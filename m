@@ -2,67 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E224D4F91
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 17:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAD9C4D4FB9
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 17:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241849AbiCJQp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 11:45:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
+        id S244034AbiCJQsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 11:48:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236683AbiCJQp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 11:45:58 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DE015A209
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 08:44:57 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id j2so12152076ybu.0
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 08:44:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8cLOGnKW3QWZtUXAjkSLOTcNrzj7enkyf7LmBO93iz0=;
-        b=HUyOCKVlHW/6iY04xF87uC60FAJFJ74lzob+MnYm7K5X8a9Fqdh85RNPyltFgozRFQ
-         oQNh3WMYWDn6OVVwnovyRp4nu1ZrcV6j506QFDzXkttFMozruew7FPnAquBftLLw+8G9
-         5mwAUKxp9nSwgGzgCTYkReBaBoFONRFTschhF0WIzuL9b0TXndZocvzO+s6wYTVFiUZI
-         FGpa0wb4WS79Gy6wE1mGCkQW903o+x9d+GPuWr+5K+kDj7ETtFqZYsNRkF9fp4vUHnwK
-         URyLREX4K61M7JF+w5QXBDLdPDi2UmQkP/WF6uD7y7MLh7o91cIumOi3SV7wHgnL1DFv
-         qlTg==
+        with ESMTP id S244053AbiCJQsi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 11:48:38 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05976BF94B
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 08:47:34 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 6621A3F1A8
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 16:47:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646930853;
+        bh=wWVrqZ7JJTH8Su/93i9Vl44N0LYGxLioIabuzPNt6dY=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=uNnhX4M/uSXSVnvqFi7QxUrP1P5Cq/g4n1DgB2y6gAQ4R4anOmU6GWe9RvXiWoYpZ
+         JN5X3DpHt/Is6KPzzK/Y8aw6oFLyH4nSZ+v1VOVDr23GQUFHBvTnpKbrRF79KUufIh
+         jUDTqsK+45DbhKpiAM6U1ABtywvStSzrLzDGV7a3yxL5bQsKfdDFfGy0F+G2OSHm7s
+         5eZ1q+oQRVwutX+OrhO5+7D5c0AWwrXzySPPT/IGxM0Wy+k109+efCprBvLRco69a+
+         kyWvMq0rUIWhkMBZVUJyUqciKFsa3U1HTCA8smbh9XI8Qri9m8xcVURGpZg9D40Xvh
+         WeGH/09YakycA==
+Received: by mail-ed1-f72.google.com with SMTP id i5-20020a056402054500b00415ce7443f4so3439344edx.12
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 08:47:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8cLOGnKW3QWZtUXAjkSLOTcNrzj7enkyf7LmBO93iz0=;
-        b=m81608QqLZ8o6coVxyFbH2izl/jur4niDF0Hcx84XIn5D2UcuWPtqm21WX9FTTzGid
-         4VXEZVZGA6xbu0Ai4zTOOnh0yJN9USNup7sOgxlfuGmuBcPbjvfqlWReIsBpk+TsLpyb
-         96R9NK2te31hMEkS5oWC+783MxKazwPuLw8SUNzKgFGNuq7rcI5EtLQBnx3KFM/b/mnU
-         pTEN3wZnpikbZxzdEtJlfY8lqJhW0GEC92OUzKJ4dr8LPMLQHPOzWNqcsa+cH8TdiiB0
-         qbC4RQT7xi53tUTqjCYJDVV9sxlcLgYMjJx5KI2IQ0cBCAGVQNoXIuc9aj0zeLzr7flH
-         sDag==
-X-Gm-Message-State: AOAM530jkklTBnh72/CqcW2s5LfyYNceQzMrFxd9O65g/NiT3xro9p9X
-        yn4obSX5y39E/wFD2TZrre+HtBEeAAOV9SCNTq3DOQ==
-X-Google-Smtp-Source: ABdhPJwYeKNVRfVgewOBzfJeNN2EfFdrp1IE6sYW/ZvedXswDpLtHxdK6ENHjXNxBEXxEaC5llFcalfjc4+czK5BC84=
-X-Received: by 2002:a25:f45:0:b0:628:b4c9:7a9f with SMTP id
- 66-20020a250f45000000b00628b4c97a9fmr4569320ybp.55.1646930695799; Thu, 10 Mar
- 2022 08:44:55 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wWVrqZ7JJTH8Su/93i9Vl44N0LYGxLioIabuzPNt6dY=;
+        b=6Im/ZvFsnAaaD9XK2E0vdIDZqhaG0KIHZXbq3aJqkjsGrOGJvmmddUEI9a3xWjD8l9
+         rj4SSNL+8NXmhUppGrC+1F9ai0uifSyhD8O6JemPBwKfdeJCuQgmKXDyq/2ZiCErzLaS
+         Ki4wr6zjY/SxmNwU+T3nqqVuAzZqUed6P0uvRAL6UG6xbVBXAaMxQbUi2vDJ7tXrFSSv
+         TLVEWfME5laFxyiJY+gOc3R2TB8vu1rwZDqIaoW5goL8VEP8Po8l7vSgBa3ID7c9eZeQ
+         qzCa4Tz1DypuPDMlNnAoSqoJ1arYaNp+t35mKRR+bVCk3Ie9eEbA25VlX6qV/UyDUA6Q
+         wPRQ==
+X-Gm-Message-State: AOAM532HrmnaZfjzv2K85C3UbBqavdPE7jCcvF/+580NOGi8q/V0x9N3
+        /N0JQIoRg49anjROMvHz91xU3ISWFVqXMMs87+InY6LFqZvVYLGoD/svx1Rqqjh71pA2G+OsxsF
+        O6lvlV8+Jj2GRf4fg6+kbofglY8q3HhtfYA==
+X-Received: by 2002:a05:6402:10d5:b0:408:f881:f0f3 with SMTP id p21-20020a05640210d500b00408f881f0f3mr5237483edu.112.1646930852927;
+        Thu, 10 Mar 2022 08:47:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy++BoKBanQlX8IjQPl/omh12eZim/u509rcL+dxdwZ+W/nPbDlkvNHYK/wHstkZtmfEY57IQ==
+X-Received: by 2002:a05:6402:10d5:b0:408:f881:f0f3 with SMTP id p21-20020a05640210d500b00408f881f0f3mr5237455edu.112.1646930852690;
+        Thu, 10 Mar 2022 08:47:32 -0800 (PST)
+Received: from [192.168.0.147] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id y12-20020a50eb8c000000b00410f02e577esm2269227edr.7.2022.03.10.08.47.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 08:47:31 -0800 (PST)
+Message-ID: <a32fa8df-bd07-8040-41cd-92484420756d@canonical.com>
+Date:   Thu, 10 Mar 2022 17:47:31 +0100
 MIME-Version: 1.0
-References: <20220310004603.543196-1-eric.dumazet@gmail.com> <813acfa36558d355e6b56b17bd6bce1c67f77296.camel@redhat.com>
-In-Reply-To: <813acfa36558d355e6b56b17bd6bce1c67f77296.camel@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 10 Mar 2022 08:44:44 -0800
-Message-ID: <CANn89iL0ygQh3=P22x49-kPsAmMSs4uRRqbGFpk4PFo2GKBPtA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next] net: add per-cpu storage and net->core_stats
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        jeffreyji <jeffreyji@google.com>,
-        Brian Vazquez <brianvv@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v3 2/8] dt-bindings: phy: add the "fsl,lynx-28g"
+ compatible
+Content-Language: en-US
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Cc:     kishon@ti.com, vkoul@kernel.org, robh+dt@kernel.org,
+        leoyang.li@nxp.com, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux@armlinux.org.uk,
+        shawnguo@kernel.org, hongxing.zhu@nxp.com
+References: <20220310145200.3645763-1-ioana.ciornei@nxp.com>
+ <20220310145200.3645763-3-ioana.ciornei@nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220310145200.3645763-3-ioana.ciornei@nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,28 +87,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 1:26 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Hello,
->
-> On Wed, 2022-03-09 at 16:46 -0800, Eric Dumazet wrote:
-> > @@ -10282,6 +10282,24 @@ void netdev_stats_to_stats64(struct rtnl_link_stats64 *stats64,
-> >  }
-> >  EXPORT_SYMBOL(netdev_stats_to_stats64);
-> >
-> > +struct net_device_core_stats *netdev_core_stats_alloc(struct net_device *dev)
-> > +{
-> > +     struct net_device_core_stats __percpu *p;
-> > +
-> > +     p = alloc_percpu_gfp(struct net_device_core_stats,
-> > +                          GFP_ATOMIC | __GFP_NOWARN);
-> > +
-> > +     if (p && cmpxchg(&dev->core_stats, NULL, p))
-> > +             free_percpu(p);
-> > +
-> > +     p = dev->core_stats;
->
-> Don't we need a READ_ONCE() here? if the allocation fails (!p) there is
-> no memory barrier.
+On 10/03/2022 15:51, Ioana Ciornei wrote:
+> Describe the "fsl,lynx-28g" compatible used by the Lynx 28G SerDes PHY
+> driver on Layerscape based SoCs.
 
-I guess you are right, thanks.
+The message is a bit misleading, because it suggests you add only
+compatible to existing bindings. Instead please look at the git log how
+people usually describe it in subject and message.
+
+> 
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+> Changes in v2:
+> 	- none
+> Changes in v3:
+> 	- 2/8: fix 'make dt_binding_check' errors
+> 
+>  .../devicetree/bindings/phy/fsl,lynx-28g.yaml | 98 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 99 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml b/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
+> new file mode 100644
+> index 000000000000..e98339ec83a7
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
+> @@ -0,0 +1,98 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/phy/fsl,lynx-28g.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Freescale Lynx 28G SerDes PHY binding
+> +
+> +maintainers:
+> +  - Ioana Ciornei <ioana.ciornei@nxp.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - fsl,lynx-28g
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  "#phy-cells":
+> +    const: 1
+> +
+> +  "#address-cells":
+> +    const: 1
+> +
+> +  "#size-cells":
+> +    const: 0
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#phy-cells"
+> +  - "#address-cells"
+> +  - "#size-cells"
+> +
+> +patternProperties:
+> +  '^phy@[0-9a-f]$':
+> +    type: object
+> +    properties:
+> +      reg:
+> +        description:
+> +          Number of the SerDes lane.
+> +        minimum: 0
+> +        maximum: 7
+> +
+> +      "#phy-cells":
+> +        const: 0
+
+Why do you need all these children? You just enumerated them, without
+statuses, resources or any properties. This should be rather just index
+of lynx-28g phy.
+
+> +
+> +    additionalProperties: false
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    soc {
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+> +      serdes_1: serdes_phy@1ea0000 {
+
+node name just "phy"
+
+> +        compatible = "fsl,lynx-28g";
+> +        reg = <0x0 0x1ea0000 0x0 0x1e30>;
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        #phy-cells = <1>;
+> +
+> +        serdes1_lane_a: phy@0 {
+> +          reg = <0>;
+> +          #phy-cells = <0>;
+> +        };
+
+
+
+Best regards,
+Krzysztof
