@@ -2,265 +2,339 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB21F4D4CEA
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 876254D4CFB
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 16:43:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242826AbiCJPZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 10:25:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54326 "EHLO
+        id S234415AbiCJP0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 10:26:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232981AbiCJPZO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:25:14 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B780158792
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 07:24:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646925851; x=1678461851;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Ho6UurSzZZhqegS1YIlDbZmg/qDlB+TYAFQIlF5iZ4E=;
-  b=UrqlesVAyreKfxkqRCkaySP52CaOCFn7njBKBWcg6ZkwdUC3+N2V1F06
-   nzZC9WkUHipXMAK7LbPtBwaFQuCQRcJJgm1IAaUunh6/ivXvGhOCyvbDu
-   PhXgyif7IepI3VeLblg/wcu6ocKzIX8R3/Ym1fOzlf1B8xrS/PdBdEs+8
-   HNSUEyIw1qBeM+PMv4JnzXE99nPG74GffXen5Tz0x0A2Az6ju65h3SxJH
-   T4mFnCsLgBm8pW+mcAEo3l1Lp42+ZOwFdQYB74Isp+qh4yb4IAk4EAfFs
-   W0tEAoCZy5ThNbAfCQzOXSgERYfXtrZHL7sXgN5VTt+qnao3fSrexgCkq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="242722335"
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="242722335"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 07:24:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,171,1643702400"; 
-   d="scan'208";a="538494192"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga007.jf.intel.com with ESMTP; 10 Mar 2022 07:24:10 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Mar 2022 07:24:09 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Thu, 10 Mar 2022 07:24:09 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Thu, 10 Mar 2022 07:24:09 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CCOoESI5YZcQDZXS1/SiknQBE4RrHd6Hf1xLLBYwbBmpvUTzpO3zjYpMgk0MwX7eNzDT21ewDWDVBu8ROr0IhWaf14h+XG+snOBsGbbuz9nyRynIe5iXie25OOjptPrKJC+6k8QEpNiYjotQYJhTxnbMfCNPOH2ZhjlBhcAg0Kx3b4bEsV9zLGf2PXzNOD91RluRnA1uJSqgaJiyucJlxfsp2FstuZKk8Qjp1IBt1i9qYWu3w0WdXYuEIHUEuMwi4e/8y5kKKmrsFGTmufglrST6qDsAEMODIU86rs7TK5Ojx4ZM805LdTV0nsHbU7jhgdmHpbe6vVyPV7KE+zr77Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5j9Hf64Ufnatdg/qszpVW8Sa6a25GnoF+sQ5sEIHG7w=;
- b=LJI+8YdtcesZo7i55fcYpLNqohf/qlC5AHeqUWfinare7w/8yEHeBvXqAjPADNXv9yW6kARFRhZeAIkqEanxSdwzZlL07xqanLGAgKgng5uGnMKsjGAnEXvMFOs+JdDMME+SJ97YpURFcIopiX1L47+uEa9ie1UhTLcAFqCJPqcZGERjQ+wUUNsCcFvQVlpVI7Zybon/DfaDIUs90LKphhzBEQ6Byserdt8afYZP3ScMaCevGnusoyqFzLO72KQUqXPu64Wd+w5ZXOvUsAH1tNWu/lbncuJ2j2eC7ms36gtj3EpRHi1iGfEA6b/IHpdM34SVIP8nM/cBJpi3FmsDLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MW4PR11MB5776.namprd11.prod.outlook.com (2603:10b6:303:183::9)
- by DM6PR11MB4427.namprd11.prod.outlook.com (2603:10b6:5:1db::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Thu, 10 Mar
- 2022 15:24:07 +0000
-Received: from MW4PR11MB5776.namprd11.prod.outlook.com
- ([fe80::79bd:61ad:6fb6:b739]) by MW4PR11MB5776.namprd11.prod.outlook.com
- ([fe80::79bd:61ad:6fb6:b739%6]) with mapi id 15.20.5038.026; Thu, 10 Mar 2022
- 15:24:07 +0000
-From:   "Drewek, Wojciech" <wojciech.drewek@intel.com>
-To:     Harald Welte <laforge@gnumonks.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "michal.swiatkowski@linux.intel.com" 
-        <michal.swiatkowski@linux.intel.com>,
-        Marcin Szycik <marcin.szycik@linux.intel.com>
-Subject: RE: PFCP support in kernel
-Thread-Topic: PFCP support in kernel
-Thread-Index: Adgzonf8LBvYss0DRt2kM5s+Tem75AAP01oAACqSnwA=
-Date:   Thu, 10 Mar 2022 15:24:07 +0000
-Message-ID: <MW4PR11MB5776AB46BC5702BD0120A7C3FD0B9@MW4PR11MB5776.namprd11.prod.outlook.com>
-References: <MW4PR11MB577600AC075530F7C3D2F06DFD0A9@MW4PR11MB5776.namprd11.prod.outlook.com>
- <Yiju8kbN87kROucg@nataraja>
-In-Reply-To: <Yiju8kbN87kROucg@nataraja>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.401.20
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 39e054c8-bb7c-4857-7ed5-08da02aa04a0
-x-ms-traffictypediagnostic: DM6PR11MB4427:EE_
-x-microsoft-antispam-prvs: <DM6PR11MB4427BE085E8F010AEB7B16B8FD0B9@DM6PR11MB4427.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4cum6Cazgc1c6ehuFkVABA0r+pGaOTl8eFlBcdDho92eoTHW6F6L8UT133DstsMU3J1EdHCoy07wkAR+ex/ntZRBG3uRxTqJ5xwEE7IWJvY1Gy6T1a8R617rUrzZnhKww1n9D1dLDKa429+W8wJ4Y5t93bKKHzaAvXyi9awH+7fwmz2gSWwwgB/rlseEPb+JZCD6UuTahYga7QCCK9TgesSMZgrfos+pTxVqHCRieHy4KSrRs8tJOIfM0GCV3YHf3iHt55Hglkz3gqSRl+p6QtnQMh2AFFEuXPQFSuu0DKBlzF77UdEhK+Ug0NzkqU2JrM15nxdNnHD/wQ2W2EJLuqibP7titXyL4Xevt6EFLvCp4Zv2QCVrLm5KgBXghF5E+emtxns4nt92a0X4xO48e2pSXTkfLaCdgXgYkXf1TaaTcjY2CIYVLT6c9gzDpl0iwEAlwrq8LeyQVBo8uDMsxF4h3WdfSYcZ1NWRX4xzZt6wlH15GEzLG7qQa2zG0UPEv/051XEh3aOP2PK6jmB9Z99W7pR/fq1n1/Pf0Su2iSrnKaQwJu9kMHSGLcx0oTGwYkWn91wFt7T+EMsdNBzjORupxU+5deUMT9XExgcRJDQejfUq7Ga7oaqzeWxGewO0p6haIOpiE0dcS4J5v/Tde6u3yl/U56he89Rn95SutGwXAa7mabMyIYbW+sFVWHDWbytvZgx++sAXbB/ceHDoF2NxncRH/mVEdZgOvystCYqaSGCbcQE4LlCQ7azaisAW+gPLlHx26lxEkwJVQ7REbwOpwmhs9XFoS20mGPZoB54=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5776.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(76116006)(64756008)(55016003)(38070700005)(186003)(54906003)(4326008)(86362001)(6916009)(82960400001)(316002)(8676002)(52536014)(9686003)(122000001)(5660300002)(83380400001)(66946007)(966005)(6506007)(53546011)(7696005)(33656002)(26005)(38100700002)(3480700007)(508600001)(8936002)(66476007)(66446008)(66556008)(2906002)(71200400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?KHWCkFv8WgbEO6DAJyzBli+REN2daCEXgiuuIOXlZVoexH6fmYCnBolF/n?=
- =?iso-8859-2?Q?khh8MEF5vSAuHMxoS/C2yWXLmcIkWURjYTPbHJYZd3jzIRzBvp6VD0foeU?=
- =?iso-8859-2?Q?Z63hxIIgxCoMbqkbB4hq/I9BD61250WWM/im/uKM1/w4VmEEkedOh9xlPs?=
- =?iso-8859-2?Q?GHH2spsPXIySaNHP/l/ctnlTkzWrEpU8qrcxcRmoCV6pctCZDGt413P039?=
- =?iso-8859-2?Q?JMWe2ZDWocDv502YnYHaMbchfE9/3oYqH3b9MAYk9t4wWHI7NHKfCLJSIo?=
- =?iso-8859-2?Q?0mqux8aW5YsMN6vnStwwmCGSfQ49m6fyOKCfq/Ykdw6mBPYpvxCxcxzNrb?=
- =?iso-8859-2?Q?7TCjFavBiYHn02+NJ3z+S731VYRKxmh/fbdW73V6ex4SlkdbGruvkYwe1G?=
- =?iso-8859-2?Q?ElpmZ/bHMKhTjp6ujAJGvCJa8clI00vijXx//LeoiiXG57IVCLraxCOeVB?=
- =?iso-8859-2?Q?WkuT5wqkQtVjv1sMMf0r6GDQMBVopW1QPRzJ499F7V8Udsv7t1oklYQ2+7?=
- =?iso-8859-2?Q?Uh+2Z2RqBIjketqMh4ouidHLejt0go5So7DpYOOBIzKY2hN1Xkybjtas03?=
- =?iso-8859-2?Q?l55NZj0P/LU57rBXWKxinYdtceMbNZMq7FZaO+/yPMQA5KSI/m4J3OD3v8?=
- =?iso-8859-2?Q?tBkwE+M5SLatbCg2GIprESPhmny9ZJzJUtsXfnoUCBqCqQGBD5i47KCWV+?=
- =?iso-8859-2?Q?mxn5thvPM56/qYg8+cmnWvJmN900RHuPDEkvFLG/ZmZUA6kXf7JhH8qifL?=
- =?iso-8859-2?Q?rdcJ6kJXv98Y0aWq11mFXA9EiUZCObpmSql+rZYXpti9te+Zc1lRRMpZCJ?=
- =?iso-8859-2?Q?QzeJGH2RTli/o28sBt0ykD0rAQMAAt4hES30X3aNEtzXGS1jbgcKUke+F1?=
- =?iso-8859-2?Q?lwbB3BHfNaJBZZrP5eKO/+fy1o1CukkgYtyFDUdgsZO+GV7UHf3O9KBAzc?=
- =?iso-8859-2?Q?Ib3Bm2RHQalJWUPuybLDYTFn/BDMWNMCjFR2hBI/E1TF8wOWTGxLhd6Bbj?=
- =?iso-8859-2?Q?qhG3fWd85MEKbcYe5dwQydiV9/ygooU791le1qFQbrzjVkvAWMTxq6rDL9?=
- =?iso-8859-2?Q?ueKmqzkrmMNUFj9xjDi+qKDY6MP3cn14Eh2w60UHvbttgfWlzHJR2WFkeg?=
- =?iso-8859-2?Q?xqKuCLY3uqQDqdU1FAfHnj9E0ihrdej0g9Wopl2ISQ65y8vqySekCMFPIn?=
- =?iso-8859-2?Q?vU+sgGo6mapdP/ulXx+dg1SaP9bQxaIRyGpRoNj0ghdkzHCYXkIIVi3+n9?=
- =?iso-8859-2?Q?TxHb18fgt2VpADYv/Mrann8HzIPkr4/Yn9PyJd0/+N6S5Xkf+Ir4KJCXDV?=
- =?iso-8859-2?Q?f2VA3NeqaDpIBaRMR7k2B4P2hkevfVTsl8rVQRGviL1UxtuPLZ2h061o7J?=
- =?iso-8859-2?Q?gyt4ZZe7684T5Gv9rOLayUthG9ZyF+7gFmt+Ar/tAxelKdd+tx/KQ4dtSw?=
- =?iso-8859-2?Q?AGFawttSBahnamF6M3850HozXIpRbTLvqa68xNtIDpjDPzZum1m+l9D8KQ?=
- =?iso-8859-2?Q?j2d3Or7EoNV+WsiNIGreDDhN2qe2YRAg1mChFthErN3XAVvNT2hz3P0kR4?=
- =?iso-8859-2?Q?9w4PntHuLo3AxWocT2fc/RXiGIjqBtkTZJdhJwWS1lQdAwjxhl2sgbJoaj?=
- =?iso-8859-2?Q?BDTZnsMwJYu+uCH0dZe3zsIJpJQcgAN82IivW9c2nFop1hy5PDhUvd4aPV?=
- =?iso-8859-2?Q?MNE8Qy5y3Ldo27sPTbAgPJPlaTsJ/KflhKdqJ/TVcrT2q/feKRm+H3/ZYs?=
- =?iso-8859-2?Q?7Ugw=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S230029AbiCJP0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 10:26:52 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6D7157219;
+        Thu, 10 Mar 2022 07:25:51 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id p15so12859013ejc.7;
+        Thu, 10 Mar 2022 07:25:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hyr8lchvSxJvVZvNNPRmAWrg1/xZg5k7PwIJtfWhQPA=;
+        b=bB7/5s/t/KzBLjcRGi2a9yGaVZ4RKGv+dQSLbu4MBPn2IvdV6nEbbtK+IJEVEUhFrU
+         AEQWAVL3khsmCLwMf/oY50KBGMhO3I/P4yeEqz1MAOY2jvDFMxiGncvs8dmVgqH8IOh6
+         Q9vKmIyt8Ece8Ho2qaJ5DKEhdjtnUGbnEQVe4+sf5JKK2ccoFbV6tzCDVOBhdgTcwzy+
+         9at2DIXGe3+rklhwUjtkbp1MK0hTrg0VRt6VqcJiRQ3fnFj54dX6Ou4mjD0Ifg9X/yKq
+         CpeeKl/hZnZWHIh88lDfqVJM6mjuAOWJXOvrkanPpYYwe37q/ivX5qI4eBJX12+UgyDy
+         kgZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hyr8lchvSxJvVZvNNPRmAWrg1/xZg5k7PwIJtfWhQPA=;
+        b=3fN0/Mpq5cgBehkCvAnBXrlUreucjDK0vFbkJZjeCcdFesNK4vHmQKUFrqX5R3QOJ2
+         XPqJClf7b3Wld/uU1N4AHNZYI1mwLwoykxYFfOi+8bObu80OeSBzQNwR7kEpdQ21cbGn
+         CeyK8Y8shQuL9HJnHYstkQKcu7XcByXNDJjH9/B6ltS+uJ2qst1e19lAy7difsMQUwWk
+         +kYp7XnjulLD2UoljkOJDfxJVw75rqEZ+jDso867m1f4tOBbFH0aF1DHVug5wBpqJwz4
+         +GiW1BHNAiALxp54Lbe0kSEIWzC7HEBdeuMES3oM28k7+hVC5KAMYZh4/zkdanObIC4P
+         GxRw==
+X-Gm-Message-State: AOAM531/w8dZRqNRN9t1HBVgP/s0mw5hxLd/zxHCKpJqSRWuMOIguQhd
+        8GIjv5PWhGbyW6Ofvk48Pr8=
+X-Google-Smtp-Source: ABdhPJyeyXIwnxx7GpXcIqMRyfd7KwZ2in6ydXgLTZ+VY3mJEJDH9hq+D3/8NJaRPmbwCXUcwrRYFw==
+X-Received: by 2002:a17:907:7711:b0:6ce:e03c:e1e2 with SMTP id kw17-20020a170907771100b006cee03ce1e2mr4707576ejc.769.1646925949456;
+        Thu, 10 Mar 2022 07:25:49 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id y14-20020a056402440e00b00416046b623csm2297799eda.2.2022.03.10.07.25.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Mar 2022 07:25:48 -0800 (PST)
+Date:   Thu, 10 Mar 2022 17:25:47 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 10/10] net: dsa: mv88e6xxx: MST Offloading
+Message-ID: <20220310152547.etuov6kpqotnyv2p@skbuf>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
+ <20220301100321.951175-11-tobias@waldekranz.com>
+ <20220303222658.7ykn6grkkp6htm7a@skbuf>
+ <87k0d1n8ko.fsf@waldekranz.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5776.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39e054c8-bb7c-4857-7ed5-08da02aa04a0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 15:24:07.1044
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: b8HT6/SyStE3upV9Kc/alPJZeC+KyAeBjHo9QEjMfZGZB7CVK/sMcPU6HdmzPCfKBvBMf0Q6UkLw6A9To5GuA8YpjLQUMRKlOInB9jctMYk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4427
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87k0d1n8ko.fsf@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Harald,
+On Thu, Mar 10, 2022 at 04:14:31PM +0100, Tobias Waldekranz wrote:
+> On Fri, Mar 04, 2022 at 00:26, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > On Tue, Mar 01, 2022 at 11:03:21AM +0100, Tobias Waldekranz wrote:
+> >> Allocate a SID in the STU for each MSTID in use by a bridge and handle
+> >> the mapping of MSTIDs to VLANs using the SID field of each VTU entry.
+> >> 
+> >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> >> ---
+> >>  drivers/net/dsa/mv88e6xxx/chip.c | 178 +++++++++++++++++++++++++++++++
+> >>  drivers/net/dsa/mv88e6xxx/chip.h |  13 +++
+> >>  2 files changed, 191 insertions(+)
+> >> 
+> >> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> >> index c14a62aa6a6c..4fb4ec1dff79 100644
+> >> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> >> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> >> @@ -1818,6 +1818,137 @@ static int mv88e6xxx_stu_setup(struct mv88e6xxx_chip *chip)
+> >>  	return mv88e6xxx_stu_loadpurge(chip, &stu);
+> >>  }
+> >>  
+> >> +static int mv88e6xxx_sid_new(struct mv88e6xxx_chip *chip, u8 *sid)
+> >> +{
+> >> +	DECLARE_BITMAP(busy, MV88E6XXX_N_SID) = { 0 };
+> >> +	struct mv88e6xxx_mst *mst;
+> >> +
+> >> +	set_bit(0, busy);
+> >> +
+> >> +	list_for_each_entry(mst, &chip->msts, node) {
+> >> +		set_bit(mst->stu.sid, busy);
+> >> +	}
+> >> +
+> >> +	*sid = find_first_zero_bit(busy, MV88E6XXX_N_SID);
+> >> +
+> >> +	return (*sid >= mv88e6xxx_max_sid(chip)) ? -ENOSPC : 0;
+> >> +}
+> >> +
+> >> +static int mv88e6xxx_sid_put(struct mv88e6xxx_chip *chip, u8 sid)
+> >> +{
+> >> +	struct mv88e6xxx_mst *mst, *tmp;
+> >> +	int err = 0;
+> >> +
+> >> +	list_for_each_entry_safe(mst, tmp, &chip->msts, node) {
+> >> +		if (mst->stu.sid == sid) {
+> >> +			if (refcount_dec_and_test(&mst->refcnt)) {
+> >> +				mst->stu.valid = false;
+> >> +				err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
+> >
+> > It is interesting what to do if this fails. Possibly not this, because
+> > the entry remains in hardware but not in software.
+> 
+> True, I will let the error bubble up and keep the SW state in sync with
+> the hardware.
 
-Thx for your reply!
+Ok. For what it's worth, if you bump a refcount from 0 to 1 as part of
+the error handling here, you need to do so using refcount_set(1), not
+refcount_inc(). I found this out in commit 232deb3f9567 ("net: dsa:
+avoid refcount warnings when ->port_{fdb,mdb}_del returns error").
+Just thought I'd mention it in case you didn't know, to avoid a future
+respin for that reason.
 
-> -----Original Message-----
-> From: Harald Welte <laforge@gnumonks.org>
-> Sent: =B6roda, 9 marca 2022 19:16
-> To: Drewek, Wojciech <wojciech.drewek@intel.com>
-> Cc: netdev@vger.kernel.org; michal.swiatkowski@linux.intel.com; Marcin Sz=
-ycik <marcin.szycik@linux.intel.com>
-> Subject: Re: PFCP support in kernel
->=20
-> Hi Wojciech,
->=20
-> On Wed, Mar 09, 2022 at 12:27:01PM +0000, Drewek, Wojciech wrote:
-> > First of all I want to thank you for your revision of our GTP changes,
-> > we've learned a lot from your comments.
->=20
-> Happy to help!
->=20
-> > So, as you may know our changes were focused around implementing offloa=
-d of GTP traffic.
->=20
-> Of course, that was what the kernel GTP driver always was about.
-> Unfortunately it didn't receive a lot of love from the telecom industry,
-> and hence it is stuck in "2G/3G land", i.e. at a time before the EPS
-> with its dedicated bearers.  So you cannot use it for IMS/VoLTE, for
-> example, as it can only match on the source IP address and doesn't have
-> the capability of using packet classification to put packets in
-> different tunnels based on [inner IP] port numbers, etc.
->=20
-> > We wanted to introduce a consistent solution so we followed the approac=
-h used for geneve/vxlan.
-> > In general this approach looks like that:
-> > - create tunnel device (geneve/vxlan/GTP)
-> > - use that device in tc filter command
-> > - based on the type of the device used in tc filter, our driver knows w=
-hat traffic should be offloaded
->=20
-> I'm sorry, I have very limited insight into geneve/vxlan.  It may
-> be of interest to you that within Osmocom we are currently implementing
-> a UPF that uses nftables as the backend.  The UPF runs in userspace,
-> handles a minimal subset of PFCP (no qos/shaping, for example), and then
-> installs rules into nftables to perform packet matching and
-> manipulation.  Contrary to the old kernel GTP driver, this approach is
-> more flexible as it can also cover the TEID mapping case which you find
-> at SGSN/S-GW or in roaming hubs.  We currently are just about to
-> complete a prof-of-concept of that.
+> >> +				list_del(&mst->node);
+> >> +				kfree(mst);
+> >> +			}
+> >> +
+> >> +			return err;
+> >> +		}
+> >> +	}
+> >> +
+> >> +	return -ENOENT;
+> >> +}
+> >> +
+> >> +static int mv88e6xxx_sid_get(struct mv88e6xxx_chip *chip, struct net_device *br,
+> >> +			     u16 msti, u8 *sid)
+> >> +{
+> >> +	struct mv88e6xxx_mst *mst;
+> >> +	int err, i;
+> >> +
+> >> +	if (!br)
+> >> +		return 0;
+> >
+> > Is this condition possible?
+> 
+> Removing.
+> 
+> >> +
+> >> +	if (!mv88e6xxx_has_stu(chip))
+> >> +		return -EOPNOTSUPP;
+> >> +
+> >> +	list_for_each_entry(mst, &chip->msts, node) {
+> >> +		if (mst->br == br && mst->msti == msti) {
+> >> +			refcount_inc(&mst->refcnt);
+> >> +			*sid = mst->stu.sid;
+> >> +			return 0;
+> >> +		}
+> >> +	}
+> >> +
+> >> +	err = mv88e6xxx_sid_new(chip, sid);
+> >> +	if (err)
+> >> +		return err;
+> >> +
+> >> +	mst = kzalloc(sizeof(*mst), GFP_KERNEL);
+> >> +	if (!mst)
+> >> +		return -ENOMEM;
+> >
+> > This leaks the new SID.
+> 
+> I don't think so, the SID is just calculated based on what is in
+> chip->msts. However:
+> 
+> - The naming is bad. Will change.
 
-That's interesting, I have two questions:
-- is it going to be possible to math packets based on SEID?
-- any options for offloading this nftables  filters to the hardware?
->=20
-> > Going to the point, now we want to do the same with PFCP.
-> > The question is: does it even make sense to create PFCP device and
-> > parse PFCP messages in kernel space?
->=20
-> I don't think so.  IMHO, PFCP is a rather complex prootocol and it
-> should be handled in a userspace program, and that userspace program can
-> then install whatever kernel configuration - whether you want to use
-> nftables, or tc, or ebpf, or whatever other old or new subsystem in the
-> kernel network stack.
+I see now. My bad. What are you renaming it to? If it isn't as concise
+you could still keep it sid_new(). I see atu_new() is based on the same
+find_first_zero_bit() concept.
 
-Ok, we will then rethink our approach in this matter.
->=20
-> > My understanding is that PFCP is some kind of equivalent of GTP-C and s=
-ince GTP-C was purposely not
-> > implemented in the kernel I feel like PFCP wouldn't fit there either.
->=20
-> I'm sorry, but PFCP is not a replacement of GTP-C.  It serves a rather
-> different purpose, i.e. to act as protocol between control and user
-> plane.  GTP-C is control plane, GTP-U is user plane.  PFCP is used in
-> between the control and user plane entities to configure the user plane.
-> It's purpose is primarily to be able to mix and match control plane
-> implementations with user plane implementations. - and to be able to
-> reuse the same user plane implementation from multiple different network
-> elements,  like SGW, PGW, HNBGW, roaming hubs, ...
+> >> +
+> >> +	INIT_LIST_HEAD(&mst->node);
+> >> +	refcount_set(&mst->refcnt, 1);
+> >> +	mst->br = br;
+> >> +	mst->msti = msti;
+> >> +	mst->stu.valid = true;
+> >> +	mst->stu.sid = *sid;
+> >> +
+> >> +	/* The bridge starts out all ports in the disabled state. But
+> >> +	 * a STU state of disabled means to go by the port-global
+> >> +	 * state. So we set all user port's initial state to blocking,
+> >> +	 * to match the bridge's behavior.
+> >> +	 */
+> >> +	for (i = 0; i < mv88e6xxx_num_ports(chip); i++)
+> >> +		mst->stu.state[i] = dsa_is_user_port(chip->ds, i) ?
+> >> +			MV88E6XXX_PORT_CTL0_STATE_BLOCKING :
+> >> +			MV88E6XXX_PORT_CTL0_STATE_DISABLED;
+> >> +
+> >> +	list_add_tail(&mst->node, &chip->msts);
+> >> +	return mv88e6xxx_stu_loadpurge(chip, &mst->stu);
+> >
+> > And this doesn't behave too well on failure (the MSTID exists in
+> > software but not in hardware).
+> 
+> Yes, fixing in v3.
+> 
+> >> +}
+> >> +
+> >> +static int mv88e6xxx_port_mst_state_set(struct dsa_switch *ds, int port,
+> >> +					const struct switchdev_mst_state *st)
+> >> +{
+> >> +	struct dsa_port *dp = dsa_to_port(ds, port);
+> >> +	struct mv88e6xxx_chip *chip = ds->priv;
+> >> +	struct mv88e6xxx_mst *mst;
+> >> +	u8 state;
+> >> +	int err;
+> >> +
+> >> +	if (!mv88e6xxx_has_stu(chip))
+> >> +		return -EOPNOTSUPP;
+> >> +
+> >> +	switch (st->state) {
+> >> +	case BR_STATE_DISABLED:
+> >> +	case BR_STATE_BLOCKING:
+> >> +	case BR_STATE_LISTENING:
+> >> +		state = MV88E6XXX_PORT_CTL0_STATE_BLOCKING;
+> >> +		break;
+> >> +	case BR_STATE_LEARNING:
+> >> +		state = MV88E6XXX_PORT_CTL0_STATE_LEARNING;
+> >> +		break;
+> >> +	case BR_STATE_FORWARDING:
+> >> +		state = MV88E6XXX_PORT_CTL0_STATE_FORWARDING;
+> >> +		break;
+> >> +	default:
+> >> +		return -EINVAL;
+> >> +	}
+> >> +
+> >> +	list_for_each_entry(mst, &chip->msts, node) {
+> >> +		if (mst->br == dsa_port_bridge_dev_get(dp) &&
+> >> +		    mst->msti == st->msti) {
+> >> +			if (mst->stu.state[port] == state)
+> >> +				return 0;
+> >> +
+> >> +			mst->stu.state[port] = state;
+> >> +			mv88e6xxx_reg_lock(chip);
+> >> +			err = mv88e6xxx_stu_loadpurge(chip, &mst->stu);
+> >> +			mv88e6xxx_reg_unlock(chip);
+> >> +			return err;
+> >> +		}
+> >> +	}
+> >> +
+> >> +	return -ENOENT;
+> >> +}
+> >> +
+> >>  static int mv88e6xxx_port_check_hw_vlan(struct dsa_switch *ds, int port,
+> >>  					u16 vid)
+> >>  {
+> >> @@ -2437,6 +2568,12 @@ static int mv88e6xxx_port_vlan_leave(struct mv88e6xxx_chip *chip,
+> >>  	if (err)
+> >>  		return err;
+> >>  
+> >> +	if (!vlan.valid && vlan.sid) {
+> >> +		err = mv88e6xxx_sid_put(chip, vlan.sid);
+> >> +		if (err)
+> >> +			return err;
+> >> +	}
+> >> +
+> >>  	return mv88e6xxx_g1_atu_remove(chip, vlan.fid, port, false);
+> >>  }
+> >>  
+> >> @@ -2482,6 +2619,44 @@ static int mv88e6xxx_port_vlan_del(struct dsa_switch *ds, int port,
+> >>  	return err;
+> >>  }
+> >>  
+> >> +static int mv88e6xxx_vlan_msti_set(struct dsa_switch *ds,
+> >> +				   const struct switchdev_attr *attr)
+> >> +{
+> >> +	const struct switchdev_vlan_attr *vattr = &attr->u.vlan_attr;
+> >> +	struct mv88e6xxx_chip *chip = ds->priv;
+> >> +	struct mv88e6xxx_vtu_entry vlan;
+> >> +	u8 new_sid;
+> >> +	int err;
+> >> +
+> >> +	mv88e6xxx_reg_lock(chip);
+> >> +
+> >> +	err = mv88e6xxx_vtu_get(chip, vattr->vid, &vlan);
+> >> +	if (err)
+> >> +		goto unlock;
+> >> +
+> >> +	if (!vlan.valid) {
+> >> +		err = -EINVAL;
+> >> +		goto unlock;
+> >> +	}
+> >> +
+> >> +	err = mv88e6xxx_sid_get(chip, attr->orig_dev, vattr->msti, &new_sid);
+> >> +	if (err)
+> >> +		goto unlock;
+> >> +
+> >> +	if (vlan.sid) {
+> >> +		err = mv88e6xxx_sid_put(chip, vlan.sid);
+> >> +		if (err)
+> >> +			goto unlock;
+> >> +	}
+> >> +
+> >> +	vlan.sid = new_sid;
+> >> +	err = mv88e6xxx_vtu_loadpurge(chip, &vlan);
+> >
+> > Maybe you could move mv88e6xxx_sid_put() after this succeeds?
+> 
+> Yep. Also made sure to avoid needless updates of the VTU entry if it
+> already belonged to the correct SID.
+> 
+> Thanks for the great review!
 
-Sorry for my lack of knowledge and thanks for explanation.
->=20
-> On an abstract / architectural level, PFCP can be compared a bit to
-> NETLINK:  A protocol between the control plane (linux userspace, routing
-> daemons, etc.) and the data plane (kernel network stack).
->=20
-> Not sure if there is anything new in it for you, but a while ago in the
-> osmocom developer call covered CUPS, see the following video recording:
-> https://media.ccc.de/v/osmodevcall-20211125-laforge-cups-pfcp
->=20
-> > Lastly, if you are wrong person to ask such question then I'm sorry.
-> > Maybe you know someone else who could help us?
->=20
-> I'm a bit overloaded, but happy to help as far as time permits.
->=20
-> Regards,
-> 	Harald
->=20
-> --
-> - Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.o=
-rg/
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D
-> "Privacy in residential applications is a desirable marketing option."
->                                                   (ETSI EN 300 175-7 Ch. =
-A6)
-
-Regards,
-Wojtek
+I realize I gave you conflicting advice here, first with inverting the
+refcount_inc() with the refcount_dec(), then with having fast handling
+of noop-changes to vlan.sid. I hope you're able to make some sense out
+of that and avoid the obvious issue with the refcount temporarily
+dropping to zero before going back to 1, which makes the sanity checker
+complain.
