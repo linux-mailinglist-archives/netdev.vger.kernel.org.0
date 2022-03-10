@@ -2,176 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75CA54D44C8
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 11:35:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D910E4D44CD
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 11:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234839AbiCJKgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 05:36:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
+        id S240031AbiCJKiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 05:38:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232932AbiCJKgO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 05:36:14 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B4B3C48A;
-        Thu, 10 Mar 2022 02:35:13 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id a8so11053380ejc.8;
-        Thu, 10 Mar 2022 02:35:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bQ6VLPxZA/BQp7aelq0Kynpjtxn593KsL+2rRCzYMD8=;
-        b=U0dCQsgQp6TCd8rEA8cYnAwdl6fBTgG5WYSQgBEZDxV9AjrH4GFH4fDELvXQizUgC/
-         kXIB633n8vkKo38n8IXo0Q1TjrsG2mKXzOFbuXxEnYqjo6M9G+bAs4QXHt2PX5dsA4Ql
-         X4MQ9QK1QXZLtbGVOvNATbNZV535UYZRqmIHyW7xpO68RHpSCo72EH6IVCw8XVtT5e8u
-         dP10Ixe8X2j/bxSCjm+QbUQFXvmm1vxihFhtJyZCMKL2Hk2tnI8rkzPy64lb7xQ12cKI
-         DDVCiQJ2NdtgYVk2fonBeutA9GRSmSIvZJVL78zXh1lY0URGc2YH5GQkyU/hbhbg4qKE
-         TxIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bQ6VLPxZA/BQp7aelq0Kynpjtxn593KsL+2rRCzYMD8=;
-        b=vqOSfF9SZtU0OIIQC1OaLFO1J1r0wd8kl49GvjxRaNBomCJMz8fd67Dy74nB6jraZI
-         zJ1ugU/SLQoGuxNme84ZuuahF83I563l2fmXXM8+jvNTGkOdyjKqH6crFdtcOCK2nVEy
-         8KxgBfhZJjqGSRAx/Mrt93y+mpHD7XlN+4xPX86vx0KvCrWSHUWzQxh5dHM4upRI51ko
-         GodKodf1W1uOEDgTV8Kca65OW4HGhbUtKhrmXuiHHPA2OOCMsvGhhzK1sGioNsYXMTyX
-         PdbnEb82xkJfVXhUWNefFgQJ7CoXePNwavcqp3bzkwUYLRjj9ca3H+MS8+VftaW+7WoS
-         akjQ==
-X-Gm-Message-State: AOAM530KFpuLQFE8XLQv14GIomdKSeaYpfewBPMugo7RGwnhJzZ8ovBE
-        on/U9hh0sURik3l/1PN0IrY=
-X-Google-Smtp-Source: ABdhPJxLnqGbZcXUIDJ2roPuIoqLULkfDNTkDYyIquYyFTOLpJOxffqNQdBFwp96nFWSAVNPnQ5mUA==
-X-Received: by 2002:a17:906:3803:b0:6cf:56b9:60a9 with SMTP id v3-20020a170906380300b006cf56b960a9mr3492920ejc.716.1646908511660;
-        Thu, 10 Mar 2022 02:35:11 -0800 (PST)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id z22-20020a17090655d600b006d229436793sm1639756ejp.223.2022.03.10.02.35.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 02:35:11 -0800 (PST)
-Date:   Thu, 10 Mar 2022 12:35:09 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v2 net-next 07/10] net: dsa: Pass MST state changes to
- driver
-Message-ID: <20220310103509.g35syl776kyh5j2n@skbuf>
-References: <20220301100321.951175-1-tobias@waldekranz.com>
- <20220301100321.951175-8-tobias@waldekranz.com>
- <20220303222055.7a5pr4la3wmuuekc@skbuf>
- <87mthymblh.fsf@waldekranz.com>
+        with ESMTP id S232493AbiCJKiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 05:38:15 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 944F56BDFC
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 02:37:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646908634; x=1678444634;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=IAFErGnKRjMbI0x4kuAUYyys99NvC/0OqZn3Io2PD0w=;
+  b=auKR1qDvecm8ZRcUkQswmh5x2Oo9PVFnOhJa2Z9e6z8InacrqMgAxCVe
+   veLpxm4NlEFuyE3KMHPVqnrwJ+xoW6SPyCNj/XT61TMa7rVN4AqQ+pKxS
+   A+VFF0V2r6yvBsoaXBu47/PN4xwAnzUMk4CtJ+I687DNag4fhgAQ99MQl
+   lyPAviZ/ZyHYF7wAWArn8tIlWuiIhmC8Sjy384mVshqSC4dnAEgf5EnaH
+   ga5CczXMzmpHirjt38OZi/u86zb4PMk/QqLUvwY8NaEKTiqhhA+Ht7X0L
+   dhm3EdcfTxB/2np7mQQjZsGmcs27r4iMHZ/OTvo11dXtewt8vlY76Z8mJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="255163231"
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="255163231"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 02:37:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
+   d="scan'208";a="596618675"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga008.fm.intel.com with ESMTP; 10 Mar 2022 02:37:11 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 10 Mar 2022 02:37:11 -0800
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Thu, 10 Mar 2022 02:37:11 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.174)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Thu, 10 Mar 2022 02:37:11 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ezj0jNIfYvw5rYw8tCJ4Tvc3AjppUvEW6gPqknS8n3MtDIMZ6Z+VDBvYpe/o4rmxE/Z9YsNFq6xpe1K4wPxZb0a7meQDGCYRK3tmhrBas6ZSK8fPyBdWtwkMts9Hu3JU3PTrnFQuwxbLT3p/5OAAM6SNsrQfgue4cyzVLPFWZ82s+OKabQaPnprYwHTVQptr4YMHU/pX2WDgCNW6yWu9rqRaG++Qlinr8a0txorj/x5W9kUJFWwDjbsEdJHjENYlKm99g2iBEA59lNuQ4odLykcSldX321v9XWgpkBJWQHcXvHlNKBLODO9LAyPMMlQGrKLaM/yEJe6Z21MczoLeEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KAOtfwnNibx35UTxDE6QiJLAI9MeusXOWkXUYDj8rpQ=;
+ b=aoyIrm5ua8A7UrtcO+TXAavMc2c5JEv37VmwFMSvcPumNzbZrGD/IeeMo509Arm36Vs8Au5DEUtlD0DxZ4YX/ID0PfMw67eHGaXuDsqcH5cwbDgPH3mITZ8CeeaG24TSUf+kdd8Ltp0yODhInpBn3f/fFWAxx64N3iDcxIEteC9YMrvSwAK4yfFJWcRNsWuv9Rv/oHMDSEVK+AZaytgJ81AKKf13/18ditGKMexprvQ7SWa0dKRADu0jNBAKnpwqXsVK1veLyM+6W8gnrSWyyMLjGB3BbbqHr99wDzEXOosOanhbUQQRd64inikTUst4OfplZsfWqgvSLk8TZxnL+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW3PR11MB4554.namprd11.prod.outlook.com (2603:10b6:303:5d::7)
+ by BN6PR1101MB2212.namprd11.prod.outlook.com (2603:10b6:405:52::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.23; Thu, 10 Mar
+ 2022 10:37:09 +0000
+Received: from MW3PR11MB4554.namprd11.prod.outlook.com
+ ([fe80::88f4:40a1:ffe1:905a]) by MW3PR11MB4554.namprd11.prod.outlook.com
+ ([fe80::88f4:40a1:ffe1:905a%6]) with mapi id 15.20.5038.027; Thu, 10 Mar 2022
+ 10:37:06 +0000
+From:   "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com>
+To:     Marcin Szycik <marcin.szycik@linux.intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "jiri@resnulli.us" <jiri@resnulli.us>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "osmocom-net-gprs@lists.osmocom.org" 
+        <osmocom-net-gprs@lists.osmocom.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "laforge@gnumonks.org" <laforge@gnumonks.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pablo@netfilter.org" <pablo@netfilter.org>
+Subject: RE: [Intel-wired-lan] [PATCH net-next v10 6/7] ice: Fix FV offset
+ searching
+Thread-Topic: [Intel-wired-lan] [PATCH net-next v10 6/7] ice: Fix FV offset
+ searching
+Thread-Index: AQHYL+a8rM+mieIyrEOF7+b8ewY21qy4dZzA
+Date:   Thu, 10 Mar 2022 10:37:06 +0000
+Message-ID: <MW3PR11MB45546A2306F39A3647C94E039C0B9@MW3PR11MB4554.namprd11.prod.outlook.com>
+References: <20220304164048.476900-1-marcin.szycik@linux.intel.com>
+ <20220304164048.476900-7-marcin.szycik@linux.intel.com>
+In-Reply-To: <20220304164048.476900-7-marcin.szycik@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 62d687e9-2372-43ab-be6e-08da0281ec76
+x-ms-traffictypediagnostic: BN6PR1101MB2212:EE_
+x-microsoft-antispam-prvs: <BN6PR1101MB2212BBD6F9ABA68295AEEE619C0B9@BN6PR1101MB2212.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: htl24Kw++6j/qdnqj/VfSpwRu/S1z1jP80ZqNBxVdi2881j2qKdc8LAYngaCbyEP1MT9CBxKB3Mogju50/H9Ubf4eA6FisnxBzSRFMKIf2lYIm8aj/20CcnkJHpK9Tp/1Pvhx9h8kBn81wZU+5fqRbTyNGMyEvBnKnqLEymyD4qaCOUDhJDey0JqTmEG7Knf5t8GDVn2TFkAEiPpldQyJIrVXEA20AWEdhfns/ygSMBt2VMX5flGfKU3yb7B5e5sL3NG5fSjLrFZOyBHrEcYsVXjKjJUMaMRT/qUyzDbcTFJXqjeWZufD+fZgOV1lwPW6GiPMlr8YObcO9YSgJU8LbowRv9/CM0Yf8xijSzLhNj+KwzHmF0xVD7jA5pByATu9o1xArV8GzTP5T5TxD4JKQiHAl9iHAXXDJskA3DZaEpvZz0wdfW3YaT5orU8k4jaP71bZcsqpQmTBsd/V8MoHbv1kqZfwJFUCZpo3571jxLtbqr76dkYyAe9uSg7LHVXGPlw2tSw+txsANAvxb4ORt9lXHVl9lEVq7ucAd4/GPC5m42DpzIT3hZ4E6OWalHU/0b+X0hQLU5VLk9l1ed6G5frh0N5JS1aRbX0FxciQ4wjMlftt8N2sMlkNk2lIy5W0FEPV7NKvfyyw9qYa4+7FNh/WwyP0HzAjasNy1vorhyxD8yDbCf5bbqn59JUrmSItq9K4pk0l9chaD8Oj1b2UQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4554.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2906002)(5660300002)(54906003)(186003)(52536014)(26005)(7416002)(8936002)(33656002)(508600001)(8676002)(82960400001)(83380400001)(71200400001)(86362001)(9686003)(66556008)(64756008)(66446008)(66476007)(4326008)(76116006)(66946007)(7696005)(316002)(6506007)(110136005)(122000001)(55016003)(38070700005)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HjL2HRelCVp09nHH1XUNYGEGOTMQfm60ajux8akXOX8fsc0MucRG8KKsIAvP?=
+ =?us-ascii?Q?FECkOMG5P7zWy+jzJfFB6to9KQWnVZ7wHcb1n61Vl6tqUddjYmJwtE0dzb+c?=
+ =?us-ascii?Q?yoTG87Sq6tBmODwJIL+yIDH2eXgmMyMnghiIiPN1Rp0skDy/LVcjClujLZcy?=
+ =?us-ascii?Q?vBfJpHZ083u9UmcJUC9GF7b/pvw1RYlRYY38lbH2/pjWqPeR9XymJXEfb0b7?=
+ =?us-ascii?Q?06HKkejTwSO+8+vDxBeIPwr7qczYZE5caF+Sen9L7IiIMvZG+YFgInl2kbYz?=
+ =?us-ascii?Q?Lx3klxrJ5y7nE1bnoBGdUmorvfE5AsvPX/BH45n+x9zKlFg59yH1XtMurFwB?=
+ =?us-ascii?Q?IZVdxc1xLLR/YZ0EWN80kFRl+q+CvrnbGFwcpPHioCo42+yLL3LUngg9iGBS?=
+ =?us-ascii?Q?LNB/Lq4pjDLHuWimz0MRoO8BFg2MeXYeUWeUmMfPCA97MEfrgY/UNPUwcUkB?=
+ =?us-ascii?Q?0EEdORygodBiGGLFZ0h43t5qDzWXW6Ro2sYQocFr36skmHuseLepgcSP0K8W?=
+ =?us-ascii?Q?eDfarERzxjKHmbKUHV6PBlb7JIweLRW+xKa9fS7UU++/4MykPE7l6JCv3POG?=
+ =?us-ascii?Q?evKyZh/wlPF6cWTeC2mc3MI3lIdkQjCWgoND1DYq2FW9SZVEN1rCA27uJ40E?=
+ =?us-ascii?Q?D8L0hOkUunWB1vovxKyyrXt50NeReSs35axliijqkk+f2oT39ziYFrkQoG/r?=
+ =?us-ascii?Q?2yswsYZ+3khgPJR8ApDYzTqmVcmewT9Tw5wHYI+Wq9oTxCoIC0iZMQJs3yNg?=
+ =?us-ascii?Q?komPEBidrjFGpdd9Pn1Mvo7CrztqjVxfiknMhqTrIxDhO9LvBuDZMyGUAU4F?=
+ =?us-ascii?Q?QJRj3pO1EKxmoIIHfmPy8jMArVliKky0a0qWlonu0G6HQPktPipNaVLr08/v?=
+ =?us-ascii?Q?nPwAbX63NffAVZHM8bknpcKJ7ztTsYhUe1U0JXS1OuI8wcGGx9g7CSRPa5qx?=
+ =?us-ascii?Q?RHr+STInIQAA8hM+IGigpnrsxbJyb90Fi7DvK8XUCLCTE3WJ7NswUaHV7pfB?=
+ =?us-ascii?Q?l1BcqD0E+XKHNCK0L1NnlujZRwbPKqjub8AymE9Oz7ojKGrrOX/DosYSXthq?=
+ =?us-ascii?Q?eTS0peVq8f78TfNrfk7F/IgBgZfRrKspux0Uxa7aL+OLYZo0+CIhiMPvYO2Q?=
+ =?us-ascii?Q?j/aSep8EKdVypHh74dldJH1CWcObd8dQboS2DqaprREWyKeAMPN/zlcbROMA?=
+ =?us-ascii?Q?mucqRebUgPYklnfDLbb2bT7khViz188YfrCJh+6953N5yoR4sRCAuBz+mHCO?=
+ =?us-ascii?Q?fEWb7GqL/opcBcOlEqE/fl9YhWZwdRIGfsaCJA0cOS9sWenxcW/RV/Y0ow04?=
+ =?us-ascii?Q?x0a6hjKnDsaGRvIOQDw+goXrOzWiIG6Tkfhl+RdEFwuiTNRBUq2i8tpm2g/G?=
+ =?us-ascii?Q?joXDh2iC4rlcQe05hGgQOg8NYb5xDPepHcgN3rCgdx4irv6UWu1jKFfCXyKP?=
+ =?us-ascii?Q?B3wc38gOSUvlHsqm5yuonf3Jy8IaIWRFbMRbMjhnWLV38c8KctcwKdhVAYtx?=
+ =?us-ascii?Q?OzZXWm+OlrsqVEquzC45ux58mpgr1cv9rJEHegeO2iooDfzJCad69nv1raOU?=
+ =?us-ascii?Q?lgHmYy++KlRpgq9i3eDtw2enelz33ThpRXEJXqsgOT2P75dAXmoU0aSzL4Fr?=
+ =?us-ascii?Q?jFXp/mcUo7WI1AMauby1TQlrJiZwa3/KAenTk5Bfe5NCsVVYJoCLc54BnWIl?=
+ =?us-ascii?Q?rCWPbA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87mthymblh.fsf@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4554.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62d687e9-2372-43ab-be6e-08da0281ec76
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2022 10:37:06.6494
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mpigm3k0i7qXZpYU9gdERk0yYkoxJxDhp8GIaCVvHw5Y1g1uaSH1AnvYJgK3sxOCtHfQB4vAa2KV9wz53gNTCr3SedQgLT57EN59V53Xj5o=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2212
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 09:54:34AM +0100, Tobias Waldekranz wrote:
-> >> +	if (!dsa_port_can_configure_learning(dp) || dp->learning) {
-> >> +		switch (state->state) {
-> >> +		case BR_STATE_DISABLED:
-> >> +		case BR_STATE_BLOCKING:
-> >> +		case BR_STATE_LISTENING:
-> >> +			/* Ideally we would only fast age entries
-> >> +			 * belonging to VLANs controlled by this
-> >> +			 * MST.
-> >> +			 */
-> >> +			dsa_port_fast_age(dp);
-> >
-> > Does mv88e6xxx support this? If it does, you might just as well
-> > introduce another variant of ds->ops->port_fast_age() for an msti.
-> 
-> You can limit ATU operations to a particular FID. So the way I see it we
-> could either have:
-> 
-> int (*port_vlan_fast_age)(struct dsa_switch *ds, int port, u16 vid)
-> 
-> + Maybe more generic. You could imagine there being a way to trigger
->   this operation from userspace for example.
-> - We would have to keep the VLAN<->MSTI mapping in the DSA layer in
->   order to be able to do the fan-out in dsa_port_set_mst_state.
-> 
-> or:
-> 
-> int (*port_msti_fast_age)(struct dsa_switch *ds, int port, u16 msti)
-> 
-> + Let's the mapping be an internal affair in the driver.
-> - Perhaps, less generically useful.
-> 
-> Which one do you prefer? Or is there a hidden third option? :)
-
-Yes, I was thinking of "port_msti_fast_age". I don't see a cheap way of
-keeping VLAN to MSTI associations in the DSA layer. Only if we could
-retrieve this mapping from the bridge layer - maybe with something
-analogous to br_vlan_get_info(), but br_mst_get_info(), and this gets
-passed a VLAN_N_VID sized bitmap, which the bridge populates with ones
-and zeroes.
-
-The reason why I asked for this is because I'm not sure of the
-implications of flushing the entire FDB of the port for a single MSTP
-state change. It would trigger temporary useless flooding in other MSTIs
-at the very least. There isn't any backwards compatibility concern to
-speak of, so we can at least try from the beginning to limit the
-flushing to the required VLANs.
-
-What I didn't think about, and will be a problem, is
-dsa_port_notify_bridge_fdb_flush() - we don't know the vid to flush.
-The easy way out here would be to export dsa_port_notify_bridge_fdb_flush(),
-add a "vid" argument to it, and let drivers call it. Thoughts?
-
-Alternatively, if you think that cross-flushing FDBs of multiple MSTIs
-isn't a real problem, I suppose we could keep the "port_fast_age" method.
-
-> > And since it is new code, you could require that drivers _do_ support
-> > configuring learning before they could support MSTP. After all, we don't
-> > want to keep legacy mechanisms in place forever.
-> 
-> By "configuring learning", do you mean this new fast-age-per-vid/msti,
-> or being able to enable/disable learning per port? If it's the latter,
-> I'm not sure I understand how those two are related.
-
-The code from dsa_port_set_state() which you've copied:
-
-	if (!dsa_port_can_configure_learning(dp) ||
-	    (do_fast_age && dp->learning)) {
-
-has this explanation:
-
-1. DSA keeps standalone ports in the FORWARDING state.
-2. DSA also disables address learning on standalone ports, where this is
-   possible (dsa_port_can_configure_learning(dp) == true).
-3. When a port joins a bridge, it leaves its FORWARDING state from
-   standalone mode and inherits the bridge port's BLOCKING state
-4. dsa_port_set_state() treats a port transition from FORWARDING to
-   BLOCKING as a transition requiring an FDB flush
-5. due to (2), the FDB flush at stage (4) is in fact not needed, because
-   the FDB of that port should already be empty. Flushing the FDB may be
-   a costly operation for some drivers, so it is avoided if possible.
-
-So this is why the "dsa_port_can_configure_learning()" check is there -
-for compatibility with drivers that can't configure learning => they
-keep learning enabled also in standalone mode => they need an FDB flush
-when a standalone port joins a bridge.
-
-What I'm saying is: for drivers that offload MSTP, let's force them to
-get the basics right first (have configurable learning), rather than go
-forward forever with a backwards compatibility mode.
+>-----Original Message-----
+>From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+>Marcin Szycik
+>Sent: Friday, March 4, 2022 10:11 PM
+>To: netdev@vger.kernel.org
+>Cc: jiri@resnulli.us; xiyou.wangcong@gmail.com; osmocom-net-
+>gprs@lists.osmocom.org; jhs@mojatatu.com; laforge@gnumonks.org; intel-
+>wired-lan@lists.osuosl.org; kuba@kernel.org; davem@davemloft.net;
+>pablo@netfilter.org
+>Subject: [Intel-wired-lan] [PATCH net-next v10 6/7] ice: Fix FV offset sea=
+rching
+>
+>From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+>
+>Checking only protocol ids while searching for correct FVs can lead to a
+>situation, when incorrect FV will be added to the list. Incorrect means th=
+at FV
+>has correct protocol id but incorrect offset.
+>
+>Call ice_get_sw_fv_list with ice_prot_lkup_ext struct which contains all
+>protocol ids with offsets.
+>
+>With this modification allocating and collecting protocol ids list is not =
+longer
+>needed.
+>
+>Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+>---
+>v7: Fix ice_get_sw_fv_list kernel-doc
+>v10: Fix 80 char line limit
+>---
+> .../net/ethernet/intel/ice/ice_flex_pipe.c    | 22 +++++------
+> .../net/ethernet/intel/ice/ice_flex_pipe.h    |  2 +-
+> drivers/net/ethernet/intel/ice/ice_switch.c   | 39 +------------------
+> 3 files changed, 12 insertions(+), 51 deletions(-)
+>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
