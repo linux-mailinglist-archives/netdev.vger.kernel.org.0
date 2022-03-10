@@ -2,90 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC8D24D41EC
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 08:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E9B04D420A
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 08:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240101AbiCJHg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 02:36:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
+        id S240159AbiCJHxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 02:53:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236537AbiCJHg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 02:36:27 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0992E79C78
-        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 23:35:26 -0800 (PST)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646897724;
+        with ESMTP id S233595AbiCJHxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 02:53:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27454132943
+        for <netdev@vger.kernel.org>; Wed,  9 Mar 2022 23:52:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646898741;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=XBt8ZxM9l6PdH/gcgODOu/4DY2CfD1qg+b7hsM0BHUY=;
-        b=zHlZgPJHfCFFecbH4zQvzYWh9BClwcRkWMLvoGtcG2YTS9vt8FksmIcSlrDIj3TaMPkiac
-        ps6Z0moW/lPk1L32XRghI9gyjaX5+HuXuS9NB7mG55d+orgPBeRHVGuFNfYPIQ7i4DVy1y
-        wQrsIvlzm0CyZA1oMDqzOnI6zEHXZcC7TVzkluF8L5NKOKy5ll60XmBXfxdn0afriP5HV+
-        x2NTr6jDmH9OK2O/mkOtWwLghhPpovjs7y2O7g2Q5FLHHLWfpyGniCEEBzipyGDUps5U2t
-        0GGm71YEccAyrNiOHoASCuKZjgDsYYBTv9QT4X72FEdZ9sg4qaf15X+OpuwQwQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646897724;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=XBt8ZxM9l6PdH/gcgODOu/4DY2CfD1qg+b7hsM0BHUY=;
-        b=Zk2vUkvGIzC8meR34CDiti/3I+DxCKjnt1884Xn53foDq/+15jZNhI73tJNmt/m48TzIH0
-        MpHREcy1TYjWQrAQ==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paul Blakey <paulb@nvidia.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Juhee Kang <claudiajkang@gmail.com>,
-        Andreas Oetken <ennoerlangen@gmail.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        Anthony Harivel <anthony.harivel@linutronix.de>
-Subject: [PATCH net-next] flow_dissector: Add support for HSRv0
-Date:   Thu, 10 Mar 2022 08:35:05 +0100
-Message-Id: <20220310073505.49990-1-kurt@linutronix.de>
+        bh=d/kJbw1ceOFiXhO5YIO+i0r0c+TxsMqa/iGcWfOLU3I=;
+        b=Minv1FdXstaXqnb44YLPJjpzR+M2/UVBfT6TbxAUKmpZFEXQJEXFc4QubEAzjiHE2YMboI
+        FO6vMgjpemZ7fGQ6ph+nxVInZfosH5QFkPjvxIs0Ld+JVy5C+vvN2dGpZs/tO43TvTrZnE
+        4apT4AySu5o77wE3zx4+6zdflZLe52c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-48-5l8F3TN-PgeNTt8YBimUDQ-1; Thu, 10 Mar 2022 02:52:17 -0500
+X-MC-Unique: 5l8F3TN-PgeNTt8YBimUDQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A65FD51DC;
+        Thu, 10 Mar 2022 07:52:16 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-194.pek2.redhat.com [10.72.13.194])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D69437A220;
+        Thu, 10 Mar 2022 07:52:13 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>, Eli Cohen <elic@nvidia.com>,
+        Anirudh Rayabharam <mail@anirudhrb.com>
+Subject: [PATCH] vhost: allow batching hint without size
+Date:   Thu, 10 Mar 2022 15:52:11 +0800
+Message-Id: <20220310075211.4801-1-jasowang@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit bf08824a0f47 ("flow_dissector: Add support for HSR") added support for
-HSR within the flow dissector. However, it only works for HSR in version
-1. Version 0 uses a different Ether Type. Add support for it.
+Commit e2ae38cf3d91 ("vhost: fix hung thread due to erroneous iotlb
+entries") tries to reject the IOTLB message whose size is zero. But
+the size is not necessarily meaningful, one example is the batching
+hint, so the commit breaks that.
 
-Reported-by: Anthony Harivel <anthony.harivel@linutronix.de>
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Fixing this be reject zero size message only if the message is used to
+update/invalidate the IOTLB.
+
+Fixes: e2ae38cf3d91 ("vhost: fix hung thread due to erroneous iotlb entries")
+Reported-by: Eli Cohen <elic@nvidia.com>
+Cc: Anirudh Rayabharam <mail@anirudhrb.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- net/core/flow_dissector.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vhost/vhost.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 34441a32e3be..03b6e649c428 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -1283,6 +1283,7 @@ bool __skb_flow_dissect(const struct net *net,
- 		break;
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 082380c03a3e..1768362115c6 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -1170,7 +1170,9 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
+ 		goto done;
  	}
  
-+	case htons(ETH_P_PRP):
- 	case htons(ETH_P_HSR): {
- 		struct hsr_tag *hdr, _hdr;
- 
+-	if (msg.size == 0) {
++	if ((msg.type == VHOST_IOTLB_UPDATE ||
++	     msg.type == VHOST_IOTLB_INVALIDATE) &&
++	     msg.size == 0) {
+ 		ret = -EINVAL;
+ 		goto done;
+ 	}
 -- 
-2.30.2
+2.18.1
 
