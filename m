@@ -2,152 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC944D4723
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 13:37:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7669B4D4736
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 13:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242030AbiCJMi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 07:38:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52334 "EHLO
+        id S242105AbiCJMu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 07:50:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233643AbiCJMi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 07:38:28 -0500
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BEF148902;
-        Thu, 10 Mar 2022 04:37:24 -0800 (PST)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id D69095FD0A;
-        Thu, 10 Mar 2022 15:37:22 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1646915842;
-        bh=EYq5tKgfesKo6D2XVsUYPzfU6MR1bu8zAYZ0NrjCDsI=;
-        h=From:To:Subject:Date:Message-ID:Reply-To:Content-Type:
-         MIME-Version;
-        b=UU2cy7hIiZ4eWPgcmEeBklBLPC56Tr7RlNAAWD/oc2l4q6CUJ17ueP/EmMnTKIGFn
-         XcKE/4LueZBRK/MT9Z1njnFvytrMD9UHfvfTcRoN6iEYSNTMrPsi6Cz6Tvnlx201Ut
-         r1gIFTwEl6FyMR2fPzoGNS0x7V8nI/xE6C5O2nlc7eIVz9QkcHSx62NiINfVrjJ1tO
-         5JkSUGlLOAArPs1lpvduaus/XUe7dlq9R7D0/cDm3BADM6Nf9EK9HGOqqPTAdaXnYk
-         l1/G7DpaqHiQhbUf1P93Ow/cgfBsnZakIMBZH9N8dXZY+zq25exkhSj3/vXR6rkDnk
-         +oEv7NxYa4Oig==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 10 Mar 2022 15:37:22 +0300 (MSK)
-From:   =?utf-8?B?0JrRgNCw0YHQvdC+0LIg0JDRgNGB0LXQvdC40Lkg0JLQu9Cw0LTQuNC80Lg=?=
-         =?utf-8?B?0YDQvtCy0LjRhw==?= <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        =?utf-8?B?0KDQvtC60L7RgdC+0LIg0JTQvNC40YLRgNC40Lkg0JTQvNC40YLRgNC40LU=?=
-         =?utf-8?B?0LLQuNGH?= <DDRokosov@sberdevices.ru>
-Subject: 
-Thread-Index: AQHYNHuOMj+fQ8zOQU2b4JDz69ksfQ==
-Date:   Thu, 10 Mar 2022 12:37:14 +0000
-Message-ID: <ea590468-0fa9-65f0-fbe9-7541ce005a09@sberdevices.ru>
-Reply-To: "17514ec6-6e04-6ef9-73ba-b21da09f0f6f@sberdevices.ru" 
-          <17514ec6-6e04-6ef9-73ba-b21da09f0f6f@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9B03FE4090921B42938A8FA5DB53B983@sberdevices.ru>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/10 08:46:00 #18933400
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S237120AbiCJMuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 07:50:55 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4A6148914
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 04:49:54 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b70-20020a253449000000b0062c16d950c5so4301316yba.9
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 04:49:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=ALSEL9LuFnUnMtyCTwSaJ5peLevtVaPVQNw8s0gGmYc=;
+        b=Tu8P5221QkfRPOdz7Vm/QjH0r1IZAxD6FteMSjhufUD8xUak1VWpt+675KKx1TyEYg
+         wsmrWx6ynA7A1frWYCWAAljGT8IJA8UQ0ll2idnTo2hoKQThmcPzlDFUUeqymcjRkm3i
+         Vln3s9ysDwzp7U4/KpcLoHqIoetFgmYdQz5fz12jNjcNvPAxSKEMNsWC0EjahbyuOgsR
+         6Gg5hCOIixsXMJ8S6Ql4FCOUDG1rQdDjsrTn3hpiEfnoI7Zi/edy0BF2mcyaGyTAd4Hx
+         xXoOPkC+G3wdr0wl5J6DKG7dtLQIVvvHRidU4NFoiV8C95/F4SfyI3uPR8onwSDYIMLJ
+         yjAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ALSEL9LuFnUnMtyCTwSaJ5peLevtVaPVQNw8s0gGmYc=;
+        b=GARocUh7PXapu6oGXzUZUGFeLG59QrO7n5ZzDflqW9WnBk0k1cC6OSJPcuNpefA8Tn
+         mQqBvsZCnsaFOF8zqXBXHCaSsKYOpq8nVqk0jqX9NcOZ1QrQUovY47erEBinmM1UIpqO
+         Mc5ydcro8T0SbhJYNZ37ZYJcReDw91nvzWojHeU3QEWsj/aUx8D+CKcazVgnrMgtwMgl
+         O93TTG3X+eLUdW4yxj1iFm8EQLaADxCT7fwMNd4zgTIOZI0L0W3tH2np9FphK0hzYvD1
+         R4LQx4fLYCm0DPc/04TgZGEv/sPzjBWf6wF9nztm/WTmGpw0tBQ9SdoBEwdZbPUlSchY
+         orlQ==
+X-Gm-Message-State: AOAM532pnqhQCA4PJkml7eOkmwy13E7LPtvV0hLO3x3XsG4taj4Mg3bC
+        41rDeKe/qzI2X2475U5QUs6vDcTf/+M=
+X-Google-Smtp-Source: ABdhPJyjh0R7OFT0MD8hNPxUC6ZfB745tOtX2yKAhiJF44VEL6Hbmw+DEcAR7EUp4465bHQ6CF3to7qK6OE=
+X-Received: from jiyong.seo.corp.google.com ([2401:fa00:d:11:f59e:134:eb7:e1d2])
+ (user=jiyong job=sendgmr) by 2002:a25:3c41:0:b0:62c:2929:84b1 with SMTP id
+ j62-20020a253c41000000b0062c292984b1mr3615986yba.338.1646916593902; Thu, 10
+ Mar 2022 04:49:53 -0800 (PST)
+Date:   Thu, 10 Mar 2022 21:49:35 +0900
+In-Reply-To: <20220310124936.4179591-1-jiyong@google.com>
+Message-Id: <20220310124936.4179591-2-jiyong@google.com>
+Mime-Version: 1.0
+References: <20220310124936.4179591-1-jiyong@google.com>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+Subject: [PATCH 1/2] vsock: each transport cycles only on its own sockets
+From:   Jiyong Park <jiyong@google.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     adelva@google.com, Jiyong Park <jiyong@google.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbSA3ZTdjNzMwNWY2NGVlNTY2NWY4OTRkOThhMmIwMzkxNGY2YzhiYjViIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmlj
-ZXMucnU+DQpEYXRlOiBNb24sIDMgSmFuIDIwMjIgMTQ6NDU6MDUgKzAzMDANClN1YmplY3Q6IFtS
-RkMgUEFUQ0ggdjEgMy8zXSBhZl92c29jazogU09DS19TRVFQQUNLRVQgYnJva2VuIGJ1ZmZlciB0
-ZXN0DQoNCkFkZCB0ZXN0IHdoZXJlIHNlbmRlciBzZW5kcyB0d28gbWVzc2FnZSwgZWFjaCB3aXRo
-IG93bg0KZGF0YSBwYXR0ZXJuLiBSZWFkZXIgdHJpZXMgdG8gcmVhZCBmaXJzdCB0byBicm9rZW4g
-YnVmZmVyOg0KaXQgaGFzIHRocmVlIHBhZ2VzIHNpemUsIGJ1dCBtaWRkbGUgcGFnZSBpcyB1bm1h
-cHBlZC4gVGhlbiwNCnJlYWRlciB0cmllcyB0byByZWFkIHNlY29uZCBtZXNzYWdlIHRvIHZhbGlk
-IGJ1ZmZlci4gVGVzdA0KY2hlY2tzLCB0aGF0IHVuY29waWVkIHBhcnQgb2YgZmlyc3QgbWVzc2Fn
-ZSB3YXMgZHJvcHBlZA0KYW5kIHRodXMgbm90IGNvcGllZCBhcyBwYXJ0IG9mIHNlY29uZCBtZXNz
-YWdlLg0KDQpTaWduZWQtb2ZmLWJ5OiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2
-aWNlcy5ydT4NCi0tLQ0KIHRvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jIHwgMTIxICsr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCiAxIGZpbGUgY2hhbmdlZCwgMTIxIGluc2Vy
-dGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5j
-IGIvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMNCmluZGV4IGFhMmRlMjdkMGY3Ny4u
-Njg2YWY3MTJiNGFkIDEwMDY0NA0KLS0tIGEvdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0
-LmMNCisrKyBiL3Rvb2xzL3Rlc3RpbmcvdnNvY2svdnNvY2tfdGVzdC5jDQpAQCAtMTYsNiArMTYs
-NyBAQA0KICNpbmNsdWRlIDxsaW51eC9rZXJuZWwuaD4NCiAjaW5jbHVkZSA8c3lzL3R5cGVzLmg+
-DQogI2luY2x1ZGUgPHN5cy9zb2NrZXQuaD4NCisjaW5jbHVkZSA8c3lzL21tYW4uaD4NCiANCiAj
-aW5jbHVkZSAidGltZW91dC5oIg0KICNpbmNsdWRlICJjb250cm9sLmgiDQpAQCAtNDM1LDYgKzQz
-NiwxMjEgQEAgc3RhdGljIHZvaWQgdGVzdF9zZXFwYWNrZXRfdGltZW91dF9zZXJ2ZXIoY29uc3Qg
-c3RydWN0IHRlc3Rfb3B0cyAqb3B0cykNCiAJY2xvc2UoZmQpOw0KIH0NCiANCisjZGVmaW5lIEJV
-Rl9QQVRURVJOXzEgJ2EnDQorI2RlZmluZSBCVUZfUEFUVEVSTl8yICdiJw0KKw0KK3N0YXRpYyB2
-b2lkIHRlc3Rfc2VxcGFja2V0X2ludmFsaWRfcmVjX2J1ZmZlcl9jbGllbnQoY29uc3Qgc3RydWN0
-IHRlc3Rfb3B0cyAqb3B0cykNCit7DQorCWludCBmZDsNCisJdW5zaWduZWQgY2hhciAqYnVmMTsN
-CisJdW5zaWduZWQgY2hhciAqYnVmMjsNCisJaW50IGJ1Zl9zaXplID0gZ2V0cGFnZXNpemUoKSAq
-IDM7DQorDQorCWZkID0gdnNvY2tfc2VxcGFja2V0X2Nvbm5lY3Qob3B0cy0+cGVlcl9jaWQsIDEy
-MzQpOw0KKwlpZiAoZmQgPCAwKSB7DQorCQlwZXJyb3IoImNvbm5lY3QiKTsNCisJCWV4aXQoRVhJ
-VF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlidWYxID0gbWFsbG9jKGJ1Zl9zaXplKTsNCisJaWYgKGJ1
-ZjEgPT0gTlVMTCkgew0KKwkJcGVycm9yKCInbWFsbG9jKCknIGZvciAnYnVmMSciKTsNCisJCWV4
-aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwlidWYyID0gbWFsbG9jKGJ1Zl9zaXplKTsNCisJ
-aWYgKGJ1ZjIgPT0gTlVMTCkgew0KKwkJcGVycm9yKCInbWFsbG9jKCknIGZvciAnYnVmMiciKTsN
-CisJCWV4aXQoRVhJVF9GQUlMVVJFKTsNCisJfQ0KKw0KKwltZW1zZXQoYnVmMSwgQlVGX1BBVFRF
-Uk5fMSwgYnVmX3NpemUpOw0KKwltZW1zZXQoYnVmMiwgQlVGX1BBVFRFUk5fMiwgYnVmX3NpemUp
-Ow0KKw0KKwlpZiAoc2VuZChmZCwgYnVmMSwgYnVmX3NpemUsIDApICE9IGJ1Zl9zaXplKSB7DQor
-CQlwZXJyb3IoInNlbmQgZmFpbGVkIik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisN
-CisJaWYgKHNlbmQoZmQsIGJ1ZjIsIGJ1Zl9zaXplLCAwKSAhPSBidWZfc2l6ZSkgew0KKwkJcGVy
-cm9yKCJzZW5kIGZhaWxlZCIpOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWNs
-b3NlKGZkKTsNCit9DQorDQorc3RhdGljIHZvaWQgdGVzdF9zZXFwYWNrZXRfaW52YWxpZF9yZWNf
-YnVmZmVyX3NlcnZlcihjb25zdCBzdHJ1Y3QgdGVzdF9vcHRzICpvcHRzKQ0KK3sNCisJaW50IGZk
-Ow0KKwl1bnNpZ25lZCBjaGFyICpicm9rZW5fYnVmOw0KKwl1bnNpZ25lZCBjaGFyICp2YWxpZF9i
-dWY7DQorCWludCBwYWdlX3NpemUgPSBnZXRwYWdlc2l6ZSgpOw0KKwlpbnQgYnVmX3NpemUgPSBw
-YWdlX3NpemUgKiAzOw0KKwlzc2l6ZV90IHJlczsNCisJaW50IHByb3QgPSBQUk9UX1JFQUQgfCBQ
-Uk9UX1dSSVRFOw0KKwlpbnQgZmxhZ3MgPSBNQVBfUFJJVkFURSB8IE1BUF9BTk9OWU1PVVM7DQor
-CWludCBpOw0KKw0KKwlmZCA9IHZzb2NrX3NlcXBhY2tldF9hY2NlcHQoVk1BRERSX0NJRF9BTlks
-IDEyMzQsIE5VTEwpOw0KKwlpZiAoZmQgPCAwKSB7DQorCQlwZXJyb3IoImFjY2VwdCIpOw0KKwkJ
-ZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCS8qIFNldHVwIGZpcnN0IGJ1ZmZlci4gKi8N
-CisJYnJva2VuX2J1ZiA9IG1tYXAoTlVMTCwgYnVmX3NpemUsIHByb3QsIGZsYWdzLCAtMSwgMCk7
-DQorCWlmIChicm9rZW5fYnVmID09IE1BUF9GQUlMRUQpIHsNCisJCXBlcnJvcigibW1hcCBmb3Ig
-J2Jyb2tlbl9idWYnIik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJLyogVW5t
-YXAgImhvbGUiIGluIGJ1ZmZlci4gKi8NCisJaWYgKG11bm1hcChicm9rZW5fYnVmICsgcGFnZV9z
-aXplLCBwYWdlX3NpemUpKSB7DQorCQlwZXJyb3IoIidicm9rZW5fYnVmJyBzZXR1cCIpOw0KKwkJ
-ZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCXZhbGlkX2J1ZiA9IG1tYXAoTlVMTCwgYnVm
-X3NpemUsIHByb3QsIGZsYWdzLCAtMSwgMCk7DQorCWlmICh2YWxpZF9idWYgPT0gTUFQX0ZBSUxF
-RCkgew0KKwkJcGVycm9yKCJtbWFwIGZvciAndmFsaWRfYnVmJyIpOw0KKwkJZXhpdChFWElUX0ZB
-SUxVUkUpOw0KKwl9DQorDQorCS8qIFRyeSB0byBmaWxsIGJ1ZmZlciB3aXRoIHVubWFwcGVkIG1p
-ZGRsZS4gKi8NCisJcmVzID0gcmVhZChmZCwgYnJva2VuX2J1ZiwgYnVmX3NpemUpOw0KKwlpZiAo
-cmVzICE9IC0xKSB7DQorCQlwZXJyb3IoImludmFsaWQgcmVhZCByZXN1bHQgb2YgJ2Jyb2tlbl9i
-dWYnIik7DQorCQlleGl0KEVYSVRfRkFJTFVSRSk7DQorCX0NCisNCisJaWYgKGVycm5vICE9IEVO
-T01FTSkgew0KKwkJcGVycm9yKCJpbnZhbGlkIGVycm5vIG9mICdicm9rZW5fYnVmJyIpOw0KKwkJ
-ZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCS8qIFRyeSB0byBmaWxsIHZhbGlkIGJ1ZmZl
-ci4gKi8NCisJcmVzID0gcmVhZChmZCwgdmFsaWRfYnVmLCBidWZfc2l6ZSk7DQorCWlmIChyZXMg
-IT0gYnVmX3NpemUpIHsNCisJCXBlcnJvcigiaW52YWxpZCByZWFkIHJlc3VsdCBvZiAndmFsaWRf
-YnVmJyIpOw0KKwkJZXhpdChFWElUX0ZBSUxVUkUpOw0KKwl9DQorDQorCWZvciAoaSA9IDA7IGkg
-PCBidWZfc2l6ZTsgaSsrKSB7DQorCQlpZiAodmFsaWRfYnVmW2ldICE9IEJVRl9QQVRURVJOXzIp
-IHsNCisJCQlwZXJyb3IoImludmFsaWQgcGF0dGVybiBmb3IgdmFsaWQgYnVmIik7DQorCQkJZXhp
-dChFWElUX0ZBSUxVUkUpOw0KKwkJfQ0KKwl9DQorDQorDQorCS8qIFVubWFwIGJ1ZmZlcnMuICov
-DQorCW11bm1hcChicm9rZW5fYnVmLCBwYWdlX3NpemUpOw0KKwltdW5tYXAoYnJva2VuX2J1ZiAr
-IHBhZ2Vfc2l6ZSAqIDIsIHBhZ2Vfc2l6ZSk7DQorCW11bm1hcCh2YWxpZF9idWYsIGJ1Zl9zaXpl
-KTsNCisJY2xvc2UoZmQpOw0KK30NCisNCiBzdGF0aWMgc3RydWN0IHRlc3RfY2FzZSB0ZXN0X2Nh
-c2VzW10gPSB7DQogCXsNCiAJCS5uYW1lID0gIlNPQ0tfU1RSRUFNIGNvbm5lY3Rpb24gcmVzZXQi
-LA0KQEAgLTQ4MCw2ICs1OTYsMTEgQEAgc3RhdGljIHN0cnVjdCB0ZXN0X2Nhc2UgdGVzdF9jYXNl
-c1tdID0gew0KIAkJLnJ1bl9jbGllbnQgPSB0ZXN0X3NlcXBhY2tldF90aW1lb3V0X2NsaWVudCwN
-CiAJCS5ydW5fc2VydmVyID0gdGVzdF9zZXFwYWNrZXRfdGltZW91dF9zZXJ2ZXIsDQogCX0sDQor
-CXsNCisJCS5uYW1lID0gIlNPQ0tfU0VRUEFDS0VUIGludmFsaWQgcmVjZWl2ZSBidWZmZXIiLA0K
-KwkJLnJ1bl9jbGllbnQgPSB0ZXN0X3NlcXBhY2tldF9pbnZhbGlkX3JlY19idWZmZXJfY2xpZW50
-LA0KKwkJLnJ1bl9zZXJ2ZXIgPSB0ZXN0X3NlcXBhY2tldF9pbnZhbGlkX3JlY19idWZmZXJfc2Vy
-dmVyLA0KKwl9LA0KIAl7fSwNCiB9Ow0KIA0KLS0gDQoyLjI1LjENCg==
+When iterating over sockets using vsock_for_each_connected_socket, make
+sure that a transport filters out sockets that don't belong to the
+transport.
+
+There actually was an issue caused by this; in a nested VM
+configuration, destroying the nested VM (which often involves the
+closing of /dev/vhost-vsock if there was h2g connections to the nested
+VM) kills not only the h2g connections, but also all existing g2h
+connections to the (outmost) host which are totally unrelated.
+
+Tested: Executed the following steps on Cuttlefish (Android running on a
+VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
+connection inside the VM, (2) open and then close /dev/vhost-vsock by
+`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
+session is not reset.
+
+[1] https://android.googlesource.com/device/google/cuttlefish/
+
+Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
+Signed-off-by: Jiyong Park <jiyong@google.com>
+---
+ drivers/vhost/vsock.c            | 4 ++++
+ net/vmw_vsock/virtio_transport.c | 7 +++++++
+ net/vmw_vsock/vmci_transport.c   | 5 +++++
+ 3 files changed, 16 insertions(+)
+
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 37f0b4274113..853ddac00d5b 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -722,6 +722,10 @@ static void vhost_vsock_reset_orphans(struct sock *sk)
+ 	 * executing.
+ 	 */
+ 
++	/* Only handle our own sockets */
++	if (vsk->transport != &vhost_transport.transport)
++		return;
++
+ 	/* If the peer is still valid, no need to reset connection */
+ 	if (vhost_vsock_get(vsk->remote_addr.svm_cid))
+ 		return;
+diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+index fb3302fff627..61b24eb31d4b 100644
+--- a/net/vmw_vsock/virtio_transport.c
++++ b/net/vmw_vsock/virtio_transport.c
+@@ -24,6 +24,7 @@
+ static struct workqueue_struct *virtio_vsock_workqueue;
+ static struct virtio_vsock __rcu *the_virtio_vsock;
+ static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
++static struct virtio_transport virtio_transport; /* forward declaration */
+ 
+ struct virtio_vsock {
+ 	struct virtio_device *vdev;
+@@ -357,11 +358,17 @@ static void virtio_vsock_event_fill(struct virtio_vsock *vsock)
+ 
+ static void virtio_vsock_reset_sock(struct sock *sk)
+ {
++	struct vsock_sock *vsk = vsock_sk(sk);
++
+ 	/* vmci_transport.c doesn't take sk_lock here either.  At least we're
+ 	 * under vsock_table_lock so the sock cannot disappear while we're
+ 	 * executing.
+ 	 */
+ 
++	/* Only handle our own sockets */
++	if (vsk->transport != &virtio_transport.transport)
++		return;
++
+ 	sk->sk_state = TCP_CLOSE;
+ 	sk->sk_err = ECONNRESET;
+ 	sk_error_report(sk);
+diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
+index 7aef34e32bdf..cd2f01513fae 100644
+--- a/net/vmw_vsock/vmci_transport.c
++++ b/net/vmw_vsock/vmci_transport.c
+@@ -803,6 +803,11 @@ static void vmci_transport_handle_detach(struct sock *sk)
+ 	struct vsock_sock *vsk;
+ 
+ 	vsk = vsock_sk(sk);
++
++	/* Only handle our own sockets */
++	if (vsk->transport != &vmci_transport)
++		return;
++
+ 	if (!vmci_handle_is_invalid(vmci_trans(vsk)->qp_handle)) {
+ 		sock_set_flag(sk, SOCK_DONE);
+ 
+-- 
+2.35.1.723.g4982287a31-goog
+
