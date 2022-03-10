@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 642BE4D4AA3
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 15:55:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 156C74D4B4C
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 15:56:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243601AbiCJObx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 09:31:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
+        id S230484AbiCJOce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 09:32:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343955AbiCJObb (ORCPT
+        with ESMTP id S1343952AbiCJObb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 09:31:31 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B13EB8B6D
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:29:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1554BB91EA
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 06:29:11 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1nSJmv-0005pO-0K
+        id 1nSJmv-0005pe-D9
         for netdev@vger.kernel.org; Thu, 10 Mar 2022 15:29:09 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id CC09A47D76
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:29:06 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 4A93347D7E
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 14:29:07 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 4C27F47D69;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id B972447D72;
         Thu, 10 Mar 2022 14:29:06 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id fbd767b5;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 26e89d59;
         Thu, 10 Mar 2022 14:29:04 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Oliver Hartkopp <socketcan@hartkopp.net>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH net-next 03/29] can: isotp: set max PDU size to 64 kByte
-Date:   Thu, 10 Mar 2022 15:28:37 +0100
-Message-Id: <20220310142903.341658-4-mkl@pengutronix.de>
+Subject: [PATCH net-next 04/29] vxcan: remove sk reference in peer skb
+Date:   Thu, 10 Mar 2022 15:28:38 +0100
+Message-Id: <20220310142903.341658-5-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220310142903.341658-1-mkl@pengutronix.de>
 References: <20220310142903.341658-1-mkl@pengutronix.de>
@@ -60,40 +60,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-The reason to extend the max PDU size from 4095 Byte (12 bit length value)
-to a 32 bit value (up to 4 GByte) was to be able to flash 64 kByte
-bootloaders with a single ISO-TP PDU. The max PDU size in the Linux kernel
-implementation was set to 8200 Bytes to be able to test the length
-information escape sequence.
+With can_create_echo_skb() the skb which is forwarded to the peer CAN
+interface shares the sk pointer from the originating socket.
+This makes the CAN frame show up in the peer namespace as a TX packet.
 
-It turns out that the demand for 64 kByte PDUs is real so the value for
-MAX_MSG_LENGTH is set to 66000 to be able to potentially add some checksums
-to the 65.536 Byte block.
+With the use of skb_clone() analogue to the handling in gw.c the peer
+skb gets a new start in the peer namespace and correctly appears as
+a RX packet.
 
-Link: https://github.com/linux-can/can-utils/issues/347#issuecomment-1056142301
-Link: https://lore.kernel.org/all/20220309120416.83514-3-socketcan@hartkopp.net
+Link: https://lore.kernel.org/all/20220309120416.83514-4-socketcan@hartkopp.net
 Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/isotp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/can/vxcan.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 47404ba59981..d4c0b4704987 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -86,9 +86,9 @@ MODULE_ALIAS("can-proto-6");
- /* ISO 15765-2:2016 supports more than 4095 byte per ISO PDU as the FF_DL can
-  * take full 32 bit values (4 Gbyte). We would need some good concept to handle
-  * this between user space and kernel space. For now increase the static buffer
-- * to something about 8 kbyte to be able to test this new functionality.
-+ * to something about 64 kbyte to be able to test this new functionality.
-  */
--#define MAX_MSG_LENGTH 8200
-+#define MAX_MSG_LENGTH 66000
+diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
+index 556f1a12ec9a..51501af8d9fc 100644
+--- a/drivers/net/can/vxcan.c
++++ b/drivers/net/can/vxcan.c
+@@ -33,28 +33,33 @@ struct vxcan_priv {
+ 	struct net_device __rcu	*peer;
+ };
  
- /* N_PCI type values in bits 7-4 of N_PCI bytes */
- #define N_PCI_SF 0x00	/* single frame */
+-static netdev_tx_t vxcan_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t vxcan_xmit(struct sk_buff *oskb, struct net_device *dev)
+ {
+ 	struct vxcan_priv *priv = netdev_priv(dev);
+ 	struct net_device *peer;
+-	struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
++	struct canfd_frame *cfd = (struct canfd_frame *)oskb->data;
+ 	struct net_device_stats *peerstats, *srcstats = &dev->stats;
++	struct sk_buff *skb;
+ 	u8 len;
+ 
+-	if (can_dropped_invalid_skb(dev, skb))
++	if (can_dropped_invalid_skb(dev, oskb))
+ 		return NETDEV_TX_OK;
+ 
+ 	rcu_read_lock();
+ 	peer = rcu_dereference(priv->peer);
+ 	if (unlikely(!peer)) {
+-		kfree_skb(skb);
++		kfree_skb(oskb);
+ 		dev->stats.tx_dropped++;
+ 		goto out_unlock;
+ 	}
+ 
+-	skb = can_create_echo_skb(skb);
+-	if (!skb)
++	skb = skb_clone(oskb, GFP_ATOMIC);
++	if (skb) {
++		consume_skb(oskb);
++	} else {
++		kfree(oskb);
+ 		goto out_unlock;
++	}
+ 
+ 	/* reset CAN GW hop counter */
+ 	skb->csum_start = 0;
 -- 
 2.35.1
 
