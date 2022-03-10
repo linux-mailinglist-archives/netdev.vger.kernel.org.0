@@ -2,106 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B495F4D42BD
-	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 09:39:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D6B4D42D3
+	for <lists+netdev@lfdr.de>; Thu, 10 Mar 2022 09:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240418AbiCJIkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 03:40:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46986 "EHLO
+        id S236867AbiCJIsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 03:48:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiCJIkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:40:51 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B34136ED1;
-        Thu, 10 Mar 2022 00:39:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646901587; x=1678437587;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=NCJAmap5YXI9l6Z+GDL5+JaEtIVVUsg+cezq3a0cE00=;
-  b=zzzgUKoTndfK1kvorz5DY8c75r8ubStwyP/rjpDdtu4wFs6gwu2GqC9X
-   1f4O++PWW/hU2MszJyyREnSQiZG38wwPFcPnjM8hPXLYpkbt8wLdQasg0
-   3oI/ypTAzOarbG40I9CiLAqrOUAvLUnmgfPf0iHgA4X+EGQKrW2ncOWjf
-   9GKh79iGF7WYeUv2NHnq3uuEDA5GHN+xTaAIY5i8l4uKFvsS62qtTtxCH
-   fL4FSEDbwKynLG/sjIXN75IuJGpHlLAJNeapHN18y9iZEw6hlKltiNSMv
-   FOec11hCUF9FYHDf3vDawaXHIFZQh3D91S3YoKpLl27+djBTeT+PYJlLi
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,169,1643698800"; 
-   d="scan'208";a="88479619"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Mar 2022 01:39:46 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 10 Mar 2022 01:39:46 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 10 Mar 2022 01:39:44 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <david.laight@aculab.com>, <andrew@lunn.ch>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2] net: lan966x: Improve the CPU TX bitrate.
-Date:   Thu, 10 Mar 2022 09:40:05 +0100
-Message-ID: <20220310084005.262551-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S231153AbiCJIsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 03:48:19 -0500
+X-Greylist: delayed 361 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Mar 2022 00:47:17 PST
+Received: from mail.cassym.pl (mail.cassym.pl [158.255.214.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0BFBCB650
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 00:47:17 -0800 (PST)
+Received: by mail.cassym.pl (Postfix, from userid 1001)
+        id 443B341CF7; Thu, 10 Mar 2022 09:40:45 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=cassym.pl; s=mail;
+        t=1646901674; bh=M64dFpJAVtnWfq9rWMxUccQhCrbF5tDN2dEoARiPKHE=;
+        h=Date:From:To:Subject:From;
+        b=LGQPQWAvK4x0WKRYkukbgOEMbSbEvEz9ndifYF3EOz+ChfWV8dw5/E3+rL/9pYxKa
+         fKOpyPcw+FEsg38VRpHKWC0injPCnlm8yAgHyzMKC1icR2gNlpoZWlYIDLQ/k/RYjQ
+         x4O6vjH1iaVdSe0FlyUzZTosn/Z3mTjpABwPGSX2J1Y7i5PM1Y9h7umKYf4L7i4yNx
+         8wqSO9uAMLkopKYxhTGcW0QBR57sTW00R3WyPJU4Lbh+ChD7n0wK4bDTKStND4XpiC
+         OPiCgQV9hyjlBjvXibcoO/11Gut7DVKVEE8b0ROCDp6weMvOYaECXbvuZaLzI0X37P
+         rhQIQ52d/r8bQ==
+Received: by mail.cassym.pl for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 08:40:17 GMT
+Message-ID: <20220310083000-0.1.1e.8opw.0.ir0bkaqtum@cassym.pl>
+Date:   Thu, 10 Mar 2022 08:40:17 GMT
+From:   "Damian Pytlik" <damian.pytlik@cassym.pl>
+To:     <netdev@vger.kernel.org>
+Subject: Pozycjonowanie- informacja
+X-Mailer: mail.cassym.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_05,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When doing manual injection of the frame, it is required to check if the
-TX FIFO is ready to accept the next word of the frame. For this we are
-using 'readx_poll_timeout_atomic', the only problem is that before it
-actually checks the status, is determining the time when to finish polling
-the status. Which seems to be an expensive operation.
-Therefore check the status of the TX FIFO before calling
-'readx_poll_timeout_atomic'.
-Doing this will improve the TX bitrate by ~70%. Because 99% the FIFO is
-ready by that time. The measurements were done using iperf3.
+Dzie=C5=84 dobry,=20
 
-Before:
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.03  sec  55.2 MBytes  46.2 Mbits/sec    0 sender
-[  5]   0.00-10.04  sec  53.8 MBytes  45.0 Mbits/sec      receiver
+jaki=C5=9B czas temu zg=C5=82osi=C5=82a si=C4=99 do nas firma, kt=C3=B3re=
+j strona internetowa nie pozycjonowa=C5=82a si=C4=99 wysoko w wyszukiwarc=
+e Google.=20
 
-After:
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.10  sec  95.0 MBytes  78.9 Mbits/sec    0 sender
-[  5]   0.00-10.11  sec  95.0 MBytes  78.8 Mbits/sec      receiver
+Na podstawie wykonanego przez nas audytu SEO zoptymalizowali=C5=9Bmy tre=C5=
+=9Bci na stronie pod k=C4=85tem wcze=C5=9Bniej opracowanych s=C5=82=C3=B3=
+w kluczowych. Nasz wewn=C4=99trzny system codziennie analizuje prawid=C5=82=
+owe dzia=C5=82anie witryny.  Dzi=C4=99ki indywidualnej strategii, firma z=
+dobywa coraz wi=C4=99cej Klient=C3=B3w. =20
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
-v1->v2
-- check for TX FIFO status before calling readx_poll_timeout_atomic
----
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+Czy chcieliby Pa=C5=84stwo zwi=C4=99kszy=C4=87 liczb=C4=99 os=C3=B3b odwi=
+edzaj=C4=85cych stron=C4=99 internetow=C4=85 firmy? M=C3=B3g=C5=82bym prz=
+edstawi=C4=87 ofert=C4=99?=20
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 81c01665d01e..e1bcb28039dc 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -185,6 +185,9 @@ static int lan966x_port_inj_ready(struct lan966x *lan966x, u8 grp)
- {
- 	u32 val;
- 
-+	if (lan_rd(lan966x, QS_INJ_STATUS) & QS_INJ_STATUS_FIFO_RDY_SET(BIT(grp)))
-+		return 0;
-+
- 	return readx_poll_timeout_atomic(lan966x_port_inj_status, lan966x, val,
- 					 QS_INJ_STATUS_FIFO_RDY_GET(val) & BIT(grp),
- 					 READL_SLEEP_US, READL_TIMEOUT_US);
--- 
-2.33.0
 
+Pozdrawiam serdecznie,
+Damian Pytlik
