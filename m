@@ -2,119 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB074D57E6
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 03:05:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE6B4D57FB
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 03:17:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345574AbiCKCGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 21:06:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S1345610AbiCKCRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 21:17:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345161AbiCKCGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 21:06:43 -0500
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7007B1A6149
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 18:05:41 -0800 (PST)
-Received: by mail-io1-xd42.google.com with SMTP id b16so8691468ioz.3
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 18:05:41 -0800 (PST)
+        with ESMTP id S232382AbiCKCRm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 21:17:42 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE561181E47;
+        Thu, 10 Mar 2022 18:16:40 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id t5so6711483pfg.4;
+        Thu, 10 Mar 2022 18:16:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=1WmTiruYcLYjgfCVpwaSh4JcERuBX8rKufTgiQZnbQI=;
-        b=UoLJwNFCONozXrSjxTaJ6CQMua4tKdfIBGwWrcuH+qg7qV4qvIQvKd6ZDBpfNl02B5
-         7/f3NDnXewP4MWvXArhhRIRgFfG5UHtOC8GFRmWoc9PoyDIH2OX7pe5JW5uJcZ3wDP1S
-         Yn21PV0Lv/2OgyaKFXFlcqz1E6zMkmznF70Xusq/1kkD8r2ZFWVVBH8EmOD3Wb8YItQG
-         J/2LjYjdLPknMZc7RLd2joKTTigo11SHOv7rIySkRSAj3EH8x3p4s3Cul6kdkGI86z9P
-         rkTtCf8I4vUc8NCgtF2G8j2Q79qe1CyULZ+SvV22FYAYLG43TpvlFIzdybDtrm705aHX
-         A0dQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=Hu+ByQ7g8o0/IQmD4UvW283mwUOYWBZvyLmeZYp2qmE=;
+        b=NpN2YMJXCk1Imm6w6/LparviICti3f9hwFdzU/dKaKwiCDBTpsH2UYdwAxAOCUG8rF
+         zrkXFq3feeI4yPrlz/3+KQmTwFLe+eHyZV9nAD7lRcKWCqVgfs2AeJWzjbWaSqPOejs8
+         Z71iq0Y2Xm2KiGMCfqJVGFxAHYJptBOdxF60vxfpcxhr5Vj5fB4rTW3BeVlm7/K8JIu+
+         7tl/ddAZjmC1YPi13FacQhbWXJ7aDUPouT7IVkhlso7npFt/GXiFDgfwgsqnFMbd/hzp
+         afu+TqWf6bWJjoHyZnToL0rXCa+ZdX1IFNTRBZ/L9cYrJOpWazwbQFj2vXoDyNu6xkoV
+         jojQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=1WmTiruYcLYjgfCVpwaSh4JcERuBX8rKufTgiQZnbQI=;
-        b=SbR6ffvoRC0vRqHr2y7MuuNy+3HV+LBOqGli/iXA7nRHWLxSc4QasKZO8EtJAz3wZc
-         m74E+N4eyqRUdCY6kh4plMrZoYrRxxKQJmG06a03VzKcvIrH90AIVTTJaR0QQsQ0Z+A5
-         jbErIUNgJxW/GkeexIzyAiD/Qi2mBljXeUEknolWulTa8p2tN8gCPpUklhHw9+Wy7CjK
-         VyMFbDi90WReU+5w7g1aydA5b/Epovi1qSM33sxJIRpFH23ISeItPWEPCfzXpAREkEuo
-         bT4aofwK44wiBC/2RDD9JJCSyliz7RR4NUd0udKXz580KgPfQXBkVAh4Wj0/V/jYrxO2
-         xuxg==
-X-Gm-Message-State: AOAM531jMZbuZbmKJrLcT2hpdNmzcTBKvllAG7UD4FrQRv4Tm8pRjO4C
-        xb68+jh5Xmt/6smaE/zNV2nYmMZoq72oazgJVSE=
-X-Google-Smtp-Source: ABdhPJwzGv/EUFPjRAcnxAhD9CuVUfBUgzFPenxOjwyDW485lIubfpRBOLJ90AB7TTN85L7sK3xWajnPEHl2vMYBat8=
-X-Received: by 2002:a02:6383:0:b0:314:d9da:13b2 with SMTP id
- j125-20020a026383000000b00314d9da13b2mr6425055jac.99.1646964340692; Thu, 10
- Mar 2022 18:05:40 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=Hu+ByQ7g8o0/IQmD4UvW283mwUOYWBZvyLmeZYp2qmE=;
+        b=uolbkMy/jxKomf7D1gxPowyzSE0NWfeDajoKtgfrtWEG+BiiAeqQibtUqprFf8cj7i
+         Ad+L+Rt989q376NH1y6WgFhx1TuWo+yveegkHMsiOl5HcJLhhQcJiAUAJxdxvpt82aEj
+         vK8TImgiX1H0z3MW06mrwEjOcYGnqXpFHr9YoRL6f0RtqV/x8tW081dnPFoASigP6e/w
+         TmwOQJXWHMNopKgz2I9pWmCsjIMbThsZI5ks2r4k0laPwHMWIW39/4i8kZqe7pWE3nUV
+         64XZHf8w+wvseo0hipkVyOvrMmBpa1DgqIqSIR9H41PgqyLHCdba0yh7HLOxr0ZZjjYN
+         i2tQ==
+X-Gm-Message-State: AOAM530TCHzoPae9uBiyUzm5wmbT3NsRJ/iI4yhY3xzx9TLSnqhBj+NJ
+        TKWop5ENsijQRFz8KxPX0LgOm2VcjHY=
+X-Google-Smtp-Source: ABdhPJxll3Jmf2v5eSDnF+2ZhH6v20KKXN6QGJMDGxUpnuRsCBBMqd75eDIoLBnhEOwJVwEkzJYJ8Q==
+X-Received: by 2002:a05:6a00:1a0b:b0:4cf:9a9:5c5f with SMTP id g11-20020a056a001a0b00b004cf09a95c5fmr8067317pfv.45.1646965000012;
+        Thu, 10 Mar 2022 18:16:40 -0800 (PST)
+Received: from [192.168.1.100] ([166.111.139.99])
+        by smtp.gmail.com with ESMTPSA id j14-20020a056a00174e00b004f66ce6367bsm9269762pfc.147.2022.03.10.18.16.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 18:16:39 -0800 (PST)
+Subject: Re: [PATCH] brcmfmac: check the return value of devm_kzalloc() in
+ brcmf_of_probe()
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
+        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
+        davem@davemloft.net, kuba@kernel.org, shawn.guo@linaro.org,
+        gustavoars@kernel.org, len.baker@gmx.com,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220225132138.27722-1-baijiaju1990@gmail.com>
+ <164692859274.6056.13961655347011053680.kvalo@kernel.org>
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Message-ID: <adb61d50-8a17-de4b-2757-5c4da1b00ff7@gmail.com>
+Date:   Fri, 11 Mar 2022 10:16:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Sender: aishagaddafii331@gmail.com
-Received: by 2002:a05:6e02:154a:0:0:0:0 with HTTP; Thu, 10 Mar 2022 18:05:40
- -0800 (PST)
-From:   Aisha Gaddafi <aishagaddagfi@gmail.com>
-Date:   Fri, 11 Mar 2022 03:05:40 +0100
-X-Google-Sender-Auth: CITmde-pPdp_g8mnybwmsbu1uXo
-Message-ID: <CAMrsXqNqn4XWsG0U-Y5b-EWFJB9yY6gExOZg_EQHigQ6WBAkPg@mail.gmail.com>
-Subject: I want to invest in your country
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=6.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+In-Reply-To: <164692859274.6056.13961655347011053680.kvalo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLY,LOTS_OF_MONEY,MILLION_HUNDRED,MILLION_USD,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY,URG_BIZ autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5003]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [aishagaddafii331[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:d42 listed in]
-        [list.dnswl.org]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [aishagaddafii331[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.1 MILLION_HUNDRED BODY: Million "One to Nine" Hundred
-        *  0.0 MILLION_USD BODY: Talks about millions of dollars
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  0.6 URG_BIZ Contains urgent matter
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  1.0 FREEMAIL_REPLY From and body contain different freemails
-        *  3.6 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Greetings Sir/Madam.
 
-I want to invest in your country
-May i use this medium to open a mutual communication with you, and
-seeking your acceptance towards investing in your country under your
-management as my partner, My name is Aisha Gaddafi , i am a Widow and
-single Mother with three Children, the only biological Daughter of
-late Libyan President (Late Colonel Muammar Gaddafi) and presently i
-am under political asylum protection by the  Government of this
-nation.
-I have funds worth =E2=80=9CTwenty Seven Million Five Hundred Thousand Unit=
-ed
-State Dollars=E2=80=9D -$27.500.000.00 US Dollars which i want to entrust o=
-n
-you for investment project in your country. If you are willing to
-handle this project on my behalf, kindly reply urgent to enable me
-provide you more details to start the transfer process.
-I shall appreciate your urgent response through my email address
-below: madamgadafiaisha@gmail.com
-Thanks
-Yours Truly Aisha
+
+On 2022/3/11 0:09, Kalle Valo wrote:
+> Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+>
+>> The function devm_kzalloc() in brcmf_of_probe() can fail, so its return
+>> value should be checked.
+>>
+>> Fixes: 29e354ebeeec ("brcmfmac: Transform compatible string for FW loading")
+>> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+>> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> You are not calling of_node_put() in the error path. And I don't think
+> this even applies.
+>
+> Patch set to Changes Requested.
+>
+
+Hi Kalle,
+
+Thanks for the reply :)
+I will add of_node_put() and send a V2 patch.
+
+
+Best wishes,
+Jia-Ju Bai
