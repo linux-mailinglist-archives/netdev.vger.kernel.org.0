@@ -2,165 +2,292 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 223D74D6751
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:14:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A4DC4D6762
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:17:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350615AbiCKRPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 12:15:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
+        id S1350447AbiCKRSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 12:18:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350605AbiCKRO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:14:59 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BF31965F5
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 09:13:56 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id q4so7457796qki.11
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 09:13:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=0SX9Ku7U8TYzy0UD+6RCalxEpEqPgEDglxqG8LvTkqo=;
-        b=JboVs9ePJMkADHvjbVlWwjXXKgkPkgc10tmZh+pwrwvyDktrRXRcD3cGmclLHdWzyB
-         cwtmoZnOoCv4pl53lVxRv2CE4QP6ZmB1z+sRmt1Q+7pBD2d0PWEtorj2VNsT6EulFlwm
-         4NJHD+R4UywxKqgyZ9yrJg6hHPOeVaDPAVr8DDK7geYV9ymlph6wBemlX/J2XjDf1+En
-         e2Q8a+fZ7unGg0ZDuetK82X9/YHqD4jT99Hg0c0NG+67j0jpg0CPj0RLnLiN+69zmXsD
-         oHQsrC1AXSy+oA7XWUUxuh7eZTpPHtY8w7y+jH4fG43zGJS2IW0lfg8DajlwIE1+R6vK
-         W/0w==
+        with ESMTP id S1350722AbiCKRSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:18:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 83BC61CAF2E
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 09:16:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647019016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=frwFvW2tLrfwUW5MlUItxAYVS1OlBuCXSXlaKG/ZWrY=;
+        b=D7t2NDgIwBAscg9E+P9qzcalwvUCekev5uGdlObxChDQ73PO67yZz8qJWomVE/CYFG0Jdq
+        OEXxyMvlw7ZYadqwxXZ3I/87+gOIUTNXcQIu762KbH6H/H/0CRWEUH0/cBxPfPoNhoJmim
+        DpQgBgLRfSUrkA7mt/UTEqSvsq0e3G0=
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-482-gpV5k5_uO5GZcsEjZPOJCQ-1; Fri, 11 Mar 2022 12:16:55 -0500
+X-MC-Unique: gpV5k5_uO5GZcsEjZPOJCQ-1
+Received: by mail-pl1-f199.google.com with SMTP id y3-20020a1709029b8300b0014c8bcb70a1so4894600plp.3
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 09:16:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=0SX9Ku7U8TYzy0UD+6RCalxEpEqPgEDglxqG8LvTkqo=;
-        b=vSJaEJoGdnup7W/rmHHrwLg9eLH7Gwa7Gr6YZuJvEpT4dDs26q5HBfoaa0mgadqnhd
-         sZpA8f3o0gP44NC6YckqnVePNSIn8z/FuuoPgZdAdjpeXKRwanB/wvci9DVgNBd0nnY7
-         oWjXP154cIz9fs4GpG9MNfMPnb7RDMMiWvGh/+Cd/z17xI2a2fgWkRHfi5oGMFhZmKNP
-         Cr6tZQ12HoTnpZAD8LpqblTMNcQbLHX0g4mJlwSHqfWwKdP8RapM/Gbb31K0zUk6f7fp
-         bUnraXvTwgasgXSpUI8INzRy5DngRiS5hw4qluJql9wuvt+v5MtZ3qA1T0ZMu18PtmrC
-         zKPA==
-X-Gm-Message-State: AOAM531QanbxnoNs3kEElDEPAXrD++o3U2/KG767V23AO0hNL/hM4OPk
-        KF5crPcfZ6Pai4lwh+HGSrnzCVAIOmg=
-X-Google-Smtp-Source: ABdhPJy1+63dc6PbMms7Xaz0V4jpw0vUiCSsczd7ol5lbB/yM0WtiAwXRGtkhSVA9DNlwYqCQ2B7iQ==
-X-Received: by 2002:a37:65c5:0:b0:67b:3232:8cc8 with SMTP id z188-20020a3765c5000000b0067b32328cc8mr6825307qkb.170.1647018835407;
-        Fri, 11 Mar 2022 09:13:55 -0800 (PST)
-Received: from ?IPv6:2001:470:b:9c3:82ee:73ff:fe41:9a02? ([2001:470:b:9c3:82ee:73ff:fe41:9a02])
-        by smtp.googlemail.com with ESMTPSA id y17-20020a05622a121100b002e0702457b2sm5872111qtx.20.2022.03.11.09.13.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 09:13:54 -0800 (PST)
-Message-ID: <2151fe9e8bdf18ae02bd196f69f1b64af0eb4a55.camel@gmail.com>
-Subject: Re: [PATCH v4 net-next 00/14] tcp: BIG TCP implementation
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Coco Li <lixiaoyan@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Date:   Fri, 11 Mar 2022 09:13:53 -0800
-In-Reply-To: <20220310054703.849899-1-eric.dumazet@gmail.com>
-References: <20220310054703.849899-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=frwFvW2tLrfwUW5MlUItxAYVS1OlBuCXSXlaKG/ZWrY=;
+        b=zop0lCahk24YXppy/5MgBAgN9sVPL6eFxycnFpRa/kM4T3Z4ebDTNgvO2Y9zA2HZAO
+         mm69h1spIU2sWufHkO1BwHsWPVNmOSSz16ozxFDaXshwKOwviFBdW+n2PfpF1yFAZULa
+         zJqTuf6Badt9ZzJm1TpT4TrzIXQgSMPq9CcIeXj1EZHYOkeb8QACBIpvpbU4q5VkYnAB
+         5cv9SkqDQ4leaMLfVuN7BHiwJrHG+2IIDoSweAsobQ5e0nufbkgRZQXZTxoeWUs/mvDi
+         GnLokSPTovml+oRg5qF3IYugR7qdo+XLcIXBYdPkXK/g6bb3VbfMCN3qoTKDLup5m+t2
+         Bw0A==
+X-Gm-Message-State: AOAM533n/1AFCKl6/ayh8EUiuwZhwo2UdPsHbkkAKZo7ZGPvin4JClX2
+        ibYPbw0SaBco9c2RSvvtcC2UeQtt0II1CDJxVJ50nMtcaCkOECUQZkaRDIVlgTjh9tJhrzS+Sw6
+        YfFrBjUjzGSmiXGz7U3Na6L9w/IADGnTF
+X-Received: by 2002:a05:6a00:781:b0:4f4:2a:2d89 with SMTP id g1-20020a056a00078100b004f4002a2d89mr11163651pfu.13.1647019014157;
+        Fri, 11 Mar 2022 09:16:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzPh5TEv/N8dkshOhalRMOWLJrT3ebEgXJmia3lDbjepQA4T4UD7accir427L3UKac1apLvpE0byE6hTlKuywg=
+X-Received: by 2002:a05:6a00:781:b0:4f4:2a:2d89 with SMTP id
+ g1-20020a056a00078100b004f4002a2d89mr11163607pfu.13.1647019013797; Fri, 11
+ Mar 2022 09:16:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+ <20220304172852.274126-3-benjamin.tissoires@redhat.com> <CAPhsuW5CYF9isR4ffRdm3xA_n_FBoL+AGFkzNn4dn2LgRaQQkg@mail.gmail.com>
+ <CAO-hwJKFE4Ps962BBubn8=1K0k9mC2qi8VerFbZo1sqpp6yekg@mail.gmail.com>
+ <CAPhsuW5mZQ-N7RCndxP0RNi669RU5Tbu-Uu0M-KW2-mPYZbbng@mail.gmail.com> <CAO-hwJ+_aZDdKguze-BC+Ok9=HccAYSUFrNJmQBZfX3oufRGUQ@mail.gmail.com>
+In-Reply-To: <CAO-hwJ+_aZDdKguze-BC+Ok9=HccAYSUFrNJmQBZfX3oufRGUQ@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Fri, 11 Mar 2022 18:16:42 +0100
+Message-ID: <CAO-hwJJqP5iivQZOu0LTYa1D5OuM_aVi=LH27Udc_VYkbFsrww@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 02/28] bpf: introduce hid program type
+To:     Song Liu <song@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-03-09 at 21:46 -0800, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> This series implements BIG TCP as presented in netdev 0x15:
-> 
-> https://netdevconf.info/0x15/session.html?BIG-TCP
-> 
-> Jonathan Corbet made a nice summary: https://lwn.net/Articles/884104/
-> 
-> Standard TSO/GRO packet limit is 64KB
-> 
-> With BIG TCP, we allow bigger TSO/GRO packet sizes for IPv6 traffic.
-> 
-> Note that this feature is by default not enabled, because it might
-> break some eBPF programs assuming TCP header immediately follows IPv6 header.
-> 
-> While tcpdump recognizes the HBH/Jumbo header, standard pcap filters
-> are unable to skip over IPv6 extension headers.
-> 
-> Reducing number of packets traversing networking stack usually improves
-> performance, as shown on this experiment using a 100Gbit NIC, and 4K MTU.
-> 
-> 'Standard' performance with current (74KB) limits.
-> for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
-> 77           138          183          8542.19    
-> 79           143          178          8215.28    
-> 70           117          164          9543.39    
-> 80           144          176          8183.71    
-> 78           126          155          9108.47    
-> 80           146          184          8115.19    
-> 71           113          165          9510.96    
-> 74           113          164          9518.74    
-> 79           137          178          8575.04    
-> 73           111          171          9561.73    
-> 
-> Now enable BIG TCP on both hosts.
-> 
-> ip link set dev eth0 gro_ipv6_max_size 185000 gso_ipv6_max_size 185000
-> for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
-> 57           83           117          13871.38   
-> 64           118          155          11432.94   
-> 65           116          148          11507.62   
-> 60           105          136          12645.15   
-> 60           103          135          12760.34   
-> 60           102          134          12832.64   
-> 62           109          132          10877.68   
-> 58           82           115          14052.93   
-> 57           83           124          14212.58   
-> 57           82           119          14196.01   
-> 
-> We see an increase of transactions per second, and lower latencies as well.
-> 
-> v4: fix compile error for CONFIG_MLX5_CORE_IPOIB=y in mlx5 (Jakub)
-> 
-> v3: Fixed a typo in RFC number (Alexander)
->     Added Reviewed-by: tags from Tariq on mlx4/mlx5 parts.
-> 
-> v2: Removed the MAX_SKB_FRAGS change, this belongs to a different series.
->     Addressed feedback, for Alexander and nvidia folks.
+On Tue, Mar 8, 2022 at 10:20 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> On Tue, Mar 8, 2022 at 1:57 AM Song Liu <song@kernel.org> wrote:
+> >
+> > On Mon, Mar 7, 2022 at 10:39 AM Benjamin Tissoires
+> > <benjamin.tissoires@redhat.com> wrote:
+> > >
+> > > On Sat, Mar 5, 2022 at 1:03 AM Song Liu <song@kernel.org> wrote:
+> > > >
+> > > > On Fri, Mar 4, 2022 at 9:31 AM Benjamin Tissoires
+> > > > <benjamin.tissoires@redhat.com> wrote:
+> > > > >
+[...]
+> > > > > +struct hid_bpf_ctx {
+> > > > > +       enum hid_bpf_event type;        /* read-only */
+> > > > > +       __u16 allocated_size;           /* the allocated size of data below (RO) */
+> > > >
+> > > > There is a (6-byte?) hole here.
+> > > >
+> > > > > +       struct hid_device *hdev;        /* read-only */
+> > > > > +
+> > > > > +       __u16 size;                     /* used size in data (RW) */
+> > > > > +       __u8 data[];                    /* data buffer (RW) */
+> > > > > +};
+> > > >
+> > > > Do we really need hit_bpf_ctx in uapi? Maybe we can just use it
+> > > > from vmlinuxh?
+> > >
+> > > I had a thought at this context today, and I think I am getting to the
+> > > limit of what I understand.
+> > >
+> > > My first worry is that the way I wrote it there, with a variable data
+> > > field length is that this is not forward compatible. Unless BTF and
+> > > CORE are making magic, this will bite me in the long run IMO.
+> > >
+> > > But then, you are talking about not using uapi, and I am starting to
+> > > wonder: am I doing the things correctly?
+> > >
+> > > To solve my first issue (and the weird API I had to introduce in the
+> > > bpf_hid_get/set_data), I came up to the following:
+> > > instead of exporting the data directly in the context, I could create
+> > > a helper bpf_hid_get_data_buf(ctx, const uint size) that returns a
+> > > RET_PTR_TO_ALLOC_MEM_OR_NULL in the same way bpf_ringbuf_reserve()
+> > > does.
+> > >
+> > > This way, I can directly access the fields within the bpf program
+> > > without having to worry about the size.
+> > >
+> > > But now, I am wondering whether the uapi I defined here is correct in
+> > > the way CORE works.
+> > >
+> > > My goal is to have HID-BPF programs to be CORE compatible, and not
+> > > have to recompile them depending on the underlying kernel.
+> > >
+> > > I can not understand right now if I need to add some other BTF helpers
+> > > in the same way the access to struct xdp_md and struct xdp_buff are
+> > > converted between one and other, or if defining a forward compatible
+> > > struct hid_bpf_ctx is enough.
+> > > As far as I understand, .convert_ctx_access allows to export a stable
+> > > uapi to the bpf prog users with the verifier doing the conversion
+> > > between the structs for me. But is this really required for all the
+> > > BPF programs if we want them to be CORE?
+> > >
+> > > Also, I am starting to wonder if I should not hide fields in the
+> > > context to the users. The .data field could be a pointer and only
+> > > accessed through the helper I mentioned above. This would be forward
+> > > compatible, and also allows to use whatever available memory in the
+> > > kernel to be forwarded to the BPF program. This way I can skip the
+> > > memcpy part and work directly with the incoming dma data buffer from
+> > > the IRQ.
+> > >
+> > > But is it best practice to do such a thing?
+> >
+> > I think .convert_ctx_access is the way to go if we want to access the data
+> > buffer without memcpy. I am not sure how much work is needed to make
+> > it compatible with CORE though.
 
-One concern with this patch set is the addition of all the max_size
-netdev attributes for tsov6, gsov6, and grov6. For the gsov6 and grov6
-maxes I really think these make more sense as sysctl values since it
-feels more like a protocol change rather than a netdev specific one.
+I spent the week working on that, and I am really amazed at how smart
+and simple the .convert_ctx_access is working.
 
-If I recall correctly the addition of gso_max_size and gso_max_segs
-were added as a workaround for NICs that couldn't handle offloading
-frames larger than a certain size. This feels like increasing the scope
-of the workaround rather than adding a new feature.
+With that in place, I can hide the internal fields and export
+"virtual" public fields that are remapped on the fly by the kernel at
+load time :)
 
-I didn't see the patch that went by for gro_max_size but I am not a fan
-of the way it was added since it would make more sense as a sysctl
-which controlled the stack instead of something that is device specific
-since as far as the device is concerned it received MTU size frames,
-and GRO happens above the device. I suppose it makes things symmetric
-with gso_max_size, but at the same time it isn't really a device
-specific attribute since the work happens in the stack above the
-device.
+> >
+> > To make sure I understand the case, do we want something like
+> >
+> > bpf_prog(struct hid_bpf_ctx *ctx)
+> > {
+> >     /* makes sure n < ctx->size */
+> >     x = ctx->data[n]; /* read data */
+> >     ctx->data[n] = <something>; /* write data */
+> >     ctx->size = <something <= n>; /* change data size */
+> > }
+> >
+> > We also need it to be CORE, so that we may modify hid_bpf_ctx by
+> > inserting more members to it before data.
+> >
+> > Is this accurate?
+> >
 
-Do we need to add the IPv6 specific version of the tso_ipv6_max_size?
-Could we instead just allow setting the gso_max_size value larger than
-64K? Then it would just be a matter of having a protocol specific max
-size check to pull us back down to GSO_MAX_SIZE in the case of non-ipv6
-frames.
+I have been trying to implement that, based on the PTR_TO_PACKET implementation.
+It works, but is kind of verbose while using it because we need to
+teach the verifier about the size of the arrays.
 
+For instance, I have the following:
 
+int bpf_prog(struct hid_bpf_ctx *ctx)
+{
+  /* we need to store a pointer on the stack to store its accessible size */
+  __u8 *data = ctx->data;
 
+  if (data + 3 > ctx->data_end)
+    return 0; /* EPERM, bounds check */
 
+  data[1] = data[0] + 3;
 
+  return 0;
+}
+
+This is OK, but it gets worse if I want to access a random offset:
+
+__s64 offset = 0;
+int bpf_prog(struct hid_bpf_ctx *ctx)
+{
+  __u8 *data = ctx->data;
+  __u16 *x;
+
+  /* first assign the size of data */
+  if (data + 4 > ctx->data_end)
+    return 0; /* EPERM, bounds check */
+
+  /* teach the verifier the range of offset (needs to be a s64) */
+  if (offset >= 0 && offset < 2) {
+    x = (__u16 *)&data[offset];
+
+    /* now store the size of x in its register */
+    if (x + 2 > ctx->data_end)
+      return 0;
+
+    /* finally we can read/write the data */
+    *x += 1;
+  }
+
+  return 0;
+}
+
+OTOH, I managed to define a simpler helper that allows me to return a
+pointer to the internal data:
+
+BPF_CALL_3(bpf_hid_get_data, struct hid_bpf_ctx_kern*, ctx, u64,
+offset, u64, size)
+  {
+          if (!size)
+                  return (unsigned long)0;
+
+          if (offset + size > ctx->data_end - ctx->data)
+                  return (unsigned long)0;
+
+          return (unsigned long)(ctx->data + offset);
+  }
+
+  static const struct bpf_func_proto bpf_hid_get_data_proto = {
+          .func      = bpf_hid_get_data,
+          .gpl_only  = true,
+          .ret_type  = RET_PTR_TO_ALLOC_MEM_OR_NULL,
+          .arg1_type = ARG_PTR_TO_CTX,
+          .arg2_type = ARG_ANYTHING,
+          .arg3_type = ARG_CONST_ALLOC_SIZE_OR_ZERO,
+  };
+
+ Which makes the previous bpf code into:
+
+__u64 offset = 0;
+int bpf_prog(struct hid_bpf_ctx *ctx)
+{
+  __u16 *x = bpf_hid_get_data(ctx, offset, 2);
+
+  if (!x)
+    return 0; /* EPERM, bounds check */
+
+  *x += 1;
+
+  return 0;
+}
+
+The advantage of both of those solutions is that they are removing the
+need for bpf_hid_{get|set}_bytes().
+
+The second solution is much simpler in terms of usage, but it doesn't
+feel "right" to have to reimplement the wheel when we should have
+direct array accesses.
+OTOH, the first solution with the packet implementation is bulky and
+requiring users to do that for every single access of the data is IMO
+way too much...
+
+Any thoughts?
+
+Cheers,
+Benjamin
 
