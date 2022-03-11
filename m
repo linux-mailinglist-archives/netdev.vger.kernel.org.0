@@ -2,138 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48B4F4D66F3
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 17:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 183074D671F
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:04:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350333AbiCKQ76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 11:59:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
+        id S1350527AbiCKRF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 12:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350441AbiCKQ7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 11:59:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D7E673DC;
-        Fri, 11 Mar 2022 08:58:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8400FB82C20;
-        Fri, 11 Mar 2022 16:58:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB580C340E9;
-        Fri, 11 Mar 2022 16:58:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647017928;
-        bh=OG0J3GojgmzIoNZPBok++aiZW+CyroBNvFpFTQVCZXA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=X7F+/9epy+hJ4kGnQUwkPj8TVU5IFVZly1jBpzHAfBq4aEFsMmZvEsADN86iHN8sM
-         sK9mTrmzjVGnuiIV4deFKbIPZhCpI17XVz3apKJctv0OHWdiq3rfUZOTNPzNgQuIko
-         HvPuL1R1Z9c2Uum9fRpRyPQ4LQgEobayFYlPB2Yi/E+4fYGnpppQ+He6dGcDNmPxKo
-         6DVxfPgBqkLXQu+9OYVEGQIZuyyGXXGNBR65zMqk3GdE+xsoqGnRsVdyvII+F4muhB
-         G32xX7aPwFizSGUYaJUuFjzG2TObanmerouHSrJR6jeodVH4NX8hp2IyFnGlf8H8bQ
-         zqhHIShglvKQg==
-Message-ID: <b0ef55ef-234f-63a4-7cc3-fd4acde2f011@kernel.org>
-Date:   Fri, 11 Mar 2022 09:58:46 -0700
+        with ESMTP id S231310AbiCKRF4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:05:56 -0500
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087C11D639A;
+        Fri, 11 Mar 2022 09:04:53 -0800 (PST)
+Received: by mail-qv1-f41.google.com with SMTP id b12so7463536qvk.1;
+        Fri, 11 Mar 2022 09:04:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U2EzJeKP2pg6VmPIZ+R6lKKHZOiHE3M5gtD8vP+xTcw=;
+        b=j5zrP/8KgVWZSwWOr2DRhLREPxpKLGxD20kINxpFfJK3eG/XIpdNMzTUgi19Hpx4Qp
+         bQvolIYvyFpkFmUAaod2wSFgsf307aFGfLTt8Bd93P0W+fk5RAlYoJAhdX+M7Ps4kcBb
+         6XDsFL90uHZWQdpscpKbLBbumo+Ini+vSTU8IQzyvlC7vCtcy4WagWBCxjS/mVe9WCyQ
+         jdBzKFyjpe9AyuZSJmDRM+DS+fpx6wKJxFNnH0sjIJg5rmV9u6j+WljDyXEKHbe/1BVL
+         N//NnQsm43C4a5q714Ex6XmoEnXGpmv8gT/nfgJPexG3YYaP8JvT+ssaFN1Cd5Tsyz4e
+         U0/g==
+X-Gm-Message-State: AOAM532QX+UhlPsQHZvKMNY9jyFPAayBP+kIYXIJLAnrjRzB12KS3ir2
+        jhgHQqgf1PVhBVfLO6edKkc+Ani05vd5rA==
+X-Google-Smtp-Source: ABdhPJyV6M+ow1hyCgPBT8fK39tf4Tp0omiAck36cXSmMYM+FPpugI2x+dbmFfoTRTOhgnJvgXeCHA==
+X-Received: by 2002:ad4:5ce4:0:b0:435:bf3a:3e48 with SMTP id iv4-20020ad45ce4000000b00435bf3a3e48mr8491824qvb.93.1647018291761;
+        Fri, 11 Mar 2022 09:04:51 -0800 (PST)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id i192-20020a379fc9000000b0067b314c0ff3sm3991057qke.43.2022.03.11.09.04.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 09:04:50 -0800 (PST)
+Received: by mail-yb1-f170.google.com with SMTP id x200so18212158ybe.6;
+        Fri, 11 Mar 2022 09:04:49 -0800 (PST)
+X-Received: by 2002:a25:c54a:0:b0:628:9d7f:866a with SMTP id
+ v71-20020a25c54a000000b006289d7f866amr8885630ybe.546.1647018289554; Fri, 11
+ Mar 2022 09:04:49 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH 1/3] net:ipv6:Add ndisc_bond_send_na to support sending na
- by slave directly
-Content-Language: en-US
-To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-References: <20220311024958.7458-1-sunshouxin@chinatelecom.cn>
- <20220311024958.7458-2-sunshouxin@chinatelecom.cn>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220311024958.7458-2-sunshouxin@chinatelecom.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220309162609.3726306-1-uli+renesas@fpond.eu> <20220309162609.3726306-3-uli+renesas@fpond.eu>
+In-Reply-To: <20220309162609.3726306-3-uli+renesas@fpond.eu>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 11 Mar 2022 18:04:38 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWSw=jmawsGG9K6QKTV9-sjM6w0fgDqv1qQHqrbNvAeuw@mail.gmail.com>
+Message-ID: <CAMuHMdWSw=jmawsGG9K6QKTV9-sjM6w0fgDqv1qQHqrbNvAeuw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/4] arm64: dts: renesas: r8a779a0: Add CANFD device node
+To:     Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
+        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        socketcan@hartkopp.net,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Simon Horman <horms@verge.net.au>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/22 7:49 PM, Sun Shouxin wrote:
-> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-> index fcb288b0ae13..c59a110e9b10 100644
-> --- a/net/ipv6/ndisc.c
-> +++ b/net/ipv6/ndisc.c
-> @@ -572,6 +572,67 @@ void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
->  	ndisc_send_skb(skb, daddr, src_addr);
->  }
->  
-> +void ndisc_bond_send_na(struct net_device *dev, const struct in6_addr *daddr,
+On Wed, Mar 9, 2022 at 5:26 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
+> This patch adds a CANFD device node for r8a779a0.
+>
+> Based on patch by Kazuya Mizuguchi.
+>
+> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-This ipv6 code, not bond code
+Thanks, will queue in renesas-devel for v5.19.
 
+Gr{oetje,eeting}s,
 
-> +			const struct in6_addr *solicited_addr,
-> +			bool router, bool solicited, bool override,
-> +			bool inc_opt, unsigned short vlan_id,
-> +			const void *mac_dst, const void *mac_src)
-> +{
-> +	struct sk_buff *skb;
-> +	const struct in6_addr *src_addr;
-> +	struct nd_msg *msg;
-> +	struct net *net = dev_net(dev);
-> +	struct sock *sk = net->ipv6.ndisc_sk;
-> +	int optlen = 0;
-> +	int ret;
-> +
-> +	src_addr = solicited_addr;
-> +	if (!dev->addr_len)
-> +		inc_opt = false;
-> +	if (inc_opt)
-> +		optlen += ndisc_opt_addr_space(dev,
-> +					       NDISC_NEIGHBOUR_ADVERTISEMENT);
-> +
-> +	skb = ndisc_alloc_skb(dev, sizeof(*msg) + optlen);
-> +	if (!skb)
-> +		return;
-> +
-> +	msg = skb_put(skb, sizeof(*msg));
-> +	*msg = (struct nd_msg) {
-> +		.icmph = {
-> +			.icmp6_type = NDISC_NEIGHBOUR_ADVERTISEMENT,
-> +			.icmp6_router = router,
-> +			.icmp6_solicited = solicited,
-> +			.icmp6_override = override,
-> +		},
-> +		.target = *solicited_addr,
-> +	};
-> +
-> +	if (inc_opt)
-> +		ndisc_fill_addr_option(skb, ND_OPT_TARGET_LL_ADDR,
-> +				       dev->dev_addr,
-> +				       NDISC_NEIGHBOUR_ADVERTISEMENT);
-> +
-> +	if (vlan_id)
-> +		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-> +				       vlan_id);
-> +
-> +	msg->icmph.icmp6_cksum = csum_ipv6_magic(src_addr, daddr, skb->len,
-> +						 IPPROTO_ICMPV6,
-> +						 csum_partial(&msg->icmph,
-> +							      skb->len, 0));
-> +
-> +	ip6_nd_hdr(skb, src_addr, daddr, inet6_sk(sk)->hop_limit, skb->len);
-> +
-> +	skb->protocol = htons(ETH_P_IPV6);
-> +	skb->dev = dev;
-> +	if (dev_hard_header(skb, dev, ETH_P_IPV6, mac_dst, mac_src, skb->len) < 0)
-> +		return;
-> +
-> +	ret = dev_queue_xmit(skb);
-> +}
-> +EXPORT_SYMBOL(ndisc_bond_send_na);
+                        Geert
 
-It would be better to refactor ndisc_send_na and extract what you think
-you need into a new helper that gets exported for bond.
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
