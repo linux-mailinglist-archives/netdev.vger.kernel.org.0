@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29AE74D61D9
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 13:56:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B4414D61D6
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 13:56:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236695AbiCKM4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 07:56:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36896 "EHLO
+        id S1348690AbiCKM4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 07:56:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348662AbiCKM4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 07:56:09 -0500
+        with ESMTP id S1348675AbiCKM4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 07:56:10 -0500
 Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60079.outbound.protection.outlook.com [40.107.6.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E641BFDCD;
-        Fri, 11 Mar 2022 04:55:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E18B1BFDE8;
+        Fri, 11 Mar 2022 04:55:07 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VKcPC+zk5bBRfNoXAUSC8xMO5WZQH3GZFRfdifnEZadilv2boJ/fxAPpDTVpoWrN8QAqjnUfShiCiwl7eUo7y3K3Gy9UI5v2PzLkkrt5naTw+s7dOpKxnHYFnfn0wl4p5jVII8QZyQ63TAm9qZoXeL97jLbyB89JNfc5Pxz68Xk/L2s/Qp2jCmR2J6TAeVkppVo63TduEZMKA9mzaeTpwZbfKCwvxdByCjuzDE3SKr56rOrELSbb8FbF9jSeNW9jCxqEaxKLUwOuJBITjwTZ7/avybbKanTOz7w5Hfp7ypkuJhuiDPizf1pAvnC3kCoYyV2b3mqDrhEnxhyWEERqhw==
+ b=cLU9wfbw2Ri5oATyvcDiEY9gR/YvzZavy7Ta5nw4MNjY6Utn2RsOhWdMeyFxtok8xTyEpP9goM0Nk1cdxXTWZwYykGVMDVLB+RcC67Xi1yp7OE62dFu9IRBPRH2BUiwq6mpPXMHs0cNe7zDLE7qBMEcT3BoLjb8LH53WInBDFYJ/TzsiKEybqtSmY0JCVux2I4v5mR4P3aVO5Kack+ceejoFDy2bfWWno6z4A5rVLKlTqukrdi1xU3qnwU2uLVQnDM3WkcYgiM9Gh0RlDNrYDh/Fe/gafrKPGZ+3C92cyzk5RkWsTSYYvVy6IULfZRzVurNCCuskYhPs6CPmlHVgQw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KB+Zp7eLioZvZ3BwE3OyUisFriyX66ZtMx0rlCx/IFI=;
- b=e4JXvziaBGL7JN7BdcTV98IuAbYLantkReUfP0SJskEAMPYuQ9p7b8aX92fmA29yWMT6LYHS6T+F4OxJoXurFmgWWGmang6LJm12d5qYDfpyM4OieDP78X+CvWtPy9XoEfj+KtY7ijFpIF2Do2hZODPrnbQtDUp+ofYwdUpyuTNyzUFSDbpOlwMp+HJzbND5LbjPNppIMugo8c9vh/3lkjlVEgP5NcNEzzH+FZxUGnPW35GpFYOzZSurCRT0bsDY/1PtRPcOJ9NiUSYVy5Nm/bRdgJwSHQ+SXhvAA5UNjd7/ovBhHL+cWfMG6XD5tjOGeZXWSHD4rdSOtI2dl7K4Xg==
+ bh=Xx1bfnDpKmeKksRKzlhPQVt865Yn9+yqL59/h/9SHqI=;
+ b=AJyxOrYvz4gfc7Eg2ZkjoRszwvHp12EoDSgp6RNagr149XHbtkH1n698x1jloa8nHdQfZUPXcpvew+QYiquuVRs3lvVceyO6l47FQY/UqcQZqACDy3RpWV/WQ1ERfZUYq6bVqNU/ZC94aO5ZAPKlPoXIdunmjngz5GI6kMJdSIVgBWF0eWKrxpL4rchLxHpkiOoBNS8srKzhL1fXDtKkZCMY8GOuuaYeyaJ28GEE1eOc4mAfo/5Sc6Hi8jCUTxpJs9f7f10D5Fao++LDDlO/fYlTHzHbz3F0sUOj8qE5Oyw3RuXzphA+tn76/wYU4blGznAmuomRJTogL/DlcNjzyg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KB+Zp7eLioZvZ3BwE3OyUisFriyX66ZtMx0rlCx/IFI=;
- b=aUKUuAh5IUiaEDUeEaNFp5/k87E82Cw2/tgllhpKcmAwjlQGAa4BoGYOYfIbGHwaqmA/MArQhuhe4OjmVgdnJRwWrfi3v7pQtx8Rab+pWQwYXizKwWeRTWKF8TEF42IgH6xiCdcEnpa4ahX2bQE2LZ/6Z8FaKIMGVg4EPmhUTQ4=
+ bh=Xx1bfnDpKmeKksRKzlhPQVt865Yn9+yqL59/h/9SHqI=;
+ b=WE6DRSWAl3hVgEpl1ziZzKCOkJZIiudKRsBM9WdBJTTO+eMF1zvAM5GPHoNGIBpMZ4u3ojIiokks01ZpUCPM9R40A2t8BGLYsm0MO8q8lEbcpPuvsPqJPI4328sr3Z24mFyZ+TaqjZ/ivngf2LIBBjNy2ubJQTbQfiS4wkbIfOg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM9PR04MB8555.eurprd04.prod.outlook.com (2603:10a6:20b:436::16)
  by AM6PR0402MB3431.eurprd04.prod.outlook.com (2603:10a6:209:e::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.19; Fri, 11 Mar
- 2022 12:55:02 +0000
+ 2022 12:55:03 +0000
 Received: from AM9PR04MB8555.eurprd04.prod.outlook.com
  ([fe80::c58c:4cac:5bf9:5579]) by AM9PR04MB8555.eurprd04.prod.outlook.com
  ([fe80::c58c:4cac:5bf9:5579%7]) with mapi id 15.20.5038.027; Fri, 11 Mar 2022
- 12:55:02 +0000
+ 12:55:03 +0000
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     kishon@ti.com, vkoul@kernel.org, robh+dt@kernel.org,
@@ -46,9 +46,9 @@ Cc:     kishon@ti.com, vkoul@kernel.org, robh+dt@kernel.org,
         devicetree@vger.kernel.org, linux@armlinux.org.uk,
         shawnguo@kernel.org, hongxing.zhu@nxp.com,
         Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v4 2/8] dt-bindings: phy: add the "fsl,lynx-28g" compatible
-Date:   Fri, 11 Mar 2022 14:54:31 +0200
-Message-Id: <20220311125437.3854483-3-ioana.ciornei@nxp.com>
+Subject: [PATCH net-next v4 3/8] dpaa2-mac: add the MC API for retrieving the version
+Date:   Fri, 11 Mar 2022 14:54:32 +0200
+Message-Id: <20220311125437.3854483-4-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220311125437.3854483-1-ioana.ciornei@nxp.com>
 References: <20220311125437.3854483-1-ioana.ciornei@nxp.com>
@@ -59,53 +59,53 @@ X-ClientProxiedBy: AM5PR0402CA0014.eurprd04.prod.outlook.com
  (2603:10a6:20b:436::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a21d6730-c05f-41a1-3f5a-08da035e5b65
+X-MS-Office365-Filtering-Correlation-Id: 9af508d2-3460-4fa5-5eb1-08da035e5c1f
 X-MS-TrafficTypeDiagnostic: AM6PR0402MB3431:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR0402MB343176200D428DD607D8E6EAE00C9@AM6PR0402MB3431.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <AM6PR0402MB3431E2AF0ACBC8FE62EEC33AE00C9@AM6PR0402MB3431.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5GRnQRMHX5m4DGAlNfZ8fmCU2EdmifrglU4cuih/x2n5Zj3BBiZX1pPNVyW/1bQz+b3u2bbtx/jNfzQVx1GF7ZVbGFRAdkxWQ2DuPsA977xmBG6L9xBt4BFYzfwK5FvPdIP1E5tY4BWq+AvT5Ec+4OU2N3DIILwQPqc1LB4Q++3vqihzxvCPrOTIjeL5IueDaQ+Bert+XdmcXG8YEfYGk5hrosh+fig9jk49VkvEWHtzMX3ZDVsoeV28ewYXL+2yQFcK5oSyT/1YP7KWyqBH1WBkOiMNC/etltZvf63sZorY/H5W7hqzhDE9WifkhdJNwUD1ioTbhikZ6pSrLFnerIcXPgyGvhy/W3bgdPSQSYtjcyB6tIaoY1dyKDT1M8npUZfUL9rOPFcUD2HjYhY2nV2/K/0ysDXIEFafv/adbErNTvB9Ut2/bHKlis34l/AOnt5gY2uge8Inx4PpsZuif+EAzHEUlRpIXp5Lpkix73yHdDzAgVfp6cIJp5UiQPCR9UiFOMdc8Jyn8fhV7/B0r5kFrDEkw7J36HDN+FV0ADx3qpI6TDIFCApmbjC422mIY5KJVWjRZIM/h7SO4XxcxxMBC4KRLbk5O/bjFxUFqUQg3aBePUFcby/LeM7NOCBgcFiAi8FiB8rqWRYW5NuElU/htmZYabqLciecc5evWjRuzUat7QWmmeMbxnWg9UWUb9tel/KcxknshbscaEU6kaDGCSXj8B8dVzjQcbR7nkRpFJ0O7kFKSYCf60r+RFnhGfnHXLwHf6RZ9QD0m57Qtf4EjAb6lC827ziW9l1Y5l2VmD7Fc0Mr856XWjZnAOyO
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(66946007)(7416002)(966005)(5660300002)(6486002)(8936002)(44832011)(508600001)(66476007)(66556008)(316002)(4326008)(1076003)(2616005)(6512007)(52116002)(6666004)(6506007)(2906002)(26005)(186003)(86362001)(36756003)(38350700002)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: uO05Fa8oHL9SXnAt+dmhBZ3ifnDAI6lbTpMAugY+yoQ3WedZMN6GHPxh3SLA13qtbWxH5vGlfg2kECVsdTAYiGWw5oIFRirmkKCZDZeg3l7E6RGDGrbvs8xmxVTY1LL96VVuevFbalLF/1C9bOAWY0mkn8w4+kEtRCkO4wNrzHj01jFNpIYYKKAaZdYW3ZcBXd0q4cscbgoSQcfPclzuwo53CAVezL50cR7HVJNWf2YGsyqFeKcnIKYJnWHRV6eNzXWtn7yNwVpK99N9c5IpPTh9SBMsL+zGiXHktcjaa96ksRic/NmZyyK3lyeAI8MOvg7/6NReoQVP4arP/E8APgl+5Jg3e1NT5iJzZBkLr4inx9HQRgPr84qQJhvc7Gh3bdCRNcOtSxfPHqSwq11jflsBYWmObjm8w6Vx8yweHfwLHb8nhFX4RvXmwjkCZCPodMymHIy1NEljgJQYSZXB1gtwDnJjs0ome7s366M/7zc8jn0Ku0fSRAqU88/W3gGLDTkyIer/zURMnyyBUGWxO5qLOrLmZaFXKXHLr86ibb5cyL8OMo/FDQbFaormRS20+zYLDHVhnZJJlZJ9kt2Nib4dNjY7CyMRKQSIWPQJXWPYytzDUO/m41g6kH40VyGV/Q3tAcmgaLKwSgr3VbQ4r7XvkSMtL0jgu4lk05MZa0kbwAZpgvcsGQbg2ScciNOm
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8555.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(66946007)(7416002)(5660300002)(6486002)(8936002)(44832011)(508600001)(66476007)(66556008)(316002)(4326008)(83380400001)(1076003)(2616005)(6512007)(52116002)(6666004)(6506007)(2906002)(26005)(186003)(86362001)(36756003)(38350700002)(38100700002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FUaxpdxpaG6Ao76P8FlZVYO+SBxSKJOHgBkVVy/bz+iicymHIAmm6/To1U0f?=
- =?us-ascii?Q?3d99kSUfN/wdYLz0oQXsUGHCa5iTjcJQRD5tlMpzTUayfX7XdEAWDkb2qz7j?=
- =?us-ascii?Q?wGrgGKjPU/6Y331lVks8z18MuTtNBN2IfeLA1BXkGUnw+qtoyXdo4C+a6/pp?=
- =?us-ascii?Q?d95pYl1ntloFzYBj0bvIf0hBwmlzEe92axwTn4ylKnv0FxHgvA10MSkaFVE3?=
- =?us-ascii?Q?awgg18cHkR8LUuyIf5bzSm3fF9d0suhTaRQkTi2WllWin1a+eHrHNEzSFBBV?=
- =?us-ascii?Q?INhPGEAOmPok6CNjwZEQgx/oyueYMc7YXeAPKKUPNbhhdcVg38Qn68sNESMb?=
- =?us-ascii?Q?JCVTnNrRM+QBkbguJrTLX8QOp2aCOGwZm8j54k2pls+O1IfTCN0lMC7Rxdnf?=
- =?us-ascii?Q?9gt8X2NxZ3JF/irj+BAjqNkKDiOX9H9whIMTRWKT3Dv75Z1Oy5Ich/avzsXw?=
- =?us-ascii?Q?0DgJaI5y9s2bDH2PNv8Fl8bfA5EsVCCtuAHRvxx87dUv5NzEVtTH9I1weO25?=
- =?us-ascii?Q?QpByRnN5ioHURb/N93Crw9i4zztHPi/RxLktdb6Ys/OwbnZZuXo6+U9c4fkn?=
- =?us-ascii?Q?qeb54FoBP076Gcxtaf9INNAEXdFuvgejsyeeP6rpWyT33WuFOCQmRnIeG6Os?=
- =?us-ascii?Q?nacvzVtqdtlLxalNfZYy3YEoHFKi4L6dP9/NeYt9HVefyiQbRmnNgvxdptwT?=
- =?us-ascii?Q?g4TBxRMJi45vjsXnc41x7ylVJVYQUrjSwIeyHc46a6Cm0ZDrA4mvwpsDCs/A?=
- =?us-ascii?Q?gH8Ii3qnev350iFZOS/Y1Y14s0Ot/ly7wmlXf7qnE/zA14EnWQwa91AZlVZa?=
- =?us-ascii?Q?hPCjNP3MawhjnZJIKt9Fdoom2ufjFOQRmxWSv9f4y4iJ6sFx2zd90BabnENo?=
- =?us-ascii?Q?xIcAoBCiDQ6P84blyn2JgfFZnu6JVJR7gqHld9VAIE+IXHWGZ2g6z3l/vObU?=
- =?us-ascii?Q?tqNqYByw/TOf6uX33u6xa168+VA+nSCdoRa1rC8kcEKJbldd3XyK6/k0OBHg?=
- =?us-ascii?Q?D6Dig/M5tKyY448TvIrdpHxgsReQjT5swhUHqbN5Yk8aU2DexRGr/mfk8ZSx?=
- =?us-ascii?Q?T2ih65lVIZyqVxIluvq537C9NaJ++Q1zm+dsGyZK7DwZbi+Mx3T52uqOuymS?=
- =?us-ascii?Q?esKqdF+bnwaCAf8R5AtSf0akCbRwRV9KsVnphb2iHzB95a591nqW+v0hxtN0?=
- =?us-ascii?Q?uw98ntB2w/m9LI13LJmn1ULsNPnkGct5axTKMPEA/HVXIXlBj18/79S3i5cz?=
- =?us-ascii?Q?dnAOukYrugRoEB4FVfinkteeLs138kRkOGMWXxLZuakVXnnELfljY8lbtS7T?=
- =?us-ascii?Q?k0QUkDsvFOBxYVQVAmLLVU5h3dx9mLlES5wrupYastWpFDyOHtBGKk6YSUh+?=
- =?us-ascii?Q?d34svsYpxdakT6pvD3W7ieybTsLeE2SMT92JwD+GVLZRPrYITuq6YgKOvBGT?=
- =?us-ascii?Q?p2DZutbWhcDOL6MfIYmps7Z1UMkHKd+N32zZWOsnkEXEiIoIJ2AkoGRS/3PA?=
- =?us-ascii?Q?L/rskoG/Z+PGUeZJdhTI2VJ+ZSTDuPol7r6K+PCziNxQNB9y0VJaQoWUP6j1?=
- =?us-ascii?Q?7WxFcKnjEQ4qgSRDN0hg/gNJNjsrP3mlWvUtnrAY3C4vwDrd0yp0B6NZ1oFa?=
- =?us-ascii?Q?ZP+bJvo0nqdsnOsRKYcbKuM=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0GD23OQPGRqTiM4z9q73mfve+WZcqVD1Ci+oSvHAGA//2L9AwwULW7ciyHR2?=
+ =?us-ascii?Q?KbLJs6WXWdn9qcQDesVUXvyHExDzbI6a/R5FFowvATdTmwPXDypevt8kp3tX?=
+ =?us-ascii?Q?/RjdmCeMzGY7666wg3xmrHBvJhwXUfm8i6IZV470QywdVImJrwr4pE54JSsY?=
+ =?us-ascii?Q?yMZcxbvF/ikbAtZ+kMr3cBqRv0qJ8akwGB7c4Y+LZVZfYEJQll10cKmLSp1M?=
+ =?us-ascii?Q?Fib9KnAsYab01gpO33UDq4fQxPLqKr38FnlRqHTDEqhNs2Z7MxzByX2HVqq4?=
+ =?us-ascii?Q?ag6Diz0uXrL0Dq1i6l0U0prjJCDLvHiNH8OKox7JxpA9JzNQjGjMSy94VqhS?=
+ =?us-ascii?Q?t92Ov/RP4kkVodokrQfkx7U1rq9/8q/Gm7zRBFNLhtFmEnD4C6tx38Vh5ZtP?=
+ =?us-ascii?Q?t0QmBsI9viD0Mn8RmkIvsZMy+YZfHfYjquoo99TUzStYJmkYpOTjijwF/vuF?=
+ =?us-ascii?Q?nT8E/LvEMlKPKFUP9bSGrzLzcartSp95XwPr7eZZcsSnDbOHAkpwXhjkIOL4?=
+ =?us-ascii?Q?rHAovckWaS8MVgkY3saG4S6AlODcekFe7Qi1NLehNQBswDC/8ACRwA6MmThR?=
+ =?us-ascii?Q?S64sOwZ/wjorkizEwdgdxP3LG+Rvk+vfrxcogv+RrXkFlKk9T5T24sEcc8Y4?=
+ =?us-ascii?Q?PdRUYf9miADkqMrhBHvAFfWoAgV+S6WluUku8Qd4WPywDIuxYPvuUWHWDWey?=
+ =?us-ascii?Q?VHOBqLUskFfq9WXqbe3dyKv0AHE7GQ74ODxX7umvAj5RRtoydRXB2TgjgueJ?=
+ =?us-ascii?Q?ke3gKKC8hQjmOSs2OpuUfSiex4qjgeFf6CvXCw6vc6ueEspFhjFf5xx5oEqe?=
+ =?us-ascii?Q?tFwJIhwIJg1p0x+tnChZX669UE/bVzqrXmLaQAgb8JbTcvTs9dSXAn3r67HB?=
+ =?us-ascii?Q?OJzXXOzavuIhi/PhXNy1N1cl/tFzLB94LjO6nbXPoKHyyG8JgYY4r1LGbhYO?=
+ =?us-ascii?Q?6A+DCmyUf+QjdajGKzOUhgmCfmDQdqD1bPXL1X/SLdpB+X3t2O798i1u0YlR?=
+ =?us-ascii?Q?tmZegUABFrTaB2dqgT1qkXoiFdNfXHdpeHLC8WG1fS0EExc6jKQat6R3FXN2?=
+ =?us-ascii?Q?wVwWbmWmiOfd8cXNQ2BdRbFLAZg7nz43D3B99A7vmXJm0ExmjfiCHqywDRwK?=
+ =?us-ascii?Q?uIvrKdIYeAlGx9DHfYCBDQkws+V2wVin+f5/ZvDsi+s1WFo60SH4PUG9iHIa?=
+ =?us-ascii?Q?aRCOQQ0zwfwQbg5LWEMNRQPomURcx0m2hnUI9WarCB0MK/cH7yg19qTJ8GsT?=
+ =?us-ascii?Q?amb71xyiwnzaQ8KLhBR41be0sq9LEmMfjmei3t1rqkZIGEtmypsGzK8rwmp0?=
+ =?us-ascii?Q?74q8Tm2RxjV+JRTZ20whBY+metNcnJQwFAq8+hwRkDdtdKA6CZ/ZvbfDdf+v?=
+ =?us-ascii?Q?tZAIxdCm06gYMPfBxsfTy9gpHfW1+B0IQ0NB6qhI4SUti2GF/+wcXy0c6YYt?=
+ =?us-ascii?Q?lbVnOreY2O/xvlNhYxqkeA4p6SEhNgvb4wAT9QWvh/6Ua42yJypuOryCLwHk?=
+ =?us-ascii?Q?oWiynzgMzUD9yMpdEx0mBz9JgG0o+rw/+9/TQLNtyg+d81R9sVhj+ccvrYTp?=
+ =?us-ascii?Q?GLL3WNk362zNagB+5bZWF7yOEbp5DJpMNoO0toUluSS3LyyYUfgBODdEi9wY?=
+ =?us-ascii?Q?TnrthGDsES38SNZE7KupSRo=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a21d6730-c05f-41a1-3f5a-08da035e5b65
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9af508d2-3460-4fa5-5eb1-08da035e5c1f
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8555.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 12:55:02.3704
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 12:55:03.5121
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Cw4waVkOLEyJI0QUk0H+wB0SEkI5ok0G5E2WpvdmZu4sUl0sRFV215eW5SLuoKr84uDoJryz8wiewxyfQ+FzKg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ne0/nvtqL8/pe0j1Vu/Cdhazlajew2USteD0bS3IIRrfSSFXBZKdUzqy1jI2zjwmI2uVsuCq+ZoQeClPoHJddA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3431
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -117,81 +117,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Describe the "fsl,lynx-28g" compatible used by the Lynx 28G SerDes PHY
-driver on Layerscape based SoCs.
+The dpmac_get_api_version command will be used in the next patches to
+determine if the current firmware is capable or not to change the
+Ethernet protocol running on the MAC.
 
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
 Changes in v2:
 	- none
 Changes in v3:
-	- 2/8: fix 'make dt_binding_check' errors
+	- none
 Changes in v4:
-	- 2/8: remove the lane DT nodes
+	- none
 
- .../devicetree/bindings/phy/fsl,lynx-28g.yaml | 40 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 41 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
+ .../net/ethernet/freescale/dpaa2/dpmac-cmd.h  |  7 +++++
+ drivers/net/ethernet/freescale/dpaa2/dpmac.c  | 31 +++++++++++++++++++
+ drivers/net/ethernet/freescale/dpaa2/dpmac.h  |  2 ++
+ 3 files changed, 40 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml b/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
-new file mode 100644
-index 000000000000..dd1adf7b3c05
---- /dev/null
-+++ b/Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
-@@ -0,0 +1,40 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/phy/fsl,lynx-28g.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Freescale Lynx 28G SerDes PHY binding
-+
-+maintainers:
-+  - Ioana Ciornei <ioana.ciornei@nxp.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - fsl,lynx-28g
-+
-+  reg:
-+    maxItems: 1
-+
-+  "#phy-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#phy-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
-+      serdes_1: serdes_phy@1ea0000 {
-+        compatible = "fsl,lynx-28g";
-+        reg = <0x0 0x1ea0000 0x0 0x1e30>;
-+        #phy-cells = <1>;
-+      };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3e76c8cd8a3a..3aa185235a52 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11340,6 +11340,7 @@ LYNX 28G SERDES PHY DRIVER
- M:	Ioana Ciornei <ioana.ciornei@nxp.com>
- L:	netdev@vger.kernel.org
- S:	Supported
-+F:	Documentation/devicetree/bindings/phy/fsl,lynx-28g.yaml
- F:	drivers/phy/freescale/phy-fsl-lynx-28g.c
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h b/drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h
+index a24b20f76938..e1e06b21110d 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpmac-cmd.h
+@@ -19,6 +19,8 @@
+ #define DPMAC_CMDID_CLOSE		DPMAC_CMD(0x800)
+ #define DPMAC_CMDID_OPEN		DPMAC_CMD(0x80c)
  
- LYNX PCS MODULE
++#define DPMAC_CMDID_GET_API_VERSION	DPMAC_CMD(0xa0c)
++
+ #define DPMAC_CMDID_GET_ATTR		DPMAC_CMD(0x004)
+ #define DPMAC_CMDID_SET_LINK_STATE	DPMAC_CMD_V2(0x0c3)
+ 
+@@ -70,4 +72,9 @@ struct dpmac_rsp_get_counter {
+ 	__le64 counter;
+ };
+ 
++struct dpmac_rsp_get_api_version {
++	__le16 major;
++	__le16 minor;
++};
++
+ #endif /* _FSL_DPMAC_CMD_H */
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpmac.c b/drivers/net/ethernet/freescale/dpaa2/dpmac.c
+index d5997b654562..d348a7567d87 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpmac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpmac.c
+@@ -181,3 +181,34 @@ int dpmac_get_counter(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
+ 
+ 	return 0;
+ }
++
++/**
++ * dpmac_get_api_version() - Get Data Path MAC version
++ * @mc_io:	Pointer to MC portal's I/O object
++ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
++ * @major_ver:	Major version of data path mac API
++ * @minor_ver:	Minor version of data path mac API
++ *
++ * Return:  '0' on Success; Error code otherwise.
++ */
++int dpmac_get_api_version(struct fsl_mc_io *mc_io, u32 cmd_flags,
++			  u16 *major_ver, u16 *minor_ver)
++{
++	struct dpmac_rsp_get_api_version *rsp_params;
++	struct fsl_mc_command cmd = { 0 };
++	int err;
++
++	cmd.header = mc_encode_cmd_header(DPMAC_CMDID_GET_API_VERSION,
++					  cmd_flags,
++					  0);
++
++	err = mc_send_command(mc_io, &cmd);
++	if (err)
++		return err;
++
++	rsp_params = (struct dpmac_rsp_get_api_version *)cmd.params;
++	*major_ver = le16_to_cpu(rsp_params->major);
++	*minor_ver = le16_to_cpu(rsp_params->minor);
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpmac.h b/drivers/net/ethernet/freescale/dpaa2/dpmac.h
+index 8f7ceb731282..b580fb4164b5 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpmac.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpmac.h
+@@ -205,4 +205,6 @@ enum dpmac_counter_id {
+ int dpmac_get_counter(struct fsl_mc_io *mc_io, u32 cmd_flags, u16 token,
+ 		      enum dpmac_counter_id id, u64 *value);
+ 
++int dpmac_get_api_version(struct fsl_mc_io *mc_io, u32 cmd_flags,
++			  u16 *major_ver, u16 *minor_ver);
+ #endif /* __FSL_DPMAC_H */
 -- 
 2.33.1
 
