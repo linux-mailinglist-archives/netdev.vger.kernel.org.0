@@ -2,147 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CBC54D6608
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 17:24:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD244D660A
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 17:24:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239826AbiCKQZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 11:25:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
+        id S1345668AbiCKQZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 11:25:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235817AbiCKQZL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 11:25:11 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B47FE421
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 08:24:08 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id a1so7664832qta.13
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 08:24:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=g1zrfPF34sccMpfZ8sn+gd5rKWAjllWRjCJdzeDQk9k=;
-        b=Cwo9wN7YPaEq6w4VR6wk5bVSIELZ3IFolzWz+u4jYVtI5w0UuhqkrUjzCczsJ3URBh
-         z6dXFfRnqoe4SQHTtY9PeHc3zyXr7C3erfPlHKcn5tlX854hgL4TyT/V4JqIB+XOGdh/
-         GTZTmxsO1nFvRMvKjXBVc6+l+gTPDFoNjN77oMIaz+65icr/yCBn8EwoebhVhrNMZ7z6
-         TroXdvPtXdMXKBOal+HkHNgp+71iZ1MaPfVphY17Y19/T1V4BFfiK364x6ST6YQUPYBq
-         i7BI/Ns3zMwO5X1BgmACLwGfmTsEg5HV3IlXQmVdq312CzkC6ZH/NWJud8GqGel/Sk4o
-         F29Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=g1zrfPF34sccMpfZ8sn+gd5rKWAjllWRjCJdzeDQk9k=;
-        b=6gLKCUj1Tnv7eTZJr1sdyx0F7TzIQBSOzkvIEU9j1XejO6zJtCbAAJ62N+dBbOmEpb
-         0mXn0aueUYMNDhLjB5l9iCMZO5FnlO9zfsWYm+H2+wE8oT+iSu31LUysO3+JIYX98lv4
-         LgnKe8Fhb5S2arvyGcQh4aszdViBu3bJPgsQXi3KQYH8rDwpNWs37JaC7T7efRnx4epd
-         sPmLnMbWwjwYcpUVzdX2D7ek55zzFsuE6lKUPqgFwuhZVjiWhSW1A+pwyxy1ar53QxKz
-         Kg9Y1dpFONMfAVC8ugpJihXop74B+QcR2qDTxjlU3CwURpKZEOF8k5M3c9Ba89HUklp6
-         nssg==
-X-Gm-Message-State: AOAM530b5tHMPGFb57LZ2QP/HhPVISclbb0K7Gq0iZZTAHRqBeqc9dMU
-        mO0IfUhIgQD6T9lhbTi1tkImkQVQRLs=
-X-Google-Smtp-Source: ABdhPJy3NV12nD7un/JfbxtR5psMUoFd6sBNO3DdnA2ls2qa08TyJbgbvo/m6VqaKCtDpPq1DKsYLA==
-X-Received: by 2002:a05:622a:1aa4:b0:2e1:a97b:e80a with SMTP id s36-20020a05622a1aa400b002e1a97be80amr7926525qtc.642.1647015847305;
-        Fri, 11 Mar 2022 08:24:07 -0800 (PST)
-Received: from ?IPv6:2001:470:b:9c3:82ee:73ff:fe41:9a02? ([2001:470:b:9c3:82ee:73ff:fe41:9a02])
-        by smtp.googlemail.com with ESMTPSA id d4-20020a37c404000000b0067d67adea0fsm1963535qki.84.2022.03.11.08.24.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 08:24:06 -0800 (PST)
-Message-ID: <bd7742e5631aee2059aea2d55a7531cc88dfe49b.camel@gmail.com>
-Subject: Re: [PATCH v4 net-next 06/14] ipv6/gro: insert temporary HBH/jumbo
- header
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Coco Li <lixiaoyan@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Date:   Fri, 11 Mar 2022 08:24:04 -0800
-In-Reply-To: <20220310054703.849899-7-eric.dumazet@gmail.com>
-References: <20220310054703.849899-1-eric.dumazet@gmail.com>
-         <20220310054703.849899-7-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+        with ESMTP id S243994AbiCKQZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 11:25:28 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EBD1106137
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 08:24:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D70A3CE295C
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 16:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F6EAC340E9;
+        Fri, 11 Mar 2022 16:24:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647015861;
+        bh=lfY+Z5ibDvi60FNkyvHNFI02dXfEEa3+le4R6LqyRbA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JCqIWCfmHs8ksUOUxvZOgFYVr5fgRVlu1wroXXfM1/KACx1wP/BCV9Ua/dKHi3QE3
+         blH4OHjZW3V8Erb2k0NCQqXIRvh3wRrF2Icyv7PwHG0zQS4JqsSyR1muyCy714GHcN
+         rVIecfaDyr6Gpd3arheJXHv5acbJfBqMNnYtiCu8XK8wOLb1fNgpZV16ulmnl+9vAr
+         xwdc+CQuSKJFxgPKMrS3VKK7c5/NsEcrFFSxeYTy3pLrm28y/4EsnP8c+23b9h61Fs
+         7ElByCUWhXoMgR5ubJIe6oZRjcDZzFSHdgE541MYyuze5VaZFIwNswGGIHsrod7Lul
+         7nROyTbxpfVAA==
+Date:   Fri, 11 Mar 2022 18:24:16 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     Leon Romanovsky <leon@ikernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        sudheer.mogilappagari@intel.com, amritha.nambiar@intel.com,
+        jiri@nvidia.com
+Subject: Re: [PATCH net-next 0/2][pull request] 10GbE Intel Wired LAN Driver
+ Updates 2022-03-10
+Message-ID: <Yit3sLq6b+ZNZ07j@unreal>
+References: <20220310231235.2721368-1-anthony.l.nguyen@intel.com>
+ <YirRQWT7dtTV4fwG@unreal>
+ <0e672d96-5b68-4445-482f-1fc4c55e8f45@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0e672d96-5b68-4445-482f-1fc4c55e8f45@intel.com>
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-03-09 at 21:46 -0800, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Fri, Mar 11, 2022 at 09:19:23AM -0600, Samudrala, Sridhar wrote:
+> On 3/10/2022 10:34 PM, Leon Romanovsky wrote:
+> > On Thu, Mar 10, 2022 at 03:12:33PM -0800, Tony Nguyen wrote:
+> > > Sudheer Mogilappagari says:
+> > > 
+> > > Add support to enable inline flow director which allows uniform
+> > > distribution of flows among queues of a TC. This is configured
+> > > on a per TC basis using devlink interface.
+> > > 
+> > > Devlink params are registered/unregistered during TC creation
+> > > at runtime. To allow that commit 7a690ad499e7 ("devlink: Clean
+> > > not-executed param notifications") needs to be reverted.
+> > > 
+> > > The following are changes since commit 3126b731ceb168b3a780427873c417f2abdd5527:
+> > >    net: dsa: tag_rtl8_4: fix typo in modalias name
+> > > and are available in the git repository at:
+> > >    git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
+> > > 
+> > > Kiran Patil (1):
+> > >    ice: Add inline flow director support for channels
+> > > 
+> > > Sridhar Samudrala (1):
+> > >    devlink: Allow parameter registration/unregistration during runtime
+> > Sorry, NO to whole series.
+> > 
+> > I don't see any explanation why it is good idea and must-to-be
+> > implemented one to configure global TC parameter during runtime.
 > 
-> Following patch will add GRO_IPV6_MAX_SIZE, allowing gro to build
-> BIG TCP ipv6 packets (bigger than 64K).
+> This parameter is applicable only after splitting the netdevice queues into
+> queue groups(TCs) via tc mqprio command.
+> The queue groups can be created/destroyed during runtime.
+> So the patch is trying to register/unregister this parameter when TCs are
+> created and destroyed.
 > 
-
-This looks like it belongs in the next patch, not this one. This patch
-is adding the HBH header.
-
-> This patch changes ipv6_gro_complete() to insert a HBH/jumbo header
-> so that resulting packet can go through IPv6/TCP stacks.
+> > 
+> > You created TC with special tool, you should use that tool to configure
+> > TC and not devlink. Devlink parameters can be seen as better replacement
+> > of module parameters, which are global by nature. It means that this
+> > tc_inline_fd can be configured without relation if TC was created or
+> > not.
 > 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  net/ipv6/ip6_offload.c | 32 ++++++++++++++++++++++++++++++--
->  1 file changed, 30 insertions(+), 2 deletions(-)
+> Extending tc qdisc mqprio to add this parameter is an option we could explore.
+> Not sure if it allows changing parameters without reloading the qdisc.
+
+It was one of the options. I don't mind if it is going to be in devlink
+or TC, as long as devlink_params_register() is not changed to be dynamic.
+
 > 
-> diff --git a/net/ipv6/ip6_offload.c b/net/ipv6/ip6_offload.c
-> index a6a6c1539c28d242ef8c35fcd5ce900512ce912d..d12dba2dd5354dbb79bb80df4038dec2544cddeb 100644
-> --- a/net/ipv6/ip6_offload.c
-> +++ b/net/ipv6/ip6_offload.c
-> @@ -342,15 +342,43 @@ static struct sk_buff *ip4ip6_gro_receive(struct list_head *head,
->  INDIRECT_CALLABLE_SCOPE int ipv6_gro_complete(struct sk_buff *skb, int nhoff)
->  {
->  	const struct net_offload *ops;
-> -	struct ipv6hdr *iph = (struct ipv6hdr *)(skb->data + nhoff);
-> +	struct ipv6hdr *iph;
->  	int err = -ENOSYS;
-> +	u32 payload_len;
->  
->  	if (skb->encapsulation) {
->  		skb_set_inner_protocol(skb, cpu_to_be16(ETH_P_IPV6));
->  		skb_set_inner_network_header(skb, nhoff);
->  	}
->  
-> -	iph->payload_len = htons(skb->len - nhoff - sizeof(*iph));
-> +	payload_len = skb->len - nhoff - sizeof(*iph);
-> +	if (unlikely(payload_len > IPV6_MAXPLEN)) {
-> +		struct hop_jumbo_hdr *hop_jumbo;
-> +		int hoplen = sizeof(*hop_jumbo);
-> +
-> +		/* Move network header left */
-> +		memmove(skb_mac_header(skb) - hoplen, skb_mac_header(skb),
-> +			skb->transport_header - skb->mac_header);
-> +		skb->data -= hoplen;
-> +		skb->len += hoplen;
-> +		skb->mac_header -= hoplen;
-> +		skb->network_header -= hoplen;
-> +		iph = (struct ipv6hdr *)(skb->data + nhoff);
-> +		hop_jumbo = (struct hop_jumbo_hdr *)(iph + 1);
-> +
-> +		/* Build hop-by-hop options */
-> +		hop_jumbo->nexthdr = iph->nexthdr;
-> +		hop_jumbo->hdrlen = 0;
-> +		hop_jumbo->tlv_type = IPV6_TLV_JUMBO;
-> +		hop_jumbo->tlv_len = 4;
-> +		hop_jumbo->jumbo_payload_len = htonl(payload_len + hoplen);
-> +
-> +		iph->nexthdr = NEXTHDR_HOP;
-> +		iph->payload_len = 0;
-> +	} else {
-> +		iph = (struct ipv6hdr *)(skb->data + nhoff);
-> +		iph->payload_len = htons(payload_len);
-> +	}
->  
->  	nhoff += sizeof(*iph) + ipv6_exthdrs_len(iph, &ops);
->  	if (WARN_ON(!ops || !ops->callbacks.gro_complete))
+> > 
+> > I didn't look too deeply in revert patch, but from glance view it
+> > is not correct too as it doesn't have any protection from users
+> > who will try to configure params during devlink_params_unregister().
+> 
+> Is there any limitation that devlink params can be registered only during
+> probe time?
 
+Yes, we don't want races between userspace that tries to access devlink
+parameters and kernel code that adds/deletes them.
 
+> Would it be OK if we register this parameter during probe time, but allow
+> changing it only after TCs are created?
+
+Of course, this is exactly how it is supposed to be.
+For an example, see commit e890acd5ff18 ("net/mlx5: Add devlink flow_steering_mode parameter")
+
+In your case, you will have some sort of "if (!tc_configured) ..." line
+that will prevent to set this parameter.
+
+Thanks
+
+> 
+> -Sridhar
+> 
