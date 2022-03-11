@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B734D5C9B
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFF4B4D5C94
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347242AbiCKHlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 02:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49844 "EHLO
+        id S1347257AbiCKHl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 02:41:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344825AbiCKHls (ORCPT
+        with ESMTP id S1346474AbiCKHls (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:41:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A123C1B7570
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:45 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F4E1B7574
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58AFCB82AE1
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0CFEB82AE3
         for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 07:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ED93C340F3;
-        Fri, 11 Mar 2022 07:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38225C340F5;
+        Fri, 11 Mar 2022 07:40:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646984443;
-        bh=YueKU+eAiD0wkJcIy23m3O5aVSIo0ZrgWwbaTg/vv9Q=;
+        bh=8d1rrW7I+KWp+Ab6BqmCmgG1ABO9DQnystI6iscpLZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xgh5OvAkwJHNL7P24OI0d2wDiiEhutvpZkKMWvomSk+l9tmiVHdzh0HzQOc5Y6Bi7
-         UlGAJloT8hstWBqZt4CB5fD5bLlWc7qn5V5OqhzV88hT4wn02AdmishRp7+yhZVuuj
-         hh0EPc1VjJr4L2sVrowX/+ahFDRrS9/YdIRSOdV7G3T6Dzmo0XMf0Gb0hVVwFXCo8D
-         Rrjig+rD+i/7vyQocY+rZaixvt+OyGpWnc/HEt6RHG8VL/EsU1gCK8VTKmxNU7WLVA
-         Tbey0LNbbgTH7TFKYIDkKmGkA3uV4dfZh5SJHsxRhmo/xq+qlqDjxukRfgQHVuKv6E
-         PyDYwlbS/f7og==
+        b=tCPdXm4llOYv3oAT4JBzRdgniubYASh5Zd8ww0ySe8tRh/84olQ3x9DCB4V3e1nV1
+         J3Bvzv2LKnvweMx+CSL7Z71lCdZt633Ncx0scmYc3BNTQAXR0IjxWI8Qnx6A/CVo5Z
+         FKeGlL69UJt9Fwwk2jHwYSYKct8qd34Dbgt97b5Ii6W7KpXpY8hAj1kvx6697jZWL2
+         Q9t6oes23jfpNeTkvZSPz8iWbEWqOOV/ac9KSpUtA17RacNQlDVy+mDZBXQDcSj2ug
+         qt6NYc7TiIob6NYE1EQtp9b3Id1p0vKJwGFJx1lnMyZPCt+oC//AXhFQB1sHYPqcOa
+         ghkFjBPG7Queg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 04/15] net/mlx5: Node-aware allocation for the EQ table
-Date:   Thu, 10 Mar 2022 23:40:20 -0800
-Message-Id: <20220311074031.645168-5-saeed@kernel.org>
+Subject: [net-next 05/15] net/mlx5: Node-aware allocation for the EQs
+Date:   Thu, 10 Mar 2022 23:40:21 -0800
+Message-Id: <20220311074031.645168-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220311074031.645168-1-saeed@kernel.org>
 References: <20220311074031.645168-1-saeed@kernel.org>
@@ -63,23 +63,36 @@ Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index cb4730cb456a..316105378188 100644
+index 316105378188..229728c80233 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -438,7 +438,8 @@ int mlx5_eq_table_init(struct mlx5_core_dev *dev)
- 	struct mlx5_eq_table *eq_table;
- 	int i;
+@@ -728,7 +728,8 @@ struct mlx5_eq *
+ mlx5_eq_create_generic(struct mlx5_core_dev *dev,
+ 		       struct mlx5_eq_param *param)
+ {
+-	struct mlx5_eq *eq = kvzalloc(sizeof(*eq), GFP_KERNEL);
++	struct mlx5_eq *eq = kvzalloc_node(sizeof(*eq), GFP_KERNEL,
++					   dev->priv.numa_node);
+ 	int err;
  
--	eq_table = kvzalloc(sizeof(*eq_table), GFP_KERNEL);
-+	eq_table = kvzalloc_node(sizeof(*eq_table), GFP_KERNEL,
-+				 dev->priv.numa_node);
- 	if (!eq_table)
- 		return -ENOMEM;
+ 	if (!eq)
+@@ -888,10 +889,11 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 		return ncomp_eqs;
+ 	INIT_LIST_HEAD(&table->comp_eqs_list);
+ 	nent = comp_eq_depth_devlink_param_get(dev);
++
+ 	for (i = 0; i < ncomp_eqs; i++) {
+ 		struct mlx5_eq_param param = {};
  
+-		eq = kzalloc(sizeof(*eq), GFP_KERNEL);
++		eq = kzalloc_node(sizeof(*eq), GFP_KERNEL, dev->priv.numa_node);
+ 		if (!eq) {
+ 			err = -ENOMEM;
+ 			goto clean;
 -- 
 2.35.1
 
