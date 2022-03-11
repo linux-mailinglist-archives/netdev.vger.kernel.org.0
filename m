@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D03B94D5FF8
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 11:43:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 978444D5FFA
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 11:44:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236111AbiCKKou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S236341AbiCKKou (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 11 Mar 2022 05:44:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34534 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235596AbiCKKoq (ORCPT
+        with ESMTP id S235845AbiCKKoq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 05:44:46 -0500
 Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2138.outbound.protection.outlook.com [40.107.244.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23772198D39
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 02:43:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A128E1BBF5F
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 02:43:36 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lgSPTlziyJG3udlP1TCNWjxl1OtN03hP/4x21GlGAaqsq8UNzgygG/CFNnAh2rj/7QbljNQFHjgC2QDMPaTfuMXyLzoaMNQBIeyDvPwinndZEXDOuQedpi6njUT6exscpG0o7mcHBvqEy7IKqYjGwFVFWegEWyWLp4dbt2xqo1UwYLUBR/Kt4OIRjP6TG0NeUzXYJzSWJH9cjwlwKR4p4QdYREyf6DDx1nd/I3tMc7ZRrsM0vA/vMz3vox/dycz0HL1FWhAGRqFRK2KRpmEU+mzktIC9qBhyeEhoswSa7gNb6cLHpp7MZu5MekHgKa8Cbw9wMUURPuwJtp2wJwPldA==
+ b=fsXCqnoNeudZN3UsAlHlGJ+0eYXucp3xk1qPD2QPZ/3y+PIdKNfnYOReNa0FUSlJ2nHwpMn85VLB0+QxMqgr131lmCtuRXOjLPtuBGte7RthOssTPYXnn2h9ytVNTqxSqhgTcWmUq6nYMIBchJUAMznVXrgUREsyrgUcxiz1MSVpUid0AwDw0I1Xhtk9NOPQ8aVLPTmu/W+A3Cx/ioKpk5An2lgxsgJNI6AxBSpp1PMe/ts3Nj9OZdLyVOu0efristopu/3M1XaZ+RcooOKhLvpsW9+2cYm7wwFuDYzExH6isPukDn9/5KKAJMWo09iCw8gR/OABia2MQ86MXhsQdA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=64vSt+OJHnIIGgaOlY9Hx954rCfhppIH89wyKFkxpjo=;
- b=CLVesyHWjXAJg6LGuhEm3PA0b2jStynB00ft4+B+jd2nT0emY5w6G4+rUUXpLlqbg9ONPPtA1WPQbxTKX+mb3q53JEigho/jW/n28QGCK5SaFFhBr16UmBafxP/imggg0patCADFuvtJZwqDo2W7J/tdAU75DUya65dPcNTqs6w1Nl52b/4XkhngSCjIVTNYYt+KzuCtuE6VZBoW6y6ZWw46HN07NeVSH8dq/+XjQjHUuFjUyfLdVA8ywM9k6VesnIcEn6zeHHy4m7YU3oMeZWnZFo+LRueHWihZ5NqDWVmba7TEnQAJlT3whRnSqNvzNOIFxgaMEValf1S74jBgeg==
+ bh=QU+esHQ3+6E/hvVYxBXC1Q4lQVmlreq1ogGAgxVLIx4=;
+ b=FnmsjeNSmStHjQWq1DxXypZU4HnrsIHAVsknhEwE+tsveVhJH/Bv+PE+UJ8F55FIgkDyopmRfB1HRuhppwElR77hks9cp7yapjUFdElkZKNGpASKhcfNyQqzXXEql5vch//kuy3tXe95HGBYYaxgZtevQtBmxAOwiFNinVSupB4SX/cxWKBZ8JJY3A1fLJOHl0l1wFH6P+iQ3mr++ySamyx4LnPzjs73/Plz+ro8CKiUGftDh9nDBxaHxtLTreZAXAzEQ4XFueWGETnWjCUhOXIvO2tfLKX4IdxpZACQKgx6nab4z/oaI4BaIJpayouUopNMPeqAyLB0QoKftS0BmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=64vSt+OJHnIIGgaOlY9Hx954rCfhppIH89wyKFkxpjo=;
- b=RcwOHCgyq3p63qlDNhf7B2yHRrfW3vuZyg21neAPby6adlppPbLiZuwcV7wBfVUQ41H4u5Y9zMj5r3ROCwg0IPh49qhB88aFujWM73BGwJNr9i8FbBErwNuFT/wu4RGF4bwuUp1fv/W+tt+aHULYcrruiFsfYNBDUOrCHxW7goY=
+ bh=QU+esHQ3+6E/hvVYxBXC1Q4lQVmlreq1ogGAgxVLIx4=;
+ b=lWGaAC75NS+DMLzUPH/9yJvy19YHy3ZYt/ANqpvuWeXHs6RaRqFPz4QZO22t0LWDromg873ccO92u9tRov+tS5u3AOmMiXzrkx5oxQ1aeWPOOwYxEOC9Bf+j0HQ3ITN84rrCwTJrwwBxxyYEBVF0jXpwCH9c2EorOjEECv334mA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by CH0PR13MB4748.namprd13.prod.outlook.com (2603:10b6:610:c3::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.9; Fri, 11 Mar
- 2022 10:43:33 +0000
+ 2022 10:43:35 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e%2]) with mapi id 15.20.5061.018; Fri, 11 Mar 2022
- 10:43:33 +0000
+ 10:43:35 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH net-next 09/11] nfp: parametrize QCP offset/size using dev_info
-Date:   Fri, 11 Mar 2022 11:43:04 +0100
-Message-Id: <20220311104306.28357-10-simon.horman@corigine.com>
+Subject: [PATCH net-next 10/11] nfp: take chip version into account for ring sizes
+Date:   Fri, 11 Mar 2022 11:43:05 +0100
+Message-Id: <20220311104306.28357-11-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220311104306.28357-1-simon.horman@corigine.com>
 References: <20220311104306.28357-1-simon.horman@corigine.com>
@@ -57,52 +57,52 @@ X-ClientProxiedBy: AM0P190CA0026.EURP190.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2ce33d45-b197-4dd0-3fb2-08da034bfd73
+X-MS-Office365-Filtering-Correlation-Id: c7a2021d-8726-40cb-1126-08da034bfe2d
 X-MS-TrafficTypeDiagnostic: CH0PR13MB4748:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR13MB474893831BDBE11C926CB5F1E80C9@CH0PR13MB4748.namprd13.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <CH0PR13MB47486FA2196E10381FE2FFC9E80C9@CH0PR13MB4748.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JEcIozWDF93R1wAw5sWmarQmnRwWYhGU5mlpzc1+FrFWofTf9FM40ztKUmepQM5MvpM4J5Tn6TILiWIF789q0FmEB2nHy67epsBg7Es8Vy+eZ2IHPB4vLjpFiZvsMsWA4feGNLj9y4RD19B9+1AOhnP7Cv/TVZ0zs5H5iUQcDs4uvAO2991akONCailorYxhKB57KAppvv7XZlSWgiaDjj5Ow8Sl9LLfeez69t3tNUYo1qCu8jd26IeFJP/FsVuupGz3bKAB5GL3ixbfmiCK9JP+x1DBLTkeyo4zsH8iHlz1+pxV/cLLfnC++ffSeqSu6QP6UBZv+yS10MLvWtSKViJjU/WNjTfU0nVtrxALEQtAGaS/uaFoHbfKEUviCLrz55M1xKXsxHaImt2LGJpNjvUatQ8BuVsncsD8lfkgSlvRp7HA/9lqvI/TumMr6meX4vZQi/6URXGGpMdEUeDBYEE7X96f1x7ZK6KkRgF2ef5GiQUzWL6tqIRFp6J017shWetJMJMAcn0HWOjgpFOijxMvBJkCcRDqUKRZBOsF2B55dayBzBAovh9rNPyf5Gx4KwdTLtmZtE+cjp1FFnvbZLnjueITF7MfHJl0/3j6Z8YE+8fYjshZJUgx61EB9sFlaCH000ilK2K/pBWApPeGRg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(376002)(366004)(396003)(136003)(39840400004)(66946007)(66556008)(66476007)(4326008)(316002)(36756003)(8676002)(52116002)(86362001)(6666004)(6512007)(6506007)(5660300002)(508600001)(6486002)(110136005)(8936002)(44832011)(38100700002)(186003)(1076003)(2616005)(2906002)(107886003)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: n+FHFxgM0HYZOYwxtxW4IdSaM0t1QW5RqUbE0NODg0n+7eSjhggWSD1nBUH169W71PZw9pwcaCejVELxkGrevUW+1ET1HGEso/52AiU4hCs4L56W+OyycRu3nQ1e7WnKVLvd0KIF0WJGC+Oc9WLFGHUnGjNaSk3YKoNEUkKx1JCzn+AzxTS8SKb4UDnAPmNJyh8CHlEPXOxhHgW/LR7Mn4BLEnQK3TkIarg7QYbRjSzsz2pRR/fh3imqjpDGbHppdwKt5JYSkf+5Kyg7enate/KdGA9t8AgnugDRCYlCwnaHFXsP2n/gzVKAHY5RYJMU9QWIBygoSO6KR+TpiroSSNmZz5jF/KylHisJCMUQ+PopSbCF9rbhlXXlGQbWT74FwCT0PuUCIyp/ko006M2ORvR2VjrojrrZaG/7/N9lX61rLXeKeyPdFELJ510LfUeR7jIu/N+qHqwH9KQJasJeX+3uIyKHQ8qntlxEuZjdWVnT64En3l90nQ8l26+ZqoFofga8zAmwGK3DAGxtbIm8YXe2s4hF1BkOmIJI9WNeF77TRZcBQuxGYEuP50E+uihL3av47YLjf/Fk39xNQljFVSpfbAjmKtIMQW++zc4PGs95377upfL1ILZCvEB0x0DwuFyuOPcxr656ia7ZcbEfzQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(376002)(366004)(396003)(136003)(39840400004)(66946007)(66556008)(66476007)(4326008)(316002)(36756003)(8676002)(52116002)(86362001)(6666004)(6512007)(6506007)(5660300002)(508600001)(6486002)(110136005)(8936002)(44832011)(38100700002)(186003)(1076003)(2616005)(15650500001)(2906002)(107886003)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?VV9mKIR+TK3d41Xuo8GU5NCcKh0C7J1SeUMgAvgMfixzs9+BL1XL1GpAQE/w?=
- =?us-ascii?Q?W40LZVewROhCLaPZS9DxrLZYumVkOUm5nxXFjq6cD0vNasDHxy6a8ArG1CSt?=
- =?us-ascii?Q?5QX6L1Wgg8u89kEzxhwgXAtqX0biaY+FIcVlY5YAL4TtqDozrDrDBs0LNXFo?=
- =?us-ascii?Q?iMklK6heWxCQPTQgKKdPuWfYD3NoLh443mfDxXshc1W4t9W94lnsEGlQptih?=
- =?us-ascii?Q?YnLhSd9EwJrYbyc0ba/HQP0LdaHi+kfJoGYXd2W4sieNHUV6X5DdpeRQUtLQ?=
- =?us-ascii?Q?3zt8R5sJaatBIs78FFH+bsdl2NGs7TJPPFigDFx/exZyrkXWiaytxGpFMq2y?=
- =?us-ascii?Q?wo/KRSj+5pphIX7fiyJARrvEFCDubKhy8MgQVS5ufEZ7DWQEXwuA+OraAPQ/?=
- =?us-ascii?Q?7YGj88jneSkxyU5+915TtJ1L1pVYewU5RMt64Dbw10hAZjN3b0/Qjh2WGV8B?=
- =?us-ascii?Q?fmj6fdLHkScJPtYBRqGci735BSJnPbS6hatp0xOgyMYpzMi6HYUB2jwT2bfX?=
- =?us-ascii?Q?7CMGlP0PNK+fTzp7PnskEJwZL9a0z9VK6oT0YAFCetSRUe1m6vSlyu13vMhn?=
- =?us-ascii?Q?sruFmjPBgJqQ5bo8gPWbO9WxIIOhdy2nf2A1I6/HE2O5E3pX4XxkuefBRRZk?=
- =?us-ascii?Q?ClvR8gAC0OkS+Xm9Luy2yUY9BZLyHlnOkoMlyHyWfY2aoTxuAJ39WsxKgT85?=
- =?us-ascii?Q?xX1XBOgBalmIJfQDhK2BWe9AkT+KwYlkCIVDhMkdHUD4oAFVDK6jbXmAplWJ?=
- =?us-ascii?Q?CFMqjs8uYaDJZSEM6OkTJKkOmt3vDY7LX5rqRFV96KvXYeVOVzOyibhDlMNE?=
- =?us-ascii?Q?bB6/cha8P+lysfqcg91ZkO1DL2kqZw4euaA2iQM+XmZi0Fq7L7To9Hi3uKBt?=
- =?us-ascii?Q?gs+uOfDqvFXY4s1bLawDwRSxiTtqf8SU2ChG6KGdZXg2KUxNyiZ9G0bVdNsu?=
- =?us-ascii?Q?5INWyt2I6ikTSuR5Y6cSl2PClaAFLw6I51WPvzXnCZLvEVvvvU9OkEnio9XW?=
- =?us-ascii?Q?sDkx24VXfXakITV0ONcFvSivzQI9p+GUDpYHZsLXiXj+pd3Cyg4jYRhcoApn?=
- =?us-ascii?Q?aWhVa7ymX2UBNceSh4Gtd9YJrxns956lqAThiTkiLKC9Z3IMtdKeoHpuRvQo?=
- =?us-ascii?Q?toQNzvXiFz8lGkTxxC759YNlhIdL6a1e1KqRCZiHbB8whyNIHuo75nQBcnds?=
- =?us-ascii?Q?low4PmOO4OBgZCTuoFZJd2lI/+0VKjYQRBOWAmTyEVxddesZQoPIELp1jvJX?=
- =?us-ascii?Q?pnHH/u/BnBa9JWSumTTJk2XIrcAq0BI92lPmLAcbUbAVH8+rPaAONTcoHeZU?=
- =?us-ascii?Q?3JXgVM/iFf+77C5qJegF2AATyEg7ZYFhLCxHlkqL1+RtwgiACxr4DSyborg4?=
- =?us-ascii?Q?WN/bNqsEBPII/euX1P/tq+aOmBqQtF/Qj5PfeZZzsXLvmy2BUX5qXipypSLs?=
- =?us-ascii?Q?i8debaymN8qGsvyo6bLfnvIlqWJqYuMK8aral2ICunqdD0r7AjVxiokH04JS?=
- =?us-ascii?Q?TAPDThqK5gcPFRq6CKU2nhHPV37yUakEAmB8uBbYdTxSDLekAu5zNQ+NWw?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cM4OijPgHjARIrJZ1r6O6OrTdnUgiV1IbweaEDZIJExPS27ihhgnU4QTlPF3?=
+ =?us-ascii?Q?yAzIQ3VKLWG1iFKJk60vRbTWk7zRFYywS0edcMCnHYzP0lJpnl+kcV+cAZeb?=
+ =?us-ascii?Q?IKxGjkC9/rI63bEMVFJ7SCwXQWbHEDk+12VWY0PR9VZxjznpVvIIlJ7KhP4l?=
+ =?us-ascii?Q?lKI5/40aGDr9FDHcBcWPMfXhNfqY5G3eR+zxhRjQpUbP/VI9GyzQT2f77AgJ?=
+ =?us-ascii?Q?VxtTF4c4z8h+2jvP+fuhlLZuUDoozc0QnJBQ768Th2LC0URemunvXnE1DmHG?=
+ =?us-ascii?Q?j4C3aaPl2abaRTKyNUH3cUrPEOzktMCH9G4NRz/sBJm1BKXJp9DWPJ3Sv98x?=
+ =?us-ascii?Q?lzj61gZJa6Brw3cX6cvOBTEASfpV77rp0+L7JYIQO9oIRiQAs94G3LCTNNcz?=
+ =?us-ascii?Q?XgwXrCfH4WZc5LSZ0XGL++ctJ6qN1KOvN6U3RDkjDhF70KJngXKPV/xz7pYg?=
+ =?us-ascii?Q?q0CI41wfDua9TeVHXPXVbkOVaHMLzlollMiqa4Tvy+58QJ1ofa98IC78OqIG?=
+ =?us-ascii?Q?eYdEcst6eHGewl5niZLqsYV2mZ6OxSEwrcoOjGgQTr+u0OvYYjAGvReuWNSs?=
+ =?us-ascii?Q?wHmQ1JeVqpoei8dCzkEMzj3RMBJIvaAunf/QiJajDx5VEvN4sthumZOSJide?=
+ =?us-ascii?Q?pZD/r3BvZgB/EaTwbQhjXUrhURFgx3jkOzVpfHVqvPXK1ZKsqSEWq409D7pk?=
+ =?us-ascii?Q?Ls0HJAUxdipQPN3obgEqeRJz2d1p40gqfZ2BD3jRmOmiaZ/LlW+MtHu3qCs+?=
+ =?us-ascii?Q?n21Ixlmyl9gZUgWfbmjNGqDLpUzFoLmhVPugwRMgAkA4t/l3Q+j+Ax+H9bt+?=
+ =?us-ascii?Q?r6YvkmY3gNrMbmpaGUlgYl0YFjt1YbTM40bEpGTFDx2/ifCwzEIqiED++v1G?=
+ =?us-ascii?Q?szaHuIfDKy0xmBOAshdG6fduSWBH1aACpHQ2lyfHnTmb4dMYHJDHuUWzHtHu?=
+ =?us-ascii?Q?xCVbjj7EAzvbEPVKCvpFF6bYQVtpdnEp00mvNurXWNhCw0Hui6KczHGv9G5f?=
+ =?us-ascii?Q?DKe5ji9ECnzOBF/gZ9C/CJ2oGFeWTvN6A02TD2MNBkKu6tE6iFfXXJMYtG6G?=
+ =?us-ascii?Q?TZN35BZ/CtsfD59okFCpeL5xhxU24/WQS+iLztbVMe7XMurytfyP1YHesveC?=
+ =?us-ascii?Q?q0dUsCZru1ZZRj43Vdg4GtpE1evFVH6+cO3IlkpSH5bbDdCZGWA2T2yc2jZ7?=
+ =?us-ascii?Q?iVGIRO8rCUui0XnerUqQLyfx1jNz8FAj6ZQtg70g324bnV83Z4pjHLaAqSUO?=
+ =?us-ascii?Q?KV7JFYYGxHMFMYo6O7OHfaR8MzawQ66nm/wHeu8EcSq466heyk3Bq3gHezUw?=
+ =?us-ascii?Q?ZqLXtRpFtaa7+vTjOk7bjuVCcYgbP0H2wYIIRT/jjDNwZk4gp1vL15RJHT+V?=
+ =?us-ascii?Q?spH5iybgsuA+5yrLy2HkUtFkN7C/DV3VJNLWrNCesmhcu4uxloetNciMuYxT?=
+ =?us-ascii?Q?0aMc1jkeXJUuTD2r3uRqyFkrq09Y7/I3St+97HlIonPX4Vi1j+a4mBw/N2C1?=
+ =?us-ascii?Q?NbWZK9XZCLj5/SPLdL/6cuyIaabAkTeniLvTONOyIA1oBV9m/1JQiIrESw?=
  =?us-ascii?Q?=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ce33d45-b197-4dd0-3fb2-08da034bfd73
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7a2021d-8726-40cb-1126-08da034bfe2d
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 10:43:33.6902
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 10:43:35.0174
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8ucfqiwvBEyEhJ0cQJHYKp/H07ywKi0AysGDv+flg0Wy5T4Zi59BLoHF6H1kxa41Y9dHtmNNbnKwwn3So2ccLtKwVbZVUPtovBsgEPfEYbw=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Nzk8kcr3oat630gmpBKVEWTIXnn54oqfDYa2M0CcQzskpP0rJFVUruHnHTKck/+d2bu+uV3jy5G3wczsHC/ENOUCl8o/8q4WpSJkg+XBQaw=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB4748
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -115,182 +115,128 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-The queue controller (QCP) is accessed based on a device specific
-offset. The NFP3800 device also supports more queues.
+NFP3800 has slightly different queue controller range bounds.
+Use the static chip data instead of defines.  This commit
+still assumes unchanged descriptor format.  Later datapath
+changes will allow adjusting for descriptor accounting.
 
-Furthermore, the NFP3800 VFs also access the QCP differently to how the
-NFP6000 VFs accesses it, though still indirectly. Fortunately, we can
-remove the offset all together for both VF types. This is safe for
-NFP6000 VFs since the offset was effectively a wrap around and only used
-for convenience to have it set the same as the NFP6000 PF.
-
-Use nfp_dev_info to store queue controller parameters.
-
-Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Fei Qin <fei.qin@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net.h         |  6 ++----
- drivers/net/ethernet/netronome/nfp/nfp_net_common.c  |  7 +++++++
- drivers/net/ethernet/netronome/nfp/nfp_net_main.c    |  5 +++--
- drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c  |  6 +++---
- drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c | 10 ++++++++++
- drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h |  7 +++++++
- 6 files changed, 32 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_net.h       |  5 -----
+ .../net/ethernet/netronome/nfp/nfp_net_ethtool.c   | 14 +++++++++-----
+ .../net/ethernet/netronome/nfp/nfpcore/nfp_dev.c   |  5 +++++
+ .../net/ethernet/netronome/nfp/nfpcore/nfp_dev.h   |  2 ++
+ 4 files changed, 16 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index 232e0a622ee7..5ae15046e585 100644
+index 5ae15046e585..49b5fcb49aef 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -796,7 +796,6 @@ static inline void nn_pci_flush(struct nfp_net *nn)
-  * either add to a pointer or to read the pointer value.
-  */
- #define NFP_QCP_QUEUE_ADDR_SZ			0x800
--#define NFP_QCP_QUEUE_AREA_SZ			0x80000
- #define NFP_QCP_QUEUE_OFF(_x)			((_x) * NFP_QCP_QUEUE_ADDR_SZ)
- #define NFP_QCP_QUEUE_ADD_RPTR			0x0000
- #define NFP_QCP_QUEUE_ADD_WPTR			0x0004
-@@ -805,9 +804,6 @@ static inline void nn_pci_flush(struct nfp_net *nn)
- #define NFP_QCP_QUEUE_STS_HI			0x000c
- #define NFP_QCP_QUEUE_STS_HI_WRITEPTR_mask	0x3ffff
+@@ -82,11 +82,6 @@
+ 				 NFP_NET_MAX_TX_RINGS : NFP_NET_MAX_RX_RINGS)
+ #define NFP_NET_MAX_IRQS	(NFP_NET_NON_Q_VECTORS + NFP_NET_MAX_R_VECS)
  
--/* The offset of a QCP queues in the PCIe Target */
--#define NFP_PCIE_QUEUE(_q) (0x80000 + (NFP_QCP_QUEUE_ADDR_SZ * ((_q) & 0xff)))
+-#define NFP_NET_MIN_TX_DESCS	256	/* Min. # of Tx descs per ring */
+-#define NFP_NET_MIN_RX_DESCS	256	/* Min. # of Rx descs per ring */
+-#define NFP_NET_MAX_TX_DESCS	(256 * 1024) /* Max. # of Tx descs per ring */
+-#define NFP_NET_MAX_RX_DESCS	(256 * 1024) /* Max. # of Rx descs per ring */
 -
- /* nfp_qcp_ptr - Read or Write Pointer of a queue */
- enum nfp_qcp_ptr {
- 	NFP_QCP_READ_PTR = 0,
-@@ -876,6 +872,8 @@ static inline u32 nfp_qcp_wr_ptr_read(u8 __iomem *q)
- 	return _nfp_qcp_read(q, NFP_QCP_WRITE_PTR);
- }
+ #define NFP_NET_TX_DESCS_DEFAULT 4096	/* Default # of Tx descs per ring */
+ #define NFP_NET_RX_DESCS_DEFAULT 4096	/* Default # of Rx descs per ring */
  
-+u32 nfp_qcp_queue_offset(const struct nfp_dev_info *dev_info, u16 queue);
-+
- static inline bool nfp_net_is_data_vnic(struct nfp_net *nn)
- {
- 	WARN_ON_ONCE(!nn->dp.netdev && nn->port);
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 5d993772c1d9..ef8645b77e79 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -40,6 +40,7 @@
- #include <net/vxlan.h>
- #include <net/xdp_sock_drv.h>
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+index e0c27471bcdb..b9abae176793 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -21,6 +21,7 @@
+ #include <linux/sfp.h>
  
+ #include "nfpcore/nfp.h"
 +#include "nfpcore/nfp_dev.h"
  #include "nfpcore/nfp_nsp.h"
- #include "ccm.h"
  #include "nfp_app.h"
-@@ -65,6 +66,12 @@ void nfp_net_get_fw_version(struct nfp_net_fw_version *fw_ver,
- 	put_unaligned_le32(reg, fw_ver);
- }
- 
-+u32 nfp_qcp_queue_offset(const struct nfp_dev_info *dev_info, u16 queue)
-+{
-+	queue &= dev_info->qc_idx_mask;
-+	return dev_info->qc_addr_offset + NFP_QCP_QUEUE_ADDR_SZ * queue;
-+}
-+
- static dma_addr_t nfp_net_dma_map_rx(struct nfp_net_dp *dp, void *frag)
+ #include "nfp_main.h"
+@@ -386,9 +387,10 @@ static void nfp_net_get_ringparam(struct net_device *netdev,
+ 				  struct netlink_ext_ack *extack)
  {
- 	return dma_map_single_attrs(dp->dev, frag + NFP_NET_RX_BUF_HEADROOM,
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-index 8934d5418b1a..a18b99c93ab3 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-@@ -496,8 +496,9 @@ static int nfp_net_pci_map_mem(struct nfp_pf *pf)
- 	}
+ 	struct nfp_net *nn = netdev_priv(netdev);
++	u32 qc_max = nn->dev_info->max_qc_size;
  
- 	cpp_id = NFP_CPP_ISLAND_ID(0, NFP_CPP_ACTION_RW, 0, 0);
--	mem = nfp_cpp_map_area(pf->cpp, "net.qc", cpp_id, NFP_PCIE_QUEUE(0),
--			       NFP_QCP_QUEUE_AREA_SZ, &pf->qc_area);
-+	mem = nfp_cpp_map_area(pf->cpp, "net.qc", cpp_id,
-+			       nfp_qcp_queue_offset(pf->dev_info, 0),
-+			       pf->dev_info->qc_area_sz, &pf->qc_area);
- 	if (IS_ERR(mem)) {
- 		nfp_err(pf->cpp, "Failed to map Queue Controller area.\n");
- 		err = PTR_ERR(mem);
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c b/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
-index 1ac2a1d97c18..db4301f8cd85 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
-@@ -40,7 +40,7 @@ static const char nfp_net_driver_name[] = "nfp_netvf";
- static const struct pci_device_id nfp_netvf_pci_device_ids[] = {
- 	{ PCI_VENDOR_ID_NETRONOME, PCI_DEVICE_ID_NETRONOME_NFP6000_VF,
- 	  PCI_VENDOR_ID_NETRONOME, PCI_ANY_ID,
--	  PCI_ANY_ID, 0, NFP_DEV_NFP6000,
-+	  PCI_ANY_ID, 0, NFP_DEV_NFP6000_VF,
- 	},
- 	{ 0, } /* Required last entry. */
- };
-@@ -169,9 +169,9 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
- 	}
+-	ring->rx_max_pending = NFP_NET_MAX_RX_DESCS;
+-	ring->tx_max_pending = NFP_NET_MAX_TX_DESCS;
++	ring->rx_max_pending = qc_max;
++	ring->tx_max_pending = qc_max;
+ 	ring->rx_pending = nn->dp.rxd_cnt;
+ 	ring->tx_pending = nn->dp.txd_cnt;
+ }
+@@ -413,18 +415,20 @@ static int nfp_net_set_ringparam(struct net_device *netdev,
+ 				 struct netlink_ext_ack *extack)
+ {
+ 	struct nfp_net *nn = netdev_priv(netdev);
+-	u32 rxd_cnt, txd_cnt;
++	u32 qc_min, qc_max, rxd_cnt, txd_cnt;
  
- 	startq = readl(ctrl_bar + NFP_NET_CFG_START_TXQ);
--	tx_bar_off = NFP_PCIE_QUEUE(startq);
-+	tx_bar_off = nfp_qcp_queue_offset(dev_info, startq);
- 	startq = readl(ctrl_bar + NFP_NET_CFG_START_RXQ);
--	rx_bar_off = NFP_PCIE_QUEUE(startq);
-+	rx_bar_off = nfp_qcp_queue_offset(dev_info, startq);
+ 	/* We don't have separate queues/rings for small/large frames. */
+ 	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
+ 		return -EINVAL;
  
- 	/* Allocate and initialise the netdev */
- 	nn = nfp_net_alloc(pdev, dev_info, ctrl_bar, true,
++	qc_min = nn->dev_info->min_qc_size;
++	qc_max = nn->dev_info->max_qc_size;
+ 	/* Round up to supported values */
+ 	rxd_cnt = roundup_pow_of_two(ring->rx_pending);
+ 	txd_cnt = roundup_pow_of_two(ring->tx_pending);
+ 
+-	if (rxd_cnt < NFP_NET_MIN_RX_DESCS || rxd_cnt > NFP_NET_MAX_RX_DESCS ||
+-	    txd_cnt < NFP_NET_MIN_TX_DESCS || txd_cnt > NFP_NET_MAX_TX_DESCS)
++	if (rxd_cnt < qc_min || rxd_cnt > qc_max ||
++	    txd_cnt < qc_min || txd_cnt > qc_max)
+ 		return -EINVAL;
+ 
+ 	if (nn->dp.rxd_cnt == rxd_cnt && nn->dp.txd_cnt == txd_cnt)
 diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c
-index 5a8be13a5596..368c6a08d887 100644
+index 368c6a08d887..0c1ef01f90eb 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c
 +++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c
-@@ -2,14 +2,24 @@
- /* Copyright (C) 2019 Netronome Systems, Inc. */
+@@ -3,6 +3,7 @@
  
  #include <linux/dma-mapping.h>
-+#include <linux/kernel.h>
+ #include <linux/kernel.h>
++#include <linux/sizes.h>
  
  #include "nfp_dev.h"
  
- const struct nfp_dev_info nfp_dev_info[NFP_DEV_CNT] = {
- 	[NFP_DEV_NFP6000] = {
+@@ -11,6 +12,8 @@ const struct nfp_dev_info nfp_dev_info[NFP_DEV_CNT] = {
  		.dma_mask		= DMA_BIT_MASK(40),
-+		.qc_idx_mask		= GENMASK(7, 0),
-+		.qc_addr_offset		= 0x80000,
-+
+ 		.qc_idx_mask		= GENMASK(7, 0),
+ 		.qc_addr_offset		= 0x80000,
++		.min_qc_size		= 256,
++		.max_qc_size		= SZ_256K,
+ 
  		.chip_names		= "NFP4000/NFP5000/NFP6000",
  		.pcie_cfg_expbar_offset	= 0x0400,
- 		.pcie_expl_offset	= 0x1000,
-+		.qc_area_sz		= 0x80000,
-+	},
-+	[NFP_DEV_NFP6000_VF] = {
-+		.dma_mask		= DMA_BIT_MASK(40),
-+		.qc_idx_mask		= GENMASK(7, 0),
-+		.qc_addr_offset		= 0,
+@@ -21,5 +24,7 @@ const struct nfp_dev_info nfp_dev_info[NFP_DEV_CNT] = {
+ 		.dma_mask		= DMA_BIT_MASK(40),
+ 		.qc_idx_mask		= GENMASK(7, 0),
+ 		.qc_addr_offset		= 0,
++		.min_qc_size		= 256,
++		.max_qc_size		= SZ_256K,
  	},
  };
 diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h
-index ea61156c2075..4152be0f8b01 100644
+index 4152be0f8b01..deadd9b97f9f 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h
 +++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h
-@@ -8,14 +8,21 @@
- 
- enum nfp_dev_id {
- 	NFP_DEV_NFP6000,
-+	NFP_DEV_NFP6000_VF,
- 	NFP_DEV_CNT,
- };
- 
- struct nfp_dev_info {
-+	/* Required fields */
+@@ -17,6 +17,8 @@ struct nfp_dev_info {
  	u64 dma_mask;
-+	u32 qc_idx_mask;
-+	u32 qc_addr_offset;
-+
-+	/* PF-only fields */
- 	const char *chip_names;
- 	u32 pcie_cfg_expbar_offset;
- 	u32 pcie_expl_offset;
-+	u32 qc_area_sz;
- };
+ 	u32 qc_idx_mask;
+ 	u32 qc_addr_offset;
++	u32 min_qc_size;
++	u32 max_qc_size;
  
- extern const struct nfp_dev_info nfp_dev_info[NFP_DEV_CNT];
+ 	/* PF-only fields */
+ 	const char *chip_names;
 -- 
 2.30.2
 
