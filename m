@@ -2,284 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 811074D5770
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 02:41:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FD754D5784
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 02:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234016AbiCKBm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 20:42:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37110 "EHLO
+        id S238789AbiCKBrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 20:47:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233859AbiCKBm1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 20:42:27 -0500
-Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [148.163.129.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199F81A2758
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 17:41:25 -0800 (PST)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.137])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id AA15E1C0063;
-        Fri, 11 Mar 2022 01:41:23 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 73BF814007E;
-        Fri, 11 Mar 2022 01:41:23 +0000 (UTC)
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 15ED713C2B1;
-        Thu, 10 Mar 2022 17:41:23 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 15ED713C2B1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1646962883;
-        bh=AqdXMVnmzjYhHKLWG/UebVSkZ8bacQRoqj3fnR5FNh0=;
-        h=Subject:From:To:References:Date:In-Reply-To:From;
-        b=I5zkVHR2Z6I8v3FbI7zqgeEsWLyqFh/YhMZwBDiK0jBOMFmO/lLPEzxX5eT82w4CA
-         ZHW4akj2bDGRKd9BT05WV80qd4O7uhLsGb9gtAtFPZwEWM4dm6LVBx7ZI0GPrmv3yN
-         9qTSSQyrb9xygKgD0iHzVAwQg/OhDBjPuy5BK4gI=
-Subject: Re: vrf and multicast problem
-From:   Ben Greear <greearb@candelatech.com>
-To:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>
-References: <1e7b1aec-401d-9e70-564a-4ce96e11e1be@candelatech.com>
- <4c4f21f3-75b5-5099-7ee8-28e3c4d6b465@gmail.com>
- <50f1a384-c312-d6ec-0f42-2b9ce3a48013@candelatech.com>
- <38ecaaaf-1735-9023-2282-5feead8408b7@gmail.com>
- <08eeb237-5126-98ce-0990-5b7d7f6529f2@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <43de8172-0cd4-bf6f-b89b-864fd7bf4dee@candelatech.com>
-Date:   Thu, 10 Mar 2022 17:41:22 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <08eeb237-5126-98ce-0990-5b7d7f6529f2@candelatech.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-MDID: 1646962884-vJdoX27wsOx5
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231840AbiCKBrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 20:47:48 -0500
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC224177D21;
+        Thu, 10 Mar 2022 17:46:43 -0800 (PST)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app3 (Coremail) with SMTP id cC_KCgBHnxXyqSpipmKMAA--.24830S2;
+        Fri, 11 Mar 2022 09:46:31 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jreuter@yaina.de, kuba@kernel.org, davem@davemloft.net,
+        ralf@linux-mips.org, thomas@osterried.de,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH V3] ax25: Fix refcount leaks caused by ax25_cb_del()
+Date:   Fri, 11 Mar 2022 09:46:24 +0800
+Message-Id: <20220311014624.51117-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgBHnxXyqSpipmKMAA--.24830S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxGw1Uur4DKw15Cw18JF43Jrb_yoWrAF4kpF
+        WqvayrArZrtr1rCa18GryxWF18Zryqk3ykGry5ZFyIkasxJwn5ArZ3t3yUJry3JFZ5JF18
+        Z347Ww43Zr1DuFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
+        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
+        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
+        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
+        CI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
+        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkFAVZdtYnj3gAHsC
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/22 3:41 PM, Ben Greear wrote:
-> On 3/10/22 12:03 PM, David Ahern wrote:
->> On 3/10/22 12:33 PM, Ben Greear wrote:
->>> On 3/9/22 7:54 PM, David Ahern wrote:
->>>> On 3/9/22 3:31 PM, Ben Greear wrote:
->>>>> [resend, sorry...sent to wrong mailing list the first time]
->>>>>
->>>>> Hello,
->>>>>
->>>>> We recently found a somewhat weird problem, and before I go digging into
->>>>> the kernel source, I wanted to see if someone had an answer already...
->>>>>
->>>>> I am binding (SO_BINDTODEVICE) a socket to an Ethernet port that is in a
->>>>> VRF with a second
->>>>> interface.  When I try to send mcast traffic out that eth port,
->>>>> nothing is
->>>>> seen on the wire.
->>>>>
->>>>> But, if I set up a similar situation with a single network port in
->>>>> a vrf and send multicast, then it does appear to work as I expected.
->>>>>
->>>>> I am not actually trying to do any mcast routing here, I simply want to
->>>>> send
->>>>> out mcast frames from a port that resides inside a vrf.
->>>>>
->>>>> Any idea what might be the issue?
->>>>>
->>>>
->>>> multicast with VRF works. I am not aware of any known issues
->>>
->>> I set up a more controlled network to do some more testing.  I have eth2
->>> on 192.168.100.x/24 network, and eth1 on 172.16.0.1/16.
->>>
->>> I bind the mcast transmitter to eth1:
->>>
->>> 193 setsockopt(28, SOL_SOCKET, SO_BINDTODEVICE,
->>> "eth1\0\0\0\0\0\0\0\0\0\0\0\0", 16) = 0
->>> 194 setsockopt(28, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
->>> 195 bind(28, {sa_family=AF_INET, sin_port=htons(8888),
->>> sin_addr=inet_addr("0.0.0.0")}, 16) = 0
->>> 196 fcntl(28, F_GETFL)                      = 0x2 (flags O_RDWR)
->>> 197 fcntl(28, F_SETFL, O_ACCMODE|O_NONBLOCK) = 0
->>> 198 setsockopt(28, SOL_SOCKET, SO_BROADCAST, [1], 4) = 0
->>> 199 setsockopt(28, SOL_SOCKET, SO_SNDBUF, [64000], 4) = 0
->>> 200 setsockopt(28, SOL_SOCKET, SO_RCVBUF, [128000], 4) = 0
->>> 201 getsockopt(28, SOL_SOCKET, SO_RCVBUF, [256000], [4]) = 0
->>> 202 getsockopt(28, SOL_SOCKET, SO_SNDBUF, [128000], [4]) = 0
->>> 203 write(3, "1646940176442:  BtbitsIpEndpoint"..., 69) = 69
->>> 204 setsockopt(28, SOL_IP, IP_TOS, [0], 4)  = 0
->>> 205 getsockopt(28, SOL_IP, IP_TOS, [0], [4]) = 0
->>> 206 setsockopt(28, SOL_SOCKET, SO_PRIORITY, [0], 4) = 0
->>> 207 getsockopt(28, SOL_SOCKET, SO_PRIORITY, [0], [4]) = 0
->>> 208 write(3, "1646940176442:  UdpEndpBase.cc 2"..., 148) = 148
->>> 209 setsockopt(28, SOL_IP, IP_MULTICAST_IF, [16781484], 4) = 0
->>> 210 setsockopt(28, SOL_IP, IP_MULTICAST_TTL, " ", 1) = 0
->>>
->>> That IP_MULTICAST_IF ioctl should be assigning the IP address of
->>> eth1.
->>>
->>> But when I sniff, I see the mcast packets going out of eth2:
->>>
->>> [root@ct522-63e7 lanforge]# tshark -n -i eth2
->>> Running as user "root" and group "root". This could be dangerous.
->>> Capturing on 'eth2'
->>>      1 0.000000000 192.168.100.28 → 225.5.5.1    LANforge 1514 Seq: 474
->>>      2 0.060868103 192.168.100.226 → 192.168.100.255 ADwin Config 94
->>>      3 0.060900503 00:0d:b9:41:6a:90 → ff:ff:ff:ff:ff:ff 0x1111 92
->>> Ethernet II
->>>      4 0.209523669 192.168.100.28 → 225.5.5.1    LANforge 1514 Seq: 475
->>>
->>> [root@ct522-63e7 lanforge]# ifconfig eth1
->>> eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->>>          inet 172.16.0.1  netmask 255.255.0.0  broadcast 172.16.255.255
->>>          inet6 fe80::230:18ff:fe01:63e8  prefixlen 64  scopeid 0x20<link>
->>>          ether 00:30:18:01:63:e8  txqueuelen 1000  (Ethernet)
->>>          RX packets 1972669  bytes 409744407 (390.7 MiB)
->>>          RX errors 0  dropped 0  overruns 0  frame 0
->>>          TX packets 5818525  bytes 7341747933 (6.8 GiB)
->>>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>>          device memory 0xdf740000-df75ffff
->>>
->>> [root@ct522-63e7 lanforge]# ifconfig eth2
->>> eth2: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->>>          inet 192.168.100.28  netmask 255.255.255.0  broadcast
->>> 192.168.100.255
->>>          inet6 fe80::230:18ff:fe01:63e9  prefixlen 64  scopeid 0x20<link>
->>>          ether 00:30:18:01:63:e9  txqueuelen 1000  (Ethernet)
->>>          RX packets 24638831  bytes 8874820766 (8.2 GiB)
->>>          RX errors 26712  dropped 6596663  overruns 0  frame 16757
->>>          TX packets 1753211  bytes 370552564 (353.3 MiB)
->>>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>>          device memory 0xdf720000-df73ffff
->>>
->>> If I disable VRF and use routing-rules based approach, then it works
->>> as I expect (mcast frames go out of eth1).
->>>
->>> We tested back to quite-old kernels with same symptom, so I think it is not
->>> a regression.
->>>
->>> Any suggestions on where to start poking at this in the kernel?
->>>
->>
->> can you reproduce this using namespaces and veth pairs? if so, send me
->> the script and I will take a look.
-> 
-> I think debugging it will be easier than writing something for you to
-> reproduce it...
-> 
-> I have tracked it down to this code in route.c:
-> 
->      if (fl4->flowi4_oif) {
->          dev_out = dev_get_by_index_rcu(net, fl4->flowi4_oif);
->          rth = ERR_PTR(-ENODEV);
->          if (!dev_out)
->              goto out;
-> 
->          /* RACE: Check return value of inet_select_addr instead. */
->          if (!(dev_out->flags & IFF_UP) || !__in_dev_get_rcu(dev_out)) {
->              rth = ERR_PTR(-ENETUNREACH);
->              goto out;
->          }
->          if (ipv4_is_local_multicast(fl4->daddr) ||
->              ipv4_is_lbcast(fl4->daddr) ||
->              fl4->flowi4_proto == IPPROTO_IGMP) {
->              if (!fl4->saddr)
->                  fl4->saddr = inet_select_addr(dev_out, 0,
->                                    RT_SCOPE_LINK);
->              goto make_route;
->          }
->          if (!fl4->saddr) {
->              if (ipv4_is_multicast(fl4->daddr))
->                  fl4->saddr = inet_select_addr(dev_out, 0,
->                                    fl4->flowi4_scope);
->              else if (!fl4->daddr)
->                  fl4->saddr = inet_select_addr(dev_out, 0,
->                                    RT_SCOPE_HOST);
->          }
->      }
-> 
->      if (!fl4->daddr) {
->          fl4->daddr = fl4->saddr;
->          if (!fl4->daddr)
->              fl4->daddr = fl4->saddr = htonl(INADDR_LOOPBACK);
->          dev_out = net->loopback_dev;
->          fl4->flowi4_oif = LOOPBACK_IFINDEX;
->          res->type = RTN_LOCAL;
->          flags |= RTCF_LOCAL;
->          goto make_route;
->      }
-> 
->      pr_info("ip-route-output-key-hash-rcu before fib_lookup: orig_oif: %d  fl4 oif: %d\n",
->          orig_oif, fl4->flowi4_oif);
-> 
->      err = fib_lookup(net, fl4, res, 0);
-> 
->      pr_info("ip-route-output-key-hash-rcu after fib_lookup: orig_oif: %d  fl4 oif: %d err: %d\n",
->          orig_oif, fl4->flowi4_oif, err);
-> 
-> 
-> dmesg output:
-> 
-> 
-> [   54.122391] UDP: udp-sendmsg, mcast, oif: 4  saddr: 0x0
-> [   54.122399] UDP: udp-sendmsg, after, mcast, oif: 4  saddr: 0x10010ac
-> [   54.122401] UDP: udp-sendmsg: after flowi4_init_output: oif: 4
-> [   54.122404] UDP: udp-sendmsg: after security-sk-classify: oif: 4
-> 
-> [   54.122406] IPv4: ip-route-output-key-hash-rcu before fib_lookup: orig_oif: 4  fl4 oif: 4
-> ### This is the transition from expected to funky.
-> [   54.122413] IPv4: ip-route-output-key-hash-rcu after fib_lookup: orig_oif: 4  fl4 oif: 21
-> 
-> [   54.122415] IPv4: ip-route-output-key-hash-rcu before fib_select_path: orig_oif: 4  fl4 oif: 21
-> [   54.122418] IPv4: ip-route-output-key-hash-rcu after fib_select_path: orig_oif: 4  fl4 oif: 21
-> [   54.122420] IPv4: ip-route-output-key-hash-rcu make_route Before, orig_oif: 4  fl4 oif: 21 dev_out: 5
-> [   54.122443] IPv4: ip-route-output-key-hash-rcu make_route After, orig_oif: 4  fl4 oif: 21 dev_out: 5
-> [   54.122446] IPv4: ip_route_output_flow, old-oif: 21  new: 5  new-dev: eth2
-> [   54.122449] UDP: udp-sendmsg: after ip_route_output_flow: oif: 5
-> 
-> 
-> So, something in the fib_lookup code is selecting the vrf device as output,
-> I guess because oif 4 (eth1) is part of the vrf.  And then the vrf routing table
-> ends up selecting oif 5 (eth2), which holds the default route.  However, there is
-> nothing adding any mcast routing (I am not running any multicast router on this vrf),
-> so once the code forgets that I bound the socket to oif 4, then it ends up choosing
-> the wrong outbound interface.
-> 
-> In the paste above, there is special casing for 'local' mcast routing.  If I select
-> a 224.0.0.x local mcast address, then the special case code is used and then things
-> work as I expected (mcast pkts go out of the selected interface).
-> 
-> I think that maybe other mcast addresses should also abide by the user's request if user
-> has bound it to a specified oif?
-> 
-> Or, maybe there is some special casing needed in the fib_lookup?
+The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
+avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
+net_device caused by rebinding operation") increase the refcounts of
+ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
+in ax25_kill_by_device() in order to prevent UAF bugs, but there are
+reference count leaks.
 
-After some more investigation of this code, I am questioning the need for this logic:
+The root cause of refcount leaks is shown below:
 
-	/* update flow if oif or iif point to device enslaved to l3mdev */
-	l3mdev_update_flow(net, flowi4_to_flowi(flp));
+     (Thread 1)                      |      (Thread 2)
+ax25_bind()                          |
+ ...                                 |
+ ax25_addr_ax25dev()                 |
+  ax25_dev_hold()   //(1)            |
+  ...                                |
+ dev_hold_track()   //(2)            |
+ ...                                 | ax25_destroy_socket()
+                                     |  ax25_cb_del()
+                                     |   ...
+                                     |   hlist_del_init() //(3)
+                                     |
+                                     |
+     (thread 3)                      |
+ax25_kill_by_device()                |
+ ...                                 |
+ ax25_for_each(s, &ax25_list) {      |
+  if (s->ax25_dev == ax25_dev) //(4) |
+   ...                               |
 
-If I bind a socket to a particular net-dev with SO_BINDTODEVICE, then I really
-do want to force the frame out that interface.
+Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
+position (1) and increase the refcount of net_device in position (2).
+Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
+ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
+Finally, the decrements of refcounts in ax25_kill_by_device() will not
+be executed, because no s->ax25_dev equals to ax25_dev in position (4).
 
-I understand that with vrf, there is a secondary meaning that when you bind to
-a device that is part of a vrf, then you are also associating with that vrf.
-To me, this should mean that we use the routing table associated with this
-vrf, but just like when using 'normal' routing tables, binding to specify an OIF
-takes precedence over a lot of the routing logic.
+This patch adds a flag in ax25_dev in order to prevent reference count
+leaks. If the above condition happens, the "test_bit" condition check
+in ax25_kill_by_device() could pass and the refcounts could be
+decreased properly.
 
-If a user wishes to send frames and have the vrf route the frame out arbitrary interface, then it could
-bind to the vrf device itself.  Or maybe you could let the vrf device be the oif
-if source-addr is not selected, but that is pretty subtle distinction as well.
+Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
+Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
+Reported-by: Thomas Osterried <thomas@osterried.de>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+Changes in V3:
+  - Use one flag in ax25_dev to check.
+  - Make commit message more clearer.
+  - Fix format problem.
 
-And all this said, I am still not understanding how the vrf is supposed to make
-an intelligent decision on mcast routing in this situation.
+ include/net/ax25.h  | 5 +++++
+ net/ax25/af_ax25.c  | 6 ++++++
+ net/ax25/ax25_dev.c | 1 +
+ 3 files changed, 12 insertions(+)
 
-Thanks,
-Ben
-
+diff --git a/include/net/ax25.h b/include/net/ax25.h
+index 8221af1811d..ea6ca385190 100644
+--- a/include/net/ax25.h
++++ b/include/net/ax25.h
+@@ -158,6 +158,10 @@ enum {
+ #define	AX25_DEF_PROTOCOL	AX25_PROTO_STD_SIMPLEX	/* Standard AX.25 */
+ #define AX25_DEF_DS_TIMEOUT	180000			/* DAMA timeout 3 minutes */
+ 
++#define AX25_DEV_INIT    0
++#define AX25_DEV_KILL    0
++#define AX25_DEV_BIND    1
++
+ typedef struct ax25_uid_assoc {
+ 	struct hlist_node	uid_node;
+ 	refcount_t		refcount;
+@@ -240,6 +244,7 @@ typedef struct ax25_dev {
+ 	ax25_dama_info		dama;
+ #endif
+ 	refcount_t		refcount;
++	unsigned long	flag;
+ } ax25_dev;
+ 
+ typedef struct ax25_cb {
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 6bd09718077..fc564b87acc 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -86,6 +86,7 @@ static void ax25_kill_by_device(struct net_device *dev)
+ again:
+ 	ax25_for_each(s, &ax25_list) {
+ 		if (s->ax25_dev == ax25_dev) {
++			set_bit(AX25_DEV_KILL, &ax25_dev->flag);
+ 			sk = s->sk;
+ 			if (!sk) {
+ 				spin_unlock_bh(&ax25_list_lock);
+@@ -115,6 +116,10 @@ static void ax25_kill_by_device(struct net_device *dev)
+ 		}
+ 	}
+ 	spin_unlock_bh(&ax25_list_lock);
++	if (!test_bit(AX25_DEV_KILL, &ax25_dev->flag) && test_bit(AX25_DEV_BIND, &ax25_dev->flag)) {
++		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++		ax25_dev_put(ax25_dev);
++	}
+ }
+ 
+ /*
+@@ -1132,6 +1137,7 @@ static int ax25_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ done:
+ 	ax25_cb_add(ax25);
+ 	sock_reset_flag(sk, SOCK_ZAPPED);
++	set_bit(AX25_DEV_BIND, &ax25_dev->flag);
+ 
+ out:
+ 	release_sock(sk);
+diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+index d2a244e1c26..9b04d74a1be 100644
+--- a/net/ax25/ax25_dev.c
++++ b/net/ax25/ax25_dev.c
+@@ -77,6 +77,7 @@ void ax25_dev_device_up(struct net_device *dev)
+ 	ax25_dev->values[AX25_VALUES_PACLEN]	= AX25_DEF_PACLEN;
+ 	ax25_dev->values[AX25_VALUES_PROTOCOL]  = AX25_DEF_PROTOCOL;
+ 	ax25_dev->values[AX25_VALUES_DS_TIMEOUT]= AX25_DEF_DS_TIMEOUT;
++	ax25_dev->flag = AX25_DEV_INIT;
+ 
+ #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
+ 	ax25_ds_setup_timer(ax25_dev);
+-- 
+2.17.1
 
