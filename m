@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F7C74D659F
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 17:01:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E21B4D65A7
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 17:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350102AbiCKQCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 11:02:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
+        id S1350165AbiCKQCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 11:02:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350097AbiCKQCP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 11:02:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486AE1D035F;
-        Fri, 11 Mar 2022 08:01:00 -0800 (PST)
+        with ESMTP id S1350100AbiCKQCQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 11:02:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF0F1D087F;
+        Fri, 11 Mar 2022 08:01:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E17C9B82C18;
-        Fri, 11 Mar 2022 16:00:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E211C340E9;
-        Fri, 11 Mar 2022 16:00:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48E26B82C18;
+        Fri, 11 Mar 2022 16:01:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02792C340E9;
+        Fri, 11 Mar 2022 16:01:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647014457;
-        bh=oB3OHV7PT9qKuceHnY4r/cZGELfQzY+D6DiCbhHAX1w=;
+        s=k20201202; t=1647014469;
+        bh=gYl4Kdz77UQE5JD3kUI4FvgjNtnkg0CruIjvyq/cUEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yrt/uuOCXUKSZEvlPRB/yVI9zQsARlhgrmWlKrCSw0yfu1AVqnjxdKyb9RIFsv7Rt
-         5zuGTva+TzpFOzmdwum7Czk5z96Gh1jEP3IO93urHnfBHi6FrxugxE1QwQgGDg0Xqa
-         j79gbJQocrSWJefvihcJP+YW26HhPWlyM/31Eg6VpATJ4eCoqxcxCQqMncA9Dz2QKB
-         tobDZaYdMOltU1y8b83YaIWvGUKYd9LBfa19TgZO2mMeHj7+tQ+rdVnY18aFXTdG0E
-         JaKksEaYlSSy/cYrxNiHjWTSHJmP34wpk0kzsV4Mzpzpk9RhoiRqNxx7yU7c+4RkKU
-         uC+r/oRyAr9Dw==
+        b=UKJw97wZK4V7YOp3VsK+1HmB4OKYl7BpYoUO//hehYteaXGi/GasDEPu4o3D5jnem
+         G2DZTf1nVyfV7K/u+b5Fd9ljLQtMEFewlVCYDZ6o1BjnQMpMUveegSEPiF3h0F9+ky
+         sR1cQjtZ6Cvb+PM3Iz4RhNpmV5FlZ5O8hB8ZXLwmLk6WNxpVCQIEvgTnR0N/dntA0v
+         XgTap8XtvSUiaDqOYML7nts6BLbwPysw8jkvmeT5holXcgOQL7ALw7YfN4/wI9BmnR
+         OwirAAFrxLW+OzIj9/OVx/GbS//KDxFOUugOPKXv4NKZ6ufzPBG34zu+cXhi/0yChe
+         7FSIhUNi2S6Dw==
 From:   Masami Hiramatsu <mhiramat@kernel.org>
 To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>
@@ -46,9 +46,9 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
         Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v11 11/12] docs: fprobe: Add fprobe description to ftrace-use.rst
-Date:   Sat, 12 Mar 2022 01:00:50 +0900
-Message-Id: <164701445073.268462.7405468684092306228.stgit@devnote2>
+Subject: [PATCH v11 12/12] fprobe: Add a selftest for fprobe
+Date:   Sat, 12 Mar 2022 01:01:03 +0900
+Message-Id: <164701446311.268462.11318780752089737818.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <164701432038.268462.3329725152949938527.stgit@devnote2>
 References: <164701432038.268462.3329725152949938527.stgit@devnote2>
@@ -66,210 +66,240 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a documentation of fprobe for the user who needs
-this interface.
+Add a KUnit based selftest for fprobe interface.
 
 Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
 ---
- Changes in v7:
-  - Clarify unregister_fprobe() guarantee the callbacks will no
-    longer being called after that.
-  - Fix some wording.
- Changes in v6:
-  - Update document according to the latest spec.
+ Changes in v11:
+  - Build selftest only if KUNIT=y.
+ Changes in v9:
+  - Rename fprobe_target* to fprobe_selftest_target*.
+  - Find the correct expected ip by ftrace_location_range().
+  - Since the ftrace_location_range() is not exposed to module, make
+    this test only for embedded.
+  - Add entry only test.
+  - Reset the fprobe structure before reuse it.
 ---
- Documentation/trace/fprobe.rst |  171 ++++++++++++++++++++++++++++++++++++++++
- Documentation/trace/index.rst  |    1 
- 2 files changed, 172 insertions(+)
- create mode 100644 Documentation/trace/fprobe.rst
+ lib/Kconfig.debug |   12 ++++
+ lib/Makefile      |    2 +
+ lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 188 insertions(+)
+ create mode 100644 lib/test_fprobe.c
 
-diff --git a/Documentation/trace/fprobe.rst b/Documentation/trace/fprobe.rst
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 72ca4684beda..b0bf0d224b2c 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -2118,6 +2118,18 @@ config KPROBES_SANITY_TEST
+ 
+ 	  Say N if you are unsure.
+ 
++config FPROBE_SANITY_TEST
++	bool "Self test for fprobe"
++	depends on DEBUG_KERNEL
++	depends on FPROBE
++	depends on KUNIT=y
++	help
++	  This option will enable testing the fprobe when the system boot.
++	  A series of tests are made to verify that the fprobe is functioning
++	  properly.
++
++	  Say N if you are unsure.
++
+ config BACKTRACE_SELF_TEST
+ 	tristate "Self test for the backtrace code"
+ 	depends on DEBUG_KERNEL
+diff --git a/lib/Makefile b/lib/Makefile
+index 300f569c626b..154008764b16 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
+ obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
+ obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
+ obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
++CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
++obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
+ #
+ # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
+ # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
+diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
 new file mode 100644
-index 000000000000..4275e95e16bc
+index 000000000000..ed70637a2ffa
 --- /dev/null
-+++ b/Documentation/trace/fprobe.rst
-@@ -0,0 +1,171 @@
-+.. SPDX-License-Identifier: GPL-2.0
++++ b/lib/test_fprobe.c
+@@ -0,0 +1,174 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * test_fprobe.c - simple sanity test for fprobe
++ */
 +
-+==================================
-+Fprobe - Function entry/exit probe
-+==================================
++#include <linux/kernel.h>
++#include <linux/fprobe.h>
++#include <linux/random.h>
++#include <kunit/test.h>
 +
-+.. Author: Masami Hiramatsu <mhiramat@kernel.org>
++#define div_factor 3
 +
-+Introduction
-+============
++static struct kunit *current_test;
 +
-+Instead of using ftrace full feature, if you only want to attach callbacks
-+on function entry and exit, similar to the kprobes and kretprobes, you can
-+use fprobe. Compared with kprobes and kretprobes, fprobe gives faster
-+instrumentation for multiple functions with single handler. This document
-+describes how to use fprobe.
++static u32 rand1, entry_val, exit_val;
 +
-+The usage of fprobe
-+===================
++/* Use indirect calls to avoid inlining the target functions */
++static u32 (*target)(u32 value);
++static u32 (*target2)(u32 value);
++static unsigned long target_ip;
++static unsigned long target2_ip;
 +
-+The fprobe is a wrapper of ftrace (+ kretprobe-like return callback) to
-+attach callbacks to multiple function entry and exit. User needs to set up
-+the `struct fprobe` and pass it to `register_fprobe()`.
++static noinline u32 fprobe_selftest_target(u32 value)
++{
++	return (value / div_factor);
++}
 +
-+Typically, `fprobe` data structure is initialized with the `entry_handler`
-+and/or `exit_handler` as below.
++static noinline u32 fprobe_selftest_target2(u32 value)
++{
++	return (value / div_factor) + 1;
++}
 +
-+.. code-block:: c
++static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
++{
++	KUNIT_EXPECT_FALSE(current_test, preemptible());
++	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
++	if (ip != target_ip)
++		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
++	entry_val = (rand1 / div_factor);
++}
 +
-+ struct fprobe fp = {
-+        .entry_handler  = my_entry_callback,
-+        .exit_handler   = my_exit_callback,
-+ };
++static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
++{
++	unsigned long ret = regs_return_value(regs);
 +
-+To enable the fprobe, call one of register_fprobe(), register_fprobe_ips(), and
-+register_fprobe_syms(). These register the fprobe with different type of
-+parameters.
++	KUNIT_EXPECT_FALSE(current_test, preemptible());
++	if (ip != target_ip) {
++		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
++		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
++	} else
++		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
++	KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
++	exit_val = entry_val + div_factor;
++}
 +
-+The register_fprobe() enables a fprobe by function-name filters.
-+E.g. this enables @fp on "func*()" function except "func2()".::
++/* Test entry only (no rethook) */
++static void test_fprobe_entry(struct kunit *test)
++{
++	struct fprobe fp_entry = {
++		.entry_handler = fp_entry_handler,
++	};
 +
-+  register_fprobe(&fp, "func*", "func2");
++	current_test = test;
 +
-+The register_fprobe_ips() enables a fprobe by ftrace-location addresses.
-+E.g.
++	/* Before register, unregister should be failed. */
++	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
++	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
 +
-+.. code-block:: c
++	entry_val = 0;
++	exit_val = 0;
++	target(rand1);
++	KUNIT_EXPECT_NE(test, 0, entry_val);
++	KUNIT_EXPECT_EQ(test, 0, exit_val);
 +
-+  unsigned long ips[] = { 0x.... };
++	entry_val = 0;
++	exit_val = 0;
++	target2(rand1);
++	KUNIT_EXPECT_NE(test, 0, entry_val);
++	KUNIT_EXPECT_EQ(test, 0, exit_val);
 +
-+  register_fprobe_ips(&fp, ips, ARRAY_SIZE(ips));
++	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
++}
 +
-+And the register_fprobe_syms() enables a fprobe by symbol names.
-+E.g.
++static void test_fprobe(struct kunit *test)
++{
++	struct fprobe fp = {
++		.entry_handler = fp_entry_handler,
++		.exit_handler = fp_exit_handler,
++	};
 +
-+.. code-block:: c
++	current_test = test;
++	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
 +
-+  char syms[] = {"func1", "func2", "func3"};
++	entry_val = 0;
++	exit_val = 0;
++	target(rand1);
++	KUNIT_EXPECT_NE(test, 0, entry_val);
++	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
 +
-+  register_fprobe_syms(&fp, syms, ARRAY_SIZE(syms));
++	entry_val = 0;
++	exit_val = 0;
++	target2(rand1);
++	KUNIT_EXPECT_NE(test, 0, entry_val);
++	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
 +
-+To disable (remove from functions) this fprobe, call::
++	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
++}
 +
-+  unregister_fprobe(&fp);
++static void test_fprobe_syms(struct kunit *test)
++{
++	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
++	struct fprobe fp = {
++		.entry_handler = fp_entry_handler,
++		.exit_handler = fp_exit_handler,
++	};
 +
-+You can temporally (soft) disable the fprobe by::
++	current_test = test;
++	KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
 +
-+  disable_fprobe(&fp);
++	entry_val = 0;
++	exit_val = 0;
++	target(rand1);
++	KUNIT_EXPECT_NE(test, 0, entry_val);
++	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
 +
-+and resume by::
++	entry_val = 0;
++	exit_val = 0;
++	target2(rand1);
++	KUNIT_EXPECT_NE(test, 0, entry_val);
++	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
 +
-+  enable_fprobe(&fp);
++	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
++}
 +
-+The above is defined by including the header::
++static unsigned long get_ftrace_location(void *func)
++{
++	unsigned long size, addr = (unsigned long)func;
 +
-+  #include <linux/fprobe.h>
++	if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
++		return 0;
 +
-+Same as ftrace, the registered callback will start being called some time
-+after the register_fprobe() is called and before it returns. See
-+:file:`Documentation/trace/ftrace.rst`.
++	return ftrace_location_range(addr, addr + size - 1);
++}
 +
-+Also, the unregister_fprobe() will guarantee that the both enter and exit
-+handlers are no longer being called by functions after unregister_fprobe()
-+returns as same as unregister_ftrace_function().
++static int fprobe_test_init(struct kunit *test)
++{
++	do {
++		rand1 = prandom_u32();
++	} while (rand1 <= div_factor);
 +
-+The fprobe entry/exit handler
-+=============================
++	target = fprobe_selftest_target;
++	target2 = fprobe_selftest_target2;
++	target_ip = get_ftrace_location(target);
++	target2_ip = get_ftrace_location(target2);
 +
-+The prototype of the entry/exit callback function is as follows:
++	return 0;
++}
 +
-+.. code-block:: c
++static struct kunit_case fprobe_testcases[] = {
++	KUNIT_CASE(test_fprobe_entry),
++	KUNIT_CASE(test_fprobe),
++	KUNIT_CASE(test_fprobe_syms),
++	{}
++};
 +
-+ void callback_func(struct fprobe *fp, unsigned long entry_ip, struct pt_regs *regs);
++static struct kunit_suite fprobe_test_suite = {
++	.name = "fprobe_test",
++	.init = fprobe_test_init,
++	.test_cases = fprobe_testcases,
++};
 +
-+Note that both entry and exit callback has same ptototype. The @entry_ip is
-+saved at function entry and passed to exit handler.
++kunit_test_suites(&fprobe_test_suite);
 +
-+@fp
-+        This is the address of `fprobe` data structure related to this handler.
-+        You can embed the `fprobe` to your data structure and get it by
-+        container_of() macro from @fp. The @fp must not be NULL.
-+
-+@entry_ip
-+        This is the entry address of the traced function (both entry and exit).
-+
-+@regs
-+        This is the `pt_regs` data structure at the entry and exit. Note that
-+        the instruction pointer of @regs may be different from the @entry_ip
-+        in the entry_handler. If you need traced instruction pointer, you need
-+        to use @entry_ip. On the other hand, in the exit_handler, the instruction
-+        pointer of @regs is set to the currect return address.
-+
-+Share the callbacks with kprobes
-+================================
-+
-+Since the recursion safety of the fprobe (and ftrace) is a bit different
-+from the kprobes, this may cause an issue if user wants to run the same
-+code from the fprobe and the kprobes.
-+
-+The kprobes has per-cpu 'current_kprobe' variable which protects the
-+kprobe handler from recursion in any case. On the other hand, the fprobe
-+uses only ftrace_test_recursion_trylock(), which will allow interrupt
-+context calls another (or same) fprobe during the fprobe user handler is
-+running.
-+
-+This is not a matter in cases if the common callback shared among the
-+kprobes and the fprobe has its own recursion detection, or it can handle
-+the recursion in the different contexts (normal/interrupt/NMI.)
-+But if it relies on the 'current_kprobe' recursion lock, it has to check
-+kprobe_running() and use kprobe_busy_*() APIs.
-+
-+Fprobe has FPROBE_FL_KPROBE_SHARED flag to do this. If your common callback
-+code will be shared with kprobes, please set FPROBE_FL_KPROBE_SHARED
-+*before* registering the fprobe, like:
-+
-+.. code-block:: c
-+
-+ fprobe.flags = FPROBE_FL_KPROBE_SHARED;
-+
-+ register_fprobe(&fprobe, "func*", NULL);
-+
-+This will protect your common callback from the nested call.
-+
-+The missed counter
-+==================
-+
-+The `fprobe` data structure has `fprobe::nmissed` counter field as same as
-+kprobes.
-+This counter counts up when;
-+
-+ - fprobe fails to take ftrace_recursion lock. This usually means that a function
-+   which is traced by other ftrace users is called from the entry_handler.
-+
-+ - fprobe fails to setup the function exit because of the shortage of rethook
-+   (the shadow stack for hooking the function return.)
-+
-+Since `fprobe::nmissed` field is counted up in both case, the former case
-+will skip both of entry and exit callback, and the latter case will skip exit
-+callback, but in both case the counter is just increased by 1.
-+
-+Note that if you set the FTRACE_OPS_FL_RECURSION and/or FTRACE_OPS_FL_RCU to
-+`fprobe::ops::flags` (ftrace_ops::flags) when registering the fprobe, this
-+counter may not work correctly, because those will skip fprobe's callback.
-+
-+
-+Functions and structures
-+========================
-+
-+.. kernel-doc:: include/linux/fprobe.h
-+.. kernel-doc:: kernel/trace/fprobe.c
-+
-diff --git a/Documentation/trace/index.rst b/Documentation/trace/index.rst
-index 3769b9b7aed8..b9f3757f8269 100644
---- a/Documentation/trace/index.rst
-+++ b/Documentation/trace/index.rst
-@@ -9,6 +9,7 @@ Linux Tracing Technologies
-    tracepoint-analysis
-    ftrace
-    ftrace-uses
-+   fprobe
-    kprobes
-    kprobetrace
-    uprobetracer
++MODULE_LICENSE("GPL");
 
