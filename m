@@ -2,179 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FD754D5784
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 02:47:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 678874D57C9
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 02:58:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238789AbiCKBrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 20:47:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
+        id S1345514AbiCKB6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 20:58:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231840AbiCKBrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 20:47:48 -0500
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC224177D21;
-        Thu, 10 Mar 2022 17:46:43 -0800 (PST)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgBHnxXyqSpipmKMAA--.24830S2;
-        Fri, 11 Mar 2022 09:46:31 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jreuter@yaina.de, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, thomas@osterried.de,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH V3] ax25: Fix refcount leaks caused by ax25_cb_del()
-Date:   Fri, 11 Mar 2022 09:46:24 +0800
-Message-Id: <20220311014624.51117-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgBHnxXyqSpipmKMAA--.24830S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGw1Uur4DKw15Cw18JF43Jrb_yoWrAF4kpF
-        WqvayrArZrtr1rCa18GryxWF18Zryqk3ykGry5ZFyIkasxJwn5ArZ3t3yUJry3JFZ5JF18
-        Z347Ww43Zr1DuFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxF
-        aVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
-        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkFAVZdtYnj3gAHsC
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1345509AbiCKB6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 20:58:30 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E73C122
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 17:57:29 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id n7so7922615oif.5
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 17:57:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wYmIXqGoP18VRv8GkXhEyrdmBAb5Sj51YjCRhrfnyCU=;
+        b=UGR4hg7JGEyj5FStkRpY9WIuMMQwsLO5XjqKrJ1IytrD2WEwb++4ThYnP+bPWy7K3n
+         3nId0tS8PoBY1seJ/fDAoaNW5D2HeT5+Em4agfYD+yNRJufAIMxeGLefO1S/OfQTti3q
+         GjxxVD+ufIDzBKGHuuwzUoqPMetmNybncnfP02labX0KUJARz/SD4GO5NEbE9R8XC4K5
+         DFt4aOlH8LuuCw67BbnkrLm4IqgrJ/fjvILsP2AgW553tjl7Es1IzCIqI7L96LZhOlIE
+         pKTErC3wrOLUUk2SNMoZve4WaUha0cCMLh4xhhPe8Qy6c35MYo14OgoBo3AY1Nzat9B7
+         GSvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wYmIXqGoP18VRv8GkXhEyrdmBAb5Sj51YjCRhrfnyCU=;
+        b=54bJ7BfMXJIN+7lnRkT4bfI8BT20xaKOTpKz5kY3wVgtmC9lt5hzcUKQmxjyI0hBaY
+         o7iWgIYDvfMVMWmDDgbwpy3FjoM97AeUNtV+2qV/tbbSONroUxrrN0EbqLh08aa+XHmF
+         sKtDOsTy00IY8J76t6y30I20O73VzClmHPkYX4whnwT5jpUCRKisIcqqk4EwMYBZRAQV
+         tJd++9neUeElZCEv87cQMqchyaB89lsMPnDrUDAJsxUbNNTdj6Q+Utd7WEVzq79Ifh3p
+         dt88gcRQM4J1a/ekvrEsYQPcezzaVopAYpOwK0PBkPY1i2dzwgC74/fQn6yxP7RVQVhz
+         ZQDw==
+X-Gm-Message-State: AOAM530Oml+I2p7LhAugycHposprgFqDdm+pdN5RA7j93975TBcbt5ZH
+        LuY55nbPPNodJ0L91BmY/FPZjwwdLzI=
+X-Google-Smtp-Source: ABdhPJwsKQu2H0aWQUl9bhU/wC74wabdlbpOSlODAgG9ggP/wAQd4AeSWFnDr1XAvoyr7kMDJmZpPQ==
+X-Received: by 2002:a05:6808:1247:b0:2d3:5181:449a with SMTP id o7-20020a056808124700b002d35181449amr5188674oiv.83.1646963848586;
+        Thu, 10 Mar 2022 17:57:28 -0800 (PST)
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com. [209.85.161.51])
+        by smtp.gmail.com with ESMTPSA id 36-20020a9d0ba7000000b005ad59f1f783sm3246556oth.3.2022.03.10.17.57.28
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 17:57:28 -0800 (PST)
+Received: by mail-oo1-f51.google.com with SMTP id u30-20020a4a6c5e000000b00320d8dc2438so8978552oof.12
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 17:57:28 -0800 (PST)
+X-Received: by 2002:a81:6357:0:b0:2d7:2af4:6e12 with SMTP id
+ x84-20020a816357000000b002d72af46e12mr6731354ywb.317.1646963397784; Thu, 10
+ Mar 2022 17:49:57 -0800 (PST)
+MIME-Version: 1.0
+References: <CAF=yD-LrVjvY8wAqZtUTFS8V9ng2AD3jB1DOZvkagPOp3Sbq-g@mail.gmail.com>
+ <20220310232538.1044947-1-tadeusz.struk@linaro.org>
+In-Reply-To: <20220310232538.1044947-1-tadeusz.struk@linaro.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 10 Mar 2022 20:49:21 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSdFoTTqqL5CxCbL4gEg4-QvUQzQSM+45G9XL0BtLs7fGA@mail.gmail.com>
+Message-ID: <CA+FuTSdFoTTqqL5CxCbL4gEg4-QvUQzQSM+45G9XL0BtLs7fGA@mail.gmail.com>
+Subject: Re: [PATCH v3] net: ipv6: fix skb_over_panic in __ip6_append_data
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     kuba@kernel.org,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
-avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
-net_device caused by rebinding operation") increase the refcounts of
-ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
-in ax25_kill_by_device() in order to prevent UAF bugs, but there are
-reference count leaks.
+On Thu, Mar 10, 2022 at 6:26 PM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+>
+> Syzbot found a kernel bug in the ipv6 stack:
+> LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+> The reproducer triggers it by sending a crafted message via sendmmsg()
+> call, which triggers skb_over_panic, and crashes the kernel:
+>
+> skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+> head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+> dev:<NULL>
+>
+> Update the check that prevents an invalid packet with MTU equall to the
+> fregment header size to eat up all the space for payload.
+>
+> The reproducer can be found here:
+> LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+>
+> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Andrii Nakryiko <andrii@kernel.org>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: KP Singh <kpsingh@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: bpf@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: stable@vger.kernel.org
+>
+> Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+> Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-The root cause of refcount leaks is shown below:
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-     (Thread 1)                      |      (Thread 2)
-ax25_bind()                          |
- ...                                 |
- ax25_addr_ax25dev()                 |
-  ax25_dev_hold()   //(1)            |
-  ...                                |
- dev_hold_track()   //(2)            |
- ...                                 | ax25_destroy_socket()
-                                     |  ax25_cb_del()
-                                     |   ...
-                                     |   hlist_del_init() //(3)
-                                     |
-                                     |
-     (thread 3)                      |
-ax25_kill_by_device()                |
- ...                                 |
- ax25_for_each(s, &ax25_list) {      |
-  if (s->ax25_dev == ax25_dev) //(4) |
-   ...                               |
+small nit: "equal to the fragment" and all these Cc:s aren't really
+needed in the commit message.
 
-Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
-position (1) and increase the refcount of net_device in position (2).
-Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
-ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
-Finally, the decrements of refcounts in ax25_kill_by_device() will not
-be executed, because no s->ax25_dev equals to ax25_dev in position (4).
-
-This patch adds a flag in ax25_dev in order to prevent reference count
-leaks. If the above condition happens, the "test_bit" condition check
-in ax25_kill_by_device() could pass and the refcounts could be
-decreased properly.
-
-Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
-Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
-Reported-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in V3:
-  - Use one flag in ax25_dev to check.
-  - Make commit message more clearer.
-  - Fix format problem.
-
- include/net/ax25.h  | 5 +++++
- net/ax25/af_ax25.c  | 6 ++++++
- net/ax25/ax25_dev.c | 1 +
- 3 files changed, 12 insertions(+)
-
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index 8221af1811d..ea6ca385190 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -158,6 +158,10 @@ enum {
- #define	AX25_DEF_PROTOCOL	AX25_PROTO_STD_SIMPLEX	/* Standard AX.25 */
- #define AX25_DEF_DS_TIMEOUT	180000			/* DAMA timeout 3 minutes */
- 
-+#define AX25_DEV_INIT    0
-+#define AX25_DEV_KILL    0
-+#define AX25_DEV_BIND    1
-+
- typedef struct ax25_uid_assoc {
- 	struct hlist_node	uid_node;
- 	refcount_t		refcount;
-@@ -240,6 +244,7 @@ typedef struct ax25_dev {
- 	ax25_dama_info		dama;
- #endif
- 	refcount_t		refcount;
-+	unsigned long	flag;
- } ax25_dev;
- 
- typedef struct ax25_cb {
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 6bd09718077..fc564b87acc 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -86,6 +86,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			set_bit(AX25_DEV_KILL, &ax25_dev->flag);
- 			sk = s->sk;
- 			if (!sk) {
- 				spin_unlock_bh(&ax25_list_lock);
-@@ -115,6 +116,10 @@ static void ax25_kill_by_device(struct net_device *dev)
- 		}
- 	}
- 	spin_unlock_bh(&ax25_list_lock);
-+	if (!test_bit(AX25_DEV_KILL, &ax25_dev->flag) && test_bit(AX25_DEV_BIND, &ax25_dev->flag)) {
-+		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+		ax25_dev_put(ax25_dev);
-+	}
- }
- 
- /*
-@@ -1132,6 +1137,7 @@ static int ax25_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- done:
- 	ax25_cb_add(ax25);
- 	sock_reset_flag(sk, SOCK_ZAPPED);
-+	set_bit(AX25_DEV_BIND, &ax25_dev->flag);
- 
- out:
- 	release_sock(sk);
-diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-index d2a244e1c26..9b04d74a1be 100644
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -77,6 +77,7 @@ void ax25_dev_device_up(struct net_device *dev)
- 	ax25_dev->values[AX25_VALUES_PACLEN]	= AX25_DEF_PACLEN;
- 	ax25_dev->values[AX25_VALUES_PROTOCOL]  = AX25_DEF_PROTOCOL;
- 	ax25_dev->values[AX25_VALUES_DS_TIMEOUT]= AX25_DEF_DS_TIMEOUT;
-+	ax25_dev->flag = AX25_DEV_INIT;
- 
- #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
- 	ax25_ds_setup_timer(ax25_dev);
--- 
-2.17.1
-
+I don't think we'll find a commit for a Fixes tag. This goes ways back.
