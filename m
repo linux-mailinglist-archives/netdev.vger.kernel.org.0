@@ -2,156 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC734D5732
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 02:11:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B6464D5753
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 02:27:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243008AbiCKBLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 20:11:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
+        id S1345380AbiCKB14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 20:27:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231467AbiCKBLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 20:11:01 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C6C5C1C8C;
-        Thu, 10 Mar 2022 17:09:59 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F98A1692;
-        Thu, 10 Mar 2022 17:09:59 -0800 (PST)
-Received: from [192.168.122.164] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B95C33F7F5;
-        Thu, 10 Mar 2022 17:09:58 -0800 (PST)
-Message-ID: <de28c0ec-56a7-bfff-0c41-72aeef097ee3@arm.com>
-Date:   Thu, 10 Mar 2022 19:09:12 -0600
+        with ESMTP id S1345351AbiCKB1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 20:27:47 -0500
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3D919F466
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 17:26:45 -0800 (PST)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-2dc348dab52so78386067b3.6
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 17:26:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KA9YZ/MGaQsalELOdrxAActwdu72Km42M2dgBlMQW0I=;
+        b=i9IMsBytaLTTr9sYHJVkreJBtCBSxZ1iU0kTG+0wX2HudhdQ9bqjpr5r43jDwCKWYy
+         DnJWHrt3lTbyvD26cdGAky0jqFf8LlNtf2/PNDTaftTL+aCZxxfgYAzBDp5dxLX7jkMb
+         7s3YzmXn+matyTMkz6DcQ2nFzsNbzzK0I5cFPfB1Mtu3xnmg8Nd0tNX8ox99ofyOq3/2
+         ME1fCdMn6mtI2yxDa1Bo8PU1Vug0eH5szAuk9w/xvwqD7dCxrBZSdlISGcufoHgLqzNd
+         CNYkoD6Vykui2LhibXDH+06bzU/mRoFVHHu0tmSdO3KoygjMWJGjLXjf3gj28TrJSM2g
+         Igcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KA9YZ/MGaQsalELOdrxAActwdu72Km42M2dgBlMQW0I=;
+        b=daAMDRsz8+9/0uS71gCut7BjNHqVSoHNjB+DUuPkZDLpzuUYWQeDE7WzCgMEjC4xx7
+         +5kMBEdyq+J5sp6KvO3HISqG7N7hafqob0sUelJ90Pxpar5olG2o5A+7EQaqTRewlgZx
+         DJG7UZsOoXM74RN4k14pIcT19wPDpMkQtnouHVLofI1VMfNVCyOTPYaupOp07Wmb+ud2
+         OQZ1/dJJbddd/WkDl7af7b7n0I5Rxg8bSKt6Y7o1Rrl+gyQs0uEEdvzw7JOLKagK/DXq
+         2b3GN6zvb3+4V196AXufdJqYTzaC1W1aq2DYd9fnqrOC2BCuUVtJxLo5IvBUc1Nsewj1
+         bvaw==
+X-Gm-Message-State: AOAM531YMXEx+73BnGn5d/5UsCTU54ZzrMkk0587MmEhCat8Ysp1U3dI
+        WiYeFT1o0+ZePwvbcpkT+8b2HOjUxNTFmeUe7hO+zg==
+X-Google-Smtp-Source: ABdhPJxSofcm7lRCRp6xAfTgi9OIDSyZM9GgFv0Msotp0q/OKYFtxgvI7QElXdlaKgsrJFOXfsmpoTzWc9IAupp5Jeo=
+X-Received: by 2002:a81:6357:0:b0:2d7:2af4:6e12 with SMTP id
+ x84-20020a816357000000b002d72af46e12mr6679940ywb.317.1646962004594; Thu, 10
+ Mar 2022 17:26:44 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] net: bcmgenet: Use stronger register read/writes to
- assure ordering
-Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     opendmb@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-kernel@vger.kernel.org, Peter Robinson <pbrobinson@gmail.com>
-References: <20220310045358.224350-1-jeremy.linton@arm.com>
- <f831a4c6-58c9-20bd-94e8-e221369609e8@gmail.com>
-From:   Jeremy Linton <jeremy.linton@arm.com>
-In-Reply-To: <f831a4c6-58c9-20bd-94e8-e221369609e8@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220310135012.175219-1-jiyong@google.com> <20220310141420.lsdchdfcybzmdhnz@sgarzare-redhat>
+ <20220310102636-mutt-send-email-mst@kernel.org> <20220310170853.0e07140f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220310170853.0e07140f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jiyong Park <jiyong@google.com>
+Date:   Fri, 11 Mar 2022 10:26:08 +0900
+Message-ID: <CALeUXe7OGUUt+5hpiLcg=1vWsOWkSRLN3Lb-ncpXZZjsgZntjQ@mail.gmail.com>
+Subject: Re: [PATCH v3] vsock: each transport cycles only on its own sockets
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, adelva@google.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/22 12:59, Florian Fainelli wrote:
-> On 3/9/22 8:53 PM, Jeremy Linton wrote:
->> GCC12 appears to be much smarter about its dependency tracking and is
->> aware that the relaxed variants are just normal loads and stores and
->> this is causing problems like:
->>
->> [  210.074549] ------------[ cut here ]------------
->> [  210.079223] NETDEV WATCHDOG: enabcm6e4ei0 (bcmgenet): transmit queue 1 timed out
->> [  210.086717] WARNING: CPU: 1 PID: 0 at net/sched/sch_generic.c:529 dev_watchdog+0x234/0x240
->> [  210.095044] Modules linked in: genet(E) nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat]
->> [  210.146561] ACPI CPPC: PCC check channel failed for ss: 0. ret=-110
->> [  210.146927] CPU: 1 PID: 0 Comm: swapper/1 Tainted: G            E     5.17.0-rc7G12+ #58
->> [  210.153226] CPPC Cpufreq:cppc_scale_freq_workfn: failed to read perf counters
->> [  210.161349] Hardware name: Raspberry Pi Foundation Raspberry Pi 4 Model B/Raspberry Pi 4 Model B, BIOS EDK2-DEV 02/08/2022
->> [  210.161353] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->> [  210.161358] pc : dev_watchdog+0x234/0x240
->> [  210.161364] lr : dev_watchdog+0x234/0x240
->> [  210.161368] sp : ffff8000080a3a40
->> [  210.161370] x29: ffff8000080a3a40 x28: ffffcd425af87000 x27: ffff8000080a3b20
->> [  210.205150] x26: ffffcd425aa00000 x25: 0000000000000001 x24: ffffcd425af8ec08
->> [  210.212321] x23: 0000000000000100 x22: ffffcd425af87000 x21: ffff55b142688000
->> [  210.219491] x20: 0000000000000001 x19: ffff55b1426884c8 x18: ffffffffffffffff
->> [  210.226661] x17: 64656d6974203120 x16: 0000000000000001 x15: 6d736e617274203a
->> [  210.233831] x14: 2974656e65676d63 x13: ffffcd4259c300d8 x12: ffffcd425b07d5f0
->> [  210.241001] x11: 00000000ffffffff x10: ffffcd425b07d5f0 x9 : ffffcd4258bdad9c
->> [  210.248171] x8 : 00000000ffffdfff x7 : 000000000000003f x6 : 0000000000000000
->> [  210.255341] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000001000
->> [  210.262511] x2 : 0000000000001000 x1 : 0000000000000005 x0 : 0000000000000044
->> [  210.269682] Call trace:
->> [  210.272133]  dev_watchdog+0x234/0x240
->> [  210.275811]  call_timer_fn+0x3c/0x15c
->> [  210.279489]  __run_timers.part.0+0x288/0x310
->> [  210.283777]  run_timer_softirq+0x48/0x80
->> [  210.287716]  __do_softirq+0x128/0x360
->> [  210.291392]  __irq_exit_rcu+0x138/0x140
->> [  210.295243]  irq_exit_rcu+0x1c/0x30
->> [  210.298745]  el1_interrupt+0x38/0x54
->> [  210.302334]  el1h_64_irq_handler+0x18/0x24
->> [  210.306445]  el1h_64_irq+0x7c/0x80
->> [  210.309857]  arch_cpu_idle+0x18/0x2c
->> [  210.313445]  default_idle_call+0x4c/0x140
->> [  210.317470]  cpuidle_idle_call+0x14c/0x1a0
->> [  210.321584]  do_idle+0xb0/0x100
->> [  210.324737]  cpu_startup_entry+0x30/0x8c
->> [  210.328675]  secondary_start_kernel+0xe4/0x110
->> [  210.333138]  __secondary_switched+0x94/0x98
->>
->> The assumption when these were relaxed seems to be that device memory
->> would be mapped non reordering, and that other constructs
->> (spinlocks/etc) would provide the barriers to assure that packet data
->> and in memory rings/queues were ordered with respect to device
->> register reads/writes. This itself seems a bit sketchy, but the real
->> problem with GCC12 is that it is moving the actual reads/writes around
->> at will as though they were independent operations when in truth they
->> are not, but the compiler can't know that. When looking at the
->> assembly dumps for many of these routines its possible to see very
->> clean, but not strictly in program order operations occurring as the
->> compiler would be free to do if these weren't actually register
->> reads/write operations.
->>
->> Its possible to suppress the timeout with a liberal bit of dma_mb()'s
->> sprinkled around but the device still seems unable to reliably
->> send/receive data. A better plan is to use the safer readl/writel
->> everywhere.
->>
->> Since this partially reverts an older commit, which notes the use of
->> the relaxed variants for performance reasons. I would suggest that
->> any performance problems with this commit are targeted at relaxing only
->> the performance critical code paths after assuring proper barriers.
->>
->> Fixes: 69d2ea9c79898 ("net: bcmgenet: Use correct I/O accessors")
->> Reported-by: Peter Robinson <pbrobinson@gmail.com>
->> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
-> 
-> I think this is the correct approach in that it favors correctness over
-> speed, however there is an opportunity for maintaining the speed and
-> correctness on non-2711 and non-7712 chips where the GENET core is
-> interfaced to a system bus (GISB) that guarantees no re-ordering and no
-> buffering. I suppose that until we prove that the extra barrier is
-> harmful to performance on those chips, we should go with your patch.
-> 
-> It seems like we missed the GENET_IO_MACRO() in bcmgenet.h, while most
-> of them deal with the control path which likely does not have any
-> re-ordering problem, there is an exception to that which are the
-> intrl2_0 and intrl2_1 macros, which I believe *have* to be ordered as
-> well in order to avoid spurious or missed interrupts, or maybe there is
-> enough barriers in the interrupt processing code that this is moot?
+First of all, sorry for the stupid breakage I made in V2. I forgot to turn
+CONFIG_VMWARE_VMCI_VSOCKETS on when I did the build by
+myself. I turned it on later and fixed the build error in V3.
 
+> Jiyong, would you mind collecting the tags from Stefano and Michael
+> and reposting? I fixed our build bot, it should build test the patch
+> - I can't re-run on an already ignored patch, sadly.
 
-Ok, so I spent some time and tracked down exactly which barrier "fixes" 
-this immediate problem on the rpi4.
-
-static void bcmgenet_enable_dma(struct bcmgenet_priv *priv, u32 dma_ctrl)
-  {
-         u32 reg;
-
-+       dma_mb(); //timeout fix
-         reg = bcmgenet_rdma_readl(priv, DMA_CTRL);
-         reg |= dma_ctrl;
-
-
-fixes it as well, and keeps all the existing code. Although, granted I 
-didn't stress the adapter beyond a couple interactive ssh sessions. And 
-as you mention there are a fair number of other accessors that I didn't 
-touch which are still relaxed.
-
-
-
+Jakub, please bear with me; Could you explain what you exactly want
+me to do? I'm new to kernel development and don't know how changes
+which Stefano and Machael maintain get tested and staged.
