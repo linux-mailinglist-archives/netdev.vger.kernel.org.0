@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 183074D671F
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3EC4D6722
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:05:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350527AbiCKRF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 12:05:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
+        id S1350579AbiCKRGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 12:06:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbiCKRF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:05:56 -0500
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087C11D639A;
-        Fri, 11 Mar 2022 09:04:53 -0800 (PST)
-Received: by mail-qv1-f41.google.com with SMTP id b12so7463536qvk.1;
-        Fri, 11 Mar 2022 09:04:52 -0800 (PST)
+        with ESMTP id S241140AbiCKRGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:06:15 -0500
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036011D639C;
+        Fri, 11 Mar 2022 09:05:12 -0800 (PST)
+Received: by mail-qk1-f182.google.com with SMTP id c7so7457355qka.7;
+        Fri, 11 Mar 2022 09:05:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U2EzJeKP2pg6VmPIZ+R6lKKHZOiHE3M5gtD8vP+xTcw=;
-        b=j5zrP/8KgVWZSwWOr2DRhLREPxpKLGxD20kINxpFfJK3eG/XIpdNMzTUgi19Hpx4Qp
-         bQvolIYvyFpkFmUAaod2wSFgsf307aFGfLTt8Bd93P0W+fk5RAlYoJAhdX+M7Ps4kcBb
-         6XDsFL90uHZWQdpscpKbLBbumo+Ini+vSTU8IQzyvlC7vCtcy4WagWBCxjS/mVe9WCyQ
-         jdBzKFyjpe9AyuZSJmDRM+DS+fpx6wKJxFNnH0sjIJg5rmV9u6j+WljDyXEKHbe/1BVL
-         N//NnQsm43C4a5q714Ex6XmoEnXGpmv8gT/nfgJPexG3YYaP8JvT+ssaFN1Cd5Tsyz4e
-         U0/g==
-X-Gm-Message-State: AOAM532QX+UhlPsQHZvKMNY9jyFPAayBP+kIYXIJLAnrjRzB12KS3ir2
-        jhgHQqgf1PVhBVfLO6edKkc+Ani05vd5rA==
-X-Google-Smtp-Source: ABdhPJyV6M+ow1hyCgPBT8fK39tf4Tp0omiAck36cXSmMYM+FPpugI2x+dbmFfoTRTOhgnJvgXeCHA==
-X-Received: by 2002:ad4:5ce4:0:b0:435:bf3a:3e48 with SMTP id iv4-20020ad45ce4000000b00435bf3a3e48mr8491824qvb.93.1647018291761;
-        Fri, 11 Mar 2022 09:04:51 -0800 (PST)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id i192-20020a379fc9000000b0067b314c0ff3sm3991057qke.43.2022.03.11.09.04.49
+        bh=fK39HhjEjtaaB7vXMTnZuM5o4lss/YoGvlZq7V45BAM=;
+        b=WZGjR0WT3pdltX3GxuCAL3GT6r0QXMuC5t8BmQkooWxO/vEbAeMG3oQ4dgRVuze1tQ
+         9RCkwBN0tVGGlT7Ee2FjjLuzmnLFszr+UlNhO+m5rzzJ5oD7I+400HX3kYXQJuZxo0K1
+         MTXBSXd3XYLoEO4CEBACCtDeLk4aysEFNwpt3AOOOiOTbdYaPpNG6N+U3w1z5gh4HqYl
+         2w26Mjl4LHgHYUFOhrpX8lSptqbOQBQwM1xXVKuxZRCFV2LkGoX0VO1tZFc0GemvyOAs
+         fPm74qZhB7PSKW6hjbfWan/BfliKlNib7MX+p/HTUt06kOGmdlFnfXEVFRoTiDzCnyWv
+         gu5A==
+X-Gm-Message-State: AOAM533zmZsElY7gu7atyj/zdyAheOKaDUN+3UmNKbXwm9h6ElNtXb2B
+        3sm01Kitgx8nvBxDuk+jR/YJskuPT/mR8w==
+X-Google-Smtp-Source: ABdhPJyJW5IU91xssQVxZDxjcFZqj2EnWDVKEYyRl98oDYC4bO7GmsBPZAJUgHUzfKIBkNdxIfyNuw==
+X-Received: by 2002:a37:347:0:b0:67b:12a8:f441 with SMTP id 68-20020a370347000000b0067b12a8f441mr7235729qkd.302.1647018310707;
+        Fri, 11 Mar 2022 09:05:10 -0800 (PST)
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
+        by smtp.gmail.com with ESMTPSA id p12-20020a05622a048c00b002de8f67b60dsm5667237qtx.58.2022.03.11.09.05.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 09:04:50 -0800 (PST)
-Received: by mail-yb1-f170.google.com with SMTP id x200so18212158ybe.6;
-        Fri, 11 Mar 2022 09:04:49 -0800 (PST)
-X-Received: by 2002:a25:c54a:0:b0:628:9d7f:866a with SMTP id
- v71-20020a25c54a000000b006289d7f866amr8885630ybe.546.1647018289554; Fri, 11
- Mar 2022 09:04:49 -0800 (PST)
+        Fri, 11 Mar 2022 09:05:10 -0800 (PST)
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2dbd8777564so100979047b3.0;
+        Fri, 11 Mar 2022 09:05:10 -0800 (PST)
+X-Received: by 2002:a81:5247:0:b0:2dc:2171:d42 with SMTP id
+ g68-20020a815247000000b002dc21710d42mr8960941ywb.438.1647018309818; Fri, 11
+ Mar 2022 09:05:09 -0800 (PST)
 MIME-Version: 1.0
-References: <20220309162609.3726306-1-uli+renesas@fpond.eu> <20220309162609.3726306-3-uli+renesas@fpond.eu>
-In-Reply-To: <20220309162609.3726306-3-uli+renesas@fpond.eu>
+References: <20220309162609.3726306-1-uli+renesas@fpond.eu> <20220309162609.3726306-4-uli+renesas@fpond.eu>
+In-Reply-To: <20220309162609.3726306-4-uli+renesas@fpond.eu>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 11 Mar 2022 18:04:38 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWSw=jmawsGG9K6QKTV9-sjM6w0fgDqv1qQHqrbNvAeuw@mail.gmail.com>
-Message-ID: <CAMuHMdWSw=jmawsGG9K6QKTV9-sjM6w0fgDqv1qQHqrbNvAeuw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/4] arm64: dts: renesas: r8a779a0: Add CANFD device node
+Date:   Fri, 11 Mar 2022 18:04:58 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdW+_5UDRYUQ0aSymgXO1BUryc+AV8SAjSS4F-Lna5B_UQ@mail.gmail.com>
+Message-ID: <CAMuHMdW+_5UDRYUQ0aSymgXO1BUryc+AV8SAjSS4F-Lna5B_UQ@mail.gmail.com>
+Subject: Re: [PATCH v4 3/4] arm64: dts: renesas: r8a779a0-falcon: enable CANFD
+ 0 and 1
 To:     Ulrich Hecht <uli+renesas@fpond.eu>
 Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
@@ -77,9 +78,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Mar 9, 2022 at 5:26 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
-> This patch adds a CANFD device node for r8a779a0.
->
-> Based on patch by Kazuya Mizuguchi.
+> Enables confirmed-working CAN interfaces 0 and 1 on the Falcon board.
 >
 > Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
 > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
