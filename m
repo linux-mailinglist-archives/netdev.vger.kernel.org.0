@@ -2,65 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DDE24D5D06
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 09:07:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5139B4D5D33
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 09:23:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347375AbiCKIHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 03:07:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
+        id S232557AbiCKIYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 03:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347263AbiCKIHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 03:07:30 -0500
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05311B8BE9;
-        Fri, 11 Mar 2022 00:06:27 -0800 (PST)
-Received: by mail-pf1-x442.google.com with SMTP id z16so7269791pfh.3;
-        Fri, 11 Mar 2022 00:06:27 -0800 (PST)
+        with ESMTP id S229474AbiCKIYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 03:24:08 -0500
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16D8F11A6;
+        Fri, 11 Mar 2022 00:23:05 -0800 (PST)
+Received: by mail-pj1-x1044.google.com with SMTP id v1-20020a17090a088100b001bf25f97c6eso8319167pjc.0;
+        Fri, 11 Mar 2022 00:23:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I4mPMM0gIhSxQZ/tzxXpTn3ZOiYuivV0O9sNop/c8sI=;
-        b=il1d1E3OFC7Csbd3qnuZS5YRJ5y/Rc4uPfRoXmfth3ij5lYfLx5PJovulX25nKiqqn
-         vGePV3TL+cyve3s37baTWod1BPphum7yd2gT/HCubM2qqqqEm52VivO6ehOZU2UsH+PK
-         8wtkISRmnTQVexlioR99rW2FmrJ1tUdVmCyhQzgRlbx1R0ERSwUIKjjfGZtpvp2lcHmw
-         0KGF+d5k3GCJa2/nz8INa4e1d4RDNGJ8VGr5KIoADmtOj93UEMlmkQZJwoBgJRfhQ5AH
-         uNZwQddq3TodFiuEWHaubThYbU7NKE2Aw+D9Ps2FDXGnQ4MhQeIuz7jbvRwYR1dtUwXn
-         cv6g==
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=UKtyCUMP3qwcACml1aXOWoi8Ga3gmD02zYRaxw20XDg=;
+        b=OKXcvYE7pZfwMF/H2CFbDgpq4NKsosl8jKLB9g1Jb1UPKlPc8xRKISjMR8p/04+N/1
+         WWngWA2/HCZWdoo5DBTDdWvFXyDEcnBm7INxV0SAjDRUAFL+PUBFksRSWC80JijIzetA
+         SZfxkWZn9//Xwz6029MF2V6jexf8oGCT0lVAU8Qa1Zhcqy+strQZO9Wwhbhl0zLJHd4O
+         FzAedLwzHmlAnlne/3vFWz+pjfmzyYepH0bPWKJAJZhWARfWPemPISflNMCuZqLCp3Ee
+         ekFjmrAnhPsoPuOAglJe/Pe51ZmyqY2c7UE530I4s9X2Q5AiQCadGSyzbjklKma7qjHk
+         ZRkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
          :content-transfer-encoding;
-        bh=I4mPMM0gIhSxQZ/tzxXpTn3ZOiYuivV0O9sNop/c8sI=;
-        b=NX0PiRWcfn3mE3Ll2rWfcsvHZIRpwyLJwBmLk8saj6+E8X4RenoXXTGT0yPs19Hrua
-         u33Pze8hWhYsd1KSTL/QZBLjx6DKFtFB/0zrWpqzPfENw+7bHlRFMcPSWgEv3sz2F8vU
-         fYsJ1utL+I6OuOTjz+2DiJ87vIcNe1J76pVjF+lFuSYEWyvkySGAgT3FzNylYgZu3JCb
-         85VlO7wtkiFc4i8hooJfDgFxKUbFSfF8LfU6p3HgOdpa1DA8GYD2AmyT6a98wGi96Bjt
-         PvQWF83p1e6cRBgYn+0hfTLH3muhYJykAQhjNWY3oukvlF26KflB4nFehHOO7dgWsucr
-         A0pA==
-X-Gm-Message-State: AOAM530MX+YKLbIuri/kaZ08KIeA5Eq5t+xDkUdn7EaDQPY5HrIe6qRz
-        bjtTdjAMnFLy7BMjbe8GMwo=
-X-Google-Smtp-Source: ABdhPJx3i3wIHo6UiI84MecSCwTjGmum3NqQnyb1CeMpqDDoStSDeMTk2gNNMhl3buwRZVfo7h/UkQ==
-X-Received: by 2002:a63:e5e:0:b0:380:d345:589d with SMTP id 30-20020a630e5e000000b00380d345589dmr7315022pgo.453.1646985987278;
-        Fri, 11 Mar 2022 00:06:27 -0800 (PST)
-Received: from slim.das-security.cn ([103.84.139.54])
-        by smtp.gmail.com with ESMTPSA id b5-20020a056a000cc500b004f6ff0f51f4sm9230383pfv.5.2022.03.11.00.06.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 00:06:26 -0800 (PST)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, stefan.maetje@esd.eu, mailhol.vincent@wanadoo.fr,
-        paskripkin@gmail.com, b.krumboeck@gmail.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] can: usb_8dev: fix possible double dev_kfree_skb in usb_8dev_start_xmit
-Date:   Fri, 11 Mar 2022 16:06:14 +0800
-Message-Id: <20220311080614.45229-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=UKtyCUMP3qwcACml1aXOWoi8Ga3gmD02zYRaxw20XDg=;
+        b=ydHPEedWcSeLMGDa7tDeoIHwj44h27slWI57JN4YfoyLFfxHTqTZ0W/X6xhYk2Ewwz
+         StRtL6QdjNmQ2xoGVlq9P6zO2dmIEM3d4SODvyotIVCDnmCuXm+G9pgCHF0Linjx8Cgx
+         oXrc4faYbwvqtaJG0giOrlGmnuMgxcMAiDv4poBIy1JdzXikgQLXQjz0C9LJuosIpzKP
+         cNpnEStMroi3zE0OK3bN/MTcX0ynT47D/FKYgzmPAAkacoFPHIUCpEOIE5fcehuQ1Sp5
+         onqkx0NbKGf8JMgoMcY/CePbyV2wfiud70FmepAEdhISYCioOabU1GQXwsm8nosZvHBJ
+         z9CA==
+X-Gm-Message-State: AOAM530KZ66bPNAx+yv+jXj4OeTQ5gDyig6sNK0IWimn0t+waT93DglK
+        /AqiMxZTbGD9aApmR5ghkRU=
+X-Google-Smtp-Source: ABdhPJxd00Q0953VCQDeINPY4API18sBytnPe3qEwrjsEiYqqPoF+BtUDK2Kikg8S6xKgQVuxiBTHw==
+X-Received: by 2002:a17:903:2308:b0:151:8b3a:e43e with SMTP id d8-20020a170903230800b001518b3ae43emr9357770plh.30.1646986985289;
+        Fri, 11 Mar 2022 00:23:05 -0800 (PST)
+Received: from [10.11.37.162] ([103.84.139.53])
+        by smtp.gmail.com with ESMTPSA id s6-20020a056a0008c600b004f667b8a6b6sm9192433pfu.193.2022.03.11.00.23.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Mar 2022 00:23:04 -0800 (PST)
+Message-ID: <03303592-ad5c-ffd0-80f5-8d1e64c2b011@gmail.com>
+Date:   Fri, 11 Mar 2022 16:22:58 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] can: usb: delete a redundant dev_kfree_skb() in
+ ems_usb_start_xmit()
+Content-Language: en-US
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        stefan.maetje@esd.eu, mailhol.vincent@wanadoo.fr,
+        paskripkin@gmail.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220228083639.38183-1-hbh25y@gmail.com>
+ <20220228085536.pa5wdq3w4ul5wqn5@pengutronix.de>
+ <75c14302-b928-1e09-7cd1-78b8c2695f06@gmail.com>
+ <20220228104514.der655r4jkl42e7o@pengutronix.de>
+ <f0e068ce-49bf-a13d-53ff-d81b4f5a8a65@gmail.com>
+In-Reply-To: <f0e068ce-49bf-a13d-53ff-d81b4f5a8a65@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -69,64 +80,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no need to call dev_kfree_skb when usb_submit_urb fails beacause
-can_put_echo_skb deletes original skb and can_free_echo_skb deletes the cloned
-skb.
+Hi Marc,
 
-Fixes: 0024d8ad1639 ("can: usb_8dev: Add support for USB2CAN interface from 8 devices")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- drivers/net/can/usb/usb_8dev.c | 30 ++++++++++++++----------------
- 1 file changed, 14 insertions(+), 16 deletions(-)
+I didn't find this("can: usb: ems_usb_start_xmit(): fix double 
+dev_kfree_skb() in error path") in can/testing. Did I miss it or did you 
+forget to submit it?
 
-diff --git a/drivers/net/can/usb/usb_8dev.c b/drivers/net/can/usb/usb_8dev.c
-index 431af1ec1e3c..b638604bf1ee 100644
---- a/drivers/net/can/usb/usb_8dev.c
-+++ b/drivers/net/can/usb/usb_8dev.c
-@@ -663,9 +663,20 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
- 	atomic_inc(&priv->active_tx_urbs);
- 
- 	err = usb_submit_urb(urb, GFP_ATOMIC);
--	if (unlikely(err))
--		goto failed;
--	else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
-+	if (unlikely(err)) {
-+		can_free_echo_skb(netdev, context->echo_index, NULL);
-+
-+		usb_unanchor_urb(urb);
-+		usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
-+
-+		atomic_dec(&priv->active_tx_urbs);
-+
-+		if (err == -ENODEV)
-+			netif_device_detach(netdev);
-+		else
-+			netdev_warn(netdev, "failed tx_urb %d\n", err);
-+		stats->tx_dropped++;
-+	} else if (atomic_read(&priv->active_tx_urbs) >= MAX_TX_URBS)
- 		/* Slow down tx path */
- 		netif_stop_queue(netdev);
- 
-@@ -684,19 +695,6 @@ static netdev_tx_t usb_8dev_start_xmit(struct sk_buff *skb,
- 
- 	return NETDEV_TX_BUSY;
- 
--failed:
--	can_free_echo_skb(netdev, context->echo_index, NULL);
--
--	usb_unanchor_urb(urb);
--	usb_free_coherent(priv->udev, size, buf, urb->transfer_dma);
--
--	atomic_dec(&priv->active_tx_urbs);
--
--	if (err == -ENODEV)
--		netif_device_detach(netdev);
--	else
--		netdev_warn(netdev, "failed tx_urb %d\n", err);
--
- nomembuf:
- 	usb_free_urb(urb);
- 
--- 
-2.25.1
+Anyway, i find this problem also exists in two other places. You can 
+check them in:
+mcba_usb:
+https://lore.kernel.org/all/20220311080208.45047-1-hbh25y@gmail.com/
+usb_8dev:
+https://lore.kernel.org/all/20220311080614.45229-1-hbh25y@gmail.com/
 
+Thanks,
+Hangyu
+
+
+On 2022/2/28 18:47, Hangyu Hua wrote:
+> All right. :)
+> 
+> On 2022/2/28 18:45, Marc Kleine-Budde wrote:
+>> On 28.02.2022 18:44:06, Hangyu Hua wrote:
+>>> I get it. I'll remake a patch that matches your suggestions.
+>>
+>> Not needed, it's already applied:
+>>>> Added patch to can/testing.
+>>
+>> Marc
+>>
