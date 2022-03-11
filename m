@@ -2,217 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF5F84D6468
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 16:19:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B454B4D6474
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 16:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345245AbiCKPUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 10:20:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
+        id S1348868AbiCKPXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 10:23:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231863AbiCKPUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 10:20:34 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458F41C65E7
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 07:19:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647011971; x=1678547971;
-  h=message-id:date:subject:to:cc:references:from:
+        with ESMTP id S1348849AbiCKPXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 10:23:09 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE441C6654;
+        Fri, 11 Mar 2022 07:22:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1647012124; x=1678548124;
+  h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=scrJS934MDqsVwllRD1su6wStFovrIhcVqSK41D/ivI=;
-  b=l+vWq7vbIQaQiSfSD0P1WXylu0Qs1ow2U/PiODMfLHK5opC8/aCMWwoE
-   RRIX4lmluCJyDcubI6R0Wb+1xbv/urE/51AppwH6CC6VaLGrEMLTrG/Tb
-   RYZR9LKYSzYqHCJBIfUg0sHaFkQvH0i8OVm3byLE+8KLg2psJ8ijFrLgl
-   EZ5m0bwM55tWHYdsF8XPBWdHDdogRP9unh/navfx+HW1qx+ixcHkrSSwM
-   6M4o/mweKn77vDbtpJ+Fq9aQyDFUoXaltrzSHEjN8uu/gwsIXIO4MQkOd
-   OcqqmiJ1KUbrPL8MtjOXo4q+IHg+F7/04RyO4RJ/g3YQdnb4wzVPREYqF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10282"; a="318811734"
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="318811734"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 07:19:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="633439397"
-Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
-  by FMSMGA003.fm.intel.com with ESMTP; 11 Mar 2022 07:19:30 -0800
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+  bh=ZF6xSQ0Ne11LUHG74GsvqkUs+YD/1xsUdfc52UUOosU=;
+  b=xvLmJNTLeojsoN6y6gwwbIyCzMR10uXtcQZew27XTTJsUxISfsWkNTbB
+   uYS/EyEQf9A5WhCVGSl2WDY49GwwTcjr5kGp2skLzDLmq8IGzjU7wb+a1
+   bYzkPMXEumC85AbJIJ+XTMswqa4ZvnWU+uzaTrY7rPFNgFwtQd4hY7U1H
+   sUPURw+Cb+MvgdQF4DwZl+Hfj87s7O9LSZ5CUeCks83xkrbBayd28SIFP
+   HSjYuqxaYo5HgdipzMCcLDrrYmfyLAIz+UUVJuDwLWgVB4On2+YssNpbu
+   o6T1dLvFDvs4Ide9nLuBoe+87S9iQw7PK8nmBUxQeQE/Eg13CAqlF6qB2
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,174,1643698800"; 
+   d="scan'208";a="156130114"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Mar 2022 08:22:03 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Mar 2022 07:19:30 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Fri, 11 Mar 2022 07:19:30 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.175)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Fri, 11 Mar 2022 07:19:29 -0800
+ 15.1.2375.17; Fri, 11 Mar 2022 08:22:02 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Fri, 11 Mar 2022 08:22:02 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=beeWDzd0iG1voym1DjL6n665hXUHcNgRRW+oP0HclEjrchNaU8Ho9U3J4Dunwj4SS5iTuufahRgFSkSGBGfG5pXBoK6Mhv6W10+lx+P2rtJHGOOX08TeE27pVz8AX4glCERJYuRTUiXub1QZtXkhuUbiap5Kz7EV3vKr4j87E3KShAczpCZwvPK+B8G3CUJIdg+9C+LFoDQ0JQdtFYjZ6zMjd3IyXluHTGst1XTeEDo42et+35PYHxx/1+/F6J4n1CylKOKg7idH6iGISCiA21goDX/KeGMrJCsd422eFOgk+UzllGzMok8F0twA0fRGANNdym8/QmJPF8WnqdBW0g==
+ b=a25TNUgaHmNEXuk5ySGKe57WWJugW+wTBNbU8Pns+2TvdGqj+9p6GVYW/L/LC+Zq7MqX5Wz8RL+oc6g4DKfVf+3yFFwLCHDDRRM7SPD12oi2C/FHXLrHbxmDT86Iq11tr3GrdOO/HD7DKIoxslYpqumm27ipFHqPWxKyKJ67E0+Rv0i6+uQzlPJvsy9MoEPFdqxbLEaS01+h7whpL95vgWsWt9qnT0FsXU4OYgnRagCVe1t9DgqtnKhdZMw7NmkFGiR2OjcYdu1GVmnpCegc5EsAjbe7jjXrKuQWEGI4pPsC8aKTv3tAKmLtgjB03fQMWYv5DXGggKwsrpXzThShJQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PDCkwUta/lztpXRnM2nLSafXHNj4Xh9rbqQkMVp3rlo=;
- b=Iy6zbxaBJNMkqqckLmtdgzgRpBdVehna0utepc0l6JJa6jo1MOpS9E1HDbK7kY/gOeSMaqEyBCf6LQRv6jAXdbfS3FXmwXuLlwvycK74D+YE7O7ivHzxp9EFlfwV6Cwsj5wJLAWoWy9BkMDlitWskQi85g0spgxGWX7CeZeYZ/2lOPFiNgIX0GaRhK20YcMfZodsRj88mQLkbHCZ20CPkqut+vTnO4bmYxuv2HXPGsonDKN4tU1Jo/jABreItMAsiTo+LoHbOpHhYfJRxfLq1MYDlSsw2V7Fqbjn1AEpWCtQpBbcDszdL4KpC684qOByR0B9cAf7ggRn2nUbUwLsbg==
+ bh=OS4MVks8RdFVeI+S0OvhYNgJiBilbRQE2C8/trc4a4g=;
+ b=duSN8vNp7Wb6M1gCy7XUXnxUdtHSv1/c1ijuCQ65WyXEQpo9/OZKWnhWSxTJ7vkcJhvdy1SFUAUEShsz6BzoDfmbEyhJorD2gh6N6pGIOsLRzAS1mI4JZ5xVinVeKMOePTua8t9SOb021iUjypkDF17MG4FkiEfjjXKYF3gP6+bOwUVj3hbWV7VUskieSU10kDO+1gc7vhpLnx1h6qngL+/Cv1kuW2y1wU+GKcpBi9QJMRvLhu0OMYWMjtLHVidVzp1/U39a4N16m1CjsV5TXBzfjZDEBhSdWpBnd9aPhzQBdk1+vn6nFW5UhjQ6heMnZ00FVAtSWD9XBnHccHrNzw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
- by MW5PR11MB5860.namprd11.prod.outlook.com (2603:10b6:303:19f::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.15; Fri, 11 Mar
- 2022 15:19:27 +0000
-Received: from PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::ed3a:b7cf:f75e:8d63]) by PH0PR11MB4886.namprd11.prod.outlook.com
- ([fe80::ed3a:b7cf:f75e:8d63%7]) with mapi id 15.20.5038.027; Fri, 11 Mar 2022
- 15:19:26 +0000
-Message-ID: <0e672d96-5b68-4445-482f-1fc4c55e8f45@intel.com>
-Date:   Fri, 11 Mar 2022 09:19:23 -0600
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH net-next 0/2][pull request] 10GbE Intel Wired LAN Driver
- Updates 2022-03-10
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OS4MVks8RdFVeI+S0OvhYNgJiBilbRQE2C8/trc4a4g=;
+ b=EqOv5a8I91JbLMvLFRPpBYYU7sSnUOh71GIs28C7BKnNsAwvW6WwAPYW3EeNavIwPFjn3fSpbFs4beELgRsbVNyDU1BpSIPb/KyTkgd82F01HZSjE16UZNg+Y4BGWcZtvHN/K6nA+q3r5GrC0YmtmfCp+0ra6ckyHyUALxgBZGA=
+Received: from BL0PR11MB2913.namprd11.prod.outlook.com (2603:10b6:208:79::29)
+ by DM4PR11MB5970.namprd11.prod.outlook.com (2603:10b6:8:5d::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5061.22; Fri, 11 Mar 2022 15:21:58 +0000
+Received: from BL0PR11MB2913.namprd11.prod.outlook.com
+ ([fe80::a5f2:c2d5:c0e4:2ba9]) by BL0PR11MB2913.namprd11.prod.outlook.com
+ ([fe80::a5f2:c2d5:c0e4:2ba9%3]) with mapi id 15.20.5061.022; Fri, 11 Mar 2022
+ 15:21:58 +0000
+From:   <Woojung.Huh@microchip.com>
+To:     <richardcochran@gmail.com>, <linux@armlinux.org.uk>
+CC:     <Horatiu.Vultur@microchip.com>, <andrew@lunn.ch>,
+        <Divya.Koppera@microchip.com>, <netdev@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
+Subject: RE: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Thread-Topic: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
+ values and timestamping check for LAN8814 phy
+Thread-Index: AQHYL6td/B/51zd2r06SOlPtjL8tgKyvLZmAgAQuDgCAAI3yAIABXwsAgABAHoCAAB5+gIAAKOoAgABEIwCAABclAIAA50qAgAAZdICAAFL/AIAC09Vw
+Date:   Fri, 11 Mar 2022 15:21:58 +0000
+Message-ID: <BL0PR11MB291347C0E4699E3B202B96DDE70C9@BL0PR11MB2913.namprd11.prod.outlook.com>
+References: <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YiYD2kAFq5EZhU+q@lunn.ch>
+ <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <YidgHT8CLWrmhbTW@lunn.ch>
+ <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
+ <YiecBKGhVui1Gtb/@lunn.ch>
+ <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
+ <YifoltDp4/Fs+9op@lunn.ch>
+ <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
+ <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
+ <20220309195252.GB9663@hoboy.vegasvil.org>
+In-Reply-To: <20220309195252.GB9663@hoboy.vegasvil.org>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Leon Romanovsky <leon@ikernel.org>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <sudheer.mogilappagari@intel.com>, <amritha.nambiar@intel.com>,
-        <jiri@nvidia.com>
-References: <20220310231235.2721368-1-anthony.l.nguyen@intel.com>
- <YirRQWT7dtTV4fwG@unreal>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-In-Reply-To: <YirRQWT7dtTV4fwG@unreal>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PH7PR13CA0003.namprd13.prod.outlook.com
- (2603:10b6:510:174::14) To PH0PR11MB4886.namprd11.prod.outlook.com
- (2603:10b6:510:33::22)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bec42bcd-ab6c-4177-f608-08da0372e239
+x-ms-traffictypediagnostic: DM4PR11MB5970:EE_
+x-microsoft-antispam-prvs: <DM4PR11MB59703E6EF244F0BBC9BCCF68E70C9@DM4PR11MB5970.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Hvnc13VzwU/rqsrO+yOgOtOIENZoi2/u6vZislIqm1zzgip8rEDUx7FCkZBhNUK4vnmVivC3x5QBtrqU2OZKi2QWvis28/wlfZLHyOkZ1Sxs0/MzaNWS0mbVUm03V9nTmGWxyOXiL65+ZEFXzZzfevV9uXxMAVxbK8JouL0NR4E9QFBK+vDdODCfLRo/GZSvZMJyqPbVTYQYZZeew8jPDylma/j2HCt+GDj+y9lFOU5g2h2SN5VbLoo68QTnmF8uQilaM5vmXZICdyF+xlAdjy/UJg5b34DYpoJa1dQ3iWTk/eRVjy4+p4oKmbJyVMscjv/NZTUS8DLvGBOLQK/MH0lyB6yhMMDtnX9xYIZe1uPi4hvwiAyd2qvgEIhHdlQy9StNkSv+b4HeAmYkUIlKzWNsDTczyHf3cyHuLOp2AKKYb1sL6Tcs/UxaAKmwIWIPFTtmbUNUytyMDMkhzc+CWTe20mU8dzOoqxe/+q3R4u7Ycb+NJXirDyKgbn8Q+ANWOszItxAbHLW87eZm2PYqe9B2sTxRSrAK7KRJ81c7/srdAR9InjIG9fCDxrmy5Wh1Tm8OYpMnEBjTaKbM36lF50ytnckYB5VrvY/B2LThZcHXgxr20FRxEQ4Sa3JxladDzbBmmy2QVycNBi4dqxpI2Bxq+bI+X8Yb5f+6Q2pr58SmGwEfOK7IZ9y3NFuiw6Ptsr4CANL+F9Aw2KyJ+Ppv0+50I3dZdR4lakbPEhkv0I20e39pzQFaxKGXNf/IuGYt54vLyLdWgP38kRPZyHwQA7jQqMqANrTHGcxO0VhcTyQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR11MB2913.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(86362001)(33656002)(38100700002)(38070700005)(122000001)(316002)(5660300002)(966005)(110136005)(54906003)(2906002)(8936002)(7416002)(4326008)(66946007)(66476007)(66556008)(66446008)(76116006)(64756008)(8676002)(52536014)(83380400001)(55016003)(107886003)(9686003)(508600001)(6506007)(7696005)(71200400001)(186003)(26005)(53546011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?uv0BsD4kXssgeyAIVYY1tQgN24XpS/GLRcCO9HZymUoo2iwKxFOnTXkC7Xm2?=
+ =?us-ascii?Q?RTIfvsu8E53ILl38lskxFIfZ6AXHyF7kZbut7YQ4A4F68mFikVFfQTQTRwAX?=
+ =?us-ascii?Q?rLRfb1C7tbj8eIYsbm3VgsL5W+gvfmhoHMjx67Z/E9eSNuVKbAxRisVb6SxK?=
+ =?us-ascii?Q?LAKS8wzFPIowqbGdcIpFFyTQbCGFRwxogThIFPvUf/qLfn+oIznObnqKUT3M?=
+ =?us-ascii?Q?HQv1VNZiP/zyLXtMYehgkGHJ7fDUgnnHp+pG32iMxh0PRRaaTJpak/VnVoYU?=
+ =?us-ascii?Q?iNtphuW29Srl6s0vIeb9rDA3AixfHH5g6Tk8fY0J/C5NMRlZ1iZdQMdc4YNg?=
+ =?us-ascii?Q?J0M+BT/subV5GlCbQs+36uQY61l4aWAsPJxu3IZJqvSDXHSWuGp9TgJpG+aA?=
+ =?us-ascii?Q?4wx5zWFlkTjQvyz8uXVHMG0XcI2bJugSf64/T6uUpjzteKXu5wC6TUFyiapC?=
+ =?us-ascii?Q?Be/tJ9wwzPja6DDd7CoRvhx/wupK6Y989ZFmrL/wN9mIArDBwgIsoh12PX/W?=
+ =?us-ascii?Q?evXsWAY0iAN3eY0IJNYk+0rsZFR1cs46I5SX9rU7lE6oDtjiEC0i0vZH3jO7?=
+ =?us-ascii?Q?Mt5kkmHcY65PzoTWsnUX9vgD3wE0cIHSx9+IiFrkvnQwfxRSk0SL+hydAcUE?=
+ =?us-ascii?Q?9HXCoj/Cmt0pBWqkqJsLmveWObABDaRpTtwRV6HRMAXCDeMB3bbCespr0y2v?=
+ =?us-ascii?Q?GB37plbQRwuwvxE/IxK9J/2Y2mrfQ76ewbA5VtmSjCIr9rNCAZBqoXzQ/f8B?=
+ =?us-ascii?Q?gvlGA5oOpJgC6vz5K2vV3PSplLUxqndOnaCLBbz2cuxkzGRLX0GY0GfSSwSF?=
+ =?us-ascii?Q?AqxqxH0MqWGKdjFSfSR72DQDAeb7ihrv7PeAafzYbC+8SwUaS8F6hvWZDkA7?=
+ =?us-ascii?Q?yahkVVX6ydUP6fKmvX8tcyUQdeT6UQgyl472xK0GE9MsGIOb556sPOTBpSUU?=
+ =?us-ascii?Q?R0Vyl8Fw+imwq/PbQAE1SrVLqv/rNPr3mC6QoEneSSySV2DocXKPdCTlg4GP?=
+ =?us-ascii?Q?kZg8xKfeeV7BlsHtUHhNh8mk/JB9cjJsJqfOX29+2eo0sHnIyo+mfaZbiSvl?=
+ =?us-ascii?Q?VBq5eGsVSUjaUSpAiO5XaqcbmkgyHioYaWEGX8V68V4xd31R6vr1tLvZFkvQ?=
+ =?us-ascii?Q?QTUgn9PxTHnspj/J5B3mRvChUt1qA9RntKVXQMXdEi4DAH3rSCkcI84eEuWJ?=
+ =?us-ascii?Q?ZaKbAHVenvd+OozS+oHRH2o/xNSX8Fp0jatV9AKxym2xxCSF5u9hzxKQNbHn?=
+ =?us-ascii?Q?5hzQzBudBzTLOwv9m5GZDwTwVZCUJu7W5+3FiBuut1Bs7xj+PfBwZWPvc65J?=
+ =?us-ascii?Q?GpWMSkKyw2yX4altpkkLDwCfZ8N5fSo4MSeaG5/PwHsp6ehHI9Ir7VlXLDjE?=
+ =?us-ascii?Q?vkHYtrWdm4PeNEpgwr2V8IjlTmEu6OPs3fELxl1dJbfSqtKJXpLlHJg+69gO?=
+ =?us-ascii?Q?HrWsveaHZl5N62HRIucr9dFBHgMXgUZ6usO7DuO8kXhhvHrj5Wx5SQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1bc853ab-cbfa-4d88-4af1-08da0372879e
-X-MS-TrafficTypeDiagnostic: MW5PR11MB5860:EE_
-X-Microsoft-Antispam-PRVS: <MW5PR11MB58603F2D5D5B2CABF1F5D4A4E60C9@MW5PR11MB5860.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NXW6TYKmyaqkfb1EzOM5P/G+spqmyxWweODVlDn96fKSw9mCTMF8rNtXVrMC24PCtFdVFMoiONJ6jqj9i5eECRF71t2PsK0MSVxLOG6DTdPjaObhBsFTpkSuZnKQL+ooOVwPBkgE2uGvV5ebPtKVLiaAZOBMcGOGqjnxrWE0zSeC0Af9OyyNbaXbTKcUWqOLvrVbq2aT+i6RYWIhBgJR168KlIFwgP0QxuMd5FrWg31yyF8GrbabumNnSpvzfF0sDcbekf+UFAPJ1bsCSVXxCMlWM23B6NRDag34p0rMXc1GkfW91wR0WaNvaCkFBDNyaBIj95OtfYzBLCaeqONjin4EYhReOmNp2kSixZNGItjQJDcOJAMFGGqkPTs6ykHFZH30oGznQ+b1j9s/DT62qRDHAIjiTi0x4XmheolCK05wzJuHvZg3hvtT40e1R1tbenYprZftbCDeuKHaX05kBQXRF6Hu+MNak3EHeNzHC0ZyXx5xuvir7m2hfUTtiLFrOi+j48NVXhnOelDE0Qx0xxoy8pWsxbMoCEf55H7JhROW/VypPCu2rM96V8t/3w3xFizndB0WmkqcLQA18mffvifw4B4yNBMfH/k9hxiDKdwUrfXvrRG1XzE1HtOzYou3t7EpwEp7XOt5c5fZJzn9/p0mslI/SweOwZzttfNUgrDc3HgQDJQuWLpKgORXsRd8W3jFOI9OXQQojO8X0/H04yDVpwgQ60pogw6s9qmtfDM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4886.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(86362001)(186003)(31696002)(4326008)(26005)(8936002)(2616005)(83380400001)(508600001)(6512007)(82960400001)(6486002)(6666004)(38100700002)(53546011)(6506007)(66946007)(5660300002)(66476007)(8676002)(110136005)(6636002)(31686004)(36756003)(15650500001)(2906002)(316002)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?dGdZUk11WTBLd2MxbUVaajU2WGl1ZTNCYTJUcTBKOTI5Y3ZLZkxGSFBtYW0y?=
- =?utf-8?B?cWtzU20yMTBZbmtxZUFzTC83S1M1T0RYajlUL3ZxSStmRUFlNVdJUWFtTytH?=
- =?utf-8?B?aVNtUC9pQ3cxRExXOUkyMUlPd09NUzBURUl3VWd1UHIxakZlNmhDN2hjTVJD?=
- =?utf-8?B?SmliT1hvYVg2c0hpaThZRmVaQU1jQVFIYnRHVXNUMU52aFN0a1o5cks4ZFdD?=
- =?utf-8?B?UmlqTHFuN1g3elRQZE9OcTdLT2lzKzNKRUFuQVdjSjAxRXVnQVBYYTRMYVVT?=
- =?utf-8?B?VG1LVllPRE9zazljMDFtcksrM1BDVW0rWUp3YzdXZ0dwRFphU1lROC96L29X?=
- =?utf-8?B?Rk9CT01KamJ3Nnk0M1BwUUhJM2hLQmFVdlpIdG5mVitRQWltK2hLOFNOWTBP?=
- =?utf-8?B?ZGVRQ3VNQlRXUjgrcXE0bkNGVHIvR3V6cjJjT2l1Y3d6UE5JVDNHQzQvYTFo?=
- =?utf-8?B?Q25odXhOOElYMGYvNzI4WW9BVTkwRjhUNFo2VjRVV0JIUCtsOEZrdDJScG1X?=
- =?utf-8?B?UW42bFdTOHU1VHpUOFp0bHQxem55WlJrYzdsZzRzUi9tUCtGNU1HRmJPRlJ6?=
- =?utf-8?B?U0xIR3o2ajdrZkJBcUs1MzltTnUrbEF2WkZXN1NEc3k1Q0lHd3VhZ1JhOE1n?=
- =?utf-8?B?eTdsRG8zdDJCUGlSc0x1VStKUVNxTEFmR2t5Mms4bVdSTTB2WXhnekdFS0I2?=
- =?utf-8?B?ZllteUlxS2ZUWXNKNnlxMzdXUmxJZXE5c0lMcEJEUldiTlJpaUJ6cHY0TFJ0?=
- =?utf-8?B?RVBHdE5TRGMzR20rdFhlcERzNG5ONVBVWnRNV0lPR3A3VTRCUlJqV011aXA3?=
- =?utf-8?B?MEVBalJiSzFKNFpEeUQxZjFKU093aFlOUmRjQTVlYVE0SDZTSy9vOWF1RXN1?=
- =?utf-8?B?ZXNyWEFFRUZOeWc0VDRhUGJQK0U5a2NYQTd5bi94cjIrdEkrWENVV1RsRExo?=
- =?utf-8?B?UHpSeURwaFlSTGQwUGdYU1g3dE1ORUk2Q0pGNzlaRTdTS1VyVmM4MUNwSnox?=
- =?utf-8?B?RVAyWjVnWTFnOFZPSlcwaEFnTGhxRHRvNWZHTU93eE1tTXFNV3RIMTBucDdF?=
- =?utf-8?B?d2M5NzYwWFlGQWliVW95OVBsQTlGMnlja05iUWxrSmRhcWxQcTNLdDI2MnU5?=
- =?utf-8?B?SzZOeDBzVHlIWDdRT2hJK2M2emJ0T0pFT1FZeGsrbWJ1TTBqTFR6Q244d1RD?=
- =?utf-8?B?UjZnMjFKdUpNYmk2cFFHR0EvdFpMWUpMTWFWWXBDdEUvUDR2T1RTYjF0VjUr?=
- =?utf-8?B?Q0s2NVcxNWRxaGFxQkRaRHFXei9kNkFqOVVCTndSVUJvTG15cEt3bnphUk5y?=
- =?utf-8?B?NkRHOWdWeFZQVUFreWdKU1VpTnZROGo2ZTBUZEpUSmRFNjdKRGJzd3YzTW9C?=
- =?utf-8?B?U1A1UytleUU0YlMvUDMxQzlTS2NDNWY5eG83eENNdlE2T3UxcWJMSXhyY2lt?=
- =?utf-8?B?S25PRjRVTlRuaDlaVVd4OVMycFQ2amZNWEdWSXJ3VkVyZjM5bHhaWkY4M0t1?=
- =?utf-8?B?OE9rTWdkL2p1QXNkSXlpb2R4cDZiaEtRWTJiRHRXVXN6QU8vRnBURWduOVFH?=
- =?utf-8?B?RE1kK2p0QlEwMzdNU2lhMkpSOHdLUnA5NzBIQ0VkL3FzaG9nYXhhUWJCNVdE?=
- =?utf-8?B?ZjllcjFrV2krNHNXVDk2a0hObm55c09uSFFrOUljNlM0b2NVZFJxT0EydVlo?=
- =?utf-8?B?V2w0UllhSytHVjZzYXlqZlJZSDdta3lsekZoSUc5cWZ0cktPaGlwbzhWdEhj?=
- =?utf-8?B?RS9OYUxIZ3pjdWpKS2s2RTFZR0lqam50VXlHcmtka3FuK2U5d0NoZ2lFd3Jq?=
- =?utf-8?B?WFU1NDRCWjNUdW9nbGh3WTVWWDM1NTR0Skx2bzh6dys1WlpvY0wreTZIMTd4?=
- =?utf-8?B?dFZTWEtiZkk4S3RXU29SNlZmekFCMmp5Qm1YU2tEY2xHYVFmVW00bldRSWhJ?=
- =?utf-8?B?M1V2Y01RQU0yNWZiclc1Q2lPRmsxODQ3c3NjR050aHJOWmx1MUU5V0hyRDdk?=
- =?utf-8?B?MURGVkhJWXE0WmlGQjVIeDJ1K3NDNW1DUkVQVHhzWnB1RDZvcThSMkRqdW1y?=
- =?utf-8?B?ckhTNSs5cXlsWnZCV003TlYzaFpSd3Y3RVIxc25qeEVhUXhDM0wzNmdacncw?=
- =?utf-8?B?ZmlIOFlCTEJ5VWc0RjQwa2MxR2VWVlZuSkZSY3pFM0RoVVBCbFZJQ3dYWlBs?=
- =?utf-8?B?dUloWTU0VHR6SnhwNjNsa2VhaVNBdklaZXFrUERzeDg1M2dwRzFNSHlCa0R0?=
- =?utf-8?B?dVV4UmczaVVnTTBtaVhjWFVuWk9BPT0=?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1bc853ab-cbfa-4d88-4af1-08da0372879e
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4886.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 15:19:26.4842
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR11MB2913.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bec42bcd-ab6c-4177-f608-08da0372e239
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2022 15:21:58.2325
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gjSVUEBhMMZAe2GRSP6XUXCkiA9NFEPIht+Yij558ovD8DqdHuHJoUddFMy5kyA6pHZBLTPVEvs6lGLbVUEDGTBe8PcQ3AcK4QzQ2roV/vw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR11MB5860
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +ugtCJUQyqhDe4PshY6qoCtTPGUfdPdmJ5crGoV1CdimIQ2JDvQZpH1SL9DsbuWTh3G+i+WIWUkFReUSgzjUkmP2mVY4Xy3gNKHSKpqvPLY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5970
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/2022 10:34 PM, Leon Romanovsky wrote:
-> On Thu, Mar 10, 2022 at 03:12:33PM -0800, Tony Nguyen wrote:
->> Sudheer Mogilappagari says:
->>
->> Add support to enable inline flow director which allows uniform
->> distribution of flows among queues of a TC. This is configured
->> on a per TC basis using devlink interface.
->>
->> Devlink params are registered/unregistered during TC creation
->> at runtime. To allow that commit 7a690ad499e7 ("devlink: Clean
->> not-executed param notifications") needs to be reverted.
->>
->> The following are changes since commit 3126b731ceb168b3a780427873c417f2abdd5527:
->>    net: dsa: tag_rtl8_4: fix typo in modalias name
->> and are available in the git repository at:
->>    git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 10GbE
->>
->> Kiran Patil (1):
->>    ice: Add inline flow director support for channels
->>
->> Sridhar Samudrala (1):
->>    devlink: Allow parameter registration/unregistration during runtime
-> Sorry, NO to whole series.
->
-> I don't see any explanation why it is good idea and must-to-be
-> implemented one to configure global TC parameter during runtime.
+Hi Richard,
 
-This parameter is applicable only after splitting the netdevice queues into
-queue groups(TCs) via tc mqprio command.
-The queue groups can be created/destroyed during runtime.
-So the patch is trying to register/unregister this parameter when TCs are
-created and destroyed.
+Not sure that it is good idea to reply on not-the-latest thread.
 
->
-> You created TC with special tool, you should use that tool to configure
-> TC and not devlink. Devlink parameters can be seen as better replacement
-> of module parameters, which are global by nature. It means that this
-> tc_inline_fd can be configured without relation if TC was created or
-> not.
+> -----Original Message-----
+> From: Richard Cochran <richardcochran@gmail.com>
+> Sent: Wednesday, March 9, 2022 2:53 PM
+> To: Russell King (Oracle) <linux@armlinux.org.uk>
+> Cc: Horatiu Vultur - M31836 <Horatiu.Vultur@microchip.com>; Andrew Lunn
+> <andrew@lunn.ch>; Divya Koppera - I30481
+> <Divya.Koppera@microchip.com>; netdev@vger.kernel.org;
+> hkallweit1@gmail.com; davem@davemloft.net; kuba@kernel.org;
+> robh+dt@kernel.org; devicetree@vger.kernel.org; linux-
+> kernel@vger.kernel.org; UNGLinuxDriver
+> <UNGLinuxDriver@microchip.com>; Madhuri Sripada - I34878
+> <Madhuri.Sripada@microchip.com>; Manohar Puri - I30488
+> <Manohar.Puri@microchip.com>
+> Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure lat=
+ency
+> values and timestamping check for LAN8814 phy
+>=20
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e
+> content is safe
+>=20
+> On Wed, Mar 09, 2022 at 02:55:49PM +0000, Russell King (Oracle) wrote:
+>=20
+> > I think we understand this, and compensating for the delay in the PHY
+> > is quite reasonable, which surely will be a fixed amount irrespective
+> > of the board.
+>=20
+> The PHY delays are not fixed.  They can be variable, even packet to packe=
+t.
+>=20
+> https://www.researchgate.net/publication/260434179_Measurement_of_e
+> gress_and_ingress_delays_of_PTP_clocks
+>=20
+> https://www.researchgate.net/publication/265731050_Experimental_verific
+> ation_of_the_egress_and_ingress_latency_correction_in_PTP_clocks
+>=20
+> Some PHYs are well behaved.  Some are not.
+>=20
+> In any case, the linuxptp user space stack supports the standardized
+> method of correcting a system's delay asymmetry.  IMO it makes no
+> sense to even try to let kernel device drivers correct these delays.
+> Driver authors will get it wrong, and indeed they have already tried
+> and failed.  And when the magic numbers change from one kernel release
+> to another, it only makes the end user's job harder, because they will
+> have to update their scripts to correct the bogus numbers.
+>=20
 
-Extending tc qdisc mqprio to add this parameter is an option we could explore.
-Not sure if it allows changing parameters without reloading the qdisc.
+If you are referring to the delayAsymmetry of ptp4l, I think that is differ=
+ent from this latency value.
+delayAsymmetry of ptp4l says "The time difference in nanoseconds of the tra=
+nsmit and receive  paths.=20
+This value should be positive when the master-to-slave propagation time is =
+longer and negative
+when the slave-to-master time is longer. The default is 0 nanoseconds."
+In my understanding, master-to-slave uses reference timestamp which is defi=
+ned in IEEE specs.
+   <egressTimestamp> =3D <egressProvidedTimestamp> + <egressLatency>
+   <ingressTimestamp> =3D <ingressProvidedTimestamp> - <ingressLatency>
 
->
-> I didn't look too deeply in revert patch, but from glance view it
-> is not correct too as it doesn't have any protection from users
-> who will try to configure params during devlink_params_unregister().
+These latency is egreeLatency or ingressLatency to get accurate timestamp a=
+t reference point from=20
+timestamp of clock in MAC or PHY.
+So, this latency should (hopefully) be not-much-change in the same board af=
+ter manufactured.=20
+But, value can be different from design to design and port to port if some =
+path (PHY to RJ45) is longer than others.
 
-Is there any limitation that devlink params can be registered only during
-probe time?
-Would it be OK if we register this parameter during probe time, but allow
-changing it only after TCs are created?
+This doesn't cover any latency from cable length and/or asymmetry which may=
+ come from RJ45-to-RJ45.
+But, delayAsymmetry may care cable type/length in application point of view=
+.
 
--Sridhar
+Of cause, all values may be small enough to ignore though.
+Do I miss something here?
 
+Thanks.
+Woojung
