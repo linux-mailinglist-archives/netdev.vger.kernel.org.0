@@ -2,86 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CA744D67AD
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:32:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B02964D67C0
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:39:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350785AbiCKRdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 12:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
+        id S1350794AbiCKRki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 12:40:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350449AbiCKRda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:33:30 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910709E;
-        Fri, 11 Mar 2022 09:32:25 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id o26so7999359pgb.8;
-        Fri, 11 Mar 2022 09:32:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cbDLeYZRi3PqTVaN32FtTtne4st0hjAXHY6M3Yx/o8A=;
-        b=FkSaP+tFeaUnxuXRQ5zN60/7gn/yqDwAXboaWrqdslqeBLlMs5igjMMUejA3P/qmEu
-         J/3ukDCZCus8xAsgZMowit5rIGLsJNUSE7chKpBvxTHVMoLGk3phMsQPP/YKRZdx2DX1
-         GQjQJlbyKQXmmsW7hzZPfMdml5a8WrSpK/6MiTWOp5IIK3FokpXeymXkLwjebIP78x7V
-         934NDnUQoc7UeqAYv46sjWnZhndvu/9nxAN4tyN6TZRxjbP9yn+PCEtxJOgp4eA8teyU
-         hOESS0Y5V+FhpRE6/Of6HHBnReYDAfyhVdwmjgA/61T/01D0zCSkUHcHTaiYRBOnZ05f
-         sXgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cbDLeYZRi3PqTVaN32FtTtne4st0hjAXHY6M3Yx/o8A=;
-        b=V0cWpaUxCDleCWLW8o2g3sDK69+tc2WLCyzIHt5FPmH04cHnor4VV+iDYYkdVpLfrG
-         at57Ki+1ACpN+Llr5aOpKgH3S0mfI5Kg/ozi+0FuQCOcgmHX2VH643rvFr0uASTCOkZm
-         6FqV52NeuncYWPIq0hN3qpY9YqorsKDwYFqhI98ecsCYaYTXiBAOFkioJ++BxUHrWSsV
-         gDn2uHCShPROLnHDVy2PoEPlAKPzF27dM3E7ynF6zF/N61fDCoDAW3k0lm6dsZKQFWG0
-         vurlwuRWEd8Y/KDEXBEwC7XA7wa+oxkJ7FwQA5lnyqu/e5welH9YKutBOp+6iKVCDNmG
-         jqiQ==
-X-Gm-Message-State: AOAM530ajKCjA2MQHXq5Rmf9bGzVGrd4J+VYst69Yqw1nT+iXI3Tl44g
-        ClVne3y8vqUlWHrr0ddj7GMCNpssNiUGRjPm1y4=
-X-Google-Smtp-Source: ABdhPJxFv04mzpS3rjhpBqnAXWY1YzbhG51F0XOEBMnPnPhGJ2eeM0JWj/NAnE9UXXZciR8dZUEK0BJsiaH+pd24h3g=
-X-Received: by 2002:a63:c00c:0:b0:37c:942e:6c3c with SMTP id
- h12-20020a63c00c000000b0037c942e6c3cmr9480160pgg.336.1647019945064; Fri, 11
- Mar 2022 09:32:25 -0800 (PST)
+        with ESMTP id S1350836AbiCKRkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:40:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2469C1AEEDA
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 09:39:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9369B82C89
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 17:39:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 453FCC340E9;
+        Fri, 11 Mar 2022 17:39:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647020355;
+        bh=EDg53oczAB/bKJcQjRwXU6CJ+IDOkPsykEoh7eIMt0g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QHkOtWp8ccEpmGkoovCCsGm8mrCJu/iXblnBOjIZf1wuIUfi7cuaoqiqI85U/ybNg
+         +OB+1+cXEYlc96mbLp6pOT2odAmaaXnPrIcw7cRzZLpZWcmYm9DdBkkMhIk4wP56rX
+         Aw3XOlMHajWlNSf0Fv0lDW3VPM8E72K32s5mcZ+05YdjN63lKUywdkSWjJAaJTO4aT
+         bRFCbi5eYXEpPDzeKTsuFtKs1fkBlNjfakLtGciTeG9/+KehRcarPjRlQa5eBIo7RZ
+         ooQUgBhaGJDTMvLvdS+Al6znj4POMj98AaBzT2ziq6O8Z8dX2BmdQiF/oC/We4rG0x
+         MyJnYzJyxrgVA==
+Date:   Fri, 11 Mar 2022 09:39:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Leon Romanovsky <leonro@nvidia.com>
+Cc:     <idosch@nvidia.com>, <petrm@nvidia.com>,
+        <simon.horman@corigine.com>, <netdev@vger.kernel.org>,
+        <jiri@resnulli.us>
+Subject: Re: [RFT net-next 1/6] devlink: expose instance locking and add
+ locked port registering
+Message-ID: <20220311093913.60694baf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <Yit/f9MQWusTmsJW@unreal>
+References: <20220310001632.470337-1-kuba@kernel.org>
+        <20220310001632.470337-2-kuba@kernel.org>
+        <Yit0QFjt7HAHFNnq@unreal>
+        <20220311082611.5bca7d5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <Yit/f9MQWusTmsJW@unreal>
 MIME-Version: 1.0
-References: <20220222105156.231344-1-maximmi@nvidia.com> <DM4PR12MB51508BFFCFACA26C79D4AEB9DC0C9@DM4PR12MB5150.namprd12.prod.outlook.com>
-In-Reply-To: <DM4PR12MB51508BFFCFACA26C79D4AEB9DC0C9@DM4PR12MB5150.namprd12.prod.outlook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 11 Mar 2022 09:32:14 -0800
-Message-ID: <CAADnVQKwqw8s7U_bac-Fs+7jKDYo9A6TpZpw2BN-61UWiv+yHw@mail.gmail.com>
-Subject: Re: [PATCH bpf v3] bpf: Support dual-stack sockets in bpf_tcp_check_syncookie
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 8:36 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->
-> This patch was submitted more than two weeks ago, and there were no new
-> comments. Can it be accepted?
+On Fri, 11 Mar 2022 18:57:35 +0200 Leon Romanovsky wrote:
+> On Fri, Mar 11, 2022 at 08:26:11AM -0800, Jakub Kicinski wrote:
+> > On Fri, 11 Mar 2022 18:09:36 +0200 Leon Romanovsky wrote:  
+> > > What about this?  
+> > 
+> > Is it better?   
+> 
+> I think so. It doesn't create shadow dependency on LOCKDEP.
+> In your variant, all users of this call will generate WARN
+> in production systems that run without lockdep.
 
-The patch wasn't acked by anyone.
-Please solicit reviews for your changes in time.
+No, no, that function is mostly for rcu dereference checking.
+The calls should be eliminated as dead code on production systems.
+
+> So if you want the "eliminate" thing like you wrote in the comment,
+> the ifdef is a common solution.
+
+I think these days people try to use IS_ENABLED() whenever possible.
+
+> > Can do it you prefer, but I'd lean towards a version
+> > without an ifdef myself.  
+> 
+> So you need to add CONFIG_LOCKDEP dependency in devlink Kconfig.
+
+I don't see why.
