@@ -2,221 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2AB4D57D4
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 03:00:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB074D57E6
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 03:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345496AbiCKCBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 21:01:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50580 "EHLO
+        id S1345574AbiCKCGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 21:06:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234734AbiCKCBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 21:01:34 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD161A58D8
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 18:00:29 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id p5-20020a17090a748500b001bee6752974so4286929pjk.8
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 18:00:29 -0800 (PST)
+        with ESMTP id S1345161AbiCKCGn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 21:06:43 -0500
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7007B1A6149
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 18:05:41 -0800 (PST)
+Received: by mail-io1-xd42.google.com with SMTP id b16so8691468ioz.3
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 18:05:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=w5gdGojmRFq7pJcnsqi+arSi8dK8jySvBve6ok8cGsk=;
-        b=G5reGyTHI1S6J1MXim+bSdp6b8dgv/0P0vw8cxR99oaNLfO1821ObXoCpFhAaVLrW/
-         9QyG3ajv3oZJ3alPiQTRE1Qzt8DyYjH+r+vaI5Pty6Sa44RyspCQ2gt2XCIqK5j6W0H7
-         2oldirIm3nZbR+W3A8CiAxQr3qhE6i8ce6ITvi5jFW6s6jLP4AxrlTGs7vw43k+JAm8G
-         ZBS9hPtNSV4CG9Hj7kWUJwDJfVnJiAku9dB95TbeRpQ4oMwArNJ1g4YIof+Ds1GiwK0O
-         5hdEpE4DgLAOc24absApcq9Irq4VU+ZViOj9Mup4Vps/u8s+HgVXtv/kiLYhT2+FoJVE
-         lrzg==
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=1WmTiruYcLYjgfCVpwaSh4JcERuBX8rKufTgiQZnbQI=;
+        b=UoLJwNFCONozXrSjxTaJ6CQMua4tKdfIBGwWrcuH+qg7qV4qvIQvKd6ZDBpfNl02B5
+         7/f3NDnXewP4MWvXArhhRIRgFfG5UHtOC8GFRmWoc9PoyDIH2OX7pe5JW5uJcZ3wDP1S
+         Yn21PV0Lv/2OgyaKFXFlcqz1E6zMkmznF70Xusq/1kkD8r2ZFWVVBH8EmOD3Wb8YItQG
+         J/2LjYjdLPknMZc7RLd2joKTTigo11SHOv7rIySkRSAj3EH8x3p4s3Cul6kdkGI86z9P
+         rkTtCf8I4vUc8NCgtF2G8j2Q79qe1CyULZ+SvV22FYAYLG43TpvlFIzdybDtrm705aHX
+         A0dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=w5gdGojmRFq7pJcnsqi+arSi8dK8jySvBve6ok8cGsk=;
-        b=x43UpZDf9wFBvnvsniH/CIn97/1CtXNkkyqH/SAhLnMnw1zKwzm1liDi7ZU6OmYhwW
-         lNZGohVdv8POKlYhFBwYp5NbHBdCKpb8gzMiswQwgCIgXb+VIPkM8fuW5y3VKD7duOKT
-         9eItteJOaAdMJ26+7urNpvv5WvUA8z3Sft+QRFL1njmc97Dpt5vwtVqAQEW9MhFIkrhv
-         ITd3TEzRlyNn0wE5/zMn1aULXpnlzJWxJUkFbv3BVLsp50gDnPOObOtopcKLhsMd1V8+
-         H5E6fpJWEFLC+ENexux5HCB4Swa4vZbKgpf31a3hPDhMknOL5LrKB4xijyNOEfG2BQrW
-         cULA==
-X-Gm-Message-State: AOAM533/JVYvEiq5kF/OxtyZDPIJxeYaV2iie3wIWsYUYngMEoVy7NOK
-        qV6X8AttnfbXHhfU30ihs2siNspzfyE=
-X-Google-Smtp-Source: ABdhPJzazzYAzImuNPpCqfpkBnaZXEcV5D6f5cHVSOq6/Xihk8SFjlhnICQ+CYXKWDpFbXwvqHpVGXNDCfE=
-X-Received: from jiyong.seo.corp.google.com ([2401:fa00:d:11:f59e:134:eb7:e1d2])
- (user=jiyong job=sendgmr) by 2002:a17:902:dacc:b0:151:c216:2772 with SMTP id
- q12-20020a170902dacc00b00151c2162772mr7960491plx.107.1646964029307; Thu, 10
- Mar 2022 18:00:29 -0800 (PST)
-Date:   Fri, 11 Mar 2022 11:00:16 +0900
-Message-Id: <20220311020017.1509316-1-jiyong@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH net v3 resend] vsock: each transport cycles only on its own sockets
-From:   Jiyong Park <jiyong@google.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     adelva@google.com, Jiyong Park <jiyong@google.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=1WmTiruYcLYjgfCVpwaSh4JcERuBX8rKufTgiQZnbQI=;
+        b=SbR6ffvoRC0vRqHr2y7MuuNy+3HV+LBOqGli/iXA7nRHWLxSc4QasKZO8EtJAz3wZc
+         m74E+N4eyqRUdCY6kh4plMrZoYrRxxKQJmG06a03VzKcvIrH90AIVTTJaR0QQsQ0Z+A5
+         jbErIUNgJxW/GkeexIzyAiD/Qi2mBljXeUEknolWulTa8p2tN8gCPpUklhHw9+Wy7CjK
+         VyMFbDi90WReU+5w7g1aydA5b/Epovi1qSM33sxJIRpFH23ISeItPWEPCfzXpAREkEuo
+         bT4aofwK44wiBC/2RDD9JJCSyliz7RR4NUd0udKXz580KgPfQXBkVAh4Wj0/V/jYrxO2
+         xuxg==
+X-Gm-Message-State: AOAM531jMZbuZbmKJrLcT2hpdNmzcTBKvllAG7UD4FrQRv4Tm8pRjO4C
+        xb68+jh5Xmt/6smaE/zNV2nYmMZoq72oazgJVSE=
+X-Google-Smtp-Source: ABdhPJwzGv/EUFPjRAcnxAhD9CuVUfBUgzFPenxOjwyDW485lIubfpRBOLJ90AB7TTN85L7sK3xWajnPEHl2vMYBat8=
+X-Received: by 2002:a02:6383:0:b0:314:d9da:13b2 with SMTP id
+ j125-20020a026383000000b00314d9da13b2mr6425055jac.99.1646964340692; Thu, 10
+ Mar 2022 18:05:40 -0800 (PST)
+MIME-Version: 1.0
+Sender: aishagaddafii331@gmail.com
+Received: by 2002:a05:6e02:154a:0:0:0:0 with HTTP; Thu, 10 Mar 2022 18:05:40
+ -0800 (PST)
+From:   Aisha Gaddafi <aishagaddagfi@gmail.com>
+Date:   Fri, 11 Mar 2022 03:05:40 +0100
+X-Google-Sender-Auth: CITmde-pPdp_g8mnybwmsbu1uXo
+Message-ID: <CAMrsXqNqn4XWsG0U-Y5b-EWFJB9yY6gExOZg_EQHigQ6WBAkPg@mail.gmail.com>
+Subject: I want to invest in your country
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=6.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLY,LOTS_OF_MONEY,MILLION_HUNDRED,MILLION_USD,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_MONEY,URG_BIZ autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5003]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [aishagaddafii331[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:d42 listed in]
+        [list.dnswl.org]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [aishagaddafii331[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.1 MILLION_HUNDRED BODY: Million "One to Nine" Hundred
+        *  0.0 MILLION_USD BODY: Talks about millions of dollars
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  0.6 URG_BIZ Contains urgent matter
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  1.0 FREEMAIL_REPLY From and body contain different freemails
+        *  3.6 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When iterating over sockets using vsock_for_each_connected_socket, make
-sure that a transport filters out sockets that don't belong to the
-transport.
+--=20
+Greetings Sir/Madam.
 
-There actually was an issue caused by this; in a nested VM
-configuration, destroying the nested VM (which often involves the
-closing of /dev/vhost-vsock if there was h2g connections to the nested
-VM) kills not only the h2g connections, but also all existing g2h
-connections to the (outmost) host which are totally unrelated.
-
-Tested: Executed the following steps on Cuttlefish (Android running on a
-VM) [1]: (1) Enter into an `adb shell` session - to have a g2h
-connection inside the VM, (2) open and then close /dev/vhost-vsock by
-`exec 3< /dev/vhost-vsock && exec 3<&-`, (3) observe that the adb
-session is not reset.
-
-[1] https://android.googlesource.com/device/google/cuttlefish/
-
-Fixes: c0cfa2d8a788 ("vsock: add multi-transports support")
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Jiyong Park <jiyong@google.com>
----
-Changes in v3:
-  - Fixed the build error in vmci_transport.c
-Changes in v2:
-  - Squashed into a single patch
-
- drivers/vhost/vsock.c            | 3 ++-
- include/net/af_vsock.h           | 3 ++-
- net/vmw_vsock/af_vsock.c         | 9 +++++++--
- net/vmw_vsock/virtio_transport.c | 7 +++++--
- net/vmw_vsock/vmci_transport.c   | 5 ++++-
- 5 files changed, 20 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 37f0b4274113..e6c9d41db1de 100644
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -753,7 +753,8 @@ static int vhost_vsock_dev_release(struct inode *inode, struct file *file)
- 
- 	/* Iterating over all connections for all CIDs to find orphans is
- 	 * inefficient.  Room for improvement here. */
--	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
-+	vsock_for_each_connected_socket(&vhost_transport.transport,
-+					vhost_vsock_reset_orphans);
- 
- 	/* Don't check the owner, because we are in the release path, so we
- 	 * need to stop the vsock device in any case.
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index ab207677e0a8..f742e50207fb 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -205,7 +205,8 @@ struct sock *vsock_find_bound_socket(struct sockaddr_vm *addr);
- struct sock *vsock_find_connected_socket(struct sockaddr_vm *src,
- 					 struct sockaddr_vm *dst);
- void vsock_remove_sock(struct vsock_sock *vsk);
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk));
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk));
- int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk);
- bool vsock_find_cid(unsigned int cid);
- 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 38baeb189d4e..f04abf662ec6 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -334,7 +334,8 @@ void vsock_remove_sock(struct vsock_sock *vsk)
- }
- EXPORT_SYMBOL_GPL(vsock_remove_sock);
- 
--void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
-+void vsock_for_each_connected_socket(struct vsock_transport *transport,
-+				     void (*fn)(struct sock *sk))
- {
- 	int i;
- 
-@@ -343,8 +344,12 @@ void vsock_for_each_connected_socket(void (*fn)(struct sock *sk))
- 	for (i = 0; i < ARRAY_SIZE(vsock_connected_table); i++) {
- 		struct vsock_sock *vsk;
- 		list_for_each_entry(vsk, &vsock_connected_table[i],
--				    connected_table)
-+				    connected_table) {
-+			if (vsk->transport != transport)
-+				continue;
-+
- 			fn(sk_vsock(vsk));
-+		}
- 	}
- 
- 	spin_unlock_bh(&vsock_table_lock);
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index fb3302fff627..5afc194a58bb 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -24,6 +24,7 @@
- static struct workqueue_struct *virtio_vsock_workqueue;
- static struct virtio_vsock __rcu *the_virtio_vsock;
- static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
-+static struct virtio_transport virtio_transport; /* forward declaration */
- 
- struct virtio_vsock {
- 	struct virtio_device *vdev;
-@@ -384,7 +385,8 @@ static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
- 	switch (le32_to_cpu(event->id)) {
- 	case VIRTIO_VSOCK_EVENT_TRANSPORT_RESET:
- 		virtio_vsock_update_guest_cid(vsock);
--		vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+		vsock_for_each_connected_socket(&virtio_transport.transport,
-+						virtio_vsock_reset_sock);
- 		break;
- 	}
- }
-@@ -662,7 +664,8 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
- 	synchronize_rcu();
- 
- 	/* Reset all connected sockets when the device disappear */
--	vsock_for_each_connected_socket(virtio_vsock_reset_sock);
-+	vsock_for_each_connected_socket(&virtio_transport.transport,
-+					virtio_vsock_reset_sock);
- 
- 	/* Stop all work handlers to make sure no one is accessing the device,
- 	 * so we can safely call virtio_reset_device().
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 7aef34e32bdf..b17dc9745188 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -75,6 +75,8 @@ static u32 vmci_transport_qp_resumed_sub_id = VMCI_INVALID_ID;
- 
- static int PROTOCOL_OVERRIDE = -1;
- 
-+static struct vsock_transport vmci_transport; /* forward declaration */
-+
- /* Helper function to convert from a VMCI error code to a VSock error code. */
- 
- static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
-@@ -882,7 +884,8 @@ static void vmci_transport_qp_resumed_cb(u32 sub_id,
- 					 const struct vmci_event_data *e_data,
- 					 void *client_data)
- {
--	vsock_for_each_connected_socket(vmci_transport_handle_detach);
-+	vsock_for_each_connected_socket(&vmci_transport,
-+					vmci_transport_handle_detach);
- }
- 
- static void vmci_transport_recv_pkt_work(struct work_struct *work)
-
-base-commit: 3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b
--- 
-2.35.1.723.g4982287a31-goog
-
+I want to invest in your country
+May i use this medium to open a mutual communication with you, and
+seeking your acceptance towards investing in your country under your
+management as my partner, My name is Aisha Gaddafi , i am a Widow and
+single Mother with three Children, the only biological Daughter of
+late Libyan President (Late Colonel Muammar Gaddafi) and presently i
+am under political asylum protection by the  Government of this
+nation.
+I have funds worth =E2=80=9CTwenty Seven Million Five Hundred Thousand Unit=
+ed
+State Dollars=E2=80=9D -$27.500.000.00 US Dollars which i want to entrust o=
+n
+you for investment project in your country. If you are willing to
+handle this project on my behalf, kindly reply urgent to enable me
+provide you more details to start the transfer process.
+I shall appreciate your urgent response through my email address
+below: madamgadafiaisha@gmail.com
+Thanks
+Yours Truly Aisha
