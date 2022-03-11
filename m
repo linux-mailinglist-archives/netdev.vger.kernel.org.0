@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B3314D5C9A
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6CE74D5C98
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347261AbiCKHl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 02:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
+        id S1347254AbiCKHmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 02:42:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347249AbiCKHlw (ORCPT
+        with ESMTP id S1347251AbiCKHlw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:41:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20341B756A
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:49 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A4D1B7570
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 318F961E00
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3EA561E02
         for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 07:40:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155A5C340F6;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D14A3C340F3;
         Fri, 11 Mar 2022 07:40:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646984448;
-        bh=yACEXrawy2mLEHBJYBJHwlo/bTbuPMIKLxW4MJ7HKac=;
+        s=k20201202; t=1646984449;
+        bh=IyLeDJUNXJiJ+ePpIxL63WV3Ft/D/nHa8QXdl6lzJ80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sqzFPKXikb8oKxtNy1wwgnFp3K+gtFIcEr0lImpcErkEWjZ1TX8vuoils8dorNjiX
-         z5M6glIxnGB1BxG494Rkn9jW0CUQgPUPio0oGZFEVN4Wph0oGZJ4HkpzNDSA4MSSQN
-         U+ENuSSq1tPbkYsEbFUz+AxIjOOt1X3e2pT7ulbd1XFs90YUyUyB20bf9yxLIfsHvm
-         aT8nDBZuonmY9m9Ym18SD/eA4bfbnujD5iD47Jt2ujA6nqTISlA7n/y87AsCKWNxpU
-         M2cwm3n9JZnFFngHAF4eiv/cjmcqEXo/phF/Q/SA9uzITuHPMaVnXTy/JtrZ/XT3wu
-         +l0b/+hHTJHdw==
+        b=DBg9tJGzfurSwOWlSO9eCJ5W3U4EuvSdqGjlvijlDLSHqV6RO3tlae9zJvPxIRE+t
+         8BpczPtXcK35iD8wJ4e3A//uraHQLlMj+jqCBwNDAtB5Ka3TYq/oRst0qzjxddjm9P
+         iPn0BRCfSg6WbxeUPrUwwNMRvYRWcb34nHTg0KYuQInPeIAsR3lDU8eKzmMyRNiizM
+         dOfoH32/DqnCHyS/bbrqyqvhiF8+WRaWE05M1okpHY/ZXNSp6tytIS6rCMiQf0DkZ9
+         OySH/3xb0RrxEB0jMm8Ew1V8hv4NmaRai/llnbXlYVOJEK3NUbB/BwYjkzU0sAc3Hz
+         CJVWsVcZkr9IA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
-        Oz Shlomo <ozsh@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 12/15] net/mlx5: CT: Create smfs dr matchers dynamically
-Date:   Thu, 10 Mar 2022 23:40:28 -0800
-Message-Id: <20220311074031.645168-13-saeed@kernel.org>
+Subject: [net-next 13/15] net/mlx5: Query the maximum MCIA register read size from firmware
+Date:   Thu, 10 Mar 2022 23:40:29 -0800
+Message-Id: <20220311074031.645168-14-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220311074031.645168-1-saeed@kernel.org>
 References: <20220311074031.645168-1-saeed@kernel.org>
@@ -55,318 +55,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Blakey <paulb@nvidia.com>
+From: Gal Pressman <gal@nvidia.com>
 
-SMFS dr matchers are processed sequentially in hardware according to
-their priorities, and not skipped if empty.
+The MCIA register supports either 12 or 32 dwords, use the correct value
+by querying the capability from the MCAM register.
 
-Currently, smfs ct fs creates four predefined dr matchers per ct
-table (ct/ct nat) with hardcoded priority. Compared to dmfs ct fs
-using autogroups, this might cause additional hops in fastpath for
-traffic patterns that match later priorties, even if previous
-priorites are empty, e.g user only using ipv6 UDP traffic will
-have additional 3 hops.
-
-Create the matchers dynamically, using the highest priority available,
-on first rule usage, and remove them on last usage.
-
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en/tc/ct_fs_smfs.c     | 182 +++++++++---------
- 1 file changed, 94 insertions(+), 88 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/port.c | 8 +++++++-
+ include/linux/mlx5/mlx5_ifc.h                  | 4 +++-
+ include/linux/mlx5/port.h                      | 1 -
+ 3 files changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-index 6da8b87c0475..59988e24b704 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-@@ -1,6 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- /* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+index 289b29a23418..418ab777f6e8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+@@ -365,6 +365,12 @@ static void mlx5_sfp_eeprom_params_set(u16 *i2c_addr, int *page_num, u16 *offset
+ 	*offset -= MLX5_EEPROM_PAGE_LENGTH;
+ }
  
-+#include <linux/refcount.h>
++static int mlx5_mcia_max_bytes(struct mlx5_core_dev *dev)
++{
++	/* mcia supports either 12 dwords or 32 dwords */
++	return (MLX5_CAP_MCAM_FEATURE(dev, mcia_32dwords) ? 32 : 12) * sizeof(u32);
++}
 +
- #include "en_tc.h"
- #include "en/tc_priv.h"
- #include "en/tc_ct.h"
-@@ -13,24 +15,32 @@
- 	netdev_dbg(fs->netdev, "ct_fs_smfs debug: " fmt "\n", ##args)
- #define MLX5_CT_TCP_FLAGS_MASK cpu_to_be16(be32_to_cpu(TCP_FLAG_RST | TCP_FLAG_FIN) >> 16)
+ static int mlx5_query_mcia(struct mlx5_core_dev *dev,
+ 			   struct mlx5_module_eeprom_query_params *params, u8 *data)
+ {
+@@ -374,7 +380,7 @@ static int mlx5_query_mcia(struct mlx5_core_dev *dev,
+ 	void *ptr;
+ 	u16 size;
  
-+struct mlx5_ct_fs_smfs_matcher {
-+	struct mlx5dr_matcher *dr_matcher;
-+	struct list_head list;
-+	int prio;
-+	refcount_t ref;
-+};
-+
- struct mlx5_ct_fs_smfs_matchers {
--	struct mlx5dr_matcher *ipv4_tcp;
--	struct mlx5dr_matcher *ipv4_udp;
--	struct mlx5dr_matcher *ipv6_tcp;
--	struct mlx5dr_matcher *ipv6_udp;
-+	struct mlx5_ct_fs_smfs_matcher smfs_matchers[4];
-+	struct list_head used;
+-	size = min_t(int, params->size, MLX5_EEPROM_MAX_BYTES);
++	size = min_t(int, params->size, mlx5_mcia_max_bytes(dev));
+ 
+ 	MLX5_SET(mcia_reg, in, l, 0);
+ 	MLX5_SET(mcia_reg, in, size, size);
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 318fae4b3560..745107ff681d 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -9691,7 +9691,9 @@ struct mlx5_ifc_pcam_reg_bits {
  };
  
- struct mlx5_ct_fs_smfs {
--	struct mlx5_ct_fs_smfs_matchers ct_matchers;
--	struct mlx5_ct_fs_smfs_matchers ct_matchers_nat;
-+	struct mlx5dr_table *ct_tbl, *ct_nat_tbl;
-+	struct mlx5_ct_fs_smfs_matchers matchers;
-+	struct mlx5_ct_fs_smfs_matchers matchers_nat;
- 	struct mlx5dr_action *fwd_action;
- 	struct mlx5_flow_table *ct_nat;
-+	struct mutex lock; /* Guards matchers */
+ struct mlx5_ifc_mcam_enhanced_features_bits {
+-	u8         reserved_at_0[0x6a];
++	u8         reserved_at_0[0x5d];
++	u8         mcia_32dwords[0x1];
++	u8         reserved_at_5e[0xc];
+ 	u8         reset_state[0x1];
+ 	u8         ptpcyc2realtime_modify[0x1];
+ 	u8         reserved_at_6c[0x2];
+diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
+index 77ea4f9c5265..402413b3e914 100644
+--- a/include/linux/mlx5/port.h
++++ b/include/linux/mlx5/port.h
+@@ -56,7 +56,6 @@ enum mlx5_an_status {
+ 	MLX5_AN_LINK_DOWN   = 4,
  };
  
- struct mlx5_ct_fs_smfs_rule {
- 	struct mlx5_ct_fs_rule fs_rule;
- 	struct mlx5dr_rule *rule;
- 	struct mlx5dr_action *count_action;
-+	struct mlx5_ct_fs_smfs_matcher *smfs_matcher;
- };
- 
- static inline void
-@@ -97,71 +107,75 @@ mlx5_ct_fs_smfs_matcher_create(struct mlx5_ct_fs *fs, struct mlx5dr_table *tbl,
- 	return dr_matcher;
- }
- 
--static int
--mlx5_ct_fs_smfs_matchers_create(struct mlx5_ct_fs *fs, struct mlx5dr_table *tbl,
--				struct mlx5_ct_fs_smfs_matchers *ct_matchers)
-+static struct mlx5_ct_fs_smfs_matcher *
-+mlx5_ct_fs_smfs_matcher_get(struct mlx5_ct_fs *fs, bool nat, bool ipv4, bool tcp)
- {
--	const struct net_device *netdev = fs->netdev;
--	u32 prio = 0;
--	int err;
--
--	ct_matchers->ipv4_tcp = mlx5_ct_fs_smfs_matcher_create(fs, tbl, true, true, prio);
--	if (IS_ERR(ct_matchers->ipv4_tcp)) {
--		err = PTR_ERR(ct_matchers->ipv4_tcp);
--		netdev_warn(netdev,
--			    "%s, failed to create ipv4 tcp matcher, err: %d\n",
--			    INIT_ERR_PREFIX, err);
--		return err;
--	}
--
--	++prio;
--	ct_matchers->ipv4_udp = mlx5_ct_fs_smfs_matcher_create(fs, tbl, true, false, prio);
--	if (IS_ERR(ct_matchers->ipv4_udp)) {
--		err = PTR_ERR(ct_matchers->ipv4_udp);
--		netdev_warn(netdev,
--			    "%s, failed to create ipv4 udp matcher, err: %d\n",
--			    INIT_ERR_PREFIX, err);
--		goto err_matcher_ipv4_udp;
-+	struct mlx5_ct_fs_smfs *fs_smfs = mlx5_ct_fs_priv(fs);
-+	struct mlx5_ct_fs_smfs_matcher *m, *smfs_matcher;
-+	struct mlx5_ct_fs_smfs_matchers *matchers;
-+	struct mlx5dr_matcher *dr_matcher;
-+	struct mlx5dr_table *tbl;
-+	struct list_head *prev;
-+	int prio;
-+
-+	matchers = nat ? &fs_smfs->matchers_nat : &fs_smfs->matchers;
-+	smfs_matcher = &matchers->smfs_matchers[ipv4 * 2 + tcp];
-+
-+	if (refcount_inc_not_zero(&smfs_matcher->ref))
-+		return smfs_matcher;
-+
-+	mutex_lock(&fs_smfs->lock);
-+
-+	/* Retry with lock, as another thread might have already created the relevant matcher
-+	 * till we acquired the lock
-+	 */
-+	if (refcount_inc_not_zero(&smfs_matcher->ref))
-+		goto out_unlock;
-+
-+	// Find next available priority in sorted used list
-+	prio = 0;
-+	prev = &matchers->used;
-+	list_for_each_entry(m, &matchers->used, list) {
-+		prev = &m->list;
-+
-+		if (m->prio == prio)
-+			prio = m->prio + 1;
-+		else
-+			break;
- 	}
- 
--	++prio;
--	ct_matchers->ipv6_tcp = mlx5_ct_fs_smfs_matcher_create(fs, tbl, false, true, prio);
--	if (IS_ERR(ct_matchers->ipv6_tcp)) {
--		err = PTR_ERR(ct_matchers->ipv6_tcp);
--		netdev_warn(netdev,
--			    "%s, failed to create ipv6 tcp matcher, err: %d\n",
--			    INIT_ERR_PREFIX, err);
--		goto err_matcher_ipv6_tcp;
--	}
-+	tbl = nat ? fs_smfs->ct_nat_tbl : fs_smfs->ct_tbl;
-+	dr_matcher = mlx5_ct_fs_smfs_matcher_create(fs, tbl, ipv4, tcp, prio);
-+	if (IS_ERR(dr_matcher)) {
-+		netdev_warn(fs->netdev,
-+			    "ct_fs_smfs: failed to create matcher (nat %d, ipv4 %d, tcp %d), err: %ld\n",
-+			    nat, ipv4, tcp, PTR_ERR(dr_matcher));
- 
--	++prio;
--	ct_matchers->ipv6_udp = mlx5_ct_fs_smfs_matcher_create(fs, tbl, false, false, prio);
--	if (IS_ERR(ct_matchers->ipv6_udp)) {
--		err = PTR_ERR(ct_matchers->ipv6_udp);
--		netdev_warn(netdev,
--			    "%s, failed to create ipv6 tcp matcher, err: %d\n",
--			     INIT_ERR_PREFIX, err);
--		goto err_matcher_ipv6_udp;
-+		smfs_matcher = ERR_CAST(dr_matcher);
-+		goto out_unlock;
- 	}
- 
--	return 0;
-+	smfs_matcher->dr_matcher = dr_matcher;
-+	smfs_matcher->prio = prio;
-+	list_add(&smfs_matcher->list, prev);
-+	refcount_set(&smfs_matcher->ref, 1);
- 
--err_matcher_ipv6_udp:
--	mlx5_smfs_matcher_destroy(ct_matchers->ipv6_tcp);
--err_matcher_ipv6_tcp:
--	mlx5_smfs_matcher_destroy(ct_matchers->ipv4_udp);
--err_matcher_ipv4_udp:
--	mlx5_smfs_matcher_destroy(ct_matchers->ipv4_tcp);
--	return 0;
-+out_unlock:
-+	mutex_unlock(&fs_smfs->lock);
-+	return smfs_matcher;
- }
- 
- static void
--mlx5_ct_fs_smfs_matchers_destroy(struct mlx5_ct_fs_smfs_matchers *ct_matchers)
-+mlx5_ct_fs_smfs_matcher_put(struct mlx5_ct_fs *fs, struct mlx5_ct_fs_smfs_matcher *smfs_matcher)
- {
--	mlx5_smfs_matcher_destroy(ct_matchers->ipv6_udp);
--	mlx5_smfs_matcher_destroy(ct_matchers->ipv6_tcp);
--	mlx5_smfs_matcher_destroy(ct_matchers->ipv4_udp);
--	mlx5_smfs_matcher_destroy(ct_matchers->ipv4_tcp);
-+	struct mlx5_ct_fs_smfs *fs_smfs = mlx5_ct_fs_priv(fs);
-+
-+	if (!refcount_dec_and_mutex_lock(&smfs_matcher->ref, &fs_smfs->lock))
-+		return;
-+
-+	mlx5_smfs_matcher_destroy(smfs_matcher->dr_matcher);
-+	list_del(&smfs_matcher->list);
-+	mutex_unlock(&fs_smfs->lock);
- }
- 
- static int
-@@ -170,7 +184,6 @@ mlx5_ct_fs_smfs_init(struct mlx5_ct_fs *fs, struct mlx5_flow_table *ct,
- {
- 	struct mlx5dr_table *ct_tbl, *ct_nat_tbl, *post_ct_tbl;
- 	struct mlx5_ct_fs_smfs *fs_smfs = mlx5_ct_fs_priv(fs);
--	int err;
- 
- 	post_ct_tbl = mlx5_smfs_table_get_from_fs_ft(post_ct);
- 	ct_nat_tbl = mlx5_smfs_table_get_from_fs_ft(ct_nat);
-@@ -184,28 +197,18 @@ mlx5_ct_fs_smfs_init(struct mlx5_ct_fs *fs, struct mlx5_flow_table *ct,
- 
- 	ct_dbg("using smfs steering");
- 
--	err = mlx5_ct_fs_smfs_matchers_create(fs, ct_tbl, &fs_smfs->ct_matchers);
--	if (err)
--		goto err_init;
--
--	err = mlx5_ct_fs_smfs_matchers_create(fs, ct_nat_tbl, &fs_smfs->ct_matchers_nat);
--	if (err)
--		goto err_matchers_nat;
--
- 	fs_smfs->fwd_action = mlx5_smfs_action_create_dest_table(post_ct_tbl);
- 	if (!fs_smfs->fwd_action) {
--		err = -EINVAL;
--		goto err_action_create;
-+		return -EINVAL;
- 	}
- 
--	return 0;
-+	fs_smfs->ct_tbl = ct_tbl;
-+	fs_smfs->ct_nat_tbl = ct_nat_tbl;
-+	mutex_init(&fs_smfs->lock);
-+	INIT_LIST_HEAD(&fs_smfs->matchers.used);
-+	INIT_LIST_HEAD(&fs_smfs->matchers_nat.used);
- 
--err_action_create:
--	mlx5_ct_fs_smfs_matchers_destroy(&fs_smfs->ct_matchers_nat);
--err_matchers_nat:
--	mlx5_ct_fs_smfs_matchers_destroy(&fs_smfs->ct_matchers);
--err_init:
--	return err;
-+	return 0;
- }
- 
- static void
-@@ -214,8 +217,6 @@ mlx5_ct_fs_smfs_destroy(struct mlx5_ct_fs *fs)
- 	struct mlx5_ct_fs_smfs *fs_smfs = mlx5_ct_fs_priv(fs);
- 
- 	mlx5_smfs_action_destroy(fs_smfs->fwd_action);
--	mlx5_ct_fs_smfs_matchers_destroy(&fs_smfs->ct_matchers_nat);
--	mlx5_ct_fs_smfs_matchers_destroy(&fs_smfs->ct_matchers);
- }
- 
- static inline bool
-@@ -285,10 +286,9 @@ mlx5_ct_fs_smfs_ct_rule_add(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec,
- 			    struct mlx5_flow_attr *attr, struct flow_rule *flow_rule)
- {
- 	struct mlx5_ct_fs_smfs *fs_smfs = mlx5_ct_fs_priv(fs);
--	struct mlx5_ct_fs_smfs_matchers *matchers;
-+	struct mlx5_ct_fs_smfs_matcher *smfs_matcher;
- 	struct mlx5_ct_fs_smfs_rule *smfs_rule;
- 	struct mlx5dr_action *actions[5];
--	struct mlx5dr_matcher *matcher;
- 	struct mlx5dr_rule *rule;
- 	int num_actions = 0, err;
- 	bool nat, tcp, ipv4;
-@@ -315,22 +315,27 @@ mlx5_ct_fs_smfs_ct_rule_add(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec,
- 	tcp = MLX5_GET(fte_match_param, spec->match_value,
- 		       outer_headers.ip_protocol) == IPPROTO_TCP;
- 
--	matchers = nat ? &fs_smfs->ct_matchers_nat : &fs_smfs->ct_matchers;
--	matcher = ipv4 ? (tcp ? matchers->ipv4_tcp : matchers->ipv4_udp) :
--			 (tcp ? matchers->ipv6_tcp : matchers->ipv6_udp);
-+	smfs_matcher = mlx5_ct_fs_smfs_matcher_get(fs, nat, ipv4, tcp);
-+	if (IS_ERR(smfs_matcher)) {
-+		err = PTR_ERR(smfs_matcher);
-+		goto err_matcher;
-+	}
- 
--	rule = mlx5_smfs_rule_create(matcher, spec, num_actions, actions,
-+	rule = mlx5_smfs_rule_create(smfs_matcher->dr_matcher, spec, num_actions, actions,
- 				     MLX5_FLOW_CONTEXT_FLOW_SOURCE_ANY_VPORT);
- 	if (!rule) {
- 		err = -EINVAL;
--		goto err_rule;
-+		goto err_create;
- 	}
- 
- 	smfs_rule->rule = rule;
-+	smfs_rule->smfs_matcher = smfs_matcher;
- 
- 	return &smfs_rule->fs_rule;
- 
--err_rule:
-+err_create:
-+	mlx5_ct_fs_smfs_matcher_put(fs, smfs_matcher);
-+err_matcher:
- 	mlx5_smfs_action_destroy(smfs_rule->count_action);
- err_count:
- 	kfree(smfs_rule);
-@@ -345,6 +350,7 @@ mlx5_ct_fs_smfs_ct_rule_del(struct mlx5_ct_fs *fs, struct mlx5_ct_fs_rule *fs_ru
- 							      fs_rule);
- 
- 	mlx5_smfs_rule_destroy(smfs_rule->rule);
-+	mlx5_ct_fs_smfs_matcher_put(fs, smfs_rule->smfs_matcher);
- 	mlx5_smfs_action_destroy(smfs_rule->count_action);
- 	kfree(smfs_rule);
- }
+-#define MLX5_EEPROM_MAX_BYTES			32
+ #define MLX5_EEPROM_IDENTIFIER_BYTE_MASK	0x000000ff
+ #define MLX5_I2C_ADDR_LOW		0x50
+ #define MLX5_I2C_ADDR_HIGH		0x51
 -- 
 2.35.1
 
