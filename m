@@ -2,210 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B554D62CC
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 15:04:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B874D636F
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 15:28:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349019AbiCKOFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 09:05:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
+        id S1349299AbiCKO3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 09:29:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239331AbiCKOFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 09:05:15 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E47DF7464;
-        Fri, 11 Mar 2022 06:04:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647007450; x=1678543450;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0g8YZ60F6koJZZ5mPXUhXc+2GWru9uudgvFhUcsgcW4=;
-  b=beaOKpnksohKcVErRoo+TAxzUQd9brxNpMSz18hd8ZD2iebgF+hMPbY2
-   5lXhekFSQCwzNPoNKBHqbnxqqnyrfT8ImW0kE3Iod071DB+CZA1e6lxC6
-   P96AK2H/Y+tvyGbLEHkfjmjejQs3Vbm4Dy69FyLk3Pba2Ly8PuYdx5uxV
-   Zss8RhhCcjOL1yT+q+2DoC1fvN5Vn/Zb3TnYllvVnA58ocbBzUNmm0BIg
-   xvgm4uMg/sW/cEeL0hpxMROiO/P0lBjlTuELY+iCmjxmmhcu4qRyFWW+d
-   B2fzmdSj2O1IRIYGAMIYgXbr4oZb+GaO6k5m92t5razpk+0TiAbvjxIY2
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,174,1643698800"; 
-   d="scan'208";a="151697579"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Mar 2022 07:04:08 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 11 Mar 2022 07:04:08 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 11 Mar 2022 07:04:08 -0700
-Date:   Fri, 11 Mar 2022 15:07:00 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>, <Divya.Koppera@microchip.com>,
-        <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>, <richardcochran@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <Madhuri.Sripada@microchip.com>, <Manohar.Puri@microchip.com>
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <20220311140700.ibwyeu5bsz7tkibd@soft-dev3-1.localhost>
-References: <CO1PR11MB4771237FE3F53EBE43B614F6E2089@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YiYD2kAFq5EZhU+q@lunn.ch>
- <CO1PR11MB4771F7C1819E033EC613E262E2099@CO1PR11MB4771.namprd11.prod.outlook.com>
- <YidgHT8CLWrmhbTW@lunn.ch>
- <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
- <YiecBKGhVui1Gtb/@lunn.ch>
- <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
- <YifoltDp4/Fs+9op@lunn.ch>
- <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
- <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
+        with ESMTP id S244651AbiCKO3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 09:29:03 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A3EA1E3DA
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 06:27:58 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id q7-20020a7bce87000000b00382255f4ca9so7595879wmj.2
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 06:27:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=MpXiSYabOrYwVZBoUNg0nqtYEvuBi16Uja5dFf2EH0o=;
+        b=k2nh2gjDZ2GWduILDMTVTdPhwUGy/gKiaKiDAAeWeNvWs+qTTrNrgWKCpvV5YZTUem
+         oS/VqO60ezzCYtbnUQI49E+RYcTTpPSClCwilaRKFbUWSxsD5nb47zN5aSspNsfFktFZ
+         FkbA1p2tgEoHpfs74AHjwcd7z1Fmq06KPg4uI1LJjNZjy+w0+El9JAo7Kd2WQgnuoWT+
+         HpMizIPvpJ4kBD8vcbDXLo7JWtSiBBROSlbVgdGvOfUJcbc+q2t6xbeJDOeNJ7IgcDkf
+         oPtG5W7BIAAQOD9tgIZbFNVeFcpnIzkbhUQGtMeyPsJMSxGYr8R3kg3jnU3j/sB/SxSq
+         Xk9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=MpXiSYabOrYwVZBoUNg0nqtYEvuBi16Uja5dFf2EH0o=;
+        b=hIfFpnqIjOYM77GgCaaLLfU0sOznYUhVCIm1CpfYakEAy6Xtul50yR124t7K9PVgTY
+         AOMZx30NNfAVQxtdxYR9UDUrubL7IMV1IZ8D7I/EBCzVyNKJdxUaXuu/v5ikrMCpUz/q
+         wUFZZdcewVoEpN6nZEaTKNM4HWspmiJ3a50AngHIjMErQZkoaZJAn1JcN6Lk2HHax/ol
+         k35rtleyztqztVpihyxdgFi9jYIyEizBc9Hr9MBJ5cySIDOrBJ6h0wpAMfR8dXaguVd9
+         lcQ+chDfo0gmQjBpdseWxbg+m4p+hgKsmQdSsPFC4/Z8lx2u4eroN5xfJ1PC94GB2FX9
+         oqdA==
+X-Gm-Message-State: AOAM530Gi09Nl+Wr12hbOWrJVjX4jAAVywZeZCPcy7DCat4xS77sn3uv
+        ELCIkQ8diAo8N21TE/tpQJgI6g==
+X-Google-Smtp-Source: ABdhPJxQojmr11qBMELiUdbxhAZwsibac1eN9niCtFM0AGC0j84YVyfws1DV7ZJcT9GegkvTIMpT+w==
+X-Received: by 2002:a1c:f718:0:b0:380:ed20:6557 with SMTP id v24-20020a1cf718000000b00380ed206557mr16407510wmh.53.1647008876745;
+        Fri, 11 Mar 2022 06:27:56 -0800 (PST)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id u23-20020a7bcb17000000b0037bdfa1665asm14118274wmj.18.2022.03.11.06.27.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 06:27:56 -0800 (PST)
+Date:   Fri, 11 Mar 2022 14:27:54 +0000
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
+ outside the loop
+Message-ID: <20220311142754.a3jnnjqxpok75qgp@maple.lan>
+References: <CAHk-=whJX52b1jNsmzXeVr6Z898R=9rBcSYx2oLt69XKDbqhOg@mail.gmail.com>
+ <20220304025109.15501-1-xiam0nd.tong@gmail.com>
+ <CAHk-=wjesxw9U6JvTw34FREFAsayEE196Fi=VHtJXL8_9wgi=A@mail.gmail.com>
+ <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/09/2022 14:55, Russell King (Oracle) wrote:
-> 
-> On Wed, Mar 09, 2022 at 02:24:43PM +0100, Horatiu Vultur wrote:
-> > The 03/09/2022 00:36, Andrew Lunn wrote:
-> > >
-> > > On Tue, Mar 08, 2022 at 11:14:04PM +0100, Horatiu Vultur wrote:
-> > > > The 03/08/2022 19:10, Andrew Lunn wrote:
-> > > > >
-> > > > > > > So this is a function of the track length between the MAC and the PHY?
-> > > > > >
-> > > > > > Nope.
-> > > > > > This latency represents the time it takes for the frame to travel from RJ45
-> > > > > > module to the timestamping unit inside the PHY. To be more precisely,
-> > > > > > the timestamping unit will do the timestamp when it detects the end of
-> > > > > > the start of the frame. So it represents the time from when the frame
-> > > > > > reaches the RJ45 to when the end of start of the frame reaches the
-> > > > > > timestamping unit inside the PHY.
-> > > > >
-> > > > > I must be missing something here. How do you measure the latency
-> > > > > difference for a 1 meter cable vs a 100m cable?
-> > > >
-> > > > In the same way because the end result will be the same.
-> > >
-> > > The latency from the RJ45 to the PHY will be the same. But the latency
-> > > from the link peer PHY to the local PHY will be much more, 500ns. In
-> > > order for this RJ45 to PHY delay to be meaningful, don't you also need
-> > > to know the length of the cable? Is there a configuration knob
-> > > somewhere for the cable length?
-> > >
-> > > I'm assuming the ptp protocol does not try to measure the cable delay,
-> > > since if it did, there would be no need to know the RJ45-PHY delay, it
-> > > would be part of that.
-> > >
-> > > > > Isn't this error all just in the noise?
-> > > >
-> > > > I am not sure I follow this question.
-> > >
-> > > At minimum, you expect to have a 1m cable. The RJ45-PHY track length
-> > > is maybe 2cm? So 2% of the overall length. So you are trying to
-> > > correct the error this 2% causes. If you have a 100m cable, 0.02% is
-> > > RJ45-PHY part that you are trying to correct the error on. These
-> > > numbers seem so small, it seems pointless. It only seems to make sense
-> > > if you know the length of the cable, and to an accuracy of a few cm.
-> >
-> > I am not trying to adjust for the length of the cable.
-> > If we have the following drawing:
-> >
-> >  MAC                     PHY                    RJ45
-> > -----       --------------------------       --------
-> > |   |       |                        |       |       |
-> > |   |<----->|timestamp | FIFO | GPHY |<----->|       |<------> Peer
-> > |   |       |   unit                 |       |       |
-> > -----       --------------------------       --------
-> >                  ^                                   ^
-> >                  |            latency                |
-> >                  -------------------------------------
-> >
-> > I am trying to calculate this latency, which includes a 2cm of track +
-> > latency inside the PHY. As Richard mentioned also the PHY introduce some
-> > latency which can be microseconds.
-> 
-> I think we understand this, and compensating for the delay in the PHY
-> is quite reasonable, which surely will be a fixed amount irrespective
-> of the board.
-> 
-> However, Andrew's point is that the latency introduced by the copper
-> wire between the PHY and the RJ45 is insignificant, so insignificant
-> it's not worth bothering with - and I agree.
+On Sat, Mar 05, 2022 at 04:35:36PM -0800, Linus Torvalds wrote:
+> On Sat, Mar 5, 2022 at 1:09 PM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> What do people think? Is this clever and useful, or just too
+> subtle and odd to exist?
 
-OK, that is fine for me, we can ignore the latency introduced by the
-copper wire.
-
+> NOTE! I decided to add that "name of the target head in the target
+> type" to the list_traversal_head() macro, but it's not actually used
+> as is. It's more of a wishful "maybe we could add some sanity checking
+> of the target list entries later".
 > 
-> > I understand if we consider that this latency should not be in the DT
-> > and be part of the driver because the latency over the 2cm or 1.5cm of track
-> > is almost nothing. But then what about the case when we want to add these
-> > latencies to a MAC? They will depend on the latency inside the PHY so
-> > those should come from DT.
-> 
-> If you want to measure it to the MAC, then yes, the latency through
-> the PHY needs to be considered, and we probably need some new
-> interfaces inside the kernel so that MAC drivers can query phylib
-> to discover what the delay is.
+> Comments?
 
-Does that mean that each PHY needs to implement a new API? Because that
-would be a little bit of work to do there.
+It is possible simply to use spelling to help uncover errors in
+list_traverse()?
 
-> I don't think this is soemthing that
-> should be thrown into firmware, since the delay inside the PHY
-> should be constant (depending on what MAC side interface mode is
-> selected.)
-> 
-> Having it in firmware means that we're reliant on people ensuring
-> that they've looked up the right value for the PHY and its interface
-> mode not just once, but for every board out there - and if an error
-> is found, it brings up the question whether it should be corrected
-> on all boards or just one (and then there'll be questions why some
-> people have chosen randomly different values.)
-> 
-> > So it really doesn't matter to me if I use a 1m cable or 100m cable.
-> > What it matters is to see that mean path delay will be ~5ns for 1m cable
-> > and ~500ns for 100m cable. And if is not, then I need to update the
-> > register to calculate correctly the latency from RJ45 to timestamp unit
-> > in the PHY.
-> 
-> Does this mean you ask the user how long the cable is? Do you get them
-> to measure it to the nearest millimeter?
+Something like:
 
-My expectation is that the end user should not care about the length of
-the cable. He just needs to start ptp4l and have some sane results.
-Only the board manufacture were supposed to know the length of the
-cable to set their latency values.
+#define list_traversal_head(type, name, target_member) \
+	union { \
+		struct list_head name; \
+		type *name##_traversal_mismatch_##target_member; \
+	}
 
-> 
-> What about the overlap in the RJ45 connectors, and the height of the
-> pins in the RJ45? Some RJ45 connectors have staggered lengths for
-> their pins which would affect the true length. What about the total
-> length of the conductors in the RJ45 socket to the point that the
-> RJ45 plug makes contact? What happens if production then has to
-> change the make of RJ45 socket due to supply issues (which given
-> what is going on in the world at the moment is not unlikely.)
+And:
 
-If they don't introduce any significat latency then we can ignore them.
+#define list_traverse(pos, head, member) \
+	for (typeof(*head##_traversal_mismatch_##member) pos = list_first_entry(head, typeof(*pos), member); \
+		!list_entry_is_head(pos, head, member);	\
+		pos = list_next_entry(pos, member))
 
-> 
-> If you care about the 20mm or so on the board, then you ought to care
-> about all these other factors as well, and I suspect you're going to
-> be hard pressed to gather all that.
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+If I deliberately insert an error into your modified exit.c then the
+resulting errors even make helpful suggestions about what you did
+wrong:
 
--- 
-/Horatiu
+kernel/exit.c:412:32: error: ‘struct task_struct’ has no member named
+‘children_traversal_mismatch_children’; did you mean
+‘children_traversal_mismatch_sibling’?
+
+The suggestions are not always as good as the above
+(children_traversal_mismatch_ptrace_entry suggests
+ptraced_traversal_mismatch_ptrace_entry) but, nevertheless, it does
+ appears to be robust in detecting incorrect traversal.
+
+
+> diff --git a/include/linux/list.h b/include/linux/list.h
+> index dd6c2041d09c..1e8b3e495b51 100644
+> --- a/include/linux/list.h
+> +++ b/include/linux/list.h
+> @@ -25,6 +25,9 @@
+>  #define LIST_HEAD(name) \
+>  	struct list_head name = LIST_HEAD_INIT(name)
+
+Seeing this in the diff did set me thinking about static/global
+list heads.
+
+For architectures without HAVE_LD_DEAD_CODE_DATA_ELIMINATION then the
+"obvious" extension of list_traversal_head() ends up occupying bss
+space. Even replacing the pointer with a zero length array is still
+provoking gcc-11 (arm64) to allocate a byte from bss (often with a lot
+of padding added).
+
+Perhaps in the grand scheme of things this doesn't matter. Across the
+whole tree and all architecture I see only ~1200 instances so even in
+the worst case and with padding everywhere the wasted RAM is only a few
+kb.
+
+Nevertheless I was curious if there is any cunning tricks to avoid
+this? Naturally LIST_HEAD() could just declare a union but that would
+require all sites of use to be updated simultaneously and I rather
+like the way list_traverse_head() is entirely incremental.
+
+
+Daniel.
