@@ -2,146 +2,357 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB8944D6860
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 19:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0A554D6878
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 19:35:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244181AbiCKSVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 13:21:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39222 "EHLO
+        id S1350890AbiCKSgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 13:36:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232361AbiCKSVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 13:21:07 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2060.outbound.protection.outlook.com [40.107.244.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B101088
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 10:20:03 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MJn1009GXFWwMXISeKe2d9DcJPtVJ55cTxX7PVWfCiPFYeyF6673tmEFxO3y4+R2WwGagyTclCVaPRitvE6TcPSvmfDBK+ZJof8n4BH6FNUvB5KYqMKhHQ4ZnhIIMGchOXQxp3a1I/qzlnBqoK/zKWLA8bk+hpxIshrD2E6oA2EigVHoVHdnAy4BdoeuO39FTEqcoXjky3Aa9yasGX4uLE3QwrjyjClAOGB0+apXcY3JsjQZfglr0o4UvFoMdZvRx99XHFOf7/FShOSxssawS7mzH0zFarQNrVBdsZH9gfl3lCUqp19WkIwNSJXMx1N6BK8YPYMfzh5ZDEt4ytZtmg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WAlnB/9ggqeXM7ZvupLGcv3ARIrG6qveAgoq3Q5CeF8=;
- b=Ow5NPbUh5QRz9NtZRxELhYqAE2a4fj3LcGMPKLoJFyBFG8cuOt3c8frVB6tlOXzt5dHSM+pM50ZDBxszeosv8F+dJB6gxCym75rgyu1fMP/08IcOITp9g/Pp2FxCZNdihJTZBjt8NDVvyl/2Za734TIcNYMfMgtbuDiLboxZ+P50LQq/rHEETAIUeODiKCK/EBmmRGYac5jtXcuh+AGT6OvJJLaLE1cVlp6MSrhrVd4nxBacoUBO9rAaL82iknwsMSyR6xEI6UbLsgSm/1yEvqFCOy0SlprlSktdtH3wFgvcUlVgHoJYWtY2VOriUNSmHbKvHWTbebHPvTU37cGjSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WAlnB/9ggqeXM7ZvupLGcv3ARIrG6qveAgoq3Q5CeF8=;
- b=MvcQT/PhNaA/C4qo8vLHmQuGT+72XV2Mp2947u3W2TWGOZnd+gra9v9Ll9WpQXmC1oIq7nNFpf8fOzK+6NK47gYemZmgoYZBv0izBdHXeYvfwLWlmCXNz/IAJyosm4Kdsx7GXu8hvUGv+N68KLztvvonnmflUD60w8TQoAy97LY7PEO1Vf/UkKJFmwltJxITskRp1LcnmYsDUTkqGarOjZhJLIPSQJX+yVoAJ5d7F/p6EC1BwLSUVwux4fOH/WxHhjem/A+nC5xxiPfjzndFFA6EktEnglvA+qX5cCD6aGoOlShExpBi1MWoX2WhWZkEhAb5zPit0iVwa4UHOwbevQ==
-Received: from BN9PR03CA0551.namprd03.prod.outlook.com (2603:10b6:408:138::16)
- by CH2PR12MB4873.namprd12.prod.outlook.com (2603:10b6:610:63::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14; Fri, 11 Mar
- 2022 18:20:02 +0000
-Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:138:cafe::7b) by BN9PR03CA0551.outlook.office365.com
- (2603:10b6:408:138::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.14 via Frontend
- Transport; Fri, 11 Mar 2022 18:20:01 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT054.mail.protection.outlook.com (10.13.177.102) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5061.22 via Frontend Transport; Fri, 11 Mar 2022 18:20:01 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Fri, 11 Mar
- 2022 18:19:46 +0000
-Received: from localhost (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 11 Mar
- 2022 10:19:45 -0800
-Date:   Fri, 11 Mar 2022 20:19:42 +0200
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <idosch@nvidia.com>, <petrm@nvidia.com>,
-        <simon.horman@corigine.com>, <netdev@vger.kernel.org>,
-        <jiri@resnulli.us>
-Subject: Re: [RFT net-next 1/6] devlink: expose instance locking and add
- locked port registering
-Message-ID: <YiuSvkjcYL15TGru@unreal>
-References: <20220310001632.470337-1-kuba@kernel.org>
- <20220310001632.470337-2-kuba@kernel.org>
- <Yit0QFjt7HAHFNnq@unreal>
- <20220311082611.5bca7d5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <Yit/f9MQWusTmsJW@unreal>
- <20220311093913.60694baf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <YiuLsDa4jej7bVEz@unreal>
- <20220311100611.2993ff4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S230313AbiCKSgq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 13:36:46 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E601AC9A39;
+        Fri, 11 Mar 2022 10:35:41 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id r2so11065031iod.9;
+        Fri, 11 Mar 2022 10:35:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7+Ls5arUnSCwksjmSCsPYNM54tNgiDttw2ZYjX73Hgg=;
+        b=lSXvrBdOEx1Y0EvBwC9F9PmSC4aDvPVueTCJAGpHNb8xlVuX5LYGcRhHAcxiYSBlcm
+         vNcrdDvzqf54IdEP4X74uzc1fiDNJVz6A/N5x2SMozh6Wd5v+I5UBLYN+g+nuyJmWM17
+         Xx2etIt7HLKx+lI46A23cY0COrio2RYTJWmmj9aCnhhL+tGd3VkH/8a8L0EJJMkwWdd0
+         bgpZWR53TT0sibuYsOLY7fGgsJfKd7mlUQBhxXxrDKDm0A9IchHHTNYaDODm1buje5CG
+         T5cyWloQCT5qB6OFZOGahRlso6WCkHrEh0gUXpl0ivXdvQ3UxMrM8IWJ9BokPAxm0NRz
+         /b6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7+Ls5arUnSCwksjmSCsPYNM54tNgiDttw2ZYjX73Hgg=;
+        b=aFHMQuzpLgCBNFfV6k7jOBV/pr3pw2DxJ6COIjnZwaJVBEH1K/kQHL8BMDsO/atK5Z
+         8J0RV/nK1ZusjE2QyU8oigJ/ThpVYRHh3v5Sqlr8Cb75hVPXI8WeWtzi9PUnRwhjk2dB
+         W8TCAwX9tKhTuFn0baDTV+wBoa5m5S61AJa5eadThw+wPep+Ljzp8PtMWhZYYjwLBoWQ
+         tAmfvN6pXR3Z/TIoaDIESjmYIam/hwLTNZP4PlC9fystivMczhue031Gacb1mEgnuTlg
+         hHRWbz+R9ct6ftF0xUGEI8Fsm+LO/lIEZQVfCZrjFofOsTKpLDhyJ11S1ncVH3Cid9W/
+         7Wfg==
+X-Gm-Message-State: AOAM531wHMCxa7WbAZBvfssscmve5ldZ8v+bEeD+PRd8jFMbxdm4qHf7
+        c0fYa/AGxf4CJmWFnmqnN/HAm6ZZGIiM0386pjg=
+X-Google-Smtp-Source: ABdhPJw5C8kVaDNlwLVOy3RvsPhfbmQEogRYpeIxuQ4yPaojZ30oEXfixZ3yCXIBejdiT6a1Aa8XXLgnKcqYdFzLqxM=
+X-Received: by 2002:a02:a08c:0:b0:314:ede5:1461 with SMTP id
+ g12-20020a02a08c000000b00314ede51461mr9742499jah.103.1647023741252; Fri, 11
+ Mar 2022 10:35:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220311100611.2993ff4e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7d39cadc-7f53-4828-5de7-08da038bc21f
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4873:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB4873CCEEB3D78B48BFBE353EBD0C9@CH2PR12MB4873.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1m8GTXW44b77k1wbb6fdILrKivPYv/kf5eI0P+pQA9Bj0T4j0vlNE7MnQydTiLqOqShMUWnHBkVajvhdLQFj50YcPkFuSsRfp+cSBAepuOOPi/9dKRV1hfCp7gs6SLuzNoMsknHl6Wwjg82F/lFhgrrjk8iBm5LmeLBq9sLhskdKZk4I7QrikuuuXaFKKfK3148JZPJoelgHmTUT3xKpJRx0J9JAPwHpXRj0J6or5+kVHbP9NuzhHXucs58uOfgjf5yg5uNIkOX+zd81G2tc2lJhc1qcuoOBJ2jUgcdEPpbnHSk2m2+qrmflCGQPvig90MXPPI4HMJKdBuwFMGni81ivkjRBQc9a3bhRRnLQE5HWIOma1MUHId/4kUqFuMJFfTKEdKRcGwq6Gxa8U6HR0M6QUQW+uHkNlVh33Gm1RYVN3K2YkEO1YckFe37gNzbM4yCI3uN4fvqXZpgcelLpczhNrQxQMZz8O16h27brhvfpJ7rgfQRap5WEB0aJB2CJOq2C/syNU8jIX8wqXZb2jTR9THTZDsKv+zx55a8rPUDn261KuaGAJqGrr9Zg++LDd4NQxb/KWxqxRVhyc3zGm88PVwaRePCfAc+CCVI495RuxUyBvAM2SY2uACshMQbAM4KF6FaEBBdCb6Pg0DS9jGTFLZSYEK5dP5BV3L9V/IF+va5ZQrRhvQXRPVibMsYxAkKyxFR//U9qpNlj/3PQng==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(7916004)(36840700001)(40470700004)(46966006)(36860700001)(47076005)(426003)(82310400004)(336012)(16526019)(186003)(26005)(83380400001)(9686003)(2906002)(4326008)(8676002)(70586007)(70206006)(508600001)(54906003)(40460700003)(6916009)(86362001)(316002)(33716001)(8936002)(5660300002)(6666004)(356005)(81166007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 18:20:01.6800
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d39cadc-7f53-4828-5de7-08da038bc21f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4873
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <164673771096.1984170.8155877393151850116.stgit@devnote2>
+ <164673784786.1984170.244480726272055433.stgit@devnote2> <20220310091745.73580bd6314803cfbf21312d@kernel.org>
+ <CAEf4BzavZUn2Y40MjyGg_gkZqYQet_L0sWAJGOSgt_QVrtf21Q@mail.gmail.com> <20220311001103.6d3f30c80175b0d169e3f4f6@kernel.org>
+In-Reply-To: <20220311001103.6d3f30c80175b0d169e3f4f6@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 11 Mar 2022 10:35:30 -0800
+Message-ID: <CAEf4BzZXS5eg-409S5XGB-gC8CkC9YAYk7EsugKgOpCr+zAsUg@mail.gmail.com>
+Subject: Re: [PATCH v10 12/12] fprobe: Add a selftest for fprobe
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 10:06:11AM -0800, Jakub Kicinski wrote:
-> On Fri, 11 Mar 2022 19:49:36 +0200 Leon Romanovsky wrote:
-> > > No, no, that function is mostly for rcu dereference checking.
-> > > The calls should be eliminated as dead code on production systems.  
-> > 
-> > On systems without LOCKDEP, the devl_lock_is_held function will be
-> > generated to be like this:
-> > bool devl_lock_is_held(struct devlink *devlink)
-> > {
-> > 	return WARN_ON_ONCE(true);
-> > }
-> > EXPORT_SYMBOL_GPL(devl_lock_is_held);
-> 
-> I think you missed my first sentence. Anyway, this is what I'll do in
-> v1:
-> 
-> #ifdef CONFIG_LOCKDEP
-> /* For use in conjunction with LOCKDEP only e.g. rcu_dereference_protected() */
-> bool devl_lock_is_held(struct devlink *devlink)
-> {
-> 	return lockdep_is_held(&devlink->lock);
-> }
-> EXPORT_SYMBOL_GPL(devl_lock_is_held);
-> #endif
+On Thu, Mar 10, 2022 at 7:11 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>
+> On Wed, 9 Mar 2022 16:40:00 -0800
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>
+> > On Wed, Mar 9, 2022 at 4:17 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> > >
+> > > Hi,
+> > >
+> > > On Tue,  8 Mar 2022 20:10:48 +0900
+> > > Masami Hiramatsu <mhiramat@kernel.org> wrote:
+> > >
+> > > > Add a KUnit based selftest for fprobe interface.
+> > > >
+> > > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+> > > > ---
+> > > >  Changes in v9:
+> > > >   - Rename fprobe_target* to fprobe_selftest_target*.
+> > > >   - Find the correct expected ip by ftrace_location_range().
+> > > >   - Since the ftrace_location_range() is not exposed to module, make
+> > > >     this test only for embedded.
+> > > >   - Add entry only test.
+> > > >   - Reset the fprobe structure before reuse it.
+> > > > ---
+> > > >  lib/Kconfig.debug |   12 ++++
+> > > >  lib/Makefile      |    2 +
+> > > >  lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+> > > >  3 files changed, 188 insertions(+)
+> > > >  create mode 100644 lib/test_fprobe.c
+> > > >
+> > > > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> > > > index 14b89aa37c5c..ffc469a12afc 100644
+> > > > --- a/lib/Kconfig.debug
+> > > > +++ b/lib/Kconfig.debug
+> > > > @@ -2100,6 +2100,18 @@ config KPROBES_SANITY_TEST
+> > > >
+> > > >         Say N if you are unsure.
+> > > >
+> > > > +config FPROBE_SANITY_TEST
+> > > > +     bool "Self test for fprobe"
+> > > > +     depends on DEBUG_KERNEL
+> > > > +     depends on FPROBE
+> > > > +     depends on KUNIT
+> > >
+> > > Hmm, this caused a build error with allmodconfig because KUNIT=m but FPROBE_SANITY_TEST=y.
+> > > Let me fix this issue.
+> >
+> > Please base on top of bpf-next and add [PATCH v11 bpf-next] to subject.
+>
+> OK, let me rebase on it.
+> There are master and for-next branch, which one is better to use?
+>
 
-Because you put EXPORT_SYMBOL_GPL, this function will be used by drivers
-too, which will need to write something like this:
+Sorry, missed your reply earlier. Always rebase against master.
 
-if (IS_ENABLED(CONFIG_LOCKDEP))
-     devl_lock_is_held(devlink)
+You forgot to add "bpf-next" into [PATCH] prefix, so I had to manually
+mark it in patchworks as delegated to bpf queue (this is necessary for
+our CI to properly pick it up). For future submissions to bpf-next,
+please don't forget to add "bpf-next" marker.
 
-Otherwise, they will get linkage error in systems without LOCKDEP.
-
-Thanks
+> Thank you,
+>
+> >
+> > >
+> > > Thank you,
+> > >
+> > > > +     help
+> > > > +       This option will enable testing the fprobe when the system boot.
+> > > > +       A series of tests are made to verify that the fprobe is functioning
+> > > > +       properly.
+> > > > +
+> > > > +       Say N if you are unsure.
+> > > > +
+> > > >  config BACKTRACE_SELF_TEST
+> > > >       tristate "Self test for the backtrace code"
+> > > >       depends on DEBUG_KERNEL
+> > > > diff --git a/lib/Makefile b/lib/Makefile
+> > > > index 300f569c626b..154008764b16 100644
+> > > > --- a/lib/Makefile
+> > > > +++ b/lib/Makefile
+> > > > @@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
+> > > >  obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
+> > > >  obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
+> > > >  obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
+> > > > +CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
+> > > > +obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
+> > > >  #
+> > > >  # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
+> > > >  # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
+> > > > diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
+> > > > new file mode 100644
+> > > > index 000000000000..ed70637a2ffa
+> > > > --- /dev/null
+> > > > +++ b/lib/test_fprobe.c
+> > > > @@ -0,0 +1,174 @@
+> > > > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > > > +/*
+> > > > + * test_fprobe.c - simple sanity test for fprobe
+> > > > + */
+> > > > +
+> > > > +#include <linux/kernel.h>
+> > > > +#include <linux/fprobe.h>
+> > > > +#include <linux/random.h>
+> > > > +#include <kunit/test.h>
+> > > > +
+> > > > +#define div_factor 3
+> > > > +
+> > > > +static struct kunit *current_test;
+> > > > +
+> > > > +static u32 rand1, entry_val, exit_val;
+> > > > +
+> > > > +/* Use indirect calls to avoid inlining the target functions */
+> > > > +static u32 (*target)(u32 value);
+> > > > +static u32 (*target2)(u32 value);
+> > > > +static unsigned long target_ip;
+> > > > +static unsigned long target2_ip;
+> > > > +
+> > > > +static noinline u32 fprobe_selftest_target(u32 value)
+> > > > +{
+> > > > +     return (value / div_factor);
+> > > > +}
+> > > > +
+> > > > +static noinline u32 fprobe_selftest_target2(u32 value)
+> > > > +{
+> > > > +     return (value / div_factor) + 1;
+> > > > +}
+> > > > +
+> > > > +static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
+> > > > +{
+> > > > +     KUNIT_EXPECT_FALSE(current_test, preemptible());
+> > > > +     /* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
+> > > > +     if (ip != target_ip)
+> > > > +             KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
+> > > > +     entry_val = (rand1 / div_factor);
+> > > > +}
+> > > > +
+> > > > +static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
+> > > > +{
+> > > > +     unsigned long ret = regs_return_value(regs);
+> > > > +
+> > > > +     KUNIT_EXPECT_FALSE(current_test, preemptible());
+> > > > +     if (ip != target_ip) {
+> > > > +             KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
+> > > > +             KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
+> > > > +     } else
+> > > > +             KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
+> > > > +     KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
+> > > > +     exit_val = entry_val + div_factor;
+> > > > +}
+> > > > +
+> > > > +/* Test entry only (no rethook) */
+> > > > +static void test_fprobe_entry(struct kunit *test)
+> > > > +{
+> > > > +     struct fprobe fp_entry = {
+> > > > +             .entry_handler = fp_entry_handler,
+> > > > +     };
+> > > > +
+> > > > +     current_test = test;
+> > > > +
+> > > > +     /* Before register, unregister should be failed. */
+> > > > +     KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
+> > > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
+> > > > +
+> > > > +     entry_val = 0;
+> > > > +     exit_val = 0;
+> > > > +     target(rand1);
+> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
+> > > > +     KUNIT_EXPECT_EQ(test, 0, exit_val);
+> > > > +
+> > > > +     entry_val = 0;
+> > > > +     exit_val = 0;
+> > > > +     target2(rand1);
+> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
+> > > > +     KUNIT_EXPECT_EQ(test, 0, exit_val);
+> > > > +
+> > > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
+> > > > +}
+> > > > +
+> > > > +static void test_fprobe(struct kunit *test)
+> > > > +{
+> > > > +     struct fprobe fp = {
+> > > > +             .entry_handler = fp_entry_handler,
+> > > > +             .exit_handler = fp_exit_handler,
+> > > > +     };
+> > > > +
+> > > > +     current_test = test;
+> > > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
+> > > > +
+> > > > +     entry_val = 0;
+> > > > +     exit_val = 0;
+> > > > +     target(rand1);
+> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
+> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
+> > > > +
+> > > > +     entry_val = 0;
+> > > > +     exit_val = 0;
+> > > > +     target2(rand1);
+> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
+> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
+> > > > +
+> > > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
+> > > > +}
+> > > > +
+> > > > +static void test_fprobe_syms(struct kunit *test)
+> > > > +{
+> > > > +     static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
+> > > > +     struct fprobe fp = {
+> > > > +             .entry_handler = fp_entry_handler,
+> > > > +             .exit_handler = fp_exit_handler,
+> > > > +     };
+> > > > +
+> > > > +     current_test = test;
+> > > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
+> > > > +
+> > > > +     entry_val = 0;
+> > > > +     exit_val = 0;
+> > > > +     target(rand1);
+> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
+> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
+> > > > +
+> > > > +     entry_val = 0;
+> > > > +     exit_val = 0;
+> > > > +     target2(rand1);
+> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
+> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
+> > > > +
+> > > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
+> > > > +}
+> > > > +
+> > > > +static unsigned long get_ftrace_location(void *func)
+> > > > +{
+> > > > +     unsigned long size, addr = (unsigned long)func;
+> > > > +
+> > > > +     if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
+> > > > +             return 0;
+> > > > +
+> > > > +     return ftrace_location_range(addr, addr + size - 1);
+> > > > +}
+> > > > +
+> > > > +static int fprobe_test_init(struct kunit *test)
+> > > > +{
+> > > > +     do {
+> > > > +             rand1 = prandom_u32();
+> > > > +     } while (rand1 <= div_factor);
+> > > > +
+> > > > +     target = fprobe_selftest_target;
+> > > > +     target2 = fprobe_selftest_target2;
+> > > > +     target_ip = get_ftrace_location(target);
+> > > > +     target2_ip = get_ftrace_location(target2);
+> > > > +
+> > > > +     return 0;
+> > > > +}
+> > > > +
+> > > > +static struct kunit_case fprobe_testcases[] = {
+> > > > +     KUNIT_CASE(test_fprobe_entry),
+> > > > +     KUNIT_CASE(test_fprobe),
+> > > > +     KUNIT_CASE(test_fprobe_syms),
+> > > > +     {}
+> > > > +};
+> > > > +
+> > > > +static struct kunit_suite fprobe_test_suite = {
+> > > > +     .name = "fprobe_test",
+> > > > +     .init = fprobe_test_init,
+> > > > +     .test_cases = fprobe_testcases,
+> > > > +};
+> > > > +
+> > > > +kunit_test_suites(&fprobe_test_suite);
+> > > > +
+> > > > +MODULE_LICENSE("GPL");
+> > > >
+> > >
+> > >
+> > > --
+> > > Masami Hiramatsu <mhiramat@kernel.org>
+>
+>
+> --
+> Masami Hiramatsu <mhiramat@kernel.org>
