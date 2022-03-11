@@ -2,75 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 436C44D5CD9
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B498A4D5CF0
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 09:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239061AbiCKIAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 03:00:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33700 "EHLO
+        id S1347338AbiCKIDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 03:03:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233212AbiCKIAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 03:00:16 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDF44177D1C;
-        Thu, 10 Mar 2022 23:59:13 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id w27so13701737lfa.5;
-        Thu, 10 Mar 2022 23:59:13 -0800 (PST)
+        with ESMTP id S237155AbiCKID0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 03:03:26 -0500
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880231B84FA;
+        Fri, 11 Mar 2022 00:02:23 -0800 (PST)
+Received: by mail-pg1-x541.google.com with SMTP id e6so6863500pgn.2;
+        Fri, 11 Mar 2022 00:02:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=Mwdiioncj/l/cynziYaX1F6ed/Qr7hUrnVD41vK//OY=;
-        b=NFol+J8jV+aPmMHdQfby2hgu/UECHYPTMby4XDMqFm2Dx3W0K15oIN3u/7h3B8HlAM
-         XVYWOg7KIdNTdnce9miayjD42y6zEOCsjpzqcIHHJrAGvly+9o53fXqUJqm7etjTsB4i
-         GkVsWujIJ5enwoNBRmgMg1gMFwpudEaRfea89eNVXAdpCd3ynMiJOGjTqwHDwRIu+LBX
-         SCMJqY2RZ/Fo0G2w+8y/syFGrrrT8HtFXvGLoXAt/LEFXUklTKwX7FOfCZ5lAxIcyQwR
-         X8kKP/ZC3tvWkem1uWTlzEg/HgrneNlPoQsC8EcFAwfEfngnV5IUBUlizXleOITgPxB3
-         2F3w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FQQzdTx4AXRc0UqtDWCC5ACivflzrCQnePi6OUu3CnY=;
+        b=oXuBGb1ekwEcPik1Skv2Fud4W+/BLF+UgdNx8W3TV0XH00cT/oJnY2jDp4Xo38CwZE
+         RxW1FtQYYKqOr9IXiaEDFEkz6w55QEvrSf27A7ug65Gxn7m7850A+cigFBtZkBg/0vin
+         KdJW71wQbmknr/t5zatXElITjF/xbj+qIwlz+lQhfjQqt9aM2+PlQa2kq0kwwIKEsJSF
+         q2DlzXLdvl7B0VB5rt4UtdCRwsZJvQATmJCXexMG8QNCFuREixR+9jeFYd4Ca86G9iPZ
+         jmYEDFC+1j1F6SexGZinW9BVlV5H60GtrEG9wKxz3a1ubHO9NvCnfezcpjK3LbnesmUV
+         UjWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Mwdiioncj/l/cynziYaX1F6ed/Qr7hUrnVD41vK//OY=;
-        b=ocq2hIXwl8cQWXgYRrLK8n9FlToeVcdVUUeMxnf5L0Q7nXwDnzL+HcbYO/Nb2i4LTd
-         oImSELQ0uc3XJp0oY1elPOpJwwyMkPTs8AndRiNZsXIMXjpw0e9Ych8ViXRbCD9OCnyL
-         rOh1xfgMFIObSzkhjVe9mjvIxnkir7qjdd1Os9F79r9TAzHoRxkaCS/JFB8gTpamRpVd
-         IkjgGHgRK1aJhLEaeHzKa2DmRz5En4RfUQdw9uyV+ijb6b+Lv1lwG4O0L4dWAz7A1LTb
-         oa/t63vMfZ817DThVSq0dIC7L/Eygu2GEvIgfcDgQgeLVwaIj6DIAgqA+G+rpeK3CDYC
-         SYFw==
-X-Gm-Message-State: AOAM5313avq5dVaX8h56ctcQ88WSmYPyKtJ5MzfE7ARd20Ct2yD1VHzZ
-        vaLiVVpFxhAtgZyG4kobAlU=
-X-Google-Smtp-Source: ABdhPJxSVNzm7fcZkugcNK25HRPd1LdcUjg89I2YlhZQDTS8+GKKmsNWC6+vP8ZvCqOjk1Vc+1UEzQ==
-X-Received: by 2002:a05:6512:c07:b0:448:3b4b:2b75 with SMTP id z7-20020a0565120c0700b004483b4b2b75mr5297102lfu.283.1646985552193;
-        Thu, 10 Mar 2022 23:59:12 -0800 (PST)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id k17-20020a056512331100b00448303beb30sm1454320lfe.101.2022.03.10.23.59.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FQQzdTx4AXRc0UqtDWCC5ACivflzrCQnePi6OUu3CnY=;
+        b=4BkqjcrHxcOo3nvpPRZFr9O36zxHQjI0IFXaSto8K8lU70uJdDlmf9BdppBiWX2r5I
+         HLg60r7IAo4NNl85iMHOvB3EVTVDcHB8TQSFiF7g6jW6OGTnFdJ8JtMpZN8IxDtwg96o
+         Agxo7CG3ynv+d3WjxKXjIbCRFbzovNaMqOxB9mKuBTbEVGWc4a4iBxEF23SpCacSJS1o
+         NJqxncqdfLEqSe3YCIg5hv6umBBOZM+YesA3XZDyf91cKfk2dkZv4SqV2wmsUZjhIcgH
+         Ne7PXHDgn7cBnQNBmUFpGuAuF1WyHMcYrZymQgEMBMtTBROIsX83yfJ6WY4qSaxckHsw
+         tPQg==
+X-Gm-Message-State: AOAM532TCobGjAbBIA9d3vKBxKWenkDSAw0/ozbjJCQ0nV2FrbMDSYkR
+        7m2Aq91nDv/1ZA7yS9aVtcw=
+X-Google-Smtp-Source: ABdhPJxpdkaTnc5mX0kbOkSmB598KHBiETpwSD98+GxI2nb8FzlGSPxE1F+GVG/dsKobhveVBZmwvg==
+X-Received: by 2002:a63:90c7:0:b0:37c:7a8c:c2d3 with SMTP id a190-20020a6390c7000000b0037c7a8cc2d3mr7476395pge.473.1646985743045;
+        Fri, 11 Mar 2022 00:02:23 -0800 (PST)
+Received: from slim.das-security.cn ([103.84.139.54])
+        by smtp.gmail.com with ESMTPSA id b2-20020a056a000a8200b004f1111c66afsm10660741pfl.148.2022.03.11.00.02.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Mar 2022 23:59:11 -0800 (PST)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-In-Reply-To: <YioRQpUTJ7WmTLXQ@lunn.ch>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
- <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
- <YioRQpUTJ7WmTLXQ@lunn.ch>
-Date:   Fri, 11 Mar 2022 08:59:04 +0100
-Message-ID: <86y21gvs1j.fsf@gmail.com>
+        Fri, 11 Mar 2022 00:02:22 -0800 (PST)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr,
+        stefan.maetje@esd.eu, paskripkin@gmail.com,
+        remigiusz.kollataj@mobica.com
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] can: mcba_usb: fix possible double dev_kfree_skb in mcba_usb_start_xmit
+Date:   Fri, 11 Mar 2022 16:02:08 +0800
+Message-Id: <20220311080208.45047-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,63 +70,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On tor, mar 10, 2022 at 15:54, Andrew Lunn <andrew@lunn.ch> wrote:
->> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
->> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
->> +									    chip->ports[spid].port,
->> +									    &entry,
->> +									    fid);
->
->> +static int mv88e6xxx_find_vid_on_matching_fid(struct mv88e6xxx_chip *chip,
->> +					      const struct mv88e6xxx_vtu_entry *entry,
->> +					      void *priv)
->> +{
->> +	struct mv88e6xxx_fid_search_ctx *ctx = priv;
->> +
->> +	if (ctx->fid_search == entry->fid) {
->> +		ctx->vid_found = entry->vid;
->> +		return 1;
->> +	}
->> +	return 0;
->> +}
->> +
->> +int mv88e6xxx_switchdev_handle_atu_miss_violation(struct mv88e6xxx_chip *chip,
->> +						  int port,
->> +						  struct mv88e6xxx_atu_entry *entry,
->> +						  u16 fid)
->> +{
->> +	struct switchdev_notifier_fdb_info info = {
->> +		.addr = entry->mac,
->> +		.vid = 0,
->> +		.added_by_user = false,
->> +		.is_local = false,
->> +		.offloaded = true,
->> +		.locked = true,
->> +	};
->> +	struct mv88e6xxx_fid_search_ctx ctx;
->> +	struct netlink_ext_ack *extack;
->> +	struct net_device *brport;
->> +	struct dsa_port *dp;
->> +	int err;
->> +
->> +	ctx.fid_search = fid;
->> +	err = mv88e6xxx_vtu_walk(chip, mv88e6xxx_find_vid_on_matching_fid, &ctx);
->
-> I could be reading this code wrong, but it looks like you assume there
-> is a single new entry in the ATU. But interrupts on these devices are
-> slow. It would be easy for two or more devices to pop into existence
-> at the same time. Don't you need to walk the whole ATU to find all the
-> new entries? Have you tried this with a traffic generating populating
-> the ATU with new entries at different rates, up to line rate? Do you
-> get notifications for them all?
->
->     Andrew
+There is no need to call dev_kfree_skb when usb_submit_urb fails beacause
+can_put_echo_skb deletes original skb and can_free_echo_skb deletes the cloned
+skb.
 
-We have not tried your said test, but if a packet doesn't manage to
-trigger a ATU miss violation interrupt, not much will happen as far as I
-see. The device sending the packet will not get access, but if it sends
-again (maybe after a short while), it can still trigger the ATU miss
-violation interrupt and get access.
-I think that the normal behaviour for a device would be to try and
-connect, and if that is not successfull inside a short time, it will wait
-for a timeout before trying again.
+Fixes: 51f3baad7de9 ("can: mcba_usb: Add support for Microchip CAN BUS Analyzer")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+ drivers/net/can/usb/mcba_usb.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
+index 77bddff86252..7c198eb5bc9c 100644
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -364,7 +364,6 @@ static netdev_tx_t mcba_usb_start_xmit(struct sk_buff *skb,
+ xmit_failed:
+ 	can_free_echo_skb(priv->netdev, ctx->ndx, NULL);
+ 	mcba_usb_free_ctx(ctx);
+-	dev_kfree_skb(skb);
+ 	stats->tx_dropped++;
+ 
+ 	return NETDEV_TX_OK;
+-- 
+2.25.1
+
