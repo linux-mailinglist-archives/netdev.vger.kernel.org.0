@@ -2,148 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80F794D6571
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 16:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 450704D657B
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 16:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347525AbiCKP6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 10:58:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        id S1344571AbiCKP7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 10:59:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350265AbiCKP6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 10:58:25 -0500
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C63731451E6;
-        Fri, 11 Mar 2022 07:57:17 -0800 (PST)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgDHzzNHcStioxCZAA--.41247S2;
-        Fri, 11 Mar 2022 23:56:59 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, ralf@linux-mips.org,
-        jreuter@yaina.de, thomas@osterried.de,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net V2 1/2] ax25: Fix refcount leaks caused by ax25_cb_del()
-Date:   Fri, 11 Mar 2022 23:55:50 +0800
-Message-Id: <20220311155550.102954-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgDHzzNHcStioxCZAA--.41247S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxGw1Uur4DKw15Cw18JF43Jrb_yoW5AF4rpF
-        WUtF4rJrZ7tFs5CrsxWryxWF1rZrWj9393Jr1Yva4Ik3s8JasYy34rtryUtry3JFZ8JF48
-        Xw17W3WxAF1kuF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUka1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
-        6r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUZa9-UUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkFAVZdtYnj3gAUsR
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S241374AbiCKP7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 10:59:54 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC439186421;
+        Fri, 11 Mar 2022 07:58:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0B8FDCE2952;
+        Fri, 11 Mar 2022 15:58:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68636C340E9;
+        Fri, 11 Mar 2022 15:58:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647014327;
+        bh=xkk6Hyp9tf1SBuWkafNM2PoMOMKlgQKz/yoJR3HwZpE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X9dp/+3uU9u61M2mWfpYQV7vbOLOaMCy7Mi7rBcfrEufsJjpDBp/SGpBKs+ojtfm+
+         MjPbg5vZC1Qf85kcKvp6NdLqlGIrKtEtZDi3xzYaXEpOtLyyt1knrbMLNgujn7I/nc
+         F9UUzgzQM8QSJ0LjiC3AxrueCxLDio2q32AMtLEt6j63MWwfMoZX2Lva1sEhdnSjim
+         VsYbjGzYsT3buixyXyoxqsSGon4aPtxkyjY1SHsuR4OmfobNqQKvvLaa54UiHeV/F0
+         OwhjZRedi49lc6DbDeE4V7T0FzcDWtsEbYkOhrhwQpEetQIKEuMbcd0r5BaFmpC18v
+         DkhlzPcQXHlMg==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v11 00/12] fprobe: Introduce fprobe function entry/exit probe 
+Date:   Sat, 12 Mar 2022 00:58:40 +0900
+Message-Id: <164701432038.268462.3329725152949938527.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
-avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
-net_device caused by rebinding operation") increase the refcounts of
-ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
-in ax25_kill_by_device() in order to prevent UAF bugs, but there are
-reference count leaks.
+Hi,
 
-The root cause of refcount leaks is shown below:
+Here is the 11th version of fprobe. This version fixes some issues reported by
+build bots (Thanks!) and rebased on bpf-next tree.
 
-     (Thread 1)                      |      (Thread 2)
-ax25_bind()                          |
- ...                                 |
- ax25_addr_ax25dev()                 |
-  ax25_dev_hold()   //(1)            |
-  ...                                |
- dev_hold_track()   //(2)            |
- ...                                 | ax25_destroy_socket()
-                                     |  ax25_cb_del()
-                                     |   ...
-                                     |   hlist_del_init() //(3)
-                                     |
-                                     |
-     (thread 3)                      |
-ax25_kill_by_device()                |
- ...                                 |
- ax25_for_each(s, &ax25_list) {      |
-  if (s->ax25_dev == ax25_dev) //(4) |
-   ...                               |
+The previous version (v10) is here[1];
 
-Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
-position (1) and increase the refcount of net_device in position (2).
-Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
-ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
-Finally, the decrements of refcounts in ax25_kill_by_device() will not
-be executed, because no s->ax25_dev equals to ax25_dev in position (4).
+[1] https://lore.kernel.org/all/164673771096.1984170.8155877393151850116.stgit@devnote2/T/#u
 
-This patch adds decrements of refcounts in ax25_release() and use
-lock_sock() to do synchronization. If refcounts decrease in ax25_release(),
-the decrements of refcounts in ax25_kill_by_device() will not be
-executed and vice versa.
+This series introduces the fprobe, the function entry/exit probe
+with multiple probe point support for x86, arm64 and powerpc64le.
+This also introduces the rethook for hooking function return as same as
+the kretprobe does. This abstraction will help us to generalize the fgraph
+tracer, because we can just switch to it from the rethook in fprobe,
+depending on the kernel configuration.
 
-Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
-Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
-Reported-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+The patch [1/12] is from Jiri's series[2].
+
+[2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
+
+And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
+if user wants to share the same code (or share a same resource) on the
+fprobe and the kprobes.
+
+I forcibly updated my kprobes/fprobe branch, you can pull this series
+from:
+
+ https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git kprobes/fprobe
+
+Thank you,
+
 ---
-Changes in V2:
-  - Add decrements of refcounts in ax25_release().
 
- net/ax25/af_ax25.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+Jiri Olsa (1):
+      ftrace: Add ftrace_set_filter_ips function
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 6bd09718077..0886109421a 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -98,8 +98,10 @@ static void ax25_kill_by_device(struct net_device *dev)
- 			spin_unlock_bh(&ax25_list_lock);
- 			lock_sock(sk);
- 			s->ax25_dev = NULL;
--			dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
--			ax25_dev_put(ax25_dev);
-+			if (sk->sk_wq) {
-+				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+				ax25_dev_put(ax25_dev);
-+			}
- 			ax25_disconnect(s, ENETUNREACH);
- 			release_sock(sk);
- 			spin_lock_bh(&ax25_list_lock);
-@@ -979,14 +981,20 @@ static int ax25_release(struct socket *sock)
- {
- 	struct sock *sk = sock->sk;
- 	ax25_cb *ax25;
-+	ax25_dev *ax25_dev;
- 
- 	if (sk == NULL)
- 		return 0;
- 
- 	sock_hold(sk);
--	sock_orphan(sk);
- 	lock_sock(sk);
-+	sock_orphan(sk);
- 	ax25 = sk_to_ax25(sk);
-+	ax25_dev = ax25->ax25_dev;
-+	if (ax25_dev) {
-+		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+		ax25_dev_put(ax25_dev);
-+	}
- 
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		switch (ax25->state) {
--- 
-2.17.1
+Masami Hiramatsu (11):
+      fprobe: Add ftrace based probe APIs
+      rethook: Add a generic return hook
+      rethook: x86: Add rethook x86 implementation
+      arm64: rethook: Add arm64 rethook implementation
+      powerpc: Add rethook support
+      ARM: rethook: Add rethook arm implementation
+      fprobe: Add exit_handler support
+      fprobe: Add sample program for fprobe
+      fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
+      docs: fprobe: Add fprobe description to ftrace-use.rst
+      fprobe: Add a selftest for fprobe
 
+
+ Documentation/trace/fprobe.rst                |  171 +++++++++++++
+ Documentation/trace/index.rst                 |    1 
+ arch/arm/Kconfig                              |    1 
+ arch/arm/include/asm/stacktrace.h             |    4 
+ arch/arm/kernel/stacktrace.c                  |    6 
+ arch/arm/probes/Makefile                      |    1 
+ arch/arm/probes/rethook.c                     |  101 ++++++++
+ arch/arm64/Kconfig                            |    1 
+ arch/arm64/include/asm/stacktrace.h           |    2 
+ arch/arm64/kernel/probes/Makefile             |    1 
+ arch/arm64/kernel/probes/rethook.c            |   25 ++
+ arch/arm64/kernel/probes/rethook_trampoline.S |   87 +++++++
+ arch/arm64/kernel/stacktrace.c                |    7 -
+ arch/powerpc/Kconfig                          |    1 
+ arch/powerpc/kernel/Makefile                  |    1 
+ arch/powerpc/kernel/rethook.c                 |   72 +++++
+ arch/x86/Kconfig                              |    1 
+ arch/x86/include/asm/unwind.h                 |    8 +
+ arch/x86/kernel/Makefile                      |    1 
+ arch/x86/kernel/kprobes/common.h              |    1 
+ arch/x86/kernel/rethook.c                     |  119 +++++++++
+ include/linux/fprobe.h                        |  105 ++++++++
+ include/linux/ftrace.h                        |    3 
+ include/linux/kprobes.h                       |    3 
+ include/linux/rethook.h                       |  100 ++++++++
+ include/linux/sched.h                         |    3 
+ kernel/exit.c                                 |    2 
+ kernel/fork.c                                 |    3 
+ kernel/trace/Kconfig                          |   26 ++
+ kernel/trace/Makefile                         |    2 
+ kernel/trace/fprobe.c                         |  332 +++++++++++++++++++++++++
+ kernel/trace/ftrace.c                         |   58 ++++
+ kernel/trace/rethook.c                        |  317 ++++++++++++++++++++++++
+ lib/Kconfig.debug                             |   12 +
+ lib/Makefile                                  |    2 
+ lib/test_fprobe.c                             |  174 +++++++++++++
+ samples/Kconfig                               |    7 +
+ samples/Makefile                              |    1 
+ samples/fprobe/Makefile                       |    3 
+ samples/fprobe/fprobe_example.c               |  120 +++++++++
+ 40 files changed, 1871 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/trace/fprobe.rst
+ create mode 100644 arch/arm/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
+ create mode 100644 arch/powerpc/kernel/rethook.c
+ create mode 100644 arch/x86/kernel/rethook.c
+ create mode 100644 include/linux/fprobe.h
+ create mode 100644 include/linux/rethook.h
+ create mode 100644 kernel/trace/fprobe.c
+ create mode 100644 kernel/trace/rethook.c
+ create mode 100644 lib/test_fprobe.c
+ create mode 100644 samples/fprobe/Makefile
+ create mode 100644 samples/fprobe/fprobe_example.c
+
+--
+Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
