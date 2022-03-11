@@ -2,111 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B2E4D5A25
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 05:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 664BD4D5A2A
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 06:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231347AbiCKE7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 23:59:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
+        id S229725AbiCKFC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 00:02:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237718AbiCKE72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 23:59:28 -0500
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B55F213D;
-        Thu, 10 Mar 2022 20:58:25 -0800 (PST)
-Received: by mail-ej1-x644.google.com with SMTP id r13so16699796ejd.5;
-        Thu, 10 Mar 2022 20:58:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gyE9IcY/AL9lvvlSStbY/lLOPYuMFGZEROA9x6xbLGI=;
-        b=PsuYdL/+Ispy6VwTl/mQFpUDlSYHVjfBN0IUuF5kQujsjD4rot6zOwROwQai0h7cXE
-         rNp4ZrNCo+BNN7dHZl820+1VTComRjrs1dw0EK4DR/xSlMM8hOdr6QeRtf1t2G6z3NXe
-         gC0BZnxkhFtSF4gCeQkNqfJhYe90FeD8h/loAWx7ciGfkHVU2f8Q5ZP9N7yML9broSl3
-         SdZ4JvkBpIvkgNi4qmxUSTobIrAYtYkARSNkIP/R9Cr8967y4lkVpyQkATULC4cAQTyu
-         A/C37H2UGyBmUkt5Iz8SREf7yy1mymS1hMpLE68p3wmiJkbjoCqn6ES7FrBwiKPe2o16
-         2ANA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gyE9IcY/AL9lvvlSStbY/lLOPYuMFGZEROA9x6xbLGI=;
-        b=lN/oWs0EPNU8VwwSlYpcZmn1n2rltaomUyOh/mLf9AXT77dNJyCO67sHcFiHu8hgHO
-         R5XMfjI2Dw0tWTigoL3/Bb8t2vrd4eh2d9djaBRqEcuYe5mFgQf8WkGVw7WLAPbTK+8/
-         uqSLbv/ys4t5B4QNwL4pljk6yFQxQl8Qm9gimFZ3fQ5wwqyNm+/qLcaxgkq51YkoKwUN
-         Mo9muHgr8opy4pS4EZL0YucUBBQeMiTdkmiDIXr6BSDC0RrJz0lr0e3B6s8wmRwuMRo/
-         dcZGBORAZOYvi6a6r6xWCk2eoKSOhhpJN2uflJ3BYloR3GE1t3srT1T/33P53DgpCgMl
-         WsJQ==
-X-Gm-Message-State: AOAM531QNptyNg4LJT6WSPp6i57fID68jbFD6+/UnwPSzfGKaPLNWxOB
-        dhypIGmUQUYnWZOZVSbUuwVC8lg3JvjW1bYs96s=
-X-Google-Smtp-Source: ABdhPJx4jo/HcQhkdwEHWAn2U1prIfLz9M5lp3VyDorElOSP4hYvzjWz0BBM+zkK42cgxU1gNkhOTJ8HAnX/46FFmPQ=
-X-Received: by 2002:a17:907:3f9b:b0:6da:6f2b:4b1c with SMTP id
- hr27-20020a1709073f9b00b006da6f2b4b1cmr6923862ejc.765.1646974704368; Thu, 10
- Mar 2022 20:58:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20220311032828.702392-1-imagedong@tencent.com> <20220310195429.4ba93edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220310195429.4ba93edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Fri, 11 Mar 2022 12:58:13 +0800
-Message-ID: <CADxym3YybdOPMwHr3TOf0vxAN5W8mMdeQmQiQq_nr-1SSF5jMA@mail.gmail.com>
-Subject: Re: [PATCH] net: skb: move enum skb_drop_reason to uapi
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Menglong Dong <imagedong@tencent.com>,
+        with ESMTP id S229555AbiCKFC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 00:02:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFDA10CF0C
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 21:01:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD65AB82996
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 05:01:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA80C340EC;
+        Fri, 11 Mar 2022 05:01:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646974881;
+        bh=N7eFwJZBTtr84pDDUZZywgCWr7DzujQE3CwJUtLUnqo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SA/iedDuYesBT4Bc+ja1t8QhZRoxta5LuYioD0/yz68kVth1/EdhuYsGwqnXDdfqo
+         VNoqQsOV2cEo1yp/sFtmz39RCs3m/xJd/IoGdTYISLw1NHf5H/HzXb3MY5pguMgE2C
+         EMQRBdlGt1o2REudU/K/OqCk3ciBinXvNA6k+L4Q/52XJybR5Yo+sksEkpeezSeAts
+         fciWr4pU3u/RpajQguKBl/4MDa4a5X3GpkVgcAv4CxP2RMFVb4QDNeKJoF33eY3wvs
+         Uf5BWSyPN0t5ZSh4qN4V+fC1KczalL65d6rihYNjxxJg163VWbRap0RC9gAz92zhqk
+         okZV86YkYFhLQ==
+Date:   Thu, 10 Mar 2022 21:01:20 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Mengen Sun <mengensun@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        jeffreyji <jeffreyji@google.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v3 net-next] net: add per-cpu storage and
+ net->core_stats
+Message-ID: <20220310210120.3f068bf2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220310165243.981383-1-eric.dumazet@gmail.com>
+References: <20220310165243.981383-1-eric.dumazet@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 11:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 11 Mar 2022 11:28:28 +0800 menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > Move the definition of 'enum skb_drop_reason' in 'skbuff.h' to the uapi
-> > header 'net_dropmon.h', therefore some users, such as eBPF program, can
-> > make use of it.
->
-> BPF does not need an enum definition to be part of the uAPI to make use
-> of it. BTF should encode the values, and CO-RE can protect from them
-> changing, AFAIU. I think we need a better example user / justification.
+On Thu, 10 Mar 2022 08:52:43 -0800 Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Before adding yet another possibly contended atomic_long_t,
+> it is time to add per-cpu storage for existing ones:
+>  dev->tx_dropped, dev->rx_dropped, and dev->rx_nohandler
+> 
+> Because many devices do not have to increment such counters,
+> allocate the per-cpu storage on demand, so that dev_get_stats()
+> does not have to spend considerable time folding zero counters.
+> 
+> Note that some drivers have abused these counters which
+> were supposed to be only used by core networking stack.
+> 
+> v3: added a READ_ONCE() in netdev_core_stats_alloc() (Paolo)
+> 
+> v2: add a missing include (reported by kernel test robot <lkp@intel.com>)
+>     Change in netdev_core_stats_alloc() (Jakub)
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: jeffreyji <jeffreyji@google.com>
+> Reviewed-by: Brian Vazquez <brianvv@google.com>
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
 
-There is something wrong with my description, it's not the eBPF, but the user
-program that loads eBPF.
+> +		for_each_possible_cpu(i) {
+> +			core_stats = per_cpu(p, i);
 
-In my case, I'll pass the packet info (protocol, ip, port, etc) and drop reason
-to user space by eBPF that is attached on the kfree_skb() tracepoint.
+IDK if this is just sparse being silly or an actual problem but
+apparently the right incantation is:
 
-In the user space, I'll custom the description for drop reasons and convert them
-from int to string. Therefore, I need to use 'enum skb_drop_reason' in my
-user space code.
-
-For now, I copied the definition of 'enum skb_drop_reason' to my code,
-and I think it's better to make them uapi, considering someone else may
-use it this way too.
-
-Thanks
-Menglong Dong
+			core_stats = &per_cpu(*p, i);
