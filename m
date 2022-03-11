@@ -2,76 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2DF24D6B01
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 00:55:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A67B34D6A66
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 00:26:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbiCKXz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 18:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
+        id S229905AbiCKXDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 18:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiCKXz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 18:55:27 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD40E6DBC;
-        Fri, 11 Mar 2022 14:23:24 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id k5-20020a17090a3cc500b001befa0d3102so9322725pjd.1;
-        Fri, 11 Mar 2022 14:23:24 -0800 (PST)
+        with ESMTP id S230141AbiCKXC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 18:02:28 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D266326AD6;
+        Fri, 11 Mar 2022 14:56:12 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id n33-20020a05600c3ba100b003832caf7f3aso6602062wms.0;
+        Fri, 11 Mar 2022 14:56:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NRfHmLV6jC//S0JUnsW7EkyoAJl8Vb/or5+A/gBKAzM=;
-        b=KwPsT2XsrHShv56NDjUu3yvGQa1JlqCIdWproXqbg0elY5sxpXeo0jGIjpog1jChpi
-         l3dl2QAURioV1sWFgBC6rU++phG9LloQXtBVTzFVf9zjriVpimSq1gB881YT5sdLGfCm
-         f7MOSPCElXan/sdrSTwGt4sjsY7A1JBpgzh2Flwbq5F3z1mBemRaxQcxwKye6b8vOiDm
-         OTYLAvOcQTstwGN+sfa4LteZ6Tt4VPiJQdOYRdYfTwvbqxgiv7ZaD8cKJd+yD9V/BrFk
-         EEvv3Yxg92wD1nDc+lrdjhYVextf5yiEEd8VD6rbYEpvf3mCVrrOlr9zk2ldJeVW9BIl
-         kIjg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zy99wYs9INav6M+ySXDMbZ4xodBN9Of1pEI1cnAd+IU=;
+        b=YFFd/bnQJxeEEeMYOwwsSTbyCr+f8rdr616qqP+QY1ExSLUq3ssa6RC7sMOL/8H9Dv
+         nW6rQP2YPvZXtANAWlm23tcjBBOh59DLjKr5kfo5BJ4u9nMh/LOmyD4dC3jfd/iVvu6Z
+         sSLS1Bbpt3MShIjl+mExU9FMV6j0MaUGQ7s+Vh9mlGVVP9pYPXDAODsrvD+cD1CAryld
+         O2LEZek9PED++b6JclN3ln1G9jw5Sr9WoW1VfZG/APrGnVzAOALWJExp0eBUilml8gtL
+         CLkRtuKMqSNZcTlcZBGorPaettgPwxtkhF0ae7x9CHtugeQ99b7xfHsICdgcEA2hyHed
+         vBEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NRfHmLV6jC//S0JUnsW7EkyoAJl8Vb/or5+A/gBKAzM=;
-        b=DW76xWJ0v2gdlCWZsCsOdD3LHfjp2VFmjucyvToYxBG5cPAGANISPku+fkOQDIzPuH
-         C+6qKtvSJLO+NLBNIIAjbGRrwM62gIZ4bi8FnOd6ZssUr0q4d3y11WZtArWIeblRJVOj
-         LAlzaam0RJ/YFfztOAPGHKw+qCBIHTqn8DMArIzOc33NdrmTH/rww7kMoNLi9IuRMTiQ
-         uCJtt2t0Jmdjc9dlsszsKEka/8ZboHTUcmvOSpNmHiDJ2c/rnP+gT6YcyN2yVgf1Ke90
-         i97+J79M20PP2UIJMqeORG/I1wBXh42x7F6IRmRSDtYf7+6IbDVMkHdtCPpCPnVQPRlI
-         hX0g==
-X-Gm-Message-State: AOAM531GXcfAy3vSVuC1FvD7iprLxvaPGA4JNx97Ywpl6LQAe+eue8Bh
-        +9o1Vm22AFSgTrYcchnSKxVU+MK/cvRPEGcLWQU=
-X-Google-Smtp-Source: ABdhPJx1WAK57P7gss50W9Beemu0j3TP092wJbDltjPnhLzW3G3PvAU64j0v2RUJlFUyoFI9PzM7BBFicNEKCvBtXJY=
-X-Received: by 2002:a17:902:e80d:b0:151:e043:a2c3 with SMTP id
- u13-20020a170902e80d00b00151e043a2c3mr12518835plg.64.1647037404220; Fri, 11
- Mar 2022 14:23:24 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zy99wYs9INav6M+ySXDMbZ4xodBN9Of1pEI1cnAd+IU=;
+        b=ByoVqrE49WHCjq2FuMmvY+0B7zLdl5AAZbXto4fIAg01iNxhFs4yflUE3lcZkajIYV
+         0VSLDo/opbTsMZ82M/JAoqrBctEbARM6g1UXi/Urvv6CY8+dr6jG2a5m8gz66IIlU2Md
+         TEE9M77nf3jc+2mri3TjaMheao9v4CafLZgfViA+DlS/VemNwbGhrKUD1qAHfx/WZ1k3
+         4XO5zb5zJoqN9zGUu1T0wjd3MGgehb4IO/Hts7rHUaao69cSXDxXIQuE1pt2RqamhnL6
+         18MIdTRTKU1w5udKddN0QhRYZCA190h7rnD8TnN8O6v6uiMLYHj3WZY+5W+h28ZVij0Q
+         7Qpg==
+X-Gm-Message-State: AOAM530YdG7GsTOx6mir3a2Fj+lU6UgdwF4Wbah39RjR0lLYYNNRL8QR
+        DQQv0oxLXCfyS8i+Sq6ouOv0DJ6FpOs=
+X-Google-Smtp-Source: ABdhPJzUnhOjVhBQKglAYTmPJ0DMk1ouF5Z9hNagJaoeLjx8vEAlx70nCsM8tihGtMP3bdv1+UVDKw==
+X-Received: by 2002:a05:600c:4a12:b0:389:9c7d:5917 with SMTP id c18-20020a05600c4a1200b003899c7d5917mr9028457wmp.0.1647039371326;
+        Fri, 11 Mar 2022 14:56:11 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id l8-20020a5d6688000000b001f04ae0bb6csm7346837wru.58.2022.03.11.14.56.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 14:56:10 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mwifiex: make read-only array wmm_oui static const
+Date:   Fri, 11 Mar 2022 22:56:10 +0000
+Message-Id: <20220311225610.10895-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220311032828.702392-1-imagedong@tencent.com>
- <20220310195429.4ba93edf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CADxym3YybdOPMwHr3TOf0vxAN5W8mMdeQmQiQq_nr-1SSF5jMA@mail.gmail.com>
-In-Reply-To: <CADxym3YybdOPMwHr3TOf0vxAN5W8mMdeQmQiQq_nr-1SSF5jMA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 11 Mar 2022 14:23:13 -0800
-Message-ID: <CAADnVQ+XOqPXVaVVQ0HDtBob6Kv48AqEQrn8mS4rPyiNUGQXBw@mail.gmail.com>
-Subject: Re: [PATCH] net: skb: move enum skb_drop_reason to uapi
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Mengen Sun <mengensun@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,35 +74,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 8:58 PM Menglong Dong <menglong8.dong@gmail.com> wrote:
->
-> On Fri, Mar 11, 2022 at 11:54 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Fri, 11 Mar 2022 11:28:28 +0800 menglong8.dong@gmail.com wrote:
-> > > From: Menglong Dong <imagedong@tencent.com>
-> > >
-> > > Move the definition of 'enum skb_drop_reason' in 'skbuff.h' to the uapi
-> > > header 'net_dropmon.h', therefore some users, such as eBPF program, can
-> > > make use of it.
-> >
-> > BPF does not need an enum definition to be part of the uAPI to make use
-> > of it. BTF should encode the values, and CO-RE can protect from them
-> > changing, AFAIU. I think we need a better example user / justification.
->
-> There is something wrong with my description, it's not the eBPF, but the user
-> program that loads eBPF.
->
-> In my case, I'll pass the packet info (protocol, ip, port, etc) and drop reason
-> to user space by eBPF that is attached on the kfree_skb() tracepoint.
->
-> In the user space, I'll custom the description for drop reasons and convert them
-> from int to string. Therefore, I need to use 'enum skb_drop_reason' in my
-> user space code.
+Don't populate the read-only array wmm_oui on the stack but
+instead make it static const. Also makes the object code a little
+smaller.
 
-As Jakub said there is no reason to expose this in uapi.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/uap_cmd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> For now, I copied the definition of 'enum skb_drop_reason' to my code,
-> and I think it's better to make them uapi, considering someone else may
-> use it this way too.
+diff --git a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+index 18e89777b784..630e1679c3f9 100644
+--- a/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
++++ b/drivers/net/wireless/marvell/mwifiex/uap_cmd.c
+@@ -389,7 +389,7 @@ mwifiex_set_wmm_params(struct mwifiex_private *priv,
+ {
+ 	const u8 *vendor_ie;
+ 	const u8 *wmm_ie;
+-	u8 wmm_oui[] = {0x00, 0x50, 0xf2, 0x02};
++	static const u8 wmm_oui[] = {0x00, 0x50, 0xf2, 0x02};
+ 
+ 	vendor_ie = cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
+ 					    WLAN_OUI_TYPE_MICROSOFT_WMM,
+-- 
+2.35.1
 
-No. Please use CO-RE and vmlinux.h instead.
