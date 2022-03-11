@@ -2,240 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0AFE4D694E
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 21:11:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB3F44D6982
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 21:34:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351119AbiCKUMu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Mar 2022 15:12:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
+        id S1351194AbiCKUfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 15:35:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234400AbiCKUMt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 15:12:49 -0500
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234DC1A94B4
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 12:11:44 -0800 (PST)
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 22B9iQlH012186
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 12:11:43 -0800
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net (PPS) with ESMTPS id 3eqqn285ps-15
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 12:11:43 -0800
-Received: from twshared5730.23.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Mar 2022 12:11:42 -0800
-Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id 4AFFD229B3B1; Fri, 11 Mar 2022 12:11:39 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <edumazet@google.com>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH v4 bpf-next] bpf: select proper size for bpf_prog_pack
-Date:   Fri, 11 Mar 2022 12:11:35 -0800
-Message-ID: <20220311201135.3573610-1-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S236514AbiCKUfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 15:35:15 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845411CBA83;
+        Fri, 11 Mar 2022 12:34:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647030851; x=1678566851;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VNO9aR6ZlUQ1VivRTLNBPxlOoJygXM0cpiuy5f1w6pA=;
+  b=hA4PIB6c4h8PtGY15F7+muULWpRKsER/3CtNvJAgdzuDHNq3lEKp6hB7
+   +/shU6S9ZYhOCxrGEg1YZvNdcAdqtAPDLCE4X2iNQs55xS6OdZYn2Vzk9
+   O/luiqjpt7uSeA8GYw+tx5Gz4o6iPlnZcCJgtooQfDgc4DPaaAq9H60UT
+   N9/NaUItkX3dE3fyBj8LL8StAnV0X/53NU74+ZagD36mvBlHPW/IA4AqC
+   5zZ0Jd8ic0dHtijPSwMziY/dOGoh+31cjagsJvYGoHX1FVZNpcZD9m0X0
+   bSHxXs83IJliZSfBJDyYQZx7OtobuylM6fOoYT3ckV0MsxB4ODtCX+1mc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="280394715"
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="280394715"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 12:34:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="579408523"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 11 Mar 2022 12:34:05 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nSlxc-000737-VD; Fri, 11 Mar 2022 20:34:04 +0000
+Date:   Sat, 12 Mar 2022 04:34:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     menglong8.dong@gmail.com, dsahern@kernel.org, kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, nhorman@tuxdriver.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, davem@davemloft.net, imagedong@tencent.com,
+        edumazet@google.com, talalahmad@google.com, keescook@chromium.org,
+        alobakin@pm.me, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Mengen Sun <mengensun@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: Re: [PATCH] net: skb: move enum skb_drop_reason to uapi
+Message-ID: <202203120451.wHvod29d-lkp@intel.com>
+References: <20220311032828.702392-1-imagedong@tencent.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: Q48QYj-q5OhlFcwzqjt0KGRZFub_rq5c
-X-Proofpoint-ORIG-GUID: Q48QYj-q5OhlFcwzqjt0KGRZFub_rq5c
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-11_08,2022-03-11_02,2022-02-23_01
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220311032828.702392-1-imagedong@tencent.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using HPAGE_PMD_SIZE as the size for bpf_prog_pack is not ideal in some
-cases. Specifically, for NUMA systems, __vmalloc_node_range requires
-PMD_SIZE * num_online_nodes() to allocate huge pages. Also, if the system
-does not support huge pages (i.e., with cmdline option nohugevmalloc), it
-is better to use PAGE_SIZE packs.
+Hi,
 
-Add logic to select proper size for bpf_prog_pack. This solution is not
-ideal, as it makes assumption about the behavior of module_alloc and
-__vmalloc_node_range. However, it appears to be the easiest solution as
-it doesn't require changes in module_alloc and vmalloc code.
+Thank you for the patch! Yet something to improve:
 
-Fixes: 57631054fae6 ("bpf: Introduce bpf_prog_pack allocator")
-Signed-off-by: Song Liu <song@kernel.org>
+[auto build test ERROR on next-20220310]
+[cannot apply to linus/master v5.17-rc7 v5.17-rc6 v5.17-rc5 v5.17-rc7]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/menglong8-dong-gmail-com/net-skb-move-enum-skb_drop_reason-to-uapi/20220311-113243
+base:    71941773e143369a73c9c4a3b62fbb60736a1182
+config: i386-randconfig-a014 (https://download.01.org/0day-ci/archive/20220312/202203120451.wHvod29d-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/94a9a43cb9a6ba2e57d73b63226cbda08d24f6a2
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review menglong8-dong-gmail-com/net-skb-move-enum-skb_drop_reason-to-uapi/20220311-113243
+        git checkout 94a9a43cb9a6ba2e57d73b63226cbda08d24f6a2
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from <command-line>:32:
+>> ./usr/include/linux/net_dropmon.h:6:10: fatal error: uapi/linux/netlink.h: No such file or directory
+       6 | #include <uapi/linux/netlink.h>
+         |          ^~~~~~~~~~~~~~~~~~~~~~
+   compilation terminated.
 
 ---
-Changes v3 => v4:
-1. Fix a race condition reported by kernel test robot
-   <oliver.sang@intel.com>.
-
-Changes v2 => v3:
-1. Remove a leftover debug change.
-2. Shuffle alloc_new_pack() for cleaner patch.
-
-Changes v1 => v2:
-1. Fix case with first program > PAGE_SIZE. (Daniel)
-2. Add Fixes tag.
-3. Remove a inline to avoid netdev/source_inline error.
----
- kernel/bpf/core.c | 70 +++++++++++++++++++++++++++++++----------------
- 1 file changed, 47 insertions(+), 23 deletions(-)
-
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index ab630f773ec1..9d0a56aa7c90 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -33,6 +33,7 @@
- #include <linux/extable.h>
- #include <linux/log2.h>
- #include <linux/bpf_verifier.h>
-+#include <linux/nodemask.h>
- 
- #include <asm/barrier.h>
- #include <asm/unaligned.h>
-@@ -814,15 +815,9 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
-  * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
-  * to host BPF programs.
-  */
--#ifdef CONFIG_TRANSPARENT_HUGEPAGE
--#define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
--#else
--#define BPF_PROG_PACK_SIZE	PAGE_SIZE
--#endif
- #define BPF_PROG_CHUNK_SHIFT	6
- #define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
- #define BPF_PROG_CHUNK_MASK	(~(BPF_PROG_CHUNK_SIZE - 1))
--#define BPF_PROG_CHUNK_COUNT	(BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE)
- 
- struct bpf_prog_pack {
- 	struct list_head list;
-@@ -830,30 +825,56 @@ struct bpf_prog_pack {
- 	unsigned long bitmap[];
- };
- 
--#define BPF_PROG_MAX_PACK_PROG_SIZE	BPF_PROG_PACK_SIZE
- #define BPF_PROG_SIZE_TO_NBITS(size)	(round_up(size, BPF_PROG_CHUNK_SIZE) / BPF_PROG_CHUNK_SIZE)
- 
-+static size_t bpf_prog_pack_size = -1;
-+
-+static int bpf_prog_chunk_count(void)
-+{
-+	WARN_ON_ONCE(bpf_prog_pack_size == -1);
-+	return bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE;
-+}
-+
- static DEFINE_MUTEX(pack_mutex);
- static LIST_HEAD(pack_list);
- 
-+static size_t select_bpf_prog_pack_size(void)
-+{
-+	size_t size;
-+	void *ptr;
-+
-+	size = PMD_SIZE * num_online_nodes();
-+	ptr = module_alloc(size);
-+
-+	/* Test whether we can get huge pages. If not just use PAGE_SIZE
-+	 * packs.
-+	 */
-+	if (!ptr || !is_vm_area_hugepages(ptr))
-+		size = PAGE_SIZE;
-+
-+	vfree(ptr);
-+	return size;
-+}
-+
- static struct bpf_prog_pack *alloc_new_pack(void)
- {
- 	struct bpf_prog_pack *pack;
- 
--	pack = kzalloc(sizeof(*pack) + BITS_TO_BYTES(BPF_PROG_CHUNK_COUNT), GFP_KERNEL);
-+	pack = kzalloc(struct_size(pack, bitmap, BITS_TO_LONGS(bpf_prog_chunk_count())),
-+		       GFP_KERNEL);
- 	if (!pack)
- 		return NULL;
--	pack->ptr = module_alloc(BPF_PROG_PACK_SIZE);
-+	pack->ptr = module_alloc(bpf_prog_pack_size);
- 	if (!pack->ptr) {
- 		kfree(pack);
- 		return NULL;
- 	}
--	bitmap_zero(pack->bitmap, BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE);
-+	bitmap_zero(pack->bitmap, bpf_prog_pack_size / BPF_PROG_CHUNK_SIZE);
- 	list_add_tail(&pack->list, &pack_list);
- 
- 	set_vm_flush_reset_perms(pack->ptr);
--	set_memory_ro((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
--	set_memory_x((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
-+	set_memory_ro((unsigned long)pack->ptr, bpf_prog_pack_size / PAGE_SIZE);
-+	set_memory_x((unsigned long)pack->ptr, bpf_prog_pack_size / PAGE_SIZE);
- 	return pack;
- }
- 
-@@ -864,7 +885,11 @@ static void *bpf_prog_pack_alloc(u32 size)
- 	unsigned long pos;
- 	void *ptr = NULL;
- 
--	if (size > BPF_PROG_MAX_PACK_PROG_SIZE) {
-+	mutex_lock(&pack_mutex);
-+	if (bpf_prog_pack_size == -1)
-+		bpf_prog_pack_size = select_bpf_prog_pack_size();
-+
-+	if (size > bpf_prog_pack_size) {
- 		size = round_up(size, PAGE_SIZE);
- 		ptr = module_alloc(size);
- 		if (ptr) {
-@@ -872,13 +897,12 @@ static void *bpf_prog_pack_alloc(u32 size)
- 			set_memory_ro((unsigned long)ptr, size / PAGE_SIZE);
- 			set_memory_x((unsigned long)ptr, size / PAGE_SIZE);
- 		}
--		return ptr;
-+		goto out;
- 	}
--	mutex_lock(&pack_mutex);
- 	list_for_each_entry(pack, &pack_list, list) {
--		pos = bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
-+		pos = bitmap_find_next_zero_area(pack->bitmap, bpf_prog_chunk_count(), 0,
- 						 nbits, 0);
--		if (pos < BPF_PROG_CHUNK_COUNT)
-+		if (pos < bpf_prog_chunk_count())
- 			goto found_free_area;
- 	}
- 
-@@ -904,13 +928,13 @@ static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
- 	unsigned long pos;
- 	void *pack_ptr;
- 
--	if (hdr->size > BPF_PROG_MAX_PACK_PROG_SIZE) {
-+	mutex_lock(&pack_mutex);
-+	if (hdr->size > bpf_prog_pack_size) {
- 		module_memfree(hdr);
--		return;
-+		goto out;
- 	}
- 
--	pack_ptr = (void *)((unsigned long)hdr & ~(BPF_PROG_PACK_SIZE - 1));
--	mutex_lock(&pack_mutex);
-+	pack_ptr = (void *)((unsigned long)hdr & ~(bpf_prog_pack_size - 1));
- 
- 	list_for_each_entry(tmp, &pack_list, list) {
- 		if (tmp->ptr == pack_ptr) {
-@@ -926,8 +950,8 @@ static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
- 	pos = ((unsigned long)hdr - (unsigned long)pack_ptr) >> BPF_PROG_CHUNK_SHIFT;
- 
- 	bitmap_clear(pack->bitmap, pos, nbits);
--	if (bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
--				       BPF_PROG_CHUNK_COUNT, 0) == 0) {
-+	if (bitmap_find_next_zero_area(pack->bitmap, bpf_prog_chunk_count(), 0,
-+				       bpf_prog_chunk_count(), 0) == 0) {
- 		list_del(&pack->list);
- 		module_memfree(pack->ptr);
- 		kfree(pack);
--- 
-2.30.2
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
