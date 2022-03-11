@@ -2,96 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E3EC4D6722
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ED234D674D
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:12:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350579AbiCKRGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 12:06:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
+        id S1349557AbiCKRNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 12:13:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241140AbiCKRGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:06:15 -0500
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 036011D639C;
-        Fri, 11 Mar 2022 09:05:12 -0800 (PST)
-Received: by mail-qk1-f182.google.com with SMTP id c7so7457355qka.7;
-        Fri, 11 Mar 2022 09:05:11 -0800 (PST)
+        with ESMTP id S237571AbiCKRNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:13:33 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA8E17ABD
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 09:12:27 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id m22so8750277pja.0
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 09:12:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dZsrMTVQdfC9r5+u2q1ukpbsssyItRQi/vxxu0QZF3o=;
+        b=aAOgAy0/a4JVYu3+5AHT0hfihewyjTOYdTs+OJG5+EgVjDI6FwoHx3ujzP1v93Rpuq
+         HZeE2PEFLPNgcRo1M/xK0g2snVzYJXGntuTss09oMzxCfrynQ9vOFFV39RnU9uxlYtG9
+         IOEcaX1Ob9uQg8eq4vMMmiQzQNjNcylt3AJRURvF/qLOwRrmkPqZeFjOmnIXetpfAg0C
+         LNfAN7yQ0Gy1wIn7ALRFmaTH391XV8CSLparansKuyuHCT6SjDIZJ1IptppnG8exbIAG
+         dMEcr5jC1LykrZGZuMOy1KjK1P4B41pYWe5zYsR3FsuFAefjw7UqPPGyYv4wKHzm3cDJ
+         EhbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fK39HhjEjtaaB7vXMTnZuM5o4lss/YoGvlZq7V45BAM=;
-        b=WZGjR0WT3pdltX3GxuCAL3GT6r0QXMuC5t8BmQkooWxO/vEbAeMG3oQ4dgRVuze1tQ
-         9RCkwBN0tVGGlT7Ee2FjjLuzmnLFszr+UlNhO+m5rzzJ5oD7I+400HX3kYXQJuZxo0K1
-         MTXBSXd3XYLoEO4CEBACCtDeLk4aysEFNwpt3AOOOiOTbdYaPpNG6N+U3w1z5gh4HqYl
-         2w26Mjl4LHgHYUFOhrpX8lSptqbOQBQwM1xXVKuxZRCFV2LkGoX0VO1tZFc0GemvyOAs
-         fPm74qZhB7PSKW6hjbfWan/BfliKlNib7MX+p/HTUt06kOGmdlFnfXEVFRoTiDzCnyWv
-         gu5A==
-X-Gm-Message-State: AOAM533zmZsElY7gu7atyj/zdyAheOKaDUN+3UmNKbXwm9h6ElNtXb2B
-        3sm01Kitgx8nvBxDuk+jR/YJskuPT/mR8w==
-X-Google-Smtp-Source: ABdhPJyJW5IU91xssQVxZDxjcFZqj2EnWDVKEYyRl98oDYC4bO7GmsBPZAJUgHUzfKIBkNdxIfyNuw==
-X-Received: by 2002:a37:347:0:b0:67b:12a8:f441 with SMTP id 68-20020a370347000000b0067b12a8f441mr7235729qkd.302.1647018310707;
-        Fri, 11 Mar 2022 09:05:10 -0800 (PST)
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com. [209.85.128.181])
-        by smtp.gmail.com with ESMTPSA id p12-20020a05622a048c00b002de8f67b60dsm5667237qtx.58.2022.03.11.09.05.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 09:05:10 -0800 (PST)
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-2dbd8777564so100979047b3.0;
-        Fri, 11 Mar 2022 09:05:10 -0800 (PST)
-X-Received: by 2002:a81:5247:0:b0:2dc:2171:d42 with SMTP id
- g68-20020a815247000000b002dc21710d42mr8960941ywb.438.1647018309818; Fri, 11
- Mar 2022 09:05:09 -0800 (PST)
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dZsrMTVQdfC9r5+u2q1ukpbsssyItRQi/vxxu0QZF3o=;
+        b=Bczq9AyAFGJcPEu1745jO0Gkpu9OJYdASwLRxwYoycBPsE+r4VzMhkeAuijt2zMs/n
+         sfZSdgM6Qj3XGAQg65H8XvQS6kJiUoRLBxii7bxux7wvQM4K7rR44QWQDsMOSgnAJgPo
+         1aERU1aPpcL9YVOEsJ7vQVR5p4se7kaj3YAPjawjZuugU1nQtePvHBJzo5gzcHd/d2Uc
+         wCLXFiQq4Z2rosqaQMc+PWHsPqKmy4EQqQBxUHCK0frapXzP9/HzP9HCZgfoD74Y4+fX
+         X/jB+Axe6Pqe/jj/iDaw9/LLGBg93A7KZYGVAEADt+Ro2/VhH0Obxn/YpQCpXWUU3hlp
+         9nNw==
+X-Gm-Message-State: AOAM533mvjmLqczu+wWUDrnP4g+JdtYNqf/80/BMCX1DbQy4fcKyJfME
+        MSlWwSN4MRinbqIb4cntfmH7UBggbWU/Zg==
+X-Google-Smtp-Source: ABdhPJxkt5aZs/8B/xjMfWeZgLOK/zSPtCqNDAJvMJFErBNL5dRVzX2IR6fUARYHEQDqrky6RGKSeg==
+X-Received: by 2002:a17:902:6ac7:b0:150:24d6:b2ee with SMTP id i7-20020a1709026ac700b0015024d6b2eemr11590094plt.168.1647018746755;
+        Fri, 11 Mar 2022 09:12:26 -0800 (PST)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id x6-20020a17090aa38600b001bce781ce03sm9607970pjp.18.2022.03.11.09.12.26
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 09:12:26 -0800 (PST)
+Date:   Fri, 11 Mar 2022 09:12:23 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 215674] New: ip_compute_csum computes illegal zero
+ checksum, should return ffff in such a case
+Message-ID: <20220311091223.477970e6@hermes.local>
 MIME-Version: 1.0
-References: <20220309162609.3726306-1-uli+renesas@fpond.eu> <20220309162609.3726306-4-uli+renesas@fpond.eu>
-In-Reply-To: <20220309162609.3726306-4-uli+renesas@fpond.eu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 11 Mar 2022 18:04:58 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW+_5UDRYUQ0aSymgXO1BUryc+AV8SAjSS4F-Lna5B_UQ@mail.gmail.com>
-Message-ID: <CAMuHMdW+_5UDRYUQ0aSymgXO1BUryc+AV8SAjSS4F-Lna5B_UQ@mail.gmail.com>
-Subject: Re: [PATCH v4 3/4] arm64: dts: renesas: r8a779a0-falcon: enable CANFD
- 0 and 1
-To:     Ulrich Hecht <uli+renesas@fpond.eu>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
-        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        socketcan@hartkopp.net,
-        Kieran Bingham <kieran.bingham@ideasonboard.com>,
-        Simon Horman <horms@verge.net.au>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 9, 2022 at 5:26 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
-> Enables confirmed-working CAN interfaces 0 and 1 on the Falcon board.
->
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+There are not of uses of ip_compute_csum.
 
-Thanks, will queue in renesas-devel for v5.19.
+Begin forwarded message:
 
-Gr{oetje,eeting}s,
+Date: Fri, 11 Mar 2022 11:47:49 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 215674] New: ip_compute_csum computes illegal zero checksum, should return ffff in such a case
 
-                        Geert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+https://bugzilla.kernel.org/show_bug.cgi?id=215674
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+            Bug ID: 215674
+           Summary: ip_compute_csum computes illegal zero checksum, should
+                    return ffff in such a case
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 4.14.268
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: eyal.lotem@gmail.com
+        Regression: No
+
+A 0 checksum indicates the checksum is to not be validated, and an 0xffff
+checksum indicates a zero result.
+
+If the sum is computed to be 0, it should be substituted for 0xffff, to
+indicate the actual zero checksum.
+
+This bug went unnoticed for a long time, because in 2^-16 of computed
+checksums, the incorrect result merely foregoes checksum validation, which is
+likely to not trigger any noticeable errors.
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
