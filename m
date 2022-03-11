@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 849744D5FF7
+	by mail.lfdr.de (Postfix) with ESMTP id 3937E4D5FF6
 	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 11:43:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233505AbiCKKos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 05:44:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33934 "EHLO
+        id S235893AbiCKKor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 05:44:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234534AbiCKKok (ORCPT
+        with ESMTP id S234785AbiCKKok (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 05:44:40 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2138.outbound.protection.outlook.com [40.107.244.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290E8156C7C
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2122.outbound.protection.outlook.com [40.107.237.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DAD18A7AC
         for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 02:43:34 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H2ENpbhrCYD4DvNFcSCIXpGc5sVYsTQJ5Tj5uHCkEPXQ3wiaQCz30sieZ8MJ1eDWruFBq14q4HhjPUAdiNuiQWW1qHJ6vhNG04cPidXJgtYR//E3pp4Tu1+XGwczTuY9rXQusmibEe5WptCbF2rahKd2Bq+NQeWSFgLG8pIrD3TQMaFQZFLcRDpnM3ghR6oZrcER06/vUwJQ+b2GNxZJp2qM75iiKSlv2DK2Dv4VwEYk2jMN8EwYJ23tSMD/oFwVLIzXReqd+QK5Qw5NFgzBJhdrJyVk2H/fMSP+zazfGQInvGI2L+n0i3xhSh3LoMKzTh0LW0ASFabZ4MfcL38s3A==
+ b=k0VBbE9AHoB3D4DzrjTk30IgXMjYFU77Dvh6WJSH6DTz155exot0k+4D9MeoQY8Ol/6tnmbckw/PTQpIsHYEiOd6n1ejXkJpRMi+HisvvwlkQKB6taMiOUoLgyuNv3Qq4t+IcyuJ5b80OMHM6dIlfBXoW7J4QGOlh6gZ+fD6IN0vg53Pn8tIMPAv5K399eQulfd1QjC+eLX/G/wI+/112U/jnd7URVAr2UPb3fcdrmCH35Zf9m1iZcdiPbnq4H5F6h4GLVzXi/WaSPed+7gF1OAmLgKAyAnQNWYmgQll/tKGeij5uR0MGftPlKUbgDdrTcTYnvQnZg1AJ1Vgz06gnw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lAXe8/Fr9qAUZFkJpwyJ7FNqN9dvhUx/pHipRTHIs5s=;
- b=cVYO+LzYLJyDJXDxEJiG/ZP1f2Jw01PyZQnMwT5Zc3xIcdP+pgp3pyqZq+vX2th5sVrwx5NUCE03QGnmq2l3UrWNGFji50CbwfKBExgUtFObIbhIxQ9EO0i+2aYl+3fosqW9sBEAcF9whi8sr4FwMxxhmGzAFaoWKhf/m1kri3tlp4MsFoMF03wSnV+7YAB7mqAKamIbXmBCpp9jvFiRLr+09YLOLbungfMyfQ5Zjar+gJCe+4+MxumOp3i6RUAVCyqPDaSxApby2BjfwF+V44xZaq+7uBrTM6iPU/bJo+naNTmJYOYV3UqOfTwgNQeFxDxWgOpgoqJ1PXZtr2BOWg==
+ bh=boBxymxqzmJWQFMIazO1q1FjmJbmER7VMmyOpEKLXc4=;
+ b=aRXwAOPeSJGG/nTin8SRb7Kyzfs0NeSn17s1i4qvIW0oQng6lJA+mTBYJiuQ6zbNsJ6dkYHJNw9n/Lso3jYM+zC0Nzf0IJYfH/fwCZBSutDwzcF5ku+JXs6kvouUHkr4Y/vuzJd+bvss8FZ0JPQzTq+VdINAYXpLdvKmOJET86JCYGLe+YrikIK7jwtw64MrhyQEReOyQZhWblQusDZ5E3F+t8P7dhJ+/AbSUcfoG9SyVhCabKPa5shb+ONAI57UWayZubnl6FehqKcOhj0Q2ZnhAH39JVff035kkhEbFyH2yByCtc00e8JXUq3B+Y2J5TE/BYo3jt/EEgcV3WJDJQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lAXe8/Fr9qAUZFkJpwyJ7FNqN9dvhUx/pHipRTHIs5s=;
- b=Mi+mDxz5qnODBr5fj/oifZXInuF/RUxyprAg42/tl5k/i7c9JZyPjrJSvZYflKYw2VOmwR14P4DS53EAeVsZWL0ksrXFfjJrqljPLtAGH8sbMO0PUQRWQiQEtvNCZd8312uC5c9r9mWOYuwCNiKaBEhYX54+xFSVwDnqH+x9CFw=
+ bh=boBxymxqzmJWQFMIazO1q1FjmJbmER7VMmyOpEKLXc4=;
+ b=VKZ8UVZAWn14do0I9CyJe4sQkCwnS6UieLeZRxCpFtJSJaLtZF3o/X9L0XwbFMqj4fHoKfTcAuFsRA8zLycEEygLu+2VjpRlsV7tu6FinDEoAdE6PgkAv32nI356eXms0yf3th1GgDV2NQeXJ38oHD1FiUqEGKuMblYnk6tuVEQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CH0PR13MB4748.namprd13.prod.outlook.com (2603:10b6:610:c3::16) with
+ by MWHPR13MB1184.namprd13.prod.outlook.com (2603:10b6:300:e::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.9; Fri, 11 Mar
- 2022 10:43:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.8; Fri, 11 Mar
+ 2022 10:43:32 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e%2]) with mapi id 15.20.5061.018; Fri, 11 Mar 2022
- 10:43:31 +0000
+ 10:43:32 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH net-next 07/11] nfp: use dev_info for PCIe config space BAR offsets
-Date:   Fri, 11 Mar 2022 11:43:02 +0100
-Message-Id: <20220311104306.28357-8-simon.horman@corigine.com>
+Subject: [PATCH net-next 08/11] nfp: use dev_info for the DMA mask
+Date:   Fri, 11 Mar 2022 11:43:03 +0100
+Message-Id: <20220311104306.28357-9-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220311104306.28357-1-simon.horman@corigine.com>
 References: <20220311104306.28357-1-simon.horman@corigine.com>
@@ -57,53 +57,53 @@ X-ClientProxiedBy: AM0P190CA0026.EURP190.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7916230e-56ba-413d-fba2-08da034bfc05
-X-MS-TrafficTypeDiagnostic: CH0PR13MB4748:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR13MB47485873576D40C4F88252D1E80C9@CH0PR13MB4748.namprd13.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 01f1cbdf-0a1c-4398-83ea-08da034bfcbb
+X-MS-TrafficTypeDiagnostic: MWHPR13MB1184:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR13MB1184AA2034E69632F9EBA85BE80C9@MWHPR13MB1184.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KqFyztwVTyJlHQsSwlU6JYlqAERGf2CYI3FTNxn1g+lqoh6UAm8LC8Hwts8s5VTqb+guDHNBnzyGtwiawHwIF45dglzmU3VTtWZWcnxiStWdAYzVidu/Qn5pg9iOtJxj4WH/IgQcwblLYv29dkc8V1v8NGir8e7SzNW3XAA767T8U3dTnQmebLBdcAoyq4yOSWiM5E5f51doa2Z/ZL60dqVJ+jEoC0uFN+wqTYkuInItDcrwdN6ndeYZHSPMdLMHLarh94h3LZ2HAfNzEXXuAfGZF3mm8H7a2wE2YS0lwIiVidAvrTRl5UnyUuhiXiDtCDVlHhRi42qCrPBKKvvuY2hfXdpAfV+xqbEKZRwQQdKWl+/Y08hCPj9v2Yp+fvsFQClR/6iR6HCkcW0GJku1Lzbdedttqhl5OntV/Hyh9AzQlFgB1aWxs3u8n11UHqnHAOrqAIsMPxFR/JR1YSnf5QhldP72HLLmFf1uLGg8vqzSGSXngNRjiB1lHC0+gQuMh6smzmaw2yV2ykLMnh0CTtKDRQ8TvdmfaEK+a3V/EZZq83abevCmnG3wJZyNxfSvcgZsKZxDPIzEdjqDGWxhz9cP2f59jaA+QrNwmWYKvmiB4QJZEcxsA8zYJP03f7hzk057XOZxg6rA6d8UaPGd1g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(376002)(366004)(396003)(136003)(39840400004)(66946007)(66556008)(66476007)(4326008)(316002)(36756003)(8676002)(52116002)(86362001)(6666004)(6512007)(6506007)(5660300002)(508600001)(6486002)(110136005)(8936002)(44832011)(38100700002)(186003)(1076003)(2616005)(2906002)(107886003)(83380400001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: fz1lhxpvF6epq841QOvqdHJqP/MjP6fPsnr+NXtTAA5+vNuj0aHW/xvMbCAUTgMT6kf+sZ4otqinZQDegCNQnceC2sRZjTOg+ierAnyJA33ly4XOdNt/GxFYM1RGtfClgvj9ClS0hlNBy7oUmPrH5IEDuBRUfs7Zn4WKS21Ca0J+tRLCnaQT301GBSe5EGdxnzxews+GLCfhWwjsC54bIVOqbT8GZJZvj/wS3LNYY4u94Y61aQ4rnJCwkFK2nwtHscUEqwAgbRayXb/1/f6QmU6muYju0osCPyOaXzupSidWUgAHKTJqN7OqmbymkpGE5VHWlP0ZcR2WnfC2eSyUO83bq3aX7hbpyxchgfj0c2XucDBOC+Iw9qBVxQrUiZS1dhfp0NJ8a7I2RF1k8wn9LNtvW0Bs34p3DYCUnOl/H59UjffjS82GTcBnonHlmLUjBcXMW94LEvDtCkEZFz7hrQILQapbl5ryR0AUYzTwb9rfai6vzUlpGUGzS+kIVWg85HDRFa1MGV3a0TNIV3mwMl39amD9Jvcbc7Vvt0RsLhmdV7tlhaqiXrQCFFs9NaK58vYFiPw3+vri83vbM8ctsRji1PDeK0d1L4zf4c0GFCU2oT3tcQ/VPZAosBwKflg8LFjf0I+dIwtsGWW3wUg3Ew==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(396003)(376002)(346002)(39840400004)(136003)(36756003)(5660300002)(2906002)(44832011)(66556008)(8936002)(66946007)(6486002)(110136005)(86362001)(316002)(508600001)(6666004)(2616005)(1076003)(186003)(38100700002)(52116002)(6506007)(6512007)(4326008)(8676002)(66476007)(107886003)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qBxwrrqimCmDfL799vUIXLo8cO8Rx1sNWYSKpP58XsYF4airmjjoPkd99kNH?=
- =?us-ascii?Q?vgGnmm7GJm1G2OfwBiMy5iAw6cENwKbLd/OzgrVvrlU+ujg9EptbduPqoiTN?=
- =?us-ascii?Q?naRlIZUfhiIz74uzgLDeYQBP9ViMxskT83lHRMY6conhxc8dxwTaZ3OpuTsi?=
- =?us-ascii?Q?J6j3E/VLEq6ZWE0+cDFDKU5DKjNQOjO2nDSuOjuoPn3tammM5RL0LwRD+Woj?=
- =?us-ascii?Q?yh/wZyVLvznWndY1L4NAUtgrcN1KM+o9tcSdb6wb4WHDp285hwzf9e7/4zhp?=
- =?us-ascii?Q?g0pcT+ipiFQ3ITPtM/CowQYEfZ4D1V4+m4lU0uyRkJw5jwJ5fPnCyX1Hw3Xt?=
- =?us-ascii?Q?HTas0s1L5XJQkXl71cvq8h6eN8y+7jDrFKSapELO1DWPkukzGfTPIaeJgpEF?=
- =?us-ascii?Q?b1iVk1YUWGNzacWwIaFAxXhggCA3mkbBXf0tmWxHbNuV++wavH8hUM15WSrF?=
- =?us-ascii?Q?FH7jESRCAfaUGJI8BUcEFrHYhdVQfzZGPWTbH61fUPcLipS78aZ4NQVSv3kr?=
- =?us-ascii?Q?ORsOtDxcgVgdlXpVhudEVDDt18ENE6PRLPzyf917Ql41Lhyl0hDSiFsjNnKH?=
- =?us-ascii?Q?HchHFfg9YDtagqdnc8YZQA/d7jZgb9+bSkOcEpTOlwqG41+5gjC5BpZsolZ+?=
- =?us-ascii?Q?H/kYT9hT5KDnMcJzjvzkNSbOGKeIuoXmqye4wyRSfIdHntmbtRYPXs/gCmJu?=
- =?us-ascii?Q?cKjZ489HIGCYHx9fd+EsfbA8Ucyf1iKvSTrTDnozM/53Q2iUWfJ3rAbByA2u?=
- =?us-ascii?Q?QIX3Ktb4HuxpJX9wn8LO521y+XJTMZPsHqQumIImfaUxQ5d5mex3Llh2tBNI?=
- =?us-ascii?Q?KBQ3YBRF0D678UKa3/dEVKxTNFFq64kUIqgLrGdQd/33SgSqVFPeqtTnuoPT?=
- =?us-ascii?Q?/ZOdvlHReIpL117XvOEkzhlHcW61sA6HcTpuCAwiomyH8/DaTa1mkqdlib6F?=
- =?us-ascii?Q?dZCbFMpvHCTsJFTM4TUK+7//sYpqQYcuJO5X1wGiKOpiRCWKySyD2QaSFVk3?=
- =?us-ascii?Q?WEv8znou1mM3LAWsKqyypPvRyO2nuBYnezysFSkNKeOyNJEUqdtIKjFdm98l?=
- =?us-ascii?Q?6YutkX1CYJjSLBk9fFmbmdFbegSLHVNMvaHo2BK+gJYbG2jvysRbFk+ddywl?=
- =?us-ascii?Q?y0JcSyBcFQm14HHgt6DPFxFuUpgGcGKt1WeBh0T9tDNYXHbz3f/Q6IqFiny5?=
- =?us-ascii?Q?XYCp+cR99VVsBg2v5FGrqgOLivJG3y6Tk/PnIjO/D2y5qZbLOCQDx4mWM9A7?=
- =?us-ascii?Q?8XvyG3YUza60Mw4dInJsW8h1YV3s7XXRBMCOCLoUAJRR2ESSg/LfBolEUG9h?=
- =?us-ascii?Q?232K6LXQsgb2YzV4TJRlDW2JtJM2UGKeoimQWCc/xJgEhSO+DUvz9NvzUgLk?=
- =?us-ascii?Q?41NPGt2tD2rKKx3M0aDF9enh/QJnMY2MhsUnjapa8EvIp0Sq/3UmTg2dvlLe?=
- =?us-ascii?Q?9WU3S+ddlUA4Ohi2hPMlouGcsc2STVSDv+I4KiNrGBN8Ksuk4C6tYTM4SI1x?=
- =?us-ascii?Q?YzdNqGYeLtS/vPVrqcacHK8wB9l8RIBABBSwk3UdA8Lt4wp2eiHQR9zxxw?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pJwl8/Nvxt6isaay+U77xGz6VK+7kuc6FHyZu8Exwd0Q26CIrNGMnv1QuX4k?=
+ =?us-ascii?Q?UC/hx82tYXZYjBB5RhbE6cNvRdFArAOwWXkiOPllz/2uiK25vNpPEvrKGStq?=
+ =?us-ascii?Q?K8/vN1wKxuItakuXtJ0agzoBbWCrri++wqf2PsWcsLrK7+qVupO5QEaEvduW?=
+ =?us-ascii?Q?dFVaWZ8nmVO9OLP7Vyf5XJXIrLnTExy/ZEKI7XRdV/jJnBpZQAJskraCp9Gu?=
+ =?us-ascii?Q?R3CVSZDU6kDvWrGk6vXVXDaI4byy2j6qh0VuPLkbhtuXMZSDGn+sWsIHQdqI?=
+ =?us-ascii?Q?aNs3c055a1gUBdBqhsy4NPmBXLAErd7IT5dHsuaLlSVUKyvfGXtPaw1EXUzh?=
+ =?us-ascii?Q?Owh2aDCFOErRGGoD3QdCt8rGgIErfi0OIDbMlZ0g2mbLjuyEoGohUkyrHJ1+?=
+ =?us-ascii?Q?HhcFBHTzaiyfUy8xoIus2T4BwqgNb6aEWoQ2JcRAcU5j/YK9znSEKQwnrD1G?=
+ =?us-ascii?Q?YDj7ZjN5+iMyI/7YzwJTnjv+XYh38aHlsjIOiOkS5PthO9nLw00NzNIJB2pM?=
+ =?us-ascii?Q?uARmBF/0AH1axLbAJOgSv/37cUqIA+yaz7WBmpU45vKMsLd8Lu4CmyFKUFkf?=
+ =?us-ascii?Q?LAlQ1yBtmNDD5fkymF2Mm9tTxujz4H202C4C1NJvnew1iRKw9oYYVW3NUGL4?=
+ =?us-ascii?Q?T3gZaJ8hWvOsqaK3tlMA8AqD5FmRAiBhk0fX/E4Fg8JAqxPJT6+gOL8EX/Ib?=
+ =?us-ascii?Q?TUQhvyC5IQb/kIV5xupLt28Kvys7Aa4RCwOiEAc34YPFkJlZNR35VZcmPlrp?=
+ =?us-ascii?Q?fIoyqol3odGiJExcN/5fPianrn35CyUwKsyAC/okRrpQnnOa+5ceojDJ6f9d?=
+ =?us-ascii?Q?OuKvZQ1e8tGFpy5LrtQQUvmNaGR7XqnIkgRepxChDOA+4/dZ03pl9WgBqk14?=
+ =?us-ascii?Q?MNrIDPLLqsePaRBK6hAs2qiLr1F+DpXAvtown6JfcXdX6tM3E9ZbTUhQOqLE?=
+ =?us-ascii?Q?qGmgIKPBpIQ2giTS4sOE3yp8yErK/S8t6Y0drP0g3W3wqbJtV/FLOZWP3Uao?=
+ =?us-ascii?Q?Ji2QVyfebnfIY+n2Q15gS++pN1Qu2g+s2Qzy7vI16nbFQowmsfVTtTr8TjJR?=
+ =?us-ascii?Q?9Al6PAgcOA3yOYrQLimXdh/NWDtuPEkYE7ochDCvaue/XivsAJcVd9ui7WaP?=
+ =?us-ascii?Q?PZQHvqA5g5NXT3d2WK/2ZyVseyV8hNWJ5kGW4zVRz/OrJuIrhpeZO6PQ6I1B?=
+ =?us-ascii?Q?k4iX8bCl2eTG3aUjfOeI2hj/Y7DdXTN16bKbkWYI2AcuCwSaU5Zn3PlNgdZD?=
+ =?us-ascii?Q?hywxiy06Lx7Az6VJ1ogkSNe+Zlw9BthII05fMvB8r8X/PmKgrZO9TVlsptyQ?=
+ =?us-ascii?Q?J5si7OUqaLueO4R6KI56UM4FnfnP4baZ8+AKC2BUQNwEqjf0emmrIHnytHzK?=
+ =?us-ascii?Q?94uvagsFbjiGDb9/uWZtFeHZrp5QdnaudvDpUXMYnoZtRFL/jpf5Rz7Ijr/p?=
+ =?us-ascii?Q?CuzZAJPdWoBV6VERuJaC40+2MmO1wNSz0MbW9ZzJvIRy/xwS2PrQz/TsMOze?=
+ =?us-ascii?Q?Kb2Hm/q5hIw+dR15mGY9GOFvrEF9l4e53IQtlXUqEileK40pn7/17tHMsQ?=
  =?us-ascii?Q?=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7916230e-56ba-413d-fba2-08da034bfc05
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01f1cbdf-0a1c-4398-83ea-08da034bfcbb
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 10:43:31.2977
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 10:43:32.4705
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Vfd7nlhpECaq6UyFjd99Pbag485Q32j10N0oxoz9Y8KTL93Vap7zNMJrw/jMbKcETKFm5UKeNj7TV7t9onnjY8XAZ9FkZ2rfNImyuA5jLi0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR13MB4748
+X-MS-Exchange-CrossTenant-UserPrincipalName: mEbqKPD7pYIxwQVOFIHza7iyecl6kNNV0tywADS7tnYo0+r1Fivv6/fw9rc6FxiHCVuNcJpgrH+43S2uZJwoiNMQcRRM8XVwy+4CEgxHuuc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR13MB1184
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -115,104 +115,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-NFP3800 uses a different PCIe configuration to CPP expansion BAR offsets.
-We don't need to differentiate between the NFP4000, NFP5000 and NFP6000
-since they all use the same offsets.
+In preparation for new chips instead of defines use dev_info constants
+to store DMA mask length.
 
-Signed-off-by: Dirk van der Merwe <dirk.vandermerwe@netronome.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Fei Qin <fei.qin@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../netronome/nfp/nfpcore/nfp6000_pcie.c       | 18 ++++++------------
- .../ethernet/netronome/nfp/nfpcore/nfp_dev.c   |  2 ++
- .../ethernet/netronome/nfp/nfpcore/nfp_dev.h   |  4 ++++
- 3 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_main.c        | 3 +--
+ drivers/net/ethernet/netronome/nfp/nfp_net.h         | 3 ---
+ drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c  | 3 +--
+ drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c | 3 +++
+ drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h | 1 +
+ 5 files changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c
-index aa8122f751ae..0d1d39edbbae 100644
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c
-@@ -101,11 +101,7 @@
- #define NFP_PCIE_P2C_GENERAL_TOKEN_OFFSET(bar, x) ((x) << ((bar)->bitsize - 4))
- #define NFP_PCIE_P2C_GENERAL_SIZE(bar)             (1 << ((bar)->bitsize - 4))
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.c b/drivers/net/ethernet/netronome/nfp/nfp_main.c
+index aca49552f2f5..dd135ac8b1a3 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_main.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_main.c
+@@ -685,8 +685,7 @@ static int nfp_pci_probe(struct pci_dev *pdev,
  
--#define NFP_PCIE_CFG_BAR_PCIETOCPPEXPANSIONBAR(bar, slot) \
--	(0x400 + ((bar) * 8 + (slot)) * 4)
+ 	pci_set_master(pdev);
+ 
+-	err = dma_set_mask_and_coherent(&pdev->dev,
+-					DMA_BIT_MASK(NFP_NET_MAX_DMA_BITS));
++	err = dma_set_mask_and_coherent(&pdev->dev, dev_info->dma_mask);
+ 	if (err)
+ 		goto err_pci_disable;
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+index 9fc931084bbf..232e0a622ee7 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+@@ -63,9 +63,6 @@
+ #define NFP_NET_Q0_BAR		2
+ #define NFP_NET_Q1_BAR		4	/* OBSOLETE */
+ 
+-/* Max bits in DMA address */
+-#define NFP_NET_MAX_DMA_BITS	40
 -
--#define NFP_PCIE_CPP_BAR_PCIETOCPPEXPANSIONBAR(bar, slot) \
--	(((bar) * 8 + (slot)) * 4)
-+#define NFP_PCIE_P2C_EXPBAR_OFFSET(bar_index)		((bar_index) * 4)
+ /* Default size for MTU and freelist buffer sizes */
+ #define NFP_NET_DEFAULT_MTU		1500U
  
- /* The number of explicit BARs to reserve.
-  * Minimum is 0, maximum is 4 on the NFP6000.
-@@ -271,19 +267,16 @@ compute_bar(const struct nfp6000_pcie *nfp, const struct nfp_bar *bar,
- static int
- nfp6000_bar_write(struct nfp6000_pcie *nfp, struct nfp_bar *bar, u32 newcfg)
- {
--	int base, slot;
--	int xbar;
-+	unsigned int xbar;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c b/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
+index a9e05ef7d644..1ac2a1d97c18 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
+@@ -98,8 +98,7 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
  
--	base = bar->index >> 3;
--	slot = bar->index & 7;
-+	xbar = NFP_PCIE_P2C_EXPBAR_OFFSET(bar->index);
+ 	pci_set_master(pdev);
  
- 	if (nfp->iomem.csr) {
--		xbar = NFP_PCIE_CPP_BAR_PCIETOCPPEXPANSIONBAR(base, slot);
- 		writel(newcfg, nfp->iomem.csr + xbar);
- 		/* Readback to ensure BAR is flushed */
- 		readl(nfp->iomem.csr + xbar);
- 	} else {
--		xbar = NFP_PCIE_CFG_BAR_PCIETOCPPEXPANSIONBAR(base, slot);
-+		xbar += nfp->dev_info->pcie_cfg_expbar_offset;
- 		pci_write_config_dword(nfp->pdev, xbar, newcfg);
- 	}
+-	err = dma_set_mask_and_coherent(&pdev->dev,
+-					DMA_BIT_MASK(NFP_NET_MAX_DMA_BITS));
++	err = dma_set_mask_and_coherent(&pdev->dev, dev_info->dma_mask);
+ 	if (err)
+ 		goto err_pci_regions;
  
-@@ -624,7 +617,8 @@ static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
- 
- 		nfp6000_bar_write(nfp, bar, barcfg_msix_general);
- 
--		nfp->expl.data = bar->iomem + NFP_PCIE_SRAM + 0x1000;
-+		nfp->expl.data = bar->iomem + NFP_PCIE_SRAM +
-+			nfp->dev_info->pcie_expl_offset;
- 
- 		switch (nfp->pdev->device) {
- 		case PCI_DEVICE_ID_NETRONOME_NFP3800:
 diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c
-index 6069d1818725..b3fb09c2732f 100644
+index b3fb09c2732f..5a8be13a5596 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c
 +++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.c
-@@ -6,5 +6,7 @@
+@@ -1,10 +1,13 @@
+ // SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+ /* Copyright (C) 2019 Netronome Systems, Inc. */
+ 
++#include <linux/dma-mapping.h>
++
+ #include "nfp_dev.h"
+ 
  const struct nfp_dev_info nfp_dev_info[NFP_DEV_CNT] = {
  	[NFP_DEV_NFP6000] = {
++		.dma_mask		= DMA_BIT_MASK(40),
  		.chip_names		= "NFP4000/NFP5000/NFP6000",
-+		.pcie_cfg_expbar_offset	= 0x0400,
-+		.pcie_expl_offset	= 0x1000,
- 	},
- };
+ 		.pcie_cfg_expbar_offset	= 0x0400,
+ 		.pcie_expl_offset	= 0x1000,
 diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h
-index 514aa081022f..18ca8ac68fec 100644
+index 18ca8ac68fec..ea61156c2075 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h
 +++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h
-@@ -4,6 +4,8 @@
- #ifndef _NFP_DEV_H_
- #define _NFP_DEV_H_
- 
-+#include <linux/types.h>
-+
- enum nfp_dev_id {
- 	NFP_DEV_NFP6000,
- 	NFP_DEV_CNT,
-@@ -11,6 +13,8 @@ enum nfp_dev_id {
- 
- struct nfp_dev_info {
- 	const char *chip_names;
-+	u32 pcie_cfg_expbar_offset;
-+	u32 pcie_expl_offset;
+@@ -12,6 +12,7 @@ enum nfp_dev_id {
  };
  
- extern const struct nfp_dev_info nfp_dev_info[NFP_DEV_CNT];
+ struct nfp_dev_info {
++	u64 dma_mask;
+ 	const char *chip_names;
+ 	u32 pcie_cfg_expbar_offset;
+ 	u32 pcie_expl_offset;
 -- 
 2.30.2
 
