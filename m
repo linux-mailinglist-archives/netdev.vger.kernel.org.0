@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AFE24D6797
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:27:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31504D67A4
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 18:30:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350758AbiCKR2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 12:28:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
+        id S1350787AbiCKRbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 12:31:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344114AbiCKR2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:28:19 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2272617B89F;
-        Fri, 11 Mar 2022 09:27:16 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id u17so6216066pfk.11;
-        Fri, 11 Mar 2022 09:27:16 -0800 (PST)
+        with ESMTP id S1350770AbiCKRbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 12:31:50 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A9FC9902;
+        Fri, 11 Mar 2022 09:30:46 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id s11so8373677pfu.13;
+        Fri, 11 Mar 2022 09:30:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=S+4Pceae7iUnHdSO1F/PsruatLZhZauGTxh4uIca8fI=;
-        b=EKRXKNPDUzWaq6vYBc50t0HzdJ5Bf8UoRhrXZSUuKLoR/UyJY0fMVXAn+GnAVi252k
-         1kCshZhPV5db9EPUG4KCXWv7W3Eh246aqXzuOlkLBrUH8XeMyegZFqAqmKvAWDVvEKmF
-         +Nu/s/GJhHMlykBd6OfTmAYKusl3hiG+FWhDYmKm/J9OldJj0cm/85CdbBwQXdPl6yLr
-         saejr/zo48IYUpldw/z0SMZAzqKYe0jMTq4WVolHmjyxY2b3zGfMyMiu4a3mDs4lgmSB
-         YWB51fRiY63NZAfM7CpNLqzGV2uOAV+9RX4WiVZexMb9M2e63E111cYD2f2K8gAax3uK
-         fBug==
+        bh=b/8G55OzOqdOPe7ewbRDJHazDCpsX+avNi08vKU5HkA=;
+        b=gzjsfC++jDmc81RlDezZ3e0OUo7nQXc/fCO1TYtfk6FGVg60b6gaM0jn/obtZY0yWM
+         Of/Ccp8o5cN6cHgR1HQeULX1IYbG0MzERzGaz3NjNqPndkbqWDjpEYH3g+/vDK/fKhRD
+         pER9a4QQZbIecTfzA1Ol0MDWsTPIH3WgOkIsIqUXsHmovMfaCUme35nJOg56wj3hc0GO
+         gSNvverPnDJ9JEA8x+z+F3Bb0DqAwQRKkUWaCXJGq9jc7EZUqALVOJmCBHorK/hUbhXv
+         J+aw+TUzEZdG8ButQ4aJ+QAwxtHULMiq7UxZMvMmEywuKSOSkkCi9Hq+ZqoFcLuEessJ
+         QEjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=S+4Pceae7iUnHdSO1F/PsruatLZhZauGTxh4uIca8fI=;
-        b=4hhnUoOZ4G5sElMCEavsVSj+FDQHcIsuIW9rco0ii2JpKyZO+7inRa+E4Sa4ZN5jdK
-         lefiQqWqRfMlTOobQ9c1gwn8PiPViAJ7i0X3npZuXkdw9HZGYJ0v3V5AGWbCCLjxeINr
-         tRJhBZyuSu49wyUjkbR57hBNgL2gpHBAvfi3fLbrxHyKpOluCuvnTijq/oWzjH2BPnhH
-         wMjcWEUCE01hp8gJO/Mdvk2luBkFZda6wBJgZKXtmqksvl3IP2nTsS+sd6ZMWsNFvYlL
-         baUK4Jp5n32MxRBhVb61vNJVx9hNaRe7/ofMz5qjiHC6u0UbRmHzBQoWPQeEBgUerDcx
-         ZZIQ==
-X-Gm-Message-State: AOAM531H6feuDj1r0b0mfZLx5QPSwxkv0zpS5axwzCwWv70UwSbjurST
-        nRIM+E1i50BrmXmhXuNVUadcLrd+PxQEWlrQQ7Y=
-X-Google-Smtp-Source: ABdhPJznCrBODYkapCbJLWtzjrJd2uuQT4oHVpeI+FO945GtwSoewfKFEDUee1Vv3izscLuEbmvlY6uPM2lkiHeSZ6E=
-X-Received: by 2002:a05:6a02:197:b0:381:15fb:52e2 with SMTP id
- bj23-20020a056a02019700b0038115fb52e2mr2176529pgb.543.1647019635483; Fri, 11
- Mar 2022 09:27:15 -0800 (PST)
+        bh=b/8G55OzOqdOPe7ewbRDJHazDCpsX+avNi08vKU5HkA=;
+        b=k7BDbxqH/Kl57iKCNtipNmBfC3fTznF0ppG0+ZnF4YDJ7tKseT5G1Gr4WOMnawz9gF
+         DmYTXVt+OJH+/6HVm9COkQDWS6IVbVjba7nt1RMGkMj5DIMBzUzLOGkvENJZuTtc5tPk
+         TqxJIs42GGS9KVIeWWSi02Wn3B4l/VatqX88iN+H3EgEuZ2btKSx/yn3sRCO1fPELwBO
+         6br7s7qIzL1jJ7ac+bWEuPHq4Ss8PE1EXhZtvxfAbjklQ1v52EVvM+FyxIHKuDmWtGTc
+         O6HCSoUGZINhLeCt8z9cGx2yK42NR4+Kq2osgbd5riOt+1Oyl7q38Tp7RjzSj6vxbkNZ
+         Pbug==
+X-Gm-Message-State: AOAM531CcrrqtYP9PBhA8idb5ruFqsWiYQwUSgOPg1Cp7dbmtAbP8A7a
+        EtmiK7Te91DVriOrB5JJmstbQarR8iSoLR8U7ZM=
+X-Google-Smtp-Source: ABdhPJwtZAS4uEz31pZlqlmM9COGPd6xb6eeF9Q+qu7aBAfoh/XIpWQ8eMjuTPwyoOD0QOBtHtid81WoayDQ9kj1Vvw=
+X-Received: by 2002:a63:6809:0:b0:37c:68d3:1224 with SMTP id
+ d9-20020a636809000000b0037c68d31224mr9127795pgc.287.1647019846156; Fri, 11
+ Mar 2022 09:30:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220306234311.452206-1-memxor@gmail.com> <CAEf4BzaPhtUGhR1vTSNGVLAudA7fUDWqZZFDfFvHXi2MOdrN5w@mail.gmail.com>
- <20220308070828.4tjiuvvyqwmhru6a@apollo.legion> <87lexky33s.fsf@toke.dk>
- <CAEf4Bza6BhG7wtgmvWohEKpN5jSTyQwxm5-738oMoniz1v3uVw@mail.gmail.com>
- <87bkydxu59.fsf@toke.dk> <CAADnVQJPOCzyF-hBVOxCwqNj-vAk5=Dt6UvPdGok1b6s=Zdd7g@mail.gmail.com>
- <20220311072545.deeifraq4u74dagb@apollo>
-In-Reply-To: <20220311072545.deeifraq4u74dagb@apollo>
+References: <20220224151145.355355-1-maximmi@nvidia.com> <20220224151145.355355-5-maximmi@nvidia.com>
+ <20220227032519.2pgbfassbxbkxjsn@ast-mbp.dhcp.thefacebook.com> <DM4PR12MB51509E0F9B1D2846969A6A72DC0C9@DM4PR12MB5150.namprd12.prod.outlook.com>
+In-Reply-To: <DM4PR12MB51509E0F9B1D2846969A6A72DC0C9@DM4PR12MB5150.namprd12.prod.outlook.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 11 Mar 2022 09:27:04 -0800
-Message-ID: <CAADnVQLJQ+amaUh12sZeFUbBLhS8iHDMc=1JcMWaMBY-ORnFvA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 0/5] Introduce bpf_packet_pointer helper
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
+Date:   Fri, 11 Mar 2022 09:30:35 -0800
+Message-ID: <CAADnVQL-44zw3MvyuCNm6fn5K6m8hnzYmXWJbBF3aXrLKQFLVQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/5] bpf: Add helpers to issue and check SYN
+ cookies in XDP
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, Lorenz Bauer <linux@lmb.io>,
-        Networking <netdev@vger.kernel.org>
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petar Penkov <ppenkov@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -78,43 +92,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 11:25 PM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+On Fri, Mar 11, 2022 at 8:36 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>
+> > -----Original Message-----
+> > From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+> > Sent: 27 February, 2022 05:25
 > >
-> > Also I don't believe that this patch set and exposing
-> > bpf_xdp_pointer as a helper actually gives measurable performance wins.
-> > It looks quirky to me and hard to use.
+> > On Thu, Feb 24, 2022 at 05:11:44PM +0200, Maxim Mikityanskiy wrote:
+> > > @@ -7798,6 +7916,14 @@ xdp_func_proto(enum bpf_func_id func_id, const
+> > struct bpf_prog *prog)
+> > >             return &bpf_tcp_check_syncookie_proto;
+> > >     case BPF_FUNC_tcp_gen_syncookie:
+> > >             return &bpf_tcp_gen_syncookie_proto;
+> > > +   case BPF_FUNC_tcp_raw_gen_syncookie_ipv4:
+> > > +           return &bpf_tcp_raw_gen_syncookie_ipv4_proto;
+> > > +   case BPF_FUNC_tcp_raw_gen_syncookie_ipv6:
+> > > +           return &bpf_tcp_raw_gen_syncookie_ipv6_proto;
+> > > +   case BPF_FUNC_tcp_raw_check_syncookie_ipv4:
+> > > +           return &bpf_tcp_raw_check_syncookie_ipv4_proto;
+> > > +   case BPF_FUNC_tcp_raw_check_syncookie_ipv6:
+> > > +           return &bpf_tcp_raw_check_syncookie_ipv6_proto;
+> > >  #endif
+> >
+> > I understand that the main use case for new helpers is XDP specific,
+> > but why limit them to XDP?
+> > The feature looks generic and applicable to skb too.
 >
-> This is actually inspired from your idea to avoid memcpy when reading and
-> writing to multi-buff XDP [0]. But instead of passing in the stack or mem
-> pointer (as discussed in that thread), I let the user set it and detect it
-> themselves, which makes the implementation simpler.
+> That sounds like an extra feature, rather than a limitation. That's out
+> of scope of what I planned to do.
 >
-> I am sure accessing a few bytes directly is going to be faster than first
-> memcpy'ing it to a local buffer, reading, and then possibly writing things
-> back again using a memcpy, but I will be happy to come with some numbers when
-> I respin this later, when Joanne posts the dynptr series.
->
-> Ofcourse, we could just make return value PTR_TO_MEM even for the 'pass buf
-> pointer' idea, but then we have to conservatively invalidate the pointer even if
-> it points to stack buffer on clear_all_pkt_pointers. The current approach looked
-> better to me.
->
->   [0]: https://lore.kernel.org/bpf/CAADnVQKbrkOxfNoixUx-RLJEWULJLyhqjZ=M_X2cFG_APwNyCg@mail.gmail.com
+> Besides, it sounds kind of useless to me, because the intention of the
+> new helpers is to accelerate synproxy, and I doubt BPF over SKBs will
+> accelerate anything. Maybe someone else has another use case for these
+> helpers and SKBs - in that case I leave the opportunity to add this
+> feature up to them.
 
-There is a big difference in what was proposed earlier
-vs what you've implemented.
-In that proposal bpf_packet_pointer would behave similar to
-skb_header_pointer. The kernel developers are familiar with it
-and the concept is tested by time.
-While your bpf_packet_pointer is different.
-It fails on frag boundaries, so the user has to open code
-the checks and add explicit bpf_xdp_load_bytes.
-I guess you're arguing that it's the same.
-My point that it's a big conceptual difference in api.
-This kind of difference should be discussed instead
-of dumping a patch set. Especially without RFC tag.
-
-Please focus on kptr patches. They were close enough and have
-a chance of landing in this release.
-This bpf_packet_pointer stuff is certainly not going to make it.
+This patchset will not be accepted until the feature is generalized
+to both xdp and skb and tested for both.
+"I dont have a use case for it" is not an excuse to narrow down the scope.
