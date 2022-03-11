@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFF4B4D5C94
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A744D5C9D
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347257AbiCKHl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 02:41:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
+        id S1347252AbiCKHlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 02:41:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346474AbiCKHls (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:41:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F4E1B7574
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:46 -0800 (PST)
+        with ESMTP id S1343932AbiCKHlr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:41:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A471B756E
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0CFEB82AE3
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3AA161DCB
         for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 07:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38225C340F5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D31EDC36AE3;
         Fri, 11 Mar 2022 07:40:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646984443;
-        bh=8d1rrW7I+KWp+Ab6BqmCmgG1ABO9DQnystI6iscpLZg=;
+        s=k20201202; t=1646984444;
+        bh=eEWNp2AcKPf8e7Qe6okmHSv005/bMPQvxQg6yjvfh7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tCPdXm4llOYv3oAT4JBzRdgniubYASh5Zd8ww0ySe8tRh/84olQ3x9DCB4V3e1nV1
-         J3Bvzv2LKnvweMx+CSL7Z71lCdZt633Ncx0scmYc3BNTQAXR0IjxWI8Qnx6A/CVo5Z
-         FKeGlL69UJt9Fwwk2jHwYSYKct8qd34Dbgt97b5Ii6W7KpXpY8hAj1kvx6697jZWL2
-         Q9t6oes23jfpNeTkvZSPz8iWbEWqOOV/ac9KSpUtA17RacNQlDVy+mDZBXQDcSj2ug
-         qt6NYc7TiIob6NYE1EQtp9b3Id1p0vKJwGFJx1lnMyZPCt+oC//AXhFQB1sHYPqcOa
-         ghkFjBPG7Queg==
+        b=mePKgXjlAcqnX+Gkf+p3OEavuE4goSEMNHeB6TXEn8+ScRchO6boU5MQl/TUKgVzd
+         p/BJlkfWiGaAev5ax+KHFGMbx8VkKywvJAIUAW8gUUQLsaNDTtRCv9dVIj3sZiNHdk
+         2iZE547pD7rmBfmiG8YStSgcRif1PyKWCPaDX6wL7B19W8G/I6NV16+KAfpiyzofBr
+         nXAGVtQG2tb2836Nm4uFkZ+3vDL3gdZntBWtaTL5G4kEwhaHti5MvFhVMkAftv4JRM
+         knn7DKYUanW1CwAW+NPTgX+O1fKfBP3NTSWVV0lQ58v/+9CxO2YbFZ7S14WHEcTB7L
+         TNkYja6WNKSOg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/15] net/mlx5: Node-aware allocation for the EQs
-Date:   Thu, 10 Mar 2022 23:40:21 -0800
-Message-Id: <20220311074031.645168-6-saeed@kernel.org>
+Subject: [net-next 06/15] net/mlx5: Node-aware allocation for UAR
+Date:   Thu, 10 Mar 2022 23:40:22 -0800
+Message-Id: <20220311074031.645168-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220311074031.645168-1-saeed@kernel.org>
 References: <20220311074031.645168-1-saeed@kernel.org>
@@ -63,36 +63,38 @@ Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eq.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/uar.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 316105378188..229728c80233 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -728,7 +728,8 @@ struct mlx5_eq *
- mlx5_eq_create_generic(struct mlx5_core_dev *dev,
- 		       struct mlx5_eq_param *param)
- {
--	struct mlx5_eq *eq = kvzalloc(sizeof(*eq), GFP_KERNEL);
-+	struct mlx5_eq *eq = kvzalloc_node(sizeof(*eq), GFP_KERNEL,
-+					   dev->priv.numa_node);
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/uar.c b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
+index 9c81fb7c2c3c..8455e79bc44a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/uar.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
+@@ -99,19 +99,21 @@ static struct mlx5_uars_page *alloc_uars_page(struct mlx5_core_dev *mdev,
+ 	int err = -ENOMEM;
+ 	phys_addr_t pfn;
+ 	int bfregs;
++	int node;
+ 	int i;
  
- 	if (!eq)
-@@ -888,10 +889,11 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
- 		return ncomp_eqs;
- 	INIT_LIST_HEAD(&table->comp_eqs_list);
- 	nent = comp_eq_depth_devlink_param_get(dev);
-+
- 	for (i = 0; i < ncomp_eqs; i++) {
- 		struct mlx5_eq_param param = {};
+ 	bfregs = uars_per_sys_page(mdev) * MLX5_BFREGS_PER_UAR;
+-	up = kzalloc(sizeof(*up), GFP_KERNEL);
++	node = mdev->priv.numa_node;
++	up = kzalloc_node(sizeof(*up), GFP_KERNEL, node);
+ 	if (!up)
+ 		return ERR_PTR(err);
  
--		eq = kzalloc(sizeof(*eq), GFP_KERNEL);
-+		eq = kzalloc_node(sizeof(*eq), GFP_KERNEL, dev->priv.numa_node);
- 		if (!eq) {
- 			err = -ENOMEM;
- 			goto clean;
+ 	up->mdev = mdev;
+-	up->reg_bitmap = bitmap_zalloc(bfregs, GFP_KERNEL);
++	up->reg_bitmap = bitmap_zalloc_node(bfregs, GFP_KERNEL, node);
+ 	if (!up->reg_bitmap)
+ 		goto error1;
+ 
+-	up->fp_bitmap = bitmap_zalloc(bfregs, GFP_KERNEL);
++	up->fp_bitmap = bitmap_zalloc_node(bfregs, GFP_KERNEL, node);
+ 	if (!up->fp_bitmap)
+ 		goto error1;
+ 
 -- 
 2.35.1
 
