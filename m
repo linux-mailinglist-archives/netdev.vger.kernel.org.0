@@ -2,75 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A554D6878
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 19:35:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C39704D687B
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 19:37:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350890AbiCKSgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 13:36:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44472 "EHLO
+        id S1350919AbiCKSiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 13:38:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiCKSgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 13:36:46 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E601AC9A39;
-        Fri, 11 Mar 2022 10:35:41 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id r2so11065031iod.9;
-        Fri, 11 Mar 2022 10:35:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7+Ls5arUnSCwksjmSCsPYNM54tNgiDttw2ZYjX73Hgg=;
-        b=lSXvrBdOEx1Y0EvBwC9F9PmSC4aDvPVueTCJAGpHNb8xlVuX5LYGcRhHAcxiYSBlcm
-         vNcrdDvzqf54IdEP4X74uzc1fiDNJVz6A/N5x2SMozh6Wd5v+I5UBLYN+g+nuyJmWM17
-         Xx2etIt7HLKx+lI46A23cY0COrio2RYTJWmmj9aCnhhL+tGd3VkH/8a8L0EJJMkwWdd0
-         bgpZWR53TT0sibuYsOLY7fGgsJfKd7mlUQBhxXxrDKDm0A9IchHHTNYaDODm1buje5CG
-         T5cyWloQCT5qB6OFZOGahRlso6WCkHrEh0gUXpl0ivXdvQ3UxMrM8IWJ9BokPAxm0NRz
-         /b6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7+Ls5arUnSCwksjmSCsPYNM54tNgiDttw2ZYjX73Hgg=;
-        b=aFHMQuzpLgCBNFfV6k7jOBV/pr3pw2DxJ6COIjnZwaJVBEH1K/kQHL8BMDsO/atK5Z
-         8J0RV/nK1ZusjE2QyU8oigJ/ThpVYRHh3v5Sqlr8Cb75hVPXI8WeWtzi9PUnRwhjk2dB
-         W8TCAwX9tKhTuFn0baDTV+wBoa5m5S61AJa5eadThw+wPep+Ljzp8PtMWhZYYjwLBoWQ
-         tAmfvN6pXR3Z/TIoaDIESjmYIam/hwLTNZP4PlC9fystivMczhue031Gacb1mEgnuTlg
-         hHRWbz+R9ct6ftF0xUGEI8Fsm+LO/lIEZQVfCZrjFofOsTKpLDhyJ11S1ncVH3Cid9W/
-         7Wfg==
-X-Gm-Message-State: AOAM531wHMCxa7WbAZBvfssscmve5ldZ8v+bEeD+PRd8jFMbxdm4qHf7
-        c0fYa/AGxf4CJmWFnmqnN/HAm6ZZGIiM0386pjg=
-X-Google-Smtp-Source: ABdhPJw5C8kVaDNlwLVOy3RvsPhfbmQEogRYpeIxuQ4yPaojZ30oEXfixZ3yCXIBejdiT6a1Aa8XXLgnKcqYdFzLqxM=
-X-Received: by 2002:a02:a08c:0:b0:314:ede5:1461 with SMTP id
- g12-20020a02a08c000000b00314ede51461mr9742499jah.103.1647023741252; Fri, 11
- Mar 2022 10:35:41 -0800 (PST)
+        with ESMTP id S230313AbiCKSiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 13:38:08 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CB5D198E
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 10:37:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647023823; x=1678559823;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=OYNPV+tiBmPoDZQwUeSgGuz2vXHvNVtlOe7O+PdHrjE=;
+  b=hw5iP2KVdwY1FoOR3TIvArviI3Eb1R8tlaNnaXMP/epu01RI5NqZSEgb
+   HG8G+9K45mD8MTR6MYnSUd32YlVFpMtns874rSX/WAyzt2tdO/L3LjvF3
+   253LKoOibOLixlz1jPQv9Q0b+7KDZKTjG2eeZpIxMyxX/VZ58wlp24+6M
+   ikofszEOYwyOS0Mjsmuk1c6jORq/Y/etSaZs5IJTNQoigRPtjbThp/Ol+
+   ANYMIigqPSEo2osDlJDUd013ZZFdRzbq9x9WJ1mbPYUA3JpY55EFmS6x+
+   cKGA7RooPQfcX5k36XmbD61WuPfrjSCaae3D8asBXYdfLQkmb8j6cABUm
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="255577121"
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="255577121"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 10:37:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
+   d="scan'208";a="548536693"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by fmsmga007.fm.intel.com with ESMTP; 11 Mar 2022 10:37:02 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 10:37:02 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Mar 2022 10:37:01 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Fri, 11 Mar 2022 10:37:01 -0800
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.47) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Fri, 11 Mar 2022 10:37:01 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Dx3Ja6YBHrPHU8mXoaxVZqs51l7I477ffIgPW34hBSi0JF7YVNecCDjSm2OeScWXJWoQ9k4yPlSwRS5eLd+IHElNQycuUMkD4Kq4LsdZL55VZzp641kpX44O1em2MlS1RPo17vhIiK65efgGvV51oF8O6nb32CKoEfLJoTVEB6wzyAzSJDDpG7tX4qdBa3ltkRf2+Ftbpfafg9VAOpbwFxJbQswAaPW4e3QVoyY7Zb7chxp5cRAZCgQag7jX2IGQqb6QJIgPqZ6JeNxmdQwWiXl6sxjyFopXZnCjgM9P7eWo2DpWoISqs51Foxmk008bly0fgBJptes5MlvYvRGP6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4jHGVge+/kkbpdHioNYK5t4aNSkm/t50ic/2VeOA2uk=;
+ b=PxoiPu40/8a7We9cWxdB3WurvxWhRaYTJuRpt1EjwpGuEMJ0HkBP0PCWk/j7252oA8GggDBNJLx9d3vpYYFD6W+OIwwO6lgZBE9mE++syMXLZnmwiSPjQQX2P3TD9asU6qE63j4e0vZCkziF147myFp1/Ruiss4aBWyzSPLe3CoAJcgwQIaU7s5FVD4S9b4u2T0bPskaIb8kNo+Z71+xMGzU588kUZOLysvXcUzTRJDKUmHi/YQLY5mM88RtSjTSiKnkjdstsOQH/Q7wXIAw8+GCqX567QVa+qNA7cFpyH39AkfDavqERXGp0ny14NmTzfZrS7CZj0VagufRQvB4Ew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from PH0PR11MB4886.namprd11.prod.outlook.com (2603:10b6:510:33::22)
+ by BN8PR11MB3601.namprd11.prod.outlook.com (2603:10b6:408:84::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.22; Fri, 11 Mar
+ 2022 18:36:59 +0000
+Received: from PH0PR11MB4886.namprd11.prod.outlook.com
+ ([fe80::ed3a:b7cf:f75e:8d63]) by PH0PR11MB4886.namprd11.prod.outlook.com
+ ([fe80::ed3a:b7cf:f75e:8d63%7]) with mapi id 15.20.5038.027; Fri, 11 Mar 2022
+ 18:36:59 +0000
+Message-ID: <135a75f8-2da9-407b-40b2-b84ecb229110@intel.com>
+Date:   Fri, 11 Mar 2022 12:36:55 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH net-next 2/2] ice: Add inline flow director support for
+ channels
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+CC:     <davem@davemloft.net>, Kiran Patil <kiran.patil@intel.com>,
+        <netdev@vger.kernel.org>, <sudheer.mogilappagari@intel.com>,
+        <amritha.nambiar@intel.com>, <jiri@nvidia.com>,
+        <leonro@nvidia.com>,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+References: <20220310231235.2721368-1-anthony.l.nguyen@intel.com>
+ <20220310231235.2721368-3-anthony.l.nguyen@intel.com>
+ <20220310203416.3b725bd2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+In-Reply-To: <20220310203416.3b725bd2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PH0PR07CA0048.namprd07.prod.outlook.com
+ (2603:10b6:510:e::23) To PH0PR11MB4886.namprd11.prod.outlook.com
+ (2603:10b6:510:33::22)
 MIME-Version: 1.0
-References: <164673771096.1984170.8155877393151850116.stgit@devnote2>
- <164673784786.1984170.244480726272055433.stgit@devnote2> <20220310091745.73580bd6314803cfbf21312d@kernel.org>
- <CAEf4BzavZUn2Y40MjyGg_gkZqYQet_L0sWAJGOSgt_QVrtf21Q@mail.gmail.com> <20220311001103.6d3f30c80175b0d169e3f4f6@kernel.org>
-In-Reply-To: <20220311001103.6d3f30c80175b0d169e3f4f6@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 11 Mar 2022 10:35:30 -0800
-Message-ID: <CAEf4BzZXS5eg-409S5XGB-gC8CkC9YAYk7EsugKgOpCr+zAsUg@mail.gmail.com>
-Subject: Re: [PATCH v10 12/12] fprobe: Add a selftest for fprobe
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6f7e23f3-be04-4d64-5726-08da038e204d
+X-MS-TrafficTypeDiagnostic: BN8PR11MB3601:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR11MB36017A048AE1DEC43C988B71E60C9@BN8PR11MB3601.namprd11.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 75Nt6BUSqwuWLsWRRWVpa7ChfwpzzRrTP9zj+t9PpcISjjpEjc/MwbKMeawnkg32sH5AXdx4n9gPC35HEHEn/0DnZ6MAA7mVkGzxHgICUHFF4nhhQgIehWwmAOKVsShSwi5U32oLB8oGIcpFC6kDiDoJMuZtyv58clo07c667a0vzj3RU5IutdFKp0l1718Btmf8V8wQA6Vk0hgWI9iSW7Mmh7GjIdQDpOgyMU/SfPNpFW2GuzMAOobsYRSe2exXhclB0Oqqkma7fbYmTEelyzMNhffivaVrDddXlGhkcqOiIdRQvggkvIN+yXxuQbGrivl0A3gr5uixnFwFNfW94cuPyuUzxu10kPa8p0pItkxnCG0Vpn0QGggBWYc+7VoiU3quoAgT8ktCfQQnqujMVDPz3eTpg9WcFMmLl9WKDAislk5LFq7WMs8MYaK3pQMijm4tXhcEsj4EpRsLZRSlkDA9Q4/7YAhgI/537MDR3omxCmbriFFTuz6DD5yeh1HvG6YVJwCmdSgwZ3tG0tZ8+zeNNhv0hvnI3pW/RDa7AePdyOgd3JBtdbNXo0HhLzKJ4c6aJL7rEzt4NPqCfh0b01FRZzFB/k5IngkKujOlPECfX7DXXXfHwCkpVeGA1QR5eBfAa7W3IUMHyOrcPn8mAX6rYlibYlPo+8zZnq9vbDZ/f/9AMHRoi3gb2HHEfnYZmjRe6yha6TmtpZIRcbNRBScZ6cekpmU/4vckPD979FOrmalcU16S8rM0Og7oSzgC4ZguVzv+6xC2TZ8nHD2AIG3Q+ougjA2ShSzev1WLWFBQlLi9Xh/OdKDz5GyqBpbk
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB4886.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6486002)(966005)(186003)(2616005)(31696002)(53546011)(36756003)(4326008)(8936002)(6512007)(86362001)(8676002)(38100700002)(6636002)(66476007)(66556008)(66946007)(31686004)(26005)(316002)(110136005)(5660300002)(54906003)(508600001)(2906002)(107886003)(6666004)(6506007)(82960400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?THpSYkFiaW5JRWVZNnhaV240Wm5zdm1yVU1VTFVqdDBQWkVhSUF4LzkvMWJR?=
+ =?utf-8?B?amZFY3RYOWgrOW53S2lweEkxRjVPZmV6REdzSVJXTTk3R0pnUHNUUG9DTzdF?=
+ =?utf-8?B?VHVtaHAzV2RxU0k1RUdJaVpZblNYbmh4VlpEeWdZenZuZ3QrWEtCTlBwWFdy?=
+ =?utf-8?B?TFVsNGdKUndUNTRLTUZsOG8yVGIvQmVjaDJQVlF6RndLc2NTeFZUUmhPUGho?=
+ =?utf-8?B?dFVpcDNjVStsNmJKUjdpVFBOd3d4OWZjcVYxdFhVVk5rNlErbDhWZW1oVFJY?=
+ =?utf-8?B?RjF5V2l6dFJWNUpBL3kwZnE2L09oNGpaVUZtYkd5ME9mcmZZVjdnVTVTOEI3?=
+ =?utf-8?B?ZDkvZGhLZ1dHNUNRSFNFMGNtVDhxNldjL0xQUHRyU2xJcS9sYjRxemNOZlhW?=
+ =?utf-8?B?NzlUK0M2MmFKRHlKMWtoRFdCLy9KamluclVZOVNJdXlxQ1pDRW9nbG5XczUx?=
+ =?utf-8?B?RDd2ZVVpRkJodks5dzc5T3BxdnZZMUtja2NYK1FoQkxlWlNGUVE1b3hlTXFY?=
+ =?utf-8?B?RS82VTdGZTNMbnp5NHBjMm5KQVMyRUhzeUIwWVBvN3dJZkd4OHJZV2ZUWnNu?=
+ =?utf-8?B?cWNyNTQ0S2p1Q1dzdnRDbGVTUEpOa3JsOXZvTFYzdlgrSjJIZ1NaM09KQm9U?=
+ =?utf-8?B?RFgzcXFBS0tVWVlPdll0NGxIUkhxV2RjNXg0UWlaQzdjVGYzdEFuRUxPYkFq?=
+ =?utf-8?B?ZTlQL0gvSW0zVXBnNElHTWM2WXZlV3ZKOTVZOU8wekVIRzYzV3JKa1ZFZWFy?=
+ =?utf-8?B?NnIyaUdMUmlqNmJOQU1xT29UOU02QmdiTTZsOFBwd0tPU3pIdS9oTnlMQXJX?=
+ =?utf-8?B?UWRDZW9ZWWpiUHpIQzNzd3ZiWWE5ajlSVzlLK3BGdlJFKzRMNUZkTlJvMmd4?=
+ =?utf-8?B?aGJFK3pBVWZwTTQwS21ZbDJQR1RGS1ZMSHlEZTZrUGtZTzlib1J1QnpGWTRI?=
+ =?utf-8?B?TjEyc2JERk5weEVQWS94cHZrbmw3VlVnU1pibkJybFU5SlAyRGRuQ3RPZDdq?=
+ =?utf-8?B?c1EreDRGcUJBd2J6VkxyRHRXYUtJNmU4eFBtaFNyOHZiSmJWQ1RHZ0Ewd3BE?=
+ =?utf-8?B?MmowZHFNQWxVZVQ2Ky9pSnZTWUEwQkxQNS90NkVEVHBEUjVFT2JYb1lPYjRD?=
+ =?utf-8?B?RFU3bFhLYXZRNHovYlZIUGhLVmVpY0JPZTdtb20wcVRRMS9qUGZzQ0FUSDRZ?=
+ =?utf-8?B?UEdUVVB6SHVyblZ6dXNuMTNPem8yLy8yZGNvQWh6VHBpcmxQcWplQUgvNjlt?=
+ =?utf-8?B?aDh3bGRkRi9lWmw0eXR5NGNQN3psaHN2TmppMmxRTitqTTR6UDJVQjZEdHY2?=
+ =?utf-8?B?WUdCRVU5cU8wMFVSZzhJU0NzOU5RQ2w1NExHczdvdmgyVVQvRDduSE9makd4?=
+ =?utf-8?B?OXZhNERmbENtSUQwRzQzL1hOTENzYkRvdng0WjFwVzljK0xkbjZrNGF6MmYy?=
+ =?utf-8?B?cTBKZGFJZFBRRTEzaG5JcENhODlQdGZheVBKWGY2QXZ5OHV2NWRYZGk0U3pF?=
+ =?utf-8?B?ZE9Td3ptZnBNYmRucU1EdGlVaTUwc1lhS1JoNVBEREEyci8zdk5rRitOdHpB?=
+ =?utf-8?B?ZmVZM3JpZ1hhMmFiaGxXcWlHTnpoRkpDWGhhUHhpeVJENDRzV1RjTXVGMkc0?=
+ =?utf-8?B?bE1pVEtVSW5wQTBsMnNPRjNOQW1ZYjdpUENLNy9KQVlMemRSbXNiZEpxUVJI?=
+ =?utf-8?B?TW5GL1M3VUJOTzFqdTdqa285akZaQ2Q1RlBJc1RjT1NKWkltMzNIOVBpcXBZ?=
+ =?utf-8?B?TExneE05S2xZblBNRGNwTjVLNHpHZHY5ZVU0QlZyRFZnRjJVZUp2aS84WmU2?=
+ =?utf-8?B?ejllSVZvY0Z1SzlnMkZmc3lXK3cxbWs3K0ZkaTJEajY4NFh4bTRMdmNZRk96?=
+ =?utf-8?B?VjVxOTA1L0tFZ09uRklNNDd4a0s0QnhQQ0RUcjF2YldKUmV0ZG5mVkhPY2p6?=
+ =?utf-8?B?WnlOUmY1bnhXckttQmkrZkZkeTVobnRnc3dQZEY4TVljUkdpWmJBRzI1YlN6?=
+ =?utf-8?Q?bdJUs3DPuNQ2s9OU8nycrA7NKr3HB4=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f7e23f3-be04-4d64-5726-08da038e204d
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB4886.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 18:36:59.0706
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pT0Oow+2I9eYFalMHlnFkGZnt+9VQ4T6eNLfr030oQEFm3jjPa2+SfiSI7XGaV3ZbXt/rUbMQqIReSHHt9W7Kk2q77dAQnWTonQly3EUOFs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3601
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,281 +164,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 7:11 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> On Wed, 9 Mar 2022 16:40:00 -0800
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> > On Wed, Mar 9, 2022 at 4:17 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > >
-> > > Hi,
-> > >
-> > > On Tue,  8 Mar 2022 20:10:48 +0900
-> > > Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > >
-> > > > Add a KUnit based selftest for fprobe interface.
-> > > >
-> > > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > > > ---
-> > > >  Changes in v9:
-> > > >   - Rename fprobe_target* to fprobe_selftest_target*.
-> > > >   - Find the correct expected ip by ftrace_location_range().
-> > > >   - Since the ftrace_location_range() is not exposed to module, make
-> > > >     this test only for embedded.
-> > > >   - Add entry only test.
-> > > >   - Reset the fprobe structure before reuse it.
-> > > > ---
-> > > >  lib/Kconfig.debug |   12 ++++
-> > > >  lib/Makefile      |    2 +
-> > > >  lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
-> > > >  3 files changed, 188 insertions(+)
-> > > >  create mode 100644 lib/test_fprobe.c
-> > > >
-> > > > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> > > > index 14b89aa37c5c..ffc469a12afc 100644
-> > > > --- a/lib/Kconfig.debug
-> > > > +++ b/lib/Kconfig.debug
-> > > > @@ -2100,6 +2100,18 @@ config KPROBES_SANITY_TEST
-> > > >
-> > > >         Say N if you are unsure.
-> > > >
-> > > > +config FPROBE_SANITY_TEST
-> > > > +     bool "Self test for fprobe"
-> > > > +     depends on DEBUG_KERNEL
-> > > > +     depends on FPROBE
-> > > > +     depends on KUNIT
-> > >
-> > > Hmm, this caused a build error with allmodconfig because KUNIT=m but FPROBE_SANITY_TEST=y.
-> > > Let me fix this issue.
-> >
-> > Please base on top of bpf-next and add [PATCH v11 bpf-next] to subject.
->
-> OK, let me rebase on it.
-> There are master and for-next branch, which one is better to use?
->
+On 3/10/2022 10:34 PM, Jakub Kicinski wrote:
+> On Thu, 10 Mar 2022 15:12:35 -0800 Tony Nguyen wrote:
+>> Inline flow director can be configured for each TC via devlink
+>> params based interface.
+>>
+>> /* Create 4 TCs */
+>> tc qdisc add dev enp175s0f0 root mqprio num_tc 4 map 0 1 2 3 \
+>>               queues 2@0 8@2 8@10 8@18 hw 1 mode channel
+>>
+>> /* Enable inline flow director for TC1 and TC2 */
+>> devlink dev param set pci/0000:af:00.0 \
+>>          name tc_inline_fd value 6 cmode runtime
+>>
+>> /* Dump inline flow director setting */
+>> devlink dev param show  pci/0000:af:00.0 name tc_inline_fd
+>> pci/0000:af:00.0:
+>>    name tc2_inline_fd type driver-specific
+>>      values:
+>>        cmode runtime value 6
+> Why is this in devlink and not ethtool?
 
-Sorry, missed your reply earlier. Always rebase against master.
+This is 16bit value with each bit representing a TC and is used to
+enable/disable inline flow director per queue group or TC.
+tc mqprio command allows creating upto 16 TCs.
 
-You forgot to add "bpf-next" into [PATCH] prefix, so I had to manually
-mark it in patchworks as delegated to bpf queue (this is necessary for
-our CI to properly pick it up). For future submissions to bpf-next,
-please don't forget to add "bpf-next" marker.
+My understanding is that ethtool parameters are per netedev or per-queue,
+but we don't have good way to configure per-queue_group parameters
+via ethtool. So we went with devlink.
 
-> Thank you,
+
 >
-> >
-> > >
-> > > Thank you,
-> > >
-> > > > +     help
-> > > > +       This option will enable testing the fprobe when the system boot.
-> > > > +       A series of tests are made to verify that the fprobe is functioning
-> > > > +       properly.
-> > > > +
-> > > > +       Say N if you are unsure.
-> > > > +
-> > > >  config BACKTRACE_SELF_TEST
-> > > >       tristate "Self test for the backtrace code"
-> > > >       depends on DEBUG_KERNEL
-> > > > diff --git a/lib/Makefile b/lib/Makefile
-> > > > index 300f569c626b..154008764b16 100644
-> > > > --- a/lib/Makefile
-> > > > +++ b/lib/Makefile
-> > > > @@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
-> > > >  obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
-> > > >  obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
-> > > >  obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-> > > > +CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-> > > > +obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
-> > > >  #
-> > > >  # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
-> > > >  # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-> > > > diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-> > > > new file mode 100644
-> > > > index 000000000000..ed70637a2ffa
-> > > > --- /dev/null
-> > > > +++ b/lib/test_fprobe.c
-> > > > @@ -0,0 +1,174 @@
-> > > > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > > > +/*
-> > > > + * test_fprobe.c - simple sanity test for fprobe
-> > > > + */
-> > > > +
-> > > > +#include <linux/kernel.h>
-> > > > +#include <linux/fprobe.h>
-> > > > +#include <linux/random.h>
-> > > > +#include <kunit/test.h>
-> > > > +
-> > > > +#define div_factor 3
-> > > > +
-> > > > +static struct kunit *current_test;
-> > > > +
-> > > > +static u32 rand1, entry_val, exit_val;
-> > > > +
-> > > > +/* Use indirect calls to avoid inlining the target functions */
-> > > > +static u32 (*target)(u32 value);
-> > > > +static u32 (*target2)(u32 value);
-> > > > +static unsigned long target_ip;
-> > > > +static unsigned long target2_ip;
-> > > > +
-> > > > +static noinline u32 fprobe_selftest_target(u32 value)
-> > > > +{
-> > > > +     return (value / div_factor);
-> > > > +}
-> > > > +
-> > > > +static noinline u32 fprobe_selftest_target2(u32 value)
-> > > > +{
-> > > > +     return (value / div_factor) + 1;
-> > > > +}
-> > > > +
-> > > > +static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-> > > > +{
-> > > > +     KUNIT_EXPECT_FALSE(current_test, preemptible());
-> > > > +     /* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-> > > > +     if (ip != target_ip)
-> > > > +             KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-> > > > +     entry_val = (rand1 / div_factor);
-> > > > +}
-> > > > +
-> > > > +static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-> > > > +{
-> > > > +     unsigned long ret = regs_return_value(regs);
-> > > > +
-> > > > +     KUNIT_EXPECT_FALSE(current_test, preemptible());
-> > > > +     if (ip != target_ip) {
-> > > > +             KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-> > > > +             KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-> > > > +     } else
-> > > > +             KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-> > > > +     KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-> > > > +     exit_val = entry_val + div_factor;
-> > > > +}
-> > > > +
-> > > > +/* Test entry only (no rethook) */
-> > > > +static void test_fprobe_entry(struct kunit *test)
-> > > > +{
-> > > > +     struct fprobe fp_entry = {
-> > > > +             .entry_handler = fp_entry_handler,
-> > > > +     };
-> > > > +
-> > > > +     current_test = test;
-> > > > +
-> > > > +     /* Before register, unregister should be failed. */
-> > > > +     KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-> > > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-> > > > +
-> > > > +     entry_val = 0;
-> > > > +     exit_val = 0;
-> > > > +     target(rand1);
-> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > > +     KUNIT_EXPECT_EQ(test, 0, exit_val);
-> > > > +
-> > > > +     entry_val = 0;
-> > > > +     exit_val = 0;
-> > > > +     target2(rand1);
-> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > > +     KUNIT_EXPECT_EQ(test, 0, exit_val);
-> > > > +
-> > > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-> > > > +}
-> > > > +
-> > > > +static void test_fprobe(struct kunit *test)
-> > > > +{
-> > > > +     struct fprobe fp = {
-> > > > +             .entry_handler = fp_entry_handler,
-> > > > +             .exit_handler = fp_exit_handler,
-> > > > +     };
-> > > > +
-> > > > +     current_test = test;
-> > > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-> > > > +
-> > > > +     entry_val = 0;
-> > > > +     exit_val = 0;
-> > > > +     target(rand1);
-> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > > +
-> > > > +     entry_val = 0;
-> > > > +     exit_val = 0;
-> > > > +     target2(rand1);
-> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > > +
-> > > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-> > > > +}
-> > > > +
-> > > > +static void test_fprobe_syms(struct kunit *test)
-> > > > +{
-> > > > +     static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-> > > > +     struct fprobe fp = {
-> > > > +             .entry_handler = fp_entry_handler,
-> > > > +             .exit_handler = fp_exit_handler,
-> > > > +     };
-> > > > +
-> > > > +     current_test = test;
-> > > > +     KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-> > > > +
-> > > > +     entry_val = 0;
-> > > > +     exit_val = 0;
-> > > > +     target(rand1);
-> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > > +
-> > > > +     entry_val = 0;
-> > > > +     exit_val = 0;
-> > > > +     target2(rand1);
-> > > > +     KUNIT_EXPECT_NE(test, 0, entry_val);
-> > > > +     KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-> > > > +
-> > > > +     KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-> > > > +}
-> > > > +
-> > > > +static unsigned long get_ftrace_location(void *func)
-> > > > +{
-> > > > +     unsigned long size, addr = (unsigned long)func;
-> > > > +
-> > > > +     if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-> > > > +             return 0;
-> > > > +
-> > > > +     return ftrace_location_range(addr, addr + size - 1);
-> > > > +}
-> > > > +
-> > > > +static int fprobe_test_init(struct kunit *test)
-> > > > +{
-> > > > +     do {
-> > > > +             rand1 = prandom_u32();
-> > > > +     } while (rand1 <= div_factor);
-> > > > +
-> > > > +     target = fprobe_selftest_target;
-> > > > +     target2 = fprobe_selftest_target2;
-> > > > +     target_ip = get_ftrace_location(target);
-> > > > +     target2_ip = get_ftrace_location(target2);
-> > > > +
-> > > > +     return 0;
-> > > > +}
-> > > > +
-> > > > +static struct kunit_case fprobe_testcases[] = {
-> > > > +     KUNIT_CASE(test_fprobe_entry),
-> > > > +     KUNIT_CASE(test_fprobe),
-> > > > +     KUNIT_CASE(test_fprobe_syms),
-> > > > +     {}
-> > > > +};
-> > > > +
-> > > > +static struct kunit_suite fprobe_test_suite = {
-> > > > +     .name = "fprobe_test",
-> > > > +     .init = fprobe_test_init,
-> > > > +     .test_cases = fprobe_testcases,
-> > > > +};
-> > > > +
-> > > > +kunit_test_suites(&fprobe_test_suite);
-> > > > +
-> > > > +MODULE_LICENSE("GPL");
-> > > >
-> > >
-> > >
-> > > --
-> > > Masami Hiramatsu <mhiramat@kernel.org>
->
->
-> --
-> Masami Hiramatsu <mhiramat@kernel.org>
+> All devlink params must be clearly documented.
+
+Based on the discussion in the other thread, we will make this a
+devlink parameter that is registered at probe time
+    https://lore.kernel.org/netdev/Yit3sLq6b+ZNZ07j@unreal/
+Will add documentation in the next revision.
+Hope this is OK.
+
+-Sridhar
+
