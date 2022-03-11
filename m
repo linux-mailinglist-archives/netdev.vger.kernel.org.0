@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A744D5C9D
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65BD14D5C95
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347252AbiCKHlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 02:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49836 "EHLO
+        id S1346798AbiCKHly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 02:41:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343932AbiCKHlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:41:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A471B756E
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:45 -0800 (PST)
+        with ESMTP id S1346912AbiCKHlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:41:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9992F1B757D
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3AA161DCB
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 07:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D31EDC36AE3;
-        Fri, 11 Mar 2022 07:40:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FAE1B82AE4
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 07:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766AFC340F4;
+        Fri, 11 Mar 2022 07:40:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646984444;
-        bh=eEWNp2AcKPf8e7Qe6okmHSv005/bMPQvxQg6yjvfh7k=;
+        bh=6Xqra2wPH/TWNZY2JRYdQ5M4iBblPcy3vnxR+0kJ0cg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mePKgXjlAcqnX+Gkf+p3OEavuE4goSEMNHeB6TXEn8+ScRchO6boU5MQl/TUKgVzd
-         p/BJlkfWiGaAev5ax+KHFGMbx8VkKywvJAIUAW8gUUQLsaNDTtRCv9dVIj3sZiNHdk
-         2iZE547pD7rmBfmiG8YStSgcRif1PyKWCPaDX6wL7B19W8G/I6NV16+KAfpiyzofBr
-         nXAGVtQG2tb2836Nm4uFkZ+3vDL3gdZntBWtaTL5G4kEwhaHti5MvFhVMkAftv4JRM
-         knn7DKYUanW1CwAW+NPTgX+O1fKfBP3NTSWVV0lQ58v/+9CxO2YbFZ7S14WHEcTB7L
-         TNkYja6WNKSOg==
+        b=EBXRuchyj5lr548CSEivuualLC++2KZWk6UAiNLvma60xTRPWZdw3Yd7HfJf2P/fo
+         2OlJciN1JXJsluAheTPII5awQnj5HXab7QxjUnmjPdR/mVHWw4s4hiG1Ik6MIaud0J
+         KHF1BWYaaqe/0fDuMoPkgBjRdrlYKKr+vZs6cr2e6YLo5lTCwksa8dPyypWtPHrz8i
+         rRZgN2qgMBDA6YQH5ltc/NQ29BnJ+0BccjGY+rj54/FT1nyu2rSKdYhh3PWSlWmO5F
+         dY2dYsTx9imK2WxmxRnwEC1DXqMdewMUYy7zAL52M3aFon2tzUUTNRfQ/QtgOZxQz9
+         Xrmj72vdPv4eg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 06/15] net/mlx5: Node-aware allocation for UAR
-Date:   Thu, 10 Mar 2022 23:40:22 -0800
-Message-Id: <20220311074031.645168-7-saeed@kernel.org>
+Subject: [net-next 07/15] net/mlx5: Node-aware allocation for the doorbell pgdir
+Date:   Thu, 10 Mar 2022 23:40:23 -0800
+Message-Id: <20220311074031.645168-8-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220311074031.645168-1-saeed@kernel.org>
 References: <20220311074031.645168-1-saeed@kernel.org>
@@ -57,44 +57,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tariq Toukan <tariqt@nvidia.com>
 
-Prefer the aware allocation, use the device NUMA node.
+The function is node-aware and gets the node as an argument.
+Use a node-aware allocation for the doorbell pgdir structure.
 
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/uar.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/alloc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/uar.c b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-index 9c81fb7c2c3c..8455e79bc44a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/uar.c
-@@ -99,19 +99,21 @@ static struct mlx5_uars_page *alloc_uars_page(struct mlx5_core_dev *mdev,
- 	int err = -ENOMEM;
- 	phys_addr_t pfn;
- 	int bfregs;
-+	int node;
- 	int i;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
+index 291e427e9e4f..d5408f6ce5a7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
+@@ -183,11 +183,11 @@ static struct mlx5_db_pgdir *mlx5_alloc_db_pgdir(struct mlx5_core_dev *dev,
+ 	u32 db_per_page = PAGE_SIZE / cache_line_size();
+ 	struct mlx5_db_pgdir *pgdir;
  
- 	bfregs = uars_per_sys_page(mdev) * MLX5_BFREGS_PER_UAR;
--	up = kzalloc(sizeof(*up), GFP_KERNEL);
-+	node = mdev->priv.numa_node;
-+	up = kzalloc_node(sizeof(*up), GFP_KERNEL, node);
- 	if (!up)
- 		return ERR_PTR(err);
+-	pgdir = kzalloc(sizeof(*pgdir), GFP_KERNEL);
++	pgdir = kzalloc_node(sizeof(*pgdir), GFP_KERNEL, node);
+ 	if (!pgdir)
+ 		return NULL;
  
- 	up->mdev = mdev;
--	up->reg_bitmap = bitmap_zalloc(bfregs, GFP_KERNEL);
-+	up->reg_bitmap = bitmap_zalloc_node(bfregs, GFP_KERNEL, node);
- 	if (!up->reg_bitmap)
- 		goto error1;
- 
--	up->fp_bitmap = bitmap_zalloc(bfregs, GFP_KERNEL);
-+	up->fp_bitmap = bitmap_zalloc_node(bfregs, GFP_KERNEL, node);
- 	if (!up->fp_bitmap)
- 		goto error1;
- 
+-	pgdir->bitmap = bitmap_zalloc(db_per_page, GFP_KERNEL);
++	pgdir->bitmap = bitmap_zalloc_node(db_per_page, GFP_KERNEL, node);
+ 	if (!pgdir->bitmap) {
+ 		kfree(pgdir);
+ 		return NULL;
 -- 
 2.35.1
 
