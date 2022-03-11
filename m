@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EC8B4D5BF6
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:05:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 825544D5BEE
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346984AbiCKHEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 02:04:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
+        id S1347011AbiCKHEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 02:04:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231892AbiCKHEe (ORCPT
+        with ESMTP id S1344054AbiCKHEe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:04:34 -0500
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 437BF972A2;
-        Thu, 10 Mar 2022 23:03:29 -0800 (PST)
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C5E48F63D;
+        Thu, 10 Mar 2022 23:03:28 -0800 (PST)
 Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app4 (Coremail) with SMTP id cS_KCgCXTiAx9CpiW75vAA--.16861S3;
-        Fri, 11 Mar 2022 15:03:20 +0800 (CST)
+        by mail-app4 (Coremail) with SMTP id cS_KCgCXTiAx9CpiW75vAA--.16861S4;
+        Fri, 11 Mar 2022 15:03:22 +0800 (CST)
 From:   Duoming Zhou <duoming@zju.edu.cn>
 To:     linux-hams@vger.kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         jreuter@yaina.de, kuba@kernel.org, davem@davemloft.net,
         ralf@linux-mips.org, thomas@osterried.de,
         Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net 1/2] ax25: Fix refcount leaks caused by ax25_cb_del()
-Date:   Fri, 11 Mar 2022 15:03:06 +0800
-Message-Id: <e3fa72037398d9302e7124d80dc457ca5309f6e0.1646981034.git.duoming@zju.edu.cn>
+Subject: [PATCH net 2/2] ax25: Fix NULL pointer dereferences in ax25 timers
+Date:   Fri, 11 Mar 2022 15:03:07 +0800
+Message-Id: <8a9519431c30c6baa9c2135552009fcab850ae08.1646981034.git.duoming@zju.edu.cn>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1646981034.git.duoming@zju.edu.cn>
 References: <cover.1646981034.git.duoming@zju.edu.cn>
 In-Reply-To: <cover.1646981034.git.duoming@zju.edu.cn>
 References: <cover.1646981034.git.duoming@zju.edu.cn>
-X-CM-TRANSID: cS_KCgCXTiAx9CpiW75vAA--.16861S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxGw1Uur4DKw15Cw18JF43Jrb_yoWrWFykpF
-        Wqvay5ArZrtr1rCa18Gr97WF18Zryqk397GryUZFyIkasxJwn5JrZ3t3yUJry3JFZ5JF18
-        Z347Ww43Zr1DuFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID: cS_KCgCXTiAx9CpiW75vAA--.16861S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxAF4rZF48trW3Zw1UZr4kCrg_yoWrGF15pF
+        WDKFWfJr4DXrW5Ar48Crs7Jr1UZw1UX398Ar18uF4S93WxJrn8JF1UtFyjqFW3KFZ8Ar9r
+        Aw1xWasxXF18uFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
         9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
         w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
         IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
@@ -47,7 +47,7 @@ X-Coremail-Antispam: 1UD129KBjvJXoWxGw1Uur4DKw15Cw18JF43Jrb_yoWrWFykpF
         rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
         CI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
         z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkFAVZdtYnj3gAMsJ
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkFAVZdtYnj3gAOsL
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
@@ -57,122 +57,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid
-UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of net_device
-caused by rebinding operation") increase the refcounts of ax25_dev and
-net_device in ax25_bind() and decrease the matching refcounts in
-ax25_kill_by_device() in order to prevent UAF bugs, but there are
-reference count leaks.
+There are race conditions that may lead to null pointer dereferences in
+ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
+ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we use
+ax25_kill_by_device() to detach the ax25 device.
 
-The root cause of refcount leaks is shown below:
+One of the race conditions that cause null pointer dereferences can be
+shown as below:
 
-     (Thread 1)                      |      (Thread 2)
-ax25_bind()                          |
- ...                                 |
- ax25_addr_ax25dev()                 |
-  ax25_dev_hold()   //(1)            |
-  ...                                |
- dev_hold_track()   //(2)            |
- ...                                 | ax25_destroy_socket()
-                                     |  ax25_cb_del()
-                                     |   ...
-                                     |   hlist_del_init() //(3)
-                                     |
-     (Thread 3)                      |
-ax25_kill_by_device()                |
- ...                                 |
- ax25_for_each(s, &ax25_list) {      |
-  if (s->ax25_dev == ax25_dev) //(4) |
-   ...                               |
+      (Thread 1)                    |      (Thread 2)
+ax25_connect()                      |
+ ax25_std_establish_data_link()     |
+  ax25_start_t1timer()              |
+   mod_timer(&ax25->t1timer,..)     |
+                                    | ax25_kill_by_device()
+   (wait a time)                    |  ...
+                                    |  s->ax25_dev = NULL; //(1)
+   ax25_t1timer_expiry()            |
+    ax25->ax25_dev->values[..] //(2)|  ...
+     ...                            |
 
-Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
-position (1) and increase the refcount of net_device in position (2).
-Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
-ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
-Finally, the decrements of refcounts in ax25_kill_by_device() will not
-be executed, because no s->ax25_dev equals to ax25_dev in position (4).
+We set null to ax25_cb->ax25_dev in position (1) and dereference
+the null pointer in position (2).
 
-This patch adds a flag in ax25_dev in order to prevent reference count
-leaks. If the above condition happens, the "test_bit" condition check
-in ax25_kill_by_device() could pass and the refcounts could be
-decreased properly.
+The corresponding fail log is shown below:
+===============================================================
+BUG: kernel NULL pointer dereference, address: 0000000000000050
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.17.0-rc6-00794-g45690b7d0
+RIP: 0010:ax25_t1timer_expiry+0x12/0x40
+...
+Call Trace:
+ call_timer_fn+0x21/0x120
+ __run_timers.part.0+0x1ca/0x250
+ run_timer_softirq+0x2c/0x60
+ __do_softirq+0xef/0x2f3
+ irq_exit_rcu+0xb6/0x100
+ sysvec_apic_timer_interrupt+0xa2/0xd0
+...
 
-Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
-Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
-Reported-by: Thomas Osterried <thomas@osterried.de>
+This patch uses ax25_disconnect() to delete timers before we set null to
+ax25_cb->ax25_dev in ax25_kill_by_device(). Function ax25_disconnect()
+will not return until all timers are stopped, because we have changed
+del_timer() to del_timer_sync(). What`s more, we add condition check in
+ax25_destroy_socket(), because ax25_stop_heartbeat() will not return,
+if there is still heartbeat.
+
 Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
- include/net/ax25.h  | 5 +++++
- net/ax25/af_ax25.c  | 6 ++++++
- net/ax25/ax25_dev.c | 1 +
- 3 files changed, 12 insertions(+)
+ net/ax25/af_ax25.c    |  7 ++++---
+ net/ax25/ax25_timer.c | 10 +++++-----
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index 8221af1811d..ea6ca385190 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -158,6 +158,10 @@ enum {
- #define	AX25_DEF_PROTOCOL	AX25_PROTO_STD_SIMPLEX	/* Standard AX.25 */
- #define AX25_DEF_DS_TIMEOUT	180000			/* DAMA timeout 3 minutes */
- 
-+#define AX25_DEV_INIT    0
-+#define AX25_DEV_KILL    0
-+#define AX25_DEV_BIND    1
-+
- typedef struct ax25_uid_assoc {
- 	struct hlist_node	uid_node;
- 	refcount_t		refcount;
-@@ -240,6 +244,7 @@ typedef struct ax25_dev {
- 	ax25_dama_info		dama;
- #endif
- 	refcount_t		refcount;
-+	unsigned long	flag;
- } ax25_dev;
- 
- typedef struct ax25_cb {
 diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 6bd09718077..fc564b87acc 100644
+index fc564b87acc..46e4d0cc878 100644
 --- a/net/ax25/af_ax25.c
 +++ b/net/ax25/af_ax25.c
-@@ -86,6 +86,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			set_bit(AX25_DEV_KILL, &ax25_dev->flag);
+@@ -90,18 +90,18 @@ static void ax25_kill_by_device(struct net_device *dev)
  			sk = s->sk;
  			if (!sk) {
  				spin_unlock_bh(&ax25_list_lock);
-@@ -115,6 +116,10 @@ static void ax25_kill_by_device(struct net_device *dev)
- 		}
- 	}
- 	spin_unlock_bh(&ax25_list_lock);
-+	if (!test_bit(AX25_DEV_KILL, &ax25_dev->flag) && test_bit(AX25_DEV_BIND, &ax25_dev->flag)) {
-+		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-+		ax25_dev_put(ax25_dev);
-+	}
+-				s->ax25_dev = NULL;
+ 				ax25_disconnect(s, ENETUNREACH);
++				s->ax25_dev = NULL;
+ 				spin_lock_bh(&ax25_list_lock);
+ 				goto again;
+ 			}
+ 			sock_hold(sk);
+ 			spin_unlock_bh(&ax25_list_lock);
+ 			lock_sock(sk);
++			ax25_disconnect(s, ENETUNREACH);
+ 			s->ax25_dev = NULL;
+ 			dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+ 			ax25_dev_put(ax25_dev);
+-			ax25_disconnect(s, ENETUNREACH);
+ 			release_sock(sk);
+ 			spin_lock_bh(&ax25_list_lock);
+ 			sock_put(sk);
+@@ -310,7 +310,8 @@ void ax25_destroy_socket(ax25_cb *ax25)
+ 
+ 	ax25_cb_del(ax25);
+ 
+-	ax25_stop_heartbeat(ax25);
++	if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
++		ax25_stop_heartbeat(ax25);
+ 	ax25_stop_t1timer(ax25);
+ 	ax25_stop_t2timer(ax25);
+ 	ax25_stop_t3timer(ax25);
+diff --git a/net/ax25/ax25_timer.c b/net/ax25/ax25_timer.c
+index 85865ebfdfa..99af3d1aeec 100644
+--- a/net/ax25/ax25_timer.c
++++ b/net/ax25/ax25_timer.c
+@@ -78,27 +78,27 @@ void ax25_start_idletimer(ax25_cb *ax25)
+ 
+ void ax25_stop_heartbeat(ax25_cb *ax25)
+ {
+-	del_timer(&ax25->timer);
++	del_timer_sync(&ax25->timer);
  }
  
- /*
-@@ -1132,6 +1137,7 @@ static int ax25_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- done:
- 	ax25_cb_add(ax25);
- 	sock_reset_flag(sk, SOCK_ZAPPED);
-+	set_bit(AX25_DEV_BIND, &ax25_dev->flag);
+ void ax25_stop_t1timer(ax25_cb *ax25)
+ {
+-	del_timer(&ax25->t1timer);
++	del_timer_sync(&ax25->t1timer);
+ }
  
- out:
- 	release_sock(sk);
-diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-index d2a244e1c26..9b04d74a1be 100644
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -77,6 +77,7 @@ void ax25_dev_device_up(struct net_device *dev)
- 	ax25_dev->values[AX25_VALUES_PACLEN]	= AX25_DEF_PACLEN;
- 	ax25_dev->values[AX25_VALUES_PROTOCOL]  = AX25_DEF_PROTOCOL;
- 	ax25_dev->values[AX25_VALUES_DS_TIMEOUT]= AX25_DEF_DS_TIMEOUT;
-+	ax25_dev->flag = AX25_DEV_INIT;
+ void ax25_stop_t2timer(ax25_cb *ax25)
+ {
+-	del_timer(&ax25->t2timer);
++	del_timer_sync(&ax25->t2timer);
+ }
  
- #if defined(CONFIG_AX25_DAMA_SLAVE) || defined(CONFIG_AX25_DAMA_MASTER)
- 	ax25_ds_setup_timer(ax25_dev);
+ void ax25_stop_t3timer(ax25_cb *ax25)
+ {
+-	del_timer(&ax25->t3timer);
++	del_timer_sync(&ax25->t3timer);
+ }
+ 
+ void ax25_stop_idletimer(ax25_cb *ax25)
+ {
+-	del_timer(&ax25->idletimer);
++	del_timer_sync(&ax25->idletimer);
+ }
+ 
+ int ax25_t1timer_running(ax25_cb *ax25)
 -- 
 2.17.1
 
