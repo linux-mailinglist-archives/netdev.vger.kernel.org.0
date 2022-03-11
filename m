@@ -2,123 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE704D66EC
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 17:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48B4F4D66F3
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 17:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350216AbiCKQ7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 11:59:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
+        id S1350333AbiCKQ76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 11:59:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347005AbiCKQ7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 11:59:44 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF69665796;
-        Fri, 11 Mar 2022 08:58:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647017920; x=1678553920;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xss8NVffgnDqny0DrevtiFdcFMiLKAGG+aI7RRI/y0o=;
-  b=W8HkTavODK1O+jdAPf65T6PEwVm8q9GoGfDyPv5iG9Pka8s8Un6qtDQB
-   8GKXQXNJiSCWNtV8SEfkQCNnRSvuUQdWLpmaPAzkBnvSkS4Hno9QTlBGg
-   C/ZA8U+Dn4ztRkRsMecaaXQ+d1bCWtUuzFqQmlizy1UXmw9vGcQJRPxHr
-   tKv1WOtCgAdBt8jJv5SXZcVb/DzY10QnbPEkdXz4FEveNKzpAEKY37fSV
-   SszaieKHHlQ5cHA/7mMoClDhf9HKe8rQHd/iKq4iXcqJmaLZX+HTj7OFt
-   xOS4J+IUFGlSzxa80nzGfD7EH6DvKNrncWUYjTeguwZIY9parm+JznW15
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10283"; a="316330538"
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="316330538"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2022 08:58:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,174,1643702400"; 
-   d="scan'208";a="548509073"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Mar 2022 08:58:37 -0800
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nSib6-0006nF-Dj; Fri, 11 Mar 2022 16:58:36 +0000
-Date:   Sat, 12 Mar 2022 00:58:02 +0800
-From:   kernel test robot <lkp@intel.com>
+        with ESMTP id S1350441AbiCKQ7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 11:59:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D7E673DC;
+        Fri, 11 Mar 2022 08:58:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8400FB82C20;
+        Fri, 11 Mar 2022 16:58:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB580C340E9;
+        Fri, 11 Mar 2022 16:58:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647017928;
+        bh=OG0J3GojgmzIoNZPBok++aiZW+CyroBNvFpFTQVCZXA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=X7F+/9epy+hJ4kGnQUwkPj8TVU5IFVZly1jBpzHAfBq4aEFsMmZvEsADN86iHN8sM
+         sK9mTrmzjVGnuiIV4deFKbIPZhCpI17XVz3apKJctv0OHWdiq3rfUZOTNPzNgQuIko
+         HvPuL1R1Z9c2Uum9fRpRyPQ4LQgEobayFYlPB2Yi/E+4fYGnpppQ+He6dGcDNmPxKo
+         6DVxfPgBqkLXQu+9OYVEGQIZuyyGXXGNBR65zMqk3GdE+xsoqGnRsVdyvII+F4muhB
+         G32xX7aPwFizSGUYaJUuFjzG2TObanmerouHSrJR6jeodVH4NX8hp2IyFnGlf8H8bQ
+         zqhHIShglvKQg==
+Message-ID: <b0ef55ef-234f-63a4-7cc3-fd4acde2f011@kernel.org>
+Date:   Fri, 11 Mar 2022 09:58:46 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH 1/3] net:ipv6:Add ndisc_bond_send_na to support sending na
+ by slave directly
+Content-Language: en-US
 To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
         vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn,
-        sunshouxin@chinatelecom.cn
-Subject: Re: [PATCH 3/3] net:bonding:Add support for IPV6 RLB to balance-alb
- mode
-Message-ID: <202203120001.k8e1fNyg-lkp@intel.com>
-References: <20220311024958.7458-4-sunshouxin@chinatelecom.cn>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220311024958.7458-4-sunshouxin@chinatelecom.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        kuba@kernel.org, yoshfuji@linux-ipv6.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+References: <20220311024958.7458-1-sunshouxin@chinatelecom.cn>
+ <20220311024958.7458-2-sunshouxin@chinatelecom.cn>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220311024958.7458-2-sunshouxin@chinatelecom.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sun,
+On 3/10/22 7:49 PM, Sun Shouxin wrote:
+> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+> index fcb288b0ae13..c59a110e9b10 100644
+> --- a/net/ipv6/ndisc.c
+> +++ b/net/ipv6/ndisc.c
+> @@ -572,6 +572,67 @@ void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
+>  	ndisc_send_skb(skb, daddr, src_addr);
+>  }
+>  
+> +void ndisc_bond_send_na(struct net_device *dev, const struct in6_addr *daddr,
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on 2a9eef868a997ec575c2e6ae885e91313f635d59]
-
-url:    https://github.com/0day-ci/linux/commits/Sun-Shouxin/net-bonding-Add-support-for-IPV6-RLB-to-balance-alb-mode/20220311-110221
-base:   2a9eef868a997ec575c2e6ae885e91313f635d59
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220312/202203120001.k8e1fNyg-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/dde3df4ab3030a55968f48dc96ff2014d8f18410
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Sun-Shouxin/net-bonding-Add-support-for-IPV6-RLB-to-balance-alb-mode/20220311-110221
-        git checkout dde3df4ab3030a55968f48dc96ff2014d8f18410
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/bonding/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/bonding/bond_alb.c:986:6: warning: no previous prototype for 'rlb6_update_client' [-Wmissing-prototypes]
-     986 | void rlb6_update_client(struct rlb_client_info *client_info)
-         |      ^~~~~~~~~~~~~~~~~~
+This ipv6 code, not bond code
 
 
-vim +/rlb6_update_client +986 drivers/net/bonding/bond_alb.c
+> +			const struct in6_addr *solicited_addr,
+> +			bool router, bool solicited, bool override,
+> +			bool inc_opt, unsigned short vlan_id,
+> +			const void *mac_dst, const void *mac_src)
+> +{
+> +	struct sk_buff *skb;
+> +	const struct in6_addr *src_addr;
+> +	struct nd_msg *msg;
+> +	struct net *net = dev_net(dev);
+> +	struct sock *sk = net->ipv6.ndisc_sk;
+> +	int optlen = 0;
+> +	int ret;
+> +
+> +	src_addr = solicited_addr;
+> +	if (!dev->addr_len)
+> +		inc_opt = false;
+> +	if (inc_opt)
+> +		optlen += ndisc_opt_addr_space(dev,
+> +					       NDISC_NEIGHBOUR_ADVERTISEMENT);
+> +
+> +	skb = ndisc_alloc_skb(dev, sizeof(*msg) + optlen);
+> +	if (!skb)
+> +		return;
+> +
+> +	msg = skb_put(skb, sizeof(*msg));
+> +	*msg = (struct nd_msg) {
+> +		.icmph = {
+> +			.icmp6_type = NDISC_NEIGHBOUR_ADVERTISEMENT,
+> +			.icmp6_router = router,
+> +			.icmp6_solicited = solicited,
+> +			.icmp6_override = override,
+> +		},
+> +		.target = *solicited_addr,
+> +	};
+> +
+> +	if (inc_opt)
+> +		ndisc_fill_addr_option(skb, ND_OPT_TARGET_LL_ADDR,
+> +				       dev->dev_addr,
+> +				       NDISC_NEIGHBOUR_ADVERTISEMENT);
+> +
+> +	if (vlan_id)
+> +		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+> +				       vlan_id);
+> +
+> +	msg->icmph.icmp6_cksum = csum_ipv6_magic(src_addr, daddr, skb->len,
+> +						 IPPROTO_ICMPV6,
+> +						 csum_partial(&msg->icmph,
+> +							      skb->len, 0));
+> +
+> +	ip6_nd_hdr(skb, src_addr, daddr, inet6_sk(sk)->hop_limit, skb->len);
+> +
+> +	skb->protocol = htons(ETH_P_IPV6);
+> +	skb->dev = dev;
+> +	if (dev_hard_header(skb, dev, ETH_P_IPV6, mac_dst, mac_src, skb->len) < 0)
+> +		return;
+> +
+> +	ret = dev_queue_xmit(skb);
+> +}
+> +EXPORT_SYMBOL(ndisc_bond_send_na);
 
-   984	
-   985	/*********************** ipv6 rlb specific functions ***************************/
- > 986	void rlb6_update_client(struct rlb_client_info *client_info)
-   987	{
-   988		int i;
-   989	
-   990		if (!client_info->slave || !is_valid_ether_addr(client_info->mac_dst))
-   991			return;
-   992	
-   993		for (i = 0; i < RLB_ARP_BURST_SIZE; i++) {
-   994			ndisc_bond_send_na(client_info->slave->dev,
-   995					   &client_info->ip6_dst,
-   996					   &client_info->ip6_src,
-   997					   false, false, true, true,
-   998					   client_info->vlan_id,
-   999					   client_info->mac_dst,
-  1000					   client_info->slave->dev->dev_addr);
-  1001		}
-  1002	}
-  1003	
+It would be better to refactor ndisc_send_na and extract what you think
+you need into a new helper that gets exported for bond.
 
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
