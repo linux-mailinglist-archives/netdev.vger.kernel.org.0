@@ -2,117 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4EFA4D6233
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 14:15:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F34584D6243
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 14:21:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348831AbiCKNQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 08:16:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
+        id S1348851AbiCKNWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 08:22:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235260AbiCKNQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 08:16:30 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263441C2F62
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 05:15:27 -0800 (PST)
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 879183F1E5
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 13:15:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647004523;
-        bh=TN0/6qCY/tJQXZh6cFY1jeGVIfLosWp/aDkoemInbFs=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=lavVCKjyr1uU5ETjMKKQVZpIMUbv7UtnT1MtQX21YPWVOLfV6KkmITYDZBIkvKLII
-         nW64LWWQ+9I2zgp6mCntXTFKD3bnK0hFh8uQ4HHpWidthjplSNf/khbg5NagTF2Hpp
-         41JhB5FKbXKbs0LSSYO7+gIYJWtOmPjwbSJ0D7mjWNbXhhV6tg0N+R0K/uXOMRk0e5
-         8WS6P2dV+uWEe5RqN80Cme7oigDlYbPdAaz4HIapuqbt1MkM6PK9f6d3KJGopY/V/y
-         H/c6Sq1oX1N5y6hecLxjt/JVpWvNAiHlrRt9K1EzAyad4Iy7Vo9hvTbXUapTlJ9Slx
-         A4vi2/wK9y7ag==
-Received: by mail-ed1-f72.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso4825125edt.20
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 05:15:23 -0800 (PST)
+        with ESMTP id S239206AbiCKNWD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 08:22:03 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722151C2D97;
+        Fri, 11 Mar 2022 05:21:00 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id y22so10914792eds.2;
+        Fri, 11 Mar 2022 05:21:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=KeIcFi3Rr2zXYQr6fLEKbqt/2PwXApn2VhoSkP/Ntyc=;
+        b=jkyAQPSP/xz+inFQxVFY0mppDO9MzYQLQeOd8v14TimD8JzQhX/JidRRqqZ0OWKxGv
+         g1/khMtqk+7ZUFDvfh/oW8w8YCifaIKwqVewNuy3v6rZ/BXuX5tsI5avxWJVKxLbcpaT
+         nkJwKbI6B7s+bswHpbWkRo0SFhYem9Boj/Tx5t90dgDjDx1Lr5a+iICusDlGH4KK22A1
+         qmNtCi5kADJ5ETV0BQtaNZVraQV1qYnIhiueBBBjhMZZmRKjgykSpagzpt+J5VAQnnga
+         N/x6/ml5uL3utQoVAzkvJZSshTI2Oy99aMVh+2ftyXpfwjybDmSkFaSpjowP6OLsyg68
+         FLvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TN0/6qCY/tJQXZh6cFY1jeGVIfLosWp/aDkoemInbFs=;
-        b=NVEqSxZQzFNGB8v2E4dMnVRyPvxOGmzBzsJRZNVMYvUO+BHK9J4TuToZcvv5vZAlJY
-         ry6ubWGvNdZkpuNX4uujMLz3mgTfBRykMBDeYh57MT2FKxW3xIPW8zLlTLukllRsNi0N
-         lLkae6Es8XL3c+Uvn3xEcPC+p+9YZSgWjxz6PLxkIjg0Z4hWv+8hc4G1rUueYTNLGm9K
-         g3b/dGRauVAl2X1p15PlGRBaSJT/8XqgsLbO+7SjX+kY1uP73Q0e0xZAhSDCwxvzz4IX
-         /LWSDezHxOZFHxDMrwfISF809X5+6DxdyPp+AmgkJKBYeVz2IrHIAzjm3t9fM8fZQWB2
-         z0pA==
-X-Gm-Message-State: AOAM531wXxAKJalUgR5tBA66hSvOIOx4c9fVV4ijjdolyaU4ePh5i25l
-        AIuVXJPzi5aGBxDK+IAAMdmooXxeW677mAeTLwypwtR8psrPBgGaHPp9VsWY1EGI/Ia7H1O+kx9
-        6YHjE2BGWV3Ity78A9jHaEB6xmcXtShpYiw==
-X-Received: by 2002:a17:906:3ec7:b0:6d6:e52b:b with SMTP id d7-20020a1709063ec700b006d6e52b000bmr8280060ejj.521.1647004523283;
-        Fri, 11 Mar 2022 05:15:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxi3gklXV/fUKCMh5Si2xnpWTXW2rKNoLHSWBdSlOw8X+knNmCFTl0zQOg4mxoJY2xxUJgSfg==
-X-Received: by 2002:a17:906:3ec7:b0:6d6:e52b:b with SMTP id d7-20020a1709063ec700b006d6e52b000bmr8280045ejj.521.1647004523117;
-        Fri, 11 Mar 2022 05:15:23 -0800 (PST)
-Received: from [192.168.0.148] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.gmail.com with ESMTPSA id w19-20020a05640234d300b00416baf4cdcasm1890685edc.48.2022.03.11.05.15.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 05:15:22 -0800 (PST)
-Message-ID: <388e0ded-57ed-27bd-ae05-b18b943fbc32@canonical.com>
-Date:   Fri, 11 Mar 2022 14:15:21 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net-next v4 2/8] dt-bindings: phy: add the "fsl,lynx-28g"
- compatible
-Content-Language: en-US
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kishon@ti.com" <kishon@ti.com>,
-        "vkoul@kernel.org" <vkoul@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Hongxing Zhu <hongxing.zhu@nxp.com>
-References: <20220311125437.3854483-1-ioana.ciornei@nxp.com>
- <20220311125437.3854483-3-ioana.ciornei@nxp.com>
- <f782bf45-3a69-18b4-de0b-f53669aec546@canonical.com>
- <20220311131324.uzayrpnp2mifox23@skbuf>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220311131324.uzayrpnp2mifox23@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KeIcFi3Rr2zXYQr6fLEKbqt/2PwXApn2VhoSkP/Ntyc=;
+        b=Vm8JUV8zsXmNmw6qaQUIuJgwqy//0jGzxWvd7M7cFJqQUauvWQzH6r+S4dPCoj0fhp
+         zDWn4r+ODSO/n47JEMuz4pkrYsJ5Zl7IESEvPTWHsXYBQ4rsTni6Yz2SdZBgKMS3uYw+
+         RvwyaoTc5BA2Ra2J5X9hcXmjT/u/ES92eyhcN0NSzZo/EYszN40r7XFtAf8gs07OIj3H
+         aA8X+CFNUQSNToZvjAJnHprc1dhwftQ9iG+V5h8lMR8OP9w/f8HYlVSzgnPwSJLxIrS1
+         4xdpqpf7MTOAcl4pku0zayAPC5Ju+UfXPXK3vsqV52k0niRc0+tcjisYN75aOC+EimGR
+         k0Sg==
+X-Gm-Message-State: AOAM533B9bhTMaaR1ZxVv954D9EcsZxcQmT87DjEAYnE5xpeMPcsKBjy
+        6hFJ/JObPWYFm8DI3dK9l4U=
+X-Google-Smtp-Source: ABdhPJwVXUzZB5cpKF2x75RtFG3YEMTiKoforB885AlXxaBQxm2RTqSxA2WUUMN/51rejK5FcxSHGA==
+X-Received: by 2002:a05:6402:4414:b0:408:4dc0:3ee9 with SMTP id y20-20020a056402441400b004084dc03ee9mr8686736eda.203.1647004858571;
+        Fri, 11 Mar 2022 05:20:58 -0800 (PST)
+Received: from felia.fritz.box (200116b826a9a900147fc2a0771e144b.dip.versatel-1u1.de. [2001:16b8:26a9:a900:147f:c2a0:771e:144b])
+        by smtp.gmail.com with ESMTPSA id u9-20020a170906124900b006ce88a505a1sm3027146eja.179.2022.03.11.05.20.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Mar 2022 05:20:58 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     robh+dt@kernel.org, devicetree@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        Corentin Labbe <clabbe@baylibre.com>,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: rectify entry for ARM/CORTINA SYSTEMS GEMINI ARM ARCHITECTURE
+Date:   Fri, 11 Mar 2022 14:20:16 +0100
+Message-Id: <20220311132016.24090-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/03/2022 14:13, Ioana Ciornei wrote:
-> On Fri, Mar 11, 2022 at 02:09:05PM +0100, Krzysztof Kozlowski wrote:
->> On 11/03/2022 13:54, Ioana Ciornei wrote:
->>> +examples:
->>> +  - |
->>> +    soc {
->>> +      #address-cells = <2>;
->>> +      #size-cells = <2>;
->>> +      serdes_1: serdes_phy@1ea0000 {
->>
->> Comment from v3 still unresolved. Rest looks good.
-> 
-> Uhhh, I forgot to change the name. Sorry.
+Commit 208b65f7b5cc ("dt-bindings: net: convert net/cortina,gemini-ethernet
+to yaml") converts cortina,gemini-ethernet.txt to yaml, but missed to
+adjust its reference in MAINTAINERS.
 
-With the node name "phy":
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+broken reference.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Repair this file reference in ARM/CORTINA SYSTEMS GEMINI ARM ARCHITECTURE.
 
-Best regards,
-Krzysztof
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Rob, please pick this minor non-urgent cleanup patch in your -next tree on
+top of the commit above.
+
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d0a17fcf264b..80e5867b2afa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2004,7 +2004,7 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ S:	Maintained
+ T:	git git://github.com/ulli-kroll/linux.git
+ F:	Documentation/devicetree/bindings/arm/gemini.yaml
+-F:	Documentation/devicetree/bindings/net/cortina,gemini-ethernet.txt
++F:	Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+ F:	Documentation/devicetree/bindings/pinctrl/cortina,gemini-pinctrl.txt
+ F:	Documentation/devicetree/bindings/rtc/faraday,ftrtc010.yaml
+ F:	arch/arm/boot/dts/gemini*
+-- 
+2.17.1
+
