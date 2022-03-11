@@ -2,50 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8918F4D59B9
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 05:41:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98FE14D59B6
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 05:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236877AbiCKElQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 23:41:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
+        id S1346349AbiCKEl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 23:41:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233332AbiCKElP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 23:41:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3292FEBAFF
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 20:40:12 -0800 (PST)
+        with ESMTP id S233332AbiCKEl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 23:41:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945BD1A8070;
+        Thu, 10 Mar 2022 20:40:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3C7B619C5
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 04:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1F488C340F3;
-        Fri, 11 Mar 2022 04:40:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FEC4B82A77;
+        Fri, 11 Mar 2022 04:40:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89448C340EC;
+        Fri, 11 Mar 2022 04:40:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646973611;
-        bh=+k3iCe5w8O92UwGBp775mNvesb1Q0nh+bDKQz82l9dc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a2SZ4Gc9TWbIgzFav6iYzLi9QDwPjpp8AhEVaA8gjxK9gGoDglUJNdLc3DW0NMOUZ
-         guzVY9DRAmQXApjfqSuanu5clWyUfMjeyW8779Jv38zesKnkKDo+8FuR1hC8TTW/Nk
-         JV3u2xXD7dkHzZ62fIWuKNzwrIbzOIN6um9CfYEryrwx9u1S8Z0t+RmMc32DFsj0rf
-         kyU6BokZujkZOPBYmk3uQc2YNjj7HT7tSN9cf2VkH6m01uzfsa4RtU4LRVaRBrCNqr
-         B4MAVlcnNQd41IOvUM7fN2JvX4UEDHc8BCJk9PFayMJYcnqd/fbCGBJJL6p/CwktcT
-         krPtKy6/0zyHw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 05A68E8DD5B;
-        Fri, 11 Mar 2022 04:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1646973652;
+        bh=IRqFVrpyUqt1gWh3UlejHjKKJ5lWo3XyNfF+ss8+feQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vJDhLDo3FNR21w4iHUox8q/APrfcRVEb5nH+UN4+VzcaO9RYqiOGt3vqla7yXSgIn
+         7FvXJqOBccD+qOuDUM6nlE1PKFuwjSNhMuvsMNDeobgy6MLDjW18Lar0vWFESqlDgo
+         uwe19sOWTWVuJC9DpnSWz/MlFKHk9QBh0sNZEJQ0BNEDdH3ne08Pt1rITBTdtXGZJE
+         3gsm0lbovQuvU3nQC/TcEy8igB8z7KLNJGRvhA4jyZNOyz/fw3vnj+61PZ5+J4M253
+         KATIwgsADjxt8yOQnW8ny+gsznhANiy/3BDrpXr1SYIfbqlRqqIoTjZMDeIoppTDjG
+         N7S7eMMVQitYw==
+Date:   Thu, 10 Mar 2022 20:40:51 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        ralf@linux-mips.org, jreuter@yaina.de
+Subject: Re: [PATCH V2] ax25: Fix NULL pointer dereferences in ax25 timers
+Message-ID: <20220310204051.44c9555d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220310144347.102465-1-duoming@zju.edu.cn>
+References: <20220310144347.102465-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ptp: ocp: add UPF_NO_THRE_TEST flag for serial ports
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164697361101.17229.12244359500567675468.git-patchwork-notify@kernel.org>
-Date:   Fri, 11 Mar 2022 04:40:11 +0000
-References: <20220309223427.34745-1-jonathan.lemon@gmail.com>
-In-Reply-To: <20220309223427.34745-1-jonathan.lemon@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        richardcochran@gmail.com, kernel-team@fb.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,28 +54,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, 10 Mar 2022 22:43:47 +0800 Duoming Zhou wrote:
+> There are race conditions that may lead to null pointer dereferences in
+> ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
+> ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we use
+> ax25_kill_by_device() to detach the ax25 device.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+None of your last 4 patches applied to our trees.
 
-On Wed,  9 Mar 2022 14:34:27 -0800 you wrote:
-> From: Jonathan Lemon <bsd@fb.com>
-> 
-> The serial port driver attempts to test for correct THRE behavior
-> on startup.  However, it does this by disabling interrupts, and
-> then intentionally trying to trigger an interrupt in order to see
-> if the IIR bit is set in the UART.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next] ptp: ocp: add UPF_NO_THRE_TEST flag for serial ports
-    https://git.kernel.org/netdev/net-next/c/c17c4059df24
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+If you're sending fixes for networking please base them on 
+net/master and put [PATCH net] in the subject.
