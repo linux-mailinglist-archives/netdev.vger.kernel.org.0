@@ -2,144 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14A134D56BD
+	by mail.lfdr.de (Postfix) with ESMTP id AB4EB4D56BF
 	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 01:30:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245465AbiCKAaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Mar 2022 19:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56958 "EHLO
+        id S1343884AbiCKAaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Mar 2022 19:30:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232250AbiCKAaR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 19:30:17 -0500
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF4319DEB7;
-        Thu, 10 Mar 2022 16:29:15 -0800 (PST)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22AIOaDU013535;
-        Thu, 10 Mar 2022 16:28:58 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=facebook;
- bh=ytlWhABGmf4o/VRGR1K+vR5TpqBsnGyGBc/zPG+zI5g=;
- b=GSJ5/qdAJ5YTy7n5qnqg1E64RhRStIBAH7RkWD/S6ZPrf7qUXxD92J5hRvx8rS5BkvQY
- ae0Uufr5O1OhpZX2N23RTAa4iXRmrZOoA7u2PqgLtmax/o63tWgQHagjXKSCGoF3pogY
- O64M3cvHCH6Ott6Kq+19rTHBwm5ZWcpHrNE= 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3eqpk72jes-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Mar 2022 16:28:58 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ARks7K7ABLQp+5/EVStu73dNTHQRty/Oez0/CJV8MNpQEvQyHCFJrD6L6bM9Er01Msd1kvh888VAW28Z7gC/0vkModAqAnrQiaEdFR9D/G6MX6fdDCqYtqg7pv+V6b4Ao3dQUKcMNoNuXpGJFecIDLX7oekdW+FjTTrnQfKJN4cb8boPlmLEhRSa5yg8tuqIi0lcSfkkW5Cjd7NyDPGZNJ0AtzZ5PJHETVbvPxV0E2wEJfhy6DFlu4EFsCsPjk7hVZDFRRIgzEKoJPOAScThFiT8bE7lbgkCg3S84I5ID7Ye4dge59+oMYMwk9J4AW5Dft+Qc9t0h983o3HMe6q9LQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sU1lOCFTRsgYeTCE87wEmB+x8iNW1nf/t4q9zfe/ZxU=;
- b=m5YVEV3p67l5PTFYUhYmGiu8mr2u8HRvOBhfjJnCi+z4QxL2T1Zfxw3lg91hx2lcpZrVA20lro61xP3AAi2tcNVHq8ic9v4FHSL+bOMTEl/tFMBcl+w+e+mCfhAWsLA5X9u3nkLpQEdZgk2OGgrEA7Coq+PAoxl8cJIumJmXO1y/fQPN5bG98EmMf6njmpmlsofI8Ez4rcUZgq8FLxxDOMjKAgspmdWP+1K9HzAuwz9PtpRYoHZqPO9h+ME51kkaUCfuh2t7nSJj6tc5MJ/t75gpK4kdEFuFgvvSzfHniy+QCVBiiWPlIFXSDXvsFMrJIZQORolQ5jGFBuHkViamLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by MW3PR15MB3961.namprd15.prod.outlook.com (2603:10b6:303:44::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.17; Fri, 11 Mar
- 2022 00:28:56 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::708c:84b0:641f:e7ca]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::708c:84b0:641f:e7ca%3]) with mapi id 15.20.5061.022; Fri, 11 Mar 2022
- 00:28:56 +0000
-Date:   Thu, 10 Mar 2022 16:28:52 -0800
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Add a test for maximum
- packet size in xdp_do_redirect
-Message-ID: <20220311002852.f3wwvjofo3ici6pc@kafai-mbp.dhcp.thefacebook.com>
-References: <20220310225621.53374-1-toke@redhat.com>
- <20220310225621.53374-2-toke@redhat.com>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220310225621.53374-2-toke@redhat.com>
-X-ClientProxiedBy: CO2PR07CA0060.namprd07.prod.outlook.com (2603:10b6:100::28)
- To SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+        with ESMTP id S236618AbiCKAaS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Mar 2022 19:30:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDF81A272C;
+        Thu, 10 Mar 2022 16:29:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85226B82963;
+        Fri, 11 Mar 2022 00:29:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED59FC340F3;
+        Fri, 11 Mar 2022 00:29:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646958553;
+        bh=+f145bq0y4Y908dr0xQoAoOcCOlLzUF/zwjJSj93Rlk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jm7TbzLBsZSnHozd5X7FbWQMsc7laXZb+pm1UalYgBVeOQXkrRG3xVG+sG6YPRe7q
+         hJvVJ1vJAgHBBRtA9J3jSwosP9cMXQ9cGwXcoTGPf7CVi844ZMosXTSsLz/F61KcFy
+         /gOP6TSPyQH+55NbyLknzzqxwoFFAEmKKCY/ho39mzS/6UWULuPObLNDpzZlGNZ+IQ
+         Cg4UxbyyUY2Ke9vnjJk/uC9PCMLaEasOeOQ9HQIruuDLQQfTmh5zrzpq0xk7HSaYtA
+         74E0KvyGyd4/+M2WigkvXNYXdETL2pGmLnwtTxsGRA+G9p6TR7mkY0UuYkTckrIwh2
+         984c6WuRgu5og==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking for 5.17-rc8
+Date:   Thu, 10 Mar 2022 16:29:12 -0800
+Message-Id: <20220311002912.437871-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 415c2a66-f3e6-4d66-418c-08da02f620d6
-X-MS-TrafficTypeDiagnostic: MW3PR15MB3961:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR15MB3961920B184DB81AA0EA075ED50C9@MW3PR15MB3961.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xTNWzuVk6mFoJ/0oZps5BQA13uwyFPoqYoCKQ89dM5ygUiFNII0VbhNN6+N/neLYs0iEi9HOkIwfKjm+p4cyGhtQOzcuDT7HU2xWAtPVBsiyTp7diVbSdAUk3PsGpumQEeBcohCCaoeGObnf69HbuvfTT2s7HLEm97P9aYbBC4L3kDuCvPb8TlUFfI2lQxC52stxb/KI68Is/YHonIop5+QF5cHi3XuxeJA1TIyfdQGmDt0qnxvANuoRg5atb/ms2sGrnRGe4uO39QelZR7n/fYKCQK65ts70VacYyQJa8fBKoPpGbj1OGguBo/BnTgSwxQf5PaRBX+5g9s0QM9vKGtFF1aX4K5caR4ejUAr6bHkeIGSknALPJNlovqN2JAxgz7ps1XrVmSflCnI0qMqySPh0f7JA2dyFMKKU6yXSGHjtNbw5NjgKuNsbr/UgeLMb48GKowhAYx83NQd3VSLd8sUcsUsAGckbfEFGIm/JQs4x2DLXZdrvau886qF5YPF5+Cn2HVoF9JTcNOGPlFII0EIwLVeh1+5AcvygVwdw8QVlo/5SuRKUBGMUoeAsphJX3xq4XfLxQxZqLDFx8qMiDYqsvdS75rpX/3ksDDtiQjphOVT8G6JalP0yEGoL7gweAEJvzuaGXRsdXUhbTgjEQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(8936002)(86362001)(5660300002)(6486002)(9686003)(6512007)(186003)(1076003)(6666004)(7416002)(4744005)(2906002)(6506007)(52116002)(66556008)(66946007)(66476007)(4326008)(8676002)(316002)(54906003)(6916009)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?1GV09bLr6LHDBs/FXf8lcasHcSC6hHLMOrzhQ9o8VnTrfdgNCwbiSRcSqg?=
- =?iso-8859-1?Q?/aV+hLlGLfAtxJzQoekmxJVA28L4HXOWZsNtK8J5Rzo+pw0sVV4e8zZVKM?=
- =?iso-8859-1?Q?4UwZaeIwNTjQmXOtdSQUJWjmm6qOMomQN+51cEHmZUqUjvdlE3MACsbh+8?=
- =?iso-8859-1?Q?/MR4KjwwjaMMJ5396zsk2NtSY+Zc9JtNIR/BpyKjSVi6z1IyIULkv8C6F/?=
- =?iso-8859-1?Q?UKXB6NQBdmAECTk5ZphbhT4m8t/DSDUK1ETR7MlDMN3CZ+PRbp2q981rRE?=
- =?iso-8859-1?Q?8XvZzvGNpIdkJ5UMctCyOd0Tk+8mldyo7/GsYgPN+0/F5lwerYbM9f94rn?=
- =?iso-8859-1?Q?Ku5wymyznO1WYyH35NKTHKhhixhyT05menP2IVbkbAviDGzzYHcSmXK+6D?=
- =?iso-8859-1?Q?iJdEnqnsWsiSNH1j/pa/n+qaodXiGdLpMHuIXmZjDvEVFWLwEhGJS/LIOh?=
- =?iso-8859-1?Q?D0FDzzn9htul8/IHZj+mYe+Elvs4NkMF41VDYLOmRSt7YuHj8LsqoCbD4G?=
- =?iso-8859-1?Q?p0cddRR7EBI1OUWxW1mTyR+5M+ktwGqua9RwySeUzku9sb65VyTjaJJ117?=
- =?iso-8859-1?Q?Zh6/vkhJez6Wl38Mqc1iXVoEeWZIrcgcpaLDUZJ16Hm66AEHKEnREF+g5e?=
- =?iso-8859-1?Q?n0bgeCzm9j6eJIsiEG1b+fFl23ooxvMb734lxy8ShCW0NklUAGfhsLIgP6?=
- =?iso-8859-1?Q?pOjUHhkuEWoJ5E1hFqkkh2Ox85lQp+rUPFVXhJnQTgeQ72ADxexWrxjv8n?=
- =?iso-8859-1?Q?5L7JJQU0x+UlPelSWar0d/jtL1+TNqr14BrLUz8hq85m2na8WFFbMJf2Sj?=
- =?iso-8859-1?Q?pVDW3EWzbgWhu29/Oc/eeVHp474U9dOQKquU46jkD79dkD1U7o6insWdCW?=
- =?iso-8859-1?Q?ZOkuR9csbrxoXL2n8OQ2YRoAukWgNyiQoZlqtTYvAPtbh/2nYRAK99ydyZ?=
- =?iso-8859-1?Q?1yRB638/VBuYomVQsg1bOnx0PjFEq5SiMjtRTHXypAeuqMfMv3VKTLbFRy?=
- =?iso-8859-1?Q?rciu8iL4l1M2YgI81oJATHYZKNYahdRHRGvXjX4KePPOsFxsd3FkGCFp0o?=
- =?iso-8859-1?Q?tVp4yEGkX6LBUgLakyaSeph3kSQ844VfqZBtSTcfsl6FYEQ6GplrDwMcUz?=
- =?iso-8859-1?Q?5Kd1UH9cwYCxBNbrhcvup9sUmak9s8WnoUjoJF9z0wOilrDPJKlqv5JHn5?=
- =?iso-8859-1?Q?pbqdDsWyIYesYNhaPbxdvhseV+OeQEm3vN1ocP6ziYaOH4rj5co2eOrc+V?=
- =?iso-8859-1?Q?NPR0xWOxcNSb8je4lM++slWZ1Yv+UIT3KgpeXcI4nsQ5cIvhWlqepEd81f?=
- =?iso-8859-1?Q?/lXoRIXQ3GgCHHPvZYVCfbsF7uWHMJZuWcquZkSQSllL2bQzYQ6lNdY9zE?=
- =?iso-8859-1?Q?i+HJSkQhpoktOUcq9CF9OW651ErqcyqqxTDzpC7ilsB7L4bw4xPdPFnXWu?=
- =?iso-8859-1?Q?LcxmovnnMrS5R+tDrCAaFd2OKMtJLZkHzNcGsiUpY7U9Uqnvqp+wizsGOg?=
- =?iso-8859-1?Q?3wS/888GdseDSu2Q2TeYzolyIOj8QSyBiHcPLc0bpZMXFf58TU0QwhxgMg?=
- =?iso-8859-1?Q?W8IzXn5c+BmW0tOmvZ4HdLd8PS5Lx2su8/0RPOljNPn+s7yEi2tN7EqnFy?=
- =?iso-8859-1?Q?STCxaXWbt7DlhxMzA8nnLtzCqLrTvcOTxS/2KYxwvA9N3QXpViGkL/+Q?=
- =?iso-8859-1?Q?=3D=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 415c2a66-f3e6-4d66-418c-08da02f620d6
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2022 00:28:56.4187
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LsmREDKSAo0Tb4H9lik6hB/8GyXLu53dqNL8xbqqcLvhf4aEllemoeCa9MXrE1wc
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3961
-X-Proofpoint-GUID: GARrWyQQhOGgOWvpWsxkD-D8T9a1X6ES
-X-Proofpoint-ORIG-GUID: GARrWyQQhOGgOWvpWsxkD-D8T9a1X6ES
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-10_09,2022-03-09_01,2022-02-23_01
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 11:56:21PM +0100, Toke H¯iland-J¯rgensen wrote:
-> This adds an extra test to the xdp_do_redirect selftest for XDP live packet
-> mode, which verifies that the maximum permissible packet size is accepted
-> without any errors, and that a too big packet is correctly rejected.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+Hi Linus!
+
+A little late this week due to dentistry.
+
+The only 5.17 regression I'm aware of is the bnx2x firmware
+loading thing. I can send a patch or respin the PR to include
+the revert but I'd rather leave bandaging it up to people who
+have the HW. The bad commits are in stable since v5.16.4, I'm
+worried someone out there has initramfs with just the new FW
+present.
+
+The following changes since commit b949c21fc23ecaccef89582f251e6281cad1f81e:
+
+  Merge tag 'net-5.17-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-03-03 11:10:56 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.17-rc8
+
+for you to fetch changes up to e0ae713023a9d09d6e1b454bdc8e8c1dd32c586e:
+
+  xdp: xdp_mem_allocator can be NULL in trace_mem_connect(). (2022-03-10 16:09:29 -0800)
+
+----------------------------------------------------------------
+Networking fixes for 5.17-rc8/final, including fixes from bluetooth,
+and ipsec.
+
+Current release - regressions:
+
+ - Bluetooth: fix unbalanced unlock in set_device_flags()
+
+ - Bluetooth: fix not processing all entries on cmd_sync_work,
+   make connect with qualcomm and intel adapters reliable
+
+ - Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
+
+ - xdp: xdp_mem_allocator can be NULL in trace_mem_connect()
+
+ - eth: ice: fix race condition and deadlock during interface enslave
+
+Current release - new code bugs:
+
+ - tipc: fix incorrect order of state message data sanity check
+
+Previous releases - regressions:
+
+ - esp: fix possible buffer overflow in ESP transformation
+
+ - dsa: unlock the rtnl_mutex when dsa_master_setup() fails
+
+ - phy: meson-gxl: fix interrupt handling in forced mode
+
+ - smsc95xx: ignore -ENODEV errors when device is unplugged
+
+Previous releases - always broken:
+
+ - xfrm: fix tunnel mode fragmentation behavior
+
+ - esp: fix inter address family tunneling on GSO
+
+ - tipc: fix null-deref due to race when enabling bearer
+
+ - sctp: fix kernel-infoleak for SCTP sockets
+
+ - eth: macb: fix lost RX packet wakeup race in NAPI receive
+
+ - eth: intel stop disabling VFs due to PF error responses
+
+ - eth: bcmgenet: don't claim WOL when its not available
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Aleksander Jan Bajkowski (1):
+      net: lantiq_xrx200: fix use after free bug
+
+Alexey Khoroshilov (1):
+      mISDN: Fix memory leak in dsp_pipeline_build()
+
+Ben Ben-Ishay (1):
+      net/mlx5e: SHAMPO, reduce TIR indication
+
+Christophe JAILLET (1):
+      ice: Don't use GFP_KERNEL in atomic context
+
+Cl√©ment L√©ger (1):
+      net: phy: DP83822: clear MISR2 register to disable interrupts
+
+Colin Foster (1):
+      net: phy: correct spelling error of media in documentation
+
+Dave Ertman (1):
+      ice: Fix error with handling of bonding MTU
+
+David S. Miller (2):
+      Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
+      Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec
+
+Dima Chumak (1):
+      net/mlx5: Fix offloading with ESWITCH_IPV4_TTL_MODIFY_ENABLE
+
+Duoming Zhou (1):
+      ax25: Fix NULL pointer dereference in ax25_kill_by_device
+
+Eric Dumazet (1):
+      sctp: fix kernel-infoleak for SCTP sockets
+
+Fabio Estevam (1):
+      smsc95xx: Ignore -ENODEV errors when device is unplugged
+
+Guillaume Nault (2):
+      selftests: pmtu.sh: Kill tcpdump processes launched by subshell.
+      selftests: pmtu.sh: Kill nettest processes launched in subshell.
+
+Hans de Goede (1):
+      Bluetooth: hci_core: Fix unbalanced unlock in set_device_flags()
+
+Heiner Kallweit (2):
+      net: phy: meson-gxl: fix interrupt handling in forced mode
+      net: phy: meson-gxl: improve link-up behavior
+
+Ivan Vecera (1):
+      ice: Fix race condition during interface enslave
+
+Jacob Keller (2):
+      i40e: stop disabling VFs due to PF error responses
+      ice: stop disabling VFs due to PF error responses
+
+Jakub Kicinski (3):
+      Merge tag 'for-net-2022-03-03' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth
+      Merge branch 'selftests-pmtu-sh-fix-cleanup-of-processes-launched-in-subshell'
+      Merge tag 'mlx5-fixes-2022-03-09' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+
+Jedrzej Jagielski (1):
+      ice: Fix curr_link_speed advertised speed
+
+Jeremy Linton (1):
+      net: bcmgenet: Don't claim WOL when its not available
+
+Jia-Ju Bai (2):
+      isdn: hfcpci: check the return value of dma_set_mask() in setup_hw()
+      net: qlogic: check the return value of dma_alloc_coherent() in qed_vf_hw_prepare()
+
+Jianglei Nie (1):
+      net: arc_emac: Fix use after free in arc_mdio_probe()
+
+Jiasheng Jiang (2):
+      net: ethernet: ti: cpts: Handle error for clk_enable
+      net: ethernet: lpc_eth: Handle error for clk_enable
+
+Kai Lueke (1):
+      Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
+
+Lina Wang (1):
+      xfrm: fix tunnel model fragmentation behavior
+
+Luiz Augusto von Dentz (1):
+      Bluetooth: hci_sync: Fix not processing all entries on cmd_sync_work
+
+Miaoqian Lin (3):
+      ethernet: Fix error handling in xemaclite_of_probe
+      net: marvell: prestera: Add missing of_node_put() in prestera_switch_set_base_mac_addr
+      gianfar: ethtool: Fix refcount leak in gfar_get_ts_info
+
+Michal Maloszewski (2):
+      iavf: Fix handling of vlan strip virtual channel messages
+      iavf: Fix adopting new combined setting
+
+Minghao Chi (CGEL ZTE) (1):
+      net:mcf8390: Use platform_get_irq() to get the interrupt
+
+Mohammad Kabat (1):
+      net/mlx5: Fix size field in bufferx_reg struct
+
+Moshe Shemesh (1):
+      net/mlx5: Fix a race on command flush flow
+
+Pavel Skripkin (1):
+      NFC: port100: fix use-after-free in port100_send_complete
+
+Robert Hancock (1):
+      net: macb: Fix lost RX packet wakeup race in NAPI receive
+
+Roi Dayan (1):
+      net/mlx5e: Lag, Only handle events from highest priority multipath entry
+
+Russell King (Oracle) (1):
+      net: dsa: mt7530: fix incorrect test in mt753x_phylink_validate()
+
+Sebastian Andrzej Siewior (1):
+      xdp: xdp_mem_allocator can be NULL in trace_mem_connect().
+
+Steffen Klassert (3):
+      esp: Fix possible buffer overflow in ESP transformation
+      esp: Fix BEET mode inter address family tunneling on GSO
+      net: Fix esp GSO on inter address family tunnels.
+
+Tom Rix (1):
+      qed: return status of qed_iov_get_link
+
+Tung Nguyen (2):
+      tipc: fix kernel panic when enabling bearer
+      tipc: fix incorrect order of state message data sanity check
+
+Vladimir Oltean (1):
+      net: dsa: unlock the rtnl_mutex when dsa_master_setup() fails
+
+Zheyu Ma (1):
+      ethernet: sun: Free the coherent when failing in probing
+
+ drivers/isdn/hardware/mISDN/hfcpci.c               |  6 ++-
+ drivers/isdn/mISDN/dsp_pipeline.c                  |  6 +--
+ drivers/net/dsa/mt7530.c                           |  2 +-
+ drivers/net/ethernet/8390/mcf8390.c                | 10 ++--
+ drivers/net/ethernet/arc/emac_mdio.c               |  5 +-
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c |  7 +++
+ drivers/net/ethernet/cadence/macb_main.c           | 25 +++++++++-
+ drivers/net/ethernet/freescale/gianfar_ethtool.c   |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_debugfs.c     |  6 +--
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 57 +++-------------------
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h |  5 --
+ drivers/net/ethernet/intel/iavf/iavf.h             |  1 +
+ drivers/net/ethernet/intel/iavf/iavf_main.c        | 13 +++--
+ drivers/net/ethernet/intel/iavf/iavf_virtchnl.c    | 40 +++++++++++++++
+ drivers/net/ethernet/intel/ice/ice.h               | 12 ++++-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c       |  2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c          | 43 +++++++++-------
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c   | 18 -------
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h   |  3 --
+ drivers/net/ethernet/lantiq_xrx200.c               |  2 +-
+ .../net/ethernet/marvell/prestera/prestera_main.c  |  1 +
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      | 15 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tir.c   |  3 --
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c   | 11 +++--
+ .../ethernet/mellanox/mlx5/core/lib/fs_chains.c    |  3 --
+ drivers/net/ethernet/nxp/lpc_eth.c                 |  5 +-
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c        | 18 ++++---
+ drivers/net/ethernet/qlogic/qed/qed_vf.c           |  7 +++
+ drivers/net/ethernet/sun/sunhme.c                  |  6 ++-
+ drivers/net/ethernet/ti/cpts.c                     |  4 +-
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c      |  4 +-
+ drivers/net/phy/dp83822.c                          |  2 +-
+ drivers/net/phy/meson-gxl.c                        | 31 +++++++-----
+ drivers/net/usb/smsc95xx.c                         | 28 ++++++++---
+ drivers/nfc/port100.c                              |  2 +
+ include/linux/mlx5/mlx5_ifc.h                      |  5 +-
+ include/linux/netdevice.h                          |  2 +
+ include/linux/phy.h                                |  4 +-
+ include/net/esp.h                                  |  2 +
+ net/ax25/af_ax25.c                                 |  7 +++
+ net/bluetooth/hci_sync.c                           | 49 +++++++++----------
+ net/bluetooth/mgmt.c                               |  2 +-
+ net/core/gro.c                                     | 25 ++++++++++
+ net/core/xdp.c                                     |  3 +-
+ net/dsa/dsa2.c                                     |  6 +--
+ net/ipv4/esp4.c                                    |  5 ++
+ net/ipv4/esp4_offload.c                            |  6 ++-
+ net/ipv6/esp6.c                                    |  5 ++
+ net/ipv6/esp6_offload.c                            |  6 ++-
+ net/ipv6/xfrm6_output.c                            | 16 ++++++
+ net/sctp/diag.c                                    |  9 ++--
+ net/tipc/bearer.c                                  | 12 +++--
+ net/tipc/link.c                                    |  9 ++--
+ net/xfrm/xfrm_interface.c                          |  5 +-
+ net/xfrm/xfrm_user.c                               | 21 ++------
+ tools/testing/selftests/net/pmtu.sh                | 21 ++++++--
+ 57 files changed, 383 insertions(+), 244 deletions(-)
