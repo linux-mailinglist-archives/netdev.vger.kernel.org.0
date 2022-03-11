@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 947E14D5C93
-	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F0EE4D5C9F
+	for <lists+netdev@lfdr.de>; Fri, 11 Mar 2022 08:41:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347251AbiCKHmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 02:42:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
+        id S1347268AbiCKHmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 02:42:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347256AbiCKHlz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:41:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920471B7602
-        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:52 -0800 (PST)
+        with ESMTP id S1347249AbiCKHmJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 02:42:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAAA31B756A
+        for <netdev@vger.kernel.org>; Thu, 10 Mar 2022 23:40:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EA30B82A7B
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4597061DFF
         for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 07:40:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C8B8C340F6;
-        Fri, 11 Mar 2022 07:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30DE1C340F3;
+        Fri, 11 Mar 2022 07:40:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1646984450;
-        bh=6gCvQ5hiYvX59VZBdrzr8awBGb4thLTnggd5lHIVvB4=;
+        bh=7cK3S04T4t1Q6U6OJgv+0B4UG2G0+duEQ0XIng5vY0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CmrlRQCXqVBniseii2K5YogGXYFVN/JQn6jN/B1s5UuAGuMWbWD7nopWSJ4gNYdG4
-         /ETIr8aAYnlQR7TW7V8uJscHvVR6V7yEBnTEuClnsBLKugbqM+eoSPDEx+dQ3Ltnxf
-         j+KnI2jUtnP+fk7n671IyV3/wlXKFE6UW0sgpkkNeFzrbVT2TR0wXN1rrmXoWOdZno
-         HeDTcF8lqFvYRWKMOuGXSFw23xk4aXRSFbZWFWl78huCKWw77hiOiE/NtYQX54oYde
-         hpbbdW3EWp4c/YnUXfX4JZ9U2kJrLNTuNjsQxZA2Y0jDZA7lJ2hsn3GYPnaEhcI2JY
-         3XrO5T8CKEMyA==
+        b=kRLVmac7Ojmoy3YERYZP2AfVi/8YreV38YnC5CqqIwYUYUh6QWB7GIl6BUDoIVnqs
+         5xL+NFvAbwXu1W785gOncM0BuCqM8671dh4CYNTQxwRMUtI1+Pw/LDBcluCb32Iboe
+         4Hz7qbipuaP8pX+4q0g2MwCirFMWx//HvmPvP7meTcDD33r9Q3w4+VBQ7yxPpvYAGS
+         eC4py5VO1Y1kmJ2Xr8UBmF13MhsBdRIg1McYdROI/Gfj+F4HbTGjhza47CuVHtWGsI
+         7CLAh0qNrAVaH8HVya8Q3+EQSLwlzgcxEyHVRUBfBr1Bwrzi2ywLSzA0Bec9y9cUJQ
+         gXVzHU5MhI4+w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 14/15] net/mlx5: Parse module mapping using mlx5_ifc
-Date:   Thu, 10 Mar 2022 23:40:30 -0800
-Message-Id: <20220311074031.645168-15-saeed@kernel.org>
+Subject: [net-next 15/15] net/mlx5e: Remove overzealous validations in netlink EEPROM query
+Date:   Thu, 10 Mar 2022 23:40:31 -0800
+Message-Id: <20220311074031.645168-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220311074031.645168-1-saeed@kernel.org>
 References: <20220311074031.645168-1-saeed@kernel.org>
@@ -57,77 +58,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Gal Pressman <gal@nvidia.com>
 
-The assumption that the first byte in the module mapping dword is the
-module number shouldn't be hard-coded in the driver, but come from
-mlx5_ifc structs.
+Unlike the legacy EEPROM callbacks, when using the netlink EEPROM query
+(get_module_eeprom_by_page) the driver should not try to validate the
+query parameters, but just perform the read requested by the userspace.
 
-While at it, fix the incorrect width for the 'rx_lane' and 'tx_lane'
-fields.
+Recent discussion in the mailing list:
+https://lore.kernel.org/netdev/20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
 
 Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/port.c | 6 +++---
- include/linux/mlx5/mlx5_ifc.h                  | 8 ++++----
- include/linux/mlx5/port.h                      | 1 -
- 3 files changed, 7 insertions(+), 8 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -------------------
+ 1 file changed, 23 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index 418ab777f6e8..493cacb4610b 100644
+index 493cacb4610b..e1bd54574ea5 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -275,7 +275,6 @@ static int mlx5_query_module_num(struct mlx5_core_dev *dev, int *module_num)
+@@ -451,35 +451,12 @@ int mlx5_query_module_eeprom_by_page(struct mlx5_core_dev *dev,
+ 				     struct mlx5_module_eeprom_query_params *params,
+ 				     u8 *data)
  {
- 	u32 in[MLX5_ST_SZ_DW(pmlp_reg)] = {0};
- 	u32 out[MLX5_ST_SZ_DW(pmlp_reg)];
--	int module_mapping;
+-	u8 module_id;
  	int err;
  
- 	MLX5_SET(pmlp_reg, in, local_port, 1);
-@@ -284,8 +283,9 @@ static int mlx5_query_module_num(struct mlx5_core_dev *dev, int *module_num)
+ 	err = mlx5_query_module_num(dev, &params->module_number);
  	if (err)
  		return err;
  
--	module_mapping = MLX5_GET(pmlp_reg, out, lane0_module_mapping);
--	*module_num = module_mapping & MLX5_EEPROM_IDENTIFIER_BYTE_MASK;
-+	*module_num = MLX5_GET(lane_2_module_mapping,
-+			       MLX5_ADDR_OF(pmlp_reg, out, lane0_module_mapping),
-+			       module);
- 
- 	return 0;
- }
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 745107ff681d..91b7f730ed91 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -9888,10 +9888,10 @@ struct mlx5_ifc_pcmr_reg_bits {
- };
- 
- struct mlx5_ifc_lane_2_module_mapping_bits {
--	u8         reserved_at_0[0x6];
--	u8         rx_lane[0x2];
--	u8         reserved_at_8[0x6];
--	u8         tx_lane[0x2];
-+	u8         reserved_at_0[0x4];
-+	u8         rx_lane[0x4];
-+	u8         reserved_at_8[0x4];
-+	u8         tx_lane[0x4];
- 	u8         reserved_at_10[0x8];
- 	u8         module[0x8];
- };
-diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-index 402413b3e914..28a928b0684b 100644
---- a/include/linux/mlx5/port.h
-+++ b/include/linux/mlx5/port.h
-@@ -56,7 +56,6 @@ enum mlx5_an_status {
- 	MLX5_AN_LINK_DOWN   = 4,
- };
- 
--#define MLX5_EEPROM_IDENTIFIER_BYTE_MASK	0x000000ff
- #define MLX5_I2C_ADDR_LOW		0x50
- #define MLX5_I2C_ADDR_HIGH		0x51
- #define MLX5_EEPROM_PAGE_LENGTH		256
+-	err = mlx5_query_module_id(dev, params->module_number, &module_id);
+-	if (err)
+-		return err;
+-
+-	switch (module_id) {
+-	case MLX5_MODULE_ID_SFP:
+-		if (params->page > 0)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_QSFP:
+-	case MLX5_MODULE_ID_QSFP28:
+-	case MLX5_MODULE_ID_QSFP_PLUS:
+-		if (params->page > 3)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_DSFP:
+-		break;
+-	default:
+-		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
+-		return -EINVAL;
+-	}
+-
+ 	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
+ 	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
+ 		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
 -- 
 2.35.1
 
