@@ -2,112 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13A424D6E34
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 11:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E9064D6E9B
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 13:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbiCLKh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Mar 2022 05:37:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53470 "EHLO
+        id S231599AbiCLMLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Mar 2022 07:11:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiCLKhZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 05:37:25 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52F9265B7E;
-        Sat, 12 Mar 2022 02:36:19 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id bu29so19276084lfb.0;
-        Sat, 12 Mar 2022 02:36:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cVMykGM44N1x59rRBnWq4F2y+SQvEKrBG4xksC7zjJo=;
-        b=R4iG36zRM1avPy+Cd8IFirUlQqyvhoLwlZoCr/vaEHb8QpKSrx8XubJ+Zs3YxZLUXN
-         obK5Izo2M6O4p/mWnc+Kn7RRna9fDiA+4MNbERLQfQTp1rJz27L07t1qOE7s6/o6QbPd
-         0J3T9NFjOXCUhN13q2ox9sXNFo2rProCMZqd/2rftpD91iQISfMqL1W8HLGeiddTUOa1
-         NSK/AuZifoc3BYb/8wFlTG01xBze1yLCK1ZNL2Vhf0E72my1QWgZdU9UX9v9vl/svYn7
-         +B0NS42TfgvHj4dx/hLbVeomns5MDo580L73ReS+WEUilVb8BGcUXWwfWn2evqC01dRN
-         hTDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cVMykGM44N1x59rRBnWq4F2y+SQvEKrBG4xksC7zjJo=;
-        b=yI49zcoyNmnp2QIpNKnLbwLG+2d+uCWCU1qr1rG4Wlwd6b3dfkHLpY5/TQVOdWZcsI
-         +SRFHbEcgenbmwnYBs/dk9R6eGhVNZ3IXAr8Ba0l4ePpjTQeFRMYlehaLV+5TmUcHQ01
-         utGCVDLdLZuGXNBNxQDZ6MG2Fy+Z5PqxnSsbz5KxkZBtCn5JI5SSvpUnYWwk3sRt7jqj
-         c3JfTzt30g6dYoJQDzfyKynz9RzLyG0q2oDwnLXWgAhaHRPDbCK/pdshKzQas6HLnHXf
-         +zmz6uVz+3mh+vK/aRgXUYsFay+E7BSbSqFf4xnS0bPV6YsfBIn/nyehAbpqWfvkFlGe
-         zXPA==
-X-Gm-Message-State: AOAM531RwI50K49nM4sfb7xh5M1KdadtgZ9306A03nnG4mxjFYALX/uC
-        t05KjoCWZOwKNyxFCY4THH0=
-X-Google-Smtp-Source: ABdhPJwjgRadCVDsz2iiQqoREhkfedSRAVn4c3qnX9gSi8nz4QTRvG2LSStr6XLQkDPN+57SRpHoUA==
-X-Received: by 2002:a05:6512:3d12:b0:448:5f9f:92ab with SMTP id d18-20020a0565123d1200b004485f9f92abmr7910228lfv.667.1647081378030;
-        Sat, 12 Mar 2022 02:36:18 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.229.107])
-        by smtp.gmail.com with ESMTPSA id u2-20020a2e9f02000000b00244c5e20ee9sm2351933ljk.23.2022.03.12.02.36.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Mar 2022 02:36:17 -0800 (PST)
-Message-ID: <afbc1c26-8aea-e0b7-47e0-bee0d195a21b@gmail.com>
-Date:   Sat, 12 Mar 2022 13:36:15 +0300
+        with ESMTP id S229462AbiCLMLU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 07:11:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4F110C1
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 04:10:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A011CB82E4D
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 12:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5E6C7C340EB;
+        Sat, 12 Mar 2022 12:10:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647087012;
+        bh=6gppKD9PTRrOGkXNjRyAMZHyYnM/XlwCqyXzKFB6Ddg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=It6sCoxByyLG0R/SJROgiodKBKdvKvkr7XZuzZQFpE/jItVbNz5KtwqaXzJSgkdPx
+         pjq20o5FVQyonW5iuwuBrka2AV9Isy4aPbQbCOcvV20E8MT0ywrX216lg0LneKHQLT
+         hxVHZQ46+5f1yvQ9pD+nIjlGxfIX0rCNdl/IaJxTELEntxkYmMeyr7Q7FibvgZyNN9
+         4FhOXo19HTzkQ1GKCFbPBkGR0akhOcIJaAEnatIveFXMGyfbux4gQr9Spr7Y6FcaiK
+         y0daJyTSbSuYrqIon2fjfclJe1veD3F614xNYiA+3CVZcDs4E0tdjh0JubZ5RQEYFL
+         fbiN7bz4q9v1w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 453CDE6D3DD;
+        Sat, 12 Mar 2022 12:10:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [syzbot] INFO: task hung in port100_probe
-Content-Language: en-US
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        syzbot <syzbot+abd2e0dafb481b621869@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <20220310084247.1148-1-hdanton@sina.com>
- <20220311053751.1226-1-hdanton@sina.com>
- <20220312005624.1310-1-hdanton@sina.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220312005624.1310-1-hdanton@sina.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v11 0/7][pull request] ice: GTP support in switchdev
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164708701228.11169.15700740251869229843.git-patchwork-notify@kernel.org>
+Date:   Sat, 12 Mar 2022 12:10:12 +0000
+References: <20220311171821.3785992-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220311171821.3785992-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        marcin.szycik@linux.intel.com, michal.swiatkowski@linux.intel.com,
+        wojciech.drewek@intel.com, jiri@resnulli.us, pablo@netfilter.org,
+        laforge@gnumonks.org, xiyou.wangcong@gmail.com, jhs@mojatatu.com,
+        osmocom-net-gprs@lists.osmocom.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hillf,
+Hello:
 
-On 3/12/22 03:56, Hillf Danton wrote:
->> upstream branch already has my patch: see commit 
->> f80cfe2f26581f188429c12bd937eb905ad3ac7b.
->> 
-> Thanks for your fix.
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
+
+On Fri, 11 Mar 2022 09:18:14 -0800 you wrote:
+> Marcin Szycik says:
 > 
->> let's test previous commit to see if my really fixes this issue
->> 
->> #syz test: 
->> git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 
->> 3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b3bf7edc84a9eb4007dd9a0cb8878a7e1d5ec6a3b
+> Add support for adding GTP-C and GTP-U filters in switchdev mode.
 > 
-> Given the Reported-and-tested-by tag in syzbot's echo [1], can you try and
-> bisect the curing commit in your spare cycles?
+> To create a filter for GTP, create a GTP-type netdev with ip tool, enable
+> hardware offload, add qdisc and add a filter in tc:
 > 
-> Hillf
-> 
-> [1] https://lore.kernel.org/lkml/00000000000002e20d05d9f663c6@google.com/
-> 
+> [...]
 
-Hm, that's odd. Last hit was 4d09h ago and I don't see related patches 
-went it expect for mine.
+Here is the summary with links:
+  - [net-next,v11,1/7] gtp: Allow to create GTP device without FDs
+    https://git.kernel.org/netdev/net-next/c/b20dc3c68458
+  - [net-next,v11,2/7] gtp: Implement GTP echo response
+    https://git.kernel.org/netdev/net-next/c/9af41cc33471
+  - [net-next,v11,3/7] gtp: Implement GTP echo request
+    https://git.kernel.org/netdev/net-next/c/d33bd757d362
+  - [net-next,v11,4/7] net/sched: Allow flower to match on GTP options
+    https://git.kernel.org/netdev/net-next/c/e3acda7ade0a
+  - [net-next,v11,5/7] gtp: Add support for checking GTP device type
+    https://git.kernel.org/netdev/net-next/c/81dd9849fa49
+  - [net-next,v11,6/7] ice: Fix FV offset searching
+    https://git.kernel.org/netdev/net-next/c/e5dd661b8bb3
+  - [net-next,v11,7/7] ice: Support GTP-U and GTP-C offload in switchdev
+    https://git.kernel.org/netdev/net-next/c/9a225f81f540
 
-Will try to bisect...
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Also there is a chance, that reproducer is just unstable.
 
-
-
-With regards,
-Pavel Skripkin
