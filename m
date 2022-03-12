@@ -2,101 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA3D4D6B77
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 01:36:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485E74D6B8E
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 01:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229794AbiCLAhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Mar 2022 19:37:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43020 "EHLO
+        id S229863AbiCLAz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Mar 2022 19:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbiCLAhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 19:37:42 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34641253
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 16:36:38 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id b7so6130280ilm.12
-        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 16:36:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=gNHcDn0XyW0WOhftlgrs7ODGHy0YZt2ZzJIfeiWQGG0=;
-        b=pAmsUpdAmhx3k3Y0iBQ0bRRGQv3xa3aFcNr7cBAi3830qRBbmEOWvIt6ravzQxGhHL
-         EYKrS+mXpa1nMzhMtp3ZJXV/uyeZx1lDn82ctIZDo7uIabx30cK5rJcPmAKMYtBtn6UP
-         gyn0P9+A5STgidAI8n+3rgpPI7NeTFilC1iXIRQWVga5Z1QcguQAwDFIFdneNAjK06+c
-         kE5BqW7veFsrhJF1vIfCFxnLfMPqWa8842lQRgOWp06yRHVIHfbwTAFrjU8NOHXkiI3t
-         wzxmCRXcHYSQLSYpRfkjAfGWq/hywvaWmoIcTwwjAOG8IS9IuZwg2UCppA/s9yyxaZi9
-         r7Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gNHcDn0XyW0WOhftlgrs7ODGHy0YZt2ZzJIfeiWQGG0=;
-        b=HL3fVTR861G4+LBXwkok6VDnTYKZpAFRtdAZKODm4ZYWQ+vSBN/t7mUQSuHST7cw1a
-         nLmqVQmyA01YGq4HN6uWWf9t+jL6wRWs/YpcM6yH4Mo9mcEcHGxvKRvQHFO4tgXvnrYO
-         ZBiPnV8YcPpO8kBtHEZrwDZ7sWoytLYZq9oTJq5rajChvQQfemp1icRel7zT2nACV/UQ
-         UyQ04C9EPWKimLjIBGk37kiXwh11qV8xKGPad9/Qd7G+IAHdwmN8ze7QfrwDweYhAQPh
-         GdRWBwPJtNhroUXp0qJhNNHiXY91AlT+INQZCV4oNVw20Z9EzsSUKwiVAUSXO6i0PjF5
-         VD4Q==
-X-Gm-Message-State: AOAM531KD+roSwiWjJ1NyNTIqiw9Kuz+aC/TgJyzgy0fIjn1yzlYCfjq
-        jAtISKoNucYIIlWZfO3JDfzih9oPRAsMtA==
-X-Google-Smtp-Source: ABdhPJz1XIm3PqK74sPIFtbRmt3K2yegQxtV7FxXMu2C6aE+3ygxBfBEnZ/emMwHbk1oYgPs86zg7w==
-X-Received: by 2002:a92:d201:0:b0:2c6:4b38:634e with SMTP id y1-20020a92d201000000b002c64b38634emr10393283ily.148.1647045397581;
-        Fri, 11 Mar 2022 16:36:37 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.65])
-        by smtp.googlemail.com with ESMTPSA id b1-20020a926701000000b002c25d28d378sm5105446ilc.71.2022.03.11.16.36.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Mar 2022 16:36:36 -0800 (PST)
-Message-ID: <a3ab5052-51ac-81d6-c65e-cfcfede3297a@gmail.com>
-Date:   Fri, 11 Mar 2022 17:36:33 -0700
+        with ESMTP id S229637AbiCLAz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Mar 2022 19:55:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F662A7AFF
+        for <netdev@vger.kernel.org>; Fri, 11 Mar 2022 16:54:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A8FC6159F
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 00:54:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 480D4C340E9;
+        Sat, 12 Mar 2022 00:54:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647046463;
+        bh=fOABcNzJe5wmjlOwS/BBw7BbmQoDs2AMrBkF5qKjInY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OakY6F1ehSUnpSRBvyz4oWQDU1qvJkrkgSRozaWeywvHkv1YFCYnamM4bwaqFcvJS
+         c6DURoCmrSnxlluvP2NTJS1sezwMvEHqt6fKVkWGFZmo4ZpdPhASh4qXNkPNNrJ5nv
+         pf1jRW1JteCeoUvQmzeuIVhZC6wV0LeLg/ACcRBx4FtGh8A97FjEvLqa33uroHZo+2
+         i+kP+NeFh1U2n8lP8KF1MeMagfX1kMykNnYO0v29/6rAGnPs7wK/P721J/BODVkkzt
+         1cRMWQop0qtccABnQByqrqEvkJR8WiyvCuIC9hqcA6W1cmIzutybUKtylZ5863yZCX
+         agVsaYrq25Flg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Joe Damato <jdamato@fastly.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH net-next] net/mlx5e: Fix use-after-free in mlx5e_stats_grp_sw_update_stats
+Date:   Fri, 11 Mar 2022 16:53:53 -0800
+Message-Id: <20220312005353.786255-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: vrf and multicast problem
-Content-Language: en-US
-To:     Ben Greear <greearb@candelatech.com>,
-        netdev <netdev@vger.kernel.org>
-References: <1e7b1aec-401d-9e70-564a-4ce96e11e1be@candelatech.com>
- <4c4f21f3-75b5-5099-7ee8-28e3c4d6b465@gmail.com>
- <50f1a384-c312-d6ec-0f42-2b9ce3a48013@candelatech.com>
- <38ecaaaf-1735-9023-2282-5feead8408b7@gmail.com>
- <08eeb237-5126-98ce-0990-5b7d7f6529f2@candelatech.com>
- <43de8172-0cd4-bf6f-b89b-864fd7bf4dee@candelatech.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <43de8172-0cd4-bf6f-b89b-864fd7bf4dee@candelatech.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/22 6:41 PM, Ben Greear wrote:
->>> can you reproduce this using namespaces and veth pairs? if so, send me
->>> the script and I will take a look.
->>
->> I think debugging it will be easier than writing something for you to
->> reproduce it...
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-A test case needs to be added to
-tools/testing/selftests/net/fcnal-test.sh; nettest.c provides the
-networking APIs so it should be fairly trivial to add.
+We need to sync page pool stats only for active channels. Reading ethtool
+stats on a down netdev or a netdev with modified number of channels will
+result in a user-after-free, trying to access page pools that are freed
+already.
 
+BUG: KASAN: use-after-free in mlx5e_stats_grp_sw_update_stats+0x465/0xf80
+Read of size 8 at addr ffff888004835e40 by task ethtool/720
 
-> 
-> After some more investigation of this code, I am questioning the need
-> for this logic:
-> 
->     /* update flow if oif or iif point to device enslaved to l3mdev */
->     l3mdev_update_flow(net, flowi4_to_flowi(flp));
+Fixes: cc10e84b2ec3 ("mlx5: add support for page_pool_get_stats")
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-that is fundamentally how VRF works. I would love to add the original
-vrf port index to flowi4 for consideration with bind to device within a
-VRF. I suspect your proposed patch is doing something close.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 336e4d04c5f2..bdc870f9c2f3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -521,14 +521,15 @@ static MLX5E_DECLARE_STATS_GRP_OP_UPDATE_STATS(sw)
+ 
+ 	memset(s, 0, sizeof(*s));
+ 
++	for (i = 0; i < priv->channels.num; i++) /* for active channels only */
++		mlx5e_stats_update_stats_rq_page_pool(priv->channels.c[i]);
++
+ 	for (i = 0; i < priv->stats_nch; i++) {
+ 		struct mlx5e_channel_stats *channel_stats =
+ 			priv->channel_stats[i];
+ 
+ 		int j;
+ 
+-		mlx5e_stats_update_stats_rq_page_pool(priv->channels.c[i]);
+-
+ 		mlx5e_stats_grp_sw_update_stats_rq_stats(s, &channel_stats->rq);
+ 		mlx5e_stats_grp_sw_update_stats_xdpsq(s, &channel_stats->rq_xdpsq);
+ 		mlx5e_stats_grp_sw_update_stats_ch_stats(s, &channel_stats->ch);
+-- 
+2.35.1
 
