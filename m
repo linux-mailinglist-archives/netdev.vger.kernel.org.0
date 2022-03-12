@@ -2,33 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB674D713B
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 23:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 860E44D714D
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 23:42:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232806AbiCLWEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Mar 2022 17:04:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
+        id S232821AbiCLWmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Mar 2022 17:42:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232766AbiCLWEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 17:04:31 -0500
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C6B8D0492;
-        Sat, 12 Mar 2022 14:03:24 -0800 (PST)
-Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id BD70E62FFA;
-        Sat, 12 Mar 2022 23:01:14 +0100 (CET)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/3] netfilter: nf_tables: disable register tracking
-Date:   Sat, 12 Mar 2022 23:03:15 +0100
-Message-Id: <20220312220315.64531-4-pablo@netfilter.org>
+        with ESMTP id S230380AbiCLWmy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 17:42:54 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B581C2F78;
+        Sat, 12 Mar 2022 14:41:48 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E854422239;
+        Sat, 12 Mar 2022 23:41:45 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647124906;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=41OBeTclfUqu9E10Glc2yaP92LM2mbCEsKFyGzia5ns=;
+        b=Bcn6TJQ5PIRq9iL30BAkPa0a8pZNAeeweCiUUFVv+KPsAq9+0DdqDKkFsyjIS7dpq4sim6
+        C+/u3gQgAL2fZqiP748QRXdhRJ2zkqBpLsk1qEF5tOZqGeDzmw8ZZHFI7M/gwtxYO8wnBt
+        3d1Oull4pGs6zUkgaUiE8/unIaV7tJk=
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Foster <colin.foster@in-advantage.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net] net: mdio: mscc-miim: fix duplicate debugfs entry
+Date:   Sat, 12 Mar 2022 23:41:40 +0100
+Message-Id: <20220312224140.4173930-1-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220312220315.64531-1-pablo@netfilter.org>
-References: <20220312220315.64531-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -37,42 +54,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The register tracking infrastructure is incomplete, it might lead to
-generating incorrect ruleset bytecode, disable it by now given we are
-late in the release process.
+This driver can have up to two regmaps. If the second one is registered
+its debugfs entry will have the same name as the first one and the
+following error will be printed:
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[    3.833521] debugfs: Directory 'e200413c.mdio' with parent 'regmap' already present!
+
+Give the second regmap a name to avoid this.
+
+Fixes: a27a76282837 ("net: mdio: mscc-miim: convert to a regmap implementation")
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- net/netfilter/nf_tables_api.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/mdio/mdio-mscc-miim.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index c86748b3873b..d71a33ae39b3 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -8260,6 +8260,12 @@ void nf_tables_trans_destroy_flush_work(void)
- }
- EXPORT_SYMBOL_GPL(nf_tables_trans_destroy_flush_work);
+diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+index dfd7f3001a15..fc5655328b1f 100644
+--- a/drivers/net/mdio/mdio-mscc-miim.c
++++ b/drivers/net/mdio/mdio-mscc-miim.c
+@@ -197,6 +197,13 @@ static const struct regmap_config mscc_miim_regmap_config = {
+ 	.reg_stride	= 4,
+ };
  
-+static bool nft_expr_reduce(struct nft_regs_track *track,
-+			    const struct nft_expr *expr)
-+{
-+	return false;
-+}
++static const struct regmap_config mscc_miim_phy_regmap_config = {
++	.reg_bits	= 32,
++	.val_bits	= 32,
++	.reg_stride	= 4,
++	.name		= "phy",
++};
 +
- static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *chain)
+ int mscc_miim_setup(struct device *dev, struct mii_bus **pbus, const char *name,
+ 		    struct regmap *mii_regmap, int status_offset)
  {
- 	const struct nft_expr *expr, *last;
-@@ -8307,8 +8313,7 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
- 		nft_rule_for_each_expr(expr, last, rule) {
- 			track.cur = expr;
+@@ -260,7 +267,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
+ 		}
  
--			if (expr->ops->reduce &&
--			    expr->ops->reduce(&track, expr)) {
-+			if (nft_expr_reduce(&track, expr)) {
- 				expr = track.cur;
- 				continue;
- 			}
+ 		phy_regmap = devm_regmap_init_mmio(&pdev->dev, phy_regs,
+-						   &mscc_miim_regmap_config);
++						   &mscc_miim_phy_regmap_config);
+ 		if (IS_ERR(phy_regmap)) {
+ 			dev_err(&pdev->dev, "Unable to create phy register regmap\n");
+ 			return PTR_ERR(phy_regmap);
 -- 
 2.30.2
 
