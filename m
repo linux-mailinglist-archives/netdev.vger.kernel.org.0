@@ -2,92 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 841324D70AB
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 21:04:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29B2A4D70C9
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 21:20:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiCLUFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Mar 2022 15:05:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42316 "EHLO
+        id S232585AbiCLUV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Mar 2022 15:21:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231804AbiCLUFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 15:05:45 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C44532F1;
-        Sat, 12 Mar 2022 12:04:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=rGqBRcNw4s56JzIh4WiyNNxrcGXW+DdMyOtuGHG9ozs=; b=Th
-        q7cmAGUFE8nRztSu7eUZNV1O7EeMSsqNdrjI7WI0cQIeFuv1kPRsRUaRvYA/UY7L5Tt3Q0ZoidFMw
-        XmV+pmrS23Qb/0J6GhIRUbv+cKaLmt2leNehEFa7JYwmSxqNoQzGBgLmhyce+dzrBbqVuKqPKjFlX
-        ph1KD5vJHJVUG90=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nT7yZ-00AVKz-Qt; Sat, 12 Mar 2022 21:04:31 +0100
-Date:   Sat, 12 Mar 2022 21:04:31 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Woojung.Huh@microchip.com, linux@armlinux.org.uk,
-        Horatiu.Vultur@microchip.com, Divya.Koppera@microchip.com,
-        netdev@vger.kernel.org, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Madhuri.Sripada@microchip.com, Manohar.Puri@microchip.com
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <Yiz8z3UPqNANa5zA@lunn.ch>
-References: <YidgHT8CLWrmhbTW@lunn.ch>
- <20220308154345.l4mk2oab4u5ydn5r@soft-dev3-1.localhost>
- <YiecBKGhVui1Gtb/@lunn.ch>
- <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
- <YifoltDp4/Fs+9op@lunn.ch>
- <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
- <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
- <20220309195252.GB9663@hoboy.vegasvil.org>
- <BL0PR11MB291347C0E4699E3B202B96DDE70C9@BL0PR11MB2913.namprd11.prod.outlook.com>
- <20220312024828.GA15046@hoboy.vegasvil.org>
+        with ESMTP id S231479AbiCLUV4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 15:21:56 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3AD207A20
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 12:20:50 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id a14so10168141qtx.12
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 12:20:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=x64architecture.com; s=x64;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rxkUDg+qBB3WQG4mCBC3m79wqb1PB3BKKrUVCN9KZn0=;
+        b=2tZaw4Qwh/ihASXpHkGEsxQLKIj1+qcRrCZ7L5/y3AauHchtWbFXGIovhMRfZORndK
+         8X9euYlM/49MOrxzsCq5zpJOwmRjjeeYNC0ZJW4g3xAFp73IbehzbLQW1phi+ugXFPW1
+         tUWxPzIGITeRjkSmJ5U+YQKdvPOhRnw+TaLnv4jNFKDihCdIkqwZltFzjxUf/g1Rz3/g
+         euVvNrkf3aiab64rMf7aWzIKBczGi0NfElF3+/fX/ACn2OeuYvjtEH8uHm07KURR+zA0
+         MCy1qG220vPLj/NH/LyyjkV3ZG3avKbXplyYrtefbGOXLgh00qaldxERpzl1tJRWqaCM
+         Bnrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rxkUDg+qBB3WQG4mCBC3m79wqb1PB3BKKrUVCN9KZn0=;
+        b=gfxmKvGrekMbQRs5GRl8awfqFmZyzF31F07Almqy7bTH+XW60JqvJAi3sds25M22MA
+         J3RQtaFmaefCLe+quiDqPMZ23FEbgzna7WoQ/nJ3k5jdG3zzlyt4eGPISKlR5YKSCVZZ
+         D/4W5Dfxqw+JSOyKZkmxbsnunxO1qhMkDi0NLwnCfpXQ+X4wqNfH6LRBdrXYTEq5OqlJ
+         5qgrxVEGJ3oe6DEsiwWSn25z+j4Mw5I7RkUU7ZjNxMtAi3YU+DG+O4xr94Aq3l7nJoAJ
+         grHdvLyS5RsyDByBEtbSyRJjQ4i9cBN7Zft11gLKMAh7b9PeQ50n1WYPzTivh4nmr6TT
+         1Ofw==
+X-Gm-Message-State: AOAM531t5vmBMFuoSgrc8l199m0bP9QRnsxyfbH0jQbU1L55Q6ka8l0g
+        exkyzF/EVj1BhmDyzDYVH5FBMpHJ4e39QvMW7PI=
+X-Google-Smtp-Source: ABdhPJwQlz+GEvLyQCD1Kv5tSQI55A5GrgRbqCvQTLLCKRhh2ZOSv30BGtcfgL2/z1olP9SXo0ZWZA==
+X-Received: by 2002:ac8:5dd2:0:b0:2e0:688f:ba8f with SMTP id e18-20020ac85dd2000000b002e0688fba8fmr13227062qtx.139.1647116449276;
+        Sat, 12 Mar 2022 12:20:49 -0800 (PST)
+Received: from kcancemi-arch.Engineering.com ([167.206.126.218])
+        by smtp.gmail.com with ESMTPSA id o21-20020ac85a55000000b002e16389b501sm8186224qta.96.2022.03.12.12.20.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Mar 2022 12:20:49 -0800 (PST)
+From:   Kurt Cancemi <kurt@x64architecture.com>
+To:     netdev@vger.kernel.org
+Cc:     kurt@x64architecture.com, kabel@kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net v3] net: phy: marvell: Fix invalid comparison in the resume and suspend functions
+Date:   Sat, 12 Mar 2022 15:15:13 -0500
+Message-Id: <20220312201512.326047-1-kurt@x64architecture.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220312002016.60416-1-kurt@x64architecture.com>
+References: <20220312002016.60416-1-kurt@x64architecture.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220312024828.GA15046@hoboy.vegasvil.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->        PTP4l(8)                    System Manager's Manual                   PTP4l(8)
-> 
->        NAME
->            ptp4l - PTP Boundary/Ordinary/Transparent Clock
-> 
->        ...
-> 
->        egressLatency
->               Specifies  the  difference  in  nanoseconds  between  the actual
->               transmission time at the reference plane and the reported trans‐
->               mit  time  stamp. This value will be added to egress time stamps
->               obtained from the hardware.  The default is 0.
-> 
->        ingressLatency
->               Specifies the difference in nanoseconds between the reported re‐
->               ceive  time  stamp  and  the  actual reception time at reference
->               plane. This value will be subtracted from  ingress  time  stamps
->               obtained from the hardware.  The default is 0.
-> 
+This bug resulted in only the current mode being resumed and suspended when
+the PHY supported both fiber and copper modes and when the PHY only supported
+copper mode the fiber mode would incorrectly be attempted to be resumed and
+suspended.
 
-Hi Richard
+Fixes: 3758be3dc162 ("Marvell phy: add functions to suspend and resume both interfaces: fiber and copper links.")
+Signed-off-by: Kurt Cancemi <kurt@x64architecture.com>
+---
 
-Do these get passed to the kernel so the hardware can act on them, or
-are they used purely in userspace by ptp4l?
+I removed the dot from the summary line.
 
-If they has passed to the kernel, could we provide a getter as well as
-a setter, so the defaults hard coded in the driver can be read back?
+ drivers/net/phy/marvell.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-	Andrew
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 2429db614b59..80b888a88127 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1687,7 +1687,7 @@ static int marvell_suspend(struct phy_device *phydev)
+ 	int err;
+ 
+ 	/* Suspend the fiber mode first */
+-	if (!linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+ 			       phydev->supported)) {
+ 		err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
+ 		if (err < 0)
+@@ -1722,7 +1722,7 @@ static int marvell_resume(struct phy_device *phydev)
+ 	int err;
+ 
+ 	/* Resume the fiber mode first */
+-	if (!linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
++	if (linkmode_test_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+ 			       phydev->supported)) {
+ 		err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
+ 		if (err < 0)
+-- 
+2.35.1
+
