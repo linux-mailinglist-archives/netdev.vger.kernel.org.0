@@ -2,106 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 576A74D7111
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 22:44:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D744D7117
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 22:48:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232777AbiCLVpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Mar 2022 16:45:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
+        id S232792AbiCLVqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Mar 2022 16:46:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232770AbiCLVpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 16:45:18 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9251D8335
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 13:44:12 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id l20so20849678lfg.12
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 13:44:11 -0800 (PST)
+        with ESMTP id S232786AbiCLVqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 16:46:17 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7134E4738C
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 13:45:11 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id mg21-20020a17090b371500b001bef9e4657cso14147308pjb.0
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 13:45:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Al6bnHgVgcqWGS7SzpEP6EcNnlitYzP4oWhkmGFLRYg=;
-        b=TUNQe6vdMdyq5Mk9RcZa0WrgFWSQNBekv3itbnQYPfxEcKkulC5M9G35QESGHx3lCs
-         CkiAAaqI2HmrSs4euU/9PrCa+nGQ4kj+UavhRfZqSrLFd9YMMCelxwBYrKyghkz/zT4k
-         cSm+n0RWPhJ3qKq/xEsoqAW/Ef3Ix0mfhyfWA=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=n4TdA0gI45Xj2K7cbGIisTENSr0kI8/Q/IOoENBXZ+U=;
+        b=SQ0I8H66lDEAJ5Fn+aBHX2jFmxn+HWhTyZPJM9VS3toIjepFpNofZSjcwzqrm+lvOE
+         0Ec0+qsqnJtxq+2Iq+TUd9L2UEi2DVSKKUu4JkmbGQ8kPsJmq9VIExRz2ZCpqeOahHAN
+         5MSp+CK3O2Iszsp8s+fp+KOQTHT4aQLzzBmpRsTsRp8wj2iGbjjUfC4PJNgxw6JWEuYp
+         sqP87yJ305yj9H9eqt5eUH22PR7TnShOrAYuJpUitX8407qc5/uZE+NvyDNZ05e4RvAb
+         xoUsCA6HTr7cTa5MgJV4zTLelfGaKR/sZWF7biHh1n53TK2TU5AxD1GN1qWD7Xgnujdx
+         dwXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Al6bnHgVgcqWGS7SzpEP6EcNnlitYzP4oWhkmGFLRYg=;
-        b=RiCmqF1ADveAq6gOHLp7+wREMeGp6E3VRz7vZ8iO7cTPGBmT5ZwqrDH2QBDPFUUY8y
-         WRyiLL5VT/YUuswHhhzexC2Yaxq4lf74KNG6roHqY6n/r8v3BGIuKG6q0UqRfyc412Oy
-         ZHms+Dwf1Gb1qz115rUtP7LRw6wRWYOZeXZb4IwKNQtRSUqCitdZSKRD8NcGmKcpN1el
-         SoBxkiFTravZ0MvYx/qBgm2FgrUZPX1z1pqDenTiA0rMFew7qZc6CxS5Mvk8x4T1i7Fi
-         MyV3uURneB5aaKsdcfDE7JE6y8UrpitMFAi8gfXWeqhoxsHNMu47VZN1OBen7WKmG8Sh
-         9YBw==
-X-Gm-Message-State: AOAM533ZxI+65Acpj1yrQONb9mHO5kGH905dVLBIaeqr5GLLmGW0w4U1
-        1DwqUMtf+7xFIQePrdRWCCH3YJtkeJVf6CKDKHY=
-X-Google-Smtp-Source: ABdhPJwu1N1fmzHzYCPepF4CdinL8tC4BqJN0eOefdBlwg2gm5kpJtKaxBlgAnQmEqOIy8l5tR0aKQ==
-X-Received: by 2002:a05:6512:525:b0:448:89d5:2e40 with SMTP id o5-20020a056512052500b0044889d52e40mr1770268lfc.249.1647121450025;
-        Sat, 12 Mar 2022 13:44:10 -0800 (PST)
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com. [209.85.167.54])
-        by smtp.gmail.com with ESMTPSA id m11-20020a05651202eb00b00443130ce80asm2368821lfq.138.2022.03.12.13.44.06
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Mar 2022 13:44:07 -0800 (PST)
-Received: by mail-lf1-f54.google.com with SMTP id l20so20849554lfg.12
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 13:44:06 -0800 (PST)
-X-Received: by 2002:a05:6512:b13:b0:448:90c6:dc49 with SMTP id
- w19-20020a0565120b1300b0044890c6dc49mr147974lfu.542.1647121446538; Sat, 12
- Mar 2022 13:44:06 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=n4TdA0gI45Xj2K7cbGIisTENSr0kI8/Q/IOoENBXZ+U=;
+        b=oBQgLDTpHrcjKF/T8cZb0rga1ae/vy2Pfgq6/um1j6ztMb7dffdD4w0FnfV/LKeCGv
+         YbxdISujoe6SeE0QCj2w4k6aoIx9Zfu8b95SHMvfRnuRByxQbIFlBbCLtCQOwdw1MQZ9
+         YzELrabxX0D0vjZLdlIRZK5ebIAO22c3f6xxUMA05EN+pPbiE/3FPkt8fPAPUMZBm4Io
+         4ipZdM+ssC0o9Z9Lsud+JarTXL+N8WtCd47XntAlftjtSdaabRmVwxhIuYcUWZ7I6bba
+         xfeoq2PhCjCnusWtZJtufsX19mQN1igGO3JOuynROmqBmkbBRe2aOhVsJwsobkX5vsnq
+         wDYA==
+X-Gm-Message-State: AOAM530lzu7zqOXq2yOvSVcd5zlBuAkXsyxkRnXLts23u4V/zQSB5GWl
+        NIJct/gR9c30sMo3LhdsALmYr7O8K4k=
+X-Google-Smtp-Source: ABdhPJy72PyaesuExpg6KU7juGJ8sd256y2E9l8vgOlrQFeZzSJWXeZi0HOZcxgSeb/hruHTWMyCWA==
+X-Received: by 2002:a17:90b:1647:b0:1c3:b18c:793f with SMTP id il7-20020a17090b164700b001c3b18c793fmr10522647pjb.134.1647121510990;
+        Sat, 12 Mar 2022 13:45:10 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7661:178d:4650:697])
+        by smtp.gmail.com with ESMTPSA id bh6-20020a056a00308600b004f6aa0367f6sm13033523pfb.118.2022.03.12.13.45.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Mar 2022 13:45:10 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        jeffreyji <jeffreyji@google.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next] net: disable preemption in dev_core_stats_XXX_inc() helpers
+Date:   Sat, 12 Mar 2022 13:45:05 -0800
+Message-Id: <20220312214505.3294762-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
 MIME-Version: 1.0
-References: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
- <YiqPmIdZ/RGiaOei@qmqm.qmqm.pl> <CAADWXX-Pr-D3wSr5wsqTEOBSJzB9k7bSH+7hnCAj0AeL0=U4mg@mail.gmail.com>
- <Yix06B9rPaGh0dp8@qmqm.qmqm.pl>
-In-Reply-To: <Yix06B9rPaGh0dp8@qmqm.qmqm.pl>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 12 Mar 2022 13:43:50 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgxtcTbBdtm9ewarth476Wr5vYYnptaWpwdHcML8-xayA@mail.gmail.com>
-Message-ID: <CAHk-=wgxtcTbBdtm9ewarth476Wr5vYYnptaWpwdHcML8-xayA@mail.gmail.com>
-Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
-To:     =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 12, 2022 at 2:24 AM Micha=C5=82 Miros=C5=82aw <mirq-linux@rere.=
-qmqm.pl> wrote:
->
-> The source type is not needed for the macros [..]
+From: Eric Dumazet <edumazet@google.com>
 
-Ahh. Yeah, as long as we don't do typedefs, it looks like we don't
-need to pre-declare the member access types.
+syzbot was kind enough to remind us that dev->{tx_dropped|rx_dropped}
+could be increased in process context.
 
-I expected that to be required, because function declarations taking
-arguments need it, but that's because they create their own scope.
-Just doing it in a regular struct (or in this case union) declaration
-is fine.
+BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor413/3593
+caller is netdev_core_stats_alloc+0x98/0x110 net/core/dev.c:10298
+CPU: 1 PID: 3593 Comm: syz-executor413 Not tainted 5.17.0-rc7-syzkaller-02426-g97aeb877de7f #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ check_preemption_disabled+0x16b/0x170 lib/smp_processor_id.c:49
+ netdev_core_stats_alloc+0x98/0x110 net/core/dev.c:10298
+ dev_core_stats include/linux/netdevice.h:3855 [inline]
+ dev_core_stats_rx_dropped_inc include/linux/netdevice.h:3866 [inline]
+ tun_get_user+0x3455/0x3ab0 drivers/net/tun.c:1800
+ tun_chr_write_iter+0xe1/0x200 drivers/net/tun.c:2015
+ call_write_iter include/linux/fs.h:2074 [inline]
+ new_sync_write+0x431/0x660 fs/read_write.c:503
+ vfs_write+0x7cd/0xae0 fs/read_write.c:590
+ ksys_write+0x12d/0x250 fs/read_write.c:643
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f2cf4f887e3
+Code: 5d 41 5c 41 5d 41 5e e9 9b fd ff ff 66 2e 0f 1f 84 00 00 00 00 00 90 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
+RSP: 002b:00007ffd50dd5fd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007ffd50dd6000 RCX: 00007f2cf4f887e3
+RDX: 000000000000002a RSI: 0000000000000000 RDI: 00000000000000c8
+RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffd50dd5ff0 R14: 00007ffd50dd5fe8 R15: 00007ffd50dd5fe4
+ </TASK>
 
-So we would only need that post-declaration.
+Fixes: 625788b58445 ("net: add per-cpu storage and net->core_stats")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: jeffreyji <jeffreyji@google.com>
+Cc: Brian Vazquez <brianvv@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+---
+ include/linux/netdevice.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-That said, your naming is wrong. It's not just about "self". It's any
-case where the type we iterate over is declared after the type that
-has the head.
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 0d994710b3352395b8c6d6fd53affb2fe0cea39f..8cbe96ce0a2cd9e4f02168835d460d1c91901430 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3858,10 +3858,14 @@ static inline struct net_device_core_stats *dev_core_stats(struct net_device *de
+ #define DEV_CORE_STATS_INC(FIELD)						\
+ static inline void dev_core_stats_##FIELD##_inc(struct net_device *dev)		\
+ {										\
+-	struct net_device_core_stats *p = dev_core_stats(dev);			\
++	struct net_device_core_stats *p;					\
++										\
++	preempt_disable();							\
++	p = dev_core_stats(dev);						\
+ 										\
+ 	if (p)									\
+ 		local_inc(&p->FIELD);						\
++	preempt_enable();							\
+ }
+ DEV_CORE_STATS_INC(rx_dropped)
+ DEV_CORE_STATS_INC(tx_dropped)
+-- 
+2.35.1.723.g4982287a31-goog
 
-So I suspect it would be a lot better to just always do it, and not do
-that "self vs non-self" distinction.
-
-              Linus
