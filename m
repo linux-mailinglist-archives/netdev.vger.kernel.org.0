@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCA04D6DEE
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 11:09:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EB1C4D6DEF
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 11:09:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231695AbiCLKKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Mar 2022 05:10:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
+        id S231705AbiCLKKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Mar 2022 05:10:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbiCLKKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 05:10:19 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD765226C3A
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 02:09:13 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so9530459ybg.8
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 02:09:13 -0800 (PST)
+        with ESMTP id S231696AbiCLKKV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 05:10:21 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A062272EF
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 02:09:15 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dd2c5ef10eso89774637b3.14
+        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 02:09:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=v0INzGgR4QVffzC6zq3G/Euc0szlm+qrGZcoVeZG7VQ=;
-        b=ShszOJyZjdPPLb5B4ng5mZ6noaksydnRNmBc5T8kVfAiGIFOSDc0SuvjuGA4RfYLJU
-         vKu4zUJduKDBH2q1hDlkW9E2n9VlaRNkcFrdjmYNf3DEAo4fRm7Cw4lwWLLvMYbX1gvx
-         AiJL2pyQZD90I7DnnpI+po/up1t6XtjJ4zo9LQ1HEi1xDNb9K8dge6a/nkQokgQEfbEE
-         Y1G+Xb+j6F3RAtO4TWJ7jpy0mEmSbgjehIQp3tB7wI3rE8fwXd1HIptIIdYQOytkl/Bz
-         ZBQVt2kSEY8YQ9FDSUbTr5K5gKVK7uRyFVc3Ut1dmFKaTV285BxcIu6okv0YnNHoP9xP
-         W+eQ==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=KYvhJwEqPqMacll2Nmd0cKWfMMmSrt6TYTGYVr6fAKo=;
+        b=J7927ySszHyeEQ7P3AfY7detl3yHPIjk9WdOIkUB8+zI2dkgItouavznSbYeg3NM+P
+         SXANcpzXzr3G/7UmiTDBUm88mHvQp2aL2VATbxYYqV7D1DdBv5ZoxAQTX3Vs+qiW7I5B
+         4zV1G9DGOv7Mt5OkPAoI6c13wbFEgyatJJ7jtAUNK1V8jHkroNF6kmgknUSn+dt3gDTs
+         F0+ynuPrf1nqKM8RahsoEZHKcR7VchM17ovI8tyUc3uTtPsGp+QbOc4cbu6frU1Qi06R
+         EF0rKjFbynmwND6YkEz6lAcGwdMSRWh1R4fsqzk8M6SYRs/5P751Zaii0RPBZ3cSYrfO
+         Y1Rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=v0INzGgR4QVffzC6zq3G/Euc0szlm+qrGZcoVeZG7VQ=;
-        b=z/2tpZtNtC0GYW6QnuDWAdg7tg5FB8NVdI5JdJfDOVtcsdU3HTe3oWdQn0brRMfpwE
-         TIclIW8nfzjdijzblMAL0r5i4gZPqlOkjV6XPtWd08P0GTE2gMWUcCQQiCIW9hiNKh2v
-         OVJsAOzrUmMzK2DD9CrFc+ulZYSBYafXzDQEjdFeONcxFbKiyJJhr4gukFSY2IysZyqK
-         kLw9Di7TOH/YxBxecy0/P7iCbhlK0/vNfZ3H5PZnSHMvENxKUlw9ZPxBCZC3S0p3ZPgb
-         BtBOpX9DvTOfCsUwMKvNVyAU7N3YXBZEyE0AofSbO1afny2C4a8jT4hwnSCb4/xnpSpn
-         xowg==
-X-Gm-Message-State: AOAM530qwrTCyEgoqfO3lH5G6K5OHXpnYDqltxEL+5U4pmkTkCWX0Zn6
-        CDmgihqxZv2HiIei9n/EntsIZNWrn0Hc+A==
-X-Google-Smtp-Source: ABdhPJxixmLfsMESvqL79T2A6JOIB9t89esliSfrsowEfLFeyDrZH5Kj0WGMoZtHy6z0g5QgukynEccfCabYKw==
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=KYvhJwEqPqMacll2Nmd0cKWfMMmSrt6TYTGYVr6fAKo=;
+        b=7u5f7DBO4hcs+UtQeXRRvTGCzoghcdjNs5ANCTYXbInEdv7qOtKhwJl9zyBycMRYql
+         2U9cDPjJAOgd901ZZTkrxcpBjF49fz7YF8MWEsbEDz9VX8TnCWYiFqDyyWjpiNGGKE4m
+         TPA9hWUUbH2RJFZUBi0ktx8xi0zXONCBZ0dZaP8DPtwhoulz998zs4/20d4/OTdzSegO
+         cQ2K5zguNyinq4GcqwGTgPfIARmpWjDcQ6ZiD+k2LUdhSRhpv0D0c00gkGD3QbNyftww
+         /eYtF/y/+ScK5TojLv7JG9faGFq0nyMhRn78JhrK0PCDyknmj6RCob01IroRY8PjmXT6
+         TmBw==
+X-Gm-Message-State: AOAM5332r73+fhSEHV1Fg42HOvhVGwXQxyd7wTXfbVqd7N4rpSOmPWfG
+        ozXo/ldw2DfH4pj1w8oQn3XhCWiMPAW1jA==
+X-Google-Smtp-Source: ABdhPJxcRzDPnhDhS87upQvOk2nbkWf71y95bto7e4L03qhYhuyrC/KST/9j5nK7UuzuIkXsbhSUQCrLvX6E5w==
 X-Received: from mmandlik.mtv.corp.google.com ([2620:15c:202:201:1cf8:bbfc:56cd:c500])
- (user=mmandlik job=sendgmr) by 2002:a0d:d6c2:0:b0:2dc:a9b0:d22 with SMTP id
- y185-20020a0dd6c2000000b002dca9b00d22mr11818901ywd.194.1647079752865; Sat, 12
- Mar 2022 02:09:12 -0800 (PST)
-Date:   Sat, 12 Mar 2022 02:08:58 -0800
-Message-Id: <20220312020707.1.I2b7f789329979102339d7e0717522ba417b63109@changeid>
+ (user=mmandlik job=sendgmr) by 2002:a81:493:0:b0:2dc:a1c3:5e13 with SMTP id
+ 141-20020a810493000000b002dca1c35e13mr11655097ywe.381.1647079755192; Sat, 12
+ Mar 2022 02:09:15 -0800 (PST)
+Date:   Sat, 12 Mar 2022 02:08:59 -0800
+In-Reply-To: <20220312020707.1.I2b7f789329979102339d7e0717522ba417b63109@changeid>
+Message-Id: <20220312020707.2.Ie20f132ad5cb6bcd435d6c6e0fca8a9d858e83d4@changeid>
 Mime-Version: 1.0
+References: <20220312020707.1.I2b7f789329979102339d7e0717522ba417b63109@changeid>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH 1/2] Bluetooth: msft: Clear tracked devices on resume
+Subject: [PATCH 2/2] Bluetooth: Send AdvMonitor Dev Found for all matched devices
 From:   Manish Mandlik <mmandlik@google.com>
 To:     marcel@holtmann.org, luiz.dentz@gmail.com
 Cc:     chromeos-bluetooth-upstreaming@chromium.org,
@@ -62,62 +66,151 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clear already tracked devices on system resume. Once the monitors are
-reregistered after resume, matched devices in range will be found again.
+When an Advertisement Monitor is configured with SamplingPeriod 0xFF,
+the controller reports only one adv report along with the MSFT Monitor
+Device event.
+
+When an advertiser matches multiple monitors, some controllers send one
+adv report for each matched monitor; whereas, some controllers send just
+one adv report for all matched monitors.
+
+In such a case, report Adv Monitor Device Found event for each matched
+monitor.
 
 Signed-off-by: Manish Mandlik <mmandlik@google.com>
 Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
 ---
 
- net/bluetooth/msft.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ net/bluetooth/mgmt.c | 70 +++++++++++++++++++++++---------------------
+ 1 file changed, 37 insertions(+), 33 deletions(-)
 
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index 9a3d77d3ca86..f43994523b1f 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -330,12 +330,13 @@ static void msft_le_cancel_monitor_advertisement_cb(struct hci_dev *hdev,
- 		/* Do not free the monitor if it is being removed due to
- 		 * suspend. It will be re-monitored on resume.
- 		 */
--		if (monitor && !msft->suspending)
-+		if (monitor && !msft->suspending) {
- 			hci_free_adv_monitor(hdev, monitor);
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index d59c70e9166f..e4da2318a2f6 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -9628,17 +9628,44 @@ void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
+ 		   NULL);
+ }
  
--		/* Clear any monitored devices by this Adv Monitor */
--		msft_monitor_device_del(hdev, handle_data->mgmt_handle, NULL,
--					0, false);
-+			/* Clear any monitored devices by this Adv Monitor */
-+			msft_monitor_device_del(hdev, handle_data->mgmt_handle,
-+						NULL, 0, false);
-+		}
- 
- 		list_del(&handle_data->list);
- 		kfree(handle_data);
-@@ -522,6 +523,16 @@ int msft_resume_sync(struct hci_dev *hdev)
- 	if (!msft || !msft_monitor_supported(hdev))
- 		return 0;
- 
-+	hci_dev_lock(hdev);
++static void mgmt_send_adv_monitor_device_found(struct hci_dev *hdev,
++					       struct sk_buff *skb,
++					       struct sock *skip_sk,
++					       u16 handle)
++{
++	struct sk_buff *advmon_skb;
++	size_t advmon_skb_len;
++	__le16 *monitor_handle;
 +
-+	/* Clear already tracked devices on resume. Once the monitors are
-+	 * reregistered, devices in range will be found again after resume.
++	if (!skb)
++		return;
++
++	advmon_skb_len = (sizeof(struct mgmt_ev_adv_monitor_device_found) -
++			  sizeof(struct mgmt_ev_device_found)) + skb->len;
++	advmon_skb = mgmt_alloc_skb(hdev, MGMT_EV_ADV_MONITOR_DEVICE_FOUND,
++				    advmon_skb_len);
++	if (!advmon_skb)
++		return;
++
++	/* ADV_MONITOR_DEVICE_FOUND is similar to DEVICE_FOUND event except
++	 * that it also has 'monitor_handle'. Make a copy of DEVICE_FOUND and
++	 * store monitor_handle of the matched monitor.
 +	 */
-+	hdev->advmon_pend_notify = false;
-+	msft_monitor_device_del(hdev, 0, NULL, 0, true);
++	monitor_handle = skb_put(advmon_skb, sizeof(*monitor_handle));
++	*monitor_handle = cpu_to_le16(handle);
++	skb_put_data(advmon_skb, skb->data, skb->len);
 +
-+	hci_dev_unlock(hdev);
++	mgmt_event_skb(advmon_skb, skip_sk);
++}
 +
- 	msft->resuming = true;
+ static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
+ 					  bdaddr_t *bdaddr, bool report_device,
+ 					  struct sk_buff *skb,
+ 					  struct sock *skip_sk)
+ {
+-	struct sk_buff *advmon_skb;
+-	size_t advmon_skb_len;
+-	__le16 *monitor_handle;
+ 	struct monitored_device *dev, *tmp;
+ 	bool matched = false;
+-	bool notify = false;
++	bool notified = false;
  
- 	while (1) {
+ 	/* We have received the Advertisement Report because:
+ 	 * 1. the kernel has initiated active discovery
+@@ -9660,25 +9687,6 @@ static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
+ 		return;
+ 	}
+ 
+-	advmon_skb_len = (sizeof(struct mgmt_ev_adv_monitor_device_found) -
+-			  sizeof(struct mgmt_ev_device_found)) + skb->len;
+-	advmon_skb = mgmt_alloc_skb(hdev, MGMT_EV_ADV_MONITOR_DEVICE_FOUND,
+-				    advmon_skb_len);
+-	if (!advmon_skb) {
+-		if (report_device)
+-			mgmt_event_skb(skb, skip_sk);
+-		else
+-			kfree_skb(skb);
+-		return;
+-	}
+-
+-	/* ADV_MONITOR_DEVICE_FOUND is similar to DEVICE_FOUND event except
+-	 * that it also has 'monitor_handle'. Make a copy of DEVICE_FOUND and
+-	 * store monitor_handle of the matched monitor.
+-	 */
+-	monitor_handle = skb_put(advmon_skb, sizeof(*monitor_handle));
+-	skb_put_data(advmon_skb, skb->data, skb->len);
+-
+ 	hdev->advmon_pend_notify = false;
+ 
+ 	list_for_each_entry_safe(dev, tmp, &hdev->monitored_devices, list) {
+@@ -9686,8 +9694,10 @@ static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
+ 			matched = true;
+ 
+ 			if (!dev->notified) {
+-				*monitor_handle = cpu_to_le16(dev->handle);
+-				notify = true;
++				mgmt_send_adv_monitor_device_found(hdev, skb,
++								   skip_sk,
++								   dev->handle);
++				notified = true;
+ 				dev->notified = true;
+ 			}
+ 		}
+@@ -9697,25 +9707,19 @@ static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
+ 	}
+ 
+ 	if (!report_device &&
+-	    ((matched && !notify) || !msft_monitor_supported(hdev))) {
++	    ((matched && !notified) || !msft_monitor_supported(hdev))) {
+ 		/* Handle 0 indicates that we are not active scanning and this
+ 		 * is a subsequent advertisement report for an already matched
+ 		 * Advertisement Monitor or the controller offloading support
+ 		 * is not available.
+ 		 */
+-		*monitor_handle = 0;
+-		notify = true;
++		mgmt_send_adv_monitor_device_found(hdev, skb, skip_sk, 0);
+ 	}
+ 
+ 	if (report_device)
+ 		mgmt_event_skb(skb, skip_sk);
+ 	else
+ 		kfree_skb(skb);
+-
+-	if (notify)
+-		mgmt_event_skb(advmon_skb, skip_sk);
+-	else
+-		kfree_skb(advmon_skb);
+ }
+ 
+ void mgmt_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
 -- 
 2.35.1.723.g4982287a31-goog
 
