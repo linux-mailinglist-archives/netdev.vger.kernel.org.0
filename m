@@ -2,95 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 964F34D70F0
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 21:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B31F34D7100
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 22:18:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbiCLU5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Mar 2022 15:57:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
+        id S232718AbiCLVTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Mar 2022 16:19:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231488AbiCLU5G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 15:57:06 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE5B1BAF33;
-        Sat, 12 Mar 2022 12:55:59 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S232710AbiCLVTQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 16:19:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEF8554B8;
+        Sat, 12 Mar 2022 13:18:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id A5C9B22239;
-        Sat, 12 Mar 2022 21:55:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647118558;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=vMgLswBA0/NbjgyCuBu9aMBgpNZnNIEHqc7S0Jyg3rE=;
-        b=ce7amQ7BEY6accaQP6fbi3KtF154KsNPlUep2oetXRO2av6Gt1tVkxnBV+ee8kCBIjYKPN
-        tqrDjAifF5sfhQsRjQuaPDjh0tbXI2MO2+hGoP1BmMtJqF+MwWeZNP3g0EWJOov41viXHM
-        5Zlh0D3gfr2hrmr2QGHvPvWAmdRhZWs=
-From:   Michael Walle <michael@walle.cc>
-To:     Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next] net: sfp: add 2500base-X quirk for Lantech SFP module
-Date:   Sat, 12 Mar 2022 21:50:14 +0100
-Message-Id: <20220312205014.4154907-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2C52611E4;
+        Sat, 12 Mar 2022 21:18:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A854C340EB;
+        Sat, 12 Mar 2022 21:18:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647119888;
+        bh=CqybOwz/LLG4adtApkIEKsJSXWtpNr58vIootKUXpck=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OQxKxxQa5Zn2OQrmNjMli8LPcHzzNJwqfx+JMI7OQFHBZjDSVh7YWUt+9t69KOhAW
+         UCqKm6adB2mUHSLKG2EOMkp5CteGIq02W2P1T8HcgYBplL01YRwO3U9nPa49rIZ08x
+         2x7U/FaKxXJuYPCZVjkM1JmwV1A2g65uP4XS9218m2o4UOwdX6S92iJTWHYqbJuF+P
+         vydcbDvMhYtDdOXp3egGHB+1sBtFw2340S/0PMHm1fsXXeUI5CvJENa1/dPubGLAK3
+         G7T5ZvHB1Fj2+wVXFvN4nGJwBwIZCX4N69e+Dc+w1noAWQOCCUBXPdHf6mcGumvCRx
+         cwLvLvgONNKYA==
+Date:   Sat, 12 Mar 2022 13:18:06 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        daniel@iogearbox.net, brouer@redhat.com, pabeni@redhat.com,
+        echaudro@redhat.com, toshiaki.makita1@gmail.com, andrii@kernel.org
+Subject: Re: [PATCH v4 bpf-next 2/3] veth: rework veth_xdp_rcv_skb in order
+ to accept non-linear skb
+Message-ID: <20220312131806.1c2919ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87ilsly6db.fsf@toke.dk>
+References: <cover.1646755129.git.lorenzo@kernel.org>
+        <24703dbc3477a4b3aaf908f6226a566d27969f83.1646755129.git.lorenzo@kernel.org>
+        <87ee3auk70.fsf@toke.dk>
+        <YinkUiv/yC/gJhYZ@lore-desk>
+        <87ilsly6db.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
-nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
-module.
+On Thu, 10 Mar 2022 20:06:40 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> >> So this always clones the skb if it has frags? Is that really needed? =
+=20
+> >
+> > if we look at skb_cow_data(), paged area is always considered not writa=
+ble =20
+>=20
+> Ah, right, did not know that. Seems a bit odd, but OK.
 
-The following in an EEPROM dump of such a SFP with the serial number
-redacted:
+Yeah, I think I pointed that out, I may well be wrong.
 
-00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
-10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
-20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
-30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
-40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
-50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
-60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
-70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
+AFAICT frags which are not writable are not marked in any clear
+way. We have SKBFL_SHARED_FRAG which seems pretty close but its
+documented as an indication that the frag can be written under our
+feet, not that we can't write to it. Subtly different. And (as
+documented) it's only used when doing SW csums, as far as I can
+grep.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/sfp-bus.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index c1512c9925a6..15aa5ac1ff49 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		// Lantech 8330-262D-E can operate at 2500base-X, but
-+		// incorrectly report 2500MBd NRZ in their EEPROM
-+		.vendor = "Lantech",
-+		.part = "8330-262D-E",
-+		.modes = sfp_quirk_2500basex,
- 	}, {
- 		.vendor = "UBNT",
- 		.part = "UF-INSTANT",
--- 
-2.30.2
-
+Maybe someone else knows the semantics.
