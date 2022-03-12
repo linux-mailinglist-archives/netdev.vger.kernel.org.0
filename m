@@ -2,70 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB1C4D6DEF
-	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 11:09:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE0FD4D6DFD
+	for <lists+netdev@lfdr.de>; Sat, 12 Mar 2022 11:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbiCLKKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Mar 2022 05:10:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47490 "EHLO
+        id S231698AbiCLKZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Mar 2022 05:25:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231696AbiCLKKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 05:10:21 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A062272EF
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 02:09:15 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dd2c5ef10eso89774637b3.14
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 02:09:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=KYvhJwEqPqMacll2Nmd0cKWfMMmSrt6TYTGYVr6fAKo=;
-        b=J7927ySszHyeEQ7P3AfY7detl3yHPIjk9WdOIkUB8+zI2dkgItouavznSbYeg3NM+P
-         SXANcpzXzr3G/7UmiTDBUm88mHvQp2aL2VATbxYYqV7D1DdBv5ZoxAQTX3Vs+qiW7I5B
-         4zV1G9DGOv7Mt5OkPAoI6c13wbFEgyatJJ7jtAUNK1V8jHkroNF6kmgknUSn+dt3gDTs
-         F0+ynuPrf1nqKM8RahsoEZHKcR7VchM17ovI8tyUc3uTtPsGp+QbOc4cbu6frU1Qi06R
-         EF0rKjFbynmwND6YkEz6lAcGwdMSRWh1R4fsqzk8M6SYRs/5P751Zaii0RPBZ3cSYrfO
-         Y1Rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=KYvhJwEqPqMacll2Nmd0cKWfMMmSrt6TYTGYVr6fAKo=;
-        b=7u5f7DBO4hcs+UtQeXRRvTGCzoghcdjNs5ANCTYXbInEdv7qOtKhwJl9zyBycMRYql
-         2U9cDPjJAOgd901ZZTkrxcpBjF49fz7YF8MWEsbEDz9VX8TnCWYiFqDyyWjpiNGGKE4m
-         TPA9hWUUbH2RJFZUBi0ktx8xi0zXONCBZ0dZaP8DPtwhoulz998zs4/20d4/OTdzSegO
-         cQ2K5zguNyinq4GcqwGTgPfIARmpWjDcQ6ZiD+k2LUdhSRhpv0D0c00gkGD3QbNyftww
-         /eYtF/y/+ScK5TojLv7JG9faGFq0nyMhRn78JhrK0PCDyknmj6RCob01IroRY8PjmXT6
-         TmBw==
-X-Gm-Message-State: AOAM5332r73+fhSEHV1Fg42HOvhVGwXQxyd7wTXfbVqd7N4rpSOmPWfG
-        ozXo/ldw2DfH4pj1w8oQn3XhCWiMPAW1jA==
-X-Google-Smtp-Source: ABdhPJxcRzDPnhDhS87upQvOk2nbkWf71y95bto7e4L03qhYhuyrC/KST/9j5nK7UuzuIkXsbhSUQCrLvX6E5w==
-X-Received: from mmandlik.mtv.corp.google.com ([2620:15c:202:201:1cf8:bbfc:56cd:c500])
- (user=mmandlik job=sendgmr) by 2002:a81:493:0:b0:2dc:a1c3:5e13 with SMTP id
- 141-20020a810493000000b002dca1c35e13mr11655097ywe.381.1647079755192; Sat, 12
- Mar 2022 02:09:15 -0800 (PST)
-Date:   Sat, 12 Mar 2022 02:08:59 -0800
-In-Reply-To: <20220312020707.1.I2b7f789329979102339d7e0717522ba417b63109@changeid>
-Message-Id: <20220312020707.2.Ie20f132ad5cb6bcd435d6c6e0fca8a9d858e83d4@changeid>
-Mime-Version: 1.0
-References: <20220312020707.1.I2b7f789329979102339d7e0717522ba417b63109@changeid>
-X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
-Subject: [PATCH 2/2] Bluetooth: Send AdvMonitor Dev Found for all matched devices
-From:   Manish Mandlik <mmandlik@google.com>
-To:     marcel@holtmann.org, luiz.dentz@gmail.com
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org,
-        Manish Mandlik <mmandlik@google.com>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        with ESMTP id S231233AbiCLKZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Mar 2022 05:25:53 -0500
+Received: from rere.qmqm.pl (rere.qmqm.pl [91.227.64.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD5217775A;
+        Sat, 12 Mar 2022 02:24:47 -0800 (PST)
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4KFzSW2sKzzJS;
+        Sat, 12 Mar 2022 11:24:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1647080684; bh=+QR/+RJkyH6iOL9WdEejK5XbutH1cp/++rV5+5TNCEU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fJup2gIGRswfLU52LqyF/nMo3l2iimuu1mZSzsQTuQKGumuX731elm4pQaQoiTA7R
+         MP+HtyE9Dd01XZHadk64vHmOtW7A/XXhdC00IVxtKHeUwUMK+Wmays+UTb155qlIRr
+         ERo2qs8gvRUeRgaHCGixncnt2KIuYg/0uqjni0UXn0NGN4a69IkL+NN0rhmhKXNWqn
+         VXp1Uibi8oRExJlWeKWM1RGkoMm61+GyqDBjYs4Ua8u1U1J1yLdyzWv8L2e0pOKHBr
+         9u5OEs+uczVfBM15y8Ps2Y7TkiyAyfEx917KnhoA0XXx6AnOvWUPIa7r4H4JgieC+1
+         2XDC/8ptw0Fgg==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.5 at mail
+Date:   Sat, 12 Mar 2022 11:24:40 +0100
+From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/6] list: add new MACROs to make iterator invisiable
+Message-ID: <Yix06B9rPaGh0dp8@qmqm.qmqm.pl>
+References: <CAHk-=wiacQM76xec=Hr7cLchVZ8Mo9VDHmXRJzJ_EX4sOsApEA@mail.gmail.com>
+ <YiqPmIdZ/RGiaOei@qmqm.qmqm.pl>
+ <CAADWXX-Pr-D3wSr5wsqTEOBSJzB9k7bSH+7hnCAj0AeL0=U4mg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-2
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAADWXX-Pr-D3wSr5wsqTEOBSJzB9k7bSH+7hnCAj0AeL0=U4mg@mail.gmail.com>
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,144 +59,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an Advertisement Monitor is configured with SamplingPeriod 0xFF,
-the controller reports only one adv report along with the MSFT Monitor
-Device event.
+On Thu, Mar 10, 2022 at 04:46:33PM -0800, Linus Torvalds wrote:
+> On Thu, Mar 10, 2022 at 3:54 PM Micha³ Miros³aw <mirq-linux@rere.qmqm.pl> wrote:
+> >
+> > If the macro implementation doesn't have to be pretty, maybe it could go
+> > a step further and remember the list_head's offset? That would look
+> > something like following (expanding on your patch; not compile tested):
+> 
+> Oh, I thought of it.
+> 
+> It gets complicated.
+[...]
 
-When an advertiser matches multiple monitors, some controllers send one
-adv report for each matched monitor; whereas, some controllers send just
-one adv report for all matched monitors.
+It seems that it's not that bad if we don't require checking whether
+a list_head of an entry is only ever used with a single list parent. The
+source type is not needed for the macros, and it turns out that pre-declaring
+the offset type is also not needed.
 
-In such a case, report Adv Monitor Device Found event for each matched
-monitor.
+I compile-tested the code below on godbolt.org with -std=c11:
 
-Signed-off-by: Manish Mandlik <mmandlik@google.com>
-Reviewed-by: Miao-chen Chou <mcchou@chromium.org>
----
+struct list_head {
+	struct list_head *prev, *next;
+};
 
- net/bluetooth/mgmt.c | 70 +++++++++++++++++++++++---------------------
- 1 file changed, 37 insertions(+), 33 deletions(-)
+#define offsetof __builtin_offsetof
+#define typeof __typeof
 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index d59c70e9166f..e4da2318a2f6 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -9628,17 +9628,44 @@ void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
- 		   NULL);
- }
- 
-+static void mgmt_send_adv_monitor_device_found(struct hci_dev *hdev,
-+					       struct sk_buff *skb,
-+					       struct sock *skip_sk,
-+					       u16 handle)
-+{
-+	struct sk_buff *advmon_skb;
-+	size_t advmon_skb_len;
-+	__le16 *monitor_handle;
-+
-+	if (!skb)
-+		return;
-+
-+	advmon_skb_len = (sizeof(struct mgmt_ev_adv_monitor_device_found) -
-+			  sizeof(struct mgmt_ev_device_found)) + skb->len;
-+	advmon_skb = mgmt_alloc_skb(hdev, MGMT_EV_ADV_MONITOR_DEVICE_FOUND,
-+				    advmon_skb_len);
-+	if (!advmon_skb)
-+		return;
-+
-+	/* ADV_MONITOR_DEVICE_FOUND is similar to DEVICE_FOUND event except
-+	 * that it also has 'monitor_handle'. Make a copy of DEVICE_FOUND and
-+	 * store monitor_handle of the matched monitor.
-+	 */
-+	monitor_handle = skb_put(advmon_skb, sizeof(*monitor_handle));
-+	*monitor_handle = cpu_to_le16(handle);
-+	skb_put_data(advmon_skb, skb->data, skb->len);
-+
-+	mgmt_event_skb(advmon_skb, skip_sk);
-+}
-+
- static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
- 					  bdaddr_t *bdaddr, bool report_device,
- 					  struct sk_buff *skb,
- 					  struct sock *skip_sk)
- {
--	struct sk_buff *advmon_skb;
--	size_t advmon_skb_len;
--	__le16 *monitor_handle;
- 	struct monitored_device *dev, *tmp;
- 	bool matched = false;
--	bool notify = false;
-+	bool notified = false;
- 
- 	/* We have received the Advertisement Report because:
- 	 * 1. the kernel has initiated active discovery
-@@ -9660,25 +9687,6 @@ static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
- 		return;
- 	}
- 
--	advmon_skb_len = (sizeof(struct mgmt_ev_adv_monitor_device_found) -
--			  sizeof(struct mgmt_ev_device_found)) + skb->len;
--	advmon_skb = mgmt_alloc_skb(hdev, MGMT_EV_ADV_MONITOR_DEVICE_FOUND,
--				    advmon_skb_len);
--	if (!advmon_skb) {
--		if (report_device)
--			mgmt_event_skb(skb, skip_sk);
--		else
--			kfree_skb(skb);
--		return;
--	}
--
--	/* ADV_MONITOR_DEVICE_FOUND is similar to DEVICE_FOUND event except
--	 * that it also has 'monitor_handle'. Make a copy of DEVICE_FOUND and
--	 * store monitor_handle of the matched monitor.
--	 */
--	monitor_handle = skb_put(advmon_skb, sizeof(*monitor_handle));
--	skb_put_data(advmon_skb, skb->data, skb->len);
--
- 	hdev->advmon_pend_notify = false;
- 
- 	list_for_each_entry_safe(dev, tmp, &hdev->monitored_devices, list) {
-@@ -9686,8 +9694,10 @@ static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
- 			matched = true;
- 
- 			if (!dev->notified) {
--				*monitor_handle = cpu_to_le16(dev->handle);
--				notify = true;
-+				mgmt_send_adv_monitor_device_found(hdev, skb,
-+								   skip_sk,
-+								   dev->handle);
-+				notified = true;
- 				dev->notified = true;
- 			}
- 		}
-@@ -9697,25 +9707,19 @@ static void mgmt_adv_monitor_device_found(struct hci_dev *hdev,
- 	}
- 
- 	if (!report_device &&
--	    ((matched && !notify) || !msft_monitor_supported(hdev))) {
-+	    ((matched && !notified) || !msft_monitor_supported(hdev))) {
- 		/* Handle 0 indicates that we are not active scanning and this
- 		 * is a subsequent advertisement report for an already matched
- 		 * Advertisement Monitor or the controller offloading support
- 		 * is not available.
- 		 */
--		*monitor_handle = 0;
--		notify = true;
-+		mgmt_send_adv_monitor_device_found(hdev, skb, skip_sk, 0);
- 	}
- 
- 	if (report_device)
- 		mgmt_event_skb(skb, skip_sk);
- 	else
- 		kfree_skb(skb);
--
--	if (notify)
--		mgmt_event_skb(advmon_skb, skip_sk);
--	else
--		kfree_skb(advmon_skb);
- }
- 
- void mgmt_device_found(struct hci_dev *hdev, bdaddr_t *bdaddr, u8 link_type,
+#define list_traversal_head(name,type,target_member) \
+	union { \
+		struct list_head name; \
+		type *name##_traversal_type; \
+		char (*name##_list_head_offset)[offsetof(type, target_member)];  \
+	}
+
+#define self_list_ref_offset_type(type,target_member) \
+	type##__##target_member##__offset__
+
+#define define_self_list_ref_offset(type,target_member) \
+	self_list_ref_offset_type(type,target_member) \
+	{ char ignoreme__[offsetof(type, target_member)]; }
+
+#define self_list_traversal_head(name,type,target_member) \
+	union { \
+		struct list_head name; \
+		type *name##_traversal_type; \
+		self_list_ref_offset_type(type,target_member) *name##_list_head_offset;  \
+	}
+
+#define list_traversal_entry(ptr, head) \
+	(typeof(*head##_traversal_type))((void *)ptr - sizeof(**head##_list_head_offset))
+
+#define list_traversal_entry_head(ptr, head) \
+	((struct list_head *)((void *)ptr + sizeof(**head##_list_head_offset)))
+
+#define list_traversal_entry_is_head(ptr, head) \
+	(list_traversal_entry_head(ptr, head) == (head))
+
+#define list_traversal_next_entry(ptr, head) \
+	list_traversal_entry(list_traversal_entry_head(ptr, head)->next, head)
+
+#define list_traverse(pos, head) \
+    for (typeof(*head##_traversal_type) pos = list_traversal_entry((head)->next, head); \
+    !list_traversal_entry_is_head(pos, head); \
+    pos = list_traversal_next_entry(pos,head))
+
+struct entry {
+    self_list_traversal_head(self_list, struct entry, child_head);
+    struct list_head child_head;
+};
+
+define_self_list_ref_offset(struct entry, child_head);
+
+
+void bar(struct entry *b);
+
+void foo(struct entry *a)
+{
+    list_traverse(pos, &a->self_list) {
+        bar(pos);
+    }
+}
+
 -- 
-2.35.1.723.g4982287a31-goog
-
+Micha³ Miros³aw
