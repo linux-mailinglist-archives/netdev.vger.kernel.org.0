@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C25E24D73A2
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 08:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F1EA4D73C9
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 09:51:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232390AbiCMHgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 03:36:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
+        id S233998AbiCMIww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 04:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232210AbiCMHgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 03:36:24 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BCE8300E
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 23:35:16 -0800 (PST)
-Received: by mail-il1-f197.google.com with SMTP id a2-20020a056e020e0200b002c6344a01c9so7351471ilk.13
-        for <netdev@vger.kernel.org>; Sat, 12 Mar 2022 23:35:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=4Dqq0/WpjlQyZBrDSLqAVmKyOSqEUWgYv7yZtITMZJk=;
-        b=K4YZ/aNSQ0pE7/sICKy/W9jzlAR3e0NLdKg79UslWsUjGVEnTpfBFbthpTg6cR5huY
-         VxS84fJON98q7tid56MjqTU8/73RQGSthO3oruNAdtH43qXpDzAju1/lSwZfmAFf0EaI
-         KoU1Itw6FocNtDICd65m1xXJoE5/pGMuGFPP8kJjJkFY6oUv0Axs2oLz6k1OqHOeNcLW
-         XJLlVXTUPnmS+Au9l1m5G7d/5iqrA11F4UFqplh6M/StfwisVyls+oChtp6ywP8hYDPM
-         YDd6y4fbbab4g07x5/0w2GDItFA1oTkHJnNkLYTD7a6etc8foyunSLOlVyjW8ILLk4pe
-         O0yA==
-X-Gm-Message-State: AOAM530kZRtcWDZTddy5aw1LkV61P4CejBpXDLjJr2Xtlcn4JOWdFUqz
-        V1FCmKwoCQp+oXGBtjLrJe3yAhJ7UuwvW2FOkDIpUSAj/NdL
-X-Google-Smtp-Source: ABdhPJxcjIzZ8oheB+VnXeJwhlI7M+OrxqC2lMUii6fgoNO7yrJLUKm+s4UBGV+1g2U7U1gTXp/w1l15k1hu9YwLjaBjyou+NCxS
+        with ESMTP id S233475AbiCMIwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 04:52:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1223B635B
+        for <netdev@vger.kernel.org>; Sun, 13 Mar 2022 00:51:42 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nTJwy-0000Pn-Cd
+        for netdev@vger.kernel.org; Sun, 13 Mar 2022 09:51:40 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 3218C49B24
+        for <netdev@vger.kernel.org>; Sun, 13 Mar 2022 08:51:39 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id F059149B1C;
+        Sun, 13 Mar 2022 08:51:38 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 8667d1ad;
+        Sun, 13 Mar 2022 08:51:38 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/13] pull-request: can-next 2022-03-13
+Date:   Sun, 13 Mar 2022 09:51:25 +0100
+Message-Id: <20220313085138.507062-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:164f:b0:2c6:1b85:b985 with SMTP id
- v15-20020a056e02164f00b002c61b85b985mr15358280ilu.4.1647156915691; Sat, 12
- Mar 2022 23:35:15 -0800 (PST)
-Date:   Sat, 12 Mar 2022 23:35:15 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d9660d05da149ac1@google.com>
-Subject: [syzbot] KMSAN: uninit-value in asix_mdio_read (3)
-From:   syzbot <syzbot+9ed16c369e0f40e366b2@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, glider@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux@rempel-privat.de,
-        netdev@vger.kernel.org, paskripkin@gmail.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,88 +55,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello Jakub, hello David,
 
-syzbot found the following issue on:
+this is a pull request of 13 patches for net-next/master.
 
-HEAD commit:    724946410067 x86: kmsan: enable KMSAN builds for x86
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=158dd1f6700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=28718f555f258365
-dashboard link: https://syzkaller.appspot.com/bug?extid=9ed16c369e0f40e366b2
-compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11b31281700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15e8c4ee700000
+The 1st patch is by me and fixes the freeing of a skb in the vxcan
+driver (initially added in this net-next window).
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+9ed16c369e0f40e366b2@syzkaller.appspotmail.com
+The remaining 12 patches are also by me and target the mcp251xfd
+driver. The first patch fixes a printf modifier (initially added in
+this net-next window). The remaining patches add ethtool based ring
+and RX/TX IRQ coalescing support to the driver.
 
-asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to enable software MII access
-asix 1-1:0.0 (unnamed net_device) (uninitialized): Failed to read reg index 0x0000: -71
-=====================================================
-BUG: KMSAN: uninit-value in asix_check_host_enable drivers/net/usb/asix_common.c:84 [inline]
-BUG: KMSAN: uninit-value in asix_mdio_read+0x537/0xa40 drivers/net/usb/asix_common.c:499
- asix_check_host_enable drivers/net/usb/asix_common.c:84 [inline]
- asix_mdio_read+0x537/0xa40 drivers/net/usb/asix_common.c:499
- asix_mdio_bus_read+0xba/0xe0 drivers/net/usb/asix_common.c:558
- __mdiobus_read+0xbf/0x4f0 drivers/net/phy/mdio_bus.c:762
- mdiobus_read+0xaa/0xf0 drivers/net/phy/mdio_bus.c:869
- get_phy_c22_id drivers/net/phy/phy_device.c:813 [inline]
- get_phy_device+0x218/0x8b0 drivers/net/phy/phy_device.c:890
- mdiobus_scan+0x1c7/0x940
- __mdiobus_register+0xe6c/0x11a0 drivers/net/phy/mdio_bus.c:589
- __devm_mdiobus_register+0x18f/0x2f0 drivers/net/phy/mdio_devres.c:87
- ax88772_init_mdio drivers/net/usb/asix_devices.c:676 [inline]
- ax88772_bind+0x10b1/0x1770 drivers/net/usb/asix_devices.c:786
- usbnet_probe+0x1251/0x4160 drivers/net/usb/usbnet.c:1747
- usb_probe_interface+0xf19/0x1600 drivers/usb/core/driver.c:396
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_set_configuration+0x37e9/0x3ed0 drivers/usb/core/message.c:2170
- usb_generic_driver_probe+0x13c/0x300 drivers/usb/core/generic.c:238
- usb_probe_device+0x309/0x570 drivers/usb/core/driver.c:293
- really_probe+0x653/0x14b0 drivers/base/dd.c:596
- __driver_probe_device+0x3e9/0x530 drivers/base/dd.c:752
- driver_probe_device drivers/base/dd.c:782 [inline]
- __device_attach_driver+0x79f/0x1120 drivers/base/dd.c:899
- bus_for_each_drv+0x2d6/0x3f0 drivers/base/bus.c:427
- __device_attach+0x593/0x8e0 drivers/base/dd.c:970
- device_initial_probe+0x4a/0x60 drivers/base/dd.c:1017
- bus_probe_device+0x17b/0x3e0 drivers/base/bus.c:487
- device_add+0x1fff/0x26e0 drivers/base/core.c:3405
- usb_new_device+0x1b8e/0x2950 drivers/usb/core/hub.c:2566
- hub_port_connect drivers/usb/core/hub.c:5358 [inline]
- hub_port_connect_change drivers/usb/core/hub.c:5502 [inline]
- port_event drivers/usb/core/hub.c:5660 [inline]
- hub_event+0x58e3/0x89e0 drivers/usb/core/hub.c:5742
- process_one_work+0xdb6/0x1820 kernel/workqueue.c:2307
- worker_thread+0x10b3/0x21e0 kernel/workqueue.c:2454
- kthread+0x3c7/0x500 kernel/kthread.c:377
- ret_from_fork+0x1f/0x30
-
-Local variable smsr.i created at:
- asix_mdio_read+0xaf/0xa40 drivers/net/usb/asix_common.c:499
- asix_mdio_bus_read+0xba/0xe0 drivers/net/usb/asix_common.c:558
-
-CPU: 0 PID: 7 Comm: kworker/0:1 Not tainted 5.17.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: usb_hub_wq hub_event
-=====================================================
-
+regards,
+Marc
 
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+The following changes since commit 97aeb877de7f14f819fc2cf8388d7a2d8090489d:
+
+  Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue (2022-03-12 11:54:29 +0000)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.18-20220313
+
+for you to fetch changes up to aa66ae9b241eadd5d31077f869f298444c98a85f:
+
+  can: mcp251xfd: ring: increase number of RX-FIFOs to 3 and increase max TX-FIFO depth to 16 (2022-03-13 09:45:36 +0100)
+
+----------------------------------------------------------------
+linux-can-next-for-5.18-20220313
+
+----------------------------------------------------------------
+Marc Kleine-Budde (13):
+      can: vxcan: vxcan_xmit(): use kfree_skb() instead of kfree() to free skb
+      can: mcp251xfd: mcp251xfd_ring_init(): use %d to print free RAM
+      can: mcp251xfd: ram: add helper function for runtime ring size calculation
+      can: mcp251xfd: ram: coalescing support
+      can: mcp251xfd: ethtool: add support
+      can: mcp251xfd: ring: prepare support for runtime configurable RX/TX ring parameters
+      can: mcp251xfd: update macros describing ring, FIFO and RAM layout
+      can: mcp251xfd: ring: add support for runtime configurable RX/TX ring parameters
+      can: mcp251xfd: add RX IRQ coalescing support
+      can: mcp251xfd: add RX IRQ coalescing ethtool support
+      can: mcp251xfd: add TX IRQ coalescing support
+      can: mcp251xfd: add TX IRQ coalescing ethtool support
+      can: mcp251xfd: ring: increase number of RX-FIFOs to 3 and increase max TX-FIFO depth to 16
+
+ drivers/net/can/spi/mcp251xfd/Makefile            |   2 +
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c    |   7 +
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-ethtool.c | 143 +++++++++++++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-ram.c     | 153 ++++++++++++++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-ram.h     |  62 ++++++
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-ring.c    | 244 ++++++++++++++++++----
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-rx.c      |  12 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-tef.c     |   6 +
+ drivers/net/can/spi/mcp251xfd/mcp251xfd.h         |  71 +++++--
+ drivers/net/can/vxcan.c                           |   2 +-
+ 10 files changed, 644 insertions(+), 58 deletions(-)
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-ethtool.c
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-ram.c
+ create mode 100644 drivers/net/can/spi/mcp251xfd/mcp251xfd-ram.h
+
+
