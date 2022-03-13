@@ -2,138 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 022F64D76C7
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 17:30:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6224D76F7
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 17:48:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234900AbiCMQbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 12:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55804 "EHLO
+        id S234539AbiCMQtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 12:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231217AbiCMQbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 12:31:46 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5CD201AC;
-        Sun, 13 Mar 2022 09:30:38 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2C07F22238;
-        Sun, 13 Mar 2022 17:30:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647189036;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mw7ua8bm47fSMOjBOWnSCPNMt3SK4yr5lqTmvLcR1t4=;
-        b=cF/58OMBU/4htvb/BgKkVeVxAhzy13qrKC37ZZ6qy+Uoyt4WoViG94H5fsPmpxBGr0tezn
-        hIwyc41YjBG9GtN5lCbU7tMN4b4q6+PxVB8qyKxNu5ZQk7KLh9ImY+bq8LwpBxSyZccbPA
-        GmX8asMq/Fmf8gQlBHNvTmZJoy2ml+U=
+        with ESMTP id S234531AbiCMQtW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 12:49:22 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535182E686
+        for <netdev@vger.kernel.org>; Sun, 13 Mar 2022 09:48:13 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id o23so11748728pgk.13
+        for <netdev@vger.kernel.org>; Sun, 13 Mar 2022 09:48:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=j+ck0utZSaE8eguWP8KHHbl94tHqug0vjgSFPE+VtrU=;
+        b=re4W4+sW5cFexcMJc6h5f16PyJ49EVgKPRYeWTpvVHo3zN7GZ1IsXFEvtMbi0A7jP7
+         xxVMn+/s6jWPIj1VryjRP+0yLo6HI39iNMV73rBZiDOvHm+DiZr9zk7Rt9xral/v6nD7
+         k4tFXM/3zwv+mitSOn3hf7PSZdIs4FP3/U7VF+L8HzXssR+WPabEZ4I/k+bNXvl8CV8t
+         9Q/+bRXxiT4h8RdoClG+eiek5ALzMbCccyDXEUaWvckfyLn3y5Az9x+sFdTpDulWCQ4Z
+         7R0nng7FSYy488gzfGbVFZ2pFxJvublVub4GcFjXeZHFvC9HLLlwg42CdOo/1Y/lBYrh
+         rrSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=j+ck0utZSaE8eguWP8KHHbl94tHqug0vjgSFPE+VtrU=;
+        b=BSFvjb6jD4I9XJA7aKPAw6slyoCtWBVIbvz2zZvoFuD2FMTqTM2vQ7dFcPZtVPbM2y
+         w78FOwTz/fO2RcW+emDyrnVW7yos9O6A/6VXnlSAUNZHo16rrwAbfJv5KDmMPfEPhnfH
+         XE4NWLTKHcKRHuirpOAY00qC/Dgi+QEpt5bu1/X7OYfCrZVQj+HUtU5CL4QhZWgvznhe
+         sSYgRQUSqW8uJWEsyLLPlIIQm8HZSRHKJKPQlTmKYHEo4qVYLf+IF1jVBjgXJR2hCKCD
+         D962XAR0M5cT/ue6pQrQoQoEQIbsNgjVsscNpXvVQBkyeJ9OmU29ZeccPuC9KvIpn1vL
+         nMWQ==
+X-Gm-Message-State: AOAM532urSUiv3WMQ/F5W0nuNm2KZ744Xj2NmM2EBSaIc8adJGcx2npW
+        H2m1lzj0939jc0j5pz0dfBcJuCh1VEQFig==
+X-Google-Smtp-Source: ABdhPJyh+z/yUXyWUsievGhruysmUkA7PH5M955M0I69scKsyNDKh8AExJE4c9B7NZc+NABwPaKiCg==
+X-Received: by 2002:a63:db02:0:b0:381:3e21:e994 with SMTP id e2-20020a63db02000000b003813e21e994mr417986pgg.22.1647190092685;
+        Sun, 13 Mar 2022 09:48:12 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id l62-20020a633e41000000b0037fee1843dbsm14134493pga.25.2022.03.13.09.48.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Mar 2022 09:48:12 -0700 (PDT)
+Date:   Sun, 13 Mar 2022 09:48:10 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     <dsahern@kernel.org>, <netdev@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>, <jasowang@redhat.com>,
+        <si-wei.liu@oracle.com>, <mst@redhat.com>, <lulu@redhat.com>,
+        <parav@nvidia.com>
+Subject: Re: [PATCH v6 2/4] vdpa: Allow for printing negotiated features of
+ a device
+Message-ID: <20220313094810.3dd7aacd@hermes.local>
+In-Reply-To: <20220313124629.297014-3-elic@nvidia.com>
+References: <20220313124629.297014-1-elic@nvidia.com>
+        <20220313124629.297014-3-elic@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Sun, 13 Mar 2022 17:30:35 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-Subject: Re: [PATCH net-next v2 1/3] dt-bindings: net: mscc-miim: add lan966x
- compatible
-In-Reply-To: <2d35127c-d4ef-6644-289a-5c10bcbbbf84@kernel.org>
-References: <20220313002536.13068-1-michael@walle.cc>
- <20220313002536.13068-2-michael@walle.cc>
- <08b89b3f-d0d3-e96f-d1c3-80e8dfd0798f@kernel.org>
- <d18291ff8d81f03a58900935d92115f2@walle.cc>
- <2d35127c-d4ef-6644-289a-5c10bcbbbf84@kernel.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <145fc079ce8c266b8c2265aacfd3b077@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[adding Horatiu and Kavyasree from Microchip]
+On Sun, 13 Mar 2022 14:46:27 +0200
+Eli Cohen <elic@nvidia.com> wrote:
 
-Am 2022-03-13 17:10, schrieb Krzysztof Kozlowski:
-> On 13/03/2022 11:47, Michael Walle wrote:
->> Am 2022-03-13 10:47, schrieb Krzysztof Kozlowski:
->>> On 13/03/2022 01:25, Michael Walle wrote:
->>>> The MDIO controller has support to release the internal PHYs from
->>>> reset
->>>> by specifying a second memory resource. This is different between 
->>>> the
->>>> currently supported SparX-5 and the LAN966x. Add a new compatible to
->>>> distiguish between these two.
+> When reading the configuration of a vdpa device, check if the
+> VDPA_ATTR_DEV_NEGOTIATED_FEATURES is available. If it is, parse the
+> feature bits and print a string representation of each of the feature
+> bits.
 > 
-> Typo here, BTW.
+> We keep the strings in two different arrays. One for net device related
+> devices and one for generic feature bits.
 > 
->>>> 
->>>> Signed-off-by: Michael Walle <michael@walle.cc>
->>>> ---
->>>>  Documentation/devicetree/bindings/net/mscc-miim.txt | 2 +-
->>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>> 
->>>> diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt
->>>> b/Documentation/devicetree/bindings/net/mscc-miim.txt
->>>> index 7104679cf59d..a9efff252ca6 100644
->>>> --- a/Documentation/devicetree/bindings/net/mscc-miim.txt
->>>> +++ b/Documentation/devicetree/bindings/net/mscc-miim.txt
->>>> @@ -2,7 +2,7 @@ Microsemi MII Management Controller (MIIM) / MDIO
->>>>  =================================================
->>>> 
->>>>  Properties:
->>>> -- compatible: must be "mscc,ocelot-miim"
->>>> +- compatible: must be "mscc,ocelot-miim" or "mscc,lan966x-miim"
->>> 
->>> No wildcards, use one, specific compatible.
->> 
->> I'm in a kind of dilemma here, have a look yourself:
->> grep -r "lan966[28x]-" Documentation
->> 
->> Should I deviate from the common "name" now? To make things
->> worse, there was a similar request by Arnd [1]. But the
->> solution feels like cheating ("lan966x" -> "lan966") ;)
+> In this patch we parse only net device specific features. Support for
+> other devices can be added later. If the device queried is not a net
+> device, we print its bit number only.
 > 
-> The previous 966x cases were added by one person from Microchip, so he
-> actually might know something. But do you know whether lan966x will
-> cover all current and future designs from Microchip? E.g. lan9669 (if
-> ever made) will be the same? Avoiding wildcard is the easiest, just
-> choose one implementation, e.g. "lan9662".
-
-So if Microchip would review/ack this it would be ok? I don't really
-have a strong opinion, I just want to avoid any inconsistencies. If no
-one from Microchip will answer, I'll use microchip,lan9668-miim.
-
-> Different topic is that all current lan966[28] are from Microchip and
-> you still add Microsemi, even though it was acquired by Microchip.
-> That's an inconsistency which should be rather fixed.
-
-Agreed, that was an oversight by me.
-
->> On a side note, I understand that there should be no wildcards,
->> because the compatible should target one specific implementation,
->> right? But then the codename "ocelot" represents a whole series of
->> chips. Therefore, names for whole families shouldn't be used neither,
->> right?
+> Examples:
+> 1. Standard presentation
+> $ vdpa dev config show vdpa-a
+> vdpa-a: mac 00:00:00:00:88:88 link up link_announce false max_vq_pairs 2 mtu 9000
+>   negotiated_features CSUM GUEST_CSUM MTU MAC HOST_TSO4 HOST_TSO6 STATUS \
+> CTRL_VQ MQ CTRL_MAC_ADDR VERSION_1 ACCESS_PLATFORM
 > 
-> You're not adding "ocelot" now, so it is separate topic. However a
-> compatible like "mscc,ocelot" feels wrong, unless it is used as a
-> fallback (see: git grep 'apple,').
+> 2. json output
+> $ vdpa -j dev config show vdpa-a
+> {"config":{"vdpa-a":{"mac":"00:00:00:00:88:88","link":"up","link_announce":false,\
+> "max_vq_pairs":2,"mtu":9000,"negotiated_features":["CSUM","GUEST_CSUM",\
+> "MTU","MAC","HOST_TSO4","HOST_TSO6","STATUS","CTRL_VQ","MQ","CTRL_MAC_ADDR",\
+> "VERSION_1","ACCESS_PLATFORM"]}}}
+> 
+> 3. Pretty json
+> $ vdpa -jp dev config show vdpa-a
+> {
+>     "config": {
+>         "vdpa-a": {
+>             "mac": "00:00:00:00:88:88",
+>             "link ": "up",
+>             "link_announce ": false,
+>             "max_vq_pairs": 2,
+>             "mtu": 9000,
+>             "negotiated_features": [
+> "CSUM","GUEST_CSUM","MTU","MAC","HOST_TSO4","HOST_TSO6","STATUS","CTRL_VQ",\
+> "MQ","CTRL_MAC_ADDR","VERSION_1","ACCESS_PLATFORM" ]
+>         }
+>     }
+> }
+> 
+> Reviewed-by: Si-Wei Liu<si-wei.liu@oracle.com>
+> Acked-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> ---
 
-Sure, it was just a question for my understanding, not to make a
-point for a discussion.
+checkpatch says:
 
--michael
+WARNING: braces {} are not necessary for any arm of this statement
+#280: FILE: vdpa/vdpa.c:466:
++			if (feature_strs) {
+[...]
++			} else {
+[...]
+
+
