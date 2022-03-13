@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 700894D7828
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 21:17:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 875264D782A
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 21:21:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235544AbiCMUSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 16:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
+        id S235547AbiCMUWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 16:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiCMUSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 16:18:07 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111358E194;
-        Sun, 13 Mar 2022 13:16:59 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id w27so23799593lfa.5;
-        Sun, 13 Mar 2022 13:16:58 -0700 (PDT)
+        with ESMTP id S230136AbiCMUWP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 16:22:15 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCEF7A9B0;
+        Sun, 13 Mar 2022 13:21:06 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id s25so23747484lfs.10;
+        Sun, 13 Mar 2022 13:21:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lF/gT51FipGQcnByyIiiiOkhSTwd5tIlJbStSEDO4dc=;
-        b=Z+XKo2KauQYTcbWNkQOMKquocTY9FaigJDyUhCJubz9GZdTDhtrOAy2FKDNDHzkCno
-         X+H65DSeoMzv118hy3tulzJTOPc/vxp4+cxrRrw0ueXQsYtVJSMVoiO79in1sOFVFn6Q
-         Pw5D33YoqaHkHWV7WEcMhFLt4PQqhk6qX2Fe2Mw7D1/k/EKGLi3RlwcXVWWhXd2birJP
-         G3egDl9Ll0DhnoW6kUMr22K41IPW2+FUZBihh4GgFCvuoNSG9VjVgBIELlMr3vwYq/yG
-         jKhW1NOLTj/8ZB/+XomLf5Yem6Ocv3ajk2aYN1wgVHcpxnp+Ia9lUwCWd1t1rPHp3gUh
-         l5YA==
+        bh=g9Ta+Q+xlSrkvjGgDj1mxjhaXC8ED1/49sZigT1q9Ag=;
+        b=ct9AlhJ1DNltBYDZzMe9bmw/jFFCZz8Le2HKXsK3Qv7UTv8u57qvU6H3s1RXiQ5ORO
+         oqoaEI7P/qPRQII7m8fLdvh3sealWItTob1bMu0ZbCRY5zuM19UE+jVpB0QBRawGw9ls
+         hk7DTqvrrm2rLLwjYwgYnA6AebuqJdj7CKRftDOBlNb3dSOduUVyqgf8rV+TWjcNJlMF
+         IrvI+R4lqSz7ZOSxmYthdKpSchuok32sOIb5KpcSJoRrCwCl6gW2Vl8azMf+esECE/OI
+         v1WjPrvAeNPGf4jYvKkP+jSBkA2JodHKK/7Beun3wk49XWccXGbvpQ4Xz+vMJ/GEei8H
+         w5iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lF/gT51FipGQcnByyIiiiOkhSTwd5tIlJbStSEDO4dc=;
-        b=j8YLpD9IDg93hq+SCOyVGkfQH29SR4F+EFeny0jKOJzkvvFotINuoJrHMNnxod9lan
-         pKgr9Ab70eDZGccvRZsJdYpUjfxN5wlJCY+/yrlZfjNQPjgg/aV3Emg9t/ftoVg4H8+W
-         NfL2zM2lBVu04Gvn0uouylgQuB0rFLe7cpyD8vxgWsKwb3g5q6ygjHcJOUKTpbGa/hAj
-         b4CA4PmSfItwBR07bdkgEsucfHRcrS1EWBgicBqtJ+BLHS8mrOizY6rydcnW5xetMAS2
-         qlZ0w/V1Bn43TrLKG6rKHNK3Dd7k2r3pcilrnlc+GrseaYTjWfdT5s4LjXS1GvuJEFq3
-         ktSA==
-X-Gm-Message-State: AOAM5314WoKwmZn/Xk3jXyPjWJaU6mXFxotM7xH0G/8LTEMzF/Xex+EM
-        EndTmtMTF+BDocE6mAe4t+bnph4e/r75WZjJ13U=
-X-Google-Smtp-Source: ABdhPJyguvs3W/7mNkf3V34b5FXG9g6e0gflZW9ITN4H0ULRrAzhvoRc1OVkN4XtGS2577t8YhuBomz8brCi8pr/quc=
-X-Received: by 2002:a05:6512:260e:b0:448:97b8:94b0 with SMTP id
- bt14-20020a056512260e00b0044897b894b0mr847711lfb.226.1647202616862; Sun, 13
- Mar 2022 13:16:56 -0700 (PDT)
+        bh=g9Ta+Q+xlSrkvjGgDj1mxjhaXC8ED1/49sZigT1q9Ag=;
+        b=wB3YtdGxyqSgCuS3ED8iTI+l7+yvsPcV5AQqzjnf9HQVEsvI7EHZskJdSx8T9P6Res
+         jl4wJl2oEhIrN6HHMuY6rw/MvziepUiGRPe02FkT/Wh5UKie+JXkInw2Sukm/ETL65nL
+         0+42tk6mi8QIP9Vew9aXSQ7Tjl8et8iavDsTmOI+DWq/x44FoO9F+JywscujwTJxv7aL
+         nWF7Yn/dQmUKWN4a5RKvjGHgnE+kYWoA8NcZ2PFqJCZ06qQwbr5iSx5v3CpRhEqwPHbZ
+         Gz7FmY3ZZTK+7Vkp4U6GH6dLnIwaNBO/HMoSRa3iuaRz6xQUJW/qD1rkgwchdgDoKV/N
+         DLuA==
+X-Gm-Message-State: AOAM530SyRv5A4C8WZteV4/05V3KZcHo/aQ09Kx/hc8PpwvnIaytPvnQ
+        40ntT6bqU9ADjGXobu11jebwDMIpoYcTXlxwq6w=
+X-Google-Smtp-Source: ABdhPJznfGKDrBvdIWyRxPXaMBDszMG4RowOTHALroRwnT9YrIvFWBhar7aKQGrJzLRM7qwHAMSXqLuMpb7+7OyzZ/o=
+X-Received: by 2002:ac2:4207:0:b0:442:bf8b:eee with SMTP id
+ y7-20020ac24207000000b00442bf8b0eeemr11904691lfh.536.1647202864380; Sun, 13
+ Mar 2022 13:21:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220303182508.288136-1-miquel.raynal@bootlin.com> <20220303182508.288136-8-miquel.raynal@bootlin.com>
-In-Reply-To: <20220303182508.288136-8-miquel.raynal@bootlin.com>
+References: <20220303182508.288136-1-miquel.raynal@bootlin.com> <20220303182508.288136-10-miquel.raynal@bootlin.com>
+In-Reply-To: <20220303182508.288136-10-miquel.raynal@bootlin.com>
 From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Sun, 13 Mar 2022 16:16:45 -0400
-Message-ID: <CAB_54W5f87H2umyRsjAZ--x_BiN8D7taG4BnyEXx1EWQyQSyBA@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v3 07/11] net: ieee802154: at86rf230: Provide
- meaningful error codes when possible
+Date:   Sun, 13 Mar 2022 16:20:53 -0400
+Message-ID: <CAB_54W5Fr-1d7O4L4s4A=-TWiP9X06C9u9gC8pKM7TE9B+6shQ@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v3 09/11] net: ieee802154: atusb: Call
+ _xmit_error() when a transmission fails
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
         linux-wpan - ML <linux-wpan@vger.kernel.org>,
@@ -78,53 +78,34 @@ Hi,
 
 On Thu, Mar 3, 2022 at 1:25 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> Either the spi operation failed, or the device encountered an error. In
-> both case, we know more or less what happened thanks to the spi call
-> return code or the content of the TRAC register otherwise. Use them in
-> order to propagate one step above the error.
+> ieee802154_xmit_error() is the right helper to call when a transmission
+> has failed. Let's use it instead of open-coding it.
 >
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  drivers/net/ieee802154/at86rf230.c | 25 +++++++++++++++++++++++--
->  1 file changed, 23 insertions(+), 2 deletions(-)
+>  drivers/net/ieee802154/atusb.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 >
-> diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-> index 12ee071057d2..5f19266b3045 100644
-> --- a/drivers/net/ieee802154/at86rf230.c
-> +++ b/drivers/net/ieee802154/at86rf230.c
-> @@ -370,7 +370,27 @@ static inline void
->  at86rf230_async_error(struct at86rf230_local *lp,
->                       struct at86rf230_state_change *ctx, int rc)
->  {
-> -       dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
-> +       int reason;
-> +
-> +       switch (rc) {
-> +       case TRAC_CHANNEL_ACCESS_FAILURE:
-> +               reason = IEEE802154_CHANNEL_ACCESS_FAILURE;
-> +               break;
-> +       case TRAC_NO_ACK:
-> +               reason = IEEE802154_NO_ACK;
-> +               break;
-> +       case TRAC_INVALID:
-> +               reason = IEEE802154_SYSTEM_ERROR;
-> +               break;
-> +       default:
-> +               reason = rc;
-> +       }
-> +
+> diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+> index f27a5f535808..9fa7febddff2 100644
+> --- a/drivers/net/ieee802154/atusb.c
+> +++ b/drivers/net/ieee802154/atusb.c
+> @@ -271,9 +271,8 @@ static void atusb_tx_done(struct atusb *atusb, u8 seq)
+>                  * unlikely case now that seq == expect is then true, but can
+>                  * happen and fail with a tx_skb = NULL;
+>                  */
+> -               ieee802154_wake_queue(atusb->hw);
+> -               if (atusb->tx_skb)
+> -                       dev_kfree_skb_irq(atusb->tx_skb);
+> +               ieee802154_xmit_error(atusb->hw, atusb->tx_skb,
+> +                                     IEEE802154_MAC_ERROR);
 
-Actually the rc value here is not a TRAC status register value... and
-it should not be one.
-
-The reason is because this function can also be called during a non-tx
-state change failure whereas the trac register is only valid when the
-transmission "is successfully offloaded to device" and delivers us an
-error of the transmission operation on the device. It is called during
-the tx case only if there was a "state transition error" and then it
-should report IEEE802154_SYSTEM_ERROR in
-at86rf230_async_error_recover_complete(). Whereas I think we can use
-IEEE802154_SYSTEM_ERROR as a non-specific 802.15.4 error code, because
-a bus error of a state transition is not 802.15.4 specific.
+I think we should have a consens what kind of 802.15.4 error we
+deliver in such a case. This is more some kind of bus/device error not
+related to a 802.15.4 operation, and in this case we should use the
+SYSTEM_ERROR which 802.15.4 says it can be used for a kind of "user
+specific error"? I mean it is not user specific but 802.15.4 spec will
+never reference it to make some special handling if it occurs... just
+"something failed".
 
 - Alex
