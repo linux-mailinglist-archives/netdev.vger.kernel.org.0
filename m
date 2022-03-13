@@ -2,78 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E794D7820
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 21:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 700894D7828
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 21:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235523AbiCMUIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 16:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50756 "EHLO
+        id S235544AbiCMUSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 16:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232809AbiCMUIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 16:08:21 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1882A4B426;
-        Sun, 13 Mar 2022 13:07:13 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id g19so12512805pfc.9;
-        Sun, 13 Mar 2022 13:07:13 -0700 (PDT)
+        with ESMTP id S230136AbiCMUSH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 16:18:07 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111358E194;
+        Sun, 13 Mar 2022 13:16:59 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id w27so23799593lfa.5;
+        Sun, 13 Mar 2022 13:16:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tcuZyofv7oRF8b30riFV2CypFagiRwrqjLETjMU5Up0=;
-        b=TdUKBZe9mlv/TGSrI6f7l5jL0X7FQNS3G8Y+6kjkjAGCi3mOZoWxLr+Y6wVRJWyjLd
-         tXVQw1XEA3/V9USTwFZHAYvgsosAcfVgsih+ioDXVnmxsqO19Tg7s8v32e2JhJrOHl6L
-         Sm6l671o8zlkNVgcnIt1qGxCDd3hs8mksaDpTzIg8aFT9Wt9CRWIA14knnp7O4Tr8Z5F
-         /SWWxZR5WpRTiy4kLcBg5Ht6Que/DUBwnqp00sBCzzwq6cQsNW/JbeNJOIlGn8QofC5i
-         M26uHOKWUe8P8zq6xRF0Woz+P4DrkFgBnAIIppnx50ZiP0IA1BLi59dT5hjFPNYJ0HxR
-         jXFg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lF/gT51FipGQcnByyIiiiOkhSTwd5tIlJbStSEDO4dc=;
+        b=Z+XKo2KauQYTcbWNkQOMKquocTY9FaigJDyUhCJubz9GZdTDhtrOAy2FKDNDHzkCno
+         X+H65DSeoMzv118hy3tulzJTOPc/vxp4+cxrRrw0ueXQsYtVJSMVoiO79in1sOFVFn6Q
+         Pw5D33YoqaHkHWV7WEcMhFLt4PQqhk6qX2Fe2Mw7D1/k/EKGLi3RlwcXVWWhXd2birJP
+         G3egDl9Ll0DhnoW6kUMr22K41IPW2+FUZBihh4GgFCvuoNSG9VjVgBIELlMr3vwYq/yG
+         jKhW1NOLTj/8ZB/+XomLf5Yem6Ocv3ajk2aYN1wgVHcpxnp+Ia9lUwCWd1t1rPHp3gUh
+         l5YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tcuZyofv7oRF8b30riFV2CypFagiRwrqjLETjMU5Up0=;
-        b=bPZ7V8cAKO+gVNjv9LsUKwcStMT7/bwkd3eEUKFI4a7tm2Rpz8CvACmZMFIpofXnLA
-         fuOKscNMkbPIPBGAjM/EjNQvxNqEJAeJ1Jwx+o1ttLnJNz0GCAM9r/usq26Ec3CggUC1
-         /CdFXBTRyrcRhjfEHmqWcLWy6oVD5NUmZ75eGGL73Ae1t/yPiyekIfUAgLYPmdKM3uHx
-         9diaZy7IJbmv9Y3ptl/3A81IL6D4sIaXRH7H48DPWEhPco2rWJ0ecDB3cuw+QtV02MFo
-         PvDwvMmc0PisK4zLoCx1hnARkF9q9j5HfRqr32wLv68OsoS89cBajF9bBRqxO5Pg7pAU
-         GIgg==
-X-Gm-Message-State: AOAM532Bu8Lo1o91BhUDdNfkOkFUrO/pmYcPb2XHRCUVLPlil7kkIBsb
-        YIK7uyLfgD34xnRjVEO8Eqs=
-X-Google-Smtp-Source: ABdhPJxVDYop0QnOkZ08+FM1z6M5y92ltHBQdtrfbUTmf0XZ0eO+Dw0I2GiROmxqooZk0Ms1YEYsVQ==
-X-Received: by 2002:a63:8441:0:b0:380:5d50:ba71 with SMTP id k62-20020a638441000000b003805d50ba71mr17597308pgd.107.1647202032290;
-        Sun, 13 Mar 2022 13:07:12 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id u12-20020a17090a890c00b001b8efcf8e48sm18856717pjn.14.2022.03.13.13.07.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Mar 2022 13:07:11 -0700 (PDT)
-Date:   Sun, 13 Mar 2022 13:07:09 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Woojung.Huh@microchip.com, linux@armlinux.org.uk,
-        Horatiu.Vultur@microchip.com, Divya.Koppera@microchip.com,
-        netdev@vger.kernel.org, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Madhuri.Sripada@microchip.com, Manohar.Puri@microchip.com
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <20220313200709.GD7471@hoboy.vegasvil.org>
-References: <20220308221404.bwhujvsdp253t4g3@soft-dev3-1.localhost>
- <YifoltDp4/Fs+9op@lunn.ch>
- <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
- <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
- <20220309195252.GB9663@hoboy.vegasvil.org>
- <BL0PR11MB291347C0E4699E3B202B96DDE70C9@BL0PR11MB2913.namprd11.prod.outlook.com>
- <20220312024828.GA15046@hoboy.vegasvil.org>
- <Yiz8z3UPqNANa5zA@lunn.ch>
- <20220313024646.GC29538@hoboy.vegasvil.org>
- <Yi4IrO4Qcm1KVMaa@lunn.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lF/gT51FipGQcnByyIiiiOkhSTwd5tIlJbStSEDO4dc=;
+        b=j8YLpD9IDg93hq+SCOyVGkfQH29SR4F+EFeny0jKOJzkvvFotINuoJrHMNnxod9lan
+         pKgr9Ab70eDZGccvRZsJdYpUjfxN5wlJCY+/yrlZfjNQPjgg/aV3Emg9t/ftoVg4H8+W
+         NfL2zM2lBVu04Gvn0uouylgQuB0rFLe7cpyD8vxgWsKwb3g5q6ygjHcJOUKTpbGa/hAj
+         b4CA4PmSfItwBR07bdkgEsucfHRcrS1EWBgicBqtJ+BLHS8mrOizY6rydcnW5xetMAS2
+         qlZ0w/V1Bn43TrLKG6rKHNK3Dd7k2r3pcilrnlc+GrseaYTjWfdT5s4LjXS1GvuJEFq3
+         ktSA==
+X-Gm-Message-State: AOAM5314WoKwmZn/Xk3jXyPjWJaU6mXFxotM7xH0G/8LTEMzF/Xex+EM
+        EndTmtMTF+BDocE6mAe4t+bnph4e/r75WZjJ13U=
+X-Google-Smtp-Source: ABdhPJyguvs3W/7mNkf3V34b5FXG9g6e0gflZW9ITN4H0ULRrAzhvoRc1OVkN4XtGS2577t8YhuBomz8brCi8pr/quc=
+X-Received: by 2002:a05:6512:260e:b0:448:97b8:94b0 with SMTP id
+ bt14-20020a056512260e00b0044897b894b0mr847711lfb.226.1647202616862; Sun, 13
+ Mar 2022 13:16:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yi4IrO4Qcm1KVMaa@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220303182508.288136-1-miquel.raynal@bootlin.com> <20220303182508.288136-8-miquel.raynal@bootlin.com>
+In-Reply-To: <20220303182508.288136-8-miquel.raynal@bootlin.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Sun, 13 Mar 2022 16:16:45 -0400
+Message-ID: <CAB_54W5f87H2umyRsjAZ--x_BiN8D7taG4BnyEXx1EWQyQSyBA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v3 07/11] net: ieee802154: at86rf230: Provide
+ meaningful error codes when possible
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -84,13 +74,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 04:07:24PM +0100, Andrew Lunn wrote:
-> Anyway, it is clear you don't want the driver doing any correction, so
-> lets stop this discussion.
+Hi,
 
-Okay.  Just to be clear, as an end user, I've already been burnt by
-well meaning but false corrections in the driver.  As maintainer I
-must advocate for the end users.
+On Thu, Mar 3, 2022 at 1:25 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Either the spi operation failed, or the device encountered an error. In
+> both case, we know more or less what happened thanks to the spi call
+> return code or the content of the TRAC register otherwise. Use them in
+> order to propagate one step above the error.
+>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>  drivers/net/ieee802154/at86rf230.c | 25 +++++++++++++++++++++++--
+>  1 file changed, 23 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
+> index 12ee071057d2..5f19266b3045 100644
+> --- a/drivers/net/ieee802154/at86rf230.c
+> +++ b/drivers/net/ieee802154/at86rf230.c
+> @@ -370,7 +370,27 @@ static inline void
+>  at86rf230_async_error(struct at86rf230_local *lp,
+>                       struct at86rf230_state_change *ctx, int rc)
+>  {
+> -       dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
+> +       int reason;
+> +
+> +       switch (rc) {
+> +       case TRAC_CHANNEL_ACCESS_FAILURE:
+> +               reason = IEEE802154_CHANNEL_ACCESS_FAILURE;
+> +               break;
+> +       case TRAC_NO_ACK:
+> +               reason = IEEE802154_NO_ACK;
+> +               break;
+> +       case TRAC_INVALID:
+> +               reason = IEEE802154_SYSTEM_ERROR;
+> +               break;
+> +       default:
+> +               reason = rc;
+> +       }
+> +
 
-Thanks,
-Richard
+Actually the rc value here is not a TRAC status register value... and
+it should not be one.
+
+The reason is because this function can also be called during a non-tx
+state change failure whereas the trac register is only valid when the
+transmission "is successfully offloaded to device" and delivers us an
+error of the transmission operation on the device. It is called during
+the tx case only if there was a "state transition error" and then it
+should report IEEE802154_SYSTEM_ERROR in
+at86rf230_async_error_recover_complete(). Whereas I think we can use
+IEEE802154_SYSTEM_ERROR as a non-specific 802.15.4 error code, because
+a bus error of a state transition is not 802.15.4 specific.
+
+- Alex
