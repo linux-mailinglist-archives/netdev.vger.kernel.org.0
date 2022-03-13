@@ -2,92 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB46C4D75F1
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 15:52:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C7C4D75FB
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 16:02:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234547AbiCMOx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 10:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36116 "EHLO
+        id S234699AbiCMPDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 11:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiCMOxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 10:53:25 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3663D8879A;
-        Sun, 13 Mar 2022 07:52:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=SYLJecFzMoXae9Yd63DSIRQsBWaqYrsKU+5452Z4zcQ=; b=AECFhEzbz4hZ9WbIJVzXpFpbKH
-        kidJPcYSinNrYvzgsSMIytPZjpRanYKa7XnHlYUxM2QtD/A3TK2LpQKi5q7PNg+mlwYh2LfC5Vvqu
-        JX55NxICbc6nzjMLUm/evTnRuIp+a0JiiPdOqBuzUxuwWax+z5zkCZuSpZgo0f2lmsGA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nTPZs-00AdA3-1f; Sun, 13 Mar 2022 15:52:12 +0100
-Date:   Sun, 13 Mar 2022 15:52:12 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] net: mdio: mscc-miim: replace magic numbers
- for the bus reset
-Message-ID: <Yi4FHDz+ya8VZZDq@lunn.ch>
-References: <20220313002153.11280-1-michael@walle.cc>
- <20220313002153.11280-3-michael@walle.cc>
- <Yi1ALN6hN9aV1VrA@lunn.ch>
- <7cbe529d46c64b01eb99c016d9f16f1a@walle.cc>
+        with ESMTP id S234685AbiCMPDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 11:03:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0BF9580CE
+        for <netdev@vger.kernel.org>; Sun, 13 Mar 2022 08:02:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647183746;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=OZkkggqsQIoWieW/oVrOCwUkJK6lKvyxEtn8wx8/DH4=;
+        b=YPsgh1R4WIgXqnpYkir4DELeHTg+Mq21vYPqbz6wn81UooJYmi/k6IdVy60x0iqLyzozNi
+        x6uMAAa3XxBMPQzktJG+UMClyemQUfMaC+ZxQkM2Ds4Nq0g0wLqSRYwqI1lXIYkluYsR7n
+        PqFrjKN5uL2G8Jk9UqhD71uF1xUWXwU=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-480-wleo5yuoOCueEfd5YrvmTA-1; Sun, 13 Mar 2022 11:02:22 -0400
+X-MC-Unique: wleo5yuoOCueEfd5YrvmTA-1
+Received: by mail-ot1-f71.google.com with SMTP id t16-20020a9d7290000000b005b24005289dso10029644otj.11
+        for <netdev@vger.kernel.org>; Sun, 13 Mar 2022 08:02:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OZkkggqsQIoWieW/oVrOCwUkJK6lKvyxEtn8wx8/DH4=;
+        b=rZosCK5bSxyssEFoPRE0DUnEWXONUalddPZsgCvv1qxc3ulOU5Fckq5qzBOCifvCOF
+         yfGZt/+Dm4fcZOT+/61ROA8ipB/h83S5yRncLXTIwg62XHeASw3LkjRa6GOMZqKX1TVZ
+         jkt9A8cGVSk7NKFSBR1U1mFkuQScgWFFZoxZ+KgjHR1xV1Y3ccHVN0fnYDN9tyeI8vWI
+         G6iEZuj1gwEy9dAwlfsU18/0cdB9aekDFPYOd7/UK6Hb+gaERpP7qo5EH5vOQkMFVjxx
+         NN0sxR7Ynl/jyXzsl2L65527zeCH6fm4Anz8LuGJj2olm4siCatQ6IygfyH7GKYlblRx
+         GV4g==
+X-Gm-Message-State: AOAM530IJCaj/ErH8DYO1kdTxFVY9QvzTrUYVuloBMvCvh4KhxrxUNNu
+        N63z8Ysxy5NkjrlrTYe6NmxqAYWMo925V7cCUJuScGgV75EYuA8LEXbDj4Tes90nycwFM56O/4i
+        oiU9iYhUGd+BCnSEc
+X-Received: by 2002:a9d:4e99:0:b0:5b2:54f4:75e7 with SMTP id v25-20020a9d4e99000000b005b254f475e7mr9119068otk.94.1647183741500;
+        Sun, 13 Mar 2022 08:02:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzjb1ejVgoHBYltkBU7cyugOD8fhaxKGdkCT++7rWLl8GnDe8scorY7NgLJqvOmNm3oOxRWWQ==
+X-Received: by 2002:a9d:4e99:0:b0:5b2:54f4:75e7 with SMTP id v25-20020a9d4e99000000b005b254f475e7mr9119012otk.94.1647183739823;
+        Sun, 13 Mar 2022 08:02:19 -0700 (PDT)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id o17-20020a9d5c11000000b005b2611a13edsm6324116otk.61.2022.03.13.08.02.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Mar 2022 08:02:19 -0700 (PDT)
+From:   trix@redhat.com
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] igb: zero hwtstamp by default
+Date:   Sun, 13 Mar 2022 08:02:10 -0700
+Message-Id: <20220313150210.1508203-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7cbe529d46c64b01eb99c016d9f16f1a@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 02:17:55AM +0100, Michael Walle wrote:
-> Am 2022-03-13 01:51, schrieb Andrew Lunn:
-> > > diff --git a/drivers/net/mdio/mdio-mscc-miim.c
-> > > b/drivers/net/mdio/mdio-mscc-miim.c
-> > > index 64fb76c1e395..7773d5019e66 100644
-> > > --- a/drivers/net/mdio/mdio-mscc-miim.c
-> > > +++ b/drivers/net/mdio/mdio-mscc-miim.c
-> > > @@ -158,18 +158,18 @@ static int mscc_miim_reset(struct mii_bus *bus)
-> > >  {
-> > >  	struct mscc_miim_dev *miim = bus->priv;
-> > >  	int offset = miim->phy_reset_offset;
-> > > +	int mask = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
-> > > +		   PHY_CFG_PHY_RESET;
-> > 
-> > > -		ret = regmap_write(miim->phy_regs,
-> > > -				   MSCC_PHY_REG_PHY_CFG + offset, 0x1ff);
-> > > +		ret = regmap_write(miim->phy_regs, offset, mask);
-> > 
-> > Is mask the correct name? It is not being used in the typical way for
-> > a mask.
-> 
-> It is the mask of all the reset bits, see also patch 3/3. Either all
-> these bits are set or none.
+From: Tom Rix <trix@redhat.com>
 
-Yes, it is you just don't use it in the typical way for a mask
+Clang static analysis reports this representative issue
+igb_ptp.c:997:3: warning: The left operand of '+' is a
+  garbage value
+  ktime_add_ns(shhwtstamps.hwtstamp, adjust);
+  ^            ~~~~~~~~~~~~~~~~~~~~
 
-	foo = bar & mask;
+shhwtstamps.hwtstamp is set by a call to
+igb_ptp_systim_to_hwtstamp().  In the switch-statement
+for the hw type, the hwtstamp is zeroed for matches
+but not the default case.  Move the memset out of
+switch-statement.  This degarbages the default case
+and reduces the size.
 
-The name mask made me look for a read-modify-write or similar. And
-that then makes me thing of race conditions.
+Some whitespace cleanup of empty lines
 
-> Do you haave any suggestion?
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/intel/igb/igb_ptp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-value everywhere? Or phy_reset_bits?
+diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/ethernet/intel/igb/igb_ptp.c
+index 6580fcddb4be5..02fec948ce642 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ptp.c
++++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
+@@ -165,23 +165,21 @@ static void igb_ptp_systim_to_hwtstamp(struct igb_adapter *adapter,
+ 	unsigned long flags;
+ 	u64 ns;
+ 
++	memset(hwtstamps, 0, sizeof(*hwtstamps));
++
+ 	switch (adapter->hw.mac.type) {
+ 	case e1000_82576:
+ 	case e1000_82580:
+ 	case e1000_i354:
+ 	case e1000_i350:
+ 		spin_lock_irqsave(&adapter->tmreg_lock, flags);
+-
+ 		ns = timecounter_cyc2time(&adapter->tc, systim);
+-
+ 		spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
+ 
+-		memset(hwtstamps, 0, sizeof(*hwtstamps));
+ 		hwtstamps->hwtstamp = ns_to_ktime(ns);
+ 		break;
+ 	case e1000_i210:
+ 	case e1000_i211:
+-		memset(hwtstamps, 0, sizeof(*hwtstamps));
+ 		/* Upper 32 bits contain s, lower 32 bits contain ns. */
+ 		hwtstamps->hwtstamp = ktime_set(systim >> 32,
+ 						systim & 0xFFFFFFFF);
+-- 
+2.26.3
 
-      Andrew
