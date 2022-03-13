@@ -2,111 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23FE24D743F
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 11:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 757C44D744B
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 11:47:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232630AbiCMKbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 06:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
+        id S232720AbiCMKsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 06:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231672AbiCMKbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 06:31:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B495A92D2C;
-        Sun, 13 Mar 2022 03:30:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S230260AbiCMKsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 06:48:37 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22518114FC3;
+        Sun, 13 Mar 2022 03:47:28 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 04BD8CE0F7F;
-        Sun, 13 Mar 2022 10:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F0106C340F4;
-        Sun, 13 Mar 2022 10:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647167413;
-        bh=yZRakI9TBNyMLlv9s/p5GfN7xSbI6G1mtsA3O7abnzU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=M5ZbfX7EcFuhEPKjJktSg5sAqriRIOL640X6NXn/tvtupO3n41TIrXgHm2yntFqqw
-         coRAJ9cRjFxoPDjwir59m86qnZRveLLkZVlhhyRStMcnEPuiCFeAOfKe+5K+St91/o
-         SH4DeqHvodXja6l14niUS5iYSPKiGxn+lZVfVIkppJFWwONN9aUEfFYOqI62jjRXVo
-         TqYWg7RcW8Qj+9fVvNW36a8D0g63i140FS2jU7461JbjfkrfavrADiJal0CSR0CCKH
-         GvwFGp1vzZn9/8NlWYb0XazOQD1Mb7TGVBPdBGPKdpvjFJzywguOD/S6u0z7y8RmBS
-         MXQJ0NttnyXXA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3A41E6D3DD;
-        Sun, 13 Mar 2022 10:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7B54922239;
+        Sun, 13 Mar 2022 11:47:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647168446;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wIZiFEsZAeYnOqGs2+bUuvQH61Nh7FBJ6q0NJr//BIc=;
+        b=Jsqb8R27K4Qb9rhh2kkLgl4QF30L8Zoir/MEJOYpBLov6Da5zXRUtfV+p+nGRhKbvGTnwF
+        4Lb61D5TLrpwVDwpyDGWfpEDpMqzJDkq/3IQ2AZ2Lh/Uc0xSmioHscQLiXleTN7XG8PXKq
+        Wb9AV4OIWFUGZw+ADvWBDNImlOWbAMk=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 01/13] can: vxcan: vxcan_xmit(): use kfree_skb()
- instead of kfree() to free skb
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164716741286.31331.17220555710715399821.git-patchwork-notify@kernel.org>
-Date:   Sun, 13 Mar 2022 10:30:12 +0000
-References: <20220313085138.507062-2-mkl@pengutronix.de>
-In-Reply-To: <20220313085138.507062-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        socketcan@hartkopp.net, lkp@intel.com, dan.carpenter@oracle.com
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Sun, 13 Mar 2022 11:47:26 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/3] dt-bindings: net: mscc-miim: add lan966x
+ compatible
+In-Reply-To: <08b89b3f-d0d3-e96f-d1c3-80e8dfd0798f@kernel.org>
+References: <20220313002536.13068-1-michael@walle.cc>
+ <20220313002536.13068-2-michael@walle.cc>
+ <08b89b3f-d0d3-e96f-d1c3-80e8dfd0798f@kernel.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <d18291ff8d81f03a58900935d92115f2@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Krzysztof,
 
-This series was applied to netdev/net-next.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
-
-On Sun, 13 Mar 2022 09:51:26 +0100 you wrote:
-> This patch fixes the freeing of the "oskb", by using kfree_skb()
-> instead of kfree().
+Am 2022-03-13 10:47, schrieb Krzysztof Kozlowski:
+> On 13/03/2022 01:25, Michael Walle wrote:
+>> The MDIO controller has support to release the internal PHYs from 
+>> reset
+>> by specifying a second memory resource. This is different between the
+>> currently supported SparX-5 and the LAN966x. Add a new compatible to
+>> distiguish between these two.
+>> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>  Documentation/devicetree/bindings/net/mscc-miim.txt | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt 
+>> b/Documentation/devicetree/bindings/net/mscc-miim.txt
+>> index 7104679cf59d..a9efff252ca6 100644
+>> --- a/Documentation/devicetree/bindings/net/mscc-miim.txt
+>> +++ b/Documentation/devicetree/bindings/net/mscc-miim.txt
+>> @@ -2,7 +2,7 @@ Microsemi MII Management Controller (MIIM) / MDIO
+>>  =================================================
+>> 
+>>  Properties:
+>> -- compatible: must be "mscc,ocelot-miim"
+>> +- compatible: must be "mscc,ocelot-miim" or "mscc,lan966x-miim"
 > 
-> Fixes: 1574481bb3de ("vxcan: remove sk reference in peer skb")
-> Link: https://lore.kernel.org/all/20220311123741.382618-1-mkl@pengutronix.de
-> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> 
-> [...]
+> No wildcards, use one, specific compatible.
 
-Here is the summary with links:
-  - [net-next,01/13] can: vxcan: vxcan_xmit(): use kfree_skb() instead of kfree() to free skb
-    https://git.kernel.org/netdev/net-next/c/fc7dcd05f4c2
-  - [net-next,02/13] can: mcp251xfd: mcp251xfd_ring_init(): use %d to print free RAM
-    https://git.kernel.org/netdev/net-next/c/c47675b11ba1
-  - [net-next,03/13] can: mcp251xfd: ram: add helper function for runtime ring size calculation
-    https://git.kernel.org/netdev/net-next/c/a1439a5add62
-  - [net-next,04/13] can: mcp251xfd: ram: coalescing support
-    https://git.kernel.org/netdev/net-next/c/b8123d94f58c
-  - [net-next,05/13] can: mcp251xfd: ethtool: add support
-    https://git.kernel.org/netdev/net-next/c/d86ba8db6af3
-  - [net-next,06/13] can: mcp251xfd: ring: prepare support for runtime configurable RX/TX ring parameters
-    https://git.kernel.org/netdev/net-next/c/0a1f2e6502a1
-  - [net-next,07/13] can: mcp251xfd: update macros describing ring, FIFO and RAM layout
-    https://git.kernel.org/netdev/net-next/c/c9e6b80dfd48
-  - [net-next,08/13] can: mcp251xfd: ring: add support for runtime configurable RX/TX ring parameters
-    https://git.kernel.org/netdev/net-next/c/9263c2e92be9
-  - [net-next,09/13] can: mcp251xfd: add RX IRQ coalescing support
-    https://git.kernel.org/netdev/net-next/c/60a848c50d2d
-  - [net-next,10/13] can: mcp251xfd: add RX IRQ coalescing ethtool support
-    https://git.kernel.org/netdev/net-next/c/846990e0ed82
-  - [net-next,11/13] can: mcp251xfd: add TX IRQ coalescing support
-    https://git.kernel.org/netdev/net-next/c/169d00a25658
-  - [net-next,12/13] can: mcp251xfd: add TX IRQ coalescing ethtool support
-    https://git.kernel.org/netdev/net-next/c/656fc12ddaf8
-  - [net-next,13/13] can: mcp251xfd: ring: increase number of RX-FIFOs to 3 and increase max TX-FIFO depth to 16
-    https://git.kernel.org/netdev/net-next/c/aa66ae9b241e
+I'm in a kind of dilemma here, have a look yourself:
+grep -r "lan966[28x]-" Documentation
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Should I deviate from the common "name" now? To make things
+worse, there was a similar request by Arnd [1]. But the
+solution feels like cheating ("lan966x" -> "lan966") ;)
 
+On a side note, I understand that there should be no wildcards,
+because the compatible should target one specific implementation,
+right? But then the codename "ocelot" represents a whole series of
+chips. Therefore, names for whole families shouldn't be used neither,
+right?
 
+-michael
+
+[1] 
+https://lore.kernel.org/lkml/CAK8P3a2kRhCOoXnvcMyqS-zK2WDZjtUq4aqOzE5VV=VMg=pVOA@mail.gmail.com/
