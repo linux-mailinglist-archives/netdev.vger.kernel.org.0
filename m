@@ -2,107 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D29094D7508
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 12:44:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D2E4D754D
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 13:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232041AbiCMLpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 07:45:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
+        id S233740AbiCMMsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 08:48:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231153AbiCMLpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 07:45:24 -0400
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2BDB6D31;
-        Sun, 13 Mar 2022 04:44:15 -0700 (PDT)
-Received: by mail-wm1-f47.google.com with SMTP id n31-20020a05600c3b9f00b003898fc06f1eso10256118wms.1;
-        Sun, 13 Mar 2022 04:44:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vCaA+Wh+Wx7Ta4aeT/ck2tjXVf6Mb0nC0oCuYVcQ0C8=;
-        b=vbDlQ1Kmpygn0T2K48HSGw2g+liofXV1Kghq9tBgJGHapaUnEgPbxiE4O/ff+C8qKU
-         BH5wey/a3xR32A/8abU13KUhuI7IckToz6upCwf9VDNk0Z05t8995RVsX5b2GOeSV/Xs
-         4YGSK1XKUaw1wkC39ipRYBYBZwY1T9/95eVV7k9IIqSyyiK802UuVvlh/xEjCFsyIlq3
-         w9F8BsBtig+9ml7TNMQKnJqasIgZwbhAt0v6q+twCoelWObNwk6SCiOnGldTwD2PU3r2
-         daA1WuIBwIwznorA8BWx2vlP7Ylg60VLEHxsk3aUGSkcHLNEiXRV6+YduOqClDGMQb/r
-         3BPA==
-X-Gm-Message-State: AOAM532jBYz8dlhMmjRiJ6BQWKF6MMilqXyB/sx7I6KBqaMmtJy0Kdkg
-        5UizjUJu/+j3KnIosDYIUZ1e/Rh3HgQ=
-X-Google-Smtp-Source: ABdhPJwYFHTtRQ4qBgNnAqWunEUgx1z6UPldJ6h9s9YVPKEFa+nET2P2MzLYmrs6Wg7w4IUb7Zi8EQ==
-X-Received: by 2002:a05:600c:3506:b0:389:d567:e9fa with SMTP id h6-20020a05600c350600b00389d567e9famr13800144wmq.74.1647171854534;
-        Sun, 13 Mar 2022 04:44:14 -0700 (PDT)
-Received: from [192.168.64.180] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
-        by smtp.gmail.com with ESMTPSA id c124-20020a1c3582000000b00384d42a9638sm12616244wma.2.2022.03.13.04.44.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Mar 2022 04:44:14 -0700 (PDT)
-Message-ID: <45aed896-ab6a-90f5-9676-e27a7d0128fd@grimberg.me>
-Date:   Sun, 13 Mar 2022 13:44:11 +0200
+        with ESMTP id S232883AbiCMMsc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 08:48:32 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2067.outbound.protection.outlook.com [40.107.94.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C77360DA7
+        for <netdev@vger.kernel.org>; Sun, 13 Mar 2022 05:47:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DLWDIk11X6VCYfrUTx9NuyMJFMVaiQjTJ0SqjpNIZ6nhWmNXrErpRBQ0WyecVSdOmoGyXpGJejOpa7gPZTsjNHVCiko1eUWzJqgijptjRv8ZJZ6yO/GOS1q0q+I4zZM4X/IsO44pufyKWt35FqH8MKYGCDt2GlrzzC3bnfQmFilXHCV5WLVZ7OgdJVKOMSaKg6RJCT3zNvMvqek5G2XysAuY80ZgUjfvlaXndfXwUXIQlhWaaqj6NNY9JFNPcDNFEwvrclFHHFSK6yhAOzBA0boOOtiswm44qhj258J6W/QbzXBviDW8oYx7CVuqSPhFCGGpGNC514jRk6822VwU+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DWz1I1PEIcg2MVoWmmzrvPpbZiYKD4Gd7egT519yN4A=;
+ b=NybR2rAscnzeMxmU8x6O/qW0oE6IYhL4zYNVuuI/xkdJm5zTwvuYtAsWW7hFKkzJASf0qEfw4A24MVLUv9FYnASk3t4XGOEmTehad7YQOQJON1y/R0sKRsw9E+hSE6hbviRI0JHcoMWnCq1PQSKFTqw67kNlvfvfzB7jZ63lETjKwW7VBrel+GwnS/PT+EVLKbuPUb8A+P02bR4CvBRd52SKvpHgQKG0PCnnd1J8+4NECcK8ppDN7NdgAAseTqoHjfe4Ug4y0nlRNdautrBQTgt2i53/rDwBncdEZoHNQKxUf5hz1K37Y3kd8pqYI2bySSc7/lS6z/Ah4Ci7oSiXNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=oracle.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DWz1I1PEIcg2MVoWmmzrvPpbZiYKD4Gd7egT519yN4A=;
+ b=rGMnDQ9MtCG9Hcg29uXGOX9ZVd0sw7O2O9T6M9UvBKHuBqpKQS0Z5W8DgnW7YqYInaevQsjKziNflKYnw4/XLKAF0ljSYTckv+ivX/Lt8AmDg98f02Ey3BrPwtgv4n7gQ1GwUH4BhuP76LCQncRB5q0UjIdJ2QYM9tEEyu3s35zMCwdo/wvJlfSSjrZvq7ZC35EZSbkkR6ZcLC3B7wXzaoyD12lbZuvDGJGz5ezCeAYKjFFg8Fqk88Tsr0DmSOwG6MgK24e+TfLH36h0BmuQqJ3MV84vlpH1+ZF7fscRD8FqORblm09Wm4CSz20yz8YpVpOGBGk5CKKqqjr2rcQp7A==
+Received: from BN9PR03CA0435.namprd03.prod.outlook.com (2603:10b6:408:113::20)
+ by MN2PR12MB3567.namprd12.prod.outlook.com (2603:10b6:208:c9::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25; Sun, 13 Mar
+ 2022 12:47:20 +0000
+Received: from BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:113:cafe::b) by BN9PR03CA0435.outlook.office365.com
+ (2603:10b6:408:113::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25 via Frontend
+ Transport; Sun, 13 Mar 2022 12:47:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ BN8NAM11FT009.mail.protection.outlook.com (10.13.176.65) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5061.22 via Frontend Transport; Sun, 13 Mar 2022 12:47:19 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Sun, 13 Mar
+ 2022 12:46:36 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 13 Mar
+ 2022 05:46:35 -0700
+Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Sun, 13 Mar
+ 2022 05:46:32 -0700
+From:   Eli Cohen <elic@nvidia.com>
+To:     <dsahern@kernel.org>, <stephen@networkplumber.org>,
+        <netdev@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>, <jasowang@redhat.com>,
+        <si-wei.liu@oracle.com>
+CC:     <mst@redhat.com>, <lulu@redhat.com>, <parav@nvidia.com>,
+        Eli Cohen <elic@nvidia.com>
+Subject: [PATCH v6 0/4] vdpa tool enhancements
+Date:   Sun, 13 Mar 2022 14:46:25 +0200
+Message-ID: <20220313124629.297014-1-elic@nvidia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 3/3] nvmet-tcp: support specifying the
- congestion-control
-Content-Language: en-US
-To:     Mingbao Sun <sunmingbao@tom.com>, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-References: <20220311103414.8255-1-sunmingbao@tom.com>
- <20220311103414.8255-3-sunmingbao@tom.com>
-From:   Sagi Grimberg <sagi@grimberg.me>
-In-Reply-To: <20220311103414.8255-3-sunmingbao@tom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4d315729-a8b9-4435-1fc5-08da04ef9cce
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3567:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB35679FAA01A1A1863836C684AB0E9@MN2PR12MB3567.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VHaYcylUIw8+HMvDvKtTeAOTThGQVwN4UNu7lmK5+lw/ErB9Usml9o1hNseEvigff6sl/QjJkvAYFpogExSM9BdR41wSySjCRB/NPEXpi+WJ+IkoMkhg/MOAIfPZIcJuZO5SkaisrDinu8r6QH12HmnqdiAhnN5UMnNieStEr1+m+aZRZPQdVoEHqB7v0f/qzB/tsp3LaVVwtOzntWQwnStmq5bwKxJ0N46eAtM5g+RyCzmTjTOkt18eh4jE7I1irc62i3AiwW7nMdOet8HareTRpKg09zk2m0CTyzlOPynXWtOMyy+h2a/MQXcF9b7CHy/UuOCG9BTTNHxWTDIr8SitAlKkht4gY8rjJnJ1VPN4hWqcUpaOYM2KEoxqxej4GzN+uv9qHGSdg/LKZCClD53L+VLLLmnPpqTqEMob2sSSwCMb8y+3G5ETDvuHBgJvylkvKcJgjUZE/nqHhTza0odwXSVSpgXx0S2txv+QDM6pXE2lcYAYNcEOlkwyPVLLjTRgLwfikb0FCsjnUFg9Jv/EaXv/goY1g08wLHInOOIZCtNmWErHQnDPgDGVjZt6K/V1SBGKtA8dQap1KgD+Cp3+XKHPqSFOeoMUczUG+kJaKPe759GGYyl5g2a96aQfZ6x/wSaKXHrJO3EwFYAyFXqJDjIDyTCjKeK7c5OUbCt0HlupI24u0ZYuAoZTuqDezJcAybc3qc4Iy0wsz7gcJA==
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(2906002)(4744005)(40460700003)(36756003)(4326008)(7696005)(2616005)(8676002)(81166007)(5660300002)(70586007)(70206006)(8936002)(356005)(86362001)(83380400001)(426003)(336012)(36860700001)(1076003)(186003)(107886003)(26005)(316002)(54906003)(110136005)(6666004)(82310400004)(47076005)(508600001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2022 12:47:19.9076
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d315729-a8b9-4435-1fc5-08da04ef9cce
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT009.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3567
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-> From: Mingbao Sun <tyler.sun@dell.com>
+The following four patch series enhances vdpa to show negotiated
+features for a vdpa device, max features for a management device and
+allows to configure max number of virtqueue pairs.
 
-Hey Mingbao,
 
-> congestion-control could have a noticeable impaction on the
-> performance of TCP-based communications. This is of course true
-> to NVMe_over_TCP.
-> 
-> Different congestion-controls (e.g., cubic, dctcp) are suitable for
-> different scenarios. Proper adoption of congestion control would benefit
-> the performance. On the contrary, the performance could be destroyed.
-> 
-> Though we can specify the congestion-control of NVMe_over_TCP via
-> writing '/proc/sys/net/ipv4/tcp_congestion_control', but this also
-> changes the congestion-control of all the future TCP sockets that
-> have not been explicitly assigned the congestion-control, thus bringing
-> potential impaction on their performance.
-> 
-> So it makes sense to make NVMe_over_TCP support specifying the
-> congestion-control. And this commit addresses the target side.
-> 
-> Implementation approach:
-> the following new file entry was created for user to specify the
-> congestion-control of each nvmet port.
-> '/sys/kernel/config/nvmet/ports/X/tcp_congestion'
-> Then later in nvmet_tcp_add_port, the specified congestion-control
-> would be applied to the listening socket of the nvmet port.
+v5->v6:
+1. Use macro to define number of feature bits
+2. Use print_nl() to print new line in non json output.
+3. Break usage message to two line so resulting output is confined to 80
+   columns.
 
-Please see my comments on the host side patch.
 
-In addition, specifically on the chosen interface, why should this
-be port specific? What is the use-case to configure this per-port?
+Eli Cohen (4):
+  vdpa: Remove unsupported command line option
+  vdpa: Allow for printing negotiated features of a device
+  vdpa: Support for configuring max VQ pairs for a device
+  vdpa: Support reading device features
+
+ vdpa/vdpa.c | 151 +++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 145 insertions(+), 6 deletions(-)
+
+-- 
+2.35.1
+
