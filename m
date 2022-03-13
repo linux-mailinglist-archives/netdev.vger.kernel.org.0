@@ -2,79 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B24CD4D7818
-	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 21:03:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E4D4D781E
+	for <lists+netdev@lfdr.de>; Sun, 13 Mar 2022 21:07:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234940AbiCMUEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 16:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
+        id S235279AbiCMUIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 16:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232809AbiCMUEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 16:04:35 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C6F2A731;
-        Sun, 13 Mar 2022 13:03:26 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id v4so12695753pjh.2;
-        Sun, 13 Mar 2022 13:03:26 -0700 (PDT)
+        with ESMTP id S232809AbiCMUII (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 16:08:08 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F772AE32;
+        Sun, 13 Mar 2022 13:07:00 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id 25so19148254ljv.10;
+        Sun, 13 Mar 2022 13:07:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=oTB3z/CiYe0gCHLWrVeh5ooeKA/UKcP9DlP2m+aGfiY=;
-        b=CNSM9PjsdUbDPcIBkhCHccSnKdLXn5flnVEFDssiyCrpqPjnCEKE6eVl0qY5GRoCPE
-         v9GPmKBncaVTFelOPgQ3rIesYEHPRv+Zeerpw3aiGoGqbdbYpnsOlj2+jNRLVUC1hTjf
-         yaU1MGDtRPA1y+aChybxrWVlZ1+qvEALmu6UPZQmOeXAaSFYoS+05xRtgqUdcQI49R8/
-         pW+hkDcmHnLltIje9lgyF7ywutUZwqT7v5yoM8My4q2ZVOwBb/6j/AhMrK1VRNxcPuSa
-         F92k5+4KHS2wr1t1rbKh2dqMnm9UqOTtQ8kZpSecLYwbVo1yJD1Dt55bhKdhES8C+u3Q
-         0b7A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h5dkyy0nkqUAlW89Y7+liUDjWjAQJ5MhYKATVcex5n4=;
+        b=YZy32EXa+K5Ak2zoZwwQOkrY7HxBb6QIoMA6DYz4IVsyBXBBne/0rCf8IVGJV5hg9v
+         Qxtlfmm43tjsaG5Iby0NK7IniRUXpLxGISspIOM2N9W/Wg7m/KCC7LlF+ql+Y9exTLFw
+         O7JKv3jCdCnAjrPLHyWSoU2oHDEE9h/wU3gI7yNIDHdNzqnB4/WjM39/MDmCqtIaZ3zH
+         BkasncAI1TpwS6OOkHZXpK5Gd5+jzeHuio/Ie4IcInraS0B6WFY4K6YlZ8p5LrO8DHqz
+         kAXdyxPdA8MvOgorjx8Ri/Fk35nOlJmlEZDYdEc977kTuAx6t7QYNKwWVcZJlGj6wH+W
+         gqbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oTB3z/CiYe0gCHLWrVeh5ooeKA/UKcP9DlP2m+aGfiY=;
-        b=VD4k7qszP2dTOkVi05M3U/3JCWYd39Q0yNYTqZZ+LqUDm2CqFvCScdXS84uHCOw0Nw
-         R1mzc5ziyYMDZ2eh9aTaDpdOFymvJ0Cfy66D2BmoPfT99JDMTyjx3VxiLak0SMVBP1I7
-         Y4uo2kuPLLw0m28NY3dqoZFNHSGxhQWbWXMQisOI9bMNzrNhyEJiGLHB+MELfX0eUAqk
-         t+SPcWqW2XKNkyV58JLu54QzdAhnZrazdJJU7PLfq7npy2BfobsrSBaLtTYhSzsZFu+y
-         PwvL4PU7k9+72Mk8mcPBVBxgdw34szES4Aamc/wnBKnQCJ34yXi7xs9c2pJK3rC/N8aU
-         aEzw==
-X-Gm-Message-State: AOAM532i+3N9o/6ciF55/JOvFnzcN5/yt6fboVHVtfODp3UlP++z5c1j
-        Eh0TtCGpJm1GOdFTdR3zycQ=
-X-Google-Smtp-Source: ABdhPJxVdfz0Y0lmH9JUhsldGJMADHRSMV73ZZRZY2+qKusip6IU/Rf27ybRMVpusNwzCUnwthrWVA==
-X-Received: by 2002:a17:902:ab43:b0:153:29c8:38da with SMTP id ij3-20020a170902ab4300b0015329c838damr16014833plb.11.1647201805961;
-        Sun, 13 Mar 2022 13:03:25 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id nn15-20020a17090b38cf00b001b90c745188sm15048671pjb.25.2022.03.13.13.03.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Mar 2022 13:03:25 -0700 (PDT)
-Date:   Sun, 13 Mar 2022 13:03:22 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Woojung.Huh@microchip.com,
-        linux@armlinux.org.uk, Horatiu.Vultur@microchip.com,
-        Divya.Koppera@microchip.com, netdev@vger.kernel.org,
-        hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Madhuri.Sripada@microchip.com, Manohar.Puri@microchip.com
-Subject: Re: [PATCH net-next 2/3] dt-bindings: net: micrel: Configure latency
- values and timestamping check for LAN8814 phy
-Message-ID: <20220313200322.GC7471@hoboy.vegasvil.org>
-References: <YifoltDp4/Fs+9op@lunn.ch>
- <20220309132443.axyzcsc5kyb26su4@soft-dev3-1.localhost>
- <Yii/9RH67BEjNtLM@shell.armlinux.org.uk>
- <20220309195252.GB9663@hoboy.vegasvil.org>
- <BL0PR11MB291347C0E4699E3B202B96DDE70C9@BL0PR11MB2913.namprd11.prod.outlook.com>
- <20220312024828.GA15046@hoboy.vegasvil.org>
- <Yiz8z3UPqNANa5zA@lunn.ch>
- <20220313024646.GC29538@hoboy.vegasvil.org>
- <Yi4IrO4Qcm1KVMaa@lunn.ch>
- <20220313193744.6gu6l2mjj4r3wj6x@den-dk-m31684h>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h5dkyy0nkqUAlW89Y7+liUDjWjAQJ5MhYKATVcex5n4=;
+        b=xDmjqrr9M2kxxYi/aV4EZUGNp84ukKfcZsbG3+7ln2yiuC4Mn0rIAqcoWErgL2UqQN
+         nLaahi3QfUN397rIbllAWbvjrPdmiQv8I3kTVAUYgN2kOcnpXVjTuEGOrEcrhSulREw3
+         ehcjFhu5kT2wrNmbfaHVgaFuwryUgVyUCgCxfUBjn7/eml/2RAYMmFL2VVmTRsOyrpSS
+         dMxuYgHCPGkAqWyHQ8a2UqDCa90WVUwIWPY8b/a3ulSedzsfLBIzXtJauRgx+r4QNlw2
+         lCJu/yfc2DLlPNwZNI+L2uTTCuYQjuDWgVNhZSyhkHF7PFJDGth7gzAa65yHpFIgWQuc
+         83wg==
+X-Gm-Message-State: AOAM532fUvpl4lLOxG0Aslgu5kfoOH0lvsSP7td+Kacx3q6YmKh63lMH
+        mvHYnAtv+EeYZNd0iTDor1uEmJEnEKO6rBq5BH2y+WtU6PI=
+X-Google-Smtp-Source: ABdhPJwcBIJR05XQGluKSFlxI5ViMKoWTLxiKJpVei7xI4smLmIuWW++Rc4kPbQbuL594ueeLIQse1lMGpO4dzABKh4=
+X-Received: by 2002:a2e:1618:0:b0:247:eb53:6d5b with SMTP id
+ w24-20020a2e1618000000b00247eb536d5bmr12222414ljd.312.1647202018503; Sun, 13
+ Mar 2022 13:06:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220313193744.6gu6l2mjj4r3wj6x@den-dk-m31684h>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220303182508.288136-1-miquel.raynal@bootlin.com> <20220303182508.288136-6-miquel.raynal@bootlin.com>
+In-Reply-To: <20220303182508.288136-6-miquel.raynal@bootlin.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Sun, 13 Mar 2022 16:06:47 -0400
+Message-ID: <CAB_54W7zOY3+Xe=s8ehvcX3mY2bSL1Q5bhsEz50DKXUL1bCw1w@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v3 05/11] net: ieee802154: at86rf230: Assume
+ invalid TRAC if not recognized
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -85,27 +74,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 08:37:44PM +0100, Allan W. Nielsen wrote:
-> On Sun, Mar 13, 2022 at 04:07:24PM +0100, Andrew Lunn wrote:
-> > On Sat, Mar 12, 2022 at 06:46:46PM -0800, Richard Cochran wrote:
-> > > On Sat, Mar 12, 2022 at 09:04:31PM +0100, Andrew Lunn wrote:
-> > > > Do these get passed to the kernel so the hardware can act on them, or
-> > > > are they used purely in userspace by ptp4l?
-> > >
-> > > user space only.
-> I'm wondering if one-step will work if these correction values are not
-> applied to HW.
+Hi,
 
-They are applied to the time stamps that are available to the
-program.  So, no, they obviously won't be applied to one step Sync.
-But then again, neither will the driver values.
+On Thu, Mar 3, 2022 at 1:25 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> The TRAC register gives the MAC error codes if any. If the TRAC register
+> reports a value that is unknown, we should probably assume that it is
+> invalid.
+>
 
-(You could imagine a HW tstamp unit that includes a correction factor,
-for example by adding the egress time stamp value to the correction
-field.  But there are no APIs for that, and maybe no HW either.)
+Can we instead revert 493bc90a9683 ("at86rf230: add debugfs support")
+it was introduced because of some testing stuff with ack handling but
+now we have an error. We might add a stats handling for such errors in
+the 802.15.4 core in future to get it on a per neighbor basis.
 
-(BTW one step is overrated IMO)
-
-Thanks,
-Richard
-
+- Alex
