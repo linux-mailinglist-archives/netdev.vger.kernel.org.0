@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FAD34D8554
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 13:48:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 162D04D83F5
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 13:21:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237088AbiCNMtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 08:49:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
+        id S241032AbiCNMWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 08:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239275AbiCNMr6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 08:47:58 -0400
+        with ESMTP id S243861AbiCNMVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 08:21:20 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955BD3A1A2;
-        Mon, 14 Mar 2022 05:41:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 847E2BE5;
+        Mon, 14 Mar 2022 05:17:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+hYUu2G/bq68s9f2SGkYZi4xlcaxcWwYD94UHu9GgRY=;
-  b=p9GC6OpXJFvaT9UgALjpX+KCc0W9t9BgRzlCd4QoDwR4er5TD0eMzJXf
-   DzriE/66opaOKETRTPjE9OG0m7KC1tMUXl7LiKztQkRo8CQrgGKYtj8jC
-   QkOqFsWa0Hcrkc3qfiXAVUjObxEM1YZHFPRQ9Qi9fLqe470ItuvysdJfW
-   k=;
+  bh=yAh5dhSWoezDHAmIMKrnf1fmCmAoJ/u8UhSQGN/+5rg=;
+  b=AOnEnK5rwCG4310Vpj8R+iKPhl+ZQD+1cDacCSAMGCta6CgsSn9yBslL
+   Y1TrJpCX8hv7jCgskW7U1RQ8F6ZnlT4GCA0nKToZhZGvR2wQ42o/C7TAp
+   6Uwkpl70GJ0CwzNzwB5HL+SwW86rfOZM88KpUW0hoMBFN0ZoFvJLVt9bZ
+   Y=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997352"
+   d="scan'208";a="25997353"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
   by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Ping-Ke Shih <pkshih@realtek.com>
-Cc:     kernel-janitors@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 19/30] rtlwifi: rtl8821ae: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:43 +0100
-Message-Id: <20220314115354.144023-20-Julia.Lawall@inria.fr>
+Subject: [PATCH 20/30] airo: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:44 +0100
+Message-Id: <20220314115354.144023-21-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -59,38 +59,20 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/cisco/airo.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
-index f6bff0ebd6b0..f3fe16798c59 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
-@@ -872,7 +872,7 @@ static void rtl8821ae_dm_false_alarm_counter_statistics(struct ieee80211_hw *hw)
- 	else
- 		falsealm_cnt->cnt_all = falsealm_cnt->cnt_ofdm_fail;
- 
--	/*reset OFDM FA coutner*/
-+	/*reset OFDM FA counter*/
- 	rtl_set_bbreg(hw, ODM_REG_OFDM_FA_RST_11AC, BIT(17), 1);
- 	rtl_set_bbreg(hw, ODM_REG_OFDM_FA_RST_11AC, BIT(17), 0);
- 	/* reset CCK FA counter*/
-@@ -1464,7 +1464,7 @@ void rtl8812ae_dm_txpower_tracking_callback_thermalmeter(
- 	const u8 *delta_swing_table_idx_tup_b;
- 	const u8 *delta_swing_table_idx_tdown_b;
- 
--	/*2. Initilization ( 7 steps in total )*/
-+	/*2. Initialization ( 7 steps in total )*/
- 	rtl8812ae_get_delta_swing_table(hw,
- 		&delta_swing_table_idx_tup_a,
- 		&delta_swing_table_idx_tdown_a,
-@@ -2502,7 +2502,7 @@ static void rtl8821ae_dm_check_edca_turbo(struct ieee80211_hw *hw)
- 	rtlpriv->dm.dbginfo.num_non_be_pkt = 0;
- 
- 	/*===============================
--	 * list paramter for different platform
-+	 * list parameter for different platform
- 	 *===============================
- 	 */
- 	pb_is_cur_rdl_state = &rtlpriv->dm.is_cur_rdlstate;
+diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
+index 452d08545d31..10daef81c355 100644
+--- a/drivers/net/wireless/cisco/airo.c
++++ b/drivers/net/wireless/cisco/airo.c
+@@ -545,7 +545,7 @@ struct ConfigRid {
+ #define MODE_CFG_MASK cpu_to_le16(0xff)
+ #define MODE_ETHERNET_HOST cpu_to_le16(0<<8) /* rx payloads converted */
+ #define MODE_LLC_HOST cpu_to_le16(1<<8) /* rx payloads left as is */
+-#define MODE_AIRONET_EXTEND cpu_to_le16(1<<9) /* enable Aironet extenstions */
++#define MODE_AIRONET_EXTEND cpu_to_le16(1<<9) /* enable Aironet extensions */
+ #define MODE_AP_INTERFACE cpu_to_le16(1<<10) /* enable ap interface extensions */
+ #define MODE_ANTENNA_ALIGN cpu_to_le16(1<<11) /* enable antenna alignment */
+ #define MODE_ETHER_LLC cpu_to_le16(1<<12) /* enable ethernet LLC */
 
