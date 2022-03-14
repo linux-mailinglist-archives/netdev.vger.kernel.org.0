@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1E44D8600
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 14:33:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD2EF4D8602
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 14:33:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241798AbiCNNep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 09:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49936 "EHLO
+        id S241793AbiCNNex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 09:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241809AbiCNNem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 09:34:42 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B374E24F26;
-        Mon, 14 Mar 2022 06:33:31 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id d19so7111286pfv.7;
-        Mon, 14 Mar 2022 06:33:31 -0700 (PDT)
+        with ESMTP id S241808AbiCNNev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 09:34:51 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6114226549;
+        Mon, 14 Mar 2022 06:33:36 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id q11so13527402pln.11;
+        Mon, 14 Mar 2022 06:33:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WSiApMWrkRbeANEINoUs0lo7fVMDH1hs0RZuED9t7jo=;
-        b=omyRoTKEBBDhJXJlPbqCbziUcgI/EmLVFlc65b6x2vz8ws9JefNclwJ3QdoyfjJsss
-         m5TOA2ALlrALK/F6UlI9JO4qW21nw63yJGQY8pNOc66Jdehb7vswagqOPFLO7oOMrpYe
-         uLlddok/auroZGrtbBFIEg6seFk6KTM0eH6vO+BxLZIYb5NoCWfP0CSxWeDeqICJWJW+
-         4KJWMt0XXkL5Xh5qytLJJxp/hWxtAj9yzlplCsFDwUhoid0zdGbCUDdZEpxkEATXczRK
-         HqHwkrqO+lGV1xwTjTP9Ly+Ka5DO0HsKbkZF9051UZDInVSMUVwMrCxh7+bbvfJSkta3
-         UZsw==
+        bh=DAuSBfeLpiTRO6SZRb/v3UzbKgj2YbHpow+Ky+sb0Nc=;
+        b=Nd4wKXMNFV/CTh0rPlWQcWIgJkUAE851xZhgVe3OcRwcZu1czXppIgfWpt1xH1lFix
+         LYffdkYsVTeOPm7YzGTPTaNIT6LtNQMkOdO9BBWqY0hvBLb/AaAqCeWlr1PVxTokLjZk
+         iEfPTMP/Vk0MB+Kh+FUr5L9CE/hXQWYDMkBM76r3gnBBxOa6aFJvtWjn2ucSJz33GPSm
+         x5u4Sa9cQLtdfyJzBvgT9zLeyf+udHb77e7XkiBV9wRGshoWrjCX9ANVN+yjR3DLna4Z
+         iswnza09nvaN+8StCgBlvvxtcOvT9MeiiwB9PuYPteXu+2ypelUcDGtFYyJ6uUv29XZx
+         pdIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WSiApMWrkRbeANEINoUs0lo7fVMDH1hs0RZuED9t7jo=;
-        b=zZCcSyB7jl9gS9OocTx5AWX2i+piDbR+PMDZNP0jmYt2NTiGbsutDPVVJallir2EJ9
-         wlh9/n8WWuXtaD7hyCTK21VUyUgJS4a5nnky/ZgZd8uTVBVu/zgLmvTqLEBtYE4QFrx7
-         Y2FJMPmp8povYSYW0YNfJbSNNXCeKl8Ih1sO5FpVVcZiv6kq3JAqpnDB1aycwqEagauu
-         KpUUXsDTh7IbAPD/uKAL5ecrd8CTVHIWjMj0xRVHv0Re328gsakSxPBBj+BVNlSSBTSx
-         s78s0CfbAydzH94k69NbZFqQqFEIW7UiuNuuoYnuLbE2etbNlTk7vIv586USRq9BsVmV
-         xEgg==
-X-Gm-Message-State: AOAM530rFCWCMNmMJFtzxB3ckUDF4hdK8kKstVg6d5/DAlw0IIs//Tfy
-        Lrm2Y+MROaSz0rtPNZMCGJs=
-X-Google-Smtp-Source: ABdhPJw0N5PFUhNg1pfu5DCSdFY92/y4+qT7fcOhQlkfD2PrQGfwC9R5EGQ9GA6E22LhBRNlTZEOSg==
-X-Received: by 2002:a05:6a00:1350:b0:4f7:8c4f:cfca with SMTP id k16-20020a056a00135000b004f78c4fcfcamr16726905pfu.45.1647264811277;
-        Mon, 14 Mar 2022 06:33:31 -0700 (PDT)
+        bh=DAuSBfeLpiTRO6SZRb/v3UzbKgj2YbHpow+Ky+sb0Nc=;
+        b=L9nMl7VUhhPjBMLR4UE1MgVFWOnU1z7eYzhNR1sR3fPn0iDiCuOwnYm5XGrJMQ4Aor
+         bR8KYjPWkyhqN4Johmse6RrDG4PeVnkybF+mf1NLQb6EtVkCJi/WszufNI1rhNzOhk8s
+         BhC7CQS/XWzF4L1V4J/EQtrmJrateTmxQxDWSEMKAVjk13lbqjJF7Ph17Lgb7JLr2JjL
+         LCBAJvWmP2zrPVelIaDx8OXdPIXeVy7hc59vIZ8FeXjACfk0pQwn+27DwepfeRDq3yaG
+         7aHIjflcK+0VXQfiDAGtUZGlsc+R5B1YWDOASDhdXkzhdzZVUCz+c0944gnc1q58eCgo
+         1CXg==
+X-Gm-Message-State: AOAM530fun/QIm29Jc0R9Q8kfFbrrolA0qtQ9t349esXgLiVSdSmhPhM
+        suhOyqGlgSElbviJMroZjzY=
+X-Google-Smtp-Source: ABdhPJwam+ABYsMM9CB9+S5gWaVLT5msi5eAqHqh963gQAaS4LUm1AVe2VCUgeyherlBmW5T0IfSXg==
+X-Received: by 2002:a17:902:b597:b0:151:e24e:a61e with SMTP id a23-20020a170902b59700b00151e24ea61emr23737070pls.66.1647264815836;
+        Mon, 14 Mar 2022 06:33:35 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.114])
-        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm22118722pfu.202.2022.03.14.06.33.26
+        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm22118722pfu.202.2022.03.14.06.33.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 06:33:30 -0700 (PDT)
+        Mon, 14 Mar 2022 06:33:35 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org
@@ -57,9 +57,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
         flyingpeng@tencent.com, mengensun@tencent.com,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Biao Jiang <benbjiang@tencent.com>
-Subject: [PATCH net-next 2/3] net: ipgre: make erspan_rcv() return PACKET_NEXT
-Date:   Mon, 14 Mar 2022 21:33:11 +0800
-Message-Id: <20220314133312.336653-3-imagedong@tencent.com>
+Subject: [PATCH net-next 3/3] net: ipgre: add skb drop reasons to gre_rcv()
+Date:   Mon, 14 Mar 2022 21:33:12 +0800
+Message-Id: <20220314133312.336653-4-imagedong@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220314133312.336653-1-imagedong@tencent.com>
 References: <20220314133312.336653-1-imagedong@tencent.com>
@@ -77,31 +77,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-PACKET_NEXT is returned in ipgre_rcv() when no tunnel device found. To
-report skb drop reasons, we make erspan_rcv() the same way. Therefore,
-we can know that skb is dropped out of tunnel device's absence when
-PACKET_NEXT is returned.
+Replace kfree_skb() used in gre_rcv() with kfree_skb_reason(). With
+previous patch, we can tell that no tunnel device is found when
+PACKET_NEXT is returned by erspan_rcv() or ipgre_rcv().
+
+In this commit, following new drop reasons are added:
+
+SKB_DROP_REASON_GRE_CSUM
+SKB_DROP_REASON_GRE_NOTUNNEL
 
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Reviewed-by: Biao Jiang <benbjiang@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- net/ipv4/ip_gre.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/skbuff.h     |  2 ++
+ include/trace/events/skb.h |  2 ++
+ net/ipv4/ip_gre.c          | 28 ++++++++++++++++++----------
+ 3 files changed, 22 insertions(+), 10 deletions(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 5edb704af5bb..4f5e58e717ee 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -448,6 +448,8 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_GRE_NOHANDLER,	/* no handler found (version not
+ 					 * supported?)
+ 					 */
++	SKB_DROP_REASON_GRE_CSUM,	/* GRE csum error */
++	SKB_DROP_REASON_GRE_NOTUNNEL,	/* no tunnel device found */
+ 	SKB_DROP_REASON_MAX,
+ };
+ 
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index f2bcffdc4bae..e8f95c96cf9d 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -63,6 +63,8 @@
+ 	EM(SKB_DROP_REASON_TAP_TXFILTER, TAP_TXFILTER)		\
+ 	EM(SKB_DROP_REASON_GRE_VERSION, GRE_VERSION)		\
+ 	EM(SKB_DROP_REASON_GRE_NOHANDLER, GRE_NOHANDLER)	\
++	EM(SKB_DROP_REASON_GRE_CSUM, GRE_CSUM)			\
++	EM(SKB_DROP_REASON_GRE_NOTUNNEL, GRE_NOTUNNEL)		\
+ 	EMe(SKB_DROP_REASON_MAX, MAX)
+ 
+ #undef EM
 diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 99db2e41ed10..b1579d8374fd 100644
+index b1579d8374fd..b989239e4abc 100644
 --- a/net/ipv4/ip_gre.c
 +++ b/net/ipv4/ip_gre.c
-@@ -341,7 +341,7 @@ static int erspan_rcv(struct sk_buff *skb, struct tnl_ptk_info *tpi,
- 		ip_tunnel_rcv(tunnel, skb, tpi, tun_dst, log_ecn_error);
- 		return PACKET_RCVD;
- 	}
--	return PACKET_REJECT;
-+	return PACKET_NEXT;
+@@ -421,9 +421,10 @@ static int ipgre_rcv(struct sk_buff *skb, const struct tnl_ptk_info *tpi,
  
+ static int gre_rcv(struct sk_buff *skb)
+ {
++	enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
+ 	struct tnl_ptk_info tpi;
+ 	bool csum_err = false;
+-	int hdr_len;
++	int hdr_len, ret;
+ 
+ #ifdef CONFIG_NET_IPGRE_BROADCAST
+ 	if (ipv4_is_multicast(ip_hdr(skb)->daddr)) {
+@@ -438,19 +439,26 @@ static int gre_rcv(struct sk_buff *skb)
+ 		goto drop;
+ 
+ 	if (unlikely(tpi.proto == htons(ETH_P_ERSPAN) ||
+-		     tpi.proto == htons(ETH_P_ERSPAN2))) {
+-		if (erspan_rcv(skb, &tpi, hdr_len) == PACKET_RCVD)
+-			return 0;
+-		goto out;
+-	}
++		     tpi.proto == htons(ETH_P_ERSPAN2)))
++		ret = erspan_rcv(skb, &tpi, hdr_len);
++	else
++		ret = ipgre_rcv(skb, &tpi, hdr_len);
+ 
+-	if (ipgre_rcv(skb, &tpi, hdr_len) == PACKET_RCVD)
++	switch (ret) {
++	case PACKET_NEXT:
++		reason = SKB_DROP_REASON_GRE_NOTUNNEL;
++		break;
++	case PACKET_RCVD:
+ 		return 0;
+-
+-out:
++	case PACKET_REJECT:
++		reason = SKB_DROP_REASON_NOMEM;
++		break;
++	}
+ 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
  drop:
- 	kfree_skb(skb);
+-	kfree_skb(skb);
++	if (csum_err)
++		reason = SKB_DROP_REASON_GRE_CSUM;
++	kfree_skb_reason(skb, reason);
+ 	return 0;
+ }
+ 
 -- 
 2.35.1
 
