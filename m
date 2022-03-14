@@ -2,81 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54A2F4D8042
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 11:55:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25BF54D8052
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 12:02:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234814AbiCNK4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 06:56:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
+        id S236796AbiCNLDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 07:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238614AbiCNK4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 06:56:51 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1471443ED9;
-        Mon, 14 Mar 2022 03:55:42 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KHD1f0mZMzfYvc;
-        Mon, 14 Mar 2022 18:54:14 +0800 (CST)
-Received: from localhost.localdomain (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Mar 2022 18:55:39 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <edumazet@google.com>, <sakiwit@gmail.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 3/3] net: ipvtap: fix error comments
-Date:   Mon, 14 Mar 2022 19:13:25 +0800
-Message-ID: <1fdd040200b495add1020f4a0890ce8d87267334.1647255926.git.william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1647255926.git.william.xuanziyang@huawei.com>
-References: <cover.1647255926.git.william.xuanziyang@huawei.com>
+        with ESMTP id S234345AbiCNLDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 07:03:45 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6377143EFB
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 04:02:36 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id v130so29868771ybe.13
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 04:02:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Io/bO0B9639Ob/rp5GDNN+3V3J2bkzKdpA+20hYRw7A=;
+        b=MdzlLj16x9LqL8EnvisYaDIf27FnoatAWsgqYyksKuFBURFejYE3GaWYLzV0JwhCnk
+         Q3Ozf/b9+laz7cwoTI99tSWQKdnoZgFQMQF6o+uswQQZZ8PV7D9oc7P0JUM9XNzGXCw+
+         hC6FI+70FdbEQznMYLI1y8LymD2K24KqdHk8vC5vWHfEtxNTMeFefpzuLi1pU0Lmpb9t
+         KhRjcYtPQv3gFl1ros4Q08/buCMonhA/Kz3/Ud9uB+8GseVugKlYlDqzfeuh4f2GNNwm
+         nLl/KrPXSIQrE6wG3sOn9gpZ56MNEIz3/8y793/nKU4eChZNvztjAd+kfHlo3GxyTFqc
+         n2Dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Io/bO0B9639Ob/rp5GDNN+3V3J2bkzKdpA+20hYRw7A=;
+        b=SuAmcp4z98w2OD+pLohZrbMyFZOErfYpFqtPUBdrBoCyEMqyWZ884qYX0sFpJB5mkR
+         uoswA52aR6hhp+TaRhme/WKxG0Q75q5GRvVhc3c1fNXVNsvMZKQU7Va8n/O+8STJgA+/
+         hI6QuVcyfygUZ3IJmhWqE6U3251ww0BH3l6vNtRLJNaboQKVFo0e45qP6MivfHwkUwf/
+         X1C/0mRbyIu2iMrCy/xi9Esm7lqoYJnEuq4JBpxBsbAk3noDnBagF50uv4v9/ou02Ltx
+         KP0CNexCv8PNB8vrDWnYRPCprNlo99m7RxRq6la047Yj866O+Ls0tHV1Gv2RpLgK5LwT
+         0zoA==
+X-Gm-Message-State: AOAM531qMIc2Ij14NWQByEhoujunKvxFwDk8rxC6TkT3NPuQHvCk3dnX
+        bmBniB5k2qFfAh2DWRExLOzeTqpG//jrA0kmtDmJiHENUo2kiA==
+X-Google-Smtp-Source: ABdhPJzcP0C1ENhCQo+43rxMha9SlaOklopk6jyJg6iMpJTyrse/5ISGFX12EgPO/VUNrzmd9QS71SE5NTy56hUNgq0=
+X-Received: by 2002:a25:f505:0:b0:624:f6f9:7bf3 with SMTP id
+ a5-20020a25f505000000b00624f6f97bf3mr16621771ybe.465.1647255755635; Mon, 14
+ Mar 2022 04:02:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220310101744.1053425-1-anders.roxell@linaro.org> <YioNV4G/OJmeEt0Z@lunn.ch>
+In-Reply-To: <YioNV4G/OJmeEt0Z@lunn.ch>
+From:   Anders Roxell <anders.roxell@linaro.org>
+Date:   Mon, 14 Mar 2022 12:02:25 +0100
+Message-ID: <CADYN=9+Th933YcRdjk51KJsTMGn2f8MdKBx515FcHrs5=H497w@mail.gmail.com>
+Subject: Re: [PATCH] net: phy: Kconfig: micrel_phy: fix dependency issue
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use "macvlan" comment inappropriately in ipvtap module.
-Fix them with "ipvlan" comment.
+On Thu, 10 Mar 2022 at 15:38, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> The description says:
+>
+> > Rework Kconfig for MICREL_PHY to depend on 'PTP_1588_CLOCK_OPTIONAL ||
+> > !NETWORK_PHY_TIMESTAMPING'.
+>
+> >  config MICREL_PHY
+> >       tristate "Micrel PHYs"
+> > +     depends on PTP_1588_CLOCK_OPTIONAL
+>
+> But you actually added only a subset?
 
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- drivers/net/ipvlan/ipvtap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+You are correct, I will send a updated version shortly.
 
-diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
-index ef02f2cf5ce1..c130cfb30822 100644
---- a/drivers/net/ipvlan/ipvtap.c
-+++ b/drivers/net/ipvlan/ipvtap.c
-@@ -83,7 +83,7 @@ static int ipvtap_newlink(struct net *src_net, struct net_device *dev,
- 
- 	INIT_LIST_HEAD(&vlantap->tap.queue_list);
- 
--	/* Since macvlan supports all offloads by default, make
-+	/* Since ipvlan supports all offloads by default, make
- 	 * tap support all offloads also.
- 	 */
- 	vlantap->tap.tap_features = TUN_OFFLOADS;
-@@ -95,7 +95,7 @@ static int ipvtap_newlink(struct net *src_net, struct net_device *dev,
- 	if (err)
- 		return err;
- 
--	/* Don't put anything that may fail after macvlan_common_newlink
-+	/* Don't put anything that may fail after ipvlan_link_new
- 	 * because we can't undo what it does.
- 	 */
- 	err =  ipvlan_link_new(src_net, dev, tb, data, extack);
--- 
-2.25.1
-
+Cheers,
+Anders
