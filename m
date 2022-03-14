@@ -2,138 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A432D4D8E36
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D1A44D8E5C
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:39:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245037AbiCNUb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 16:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
+        id S245174AbiCNUky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 16:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239124AbiCNUbX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:31:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8449739812;
-        Mon, 14 Mar 2022 13:30:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0BE9611E3;
-        Mon, 14 Mar 2022 20:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 395EAC340EE;
-        Mon, 14 Mar 2022 20:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647289811;
-        bh=5slkzW/wYFCAJdfNlCFTBba0nZcr16X7BRShsWGs8e4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=leggAOjDGLqu5Y16iRzmCapGpn9MgtEwT4CrU4eyl+t2E31oSfK39qKDLg3AehmbU
-         40wH8plobcUAZegoJFqfw9/xkqsBBPmZP9vZVSFOcI/Xp23ZGUf+pgmWTjQguJdafL
-         aR+7p6LxqiE9iThzqyS8jQ9G6EB+4tZZi+yCfGQiapJJIo9jcBYm9fR9I2LX08BkN2
-         bFDWmepy5ZVI6q23q7h6GXJ7SL0Svf5wH1oJCuTgacReCjqPgety1pGCFxOBEiOwa4
-         z9SA1gQwBNf2EwKLfJ+KdExejyFckwalTlOP/U5FXz63cZ94Vo7u6CrKogKN+nyC4B
-         +CVXdED/jOy7Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0DC0AE6D3DE;
-        Mon, 14 Mar 2022 20:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S245120AbiCNUkv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:40:51 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7E13DDFD
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:39:24 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id c25so19451058edj.13
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:39:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brouer-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:cc:subject:content-language
+         :to:references:from:in-reply-to:content-transfer-encoding;
+        bh=S5i0TLtrk4dOBmRRh+Yq7O8vfz6Gv5F2Xy81kPlrcb8=;
+        b=ggWuAf6kql6XuEjSmVdrtbeA+ledbku/VCzhTOGydbN7ihVWVJZqSsS9cXkCzeBwzc
+         PT5b68J6dvNY5tGIC7oMwgoDUWlJgQfoo66XCE9LM+TTncaEfEbsCTxSIrk0CSvxhO6F
+         uwOT/Hi35BDE5FPmVcY0/yCLwH1RJIuU7x8jG9fcJFOFRSBQXsuE+yH5VkpwRpzs7WXY
+         IdutiG8kI90HMeOXokmTL7XoYH5emWygBc3LyxIcBxcpwMTpBjrhKMBTuH0i2ExExwjk
+         Bepot4/Fi8Unz6EcGddzqeULx75F6sTPcF3+if19+i3iMDkYBATvX7/ieMl5c3OYgrR6
+         QE8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:cc
+         :subject:content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=S5i0TLtrk4dOBmRRh+Yq7O8vfz6Gv5F2Xy81kPlrcb8=;
+        b=IPEi4NnA+FopM4WMKONnLgCHwXKpfZaduJSCqo0AzYVfm5/NTxNOctVcd/RYMv2oR0
+         /tunRWJYaTP3HgYKV78e+6DiS15q9Ugvs2hxrm7xkQS9dg54wnh6qizKSZkchTFgk8vz
+         a+TBIHTk223pWlaZGfP9JClu3rploLypyHSZJEjZebAG7K6kGuEmtiuK7DwA7tfjHRne
+         bISEdb2/5WYFta7zS5Cx3Zbg6/KXV4vOIyTwGysX8tH0tub+Z0zvbujnuTMeN/Mua0n8
+         NR7wuHMl72DBhTGdr7BRqRLeiiyC2LYP4MThGHgmqd+t8NeV9ane59XWpWy1LgfBQTLy
+         NDrA==
+X-Gm-Message-State: AOAM533Zt331q+K93PRjcP8FY4VM0TVTm346+i39BkOSxJ7K7oHX8nFz
+        QLHo/TkTUS73C/qodPUwBscAUw==
+X-Google-Smtp-Source: ABdhPJxn49rfigm6oyzlOa1QiSW4nVPQhw1iGEPDV8463LVZNCdjKfNbRll1asF8O5lCnehxEtJSag==
+X-Received: by 2002:a05:6402:5244:b0:417:adbe:e9f6 with SMTP id t4-20020a056402524400b00417adbee9f6mr15251242edd.282.1647290363249;
+        Mon, 14 Mar 2022 13:39:23 -0700 (PDT)
+Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
+        by smtp.gmail.com with ESMTPSA id ca21-20020aa7cd75000000b004188bc5712fsm1950419edb.73.2022.03.14.13.39.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 13:39:22 -0700 (PDT)
+Message-ID: <86137924-b3cb-3d96-51b1-19923252f092@brouer.com>
+Date:   Mon, 14 Mar 2022 21:39:21 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 00/30] fix typos in comments
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164728981105.21494.10764025984714254687.git-patchwork-notify@kernel.org>
-Date:   Mon, 14 Mar 2022 20:30:11 +0000
-References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     linux-can@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, linux-spi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-usb@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        platform-driver-x86@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com,
-        linux-leds@vger.kernel.org, shayne.chen@mediatek.com,
-        sean.wang@mediatek.com, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-clk@vger.kernel.org, rafael@kernel.org,
-        linux-rdma@vger.kernel.org, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, linux-s390@vger.kernel.org,
-        matti.vaittinen@fi.rohmeurope.com, linux-power@fi.rohmeurope.com,
-        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, namhyung@kernel.org,
-        linux-perf-users@vger.kernel.org
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Cc:     brouer@redhat.com, Toke Hoiland Jorgensen <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH] net: xdp: allow user space to request a smaller packet
+ headroom requirement
+Content-Language: en-US
+To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>
+References: <20220314102210.92329-1-nbd@nbd.name>
+From:   "Jesper D. Brouer" <netdev@brouer.com>
+In-Reply-To: <20220314102210.92329-1-nbd@nbd.name>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+(Cc. BPF list and other XDP maintainers)
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+On 14/03/2022 11.22, Felix Fietkau wrote:
+> Most ethernet drivers allocate a packet headroom of NET_SKB_PAD. Since it is
+> rounded up to L1 cache size, it ends up being at least 64 bytes on the most
+> common platforms.
+> On most ethernet drivers, having a guaranteed headroom of 256 bytes for XDP
+> adds an extra forced pskb_expand_head call when enabling SKB XDP, which can
+> be quite expensive.
+> Many XDP programs need only very little headroom, so it can be beneficial
+> to have a way to opt-out of the 256 bytes headroom requirement.
 
-On Mon, 14 Mar 2022 12:53:24 +0100 you wrote:
-> Various spelling mistakes in comments.
-> Detected with the help of Coccinelle.
-> 
+IMHO 64 bytes is too small.
+We are using this area for struct xdp_frame and also for metadata
+(XDP-hints).  This will limit us from growing this structures for
+the sake of generic-XDP.
+
+I'm fine with reducting this to 192 bytes, as most Intel drivers
+have this headroom, and have defacto established that this is
+a valid XDP headroom, even for native-XDP.
+
+We could go a small as two cachelines 128 bytes, as if xdp_frame
+and metadata grows above a cache-line (64 bytes) each, then we have
+done something wrong (performance wise).
+
+
+> Add an extra flag XDP_FLAGS_SMALL_HEADROOM that can be set when attaching
+> the XDP program, which reduces the minimum headroom to 64 bytes.
+
+I don't like a flags approach.
+
+Multiple disadvantages.
+  (a) Harder to use
+  (b) Now reading a new cache-line in net_device
+
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
 > ---
+>   include/linux/netdevice.h          | 1 +
+>   include/uapi/linux/bpf.h           | 1 +
+>   include/uapi/linux/if_link.h       | 4 +++-
+>   net/core/dev.c                     | 9 ++++++++-
+>   tools/include/uapi/linux/if_link.h | 4 +++-
+>   5 files changed, 16 insertions(+), 3 deletions(-)
 > 
->  drivers/base/devres.c                               |    4 ++--
->  drivers/clk/qcom/gcc-sm6125.c                       |    2 +-
->  drivers/clk/ti/clkctrl.c                            |    2 +-
->  drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c              |    4 ++--
->  drivers/gpu/drm/amd/display/dc/bios/command_table.c |    6 +++---
->  drivers/gpu/drm/amd/pm/amdgpu_pm.c                  |    2 +-
->  drivers/gpu/drm/bridge/analogix/analogix_dp_core.c  |    4 ++--
->  drivers/gpu/drm/sti/sti_gdp.c                       |    2 +-
->  drivers/infiniband/hw/qib/qib_iba7220.c             |    4 ++--
->  drivers/leds/leds-pca963x.c                         |    2 +-
->  drivers/media/i2c/ov5695.c                          |    2 +-
->  drivers/mfd/rohm-bd9576.c                           |    2 +-
->  drivers/mtd/ubi/block.c                             |    2 +-
->  drivers/net/can/usb/ucan.c                          |    4 ++--
->  drivers/net/ethernet/packetengines/yellowfin.c      |    2 +-
->  drivers/net/wireless/ath/ath6kl/htc_mbox.c          |    2 +-
->  drivers/net/wireless/cisco/airo.c                   |    2 +-
->  drivers/net/wireless/mediatek/mt76/mt7915/init.c    |    2 +-
->  drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c |    6 +++---
->  drivers/platform/x86/uv_sysfs.c                     |    2 +-
->  drivers/s390/crypto/pkey_api.c                      |    2 +-
->  drivers/scsi/aic7xxx/aicasm/aicasm.c                |    2 +-
->  drivers/scsi/elx/libefc_sli/sli4.c                  |    2 +-
->  drivers/scsi/lpfc/lpfc_mbox.c                       |    2 +-
->  drivers/scsi/qla2xxx/qla_gs.c                       |    2 +-
->  drivers/spi/spi-sun4i.c                             |    2 +-
->  drivers/staging/rtl8723bs/core/rtw_mlme.c           |    2 +-
->  drivers/usb/gadget/udc/snps_udc_core.c              |    2 +-
->  fs/kernfs/file.c                                    |    2 +-
->  kernel/events/core.c                                |    2 +-
->  30 files changed, 39 insertions(+), 39 deletions(-)
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 0d994710b335..f6f270a5e301 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -2274,6 +2274,7 @@ struct net_device {
+>   	bool			proto_down;
+>   	unsigned		wol_enabled:1;
+>   	unsigned		threaded:1;
+> +	unsigned		xdp_small_headroom:1;
+>   
 
-Here is the summary with links:
-  - [03/30] ath6kl: fix typos in comments
-    (no matching commit)
-  - [10/30] mt76: mt7915: fix typos in comments
-    (no matching commit)
-  - [12/30] drivers: net: packetengines: fix typos in comments
-    https://git.kernel.org/netdev/net-next/c/ebc0b8b5374e
-  - [19/30] rtlwifi: rtl8821ae: fix typos in comments
-    (no matching commit)
-  - [20/30] airo: fix typos in comments
-    (no matching commit)
-  - [27/30] can: ucan: fix typos in comments
-    (no matching commit)
+Looks like we need to read this cache-line, in a XDP (generic) fastpath.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>   	struct list_head	net_notifier_list;
+>   
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 4eebea830613..7635dfb02313 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5688,6 +5688,7 @@ struct bpf_xdp_sock {
+>   };
+>   
+>   #define XDP_PACKET_HEADROOM 256
+> +#define XDP_PACKET_HEADROOM_SMALL 64
 
+Define it 192 instead.
 
+>   
+>   /* User return codes for XDP prog type.
+>    * A valid XDP program must return one of these defined values. All other
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index e003a0b9b4b2..acb996334910 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -1275,11 +1275,13 @@ enum {
+>   #define XDP_FLAGS_DRV_MODE		(1U << 2)
+>   #define XDP_FLAGS_HW_MODE		(1U << 3)
+>   #define XDP_FLAGS_REPLACE		(1U << 4)
+> +#define XDP_FLAGS_SMALL_HEADROOM	(1U << 5)
+>   #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
+>   					 XDP_FLAGS_DRV_MODE | \
+>   					 XDP_FLAGS_HW_MODE)
+>   #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
+> -					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE)
+> +					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE | \
+> +					 XDP_FLAGS_SMALL_HEADROOM)
+>   
+>   /* These are stored into IFLA_XDP_ATTACHED on dump. */
+>   enum {
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 8d25ec5b3af7..cb12379b8f11 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4722,6 +4722,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+>   				     struct xdp_buff *xdp,
+>   				     struct bpf_prog *xdp_prog)
+>   {
+> +	int min_headroom = XDP_PACKET_HEADROOM;
+>   	u32 act = XDP_DROP;
+>   
+>   	/* Reinjected packets coming from act_mirred or similar should
+> @@ -4730,12 +4731,15 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+>   	if (skb_is_redirected(skb))
+>   		return XDP_PASS;
+>   
+> +	if (skb->dev->xdp_small_headroom)
+> +		min_headroom = XDP_PACKET_HEADROOM_SMALL;
+> +
+>   	/* XDP packets must be linear and must have sufficient headroom
+>   	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
+>   	 * native XDP provides, thus we need to do it here as well.
+>   	 */
+>   	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
+> -	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
+> +	    skb_headroom(skb) < min_headroom) {
+
+Use define XDP_PACKET_HEADROOM_SMALL here directly.
+
+>   		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
+>   		int troom = skb->tail + skb->data_len - skb->end;
+>   
+> @@ -9135,6 +9139,9 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+>   			return err;
+>   	}
+>   
+> +	if (mode == XDP_MODE_SKB)
+> +		dev->xdp_small_headroom = !!(flags & XDP_FLAGS_SMALL_HEADROOM);
+> +
+>   	if (link)
+>   		dev_xdp_set_link(dev, mode, link);
+>   	else
+> diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+> index e1ba2d51b717..0df737a6c489 100644
+> --- a/tools/include/uapi/linux/if_link.h
+> +++ b/tools/include/uapi/linux/if_link.h
+> @@ -1185,11 +1185,13 @@ enum {
+>   #define XDP_FLAGS_DRV_MODE		(1U << 2)
+>   #define XDP_FLAGS_HW_MODE		(1U << 3)
+>   #define XDP_FLAGS_REPLACE		(1U << 4)
+> +#define XDP_FLAGS_SMALL_HEADROOM	(1U << 5)
+>   #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
+>   					 XDP_FLAGS_DRV_MODE | \
+>   					 XDP_FLAGS_HW_MODE)
+>   #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
+> -					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE)
+> +					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE | \
+> +					 XDP_FLAGS_SMALL_HEADROOM)
+>   
+>   /* These are stored into IFLA_XDP_ATTACHED on dump. */
+>   enum {
+> 
+
+--Jesper
