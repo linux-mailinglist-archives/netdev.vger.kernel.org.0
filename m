@@ -2,46 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9634D8C90
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 20:40:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EBB64D8DA9
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:01:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244086AbiCNTmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 15:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
+        id S244819AbiCNUCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 16:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232288AbiCNTmA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 15:42:00 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB513C731;
-        Mon, 14 Mar 2022 12:40:49 -0700 (PDT)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7A6D0C0002;
-        Mon, 14 Mar 2022 19:40:45 +0000 (UTC)
-Message-ID: <1a185332-3693-2750-fef2-f6938bbc8500@ovn.org>
-Date:   Mon, 14 Mar 2022 20:40:43 +0100
+        with ESMTP id S236350AbiCNUC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:02:29 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7489310FC7
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:01:18 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id b28so17514624lfc.4
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:01:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=F5mU9o7savlVkOpAVXAc7vZgunxy8jXIc2Wup8XxmsY=;
+        b=U9r3p6udDqYlZ1aopd62hIGt17gWQvQg7QbrFEqTQOh59FTbqt6d+jnOaxtuOemxUx
+         fc8Cm//gfPrMpb46jCfiDzcT2SRuCSHU4LZvHM+j4uGUzaPmhhsaFt3Mra/xnGnwt3z1
+         NvVVn/WRXQJVn3RMkkWAQxgRotPoF/Cf/qFIxY5bKHkOBrBM7//tpkLQf7zt1KFfgzD+
+         YNEi7mazSo0xLGI7QHGT/qPi++c6x9OOylHKgsHWcp8raYtetaDbdH/UxwcuqaGuJmzX
+         pX4Nj7n69fCKkgPH++8LHtka06ngmG4Ta9Hdb2RTKiknFDUEjkh7aClHpBD7jW+pFoBk
+         zMpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=F5mU9o7savlVkOpAVXAc7vZgunxy8jXIc2Wup8XxmsY=;
+        b=AC8LjGHV1kS+A7dA3qxwwwKUGFE1Oj39delvXxGpgAht/eB/nQ6A2OvNk5q/qeaqSX
+         Jfwn8SpaOJhLmQzlkwshWMec52ZSbAh+Zp4jP0EMuP/k+eX1INRB4lecL9Ts2dCMvAjJ
+         qSeQ9Zm9kxxW3G6G7NA54vtaHaXvPBN5elNDTOzC/J9mwEPrjzng2VeBLxllaVFefmBJ
+         Vs/OvZPh/aH0MWIO0vPxhM5LDAqmKL67iTeKf10TpOQmzWdPtVeYNeaS8OMeAEWFfjlr
+         hURsDla+UowmpjRZV5ilDNeik0nPH93bGj65AASMeZrb9MKeg7jg2vagJ4ymQUNanhiy
+         /dpA==
+X-Gm-Message-State: AOAM530y3NDYXd5aAl2XN5YSS49FPRyrUYFUbotwcbi7kgtD8vyuSJOm
+        eEkgzbSH6J8Trw8CiVE/CeE+IA==
+X-Google-Smtp-Source: ABdhPJyHDyPenGqPAi41TYDlo5mD300lE2AJ2gyHhdiUNZlkYSUqN58v0syL+saGgM1BBbx8/gwZZA==
+X-Received: by 2002:ac2:4ac2:0:b0:448:373b:dca5 with SMTP id m2-20020ac24ac2000000b00448373bdca5mr14094527lfp.568.1647288075110;
+        Mon, 14 Mar 2022 13:01:15 -0700 (PDT)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id t10-20020ac24c0a000000b004482e94a3b5sm3431991lfq.16.2022.03.14.13.01.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 13:01:14 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
+ for MST
+In-Reply-To: <20220314175556.7mjr4tui4vb4i5qn@skbuf>
+References: <20220314095231.3486931-1-tobias@waldekranz.com>
+ <20220314095231.3486931-10-tobias@waldekranz.com>
+ <20220314165649.vtsd3xqv7htut55d@skbuf>
+ <20220314175556.7mjr4tui4vb4i5qn@skbuf>
+Date:   Mon, 14 Mar 2022 21:01:12 +0100
+Message-ID: <87mthsl2wn.fsf@waldekranz.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     i.maximets@ovn.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Maor Dickman <maord@nvidia.com>
-Content-Language: en-US
-To:     Roi Dayan <roid@nvidia.com>, Aaron Conole <aconole@redhat.com>
-References: <20220309222033.3018976-1-i.maximets@ovn.org>
- <f7ty21hir5v.fsf@redhat.com>
- <44eeb550-3310-d579-91cc-ec18b59966d2@nvidia.com>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Subject: Re: [PATCH net-next v2] net: openvswitch: fix uAPI incompatibility
- with existing user space
-In-Reply-To: <44eeb550-3310-d579-91cc-ec18b59966d2@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,80 +83,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/14/22 19:33, Roi Dayan wrote:
-> 
-> 
-> On 2022-03-10 8:44 PM, Aaron Conole wrote:
->> Ilya Maximets <i.maximets@ovn.org> writes:
->>
->>> Few years ago OVS user space made a strange choice in the commit [1]
->>> to define types only valid for the user space inside the copy of a
->>> kernel uAPI header.  '#ifndef __KERNEL__' and another attribute was
->>> added later.
->>>
->>> This leads to the inevitable clash between user space and kernel types
->>> when the kernel uAPI is extended.  The issue was unveiled with the
->>> addition of a new type for IPv6 extension header in kernel uAPI.
->>>
->>> When kernel provides the OVS_KEY_ATTR_IPV6_EXTHDRS attribute to the
->>> older user space application, application tries to parse it as
->>> OVS_KEY_ATTR_PACKET_TYPE and discards the whole netlink message as
->>> malformed.  Since OVS_KEY_ATTR_IPV6_EXTHDRS is supplied along with
->>> every IPv6 packet that goes to the user space, IPv6 support is fully
->>> broken.
->>>
->>> Fixing that by bringing these user space attributes to the kernel
->>> uAPI to avoid the clash.  Strictly speaking this is not the problem
->>> of the kernel uAPI, but changing it is the only way to avoid breakage
->>> of the older user space applications at this point.
->>>
->>> These 2 types are explicitly rejected now since they should not be
->>> passed to the kernel.  Additionally, OVS_KEY_ATTR_TUNNEL_INFO moved
->>> out from the '#ifdef __KERNEL__' as there is no good reason to hide
->>> it from the userspace.  And it's also explicitly rejected now, because
->>> it's for in-kernel use only.
->>>
->>> Comments with warnings were added to avoid the problem coming back.
->>>
->>> (1 << type) converted to (1ULL << type) to avoid integer overflow on
->>> OVS_KEY_ATTR_IPV6_EXTHDRS, since it equals 32 now.
->>>
->>>   [1] beb75a40fdc2 ("userspace: Switching of L3 packets in L2 pipeline")
->>>
->>> Fixes: 28a3f0601727 ("net: openvswitch: IPv6: Add IPv6 extension header support")
->>> Link: https://lore.kernel.org/netdev/3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com
->>> Link: https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b0068b4cd12f6de507c
->>> Reported-by: Roi Dayan <roid@nvidia.com>
->>> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
->>> ---
->>
->> Acked-by: Aaron Conole <aconole@redhat.com>
->>
-> 
-> 
-> 
-> I got to check traffic with the fix and I do get some traffic
-> but something is broken. I didn't investigate much but the quick
-> test shows me rules are not offloaded and dumping ovs rules gives
-> error like this
-> 
-> recirc_id(0),in_port(enp8s0f0_1),ct_state(-trk),eth(),eth_type(0x86dd),ipv6(frag=no)(bad key length 2, expected -1)(00 00/(bad mask length 2, expected -1)(00 00), packets:2453, bytes:211594, used:0.004s, flags:S., actions:ct,recirc(0x2)
+On Mon, Mar 14, 2022 at 19:55, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Mon, Mar 14, 2022 at 06:56:49PM +0200, Vladimir Oltean wrote:
+>> > diff --git a/net/dsa/port.c b/net/dsa/port.c
+>> > index 58291df14cdb..1a17a0efa2fa 100644
+>> > --- a/net/dsa/port.c
+>> > +++ b/net/dsa/port.c
+>> > @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
+>> >  	if (err && err != -EOPNOTSUPP)
+>> >  		return err;
+>> >  
+>> > +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
+>> > +	if (err && err != -EOPNOTSUPP)
+>> > +		return err;
+>> 
+>> Sadly this will break down because we don't have unwinding on error in
+>> place (sorry). We'd end up with an unoffloaded bridge port with
+>> partially synced bridge port attributes. Could you please add a patch
+>> previous to this one that handles this, and unoffloads those on error?
+>
+> Actually I would rather rename the entire dsa_port_mst_enable() function
+> to dsa_port_mst_validate() and move it to the beginning of dsa_port_bridge_join().
+> This simplifies the unwinding that needs to take place quite a bit.
 
-Such a dump is expected, because kernel parses fields that current
-userspace doesn't understand, and at the same time OVS by design is
-using kernel provided key/mask while installing datapath rules, IIRC.
-It should be possible to make these dumps a bit more friendly though.
+Well you still need to unwind vlan filtering if setting the ageing time
+fails, which is the most complicated one, right? Still, I agree that
+_validate is a better name, and then _bridge_join seems like a more
+reasonable placement. Should the unwinding patch still be part of this
+series then?
 
-For the offloading not working, see my comment in the v2 patch email
-I sent (top email of this thread).  In short, it's a problem in user
-space and it can not be fixed from the kernel side, unless we revert
-IPv6 extension header support and never add any new types, which is
-unreasonable.  I didn't test any actual offloading, but I had a
-successful run of 'make check-offloads' with my quick'n'dirty fix from
-the top email.
+While we're here, I actually made this a hard error in both scenarios
+(but forgot to update the log - will do that in v4, depending on what we
+decide here). There's a dilemma:
 
-Since we're here:
+- When reacting to the attribute event, i.e. changing the mode on a
+  member we're apart of, we _can't_ return -EOPNOTSUPP as it will be
+  ignored, which is why dsa_port_mst_validate (nee _enable) returns
+  -EINVAL.
 
-Toms, do you plan to submit user space patches for this feature?
+- When joining a bridge, we _must_ return -EOPNOTSUPP to trigger the
+  software fallback.
 
-Best regards, Ilya Maximets.
+Having something like this in dsa_port_bridge_join...
+
+err = dsa_port_mst_validate(dp);
+if (err == -EINVAL)
+	return -EOPNOTSUPP;
+else if (err)
+	return err;
+
+...works I suppose, but feels somewhat awkwark. Any better ideas?
+
