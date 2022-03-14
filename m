@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6FAA4D8B63
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 19:10:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E3084D8B5F
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 19:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243642AbiCNSLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 14:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53970 "EHLO
+        id S243602AbiCNSLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 14:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243593AbiCNSLH (ORCPT
+        with ESMTP id S241784AbiCNSLH (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 14:11:07 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AD812A80
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218781277B
         for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 11:09:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647281397; x=1678817397;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1seUNlXtRwg+alYnGwU0zNdTt9DJGURrbEiKgRI2Kk0=;
-  b=mSGoT/itQwBqnEpsYcNAXkoAgSZVOi+c8gjczUqx/vnqmJDV2uuaz2rC
-   ZXYuaipVf9i7/TQp+Q/TP5WBR1DpOU7Px/QJZfrg2cmvG79HJQnRS7DdE
-   TSGKSkxIRuAyVmMPwNte46rL47Wj2tI+btQdaDkhs6N3LvidGWZjspaBM
-   /bgsc0xihRQFy/kPmJHR3jMrKDimJKHn4DYAYu8ijcIVEeaodbM4HrYpc
-   hcr7hR7k5g7Re7t8f4pjaITE6RtUVFZV/hxkA3+GHGFGzcxN6CaUl72WP
-   uxcBHHpcwhVz1hCL4PJc7+HapgFO2RAMZpP6IFz0Q5ruSvc6bQHwzBqy0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="238275348"
+  bh=ydaLrv9hbLlfNyz+3v3PIUFUr+wOJd2jKRjVqCA1aKE=;
+  b=Oo5AnnoE19A4jd1lJ3ARyPzNnjVe34u+EEMri6lp7fXZNlvgmTRXAtds
+   VrjzwhpQ57KO0cw4EjsgOJCqs8iyn2EsaYqx/TTQKZm4Mn1h0Q9hBJZ4L
+   RPU5b6g1MJz6f2Kxmi0Gk+E7Zan5jiQ92UCsUuy0lILXeivjlUUZx0I8c
+   Ape4xfMSoQHbZ9rwXAbLPsHpiOcM+0RVhFG8GQbhVrkvlQiGi8NF/dJfS
+   XgwdUQMKCKdDBB9sBgSWIhm7GAQT+iz4r2SPZUxF5sv/gnRh7sdXWsUnv
+   aUL6ICf/KYW0gAONfDNXo9VzacZWWHTAUrY1qbVOenorANSYoJGxYc85T
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="238275351"
 X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="238275348"
+   d="scan'208";a="238275351"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 11:09:55 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 11:09:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="634297499"
+   d="scan'208";a="634297518"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by FMSMGA003.fm.intel.com with ESMTP; 14 Mar 2022 11:09:55 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next 04/25] ice: convert vf->vc_ops to a const pointer
-Date:   Mon, 14 Mar 2022 11:09:55 -0700
-Message-Id: <20220314181016.1690595-5-anthony.l.nguyen@intel.com>
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net-next 05/25] ice: remove unused definitions from ice_sriov.h
+Date:   Mon, 14 Mar 2022 11:09:56 -0700
+Message-Id: <20220314181016.1690595-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220314181016.1690595-1-anthony.l.nguyen@intel.com>
 References: <20220314181016.1690595-1-anthony.l.nguyen@intel.com>
@@ -62,236 +62,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The vc_ops structure is used to allow different handlers for virtchnl
-commands when the driver is in representor mode. The current
-implementation uses a copy of the ops table in each VF, and modifies
-this copy dynamically.
-
-The usual practice in kernel code is to store the ops table in a
-constant structure and point to different versions. This has a number of
-advantages:
-
-  1. Reduced memory usage. Each VF merely points to the correct table,
-     so they're able to re-use the same constant lookup table in memory.
-  2. Consistency. It becomes more difficult to accidentally update or
-     edit only one op call. Instead, the code switches to the correct
-     able by a single pointer write. In general this is atomic, either
-     the pointer is updated or its not.
-  3. Code Layout. The VF structure can store a pointer to the table
-     without needing to have the full structure definition defined prior
-     to the VF structure definition. This will aid in future refactoring
-     of code by allowing the VF pointer to be kept in ice_vf_lib.h while
-     the virtchnl ops table can be maintained in ice_virtchnl.h
-
-There is one major downside in the case of the vc_ops structure. Most of
-the operations in the table are the same between the two current
-implementations. This can appear to lead to duplication since each
-implementation must now fill in the complete table. It could make
-spotting the differences in the representor mode more challenging.
-Unfortunately, methods to make this less error prone either add
-complexity overhead (macros using CPP token concatenation) or don't work
-on all compilers we support (constant initializer from another constant
-structure).
-
-The cost of maintaining two structures does not out weigh the benefits
-of the constant table model.
-
-While we're making these changes, go ahead and rename the structure and
-implementations with "virtchnl" instead of "vc_vf_". This will more
-closely align with the planned file renaming, and avoid similar names when
-we later introduce a "vf ops" table for separating Scalable IOV and
-Single Root IOV implementations.
-
-Leave the accessor/assignment functions in order to avoid issues with
-compiling with options disabled. The interface makes it easier to handle
-when CONFIG_PCI_IOV is disabled in the kernel.
+A few more macros exist in ice_sriov.h which are not used anywhere.
+These can be safely removed. Note that ICE_VIRTCHNL_VF_CAP_L2 capability
+is set but never checked anywhere in the driver. Thus it is also safe to
+remove.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_repr.c  |  4 +-
- drivers/net/ethernet/intel/ice/ice_sriov.c | 61 +++++++++++++++++-----
- drivers/net/ethernet/intel/ice/ice_sriov.h | 13 +++--
- 3 files changed, 55 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_sriov.c | 1 -
+ drivers/net/ethernet/intel/ice/ice_sriov.h | 7 +------
+ 2 files changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
-index e0be27657569..848f2adea563 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.c
-@@ -339,7 +339,7 @@ static int ice_repr_add(struct ice_vf *vf)
- 
- 	devlink_port_type_eth_set(&vf->devlink_port, repr->netdev);
- 
--	ice_vc_change_ops_to_repr(&vf->vc_ops);
-+	ice_virtchnl_set_repr_ops(vf);
- 
- 	return 0;
- 
-@@ -384,7 +384,7 @@ static void ice_repr_rem(struct ice_vf *vf)
- 	kfree(vf->repr);
- 	vf->repr = NULL;
- 
--	ice_vc_set_dflt_vf_ops(&vf->vc_ops);
-+	ice_virtchnl_set_dflt_ops(vf);
- }
- 
- /**
 diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 45fe36db076a..8578317ceb8a 100644
+index 8578317ceb8a..205d7e5003d8 100644
 --- a/drivers/net/ethernet/intel/ice/ice_sriov.c
 +++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -2023,7 +2023,7 @@ static int ice_create_vf_entries(struct ice_pf *pf, u16 num_vfs)
- 		ice_vf_ctrl_invalidate_vsi(vf);
- 		ice_vf_fdir_init(vf);
+@@ -2012,7 +2012,6 @@ static int ice_create_vf_entries(struct ice_pf *pf, u16 num_vfs)
  
--		ice_vc_set_dflt_vf_ops(&vf->vc_ops);
-+		ice_virtchnl_set_dflt_ops(vf);
- 
- 		mutex_init(&vf->cfg_lock);
- 
-@@ -5672,7 +5672,7 @@ static int ice_vc_dis_vlan_insertion_v2_msg(struct ice_vf *vf, u8 *msg)
- 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_DISABLE_VLAN_INSERTION_V2, v_ret, NULL, 0);
- }
- 
--static struct ice_vc_vf_ops ice_vc_vf_dflt_ops = {
-+static const struct ice_virtchnl_ops ice_virtchnl_dflt_ops = {
- 	.get_ver_msg = ice_vc_get_ver_msg,
- 	.get_vf_res_msg = ice_vc_get_vf_res_msg,
- 	.reset_vf = ice_vc_reset_vf_msg,
-@@ -5703,9 +5703,13 @@ static struct ice_vc_vf_ops ice_vc_vf_dflt_ops = {
- 	.dis_vlan_insertion_v2_msg = ice_vc_dis_vlan_insertion_v2_msg,
- };
- 
--void ice_vc_set_dflt_vf_ops(struct ice_vc_vf_ops *ops)
-+/**
-+ * ice_virtchnl_set_dflt_ops - Switch to default virtchnl ops
-+ * @vf: the VF to switch ops
-+ */
-+void ice_virtchnl_set_dflt_ops(struct ice_vf *vf)
- {
--	*ops = ice_vc_vf_dflt_ops;
-+	vf->virtchnl_ops = &ice_virtchnl_dflt_ops;
- }
- 
- /**
-@@ -5838,15 +5842,44 @@ ice_vc_repr_cfg_promiscuous_mode(struct ice_vf *vf, u8 __always_unused *msg)
- 				     NULL, 0);
- }
- 
--void ice_vc_change_ops_to_repr(struct ice_vc_vf_ops *ops)
-+static const struct ice_virtchnl_ops ice_virtchnl_repr_ops = {
-+	.get_ver_msg = ice_vc_get_ver_msg,
-+	.get_vf_res_msg = ice_vc_get_vf_res_msg,
-+	.reset_vf = ice_vc_reset_vf_msg,
-+	.add_mac_addr_msg = ice_vc_repr_add_mac,
-+	.del_mac_addr_msg = ice_vc_repr_del_mac,
-+	.cfg_qs_msg = ice_vc_cfg_qs_msg,
-+	.ena_qs_msg = ice_vc_ena_qs_msg,
-+	.dis_qs_msg = ice_vc_dis_qs_msg,
-+	.request_qs_msg = ice_vc_request_qs_msg,
-+	.cfg_irq_map_msg = ice_vc_cfg_irq_map_msg,
-+	.config_rss_key = ice_vc_config_rss_key,
-+	.config_rss_lut = ice_vc_config_rss_lut,
-+	.get_stats_msg = ice_vc_get_stats_msg,
-+	.cfg_promiscuous_mode_msg = ice_vc_repr_cfg_promiscuous_mode,
-+	.add_vlan_msg = ice_vc_repr_add_vlan,
-+	.remove_vlan_msg = ice_vc_repr_del_vlan,
-+	.ena_vlan_stripping = ice_vc_repr_ena_vlan_stripping,
-+	.dis_vlan_stripping = ice_vc_repr_dis_vlan_stripping,
-+	.handle_rss_cfg_msg = ice_vc_handle_rss_cfg,
-+	.add_fdir_fltr_msg = ice_vc_add_fdir_fltr,
-+	.del_fdir_fltr_msg = ice_vc_del_fdir_fltr,
-+	.get_offload_vlan_v2_caps = ice_vc_get_offload_vlan_v2_caps,
-+	.add_vlan_v2_msg = ice_vc_add_vlan_v2_msg,
-+	.remove_vlan_v2_msg = ice_vc_remove_vlan_v2_msg,
-+	.ena_vlan_stripping_v2_msg = ice_vc_ena_vlan_stripping_v2_msg,
-+	.dis_vlan_stripping_v2_msg = ice_vc_dis_vlan_stripping_v2_msg,
-+	.ena_vlan_insertion_v2_msg = ice_vc_ena_vlan_insertion_v2_msg,
-+	.dis_vlan_insertion_v2_msg = ice_vc_dis_vlan_insertion_v2_msg,
-+};
-+
-+/**
-+ * ice_virtchnl_set_repr_ops - Switch to representor virtchnl ops
-+ * @vf: the VF to switch ops
-+ */
-+void ice_virtchnl_set_repr_ops(struct ice_vf *vf)
- {
--	ops->add_mac_addr_msg = ice_vc_repr_add_mac;
--	ops->del_mac_addr_msg = ice_vc_repr_del_mac;
--	ops->add_vlan_msg = ice_vc_repr_add_vlan;
--	ops->remove_vlan_msg = ice_vc_repr_del_vlan;
--	ops->ena_vlan_stripping = ice_vc_repr_ena_vlan_stripping;
--	ops->dis_vlan_stripping = ice_vc_repr_dis_vlan_stripping;
--	ops->cfg_promiscuous_mode_msg = ice_vc_repr_cfg_promiscuous_mode;
-+	vf->virtchnl_ops = &ice_virtchnl_repr_ops;
- }
- 
- /**
-@@ -5861,8 +5894,8 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- {
- 	u32 v_opcode = le32_to_cpu(event->desc.cookie_high);
- 	s16 vf_id = le16_to_cpu(event->desc.retval);
-+	const struct ice_virtchnl_ops *ops;
- 	u16 msglen = event->msg_len;
--	struct ice_vc_vf_ops *ops;
- 	u8 *msg = event->msg_buf;
- 	struct ice_vf *vf = NULL;
- 	struct device *dev;
-@@ -5883,7 +5916,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
- 		goto error_handler;
- 	}
- 
--	ops = &vf->vc_ops;
-+	ops = vf->virtchnl_ops;
- 
- 	/* Perform basic checks on the msg */
- 	err = virtchnl_vc_validate_vf_msg(&vf->vf_ver, v_opcode, msg, msglen);
+ 		vf->vf_sw_id = pf->first_sw;
+ 		/* assign default capabilities */
+-		set_bit(ICE_VIRTCHNL_VF_CAP_L2, &vf->vf_caps);
+ 		vf->spoofchk = true;
+ 		vf->num_vf_qs = pf->vfs.num_qps_per;
+ 		ice_vc_set_default_allowlist(vf);
 diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.h b/drivers/net/ethernet/intel/ice/ice_sriov.h
-index a5ef3c46953a..b6951d718592 100644
+index b6951d718592..699690c1f6a0 100644
 --- a/drivers/net/ethernet/intel/ice/ice_sriov.h
 +++ b/drivers/net/ethernet/intel/ice/ice_sriov.h
-@@ -113,7 +113,7 @@ struct ice_mdd_vf_events {
+@@ -13,9 +13,6 @@
+  */
+ #define ICE_MAX_MACADDR_PER_VF		18
  
- struct ice_vf;
- 
--struct ice_vc_vf_ops {
-+struct ice_virtchnl_ops {
- 	int (*get_ver_msg)(struct ice_vf *vf, u8 *msg);
- 	int (*get_vf_res_msg)(struct ice_vf *vf, u8 *msg);
- 	void (*reset_vf)(struct ice_vf *vf);
-@@ -206,8 +206,7 @@ struct ice_vf {
- 	DECLARE_BITMAP(opcodes_allowlist, VIRTCHNL_OP_MAX);
- 
- 	struct ice_repr *repr;
+-/* Malicious Driver Detection */
+-#define ICE_MDD_EVENTS_THRESHOLD		30
 -
--	struct ice_vc_vf_ops vc_ops;
-+	const struct ice_virtchnl_ops *virtchnl_ops;
+ /* Static VF transaction/status register def */
+ #define VF_DEVICE_STATUS		0xAA
+ #define VF_TRANS_PENDING_M		0x20
+@@ -28,7 +25,6 @@
+ #define ICE_MAX_VF_COUNT		256
+ #define ICE_MIN_QS_PER_VF		1
+ #define ICE_NONQ_VECS_VF		1
+-#define ICE_MAX_SCATTER_QS_PER_VF	16
+ #define ICE_MAX_RSS_QS_PER_VF		16
+ #define ICE_NUM_VF_MSIX_MED		17
+ #define ICE_NUM_VF_MSIX_SMALL		5
+@@ -95,8 +91,7 @@ enum ice_vf_states {
  
- 	/* devlink port data */
- 	struct devlink_port devlink_port;
-@@ -230,8 +229,8 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event);
- void ice_vc_notify_link_state(struct ice_pf *pf);
- void ice_vc_notify_reset(struct ice_pf *pf);
- void ice_vc_notify_vf_link_state(struct ice_vf *vf);
--void ice_vc_change_ops_to_repr(struct ice_vc_vf_ops *ops);
--void ice_vc_set_dflt_vf_ops(struct ice_vc_vf_ops *ops);
-+void ice_virtchnl_set_repr_ops(struct ice_vf *vf);
-+void ice_virtchnl_set_dflt_ops(struct ice_vf *vf);
- bool ice_reset_all_vfs(struct ice_pf *pf, bool is_vflr);
- bool ice_reset_vf(struct ice_vf *vf, bool is_vflr);
- void ice_restore_all_vfs_msi_state(struct pci_dev *pdev);
-@@ -303,8 +302,8 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event) {
- static inline void ice_vc_notify_link_state(struct ice_pf *pf) { }
- static inline void ice_vc_notify_reset(struct ice_pf *pf) { }
- static inline void ice_vc_notify_vf_link_state(struct ice_vf *vf) { }
--static inline void ice_vc_change_ops_to_repr(struct ice_vc_vf_ops *ops) { }
--static inline void ice_vc_set_dflt_vf_ops(struct ice_vc_vf_ops *ops) { }
-+static inline void ice_virtchnl_set_repr_ops(struct ice_vf *vf) { }
-+static inline void ice_virtchnl_set_dflt_ops(struct ice_vf *vf) { }
- static inline void ice_set_vf_state_qs_dis(struct ice_vf *vf) { }
- static inline
- void ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event) { }
+ /* VF capabilities */
+ enum ice_virtchnl_cap {
+-	ICE_VIRTCHNL_VF_CAP_L2 = 0,
+-	ICE_VIRTCHNL_VF_CAP_PRIVILEGE,
++	ICE_VIRTCHNL_VF_CAP_PRIVILEGE = 0,
+ };
+ 
+ struct ice_time_mac {
 -- 
 2.31.1
 
