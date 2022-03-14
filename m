@@ -2,96 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 254A94D7AE1
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 07:38:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA114D7AEA
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 07:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiCNGkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 02:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
+        id S236450AbiCNGqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 02:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiCNGkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 02:40:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E9F3CFFD;
-        Sun, 13 Mar 2022 23:38:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE6261053;
-        Mon, 14 Mar 2022 06:38:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5857CC340E9;
-        Mon, 14 Mar 2022 06:38:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647239933;
-        bh=TJyckrVdD9vt3Cl2Da1dKFQHLsxRPeDuQgCN8VeoLxI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=0ORFnekYJeIX98ILOhTdLOHeV0m56Me2lvHtCbPyF4RIgcCA7GIST+1JQukh7VWv0
-         oxUbOFT+jDj3oypjYN8Wk3f2pDmb0M2R23R1DwTxSHaQOlQkHNtKOkcmtvr8w2Ll6p
-         oTV8tKaWrbtpyjHxB2GKCo34r31vgIBmCjcjB+Sc=
-Date:   Mon, 14 Mar 2022 07:38:50 +0100
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Daniel Suchy <danny@danysek.cz>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rafael.richter@gin.de" <rafael.richter@gin.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: patch problem - mv88e6xxx: flush switchdev FDB workqueue
-Message-ID: <Yi7i+pebGu0NoIsF@kroah.com>
-References: <ccf51795-5821-203d-348e-295aabbdc735@danysek.cz>
- <20220313141030.ztwhuhfwxjfzi5nb@skbuf>
+        with ESMTP id S229724AbiCNGqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 02:46:20 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8373CFF3;
+        Sun, 13 Mar 2022 23:45:11 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id n2so12722241plf.4;
+        Sun, 13 Mar 2022 23:45:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HwGDi1sVfgM6vEwjYmQWuo614yIWTc+TjSIxyxAMlAA=;
+        b=OFglV4YNTV4B9RvfWrcOyp9Ky6jz7gYFN7V7XkdY05sSHo7bTVSZDN3d19BzcABKaH
+         YRxwvKCbXXsxHsJshYEh8PshhCQ7REiQ1N7UUe1p/YJphK3FRhTOiEqS4hXeNTjlVQfa
+         K4fIgWVNKaSRMM/FxdX4Thgz1rjs/StrkDfB3M3GOKCcRnMY5GgvkBLOA+Qrrs5kaoRP
+         8a4JmdyOpGlPlpUGr/TpkhYUfJK4DuWGRkE5q8J0U7DwzKDAR7mCySxnMbM031pn2sMz
+         g6l1r3u0LizvyiBt0JBJ0vtCkl8p4QxbuelD5GNKSaNSq6KzSlMj78Wm8VZunw78bYux
+         AfHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HwGDi1sVfgM6vEwjYmQWuo614yIWTc+TjSIxyxAMlAA=;
+        b=178e+uDxVbCOZCQP/vgakmLnZqbTgxLz/jpHi6xDfJg+VbGLtVFfSKHXt98Ej2o4Dt
+         qMzeRMJBOLyqNDZZgkiTx+s8E1dZLmAlGFfZxya3jl0YDEjCosgxhPfbEt5PMK1Cmnpy
+         QbHg6zJiI/L1aSebmDWOtQ3WDHT4DnTo45NW5+MVd0d7ZGhAaFfoi9E5OJUBXQsF6bnC
+         R211d8HnMjkIVjA+gLOEfPwv2x7DHkXFUWdtu3oJj+WK6nv1DtnqWM5uyhmvoL+MVlgc
+         lxSiS5L3NZ6yxldpTjlCBv9GyzbPcTeJUEuhUTsI3toTBDUDeeKVxF+Rxdm9p+zvJrxn
+         6D4g==
+X-Gm-Message-State: AOAM532NIBFZWmebqqz7mUE5vmujEv8Rly9TEtzu700y/Dv7ZKjr+Ov7
+        G+96Ca0fspI1yyLOKOwDPHs=
+X-Google-Smtp-Source: ABdhPJx/JtpuTG5tp1CzzSrpghu2Tp9YzGYf8rw4hriJbh8ezMW/YgFFEn7thGrGtrX7buLcrYgEDA==
+X-Received: by 2002:a17:902:6903:b0:151:6781:9397 with SMTP id j3-20020a170902690300b0015167819397mr22502299plk.137.1647240311126;
+        Sun, 13 Mar 2022 23:45:11 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id u18-20020a056a00099200b004f737cdd046sm20342127pfg.145.2022.03.13.23.45.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Mar 2022 23:45:10 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     toke@toke.dk
+Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH V2] ath9k: Use platform_get_irq() to get the interrupt
+Date:   Mon, 14 Mar 2022 06:45:01 +0000
+Message-Id: <20220314064501.2114002-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220313141030.ztwhuhfwxjfzi5nb@skbuf>
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 13, 2022 at 02:10:31PM +0000, Vladimir Oltean wrote:
-> Hi Daniel,
-> 
-> On Sun, Mar 13, 2022 at 03:03:07PM +0100, Daniel Suchy wrote:
-> > Hello,
-> > 
-> > I noticed boot problems on my Turris Omnia (with Marvell 88E6176 switch
-> > chip) after "net: dsa: mv88e6xxx: flush switchdev FDB workqueue before
-> > removing VLAN" commit https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=2566a89b9e163b2fcd104d6005e0149f197b8a48
-> > 
-> > Within logs I catched hung kernel tasks (see below), at least first is
-> > related to DSA subsystem.
-> > 
-> > When I revert this patch, everything works as expected and without any
-> > issues.
-> > 
-> > In my setup, I have few vlans on affected switch (i'm using ifupdown2 v3.0
-> > with iproute2 5.16 for configuration).
-> > 
-> > It seems your this patch introduces some new problem (at least for 5.15
-> > kernels). I suggest revert this patch.
-> > 
-> > - Daniel
-> 
-> Oh wow, I'm terribly sorry. Yes, this patch shouldn't have been
-> backported to kernel 5.15 and below, but I guess I missed the
-> backport notification email and forgot to tell Greg about this.
-> Patch "net: dsa: mv88e6xxx: flush switchdev FDB workqueue before
-> removing VLAN" needs to be immediately reverted from these trees.
-> 
-> Greg, to avoid this from happening in the future, would something like
-> this work? Is this parsed in some way?
-> 
-> Depends-on: 0faf890fc519 ("net: dsa: drop rtnl_lock from dsa_slave_switchdev_event_work") # which first appeared in v5.16
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-The "Fixes:" tag will solve this, please just use that in the future.
+It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+for requesting IRQ's resources any more, as they can be not ready yet in
+case of DT-booting.
 
-I'll go revert this, thanks.
+platform_get_irq() instead is a recommended way for getting IRQ even if
+it was not retrieved earlier.
 
-greg k-h
+It also makes code simpler because we're getting "int" value right away
+and no conversion from resource to int is required.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+---
+v1->v2:
+  - Retain dev_err() call on failure
+
+ drivers/net/wireless/ath/ath9k/ahb.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/ahb.c b/drivers/net/wireless/ath/ath9k/ahb.c
+index cdefb8e2daf1..c9b853af41d1 100644
+--- a/drivers/net/wireless/ath/ath9k/ahb.c
++++ b/drivers/net/wireless/ath/ath9k/ahb.c
+@@ -98,14 +98,12 @@ static int ath_ahb_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (res == NULL) {
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
+ 		dev_err(&pdev->dev, "no IRQ resource found\n");
+-		return -ENXIO;
++		return irq;
+ 	}
+ 
+-	irq = res->start;
+-
+ 	ath9k_fill_chanctx_ops();
+ 	hw = ieee80211_alloc_hw(sizeof(struct ath_softc), &ath9k_ops);
+ 	if (hw == NULL) {
+-- 
+2.25.1
+
