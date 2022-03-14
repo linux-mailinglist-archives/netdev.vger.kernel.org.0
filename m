@@ -2,53 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 554534D8512
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 13:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBCAB4D8516
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 13:34:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233326AbiCNMez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 08:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42666 "EHLO
+        id S240774AbiCNMfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 08:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245342AbiCNMcz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 08:32:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD19A5882A;
-        Mon, 14 Mar 2022 05:27:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C2A161025;
-        Mon, 14 Mar 2022 12:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3E8C340E9;
-        Mon, 14 Mar 2022 12:27:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647260849;
-        bh=pclfUA10g0N+EEIicov6TyYMnO+hEsvYfFRTwAkQkG4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qIwFylDtPLwMRARaNrOIc3TTcwenaR3vXS5+p1wV8Z7nBd6B+TZcNT6KGu8br6uhu
-         bKBY1rVo0I1cpjmdBRHL3pxzjF3DGxyj5O+gGfKqwQjVbO6LGJq5/zSZ8FQs2jQw03
-         5PA4GAvyF6Pb502IIK1kHLZPAbvbJG/Ou9e6fYNs=
-Date:   Mon, 14 Mar 2022 13:27:25 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kai Lueke <kailueke@linux.microsoft.com>
-Cc:     stable@vger.kernel.org,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paul Chaignon <paul@cilium.io>,
-        Eyal Birger <eyal.birger@gmail.com>
-Subject: Re: [PATCH] Revert "xfrm: state and policy should fail if
- XFRMA_IF_ID 0"
-Message-ID: <Yi80rV9a88NmXPPb@kroah.com>
-References: <20220303145510.324-1-kailueke@linux.microsoft.com>
- <20220307082245.GA1791239@gauss3.secunet.de>
- <076e8c72-b842-64a8-7a4b-9a3b30715b5d@linux.microsoft.com>
+        with ESMTP id S245463AbiCNMdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 08:33:03 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA51140CC;
+        Mon, 14 Mar 2022 05:31:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647261078; x=1678797078;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Uk40I5JPAuKTeUDKbFKLzPBxKRBgK3se0kAQvR9DnsI=;
+  b=bZQuUirVK5p3Z9dAbckXzpJjuJ5Sz01WUFxjd0Sh1vJ0vTOuRw4IvrGx
+   k6hNaeiCmlEqMGnMhml+1+CbhNwgSx5O+2rPXluaxvZBpF7eGuP3sVotN
+   WJhzNCEnwUD6qOsEtXXS4fHvpcTCbDfixCgQFqKeyKf/yFNV29GuPAnZT
+   pMaqMlM92AT5RQImAMG9FNlUJs1ScGdMXHSUZUHbdNLBqbYXKEuV6TIsl
+   0IOU4xx9UdnY06agP4RNbnN+CEpgmBNi0ekKGiLMcpTpz1mqw5S66LK/C
+   R71yB2wpZy2CZmu6WH5nCXJ+pt0fRGTmoteEWLvSnXUOLEkZUu6pe3Ewd
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10285"; a="342438526"
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="342438526"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 05:31:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,180,1643702400"; 
+   d="scan'208";a="597871762"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Mar 2022 05:31:13 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nTjqz-0009r8-4f; Mon, 14 Mar 2022 12:31:13 +0000
+Date:   Mon, 14 Mar 2022 20:31:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v3 net-next 01/14] net: bridge: mst: Multiple Spanning
+ Tree (MST) mode
+Message-ID: <202203142009.7OAfQ0fR-lkp@intel.com>
+References: <20220314095231.3486931-2-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <076e8c72-b842-64a8-7a4b-9a3b30715b5d@linux.microsoft.com>
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220314095231.3486931-2-tobias@waldekranz.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,29 +78,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 01:19:19PM +0100, Kai Lueke wrote:
-> I forgot to CC stable@ when submitting, doing it now:
-> Can this be picked for the next round of stable kernels (down to 5.10)?
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a3d9001b4e287fc043e5539d03d71a32ab114bcb
-> 
-> Thanks,
-> Kai
-> 
-> On 07.03.2022 09:22, Steffen Klassert wrote:
-> > On Thu, Mar 03, 2022 at 03:55:10PM +0100, kailueke@linux.microsoft.com wrote:
-> >> From: Kai Lueke <kailueke@linux.microsoft.com>
-> >>
-> >> This reverts commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 because ID
-> >> 0 was meant to be used for configuring the policy/state without
-> >> matching for a specific interface (e.g., Cilium is affected, see
-> >> https://github.com/cilium/cilium/pull/18789 and
-> >> https://github.com/cilium/cilium/pull/19019).
-> >>
-> >> Signed-off-by: Kai Lueke <kailueke@linux.microsoft.com>
-> > Applied, thanks Kai!
+Hi Tobias,
 
-I will pick it up for the next round of releases after these go out.
+I love your patch! Yet something to improve:
 
-thanks,
+[auto build test ERROR on net-next/master]
 
-greg k-h
+url:    https://github.com/0day-ci/linux/commits/Tobias-Waldekranz/net-bridge-Multiple-Spanning-Trees/20220314-175717
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git de29aff976d3216e7f3ab41fcd7af46fa8f7eab7
+config: xtensa-randconfig-m031-20220313 (https://download.01.org/0day-ci/archive/20220314/202203142009.7OAfQ0fR-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/702c502efb27c12860bc55fc8d9b1bfd99466623
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Tobias-Waldekranz/net-bridge-Multiple-Spanning-Trees/20220314-175717
+        git checkout 702c502efb27c12860bc55fc8d9b1bfd99466623
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash net/bridge/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   net/bridge/br.c: In function 'br_boolopt_toggle':
+>> net/bridge/br.c:269:23: error: implicit declaration of function 'br_mst_set_enabled'; did you mean 'br_stp_set_enabled'? [-Werror=implicit-function-declaration]
+     269 |                 err = br_mst_set_enabled(br, on, extack);
+         |                       ^~~~~~~~~~~~~~~~~~
+         |                       br_stp_set_enabled
+   cc1: some warnings being treated as errors
+
+
+vim +269 net/bridge/br.c
+
+   245	
+   246	/* br_boolopt_toggle - change user-controlled boolean option
+   247	 *
+   248	 * @br: bridge device
+   249	 * @opt: id of the option to change
+   250	 * @on: new option value
+   251	 * @extack: extack for error messages
+   252	 *
+   253	 * Changes the value of the respective boolean option to @on taking care of
+   254	 * any internal option value mapping and configuration.
+   255	 */
+   256	int br_boolopt_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on,
+   257			      struct netlink_ext_ack *extack)
+   258	{
+   259		int err = 0;
+   260	
+   261		switch (opt) {
+   262		case BR_BOOLOPT_NO_LL_LEARN:
+   263			br_opt_toggle(br, BROPT_NO_LL_LEARN, on);
+   264			break;
+   265		case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
+   266			err = br_multicast_toggle_vlan_snooping(br, on, extack);
+   267			break;
+   268		case BR_BOOLOPT_MST_ENABLE:
+ > 269			err = br_mst_set_enabled(br, on, extack);
+   270			break;
+   271		default:
+   272			/* shouldn't be called with unsupported options */
+   273			WARN_ON(1);
+   274			break;
+   275		}
+   276	
+   277		return err;
+   278	}
+   279	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
