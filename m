@@ -2,103 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDF614D7F04
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 10:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A410B4D7F0B
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 10:53:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238114AbiCNJwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 05:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36424 "EHLO
+        id S238112AbiCNJyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 05:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238075AbiCNJwS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 05:52:18 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on2063.outbound.protection.outlook.com [40.107.102.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D7A457A0
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 02:51:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IWA/LmV+TDXPK7XlbDtxkALq+uZzoy9qldtVnYiaObYu+q9NChTxZ96PMsKQmH2Elc7AbDV+9PX4E4D5nfILpa4W4mW00YAw9+vjaamrYSQ7CnkS63cD+L5FLWpR6oUAocnxZClPPTC8/fap2Jstq16MQQpgAvKuPjeSIBFiCxjKxKj+35hBqixV0Awcwfd75fbcPdGrY9+VBzQKKP20/X3JJ/vTVCWDW+RKswsY1Uar6Rhc3rCIoM2YFRgIHoDbOpJR0SIXJ+nrIFCk27oQL4lKTBwyTBe6GgUojBvztOQAKe2NMhUId2C7+hBROKjSvhzUWoNlsJKxbvsVWTQtig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=om5fZle4PPhRqkYkM2tYTJ7OXneLD+fS6dgg+uQTxD4=;
- b=Lxq6ujm9nlN8IEwbHXOKpsGw3P6rL0zQU1LdQv2t9aekrWO2wXs/pl2p/3W/JlehK4uCVqrYiTMgs9Md+mV03FYaAT16j1XhgKNsTluHb4fCwrb3GlI7OFdQEMPXin3IjIgfjI0CSvB2yndF3xRcHseslj5uaq5MDfQn5KyGnbW/ouoLjgdLLcbqjj65KnncJuaucgQjOlw3P4hiHODDiV/TMPc2ha+Zm2uHLJtH0mmAwjM67r/OhcwjgS8SJDGRd3UkNmTGk9tx3IDB9Dwr9wCuDV75Bfwjcs7saUo+I/Dyk8KgcThQNsZIuvZP5Qx/zGdY1ItjyDbTw6Q7Zjpf0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=om5fZle4PPhRqkYkM2tYTJ7OXneLD+fS6dgg+uQTxD4=;
- b=lq35aJT3+E2BjW2sdSkray7G9H/E3QV7Q7gaJpgDakoMoXtPAuJhcrqOZoe4Ws3ay1NIG4L6mHWKcxjaRfBxn/qdktAuob17Fq/H686G1FxAoXgwbv77V2JHQvrsjjC76F2ppUa93tLzLHzRPa3voyh/mJvihJ0yzQgCZuVWJEAe+ecvgBDGkvwFNhUBmaFu6sbYAMGPOwMy268oxxfCGbiERyKV0buqZnfUD3e7wP2RNLdNFU062fofiu+n4lKviasrDAFOabT/I0EKiP4ihuwy0+l3WrHUs9g666dBtb80VUcNyZUIxZTvqrNhsVWbv8clxGR5C3twioMyIU+UFQ==
-Received: from MW4PR02CA0008.namprd02.prod.outlook.com (2603:10b6:303:16d::27)
- by DM6PR12MB3195.namprd12.prod.outlook.com (2603:10b6:5:183::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.26; Mon, 14 Mar
- 2022 09:51:07 +0000
-Received: from CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:16d:cafe::1e) by MW4PR02CA0008.outlook.office365.com
- (2603:10b6:303:16d::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25 via Frontend
- Transport; Mon, 14 Mar 2022 09:51:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT065.mail.protection.outlook.com (10.13.174.62) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5061.22 via Frontend Transport; Mon, 14 Mar 2022 09:51:07 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 14 Mar
- 2022 09:51:05 +0000
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 14 Mar
- 2022 02:51:03 -0700
-References: <cover.1647009587.git.petrm@nvidia.com>
- <7480f1df343e383234e7f197d78c180eefe92e89.1647009587.git.petrm@nvidia.com>
- <20220311170948.613fd09c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-agent: mu4e 1.6.6; emacs 27.2
-From:   Petr Machata <petrm@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Petr Machata <petrm@nvidia.com>, <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next v2 1/3] netdevsim: Introduce support for L3
- offload xstats
-Date:   Mon, 14 Mar 2022 10:47:12 +0100
-In-Reply-To: <20220311170948.613fd09c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Message-ID: <87ee34981m.fsf@nvidia.com>
+        with ESMTP id S233645AbiCNJyH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 05:54:07 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27734645A
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 02:52:56 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id z26so20966652lji.8
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 02:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=xMFvgybvJF3VqtR+/cQDnuYW+EVkWBbAn5g045aqjjs=;
+        b=EhJVlZkVs2Xkt4rI91TPXAMB8GE5CuQUnrCjhdqKM78NXlyd2KT1xa82G7L123WaK4
+         sk+8gBjWJv/tz4QeL1Wj2ho7VlzGU6i3j/G9L2MfSyrbKbMyeZrvxhN3qFhFz75VqsQj
+         8HtZfXOQqy3Jwp0oWGeypz0WosQYneZa++8U1Vm+DTPm893QA9d+V8bZjOjsv2XlsIdr
+         RMuszCzrq10aoOump6Bg3MqM0FCzi6vlLY2ofwGR2lUb3yIQnI3vMEWAlBIgGq0oHFil
+         Vuklcxa6QrwBecnnMQhxSpVw34ML5gGET07e3S60l21BxgxZ7AJD8kRAP6OldLkM8Yrg
+         obrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=xMFvgybvJF3VqtR+/cQDnuYW+EVkWBbAn5g045aqjjs=;
+        b=Z8yV64OlUjLyW1kexx0r69FuToOkTz+7bF+K/YGomukHlABHpsNcgCbxj9pte/cHgn
+         UcvF6BQNK284dkYU0SYHzKTIL5fYq3vwp68nWeF3NngsgoALcoWsgGIQCdwHylciqil2
+         xcZqJwp/tqkT1yGxZluCvHzN6uODYq6v8MHdGy8KR1BBLiubCEc4nUFml6fbKWo0DNal
+         t/wE6Zq+SftouulmTYcifbhOAvAvdU9zMb72EKwJSl85MVVOW6NfOJJivf063cHiGBt2
+         jaGzU5jr+ygVVayUyzl4Zg8yEIbYYOBrNvqwzOPN8Gpc2239JcSi/GryQ5IfWg8IQr0H
+         KJfw==
+X-Gm-Message-State: AOAM530qiRDbHU7LtkYmYEQi0yyCiOrDy4TgLWbt8TyQIpiBxtOVolyI
+        0Gywni9Ri76h1NRzuMtwOin1KA==
+X-Google-Smtp-Source: ABdhPJwfAwHjxQjYONL4Pi1vJVKg4+muhXbkT79GJeSGUZzLhVP3GDmYhBUtTC3Tyf4iU+Bosrj3hw==
+X-Received: by 2002:a05:651c:171b:b0:248:c74:76f0 with SMTP id be27-20020a05651c171b00b002480c7476f0mr12705190ljb.106.1647251574338;
+        Mon, 14 Mar 2022 02:52:54 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id b3-20020a056512304300b004488e49f2fasm984870lfb.129.2022.03.14.02.52.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 02:52:53 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: [PATCH v3 net-next 00/14] net: bridge: Multiple Spanning Trees
+Date:   Mon, 14 Mar 2022 10:52:17 +0100
+Message-Id: <20220314095231.3486931-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 49982ede-9220-4ed0-4412-08da05a02950
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3195:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB31956734FB4FD2DBB32F5847D60F9@DM6PR12MB3195.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Uuj6wzDgFY73j2D9iaEKlGrhU0lgzEZ7t9HKW/wxw4rPQkpjbHnT9u7UxX5UKsj8MXiUAkroF0T7/lW8MKuevxtAF1c1EaziVZW4dd8dlO9WjXDRCr4aKBF9usW+BaSSqvfmmRwD/3keRoqYyw/tdM2p04NCz2DYPWxnkZwR2ouBH+6buiLXulkrXVwGz3RAMPBPVzVAxjjcEzMzomYIijh6FoOgBzPlHLeNAZBHcvxkGMqDD/ti07jXSti4R5beeLgDDhtmINpoOtO9SdY51YLG1vUWCMpWrygLdGKaG+ksy0pHdh/XHs1BgSl6fNqJJLFND8gJ94m4riqQjmJIgI4i0IEZMGnC6ye8/BugNGCq90qOuCmsuaTDp4GF4lN3cNPSgqmtjPqH2dzCHXWk13JjWm8Kk/IY2PDNkEZKuoRAE1sm71gt3ACJKFitEBt0i61qVzoDe4QxGlZvMGnV7P+XJdLvX4SuYshKgxy3puK43NdQO5obwF1WJJrXxuENEX2LrSWKs8TLpzdL1sNWjosj+qxVKcEAO7Nw3ZQF9RONM2Ye/GqzMRUe3rtwFFkSYwfnGqg5jDWPW5P/QJNmJKd3wyiI/HK8f89fL+z0uX4AGwgjVDmsvV4dG7Y25i965ABDTT40TQGO81NrrVP0FTvB3r6uHWyfV8zf8RkN/Bywvv0uOXTgyignsZLr9VlHFZT5hKx/urptIUrNHyZrFQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(81166007)(47076005)(356005)(6666004)(107886003)(426003)(26005)(86362001)(186003)(2616005)(2906002)(16526019)(336012)(508600001)(8676002)(70206006)(70586007)(5660300002)(36860700001)(4326008)(316002)(6916009)(36756003)(8936002)(40460700003)(54906003)(82310400004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2022 09:51:07.1285
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 49982ede-9220-4ed0-4412-08da05a02950
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3195
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -106,39 +80,174 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The bridge has had per-VLAN STP support for a while now, since:
 
-Jakub Kicinski <kuba@kernel.org> writes:
+https://lore.kernel.org/netdev/20200124114022.10883-1-nikolay@cumulusnetworks.com/
 
-> On Fri, 11 Mar 2022 15:41:22 +0100 Petr Machata wrote:
->> +static const struct file_operations nsim_dev_hwstats_generic_fops = {
->> +	.open = simple_open,
->> +	.write = nsim_dev_hwstats_do_write,
->> +	.llseek = generic_file_llseek,
->> +	.owner = THIS_MODULE,
->> +};
->> +
->> +static const struct nsim_dev_hwstats_fops nsim_dev_hwstats_l3_disable_fops = {
->> +	.fops = nsim_dev_hwstats_generic_fops,
->> +	.action = NSIM_DEV_HWSTATS_DO_DISABLE,
->> +	.type = NETDEV_OFFLOAD_XSTATS_TYPE_L3,
->> +};
->> +
->> +static const struct nsim_dev_hwstats_fops nsim_dev_hwstats_l3_enable_fops = {
->> +	.fops = nsim_dev_hwstats_generic_fops,
->> +	.action = NSIM_DEV_HWSTATS_DO_ENABLE,
->> +	.type = NETDEV_OFFLOAD_XSTATS_TYPE_L3,
->> +};
->> +
->> +static const struct nsim_dev_hwstats_fops nsim_dev_hwstats_l3_fail_fops = {
->> +	.fops = nsim_dev_hwstats_generic_fops,
->> +	.action = NSIM_DEV_HWSTATS_DO_FAIL,
->> +	.type = NETDEV_OFFLOAD_XSTATS_TYPE_L3,
->> +};
->
-> clang is not on board :(
->
-> drivers/net/netdevsim/hwstats.c:404:10: error: initializer element is not a compile-time constant
->         .fops = nsim_dev_hwstats_generic_fops,
+The current implementation has some problems:
 
-OK, I'll figure out another way to do away with the redundancy. Or else
-inline the definitions.
+- The mapping from VLAN to STP state is fixed as 1:1, i.e. each VLAN
+  is managed independently. This is awkward from an MSTP (802.1Q-2018,
+  Clause 13.5) point of view, where the model is that multiple VLANs
+  are grouped into MST instances.
+
+  Because of the way that the standard is written, presumably, this is
+  also reflected in hardware implementations. It is not uncommon for a
+  switch to support the full 4k range of VIDs, but that the pool of
+  MST instances is much smaller. Some examples:
+
+  Marvell LinkStreet (mv88e6xxx): 4k VLANs, but only 64 MSTIs
+  Marvell Prestera: 4k VLANs, but only 128 MSTIs
+  Microchip SparX-5i: 4k VLANs, but only 128 MSTIs
+
+- By default, the feature is enabled, and there is no way to disable
+  it. This makes it hard to add offloading in a backwards compatible
+  way, since any underlying switchdevs have no way to refuse the
+  function if the hardware does not support it
+
+- The port-global STP state has precedence over per-VLAN states. In
+  MSTP, as far as I understand it, all VLANs will use the common
+  spanning tree (CST) by default - through traffic engineering you can
+  then optimize your network to group subsets of VLANs to use
+  different trees (MSTI). To my understanding, the way this is
+  typically managed in silicon is roughly:
+
+  Incoming packet:
+  .----.----.--------------.----.-------------
+  | DA | SA | 802.1Q VID=X | ET | Payload ...
+  '----'----'--------------'----'-------------
+                        |
+                        '->|\     .----------------------------.
+                           | +--> | VID | Members | ... | MSTI |
+                   PVID -->|/     |-----|---------|-----|------|
+                                  |   1 | 0001001 | ... |    0 |
+                                  |   2 | 0001010 | ... |   10 |
+                                  |   3 | 0001100 | ... |   10 |
+                                  '----------------------------'
+                                                             |
+                               .-----------------------------'
+                               |  .------------------------.
+                               '->| MSTI | Fwding | Lrning |
+                                  |------|--------|--------|
+                                  |    0 | 111110 | 111110 |
+                                  |   10 | 110111 | 110111 |
+                                  '------------------------'
+
+  What this is trying to show is that the STP state (whether MSTP is
+  used, or ye olde STP) is always accessed via the VLAN table. If STP
+  is running, all MSTI pointers in that table will reference the same
+  index in the STP stable - if MSTP is running, some VLANs may point
+  to other trees (like in this example).
+
+  The fact that in the Linux bridge, the global state (think: index 0
+  in most hardware implementations) is supposed to override the
+  per-VLAN state, is very awkward to offload. In effect, this means
+  that when the global state changes to blocking, drivers will have to
+  iterate over all MSTIs in use, and alter them all to match. This
+  also means that you have to cache whether the hardware state is
+  currently tracking the global state or the per-VLAN state. In the
+  first case, you also have to cache the per-VLAN state so that you
+  can restore it if the global state transitions back to forwarding.
+
+This series adds a new mst_enable bridge setting (as suggested by Nik)
+that can only be changed when no VLANs are configured on the
+bridge. Enabling this mode has the following effect:
+
+- The port-global STP state is used to represent the CST (Common
+  Spanning Tree) (1/14)
+
+- Ingress STP filtering is deferred until the frame's VLAN has been
+  resolved (1/14)
+
+- The preexisting per-VLAN states can no longer be controlled directly
+  (1/14). They are instead placed under the MST module's control,
+  which is managed using a new netlink interface (described in 3/14)
+
+- VLANs can br mapped to MSTIs in an arbitrary M:N fashion, using a
+  new global VLAN option (2/14)
+
+Switchdev notifications are added so that a driver can track:
+- MST enabled state
+- VID to MSTI mappings
+- MST port states
+
+An offloading implementation is this provided for mv88e6xxx.
+
+A proposal for the corresponding iproute2 interface is available here:
+
+https://github.com/wkz/iproute2/tree/mst
+
+v2 -> v3:
+  Bridge:
+  - Use new boolopt API to enable/disable the MST mode (Nik)
+  - Mark br_mst_vlan_set_state as static (Vladimir)
+  - Avoid updates/notifications on repeated VLAN to MSTI mapping
+    configurations (Vladimir)
+  - Configure MSTI states via the existing RTM_GET/SETLINK interface
+    (Roopa)
+  - Refactor switchdev replay logic (Vladimir)
+  - Send switchdev notifications when enabling/disabling MST
+    (Vladimir)
+  DSA:
+  - Align VLAN MSTI callback with existing APIs (Vladimir)
+  - Only flush entries in the affected VLANs when changing an MST
+    state (Vladimir)
+  - Refuse offloading, unless all required ops are implemented
+    (Vladimir)
+  mv88e6xxx:
+  - Always keep the driver's MST state in sync with hardware
+    (Vladimir)
+  - Fix SID leaks (Vladimir)
+  - Only flush entries in the affected VLANs when changing an MST
+    state (Vladimir)
+
+v1 (RFC) -> v2:
+  - Add a separate MST mode that is distinct from the exiting per-VLAN
+    state functionality
+  - Control MSTI states explicitly, rather than via an associated VLAN
+
+Tobias Waldekranz (14):
+  net: bridge: mst: Multiple Spanning Tree (MST) mode
+  net: bridge: mst: Allow changing a VLAN's MSTI
+  net: bridge: mst: Support setting and reporting MST port states
+  net: bridge: mst: Notify switchdev drivers of MST mode changes
+  net: bridge: mst: Notify switchdev drivers of VLAN MSTI migrations
+  net: bridge: mst: Notify switchdev drivers of MST state changes
+  net: bridge: mst: Add helper to map an MSTI to a VID set
+  net: bridge: mst: Add helper to check if MST is enabled
+  net: dsa: Validate hardware support for MST
+  net: dsa: Pass VLAN MSTI migration notifications to driver
+  net: dsa: Handle MST state changes
+  net: dsa: mv88e6xxx: Disentangle STU from VTU
+  net: dsa: mv88e6xxx: Export STU as devlink region
+  net: dsa: mv88e6xxx: MST Offloading
+
+ drivers/net/dsa/mv88e6xxx/chip.c        | 305 ++++++++++++++++++++++-
+ drivers/net/dsa/mv88e6xxx/chip.h        |  38 +++
+ drivers/net/dsa/mv88e6xxx/devlink.c     |  94 +++++++
+ drivers/net/dsa/mv88e6xxx/global1.h     |  10 +
+ drivers/net/dsa/mv88e6xxx/global1_vtu.c | 311 ++++++++++++++----------
+ include/linux/if_bridge.h               |  11 +
+ include/net/dsa.h                       |   6 +
+ include/net/switchdev.h                 |  16 ++
+ include/uapi/linux/if_bridge.h          |  19 ++
+ include/uapi/linux/rtnetlink.h          |   1 +
+ net/bridge/Makefile                     |   2 +-
+ net/bridge/br.c                         |   5 +
+ net/bridge/br_input.c                   |  17 +-
+ net/bridge/br_mst.c                     | 310 +++++++++++++++++++++++
+ net/bridge/br_netlink.c                 |  32 ++-
+ net/bridge/br_private.h                 |  43 ++++
+ net/bridge/br_stp.c                     |   3 +
+ net/bridge/br_switchdev.c               |  46 ++++
+ net/bridge/br_vlan.c                    |  20 +-
+ net/bridge/br_vlan_options.c            |  20 ++
+ net/dsa/dsa_priv.h                      |   6 +
+ net/dsa/port.c                          |  99 +++++++-
+ net/dsa/slave.c                         |  18 ++
+ 23 files changed, 1281 insertions(+), 151 deletions(-)
+ create mode 100644 net/bridge/br_mst.c
+
+-- 
+2.25.1
+
