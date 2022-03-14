@@ -2,66 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF9BA4D8DF3
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D95FD4D8E03
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:17:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244039AbiCNUM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 16:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
+        id S238092AbiCNUSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 16:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244433AbiCNUMt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:12:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4829313D0C
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:11:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AB59B80FA7
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 20:11:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81C8AC340E9;
-        Mon, 14 Mar 2022 20:11:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647288695;
-        bh=KIOrN/hO69r3zY7TPtbiLbMsh5cL4njwJiGp3c2h1v8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b8xsqLLVncLh1pENyG1w+Dfloo9He1sd/aXW5MIhxkeCS2pBMVqHiTRED8XkcGa5s
-         3AXecJRwOKg0YsQNBOq/QUTiFdvu+PulTWOiCrGDjqarTaKCpi3DAdfEUbE/kB9Mr7
-         Q8QOHPJZoNykgCq0+IWht6Nr1t0XQILUzr8LhqMn940c7KL8MyHsW6qsJhwWGyUtNF
-         G0fC6rceku/D/VAsGeAoFOzUZeJ8hqotxvuAnbjh0af+ZsnHsyQzckIFdz8+TXVXcr
-         R7OWbMO0YhkMzFLq49E/MzDmBAV1W+IixITON4YgqnhhWb6oQDwHaJLt/i6qhrr/dQ
-         nl4OCK7BzrMnA==
-Date:   Mon, 14 Mar 2022 13:11:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
-        netdev@vger.kernel.org, leonro@nvidia.com, jiri@resnulli.us,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [RFT net-next 0/6] devlink: expose instance locking and
- simplify port splitting
-Message-ID: <20220314131134.62f98ba8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <Yi+TJ5X27Esi4NWz@shredder>
-References: <20220310001632.470337-1-kuba@kernel.org>
-        <Yim9aIeF8oHG59tG@shredder>
-        <Yipp3sQewk9y0RVP@shredder>
-        <20220314114645.5708bf90@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <Yi+TJ5X27Esi4NWz@shredder>
+        with ESMTP id S236244AbiCNUSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:18:45 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8483533EB0;
+        Mon, 14 Mar 2022 13:17:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=cVkMS+Fa/xX+53DYlYjjDSiEa2X0IZrbhmQUrlvfDEQ=;
+        t=1647289053; x=1648498653; b=KtVidyiYVztZ3NXubBweyD1NC0Fn+O7jZDRixv4xg9ZhcaS
+        u9YhCMjF1oLxKSTkeugbFT63Q0mqCPHv5kboBQcmwxZ/PxfmJkp/E62It2fQe5zLoJKblSUUDv7qb
+        gbM9pOHnLU1SoFhIjZcYmDpOSL5Zt5EcQD5YO9Nu663Ml8kesOvTSZcp1642BVfXkapI5udE32555
+        paaz/Dk0W3/R8TzenT0xS8HetwEgm+2vdAniAiltRmOw3/jlFkQ2D1rsRrfsF2FwTiDURi7UBOE/W
+        +5HPpM796hTknuJOzl+Wtn2V0gAY4DT24fwEhVZSG1h2SMUeRtSG4FQAptyX16tg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nTr8E-00DD64-TF;
+        Mon, 14 Mar 2022 21:17:31 +0100
+Message-ID: <6d37b8c3415b88ff6da1b88f0c6dfb649824311c.camel@sipsolutions.net>
+Subject: Re: pull-request: wireless-next-2022-03-11
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, Kalle Valo <kvalo@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Date:   Mon, 14 Mar 2022 21:17:30 +0100
+In-Reply-To: <20220314113738.640ea10b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220311124029.213470-1-johannes@sipsolutions.net>
+         <164703362988.31502.5602906395973712308.git-patchwork-notify@kernel.org>
+         <20220311170625.4a3a626b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <20220311170833.34d44c24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <87sfrkwg1q.fsf@tynnyri.adurom.net>
+         <20220314113738.640ea10b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Mar 2022 21:10:31 +0200 Ido Schimmel wrote:
-> > Hi Ido, no news?  
+On Mon, 2022-03-14 at 11:37 -0700, Jakub Kicinski wrote:
+> On Mon, 14 Mar 2022 20:21:53 +0200 Kalle Valo wrote:
+> > Jakub Kicinski <kuba@kernel.org> writes:
+> > 
+> > > On Fri, 11 Mar 2022 17:06:25 -0800 Jakub Kicinski wrote:  
+> > > > Seems to break clang build.  
+> > > 
+> > > No, sorry just some new warnings with W=1, I think.  
+> > 
+> > I have not installed clang yet. You don't happen to have the warnings
+> > stored someplace? I checked the patchwork tests and didn't see anything
+> > there.
 > 
-> Sorry, forgot to update you. All the tests passed :)
+> Yeah.. patchwork build thing can't resolve conflicts. I wish there was
+> a way to attach a resolution to the PR so that the bot can use it :S
+> 
 
-Perfect, thank you!
+That'd be on thing - but OTOH ... maybe you/we could somehow attach the
+bot that processes things on the netdev patchwork also to the wireless
+one? It's on the same patchwork instance already, so ...
+
+But I do't know who runs it, how it runs, who's paying for it, etc.
+
+johannes
