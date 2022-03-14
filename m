@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41BEB4D7AD3
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 07:32:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 254A94D7AE1
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 07:38:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236398AbiCNGdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 02:33:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44428 "EHLO
+        id S236433AbiCNGkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 02:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbiCNGdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 02:33:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA8661AD92;
-        Sun, 13 Mar 2022 23:32:13 -0700 (PDT)
+        with ESMTP id S229787AbiCNGkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 02:40:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E9F3CFFD;
+        Sun, 13 Mar 2022 23:38:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D340B80D31;
-        Mon, 14 Mar 2022 06:32:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0FEFC340E9;
-        Mon, 14 Mar 2022 06:32:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647239530;
-        bh=uL2ISkbwNCyUtkHUNIck8aCPqkfUen/EsbzZstPNXaQ=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=gbphCcZh0BddFZhU/5ZsOlHfQIzg7Tf551saRQDO2myvCkleQXf07pe/suNzTzdBg
-         kKJD0wr9X5jSTCgAW2ym6DrGEy5870ihXtAqr4KJEPL6+upYBBv7V/cLC5WL6zlg4U
-         2RuceMZllpZiXYD3NjvFD/XZe32ArOQmUtzziEk+VAJ1JnGdWK2kVtJz9ZgZVAy5ZX
-         YAGlcelB2lf0J10guyynrMjNdn1ty1WCqYmAXkG/6v5zHAo2wCOhEM3WFjVvRVZeky
-         3eoh2sWF5c89gxNpXn/Ztnp0nTK/KJRAhas6OMXT/73M7RrXsJdnjmOd819KktLppJ
-         JzmR0RCj/Fknw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     toke@toke.dk, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH V2] ath9k: Use platform_get_irq() to get the interrupt
-References: <20220314062635.2113747-1-chi.minghao@zte.com.cn>
-Date:   Mon, 14 Mar 2022 08:32:05 +0200
-In-Reply-To: <20220314062635.2113747-1-chi.minghao@zte.com.cn> (cgel zte's
-        message of "Mon, 14 Mar 2022 06:26:35 +0000")
-Message-ID: <877d8xqc2i.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE6261053;
+        Mon, 14 Mar 2022 06:38:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5857CC340E9;
+        Mon, 14 Mar 2022 06:38:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647239933;
+        bh=TJyckrVdD9vt3Cl2Da1dKFQHLsxRPeDuQgCN8VeoLxI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=0ORFnekYJeIX98ILOhTdLOHeV0m56Me2lvHtCbPyF4RIgcCA7GIST+1JQukh7VWv0
+         oxUbOFT+jDj3oypjYN8Wk3f2pDmb0M2R23R1DwTxSHaQOlQkHNtKOkcmtvr8w2Ll6p
+         oTV8tKaWrbtpyjHxB2GKCo34r31vgIBmCjcjB+Sc=
+Date:   Mon, 14 Mar 2022 07:38:50 +0100
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Daniel Suchy <danny@danysek.cz>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "rafael.richter@gin.de" <rafael.richter@gin.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: patch problem - mv88e6xxx: flush switchdev FDB workqueue
+Message-ID: <Yi7i+pebGu0NoIsF@kroah.com>
+References: <ccf51795-5821-203d-348e-295aabbdc735@danysek.cz>
+ <20220313141030.ztwhuhfwxjfzi5nb@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220313141030.ztwhuhfwxjfzi5nb@skbuf>
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,46 +55,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cgel.zte@gmail.com writes:
+On Sun, Mar 13, 2022 at 02:10:31PM +0000, Vladimir Oltean wrote:
+> Hi Daniel,
+> 
+> On Sun, Mar 13, 2022 at 03:03:07PM +0100, Daniel Suchy wrote:
+> > Hello,
+> > 
+> > I noticed boot problems on my Turris Omnia (with Marvell 88E6176 switch
+> > chip) after "net: dsa: mv88e6xxx: flush switchdev FDB workqueue before
+> > removing VLAN" commit https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=2566a89b9e163b2fcd104d6005e0149f197b8a48
+> > 
+> > Within logs I catched hung kernel tasks (see below), at least first is
+> > related to DSA subsystem.
+> > 
+> > When I revert this patch, everything works as expected and without any
+> > issues.
+> > 
+> > In my setup, I have few vlans on affected switch (i'm using ifupdown2 v3.0
+> > with iproute2 5.16 for configuration).
+> > 
+> > It seems your this patch introduces some new problem (at least for 5.15
+> > kernels). I suggest revert this patch.
+> > 
+> > - Daniel
+> 
+> Oh wow, I'm terribly sorry. Yes, this patch shouldn't have been
+> backported to kernel 5.15 and below, but I guess I missed the
+> backport notification email and forgot to tell Greg about this.
+> Patch "net: dsa: mv88e6xxx: flush switchdev FDB workqueue before
+> removing VLAN" needs to be immediately reverted from these trees.
+> 
+> Greg, to avoid this from happening in the future, would something like
+> this work? Is this parsed in some way?
+> 
+> Depends-on: 0faf890fc519 ("net: dsa: drop rtnl_lock from dsa_slave_switchdev_event_work") # which first appeared in v5.16
 
-> From: Minghao Chi <chi.minghao@zte.com.cn>
->
-> It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
-> for requesting IRQ's resources any more, as they can be not ready yet in
-> case of DT-booting.
->
-> platform_get_irq() instead is a recommended way for getting IRQ even if
-> it was not retrieved earlier.
->
-> It also makes code simpler because we're getting "int" value right away
-> and no conversion from resource to int is required.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-> ---
-> v1->v2:
->   - Retain dev_err() call on failure
->
->  drivers/net/wireless/ath/ath9k/ahb.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/net/wireless/ath/ath9k/ahb.c b/drivers/net/wireless/ath/ath9k/ahb.c
-> index cdefb8e2daf1..28c45002c115 100644
-> --- a/drivers/net/wireless/ath/ath9k/ahb.c
-> +++ b/drivers/net/wireless/ath/ath9k/ahb.c
-> @@ -98,14 +98,12 @@ static int ath_ahb_probe(struct platform_device *pdev)
->  		return -ENOMEM;
->  	}
->  
-> -	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> -	if (res == NULL) {
-> +	irq = platform_get_resource(pdev, 0);
+The "Fixes:" tag will solve this, please just use that in the future.
 
-Is this really correct? Should it be platform_get_irq()?
+I'll go revert this, thanks.
 
-Do you compile test your patches? That's mandatory.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+greg k-h
