@@ -2,142 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C5284D8A23
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 17:49:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 242504D8A34
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 17:56:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230446AbiCNQuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 12:50:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        id S235062AbiCNQ6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 12:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244810AbiCNQuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 12:50:12 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0428820F5C
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 09:49:02 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id bu29so28401070lfb.0
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 09:49:01 -0700 (PDT)
+        with ESMTP id S234693AbiCNQ6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 12:58:03 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75073A73B;
+        Mon, 14 Mar 2022 09:56:52 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id r13so35440590ejd.5;
+        Mon, 14 Mar 2022 09:56:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=F9ILzHWkvkyh+gia0dF1ILImDL/fEekmMr3Uov1MXcE=;
-        b=QnGXLSD3jzJFREQ+Ji7gzJL8J6H4xQsmmHsoRgoe05KeQClo92KR5djjaibyRshbUC
-         6LrCTjZzV7oJnxFUQzJeG6qM1qKThe+XdJY4clHHC+Lmu1IQPXi6C8MGXYLztcgygx7z
-         4mHsDq+Duym7C7NZ/9cUWou8zydiI9jR8823Q/1A4kam5/cubSBDhvIK5u74LQTDfwZc
-         Ju1mrqz4NNeBXFWQWKNvSSPGmO4Y9FLu3+hNBMahR2IMJmv3nfZI/k3/0Hv2vVSSWOwk
-         q/CxcCfuS1obHPLAzxeBGkuE7AAxTUNwR6Hhkoz+4R1EMQ2oir9BbmEBz3Tz+mfiuEa0
-         DXSA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=63A+VQ/NUEeDaJW7pNGXfcNFAy8DF92o6Jzg0oVXuE4=;
+        b=bLlpoaIizi9w3UjGu1TRPkRkHLgPf6oYVkqZWI2khR0kHkk3u04vcv1O8WJMtUqoxV
+         99B9FR+PioiSsynsRNsE6QFtnlvm+Xj5dH34iH9GlBmn6++ZXau3EED6kY3J+hAEdbL4
+         6XvpbJMXNdp5ZfUy5hujk3Vb+tH4K7lZEAA0K1VUHGTorOS47cPw6eTJP36+Nen6h9kt
+         Rpvzm96daPnQuEl1cJnQKip3IihU9R5UftSOdffgGkJpZbxZYooxKNCxQil0BpG9O5a4
+         MsCtR96HyerXpBZk0C4uERrPw4f/n3yU+y0eD51xhWOlGhXoz0yZljPMLAYu8YgxaF+0
+         vDug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=F9ILzHWkvkyh+gia0dF1ILImDL/fEekmMr3Uov1MXcE=;
-        b=r8xZGO1FmTq9gOCcwkOQXZxbGqvMEI51t3x9WRng4MAKHqV8H/zZK1ST3pnGcA6O6E
-         bzumdAoLOOKU/teomM0gAW609tIz3zhtSYMMdi7ZOPt98snyzSfrz1oL0tzdjIr0g0mJ
-         9oxMWA1cFSbBjQlLrraSUrJi8MQZI0V4GhXVVkIi5rYmO8pYpdghp2g0Ezqd5TqdwWK8
-         X8J/4n/ydlFPpsTXir3FrERP76lLTTPXLVCQqQUjfrDRR80KUNVFByN9jnZhwusdYOZs
-         aeDZVFNppHpmr5dDNdJrT/PQNYHDnr+JLyaF8mwH+pWggopd7Ltdpd3ck8uLDAQe8Fxl
-         UaHQ==
-X-Gm-Message-State: AOAM5312fiHxayHb4RGSLRQOLsRLwoWhT1F0Ip81zhbF7ZHOQRRHaQju
-        KVn40KDJaLxaUBEOVhF27hg=
-X-Google-Smtp-Source: ABdhPJyuZgoxmaop3RO6KPEJDYmmlf4TVUxONkXsdh/WBh2TrSmuMB/xmDDButV64izJQyieeRZt6Q==
-X-Received: by 2002:ac2:4ec3:0:b0:443:6504:ee19 with SMTP id p3-20020ac24ec3000000b004436504ee19mr14243848lfr.260.1647276540029;
-        Mon, 14 Mar 2022 09:49:00 -0700 (PDT)
-Received: from [10.0.1.14] (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id w15-20020ac25d4f000000b0044846901eaesm3347690lfd.247.2022.03.14.09.48.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 09:48:59 -0700 (PDT)
-Message-ID: <603ed7af-8b5e-f5f3-ed9c-8d287095efbf@gmail.com>
-Date:   Mon, 14 Mar 2022 17:48:58 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Reply-To: mattias.forsblad+netdev@gmail.com
-Subject: Re: [PATCH 1/3] net: bridge: Implement bridge flag local_receive
-Content-Language: en-US
-To:     Ido Schimmel <idosch@idosch.org>, mattias.forsblad+netdev@gmail.com
-Cc:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=63A+VQ/NUEeDaJW7pNGXfcNFAy8DF92o6Jzg0oVXuE4=;
+        b=7bDyTtf0XkKhwLVoU2z9Pw1iEi4e/ADWZoL9hYsN7WPg3iEhA2unVUfaF+Y/R97DnN
+         hj/yI5Y3KOKsC3sXG0IgkbVoBe0/QQGs45bZDmrdh1QqDlZIFzYbIw4vl4C3/oYXzKFi
+         AfE3KcHT+vRrpiw+CLvrSc5TYwUo3B+TyQAOSOuMLrIeEemrMb6sVAnHjkVbCBrLnAW7
+         VKdUvJPvOFBhc+s5eYKkG4c4K4NO40iwARub4r/AR9UfmMsobdEk4T411RRfs4TSjk8B
+         bxnJEChByWo7Rbl8wHxvqrgYQXaLN/83w0oSIOHwY+bc5KxwjQYW9EmkCfgSEnOT8mPQ
+         FUcw==
+X-Gm-Message-State: AOAM530Gcrnc9M3uAdgDowzjBXFvfDhsNywGIYpdMITpZkTiUqBXfTXj
+        yMfUP4DYkBabjUhQFly/4i0=
+X-Google-Smtp-Source: ABdhPJy4iP7W3VPKzGvFW/dTiEMVOGUqKn5TPQdRZRefbfStQyIy115mZyar8J0FrnQFf4zbZb8I5A==
+X-Received: by 2002:a17:907:7254:b0:6db:ad8f:27b4 with SMTP id ds20-20020a170907725400b006dbad8f27b4mr12828197ejc.599.1647277011251;
+        Mon, 14 Mar 2022 09:56:51 -0700 (PDT)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id js24-20020a170906ca9800b006c8aeca8fe8sm7029530ejb.58.2022.03.14.09.56.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 09:56:50 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 18:56:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-References: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
- <20220301123104.226731-2-mattias.forsblad+netdev@gmail.com>
- <Yh5NL1SY7+3rLW5O@shredder>
- <EE0F5EE3-C6EA-4618-BBA2-3527C7DB88B4@blackwall.org>
- <96845833-8c17-04ab-2586-5005d27e1077@gmail.com> <Yi9tgOQ32q2l2TxD@shredder>
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-In-Reply-To: <Yi9tgOQ32q2l2TxD@shredder>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
+ for MST
+Message-ID: <20220314165649.vtsd3xqv7htut55d@skbuf>
+References: <20220314095231.3486931-1-tobias@waldekranz.com>
+ <20220314095231.3486931-10-tobias@waldekranz.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220314095231.3486931-10-tobias@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-03-14 17:29, Ido Schimmel wrote:
-> On Wed, Mar 02, 2022 at 07:27:25AM +0100, Mattias Forsblad wrote:
->> On 2022-03-01 23:36, Nikolay Aleksandrov wrote:
->>> On 1 March 2022 17:43:27 CET, Ido Schimmel <idosch@idosch.org> wrote:
->>>> On Tue, Mar 01, 2022 at 01:31:02PM +0100, Mattias Forsblad wrote:
->>>>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
->>>>> index e0c13fcc50ed..5864b61157d3 100644
->>>>> --- a/net/bridge/br_input.c
->>>>> +++ b/net/bridge/br_input.c
->>>>> @@ -163,6 +163,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
->>>>>  		break;
->>>>>  	}
->>>>>  
->>>>> +	if (local_rcv && !br_opt_get(br, BROPT_LOCAL_RECEIVE))
->>>>> +		local_rcv = false;
->>>>> +
->>>>
->>>> I don't think the description in the commit message is accurate:
->>>> "packets received on bridge ports will not be forwarded up". From the
->>>> code it seems that if packets hit a local FDB entry, then they will be
->>>> "forwarded up". Instead, it seems that packets will not be flooded
->>>> towards the bridge. In which case, why not maintain the same granularity
->>>> we have for the rest of the ports and split this into unicast /
->>>> multicast / broadcast?
->>>>
->>>
->>> Exactly my first thought - why not implement the same control for the bridge?
->>> Also try to minimize the fast-path hit, you can keep the needed changes 
->>> localized only to the cases where they are needed.
->>> I'll send a few more comments in a reply to the patch.
->>>
->>
->> Soo, if I understand you correctly, you want to have three different options?
->> local_receive_unicast
->> local_receive_multicast
->> local_receive_broadcast
+On Mon, Mar 14, 2022 at 10:52:26AM +0100, Tobias Waldekranz wrote:
+> When joining a bridge where MST is enabled, we validate that the
+> proper offloading support is in place, otherwise we fallback to
+> software bridging.
 > 
-> My understanding of the feature is that you want to prevent flooding
-> towards the bridge. In which case, it makes sense to keep the same
-> granularity as for regular bridge ports and also name the options
-> similarly. We already have several options that are applicable to both
-> the bridge and bridge ports (e.g., 'mcast_router').
+> When then mode is changed on a bridge in which we are members, we
+> refuse the change if offloading is not supported.
 > 
-> I suggest:
+> At the moment we only check for configurable learning, but this will
+> be further restricted as we support more MST related switchdev events.
 > 
-> $ ip link help bridge
-> Usage: ... bridge [ fdb_flush ]
->                   ...
->                   [ flood {on | off} ]
->                   [ mcast_flood {on | off} ]
->                   [ bcast_flood {on | off} ]
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  net/dsa/dsa_priv.h |  2 ++
+>  net/dsa/port.c     | 20 ++++++++++++++++++++
+>  net/dsa/slave.c    |  6 ++++++
+>  3 files changed, 28 insertions(+)
 > 
-> This is consistent with "bridge_slave".
+> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+> index f20bdd8ea0a8..2aba420696ef 100644
+> --- a/net/dsa/dsa_priv.h
+> +++ b/net/dsa/dsa_priv.h
+> @@ -234,6 +234,8 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
+>  			    struct netlink_ext_ack *extack);
+>  bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
+>  int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
+> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
+> +			struct netlink_ext_ack *extack);
+>  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
+>  			bool targeted_match);
+>  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+> diff --git a/net/dsa/port.c b/net/dsa/port.c
+> index 58291df14cdb..1a17a0efa2fa 100644
+> --- a/net/dsa/port.c
+> +++ b/net/dsa/port.c
+> @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
+>  	if (err && err != -EOPNOTSUPP)
+>  		return err;
+>  
+> +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
+> +	if (err && err != -EOPNOTSUPP)
+> +		return err;
 
-Many thanks for your input. I'll have a go at a V2.
+Sadly this will break down because we don't have unwinding on error in
+place (sorry). We'd end up with an unoffloaded bridge port with
+partially synced bridge port attributes. Could you please add a patch
+previous to this one that handles this, and unoffloads those on error?
 
-BR
-Mattias Forsblad
+> +
+>  	return 0;
+>  }
+>  
+> @@ -735,6 +739,22 @@ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
+>  	return 0;
+>  }
+>  
+> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
+> +			struct netlink_ext_ack *extack)
+> +{
+> +	struct dsa_switch *ds = dp->ds;
+> +
+> +	if (!on)
+> +		return 0;
+> +
+> +	if (!dsa_port_can_configure_learning(dp)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Hardware does not support MST");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
+>  			      struct switchdev_brport_flags flags,
+>  			      struct netlink_ext_ack *extack)
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index a61a7c54af20..333f5702ea4f 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -463,6 +463,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
+>  
+>  		ret = dsa_port_ageing_time(dp, attr->u.ageing_time);
+>  		break;
+> +	case SWITCHDEV_ATTR_ID_BRIDGE_MST:
+> +		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
+> +			return -EOPNOTSUPP;
+> +
+> +		ret = dsa_port_mst_enable(dp, attr->u.mst, extack);
+> +		break;
+>  	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
+>  		if (!dsa_port_offloads_bridge_port(dp, attr->orig_dev))
+>  			return -EOPNOTSUPP;
+> -- 
+> 2.25.1
+> 
