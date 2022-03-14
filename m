@@ -2,81 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FDED4D8772
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 15:53:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFDE14D876A
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 15:52:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234622AbiCNOy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 10:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S231299AbiCNOxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 10:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233581AbiCNOyZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 10:54:25 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9886025C63;
-        Mon, 14 Mar 2022 07:53:14 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1nTm4O-0006nG-00; Mon, 14 Mar 2022 15:53:12 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id DCAF1C2E31; Mon, 14 Mar 2022 15:51:23 +0100 (CET)
-Date:   Mon, 14 Mar 2022 15:51:23 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, patches@lists.linux.dev,
-        linux-mips@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Phil Sutter <n0-1@freewrt.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Daniel Walter <dwalter@google.com>
-Subject: Re: [PATCH] MIPS: RB532: fix return value of __setup handler
-Message-ID: <20220314145123.GC13438@alpha.franken.de>
-References: <20220312042026.10482-1-rdunlap@infradead.org>
+        with ESMTP id S242361AbiCNOxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 10:53:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D725A41987
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 07:51:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 641016120C
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 14:51:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CFB6C340E9;
+        Mon, 14 Mar 2022 14:51:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647269515;
+        bh=nGhebV+ENOKrBZuNDrS4tIsEW4oInNPbYMxtlNcpb7U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=RM6FC1nrK6dCMCohNgup4Ys8nEfXwrEBpawiVFOCGvGULwPfi3Wjuj+ymEFB+sj65
+         tRgCA6OunBipTJY1Mr1yZNSdzk34En5IIr8xEnvy7H04qMHE1+fM+xGt2o09bZdh8l
+         ioVcypGeQ4o0XKThNUIw6UPEzRy5jmAQCtSHo7sHofzQ8nf4mS8EnDmc0anym53tli
+         IlerHDGRDFPEx7n0/m+HM1U51sxXYXLtwyhYhJayvb2BxDO62Z6FeGMVj8+uf5ciGP
+         52N87PXJjXz1K0/PiG0Ro2pzrOgkEwAuMuGhveeDuXmjth8G9DpvRIJdraZPRBliL5
+         ay+7fM/di8uGw==
+Message-ID: <a9e95f95-6ae7-518a-329b-3195e25a15e8@kernel.org>
+Date:   Mon, 14 Mar 2022 08:51:54 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220312042026.10482-1-rdunlap@infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_PERMERROR autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH v7 2/4] vdpa: Allow for printing negotiated features of a
+ device
+Content-Language: en-US
+To:     Eli Cohen <elic@nvidia.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "si-wei.liu@oracle.com" <si-wei.liu@oracle.com>,
+        "mst@redhat.com" <mst@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@nvidia.com>
+References: <20220313171219.305089-1-elic@nvidia.com>
+ <20220313171219.305089-3-elic@nvidia.com>
+ <20220313103356.2df9ac45@hermes.local>
+ <DM8PR12MB540017F40D7FB0DA12F7AB8DAB0E9@DM8PR12MB5400.namprd12.prod.outlook.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <DM8PR12MB540017F40D7FB0DA12F7AB8DAB0E9@DM8PR12MB5400.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 08:20:26PM -0800, Randy Dunlap wrote:
-> __setup() handlers should return 1 to obsolete_checksetup() in
-> init/main.c to indicate that the boot option has been handled.
-> A return of 0 causes the boot option/value to be listed as an Unknown
-> kernel parameter and added to init's (limited) argument or environment
-> strings. Also, error return codes don't mean anything to
-> obsolete_checksetup() -- only non-zero (usually 1) or zero.
-> So return 1 from setup_kmac().
+On 3/13/22 12:04 PM, Eli Cohen wrote:
+>>
+>> On Sun, 13 Mar 2022 19:12:17 +0200
+>> Eli Cohen <elic@nvidia.com> wrote:
+>>
+>>> +			if (feature_strs)
+>>> +				s = feature_strs[i];
+>>> +			else
+>>> +				s = NULL;
+>>
+>> You really don't like trigraphs?
+>> 			s = feature_strs ? feature_strs[i] : NULL;
+>> is more compact
 > 
-> Fixes: 9e21c7e40b7e ("MIPS: RB532: Replace parse_mac_addr() with mac_pton().")
-> Fixes: 73b4390fb234 ("[MIPS] Routerboard 532: Support for base system")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> From: Igor Zhbanov <i.zhbanov@omprussia.ru>
-> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> Cc: linux-mips@vger.kernel.org
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Phil Sutter <n0-1@freewrt.org>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Ralf Baechle <ralf@linux-mips.org>
-> Cc: Daniel Walter <dwalter@google.com>
-> ---
->  arch/mips/rb532/devices.c |    6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
+> If you insist I will send another version.
+> Let me know.
 
-applied to mips-next.
-
-Thomas.
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+I'll change it before applying
