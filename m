@@ -2,117 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5684D8AD0
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 18:29:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E96E34D8AFE
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 18:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243413AbiCNRaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 13:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56544 "EHLO
+        id S237160AbiCNRn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 13:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiCNRaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 13:30:19 -0400
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55979DEB6;
-        Mon, 14 Mar 2022 10:29:09 -0700 (PDT)
-Received: by mail-lj1-f172.google.com with SMTP id h11so22992523ljb.2;
-        Mon, 14 Mar 2022 10:29:09 -0700 (PDT)
+        with ESMTP id S234001AbiCNRn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 13:43:56 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6E56151
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 10:42:45 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id fs4-20020a17090af28400b001bf5624c0aaso15400436pjb.0
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 10:42:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=eAlsB5oNEYsER7jPWoA72QjRxXZtYemLvQqqOj41w8g=;
+        b=UxNgPrHrlJKADdwlA8u874Q1Bry/4tC8S8vYRetLSi4iCzekGEmfXiwmvLjaELUvei
+         HSefhg3oySNEFjaMLm1iZ4A6bsXQdfO4gogNA0V6bxCBZhCMBL4VS+fLToWXnI1T+NdP
+         QJiVLeopiuaEIjDn/dNYTEwpdwmKUouPZk6hW4Qo6G94PacD57MuD18aTOAHS0zmgF1F
+         TUhjbkfgrlTDPcyaTq9AuHJ5Mh2myd1ct3aWJ6f9q85YRAA48EdKieD0CUfrSyrs3rbC
+         1OJgzwvi0QLWcWUDz4YAU9k7Bco1TqlTBvb24KD8DSQSW6zUxHTlTdjp2PkgrfE4CAjO
+         7yGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wluxvZZRX4EKbcVvJ/eg3d1hoy/ZEcP65mxSGZfR8b8=;
-        b=XbwNDwKpXgp1ZuRwvwpoko54IbbMOYB3f1jXrHsKFNnutQZZNr2zneAW2SgB6xN+qn
-         dN/hzwHJFHB8afHyFrbl6J74UeRKU2KkqC3f/GBNuktY0xYCeR4+UNEToPpvnZ9YW9ut
-         nMvRm/eRguVIFYH9ghX9fnnHD9GVQU8Aek6vb1TPx1aD5nsRHeczjDx+47RaQ6MBYzIo
-         SlFGtgi70yQItdbHaJWwlzzaOfJDoxA5O7tPZ64YFiH9b9pUMIYvTqVgzBvwQLzzSF40
-         g5VEGw3PqIabA8fMo6+FxNlf2JAQQoP+uUje1WomJBKVCFGx4rjHN2OjsCwu+XydO38h
-         /5qg==
-X-Gm-Message-State: AOAM532HCYcmQI0A876T+uTQh98UvI4mVZVv+I+FC7PXcKF+4aQNX6MF
-        TaLgdh/H1oMxo6EP0j84dWRVE6mm3DY+H/e87M0=
-X-Google-Smtp-Source: ABdhPJyDjw6SAJ1pG95ESM8cb9VMKIADALppkjSv7LXf4LGBo6GrfONjwX+IxH0EO7+FzyBugxipqjskb8vqlGjBREY=
-X-Received: by 2002:a05:651c:1051:b0:247:ea0d:a57c with SMTP id
- x17-20020a05651c105100b00247ea0da57cmr14118926ljm.204.1647278947501; Mon, 14
- Mar 2022 10:29:07 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eAlsB5oNEYsER7jPWoA72QjRxXZtYemLvQqqOj41w8g=;
+        b=dXsNLFgSZ20MxKBpYIOlMb8l8c7gBKX8voQYMZj5uERsxAbQb/q08KKT/LoJJk1K9g
+         sHh/WKO8KRUqVVg8b4ItHJgMxozZR2zXwHnUzp3AfzHKr1ajZRz5P4FCALS4OFFbygRC
+         QM/jKh1UDC+M21sc4YFRMln/Q1SU0k09YTfcj5LeoTc+gorIbq8q7h128v8yt+EhWWrc
+         UqHwwSRyzHkivjLlGhF+QBs/aMJntw+T3koNv7wd4CZirq8qTqsj+tvx+ddS8RJeAazM
+         NHRjfY57y0Rqs5pTRs1ihbtFRYgRbYL4CbRew0/ETQbERFZ5j8jRB5knk1aihzOR3YfX
+         yOXg==
+X-Gm-Message-State: AOAM533pCbaw0QEPj95VSvKGJfzgBUUl9cyAo84TKcSz4QI0q2hJ7D+/
+        aTi/bWIRoc+ZkAVTBFxfPoI=
+X-Google-Smtp-Source: ABdhPJw1hGVJs/DkUF8oMFBAVYSL9AiuhAM2WGCdu869LbPIKN47jz1EpMQ/EhWT9/4cd8EK71KaGg==
+X-Received: by 2002:a17:90b:240e:b0:1b9:2963:d5a1 with SMTP id nr14-20020a17090b240e00b001b92963d5a1mr279369pjb.227.1647279765121;
+        Mon, 14 Mar 2022 10:42:45 -0700 (PDT)
+Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id m12-20020a17090a414c00b001bf6d88870csm89992pjg.55.2022.03.14.10.42.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 10:42:44 -0700 (PDT)
+Message-ID: <bb446581-6eaf-3b61-1e5d-07d629c77831@gmail.com>
+Date:   Mon, 14 Mar 2022 10:42:39 -0700
 MIME-Version: 1.0
-References: <20220310082202.1229345-1-namhyung@kernel.org> <20220310082202.1229345-2-namhyung@kernel.org>
- <CAEf4BzZUEvCqz-zGdKAeyg3vywEEnFWuZ4Q446BrTGOsFqNqyQ@mail.gmail.com>
-In-Reply-To: <CAEf4BzZUEvCqz-zGdKAeyg3vywEEnFWuZ4Q446BrTGOsFqNqyQ@mail.gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Mon, 14 Mar 2022 10:28:56 -0700
-Message-ID: <CAM9d7chtq2DV28GU=_eb+MSUTPFg8oGX8NDeeLdnf=Vr+7E1Yg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] bpf/selftests: Test skipping stacktrace
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Eugene Loh <eugene.loh@oracle.com>, Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH net] af_unix: Support POLLPRI for OOB.
+Content-Language: en-US
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rao Shoaib <Rao.Shoaib@oracle.com>
+Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, netdev@vger.kernel.org
+References: <20220314052110.53634-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220314052110.53634-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-On Fri, Mar 11, 2022 at 2:23 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On 3/13/22 22:21, Kuniyuki Iwashima wrote:
+> The commit 314001f0bf92 ("af_unix: Add OOB support") introduced OOB for
+> AF_UNIX, but it lacks some changes for POLLPRI.  Let's add the missing
+> piece.
 >
-> On Thu, Mar 10, 2022 at 12:22 AM Namhyung Kim <namhyung@kernel.org> wrote:
-> > +SEC("tracepoint/sched/sched_switch")
-> > +int oncpu(struct sched_switch_args *ctx)
-> > +{
-> > +       __u32 max_len = TEST_STACK_DEPTH * sizeof(__u64);
-> > +       __u32 key = 0, val = 0, *value_p;
-> > +       __u64 *stack_p;
-> > +
+> In the selftest, normal datagrams are sent followed by OOB data, so this
+> commit replaces `POLLIN | POLLPRI` with just `POLLPRI` in the first test
+> case.
 >
-> please also add filtering by PID to avoid interference from other
-> selftests when run in parallel mode
-
-Will do!
-
-Thanks,
-Namhyung
-
+> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> ---
+>   net/unix/af_unix.c                                  | 2 ++
+>   tools/testing/selftests/net/af_unix/test_unix_oob.c | 6 +++---
+>   2 files changed, 5 insertions(+), 3 deletions(-)
 >
-> > +       value_p = bpf_map_lookup_elem(&control_map, &key);
-> > +       if (value_p && *value_p)
-> > +               return 0; /* skip if non-zero *value_p */
-> > +
-> > +       /* it should allow skipping whole buffer size entries */
-> > +       key = bpf_get_stackid(ctx, &stackmap, TEST_STACK_DEPTH);
-> > +       if ((int)key >= 0) {
-> > +               /* The size of stackmap and stack_amap should be the same */
-> > +               bpf_map_update_elem(&stackid_hmap, &key, &val, 0);
-> > +               stack_p = bpf_map_lookup_elem(&stack_amap, &key);
-> > +               if (stack_p) {
-> > +                       bpf_get_stack(ctx, stack_p, max_len, TEST_STACK_DEPTH);
-> > +                       /* it wrongly skipped all the entries and filled zero */
-> > +                       if (stack_p[0] == 0)
-> > +                               failed = 1;
-> > +               }
-> > +       } else if ((int)key == -14/*EFAULT*/) {
-> > +               /* old kernel doesn't support skipping that many entries */
-> > +               failed = 2;
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > --
-> > 2.35.1.723.g4982287a31-goog
-> >
+> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> index c19569819866..711d21b1c3e1 100644
+> --- a/net/unix/af_unix.c
+> +++ b/net/unix/af_unix.c
+> @@ -3139,6 +3139,8 @@ static __poll_t unix_poll(struct file *file, struct socket *sock, poll_table *wa
+>   		mask |= EPOLLIN | EPOLLRDNORM;
+>   	if (sk_is_readable(sk))
+>   		mask |= EPOLLIN | EPOLLRDNORM;
+> +	if (unix_sk(sk)->oob_skb)
+> +		mask |= EPOLLPRI;
+
+
+This adds another data-race, maybe add something to avoid another syzbot 
+report ?
+
+
+>   
+>   	/* Connection-based need to check for termination and startup */
+>   	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
+> diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+> index 3dece8b29253..b57e91e1c3f2 100644
+> --- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
+> +++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+> @@ -218,10 +218,10 @@ main(int argc, char **argv)
+>   
+>   	/* Test 1:
+>   	 * veriyf that SIGURG is
+> -	 * delivered and 63 bytes are
+> -	 * read and oob is '@'
+> +	 * delivered, 63 bytes are
+> +	 * read, oob is '@', and POLLPRI works.
+>   	 */
+> -	wait_for_data(pfd, POLLIN | POLLPRI);
+> +	wait_for_data(pfd, POLLPRI);
+>   	read_oob(pfd, &oob);
+>   	len = read_data(pfd, buf, 1024);
+>   	if (!signal_recvd || len != 63 || oob != '@') {
