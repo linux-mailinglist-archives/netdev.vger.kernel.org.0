@@ -2,179 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 242504D8A34
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 17:56:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D484D8A60
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 18:05:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235062AbiCNQ6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 12:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
+        id S237288AbiCNRHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 13:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234693AbiCNQ6D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 12:58:03 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75073A73B;
-        Mon, 14 Mar 2022 09:56:52 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id r13so35440590ejd.5;
-        Mon, 14 Mar 2022 09:56:52 -0700 (PDT)
+        with ESMTP id S230141AbiCNRHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 13:07:02 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365853D1E0
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 10:05:52 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id n15so14118481plh.2
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 10:05:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=63A+VQ/NUEeDaJW7pNGXfcNFAy8DF92o6Jzg0oVXuE4=;
-        b=bLlpoaIizi9w3UjGu1TRPkRkHLgPf6oYVkqZWI2khR0kHkk3u04vcv1O8WJMtUqoxV
-         99B9FR+PioiSsynsRNsE6QFtnlvm+Xj5dH34iH9GlBmn6++ZXau3EED6kY3J+hAEdbL4
-         6XvpbJMXNdp5ZfUy5hujk3Vb+tH4K7lZEAA0K1VUHGTorOS47cPw6eTJP36+Nen6h9kt
-         Rpvzm96daPnQuEl1cJnQKip3IihU9R5UftSOdffgGkJpZbxZYooxKNCxQil0BpG9O5a4
-         MsCtR96HyerXpBZk0C4uERrPw4f/n3yU+y0eD51xhWOlGhXoz0yZljPMLAYu8YgxaF+0
-         vDug==
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IfKu246HPWJWqkCQznegkb7XFAqlce5OC+kFdjAQt3E=;
+        b=Q5Ia7aiuxulJoNoOS5aPL3ORCwoI5XZxVbrVWIPm3W+lPE7RnthJ1trCvUNPBETD00
+         RmflYXXr9R0CrDgR3DJTc6HiQ26qALdQacnef/qSy/QGlb5EMkmvHBDmK6npHdMep+D0
+         4Ib59pYcUuoIl3y6UdZZgZpYJ5V1LuisvIn7xAorRw2ti0AMoKm0ARTehObwVyS3KY+b
+         oj2FgPscPEB4suqy+XvAY/urhGXSkxBgJsb/HZjP+ozBdf+AKoSQ5XgillX8ujkZtyga
+         eC9tS9JUdvpzO1zmv8ickxHQ+vwHN1jiluc2Jx+qI+CW/Poqzt/2HXRM0n8kETQm97dt
+         fE1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=63A+VQ/NUEeDaJW7pNGXfcNFAy8DF92o6Jzg0oVXuE4=;
-        b=7bDyTtf0XkKhwLVoU2z9Pw1iEi4e/ADWZoL9hYsN7WPg3iEhA2unVUfaF+Y/R97DnN
-         hj/yI5Y3KOKsC3sXG0IgkbVoBe0/QQGs45bZDmrdh1QqDlZIFzYbIw4vl4C3/oYXzKFi
-         AfE3KcHT+vRrpiw+CLvrSc5TYwUo3B+TyQAOSOuMLrIeEemrMb6sVAnHjkVbCBrLnAW7
-         VKdUvJPvOFBhc+s5eYKkG4c4K4NO40iwARub4r/AR9UfmMsobdEk4T411RRfs4TSjk8B
-         bxnJEChByWo7Rbl8wHxvqrgYQXaLN/83w0oSIOHwY+bc5KxwjQYW9EmkCfgSEnOT8mPQ
-         FUcw==
-X-Gm-Message-State: AOAM530Gcrnc9M3uAdgDowzjBXFvfDhsNywGIYpdMITpZkTiUqBXfTXj
-        yMfUP4DYkBabjUhQFly/4i0=
-X-Google-Smtp-Source: ABdhPJy4iP7W3VPKzGvFW/dTiEMVOGUqKn5TPQdRZRefbfStQyIy115mZyar8J0FrnQFf4zbZb8I5A==
-X-Received: by 2002:a17:907:7254:b0:6db:ad8f:27b4 with SMTP id ds20-20020a170907725400b006dbad8f27b4mr12828197ejc.599.1647277011251;
-        Mon, 14 Mar 2022 09:56:51 -0700 (PDT)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id js24-20020a170906ca9800b006c8aeca8fe8sm7029530ejb.58.2022.03.14.09.56.49
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IfKu246HPWJWqkCQznegkb7XFAqlce5OC+kFdjAQt3E=;
+        b=GaivnmeKj1EcjfeumStT6n9NZD8QPgIDpxyInYOn4HRBRM0IaCwSNmg1QiVetWyBC8
+         Dgu4ntZ5xxSGOd4FPkXSvBXVJ/PRCM8NGGkXd68W4igrfI51Oa0t90qSIXx53TOoVOTd
+         k/NAE/6uA6NbEviG/D+5Pcn6/DlBiMFc6cd6l1LM04ETgMHczZw9tSD/CZXMqKFTCMFd
+         782mwjiHmVOKe4zvuO8M4+dylD2p2f93sYZAxjWPt1rN6Hzf/KwDSjtq30LvEXLudrWS
+         XsOeopZrdYB8iFZBTolNmCiTRU+ibqtG9jB1EgjPn7i2yxF75fdA4i9eIdMVItv61x85
+         ap/g==
+X-Gm-Message-State: AOAM532lrqQPA6TPxUsv/zP5iE6Z1in4eATOVsp+hu7PS4rs79we/Joc
+        kjf8lkWy/upk0IXb0xiakKioE2HqYS7nEA==
+X-Google-Smtp-Source: ABdhPJx4mksN1g+lzPZfEPI7VA6HFbbFR9MiOs2oN1u74gVd76f4VfdlKYv0wleaNpu/X27UMb6tMw==
+X-Received: by 2002:a17:90b:1bc5:b0:1bf:1c96:66ac with SMTP id oa5-20020a17090b1bc500b001bf1c9666acmr132323pjb.167.1647277551634;
+        Mon, 14 Mar 2022 10:05:51 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id c34-20020a630d22000000b0034cb89e4695sm16968124pgl.28.2022.03.14.10.05.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 09:56:50 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 18:56:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
- for MST
-Message-ID: <20220314165649.vtsd3xqv7htut55d@skbuf>
-References: <20220314095231.3486931-1-tobias@waldekranz.com>
- <20220314095231.3486931-10-tobias@waldekranz.com>
+        Mon, 14 Mar 2022 10:05:51 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 10:05:48 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jason@zx2c4.com
+Cc:     wireguard@lists.zx2c4.com, netdev@vger.kernel.org
+Subject: Fw: [Bug 215682] New: Long iperf test of wireguard interface causes
+ kernel panic
+Message-ID: <20220314100548.35026ad0@hermes.local>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314095231.3486931-10-tobias@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 10:52:26AM +0100, Tobias Waldekranz wrote:
-> When joining a bridge where MST is enabled, we validate that the
-> proper offloading support is in place, otherwise we fallback to
-> software bridging.
-> 
-> When then mode is changed on a bridge in which we are members, we
-> refuse the change if offloading is not supported.
-> 
-> At the moment we only check for configurable learning, but this will
-> be further restricted as we support more MST related switchdev events.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
->  net/dsa/dsa_priv.h |  2 ++
->  net/dsa/port.c     | 20 ++++++++++++++++++++
->  net/dsa/slave.c    |  6 ++++++
->  3 files changed, 28 insertions(+)
-> 
-> diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-> index f20bdd8ea0a8..2aba420696ef 100644
-> --- a/net/dsa/dsa_priv.h
-> +++ b/net/dsa/dsa_priv.h
-> @@ -234,6 +234,8 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
->  			    struct netlink_ext_ack *extack);
->  bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
->  int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
-> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
-> +			struct netlink_ext_ack *extack);
->  int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
->  			bool targeted_match);
->  int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index 58291df14cdb..1a17a0efa2fa 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
->  	if (err && err != -EOPNOTSUPP)
->  		return err;
->  
-> +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
-> +	if (err && err != -EOPNOTSUPP)
-> +		return err;
 
-Sadly this will break down because we don't have unwinding on error in
-place (sorry). We'd end up with an unoffloaded bridge port with
-partially synced bridge port attributes. Could you please add a patch
-previous to this one that handles this, and unoffloads those on error?
 
-> +
->  	return 0;
->  }
->  
-> @@ -735,6 +739,22 @@ int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock)
->  	return 0;
->  }
->  
-> +int dsa_port_mst_enable(struct dsa_port *dp, bool on,
-> +			struct netlink_ext_ack *extack)
-> +{
-> +	struct dsa_switch *ds = dp->ds;
-> +
-> +	if (!on)
-> +		return 0;
-> +
-> +	if (!dsa_port_can_configure_learning(dp)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Hardware does not support MST");
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
->  			      struct switchdev_brport_flags flags,
->  			      struct netlink_ext_ack *extack)
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index a61a7c54af20..333f5702ea4f 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -463,6 +463,12 @@ static int dsa_slave_port_attr_set(struct net_device *dev, const void *ctx,
->  
->  		ret = dsa_port_ageing_time(dp, attr->u.ageing_time);
->  		break;
-> +	case SWITCHDEV_ATTR_ID_BRIDGE_MST:
-> +		if (!dsa_port_offloads_bridge_dev(dp, attr->orig_dev))
-> +			return -EOPNOTSUPP;
-> +
-> +		ret = dsa_port_mst_enable(dp, attr->u.mst, extack);
-> +		break;
->  	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
->  		if (!dsa_port_offloads_bridge_port(dp, attr->orig_dev))
->  			return -EOPNOTSUPP;
-> -- 
-> 2.25.1
-> 
+Begin forwarded message:
+
+Date: Mon, 14 Mar 2022 16:51:08 +0000
+From: bugzilla-daemon@kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 215682] New: Long iperf test of wireguard interface causes kernel panic
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=215682
+
+            Bug ID: 215682
+           Summary: Long iperf test of wireguard interface causes kernel
+                    panic
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.15.27
+          Hardware: ARM
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: alexey.kv@gmail.com
+        Regression: No
+
+I have setup of two Rock64 SBC which I connected via lan and created a
+wireguard interface on it to do some benchmarking with iperf3. After long run
+(~3 days) on one instance following kernel panic was observed:
+
+[266706.637097] Kernel panic - not syncing: stack-protector: Kernel stack is
+corrupted in: netif_receive_skb_list_internal+0x2b0/0x2b0       
+[266706.638171] CPU: 3 PID: 9861 Comm: kworker/3:0 Tainted: G         C       
+5.15.27-rockchip64 #trunk
+[266706.638999] Hardware name: Pine64 Rock64 (DT)
+[266706.639406] Workqueue: wg-crypt-wg0 wg_packet_decrypt_worker [wireguard]
+[266706.640084] Call trace:
+[266706.640316]  dump_backtrace+0x0/0x200
+[266706.640686]  show_stack+0x18/0x28
+[266706.640997]  dump_stack_lvl+0x68/0x84
+[266706.641348]  dump_stack+0x18/0x34
+[266706.641661]  panic+0x164/0x35c
+[266706.641955]  __stack_chk_fail+0x3c/0x40
+[266706.642309]  netif_receive_skb_list+0x0/0x158
+[266706.642711]  gro_normal_list.part.159+0x20/0x40
+[266706.643129]  napi_complete_done+0xc0/0x1e8
+[266706.643512]  wg_packet_rx_poll+0x45c/0x8c0 [wireguard]
+[266706.644000]  __napi_poll+0x38/0x230
+[266706.644324]  net_rx_action+0x284/0x2c8
+[266706.644675]  _stext+0x160/0x3f8
+[266706.644986]  do_softirq+0xa8/0xb8
+[266706.645297]  __local_bh_enable_ip+0xac/0xb8
+[266706.645682]  _raw_spin_unlock_bh+0x34/0x60
+[266706.646059]  wg_packet_decrypt_worker+0x50/0x1a8 [wireguard]
+[266706.646589]  process_one_work+0x20c/0x4c8
+[266706.646961]  worker_thread+0x48/0x478
+[266706.647300]  kthread+0x138/0x150
+[266706.647599]  ret_from_fork+0x10/0x20
+[266706.647931] SMP: stopping secondary CPUs
+[266706.648297] Kernel Offset: disabled
+[266706.648615] CPU features: 0x00001001,00000846
+[266706.649009] Memory Limit: none
+[266706.649293] ---[ end Kernel panic - not syncing: stack-protector: Kernel
+stack is corrupted in: netif_receive_skb_list_internal+0x2b0/0x2b0 ]---
+
+-- 
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are the assignee for the bug.
