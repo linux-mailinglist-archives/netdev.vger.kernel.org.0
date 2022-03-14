@@ -2,81 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 706B24D8689
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 15:16:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB71D4D8706
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 15:36:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242203AbiCNORU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 10:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
+        id S238619AbiCNOhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 10:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242211AbiCNORS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 10:17:18 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5500119C34
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 07:16:08 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id z3so13656972plg.8
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 07:16:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=A+skx2lZnrQ+7/VsYrnUhRhf3Pt2I7eYRStLnAd42nI=;
-        b=HrAbTFPaaMPG1sEC0M/v71hJrr4M6LEOKrKpgvJwEFTuM7WUPSYNX/G8hIdAn36Tib
-         Y3DYoM8aZha/9Gb6/ET6LPSXWZexuSIDODrf7RzDcJ7VjTyRS7Q2cb8DXpK2eJcGcKlK
-         IA2vkXitMUZ9p/G/tPR7nTPLULupaIjCRWErmNDJmGYxaocz0L7Hl4LLlI3aIzoKsRIi
-         WuP6ABhd/EQtXizRGOA2z1hCLz/yh29y3aBTyMx48i4JYB/BT5Z2wS1sG8m4gx0SJjsu
-         VaAgh2qtBtubJFqEWWR+bBDCH3WXivWi6OLMz5m1or+4F98fmmKU4xOteu1yi9lU8h5W
-         h3pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=A+skx2lZnrQ+7/VsYrnUhRhf3Pt2I7eYRStLnAd42nI=;
-        b=urG4NOdmsyOgSqP5foU2C39LIC0TNSf5r3KcbRdAYL89x/ujllB7wcortbBmP777O9
-         7LTXZnX5+jn39upwLLv+k2A8pKsqxQsrRQxu2l4Iy+75E32iNPPJ8+c19oKnunbEs2lp
-         s+UlMPesws187efKCfg0upwP4SUBrFPMqmasawluAMkClSCmS8++v9Mcc2UnlJf0MQk8
-         kDd2qcWWSG84EELn62tc8pI6xW5G0kgW8N7D4MDW1jQZFFRRjcDgZtdiho3zAcz4Hfv6
-         fDdFWMu93kteKwBp8ELP+0H0gLhYkfchcjzgjz5/q8XtPKam3YMoW62VPXtSBeBLsg1w
-         tcYQ==
-X-Gm-Message-State: AOAM533E4o90t52u3z5APY3hgi6Qxc0Xb8xLNQvgD5nCI+gCQLGxQoi5
-        QEbOe8Ykjo/JWbqPxcgIhJF/FTMB7BdPVw==
-X-Google-Smtp-Source: ABdhPJyXZYVHX2E/0H0fQ4ZwdAQ99tHqcNEyXJiuDLk1SV073RZcyYnHT8ahYMh7m+iVJOXByW/BwQ==
-X-Received: by 2002:a17:902:8b87:b0:14d:7920:e54a with SMTP id ay7-20020a1709028b8700b0014d7920e54amr23501429plb.140.1647267367314;
-        Mon, 14 Mar 2022 07:16:07 -0700 (PDT)
-Received: from localhost.localdomain ([111.201.151.228])
-        by smtp.gmail.com with ESMTPSA id oa12-20020a17090b1bcc00b001bf430c3909sm22540430pjb.32.2022.03.14.07.16.01
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 14 Mar 2022 07:16:06 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        with ESMTP id S229925AbiCNOhf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 10:37:35 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D773A3C72E;
+        Mon, 14 Mar 2022 07:36:23 -0700 (PDT)
+Received: from theinternet.molgen.mpg.de (theinternet.molgen.mpg.de [141.14.31.7])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: buczek)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 2A29161E6478B;
+        Mon, 14 Mar 2022 15:36:20 +0100 (CET)
+Subject: Re: [EXT] Re: [PATCH v2 net-next 1/2] bnx2x: Utilize firmware
+ 7.13.21.0
+To:     Manish Chopra <manishc@marvell.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        Alok Prasad <palok@marvell.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next v10 2/2] net: sched: support hash selecting tx queue
-Date:   Mon, 14 Mar 2022 22:15:08 +0800
-Message-Id: <20220314141508.39952-3-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220314141508.39952-1-xiangxia.m.yue@gmail.com>
-References: <20220314141508.39952-1-xiangxia.m.yue@gmail.com>
+        Greg KH <gregkh@linuxfoundation.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "it+netdev@molgen.mpg.de" <it+netdev@molgen.mpg.de>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <20211217165552.746-1-manishc@marvell.com>
+ <ea05bcab-fe72-4bc2-3337-460888b2c44e@molgen.mpg.de>
+ <BY3PR18MB46129282EBA1F699583134A4AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <e884cf16-3f98-e9a7-ce96-9028592246cc@molgen.mpg.de>
+ <BY3PR18MB4612BC158A048053BAC7A30EAB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <CAHk-=wjN22EeVLviARu=amf1+422U2iswCC6cz7cN8h+S9=-Jg@mail.gmail.com>
+ <BY3PR18MB4612C2FFE05879E30BAD91D7AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <CAHk-=whXCf43ieh79fujcF=u3Ow1byRvWp+Lt5+v3vumA+V0yA@mail.gmail.com>
+ <BY3PR18MB46124F3F575F9F7D1980E76BAB0C9@BY3PR18MB4612.namprd18.prod.outlook.com>
+From:   Donald Buczek <buczek@molgen.mpg.de>
+Message-ID: <0dafa9d7-9c79-f367-a343-8ad38f7bde07@molgen.mpg.de>
+Date:   Mon, 14 Mar 2022 15:36:19 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <BY3PR18MB46124F3F575F9F7D1980E76BAB0C9@BY3PR18MB4612.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,259 +64,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Dear Manish,
 
-This patch allows users to pick queue_mapping, range
-from A to B. Then we can load balance packets from A
-to B tx queue. The range is an unsigned 16bit value
-in decimal format.
+On 3/11/22 1:11 PM, Manish Chopra wrote:
+>> -----Original Message-----
+>> From: Linus Torvalds <torvalds@linux-foundation.org>
+>> Sent: Thursday, March 10, 2022 3:48 AM
+>> To: Manish Chopra <manishc@marvell.com>
+>> Cc: Paul Menzel <pmenzel@molgen.mpg.de>; kuba@kernel.org;
+>> netdev@vger.kernel.org; Ariel Elior <aelior@marvell.com>; Alok Prasad
+>> <palok@marvell.com>; Prabhakar Kushwaha <pkushwaha@marvell.com>;
+>> David S. Miller <davem@davemloft.net>; Greg KH
+>> <gregkh@linuxfoundation.org>; stable@vger.kernel.org;
+>> it+netdev@molgen.mpg.de; regressions@lists.linux.dev
+>> Subject: Re: [EXT] Re: [PATCH v2 net-next 1/2] bnx2x: Utilize firmware
+>> 7.13.21.0
+>>
+>> On Wed, Mar 9, 2022 at 11:46 AM Manish Chopra <manishc@marvell.com>
+>> wrote:
+>>>
+>>> This has not changed anything functionally from driver/device perspective,
+>> FW is still being loaded only when device is opened.
+>>> bnx2x_init_firmware() [I guess, perhaps the name is misleading] just
+>> request_firmware() to prepare the metadata to be used when device will be
+>> opened.
+>>
+>> So how do you explain the report by Paul Menzel that things used to work and
+>> no longer work now?
+>>
+> 
+> The issue which Paul mentioned had to do with "/lib/firmware/bnx2x/* file not found" when driver probes, which was introduced by the patch in subject,
+> And the commit e13ad1443684 ("bnx2x: fix driver load from initrd") fixes this issue. So things should work as it is with the mentioned fixed commit.
+> The only discussion led by this problem now is why the request_firmware() was moved early on [from open() to probe()] by the patch in subject.
+> I explained the intention to do this in my earlier emails and let me add more details below -
+> 
+> Note that we have just moved request_firmware() logic, *not* something significant which has to do with actual FW loading or device initialization from the
+> FW file data which could cause significant functional change for this device/driver, FW load/init part still stays in open flow.
+> 
+> Before the patch in subject, driver used to only work with fixed/specific FW version file whose version was statically known to the driver function at probe() time to take
+> some decision to fail the function probe early in the system if the function is supposed to run with a FW version which is not the same version loaded on the device by another PF (different ENV).
+> Now when we sent this new FW patch (in subject) then we got feedback from community to maintain backward compatibility with older FW versions as well and we did it in same v2 patch legitimately,
+> just that now we can work with both older or newer FW file so we need this run time FW version information to cache (based on request_firmware() return success value for an old FW file or new FW file)
+> which will be used in follow up probe() flows to decide the function probe failure early If there could be FW version mismatches against the loaded FW on the device by other PFs already
 
-$ tc filter ... action skbedit queue_mapping skbhash A B
+There might be something more wrong with the patch in the subject: The usability of the ports from a single card (with older firmware?) now depends on the order the ports are enabled (first port enabled is working, second port enabled is not working, driver complaining about a firmware mismatch).
 
-"skbedit queue_mapping QUEUE_MAPPING" (from "man 8 tc-skbedit")
-is enhanced with flags: SKBEDIT_F_TXQ_SKBHASH
+In the following examples, the driver was not built-in to the kernel but loaded from the root filesystem instead, so there is no initramfs related problem here.
 
-  +----+      +----+      +----+
-  | P1 |      | P2 |      | Pn |
-  +----+      +----+      +----+
-    |           |           |
-    +-----------+-----------+
-                |
-                | clsact/skbedit
-                |      MQ
-                v
-    +-----------+-----------+
-    | q0        | qn        | qm
-    v           v           v
-  HTB/FQ       FIFO   ...  FIFO
+For the records:
 
-For example:
-If P1 sends out packets to different Pods on other host, and
-we want distribute flows from qn - qm. Then we can use skb->hash
-as hash.
+root@ira:~# dmesg|grep bnx2x
+[   18.749871] bnx2x 0000:45:00.0: msix capability found
+[   18.766534] bnx2x 0000:45:00.0: part number 394D4342-31373735-31314131-473331
+[   18.799198] bnx2x 0000:45:00.0: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+[   18.807638] bnx2x 0000:45:00.1: msix capability found
+[   18.824509] bnx2x 0000:45:00.1: part number 394D4342-31373735-31314131-473331
+[   18.857171] bnx2x 0000:45:00.1: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+[   18.865619] bnx2x 0000:46:00.0: msix capability found
+[   18.882636] bnx2x 0000:46:00.0: part number 394D4342-31373735-31314131-473331
+[   18.915196] bnx2x 0000:46:00.0: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+[   18.923636] bnx2x 0000:46:00.1: msix capability found
+[   18.940505] bnx2x 0000:46:00.1: part number 394D4342-31373735-31314131-473331
+[   18.973167] bnx2x 0000:46:00.1: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+[   46.480660] bnx2x 0000:45:00.0 net04: renamed from eth4
+[   46.494677] bnx2x 0000:45:00.1 net05: renamed from eth5
+[   46.508544] bnx2x 0000:46:00.0 net06: renamed from eth6
+[   46.524641] bnx2x 0000:46:00.1 net07: renamed from eth7
+root@ira:~# ls /lib/firmware/bnx2x/
+bnx2x-e1-6.0.34.0.fw   bnx2x-e1-7.13.1.0.fw   bnx2x-e1-7.8.2.0.fw     bnx2x-e1h-7.12.30.0.fw  bnx2x-e1h-7.8.19.0.fw  bnx2x-e2-7.10.51.0.fw  bnx2x-e2-7.8.17.0.fw
+bnx2x-e1-6.2.5.0.fw    bnx2x-e1-7.13.11.0.fw  bnx2x-e1h-6.0.34.0.fw   bnx2x-e1h-7.13.1.0.fw   bnx2x-e1h-7.8.2.0.fw   bnx2x-e2-7.12.30.0.fw  bnx2x-e2-7.8.19.0.fw
+bnx2x-e1-6.2.9.0.fw    bnx2x-e1-7.13.15.0.fw  bnx2x-e1h-6.2.5.0.fw    bnx2x-e1h-7.13.11.0.fw  bnx2x-e2-6.0.34.0.fw   bnx2x-e2-7.13.1.0.fw   bnx2x-e2-7.8.2.0.fw
+bnx2x-e1-7.0.20.0.fw   bnx2x-e1-7.13.21.0.fw  bnx2x-e1h-6.2.9.0.fw    bnx2x-e1h-7.13.15.0.fw  bnx2x-e2-6.2.5.0.fw    bnx2x-e2-7.13.11.0.fw
+bnx2x-e1-7.0.23.0.fw   bnx2x-e1-7.2.16.0.fw   bnx2x-e1h-7.0.20.0.fw   bnx2x-e1h-7.13.21.0.fw  bnx2x-e2-6.2.9.0.fw    bnx2x-e2-7.13.15.0.fw
+bnx2x-e1-7.0.29.0.fw   bnx2x-e1-7.2.51.0.fw   bnx2x-e1h-7.0.23.0.fw   bnx2x-e1h-7.2.16.0.fw   bnx2x-e2-7.0.20.0.fw   bnx2x-e2-7.13.21.0.fw
+bnx2x-e1-7.10.51.0.fw  bnx2x-e1-7.8.17.0.fw   bnx2x-e1h-7.0.29.0.fw   bnx2x-e1h-7.2.51.0.fw   bnx2x-e2-7.0.23.0.fw   bnx2x-e2-7.2.16.0.fw
+bnx2x-e1-7.12.30.0.fw  bnx2x-e1-7.8.19.0.fw   bnx2x-e1h-7.10.51.0.fw  bnx2x-e1h-7.8.17.0.fw   bnx2x-e2-7.0.29.0.fw   bnx2x-e2-7.2.51.0.fw
 
-setup commands:
-$ NETDEV=eth0
-$ ip netns add n1
-$ ip link add ipv1 link $NETDEV type ipvlan mode l2
-$ ip link set ipv1 netns n1
-$ ip netns exec n1 ifconfig ipv1 2.2.2.100/24 up
+Now with v5.10.95, the first kernel of the series which includes fdcfabd0952d ("bnx2x: Utilize firmware 7.13.21.0") and later:
 
-$ tc qdisc add dev $NETDEV clsact
-$ tc filter add dev $NETDEV egress protocol ip prio 1 \
-        flower skip_hw src_ip 2.2.2.100 action skbedit queue_mapping skbhash 2 6
-$ tc qdisc add dev $NETDEV handle 1: root mq
-$ tc qdisc add dev $NETDEV parent 1:1 handle 2: htb
-$ tc class add dev $NETDEV parent 2: classid 2:1 htb rate 100kbit
-$ tc class add dev $NETDEV parent 2: classid 2:2 htb rate 200kbit
-$ tc qdisc add dev $NETDEV parent 1:2 tbf rate 100mbit burst 100mb latency 1
-$ tc qdisc add dev $NETDEV parent 1:3 pfifo
-$ tc qdisc add dev $NETDEV parent 1:4 pfifo
-$ tc qdisc add dev $NETDEV parent 1:5 pfifo
-$ tc qdisc add dev $NETDEV parent 1:6 pfifo
-$ tc qdisc add dev $NETDEV parent 1:7 pfifo
+root@ira:~# dmesg -w &
+[...]
+root@ira:~# ip link set net04 up
+[   88.504536] bnx2x 0000:45:00.0 net04: using MSI-X  IRQs: sp 47  fp[0] 49 ... fp[7] 56
+root@ira:~# ip link set net05 up
+[   90.825820] bnx2x: [bnx2x_compare_fw_ver:2380(net05)]bnx2x with FW 120d07 was already loaded which mismatches my 150d07 FW. Aborting
+RTNETLINK answers: Device or resource busy
+root@ira:~# ip link set net04 down
+root@ira:~# ip link set net05 down
+root@ira:~# ip link set net05 up
+[  114.462448] bnx2x 0000:45:00.1 net05: using MSI-X  IRQs: sp 58  fp[0] 60 ... fp[7] 67
+root@ira:~# ip link set net04 up
+[  117.247763] bnx2x: [bnx2x_compare_fw_ver:2380(net04)]bnx2x with FW 120d07 was already loaded which mismatches my 150d07 FW. Aborting
+RTNETLINK answers: Device or resource busy
 
-$ ip netns exec n1 iperf3 -c 2.2.2.1 -i 1 -t 10 -P 10
+With v5.10.94, both ports work fine:
 
-pick txqueue from 2 - 6:
-$ ethtool -S $NETDEV | grep -i tx_queue_[0-9]_bytes
-     tx_queue_0_bytes: 42
-     tx_queue_1_bytes: 0
-     tx_queue_2_bytes: 11442586444
-     tx_queue_3_bytes: 7383615334
-     tx_queue_4_bytes: 3981365579
-     tx_queue_5_bytes: 3983235051
-     tx_queue_6_bytes: 6706236461
-     tx_queue_7_bytes: 42
-     tx_queue_8_bytes: 0
-     tx_queue_9_bytes: 0
+root@ira:~# dmesg -w &
+[...]
+root@ira:~# ip link set net04 up
+[  133.126647] bnx2x 0000:45:00.0 net04: using MSI-X  IRQs: sp 47  fp[0] 49 ... fp[7] 56
+root@ira:~# ip link set net05 up
+[  136.215169] bnx2x 0000:45:00.1 net05: using MSI-X  IRQs: sp 58  fp[0] 60 ... fp[7] 67
 
-txqueues 2 - 6 are mapped to classid 1:3 - 1:7
-$ tc -s class show dev $NETDEV
-...
-class mq 1:3 root leaf 8002:
- Sent 11949133672 bytes 7929798 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
-class mq 1:4 root leaf 8003:
- Sent 7710449050 bytes 5117279 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
-class mq 1:5 root leaf 8004:
- Sent 4157648675 bytes 2758990 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
-class mq 1:6 root leaf 8005:
- Sent 4159632195 bytes 2759990 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
-class mq 1:7 root leaf 8006:
- Sent 7003169603 bytes 4646912 pkt (dropped 0, overlimits 0 requeues 0)
- backlog 0b 0p requeues 0
-...
+Best
+   Donald
 
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Alexander Lobakin <alobakin@pm.me>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Talal Ahmad <talalahmad@google.com>
-Cc: Kevin Hao <haokexin@gmail.com>
-Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc: Antoine Tenart <atenart@kernel.org>
-Cc: Wei Wang <weiwan@google.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- include/net/tc_act/tc_skbedit.h        |  1 +
- include/uapi/linux/tc_act/tc_skbedit.h |  2 ++
- net/sched/act_skbedit.c                | 49 ++++++++++++++++++++++++--
- 3 files changed, 50 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
-index 00bfee70609e..ee96e0fa6566 100644
---- a/include/net/tc_act/tc_skbedit.h
-+++ b/include/net/tc_act/tc_skbedit.h
-@@ -17,6 +17,7 @@ struct tcf_skbedit_params {
- 	u32 mark;
- 	u32 mask;
- 	u16 queue_mapping;
-+	u16 mapping_mod;
- 	u16 ptype;
- 	struct rcu_head rcu;
- };
-diff --git a/include/uapi/linux/tc_act/tc_skbedit.h b/include/uapi/linux/tc_act/tc_skbedit.h
-index 800e93377218..6cb6101208d0 100644
---- a/include/uapi/linux/tc_act/tc_skbedit.h
-+++ b/include/uapi/linux/tc_act/tc_skbedit.h
-@@ -29,6 +29,7 @@
- #define SKBEDIT_F_PTYPE			0x8
- #define SKBEDIT_F_MASK			0x10
- #define SKBEDIT_F_INHERITDSFIELD	0x20
-+#define SKBEDIT_F_TXQ_SKBHASH		0x40
- 
- struct tc_skbedit {
- 	tc_gen;
-@@ -45,6 +46,7 @@ enum {
- 	TCA_SKBEDIT_PTYPE,
- 	TCA_SKBEDIT_MASK,
- 	TCA_SKBEDIT_FLAGS,
-+	TCA_SKBEDIT_QUEUE_MAPPING_MAX,
- 	__TCA_SKBEDIT_MAX
- };
- #define TCA_SKBEDIT_MAX (__TCA_SKBEDIT_MAX - 1)
-diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-index d5799b4fc499..2634c725bc75 100644
---- a/net/sched/act_skbedit.c
-+++ b/net/sched/act_skbedit.c
-@@ -23,6 +23,20 @@
- static unsigned int skbedit_net_id;
- static struct tc_action_ops act_skbedit_ops;
- 
-+static u16 tcf_skbedit_hash(struct tcf_skbedit_params *params,
-+			    struct sk_buff *skb)
-+{
-+	u16 queue_mapping = params->queue_mapping;
-+
-+	if (params->flags & SKBEDIT_F_TXQ_SKBHASH) {
-+		u32 hash = skb_get_hash(skb);
-+
-+		queue_mapping += hash % params->mapping_mod;
-+	}
-+
-+	return netdev_cap_txqueue(skb->dev, queue_mapping);
-+}
-+
- static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			   struct tcf_result *res)
- {
-@@ -62,7 +76,7 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
- #ifdef CONFIG_NET_EGRESS
- 		netdev_xmit_skip_txqueue(true);
- #endif
--		skb_set_queue_mapping(skb, params->queue_mapping);
-+		skb_set_queue_mapping(skb, tcf_skbedit_hash(params, skb));
- 	}
- 	if (params->flags & SKBEDIT_F_MARK) {
- 		skb->mark &= ~params->mask;
-@@ -96,6 +110,7 @@ static const struct nla_policy skbedit_policy[TCA_SKBEDIT_MAX + 1] = {
- 	[TCA_SKBEDIT_PTYPE]		= { .len = sizeof(u16) },
- 	[TCA_SKBEDIT_MASK]		= { .len = sizeof(u32) },
- 	[TCA_SKBEDIT_FLAGS]		= { .len = sizeof(u64) },
-+	[TCA_SKBEDIT_QUEUE_MAPPING_MAX]	= { .len = sizeof(u16) },
- };
- 
- static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
-@@ -112,6 +127,7 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 	struct tcf_skbedit *d;
- 	u32 flags = 0, *priority = NULL, *mark = NULL, *mask = NULL;
- 	u16 *queue_mapping = NULL, *ptype = NULL;
-+	u16 mapping_mod = 1;
- 	bool exists = false;
- 	int ret = 0, err;
- 	u32 index;
-@@ -157,6 +173,25 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 	if (tb[TCA_SKBEDIT_FLAGS] != NULL) {
- 		u64 *pure_flags = nla_data(tb[TCA_SKBEDIT_FLAGS]);
- 
-+		if (*pure_flags & SKBEDIT_F_TXQ_SKBHASH) {
-+			u16 *queue_mapping_max;
-+
-+			if (!tb[TCA_SKBEDIT_QUEUE_MAPPING] ||
-+			    !tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]) {
-+				NL_SET_ERR_MSG_MOD(extack, "Missing required range of queue_mapping.");
-+				return -EINVAL;
-+			}
-+
-+			queue_mapping_max =
-+				nla_data(tb[TCA_SKBEDIT_QUEUE_MAPPING_MAX]);
-+			if (*queue_mapping_max < *queue_mapping) {
-+				NL_SET_ERR_MSG_MOD(extack, "The range of queue_mapping is invalid, max < min.");
-+				return -EINVAL;
-+			}
-+
-+			mapping_mod = *queue_mapping_max - *queue_mapping + 1;
-+			flags |= SKBEDIT_F_TXQ_SKBHASH;
-+		}
- 		if (*pure_flags & SKBEDIT_F_INHERITDSFIELD)
- 			flags |= SKBEDIT_F_INHERITDSFIELD;
- 	}
-@@ -208,8 +243,10 @@ static int tcf_skbedit_init(struct net *net, struct nlattr *nla,
- 	params_new->flags = flags;
- 	if (flags & SKBEDIT_F_PRIORITY)
- 		params_new->priority = *priority;
--	if (flags & SKBEDIT_F_QUEUE_MAPPING)
-+	if (flags & SKBEDIT_F_QUEUE_MAPPING) {
- 		params_new->queue_mapping = *queue_mapping;
-+		params_new->mapping_mod = mapping_mod;
-+	}
- 	if (flags & SKBEDIT_F_MARK)
- 		params_new->mark = *mark;
- 	if (flags & SKBEDIT_F_PTYPE)
-@@ -276,6 +313,13 @@ static int tcf_skbedit_dump(struct sk_buff *skb, struct tc_action *a,
- 		goto nla_put_failure;
- 	if (params->flags & SKBEDIT_F_INHERITDSFIELD)
- 		pure_flags |= SKBEDIT_F_INHERITDSFIELD;
-+	if (params->flags & SKBEDIT_F_TXQ_SKBHASH) {
-+		if (nla_put_u16(skb, TCA_SKBEDIT_QUEUE_MAPPING_MAX,
-+				params->queue_mapping + params->mapping_mod - 1))
-+			goto nla_put_failure;
-+
-+		pure_flags |= SKBEDIT_F_TXQ_SKBHASH;
-+	}
- 	if (pure_flags != 0 &&
- 	    nla_put(skb, TCA_SKBEDIT_FLAGS, sizeof(pure_flags), &pure_flags))
- 		goto nla_put_failure;
-@@ -325,6 +369,7 @@ static size_t tcf_skbedit_get_fill_size(const struct tc_action *act)
- 	return nla_total_size(sizeof(struct tc_skbedit))
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_PRIORITY */
- 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING */
-+		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_QUEUE_MAPPING_MAX */
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MARK */
- 		+ nla_total_size(sizeof(u16)) /* TCA_SKBEDIT_PTYPE */
- 		+ nla_total_size(sizeof(u32)) /* TCA_SKBEDIT_MASK */
+> So we need to understand why we should not call request_firmware() in probe or at least what's really harmful in doing that in probe() if some of the follow up probe flows needs
+> some of the metadata info (like the run time FW versions info in this case which we get based on request_firmware() return value), we could avoid this but we don't want
+> to add some ugly/unsuitable file APIs checks to know which FW version file is available on the file system if there is already an API request_firmware() available for this to be used.
+> 
+> Please let us know. Thanks.
+> 
+>> You can't do request_firmware() early. When you actually then push the
+>> firmware to the device is immaterial - but request_firmware() has to be done
+>> after the system is up and running.
+>>
+>>                   Linus
+> 
+
+
 -- 
-2.27.0
-
+Donald Buczek
+buczek@molgen.mpg.de
+Tel: +49 30 8413 1433
