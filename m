@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A0554D7CF7
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 09:00:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B001A4D7D3D
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 09:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235039AbiCNIB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 04:01:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        id S233312AbiCNIIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 04:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237424AbiCNIBE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 04:01:04 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9931B2A24A;
-        Mon, 14 Mar 2022 00:58:09 -0700 (PDT)
-X-UUID: 87696065089142a08d64aced8fec0026-20220314
-X-UUID: 87696065089142a08d64aced8fec0026-20220314
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        with ESMTP id S237657AbiCNIHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 04:07:49 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685B73F8B9;
+        Mon, 14 Mar 2022 01:05:34 -0700 (PDT)
+X-UUID: 056b96e514c940ab8c284bf0a31f8b3b-20220314
+X-UUID: 056b96e514c940ab8c284bf0a31f8b3b-20220314
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 563562564; Mon, 14 Mar 2022 15:57:20 +0800
+        with ESMTP id 978099276; Mon, 14 Mar 2022 15:57:21 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 14 Mar 2022 15:57:19 +0800
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 14 Mar 2022 15:57:20 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Mar 2022 15:57:18 +0800
+ Transport; Mon, 14 Mar 2022 15:57:19 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -43,9 +43,9 @@ CC:     Matthias Brugger <matthias.bgg@gmail.com>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
         <dkirjanov@suse.de>
-Subject: [PATCH net-next v13 2/7] stmmac: dwmac-mediatek: Reuse more common features
-Date:   Mon, 14 Mar 2022 15:57:08 +0800
-Message-ID: <20220314075713.29140-3-biao.huang@mediatek.com>
+Subject: [PATCH net-next v13 3/7] stmmac: dwmac-mediatek: re-arrange clock setting
+Date:   Mon, 14 Mar 2022 15:57:09 +0800
+Message-ID: <20220314075713.29140-4-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220314075713.29140-1-biao.huang@mediatek.com>
 References: <20220314075713.29140-1-biao.huang@mediatek.com>
@@ -62,73 +62,170 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch makes dwmac-mediatek reuse more features
-supported by stmmac_platform.c.
+The rmii_internal clock is needed only when PHY
+interface is RMII, and reference clock is from MAC.
+
+Re-arrange the clock setting as following:
+1. the optional "rmii_internal" is controlled by devm_clk_get(),
+2. other clocks still be configured by devm_clk_bulk_get().
 
 Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 ---
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 32 +++++++++----------
- 1 file changed, 15 insertions(+), 17 deletions(-)
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 71 +++++++++++++------
+ 1 file changed, 48 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-index 0ff57c268dca..8747aa4403e8 100644
+index 8747aa4403e8..b2507a2ba326 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-@@ -334,22 +334,20 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
- 	const struct mediatek_dwmac_variant *variant = plat->variant;
- 	int ret;
+@@ -49,12 +49,12 @@ struct mac_delay_struct {
+ struct mediatek_dwmac_plat_data {
+ 	const struct mediatek_dwmac_variant *variant;
+ 	struct mac_delay_struct mac_delay;
++	struct clk *rmii_internal_clk;
+ 	struct clk_bulk_data *clks;
+-	struct device_node *np;
+ 	struct regmap *peri_regmap;
++	struct device_node *np;
+ 	struct device *dev;
+ 	phy_interface_t phy_mode;
+-	int num_clks_to_config;
+ 	bool rmii_clk_from_mac;
+ 	bool rmii_rxc;
+ };
+@@ -74,7 +74,7 @@ struct mediatek_dwmac_variant {
  
--	ret = dma_set_mask_and_coherent(plat->dev, DMA_BIT_MASK(variant->dma_bit_mask));
--	if (ret) {
--		dev_err(plat->dev, "No suitable DMA available, err = %d\n", ret);
--		return ret;
--	}
+ /* list of clocks required for mac */
+ static const char * const mt2712_dwmac_clk_l[] = {
+-	"axi", "apb", "mac_main", "ptp_ref", "rmii_internal"
++	"axi", "apb", "mac_main", "ptp_ref"
+ };
+ 
+ static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
+@@ -83,23 +83,12 @@ static int mt2712_set_interface(struct mediatek_dwmac_plat_data *plat)
+ 	int rmii_rxc = plat->rmii_rxc ? RMII_CLK_SRC_RXC : 0;
+ 	u32 intf_val = 0;
+ 
+-	/* The clock labeled as "rmii_internal" in mt2712_dwmac_clk_l is needed
+-	 * only in RMII(when MAC provides the reference clock), and useless for
+-	 * RGMII/MII/RMII(when PHY provides the reference clock).
+-	 * num_clks_to_config indicates the real number of clocks should be
+-	 * configured, equals to (plat->variant->num_clks - 1) in default for all the case,
+-	 * then +1 for rmii_clk_from_mac case.
+-	 */
+-	plat->num_clks_to_config = plat->variant->num_clks - 1;
 -
--	ret = variant->dwmac_set_phy_interface(plat);
--	if (ret) {
--		dev_err(plat->dev, "failed to set phy interface, err = %d\n", ret);
--		return ret;
-+	if (variant->dwmac_set_phy_interface) {
-+		ret = variant->dwmac_set_phy_interface(plat);
-+		if (ret) {
-+			dev_err(plat->dev, "failed to set phy interface, err = %d\n", ret);
-+			return ret;
-+		}
- 	}
+ 	/* select phy interface in top control domain */
+ 	switch (plat->phy_mode) {
+ 	case PHY_INTERFACE_MODE_MII:
+ 		intf_val |= PHY_INTF_MII;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RMII:
+-		if (plat->rmii_clk_from_mac)
+-			plat->num_clks_to_config++;
+ 		intf_val |= (PHY_INTF_RMII | rmii_rxc | rmii_clk_from_mac);
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
+@@ -314,18 +303,34 @@ static int mediatek_dwmac_config_dt(struct mediatek_dwmac_plat_data *plat)
+ static int mediatek_dwmac_clk_init(struct mediatek_dwmac_plat_data *plat)
+ {
+ 	const struct mediatek_dwmac_variant *variant = plat->variant;
+-	int i, num = variant->num_clks;
++	int i, ret;
  
--	ret = variant->dwmac_set_delay(plat);
--	if (ret) {
--		dev_err(plat->dev, "failed to set delay value, err = %d\n", ret);
--		return ret;
-+	if (variant->dwmac_set_delay) {
-+		ret = variant->dwmac_set_delay(plat);
-+		if (ret) {
-+			dev_err(plat->dev, "failed to set delay value, err = %d\n", ret);
-+			return ret;
-+		}
- 	}
+-	plat->clks = devm_kcalloc(plat->dev, num, sizeof(*plat->clks), GFP_KERNEL);
++	plat->clks = devm_kcalloc(plat->dev, variant->num_clks, sizeof(*plat->clks), GFP_KERNEL);
+ 	if (!plat->clks)
+ 		return -ENOMEM;
  
- 	ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
-@@ -422,15 +420,15 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
- 		return PTR_ERR(plat_dat);
+-	for (i = 0; i < num; i++)
++	for (i = 0; i < variant->num_clks; i++)
+ 		plat->clks[i].id = variant->clk_list[i];
  
- 	plat_dat->interface = priv_plat->phy_mode;
--	plat_dat->has_gmac4 = 1;
--	plat_dat->has_gmac = 0;
--	plat_dat->pmt = 0;
-+	plat_dat->use_phy_wol = 1;
- 	plat_dat->riwt_off = 1;
- 	plat_dat->maxmtu = ETH_DATA_LEN;
-+	plat_dat->addr64 = priv_plat->variant->dma_bit_mask;
- 	plat_dat->bsp_priv = priv_plat;
- 	plat_dat->init = mediatek_dwmac_init;
- 	plat_dat->exit = mediatek_dwmac_exit;
- 	plat_dat->clks_config = mediatek_dwmac_clks_config;
+-	plat->num_clks_to_config = variant->num_clks;
++	ret = devm_clk_bulk_get(plat->dev, variant->num_clks, plat->clks);
++	if (ret)
++		return ret;
+ 
+-	return devm_clk_bulk_get(plat->dev, num, plat->clks);
++	/* The clock labeled as "rmii_internal" is needed only in RMII(when
++	 * MAC provides the reference clock), and useless for RGMII/MII or
++	 * RMII(when PHY provides the reference clock).
++	 * So, "rmii_internal" clock is got and configured only when
++	 * reference clock of RMII is from MAC.
++	 */
++	if (plat->rmii_clk_from_mac) {
++		plat->rmii_internal_clk = devm_clk_get(plat->dev, "rmii_internal");
++		if (IS_ERR(plat->rmii_internal_clk))
++			ret = PTR_ERR(plat->rmii_internal_clk);
++	} else {
++		plat->rmii_internal_clk = NULL;
++	}
 +
- 	mediatek_dwmac_init(pdev, priv_plat);
++	return ret;
+ }
  
- 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+@@ -350,35 +355,55 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+ 		}
+ 	}
+ 
+-	ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
++	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+ 	if (ret) {
+ 		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+ 		return ret;
+ 	}
+ 
++	ret = clk_prepare_enable(plat->rmii_internal_clk);
++	if (ret) {
++		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
++		goto err_clk;
++	}
++
+ 	return 0;
++
++err_clk:
++	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
++	return ret;
+ }
+ 
+ static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
+ {
+ 	struct mediatek_dwmac_plat_data *plat = priv;
++	const struct mediatek_dwmac_variant *variant = plat->variant;
+ 
+-	clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
++	clk_disable_unprepare(plat->rmii_internal_clk);
++	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+ }
+ 
+ static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+ {
+ 	struct mediatek_dwmac_plat_data *plat = priv;
++	const struct mediatek_dwmac_variant *variant = plat->variant;
+ 	int ret = 0;
+ 
+ 	if (enabled) {
+-		ret = clk_bulk_prepare_enable(plat->num_clks_to_config, plat->clks);
++		ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+ 		if (ret) {
+ 			dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+ 			return ret;
+ 		}
++
++		ret = clk_prepare_enable(plat->rmii_internal_clk);
++		if (ret) {
++			dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
++			return ret;
++		}
+ 	} else {
+-		clk_bulk_disable_unprepare(plat->num_clks_to_config, plat->clks);
++		clk_disable_unprepare(plat->rmii_internal_clk);
++		clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+ 	}
+ 
+ 	return ret;
 -- 
 2.25.1
 
