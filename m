@@ -2,157 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C50E44D7D19
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 09:04:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7BA4D7D5F
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 09:09:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237436AbiCNIGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 04:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
+        id S236663AbiCNILA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 04:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237370AbiCNIBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 04:01:33 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC4A2DA95;
-        Mon, 14 Mar 2022 00:58:20 -0700 (PDT)
-X-UUID: 0a03db2e8cf64a5cac910887abd5bcb6-20220314
-X-UUID: 0a03db2e8cf64a5cac910887abd5bcb6-20220314
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1462764368; Mon, 14 Mar 2022 15:57:27 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 14 Mar 2022 15:57:26 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Mar 2022 15:57:24 +0800
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        <angelogioacchino.delregno@collabora.com>
-CC:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Biao Huang <biao.huang@mediatek.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
-        <dkirjanov@suse.de>, Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v13 7/7] net: dt-bindings: dwmac: add support for mt8195
-Date:   Mon, 14 Mar 2022 15:57:13 +0800
-Message-ID: <20220314075713.29140-8-biao.huang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220314075713.29140-1-biao.huang@mediatek.com>
-References: <20220314075713.29140-1-biao.huang@mediatek.com>
+        with ESMTP id S233749AbiCNIK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 04:10:59 -0400
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258532BE6;
+        Mon, 14 Mar 2022 01:09:50 -0700 (PDT)
+Received: by mail-qt1-f170.google.com with SMTP id g7so5829553qtg.7;
+        Mon, 14 Mar 2022 01:09:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=08Cq6sAqtL7e5hp/9ndQMfCAbW7RoUh3nfCkJLMngb8=;
+        b=Rpta1+dbExJJYo9L8CHaWcJoaqFkp+NPEzSqTstaO3DtcLJQJLF/z5LXy0+nYdpW4s
+         uho3sadF4eptv8rqiiG1BWjYsgZhgzJIXjyvb2iCtHIxiVQgsgSIJFg5Ly6CAwMAw2Gj
+         fN8eYrIpwIB0n0TmJq+pGl2PKMUe5NGfCx6AIOrJ89yY16rsK9speNwKeng2A5+h38iI
+         iid6tMf45hgNbGkqlBfuwHR0FRuH5naEWggmVRH02+bT9hn5gzp1FvVt5T6o62S2aNFi
+         GlZA7LYrzycKZuQyc5LHZJ3W8R1Z+huLXcpGM1RVysvOf1ZyXKEqS8J7MC4IrfzAqvMj
+         bkzg==
+X-Gm-Message-State: AOAM531BJwm6agjWURWXA5hFd3kcCZ+U36fSMS1i21XLSVJk+UJ+Mixn
+        +PpIIigVM2Rm0HGjGKHs+RF/HNXxwqIVgQ==
+X-Google-Smtp-Source: ABdhPJx7h5gqIcM3e/AHlw5qbiSRk2nqi1/CDkfItl8tOeiJe1XH0dZmXCcQQG7nUl0/BXavn0fozQ==
+X-Received: by 2002:a05:622a:1015:b0:2e0:6cd5:7ee1 with SMTP id d21-20020a05622a101500b002e06cd57ee1mr17033493qte.485.1647245388961;
+        Mon, 14 Mar 2022 01:09:48 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id e12-20020ac8130c000000b002e1d84f118dsm299774qtj.39.2022.03.14.01.09.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 01:09:48 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id j2so29249859ybu.0;
+        Mon, 14 Mar 2022 01:09:48 -0700 (PDT)
+X-Received: by 2002:a0d:f1c7:0:b0:2db:d2bc:be11 with SMTP id
+ a190-20020a0df1c7000000b002dbd2bcbe11mr17825798ywf.62.1647245083313; Mon, 14
+ Mar 2022 01:04:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220309162609.3726306-1-uli+renesas@fpond.eu>
+ <20220309162609.3726306-4-uli+renesas@fpond.eu> <CAMuHMdW+_5UDRYUQ0aSymgXO1BUryc+AV8SAjSS4F-Lna5B_UQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdW+_5UDRYUQ0aSymgXO1BUryc+AV8SAjSS4F-Lna5B_UQ@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 14 Mar 2022 09:04:31 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXyb8TddJwOfZOg4g8uxAe6EQNXM2y+fe=EVMydg1CN4Q@mail.gmail.com>
+Message-ID: <CAMuHMdXyb8TddJwOfZOg4g8uxAe6EQNXM2y+fe=EVMydg1CN4Q@mail.gmail.com>
+Subject: Re: [PATCH v4 3/4] arm64: dts: renesas: r8a779a0-falcon: enable CANFD
+ 0 and 1
+To:     Ulrich Hecht <uli+renesas@fpond.eu>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
+        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        socketcan@hartkopp.net,
+        Kieran Bingham <kieran.bingham@ideasonboard.com>,
+        Simon Horman <horms@verge.net.au>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add binding document for the ethernet on mt8195.
+On Fri, Mar 11, 2022 at 6:04 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> On Wed, Mar 9, 2022 at 5:26 PM Ulrich Hecht <uli+renesas@fpond.eu> wrote:
+> > Enables confirmed-working CAN interfaces 0 and 1 on the Falcon board.
+> >
+> > Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>
+> Thanks, will queue in renesas-devel for v5.19.
 
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/net/mediatek-dwmac.yaml          | 28 ++++++++++++++++---
- 1 file changed, 24 insertions(+), 4 deletions(-)
+... with the canfd moved up, to preserve sort order.
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-index 8ad6e19661b8..901944683322 100644
---- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-@@ -19,6 +19,7 @@ select:
-       contains:
-         enum:
-           - mediatek,mt2712-gmac
-+          - mediatek,mt8195-gmac
-   required:
-     - compatible
- 
-@@ -27,26 +28,35 @@ allOf:
- 
- properties:
-   compatible:
--    items:
--      - enum:
--          - mediatek,mt2712-gmac
--      - const: snps,dwmac-4.20a
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt2712-gmac
-+          - const: snps,dwmac-4.20a
-+      - items:
-+          - enum:
-+              - mediatek,mt8195-gmac
-+          - const: snps,dwmac-5.10a
- 
-   clocks:
-+    minItems: 5
-     items:
-       - description: AXI clock
-       - description: APB clock
-       - description: MAC Main clock
-       - description: PTP clock
-       - description: RMII reference clock provided by MAC
-+      - description: MAC clock gate
- 
-   clock-names:
-+    minItems: 5
-     items:
-       - const: axi
-       - const: apb
-       - const: mac_main
-       - const: ptp_ref
-       - const: rmii_internal
-+      - const: mac_cg
- 
-   mediatek,pericfg:
-     $ref: /schemas/types.yaml#/definitions/phandle
-@@ -61,6 +71,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple of 290,
-+      or will round down. Range 0~31*290.
- 
-   mediatek,rx-delay-ps:
-     description:
-@@ -69,6 +81,8 @@ properties:
-       or will round down. Range 0~31*170.
-       For MT2712 RMII/MII interface, Allowed value need to be a multiple of 550,
-       or will round down. Range 0~31*550.
-+      For MT8195 RGMII/RMII/MII interface, Allowed value need to be a multiple
-+      of 290, or will round down. Range 0~31*290.
- 
-   mediatek,rmii-rxc:
-     type: boolean
-@@ -102,6 +116,12 @@ properties:
-       3. the inside clock, which be sent to MAC, will be inversed in RMII case when
-          the reference clock is from MAC.
- 
-+  mediatek,mac-wol:
-+    type: boolean
-+    description:
-+      If present, indicates that MAC supports WOL(Wake-On-LAN), and MAC WOL will be enabled.
-+      Otherwise, PHY WOL is perferred.
-+
- required:
-   - compatible
-   - reg
--- 
-2.25.1
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
