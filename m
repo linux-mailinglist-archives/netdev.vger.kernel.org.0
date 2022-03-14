@@ -2,162 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3E94D8E09
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 904E44D8E33
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244957AbiCNUV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 16:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46746 "EHLO
+        id S245058AbiCNUb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 16:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241268AbiCNUV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:21:56 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411CD31933;
-        Mon, 14 Mar 2022 13:20:44 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id p15so36652203ejc.7;
-        Mon, 14 Mar 2022 13:20:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XA2aP5Nic7Ru8rrrtaAb2aP/czbKdSvuHA7SK90mhFk=;
-        b=JUfo9hahsbfyOV+1YWAdpd7ZQSi79AgJRln0bTaBY/kfgygleF/697oK4v0gYvWLmz
-         Jpmhfqe3luT0Y1Dc15sA4D/CzyksBSiLk14ahgqip36BhsvtRRnj5P15SrA698KiE5IW
-         AP5/GWrVwu/R7UCBkhdJros6ehhCPIvRnF/svwkbOuly8QwHVUeuRxbZf0Y+uy1FzRaE
-         Dh9Gc1aAZ9Jrv+ZzTvy6Tns7KcPmV1H17e/pCLN+RsMkVjAlppMDvwLFIPa8W1Lyt2AQ
-         M2/xfla50ew6JqyMKHw+FLYeLSpUXo5wOGcXI0r81HZzWBc+wZfgUiYdgEggzClum1ti
-         5cMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XA2aP5Nic7Ru8rrrtaAb2aP/czbKdSvuHA7SK90mhFk=;
-        b=Lz1dUhnWvQKLrX0ZtuTk9rwdSMDFv6cQw+4T+UPGhr5zrUyF6OwkKxm/ViiWBVkokv
-         XezRl52y8rkEN/RCRZ56Uc8rqPzshQVrG2218fZPPhKcjpypvN/Bcg6OD+xDTbHTqFR6
-         KdZblq47FE7vKVWqDJ85AnSIB3PumjiQrbR2iG+oPh5wGmAD1bRsV9jK4/h4w+HFFyV2
-         I6HWRtc6gTmnFc23yNsuEF4coXaJ2GA+ZaO3SyqCx9U5yo1Vwn1Rui0/RYahXVShiinh
-         EOLrnu5adV+SFArCh4ubJogtqAkDOArX8cMOnZZpqMwJXxe6y35IT4YGvMcC+ArGxbsk
-         1MIg==
-X-Gm-Message-State: AOAM530McA5vyTJe0CtEPl3b6ONxEhxXv0l5JtEhoLlePmunWom2Jd+s
-        En9MIS9HizhtTLtPDCxadaw=
-X-Google-Smtp-Source: ABdhPJzgAIAgLYgjQeMcar+yKXCNF8VRMp68hiBa0K+XaXi0U5DOVLCj3x8vqtuQ//JRA1VlttSFOA==
-X-Received: by 2002:a17:906:7fc9:b0:6cf:d288:c9ef with SMTP id r9-20020a1709067fc900b006cfd288c9efmr19524300ejs.751.1647289242547;
-        Mon, 14 Mar 2022 13:20:42 -0700 (PDT)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id q16-20020a170906145000b006bdaf981589sm7267557ejc.81.2022.03.14.13.20.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 13:20:41 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 22:20:40 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v3 net-next 09/14] net: dsa: Validate hardware support
- for MST
-Message-ID: <20220314202040.f2r4pidcy6ws34qv@skbuf>
-References: <20220314095231.3486931-1-tobias@waldekranz.com>
- <20220314095231.3486931-10-tobias@waldekranz.com>
- <20220314165649.vtsd3xqv7htut55d@skbuf>
- <20220314175556.7mjr4tui4vb4i5qn@skbuf>
- <87mthsl2wn.fsf@waldekranz.com>
+        with ESMTP id S235159AbiCNUbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:31:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AF239822
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:30:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E34CE612B4
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 20:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4358CC36AE7;
+        Mon, 14 Mar 2022 20:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647289811;
+        bh=dk2doHa/i/uGwNcCn9GtoF6Acp3nRspghAJP7unPOic=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=dVNLMwCG+2tt7LxlpZyB7kTwE7KXIdDey9IbR9A9R89w1UfGamlNUzVxJjz81DkIU
+         5PDgmw1RC68fmaaPgex2F9P6a/OZfJyYPQ6h55LWfdLThLDukrXLB5Mc5xkO0A75hk
+         KPv2tmuj3eDYmXmS4MZFRvMWNjpb+08v4NpqxyB4yRmfOpr2CeEaylVPrfhW6OrUQ+
+         n5kpl3zbxXMfRb9a57XfqMDDXy/hWMgkgJv+QlLQ9KclcJgfEYPZL2ep8OkaFFMAWY
+         AVX86BqiwpHxVnyySHgGoN2wy3w9OHtCtcsCxZR5j1MKjUGwWDsbpdBLxPlo+XdnsA
+         bdNLMHRg7kw7Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1CC36EAC09C;
+        Mon, 14 Mar 2022 20:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87mthsl2wn.fsf@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: disable preemption in dev_core_stats_XXX_inc()
+ helpers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164728981111.21494.4878273308182979524.git-patchwork-notify@kernel.org>
+Date:   Mon, 14 Mar 2022 20:30:11 +0000
+References: <20220312214505.3294762-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220312214505.3294762-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        edumazet@google.com, jeffreyji@google.com, brianvv@google.com,
+        pabeni@redhat.com
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 09:01:12PM +0100, Tobias Waldekranz wrote:
-> On Mon, Mar 14, 2022 at 19:55, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, Mar 14, 2022 at 06:56:49PM +0200, Vladimir Oltean wrote:
-> >> > diff --git a/net/dsa/port.c b/net/dsa/port.c
-> >> > index 58291df14cdb..1a17a0efa2fa 100644
-> >> > --- a/net/dsa/port.c
-> >> > +++ b/net/dsa/port.c
-> >> > @@ -240,6 +240,10 @@ static int dsa_port_switchdev_sync_attrs(struct dsa_port *dp,
-> >> >  	if (err && err != -EOPNOTSUPP)
-> >> >  		return err;
-> >> >  
-> >> > +	err = dsa_port_mst_enable(dp, br_mst_enabled(br), extack);
-> >> > +	if (err && err != -EOPNOTSUPP)
-> >> > +		return err;
-> >> 
-> >> Sadly this will break down because we don't have unwinding on error in
-> >> place (sorry). We'd end up with an unoffloaded bridge port with
-> >> partially synced bridge port attributes. Could you please add a patch
-> >> previous to this one that handles this, and unoffloads those on error?
-> >
-> > Actually I would rather rename the entire dsa_port_mst_enable() function
-> > to dsa_port_mst_validate() and move it to the beginning of dsa_port_bridge_join().
-> > This simplifies the unwinding that needs to take place quite a bit.
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sat, 12 Mar 2022 13:45:05 -0800 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Well you still need to unwind vlan filtering if setting the ageing time
-> fails, which is the most complicated one, right?
-
-Yes, but we can leave that for another day :)
-
-...ergo
-
-> Should the unwinding patch still be part of this series then?
-
-no.
-
-> Still, I agree that _validate is a better name, and then _bridge_join
-> seems like a more reasonable placement.
+> syzbot was kind enough to remind us that dev->{tx_dropped|rx_dropped}
+> could be increased in process context.
 > 
-> While we're here, I actually made this a hard error in both scenarios
-> (but forgot to update the log - will do that in v4, depending on what we
-> decide here). There's a dilemma:
+> BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor413/3593
+> caller is netdev_core_stats_alloc+0x98/0x110 net/core/dev.c:10298
+> CPU: 1 PID: 3593 Comm: syz-executor413 Not tainted 5.17.0-rc7-syzkaller-02426-g97aeb877de7f #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  check_preemption_disabled+0x16b/0x170 lib/smp_processor_id.c:49
+>  netdev_core_stats_alloc+0x98/0x110 net/core/dev.c:10298
+>  dev_core_stats include/linux/netdevice.h:3855 [inline]
+>  dev_core_stats_rx_dropped_inc include/linux/netdevice.h:3866 [inline]
+>  tun_get_user+0x3455/0x3ab0 drivers/net/tun.c:1800
+>  tun_chr_write_iter+0xe1/0x200 drivers/net/tun.c:2015
+>  call_write_iter include/linux/fs.h:2074 [inline]
+>  new_sync_write+0x431/0x660 fs/read_write.c:503
+>  vfs_write+0x7cd/0xae0 fs/read_write.c:590
+>  ksys_write+0x12d/0x250 fs/read_write.c:643
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f2cf4f887e3
+> Code: 5d 41 5c 41 5d 41 5e e9 9b fd ff ff 66 2e 0f 1f 84 00 00 00 00 00 90 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 48 89 54 24 18
+> RSP: 002b:00007ffd50dd5fd8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 00007ffd50dd6000 RCX: 00007f2cf4f887e3
+> RDX: 000000000000002a RSI: 0000000000000000 RDI: 00000000000000c8
+> RBP: 0000000000000003 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007ffd50dd5ff0 R14: 00007ffd50dd5fe8 R15: 00007ffd50dd5fe4
+>  </TASK>
 > 
-> - When reacting to the attribute event, i.e. changing the mode on a
->   member we're apart of, we _can't_ return -EOPNOTSUPP as it will be
->   ignored, which is why dsa_port_mst_validate (nee _enable) returns
->   -EINVAL.
-> 
-> - When joining a bridge, we _must_ return -EOPNOTSUPP to trigger the
->   software fallback.
-> 
-> Having something like this in dsa_port_bridge_join...
-> 
-> err = dsa_port_mst_validate(dp);
-> if (err == -EINVAL)
-> 	return -EOPNOTSUPP;
-> else if (err)
-> 	return err;
-> 
-> ...works I suppose, but feels somewhat awkwark. Any better ideas?
+> [...]
 
-What you can do is follow the model of dsa_switch_supports_uc_filtering(),
-and create a dsa_switch_supports_mst() which is called inside an
-"if br_mst_enabled(br)" check, and returns bool. When false, you could
-return -EINVAL or -EOPNOTSUPP, as appropriate.
+Here is the summary with links:
+  - [net-next] net: disable preemption in dev_core_stats_XXX_inc() helpers
+    https://git.kernel.org/netdev/net-next/c/fc93db153b01
 
-This is mostly fine, except for the pesky dsa_port_can_configure_learning(dp)
-check :) So while you could name it dsa_port_supports_mst() and pass it
-a dsa_port, the problem is that you can't put the implementation of this
-new dsa_port_supports_mst() next to dsa_switch_supports_uc_filtering()
-where it would be nice to sit for symmetry, because the latter is static
-inline and we're missing the definition of dsa_port_can_configure_learning().
-So.. the second best thing is to keep dsa_port_supports_mst() in the
-same place where dsa_port_mst_enable() currently is.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-What do you think?
+
