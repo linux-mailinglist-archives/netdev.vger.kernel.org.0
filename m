@@ -2,86 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E9394D7F7E
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 11:10:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D78DB4D7FBB
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 11:22:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238381AbiCNKL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 06:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52666 "EHLO
+        id S237620AbiCNKX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 06:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238372AbiCNKLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 06:11:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB6F3C48A;
-        Mon, 14 Mar 2022 03:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 64042CE113D;
-        Mon, 14 Mar 2022 10:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A4C0FC340F7;
-        Mon, 14 Mar 2022 10:10:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647252611;
-        bh=bYIm4hVM0CHF3WLrx87iPpNZexuy3p8S541z5pRuYUk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n1v0gZF+Jhloy6nMoODxDf3Pqe5EyRCEi5hfQXIz13G1uFihyDaOIjLKL+3bUT9RX
-         vPZP9EAR1N6YQ8yr/m4jfFGkjhSA00dWuQWIqpYHKOvsSyyKnT1q3/nqmEu9+2c/7h
-         Tt/HCoAMaVrKvJfCmmHmf+MNo5VsD3aPggNHL9YGjAWoERFIEq34mffvPtEYurzmuy
-         Z2NhYYCtBtw6sAivAjvgUVMxHrn63fWKUrPe2xi9jXRyr95Ln1qWw/ikXDw8SmmeO+
-         cvuZfeSXOrJno8UkyBdKDKyXJmxn8l3RWYcIrL7LFNTBNQgfY/+caqULT3uGXvuf6g
-         DZx3KaHUjL7Ww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8F862E6D44B;
-        Mon, 14 Mar 2022 10:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234054AbiCNKX0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 06:23:26 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C31943484
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 03:22:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
+        :To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=37iRZzgcz08aeekCIRPNzzqIgSISC+vDx+4ci1PLfTQ=; b=MGT9tEtlnfh1fGRcHq3pTOoL87
+        Hx7keBJEKOXOGcC4nAjCS3B8HMhmgQA4TqIEfz06wEGQgQ5SWpew5juXB1HSOK/q8hpzecjmKXcGx
+        R2G0grsQkG0E5kjuV2dxPWfFZImBuz4zPJ9r+y5wShutU4Wu4NXwEoyc0eUWZ7yKYZWk=;
+Received: from p200300daa7204f006c015a90d6b6c4d6.dip0.t-ipconnect.de ([2003:da:a720:4f00:6c01:5a90:d6b6:c4d6] helo=Maecks.lan)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nThqA-0005bs-JQ
+        for netdev@vger.kernel.org; Mon, 14 Mar 2022 11:22:14 +0100
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org
+Subject: [PATCH] net: xdp: allow user space to request a smaller packet headroom requirement
+Date:   Mon, 14 Mar 2022 11:22:10 +0100
+Message-Id: <20220314102210.92329-1-nbd@nbd.name>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] net: macvlan: fix potential UAF problem for
- lowerdev
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164725261157.13129.12736326177131205389.git-patchwork-notify@kernel.org>
-Date:   Mon, 14 Mar 2022 10:10:11 +0000
-References: <cover.1646989143.git.william.xuanziyang@huawei.com>
-In-Reply-To: <cover.1646989143.git.william.xuanziyang@huawei.com>
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Most ethernet drivers allocate a packet headroom of NET_SKB_PAD. Since it is
+rounded up to L1 cache size, it ends up being at least 64 bytes on the most
+common platforms.
+On most ethernet drivers, having a guaranteed headroom of 256 bytes for XDP
+adds an extra forced pskb_expand_head call when enabling SKB XDP, which can
+be quite expensive.
+Many XDP programs need only very little headroom, so it can be beneficial
+to have a way to opt-out of the 256 bytes headroom requirement.
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Add an extra flag XDP_FLAGS_SMALL_HEADROOM that can be set when attaching
+the XDP program, which reduces the minimum headroom to 64 bytes.
 
-On Fri, 11 Mar 2022 17:02:41 +0800 you wrote:
-> Add the reference operation to lowerdev of macvlan to avoid
-> the potential UAF problem under the following known scenario:
-> 
-> Someone module puts the NETDEV_UNREGISTER event handler to a
-> work, and lowerdev is accessed in the work handler. But when
-> the work is excuted, lowerdev has been destroyed because upper
-> macvlan did not get reference to lowerdev correctly.
-> 
-> [...]
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ include/linux/netdevice.h          | 1 +
+ include/uapi/linux/bpf.h           | 1 +
+ include/uapi/linux/if_link.h       | 4 +++-
+ net/core/dev.c                     | 9 ++++++++-
+ tools/include/uapi/linux/if_link.h | 4 +++-
+ 5 files changed, 16 insertions(+), 3 deletions(-)
 
-Here is the summary with links:
-  - [net-next,1/2] net: macvlan: fix potential UAF problem for lowerdev
-    https://git.kernel.org/netdev/net-next/c/291ac68478d9
-  - [net-next,2/2] net: macvlan: add net device refcount tracker
-    https://git.kernel.org/netdev/net-next/c/1f4a5983d623
-
-You are awesome, thank you!
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 0d994710b335..f6f270a5e301 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2274,6 +2274,7 @@ struct net_device {
+ 	bool			proto_down;
+ 	unsigned		wol_enabled:1;
+ 	unsigned		threaded:1;
++	unsigned		xdp_small_headroom:1;
+ 
+ 	struct list_head	net_notifier_list;
+ 
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 4eebea830613..7635dfb02313 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -5688,6 +5688,7 @@ struct bpf_xdp_sock {
+ };
+ 
+ #define XDP_PACKET_HEADROOM 256
++#define XDP_PACKET_HEADROOM_SMALL 64
+ 
+ /* User return codes for XDP prog type.
+  * A valid XDP program must return one of these defined values. All other
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index e003a0b9b4b2..acb996334910 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -1275,11 +1275,13 @@ enum {
+ #define XDP_FLAGS_DRV_MODE		(1U << 2)
+ #define XDP_FLAGS_HW_MODE		(1U << 3)
+ #define XDP_FLAGS_REPLACE		(1U << 4)
++#define XDP_FLAGS_SMALL_HEADROOM	(1U << 5)
+ #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
+ 					 XDP_FLAGS_DRV_MODE | \
+ 					 XDP_FLAGS_HW_MODE)
+ #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
+-					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE)
++					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE | \
++					 XDP_FLAGS_SMALL_HEADROOM)
+ 
+ /* These are stored into IFLA_XDP_ATTACHED on dump. */
+ enum {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8d25ec5b3af7..cb12379b8f11 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4722,6 +4722,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 				     struct xdp_buff *xdp,
+ 				     struct bpf_prog *xdp_prog)
+ {
++	int min_headroom = XDP_PACKET_HEADROOM;
+ 	u32 act = XDP_DROP;
+ 
+ 	/* Reinjected packets coming from act_mirred or similar should
+@@ -4730,12 +4731,15 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	if (skb_is_redirected(skb))
+ 		return XDP_PASS;
+ 
++	if (skb->dev->xdp_small_headroom)
++		min_headroom = XDP_PACKET_HEADROOM_SMALL;
++
+ 	/* XDP packets must be linear and must have sufficient headroom
+ 	 * of XDP_PACKET_HEADROOM bytes. This is the guarantee that also
+ 	 * native XDP provides, thus we need to do it here as well.
+ 	 */
+ 	if (skb_cloned(skb) || skb_is_nonlinear(skb) ||
+-	    skb_headroom(skb) < XDP_PACKET_HEADROOM) {
++	    skb_headroom(skb) < min_headroom) {
+ 		int hroom = XDP_PACKET_HEADROOM - skb_headroom(skb);
+ 		int troom = skb->tail + skb->data_len - skb->end;
+ 
+@@ -9135,6 +9139,9 @@ static int dev_xdp_attach(struct net_device *dev, struct netlink_ext_ack *extack
+ 			return err;
+ 	}
+ 
++	if (mode == XDP_MODE_SKB)
++		dev->xdp_small_headroom = !!(flags & XDP_FLAGS_SMALL_HEADROOM);
++
+ 	if (link)
+ 		dev_xdp_set_link(dev, mode, link);
+ 	else
+diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
+index e1ba2d51b717..0df737a6c489 100644
+--- a/tools/include/uapi/linux/if_link.h
++++ b/tools/include/uapi/linux/if_link.h
+@@ -1185,11 +1185,13 @@ enum {
+ #define XDP_FLAGS_DRV_MODE		(1U << 2)
+ #define XDP_FLAGS_HW_MODE		(1U << 3)
+ #define XDP_FLAGS_REPLACE		(1U << 4)
++#define XDP_FLAGS_SMALL_HEADROOM	(1U << 5)
+ #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
+ 					 XDP_FLAGS_DRV_MODE | \
+ 					 XDP_FLAGS_HW_MODE)
+ #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
+-					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE)
++					 XDP_FLAGS_MODES | XDP_FLAGS_REPLACE | \
++					 XDP_FLAGS_SMALL_HEADROOM)
+ 
+ /* These are stored into IFLA_XDP_ATTACHED on dump. */
+ enum {
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
