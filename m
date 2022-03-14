@@ -2,66 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEAFA4D8DDD
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:08:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3624D8DEF
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 21:11:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237741AbiCNUJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 16:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47760 "EHLO
+        id S244032AbiCNUM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 16:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233764AbiCNUJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:09:40 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E3D12610
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:08:30 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id t5so15893599pfg.4
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ZfM/ShDuHFahKd1TMYL+g26NCZ1P3CYuyCVYj8j4umk=;
-        b=BewI5Z5/5HBeeFiJtAE7bzyh7Uru+orfUCWAueTsdyXHFKhsr1hidNBctmDNNRcQtD
-         XF2RFa/+a9FmBiXhgLNGif01rAd8lqFenqzI4kBCKihAjblAGphJ82p+DulZf6Ax+Qww
-         snxnhJSe2M1eThYga5GOfdk1Vy2c8dbFUhvR8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ZfM/ShDuHFahKd1TMYL+g26NCZ1P3CYuyCVYj8j4umk=;
-        b=UDvbR+5amW+ArruYfLAcKCddRQJVYTsrAG6kc4wF2mXyjRuTW2VG0rgfc3U1eeuuGl
-         w+7YrTpXyVReAkNS91vz3x2Uplo0jQ9c9W5540rK41nTss/T/E4/eJR2BjIEmmuovim/
-         1mtQps7P53Wc1dVTYOewGkwSPkiOU85SmBDLEFIlxeL4AkY+7ldR/0dqNrize9IwWHKz
-         8+7Iit7z2HFVCXHzu9R/xPHmfRGCDGa1oDKbWNADXhOsA3p0sNkpXarW+JfItrIYUJk4
-         0Do97VCHQhR+o9p6lyXtSZyhi1g+yQfIWAeQkPfUQHo5/8zC241PRdj1UsgJUiPr96/n
-         WjrA==
-X-Gm-Message-State: AOAM5325hBastRiEEnmTZejhzMw1VV+fGi5iJBqSga/pSPnHNABr0B9T
-        xKj9JTtnrg2/b1iZsxhwrmn1yg==
-X-Google-Smtp-Source: ABdhPJydBcsqQZokhgVGzVxs6oLw3laHl61H1FuYj1OJ7PIsHEQhXXwWI3+PGDbjpjwrE7191XpkBQ==
-X-Received: by 2002:a05:6a00:2314:b0:4f7:a347:cf68 with SMTP id h20-20020a056a00231400b004f7a347cf68mr14025642pfh.63.1647288509496;
-        Mon, 14 Mar 2022 13:08:29 -0700 (PDT)
-Received: from fastly.com (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id o5-20020a655bc5000000b00372f7ecfcecsm17317271pgr.37.2022.03.14.13.08.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 14 Mar 2022 13:08:29 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 13:08:26 -0700
-From:   Joe Damato <jdamato@fastly.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH net-next] net/mlx5e: Fix use-after-free in
- mlx5e_stats_grp_sw_update_stats
-Message-ID: <20220314200825.GA28535@fastly.com>
-References: <20220312005353.786255-1-saeed@kernel.org>
+        with ESMTP id S233445AbiCNUM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 16:12:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EA313D0A
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 13:11:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64C4961258
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 20:11:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59EB7C340E9;
+        Mon, 14 Mar 2022 20:11:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647288676;
+        bh=syMGBputaXiS9FtO0IEcCDnEXUACwyeJCzXNPB0JiD8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oyGHdYMSdmu6F8cQXJjl1c08Qb0PQaa5sv0+nzXSJjmBZyPP5CJh99mP5U8pld0wK
+         /G9Ljp99td3ZcaDBUuDMiUv9j6vPj2cf0PkW2+1TK9Kkm5HhdZwMjwuRezLsN+WsM8
+         TlXVYTXTWpzU+cvhI/quR/L8M6F0hpfkqHUmPInYM5VguUIVhVCkVFj59D7i7XxlQi
+         BPL+sBVRAzIk11u/+yeavUqcT90UkUMr99cJ99Tsgx/dJ7STZsGTWIeIfrqiZeW7To
+         GIa1+UDbEyG3QPGt64eyEhyGnMdt/STw8HLYMuNFq51v5PtCg+DHpRjVLqCdylTeqI
+         vJFfjFSYczqbA==
+Date:   Mon, 14 Mar 2022 13:11:14 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <sudheer.mogilappagari@intel.com>,
+        <amritha.nambiar@intel.com>, <jiri@nvidia.com>,
+        <leonro@nvidia.com>,
+        "Bharathi Sreenivas" <bharathi.sreenivas@intel.com>
+Subject: Re: [PATCH net-next 2/2] ice: Add inline flow director support for
+ channels
+Message-ID: <20220314131114.635d5acb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8602316c-2d0c-8d99-1d7f-135b7d808696@intel.com>
+References: <20220310231235.2721368-1-anthony.l.nguyen@intel.com>
+        <20220310231235.2721368-3-anthony.l.nguyen@intel.com>
+        <20220310203416.3b725bd2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <135a75f8-2da9-407b-40b2-b84ecb229110@intel.com>
+        <20220311124909.7112318a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8602316c-2d0c-8d99-1d7f-135b7d808696@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220312005353.786255-1-saeed@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,24 +62,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 04:53:53PM -0800, Saeed Mahameed wrote:
-> From: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> We need to sync page pool stats only for active channels. Reading ethtool
-> stats on a down netdev or a netdev with modified number of channels will
-> result in a user-after-free, trying to access page pools that are freed
-> already.
-> 
-> BUG: KASAN: use-after-free in mlx5e_stats_grp_sw_update_stats+0x465/0xf80
-> Read of size 8 at addr ffff888004835e40 by task ethtool/720
-> 
-> Fixes: cc10e84b2ec3 ("mlx5: add support for page_pool_get_stats")
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> Reported-by: Jakub Kicinski <kuba@kernel.org>
+On Sun, 13 Mar 2022 17:11:42 -0500 Samudrala, Sridhar wrote:
+> > ethtool has RSS context which is what you should use.
+> > I presume you used TCs because it's a quick shortcut for getting
+> > rate control?
+>=20
+> When tc mqprio hw offload is used to split tx/rx queues into queue groups=
+, we
+> create rss contexts per queue group automatically.
+> Today we are not exposing the rss indirection table for queue groups via =
+ethtool.
+> We will add that support by enabling get_rxfh_context() ethtool_ops.
 
-Err, sorry about that folks - my bad. Thanks for catching that Jakub and
-sorry for the trouble Saeed.
+=F0=9F=91=8D
 
-LGTM.
+> IIUC, you are suggesting using the rsvd fields in struct ethtool_rxfh to =
+enable
+> additional per-rss_context parameters.
 
-Acked-by: Joe Damato <jdamato@fastly.com>
+Poosssibllyy... I'm not sure if it's initialized by user space, always?
+You'll need to double check that, since we haven't been enforcing that
+it's set to zero in the kernel.
+
+If not we can limit the feature to ethtool netlink. Either way I think
+we can keep the driver facing API intact.
+
+> ethtool -X enp175s0f0 context 1 inline_fd on/off
+>=20
+> Will this be acceptable?
+
+Slightly risky for me to agree because of the lack of documentation -=20
+I can't be sure what the knob does, exactly.
+
+If I'm reading the cover letter right the feature flips from hash-based
+RSS to assigning flows in a round-robin fashion. Are there flows which
+remain hashed or everything goes to round robin? We should document
+what the eviction policy is as well.
+
+I think we may need to polish the exact definition of what on/off means
+a little more but your example command seems quite plausible at this
+point.
