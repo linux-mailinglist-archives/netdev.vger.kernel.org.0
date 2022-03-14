@@ -2,88 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D11F4D85CD
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 14:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BE9A4D85FB
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 14:33:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241698AbiCNNQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 09:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
+        id S241790AbiCNNeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 09:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239837AbiCNNQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 09:16:02 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD902AE11
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 06:14:52 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id v2so3805518qtc.5
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 06:14:52 -0700 (PDT)
+        with ESMTP id S241809AbiCNNed (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 09:34:33 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E2625C6E;
+        Mon, 14 Mar 2022 06:33:21 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id m11-20020a17090a7f8b00b001beef6143a8so14562345pjl.4;
+        Mon, 14 Mar 2022 06:33:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fireburn-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/rdm6WcHd2UZKtrYNzZbFzqUQd4NUiFFh3tDX3bGnuk=;
-        b=ZJbPZTWCQpkBMpm4c7zzdBjLhFwYV5Mmfc7nb2sDKttaMgwlrxtZrnxy7dovr/2v0/
-         R7bc9A/ZRWtKh+gulNgN0ahSlBP+/lSl74r26+9jiJ6zzV/p8bcMpLKK26YHSt0RfN4S
-         wu90+G9FCm3YHHET0U9Q7ETPkMKtiQpTi48B4WOl0G0TagY82uK5UBvDGZvuAPE0EJmd
-         nVmbJsp2oip/LD617ON0rPerhIk0rezkoUgc4XuehAnq433rX9zgk33HSVwpX6+6RjUU
-         NnMCrfyYEMaornZoM7r/L5ZSursaVNYEoozJjvVCZpzCgUea7X12b3TmelNJ8s2QUzSN
-         fkuw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=idHjkRIltp8O+8vjJJH3tivjjSy+7Uw6dAGEkWyyqls=;
+        b=jIf+ImYJ6sIVPX6By/Flor8u44P3yt80KgXyTwADNV9LeAtplx1xircpTp47Kwz8gM
+         HJOHFSD6xHVubuX1qUCi2hbdA5qJTI31kuu+bkWPCWIlS3W1nxZrp6C+gSdxx0mY/PWk
+         /Wj3Mn0hWECzyab7ZFM+D1Y59JN8ndfF5FERhityrTbySAWa4vPm9FPtwqGUwAjzw4xL
+         qzvgCup+4/qd5ZN8mqYv6hZAd7WK03PU/8H7ohfmv8tIiaI6uE0ndCYMo4fV9sft6qj4
+         mFc98iyAtcLcER84HkGb7QfVynxDW62EyA5ituNwDpalSn0IzItGF6UGmS8Xrc3gp7m8
+         0Q4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/rdm6WcHd2UZKtrYNzZbFzqUQd4NUiFFh3tDX3bGnuk=;
-        b=rjmUFjH9ijVmVSUKLKZN3QeIhGhTIA+vtOd0Sb0/+HyHwmj1JyIDG8RyTHp4LtKH+U
-         8Es0e08dhCGEo2pqAp7hthRbYKF4zILlbeePelwNmW/7keRZIfSLW57GsFBkWWJ9LblK
-         uBXyKW1/f76Xdjyv7VeySb10m2mvGD8zV10vLjpGwcPtGybDe6f6uioproxPH5bYamrA
-         DTItIQHDfpGm/1AKB47fqb7LqhQL8WsMshJVP+YslKD/4OdyeWmUNpJGMx0rQQ0OzeA4
-         R4YWe1lGBiET06aEB+FYRNN+t3dBGzu5rJykgkl7VwkYGYmpPHxoeRIX33c/k0dqumnM
-         BFBw==
-X-Gm-Message-State: AOAM531AHntIsTKvXkFESWOSEpaoNfDAktAGfB4/QfgqkB2QSRQNYL4e
-        LuOTarxe3gvaVnil+L7H6Ryl9OkCSFIEESU2P2ZtXA==
-X-Google-Smtp-Source: ABdhPJzp+LJ7N9PBedtu0a94sxgYSVBoqLsNOYckDzrN4CCHX0/wxVuma4fRc3DM1r30N8emwMq+4JHJz0Tl2LgVavY=
-X-Received: by 2002:ac8:5a84:0:b0:2e1:4f1d:36fb with SMTP id
- c4-20020ac85a84000000b002e14f1d36fbmr18471370qtc.54.1647263691295; Mon, 14
- Mar 2022 06:14:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211201000215.1134831-13-luiz.dentz@gmail.com>
- <20220125144639.2226-1-mike@fireburn.co.uk> <CAHbf0-FEVZZYg7U__YXqPmS=XETb2pObB-8CX+vh8=-HivppJA@mail.gmail.com>
- <20220312144512.GQ3315@kadam>
-In-Reply-To: <20220312144512.GQ3315@kadam>
-From:   Mike Lothian <mike@fireburn.co.uk>
-Date:   Mon, 14 Mar 2022 13:14:40 +0000
-Message-ID: <CAHbf0-GTexadb=Ypk+gn8_KfUHjHZW-Vtzh1V_M08Tv=nd0Xrw@mail.gmail.com>
-Subject: Re: [PATCH 12/15] Bluetooth: hci_event: Use of a function table to
- handle HCI events
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, luiz.von.dentz@intel.com,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=idHjkRIltp8O+8vjJJH3tivjjSy+7Uw6dAGEkWyyqls=;
+        b=qD6lUotgf9OxkR22+cMw0HJCIGMzSt/hU6GbmwalG+SGOpaljZ9bnTwYcO9XhjCnBD
+         wkaqmWv12Bh2hb80t87GI6wsMs9to6q5J7cSdv4zFo3KGqLq71PFkyFm8c7yjOQwgqus
+         NDmZbE1PiACIa1Wu/KVeXc4FUYKix21HknRxOj34/vFPVP4KE/V1cpN9b3S34zzYDOWN
+         gMsZNqw0fPwjpBPqe6mcePuku+ZmlUdzw1YKzxB9qE+yzgQWJDK0cxl8rRlbCUTcxWKb
+         gTtc9FkJGOl3ajfQJdz6PRrKuEWBJj+pvRJfo3gb4aezw5avLp0Lab+sCWumpDutlua/
+         DkaA==
+X-Gm-Message-State: AOAM533IWg/1xaUUa6lXFoC3KZ26+edIxGwWT/OLv/w+nHp4cTMk1avM
+        /NowvcVYPaWMRDtaKBdUc1s=
+X-Google-Smtp-Source: ABdhPJzERhjcfIeWCK6ca4JdxfygufBCgTMns1MKWkUniqAGhWfcDDx5kFN/dQOh9UVO/9OuSYscyQ==
+X-Received: by 2002:a17:902:6ac7:b0:150:24d6:b2ee with SMTP id i7-20020a1709026ac700b0015024d6b2eemr23946345plt.168.1647264801508;
+        Mon, 14 Mar 2022 06:33:21 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.114])
+        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm22118722pfu.202.2022.03.14.06.33.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 06:33:20 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org
+Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
+        flyingpeng@tencent.com, mengensun@tencent.com,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Subject: [PATCH net-next 0/3] net: gre: add skb drop reasons to gre packet receive
+Date:   Mon, 14 Mar 2022 21:33:09 +0800
+Message-Id: <20220314133312.336653-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Mar 2022 at 14:45, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> It seems reasonable enought to remove a spammy error message.
->
-> Can you resend your patch in the proper format with a proper subject,
-> commit message and signed-off-by line?
->
-> regards,
-> dan carpenter
->
+From: Menglong Dong <imagedong@tencent.com>
 
-I've done that, but I'm not sure if I need to do anything else
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
+we added the support of reporting the reasons of skb drops to kfree_skb
+tracepoint. And in this series patches, reasons for skb drops are added
+to gre packet receiving path.
 
-The patch was based against 5.17-rc7, but just let me know if I need
-to rebase it to a different tree
+gre_rcv() in gre_demux.c is handled in the 1th patch.
 
-Cheers
+In order to report skb drop reasons, we make erspan_rcv() return
+PACKET_NEXT when no tunnel device found in the 2th patch. This may don't
+correspond to 'PACKET_NEXT', but don't matter.
 
-Mike
+And gre_rcv() in ip_gre.c is handled in the 3th patch.
+
+Following drop reasons are added(what they mean can be see in the
+document for them):
+
+SKB_DROP_REASON_GRE_VERSION
+SKB_DROP_REASON_GRE_NOHANDLER
+SKB_DROP_REASON_GRE_CSUM
+SKB_DROP_REASON_GRE_NOTUNNEL
+
+Maybe SKB_DROP_REASON_GRE_NOHANDLER can be replaced with
+SKB_DROP_REASON_GRE_VERSION? As no gre_protocol found means that gre
+version not supported.
+
+PS: This set is parallel with the set "net: icmp: add skb drop reasons
+to icmp", please don't mind :)
+
+Menglong Dong (3):
+  net: gre_demux: add skb drop reasons to gre_rcv()
+  net: ipgre: make erspan_rcv() return PACKET_NEXT
+  net: ipgre: add skb drop reasons to gre_rcv()
+
+ include/linux/skbuff.h     |  6 ++++++
+ include/trace/events/skb.h |  4 ++++
+ net/ipv4/gre_demux.c       | 12 +++++++++---
+ net/ipv4/ip_gre.c          | 30 +++++++++++++++++++-----------
+ 4 files changed, 38 insertions(+), 14 deletions(-)
+
+-- 
+2.35.1
+
