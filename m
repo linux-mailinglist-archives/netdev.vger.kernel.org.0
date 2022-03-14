@@ -2,119 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DC6A4D809C
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 12:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62C6F4D80BD
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 12:32:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238890AbiCNL0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 07:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
+        id S238940AbiCNLdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 07:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230506AbiCNL0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 07:26:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C8939687;
-        Mon, 14 Mar 2022 04:25:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FA15B80D91;
-        Mon, 14 Mar 2022 11:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8A34C340E9;
-        Mon, 14 Mar 2022 11:25:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647257136;
-        bh=rZOWKbjELHYqrIoGaZbW7LvgfxBv3MLhfimZpgWM0d4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rFkpLC85NWCpMMC/+yqgSEev4fW1GgxKieVXe3BX95EkuvPTZFaxLYZo57axNilkO
-         SX6e6Gf+hOOR0R2zdyy/Rb8AHbT1htZXyp0jOSFJvt4p5ru4Bdqmv331dThy3TMvCd
-         /oOVVLaU2ppeSXLYJd3k3xTKofNZ7r1GqUURKvhg=
-Date:   Mon, 14 Mar 2022 12:25:31 +0100
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Daniel Suchy <danny@danysek.cz>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "rafael.richter@gin.de" <rafael.richter@gin.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: patch problem - mv88e6xxx: flush switchdev FDB workqueue
-Message-ID: <Yi8mK+K9aiXShNQY@kroah.com>
-References: <ccf51795-5821-203d-348e-295aabbdc735@danysek.cz>
- <20220313141030.ztwhuhfwxjfzi5nb@skbuf>
- <Yi7i+pebGu0NoIsF@kroah.com>
- <Yi7s+vh3GBTVtDN2@kroah.com>
- <20220314111750.ym5xiuvusj4kl4t4@skbuf>
+        with ESMTP id S238922AbiCNLdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 07:33:54 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72CF1F62E;
+        Mon, 14 Mar 2022 04:32:44 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id z4so13470904pgh.12;
+        Mon, 14 Mar 2022 04:32:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=92cFP1Q6pigG4NDAij7XXlgfkxnBaSgKOySsdGgapv0=;
+        b=Qzb+b30IWzZ8yT1D98WbHHtNLsv83jEdHMCsP9EUJAF1by8QgRAwP2LL6Md6iu6Vur
+         D4YMsevNUJ9EWCWod8CxNb5P4B/STl64lixHUrWLWnHhgg2vyIBkZzjB6oR1S52/1WG3
+         lRvn28f43NvQuK8BkLpJUuq47vCPZIABxwGtaSaMw4qyWlHY+7fxuNUGASnVgepIOBha
+         JTvr2BBuDsdYaCeTk5xUMhoTX6Z/rVzRq4AjBear/aASTqJdYM+AkUNhGbpW9inxInLo
+         PPgOYeomYhGIOurDyymwO7Sa2GggnoluJOUanXBxjnh0h5p7t5lUP0PTFjpIxZdF41mV
+         pUhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=92cFP1Q6pigG4NDAij7XXlgfkxnBaSgKOySsdGgapv0=;
+        b=eU98wAdHpv9bsnRFD2MqZzL5ItkVAItumcf+VXo3DBZZJhypHwMzYs7CoOZ9rRdCBV
+         yh1Zjw/m98uQkBSzpVaa7ycB6FXQhqfzUkmh2WbHTmRE9o3V8trp8OWn/4b/6SgBJ8Sz
+         cPs1rJxsXPp/9wzn1LkPa1TdAKT4abq0r+euTiWYbgnL8FZJbDynJvzKdGElw7xzK81u
+         jXNeyJrOjhqpMwFFR+p3LCB9gdUHuO21KBVJgbKeWXv+qA9ZHyLKFKkFsdG6fhdK5ac7
+         guJFtiX35oqTiypSySM38h5FF0pEBsvIW0zWebKtPd/d9RabftstscWVgWcTYpUIkAYq
+         zLTA==
+X-Gm-Message-State: AOAM530CkibfHHrPJEJ+s01DXdLVdU31IV3sfPjqvJBtKVnxXfQoBBmN
+        VIixO7k9jnOUQG4FxBi9sQM=
+X-Google-Smtp-Source: ABdhPJyi7Hh/JYtt3JY7Nf9mWH2uKnG7FDRGWWlHs6RzovzxGkZu9vokk/51i02aWNKfEJZi+jVOKQ==
+X-Received: by 2002:a05:6a00:319e:b0:4f6:dedb:6c52 with SMTP id bj30-20020a056a00319e00b004f6dedb6c52mr23293271pfb.31.1647257564320;
+        Mon, 14 Mar 2022 04:32:44 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.118])
+        by smtp.gmail.com with ESMTPSA id l2-20020a056a0016c200b004f7e3181a41sm2645197pfc.98.2022.03.14.04.32.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 04:32:43 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org
+Cc:     davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
+        yoshfuji@linux-ipv6.org, imagedong@tencent.com,
+        edumazet@google.com, kafai@fb.com, talalahmad@google.com,
+        keescook@chromium.org, alobakin@pm.me, dongli.zhang@oracle.com,
+        pabeni@redhat.com, maze@google.com, aahringo@redhat.com,
+        weiwan@google.com, yangbo.lu@nxp.com, fw@strlen.de,
+        tglx@linutronix.de, rpalethorpe@suse.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/3] net: icmp: add skb drop reasons to icmp
+Date:   Mon, 14 Mar 2022 19:32:22 +0800
+Message-Id: <20220314113225.151959-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314111750.ym5xiuvusj4kl4t4@skbuf>
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 11:17:50AM +0000, Vladimir Oltean wrote:
-> On Mon, Mar 14, 2022 at 08:21:30AM +0100, gregkh@linuxfoundation.org wrote:
-> > On Mon, Mar 14, 2022 at 07:38:50AM +0100, gregkh@linuxfoundation.org wrote:
-> > > On Sun, Mar 13, 2022 at 02:10:31PM +0000, Vladimir Oltean wrote:
-> > > > Hi Daniel,
-> > > > 
-> > > > On Sun, Mar 13, 2022 at 03:03:07PM +0100, Daniel Suchy wrote:
-> > > > > Hello,
-> > > > > 
-> > > > > I noticed boot problems on my Turris Omnia (with Marvell 88E6176 switch
-> > > > > chip) after "net: dsa: mv88e6xxx: flush switchdev FDB workqueue before
-> > > > > removing VLAN" commit https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=2566a89b9e163b2fcd104d6005e0149f197b8a48
-> > > > > 
-> > > > > Within logs I catched hung kernel tasks (see below), at least first is
-> > > > > related to DSA subsystem.
-> > > > > 
-> > > > > When I revert this patch, everything works as expected and without any
-> > > > > issues.
-> > > > > 
-> > > > > In my setup, I have few vlans on affected switch (i'm using ifupdown2 v3.0
-> > > > > with iproute2 5.16 for configuration).
-> > > > > 
-> > > > > It seems your this patch introduces some new problem (at least for 5.15
-> > > > > kernels). I suggest revert this patch.
-> > > > > 
-> > > > > - Daniel
-> > > > 
-> > > > Oh wow, I'm terribly sorry. Yes, this patch shouldn't have been
-> > > > backported to kernel 5.15 and below, but I guess I missed the
-> > > > backport notification email and forgot to tell Greg about this.
-> > > > Patch "net: dsa: mv88e6xxx: flush switchdev FDB workqueue before
-> > > > removing VLAN" needs to be immediately reverted from these trees.
-> > > > 
-> > > > Greg, to avoid this from happening in the future, would something like
-> > > > this work? Is this parsed in some way?
-> > > > 
-> > > > Depends-on: 0faf890fc519 ("net: dsa: drop rtnl_lock from dsa_slave_switchdev_event_work") # which first appeared in v5.16
-> > > 
-> > > The "Fixes:" tag will solve this, please just use that in the future.
-> > 
-> > Ah, you did have a fixes tag here, so then use the way to say "you also
-> > need to add another patch here" by adding the sha to the line for the
-> > stable tree:
-> > 	cc: stable@vger.kernel.org # 0faf890fc519
-> > 
-> > So, should I just backport that commit instead?  The "Fixes:" line says
-> > this needs to be backported to 4.14, which is why I added it to these
-> > trees.
-> > 
-> > thanks,
-> 
-> No, don't backport the dependency, just revert the patch (hence my
-> question: how can I describe "don't backport beyond commit X"?).
-> 
-> Here, you can apply the revert attached.
+From: Menglong Dong <imagedong@tencent.com>
 
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
+we added the support of reporting the reasons of skb drops to kfree_skb
+tracepoint. And in this series patches, reasons for skb drops are added
+to ICMP protocol.
 
-Thanks, now queued up.
+In order to report the reasons of skb drops in 'sock_queue_rcv_skb()',
+the function 'sock_queue_rcv_skb_reason()' is introduced in the 1th
+patch, which is used in the 2th patch.
 
-greg k-h
+In the 2th patch, we add skb drop reasons to ping_queue_rcv_skb().
+
+In the 3th patch, we make ICMP message handler functions return drop
+reasons, which means we change the return type of 'handler()' in
+'struct icmp_control' from 'bool' to 'enum skb_drop_reason'. This
+changed its original intention, as 'false' means failure, but
+'SKB_NOT_DROPPED_YET', which is 0, means success now. Therefore, we
+have to change all usages of these handler. Following "handler" functions
+are involved:
+
+icmp_unreach()
+icmp_redirect()
+icmp_echo()
+icmp_timestamp()
+icmp_discard()
+
+And following drop reasons are added(what they mean can be see
+in the document for them):
+
+SKB_DROP_REASON_ICMP_CSUM
+SKB_DROP_REASON_ICMP_TYPE
+SKB_DROP_REASON_ICMP_BROADCAST
+
+Menglong Dong (3):
+  net: sock: introduce sock_queue_rcv_skb_reason()
+  net: icmp: add skb drop reasons to ping_queue_rcv_skb()
+  net: icmp: add reasons of the skb drops to icmp protocol
+
+ include/linux/skbuff.h     |  5 +++
+ include/net/ping.h         |  2 +-
+ include/net/sock.h         |  9 ++++-
+ include/trace/events/skb.h |  3 ++
+ net/core/sock.c            | 30 ++++++++++++---
+ net/ipv4/icmp.c            | 75 ++++++++++++++++++++++----------------
+ net/ipv4/ping.c            | 21 ++++++-----
+ net/ipv6/icmp.c            | 24 +++++++-----
+ 8 files changed, 112 insertions(+), 57 deletions(-)
+
+-- 
+2.35.1
+
