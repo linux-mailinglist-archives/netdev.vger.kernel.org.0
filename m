@@ -2,57 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75D214D8F24
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 22:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B05BF4D8F30
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 23:01:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245384AbiCNWBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 18:01:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
+        id S245455AbiCNWCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 18:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238329AbiCNWBD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 18:01:03 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570573BF8A;
-        Mon, 14 Mar 2022 14:59:51 -0700 (PDT)
-Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nTsjE-000650-7K; Mon, 14 Mar 2022 22:59:48 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nTsjD-000ELb-RG; Mon, 14 Mar 2022 22:59:47 +0100
-Subject: Re: [net-next v10 1/2] net: sched: use queue_mapping to pick tx queue
-To:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
+        with ESMTP id S245425AbiCNWCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 18:02:22 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442C63C48F;
+        Mon, 14 Mar 2022 15:01:11 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id o5so4745858ybe.2;
+        Mon, 14 Mar 2022 15:01:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FDQp0elUbEb3l2ztp8B9W0hhZAwxOZgBnkRa+RhHUnU=;
+        b=WvHe4lvu9eMeiGDQrTW+QFd0atSq6h7tPADdOTemrhvtyF8fR44hONCUmP0BXcMICq
+         JD3TdX9CequRTw9vJXkuES8i5Gko+9m6uEF/P0SfS+6vGijN1MQDhGVutZ81RLJAQS2S
+         uTSibi6jnSh+A8VH9wDeT9A4EtrE+iqiTaHdH9mEXKFPyMQ7B8N6QQLS4hz8Egcl9AO+
+         U46H8gbP8konmPKMj6reDwTQbs50B8ykWJEDaT/WLGDYDVzZhJRxl9mZp+zDSapC/lZZ
+         cJhnrPLQEUA0wJhh3vfgUOYJaP3mJ3T/KUZmlR+tni99BAty+93dOAESeaaejKEbG6KE
+         UU3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FDQp0elUbEb3l2ztp8B9W0hhZAwxOZgBnkRa+RhHUnU=;
+        b=HicE5R3XrpaO6TncjgeGxicCpgGIxZtAvj1Iwg9ePt0fzbCpTckId38OTwevc256rA
+         pE5KU/ujewY4Nf4smBwOrUpVCE8RYiZOo1HovOXu9j1NRQDOFnsunD/j69v/oxRLU7Ii
+         clNCQGao454S7Sh/CpAhYov7HWtJzted8zk0mzMmJ6viZlsmzdnZu5+hlitXyzQdddLk
+         jduDMrJhh2UkgadNZYOhnA2xerzmiZSajPGU2dw30NC6fAc6C2+sVNEF6+UxwiOlMGdb
+         uyWiRCfF/OYGysWW4LhJ1JLNBBS+x0T8ycy4NtfoUUNdmSkuNwZkSwDS2uyFoV1qvo8i
+         STQQ==
+X-Gm-Message-State: AOAM533BrIHoFH/U2HCH9dtqR8Hm2CXfclg0TFIQx3tZXjAfpoLbzCsi
+        gGAji7LqJNo+znrqX26e8mXuZ0vuQN0Z2ULYvhOITELI
+X-Google-Smtp-Source: ABdhPJyje4eQsiO8dt4q7jDAtFimCxHJPbizI7qD7bwtkI9WgWPNi408Kg2S6oHIMFc3vrtLGm9QkspOr98knrLIUO0=
+X-Received: by 2002:a25:a467:0:b0:61e:1b4a:7700 with SMTP id
+ f94-20020a25a467000000b0061e1b4a7700mr19985076ybi.390.1647295270388; Mon, 14
+ Mar 2022 15:01:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <e2c2fe36c226529c99595370003d3cb1b7133c47.1646252285.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <e2c2fe36c226529c99595370003d3cb1b7133c47.1646252285.git.christophe.jaillet@wanadoo.fr>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Mon, 14 Mar 2022 15:00:59 -0700
+Message-ID: <CABBYNZ+uNjszAf9jYL4iu+HxjrktnQL2FeQfdDRnFfNNnmw07g@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Don't assign twice the same value
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>, ast@kernel.org,
-        bpf@vger.kernel.org
-References: <20220314141508.39952-1-xiangxia.m.yue@gmail.com>
- <20220314141508.39952-2-xiangxia.m.yue@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <015e903a-f4b4-a905-1cd2-11d10aefec8a@iogearbox.net>
-Date:   Mon, 14 Mar 2022 22:59:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20220314141508.39952-2-xiangxia.m.yue@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26481/Mon Mar 14 09:39:13 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,131 +71,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/14/22 3:15 PM, xiangxia.m.yue@gmail.com wrote:
-[...]
->   include/linux/netdevice.h |  3 +++
->   include/linux/rtnetlink.h |  1 +
->   net/core/dev.c            | 31 +++++++++++++++++++++++++++++--
->   net/sched/act_skbedit.c   |  6 +++++-
->   4 files changed, 38 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 0d994710b335..f33fb2d6712a 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -3065,6 +3065,9 @@ struct softnet_data {
->   	struct {
->   		u16 recursion;
->   		u8  more;
-> +#ifdef CONFIG_NET_EGRESS
-> +		u8  skip_txqueue;
-> +#endif
->   	} xmit;
->   #ifdef CONFIG_RPS
->   	/* input_queue_head should be written by cpu owning this struct,
-> diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
-> index 7f970b16da3a..ae2c6a3cec5d 100644
-> --- a/include/linux/rtnetlink.h
-> +++ b/include/linux/rtnetlink.h
-> @@ -100,6 +100,7 @@ void net_dec_ingress_queue(void);
->   #ifdef CONFIG_NET_EGRESS
->   void net_inc_egress_queue(void);
->   void net_dec_egress_queue(void);
-> +void netdev_xmit_skip_txqueue(bool skip);
->   #endif
->   
->   void rtnetlink_init(void);
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 75bab5b0dbae..8e83b7099977 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -3908,6 +3908,25 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
->   
->   	return skb;
->   }
-> +
-> +static struct netdev_queue *
-> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
-> +{
-> +	int qm = skb_get_queue_mapping(skb);
-> +
-> +	return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
-> +}
-> +
-> +static bool netdev_xmit_txqueue_skipped(void)
-> +{
-> +	return __this_cpu_read(softnet_data.xmit.skip_txqueue);
-> +}
-> +
-> +void netdev_xmit_skip_txqueue(bool skip)
-> +{
-> +	__this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
-> +}
-> +EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
->   #endif /* CONFIG_NET_EGRESS */
->   
->   #ifdef CONFIG_XPS
-> @@ -4078,7 +4097,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
->   static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->   {
->   	struct net_device *dev = skb->dev;
-> -	struct netdev_queue *txq;
-> +	struct netdev_queue *txq = NULL;
->   	struct Qdisc *q;
->   	int rc = -ENOMEM;
->   	bool again = false;
-> @@ -4106,11 +4125,17 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->   			if (!skb)
->   				goto out;
->   		}
-> +
-> +		netdev_xmit_skip_txqueue(false);
-> +
->   		nf_skip_egress(skb, true);
->   		skb = sch_handle_egress(skb, &rc, dev);
->   		if (!skb)
->   			goto out;
->   		nf_skip_egress(skb, false);
-> +
-> +		if (netdev_xmit_txqueue_skipped())
-> +			txq = netdev_tx_queue_mapping(dev, skb);
->   	}
->   #endif
->   	/* If device/qdisc don't need skb->dst, release it right now while
-> @@ -4121,7 +4146,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->   	else
->   		skb_dst_force(skb);
->   
-> -	txq = netdev_core_pick_tx(dev, skb, sb_dev);
-> +	if (likely(!txq))
+Hi Christophe,
 
-nit: Drop likely(). If the feature is used from sch_handle_egress(), then this would always be the case.
+On Wed, Mar 2, 2022 at 12:18 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> data.pid is set twice with the same value. Remove one of these redundant
+> calls.
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  net/bluetooth/l2cap_core.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+> index e817ff0607a0..0d460cb7f965 100644
+> --- a/net/bluetooth/l2cap_core.c
+> +++ b/net/bluetooth/l2cap_core.c
+> @@ -1443,7 +1443,6 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
+>         data.pdu.scid[0]     = cpu_to_le16(chan->scid);
+>
+>         chan->ident = l2cap_get_ident(conn);
+> -       data.pid = chan->ops->get_peer_pid(chan);
+>
+>         data.count = 1;
+>         data.chan = chan;
+> --
+> 2.32.0
+>
+Applied, thanks.
 
-> +		txq = netdev_core_pick_tx(dev, skb, sb_dev);
-> +
->   	q = rcu_dereference_bh(txq->qdisc);
-
-How will the `netdev_xmit_skip_txqueue(true)` be usable from BPF side (see bpf_convert_ctx_access() ->
-queue_mapping)?
-
->   	trace_net_dev_queue(skb);
-> diff --git a/net/sched/act_skbedit.c b/net/sched/act_skbedit.c
-> index ceba11b198bb..d5799b4fc499 100644
-> --- a/net/sched/act_skbedit.c
-> +++ b/net/sched/act_skbedit.c
-> @@ -58,8 +58,12 @@ static int tcf_skbedit_act(struct sk_buff *skb, const struct tc_action *a,
->   		}
->   	}
->   	if (params->flags & SKBEDIT_F_QUEUE_MAPPING &&
-> -	    skb->dev->real_num_tx_queues > params->queue_mapping)
-> +	    skb->dev->real_num_tx_queues > params->queue_mapping) {
-> +#ifdef CONFIG_NET_EGRESS
-> +		netdev_xmit_skip_txqueue(true);
-> +#endif
->   		skb_set_queue_mapping(skb, params->queue_mapping);
-> +	}
->   	if (params->flags & SKBEDIT_F_MARK) {
->   		skb->mark &= ~params->mask;
->   		skb->mark |= params->mark & params->mask;
-> 
-
+-- 
+Luiz Augusto von Dentz
