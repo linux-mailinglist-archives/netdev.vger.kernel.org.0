@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CCFB4D8B5C
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED394D8B5D
 	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 19:10:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241336AbiCNSLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 14:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
+        id S243558AbiCNSLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 14:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241784AbiCNSLG (ORCPT
+        with ESMTP id S240333AbiCNSLG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 14:11:06 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EFE12601
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1837F1277A
         for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 11:09:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647281396; x=1678817396;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LtzD69+vSeu5lLe+fIhUVRXnlxPWKVCxjJYe+cw8OUI=;
-  b=JIH+SXhWK3C7M9nzA4Gt5HNOwzoCdeJuJb4/7P8LC2UvcJr4XioY6QzQ
-   +GYZFSmBlKQrMzny5DzfIToYwuyf0JimllmuXABFteImvpGA1D/UR5igL
-   hNimJshF8pVrgqWYRteehCV6ORZDx04qZbAS/fF5jI4adpOkPGjr1N7BO
-   uaGwlZ4Ev0oZrxRwtiIgeLhXTGScqeahDFVDNIxhF6f5uIawq4XcnTC1M
-   /yholJVVOZB2IT4alkBALpd+9Ui1MgS+xwRuZ15L2Ha2Vu03iqGgHLLQ+
-   gW/lEP4Vqsv20UnYHimCCVayAHxn7OddJ4KFLMlQC7BMdMhZXvxsGC64d
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="238275339"
+  bh=YJiKnYuUwUuH+pMq5jWSrLufR5N0avguQnUXrUJI2jk=;
+  b=YgteznK+NrByAuegl7nq2yGwRHCP90qSev7NIHL5NXTp8eHhv0yW+ENp
+   YyaFzRMHzxB7QEeXsHlqs7HmofNoiLwnBAMQaoYaVgW9+xJJsd38QLHU4
+   iIa11sHbzPf/8+csCA187Ms3aHLChfCQm7Dw+9IpI5hGPNaDE/lCDGJBG
+   Ycg11n2H4qHuS43mQRC/vkDHNQ53ko2jNPBUcM/nSs+PJCYR5w+WHmQQl
+   k4ZqN+E82goybq15ID7kTFRu6iBNH4+DRy6wlMBtCADmDLrLMsziVoZPB
+   vzBpxQRar4NgattFJjJkpILC5AbFtW2yfvnq0WEM3CUHlZimvIaTx7+mA
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="238275342"
 X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="238275339"
+   d="scan'208";a="238275342"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 11:09:54 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 11:09:55 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="634297455"
+   d="scan'208";a="634297471"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by FMSMGA003.fm.intel.com with ESMTP; 14 Mar 2022 11:09:54 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -42,9 +42,9 @@ To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
         Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 01/25] ice: rename ice_sriov.c to ice_vf_mbx.c
-Date:   Mon, 14 Mar 2022 11:09:52 -0700
-Message-Id: <20220314181016.1690595-2-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 02/25] ice: rename ice_virtchnl_pf.c to ice_sriov.c
+Date:   Mon, 14 Mar 2022 11:09:53 -0700
+Message-Id: <20220314181016.1690595-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220314181016.1690595-1-anthony.l.nguyen@intel.com>
 References: <20220314181016.1690595-1-anthony.l.nguyen@intel.com>
@@ -62,19 +62,46 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The ice_sriov.c file primarily contains code which handles the logic for
-mailbox overflow detection and some other utility functions related to
-the virtualization mailbox.
+The ice_virtchnl_pf.c and ice_virtchnl_pf.h files are where most of the
+code for implementing Single Root IOV virtualization resides. This code
+includes support for bringing up and tearing down VFs, hooks into the
+kernel SR-IOV netdev operations, and for handling virtchnl messages from
+VFs.
 
-The bulk of the SR-IOV implementation is actually found in
-ice_virtchnl_pf.c, and this file isn't strictly SR-IOV specific.
+In the future, we plan to support Scalable IOV in addition to Single
+Root IOV as an alternative virtualization scheme. This implementation
+will re-use some but not all of the code in ice_virtchnl_pf.c
 
-In the future, the ice driver will support an additional virtualization
-scheme known as Scalable IOV, and the code in this file will be used
-for this alternative implementation.
+To prepare for this future, we want to refactor and split up the code in
+ice_virtchnl_pf.c into the following scheme:
 
-Rename this file (and its associated header) to ice_vf_mbx.c, so that we
-can later re-use the ice_sriov.c file as the SR-IOV specific file.
+ * ice_vf_lib.[ch]
+
+   Basic VF structures and accessors. This is where scheme-independent
+   code will reside.
+
+ * ice_virtchnl.[ch]
+
+   Virtchnl message handling. This is where the bulk of the logic for
+   processing messages from VFs using the virtchnl messaging scheme will
+   reside. This is separated from ice_vf_lib.c because it is distinct
+   and has a bulk of the processing code.
+
+ * ice_sriov.[ch]
+
+   Single Root IOV implementation, including initialization and the
+   routines for interacting with SR-IOV based netdev operations.
+
+ * (future) ice_siov.[ch]
+
+   Scalable IOV implementation.
+
+As a first step, lets assume that all of the code in
+ice_virtchnl_pf.[ch] is for Single Root IOV. Rename this file to
+ice_sriov.c and its header to ice_sriov.h
+
+Future changes will further split out the code in these files following
+the plan outlined here.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
@@ -82,78 +109,108 @@ Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
  drivers/net/ethernet/intel/ice/Makefile                     | 2 +-
  drivers/net/ethernet/intel/ice/ice.h                        | 2 +-
- .../net/ethernet/intel/ice/{ice_sriov.c => ice_vf_mbx.c}    | 2 +-
- .../net/ethernet/intel/ice/{ice_sriov.h => ice_vf_mbx.h}    | 6 +++---
- 4 files changed, 6 insertions(+), 6 deletions(-)
- rename drivers/net/ethernet/intel/ice/{ice_sriov.c => ice_vf_mbx.c} (99%)
- rename drivers/net/ethernet/intel/ice/{ice_sriov.h => ice_vf_mbx.h} (95%)
+ drivers/net/ethernet/intel/ice/ice_base.c                   | 2 +-
+ drivers/net/ethernet/intel/ice/ice_repr.c                   | 2 +-
+ .../ethernet/intel/ice/{ice_virtchnl_pf.c => ice_sriov.c}   | 0
+ .../ethernet/intel/ice/{ice_virtchnl_pf.h => ice_sriov.h}   | 6 +++---
+ drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c        | 2 +-
+ 7 files changed, 8 insertions(+), 8 deletions(-)
+ rename drivers/net/ethernet/intel/ice/{ice_virtchnl_pf.c => ice_sriov.c} (100%)
+ rename drivers/net/ethernet/intel/ice/{ice_virtchnl_pf.h => ice_sriov.h} (99%)
 
 diff --git a/drivers/net/ethernet/intel/ice/Makefile b/drivers/net/ethernet/intel/ice/Makefile
-index 44b8464b7663..451098e25023 100644
+index 451098e25023..816e81832b7f 100644
 --- a/drivers/net/ethernet/intel/ice/Makefile
 +++ b/drivers/net/ethernet/intel/ice/Makefile
-@@ -36,7 +36,7 @@ ice-y := ice_main.o	\
- ice-$(CONFIG_PCI_IOV) +=	\
- 	ice_virtchnl_allowlist.o \
+@@ -38,7 +38,7 @@ ice-$(CONFIG_PCI_IOV) +=	\
  	ice_virtchnl_fdir.o	\
--	ice_sriov.o		\
-+	ice_vf_mbx.o		\
+ 	ice_vf_mbx.o		\
  	ice_vf_vsi_vlan_ops.o	\
- 	ice_virtchnl_pf.o
+-	ice_virtchnl_pf.o
++	ice_sriov.o
  ice-$(CONFIG_PTP_1588_CLOCK) += ice_ptp.o ice_ptp_hw.o
+ ice-$(CONFIG_TTY) += ice_gnss.o
+ ice-$(CONFIG_DCB) += ice_dcb.o ice_dcb_nl.o ice_dcb_lib.o
 diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 1a130ff562af..9449ee2322b7 100644
+index 9449ee2322b7..24325df8dc7d 100644
 --- a/drivers/net/ethernet/intel/ice/ice.h
 +++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -65,7 +65,7 @@
+@@ -64,7 +64,7 @@
+ #include "ice_flow.h"
  #include "ice_sched.h"
  #include "ice_idc_int.h"
- #include "ice_virtchnl_pf.h"
--#include "ice_sriov.h"
-+#include "ice_vf_mbx.h"
+-#include "ice_virtchnl_pf.h"
++#include "ice_sriov.h"
+ #include "ice_vf_mbx.h"
  #include "ice_ptp.h"
  #include "ice_fdir.h"
- #include "ice_xsk.h"
-diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_vf_mbx.c
-similarity index 99%
-rename from drivers/net/ethernet/intel/ice/ice_sriov.c
-rename to drivers/net/ethernet/intel/ice/ice_vf_mbx.c
-index 52c6bac41bf7..fc8c93fa4455 100644
---- a/drivers/net/ethernet/intel/ice/ice_sriov.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_mbx.c
-@@ -2,7 +2,7 @@
- /* Copyright (c) 2018, Intel Corporation. */
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index a3094470d31d..136d7911adb4 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -5,7 +5,7 @@
+ #include "ice_base.h"
+ #include "ice_lib.h"
+ #include "ice_dcb_lib.h"
+-#include "ice_virtchnl_pf.h"
++#include "ice_sriov.h"
  
- #include "ice_common.h"
--#include "ice_sriov.h"
-+#include "ice_vf_mbx.h"
+ static bool ice_alloc_rx_buf_zc(struct ice_rx_ring *rx_ring)
+ {
+diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
+index f8db3ca521da..e0be27657569 100644
+--- a/drivers/net/ethernet/intel/ice/ice_repr.c
++++ b/drivers/net/ethernet/intel/ice/ice_repr.c
+@@ -4,7 +4,7 @@
+ #include "ice.h"
+ #include "ice_eswitch.h"
+ #include "ice_devlink.h"
+-#include "ice_virtchnl_pf.h"
++#include "ice_sriov.h"
+ #include "ice_tc_lib.h"
  
  /**
-  * ice_aq_send_msg_to_vf
-diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.h b/drivers/net/ethernet/intel/ice/ice_vf_mbx.h
-similarity index 95%
-rename from drivers/net/ethernet/intel/ice/ice_sriov.h
-rename to drivers/net/ethernet/intel/ice/ice_vf_mbx.h
-index 68686a3fd7e8..582716e6d5f9 100644
---- a/drivers/net/ethernet/intel/ice/ice_sriov.h
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_mbx.h
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+similarity index 100%
+rename from drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+rename to drivers/net/ethernet/intel/ice/ice_sriov.c
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_sriov.h
+similarity index 99%
+rename from drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
+rename to drivers/net/ethernet/intel/ice/ice_sriov.h
+index 7f16ed9c70d6..bf42f7792d68 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.h
 @@ -1,8 +1,8 @@
  /* SPDX-License-Identifier: GPL-2.0 */
  /* Copyright (c) 2018, Intel Corporation. */
  
--#ifndef _ICE_SRIOV_H_
--#define _ICE_SRIOV_H_
-+#ifndef _ICE_VF_MBX_H_
-+#define _ICE_VF_MBX_H_
- 
- #include "ice_type.h"
- #include "ice_controlq.h"
-@@ -49,4 +49,4 @@ ice_conv_link_speed_to_virtchnl(bool __always_unused adv_link_support,
+-#ifndef _ICE_VIRTCHNL_PF_H_
+-#define _ICE_VIRTCHNL_PF_H_
++#ifndef _ICE_SRIOV_H_
++#define _ICE_SRIOV_H_
+ #include "ice.h"
+ #include "ice_virtchnl_fdir.h"
+ #include "ice_vsi_vlan_ops.h"
+@@ -434,4 +434,4 @@ static inline bool ice_vf_is_port_vlan_ena(struct ice_vf __always_unused *vf)
+ 	return false;
  }
- 
  #endif /* CONFIG_PCI_IOV */
--#endif /* _ICE_SRIOV_H_ */
-+#endif /* _ICE_VF_MBX_H_ */
+-#endif /* _ICE_VIRTCHNL_PF_H_ */
++#endif /* _ICE_SRIOV_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
+index b16f946185f2..5ecc0ee9a78e 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_vsi_vlan_ops.c
+@@ -6,7 +6,7 @@
+ #include "ice_vlan_mode.h"
+ #include "ice.h"
+ #include "ice_vf_vsi_vlan_ops.h"
+-#include "ice_virtchnl_pf.h"
++#include "ice_sriov.h"
+ 
+ static int
+ noop_vlan_arg(struct ice_vsi __always_unused *vsi,
 -- 
 2.31.1
 
