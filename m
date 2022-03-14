@@ -2,197 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 426CB4D8834
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 16:35:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9974D8832
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 16:35:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237106AbiCNPfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 11:35:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
+        id S242576AbiCNPft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 11:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234713AbiCNPf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 11:35:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896781FCC5
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 08:34:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29DE5B80D40
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 15:34:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FB6BC340E9;
-        Mon, 14 Mar 2022 15:34:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647272054;
-        bh=tp/YcGmz44ekqb1I6fhvjuQlWNXlordIVv8xDUZDqbA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QxBf6aseTBokxbuHHhaI2WthaN4GTcWQjU1dFbuPvMnuLpyFAu1LrWLE6FeTlza10
-         4vDTY7yBoDUww9shmvjqKeHrIZiKQZ+M34OBQFBHBb4/OnnjVCaHfCtA+QL2pqdhji
-         zFa8QJNCHmmu3OtPS47/A/N+KeeszX4hXqpPKhYOFwHffWqtIM2nYwoiHsDrNVSluG
-         eieWlj4CMzthGlKYncJyJfdL+ovZOi1HVp/rFsx+73goE8YaQXA1zj+csBoOCkLe1P
-         Vq0o8Kl2kHGwmPntbIvWbcc3A1Q2HwbDW5zHQLjwp4Kdpofyq83dGF2PUUjt3eq0P+
-         WUyaHSQJ5wQXw==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        =?UTF-8?q?Jan=20B=C4=9Bt=C3=ADk?= <hagrid@svine.us>
-Subject: [PATCH net] net: dsa: fix panic when port leaves a bridge
-Date:   Mon, 14 Mar 2022 16:34:10 +0100
-Message-Id: <20220314153410.31744-1-kabel@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S242558AbiCNPfq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 11:35:46 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2079.outbound.protection.outlook.com [40.107.236.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C48B27B00
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 08:34:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I1kJHraVM/T/aPzq40VASjOX/fzewZwvBSZ21WFjlztCyrfWctWTp4LIT1DckYdg/99OsnkiEYPjXEIrxQBbb2nE6b9ssQmAQwUimPDSU5tOdfEPByRz9NOUZKXT3UfBnLAjTv9mR43SyWiPl578TWVzcc9fNRwVSHSllO6W5r1S4mmq/L2Wp0pQullGR6ZYAZeWQV500VtFAj2kRUJn8QdplIH94Tu15xTa9pB4AtncbW9dLWZtxrZVjhROPfTHKrgTKzWU93bH+pYF10Vzlq3vx3CvPTHGQwN1PKi38qbsXQT31Mo+Xp+Dqwwh8prjp1KoRdOSubZCdDBokCrMhg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=i3NWnMcNz8vVRjYWc6m/av9uHDxGwEsRMfihJiRNcaQ=;
+ b=MI6kgrF4fegyhAeKGp6jVOsXmsVSLeT43PSW3nRzIxqe3B7+foUFa97ounc6e8qVo6qgy5lcyDEdtqv67G/hw5temq4CwbkJsP+FQbHtkLTLd7M6PVlYGiS7BSNof0cDh4WxoZx74JH4yaUv8O5GlYvphPMxrFY5oxidpW2gyNgz3WTMu9eSfpeVG4Uo/z9bzpme9H8r5tsQXJ33spYVTxNvrEDU0enBimr/Ar2Rz7FKUy+C/s7+mPu9knp/0vsSOtzhVJIxNgiDa1hHmsDY3KmJZF25GD4yli3E9Q/vEfcNvswdT51tOjIgjWbrlIeU4Gp64LDpF9vXQtiTk9Rb1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=i3NWnMcNz8vVRjYWc6m/av9uHDxGwEsRMfihJiRNcaQ=;
+ b=G3i9knVwxbVbFGIkBRNJMBIWIJSlDOlLPh9h8zaY856fGo+rIyHS4QqVgtG+GFTgZpi2+2iGxwGrPm6swVtRle4K21edk9Dnkd3B4RA97ZWN+IBtJsdiebnsBNnRr2oIoTCajjBNu7Knf8fXGOgNbjZoVM1uywEQMEYQjh7MzQPxBH85bKMkvBbhpQTuMyhiL0KOpKIUGJdL/PRVcER9xs9CAUUdVZyF5p7Rq2cfcQZfCoYTWqRDgITRES/Eb9A7UwEUcf0Q4kgVKzktbvSZValHm4VL6og0yWOb5AwPXq3S9BX3tT44Cl//jY/Ipfwfr1eN1DZa6DZ5BuPk/7yrBg==
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
+ BL0PR12MB4931.namprd12.prod.outlook.com (2603:10b6:208:17e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25; Mon, 14 Mar
+ 2022 15:34:31 +0000
+Received: from DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::c53a:18b3:d87f:f627]) by DM8PR12MB5400.namprd12.prod.outlook.com
+ ([fe80::c53a:18b3:d87f:f627%6]) with mapi id 15.20.5061.028; Mon, 14 Mar 2022
+ 15:34:31 +0000
+From:   Eli Cohen <elic@nvidia.com>
+To:     David Ahern <dsahern@kernel.org>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "si-wei.liu@oracle.com" <si-wei.liu@oracle.com>
+CC:     "mst@redhat.com" <mst@redhat.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Parav Pandit <parav@nvidia.com>
+Subject: RE: [PATCH v7 2/4] vdpa: Allow for printing negotiated features of a
+ device
+Thread-Topic: [PATCH v7 2/4] vdpa: Allow for printing negotiated features of a
+ device
+Thread-Index: AQHYNv2IELmBUhoXUkSx7mD3Z/gSXKy+/I0AgAAGhuA=
+Date:   Mon, 14 Mar 2022 15:34:31 +0000
+Message-ID: <DM8PR12MB540062ECB8F8FD32B99A421EAB0F9@DM8PR12MB5400.namprd12.prod.outlook.com>
+References: <20220313171219.305089-1-elic@nvidia.com>
+ <20220313171219.305089-3-elic@nvidia.com>
+ <22fe6d6c-d665-e4ee-9e16-04010b184a98@kernel.org>
+In-Reply-To: <22fe6d6c-d665-e4ee-9e16-04010b184a98@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 91592939-4ba9-48ec-723b-08da05d02259
+x-ms-traffictypediagnostic: BL0PR12MB4931:EE_
+x-microsoft-antispam-prvs: <BL0PR12MB49318575176327A3F93C25C4AB0F9@BL0PR12MB4931.namprd12.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qRaXXq/fl/dy4qahS0lep5ocVUTemUVkbC0AmzoGSfIr/mpBf+XFbCG/S3tfAtAfmIbbpAgMjvYsLEKPB+rLmPCKw8O6I2jV9WixoItDWpe1haPznBgoqAJT3wwDUGUgW3M5uy/WjIfhrU3f2CBsi5pUpKE3O9C93tWeaNaiyPxLQimv5Dhqs4JC2U7PjJnvQjqcNPswNcfMbncldX1TdGA47Me5twuG/MbsqbkOiwLHmVbjXE7Ahg23pOIpRG1iSDTOr2wDSNA9F1m7koZaNoKJznSHd6tclcxESuamhIqZIBXNuIbbdEzRc2c5+1voO3Kq1yuJ6ZUkqQ1S9Y9YJyVoBXjMIMBIBuvOBOjMuRVGRWMIDxGMNy2cCp1EJReVeK5ifk6SUaIQurMGrafiV9NRmqkMwFzkwP9M0mMR5QJvr2xeBe7EQFmryGDqgeP/qLzEPOqFP7JocfZ9Yxiw0DhbzLvTlSyi248xJbV0g1Ffi1WMDFbZrgwh25ohcT2Km0+3HOgWjnUtLHL2BRtH+elYORW4w1Stlt9Gts2FFcTB1Ahr3tLO7eQXgfa1jarFTRFpbyTfj8KT54rX3kyhEMbtUqgcVV0z4kABxUnvfgjZa8u398lQEam+gbjoAvmvZKU9AaQJ28nIz+6j62syYO5ony6GqgvCOJXdG97gtQkNRWFY6oplVjsVqbq8TJPGU38wRO1+BVdu1+WdpwaXmQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(76116006)(186003)(8676002)(66476007)(66556008)(4326008)(64756008)(52536014)(71200400001)(38100700002)(66946007)(53546011)(8936002)(66446008)(38070700005)(110136005)(54906003)(508600001)(7696005)(86362001)(6506007)(316002)(55016003)(9686003)(5660300002)(122000001)(33656002)(107886003)(2906002)(83380400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RytBSHNzTDFEWEthNnpGNVhtdTRRYXJWMXZETGF5bGdDVXQ3c0NkTHBEeElD?=
+ =?utf-8?B?ZUVkQ0lWaURScS8zOFcrNVFQaVgycVNoUHBLYzVtOFVJdkJaZjQvc1dvTEov?=
+ =?utf-8?B?dDdkZWJMQVc3TnpidHFrUTl0eERiYTRhM0Vpb1gzYS9KM3JFektVeGJVM01C?=
+ =?utf-8?B?d1M1Y1ArSEJjZzZLZXdHQjVNU1U4ZXp1dkU1WFFhenM2MUhvbHdMRFc4djlW?=
+ =?utf-8?B?b0VGNTArVlY3S0QrWTBWSzRwaVpnNVFWZHN0bXRSY3JGd21iam1UUnRlV0pS?=
+ =?utf-8?B?N0xCRE04bVp2dmYzcElQTm5IL2lpaU5lcnBOS1JJanRJdEZpU3VHS1JjL2RV?=
+ =?utf-8?B?NC93cjJXZWZ6ZFk4am8vNkx1cXU1NmVHcE9kejlIOVZvWmoyMTlNTDNLb0dk?=
+ =?utf-8?B?d2lYSEllOVY0R0ZNUGY0ZHJkOXl2Vk5BUjQyNjcxZDh2Q2duUmRnMnZUVnRm?=
+ =?utf-8?B?UGJxVDZMMVpQL3FrWjFkS0k5eDZzV0dwbzFqeGE1UEtqMXMxZzd6dXpKNU05?=
+ =?utf-8?B?cUEycXlmdnRRZGhUQ1dMTUk3Smh0cy9zN2djUlhnOWRWUWF3U0FHN2dqZVpG?=
+ =?utf-8?B?bU9LRzNrSG1mM0FkZ2hQRytCN0JWb0llZERtamVHUHlTZ0REdGJIUUs4UDJE?=
+ =?utf-8?B?TjdCWGJacDdFRGZRYXl2Q1VDaU9kL29tREZmS21HaFpzdC9aYktTb3V0bGZz?=
+ =?utf-8?B?SjIwc0phdWRZTVN3UjFaTGRad2hwbG0yYkVObDNsRCtqalZlYWgybFhaT21J?=
+ =?utf-8?B?U3ZKamVUMW5UcWVKUFJ5ZUdIOUhQRCtIc0REU293RjVlVm1rcTV6KzZBT29J?=
+ =?utf-8?B?ZFJIUnFNenE5eFh4S1ROM0JVRDM1LzNtdXFmZlNkZlZTNkZqdldnWEFMaDVM?=
+ =?utf-8?B?YUpkbzQ0a3VkMVRFK1BwRVFmTFRqd05lUzJXemY4cEZSZllhaE03dHlvUkVS?=
+ =?utf-8?B?ZFRFclJKZVFwUm9scTU0S0hBVDFyZzkxR3dyODY2M1JHQjViMFNHdUdTL1BJ?=
+ =?utf-8?B?dUNyekpCMXlmV2pzdlM2U1JpRXBJSm5oaTFkTTByUFNrZlRxMmkvYVZXR01t?=
+ =?utf-8?B?dHN1ZWw4MHJZV1l0SmdmdW1hWnlJWVhEeFNtRkdvSlZEcXBKL2NYY29tVGVq?=
+ =?utf-8?B?WVFEbHpkQ3lvOTdWcW95UG9TNjhKV21qV3l1dy9SOTlBajdTYlozanIvMzJB?=
+ =?utf-8?B?S3ErRDR4TVllTGdEcy9yNHZRbmNXTjQwdTUweEdrelpjaTRkWUMzb2NBS2g2?=
+ =?utf-8?B?eXEzV0dHN1gwaFI1ak1yQmF3d2g2MDFBN3c5dUF2M1g4NDdUU2NoNFNvUzJP?=
+ =?utf-8?B?alRkNEZXRHBLVlNwVzh2dTl4VXp0TEZNSDFGUjJPWExQSk5hY3FqZ3pOeUd1?=
+ =?utf-8?B?d3FtMVFFdGhUYVZrNXVEdVBLZlVUOU9nQzRISzFsUU84a3pOK2JxNUdOSkZa?=
+ =?utf-8?B?VG0weUNwbWZvekFMaDY1M1ZpeVNId2ZoaE1HN0ZnM05wUXVWUHFLdGRxbHZ5?=
+ =?utf-8?B?dFNnR2FFK0ZrR1Zld0o4d3ZLOGsyaGpnS0twR0lDbnBSbUcwaFFqa3dnaHlX?=
+ =?utf-8?B?TjUyNzhaeGZvTjlkODRoM2tmODNEdHpVTFplZ2c4dGp4NG90UllvWHBxdVUy?=
+ =?utf-8?B?TmZKSGhaSzUrcXFHTmxrSlpabEtOTlBuSU5MVGhtckMyaUJIeXc2cFpydEJa?=
+ =?utf-8?B?aVpZZmF0VkhlcXIvODd3OFRQVGp1bktiQlcwaE9yOGNpT2R0TC9DbTBRYXM2?=
+ =?utf-8?B?Y1VabHkzcTBVelNQZ04vb3Q5anBlbEFWSUgzYkU0ZWRucytUSTJHd1hMdVVX?=
+ =?utf-8?B?UFRXaGc3dkpuWkQwQllUeFNmeVQ2MGQ3MjdkYStjM2x1c1lUS1RpdVJYcHZM?=
+ =?utf-8?B?WEhUNVRCWHZ3d1dXdGdBa0lFZDJWRUgxSTd2R1VZMkRxY2RqWDloNVhCeUpU?=
+ =?utf-8?Q?s4ZYTEuRjDQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 91592939-4ba9-48ec-723b-08da05d02259
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2022 15:34:31.3345
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bm7nlS660R3xvNMew3n7MLt/6nrxgcYiZBe/KexXkkeqws2mo5OLHs48qzmS8xfO
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4931
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,UPPERCASE_50_75 autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a data structure breaking / NULL-pointer dereference in
-dsa_switch_bridge_leave().
-
-When a DSA port leaves a bridge, dsa_switch_bridge_leave() is called by
-notifier for every DSA switch that contains ports that are in the
-bridge.
-
-But the part of the code that unsets vlan_filtering expects that the ds
-argument refers to the same switch that contains the leaving port.
-
-This leads to various problems, including a NULL pointer dereference,
-which was observed on Turris MOX with 2 switches (one with 8 user ports
-and another with 4 user ports).
-
-Thus we need to move the vlan_filtering change code to the non-crosschip
-branch.
-
-Fixes: d371b7c92d190 ("net: dsa: Unset vlan_filtering when ports leave the bridge")
-Reported-by: Jan Bětík <hagrid@svine.us>
-Signed-off-by: Marek Behún <kabel@kernel.org>
----
- net/dsa/switch.c | 97 +++++++++++++++++++++++++++---------------------
- 1 file changed, 55 insertions(+), 42 deletions(-)
-
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index e3c7d2627a61..38afb1e8fcb7 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -123,9 +123,61 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 	struct dsa_port *dp;
- 	int err;
- 
--	if (dst->index == info->tree_index && ds->index == info->sw_index &&
--	    ds->ops->port_bridge_leave)
--		ds->ops->port_bridge_leave(ds, info->port, info->bridge);
-+	if (dst->index == info->tree_index && ds->index == info->sw_index) {
-+		if (ds->ops->port_bridge_leave)
-+			ds->ops->port_bridge_leave(ds, info->port,
-+						   info->bridge);
-+
-+		/* This function is called by the notifier for every DSA switch
-+		 * that has ports in the bridge we are leaving, but vlan
-+		 * filtering on the port should be changed only once. Since the
-+		 * code expects that ds is the switch containing the leaving
-+		 * port, the following code must not be called in the crosschip
-+		 * branch, only here.
-+		 */
-+
-+		if (ds->needs_standalone_vlan_filtering &&
-+		    !br_vlan_enabled(info->bridge.dev)) {
-+			change_vlan_filtering = true;
-+			vlan_filtering = true;
-+		} else if (!ds->needs_standalone_vlan_filtering &&
-+			   br_vlan_enabled(info->bridge.dev)) {
-+			change_vlan_filtering = true;
-+			vlan_filtering = false;
-+		}
-+
-+		/* If the bridge was vlan_filtering, the bridge core doesn't
-+		 * trigger an event for changing vlan_filtering setting upon
-+		 * slave ports leaving it. That is a good thing, because that
-+		 * lets us handle it and also handle the case where the switch's
-+		 * vlan_filtering setting is global (not per port). When that
-+		 * happens, the correct moment to trigger the vlan_filtering
-+		 * callback is only when the last port leaves the last
-+		 * VLAN-aware bridge.
-+		 */
-+		if (change_vlan_filtering && ds->vlan_filtering_is_global) {
-+			dsa_switch_for_each_port(dp, ds) {
-+				struct net_device *br =
-+					dsa_port_bridge_dev_get(dp);
-+
-+				if (br && br_vlan_enabled(br)) {
-+					change_vlan_filtering = false;
-+					break;
-+				}
-+			}
-+		}
-+
-+		if (change_vlan_filtering) {
-+			err = dsa_port_vlan_filtering(dsa_to_port(ds,
-+								  info->port),
-+						      vlan_filtering, &extack);
-+			if (extack._msg)
-+				dev_err(ds->dev, "port %d: %s\n", info->port,
-+					extack._msg);
-+			if (err && err != -EOPNOTSUPP)
-+				return err;
-+		}
-+	}
- 
- 	if ((dst->index != info->tree_index || ds->index != info->sw_index) &&
- 	    ds->ops->crosschip_bridge_leave)
-@@ -133,45 +185,6 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 						info->sw_index, info->port,
- 						info->bridge);
- 
--	if (ds->needs_standalone_vlan_filtering &&
--	    !br_vlan_enabled(info->bridge.dev)) {
--		change_vlan_filtering = true;
--		vlan_filtering = true;
--	} else if (!ds->needs_standalone_vlan_filtering &&
--		   br_vlan_enabled(info->bridge.dev)) {
--		change_vlan_filtering = true;
--		vlan_filtering = false;
--	}
--
--	/* If the bridge was vlan_filtering, the bridge core doesn't trigger an
--	 * event for changing vlan_filtering setting upon slave ports leaving
--	 * it. That is a good thing, because that lets us handle it and also
--	 * handle the case where the switch's vlan_filtering setting is global
--	 * (not per port). When that happens, the correct moment to trigger the
--	 * vlan_filtering callback is only when the last port leaves the last
--	 * VLAN-aware bridge.
--	 */
--	if (change_vlan_filtering && ds->vlan_filtering_is_global) {
--		dsa_switch_for_each_port(dp, ds) {
--			struct net_device *br = dsa_port_bridge_dev_get(dp);
--
--			if (br && br_vlan_enabled(br)) {
--				change_vlan_filtering = false;
--				break;
--			}
--		}
--	}
--
--	if (change_vlan_filtering) {
--		err = dsa_port_vlan_filtering(dsa_to_port(ds, info->port),
--					      vlan_filtering, &extack);
--		if (extack._msg)
--			dev_err(ds->dev, "port %d: %s\n", info->port,
--				extack._msg);
--		if (err && err != -EOPNOTSUPP)
--			return err;
--	}
--
- 	return dsa_tag_8021q_bridge_leave(ds, info);
- }
- 
--- 
-2.34.1
-
+PiANCj4gT24gMy8xMy8yMiAxMToxMiBBTSwgRWxpIENvaGVuIHdyb3RlOg0KPiA+IEBAIC0zODUs
+NiArMzg4LDk3IEBAIHN0YXRpYyBjb25zdCBjaGFyICpwYXJzZV9jbGFzcyhpbnQgbnVtKQ0KPiA+
+ICAJcmV0dXJuIGNsYXNzID8gY2xhc3MgOiAiPCB1bmtub3duIGNsYXNzID4iOw0KPiA+ICB9DQo+
+ID4NCj4gPiArc3RhdGljIGNvbnN0IGNoYXIgKiBjb25zdCBuZXRfZmVhdHVyZV9zdHJzWzY0XSA9
+IHsNCj4gPiArCVtWSVJUSU9fTkVUX0ZfQ1NVTV0gPSAiQ1NVTSIsDQo+ID4gKwlbVklSVElPX05F
+VF9GX0dVRVNUX0NTVU1dID0gIkdVRVNUX0NTVU0iLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9DVFJM
+X0dVRVNUX09GRkxPQURTXSA9ICJDVFJMX0dVRVNUX09GRkxPQURTIiwNCj4gPiArCVtWSVJUSU9f
+TkVUX0ZfTVRVXSA9ICJNVFUiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9NQUNdID0gIk1BQyIsDQo+
+ID4gKwlbVklSVElPX05FVF9GX0dVRVNUX1RTTzRdID0gIkdVRVNUX1RTTzQiLA0KPiA+ICsJW1ZJ
+UlRJT19ORVRfRl9HVUVTVF9UU082XSA9ICJHVUVTVF9UU082IiwNCj4gPiArCVtWSVJUSU9fTkVU
+X0ZfR1VFU1RfRUNOXSA9ICJHVUVTVF9FQ04iLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9HVUVTVF9V
+Rk9dID0gIkdVRVNUX1VGTyIsDQo+ID4gKwlbVklSVElPX05FVF9GX0hPU1RfVFNPNF0gPSAiSE9T
+VF9UU080IiwNCj4gPiArCVtWSVJUSU9fTkVUX0ZfSE9TVF9UU082XSA9ICJIT1NUX1RTTzYiLA0K
+PiA+ICsJW1ZJUlRJT19ORVRfRl9IT1NUX0VDTl0gPSAiSE9TVF9FQ04iLA0KPiA+ICsJW1ZJUlRJ
+T19ORVRfRl9IT1NUX1VGT10gPSAiSE9TVF9VRk8iLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9NUkdf
+UlhCVUZdID0gIk1SR19SWEJVRiIsDQo+ID4gKwlbVklSVElPX05FVF9GX1NUQVRVU10gPSAiU1RB
+VFVTIiwNCj4gPiArCVtWSVJUSU9fTkVUX0ZfQ1RSTF9WUV0gPSAiQ1RSTF9WUSIsDQo+ID4gKwlb
+VklSVElPX05FVF9GX0NUUkxfUlhdID0gIkNUUkxfUlgiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9D
+VFJMX1ZMQU5dID0gIkNUUkxfVkxBTiIsDQo+ID4gKwlbVklSVElPX05FVF9GX0NUUkxfUlhfRVhU
+UkFdID0gIkNUUkxfUlhfRVhUUkEiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9HVUVTVF9BTk5PVU5D
+RV0gPSAiR1VFU1RfQU5OT1VOQ0UiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9NUV0gPSAiTVEiLA0K
+PiA+ICsJW1ZJUlRJT19GX05PVElGWV9PTl9FTVBUWV0gPSAiTk9USUZZX09OX0VNUFRZIiwNCj4g
+PiArCVtWSVJUSU9fTkVUX0ZfQ1RSTF9NQUNfQUREUl0gPSAiQ1RSTF9NQUNfQUREUiIsDQo+ID4g
+KwlbVklSVElPX0ZfQU5ZX0xBWU9VVF0gPSAiQU5ZX0xBWU9VVCIsDQo+ID4gKwlbVklSVElPX05F
+VF9GX1JTQ19FWFRdID0gIlJTQ19FWFQiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9IQVNIX1JFUE9S
+VF0gPSAiSEFTSF9SRVBPUlQiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9SU1NdID0gIlJTUyIsDQo+
+ID4gKwlbVklSVElPX05FVF9GX1NUQU5EQlldID0gIlNUQU5EQlkiLA0KPiA+ICsJW1ZJUlRJT19O
+RVRfRl9TUEVFRF9EVVBMRVhdID0gIlNQRUVEX0RVUExFWCIsDQo+IA0KPiBub3QgdmVyeSBlYXN5
+IG9uIHRoZSBleWVzLiBQbGVhc2Ugc2VuZCBhIGZvbGxvd3VwIHRoYXQgY29sdW1uIGFsaWducyB0
+aGUNCj4gc3RyaW5ncy4gZS5nLiwNCj4gDQo+IEBAIC00MDMsOSArNDAzLDkgQEAgc3RhdGljIGNv
+bnN0IGNoYXIgKnBhcnNlX2NsYXNzKGludCBudW0pDQo+ICB9DQo+IA0KPiAgc3RhdGljIGNvbnN0
+IGNoYXIgKiBjb25zdCBuZXRfZmVhdHVyZV9zdHJzWzY0XSA9IHsNCj4gLSAgICAgICBbVklSVElP
+X05FVF9GX0NTVU1dID0gIkNTVU0iLA0KPiAtICAgICAgIFtWSVJUSU9fTkVUX0ZfR1VFU1RfQ1NV
+TV0gPSAiR1VFU1RfQ1NVTSIsDQo+IC0gICAgICAgW1ZJUlRJT19ORVRfRl9DVFJMX0dVRVNUX09G
+RkxPQURTXSA9ICJDVFJMX0dVRVNUX09GRkxPQURTIiwNCj4gKyAgICAgICBbVklSVElPX05FVF9G
+X0NTVU1dICAgICAgICAgICAgICAgICAgICAgPSAiQ1NVTSIsDQo+ICsgICAgICAgW1ZJUlRJT19O
+RVRfRl9HVUVTVF9DU1VNXSAgICAgICAgICAgICAgID0gIkdVRVNUX0NTVU0iLA0KPiArICAgICAg
+IFtWSVJUSU9fTkVUX0ZfQ1RSTF9HVUVTVF9PRkZMT0FEU10gICAgICA9ICJDVFJMX0dVRVNUX09G
+RkxPQURTIiwNCj4gLi4uDQo+IA0KPiANCj4gPiArfTsNCj4gPiArDQo+ID4gKyNkZWZpbmUgVklS
+VElPX0ZfSU5fT1JERVIgMzUNCj4gPiArI2RlZmluZSBWSVJUSU9fRl9OT1RJRklDQVRJT05fREFU
+QSAzOA0KPiA+ICsjZGVmaW5lIFZEUEFfRVhUX0ZFQVRVUkVTX1NaIChWSVJUSU9fVFJBTlNQT1JU
+X0ZfRU5EIC0gXA0KPiA+ICsJCQkgICAgICBWSVJUSU9fVFJBTlNQT1JUX0ZfU1RBUlQgKyAxKQ0K
+PiA+ICsNCj4gPiArc3RhdGljIGNvbnN0IGNoYXIgKiBjb25zdCBleHRfZmVhdHVyZV9zdHJzW1ZE
+UEFfRVhUX0ZFQVRVUkVTX1NaXSA9IHsNCj4gPiArCVtWSVJUSU9fUklOR19GX0lORElSRUNUX0RF
+U0MgLSBWSVJUSU9fVFJBTlNQT1JUX0ZfU1RBUlRdID0gIlJJTkdfSU5ESVJFQ1RfREVTQyIsDQo+
+ID4gKwlbVklSVElPX1JJTkdfRl9FVkVOVF9JRFggLSBWSVJUSU9fVFJBTlNQT1JUX0ZfU1RBUlRd
+ID0gIlJJTkdfRVZFTlRfSURYIiwNCj4gPiArCVtWSVJUSU9fRl9WRVJTSU9OXzEgLSBWSVJUSU9f
+VFJBTlNQT1JUX0ZfU1RBUlRdID0gIlZFUlNJT05fMSIsDQo+ID4gKwlbVklSVElPX0ZfQUNDRVNT
+X1BMQVRGT1JNIC0gVklSVElPX1RSQU5TUE9SVF9GX1NUQVJUXSA9ICJBQ0NFU1NfUExBVEZPUk0i
+LA0KPiA+ICsJW1ZJUlRJT19GX1JJTkdfUEFDS0VEIC0gVklSVElPX1RSQU5TUE9SVF9GX1NUQVJU
+XSA9ICJSSU5HX1BBQ0tFRCIsDQo+ID4gKwlbVklSVElPX0ZfSU5fT1JERVIgLSBWSVJUSU9fVFJB
+TlNQT1JUX0ZfU1RBUlRdID0gIklOX09SREVSIiwNCj4gPiArCVtWSVJUSU9fRl9PUkRFUl9QTEFU
+Rk9STSAtIFZJUlRJT19UUkFOU1BPUlRfRl9TVEFSVF0gPSAiT1JERVJfUExBVEZPUk0iLA0KPiA+
+ICsJW1ZJUlRJT19GX1NSX0lPViAtIFZJUlRJT19UUkFOU1BPUlRfRl9TVEFSVF0gPSAiU1JfSU9W
+IiwNCj4gPiArCVtWSVJUSU9fRl9OT1RJRklDQVRJT05fREFUQSAtIFZJUlRJT19UUkFOU1BPUlRf
+Rl9TVEFSVF0gPSAiTk9USUZJQ0FUSU9OX0RBVEEiLA0KPiANCj4gYW5kIHRoZSBlbnRyaWVzIGhl
+cmUgc2hvdWxkIGJlIGEgbWFjcm8gdG8gaGFuZGxlIHRoZQ0KPiBWSVJUSU9fVFJBTlNQT1JUX0Zf
+U1RBUlQgIG9mZnNldCB3aXRoIGNvbHVtbiBhbGlnbmVkIHN0cmluZ3MuDQo+IA0KRG8geW91IG1l
+YW4gZGVmaW5lIGEgbmV3IG1hY3JvIGZvciBlYWNoIGxpbmUgYWJvdmU/DQpJIGNvdWxkIGFsaWdu
+IHRoZW0gbmljZWx5IHdpdGhvdXQgbmV3IG1hY3JvcyB3aGlsZSBiZWluZyBjb25maW5lZCB0byBj
+b2x1bW4gODguDQoNCg==
