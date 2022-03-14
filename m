@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 462004D8C1F
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 20:14:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654854D8C65
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 20:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238927AbiCNTP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 15:15:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
+        id S237896AbiCNT3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 15:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237636AbiCNTP5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 15:15:57 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D03139155
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 12:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=mSSUaYbQ1VnRZ4JXOVwJVDcxJQfpxZdcY3F4unMe6hM=; b=ZpweBrft6UaCgnYueOeYH3SRPG
-        64VLyKhD1Tx5eWG4spBhcWNfymZegzm94aGB7JAENPL6c0VH78ByvrET4Q8k/B3hfwKH2oRfOS76f
-        tf+Y87KDxzod6y+9Men8SwTAVsdAOZAw7vAR70azlYM0XUDsQ2fqpJppf4aar1e/G01E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nTq9M-00AnkL-HK; Mon, 14 Mar 2022 20:14:36 +0100
-Date:   Mon, 14 Mar 2022 20:14:36 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: ordering of call to unbind() in usbnet_disconnect
-Message-ID: <Yi+UHF37rb0URSwb@lunn.ch>
-References: <62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com>
- <20220310113820.GG15680@pengutronix.de>
- <20220314184234.GA556@wunner.de>
+        with ESMTP id S237872AbiCNT3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 15:29:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18667DFD1
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 12:27:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BFCD6113C
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 19:27:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68EC1C340E9;
+        Mon, 14 Mar 2022 19:27:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647286078;
+        bh=SXQc2oU/JdA1bqUo1b3Lf7lDSsII0SAwVrS6tQ52qkY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gDRvY/o7yaXLdxhVI2XUUy4/MIoVJAdURAzkQquyreRMqEJhVXs7hmU6HwDQ/fDNp
+         g8aQH70V7eKbgYtuJL+57EHk1VMBHxB+ozuxscbLkZRjA6Auq/zKpvmOkD3ymtSct1
+         fSA5DyQDXYjxJyOEmxblmydJAVpm2w9wryCQ1fgxz57OpexbpHIkUmDXDiqYMFNsku
+         PZ7MOMnI1S232g789IhClzH8S951Sai13lJ6dKzUG4ivFoWSNHSNsYhVa03yR+W876
+         z20WBc5uWSl8I51RGQZGImGrLjcGjNagBuga2GEXp20jZN5UMs8FYbnEX+WM3Zjj/M
+         hnFfdm4FAk3Cw==
+Date:   Mon, 14 Mar 2022 20:27:53 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Jan =?UTF-8?B?QsSbdMOtaw==?= <hagrid@svine.us>
+Subject: Re: [PATCH net] net: dsa: fix panic when port leaves a bridge
+Message-ID: <20220314202753.13033f28@thinkpad>
+In-Reply-To: <87r174l7lj.fsf@waldekranz.com>
+References: <20220314153410.31744-1-kabel@kernel.org>
+        <87tuc0lelc.fsf@waldekranz.com>
+        <20220314174700.56feb3da@dellmb>
+        <20220314190926.687ac099@dellmb>
+        <87r174l7lj.fsf@waldekranz.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314184234.GA556@wunner.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 07:42:34PM +0100, Lukas Wunner wrote:
-> [cc += Heiner Kallweit, Andrew Lunn]
-> 
-> On Thu, Mar 10, 2022 at 12:38:20PM +0100, Oleksij Rempel wrote:
-> > On Thu, Mar 10, 2022 at 12:25:08PM +0100, Oliver Neukum wrote:
-> > > I got bug reports that 2c9d6c2b871d ("usbnet: run unbind() before
-> > > unregister_netdev()")
-> > > is causing regressions.
-> 
-> I would like to see this reverted as well.  For obvious reasons,
-> the order in usbnet_disconnect() should be the inverse of
-> usbnet_probe().  Since 2c9d6c2b871d, that's no longer the case.
-> 
-> 
-> > > Rather than simply reverting it,
-> > > it seems to me that the call needs to be split. One in the old place
-> > > and one in the place you moved it to.
-> 
-> I disagree.  The commit message claims that the change is necessary
-> because phy_disconnect() fails if called with phydev->attached_dev == NULL.
+On Mon, 14 Mar 2022 19:19:52 +0100
+Tobias Waldekranz <tobias@waldekranz.com> wrote:
 
-The only place i see which sets phydev->attached_dev is
-phy_attach_direct(). So if phydev->attached_dev is NULL, the PHY has
-not been attached, and hence there is no need to call
-phy_disconnect().
+> On Mon, Mar 14, 2022 at 19:09, Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+> > On Mon, 14 Mar 2022 17:47:00 +0100
+> > Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+> > =20
+> >> Tobias, I can backport these patches to 5.4+ stable. Or have you
+> >> already prepared backports? =20
+> >
+> > OK the patches are prepared here
+> >
+> > https://secure.nic.cz/files/mbehun/dsa-fix-queue/ =20
+>=20
+> Great, thank you!
+>=20
+> Not sure what the procedure is here, any action required on my part?
 
-	Andrew
+Not particularly. I can just send it to stable once Linus merges it.
+
+Pity we need to wait till it gets to Linus.
+
+Marek
