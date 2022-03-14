@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C69474D81C7
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 12:54:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FAD34D8554
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 13:48:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239758AbiCNLzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 07:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S237088AbiCNMtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 08:49:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239742AbiCNLzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 07:55:24 -0400
+        with ESMTP id S239275AbiCNMr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 08:47:58 -0400
 Received: from mail2-relais-roc.national.inria.fr (mail2-relais-roc.national.inria.fr [192.134.164.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192E165BD;
-        Mon, 14 Mar 2022 04:54:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955BD3A1A2;
+        Mon, 14 Mar 2022 05:41:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=UTHD6t3CngG06uxaTMECWlsIkBw43Sz+p3dlizGDUyI=;
-  b=TBZeCP4LZz66oYQVczpjdP60ygr5bwb9Ez2/mtvEnHgl7mGPiKL6Dp1n
-   nAb9oBUYNJSaHuh9smaYp1pBq9nMib2XI7DxVZm1QZ6lgCAg5BSSEASfu
-   GGIbCM5ViJuxsMeu/WnkU2JTVJrvG23WnOdV8UOYHzpsaw275LxQgBSoV
-   I=;
+  bh=+hYUu2G/bq68s9f2SGkYZi4xlcaxcWwYD94UHu9GgRY=;
+  b=p9GC6OpXJFvaT9UgALjpX+KCc0W9t9BgRzlCd4QoDwR4er5TD0eMzJXf
+   DzriE/66opaOKETRTPjE9OG0m7KC1tMUXl7LiKztQkRo8CQrgGKYtj8jC
+   QkOqFsWa0Hcrkc3qfiXAVUjObxEM1YZHFPRQ9Qi9fLqe470ItuvysdJfW
+   k=;
 Authentication-Results: mail2-relais-roc.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.90,180,1643670000"; 
-   d="scan'208";a="25997345"
+   d="scan'208";a="25997352"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:53:59 +0100
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 12:54:00 +0100
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     kernel-janitors@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 12/30] drivers: net: packetengines: fix typos in comments
-Date:   Mon, 14 Mar 2022 12:53:36 +0100
-Message-Id: <20220314115354.144023-13-Julia.Lawall@inria.fr>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     kernel-janitors@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 19/30] rtlwifi: rtl8821ae: fix typos in comments
+Date:   Mon, 14 Mar 2022 12:53:43 +0100
+Message-Id: <20220314115354.144023-20-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
 References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
@@ -56,20 +59,38 @@ Detected with the help of Coccinelle.
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/net/ethernet/packetengines/yellowfin.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/packetengines/yellowfin.c b/drivers/net/ethernet/packetengines/yellowfin.c
-index 12105f62cbdd..03650022d444 100644
---- a/drivers/net/ethernet/packetengines/yellowfin.c
-+++ b/drivers/net/ethernet/packetengines/yellowfin.c
-@@ -191,7 +191,7 @@ IV. Notes
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
+index f6bff0ebd6b0..f3fe16798c59 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/dm.c
+@@ -872,7 +872,7 @@ static void rtl8821ae_dm_false_alarm_counter_statistics(struct ieee80211_hw *hw)
+ 	else
+ 		falsealm_cnt->cnt_all = falsealm_cnt->cnt_ofdm_fail;
  
- Thanks to Kim Stearns of Packet Engines for providing a pair of G-NIC boards.
- Thanks to Bruce Faust of Digitalscape for providing both their SYM53C885 board
--and an AlphaStation to verifty the Alpha port!
-+and an AlphaStation to verify the Alpha port!
+-	/*reset OFDM FA coutner*/
++	/*reset OFDM FA counter*/
+ 	rtl_set_bbreg(hw, ODM_REG_OFDM_FA_RST_11AC, BIT(17), 1);
+ 	rtl_set_bbreg(hw, ODM_REG_OFDM_FA_RST_11AC, BIT(17), 0);
+ 	/* reset CCK FA counter*/
+@@ -1464,7 +1464,7 @@ void rtl8812ae_dm_txpower_tracking_callback_thermalmeter(
+ 	const u8 *delta_swing_table_idx_tup_b;
+ 	const u8 *delta_swing_table_idx_tdown_b;
  
- IVb. References
+-	/*2. Initilization ( 7 steps in total )*/
++	/*2. Initialization ( 7 steps in total )*/
+ 	rtl8812ae_get_delta_swing_table(hw,
+ 		&delta_swing_table_idx_tup_a,
+ 		&delta_swing_table_idx_tdown_a,
+@@ -2502,7 +2502,7 @@ static void rtl8821ae_dm_check_edca_turbo(struct ieee80211_hw *hw)
+ 	rtlpriv->dm.dbginfo.num_non_be_pkt = 0;
  
+ 	/*===============================
+-	 * list paramter for different platform
++	 * list parameter for different platform
+ 	 *===============================
+ 	 */
+ 	pb_is_cur_rdl_state = &rtlpriv->dm.is_cur_rdlstate;
 
