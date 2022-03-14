@@ -2,80 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EA574D8789
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 15:59:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7E0D4D87BD
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 16:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241525AbiCNPAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 11:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
+        id S233688AbiCNPIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 11:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232280AbiCNPAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 11:00:08 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280CA3C73B;
-        Mon, 14 Mar 2022 07:58:58 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id d10so34591186eje.10;
-        Mon, 14 Mar 2022 07:58:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OYV4LpH4D3agxsG3V7VyzstSf+lDz7EM5vQa2UkEP7w=;
-        b=MOiHh0CsD3q+iNPxoPSXwT3iZzcB0ZcSFhKkrzBOMCkYSu7aKHbORB3emZtHnfBxYu
-         v3dtH3qbNNm3Vi2nNIdfDrruOItemfOdVViSojC3sXZBM1YHKxbEtvfbb13NoFonpDil
-         IMh6xGHEWuHI6yHyAYaLWJkI7K9IMXYWhHoYorlQAxEoMYom6ad0diEKR+HMICp5/tEX
-         SP3kbCzP1qFzW5bV2gCgiYpimaqSn+c0SXq0O5OG3Pn4HJErrjdswwuRLYvwS0X1z5bL
-         EajKTJDzTYBnw5lZVuhQzYCm25RotqH7PSMdw/AryMk6NHNJaUvcvC/z1eXwAlUn3UGi
-         JdKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OYV4LpH4D3agxsG3V7VyzstSf+lDz7EM5vQa2UkEP7w=;
-        b=swIuAx7KOFv/+ED1jBOiCK8IO/0Mf0xjOveXMJGo1CdMBm2ZXyyFGUAJ5XYXLc+nrf
-         kBnU6UC4dA8pKFYAqTCA2jliXZE4dB2eHBH3j7Uch3guNtkPJ9jtjmo1VdcpkkRrNK86
-         KsExMbWWI7unzS8XgRftVmu0Zbf0ERnywLaSGut1TuaNxfEeRCywaUVATq7gajIlILFI
-         35kkgI8f9SGlNhyg5OzTD+nPTpPa67OllKj3oMB0xkvrGGW+sb79InwqR9mLCzwS4Yrp
-         /vbmMPf+8adp8BSYNn/AsvEaqDXIS/7G6DtPfeu7jGldXeTJG1eTfJA9+z7N7QyjSJ01
-         37cQ==
-X-Gm-Message-State: AOAM531kHk+LSLgLco9oXACCrWb+GJhCwHgCfZYbKasGmQmsZHoMiuyS
-        wvzW81DhCFDB2KQ7iMSC+AU=
-X-Google-Smtp-Source: ABdhPJwEXXJr7N8/UGnBPerXHkgdsTRUxrmYmjgrx1ZKylhRSvtZpmHi617uiUE4yKGd6/6FaDkQcw==
-X-Received: by 2002:a17:907:2cc6:b0:6db:7e92:e36 with SMTP id hg6-20020a1709072cc600b006db7e920e36mr18090693ejc.329.1647269936492;
-        Mon, 14 Mar 2022 07:58:56 -0700 (PDT)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id a1-20020aa7d901000000b00416217c99bcsm8157560edr.65.2022.03.14.07.58.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Mar 2022 07:58:56 -0700 (PDT)
-Date:   Mon, 14 Mar 2022 16:58:54 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v3 net-next 03/14] net: bridge: mst: Support setting and
- reporting MST port states
-Message-ID: <20220314145854.shtnvetounjfnu4e@skbuf>
-References: <20220314095231.3486931-1-tobias@waldekranz.com>
- <20220314095231.3486931-4-tobias@waldekranz.com>
+        with ESMTP id S231613AbiCNPIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 11:08:21 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E72743AD2;
+        Mon, 14 Mar 2022 08:07:10 -0700 (PDT)
+Received: from [192.168.0.3] (ip5f5ae91c.dynamic.kabel-deutschland.de [95.90.233.28])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id B56D261E6478B;
+        Mon, 14 Mar 2022 16:07:08 +0100 (CET)
+Message-ID: <9513e74e-c682-d891-a5de-c9a82c5cf9d3@molgen.mpg.de>
+Date:   Mon, 14 Mar 2022 16:07:08 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220314095231.3486931-4-tobias@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [EXT] Re: [PATCH v2 net-next 1/2] bnx2x: Utilize firmware
+ 7.13.21.0
+Content-Language: en-US
+To:     Manish Chopra <manishc@marvell.com>
+Cc:     Donald Buczek <buczek@molgen.mpg.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Ariel Elior <aelior@marvell.com>,
+        Alok Prasad <palok@marvell.com>,
+        Prabhakar Kushwaha <pkushwaha@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>, stable@vger.kernel.org,
+        it+netdev@molgen.mpg.de, regressions@lists.linux.dev
+References: <20211217165552.746-1-manishc@marvell.com>
+ <ea05bcab-fe72-4bc2-3337-460888b2c44e@molgen.mpg.de>
+ <BY3PR18MB46129282EBA1F699583134A4AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <e884cf16-3f98-e9a7-ce96-9028592246cc@molgen.mpg.de>
+ <BY3PR18MB4612BC158A048053BAC7A30EAB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <CAHk-=wjN22EeVLviARu=amf1+422U2iswCC6cz7cN8h+S9=-Jg@mail.gmail.com>
+ <BY3PR18MB4612C2FFE05879E30BAD91D7AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <CAHk-=whXCf43ieh79fujcF=u3Ow1byRvWp+Lt5+v3vumA+V0yA@mail.gmail.com>
+ <BY3PR18MB46124F3F575F9F7D1980E76BAB0C9@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <0dafa9d7-9c79-f367-a343-8ad38f7bde07@molgen.mpg.de>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <0dafa9d7-9c79-f367-a343-8ad38f7bde07@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,46 +62,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 10:52:20AM +0100, Tobias Waldekranz wrote:
-> +int br_mst_fill_info(struct sk_buff *skb, struct net_bridge_vlan_group *vg)
-> +{
-> +	struct net_bridge_vlan *v;
-> +	struct nlattr *nest;
-> +	unsigned long *seen;
-> +	int err = 0;
-> +
-> +	seen = bitmap_zalloc(VLAN_N_VID, 0);
+[Use Jakub’s current address]
 
-I see there is precedent in the bridge driver for using dynamic
-allocation as opposed to on-stack declaration using DECLARE_BITMAP().
-I imagine this isn't just to be "heapsters", but why?
+Dear Manish,
 
-I don't have a very good sense of how much on-stack memory is too much
-(a lot probably depends on the expected depth of the call stack too, and here it
-doesn't appear to be too deep), but I see that mlxsw_sp_bridge_vxlan_vlan_is_valid()
-has a DECLARE_BITMAP(vlans, VLAN_N_VID) too.
 
-The comment applies for callers of br_mst_get_info() too.
+Am 14.03.22 um 15:36 schrieb Donald Buczek:
 
-> +	if (!seen)
-> +		return -ENOMEM;
-> +
-> +	list_for_each_entry(v, &vg->vlan_list, vlist) {
-> +		if (test_bit(v->brvlan->msti, seen))
-> +			continue;
-> +
-> +		nest = nla_nest_start_noflag(skb, IFLA_BRIDGE_MST_ENTRY);
-> +		if (!nest ||
-> +		    nla_put_u16(skb, IFLA_BRIDGE_MST_ENTRY_MSTI, v->brvlan->msti) ||
-> +		    nla_put_u8(skb, IFLA_BRIDGE_MST_ENTRY_STATE, v->state)) {
-> +			err = -EMSGSIZE;
-> +			break;
-> +		}
-> +		nla_nest_end(skb, nest);
-> +
-> +		set_bit(v->brvlan->msti, seen);
-> +	}
-> +
-> +	kfree(seen);
-> +	return err;
-> +}
+> On 3/11/22 1:11 PM, Manish Chopra wrote:
+>>> -----Original Message-----
+>>> From: Linus Torvalds <torvalds@linux-foundation.org>
+>>> Sent: Thursday, March 10, 2022 3:48 AM
+
+[…]
+
+>>> On Wed, Mar 9, 2022 at 11:46 AM Manish Chopra wrote:
+>>>>
+>>>> This has not changed anything functionally from driver/device 
+>>>> perspective,
+>>> FW is still being loaded only when device is opened.
+>>>> bnx2x_init_firmware() [I guess, perhaps the name is misleading] just
+>>> request_firmware() to prepare the metadata to be used when device 
+>>> will be opened.
+>>>
+>>> So how do you explain the report by Paul Menzel that things used to 
+>>> work and no longer work now?
+>>>
+>>
+>> The issue which Paul mentioned had to do with "/lib/firmware/bnx2x/* 
+>> file not found" when driver probes, which was introduced by the patch 
+>> in subject,
+>> And the commit e13ad1443684 ("bnx2x: fix driver load from initrd") 
+>> fixes this issue. So things should work as it is with the mentioned 
+>> fixed commit.
+>> The only discussion led by this problem now is why the 
+>> request_firmware() was moved early on [from open() to probe()] by the 
+>> patch in subject.
+>> I explained the intention to do this in my earlier emails and let me 
+>> add more details below -
+>>
+>> Note that we have just moved request_firmware() logic, *not* something 
+>> significant which has to do with actual FW loading or device 
+>> initialization from the
+>> FW file data which could cause significant functional change for this 
+>> device/driver, FW load/init part still stays in open flow.
+>>
+>> Before the patch in subject, driver used to only work with 
+>> fixed/specific FW version file whose version was statically known to 
+>> the driver function at probe() time to take
+>> some decision to fail the function probe early in the system if the 
+>> function is supposed to run with a FW version which is not the same 
+>> version loaded on the device by another PF (different ENV).
+>> Now when we sent this new FW patch (in subject) then we got feedback 
+>> from community to maintain backward compatibility with older FW 
+>> versions as well and we did it in same v2 patch legitimately,
+>> just that now we can work with both older or newer FW file so we need 
+>> this run time FW version information to cache (based on 
+>> request_firmware() return success value for an old FW file or new FW 
+>> file)
+>> which will be used in follow up probe() flows to decide the function 
+>> probe failure early If there could be FW version mismatches against 
+>> the loaded FW on the device by other PFs already
+> 
+> There might be something more wrong with the patch in the subject: The 
+> usability of the ports from a single card (with older firmware?) now 
+> depends on the order the ports are enabled (first port enabled is 
+> working, second port enabled is not working, driver complaining about a 
+> firmware mismatch).
+> 
+> In the following examples, the driver was not built-in to the kernel but 
+> loaded from the root filesystem instead, so there is no initramfs 
+> related problem here.
+> 
+> For the records:
+> 
+> root@ira:~# dmesg|grep bnx2x
+> [   18.749871] bnx2x 0000:45:00.0: msix capability found
+> [   18.766534] bnx2x 0000:45:00.0: part number 394D4342-31373735-31314131-473331
+> [   18.799198] bnx2x 0000:45:00.0: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+> [   18.807638] bnx2x 0000:45:00.1: msix capability found
+> [   18.824509] bnx2x 0000:45:00.1: part number 394D4342-31373735-31314131-473331
+> [   18.857171] bnx2x 0000:45:00.1: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+> [   18.865619] bnx2x 0000:46:00.0: msix capability found
+> [   18.882636] bnx2x 0000:46:00.0: part number 394D4342-31373735-31314131-473331
+> [   18.915196] bnx2x 0000:46:00.0: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+> [   18.923636] bnx2x 0000:46:00.1: msix capability found
+> [   18.940505] bnx2x 0000:46:00.1: part number 394D4342-31373735-31314131-473331
+> [   18.973167] bnx2x 0000:46:00.1: 32.000 Gb/s available PCIe bandwidth (5.0 GT/s PCIe x8 link)
+> [   46.480660] bnx2x 0000:45:00.0 net04: renamed from eth4
+> [   46.494677] bnx2x 0000:45:00.1 net05: renamed from eth5
+> [   46.508544] bnx2x 0000:46:00.0 net06: renamed from eth6
+> [   46.524641] bnx2x 0000:46:00.1 net07: renamed from eth7
+> root@ira:~# ls /lib/firmware/bnx2x/
+> bnx2x-e1-6.0.34.0.fw   bnx2x-e1-7.13.1.0.fw   bnx2x-e1-7.8.2.0.fw     
+> bnx2x-e1h-7.12.30.0.fw  bnx2x-e1h-7.8.19.0.fw  bnx2x-e2-7.10.51.0.fw  bnx2x-e2-7.8.17.0.fw
+> bnx2x-e1-6.2.5.0.fw    bnx2x-e1-7.13.11.0.fw  bnx2x-e1h-6.0.34.0.fw   
+> bnx2x-e1h-7.13.1.0.fw   bnx2x-e1h-7.8.2.0.fw   bnx2x-e2-7.12.30.0.fw  bnx2x-e2-7.8.19.0.fw
+> bnx2x-e1-6.2.9.0.fw    bnx2x-e1-7.13.15.0.fw  bnx2x-e1h-6.2.5.0.fw    
+> bnx2x-e1h-7.13.11.0.fw  bnx2x-e2-6.0.34.0.fw   bnx2x-e2-7.13.1.0.fw   bnx2x-e2-7.8.2.0.fw
+> bnx2x-e1-7.0.20.0.fw   bnx2x-e1-7.13.21.0.fw  bnx2x-e1h-6.2.9.0.fw    
+> bnx2x-e1h-7.13.15.0.fw  bnx2x-e2-6.2.5.0.fw    bnx2x-e2-7.13.11.0.fw
+> bnx2x-e1-7.0.23.0.fw   bnx2x-e1-7.2.16.0.fw   bnx2x-e1h-7.0.20.0.fw   
+> bnx2x-e1h-7.13.21.0.fw  bnx2x-e2-6.2.9.0.fw    bnx2x-e2-7.13.15.0.fw
+> bnx2x-e1-7.0.29.0.fw   bnx2x-e1-7.2.51.0.fw   bnx2x-e1h-7.0.23.0.fw   
+> bnx2x-e1h-7.2.16.0.fw   bnx2x-e2-7.0.20.0.fw   bnx2x-e2-7.13.21.0.fw
+> bnx2x-e1-7.10.51.0.fw  bnx2x-e1-7.8.17.0.fw   bnx2x-e1h-7.0.29.0.fw   
+> bnx2x-e1h-7.2.51.0.fw   bnx2x-e2-7.0.23.0.fw   bnx2x-e2-7.2.16.0.fw
+> bnx2x-e1-7.12.30.0.fw  bnx2x-e1-7.8.19.0.fw   bnx2x-e1h-7.10.51.0.fw  
+> bnx2x-e1h-7.8.17.0.fw   bnx2x-e2-7.0.29.0.fw   bnx2x-e2-7.2.51.0.fw
+> 
+> Now with v5.10.95, the first kernel of the series which includes 
+> fdcfabd0952d ("bnx2x: Utilize firmware 7.13.21.0") and later:
+> 
+> root@ira:~# dmesg -w &
+> [...]
+> root@ira:~# ip link set net04 up
+> [   88.504536] bnx2x 0000:45:00.0 net04: using MSI-X  IRQs: sp 47  fp[0] 49 ... fp[7] 56
+> root@ira:~# ip link set net05 up
+> [   90.825820] bnx2x: [bnx2x_compare_fw_ver:2380(net05)]bnx2x with FW 120d07 was already loaded which mismatches my 150d07 FW. Aborting
+> RTNETLINK answers: Device or resource busy
+> root@ira:~# ip link set net04 down
+> root@ira:~# ip link set net05 down
+> root@ira:~# ip link set net05 up
+> [  114.462448] bnx2x 0000:45:00.1 net05: using MSI-X  IRQs: sp 58  fp[0] 60 ... fp[7] 67
+> root@ira:~# ip link set net04 up
+> [  117.247763] bnx2x: [bnx2x_compare_fw_ver:2380(net04)]bnx2x with FW 120d07 was already loaded which mismatches my 150d07 FW. Aborting
+> RTNETLINK answers: Device or resource busy
+> 
+> With v5.10.94, both ports work fine:
+> 
+> root@ira:~# dmesg -w &
+> [...]
+> root@ira:~# ip link set net04 up
+> [  133.126647] bnx2x 0000:45:00.0 net04: using MSI-X  IRQs: sp 47  fp[0] 49 ... fp[7] 56
+> root@ira:~# ip link set net05 up
+> [  136.215169] bnx2x 0000:45:00.1 net05: using MSI-X  IRQs: sp 58  fp[0] 60 ... fp[7] 67
+
+One additional note, that it’s totally unclear to us, where FW version 
+120d07 in the error message comes from. It maps to 7.13.18.0, which is 
+nowhere to be found and too new to be on the cards EEPROM, which should 
+be from 2013 or so.
+
+
+Kind regards,
+
+Paul
+
+
+>> So we need to understand why we should not call request_firmware() in 
+>> probe or at least what's really harmful in doing that in probe() if 
+>> some of the follow up probe flows needs
+>> some of the metadata info (like the run time FW versions info in this 
+>> case which we get based on request_firmware() return value), we could 
+>> avoid this but we don't want
+>> to add some ugly/unsuitable file APIs checks to know which FW version 
+>> file is available on the file system if there is already an API 
+>> request_firmware() available for this to be used.
+>>
+>> Please let us know. Thanks.
+>>
+>>> You can't do request_firmware() early. When you actually then push the
+>>> firmware to the device is immaterial - but request_firmware() has to 
+>>> be done
+>>> after the system is up and running.
+>>>
+>>>                   Linus
