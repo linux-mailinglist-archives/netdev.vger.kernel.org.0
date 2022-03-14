@@ -2,81 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C0694D7DA3
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 09:35:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2AF24D7DB8
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 09:43:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236349AbiCNIgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 04:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        id S237490AbiCNIoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 04:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231548AbiCNIga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 04:36:30 -0400
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E4A531340;
-        Mon, 14 Mar 2022 01:35:20 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowACnrfk1_i5ixhxyAw--.16154S2;
-        Mon, 14 Mar 2022 16:35:02 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org
-Cc:     stephen@networkplumber.org, kys@microsoft.com,
-        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
-        decui@microsoft.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: Re: [PATCH] hv_netvsc: Add check for kvmalloc_array
-Date:   Mon, 14 Mar 2022 16:35:00 +0800
-Message-Id: <20220314083500.2501146-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S236675AbiCNIoS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 04:44:18 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066C411C27
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 01:43:08 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id q20so8842130wmq.1
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 01:43:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h8sJyHrz9MSFv6aQ5rNLhY6H2EgY9rxFKZSrrjXt/DA=;
+        b=SFQws5dWS5IMGrfAnDPxae+Am8l7I6/hNpKN2OmjbEYBGOqYImlF1vqLR1AWOKjxuz
+         Y3SmnYVN3rl4rC4EoSP+NPG+5KWZz++GAzeOoGAbPT/KVHXn4ANsb5wfn5v3kGdtF/ZJ
+         64EyjWFnJczi6FbxWHPRo3MnjGRwix9kCikrysBaeN1/ylzG2nUNblB3tW3v/OKTS6xt
+         gCceRq2GOmUuCVyDsRt62GwnhO3ZZLyEg6TLLo0DIi2fWEIRL1kSiGcyV/KP1hV5Ur/m
+         w9PIORH6GoAPa2fq9IRxdWhZhrnbnpECthh2qm72hq+KeXISV48tviEmpezl7l3KW+gs
+         s/OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=h8sJyHrz9MSFv6aQ5rNLhY6H2EgY9rxFKZSrrjXt/DA=;
+        b=Xm7Xv3HxAE3LZ/9zvXZtVwbCr4Cei+D1NSkjidhX2301A8Qn0c5pzxkl025hWwOiqH
+         cJkGQ4Ie7HtbapTKaMp/pglAT7q7ml2MPrwXludteI5XLiZUobNkgWC69hKW6KjRQ/za
+         iayomI3vpyFrucLHqFso46efa2MV4SoZF8c0B+BG4H8btPBhD/W4pPOMwIdy4zS8mAEg
+         Ihqv3Y8zjw8Rk257bYqXMUyfBwqbXHPODcjMKyQsbVMYmiXFPRMlCk58JRj48Lw+qPPs
+         1Fww2pY74SmLiI6s+S+gp6ojeeVupE/OLHiJL0gOexGxr+N6LUJAMAofA2UJOzQz/U1e
+         4cbw==
+X-Gm-Message-State: AOAM532hKN3cFneLg6yX9HnOvXukyBvVEYr3QxxSwRoPBp2/QaLMOG6i
+        prMtZ13Nd+ISWgKpq4QeYdedpw==
+X-Google-Smtp-Source: ABdhPJzc9uprjBGpnv4mgjX60WyBxgufdLW4uQZcYLKXmRnyMUHGBSCkV5UyRJf8/ADueYqZriWJIQ==
+X-Received: by 2002:a05:600c:4249:b0:385:a7bc:b37 with SMTP id r9-20020a05600c424900b00385a7bc0b37mr24170451wmm.185.1647247386565;
+        Mon, 14 Mar 2022 01:43:06 -0700 (PDT)
+Received: from joneslee.c.googlers.com.com (205.215.190.35.bc.googleusercontent.com. [35.190.215.205])
+        by smtp.gmail.com with ESMTPSA id v14-20020adfd18e000000b0020373e5319asm13416678wrc.103.2022.03.14.01.43.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 01:43:06 -0700 (PDT)
+From:   Lee Jones <lee.jones@linaro.org>
+To:     lee.jones@linaro.org, mst@redhat.com, jasowang@redhat.com
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH 1/1] vhost: Protect the virtqueue from being cleared whilst still in use
+Date:   Mon, 14 Mar 2022 08:43:02 +0000
+Message-Id: <20220314084302.2933167-1-lee.jones@linaro.org>
+X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowACnrfk1_i5ixhxyAw--.16154S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYq7AC8VAFwI0_Xr0_Wr1l1xkIjI8I6I8E
-        6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28Cjx
-        kF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8I
-        cVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87
-        Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE
-        6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72
-        CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7
-        M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVAFwVW8ZwCF04k20xvY0x0EwIxGrwCFx2
-        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
-        6r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
-        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IY
-        s7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI
-        0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjfUeYLvDUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 04:13:59PM +0800, Greg KH wrote:
->> The failure of allocation is not included in the tests.
->> And as far as I know, there is not any tool that has the
->> ability to fail the allocation.
-> 
-> There are tools that do this.
-> 
+vhost_vsock_handle_tx_kick() already holds the mutex during its call
+to vhost_get_vq_desc().  All we have to do here is take the same lock
+during virtqueue clean-up and we mitigate the reported issues.
 
-Thanks, could you please tell me the tools?
+Also WARN() as a precautionary measure.  The purpose of this is to
+capture possible future race conditions which may pop up over time.
 
-Jiang
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/vhost/vhost.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
->> But I think that for safety, the cost of redundant and harmless
->> check is acceptable.
->> Also, checking after allocation is a good program pattern.
-> 
-> That's fine, it's how you clean up that is the problem that not everyone
-> gets correct, which is why it is good to verify that you do not
-> introduce problems.
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 59edb5a1ffe28..bbaff6a5e21b8 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -693,6 +693,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+ 	int i;
+ 
+ 	for (i = 0; i < dev->nvqs; ++i) {
++		mutex_lock(&dev->vqs[i]->mutex);
+ 		if (dev->vqs[i]->error_ctx)
+ 			eventfd_ctx_put(dev->vqs[i]->error_ctx);
+ 		if (dev->vqs[i]->kick)
+@@ -700,6 +701,7 @@ void vhost_dev_cleanup(struct vhost_dev *dev)
+ 		if (dev->vqs[i]->call_ctx.ctx)
+ 			eventfd_ctx_put(dev->vqs[i]->call_ctx.ctx);
+ 		vhost_vq_reset(dev, dev->vqs[i]);
++		mutex_unlock(&dev->vqs[i]->mutex);
+ 	}
+ 	vhost_dev_free_iovecs(dev);
+ 	if (dev->log_ctx)
+-- 
+2.35.1.723.g4982287a31-goog
 
