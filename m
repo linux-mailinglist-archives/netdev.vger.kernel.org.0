@@ -2,86 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E804D4D8F6F
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 23:20:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D00814D8F87
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 23:26:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234328AbiCNWVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 18:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
+        id S245569AbiCNW1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 18:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245521AbiCNWVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 18:21:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82ADF3D4B7;
-        Mon, 14 Mar 2022 15:20:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B76F61403;
-        Mon, 14 Mar 2022 22:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7458AC340EC;
-        Mon, 14 Mar 2022 22:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647296410;
-        bh=vWDC0X+KNpASrrpeIFEc2I5l3NpOaM+7axOMNFAuyds=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Dn80RJKyKMe77g+BmK+pu+8wjkYK6acTz1IMBqLAGwzA7addD67jT67tYA2wxnWvC
-         E80HNfv2D42EzSW0iWGCnf4E4Dpuci0/FwOHyhgB2wfi93N/dfbalzkAT9WNTKwaWv
-         N1kytU2b/4J0IsQLDX0/1dL4Tz+cgHfvEI3nsN9yv8S6kzUoRzW+rZ6e8XQwsZgwfI
-         vHHVWx1hk5mwCJ1GXLuYl3bltdCYr110tbLQsf3aux8l0JixTLfkGHfAUztZG4eL8p
-         eno2pbS2oMBUrf/VWdcqRxFzi+xkwLlYY7NS+t4O3VkrqR9KEOwQAeUASQareVI0Ks
-         vqAkcbjIcMxwQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5A054E73C67;
-        Mon, 14 Mar 2022 22:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233289AbiCNW13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 18:27:29 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B173D481;
+        Mon, 14 Mar 2022 15:26:19 -0700 (PDT)
+Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nTt8i-0009AB-7u; Mon, 14 Mar 2022 23:26:08 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nTt8h-000Jc1-Te; Mon, 14 Mar 2022 23:26:07 +0100
+Subject: Re: [PATCH v4 bpf-next 5/5] selftests/bpf: add tests for uprobe
+ auto-attach via skeleton
+To:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
+        andrii@kernel.org
+Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, toke@redhat.com,
+        sunyucong@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <1647000658-16149-1-git-send-email-alan.maguire@oracle.com>
+ <1647000658-16149-6-git-send-email-alan.maguire@oracle.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <829ace90-17fa-5076-b213-30357b1c4776@iogearbox.net>
+Date:   Mon, 14 Mar 2022 23:26:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3] net: phy: marvell: Fix invalid comparison in the
- resume and suspend functions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164729641036.12900.12801827635142867421.git-patchwork-notify@kernel.org>
-Date:   Mon, 14 Mar 2022 22:20:10 +0000
-References: <20220312201512.326047-1-kurt@x64architecture.com>
-In-Reply-To: <20220312201512.326047-1-kurt@x64architecture.com>
-To:     Kurt Cancemi <kurt@x64architecture.com>
-Cc:     netdev@vger.kernel.org, kabel@kernel.org, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, charles-antoine.couret@nexvision.fr,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <1647000658-16149-6-git-send-email-alan.maguire@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26481/Mon Mar 14 09:39:13 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 12 Mar 2022 15:15:13 -0500 you wrote:
-> This bug resulted in only the current mode being resumed and suspended when
-> the PHY supported both fiber and copper modes and when the PHY only supported
-> copper mode the fiber mode would incorrectly be attempted to be resumed and
-> suspended.
+On 3/11/22 1:10 PM, Alan Maguire wrote:
+> tests that verify auto-attach works for function entry/return for
+> local functions in program, library functions in program and library
+> functions in library.
 > 
-> Fixes: 3758be3dc162 ("Marvell phy: add functions to suspend and resume both interfaces: fiber and copper links.")
-> Signed-off-by: Kurt Cancemi <kurt@x64architecture.com>
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> ---
+>   .../selftests/bpf/prog_tests/uprobe_autoattach.c   | 48 +++++++++++++++
+>   .../selftests/bpf/progs/test_uprobe_autoattach.c   | 69 ++++++++++++++++++++++
+>   2 files changed, 117 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_uprobe_autoattach.c
 > 
-> [...]
+> diff --git a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
+> new file mode 100644
+> index 0000000..57ed636
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
+> @@ -0,0 +1,48 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2022, Oracle and/or its affiliates. */
+> +
+> +#include <test_progs.h>
+> +#include "test_uprobe_autoattach.skel.h"
+> +
+> +/* uprobe attach point */
+> +static void autoattach_trigger_func(void)
+> +{
+> +	asm volatile ("");
+> +}
+> +
+> +void test_uprobe_autoattach(void)
+> +{
+> +	struct test_uprobe_autoattach *skel;
+> +	char *mem;
+> +
+> +	skel = test_uprobe_autoattach__open_and_load();
+> +	if (!ASSERT_OK_PTR(skel, "skel_open"))
+> +		return;
+> +	if (!ASSERT_OK_PTR(skel->bss, "check_bss"))
+> +		goto cleanup;
+> +
+> +	if (!ASSERT_OK(test_uprobe_autoattach__attach(skel), "skel_attach"))
+> +		goto cleanup;
+> +
+> +	/* trigger & validate uprobe & uretprobe */
+> +	autoattach_trigger_func();
+> +
+> +	/* trigger & validate shared library u[ret]probes attached by name */
+> +	mem = malloc(1);
+> +	free(mem);
+> +
+> +	if (!ASSERT_EQ(skel->bss->uprobe_byname_res, 1, "check_uprobe_byname_res"))
+> +		goto cleanup;
+> +	if (!ASSERT_EQ(skel->bss->uretprobe_byname_res, 2, "check_uretprobe_byname_res"))
+> +		goto cleanup;
+> +	if (!ASSERT_EQ(skel->bss->uprobe_byname2_res, 3, "check_uprobe_byname2_res"))
+> +		goto cleanup;
+> +	if (!ASSERT_EQ(skel->bss->uretprobe_byname2_res, 4, "check_uretprobe_byname2_res"))
+> +		goto cleanup;
+> +	if (!ASSERT_EQ(skel->bss->uprobe_byname3_res, 5, "check_uprobe_byname3_res"))
+> +		goto cleanup;
+> +	if (!ASSERT_EQ(skel->bss->uretprobe_byname3_res, 6, "check_uretprobe_byname3_res"))
+> +		goto cleanup;
+> +cleanup:
+> +	test_uprobe_autoattach__destroy(skel);
+> +}
 
-Here is the summary with links:
-  - [net,v3] net: phy: marvell: Fix invalid comparison in the resume and suspend functions
-    https://git.kernel.org/netdev/net/c/837d9e49402e
+Hmm, looks like this fails CI, ptal:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+https://github.com/kernel-patches/bpf/runs/5517172330?check_suite_focus=true
 
-
+[...]
+   test_attach_probe:PASS:uprobe_offset 0 nsec
+   test_attach_probe:PASS:ref_ctr_offset 0 nsec
+   test_attach_probe:PASS:skel_open 0 nsec
+   test_attach_probe:PASS:check_bss 0 nsec
+   test_attach_probe:PASS:attach_kprobe 0 nsec
+   test_attach_probe:PASS:attach_kretprobe 0 nsec
+   test_attach_probe:PASS:uprobe_ref_ctr_before 0 nsec
+   test_attach_probe:PASS:attach_uprobe 0 nsec
+   test_attach_probe:PASS:uprobe_ref_ctr_after 0 nsec
+   test_attach_probe:PASS:attach_uretprobe 0 nsec
+   test_attach_probe:PASS:auto-attach should fail for old-style name 0 nsec
+   test_attach_probe:PASS:attach_uprobe_byname 0 nsec
+   test_attach_probe:PASS:attach_uretprobe_byname 0 nsec
+   test_attach_probe:PASS:attach_uprobe_byname2 0 nsec
+   test_attach_probe:PASS:attach_uretprobe_byname2 0 nsec
+   test_attach_probe:PASS:check_kprobe_res 0 nsec
+   test_attach_probe:PASS:check_kretprobe_res 0 nsec
+   test_attach_probe:PASS:check_uprobe_res 0 nsec
+   test_attach_probe:PASS:check_uretprobe_res 0 nsec
+   test_attach_probe:PASS:check_uprobe_byname_res 0 nsec
+   test_attach_probe:PASS:check_uretprobe_byname_res 0 nsec
+   test_attach_probe:PASS:check_uprobe_byname2_res 0 nsec
+   test_attach_probe:FAIL:check_uretprobe_byname2_res unexpected check_uretprobe_byname2_res: actual 0 != expected 8
+   test_attach_probe:PASS:uprobe_ref_ctr_cleanup 0 nsec
+   #4 attach_probe:FAIL
+[...]
