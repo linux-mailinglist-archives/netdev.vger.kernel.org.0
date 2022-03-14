@@ -2,440 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2DFA4D7FFC
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 11:37:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD0974D8031
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 11:47:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238612AbiCNKjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 06:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
+        id S234774AbiCNKsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 06:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238607AbiCNKjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 06:39:01 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72F3513E07
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 03:37:50 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id p15so32806113ejc.7
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 03:37:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MZp7gpnQ9sDMK3u9FGLF0DtfQSh/r7kXG58Sm7tKpYY=;
-        b=saLhr5vFxCZrsjEj3zox8KF0Jb1MMbflR64Kb4l4U4tzSm3yiiVkIu+uDJS5QATHiw
-         +lz3GSqr1atOyRu9wMyJSddeuHQfuT51ZKhx5MXqEaQwuT4mU0EpDw/EZf0OKtxz77k9
-         E1u92oMbVLni/4nwkwlmgAPyRXb2sJAeOYNkMiqFVWgHeTD/7FDa+CcVqS+dsCMaYNmZ
-         8vcD5L0hbgAhMnwckDw9FbuSlEXGVYKADhUqOsrUuhlNxZ8L+K0y1SDQUcZM3MCyD+M4
-         iDbXJ+YTY706sAufKQi8A9tZU7mX/5UGDJ9gg8pL1zaHxP1Y+57GunLctJxM6ahtSYqU
-         ojfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MZp7gpnQ9sDMK3u9FGLF0DtfQSh/r7kXG58Sm7tKpYY=;
-        b=pUeZavSgMAfgymlfaQC+IYRLnha+lvk5TGTnenB8iIS4lq5RN2+9wO0dI+KHqyRrnl
-         hS5ephgQV/4dni3GSF2MHL3z+/Dfj4SGCjsz4+6KYRkj/SfQDINbP0ZypbqbYKChnw5q
-         GD22Ns+hTRLS3NGH9rzJrMu0TAOBBwC9/uYRMroxy36SwPnY1bQvfSKoU8nBiFqWb4Az
-         mKlvjjCCM5a14Jhxe9vzIMr17S1Af8UIHmWfjcdcmUug5YRSw4UBPd0GkMY2v3Ozq16F
-         4tEsBuprGzcDpy2X8I0ulbcqTxSCi6YybKwoC8V+muOPPvfkMSOoXMnYpI8wNfLilaIN
-         joeQ==
-X-Gm-Message-State: AOAM531uaEPdzhnUrX7+hUHr2Vbt5Fu+2pZ3GoCLpxnoyMoQBO6c9ZHG
-        RqjB92OStCTqaaVdCRe/e77t5A==
-X-Google-Smtp-Source: ABdhPJwBzilczZqjxRl2tocXjpfILbiCNUlThUkPEV5lBZ6+4VrjKX37ZNnHET3BIlhwSTB67FQbBg==
-X-Received: by 2002:a17:906:3adb:b0:6b7:876c:d11b with SMTP id z27-20020a1709063adb00b006b7876cd11bmr17836590ejd.250.1647254268847;
-        Mon, 14 Mar 2022 03:37:48 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id cc20-20020a0564021b9400b00412f2502469sm7694617edb.23.2022.03.14.03.37.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 03:37:48 -0700 (PDT)
-Message-ID: <d16cb4b7-a1bf-2e96-0b59-2c4c37b2fdd3@blackwall.org>
-Date:   Mon, 14 Mar 2022 12:37:46 +0200
+        with ESMTP id S230147AbiCNKsx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 06:48:53 -0400
+X-Greylist: delayed 557 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Mar 2022 03:47:43 PDT
+Received: from smtpservice.6wind.com (unknown [185.13.181.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BE472E68D
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 03:47:43 -0700 (PDT)
+Received: from bretzel (bretzel.dev.6wind.com [10.17.1.57])
+        by smtpservice.6wind.com (Postfix) with ESMTPS id CC96C600AB;
+        Mon, 14 Mar 2022 11:38:24 +0100 (CET)
+Received: from dichtel by bretzel with local (Exim 4.92)
+        (envelope-from <dichtel@6wind.com>)
+        id 1nTi5o-0008Ft-Mx; Mon, 14 Mar 2022 11:38:24 +0100
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        antony.antony@secunet.com
+Cc:     leon@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Subject: [PATCH ipsec-next v2] xfrm: rework default policy structure
+Date:   Mon, 14 Mar 2022 11:38:22 +0100
+Message-Id: <20220314103822.31720-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <YZpSlpVuE9G+Ebh4@unreal>
+References: <YZpSlpVuE9G+Ebh4@unreal>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 net-next 03/14] net: bridge: mst: Support setting and
- reporting MST port states
-Content-Language: en-US
-To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Cooper Lees <me@cooperlees.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-References: <20220314095231.3486931-1-tobias@waldekranz.com>
- <20220314095231.3486931-4-tobias@waldekranz.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220314095231.3486931-4-tobias@waldekranz.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.5 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/03/2022 11:52, Tobias Waldekranz wrote:
-> Make it possible to change the port state in a given MSTI by extending
-> the bridge port netlink interface (RTM_SETLINK on PF_BRIDGE).The
-> proposed iproute2 interface would be:
-> 
->     bridge mst set dev <PORT> msti <MSTI> state <STATE>
-> 
-> Current states in all applicable MSTIs can also be dumped via a
-> corresponding RTM_GETLINK. The proposed iproute interface looks like
-> this:
-> 
-> $ bridge mst
-> port              msti
-> vb1               0
-> 		    state forwarding
-> 		  100
-> 		    state disabled
-> vb2               0
-> 		    state forwarding
-> 		  100
-> 		    state forwarding
-> 
-> The preexisting per-VLAN states are still valid in the MST
-> mode (although they are read-only), and can be queried as usual if one
-> is interested in knowing a particular VLAN's state without having to
-> care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
-> bound to MSTI 100):
-> 
-> $ bridge -d vlan
-> port              vlan-id
-> vb1               10
-> 		    state forwarding mcast_router 1
-> 		  20
-> 		    state disabled mcast_router 1
-> 		  30
-> 		    state disabled mcast_router 1
-> 		  40
-> 		    state forwarding mcast_router 1
-> vb2               10
-> 		    state forwarding mcast_router 1
-> 		  20
-> 		    state forwarding mcast_router 1
-> 		  30
-> 		    state forwarding mcast_router 1
-> 		  40
-> 		    state forwarding mcast_router 1
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
+This is a follow up of commit f8d858e607b2 ("xfrm: make user policy API
+complete"). The goal is to align userland API to the internal structures.
 
-Hi Tobias,
-A few comments below..
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+---
 
->  include/uapi/linux/if_bridge.h |  17 ++++++
->  include/uapi/linux/rtnetlink.h |   1 +
->  net/bridge/br_mst.c            | 105 +++++++++++++++++++++++++++++++++
->  net/bridge/br_netlink.c        |  32 +++++++++-
->  net/bridge/br_private.h        |  15 +++++
->  5 files changed, 169 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-> index f60244b747ae..879dfaef8da0 100644
-> --- a/include/uapi/linux/if_bridge.h
-> +++ b/include/uapi/linux/if_bridge.h
-> @@ -122,6 +122,7 @@ enum {
->  	IFLA_BRIDGE_VLAN_TUNNEL_INFO,
->  	IFLA_BRIDGE_MRP,
->  	IFLA_BRIDGE_CFM,
-> +	IFLA_BRIDGE_MST,
->  	__IFLA_BRIDGE_MAX,
->  };
->  #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
-> @@ -453,6 +454,21 @@ enum {
->  
->  #define IFLA_BRIDGE_CFM_CC_PEER_STATUS_MAX (__IFLA_BRIDGE_CFM_CC_PEER_STATUS_MAX - 1)
->  
-> +enum {
-> +	IFLA_BRIDGE_MST_UNSPEC,
-> +	IFLA_BRIDGE_MST_ENTRY,
-> +	__IFLA_BRIDGE_MST_MAX,
-> +};
-> +#define IFLA_BRIDGE_MST_MAX (__IFLA_BRIDGE_MST_MAX - 1)
-> +
-> +enum {
-> +	IFLA_BRIDGE_MST_ENTRY_UNSPEC,
-> +	IFLA_BRIDGE_MST_ENTRY_MSTI,
-> +	IFLA_BRIDGE_MST_ENTRY_STATE,
-> +	__IFLA_BRIDGE_MST_ENTRY_MAX,
-> +};
-> +#define IFLA_BRIDGE_MST_ENTRY_MAX (__IFLA_BRIDGE_MST_ENTRY_MAX - 1)
-> +
->  struct bridge_stp_xstats {
->  	__u64 transition_blk;
->  	__u64 transition_fwd;
-> @@ -786,4 +802,5 @@ enum {
->  	__BRIDGE_QUERIER_MAX
->  };
->  #define BRIDGE_QUERIER_MAX (__BRIDGE_QUERIER_MAX - 1)
-> +
+v1 -> v2: introduce __xfrm_check_nopolicy()
 
-stray new line
+ include/net/netns/xfrm.h |  6 +----
+ include/net/xfrm.h       | 48 +++++++++++++++-------------------------
+ net/xfrm/xfrm_policy.c   | 10 ++++++---
+ net/xfrm/xfrm_user.c     | 43 +++++++++++++++--------------------
+ 4 files changed, 44 insertions(+), 63 deletions(-)
 
->  #endif /* _UAPI_LINUX_IF_BRIDGE_H */
-> diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-> index 51530aade46e..83849a37db5b 100644
-> --- a/include/uapi/linux/rtnetlink.h
-> +++ b/include/uapi/linux/rtnetlink.h
-> @@ -817,6 +817,7 @@ enum {
->  #define RTEXT_FILTER_MRP	(1 << 4)
->  #define RTEXT_FILTER_CFM_CONFIG	(1 << 5)
->  #define RTEXT_FILTER_CFM_STATUS	(1 << 6)
-> +#define RTEXT_FILTER_MST	(1 << 7)
->  
->  /* End of information exported to user level */
->  
-> diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
-> index 78ef5fea4d2b..df65aa7701c1 100644
-> --- a/net/bridge/br_mst.c
-> +++ b/net/bridge/br_mst.c
-> @@ -124,3 +124,108 @@ int br_mst_set_enabled(struct net_bridge *br, bool on,
->  	br_opt_toggle(br, BROPT_MST_ENABLED, on);
->  	return 0;
->  }
-> +
-> +int br_mst_fill_info(struct sk_buff *skb, struct net_bridge_vlan_group *vg)
-
-const vg
-
-> +{
-> +	struct net_bridge_vlan *v;
-
-const v
-
-> +	struct nlattr *nest;
-> +	unsigned long *seen;
-> +	int err = 0;
-> +
-> +	seen = bitmap_zalloc(VLAN_N_VID, 0);
-> +	if (!seen)
-> +		return -ENOMEM;
-> +
-> +	list_for_each_entry(v, &vg->vlan_list, vlist) {
-> +		if (test_bit(v->brvlan->msti, seen))
-> +			continue;
-> +
-> +		nest = nla_nest_start_noflag(skb, IFLA_BRIDGE_MST_ENTRY);
-> +		if (!nest ||
-> +		    nla_put_u16(skb, IFLA_BRIDGE_MST_ENTRY_MSTI, v->brvlan->msti) ||
-> +		    nla_put_u8(skb, IFLA_BRIDGE_MST_ENTRY_STATE, v->state)) {
-> +			err = -EMSGSIZE;
-> +			break;
-> +		}
-> +		nla_nest_end(skb, nest);
-> +
-> +		set_bit(v->brvlan->msti, seen);
-
-__set_bit()
-
-> +	}
-> +
-> +	kfree(seen);
-> +	return err;
-> +}
-> +
-> +static const struct nla_policy br_mst_nl_policy[IFLA_BRIDGE_MST_ENTRY_MAX + 1] = {
-> +	[IFLA_BRIDGE_MST_ENTRY_MSTI] = NLA_POLICY_RANGE(NLA_U16,
-> +						   1, /* 0 reserved for CST */
-> +						   VLAN_N_VID - 1),
-> +	[IFLA_BRIDGE_MST_ENTRY_STATE] = NLA_POLICY_RANGE(NLA_U8,
-> +						    BR_STATE_DISABLED,
-> +						    BR_STATE_BLOCKING),
-> +};
-> +
-> +static int br_mst_parse_one(struct net_bridge_port *p,
-> +			    const struct nlattr *attr,
-> +			    struct netlink_ext_ack *extack)
-> +{
-
-I'd either set the state after parsing, so this function just does what it
-says (parse) or I'd rename it.
-
-> +	struct nlattr *tb[IFLA_BRIDGE_MST_ENTRY_MAX + 1];
-> +	u16 msti;
-> +	u8 state;
-> +	int err;
-> +
-> +	err = nla_parse_nested(tb, IFLA_BRIDGE_MST_ENTRY_MAX, attr,
-> +			       br_mst_nl_policy, extack);
-> +	if (err)
-> +		return err;
-> +
-> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_MSTI]) {
-> +		NL_SET_ERR_MSG_MOD(extack, "MSTI not specified");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_STATE]) {
-> +		NL_SET_ERR_MSG_MOD(extack, "State not specified");
-> +		return -EINVAL;
-> +	}
-> +
-> +	msti = nla_get_u16(tb[IFLA_BRIDGE_MST_ENTRY_MSTI]);
-> +	state = nla_get_u8(tb[IFLA_BRIDGE_MST_ENTRY_STATE]);
-> +
-> +	br_mst_set_state(p, msti, state);
-> +	return 0;
-> +}
-> +
-> +int br_mst_parse(struct net_bridge_port *p, struct nlattr *mst_attr,
-> +		 struct netlink_ext_ack *extack)
-
-This doesn't just parse though, it also sets the state. Please rename it to
-something more appropriate.
-
-const mst_attr
-
-> +{
-> +	struct nlattr *attr;
-> +	int err, msts = 0;
-> +	int rem;
-> +
-> +	if (!br_opt_get(p->br, BROPT_MST_ENABLED)) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Can't modify MST state when MST is disabled");
-> +		return -EBUSY;
-> +	}
-> +
-> +	nla_for_each_nested(attr, mst_attr, rem) {
-> +		switch (nla_type(attr)) {
-> +		case IFLA_BRIDGE_MST_ENTRY:
-> +			err = br_mst_parse_one(p, attr, extack);
-> +			break;
-> +		default:
-> +			continue;
-> +		}
-> +
-> +		msts++;
-> +		if (err)
-> +			break;
-> +	}
-> +
-> +	if (!msts) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Found no MST entries to process");
-> +		err = -EINVAL;
-> +	}
-> +
-> +	return err;
-> +}
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index 7d4432ca9a20..d2b4550f30d6 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -485,7 +485,8 @@ static int br_fill_ifinfo(struct sk_buff *skb,
->  			   RTEXT_FILTER_BRVLAN_COMPRESSED |
->  			   RTEXT_FILTER_MRP |
->  			   RTEXT_FILTER_CFM_CONFIG |
-> -			   RTEXT_FILTER_CFM_STATUS)) {
-> +			   RTEXT_FILTER_CFM_STATUS |
-> +			   RTEXT_FILTER_MST)) {
->  		af = nla_nest_start_noflag(skb, IFLA_AF_SPEC);
->  		if (!af)
->  			goto nla_put_failure;
-> @@ -564,7 +565,28 @@ static int br_fill_ifinfo(struct sk_buff *skb,
->  		nla_nest_end(skb, cfm_nest);
->  	}
->  
-> +	if ((filter_mask & RTEXT_FILTER_MST) &&
-> +	    br_opt_get(br, BROPT_MST_ENABLED) && port) {
-> +		struct net_bridge_vlan_group *vg = nbp_vlan_group(port);
-
-const vg
-
-> +		struct nlattr *mst_nest;
-> +		int err;
-> +
-> +		if (!vg || !vg->num_vlans)
-> +			goto done;
-> +
-> +		mst_nest = nla_nest_start(skb, IFLA_BRIDGE_MST);
-> +		if (!mst_nest)
-> +			goto nla_put_failure;
-> +
-> +		err = br_mst_fill_info(skb, vg);
-> +		if (err)
-> +			goto nla_put_failure;
-> +
-> +		nla_nest_end(skb, mst_nest);
-> +	}
-> +
-
-I think you should also update br_get_link_af_size_filtered() to account for the
-new dump attributes based on the filter. I'd adjust vinfo_sz based on the filter
-flag.
-
->  done:
-> +
->  	if (af)
->  		nla_nest_end(skb, af);
->  	nlmsg_end(skb, nlh);
-> @@ -803,6 +825,14 @@ static int br_afspec(struct net_bridge *br,
->  			if (err)
->  				return err;
->  			break;
-> +		case IFLA_BRIDGE_MST:
-> +			if (cmd != RTM_SETLINK || !p)
-> +				return -EINVAL;
-
-These are two different errors, please set extack appropriately
-for each error.
-
-> +
-> +			err = br_mst_parse(p, attr, extack);
-> +			if (err)
-> +				return err;
-> +			break;
->  		}
->  	}
->  
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index b907d389b63a..08d82578bd97 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -1783,6 +1783,9 @@ int br_mst_vlan_set_msti(struct net_bridge_vlan *v, u16 msti);
->  void br_mst_vlan_init_state(struct net_bridge_vlan *v);
->  int br_mst_set_enabled(struct net_bridge *br, bool on,
->  		       struct netlink_ext_ack *extack);
-> +int br_mst_fill_info(struct sk_buff *skb, struct net_bridge_vlan_group *vg);
-> +int br_mst_parse(struct net_bridge_port *p, struct nlattr *mst_attr,
-> +		 struct netlink_ext_ack *extack);
->  #else
->  static inline bool br_mst_is_enabled(struct net_bridge *br)
->  {
-> @@ -1791,6 +1794,18 @@ static inline bool br_mst_is_enabled(struct net_bridge *br)
->  
->  static inline void br_mst_set_state(struct net_bridge_port *p,
->  				    u16 msti, u8 state) {}
-> +static inline int br_mst_fill_info(struct sk_buff *skb,
-> +				   struct net_bridge_vlan_group *vg)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline int br_mst_parse(struct net_bridge_port *p,
-> +			       struct nlattr *mst_attr,
-> +			       struct netlink_ext_ack *extack)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
->  #endif
->  
->  struct nf_br_ops {
+diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
+index 947733a639a6..bd7c3be4af5d 100644
+--- a/include/net/netns/xfrm.h
++++ b/include/net/netns/xfrm.h
+@@ -66,11 +66,7 @@ struct netns_xfrm {
+ 	int			sysctl_larval_drop;
+ 	u32			sysctl_acq_expires;
+ 
+-	u8			policy_default;
+-#define XFRM_POL_DEFAULT_IN	1
+-#define XFRM_POL_DEFAULT_OUT	2
+-#define XFRM_POL_DEFAULT_FWD	4
+-#define XFRM_POL_DEFAULT_MASK	7
++	u8			policy_default[XFRM_POLICY_MAX];
+ 
+ #ifdef CONFIG_SYSCTL
+ 	struct ctl_table_header	*sysctl_hdr;
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index fdb41e8bb626..1541ca0cb13c 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1081,25 +1081,18 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
+ }
+ 
+ #ifdef CONFIG_XFRM
+-static inline bool
+-xfrm_default_allow(struct net *net, int dir)
+-{
+-	u8 def = net->xfrm.policy_default;
+-
+-	switch (dir) {
+-	case XFRM_POLICY_IN:
+-		return def & XFRM_POL_DEFAULT_IN ? false : true;
+-	case XFRM_POLICY_OUT:
+-		return def & XFRM_POL_DEFAULT_OUT ? false : true;
+-	case XFRM_POLICY_FWD:
+-		return def & XFRM_POL_DEFAULT_FWD ? false : true;
+-	}
+-	return false;
+-}
+-
+ int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
+ 			unsigned short family);
+ 
++static inline bool __xfrm_check_nopolicy(struct net *net, struct sk_buff *skb,
++					 int dir)
++{
++	if (!net->xfrm.policy_count[dir] && !secpath_exists(skb))
++		return net->xfrm.policy_default[dir] == XFRM_USERPOLICY_ACCEPT;
++
++	return false;
++}
++
+ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
+ 				       struct sk_buff *skb,
+ 				       unsigned int family, int reverse)
+@@ -1110,13 +1103,9 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
+ 	if (sk && sk->sk_policy[XFRM_POLICY_IN])
+ 		return __xfrm_policy_check(sk, ndir, skb, family);
+ 
+-	if (xfrm_default_allow(net, dir))
+-		return (!net->xfrm.policy_count[dir] && !secpath_exists(skb)) ||
+-		       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
+-		       __xfrm_policy_check(sk, ndir, skb, family);
+-	else
+-		return (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
+-		       __xfrm_policy_check(sk, ndir, skb, family);
++	return __xfrm_check_nopolicy(net, skb, dir) ||
++	       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
++	       __xfrm_policy_check(sk, ndir, skb, family);
+ }
+ 
+ static inline int xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb, unsigned short family)
+@@ -1168,13 +1157,12 @@ static inline int xfrm_route_forward(struct sk_buff *skb, unsigned short family)
+ {
+ 	struct net *net = dev_net(skb->dev);
+ 
+-	if (xfrm_default_allow(net, XFRM_POLICY_OUT))
+-		return !net->xfrm.policy_count[XFRM_POLICY_OUT] ||
+-			(skb_dst(skb)->flags & DST_NOXFRM) ||
+-			__xfrm_route_forward(skb, family);
+-	else
+-		return (skb_dst(skb)->flags & DST_NOXFRM) ||
+-			__xfrm_route_forward(skb, family);
++	if (!net->xfrm.policy_count[XFRM_POLICY_OUT] &&
++	    net->xfrm.policy_default[XFRM_POLICY_OUT] == XFRM_USERPOLICY_ACCEPT)
++		return true;
++
++	return (skb_dst(skb)->flags & DST_NOXFRM) ||
++	       __xfrm_route_forward(skb, family);
+ }
+ 
+ static inline int xfrm4_route_forward(struct sk_buff *skb)
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 04d1ce9b510f..01fe1e9cff86 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3158,7 +3158,7 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
+ 
+ nopol:
+ 	if (!(dst_orig->dev->flags & IFF_LOOPBACK) &&
+-	    !xfrm_default_allow(net, dir)) {
++	    net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
+ 		err = -EPERM;
+ 		goto error;
+ 	}
+@@ -3569,7 +3569,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 	}
+ 
+ 	if (!pol) {
+-		if (!xfrm_default_allow(net, dir)) {
++		if (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOPOLS);
+ 			return 0;
+ 		}
+@@ -3629,7 +3629,8 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		}
+ 		xfrm_nr = ti;
+ 
+-		if (!xfrm_default_allow(net, dir) && !xfrm_nr) {
++		if (net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK &&
++		    !xfrm_nr) {
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINNOSTATES);
+ 			goto reject;
+ 		}
+@@ -4118,6 +4119,9 @@ static int __net_init xfrm_net_init(struct net *net)
+ 	spin_lock_init(&net->xfrm.xfrm_policy_lock);
+ 	seqcount_spinlock_init(&net->xfrm.xfrm_policy_hash_generation, &net->xfrm.xfrm_policy_lock);
+ 	mutex_init(&net->xfrm.xfrm_cfg_mutex);
++	net->xfrm.policy_default[XFRM_POLICY_IN] = XFRM_USERPOLICY_ACCEPT;
++	net->xfrm.policy_default[XFRM_POLICY_FWD] = XFRM_USERPOLICY_ACCEPT;
++	net->xfrm.policy_default[XFRM_POLICY_OUT] = XFRM_USERPOLICY_ACCEPT;
+ 
+ 	rv = xfrm_statistics_init(net);
+ 	if (rv < 0)
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 8cd6c8129004..2f6b64cf0975 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -2009,12 +2009,9 @@ static int xfrm_notify_userpolicy(struct net *net)
+ 	}
+ 
+ 	up = nlmsg_data(nlh);
+-	up->in = net->xfrm.policy_default & XFRM_POL_DEFAULT_IN ?
+-			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
+-	up->fwd = net->xfrm.policy_default & XFRM_POL_DEFAULT_FWD ?
+-			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
+-	up->out = net->xfrm.policy_default & XFRM_POL_DEFAULT_OUT ?
+-			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
++	up->in = net->xfrm.policy_default[XFRM_POLICY_IN];
++	up->fwd = net->xfrm.policy_default[XFRM_POLICY_FWD];
++	up->out = net->xfrm.policy_default[XFRM_POLICY_OUT];
+ 
+ 	nlmsg_end(skb, nlh);
+ 
+@@ -2025,26 +2022,26 @@ static int xfrm_notify_userpolicy(struct net *net)
+ 	return err;
+ }
+ 
++static bool xfrm_userpolicy_is_valid(__u8 policy)
++{
++	return policy == XFRM_USERPOLICY_BLOCK ||
++	       policy == XFRM_USERPOLICY_ACCEPT;
++}
++
+ static int xfrm_set_default(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			    struct nlattr **attrs)
+ {
+ 	struct net *net = sock_net(skb->sk);
+ 	struct xfrm_userpolicy_default *up = nlmsg_data(nlh);
+ 
+-	if (up->in == XFRM_USERPOLICY_BLOCK)
+-		net->xfrm.policy_default |= XFRM_POL_DEFAULT_IN;
+-	else if (up->in == XFRM_USERPOLICY_ACCEPT)
+-		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_IN;
++	if (xfrm_userpolicy_is_valid(up->in))
++		net->xfrm.policy_default[XFRM_POLICY_IN] = up->in;
+ 
+-	if (up->fwd == XFRM_USERPOLICY_BLOCK)
+-		net->xfrm.policy_default |= XFRM_POL_DEFAULT_FWD;
+-	else if (up->fwd == XFRM_USERPOLICY_ACCEPT)
+-		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_FWD;
++	if (xfrm_userpolicy_is_valid(up->fwd))
++		net->xfrm.policy_default[XFRM_POLICY_FWD] = up->fwd;
+ 
+-	if (up->out == XFRM_USERPOLICY_BLOCK)
+-		net->xfrm.policy_default |= XFRM_POL_DEFAULT_OUT;
+-	else if (up->out == XFRM_USERPOLICY_ACCEPT)
+-		net->xfrm.policy_default &= ~XFRM_POL_DEFAULT_OUT;
++	if (xfrm_userpolicy_is_valid(up->out))
++		net->xfrm.policy_default[XFRM_POLICY_OUT] = up->out;
+ 
+ 	rt_genid_bump_all(net);
+ 
+@@ -2074,13 +2071,9 @@ static int xfrm_get_default(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	}
+ 
+ 	r_up = nlmsg_data(r_nlh);
+-
+-	r_up->in = net->xfrm.policy_default & XFRM_POL_DEFAULT_IN ?
+-			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
+-	r_up->fwd = net->xfrm.policy_default & XFRM_POL_DEFAULT_FWD ?
+-			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
+-	r_up->out = net->xfrm.policy_default & XFRM_POL_DEFAULT_OUT ?
+-			XFRM_USERPOLICY_BLOCK : XFRM_USERPOLICY_ACCEPT;
++	r_up->in = net->xfrm.policy_default[XFRM_POLICY_IN];
++	r_up->fwd = net->xfrm.policy_default[XFRM_POLICY_FWD];
++	r_up->out = net->xfrm.policy_default[XFRM_POLICY_OUT];
+ 	nlmsg_end(r_skb, r_nlh);
+ 
+ 	return nlmsg_unicast(net->xfrm.nlsk, r_skb, portid);
+-- 
+2.33.0
 
