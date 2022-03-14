@@ -2,117 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA114D7AEA
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 07:45:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 710DB4D7B1E
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 08:01:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236450AbiCNGqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 02:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45582 "EHLO
+        id S236489AbiCNHCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 03:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229724AbiCNGqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 02:46:20 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE8373CFF3;
-        Sun, 13 Mar 2022 23:45:11 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n2so12722241plf.4;
-        Sun, 13 Mar 2022 23:45:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HwGDi1sVfgM6vEwjYmQWuo614yIWTc+TjSIxyxAMlAA=;
-        b=OFglV4YNTV4B9RvfWrcOyp9Ky6jz7gYFN7V7XkdY05sSHo7bTVSZDN3d19BzcABKaH
-         YRxwvKCbXXsxHsJshYEh8PshhCQ7REiQ1N7UUe1p/YJphK3FRhTOiEqS4hXeNTjlVQfa
-         K4fIgWVNKaSRMM/FxdX4Thgz1rjs/StrkDfB3M3GOKCcRnMY5GgvkBLOA+Qrrs5kaoRP
-         8a4JmdyOpGlPlpUGr/TpkhYUfJK4DuWGRkE5q8J0U7DwzKDAR7mCySxnMbM031pn2sMz
-         g6l1r3u0LizvyiBt0JBJ0vtCkl8p4QxbuelD5GNKSaNSq6KzSlMj78Wm8VZunw78bYux
-         AfHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HwGDi1sVfgM6vEwjYmQWuo614yIWTc+TjSIxyxAMlAA=;
-        b=178e+uDxVbCOZCQP/vgakmLnZqbTgxLz/jpHi6xDfJg+VbGLtVFfSKHXt98Ej2o4Dt
-         qMzeRMJBOLyqNDZZgkiTx+s8E1dZLmAlGFfZxya3jl0YDEjCosgxhPfbEt5PMK1Cmnpy
-         QbHg6zJiI/L1aSebmDWOtQ3WDHT4DnTo45NW5+MVd0d7ZGhAaFfoi9E5OJUBXQsF6bnC
-         R211d8HnMjkIVjA+gLOEfPwv2x7DHkXFUWdtu3oJj+WK6nv1DtnqWM5uyhmvoL+MVlgc
-         lxSiS5L3NZ6yxldpTjlCBv9GyzbPcTeJUEuhUTsI3toTBDUDeeKVxF+Rxdm9p+zvJrxn
-         6D4g==
-X-Gm-Message-State: AOAM532NIBFZWmebqqz7mUE5vmujEv8Rly9TEtzu700y/Dv7ZKjr+Ov7
-        G+96Ca0fspI1yyLOKOwDPHs=
-X-Google-Smtp-Source: ABdhPJx/JtpuTG5tp1CzzSrpghu2Tp9YzGYf8rw4hriJbh8ezMW/YgFFEn7thGrGtrX7buLcrYgEDA==
-X-Received: by 2002:a17:902:6903:b0:151:6781:9397 with SMTP id j3-20020a170902690300b0015167819397mr22502299plk.137.1647240311126;
-        Sun, 13 Mar 2022 23:45:11 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id u18-20020a056a00099200b004f737cdd046sm20342127pfg.145.2022.03.13.23.45.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Mar 2022 23:45:10 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     toke@toke.dk
-Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH V2] ath9k: Use platform_get_irq() to get the interrupt
-Date:   Mon, 14 Mar 2022 06:45:01 +0000
-Message-Id: <20220314064501.2114002-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231877AbiCNHCo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 03:02:44 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C487F40900;
+        Mon, 14 Mar 2022 00:01:34 -0700 (PDT)
+X-UUID: 4decd2aa2f854a098042a04bf0a4a7e3-20220314
+X-UUID: 4decd2aa2f854a098042a04bf0a4a7e3-20220314
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 669941624; Mon, 14 Mar 2022 15:01:27 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 14 Mar 2022 15:01:26 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 14 Mar 2022 15:01:23 +0800
+Message-ID: <2d0ab5290e63069f310987a4423ef2a46f02f1b3.camel@mediatek.com>
+Subject: Re: [PATCH net-next v2 9/9] net: ethernet: mtk-star-emac: separate
+ tx/rx handling with two NAPIs
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Fabien Parent <fparent@baylibre.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Yinghua Pan <ot_yinghua.pan@mediatek.com>,
+        <srv_heupstream@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>
+Date:   Mon, 14 Mar 2022 15:01:23 +0800
+In-Reply-To: <20220128074454.46d0ca29@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220127015857.9868-1-biao.huang@mediatek.com>
+         <20220127015857.9868-10-biao.huang@mediatek.com>
+         <20220127194338.01722b3c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <2bdb6c9b5ec90b6c606b7db8c13f8acb34910b36.camel@mediatek.com>
+         <20220128074454.46d0ca29@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+Dear Jakub,
+	Thanks for your comments~
 
-It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
-for requesting IRQ's resources any more, as they can be not ready yet in
-case of DT-booting.
+On Fri, 2022-01-28 at 07:44 -0800, Jakub Kicinski wrote:
+> On Fri, 28 Jan 2022 15:05:27 +0800 Biao Huang wrote:
+> > > > + * Description : this is the driver interrupt service routine.
+> > > > + * it mainly handles:
+> > > > + *  1. tx complete interrupt for frame transmission.
+> > > > + *  2. rx complete interrupt for frame reception.
+> > > > + *  3. MAC Management Counter interrupt to avoid counter
+> > > > overflow.
+> > > >   */
+> > > >  static irqreturn_t mtk_star_handle_irq(int irq, void *data)
+> > > >  {
+> > > > -	struct mtk_star_priv *priv;
+> > > > -	struct net_device *ndev;
+> > > > +	struct net_device *ndev = data;
+> > > > +	struct mtk_star_priv *priv = netdev_priv(ndev);
+> > > > +	unsigned int intr_status = mtk_star_intr_ack_all(priv);
+> > > > +	unsigned long flags = 0;
+> > > > +
+> > > > +	if (intr_status & MTK_STAR_BIT_INT_STS_FNRC) {
+> > > > +		if (napi_schedule_prep(&priv->rx_napi)) {
+> > > > +			spin_lock_irqsave(&priv->lock, flags);
+> > > > +			/* mask Rx Complete interrupt */
+> > > > +			mtk_star_disable_dma_irq(priv, true,
+> > > > false);
+> > > > +			spin_unlock_irqrestore(&priv->lock,
+> > > > flags);
+> > > > +			__napi_schedule_irqoff(&priv->rx_napi);
+> > > > +		}
+> > > > +	}
+> > > >  
+> > > > -	ndev = data;
+> > > > -	priv = netdev_priv(ndev);
+> > > > +	if (intr_status & MTK_STAR_BIT_INT_STS_TNTC) {
+> > > > +		if (napi_schedule_prep(&priv->tx_napi)) {
+> > > > +			spin_lock_irqsave(&priv->lock, flags);
+> > > > +			/* mask Tx Complete interrupt */
+> > > > +			mtk_star_disable_dma_irq(priv, false,
+> > > > true);
+> > > > +			spin_unlock_irqrestore(&priv->lock,
+> > > > flags);
+> > > > +			__napi_schedule_irqoff(&priv->tx_napi);
+> > > > +		}
+> > > > +	}  
+> > > 
+> > > Seems a little wasteful to retake the same lock twice if two IRQ
+> > > sources fire at the same time.  
+> > 
+> > The TX/RX irq control bits are in the same register,
+> > but they are triggered independently.
+> > So it seems necessary to protect the register
+> > access with a spin lock.
+> 
+> This is what I meant:
+> 
+> rx = (status & RX) && napi_schedule_prep(rx_napi);
+> tx = (status & TX) && napi_schedule_prep(tx_napi);
+> 
+> if (rx || tx) {
+> 	spin_lock()
+> 	disable_irq(priv, rx, tx);	
+> 	spin_unlock();
+> 	if (rx)
+> 		__napi_schedule_irqoff(rx_napi)
+> 	if (tx)
+> 		__napi_schedule_irqoff(tx_napi)
+> }
+> 
+OK, We'll adopt your suggestion, and corresponding modification will be
+added in next send.
+> > > >  	desc_data.dma_addr = mtk_star_dma_map_tx(priv, skb);
+> > > >  	if (dma_mapping_error(dev, desc_data.dma_addr))
+> > > > @@ -1050,18 +1103,10 @@ static int
+> > > > mtk_star_netdev_start_xmit(struct sk_buff *skb,
+> > > >  
+> > > >  	desc_data.skb = skb;
+> > > >  	desc_data.len = skb->len;
+> > > > -
+> > > > -	spin_lock_bh(&priv->lock);
+> > > > 
+> > > >  	mtk_star_ring_push_head_tx(ring, &desc_data);
+> > > >  
+> > > >  	netdev_sent_queue(ndev, skb->len);
+> > > >  
+> > > > -	if (mtk_star_ring_full(ring))
+> > > > -		netif_stop_queue(ndev);  
+> > > 
+> > > Are you stopping the queue in advance somewhere else now? Did you
+> > > only
+> > > test this with BQL enabled? Only place that stops the ring also
+> > > prints
+> > > a loud warning now AFAICS..  
+> > 
+> > No.
+> > 
+> > We modify the ring full condition, and will not invoke
+> > netif_stop_queue
+> > if queue is already stopped.
+> 
+> I don't understand what you're saying.
+> 
+> > Test pass no matter whether BQL is enabled or disabled.
+> > 
+> > It's much safer to judge queue is full or not at the beginning of
+> > start_xmit() to avoid invalid setting.
+> 
+> Drivers are expected to stop their queues at the end of xmit routine
+> if
+> the ring can't accommodate another frame. It's more efficient to stop
+> the queues early than have to put skbs already dequeued from the
+> qdisc
+> layer back into the qdiscs.
+Yes, if descriptors ring is full, it's meaningful to stop the queue 
+at the end of xmit; 
+But driver seems hard to know how many descriptors the next skb will
+request, e.g. 3 descriptors are available for next round send, but the
+next skb may need 4 descriptors, in this case, we still need judge
+whether descriptors are enough for skb transmission, then decide stop
+the queue or not, at the beginning of xmit routine.
 
-platform_get_irq() instead is a recommended way for getting IRQ even if
-it was not retrieved earlier.
+Maybe we should judge ring is full or not at the beginning and the end
+of xmit routine(seems a little redundancy).
 
-It also makes code simpler because we're getting "int" value right away
-and no conversion from resource to int is required.
-
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
-v1->v2:
-  - Retain dev_err() call on failure
-
- drivers/net/wireless/ath/ath9k/ahb.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/ahb.c b/drivers/net/wireless/ath/ath9k/ahb.c
-index cdefb8e2daf1..c9b853af41d1 100644
---- a/drivers/net/wireless/ath/ath9k/ahb.c
-+++ b/drivers/net/wireless/ath/ath9k/ahb.c
-@@ -98,14 +98,12 @@ static int ath_ahb_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
- 
--	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (res == NULL) {
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
- 		dev_err(&pdev->dev, "no IRQ resource found\n");
--		return -ENXIO;
-+		return irq;
- 	}
- 
--	irq = res->start;
--
- 	ath9k_fill_chanctx_ops();
- 	hw = ieee80211_alloc_hw(sizeof(struct ath_softc), &ath9k_ops);
- 	if (hw == NULL) {
--- 
-2.25.1
+Regards~
 
