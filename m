@@ -2,96 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6E1E4D793F
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 03:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADCCA4D796A
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 03:41:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235861AbiCNCDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Mar 2022 22:03:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43242 "EHLO
+        id S232500AbiCNCnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Mar 2022 22:43:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235795AbiCNCCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 22:02:50 -0400
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E228FDF06;
-        Sun, 13 Mar 2022 19:01:40 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowAAnLsL2oS5iZce+Ag--.26001S2;
-        Mon, 14 Mar 2022 10:01:26 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     stephen@networkplumber.org
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v2] hv_netvsc: Add check for kvmalloc_array
-Date:   Mon, 14 Mar 2022 10:01:25 +0800
-Message-Id: <20220314020125.2365084-1-jiasheng@iscas.ac.cn>
+        with ESMTP id S235923AbiCNCm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Mar 2022 22:42:59 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D55B205E2;
+        Sun, 13 Mar 2022 19:41:50 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id r12so12349886pla.1;
+        Sun, 13 Mar 2022 19:41:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xMR3gdW7BLrew3/OAPNy28mUhLn0EbRf6Sq9j+wj9Fw=;
+        b=P7wFRUrDfFkCmt8FoW2Dewmyt2jkHRvZcCqB+ziLG+MUNvZ/HDu7Im6tTo9WgQtwyH
+         9Fu1CqctAi+raak0lF/M6yuPt3YzhHekqZwMivR2Mr/X6UHRRpDhqzxa2tQyjSyPTn7I
+         NVKShBZMhv7pUBubSXT1V9B4/QK+7p6v+THXg3um3JXgKbBek/dqM7tA6vlFypviMLij
+         Sp7GThydf5VHYYg78Pr0mOIr2gw/0ZuCb6dSOlte12SP7jU+pklsQ9VZFQ8PWUIdej2M
+         YVXrAqt15hSXbX/Z6XtuKFi9KU61y+6nAx01YvJ3kAniubPNAjxpqzQGRLtyJ3Aj4c2z
+         FV/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xMR3gdW7BLrew3/OAPNy28mUhLn0EbRf6Sq9j+wj9Fw=;
+        b=5Oryze7ygYGz87SCet455CQyoVuHqsDDW0c9v9PIcmRTETVWl3rWRId3ScPhmmmasb
+         /oJPaKV3RhlXmwaXiVyBwGmtzzqzOsT/UkV8vK723hYcVBFO6cb6QmnvE0N0B2VcbA5W
+         FoEI06wfyQBCnHUCznzEKIAiiqxBrjq1jNEmDOd3bjwN7FkesFUrEulhu2eaWBpIhzdL
+         Lk25CpiVumBLjc/4ZDqCYyiwaxTzLoJf6Ic6GHAdwp3e6V2OkC2BfpYkg991cDhWZJsp
+         q/Yv/xeecXQZJXnM5sOasyL7R+3aKUPR0ll4Juw0tx9Gs/eKsOaJKjsBlpRMoiOurloo
+         dshw==
+X-Gm-Message-State: AOAM5300A+a8uxvOOOyXiLDFYMmyqEei05OoiCxMOyW35eeLRco+o8A2
+        6uvX7Kflh7WpK7aVC0TTJzy85Mlalg0=
+X-Google-Smtp-Source: ABdhPJzF1ibfmKhO0gwm/jTPkr3fjZadUySO8H9OHB/KxL5rlkFfeBw48zSfDTRQHpU+H2vuOvrHcQ==
+X-Received: by 2002:a17:90b:3a91:b0:1bf:261e:7773 with SMTP id om17-20020a17090b3a9100b001bf261e7773mr33798841pjb.155.1647225709702;
+        Sun, 13 Mar 2022 19:41:49 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id g12-20020a056a001a0c00b004e1307b249csm18055684pfv.69.2022.03.13.19.41.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Mar 2022 19:41:48 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     kuba@kernel.org
+Cc:     cgel.zte@gmail.com, chi.minghao@zte.com.cn, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        sebastian.hesselbarth@gmail.com, zealci@zte.com.cn
+Subject: [PATCH V3] net: mv643xx_eth: use platform_get_irq() instead of platform_get_resource()
+Date:   Mon, 14 Mar 2022 02:41:44 +0000
+Message-Id: <20220314024144.2112308-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220311082051.783b7c0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220311082051.783b7c0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowAAnLsL2oS5iZce+Ag--.26001S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKFW3Jw4xCrW3Wr15tr1fJFb_yoWDZwb_Cr
-        48urnxur47CryrKF42gFy7Xr9Yyw1qqF1fAFW2qrZxJFy8ArW7Ww1rZrnrXr4fur45uF9x
-        C3ZrAa1Yv39FgjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbS8FF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r
-        4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2Wl
-        Yx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbV
-        WUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7Cj
-        xVA2Y2ka0xkIwI1lc7CjxVAaw2AFwI0_GFv_Wrylc2xSY4AK67AK6r4UMxAIw28IcxkI7V
-        AKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCj
-        r7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6x
-        IIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF
-        04k26cxKx2IYs7xG6r4j6FyUMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7
-        CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRLNVgUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the potential failure of the kvmalloc_array(),
-it should be better to check and restore the 'data'
-if fails in order to avoid the dereference of the
-NULL pointer.
+From: Minghao Chi <chi.minghao@zte.com.cn>
 
-Fixes: 6ae746711263 ("hv_netvsc: Add per-cpu ethtool stats for netvsc")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+It is not recommened to use platform_get_resource(pdev, IORESOURCE_IRQ)
+for requesting IRQ's resources any more, as they can be not ready yet in
+case of DT-booting.
+
+platform_get_irq() instead is a recommended way for getting IRQ even if
+it was not retrieved earlier.
+
+It also makes code simpler because we're getting "int" value right away
+and no conversion from resource to int is required.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
-Changelog:
+v1->v2:
+  - Add a space after "net:".
+  - Use WARN_ON instead of BUG_ON.
+v2->v3:
+  - Release some operations.
 
-v1 -> v2
+ drivers/net/ethernet/marvell/mv643xx_eth.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-* Change 1. Remove the unrolled zero.
----
- drivers/net/hyperv/netvsc_drv.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 3646469433b1..fde1c492ca02 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -1587,6 +1587,9 @@ static void netvsc_get_ethtool_stats(struct net_device *dev,
- 	pcpu_sum = kvmalloc_array(num_possible_cpus(),
- 				  sizeof(struct netvsc_ethtool_pcpu_stats),
- 				  GFP_KERNEL);
-+	if (!pcpu_sum)
-+		return;
-+
- 	netvsc_get_pcpu_stats(dev, pcpu_sum);
- 	for_each_present_cpu(cpu) {
- 		struct netvsc_ethtool_pcpu_stats *this_sum = &pcpu_sum[cpu];
+diff --git a/drivers/net/ethernet/marvell/mv643xx_eth.c b/drivers/net/ethernet/marvell/mv643xx_eth.c
+index c31cbbae0eca..d75cf9097c7a 100644
+--- a/drivers/net/ethernet/marvell/mv643xx_eth.c
++++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
+@@ -3092,8 +3092,7 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
+ 	struct mv643xx_eth_private *mp;
+ 	struct net_device *dev;
+ 	struct phy_device *phydev = NULL;
+-	struct resource *res;
+-	int err;
++	int err, irq;
+ 
+ 	pd = dev_get_platdata(&pdev->dev);
+ 	if (pd == NULL) {
+@@ -3189,9 +3188,14 @@ static int mv643xx_eth_probe(struct platform_device *pdev)
+ 	timer_setup(&mp->rx_oom, oom_timer_wrapper, 0);
+ 
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	BUG_ON(!res);
+-	dev->irq = res->start;
++	irq = platform_get_irq(pdev, 0);
++	if (WARN_ON(irq < 0)) {
++		if (!IS_ERR(mp->clk))
++			clk_disable_unprepare(mp->clk);
++		free_netdev(dev);
++		return irq;
++	}
++	dev->irq = irq;
+ 
+ 	dev->netdev_ops = &mv643xx_eth_netdev_ops;
+ 
 -- 
 2.25.1
 
