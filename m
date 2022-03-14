@@ -2,154 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D00814D8F87
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 23:26:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D82464D8F8F
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 23:28:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245569AbiCNW1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 18:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35552 "EHLO
+        id S245619AbiCNW3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 18:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbiCNW13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 18:27:29 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B173D481;
-        Mon, 14 Mar 2022 15:26:19 -0700 (PDT)
-Received: from [78.46.152.42] (helo=sslproxy04.your-server.de)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nTt8i-0009AB-7u; Mon, 14 Mar 2022 23:26:08 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nTt8h-000Jc1-Te; Mon, 14 Mar 2022 23:26:07 +0100
-Subject: Re: [PATCH v4 bpf-next 5/5] selftests/bpf: add tests for uprobe
- auto-attach via skeleton
-To:     Alan Maguire <alan.maguire@oracle.com>, ast@kernel.org,
-        andrii@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, toke@redhat.com,
-        sunyucong@gmail.com, netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <1647000658-16149-1-git-send-email-alan.maguire@oracle.com>
- <1647000658-16149-6-git-send-email-alan.maguire@oracle.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <829ace90-17fa-5076-b213-30357b1c4776@iogearbox.net>
-Date:   Mon, 14 Mar 2022 23:26:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S245612AbiCNW3j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 18:29:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15421261F
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 15:28:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A3B661425
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 22:28:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1AECC340EC;
+        Mon, 14 Mar 2022 22:28:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647296907;
+        bh=dsxgfWQgj68jaTWp2YsP8WyFa2jvnzzZbrv22ibnQHc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lF7ImIPopZGjza+zriopjP+APjs67FM5ThndC7BmcFSjYRpoqOM8ngvs0Sv8LjkXY
+         yIco69h+IJ7eGQLJA4EoYsEMa1Itq1L0rMfR63few74n/gF3O6ES9KJxkDukfA9ScV
+         zsJ6JiLfvXN18AFp05MmYyNlGPuanwVDOkO4sPvI0RWUoqSeA3yjiVRNXV8bs+r+CJ
+         o/FNnOjcpPV2v9bpFYl+pednBK3i9WEE4eQiN6zu7LnWk1eMDydLCgWXFVvVPTRDzX
+         KZ4LcQe3I5jGWmBfT8DlwwQJGBCb6nLVmJDMy4c2T58kKg6r0UkOBVqdw7DzprPe9Z
+         fr+Tr2yM1ss8Q==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] Add Paolo Abeni to networking maintainers
+Date:   Mon, 14 Mar 2022 15:28:19 -0700
+Message-Id: <20220314222819.958428-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <1647000658-16149-6-git-send-email-alan.maguire@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26481/Mon Mar 14 09:39:13 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/11/22 1:10 PM, Alan Maguire wrote:
-> tests that verify auto-attach works for function entry/return for
-> local functions in program, library functions in program and library
-> functions in library.
-> 
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> ---
->   .../selftests/bpf/prog_tests/uprobe_autoattach.c   | 48 +++++++++++++++
->   .../selftests/bpf/progs/test_uprobe_autoattach.c   | 69 ++++++++++++++++++++++
->   2 files changed, 117 insertions(+)
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
->   create mode 100644 tools/testing/selftests/bpf/progs/test_uprobe_autoattach.c
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> new file mode 100644
-> index 0000000..57ed636
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/uprobe_autoattach.c
-> @@ -0,0 +1,48 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2022, Oracle and/or its affiliates. */
-> +
-> +#include <test_progs.h>
-> +#include "test_uprobe_autoattach.skel.h"
-> +
-> +/* uprobe attach point */
-> +static void autoattach_trigger_func(void)
-> +{
-> +	asm volatile ("");
-> +}
-> +
-> +void test_uprobe_autoattach(void)
-> +{
-> +	struct test_uprobe_autoattach *skel;
-> +	char *mem;
-> +
-> +	skel = test_uprobe_autoattach__open_and_load();
-> +	if (!ASSERT_OK_PTR(skel, "skel_open"))
-> +		return;
-> +	if (!ASSERT_OK_PTR(skel->bss, "check_bss"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_OK(test_uprobe_autoattach__attach(skel), "skel_attach"))
-> +		goto cleanup;
-> +
-> +	/* trigger & validate uprobe & uretprobe */
-> +	autoattach_trigger_func();
-> +
-> +	/* trigger & validate shared library u[ret]probes attached by name */
-> +	mem = malloc(1);
-> +	free(mem);
-> +
-> +	if (!ASSERT_EQ(skel->bss->uprobe_byname_res, 1, "check_uprobe_byname_res"))
-> +		goto cleanup;
-> +	if (!ASSERT_EQ(skel->bss->uretprobe_byname_res, 2, "check_uretprobe_byname_res"))
-> +		goto cleanup;
-> +	if (!ASSERT_EQ(skel->bss->uprobe_byname2_res, 3, "check_uprobe_byname2_res"))
-> +		goto cleanup;
-> +	if (!ASSERT_EQ(skel->bss->uretprobe_byname2_res, 4, "check_uretprobe_byname2_res"))
-> +		goto cleanup;
-> +	if (!ASSERT_EQ(skel->bss->uprobe_byname3_res, 5, "check_uprobe_byname3_res"))
-> +		goto cleanup;
-> +	if (!ASSERT_EQ(skel->bss->uretprobe_byname3_res, 6, "check_uretprobe_byname3_res"))
-> +		goto cleanup;
-> +cleanup:
-> +	test_uprobe_autoattach__destroy(skel);
-> +}
+Growing the network maintainers team from 2 to 3.
+Welcome Paolo! :)
 
-Hmm, looks like this fails CI, ptal:
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-https://github.com/kernel-patches/bpf/runs/5517172330?check_suite_focus=true
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 12440bdef9b7..2f6d9171257c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13382,6 +13382,7 @@ F:	net/core/drop_monitor.c
+ NETWORKING DRIVERS
+ M:	"David S. Miller" <davem@davemloft.net>
+ M:	Jakub Kicinski <kuba@kernel.org>
++M:	Paolo Abeni <pabeni@redhat.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ Q:	https://patchwork.kernel.org/project/netdevbpf/list/
+@@ -13428,6 +13429,7 @@ F:	tools/testing/selftests/drivers/net/dsa/
+ NETWORKING [GENERAL]
+ M:	"David S. Miller" <davem@davemloft.net>
+ M:	Jakub Kicinski <kuba@kernel.org>
++M:	Paolo Abeni <pabeni@redhat.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ Q:	https://patchwork.kernel.org/project/netdevbpf/list/
+-- 
+2.34.1
 
-[...]
-   test_attach_probe:PASS:uprobe_offset 0 nsec
-   test_attach_probe:PASS:ref_ctr_offset 0 nsec
-   test_attach_probe:PASS:skel_open 0 nsec
-   test_attach_probe:PASS:check_bss 0 nsec
-   test_attach_probe:PASS:attach_kprobe 0 nsec
-   test_attach_probe:PASS:attach_kretprobe 0 nsec
-   test_attach_probe:PASS:uprobe_ref_ctr_before 0 nsec
-   test_attach_probe:PASS:attach_uprobe 0 nsec
-   test_attach_probe:PASS:uprobe_ref_ctr_after 0 nsec
-   test_attach_probe:PASS:attach_uretprobe 0 nsec
-   test_attach_probe:PASS:auto-attach should fail for old-style name 0 nsec
-   test_attach_probe:PASS:attach_uprobe_byname 0 nsec
-   test_attach_probe:PASS:attach_uretprobe_byname 0 nsec
-   test_attach_probe:PASS:attach_uprobe_byname2 0 nsec
-   test_attach_probe:PASS:attach_uretprobe_byname2 0 nsec
-   test_attach_probe:PASS:check_kprobe_res 0 nsec
-   test_attach_probe:PASS:check_kretprobe_res 0 nsec
-   test_attach_probe:PASS:check_uprobe_res 0 nsec
-   test_attach_probe:PASS:check_uretprobe_res 0 nsec
-   test_attach_probe:PASS:check_uprobe_byname_res 0 nsec
-   test_attach_probe:PASS:check_uretprobe_byname_res 0 nsec
-   test_attach_probe:PASS:check_uprobe_byname2_res 0 nsec
-   test_attach_probe:FAIL:check_uretprobe_byname2_res unexpected check_uretprobe_byname2_res: actual 0 != expected 8
-   test_attach_probe:PASS:uprobe_ref_ctr_cleanup 0 nsec
-   #4 attach_probe:FAIL
-[...]
