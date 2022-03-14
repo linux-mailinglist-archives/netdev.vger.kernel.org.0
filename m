@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEFC4D8B64
+	by mail.lfdr.de (Postfix) with ESMTP id 989224D8B65
 	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 19:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243635AbiCNSLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 14:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        id S243638AbiCNSLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 14:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243604AbiCNSLN (ORCPT
+        with ESMTP id S243607AbiCNSLN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 14:11:13 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE2913FB4
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9AE28E2E
         for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 11:09:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647281399; x=1678817399;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=4T8x1QHFs36vFGrhTNhXTxGSd/Z8B8DYiR5pHiHjKQU=;
-  b=MQ9pXRpJMoKYCbmDwx3oNq3mdsn57tg2CrrLL5axFm24w2uoVz6dr+54
-   ut57nLSzgHKKvYuNhoLyuk96nZF+wIvGMCSIRxFo22EstzfYeMCp4z9C7
-   dQizJpD3mBG8qlGJOyL3NQPMqhNPbuZZ5cjRL+FvdU60Fk5RngMu1J9Tu
-   NEqhU1kYASA4oWpdED0LutRYb5JcSsnGzKBS6nWNqwJGj36adTAiD+9Vv
-   OfAyR911Jb6UhQZL8kAk0l0HK0DcoAQi1KAFuPA1Typ1uueA2S9X0wcZ3
-   AOEYmrPwUxO1VpG6NMnfPbsyNumaOcgaQT1BVoO3h9onGTgYd6IDKG7r9
+  bh=fQ1i1BT+CQJb/jDxwNdCsdcGLnYGepjo/CSlY/IUaVU=;
+  b=I5LPk1XLBfYpXhWG/We0eBGdqsrVYnu7gRJ4SB7CqO7jvDGHkU8bv/Kg
+   WLsh34E0hxfAv65FnAK9iSLV5+oRgjK1Kf1zI7aPXzACvKM4ni4uwaqyL
+   T0gdKX8bbQr43nZC82vTd4S/fip5T/L7sC2AR2biwV6v3zUi4sUMu7HG8
+   rMOEQaWn5qBgyeDfwFE65e3ncLckje6mEuN1gwVCd/EGar/wxDxx0t8Ix
+   kyIbRldyFu34rbeZY0r85CuHbx1mRDgL4sFGx0unqvbswKjjrQ8iMVIZJ
+   mAz8EFMkRYjM3oMzy7/yH5J0WiHnHLjw9LOU1dOB6SS4k6TPCimuka0uI
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="238275367"
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="238275373"
 X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="238275367"
+   d="scan'208";a="238275373"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 11:09:58 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2022 11:09:59 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,181,1643702400"; 
-   d="scan'208";a="634297570"
+   d="scan'208";a="634297584"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by FMSMGA003.fm.intel.com with ESMTP; 14 Mar 2022 11:09:58 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next 10/25] ice: log an error message when eswitch fails to configure
-Date:   Mon, 14 Mar 2022 11:10:01 -0700
-Message-Id: <20220314181016.1690595-11-anthony.l.nguyen@intel.com>
+        Konrad Jankowski <konrad0.jankowski@intel.com>
+Subject: [PATCH net-next 11/25] ice: use ice_is_vf_trusted helper function
+Date:   Mon, 14 Mar 2022 11:10:02 -0700
+Message-Id: <20220314181016.1690595-12-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220314181016.1690595-1-anthony.l.nguyen@intel.com>
 References: <20220314181016.1690595-1-anthony.l.nguyen@intel.com>
@@ -62,32 +62,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-When ice_eswitch_configure fails, print an error message to make it more
-obvious why VF initialization did not succeed.
+The ice_vc_cfg_promiscuous_mode_msg function directly checks
+ICE_VIRTCHNL_VF_CAP_PRIVILEGE, instead of using the existing helper
+function ice_is_vf_trusted. Switch this to use the helper function so
+that all trusted checks are consistent. This aids in any potential
+future refactor by ensuring consistent code.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_sriov.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_sriov.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index b695d479dfb1..d41fce16ddfb 100644
+index d41fce16ddfb..432841ab4352 100644
 --- a/drivers/net/ethernet/intel/ice/ice_sriov.c
 +++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -2087,8 +2087,10 @@ static int ice_ena_vfs(struct ice_pf *pf, u16 num_vfs)
- 	clear_bit(ICE_VF_DIS, pf->state);
+@@ -3148,6 +3148,15 @@ int ice_set_vf_spoofchk(struct net_device *netdev, int vf_id, bool ena)
+ 	return ret;
+ }
  
- 	ret = ice_eswitch_configure(pf);
--	if (ret)
-+	if (ret) {
-+		dev_err(dev, "Failed to configure eswitch, err %d\n", ret);
- 		goto err_unroll_sriov;
-+	}
++/**
++ * ice_is_vf_trusted
++ * @vf: pointer to the VF info
++ */
++static bool ice_is_vf_trusted(struct ice_vf *vf)
++{
++	return test_bit(ICE_VIRTCHNL_VF_CAP_PRIVILEGE, &vf->vf_caps);
++}
++
+ /**
+  * ice_is_any_vf_in_promisc - check if any VF(s) are in promiscuous mode
+  * @pf: PF structure for accessing VF(s)
+@@ -3212,7 +3221,7 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
+ 	}
  
- 	/* rearm global interrupts */
- 	if (test_and_clear_bit(ICE_OICR_INTR_DIS, pf->state))
+ 	dev = ice_pf_to_dev(pf);
+-	if (!test_bit(ICE_VIRTCHNL_VF_CAP_PRIVILEGE, &vf->vf_caps)) {
++	if (!ice_is_vf_trusted(vf)) {
+ 		dev_err(dev, "Unprivileged VF %d is attempting to configure promiscuous mode\n",
+ 			vf->vf_id);
+ 		/* Leave v_ret alone, lie to the VF on purpose. */
+@@ -3862,15 +3871,6 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
+ 				     NULL, 0);
+ }
+ 
+-/**
+- * ice_is_vf_trusted
+- * @vf: pointer to the VF info
+- */
+-static bool ice_is_vf_trusted(struct ice_vf *vf)
+-{
+-	return test_bit(ICE_VIRTCHNL_VF_CAP_PRIVILEGE, &vf->vf_caps);
+-}
+-
+ /**
+  * ice_can_vf_change_mac
+  * @vf: pointer to the VF info
 -- 
 2.31.1
 
