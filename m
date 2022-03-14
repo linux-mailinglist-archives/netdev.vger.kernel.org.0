@@ -2,198 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DA454D8EA3
-	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 22:24:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 589A44D8EC7
+	for <lists+netdev@lfdr.de>; Mon, 14 Mar 2022 22:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240329AbiCNV0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 17:26:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55726 "EHLO
+        id S245300AbiCNVd0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 17:33:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235766AbiCNV0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 17:26:02 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DBB2C111
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 14:24:50 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id a8so36975159ejc.8
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 14:24:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=5GE4ZlMnX9hJoNytO75OKsvWegBsfokD7EGQmLVwtTA=;
-        b=NhKj/u2804fVDCsD9EqbvTG2MqilnYNBe2ZD7/Pq1ydswd6+uAz2gQhfOnZ9RhG/rc
-         x5iORh8/8Rc8+XKGmE8JPhukXA1SxzoVKNzPb/e4N+OLv/D9vQXJqCCMQRtlJBAPcbU4
-         WMoYqnXNhLn0ZEu5qOJuY7gJOB52/iVCjew77VSuLmrpZaMLQKuBqfNy5w6fmpxPdM2D
-         D5HFa+VUOseYleg3RWk0us5p2toRkqTRf2MJyNcomydjC0xUs+sBnbiDa6Km1hlPrnO7
-         +rQizPh9xr2glb9GlRTU6lWm6M6rzU/G2w3R1nXdboal74HbtQwMN0Ym5pfM1DI16odO
-         8qLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5GE4ZlMnX9hJoNytO75OKsvWegBsfokD7EGQmLVwtTA=;
-        b=1lEQhCuFXGX0ChWgHcwg1Q1Zz1NZguhAQOWRSL98NfhKkmDYmDZ2KcTMl5q25r4xf4
-         lhbvZK/5vBo3UIBeGDVAO4PliN5j0hDlW1CTW8F1YrK0PzPkeJwrSbKGJF3niFcwKEON
-         mVtL3lnGjGRmV3F+XVCSuEfoZ96xKdlCNgfYQVkH6NbQZHMWcZwrXNaN4jsWI0jelm7I
-         ro9ex4GN9sDFmgMJS4eyPVkqrZX9b4d9jD8mPz4ZRHC2gE2wJ/rlYLgb+YtFZb0ZFavL
-         FNvexKEn5C1/GFA4i0C0R3Q8eFuIGa68XClJqGYWFEMBBXTtjPKQVSunhMoaYwiMYNFs
-         TgZA==
-X-Gm-Message-State: AOAM533AtAY9ENxFToQ4IiQ0TAKLph62ib6KRSVEmhPJbwcLzshosNjV
-        ayg9sKmZveEfm0uTJqJwyZQ=
-X-Google-Smtp-Source: ABdhPJxmi9OGW5z2lxm4BUJn2Foh6DxPQUpBcwC4GLCTdCpkRKNNDshuEpMaVVo7lXCXEyL6lEJhiw==
-X-Received: by 2002:a17:906:d54d:b0:6db:ab37:60d0 with SMTP id cr13-20020a170906d54d00b006dbab3760d0mr13563244ejc.234.1647293089146;
-        Mon, 14 Mar 2022 14:24:49 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:bcb5:5a00:f598:7a:57a1:abb9? (dynamic-2a01-0c23-bcb5-5a00-f598-007a-57a1-abb9.c23.pool.telefonica.de. [2a01:c23:bcb5:5a00:f598:7a:57a1:abb9])
-        by smtp.googlemail.com with ESMTPSA id lj2-20020a170906f9c200b006da6f29bc01sm7180575ejb.158.2022.03.14.14.24.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Mar 2022 14:24:48 -0700 (PDT)
-Message-ID: <79606fda-ad17-954b-a2f2-7f155f142264@gmail.com>
-Date:   Mon, 14 Mar 2022 22:24:45 +0100
+        with ESMTP id S245262AbiCNVdX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 17:33:23 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1592633365
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 14:32:10 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 734802C06C6;
+        Mon, 14 Mar 2022 21:32:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1647293527;
+        bh=RkXxbfpxz60sVinFQqrsDITL8geh/kJ2X57zBM2mDPM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=In19C3dXzVgwGr5PhKZkb5Yy3bTLcfN1vn2xzyL+pbty/VNKEQQXFRyx7/olVmGIt
+         WEGHEwAG4dWs7iiY55QdUv4agc5Ka81npkwUtHzRVJhX91Cln6ht8s7gB3gnjwB0bh
+         9kuaWTiZAiL6N5LJ2+LPUCEYjaqDi7EZZAy6rirdPH8A3G5P73lrNXZ6yy93mEWQMD
+         zvHiG4qdUO2UVqR0BF1J74vI4x7LQOrgnra/xrvQkGBh/QtHf6RKYi+0yYyJ49QanN
+         1nCK2sZ2jXlbrIY7rGAfRB85FzDxu+VjT5dKFBRwQIZOl11xroMrfmaBQKGlHDN/gZ
+         EGFWIl1gfw3Uw==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B622fb4570000>; Tue, 15 Mar 2022 10:32:07 +1300
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id 0704C13EE36;
+        Tue, 15 Mar 2022 10:32:07 +1300 (NZDT)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id DF60C2A2678; Tue, 15 Mar 2022 10:32:03 +1300 (NZDT)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
+        kostap@marvell.com, robert.marko@sartura.hr
+Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v2 0/8] arm64: mvebu: Support for Marvell 98DX2530 (and variants)
+Date:   Tue, 15 Mar 2022 10:31:35 +1300
+Message-Id: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: r8169: rtl8168ep_driver_stop disables the DASH port
-Content-Language: en-US
-To:     Yanko Kaneti <yaneti@declera.com>,
-        Kevin_cheng <kevin_cheng@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Nicfae <Nicfae@realtek.com>
-References: <d654c98b90d98db13b84752477fe2c63834bcf59.camel@declera.com>
- <42304a71ed72415c803ec22d3a750b33@realtek.com>
- <ed2850b12b304a7cb89972850e503026@realtek.com>
- <37bd0b005af4e10fd7e9ada2437775a4735d40a0.camel@declera.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-In-Reply-To: <37bd0b005af4e10fd7e9ada2437775a4735d40a0.camel@declera.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=vfzu8PMGQmK49s0qG5oA:9
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14.03.2022 15:05, Yanko Kaneti wrote:
-> On Mon, 2022-03-14 at 01:00 +0000, Kevin_cheng wrote:
-> Hello Kevin,
-> 
->> Thanks for your email. Linux DASH requires specific driver and client
->> tool. It depends on the manufacturer’s requirement. You need to
->> contact ASRock to make sure they support Linux DASH and have verified
->> it.
-> 
-> Thanks for the answer but its not much help for me.
-> I am not going to use a driver that's not in mainline.
-> 
-> I wasn't really expecting full DASH support but that at least
-> r8169/linux does not prevent the limied DASH web interface functionality
-> from working.
-> 
-> Currently this is not the case on this board with the current BIOS:
->  - Once the kernel is loaded the DASH web interface power management
-> (reset, hard off) no longer works
->  - Normal shutdown or r8169 module unload actually disconnects the phy.
->  
-> It would be nice if DASH basics worked without being broken/supported by
-> the OS.
-> 
-> Regards
-> Yanko
-> 
->>
->> Best Regards
->> Kevin Cheng
->> Technical Support Dept.
->> Realtek Semiconductor Corp.
->>
->> -----Original Message-----
->> From: Yanko Kaneti <yaneti@declera.com> 
->> Sent: Friday, March 11, 2022 9:12 PM
->> To: Heiner Kallweit <hkallweit1@gmail.com>; nic_swsd
->> <nic_swsd@realtek.com>
->> Cc: netdev <netdev@vger.kernel.org>
->> Subject: r8169: rtl8168ep_driver_stop disables the DASH port
->>
->> Hello,
->>
->> Testing DASH on a ASRock A520M-HDVP/DASH, which has a RTL8111/8168 EP
->> chip. DASH is enabled and seems to work on BIOS/firmware level.
->>
->> It seems that r8169's cleanup/exit in rtl8168ep_driver_stop manages to
->> actually stop the LAN port, hence cutting the system remote
->> management.
->>
->> This is evident on plain shutdown or rmmod r8169.
->> If one does a hardware reset or echo "b" > /proc/sysrq-trigger  the
->> cleanup doesn't happen and the DASH firmware remains in working order
->> and the LAN port remains up.
->>
->> A520M-HDVP/DASH BIOS ver 1.70
->> Reatlek fw:
->>  Firmware Version:               3.0.0.20200423
->>  Version String:         20200428.1200000113
->>  
->> I have no idea if its possible or how to update the realtek firmware,
->> preferably from Linux.
->>
->> Various other DASH functionality seems to not work but basic working
->> power managements is really a deal breaker for the whole thing.
->>
->>
->> Regards
->> Yanko
->> ------Please consider the environment before printing this e-mail.
-> 
+This series adds support for the Marvell 98DX2530 SoC which is the Contro=
+l and
+Management CPU integrated into the AlleyCat5/AlleyCat5X series of Marvell
+switches.
 
-Realtek doesn't provide any public datasheets, therefore it's hard to say
-how DASH is handled in the chip.
-However there are few places left where the PHY may be suspended w/o
-checking for DASH. Can you try the following?
+The CPU core is an ARM Cortex-A55 with neon, simd and crypto extensions.
 
+This is fairly similar to the Armada-3700 SoC so most of the required
+peripherals are already supported. This series adds a devicetree and pinc=
+trl
+driver for the SoC and the RD-AC5X-32G16HVG6HLG reference board.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 67014eb76..95788ce7a 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1397,8 +1397,13 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
- 	rtl_lock_config_regs(tp);
- 
- 	device_set_wakeup_enable(tp_to_dev(tp), wolopts);
--	rtl_set_d3_pll_down(tp, !wolopts);
--	tp->dev->wol_enabled = wolopts ? 1 : 0;
-+	if (tp->dash_type == RTL_DASH_NONE) {
-+		rtl_set_d3_pll_down(tp, !wolopts);
-+		tp->dev->wol_enabled = wolopts ? 1 : 0;
-+	} else {
-+		/* keep PHY from suspending if DASH is enabled */
-+		tp->dev->wol_enabled = 1;
-+	}
- }
- 
- static int rtl8169_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
-@@ -4672,7 +4677,7 @@ static void r8169_phylink_handler(struct net_device *ndev)
- 	if (netif_carrier_ok(ndev)) {
- 		rtl_link_chg_patch(tp);
- 		pm_request_resume(&tp->pci_dev->dev);
--	} else {
-+	} else if (tp->dash_type == RTL_DASH_NONE) {
- 		pm_runtime_idle(&tp->pci_dev->dev);
- 	}
- 
-@@ -4978,7 +4983,8 @@ static void rtl_shutdown(struct pci_dev *pdev)
- 	/* Restore original MAC address */
- 	rtl_rar_set(tp, tp->dev->perm_addr);
- 
--	if (system_state == SYSTEM_POWER_OFF) {
-+	if (system_state == SYSTEM_POWER_OFF &&
-+	    tp->dash_type == RTL_DASH_NONE) {
- 		if (tp->saved_wolopts)
- 			rtl_wol_shutdown_quirk(tp);
- 
--- 
+Chris Packham (8):
+  dt-bindings: pinctrl: mvebu: Document bindings for AC5
+  dt-bindings: net: mvneta: Add marvell,armada-ac5-neta
+  dt-bindings: mmc: xenon: add AC5 compatible string
+  pinctrl: mvebu: pinctrl driver for 98DX2530 SoC
+  net: mvneta: Add support for 98DX2530 Ethernet port
+  mmc: xenon: add AC5 compatible string
+  arm64: dts: marvell: Add Armada 98DX2530 SoC and RD-AC5X board
+  arm64: marvell: enable the 98DX2530 pinctrl driver
+
+ .../bindings/mmc/marvell,xenon-sdhci.txt      |  52 +++
+ .../bindings/net/marvell-armada-370-neta.txt  |   1 +
+ .../bindings/pinctrl/marvell,ac5-pinctrl.yaml |  70 ++++
+ arch/arm64/Kconfig.platforms                  |   2 +
+ arch/arm64/boot/dts/marvell/Makefile          |   1 +
+ .../boot/dts/marvell/armada-98dx2530.dtsi     | 343 ++++++++++++++++++
+ arch/arm64/boot/dts/marvell/rd-ac5x.dts       |  62 ++++
+ drivers/mmc/host/sdhci-xenon.c                |   1 +
+ drivers/mmc/host/sdhci-xenon.h                |   3 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  13 +
+ drivers/pinctrl/mvebu/Kconfig                 |   4 +
+ drivers/pinctrl/mvebu/Makefile                |   1 +
+ drivers/pinctrl/mvebu/pinctrl-ac5.c           | 226 ++++++++++++
+ 13 files changed, 778 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/marvell,ac5=
+-pinctrl.yaml
+ create mode 100644 arch/arm64/boot/dts/marvell/armada-98dx2530.dtsi
+ create mode 100644 arch/arm64/boot/dts/marvell/rd-ac5x.dts
+ create mode 100644 drivers/pinctrl/mvebu/pinctrl-ac5.c
+
+--=20
 2.35.1
 
