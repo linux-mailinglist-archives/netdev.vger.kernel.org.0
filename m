@@ -2,88 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A04A4D9FD5
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 811224D9FF2
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:25:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350019AbiCOQVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 12:21:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53250 "EHLO
+        id S241701AbiCOQ0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 12:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349052AbiCOQVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:21:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4696156C16;
-        Tue, 15 Mar 2022 09:20:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D405B81772;
-        Tue, 15 Mar 2022 16:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 22C17C340F4;
-        Tue, 15 Mar 2022 16:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647361211;
-        bh=ZilEAn8dlD9HKNmOu4TQz3vWQ2hPlOepo9zfB+DWwoY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Fed/iZdlm2FfdNqiJAaI0+T/BEfmLZ0wszt+qrx98C9tMBJbdwlk/4ec4rlvrnJ4c
-         Co7q89+YyiJh/BcBcSAKG+9jhIOAOQTjq9FTlKSCu2WkFWUIZn9YLxboS1pz5zQRMT
-         kLC7D8tv/6FlsPmSkHoVqgtsY3LJXICtjDsZtRhZQ7bQcDwND5VmxwVnNMzYYu1Er1
-         qp5r2nggFyzSHOwvNqiHTF5LDC+6DWjbWKVjOWQJoVRiF7pG7WsFNfV/Lq3EtEiT1h
-         B1MNA9NmnWs4DCQEF51Q6VKRj/OfndkXGUE0zLEcFA9CbLHHNK7HS2DNb9w47xbE8P
-         77Eq8YuAvFpjg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F1DA4E6D44B;
-        Tue, 15 Mar 2022 16:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S235452AbiCOQ0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:26:42 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F7656C07;
+        Tue, 15 Mar 2022 09:25:30 -0700 (PDT)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nU9z1-0004dT-EN; Tue, 15 Mar 2022 17:25:15 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nU9z1-0002YV-31; Tue, 15 Mar 2022 17:25:15 +0100
+Subject: Re: [PATCH bpf-next] bpf, sockmap: Manual deletion of sockmap
+ elements in user mode is not allowed
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        wangyufen <wangyufen@huawei.com>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, lmb@cloudflare.com,
+        davem@davemloft.net, kafai@fb.com, dsahern@kernel.org,
+        kuba@kernel.org, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20220314124432.3050394-1-wangyufen@huawei.com>
+ <87sfrky2bt.fsf@cloudflare.com>
+ <ff9d0ecf-315b-00a3-8140-424714b204ff@huawei.com>
+ <87fsnjxvho.fsf@cloudflare.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <79281351-b412-2c54-265b-c0ddf537fae1@iogearbox.net>
+Date:   Tue, 15 Mar 2022 17:25:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <87fsnjxvho.fsf@cloudflare.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] selftests/bpf: fix array_size.cocci warning
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164736121098.20903.8168794402759679622.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Mar 2022 16:20:10 +0000
-References: <20220315130143.2403-1-guozhengkui@vivo.com>
-In-Reply-To: <20220315130143.2403-1-guozhengkui@vivo.com>
-To:     Guo Zhengkui <guozhengkui@vivo.com>
-Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        davemarchevsky@fb.com, sunyucong@gmail.com, christylee@fb.com,
-        delyank@fb.com, toke@redhat.com, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhengkui_guo@outlook.com
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26482/Tue Mar 15 09:26:17 2022)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Tue, 15 Mar 2022 21:01:26 +0800 you wrote:
-> Fix the array_size.cocci warning in tools/testing/selftests/bpf/
+On 3/15/22 1:12 PM, Jakub Sitnicki wrote:
+> On Tue, Mar 15, 2022 at 03:24 PM +08, wangyufen wrote:
+>> 在 2022/3/14 23:30, Jakub Sitnicki 写道:
+>>> On Mon, Mar 14, 2022 at 08:44 PM +08, Wang Yufen wrote:
+>>>> A tcp socket in a sockmap. If user invokes bpf_map_delete_elem to delete
+>>>> the sockmap element, the tcp socket will switch to use the TCP protocol
+>>>> stack to send and receive packets. The switching process may cause some
+>>>> issues, such as if some msgs exist in the ingress queue and are cleared
+>>>> by sk_psock_drop(), the packets are lost, and the tcp data is abnormal.
+>>>>
+>>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+>>>> ---
+>>> Can you please tell us a bit more about the life-cycle of the socket in
+>>> your workload? Questions that come to mind:
+>>>
+>>> 1) What triggers the removal of the socket from sockmap in your case?
+>> We use sk_msg to redirect with sock hash, like this:
+>>
+>>   skA   redirect    skB
+>>   Tx <-----------> skB,Rx
+>>
+>> And construct a scenario where the packet sending speed is high, the
+>> packet receiving speed is slow, so the packets are stacked in the ingress
+>> queue on the receiving side. In this case, if run bpf_map_delete_elem() to
+>> delete the sockmap entry, will trigger the following procedure:
+>>
+>> sock_hash_delete_elem()
+>>    sock_map_unref()
+>>      sk_psock_put()
+>>        sk_psock_drop()
+>>          sk_psock_stop()
+>>            __sk_psock_zap_ingress()
+>>              __sk_psock_purge_ingress_msg()
+>>
+>>> 2) Would it still be a problem if removal from sockmap did not cause any
+>>> packets to get dropped?
+>> Yes, it still be a problem. If removal from sockmap  did not cause any
+>> packets to get dropped, packet receiving process switches to use TCP
+>> protocol stack. The packets in the psock ingress queue cannot be received
+>>
+>> by the user.
 > 
-> Use `ARRAY_SIZE(arr)` instead of forms like `sizeof(arr)/sizeof(arr[0])`.
+> Thanks for the context. So, if I understand correctly, you want to avoid
+> breaking the network pipe by updating the sockmap from user-space.
 > 
-> tools/testing/selftests/bpf/test_cgroup_storage.c uses ARRAY_SIZE() defined
-> in tools/include/linux/kernel.h (sys/sysinfo.h -> linux/kernel.h), while
-> others use ARRAY_SIZE() in bpf_util.h.
-> 
-> [...]
+> This sounds awfully similar to BPF_MAP_FREEZE. Have you considered that?
 
-Here is the summary with links:
-  - [v3] selftests/bpf: fix array_size.cocci warning
-    https://git.kernel.org/bpf/bpf-next/c/f98d6dd1e79d
++1
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Aside from that, the patch as-is also fails BPF CI in a lot of places, please
+make sure to check selftests:
 
+https://github.com/kernel-patches/bpf/runs/5537367301?check_suite_focus=true
 
+   [...]
+   #145/73 sockmap_listen/sockmap IPv6 test_udp_redir:OK
+   #145/74 sockmap_listen/sockmap IPv6 test_udp_unix_redir:OK
+   #145/75 sockmap_listen/sockmap Unix test_unix_redir:OK
+   #145/76 sockmap_listen/sockmap Unix test_unix_redir:OK
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   #145/77 sockmap_listen/sockhash IPv4 TCP test_insert_invalid:FAIL
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   #145/78 sockmap_listen/sockhash IPv4 TCP test_insert_opened:FAIL
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   #145/79 sockmap_listen/sockhash IPv4 TCP test_insert_bound:FAIL
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
+   test_ops_cleanup:FAIL:1424
+   [...]
+
+Thanks,
+Daniel
