@@ -2,121 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B64284D97D0
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 10:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2D8C4D97DF
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 10:40:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346732AbiCOJja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 05:39:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        id S1346738AbiCOJlo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Mar 2022 05:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346713AbiCOJjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 05:39:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B17881AF2E
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 02:38:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647337089;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=K47SKj8REwLbfMI9yH8wvkO0kp+/XEGwzSW8IdK+acE=;
-        b=c1A0l369zQdmVbC2Yltu3jIHeUdZSSwx/Wx9FNWxFfsCI1f6MyD0ikY0tAgAAnJwhLkeNN
-        39JSCClQNjdJsvVNtwec0yDqJucCbd3iF12AmQFqV56ONmxyqIU/RP3OjpIit1YihheP+T
-        pNquQGsce4m11vzpcn7kmahoTFa6RDM=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-30-NwtFEt7eP4GpyhThrk-VBg-1; Tue, 15 Mar 2022 05:38:08 -0400
-X-MC-Unique: NwtFEt7eP4GpyhThrk-VBg-1
-Received: by mail-qk1-f199.google.com with SMTP id 68-20020a370847000000b0067e0cd1c855so461535qki.4
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 02:38:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=K47SKj8REwLbfMI9yH8wvkO0kp+/XEGwzSW8IdK+acE=;
-        b=QyzND6TN92hoRFmrkM/tjubFij/UnNxZJiVy5yr0fBaLzmAZvRt9eAXrQB0e2o6JZh
-         wDV8tomy3vDHgelHJcI6DFS28p4R3X+jP2fMHFuY6CbJVcJ7PCad3gAVZDn74ozsaLr9
-         Unktc+hx+uRfLuKUmeuyoyOQ3EBcu71mknUJ9U3riTRepVxxw3d/jBUkI/h45+R/OLFU
-         nFBL10xS8lECgF+PI8m7NAPgk5loXHspWTTj+9fd9FGh60cbmGbIERJnb2l+tjK55gpW
-         EZg9gR1NwtJ5PcC8B820KeeXdwRCqykxK7RtDVoFKrUWcXeNUFSzPiSgvY5R0kKPCWgX
-         9Azg==
-X-Gm-Message-State: AOAM531+gGEdfMyDOydPzvukXbHjoLY6q6lv1bY32WpVS9dNplzN06Xv
-        iK9VWze5SlVztoUtx+Cd6h4EdpNAed0/ohETqcvwgaPF/1SUPNpVROiFBVG8BdL4cYtrVAIHjtT
-        wequuRws4uI+P378K
-X-Received: by 2002:a05:6214:1c87:b0:42d:20cb:e484 with SMTP id ib7-20020a0562141c8700b0042d20cbe484mr19923067qvb.10.1647337087870;
-        Tue, 15 Mar 2022 02:38:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyhF9QDkgfvW6/9vLgmCoy3wh/Jj8hmyEKNU4aC+B4FAY1JaTiHxB1dMqDy5xYqVzFmJloaeA==
-X-Received: by 2002:a05:6214:1c87:b0:42d:20cb:e484 with SMTP id ib7-20020a0562141c8700b0042d20cbe484mr19923055qvb.10.1647337087684;
-        Tue, 15 Mar 2022 02:38:07 -0700 (PDT)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id s21-20020a05620a16b500b0067b1205878esm8908043qkj.7.2022.03.15.02.38.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 02:38:07 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 10:38:01 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Longpeng(Mike)" <longpeng2@huawei.com>
-Cc:     stefanha@redhat.com, mst@redhat.com, jasowang@redhat.com,
-        arei.gonglei@huawei.com, yechuan@huawei.com,
-        huangzhichao@huawei.com, virtualization@lists.linux-foundation.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] vdpa: support exposing the config size to
- userspace
-Message-ID: <20220315093801.ngyizwf7blkhutug@sgarzare-redhat>
-References: <20220315032553.455-1-longpeng2@huawei.com>
- <20220315032553.455-2-longpeng2@huawei.com>
+        with ESMTP id S233221AbiCOJln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 05:41:43 -0400
+Received: from mail.bix.bg (mail.bix.bg [193.105.196.21])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8E1314EF49
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 02:40:29 -0700 (PDT)
+Received: (qmail 818 invoked from network); 15 Mar 2022 09:40:28 -0000
+Received: from d2.declera.com (HELO ?212.116.131.122?) (212.116.131.122)
+  by indigo.declera.com with SMTP; 15 Mar 2022 09:40:28 -0000
+Message-ID: <da6297799b82ffbac52a192019b8844c89bbf0b9.camel@declera.com>
+Subject: Re: r8169: rtl8168ep_driver_stop disables the DASH port
+From:   Yanko Kaneti <yaneti@declera.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nicfae <Nicfae@realtek.com>,
+        Kevin_cheng <kevin_cheng@realtek.com>
+Date:   Tue, 15 Mar 2022 11:40:28 +0200
+In-Reply-To: <79606fda-ad17-954b-a2f2-7f155f142264@gmail.com>
+References: <d654c98b90d98db13b84752477fe2c63834bcf59.camel@declera.com>
+         <42304a71ed72415c803ec22d3a750b33@realtek.com>
+         <ed2850b12b304a7cb89972850e503026@realtek.com>
+         <37bd0b005af4e10fd7e9ada2437775a4735d40a0.camel@declera.com>
+         <79606fda-ad17-954b-a2f2-7f155f142264@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.43.3 (3.43.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220315032553.455-2-longpeng2@huawei.com>
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 11:25:51AM +0800, Longpeng(Mike) wrote:
->From: Longpeng <longpeng2@huawei.com>
->
->- GET_CONFIG_SIZE: return the size of the virtio config space.
->
->The size contains the fields which are conditional on feature
->bits.
->
->Acked-by: Jason Wang <jasowang@redhat.com>
->Signed-off-by: Longpeng <longpeng2@huawei.com>
->---
-> drivers/vhost/vdpa.c       | 17 +++++++++++++++++
-> include/linux/vdpa.h       |  3 ++-
-> include/uapi/linux/vhost.h |  4 ++++
-> 3 files changed, 23 insertions(+), 1 deletion(-)
->
->diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
->index ec5249e..605c7ae 100644
->--- a/drivers/vhost/vdpa.c
->+++ b/drivers/vhost/vdpa.c
->@@ -355,6 +355,20 @@ static long vhost_vdpa_get_iova_range(struct vhost_vdpa *v, u32 __user *argp)
-> 	return 0;
-> }
->
->+static long vhost_vdpa_get_config_size(struct vhost_vdpa *v, u32 __user *argp)
->+{
->+	struct vdpa_device *vdpa = v->vdpa;
->+	const struct vdpa_config_ops *ops = vdpa->config;
->+	u32 size;
->+
->+	size = ops->get_config_size(vdpa);
+On Mon, 2022-03-14 at 22:24 +0100, Heiner Kallweit wrote:
+> On 14.03.2022 15:05, Yanko Kaneti wrote:
+> > On Mon, 2022-03-14 at 01:00 +0000, Kevin_cheng wrote:
+> > Hello Kevin,
+> > 
+> > > Thanks for your email. Linux DASH requires specific driver and client
+> > > tool. It depends on the manufacturer’s requirement. You need to
+> > > contact ASRock to make sure they support Linux DASH and have verified
+> > > it.
+> > 
+> > Thanks for the answer but its not much help for me.
+> > I am not going to use a driver that's not in mainline.
+> > 
+> > I wasn't really expecting full DASH support but that at least
+> > r8169/linux does not prevent the limied DASH web interface functionality
+> > from working.
+> > 
+> > Currently this is not the case on this board with the current BIOS:
+> >  - Once the kernel is loaded the DASH web interface power management
+> > (reset, hard off) no longer works
+> >  - Normal shutdown or r8169 module unload actually disconnects the phy.
+> >  
+> > It would be nice if DASH basics worked without being broken/supported by
+> > the OS.
+> > 
+> > Regards
+> > Yanko
+> > 
+> > > 
+> > > Best Regards
+> > > Kevin Cheng
+> > > Technical Support Dept.
+> > > Realtek Semiconductor Corp.
+> > > 
+> > > -----Original Message-----
+> > > From: Yanko Kaneti <yaneti@declera.com> 
+> > > Sent: Friday, March 11, 2022 9:12 PM
+> > > To: Heiner Kallweit <hkallweit1@gmail.com>; nic_swsd
+> > > <nic_swsd@realtek.com>
+> > > Cc: netdev <netdev@vger.kernel.org>
+> > > Subject: r8169: rtl8168ep_driver_stop disables the DASH port
+> > > 
+> > > Hello,
+> > > 
+> > > Testing DASH on a ASRock A520M-HDVP/DASH, which has a RTL8111/8168 EP
+> > > chip. DASH is enabled and seems to work on BIOS/firmware level.
+> > > 
+> > > It seems that r8169's cleanup/exit in rtl8168ep_driver_stop manages to
+> > > actually stop the LAN port, hence cutting the system remote
+> > > management.
+> > > 
+> > > This is evident on plain shutdown or rmmod r8169.
+> > > If one does a hardware reset or echo "b" > /proc/sysrq-trigger  the
+> > > cleanup doesn't happen and the DASH firmware remains in working order
+> > > and the LAN port remains up.
+> > > 
+> > > A520M-HDVP/DASH BIOS ver 1.70
+> > > Reatlek fw:
+> > >  Firmware Version:               3.0.0.20200423
+> > >  Version String:         20200428.1200000113
+> > >  
+> > > I have no idea if its possible or how to update the realtek firmware,
+> > > preferably from Linux.
+> > > 
+> > > Various other DASH functionality seems to not work but basic working
+> > > power managements is really a deal breaker for the whole thing.
+> > > 
+> > > 
+> > > Regards
+> > > Yanko
+> > > ------Please consider the environment before printing this e-mail.
+> > 
+> 
+> Realtek doesn't provide any public datasheets, therefore it's hard to say
+> how DASH is handled in the chip.
+> However there are few places left where the PHY may be suspended w/o
+> checking for DASH. Can you try the following?
+> 
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 67014eb76..95788ce7a 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -1397,8 +1397,13 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
+>  	rtl_lock_config_regs(tp);
+>  
+>  	device_set_wakeup_enable(tp_to_dev(tp), wolopts);
+> -	rtl_set_d3_pll_down(tp, !wolopts);
+> -	tp->dev->wol_enabled = wolopts ? 1 : 0;
+> +	if (tp->dash_type == RTL_DASH_NONE) {
+> +		rtl_set_d3_pll_down(tp, !wolopts);
+> +		tp->dev->wol_enabled = wolopts ? 1 : 0;
+> +	} else {
+> +		/* keep PHY from suspending if DASH is enabled */
+> +		tp->dev->wol_enabled = 1;
+> +	}
+>  }
+>  
+>  static int rtl8169_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+> @@ -4672,7 +4677,7 @@ static void r8169_phylink_handler(struct net_device *ndev)
+>  	if (netif_carrier_ok(ndev)) {
+>  		rtl_link_chg_patch(tp);
+>  		pm_request_resume(&tp->pci_dev->dev);
+> -	} else {
+> +	} else if (tp->dash_type == RTL_DASH_NONE) {
+>  		pm_runtime_idle(&tp->pci_dev->dev);
+>  	}
+>  
+> @@ -4978,7 +4983,8 @@ static void rtl_shutdown(struct pci_dev *pdev)
+>  	/* Restore original MAC address */
+>  	rtl_rar_set(tp, tp->dev->perm_addr);
+>  
+> -	if (system_state == SYSTEM_POWER_OFF) {
+> +	if (system_state == SYSTEM_POWER_OFF &&
+> +	    tp->dash_type == RTL_DASH_NONE) {
+>  		if (tp->saved_wolopts)
+>  			rtl_wol_shutdown_quirk(tp);
+>  
 
-get_config_size() returns a size_t, perhaps we could have a comment here 
-where we say we don't expect there to be an overflow.
+Thanks Heiner. 
+So I tried this over linus tip from today and unfortunately it doesn't
+help the shutdown or rmmod. 
+With the couple more additions below I can get it to stay up on rmmod  ,
+but still after that , shutdown still brings it down. Perhaps that
+leaves all to the BIOS/realtek firmware..
 
-I don't have a strong opinion on this, and I wouldn't want to get you to 
-repin just for that, so:
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 19e2621e0645..d5d85a44be3e 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -4675,7 +4680,8 @@ static void rtl8169_down(struct rtl8169_private *tp)
+        /* Clear all task flags */
+        bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
+ 
+-       phy_stop(tp->phydev);
++       if (tp->dash_type == RTL_DASH_NONE)
++               phy_stop(tp->phydev);
+ 
+        rtl8169_update_counters(tp);
+ 
+@@ -4715,7 +4721,8 @@ static int rtl8169_close(struct net_device *dev)
+ 
+        free_irq(tp->irq, tp);
+ 
+-       phy_disconnect(tp->phydev);
++       if (tp->dash_type == RTL_DASH_NONE)
++               phy_disconnect(tp->phydev);
+ 
+        dma_free_coherent(&pdev->dev, R8169_RX_RING_BYTES, tp->RxDescArray,
+                          tp->RxPhyAddr);
 
