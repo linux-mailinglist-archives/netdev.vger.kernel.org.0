@@ -2,304 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B23EF4D9CE9
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:02:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F7B54D9D0B
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349014AbiCOOD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 10:03:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
+        id S1348890AbiCOOMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 10:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349017AbiCOODz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:03:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531BE5469B;
-        Tue, 15 Mar 2022 07:02:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E36E861685;
-        Tue, 15 Mar 2022 14:02:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A864C340E8;
-        Tue, 15 Mar 2022 14:02:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647352962;
-        bh=gYl4Kdz77UQE5JD3kUI4FvgjNtnkg0CruIjvyq/cUEQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIykNzyR/1l/mQrXCe7Qiz1hbCWb986Y5AWpAQYS4EpFO+wHWBDx4TGtlKnkPTKmv
-         DaVMA7zO4LCirp2Qu+Lz7ml2vVsdxlEy7uvocsRzALwfySfAfEINpec9jt9eva7Z+W
-         XZ3bJxXiVE7RibfK0UYuSYoCso6wFPI4t1PUtHIeWnMPbfqmIlpvie4H9hTrd8Gk9b
-         5c5gJKDpP0Mc66Nn1AlzfX6tExsvdtWuFi4ZYJC1Pr0G0pWt/Iu6t8rgOnqfMrbBZ4
-         XXwsI55sOSs7S9IejouR5zNjcSdJQiUJJ+QINpTYSCd9uksJZkVT4vCR4ZBTkm2Bfe
-         kyFm2dyAyCLlQ==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v12 bpf-next 12/12] fprobe: Add a selftest for fprobe
-Date:   Tue, 15 Mar 2022 23:02:35 +0900
-Message-Id: <164735295554.1084943.18347620679928750960.stgit@devnote2>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164735281449.1084943.12438881786173547153.stgit@devnote2>
-References: <164735281449.1084943.12438881786173547153.stgit@devnote2>
-User-Agent: StGit/0.19
+        with ESMTP id S1348850AbiCOOMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:12:48 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82D49546B5;
+        Tue, 15 Mar 2022 07:11:30 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 15 Mar 2022 22:11:10
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.190.64.209]
+Date:   Tue, 15 Mar 2022 22:11:10 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
+To:     "Dan Carpenter" <dan.carpenter@oracle.com>
+Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        ralf@linux-mips.org, jreuter@yaina.de, thomas@osterried.de
+Subject: Re: Re: [PATCH net V4 1/2] ax25: Fix refcount leaks caused by
+ ax25_cb_del()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220315102657.GX3315@kadam>
+References: <20220315015403.79201-1-duoming@zju.edu.cn>
+ <20220315102657.GX3315@kadam>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <15e4111b.5339.17f8deb1f24.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgDn77N+njBiObIWAA--.2995W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwKAVZdtYsAUQABsg
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a KUnit based selftest for fprobe interface.
-
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
----
- Changes in v11:
-  - Build selftest only if KUNIT=y.
- Changes in v9:
-  - Rename fprobe_target* to fprobe_selftest_target*.
-  - Find the correct expected ip by ftrace_location_range().
-  - Since the ftrace_location_range() is not exposed to module, make
-    this test only for embedded.
-  - Add entry only test.
-  - Reset the fprobe structure before reuse it.
----
- lib/Kconfig.debug |   12 ++++
- lib/Makefile      |    2 +
- lib/test_fprobe.c |  174 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 188 insertions(+)
- create mode 100644 lib/test_fprobe.c
-
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 72ca4684beda..b0bf0d224b2c 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2118,6 +2118,18 @@ config KPROBES_SANITY_TEST
- 
- 	  Say N if you are unsure.
- 
-+config FPROBE_SANITY_TEST
-+	bool "Self test for fprobe"
-+	depends on DEBUG_KERNEL
-+	depends on FPROBE
-+	depends on KUNIT=y
-+	help
-+	  This option will enable testing the fprobe when the system boot.
-+	  A series of tests are made to verify that the fprobe is functioning
-+	  properly.
-+
-+	  Say N if you are unsure.
-+
- config BACKTRACE_SELF_TEST
- 	tristate "Self test for the backtrace code"
- 	depends on DEBUG_KERNEL
-diff --git a/lib/Makefile b/lib/Makefile
-index 300f569c626b..154008764b16 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -103,6 +103,8 @@ obj-$(CONFIG_TEST_HMM) += test_hmm.o
- obj-$(CONFIG_TEST_FREE_PAGES) += test_free_pages.o
- obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
- obj-$(CONFIG_TEST_REF_TRACKER) += test_ref_tracker.o
-+CFLAGS_test_fprobe.o += $(CC_FLAGS_FTRACE)
-+obj-$(CONFIG_FPROBE_SANITY_TEST) += test_fprobe.o
- #
- # CFLAGS for compiling floating point code inside the kernel. x86/Makefile turns
- # off the generation of FPU/SSE* instructions for kernel proper but FPU_FLAGS
-diff --git a/lib/test_fprobe.c b/lib/test_fprobe.c
-new file mode 100644
-index 000000000000..ed70637a2ffa
---- /dev/null
-+++ b/lib/test_fprobe.c
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * test_fprobe.c - simple sanity test for fprobe
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/fprobe.h>
-+#include <linux/random.h>
-+#include <kunit/test.h>
-+
-+#define div_factor 3
-+
-+static struct kunit *current_test;
-+
-+static u32 rand1, entry_val, exit_val;
-+
-+/* Use indirect calls to avoid inlining the target functions */
-+static u32 (*target)(u32 value);
-+static u32 (*target2)(u32 value);
-+static unsigned long target_ip;
-+static unsigned long target2_ip;
-+
-+static noinline u32 fprobe_selftest_target(u32 value)
-+{
-+	return (value / div_factor);
-+}
-+
-+static noinline u32 fprobe_selftest_target2(u32 value)
-+{
-+	return (value / div_factor) + 1;
-+}
-+
-+static notrace void fp_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	/* This can be called on the fprobe_selftest_target and the fprobe_selftest_target2 */
-+	if (ip != target_ip)
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+	entry_val = (rand1 / div_factor);
-+}
-+
-+static notrace void fp_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
-+{
-+	unsigned long ret = regs_return_value(regs);
-+
-+	KUNIT_EXPECT_FALSE(current_test, preemptible());
-+	if (ip != target_ip) {
-+		KUNIT_EXPECT_EQ(current_test, ip, target2_ip);
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor) + 1);
-+	} else
-+		KUNIT_EXPECT_EQ(current_test, ret, (rand1 / div_factor));
-+	KUNIT_EXPECT_EQ(current_test, entry_val, (rand1 / div_factor));
-+	exit_val = entry_val + div_factor;
-+}
-+
-+/* Test entry only (no rethook) */
-+static void test_fprobe_entry(struct kunit *test)
-+{
-+	struct fprobe fp_entry = {
-+		.entry_handler = fp_entry_handler,
-+	};
-+
-+	current_test = test;
-+
-+	/* Before register, unregister should be failed. */
-+	KUNIT_EXPECT_NE(test, 0, unregister_fprobe(&fp_entry));
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp_entry, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, 0, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp_entry));
-+}
-+
-+static void test_fprobe(struct kunit *test)
-+{
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe(&fp, "fprobe_selftest_target*", NULL));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static void test_fprobe_syms(struct kunit *test)
-+{
-+	static const char *syms[] = {"fprobe_selftest_target", "fprobe_selftest_target2"};
-+	struct fprobe fp = {
-+		.entry_handler = fp_entry_handler,
-+		.exit_handler = fp_exit_handler,
-+	};
-+
-+	current_test = test;
-+	KUNIT_EXPECT_EQ(test, 0, register_fprobe_syms(&fp, syms, 2));
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	entry_val = 0;
-+	exit_val = 0;
-+	target2(rand1);
-+	KUNIT_EXPECT_NE(test, 0, entry_val);
-+	KUNIT_EXPECT_EQ(test, entry_val + div_factor, exit_val);
-+
-+	KUNIT_EXPECT_EQ(test, 0, unregister_fprobe(&fp));
-+}
-+
-+static unsigned long get_ftrace_location(void *func)
-+{
-+	unsigned long size, addr = (unsigned long)func;
-+
-+	if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
-+		return 0;
-+
-+	return ftrace_location_range(addr, addr + size - 1);
-+}
-+
-+static int fprobe_test_init(struct kunit *test)
-+{
-+	do {
-+		rand1 = prandom_u32();
-+	} while (rand1 <= div_factor);
-+
-+	target = fprobe_selftest_target;
-+	target2 = fprobe_selftest_target2;
-+	target_ip = get_ftrace_location(target);
-+	target2_ip = get_ftrace_location(target2);
-+
-+	return 0;
-+}
-+
-+static struct kunit_case fprobe_testcases[] = {
-+	KUNIT_CASE(test_fprobe_entry),
-+	KUNIT_CASE(test_fprobe),
-+	KUNIT_CASE(test_fprobe_syms),
-+	{}
-+};
-+
-+static struct kunit_suite fprobe_test_suite = {
-+	.name = "fprobe_test",
-+	.init = fprobe_test_init,
-+	.test_cases = fprobe_testcases,
-+};
-+
-+kunit_test_suites(&fprobe_test_suite);
-+
-+MODULE_LICENSE("GPL");
+SGVsbG8sCgpPbiBUdWUsIDE1IE1hciAyMDIyIDEzOjI2OjU3ICswMzAwLCBEYW4gQ2FycGVudGVy
+IHdyb3RlOgo+IEknbSBoYXBweSB0aGF0IHRoaXMgaXMgc2ltcGxlci4gIEknbSBub3Qgc3VwZXIg
+aGFwcHkgYWJvdXQgdGhlCj4gaWYgKHNrLT5za193cSkgY2hlY2suICBUaGF0IHNlZW1zIGxpa2Ug
+YSBmcmFnaWxlIHNpZGUtZWZmZWN0IGNvbmRpdGlvbgo+IGluc3RlYWQgb2Ygc29tZXRoaW5nIGRl
+bGliZXJhdGUuICBCdXQgSSBkb24ndCBrbm93IG5ldHdvcmtpbmcgc28gbWF5YmUKPiB0aGlzIGlz
+IHNvbWV0aGluZyB3aGljaCB3ZSBjYW4gcmVseSBvbi4KClRoZSB2YXJpYWJsZSBzay0+c2tfd3Eg
+aXMgdGhlIGFkZHJlc3Mgb2Ygd2FpdGluZyBxdWV1ZSBvZiBzb2NrLCBpdCBpcyBpbml0aWFsaXpl
+ZCB0byB0aGUgCmFkZHJlc3Mgb2Ygc29jay0+d3EgdGhyb3VnaCB0aGUgZm9sbG93aW5nIHBhdGg6
+CnNvY2tfY3JlYXRlLT5fX3NvY2tfY3JlYXRlLT5heDI1X2NyZWF0ZSgpLT5zb2NrX2luaXRfZGF0
+YSgpLT5SQ1VfSU5JVF9QT0lOVEVSKHNrLT5za193cSwgJnNvY2stPndxKS4KQmVjYXVzZSB3ZSBo
+YXZlIHVzZWQgc29ja19hbGxvYygpIHRvIGFsbG9jYXRlIHRoZSBzb2NrZXQgaW4gX19zb2NrX2Ny
+ZWF0ZSgpLCBzb2NrIG9yIHRoZSBhZGRyZXNzIG9mCnNvY2stPndxIGlzIG5vdCBudWxsLgpXaGF0
+YHMgbW9yZSwgc2stPnNrX3dxIGlzIHNldCB0byBudWxsIG9ubHkgaW4gc29ja19vcnBoYW4oKS4K
+CkFub3RoZXIgc29sdXRpb246CldlIGNvdWxkIGFsc28gdXNlIHNrLT5za19zb2NrZXQgdG8gY2hl
+Y2suIFdlIHNldCBzay0+c2tfc29ja2V0IHRvIHNvY2sgaW4gdGhlIGZvbGxvd2luZyBwYXRoOgpz
+b2NrX2NyZWF0ZSgpLT5fX3NvY2tfY3JlYXRlKCktPmF4MjVfY3JlYXRlKCktPnNvY2tfaW5pdF9k
+YXRhKCktPnNrX3NldF9zb2NrZXQoc2ssIHNvY2spLgpCZWNhdXNlIHdlIGhhdmUgdXNlZCBzb2Nr
+X2FsbG9jKCkgdG8gYWxsb2NhdGUgdGhlIHNvY2tldCBpbiBfX3NvY2tfY3JlYXRlKCksIHNvY2sg
+b3Igc2stPnNrX3NvY2tldAppcyBub3QgbnVsbC4KV2hhdGBzIG1vcmUsIHNrLT5za19zb2NrZXQg
+aXMgc2V0IHRvIG51bGwgb25seSBpbiBzb2NrX29ycGhhbigpLgoKSSB3aWxsIGNoYW5nZSB0aGUg
+aWYgKHNrLT5za193cSkgY2hlY2sgdG8gaWYoc2stPnNrX3NvY2tldCkgY2hlY2ssIGJlY2F1c2Ug
+SSB0aGluayBpdCBpcyAKZWFzaWVyIHRvIHVuZGVyc3RhbmQuCgo+IFdoZW4geW91IHNlbnQgdGhl
+IGVhcmxpZXIgcGF0Y2ggdGhlbiBJIGFza2VkIGlmIHRoZSBkZXZpY2VzIGluCj4gYXgyNV9raWxs
+X2J5X2RldmljZSgpIHdlcmUgYWx3YXlzIGJvdW5kIGFuZCBpZiB3ZSBjb3VsZCBqdXN0IHVzZSBh
+IGxvY2FsCj4gdmFyaWFibGUgaW5zdGVhZCBvZiBzb21ldGhpbmcgdGllZCB0byB0aGUgYXgyNV9k
+ZXYgc3RydWN0LiAgSSBzdGlsbAo+IHdvbmRlciBhYm91dCB0aGF0LiAgSW4gb3RoZXIgd29yZHMs
+IGNvdWxkIHdlIGp1c3QgZG8gdGhpcz8KPiAKPiBkaWZmIC0tZ2l0IGEvbmV0L2F4MjUvYWZfYXgy
+NS5jIGIvbmV0L2F4MjUvYWZfYXgyNS5jCj4gaW5kZXggNmJkMDk3MTgwNzcyLi40YWY5ZDlhOTM5
+YzYgMTAwNjQ0Cj4gLS0tIGEvbmV0L2F4MjUvYWZfYXgyNS5jCj4gKysrIGIvbmV0L2F4MjUvYWZf
+YXgyNS5jCj4gQEAgLTc4LDYgKzc4LDcgQEAgc3RhdGljIHZvaWQgYXgyNV9raWxsX2J5X2Rldmlj
+ZShzdHJ1Y3QgbmV0X2RldmljZSAqZGV2KQo+ICAJYXgyNV9kZXYgKmF4MjVfZGV2Owo+ICAJYXgy
+NV9jYiAqczsKPiAgCXN0cnVjdCBzb2NrICpzazsKPiArCWJvb2wgZm91bmQgPSBmYWxzZTsKPiAg
+Cj4gIAlpZiAoKGF4MjVfZGV2ID0gYXgyNV9kZXZfYXgyNWRldihkZXYpKSA9PSBOVUxMKQo+ICAJ
+CXJldHVybjsKPiBAQCAtODYsNiArODcsNyBAQCBzdGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2
+aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCj4gIGFnYWluOgo+ICAJYXgyNV9mb3JfZWFjaChz
+LCAmYXgyNV9saXN0KSB7Cj4gIAkJaWYgKHMtPmF4MjVfZGV2ID09IGF4MjVfZGV2KSB7Cj4gKwkJ
+CWZvdW5kID0gdHJ1ZTsKPiAgCQkJc2sgPSBzLT5zazsKPiAgCQkJaWYgKCFzaykgewo+ICAJCQkJ
+c3Bpbl91bmxvY2tfYmgoJmF4MjVfbGlzdF9sb2NrKTsKPiBAQCAtMTE1LDYgKzExNywxMSBAQCBz
+dGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCj4g
+IAkJfQo+ICAJfQo+ICAJc3Bpbl91bmxvY2tfYmgoJmF4MjVfbGlzdF9sb2NrKTsKPiArCj4gKwlp
+ZiAoIWZvdW5kKSB7Cj4gKwkJZGV2X3B1dF90cmFjayhheDI1X2Rldi0+ZGV2LCAmYXgyNV9kZXYt
+PmRldl90cmFja2VyKTsKPiArCQlheDI1X2Rldl9wdXQoYXgyNV9kZXYpOwo+ICsJfQo+ICB9CgpJ
+ZiB3ZSBqdXN0IHVzZSBheDI1X2Rldl9kZXZpY2VfdXAoKSB0byBicmluZyBkZXZpY2UgdXAgd2l0
+aG91dCB1c2luZyBheDI1X2JpbmQoKSwKdGhlICJmb3VuZCIgZmxhZyBjb3VsZCBiZSBmYWxzZSB3
+aGVuIHdlIGVudGVyIGF4MjVfa2lsbF9ieV9kZXZpY2UoKSBhbmQgdGhlIHJlZmNvdW50cyAKdW5k
+ZXJmbG93IHdpbGwgaGFwcGVuLiBTbyB3ZSBzaG91bGQgdXNlIHR3byBhZGRpdGlvbmFsIHZhcmlh
+Ymxlcy4KCklmIHdlIHVzZSBhZGRpdGlvbmFsIHZhcmlhYmxlcyB0byBmaXggdGhlIGJ1ZywgSSB0
+aGluayB0aGVyZSBpcyBhIHByb2JsZW0uCkluIHRoZSByZWFsIHdvcmxkLCB0aGUgZGV2aWNlIGNv
+dWxkIGJlIGRldGFjaGVkIG9ubHkgb25jZS4gSWYgdGhlIGZvbGxvd2luZwpyYWNlIGNvbmRpdGlv
+biBoYXBwZW5zLCB3ZSBjb3VsZCBub3QgZGVhbGxvY2F0ZSBheDI1X2RldiBhbmQgbmV0X2Rldmlj
+ZSBhbnltb3JlLApiZWNhdXNlIHdlIGNvdWxkIG5vdCBjYWxsIGF4MjVfa2lsbF9ieV9kZXZpY2Uo
+KSBhZ2Fpbi4KCiAgICAgICAoVGhyZWFkIDEpICAgICAgICAgICAgICAgICB8ICAgICAgKFRocmVh
+ZCAyKQogICAgYXgyNV9iaW5kKCkgICAgICAgICAgICAgICAgICAgfAogICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgfCAgYXgyNV9raWxsX2J5X2RldmljZSgpIC8vZGVjcmVhc2UgcmVm
+Y291bnRzCiAgICAgICAoVGhyZWFkIDMpICAgICAgICAgICAgICAgICB8CiAgICBheDI1X2JpbmQo
+KSAgICAgICAgICAgICAgICAgICB8CiAgICAgLi4uICAgICAgICAgICAgICAgICAgICAgICAgICB8
+ICAgIC4uLgogICAgIGF4MjVfZGV2X2hvbGQoKSAvLygxKSAgICAgICAgfCAgCiAgICAgZGV2X2hv
+bGRfdHJhY2soKSAvLygyKSAgICAgICB8ICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIHwgIGF4MjVfZGV2X2RldmljZV9kb3duKCkKCkluIHBhdGNoICJbUEFUQ0ggbmV0IFY0IDEv
+Ml0gYXgyNTogRml4IHJlZmNvdW50IGxlYWtzIGNhdXNlZCBieSBheDI1X2NiX2RlbCgpIiwKZXZl
+biB0aGUgZGV2aWNlIGhhcyBiZWVuIGRldGFjaGVkLCB3ZSBjb3VsZCBhbHNvIGRlY3JlYXNlIHRo
+ZSByZWZjb3VucyBieSB1c2luZwpheDI1X3JlbGVhc2UoKSwgd2hpY2ggY291bGQgZW5zdXJlIGF4
+MjVfZGV2IGFuZCBuZXRfZGV2aWNlIGNvdWxkIGJlIGRlYWxsb2NhdGVkLgpTbyBJIHRoaW5rICJb
+UEFUQ0ggbmV0IFY0IDEvMl0iIGlzIGJldHRlci4KCkJlc3Qgd2lzaGVzLApEdW9taW5nIFpob3U=
 
