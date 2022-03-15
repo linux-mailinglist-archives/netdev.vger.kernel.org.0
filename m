@@ -2,76 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7419C4D9F75
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 16:58:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15DF74D9F89
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:02:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349885AbiCOP7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 11:59:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        id S1343583AbiCOQDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 12:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349877AbiCOP7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 11:59:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB77C4A3F9
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 08:58:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4875A6128E
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:58:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5489DC340EE;
-        Tue, 15 Mar 2022 15:58:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647359910;
-        bh=4ErQhCwA/6LL/dWP4zLfh3clRCW8n5F8aedaQ8LoEWI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VH0L2oN4SJdJszcWXyh+l/lne9UexBQNdUgr7AQcFMpzoC2TuSGrNFAA1UA1xXwEI
-         EQJM0xVd1potnVcadi/RAsgigAXuvPEHqEuXuTs1dk31g4dFDwJjg8Ujr5slJ7sAOs
-         eRImb57IhLgz3tsXFAQE3pfSHtR4c1hESeP9cb2v3qBxYz4kc28IyPWapoozVAcDPE
-         YVl+GjVzIcf8AU+aVtYsoFmeS7NDJIHcf4NTbKqvp3fIF0YjdJQlgUxKEnJrtJsqjO
-         579UFAcesZfUb8OlCAMJAu3i92DyklE++mTmQQz/CO9nSBTM1bjD20G4U2b4t+hn0F
-         fUtsSPmvQmacw==
-Date:   Tue, 15 Mar 2022 08:58:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leonro@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, <idosch@nvidia.com>,
-        <petrm@nvidia.com>, <simon.horman@corigine.com>,
-        <netdev@vger.kernel.org>, <jiri@resnulli.us>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [RFT net-next 0/6] devlink: expose instance locking and
- simplify port splitting
-Message-ID: <20220315085829.51d2fd5c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YjBCs/uc+djgQRgH@unreal>
-References: <20220310001632.470337-1-kuba@kernel.org>
-        <Yim9aIeF8oHG59tG@shredder>
-        <Yipp3sQewk9y0RVP@shredder>
-        <20220314114645.5708bf90@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YjBCs/uc+djgQRgH@unreal>
+        with ESMTP id S1349917AbiCOQC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:02:58 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DBA55BEC
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 09:01:47 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id v130so38161943ybe.13
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 09:01:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dyyhva8D1yhSqNS2XXe6het8agvljZk/e/fdhnQFdvY=;
+        b=cDQrjJW5xmrinWAGlmzqO1lxhb0sKw8YGwhit8Y5whoTeB7ibip8vObGwyJM7u6rk0
+         m5xpGJJd4i5sLcCdhDI9oVC+ERLduCCS9LhF1k+/MnDea6EkrgrT7nDuqMltfej/K9h6
+         +2CWUsfcXSbO/2z1AvZkvmpX7iMG/3x60Cr+BJgWqfInF3WcZ8mIBlG47RM+ZhufzgEg
+         +JM38YqOWpIaP3ubgVZTH879XizS7ddlgrbCJH1wFwGYyipahvvmvD7HxKwN1X2Vf2PG
+         UZA1JQXsQ0D8Sht1JHMeHhoGmUj2vSJtRPccTFggSaPnYyRE+WZbZk+/vcDgnOd69CPz
+         rOew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dyyhva8D1yhSqNS2XXe6het8agvljZk/e/fdhnQFdvY=;
+        b=j/vQr+eQV5jIr5LGzimV2ky+7nyoM0WI6Plb8oRnbuwsiNxR8ZlHDIHDr9fjtjZaGj
+         KZgPbrIHKylXGR8cSXbyF1+meSLwHqhA6K3ZmSlqwTpAuD6jjVTEILzR1gEb88GVgbRe
+         WVGS4vQ7uv3xeoZoOrOaRG63eoHbQ/tfq2rbAL7ycd07O7YjD7h3v64aVPrP587zd0i4
+         Md8K5THEksJOAuzJhfNPDNOxdNSosCkBccfpFJ/p6OsdiReZ3eF0PaqsB1zluHCgGV5A
+         a5NLB3yJAARzcL6QAsjd4P1wybzhMKrg16PlKcPqFvFVhMSoYTP7FOY1jAexx9uQq+MG
+         HgVw==
+X-Gm-Message-State: AOAM532P1b2uLmQWiK87kP76DAIOyKy6qLp6CToWXg3Wif09zbzPjFGk
+        vQElEpROtNRebHKUs4kVg5kOJYWKOKDzKP7Qjs8eyg==
+X-Google-Smtp-Source: ABdhPJyu+xxDOmpCm17LYVj7UXieaSjfRnKID1E6WWP3Fx5nR4jA6wHyS5eAAuIvhMpVwYiYxB53pXUKPSa5Vjdeebw=
+X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr23592744ybq.407.1647360105931;
+ Tue, 15 Mar 2022 09:01:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220310054703.849899-1-eric.dumazet@gmail.com>
+ <20220310054703.849899-7-eric.dumazet@gmail.com> <bd7742e5631aee2059aea2d55a7531cc88dfe49b.camel@gmail.com>
+In-Reply-To: <bd7742e5631aee2059aea2d55a7531cc88dfe49b.camel@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 15 Mar 2022 09:01:34 -0700
+Message-ID: <CANn89iJOw3ETTUxZOi+5MXZTuuBqRtDvOd4RwVK8mGOBPMNoBQ@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next 06/14] ipv6/gro: insert temporary HBH/jumbo header
+To:     Alexander H Duyck <alexander.duyck@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Coco Li <lixiaoyan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Mar 2022 09:39:31 +0200 Leon Romanovsky wrote:
-> > I have the eswitch mode conversion patches almost ready with the
-> > "almost" being mlx5.   
-> 
-> I wonder why do you need to change eswitch locking in mlx5?
+On Fri, Mar 11, 2022 at 8:24 AM Alexander H Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Wed, 2022-03-09 at 21:46 -0800, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Following patch will add GRO_IPV6_MAX_SIZE, allowing gro to build
+> > BIG TCP ipv6 packets (bigger than 64K).
+> >
+>
+> This looks like it belongs in the next patch, not this one. This patch
+> is adding the HBH header.
 
-I want DEVLINK_CMD_ESWITCH_SET to drop the DEVLINK_NL_FLAG_NO_LOCK
-marking.
+What do you mean by "it belongs" ?
 
-Other drivers are rather simple in terms of locking (bnxt, nfp,
-netdevsim) and I can replace driver locking completely with a few 
-minor changes. Other drivers have no locking (insert cry/laugh emoji).
+Do you want me to squash the patches, or remove the first sentence ?
 
-mlx5 has layers and multiple locks, if you're okay with devl_unlock() /
-devl_lock() inside the callback that's perfect for me.
+I am confused.
+
+>
+> > This patch changes ipv6_gro_complete() to insert a HBH/jumbo header
+> > so that resulting packet can go through IPv6/TCP stacks.
+> >
