@@ -2,148 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 022BD4DA569
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:28:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90FDD4DA56D
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:29:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352254AbiCOW35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 18:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
+        id S1352260AbiCOWag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 18:30:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238437AbiCOW34 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 18:29:56 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77297275EF
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:28:43 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id w27so863797lfa.5
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:28:43 -0700 (PDT)
+        with ESMTP id S1345139AbiCOWa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 18:30:29 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A3F83B036;
+        Tue, 15 Mar 2022 15:29:17 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id p9so482743wra.12;
+        Tue, 15 Mar 2022 15:29:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=w7BDs3bl+/ZPNAYyg8MK8EHAzhqEJFCQVGbId855EFw=;
-        b=UNKIKiXT8QfonLayJTWbx/cxsyCrYGovzyCMkmOQ0WbbLDyVWoFc+Uk1YSJdQ1ErVj
-         NSZ65OYFwoBxTx37iTZxofhPtQYuTz0inW2ISH8BrEsIVKWupQ1V/0v2AOTqnkzOqHIW
-         MVzHAKTAj6L5LAFrRjVFItdVTexCKpxRKzLUb91eMO3QhpYWVcExxhjIB3WbJnai2fTU
-         qfuNwPew+1Y3t6NU7MAANItoNNKZRVoZY9NnXqRDDEl6dp6M2w5ktTXMJ6Fflzyk/u8n
-         bGm8okMa05EECvOosBzkbLV4oB43ONkLUH1EODsepFAU/yZWqBY7ocKkvqsrQZA8Ubbx
-         k16w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2mP7it1/VwMA5etq+ao66GLxUXQ6KGLRAa8IlL6JtUU=;
+        b=CuFGm/I1dRoambfUa96lRkaH7kV7vgcN9VEUSVwtWPkwpJRWU96AUhgWgzJb0Kebak
+         PcQ8Xi0UeSVTammDQxivKuBDY6fp394GdgcFk+RAkIHvgFZ/xWpxuxsreW6cLySGNhmq
+         XaR/GdbxY+vrbFvGqNNgWoVA96UIy9KdyVHh6jRLBNjp8go9jB4OALqLkkG446Yz6Flo
+         oN0ichTEsqz8bxrMNtrE+6tGR0S8IsHke7Bpgh8kNaTmrdA7Um3jIqyoJ+CVtv65xCnV
+         hoqpS71dInSf8bJ6wAJNm5eVeu2PWq9CzyU4D0wfZUxHP0c3l/3XC7D0oqZezwinipvL
+         ikyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=w7BDs3bl+/ZPNAYyg8MK8EHAzhqEJFCQVGbId855EFw=;
-        b=CzbXwz9D6Lm9mLRgBaMEIwxZroC7J4+0ThAIcdGtBAqeXFQF5GTNSbY0+rU5rehfJD
-         rqa2vbAloPyu9jFAKP9rYfgK1lvp1SKRWhN1KwgHiHAUzQ/cIlwrhMDK4CRx3Ee56Lqv
-         g4eophGFY4AAAtI0PeMuM1zAmaZVzd1e2VQS9CyjOkoM5T/Vb2KZUe7hswpRrILwRPsO
-         9AjW4Ogs2bGI8r7j087Qts2ocMoAlD389CUdFTnwYBRaYj5zYzlcFTpAMN4xB3fKiMQL
-         +9ajUpBQm04GXxB4yOrn9pEZG53jGdzMCjxwPw/gueuyPAAUxTDgRBbC3kf6ObcvSkcB
-         fR4A==
-X-Gm-Message-State: AOAM531YhaEAch69R+6ck5/+TU/HvjvEAvluCcALRbKIjhYpGi4xa1R4
-        9Q7xKUgpdB5nXWkRp7ZL+5l61w==
-X-Google-Smtp-Source: ABdhPJzSvTuOZ2Qd6cxpzVKDTdxQS6q1f1pKQ777CthPpVb5BrMo3DXztfZjgkzp4GIoFxE23grYmA==
-X-Received: by 2002:a05:6512:3e21:b0:448:53c7:178e with SMTP id i33-20020a0565123e2100b0044853c7178emr18805261lfv.374.1647383321771;
-        Tue, 15 Mar 2022 15:28:41 -0700 (PDT)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id i2-20020ac25b42000000b004488d7f5eadsm21083lfp.88.2022.03.15.15.28.40
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2mP7it1/VwMA5etq+ao66GLxUXQ6KGLRAa8IlL6JtUU=;
+        b=ROIyQrzYQhdecelmJptv/xvV48zWQCZEz6j9CT5yOOBnJwLYLuJhTzKmcteFns3xml
+         1wQnQzLRTr1bUW4Vf+cafYtXr63untWY/ow7+bwGhuIAOWHvP/o9TJo2RaYfU2eFfvy0
+         qZNsblmRUL4TWMUk1ODPxuvVnz/yd5jcjS/skSnauJ31gqWeqf3hEqoFSiaumSN/LZb6
+         CGbQyPcbSyWnQ9uSN7ymfVsun3L3YzJEmPRv3BAoQLomMwCNgJa70xpdqsIy54OEOYIc
+         ULM+HfohgTGen7lpMZ+VPEvISqW1m139mx02Cdnmj6wO55KF1ZuXzu3r5EIWIAV0zf+F
+         eIVw==
+X-Gm-Message-State: AOAM531CQZuD+F4/aoenB+bfKb9ASoCaUlqtxW/Db6YTAsDE6On/nRx8
+        bPrnrg1M6VNiYDmd/LJ1tsoEBcy65kyu3g==
+X-Google-Smtp-Source: ABdhPJxs5/XVKI8M6uvLbmKJ6JqUOz2cIuVNKXlVOZcM3keHpp0j1e9aIE29YLBbfuwAjynFaSaRlg==
+X-Received: by 2002:adf:ce03:0:b0:1f0:62b9:3c7a with SMTP id p3-20020adfce03000000b001f062b93c7amr21796516wrn.102.1647383355616;
+        Tue, 15 Mar 2022 15:29:15 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id bg18-20020a05600c3c9200b0037c2ef07493sm109916wmb.3.2022.03.15.15.29.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 15:28:41 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v4 net-next 04/15] net: bridge: mst: Notify switchdev
- drivers of MST mode changes
-In-Reply-To: <20220314223246.45cf8305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220315002543.190587-1-tobias@waldekranz.com>
- <20220315002543.190587-5-tobias@waldekranz.com>
- <20220314223246.45cf8305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Tue, 15 Mar 2022 23:28:40 +0100
-Message-ID: <87bky6lujr.fsf@waldekranz.com>
+        Tue, 15 Mar 2022 15:29:15 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: hns3: Fix spelling mistake "does't" -> "doesn't"
+Date:   Tue, 15 Mar 2022 22:29:14 +0000
+Message-Id: <20220315222914.2960786-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 22:32, Jakub Kicinski <kuba@kernel.org> wrote:
-> On Tue, 15 Mar 2022 01:25:32 +0100 Tobias Waldekranz wrote:
->> Trigger a switchdev event whenever the bridge's MST mode is
->> enabled/disabled. This allows constituent ports to either perform any
->> required hardware config, or refuse the change if it not supported.
->>=20
->> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
->
-> ../net/bridge/br_mst.c: In function =E2=80=98br_mst_set_enabled=E2=80=99:
-> ../net/bridge/br_mst.c:102:16: error: variable =E2=80=98attr=E2=80=99 has=
- initializer but incomplete type
->   102 |         struct switchdev_attr attr =3D {
->       |                ^~~~~~~~~~~~~~
-> ../net/bridge/br_mst.c:103:18: error: =E2=80=98struct switchdev_attr=E2=
-=80=99 has no member named =E2=80=98id=E2=80=99
->   103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
->       |                  ^~
-> ../net/bridge/br_mst.c:103:23: error: =E2=80=98SWITCHDEV_ATTR_ID_BRIDGE_M=
-ST=E2=80=99 undeclared (first use in this function)
->   103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
->       |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> ../net/bridge/br_mst.c:103:23: note: each undeclared identifier is report=
-ed only once for each function it appears in
-> ../net/bridge/br_mst.c:103:23: warning: excess elements in struct initial=
-izer
-> ../net/bridge/br_mst.c:103:23: note: (near initialization for =E2=80=98at=
-tr=E2=80=99)
-> ../net/bridge/br_mst.c:104:18: error: =E2=80=98struct switchdev_attr=E2=
-=80=99 has no member named =E2=80=98orig_dev=E2=80=99
->   104 |                 .orig_dev =3D br->dev,
->       |                  ^~~~~~~~
-> ../net/bridge/br_mst.c:104:29: warning: excess elements in struct initial=
-izer
->   104 |                 .orig_dev =3D br->dev,
->       |                             ^~
-> ../net/bridge/br_mst.c:104:29: note: (near initialization for =E2=80=98at=
-tr=E2=80=99)
-> ../net/bridge/br_mst.c:105:18: error: =E2=80=98struct switchdev_attr=E2=
-=80=99 has no member named =E2=80=98u=E2=80=99
->   105 |                 .u.mst =3D on,
->       |                  ^
-> ../net/bridge/br_mst.c:105:26: warning: excess elements in struct initial=
-izer
->   105 |                 .u.mst =3D on,
->       |                          ^~
-> ../net/bridge/br_mst.c:105:26: note: (near initialization for =E2=80=98at=
-tr=E2=80=99)
-> ../net/bridge/br_mst.c:102:31: error: storage size of =E2=80=98attr=E2=80=
-=99 isn=E2=80=99t known
->   102 |         struct switchdev_attr attr =3D {
->       |                               ^~~~
-> ../net/bridge/br_mst.c:125:15: error: implicit declaration of function =
-=E2=80=98switchdev_port_attr_set=E2=80=99; did you mean =E2=80=98br_switchd=
-ev_port_vlan_del=E2=80=99? [-Werror=3Dimplicit-function-declaration]
->   125 |         err =3D switchdev_port_attr_set(br->dev, &attr, extack);
->       |               ^~~~~~~~~~~~~~~~~~~~~~~
->       |               br_switchdev_port_vlan_del
-> ../net/bridge/br_mst.c:102:31: warning: unused variable =E2=80=98attr=E2=
-=80=99 [-Wunused-variable]
->   102 |         struct switchdev_attr attr =3D {
->       |                               ^~~~
+There is a spelling mistake in a dev_warn message. Fix it.
 
-Sorry about that. Forgot to run the incremental build after the
-rebase. Will be fixed in v5.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+index 089f4444b7e3..1f87a8a3fe32 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
+@@ -1225,7 +1225,7 @@ static int hclge_tm_pri_dwrr_cfg(struct hclge_dev *hdev)
+ 		ret = hclge_tm_ets_tc_dwrr_cfg(hdev);
+ 		if (ret == -EOPNOTSUPP) {
+ 			dev_warn(&hdev->pdev->dev,
+-				 "fw %08x does't support ets tc weight cmd\n",
++				 "fw %08x doesn't support ets tc weight cmd\n",
+ 				 hdev->fw_version);
+ 			ret = 0;
+ 		}
+-- 
+2.35.1
+
