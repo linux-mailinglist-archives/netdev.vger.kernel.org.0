@@ -2,125 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBE314D9419
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:45:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 939264D941E
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:48:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345023AbiCOFqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 01:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
+        id S1345031AbiCOFtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 01:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242291AbiCOFqs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:46:48 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC5B49CB3;
-        Mon, 14 Mar 2022 22:45:36 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHj703rzyz4xvW;
-        Tue, 15 Mar 2022 16:45:32 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647323135;
-        bh=pe+vPAjT5QFNqMcHo392z8pmy8QGUy4wyJA9JUUOmtE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=AsIfKZ1aYxTaTQJkAu7bhHlgh4WVD98gHakzJNGUGuMK1o8Ow4qnh+D9qVjgamAzb
-         gCk09Ku3VkP1Kkc4G+GMaomFYwR4ZPj2dm43sC68XfeHOh3civvfCfPNoqPM5z+A32
-         embzNlgqCIb6w9Z//r49v6tea4mq4ajc/NUTX8F+JUn9AArjaVzbUYMcUZwuE76FFf
-         bRDDsGYJ9kH17uauBgVmmcaUjEwwrwKVnT3I5bvEUyHoyAe1vwkiK7Ux4SSuYK1qMK
-         fYfNYoRNZ95p89aS9kvy2S9TmEaP76o//Rko3Y8HPT1BEOHmMtLpfAW9n+8u5JNkQy
-         +xFoXqx1T0trQ==
-Date:   Tue, 15 Mar 2022 16:45:31 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Greg KH <greg@kroah.com>, Arnd Bergmann <arnd@arndb.de>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: linux-next: manual merge of the char-misc tree with the net-next
- tree
-Message-ID: <20220315164531.6c1b626b@canb.auug.org.au>
+        with ESMTP id S239142AbiCOFta (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:49:30 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D5411A25
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 22:48:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1647323298; x=1678859298;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=c1yjSD9sOU0oKe7b2BQkLeXOcbLonwKQFyM5TyTgsm4=;
+  b=rrpAZ9t2ymAbbNVHEF6c8CD6knpPJIiRfqr13ZP0ihEumI70TQmp59Ge
+   NuMxU3xA+m4jOpiLenK9mORyOo80IK0+aDhYuujaWi0yo/OchjLWho40s
+   ZMDkg54vZo6CmlmrVbVKiUZapsVZzWP4OpxKlaSZHxYDPdFuH32M2XFxa
+   s=;
+X-IronPort-AV: E=Sophos;i="5.90,182,1643673600"; 
+   d="scan'208";a="186011626"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 15 Mar 2022 05:48:17 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com (Postfix) with ESMTPS id CACEAE0CB3;
+        Tue, 15 Mar 2022 05:48:15 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Tue, 15 Mar 2022 05:48:15 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.128) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 15 Mar 2022 05:48:11 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Rao Shoaib <Rao.Shoaib@oracle.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 net] af_unix: Support POLLPRI for OOB.
+Date:   Tue, 15 Mar 2022 14:48:01 +0900
+Message-ID: <20220315054801.72035-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/IHhPEcfMFY+7wk5Rz+M5EG/";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.128]
+X-ClientProxiedBy: EX13D18UWA001.ant.amazon.com (10.43.160.11) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/IHhPEcfMFY+7wk5Rz+M5EG/
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The commit 314001f0bf92 ("af_unix: Add OOB support") introduced OOB for
+AF_UNIX, but it lacks some changes for POLLPRI.  Let's add the missing
+piece.
 
-Hi all,
+In the selftest, normal datagrams are sent followed by OOB data, so this
+commit replaces `POLLIN|POLLPRI` with just `POLLPRI` in the first test
+case.
 
-Today's linux-next merge of the char-misc tree got a conflict in:
+v2:
+  - Add READ_ONCE() to avoid a race reported by KCSAN (Eric)
+  - Add IS_ENABLED(CONFIG_AF_UNIX_OOB) (Shoaib)
 
-  drivers/phy/freescale/Kconfig
+v1:
+https://lore.kernel.org/netdev/20220314052110.53634-1-kuniyu@amazon.co.jp/
 
-between commit:
+Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+---
+ net/unix/af_unix.c                                  | 10 +++++++---
+ tools/testing/selftests/net/af_unix/test_unix_oob.c |  6 +++---
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
-  8f73b37cf3fb ("phy: add support for the Layerscape SerDes 28G")
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index c19569819866..9cf1137ae174 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -2049,7 +2049,7 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
+  */
+ #define UNIX_SKB_FRAGS_SZ (PAGE_SIZE << get_order(32768))
+ 
+-#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
++#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
+ static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other)
+ {
+ 	struct unix_sock *ousk = unix_sk(other);
+@@ -2115,7 +2115,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+ 
+ 	err = -EOPNOTSUPP;
+ 	if (msg->msg_flags & MSG_OOB) {
+-#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
++#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
+ 		if (len)
+ 			len--;
+ 		else
+@@ -2186,7 +2186,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+ 		sent += size;
+ 	}
+ 
+-#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
++#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
+ 	if (msg->msg_flags & MSG_OOB) {
+ 		err = queue_oob(sock, msg, other);
+ 		if (err)
+@@ -3139,6 +3139,10 @@ static __poll_t unix_poll(struct file *file, struct socket *sock, poll_table *wa
+ 		mask |= EPOLLIN | EPOLLRDNORM;
+ 	if (sk_is_readable(sk))
+ 		mask |= EPOLLIN | EPOLLRDNORM;
++#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
++	if (READ_ONCE(unix_sk(sk)->oob_skb))
++		mask |= EPOLLPRI;
++#endif
+ 
+ 	/* Connection-based need to check for termination and startup */
+ 	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
+diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+index 3dece8b29253..b57e91e1c3f2 100644
+--- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
++++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
+@@ -218,10 +218,10 @@ main(int argc, char **argv)
+ 
+ 	/* Test 1:
+ 	 * veriyf that SIGURG is
+-	 * delivered and 63 bytes are
+-	 * read and oob is '@'
++	 * delivered, 63 bytes are
++	 * read, oob is '@', and POLLPRI works.
+ 	 */
+-	wait_for_data(pfd, POLLIN | POLLPRI);
++	wait_for_data(pfd, POLLPRI);
+ 	read_oob(pfd, &oob);
+ 	len = read_data(pfd, buf, 1024);
+ 	if (!signal_recvd || len != 63 || oob != '@') {
+-- 
+2.30.2
 
-from the net-next tree and commit:
-
-  3d565bd6fbbb ("phy: freescale: i.MX8 PHYs should depend on ARCH_MXC && AR=
-M64")
-
-from the char-misc tree.
-
-I fixed it up (I think, see below) and can carry the fix as necessary.
-This is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/phy/freescale/Kconfig
-index 0e91cd99c36b,856cbec7057d..000000000000
---- a/drivers/phy/freescale/Kconfig
-+++ b/drivers/phy/freescale/Kconfig
-@@@ -23,12 -26,4 +26,14 @@@ config PHY_FSL_IMX8M_PCI
-  	  Enable this to add support for the PCIE PHY as found on
-  	  i.MX8M family of SOCs.
- =20
- +config PHY_FSL_LYNX_28G
- +	tristate "Freescale Layerscape Lynx 28G SerDes PHY support"
- +	depends on OF
- +	select GENERIC_PHY
- +	help
- +	  Enable this to add support for the Lynx SerDes 28G PHY as
- +	  found on NXP's Layerscape platforms such as LX2160A.
- +	  Used to change the protocol running on SerDes lanes at runtime.
- +	  Only useful for a restricted set of Ethernet protocols.
-++
-+ endif
-
---Sig_/IHhPEcfMFY+7wk5Rz+M5EG/
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEyBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwJ/sACgkQAVBC80lX
-0Gxfiwf4kVsGEVe4CkKgK1/YrT8YvXnm/1HiPR6xCdPbeezdHTFhwkmMCvD84akW
-eksjm3lAU/FUoU43MhxUhEvCx46sDDEPXmTtTK0JZaZm+E78x37azl+ls/mD9zo/
-CGV2/tauuWAP5gPZDI+w5oclvSOesLzS+xi9xqUPz3gZh+d5mwmnJrTHuVg7Yuu7
-mAqDkrPR+QiVRl6f99wCOTE93l1Ewc72erG9QfQLqZmKJXtRbMmqtIvM4LXZ0j9c
-TANowiFFbQWRMcIDP0B6EesoD9YFB8dCQRDfscm244WCwTn6lOzk9ZhwLtyVi4zC
-XdTNjyHT3SCthUajotODfWJPTfHB
-=bFL8
------END PGP SIGNATURE-----
-
---Sig_/IHhPEcfMFY+7wk5Rz+M5EG/--
