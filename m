@@ -2,191 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74FA74D92BF
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 03:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 065ED4D92C7
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 04:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245474AbiCOC6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 22:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        id S1344524AbiCODEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 23:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236426AbiCOC6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 22:58:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDA423BC1;
-        Mon, 14 Mar 2022 19:57:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FA5561032;
-        Tue, 15 Mar 2022 02:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0304EC340E9;
-        Tue, 15 Mar 2022 02:57:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647313057;
-        bh=vbVGF4busbB1SfADP/S6ab+VlgQgMMbCFKeAOde9lxw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ibGF1JNpawiYXF+YouYnMoja2x/89B7ZomKzO1ypHHAIJvEWfos4ZgfAjwvrdK1bW
-         bb8IjVBpGr/vcvo4HTeoKFWd6ixhROA0EYpMfsOpSu1NdFS2Pm2lc5A8o3bad5+GuW
-         zthRHNz/tE5pDqfV4Raqpa+UHFCJuZvX4/EYx+TqNMyC0D9SpHNqDv2+sqxgwf9Zex
-         A/JX11fTy7IqH9zdY/Plc7bvH4n7yN1wLL2t46Npej3Sw1bD72GngxRPWZDmQHRBfu
-         LvLd2FhZQV6ab/v/oiw9jqQbhxRtupjrvRJ5gszcgaqYTtayg9SUFHPprha/48rdMX
-         3fxQij6Qdq1Eg==
-Date:   Mon, 14 Mar 2022 19:57:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Manish Chopra <manishc@marvell.com>,
-        Donald Buczek <buczek@molgen.mpg.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        netdev@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
-        Alok Prasad <palok@marvell.com>,
-        Prabhakar Kushwaha <pkushwaha@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg KH <gregkh@linuxfoundation.org>, stable@vger.kernel.org,
-        it+netdev@molgen.mpg.de, regressions@lists.linux.dev
-Subject: Re: [EXT] Re: [PATCH v2 net-next 1/2] bnx2x: Utilize firmware
- 7.13.21.0
-Message-ID: <20220314195735.6ada196d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <9513e74e-c682-d891-a5de-c9a82c5cf9d3@molgen.mpg.de>
-References: <20211217165552.746-1-manishc@marvell.com>
-        <ea05bcab-fe72-4bc2-3337-460888b2c44e@molgen.mpg.de>
-        <BY3PR18MB46129282EBA1F699583134A4AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
-        <e884cf16-3f98-e9a7-ce96-9028592246cc@molgen.mpg.de>
-        <BY3PR18MB4612BC158A048053BAC7A30EAB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
-        <CAHk-=wjN22EeVLviARu=amf1+422U2iswCC6cz7cN8h+S9=-Jg@mail.gmail.com>
-        <BY3PR18MB4612C2FFE05879E30BAD91D7AB0A9@BY3PR18MB4612.namprd18.prod.outlook.com>
-        <CAHk-=whXCf43ieh79fujcF=u3Ow1byRvWp+Lt5+v3vumA+V0yA@mail.gmail.com>
-        <BY3PR18MB46124F3F575F9F7D1980E76BAB0C9@BY3PR18MB4612.namprd18.prod.outlook.com>
-        <0dafa9d7-9c79-f367-a343-8ad38f7bde07@molgen.mpg.de>
-        <9513e74e-c682-d891-a5de-c9a82c5cf9d3@molgen.mpg.de>
+        with ESMTP id S235139AbiCODEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 23:04:12 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D77D2BEB;
+        Mon, 14 Mar 2022 20:03:01 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id d10-20020a17090a7bca00b001c5ed9a196bso881255pjl.1;
+        Mon, 14 Mar 2022 20:03:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=A455krXMhhy8/LLYYm9vWAWvlzZHEKZiVzhbnonkNws=;
+        b=jhcAENCFBWZcmbZIoMa4IBixoqkt2DRSnQnBe9VESilKn4CEEqf3AYoyR3vIQxCdYT
+         pJ+KMvc61kTkjENj0c10iWam3OS9WYzsndLB5E34Ru/pUPujcpJbqVYOLXqfKhvd4fot
+         XgGUmP9Cr1T5I1WTZkKbsF1ffq004PWTUxMhwfC5XLQsCoShyIrrHRJGUZlHhMfsVEsv
+         rmkth4GoRFsGnAcqW5wn6vwbBocXG/NjFw/ENW+cBadja5I4eFnsFvyFcsdz5TixPIcB
+         Hl3+OhGXuMwXX84KMLTToAUySmj2HtArumZLaOGNxGf8xnVP6qSTN3A2OkEZFq6OdrfE
+         DJDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=A455krXMhhy8/LLYYm9vWAWvlzZHEKZiVzhbnonkNws=;
+        b=qQihNDoEpg8sL6a1Znwdl/KZMCeypuGTxQJUSlpVx6D6Fzec5XxR4ZKS2JaPu7VHgT
+         5W7F7PUCbAmxw5vt23v4lSbfvykqNf9JbYFus9k313OBxfcyqe9d30tmN/B9FfyyH1v/
+         wTbH9H0XwbFIrbgEmmzbOc6jMejaHAJ1GRn2DWePukEOEYrcPlgT+znHF5rdp9dVKxB/
+         3xdhYPWmtDCeTUkg19n1cbdNnL+e0Zc3nQJKstYuBMfg1i2Enu4/O3OnfXHs9Tqa9lQP
+         z1GPqRMRkc2w6mzSB8YOWmBSHTgm8yGFPDN04pVwQSws2/OsC9fqti+wCgv7FbsOS2GG
+         wATg==
+X-Gm-Message-State: AOAM532WcS0qe8HgTCxzIWlEOtgauZ27PaVudcHR4H0tgGQ03sQjyzQr
+        v29j5CeLB3/YgKb/2sEbnHc=
+X-Google-Smtp-Source: ABdhPJxqfei84nWaWhmazei5KQRCXRBg/w+OzFuE2RAB+U8R7E8cDTc51FKfTxQjkb3idYtcSGwKdw==
+X-Received: by 2002:a17:902:8a85:b0:151:b3c6:87f8 with SMTP id p5-20020a1709028a8500b00151b3c687f8mr26208994plo.129.1647313380664;
+        Mon, 14 Mar 2022 20:03:00 -0700 (PDT)
+Received: from [192.168.86.21] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id w3-20020a63af03000000b00381309eb407sm6290291pge.68.2022.03.14.20.02.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Mar 2022 20:03:00 -0700 (PDT)
+Message-ID: <c6052f5c-c1c4-18a0-a04f-e48f366200e4@gmail.com>
+Date:   Mon, 14 Mar 2022 20:02:54 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH net V4 2/2] ax25: Fix NULL pointer dereferences in ax25
+ timers
+Content-Language: en-US
+To:     Duoming Zhou <duoming@zju.edu.cn>, linux-hams@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, ralf@linux-mips.org,
+        jreuter@yaina.de, dan.carpenter@oracle.com
+References: <20220315015654.79941-1-duoming@zju.edu.cn>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <20220315015654.79941-1-duoming@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Mar 2022 16:07:08 +0100 Paul Menzel wrote:
-> > There might be something more wrong with the patch in the subject: The=
-=20
-> > usability of the ports from a single card (with older firmware?) now=20
-> > depends on the order the ports are enabled (first port enabled is=20
-> > working, second port enabled is not working, driver complaining about a=
-=20
-> > firmware mismatch).
-> >=20
-> > In the following examples, the driver was not built-in to the kernel bu=
-t=20
-> > loaded from the root filesystem instead, so there is no initramfs=20
-> > related problem here.
-> >=20
-> > For the records:
-> >=20
-> > root@ira:~# dmesg|grep bnx2x
-> > [=C2=A0=C2=A0 18.749871] bnx2x 0000:45:00.0: msix capability found
-> > [=C2=A0=C2=A0 18.766534] bnx2x 0000:45:00.0: part number 394D4342-31373=
-735-31314131-473331
-> > [=C2=A0=C2=A0 18.799198] bnx2x 0000:45:00.0: 32.000 Gb/s available PCIe=
- bandwidth (5.0 GT/s PCIe x8 link)
-> > [=C2=A0=C2=A0 18.807638] bnx2x 0000:45:00.1: msix capability found
-> > [=C2=A0=C2=A0 18.824509] bnx2x 0000:45:00.1: part number 394D4342-31373=
-735-31314131-473331
-> > [=C2=A0=C2=A0 18.857171] bnx2x 0000:45:00.1: 32.000 Gb/s available PCIe=
- bandwidth (5.0 GT/s PCIe x8 link)
-> > [=C2=A0=C2=A0 18.865619] bnx2x 0000:46:00.0: msix capability found
-> > [=C2=A0=C2=A0 18.882636] bnx2x 0000:46:00.0: part number 394D4342-31373=
-735-31314131-473331
-> > [=C2=A0=C2=A0 18.915196] bnx2x 0000:46:00.0: 32.000 Gb/s available PCIe=
- bandwidth (5.0 GT/s PCIe x8 link)
-> > [=C2=A0=C2=A0 18.923636] bnx2x 0000:46:00.1: msix capability found
-> > [=C2=A0=C2=A0 18.940505] bnx2x 0000:46:00.1: part number 394D4342-31373=
-735-31314131-473331
-> > [=C2=A0=C2=A0 18.973167] bnx2x 0000:46:00.1: 32.000 Gb/s available PCIe=
- bandwidth (5.0 GT/s PCIe x8 link)
-> > [=C2=A0=C2=A0 46.480660] bnx2x 0000:45:00.0 net04: renamed from eth4
-> > [=C2=A0=C2=A0 46.494677] bnx2x 0000:45:00.1 net05: renamed from eth5
-> > [=C2=A0=C2=A0 46.508544] bnx2x 0000:46:00.0 net06: renamed from eth6
-> > [=C2=A0=C2=A0 46.524641] bnx2x 0000:46:00.1 net07: renamed from eth7
-> > root@ira:~# ls /lib/firmware/bnx2x/
-> > bnx2x-e1-6.0.34.0.fw=C2=A0=C2=A0 bnx2x-e1-7.13.1.0.fw=C2=A0=C2=A0 bnx2x=
--e1-7.8.2.0.fw    =20
-> > bnx2x-e1h-7.12.30.0.fw=C2=A0 bnx2x-e1h-7.8.19.0.fw=C2=A0 bnx2x-e2-7.10.=
-51.0.fw=C2=A0 bnx2x-e2-7.8.17.0.fw
-> > bnx2x-e1-6.2.5.0.fw=C2=A0=C2=A0=C2=A0 bnx2x-e1-7.13.11.0.fw=C2=A0 bnx2x=
--e1h-6.0.34.0.fw  =20
-> > bnx2x-e1h-7.13.1.0.fw=C2=A0=C2=A0 bnx2x-e1h-7.8.2.0.fw=C2=A0=C2=A0 bnx2=
-x-e2-7.12.30.0.fw=C2=A0 bnx2x-e2-7.8.19.0.fw
-> > bnx2x-e1-6.2.9.0.fw=C2=A0=C2=A0=C2=A0 bnx2x-e1-7.13.15.0.fw=C2=A0 bnx2x=
--e1h-6.2.5.0.fw   =20
-> > bnx2x-e1h-7.13.11.0.fw=C2=A0 bnx2x-e2-6.0.34.0.fw=C2=A0=C2=A0 bnx2x-e2-=
-7.13.1.0.fw=C2=A0=C2=A0 bnx2x-e2-7.8.2.0.fw
-> > bnx2x-e1-7.0.20.0.fw=C2=A0=C2=A0 bnx2x-e1-7.13.21.0.fw=C2=A0 bnx2x-e1h-=
-6.2.9.0.fw   =20
-> > bnx2x-e1h-7.13.15.0.fw=C2=A0 bnx2x-e2-6.2.5.0.fw=C2=A0=C2=A0=C2=A0 bnx2=
-x-e2-7.13.11.0.fw
-> > bnx2x-e1-7.0.23.0.fw=C2=A0=C2=A0 bnx2x-e1-7.2.16.0.fw=C2=A0=C2=A0 bnx2x=
--e1h-7.0.20.0.fw  =20
-> > bnx2x-e1h-7.13.21.0.fw=C2=A0 bnx2x-e2-6.2.9.0.fw=C2=A0=C2=A0=C2=A0 bnx2=
-x-e2-7.13.15.0.fw
-> > bnx2x-e1-7.0.29.0.fw=C2=A0=C2=A0 bnx2x-e1-7.2.51.0.fw=C2=A0=C2=A0 bnx2x=
--e1h-7.0.23.0.fw  =20
-> > bnx2x-e1h-7.2.16.0.fw=C2=A0=C2=A0 bnx2x-e2-7.0.20.0.fw=C2=A0=C2=A0 bnx2=
-x-e2-7.13.21.0.fw
-> > bnx2x-e1-7.10.51.0.fw=C2=A0 bnx2x-e1-7.8.17.0.fw=C2=A0=C2=A0 bnx2x-e1h-=
-7.0.29.0.fw  =20
-> > bnx2x-e1h-7.2.51.0.fw=C2=A0=C2=A0 bnx2x-e2-7.0.23.0.fw=C2=A0=C2=A0 bnx2=
-x-e2-7.2.16.0.fw
-> > bnx2x-e1-7.12.30.0.fw=C2=A0 bnx2x-e1-7.8.19.0.fw=C2=A0=C2=A0 bnx2x-e1h-=
-7.10.51.0.fw =20
-> > bnx2x-e1h-7.8.17.0.fw=C2=A0=C2=A0 bnx2x-e2-7.0.29.0.fw=C2=A0=C2=A0 bnx2=
-x-e2-7.2.51.0.fw
-> >=20
-> > Now with v5.10.95, the first kernel of the series which includes=20
-> > fdcfabd0952d ("bnx2x: Utilize firmware 7.13.21.0") and later:
-> >=20
-> > root@ira:~# dmesg -w &
-> > [...]
-> > root@ira:~# ip link set net04 up
-> > [=C2=A0=C2=A0 88.504536] bnx2x 0000:45:00.0 net04: using MSI-X=C2=A0 IR=
-Qs: sp 47=C2=A0 fp[0] 49 ... fp[7] 56
-> > root@ira:~# ip link set net05 up
-> > [=C2=A0=C2=A0 90.825820] bnx2x: [bnx2x_compare_fw_ver:2380(net05)]bnx2x=
- with FW 120d07 was already loaded which mismatches my 150d07 FW. Aborting
-> > RTNETLINK answers: Device or resource busy
-> > root@ira:~# ip link set net04 down
-> > root@ira:~# ip link set net05 down
-> > root@ira:~# ip link set net05 up
-> > [=C2=A0 114.462448] bnx2x 0000:45:00.1 net05: using MSI-X=C2=A0 IRQs: s=
-p 58=C2=A0 fp[0] 60 ... fp[7] 67
-> > root@ira:~# ip link set net04 up
-> > [=C2=A0 117.247763] bnx2x: [bnx2x_compare_fw_ver:2380(net04)]bnx2x with=
- FW 120d07 was already loaded which mismatches my 150d07 FW. Aborting
-> > RTNETLINK answers: Device or resource busy
-> >=20
-> > With v5.10.94, both ports work fine:
-> >=20
-> > root@ira:~# dmesg -w &
-> > [...]
-> > root@ira:~# ip link set net04 up
-> > [=C2=A0 133.126647] bnx2x 0000:45:00.0 net04: using MSI-X=C2=A0 IRQs: s=
-p 47=C2=A0 fp[0] 49 ... fp[7] 56
-> > root@ira:~# ip link set net05 up
-> > [=C2=A0 136.215169] bnx2x 0000:45:00.1 net05: using MSI-X=C2=A0 IRQs: s=
-p 58=C2=A0 fp[0] 60 ... fp[7] 67 =20
->=20
-> One additional note, that it=E2=80=99s totally unclear to us, where FW ve=
-rsion=20
-> 120d07 in the error message comes from. It maps to 7.13.18.0, which is=20
-> nowhere to be found and too new to be on the cards EEPROM, which should=20
-> be from 2013 or so.
 
-Hrm, any chance an out-of-tree driver or another OS loaded it?
-Does the dmesg indicate that the host loaded the FW at all?
-Looks like upstream went from .15 to .21, .18 was never in the picture.
+On 3/14/22 18:56, Duoming Zhou wrote:
+> There are race conditions that may lead to null pointer dereferences in
+> ax25_heartbeat_expiry(), ax25_t1timer_expiry(), ax25_t2timer_expiry(),
+> ax25_t3timer_expiry() and ax25_idletimer_expiry(), when we use
+> ax25_kill_by_device() to detach the ax25 device.
+>
+> One of the race conditions that cause null pointer dereferences can be
+> shown as below:
+>
+>        (Thread 1)                    |      (Thread 2)
+> ax25_connect()                      |
+>   ax25_std_establish_data_link()     |
+>    ax25_start_t1timer()              |
+>     mod_timer(&ax25->t1timer,..)     |
+>                                      | ax25_kill_by_device()
+>     (wait a time)                    |  ...
+>                                      |  s->ax25_dev = NULL; //(1)
+>     ax25_t1timer_expiry()            |
+>      ax25->ax25_dev->values[..] //(2)|  ...
+>       ...                            |
+>
+> We set null to ax25_cb->ax25_dev in position (1) and dereference
+> the null pointer in position (2).
+>
+> The corresponding fail log is shown below:
+> ===============================================================
+> BUG: kernel NULL pointer dereference, address: 0000000000000050
+> CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.17.0-rc6-00794-g45690b7d0
+> RIP: 0010:ax25_t1timer_expiry+0x12/0x40
+> ...
+> Call Trace:
+>   call_timer_fn+0x21/0x120
+>   __run_timers.part.0+0x1ca/0x250
+>   run_timer_softirq+0x2c/0x60
+>   __do_softirq+0xef/0x2f3
+>   irq_exit_rcu+0xb6/0x100
+>   sysvec_apic_timer_interrupt+0xa2/0xd0
+> ...
+>
+> This patch uses ax25_disconnect() to delete timers before we set null to
+> ax25_cb->ax25_dev in ax25_kill_by_device().The function ax25_disconnect()
+> will not return until all timers are stopped, because we have changed
+> del_timer() to del_timer_sync(). What`s more, we add condition check in
+> ax25_destroy_socket(), because ax25_stop_heartbeat() will not return,
+> if there is still heartbeat.
+>
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 
-Also, will the revert work for you?
+Missing FIxes: tag ?
+
+
+> ---
+> Changes in V4:
+>    - Based on [PATCH net V4 1/2] ax25: Fix refcount leaks caused by ax25_cb_del().
+>
+>   net/ax25/af_ax25.c    |  7 ++++---
+>   net/ax25/ax25_timer.c | 10 +++++-----
+>   2 files changed, 9 insertions(+), 8 deletions(-)
+>
+> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+> index 0886109421a..dc6161a75a1 100644
+> --- a/net/ax25/af_ax25.c
+> +++ b/net/ax25/af_ax25.c
+> @@ -89,20 +89,20 @@ static void ax25_kill_by_device(struct net_device *dev)
+>   			sk = s->sk;
+>   			if (!sk) {
+>   				spin_unlock_bh(&ax25_list_lock);
+> -				s->ax25_dev = NULL;
+>   				ax25_disconnect(s, ENETUNREACH);
+> +				s->ax25_dev = NULL;
+>   				spin_lock_bh(&ax25_list_lock);
+>   				goto again;
+>   			}
+>   			sock_hold(sk);
+>   			spin_unlock_bh(&ax25_list_lock);
+>   			lock_sock(sk);
+> +			ax25_disconnect(s, ENETUNREACH);
+>   			s->ax25_dev = NULL;
+>   			if (sk->sk_wq) {
+>   				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+>   				ax25_dev_put(ax25_dev);
+>   			}
+> -			ax25_disconnect(s, ENETUNREACH);
+>   			release_sock(sk);
+>   			spin_lock_bh(&ax25_list_lock);
+>   			sock_put(sk);
+> @@ -307,7 +307,8 @@ void ax25_destroy_socket(ax25_cb *ax25)
+>   
+>   	ax25_cb_del(ax25);
+>   
+> -	ax25_stop_heartbeat(ax25);
+> +	if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
+> +		ax25_stop_heartbeat(ax25);
+>   	ax25_stop_t1timer(ax25);
+>   	ax25_stop_t2timer(ax25);
+>   	ax25_stop_t3timer(ax25);
+> diff --git a/net/ax25/ax25_timer.c b/net/ax25/ax25_timer.c
+> index 85865ebfdfa..99af3d1aeec 100644
+> --- a/net/ax25/ax25_timer.c
+> +++ b/net/ax25/ax25_timer.c
+> @@ -78,27 +78,27 @@ void ax25_start_idletimer(ax25_cb *ax25)
+>   
+>   void ax25_stop_heartbeat(ax25_cb *ax25)
+>   {
+> -	del_timer(&ax25->timer);
+> +	del_timer_sync(&ax25->timer);
+>   }
+>   
+>   void ax25_stop_t1timer(ax25_cb *ax25)
+>   {
+> -	del_timer(&ax25->t1timer);
+> +	del_timer_sync(&ax25->t1timer);
+>   }
+>   
+>   void ax25_stop_t2timer(ax25_cb *ax25)
+>   {
+> -	del_timer(&ax25->t2timer);
+> +	del_timer_sync(&ax25->t2timer);
+>   }
+>   
+>   void ax25_stop_t3timer(ax25_cb *ax25)
+>   {
+> -	del_timer(&ax25->t3timer);
+> +	del_timer_sync(&ax25->t3timer);
+>   }
+>   
+>   void ax25_stop_idletimer(ax25_cb *ax25)
+>   {
+> -	del_timer(&ax25->idletimer);
+> +	del_timer_sync(&ax25->idletimer);
+>   }
+>   
+>   int ax25_t1timer_running(ax25_cb *ax25)
+
+
+
+Are you sure calling del_time_sync() wont deadlock ?
+
+
+If the timer handlers need a lock owned by the thread calling 
+del_timer_sync(),
+
+then this will block forever.
+
+
+Usually, we make sure each active timer owns a reference 
+(sk_stop_timer() for example)
+
+
+
+
