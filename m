@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BF54D9755
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 10:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE974D975D
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 10:15:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346348AbiCOJQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 05:16:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
+        id S1346463AbiCOJQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 05:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232351AbiCOJQd (ORCPT
+        with ESMTP id S1346268AbiCOJQd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 05:16:33 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4039249CAB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 408454D9D8;
         Tue, 15 Mar 2022 02:15:21 -0700 (PDT)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 9110F6300F;
-        Tue, 15 Mar 2022 10:13:00 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 3D08C63011;
+        Tue, 15 Mar 2022 10:13:01 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH nf-next 1/6] Revert "netfilter: conntrack: mark UDP zero checksum as CHECKSUM_UNNECESSARY"
-Date:   Tue, 15 Mar 2022 10:15:08 +0100
-Message-Id: <20220315091513.66544-2-pablo@netfilter.org>
+Subject: [PATCH nf-next 2/6] netfilter: nf_tables: Reject tables of unsupported family
+Date:   Tue, 15 Mar 2022 10:15:09 +0100
+Message-Id: <20220315091513.66544-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220315091513.66544-1-pablo@netfilter.org>
 References: <20220315091513.66544-1-pablo@netfilter.org>
@@ -37,42 +37,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Phil Sutter <phil@nwl.cc>
 
-This reverts commit 5bed9f3f63f8f9d2b1758c24640cbf77b5377511.
+An nftables family is merely a hollow container, its family just a
+number and such not reliant on compile-time options other than nftables
+support itself. Add an artificial check so attempts at using a family
+the kernel can't support fail as early as possible. This helps user
+space detect kernels which lack e.g. NFPROTO_INET.
 
-Gal Presman says:
- this patch broke geneve tunnels, or possibly all udp tunnels?
- A simple test that creates two geneve tunnels and runs tcp iperf fails
- and results in checksum errors (TcpInCsumErrors).
-
-Original commit wanted to fix nf_reject with zero checksum,
-so it appears better to change nf reject infra instead.
-
-Fixes: 5bed9f3f63f8f ("netfilter: conntrack: mark UDP zero checksum as CHECKSUM_UNNECESSARY")
-Reported-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Phil Sutter <phil@nwl.cc>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_proto_udp.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/netfilter/nf_tables_api.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/net/netfilter/nf_conntrack_proto_udp.c b/net/netfilter/nf_conntrack_proto_udp.c
-index 12f793d8fe0c..3b516cffc779 100644
---- a/net/netfilter/nf_conntrack_proto_udp.c
-+++ b/net/netfilter/nf_conntrack_proto_udp.c
-@@ -63,10 +63,8 @@ static bool udp_error(struct sk_buff *skb,
- 	}
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 9cd1d7a62804..3168ad8cffd1 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -1072,6 +1072,30 @@ static int nft_objname_hash_cmp(struct rhashtable_compare_arg *arg,
+ 	return strcmp(obj->key.name, k->name);
+ }
  
- 	/* Packet with no checksum */
--	if (!hdr->check) {
--		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+	if (!hdr->check)
- 		return false;
--	}
++static bool nft_supported_family(u8 family)
++{
++	return false
++#ifdef CONFIG_NF_TABLES_INET
++		|| family == NFPROTO_INET
++#endif
++#ifdef CONFIG_NF_TABLES_IPV4
++		|| family == NFPROTO_IPV4
++#endif
++#ifdef CONFIG_NF_TABLES_ARP
++		|| family == NFPROTO_ARP
++#endif
++#ifdef CONFIG_NF_TABLES_NETDEV
++		|| family == NFPROTO_NETDEV
++#endif
++#if IS_ENABLED(CONFIG_NF_TABLES_BRIDGE)
++		|| family == NFPROTO_BRIDGE
++#endif
++#ifdef CONFIG_NF_TABLES_IPV6
++		|| family == NFPROTO_IPV6
++#endif
++		;
++}
++
+ static int nf_tables_newtable(struct sk_buff *skb, const struct nfnl_info *info,
+ 			      const struct nlattr * const nla[])
+ {
+@@ -1086,6 +1110,9 @@ static int nf_tables_newtable(struct sk_buff *skb, const struct nfnl_info *info,
+ 	u32 flags = 0;
+ 	int err;
  
- 	/* Checksum invalid? Ignore.
- 	 * We skip checking packets on the outgoing path
++	if (!nft_supported_family(family))
++		return -EOPNOTSUPP;
++
+ 	lockdep_assert_held(&nft_net->commit_mutex);
+ 	attr = nla[NFTA_TABLE_NAME];
+ 	table = nft_table_lookup(net, attr, family, genmask,
 -- 
 2.30.2
 
