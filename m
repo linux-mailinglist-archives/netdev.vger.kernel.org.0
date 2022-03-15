@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 801364DA333
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 20:20:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A31D4DA334
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 20:20:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343728AbiCOTV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 15:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        id S1344185AbiCOTVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 15:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234545AbiCOTV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 15:21:26 -0400
+        with ESMTP id S234545AbiCOTV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 15:21:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C4839BA6
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 12:20:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8484639BA6
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 12:20:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B887B81898
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 19:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3FC6BC340F4;
-        Tue, 15 Mar 2022 19:20:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 330F4B81896
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 19:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 02A40C340EE;
+        Tue, 15 Mar 2022 19:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647372011;
-        bh=lvnIeUvVZe+n2DYrTtkZETBaCVBBayuTGdorU39gO38=;
+        s=k20201202; t=1647372014;
+        bh=/0C3uR20qpps6JUzDKnGgXL+hG2hu6XcOPCApxgpmcE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TQgqZFGQqbc++l7jWexaGi6/C5obA8zKI5otQT/q3Mh766B5jh5hJaDn1rFHr2Ij1
-         fWA05RvEHWBAPTPUN9+TsvQV8ZjK6ymaWzLzZ9u/GKG1gdD75JyGDbl3RzQn+ez378
-         zdvrlkz50YE64eUfamKdx+pTq0eVyL8sTfLLBuUzkdfgjzGViYqa1l9FewQbjw51uL
-         oZLPST3wl8XGN9vDsDC+zcbswRs2EH+w8V3Ib+3CniLv9mbd+hs5GGbakgZdQBn15J
-         Hc+OldFtEXki/yboePDdB4GWQMHHbag2jZX7qxBXT3yOW88fbXt/NDIs9wx/XSovOs
-         0iaZdyNppcR8g==
+        b=IXI/YhoU4vh7SHU02RGzu6dx+LIMptAzosmusoP49OLPpKdDF8FogTtN2i6y7a6Ok
+         gWkUeXdIavZY4mrkJc+jokqYKZgIHhE8j0VN5IyMdBWlT3L5xb8GQ5ADUQlSqJnVPX
+         Mcqq+hJGy3oc4CZnUVONrGqZmqbuWBAqaPNn20dXwPs7EtAEFt4W5kbvZ7vJsRgtcy
+         IA8NBciiJ+CnSx+KnZdZGXFTG12OjqMWY94TYK9EMlU2Y/tMc+xSzP/XbsmXLud/Za
+         0H/mAPZmcb3DENHAWVD3iBsaLjVzLwyCl65LauHOEqzjgZXCkUpAqqyHp24tXeOVXq
+         gm4ZdYdNn4/bg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1F363E6D44B;
-        Tue, 15 Mar 2022 19:20:11 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E290DE6BBCA;
+        Tue, 15 Mar 2022 19:20:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Add Paolo Abeni to networking maintainers
+Subject: Re: [PATCH net-next v2 00/11][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2022-03-14
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164737201112.25309.5783001055134034064.git-patchwork-notify@kernel.org>
-Date:   Tue, 15 Mar 2022 19:20:11 +0000
-References: <20220314222819.958428-1-kuba@kernel.org>
-In-Reply-To: <20220314222819.958428-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Message-Id: <164737201392.25309.7603305703350572277.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Mar 2022 19:20:13 +0000
+References: <20220315011155.2166817-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220315011155.2166817-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        jacob.e.keller@intel.com
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,22 +59,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-On Mon, 14 Mar 2022 15:28:19 -0700 you wrote:
-> Growing the network maintainers team from 2 to 3.
-> Welcome Paolo! :)
+On Mon, 14 Mar 2022 18:11:44 -0700 you wrote:
+> Jacob Keller says:
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> ---
->  MAINTAINERS | 2 ++
->  1 file changed, 2 insertions(+)
+> The ice_virtchnl_pf.c file has become a single place for a lot of
+> virtualization functionality. This includes most of the virtchnl message
+> handling, integration with kernel hooks like the .ndo operations, reset
+> logic, and more.
+> 
+> [...]
 
 Here is the summary with links:
-  - [net] Add Paolo Abeni to networking maintainers
-    https://git.kernel.org/netdev/net/c/e9c14b59ea2e
+  - [net-next,v2,01/11] ice: rename ice_sriov.c to ice_vf_mbx.c
+    https://git.kernel.org/netdev/net-next/c/d775155a8661
+  - [net-next,v2,02/11] ice: rename ice_virtchnl_pf.c to ice_sriov.c
+    https://git.kernel.org/netdev/net-next/c/0deb0bf70c3f
+  - [net-next,v2,03/11] ice: remove circular header dependencies on ice.h
+    https://git.kernel.org/netdev/net-next/c/649c87c6ff52
+  - [net-next,v2,04/11] ice: convert vf->vc_ops to a const pointer
+    https://git.kernel.org/netdev/net-next/c/a7e117109a25
+  - [net-next,v2,05/11] ice: remove unused definitions from ice_sriov.h
+    https://git.kernel.org/netdev/net-next/c/00a57e2959bd
+  - [net-next,v2,06/11] ice: rename ICE_MAX_VF_COUNT to avoid confusion
+    https://git.kernel.org/netdev/net-next/c/dc36796eadca
+  - [net-next,v2,07/11] ice: refactor spoofchk control code in ice_sriov.c
+    https://git.kernel.org/netdev/net-next/c/a8ea6d86bd98
+  - [net-next,v2,08/11] ice: move ice_set_vf_port_vlan near other .ndo ops
+    https://git.kernel.org/netdev/net-next/c/346f7aa3c773
+  - [net-next,v2,09/11] ice: cleanup error logging for ice_ena_vfs
+    https://git.kernel.org/netdev/net-next/c/94ab2488d467
+  - [net-next,v2,10/11] ice: log an error message when eswitch fails to configure
+    https://git.kernel.org/netdev/net-next/c/2b36944810b2
+  - [net-next,v2,11/11] ice: use ice_is_vf_trusted helper function
+    https://git.kernel.org/netdev/net-next/c/1261691dda6b
 
 You are awesome, thank you!
 -- 
