@@ -2,96 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D58794DA3FF
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 21:28:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 724394DA415
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 21:38:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351718AbiCOU3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 16:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+        id S242789AbiCOUjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 16:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351714AbiCOU3b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 16:29:31 -0400
-X-Greylist: delayed 72030 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 15 Mar 2022 13:28:18 PDT
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAEB32996
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 13:28:14 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id EBA2F2C02D7;
-        Tue, 15 Mar 2022 20:28:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1647376091;
-        bh=eZI2k1RiWyyrfBExA/IbaIvwwTldGAOYkJslcg+DGLI=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=BjuF/+EC3LO08/jwkjAo8mVlELMXT7XgdjL9mNpOPiGxTM9bN/cmcOz1UQO9O9vl1
-         Vn2PJ+8XoQD3hwdHVujcwIgC8PU3mU+3/ZPLFIMglOYC9khqQ8eoqzWw9zk0u9/X5e
-         jtyYivkXSd3TjQ1tIG5TcwVatD2rLTtM8RNMRBLzERygVLEcTw68oir+X678dqFgvv
-         iiXp0N/zTOq8jD8L9BhIoEk/8h6Q3LyYwrW1h1eoq9nQ3WNqOXrZNJBkJOKuQUvHmc
-         Eb1ZjesxJ6FmgWwPLcwFtRVGgWTevcAH9xOMI9ERbxo4sSwyTJeeTVcamwoR4XCZEd
-         YtEjKvlNxZPjw==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[2001:df5:b000:bc8::77]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B6230f6db0001>; Wed, 16 Mar 2022 09:28:11 +1300
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
- svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
- (TLS) id 15.0.1497.32; Wed, 16 Mar 2022 09:28:11 +1300
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.033; Wed, 16 Mar 2022 09:28:11 +1300
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 0/2] net: mvneta: Armada 98DX2530 SoC
-Thread-Topic: [PATCH net-next v3 0/2] net: mvneta: Armada 98DX2530 SoC
-Thread-Index: AQHYOAqCZ7ssWpsp5km7Bh3e8zXG5ay/EuMAgAD5c4A=
-Date:   Tue, 15 Mar 2022 20:28:10 +0000
-Message-ID: <ca07b0a6-bc9b-714b-82cf-f778341169c6@alliedtelesis.co.nz>
-References: <20220315011742.2465356-1-chris.packham@alliedtelesis.co.nz>
- <20220314223516.000780cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220314223516.000780cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.1.11]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A8AFC5FD9DC1D2459BE745527AF43B19@atlnz.lc>
-Content-Transfer-Encoding: base64
+        with ESMTP id S238876AbiCOUjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 16:39:40 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E693434A0
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 13:38:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647376704;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=KMDY+gLoV9k745Yqvlwn4CapRWlH0lMiANSIpNvkV7k=;
+    b=ToAsZtF1zmx0A/SpVGAo37EV4fLF/7AdnoZueaGwCPK5PbSt10EjLz2vhnl0Su38Nz
+    sd0tdzy9xONWqIrEQg8l3dtGYsfflMYJ6gN86reDdK7kLUrWls3rs0l6WR7Q3KsLl7O0
+    rQ3oXnmDoEm/E1d6mcESNZcXYwMJnQLjp13WIFWwGWN1bWCufpO2bwfFxpA6FhEKf5Y2
+    3yipBCOkMZOP+IxKFv18/ChNhHkQHCCKE6Tui0hhhF72ur3ZHeSBxem1JQ9mBpzRhB3f
+    IVF5q2krDKZwaB0Uo8/U6VjtMoUI0DQPM5+slSoYWs4HzWZUoXfgT10ldINHbP+yqa5o
+    KbOQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS/xvEBL7X5sbo3UIh9IyLecSWJafUvprl4"
+X-RZG-CLASS-ID: mo00
+Received: from silver.lan
+    by smtp.strato.de (RZmta 47.41.0 AUTH)
+    with ESMTPSA id a046a1y2FKcO13G
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 15 Mar 2022 21:38:24 +0100 (CET)
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     netdev@vger.kernel.org
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+Subject: [net-next] can: isotp: sanitize CAN ID checks in isotp_bind()
+Date:   Tue, 15 Mar 2022 21:37:48 +0100
+Message-Id: <20220315203748.1892-1-socketcan@hartkopp.net>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=Xf/6aR1Nyvzi7BryhOrcLQ==:117 a=xqWC_Br6kY4A:10 a=oKJsc7D3gJEA:10 a=IkcTkHD0fZMA:10 a=o8Y5sQTvuykA:10 a=62ntRvTiAAAA:8 a=VwQbUJbxAAAA:8 a=WxQsor5ude-MpjZo5R0A:9 a=QEXdDO2ut3YA:10 a=pToNdpNmrtiFLRE6bQ9Z:22 a=AjGcO6oz07-iQ99wixmX:22
-X-SEG-SpamProfiler-Score: 0
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SCC_BODY_URI_ONLY,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAxNS8wMy8yMiAxODozNSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+IE9uIFR1ZSwgMTUg
-TWFyIDIwMjIgMTQ6MTc6NDAgKzEzMDAgQ2hyaXMgUGFja2hhbSB3cm90ZToNCj4+IFRoaXMgaXMg
-c3BsaXQgb2ZmIGZyb20gWzFdIHRvIGxldCBpdCBnbyBpbiB2aWEgbmV0LW5leHQgcmF0aGVyIHRo
-YW4gd2FpdGluZyBmb3INCj4+IHRoZSByZXN0IG9mIHRoZSBzZXJpZXMgdG8gbGFuZC4NCj4+DQo+
-PiBbMV0gLSBodHRwczovL3NjYW5tYWlsLnRydXN0d2F2ZS5jb20vP2M9MjA5ODgmZD1uS1d3NG90
-QlM4bm83MTEtbHkxRk5DNHVSMHYzTGt5c1J2ZHhZd20xUmcmdT1odHRwcyUzYSUyZiUyZmxvcmUl
-MmVrZXJuZWwlMmVvcmclMmZsa21sJTJmMjAyMjAzMTQyMTMxNDMlMmUyNDA0MTYyLTEtY2hyaXMl
-MmVwYWNraGFtJTQwYWxsaWVkdGVsZXNpcyUyZWNvJTJlbnolMmYNCj4gUGF0Y2h3b3JrIHNheXMg
-aXQgZG9lc24ndCBhcHBseSBjbGVhbmx5IHRvIG5ldC1uZXh0IFsxXS4NCj4gQ291bGQgeW91IGRv
-dWJsZSBjaGVjaz8NCj4NCj4gWzFdIGh0dHBzOi8vc2Nhbm1haWwudHJ1c3R3YXZlLmNvbS8/Yz0y
-MDk4OCZkPW5LV3c0b3RCUzhubzcxMS1seTFGTkM0dVIwdjNMa3lzUnF4OGFGMjFRUSZ1PWh0dHBz
-JTNhJTJmJTJmZ2l0JTJla2VybmVsJTJlb3JnJTJmcHViJTJmc2NtJTJmbGludXglMmZrZXJuZWwl
-MmZnaXQlMmZuZXRkZXYlMmZuZXQtbmV4dCUyZWdpdCUyZg0KWWVhaCBzb3JyeSBsb29rcyBsaWtl
-IHRoaXMgd2lsbCBjbGFzaCB3aXRoIDcyYmI5NTMxMTYyYSAoIm5ldDogbXZuZXRhOiANCnJlb3Jk
-ZXIgaW5pdGlhbGlzYXRpb24iKS4gSSdsbCByZWJhc2UgbXkgYnJhbmNoIG9uIHRvcCBvZiANCm5l
-dC1uZXh0L21hc3Rlci4gVGhlIGxvZ2ljYWwgY2hhbmdlIGlzIHNpbXBsZSBlbm91Z2ggYnV0IEkg
-Y2FuIHNlZSB3aHkgDQpnaXQgYW0gd291bGQgb2JqZWN0Lg==
+Syzbot created an environment that lead to a state machine status that
+can not be reached with a compliant CAN ID address configuration.
+The provided address information consisted of CAN ID 0x6000001 and 0xC28001
+which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
+
+Sanitize the SFF/EFF CAN ID values before performing the address checks.
+
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ net/can/isotp.c | 41 +++++++++++++++++++++--------------------
+ 1 file changed, 21 insertions(+), 20 deletions(-)
+
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index d4c0b4704987..1662103ce125 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1146,19 +1146,30 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+ 	struct sock *sk = sock->sk;
+ 	struct isotp_sock *so = isotp_sk(sk);
+ 	struct net *net = sock_net(sk);
+ 	int ifindex;
+ 	struct net_device *dev;
++	canid_t tx_id, rx_id;
+ 	int err = 0;
+ 	int notify_enetdown = 0;
+ 	int do_rx_reg = 1;
+ 
+ 	if (len < ISOTP_MIN_NAMELEN)
+ 		return -EINVAL;
+ 
+-	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-		return -EADDRNOTAVAIL;
++	/* sanitize tx/rx CAN identifiers */
++	tx_id = addr->can_addr.tp.tx_id;
++	if (tx_id & CAN_EFF_FLAG)
++		tx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		tx_id &= CAN_SFF_MASK;
++
++	rx_id = addr->can_addr.tp.rx_id;
++	if (rx_id & CAN_EFF_FLAG)
++		rx_id &= (CAN_EFF_FLAG | CAN_EFF_MASK);
++	else
++		rx_id &= CAN_SFF_MASK;
+ 
+ 	if (!addr->can_ifindex)
+ 		return -ENODEV;
+ 
+ 	lock_sock(sk);
+@@ -1166,25 +1177,17 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+ 	/* do not register frame reception for functional addressing */
+ 	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
+ 		do_rx_reg = 0;
+ 
+ 	/* do not validate rx address for functional addressing */
+-	if (do_rx_reg) {
+-		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
+-
+-		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
+-			err = -EADDRNOTAVAIL;
+-			goto out;
+-		}
++	if (do_rx_reg && rx_id == tx_id) {
++		err = -EADDRNOTAVAIL;
++		goto out;
+ 	}
+ 
+ 	if (so->bound && addr->can_ifindex == so->ifindex &&
+-	    addr->can_addr.tp.rx_id == so->rxid &&
+-	    addr->can_addr.tp.tx_id == so->txid)
++	    rx_id == so->rxid && tx_id == so->txid)
+ 		goto out;
+ 
+ 	dev = dev_get_by_index(net, addr->can_ifindex);
+ 	if (!dev) {
+ 		err = -ENODEV;
+@@ -1204,20 +1207,18 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+ 		notify_enetdown = 1;
+ 
+ 	ifindex = dev->ifindex;
+ 
+ 	if (do_rx_reg) {
+-		can_rx_register(net, dev, addr->can_addr.tp.rx_id,
+-				SINGLE_MASK(addr->can_addr.tp.rx_id),
++		can_rx_register(net, dev, rx_id, SINGLE_MASK(rx_id),
+ 				isotp_rcv, sk, "isotp", sk);
+ 
+ 		/* no consecutive frame echo skb in flight */
+ 		so->cfecho = 0;
+ 
+ 		/* register for echo skb's */
+-		can_rx_register(net, dev, addr->can_addr.tp.tx_id,
+-				SINGLE_MASK(addr->can_addr.tp.tx_id),
++		can_rx_register(net, dev, tx_id, SINGLE_MASK(tx_id),
+ 				isotp_rcv_echo, sk, "isotpe", sk);
+ 	}
+ 
+ 	dev_put(dev);
+ 
+@@ -1237,12 +1238,12 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+ 		}
+ 	}
+ 
+ 	/* switch to new settings */
+ 	so->ifindex = ifindex;
+-	so->rxid = addr->can_addr.tp.rx_id;
+-	so->txid = addr->can_addr.tp.tx_id;
++	so->rxid = rx_id;
++	so->txid = tx_id;
+ 	so->bound = 1;
+ 
+ out:
+ 	release_sock(sk);
+ 
+-- 
+2.30.2
+
