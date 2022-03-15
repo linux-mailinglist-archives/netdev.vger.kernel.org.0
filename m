@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 651374D9762
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 10:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E95CD4D9761
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 10:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346465AbiCOJQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 05:16:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41024 "EHLO
+        id S239058AbiCOJQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 05:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346395AbiCOJQe (ORCPT
+        with ESMTP id S1346394AbiCOJQe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 05:16:34 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E7D74BBAF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EA274D9D8;
         Tue, 15 Mar 2022 02:15:23 -0700 (PDT)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 0E22163018;
+        by mail.netfilter.org (Postfix) with ESMTPSA id A6D626301A;
         Tue, 15 Mar 2022 10:13:03 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH nf-next 5/6] net/mlx5: Support GRE conntrack offload
-Date:   Tue, 15 Mar 2022 10:15:12 +0100
-Message-Id: <20220315091513.66544-6-pablo@netfilter.org>
+Subject: [PATCH nf-next 6/6] netfilter: bridge: clean up some inconsistent indenting
+Date:   Tue, 15 Mar 2022 10:15:13 +0100
+Message-Id: <20220315091513.66544-7-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220315091513.66544-1-pablo@netfilter.org>
 References: <20220315091513.66544-1-pablo@netfilter.org>
@@ -37,69 +37,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toshiaki Makita <toshiaki.makita1@gmail.com>
+From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 
-Support GREv0 without NAT.
+Eliminate the follow smatch warning:
 
-Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
-Acked-by: Paul Blakey <paulb@nvidia.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+net/bridge/netfilter/nf_conntrack_bridge.c:385 nf_ct_bridge_confirm()
+warn: inconsistent indenting.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 21 +++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ net/bridge/netfilter/nf_conntrack_bridge.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 875e77af0ae6..675bd6ede845 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -258,7 +258,8 @@ mlx5_tc_ct_rule_to_tuple(struct mlx5_ct_tuple *tuple, struct flow_rule *rule)
- 			return -EOPNOTSUPP;
- 		}
- 	} else {
--		return -EOPNOTSUPP;
-+		if (tuple->ip_proto != IPPROTO_GRE)
-+			return -EOPNOTSUPP;
- 	}
+diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
+index fdbed3158555..4a79d25c6391 100644
+--- a/net/bridge/netfilter/nf_conntrack_bridge.c
++++ b/net/bridge/netfilter/nf_conntrack_bridge.c
+@@ -380,7 +380,7 @@ static unsigned int nf_ct_bridge_confirm(struct sk_buff *skb)
+ 		protoff = skb_network_offset(skb) + ip_hdrlen(skb);
+ 		break;
+ 	case htons(ETH_P_IPV6): {
+-		 unsigned char pnum = ipv6_hdr(skb)->nexthdr;
++		unsigned char pnum = ipv6_hdr(skb)->nexthdr;
+ 		__be16 frag_off;
  
- 	return 0;
-@@ -807,7 +808,11 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
- 	attr->dest_chain = 0;
- 	attr->dest_ft = mlx5e_tc_post_act_get_ft(ct_priv->post_act);
- 	attr->ft = nat ? ct_priv->ct_nat : ct_priv->ct;
--	attr->outer_match_level = MLX5_MATCH_L4;
-+	if (entry->tuple.ip_proto == IPPROTO_TCP ||
-+	    entry->tuple.ip_proto == IPPROTO_UDP)
-+		attr->outer_match_level = MLX5_MATCH_L4;
-+	else
-+		attr->outer_match_level = MLX5_MATCH_L3;
- 	attr->counter = entry->counter->counter;
- 	attr->flags |= MLX5_ATTR_FLAG_NO_IN_PORT;
- 	if (ct_priv->ns_type == MLX5_FLOW_NAMESPACE_FDB)
-@@ -1224,16 +1229,20 @@ mlx5_tc_ct_skb_to_tuple(struct sk_buff *skb, struct mlx5_ct_tuple *tuple,
- 	struct flow_keys flow_keys;
- 
- 	skb_reset_network_header(skb);
--	skb_flow_dissect_flow_keys(skb, &flow_keys, 0);
-+	skb_flow_dissect_flow_keys(skb, &flow_keys, FLOW_DISSECTOR_F_STOP_BEFORE_ENCAP);
- 
- 	tuple->zone = zone;
- 
- 	if (flow_keys.basic.ip_proto != IPPROTO_TCP &&
--	    flow_keys.basic.ip_proto != IPPROTO_UDP)
-+	    flow_keys.basic.ip_proto != IPPROTO_UDP &&
-+	    flow_keys.basic.ip_proto != IPPROTO_GRE)
- 		return false;
- 
--	tuple->port.src = flow_keys.ports.src;
--	tuple->port.dst = flow_keys.ports.dst;
-+	if (flow_keys.basic.ip_proto == IPPROTO_TCP ||
-+	    flow_keys.basic.ip_proto == IPPROTO_UDP) {
-+		tuple->port.src = flow_keys.ports.src;
-+		tuple->port.dst = flow_keys.ports.dst;
-+	}
- 	tuple->n_proto = flow_keys.basic.n_proto;
- 	tuple->ip_proto = flow_keys.basic.ip_proto;
- 
+ 		protoff = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &pnum,
 -- 
 2.30.2
 
