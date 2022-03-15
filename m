@@ -2,157 +2,325 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C0824D93AB
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:19:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 237F24D93E2
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244184AbiCOFUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 01:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34956 "EHLO
+        id S238502AbiCOFcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 01:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243891AbiCOFUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:20:18 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040FC49268;
-        Mon, 14 Mar 2022 22:19:06 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22EMaUia016537;
-        Mon, 14 Mar 2022 22:18:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=M1awzgr4kel6jtQGt1Tq7zjSGoUPjiyjh41yOSz1lI8=;
- b=jC4pURNrM2cFKN0aKrTe53CsQVTlb8vtw62WjueUetZm3PO4VxNk7NO1WEp0Jql9SNg/
- X3VOuT6jT8FRbvSEv+vssOGltK4U9Z91jL+Fk1HRswAaRJon9G/u1wUT86J55JDFCCdp
- O8X4kwKjxiZga6N6kbv3jgqcWg0/ju42OaQ= 
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2174.outbound.protection.outlook.com [104.47.55.174])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3et62dehxc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Mar 2022 22:18:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nki2naJW7juweJ8stffgaixLM8IKkoG+OeSw6CNun3HFhWs1M1eBuD00PlmT7vkMwNzcgslWD9zpQAo2xAjfHf52jnRlOw/Rg4Rmj9Xh1xfbBwoXvWY+JBJ3WMoQYH2fAvloniqBJF+myXqYvru2qXkev7pUKWLp1EpYoCCRyaoLgsgeYYvtr67Qza57l7hh1ua4rwqYi+nwE849KAHl3xrgXwJbjYoeoWcHFrpBq/OKbql7BwCROa+TrLUHDeapG4J4glHMW68ubdzWOmHQuwKLU6bscKP5+cpvW7sjNW4nKBpPQmQy0UiyY9aJswX+BwxP/CR96kDdc17tWOXidw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M1awzgr4kel6jtQGt1Tq7zjSGoUPjiyjh41yOSz1lI8=;
- b=KfkgXHwwTBCpFpzL3UwZiDOONQgawy0HJyc8l1ABOwjoVThNDgPrOF34WEqTvHsznP+8S/ZGvk/biVbiC5AX0XFmaByOcR5gvKhhrXwepH/J9LZew++Ywrrm6KQVh9UhyjB9BVMZ6q3dLNXsR+Uug794lY1JwpY6YssS8qi67u9u+UFt10LpMVe+9ezvbAMvV4yvmwyjcfJFn+Ne6Optfm3ftAN0uR+cqtah0EJq1w1bX6supsXWMRTZ1sfd9R435ddqVSvkTcGFwcQ6YMzB3bqCl1cx9x3I5Y30DVAEDXlFjSSWJGqSR7j3TpzNfrSQNXCEJ8tjaQu8HjHcA0Zt3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by DM5PR15MB1689.namprd15.prod.outlook.com (2603:10b6:3:121::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.28; Tue, 15 Mar
- 2022 05:18:40 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c5c7:1f39:edaf:9d48]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::c5c7:1f39:edaf:9d48%4]) with mapi id 15.20.5061.028; Tue, 15 Mar 2022
- 05:18:40 +0000
-Message-ID: <e520afcd-795a-047b-2bf1-83e791433717@fb.com>
-Date:   Mon, 14 Mar 2022 22:18:36 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v3 2/2] bpf/selftests: Test skipping stacktrace
-Content-Language: en-US
-To:     Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Eugene Loh <eugene.loh@oracle.com>, Hao Luo <haoluo@google.com>
-References: <20220314182042.71025-1-namhyung@kernel.org>
- <20220314182042.71025-2-namhyung@kernel.org>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <20220314182042.71025-2-namhyung@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW4PR04CA0190.namprd04.prod.outlook.com
- (2603:10b6:303:86::15) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        with ESMTP id S236064AbiCOFcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:32:09 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6854924A
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 22:30:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1647322258; x=1678858258;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xrS/x0SWbsyZbBsm4mkx7QoWN554JDUYrmVMqWT+saE=;
+  b=kYOCuZrQxXBjvsim2ttfDXqB4vC678LWptioPLUJGQdhAQ2ChOcGzZ2u
+   RMCZ7LnpJGlG/oFokvJ+U33L8Eu+zy6tNdLwaLi0B5rAiAtLnY7r3SXeG
+   g38Oh0nQY1sLkrjzG3agegyOMlOsRG4tQMe4N/4D146G4Bz+MA9RBHtZ0
+   0=;
+X-IronPort-AV: E=Sophos;i="5.90,182,1643673600"; 
+   d="scan'208";a="202302952"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 15 Mar 2022 05:30:57 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-718d0906.us-west-2.amazon.com (Postfix) with ESMTPS id 071483E1899;
+        Tue, 15 Mar 2022 05:30:57 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Tue, 15 Mar 2022 05:30:47 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.162.9) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.32; Tue, 15 Mar 2022 05:30:44 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kuniyu@amazon.co.jp>
+CC:     <davem@davemloft.net>, <eric.dumazet@gmail.com>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <netdev@vger.kernel.org>,
+        <rao.shoaib@oracle.com>
+Subject: Re: [PATCH net] af_unix: Support POLLPRI for OOB.
+Date:   Tue, 15 Mar 2022 14:30:40 +0900
+Message-ID: <20220315053040.70545-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220315004503.46906-1-kuniyu@amazon.co.jp>
+References: <20220315004503.46906-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3b5a70dc-0d00-40c1-351f-08da06434417
-X-MS-TrafficTypeDiagnostic: DM5PR15MB1689:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR15MB1689091ACE6C00B6D89C1C3CD3109@DM5PR15MB1689.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GcNBkiNimVGVC8yKT4YvGliIJjHAy1BRYj6F7TzEpGLuJ/47gbak/01adFU0fXUS6HJv4ejqIK90c99YKtsFUdn0orPNG3soRgVSPOANQxivLT6zQTfO6pueVUJlno7jQw1kF8KaDjkBrEYEqZw2za15U7+c6CJ2hgC/8BT4NmUzuCVYPQZibhG6Cl8dumBQarCAZHasR7srL8+o5HyWQl1lIA9aATREmlXEVVaqmpPbNe8Btl8cxlUyPsjNWieRtVh7M1hy+lb7eFzzYsRY9xObrNZhFiF/PNsBO67HZDDwXB9eiYgjGvnu0vlh0awTzbBp4uxAVK+vyZmGvyGJO+zliX6e9jP4qA6Arjk3ToiomYncnonsFHuRKKF795Y2fFeUvep+tMwpOcqVmp+LzF6ys+2ILT4xw/mm418iNcxGT6xHOYGhbEBB2+mRXX5N/Nd3m5sdzPaKf4WL9bAW9zLYBtTareR9GNUcp6hGKDgcsCGvALDqJw6ZHxb+2zSPSDuiA4N+9SDSDosNJHEE0xRq4hPQlXmQ1oZ032t1LBKO2rtfcDqdgQ9Iedp9Pn685++UAVjUKWDidlbnaN8Xumk+e28an33yXOdFMNyeaCo16g2lwdTJ9OArOR3rHRpb9lbX9SSp6V7Q5cS5ZI/baBYhqgaIWB9qzOtZOeSEPqtofdc4lIAYC9nTd+ujsPoeHlpsIz7Y3MZXZ/Aj+MQwRWB1vul4w5HsUMk5g+K1z4Q=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(31686004)(54906003)(6486002)(36756003)(4326008)(52116002)(6666004)(6512007)(53546011)(5660300002)(8676002)(86362001)(6506007)(316002)(31696002)(2906002)(8936002)(66556008)(186003)(7416002)(66946007)(66476007)(4744005)(2616005)(38100700002)(110136005)(508600001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RHVTWEl1MFVLSFRrTmFaRmprZitjZjZnbGVpWnFEdmxOZWhYVnZIdmRlUGtM?=
- =?utf-8?B?alZNc0V1bU5EU1dNcmphbFk5WmQrYkdobXFsOVd4ZW5yUWtybWhvVjE4SmNw?=
- =?utf-8?B?a0VIY2xRNlVRSXZXOVFKWGdhUS91UllNOGhXbE1JdHB4UmU2UTNieHYwOS9j?=
- =?utf-8?B?VTNQWnVoR1BySkZvUTIra1lCMGdMVThYbko2MmNNT1lyVGE2NFM2dTFtR2xV?=
- =?utf-8?B?ZXp2dDRYaHZxL1NqRlpUekxGSk96OHRqWEhzc2hqZ0pEbjFDSTI4UnZ0NUNn?=
- =?utf-8?B?OUJMaFJ3b01JdkVWRXdMTGNGd1R2Z3VxYUZwMGZZZ1daeFZaTVdZYWVYck5z?=
- =?utf-8?B?TDdLeWZEc1dVSlRTaDMrZ1hnTXRUczJzZ3BENlVQMStOOGdCZlZxS3JBb0Fw?=
- =?utf-8?B?TGdNbEg1UWRjai9yVWRyc2Z2S2hIZlNPRm9sVzZ5cmhaNktBR25lR2MyZEN4?=
- =?utf-8?B?NTNYdTBxV2RrekpWdkxtSVVjMjdXOXMzYmF2cmJDMXRaS1ZqY1NUMTdyc1Yz?=
- =?utf-8?B?UFhYQTdnNmNXUEpZaE1hbXl0eVJ6T1JoTU1HSnBRbW9wNFlvSFhvL0EvYnoy?=
- =?utf-8?B?cXZqRkJQK0tjNytiNnB6dGNSenkwbGNpWnZpUVFLdXNPZGFTSll0cld5aDRa?=
- =?utf-8?B?S2d4ZklsaG5vS2NVOG5sRmJNY056cWhWdGV0b0hoK2k4S0JkVzBDc3VrSUFC?=
- =?utf-8?B?T3R5eGxhZmwxOW81cDZtdGMzbUkrTExnZklLWlBBSGlYbitUL21FQkFSeTd1?=
- =?utf-8?B?a3dJalljcXVqVmIyTU5velhFT0M4R1pBUU90WXRWWUFUSDYvME1odUZIbVRk?=
- =?utf-8?B?WmlRcjM5UlRxdlh2aEV0SEQ2YitSeXN6TExYYUUrODFzUndBWnhPdTFoTGFj?=
- =?utf-8?B?M09sbXMxWWxDNEFxN0lBWXk0NFhUaFZFZHFXQXlsL0ZKa2hjQ3NYMWUyQ0Nt?=
- =?utf-8?B?SjRBa3pZcmxjb1orN25BU1pTTTJBREJNaUoyaEN5SEcvdzRZQlpjb3VCQWxz?=
- =?utf-8?B?V3dEVkF0TUM2ZTZOMjRyR0cwMkJGTEM3MHoxMEJZK3BhQUMvdXdId1lZT0Rj?=
- =?utf-8?B?R2ovbU5LQjRJVC96VC9VT2pSWU5EaTJ0ckF3ZHI0Vmx5R052OG1qRU9FOUpM?=
- =?utf-8?B?VDF1M1Z2ZnB4S25JTVdRUnV1dUtlRGUyYUxoa3RtaGVvTDlES0RNM243Qkxl?=
- =?utf-8?B?U0lSSEIxT0ZsdGU3RDBkK0ttM1Jtd2d5NGhUNXJ5RXRyQy9NT1ZhKzlnNUxS?=
- =?utf-8?B?YUZpcmNzaHFJVUVnbVJFNk1hUzRDamlQMDd1NlZMaTVnenpTWXkzTTdRejgy?=
- =?utf-8?B?SG02R2xmUEZwbjA5Z1BtakRKakRDRmhkSEwzZFU3U3dGa1M3MXo5ZmhxWGQ2?=
- =?utf-8?B?dmFjRDFUWXExOWVuS0VJNllXVTlaV2NPNjdnT2cxTXRrcDhMNnNoQWtaNmQy?=
- =?utf-8?B?YTJsWWRWTEFVNTlLSkFNb1ZYM2R0bE4zZFVHaFhiUklqTG0vTG1ub3JFdDZK?=
- =?utf-8?B?cVRCa2FrdkhtNFYwTU1SU1BON1VmYWcvK3BDMUo0V0ZkLzMvd1dHd3NmbVBj?=
- =?utf-8?B?eWlKYS9YYTM3SzU0bnF2QjlXZlFOWmpmdVEyV0R4a2Q2SVhoT2R1VGxDYU5R?=
- =?utf-8?B?K3I4MXl4a3BqTUI3NDZYV2pvZWQ3d2VWTjgwSEozWDI0eEdlUFBtekhjWktn?=
- =?utf-8?B?QWpaWGN4Rnp6alZOYWd6MCtFSGRnSXliMjBWNjNrQ3JlbUVWR0hLbkFOMVV5?=
- =?utf-8?B?Y3ZGaThVZmVmSUx6SUl3L0xtNTdyNDlIL3JhczBBYTY3VW5sL29CMCt2c2lz?=
- =?utf-8?B?eTl5d3V4N1UwdUgxaHQzTi82YjQrUDVlSmY0OGFSdDMrRWRQcXU5Zk9xbTEz?=
- =?utf-8?B?RnhTdGs4YVNNSXV2UFJReXBwVHJxSVErTVRNK3M1SUVmcWNFUnMxc0N1cDhZ?=
- =?utf-8?B?Y3IxV0xpWElUbGkzQ200MkUwZXhzc2dzS21YT3pLSkcrTk9iSmVya1lKK0R2?=
- =?utf-8?B?Z1BDU1gvQ3lnPT0=?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3b5a70dc-0d00-40c1-351f-08da06434417
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 05:18:40.2856
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: otI+/QzMH7b8VMOhHeC+5eq5atjh4uwBy0WbR1dMd1lwT2c7aEl80Qx3T2aFhSna
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1689
-X-Proofpoint-ORIG-GUID: J6jv_3AVf2Y0E8W1a0Sx7wOD7GOn7wwM
-X-Proofpoint-GUID: J6jv_3AVf2Y0E8W1a0Sx7wOD7GOn7wwM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-14_14,2022-03-14_02,2022-02-23_01
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.9]
+X-ClientProxiedBy: EX13d09UWA002.ant.amazon.com (10.43.160.186) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/14/22 11:20 AM, Namhyung Kim wrote:
-> Add a test case for stacktrace with skip > 0 using a small sized
-> buffer.  It didn't support skipping entries greater than or equal to
-> the size of buffer and filled the skipped part with 0.
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Date:   Tue, 15 Mar 2022 09:45:03 +0900
+> From:   Eric Dumazet <eric.dumazet@gmail.com>
+> Date:   Mon, 14 Mar 2022 17:26:54 -0700
+>> On 3/14/22 11:10, Shoaib Rao wrote:
+>>>
+>>> On 3/14/22 10:42, Eric Dumazet wrote:
+>>>>
+>>>> On 3/13/22 22:21, Kuniyuki Iwashima wrote:
+>>>>> The commit 314001f0bf92 ("af_unix: Add OOB support") introduced OOB for
+>>>>> AF_UNIX, but it lacks some changes for POLLPRI.  Let's add the missing
+>>>>> piece.
+>>>>>
+>>>>> In the selftest, normal datagrams are sent followed by OOB data, so 
+>>>>> this
+>>>>> commit replaces `POLLIN | POLLPRI` with just `POLLPRI` in the first 
+>>>>> test
+>>>>> case.
+>>>>>
+>>>>> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
+>>>>> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+>>>>> ---
+>>>>>   net/unix/af_unix.c                                  | 2 ++
+>>>>>   tools/testing/selftests/net/af_unix/test_unix_oob.c | 6 +++---
+>>>>>   2 files changed, 5 insertions(+), 3 deletions(-)
+>>>>>
+>>>>> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+>>>>> index c19569819866..711d21b1c3e1 100644
+>>>>> --- a/net/unix/af_unix.c
+>>>>> +++ b/net/unix/af_unix.c
+>>>>> @@ -3139,6 +3139,8 @@ static __poll_t unix_poll(struct file *file, 
+>>>>> struct socket *sock, poll_table *wa
+>>>>>           mask |= EPOLLIN | EPOLLRDNORM;
+>>>>>       if (sk_is_readable(sk))
+>>>>>           mask |= EPOLLIN | EPOLLRDNORM;
+>>>>> +    if (unix_sk(sk)->oob_skb)
+>>>>> +        mask |= EPOLLPRI;
+>>>>
+>>>>
+>>>> This adds another data-race, maybe add something to avoid another 
+>>>> syzbot report ?
+>>>
+>>> It's not obvious to me how there would be a race as it is just a check.
+>>>
+>> 
+>> KCSAN will detect that whenever unix_poll() reads oob_skb,
+>> 
+>> its value can be changed by another cpu.
+>> 
+>> 
+>> unix_poll() runs without holding a lock.
 > 
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> Thanks for pointing out!
+> So, READ_ONCE() is necessary here, right?
+> oob_skb is written under the lock, so I think there is no paired
+> WRITE_ONCE(), but is it ok?
 
-Acked-by: Yonghong Song <yhs@fb.com>
+I've tested the prog below and KCSAN repoted the race.
+Also, READ_ONCE() suppressed it.
+
+Thank you Eric!
+I'll post v2 with READ_ONCE().
+
+---8<---
+[   60.021825] ==================================================================
+[   60.021999] BUG: KCSAN: data-race in unix_poll / unix_stream_sendmsg
+[   60.021999] 
+[   60.021999] write to 0xffff8880050d9ff0 of 8 bytes by task 175 on cpu 3:
+[   60.021999]  unix_stream_sendmsg+0x9dc/0xbb0
+[   60.021999]  sock_sendmsg+0x90/0xa0
+[   60.021999]  __sys_sendto+0x138/0x190
+[   60.021999]  __x64_sys_sendto+0x6d/0x80
+[   60.021999]  do_syscall_64+0x38/0x80
+[   60.021999]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   60.021999] 
+[   60.021999] read to 0xffff8880050d9ff0 of 8 bytes by task 176 on cpu 2:
+[   60.021999]  unix_poll+0xf4/0x1b0
+[   60.021999]  sock_poll+0xa4/0x1e0
+[   60.021999]  do_sys_poll+0x326/0x750
+[   60.021999]  __x64_sys_poll+0x55/0x1f0
+[   60.021999]  do_syscall_64+0x38/0x80
+[   60.021999]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   60.021999] 
+[   60.021999] value changed: 0xffff8880056bf000 -> 0xffff8880056bff00
+[   60.021999] 
+[   60.021999] Reported by Kernel Concurrency Sanitizer on:
+[   60.021999] CPU: 2 PID: 176 Comm: unix_race_oob Not tainted 5.17.0-rc5-59531-gbdaabdfaadf8-dirty #9
+[   60.021999] Hardware name: Red Hat KVM, BIOS 1.11.0-2.amzn2 04/01/2014
+[   60.021999] ==================================================================
+---8<---
+
+---8<---
+#include <errno.h>
+#include <poll.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <sys/wait.h>
+
+#define offsetof(type, member) ((size_t)&((type *)0)->member)
+#define SUNADDR "\0test\0"
+#define ADDRLEN (socklen_t)(offsetof(struct sockaddr_un, sun_path) + 6)
+
+int setup_server(void)
+{
+	struct sockaddr_un addr = {
+		.sun_family = AF_UNIX,
+		.sun_path = SUNADDR,
+	};
+	int err, fd;
+
+	fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0);
+	if (fd == -1) {
+		perror("socket");
+		goto out;
+	}
+
+	err = bind(fd, (struct sockaddr *)&addr, ADDRLEN);
+	if (err == -1) {
+		perror("bind");
+		goto err;
+	}
+
+	err = listen(fd, 32);
+	if (err == -1) {
+		perror("listen");
+		goto err;
+	}
+
+out:
+	return fd;
+
+err:
+	close(fd);
+	return err;
+}
+
+int setup_client(void)
+{
+	struct sockaddr_un addr = {
+		.sun_family = AF_UNIX,
+		.sun_path = SUNADDR,
+	};
+	int err, fd;
+
+	fd = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0);
+	if (fd == -1) {
+		perror("socket");
+		goto out;
+	}
+
+	err = connect(fd, (struct sockaddr *)&addr, ADDRLEN);
+	if (err == -1) {
+		perror("connect");
+		goto err;
+	}
+
+out:
+	return fd;
+
+err:
+	close(fd);
+	return err;
+}
+
+int setup_child(int server)
+{
+	struct sockaddr_un addr;
+	socklen_t len;
+	int child;
+
+	child = accept(server, (struct sockaddr *)&addr, &len);
+	if (child == -1)
+		perror("accept");
+
+	return child;
+}
+
+int sender(int client)
+{
+	char c = 'a';
+	int ret;
+
+	printf("start sender\n");
+
+	while (1) {
+		ret = send(client, &c, sizeof(c), MSG_OOB);
+		if (ret != 1 || errno)
+			perror("send");
+	}
+
+	return 0;
+}
+
+
+int receiver(int child)
+{
+	struct pollfd pfds[1];
+	char buf[1024];
+	int ret;
+
+	pfds[0].fd = child;
+	pfds[0].events = POLLIN | POLLPRI;
+
+	printf("start receiver\n");
+
+	while (1) {
+		poll(pfds, 1, -1);
+
+		ret = recv(child, buf, sizeof(buf), MSG_OOB);
+		if (ret < 0 || errno)
+			perror("recv (MSG_OOB)");
+
+		ret = recv(child, buf, sizeof(buf), 0);
+		if (ret < 0 || errno)
+			perror("recv");
+	}
+
+	return 0;
+}
+
+int main(void)
+{
+	int server, client, child;
+	int status;
+	pid_t pid;
+
+	server = setup_server();
+	if (server == -1)
+		goto out;
+
+	client = setup_client();
+	if (client == -1)
+		goto close_server;
+
+	child = setup_child(server);
+	if (child == -1)
+		goto close_client;
+
+	pid = fork();
+	if (pid == 0)
+		return sender(client);
+
+	pid = fork();
+	if (pid == 0)
+		return receiver(child);
+
+	wait(&status);
+
+	close(child);
+close_client:
+	close(client);
+close_server:
+	close(server);
+out:
+	return 0;
+}
+---8<---
