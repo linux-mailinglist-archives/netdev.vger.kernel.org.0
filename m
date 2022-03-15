@@ -2,141 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4CD64D922D
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 02:18:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B244D9257
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 02:54:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344255AbiCOBTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 21:19:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
+        id S1344315AbiCOBza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 21:55:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244682AbiCOBTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 21:19:09 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDFEA13DC0
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 18:17:55 -0700 (PDT)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 3241C2C081A;
-        Tue, 15 Mar 2022 01:17:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1647307073;
-        bh=xFxg4vlJ6QYWPTnApar1C0pT0qlh+5rQD5BrtA8z1hY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agl/vIISU/DDAW/16d/QPyNjeGWiArTWMyBD3EP2xcLyZxp8yXvY/xapIB0oKshqr
-         wIH0bMWQH/t/RCv4CujynP4nPf3k3pwJRAmQJEQ3FsrxO2fAOp7uGtLfDmtWBbjRYy
-         xvt7zszlAcIXcNtacnDO02rZpCd26HG3fGmuxy+60PHyFfAAG+3j3O9pgCM0TSmfGL
-         x+774+nCUWaPbaLbwZFYwe97Ex+KxlyxcSmKE4gJYA55pqXMIfkarx6dogBepHd1AQ
-         UmsPU1ZSPXWoVBWVq2bJnaFZTqsyOxTNagQwRFe8xE5hUnsi4PD23/WyiIY8N9b7UG
-         Rl3xa/0UlyUFQ==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B622fe9400002>; Tue, 15 Mar 2022 14:17:52 +1300
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id C889A13EE56;
-        Tue, 15 Mar 2022 14:17:52 +1300 (NZDT)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id 5AC842A2678; Tue, 15 Mar 2022 14:17:50 +1300 (NZDT)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        thomas.petazzoni@bootlin.com
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH net-next v3 2/2] net: mvneta: Add support for 98DX2530 Ethernet port
-Date:   Tue, 15 Mar 2022 14:17:42 +1300
-Message-Id: <20220315011742.2465356-3-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220315011742.2465356-1-chris.packham@alliedtelesis.co.nz>
-References: <20220315011742.2465356-1-chris.packham@alliedtelesis.co.nz>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=LxpfyEy1a6e1ozZBTSYA:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232835AbiCOBza (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 21:55:30 -0400
+Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D60955B3;
+        Mon, 14 Mar 2022 18:54:17 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app2 (Coremail) with SMTP id by_KCgCHbwK98S9iU9IPAA--.718S2;
+        Tue, 15 Mar 2022 09:54:09 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, ralf@linux-mips.org,
+        jreuter@yaina.de, dan.carpenter@oracle.com, thomas@osterried.de,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net V4 1/2] ax25: Fix refcount leaks caused by ax25_cb_del()
+Date:   Tue, 15 Mar 2022 09:54:03 +0800
+Message-Id: <20220315015403.79201-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgCHbwK98S9iU9IPAA--.718S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxGw1Uur4DKw15Cw18JF43Jrb_yoW5CF1DpF
+        WUtF4rJrZ7tFs5Crs8W34xWF1rZr4j9393Gr1Yva4Ik3s8Jas5J34xtryUtrW3JFZ8JF48
+        Xw17W3WfAF1kuF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvm1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
+        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IY
+        c2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4AY6r1j6r
+        4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF
+        67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2I
+        x0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2
+        z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnU
+        UI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwKAVZdtYrI6AAAsR
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 98DX2530 SoC is similar to the Armada 3700 except it needs a
-different MBUS window configuration. Add a new compatible string to
-identify this device and the required MBUS window configuration.
+The previous commit d01ffb9eee4a ("ax25: add refcount in ax25_dev to
+avoid UAF bugs") and commit feef318c855a ("ax25: fix UAF bugs of
+net_device caused by rebinding operation") increase the refcounts of
+ax25_dev and net_device in ax25_bind() and decrease the matching refcounts
+in ax25_kill_by_device() in order to prevent UAF bugs, but there are
+reference count leaks.
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+The root cause of refcount leaks is shown below:
+
+     (Thread 1)                      |      (Thread 2)
+ax25_bind()                          |
+ ...                                 |
+ ax25_addr_ax25dev()                 |
+  ax25_dev_hold()   //(1)            |
+  ...                                |
+ dev_hold_track()   //(2)            |
+ ...                                 | ax25_destroy_socket()
+                                     |  ax25_cb_del()
+                                     |   ...
+                                     |   hlist_del_init() //(3)
+                                     |
+                                     |
+     (Thread 3)                      |
+ax25_kill_by_device()                |
+ ...                                 |
+ ax25_for_each(s, &ax25_list) {      |
+  if (s->ax25_dev == ax25_dev) //(4) |
+   ...                               |
+
+Firstly, we use ax25_bind() to increase the refcount of ax25_dev in
+position (1) and increase the refcount of net_device in position (2).
+Then, we use ax25_cb_del() invoked by ax25_destroy_socket() to delete
+ax25_cb in hlist in position (3) before calling ax25_kill_by_device().
+Finally, the decrements of refcounts in ax25_kill_by_device() will not
+be executed, because no s->ax25_dev equals to ax25_dev in position (4).
+
+This patch adds decrements of refcounts in ax25_release() and use
+lock_sock() to do synchronization. If refcounts decrease in ax25_release(),
+the decrements of refcounts in ax25_kill_by_device() will not be
+executed and vice versa.
+
+Fixes: d01ffb9eee4a ("ax25: add refcount in ax25_dev to avoid UAF bugs")
+Fixes: 87563a043cef ("ax25: fix reference count leaks of ax25_dev")
+Fixes: feef318c855a ("ax25: fix UAF bugs of net_device caused by rebinding operation")
+Reported-by: Thomas Osterried <thomas@osterried.de>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
+Changes in V4:
+  - Add decrements of refcounts in ax25_release() instead of using any additional variables.
 
-Notes:
-    Changes in v3:
-    - Split from larger series
-    - Add review from Andrew
-    Changes in v2:
-    - New
+ net/ax25/af_ax25.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
- drivers/net/ethernet/marvell/mvneta.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet=
-/marvell/mvneta.c
-index 83c8908f0cc7..000929794266 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -76,6 +76,8 @@
- #define MVNETA_WIN_SIZE(w)                      (0x2204 + ((w) << 3))
- #define MVNETA_WIN_REMAP(w)                     (0x2280 + ((w) << 2))
- #define MVNETA_BASE_ADDR_ENABLE                 0x2290
-+#define      MVNETA_AC5_CNM_DDR_TARGET		0x2
-+#define      MVNETA_AC5_CNM_DDR_ATTR		0xb
- #define MVNETA_ACCESS_PROTECT_ENABLE            0x2294
- #define MVNETA_PORT_CONFIG                      0x2400
- #define      MVNETA_UNI_PROMISC_MODE            BIT(0)
-@@ -544,6 +546,7 @@ struct mvneta_port {
-=20
- 	/* Flags for special SoC configurations */
- 	bool neta_armada3700;
-+	bool neta_ac5;
- 	u16 rx_offset_correction;
- 	const struct mbus_dram_target_info *dram_target_info;
- };
-@@ -5272,6 +5275,10 @@ static void mvneta_conf_mbus_windows(struct mvneta=
-_port *pp,
- 			win_protect |=3D 3 << (2 * i);
- 		}
- 	} else {
-+		if (pp->neta_ac5)
-+			mvreg_write(pp, MVNETA_WIN_BASE(0),
-+				    (MVNETA_AC5_CNM_DDR_ATTR << 8) |
-+				    MVNETA_AC5_CNM_DDR_TARGET);
- 		/* For Armada3700 open default 4GB Mbus window, leaving
- 		 * arbitration of target/attribute to a different layer
- 		 * of configuration.
-@@ -5397,6 +5404,11 @@ static int mvneta_probe(struct platform_device *pd=
-ev)
- 	/* Get special SoC configurations */
- 	if (of_device_is_compatible(dn, "marvell,armada-3700-neta"))
- 		pp->neta_armada3700 =3D true;
-+	if (of_device_is_compatible(dn, "marvell,armada-ac5-neta")) {
-+		pp->neta_armada3700 =3D true;
-+		pp->neta_ac5 =3D true;
-+	}
-+
-=20
- 	pp->clk =3D devm_clk_get(&pdev->dev, "core");
- 	if (IS_ERR(pp->clk))
-@@ -5720,6 +5732,7 @@ static const struct of_device_id mvneta_match[] =3D=
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 6bd09718077..0886109421a 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -98,8 +98,10 @@ static void ax25_kill_by_device(struct net_device *dev)
+ 			spin_unlock_bh(&ax25_list_lock);
+ 			lock_sock(sk);
+ 			s->ax25_dev = NULL;
+-			dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+-			ax25_dev_put(ax25_dev);
++			if (sk->sk_wq) {
++				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++				ax25_dev_put(ax25_dev);
++			}
+ 			ax25_disconnect(s, ENETUNREACH);
+ 			release_sock(sk);
+ 			spin_lock_bh(&ax25_list_lock);
+@@ -979,14 +981,20 @@ static int ax25_release(struct socket *sock)
  {
- 	{ .compatible =3D "marvell,armada-370-neta" },
- 	{ .compatible =3D "marvell,armada-xp-neta" },
- 	{ .compatible =3D "marvell,armada-3700-neta" },
-+	{ .compatible =3D "marvell,armada-ac5-neta" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, mvneta_match);
---=20
-2.35.1
+ 	struct sock *sk = sock->sk;
+ 	ax25_cb *ax25;
++	ax25_dev *ax25_dev;
+ 
+ 	if (sk == NULL)
+ 		return 0;
+ 
+ 	sock_hold(sk);
+-	sock_orphan(sk);
+ 	lock_sock(sk);
++	sock_orphan(sk);
+ 	ax25 = sk_to_ax25(sk);
++	ax25_dev = ax25->ax25_dev;
++	if (ax25_dev) {
++		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
++		ax25_dev_put(ax25_dev);
++	}
+ 
+ 	if (sk->sk_type == SOCK_SEQPACKET) {
+ 		switch (ax25->state) {
+-- 
+2.17.1
 
