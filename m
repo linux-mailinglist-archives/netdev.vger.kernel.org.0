@@ -2,68 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62AB14DA498
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 22:28:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D7A4DA4E7
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 22:52:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244325AbiCOV3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 17:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        id S243110AbiCOVxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 17:53:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233018AbiCOV3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 17:29:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5293212AB2;
-        Tue, 15 Mar 2022 14:27:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 46E80CE1C87;
-        Tue, 15 Mar 2022 21:27:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89B9AC340E8;
-        Tue, 15 Mar 2022 21:27:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647379673;
-        bh=0ddtZ//kxhQuMv99OV1t3SHqo/wbAgIY5upDOleeyGA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EwyQf7Wttk/kpFZ+3g1V3IJNLPx/TmVMcRrSiISVVUPDbhYaJOaIj5Zr5usKylQd3
-         RVozvMfdZmbUoqYonmkmy5kk8JssaLk7MmalSUxjisznuoMUZ5MdSQEVzlWmIePh0k
-         LpQgTb7LleBZcX9hYk4cGus3psQjl4lKD16aZPhNmWQmQ7eyYPZvEMMsDhIcU7qG65
-         3+Aba9Rb+cr6Zkfgy9ETEZRoJX9DGzXrE5Vw5PlL+YQEs2TW9DISALmbeKTBxy+eYI
-         0jW8aR0N/xyaj+q1OHjJQP3PXgePOv3iNTPi7j+qK0AiUxUoyngiouXMl6ea1Z7gCq
-         3sItwUbX67oeA==
-Date:   Tue, 15 Mar 2022 14:27:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Phil Sutter <phil@nwl.cc>, netfilter-devel@vger.kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH nf-next 2/6] netfilter: nf_tables: Reject tables of
- unsupported family
-Message-ID: <20220315142750.31d1a4b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YjD2wbXm8XFiXgI8@salvia>
-References: <20220315091513.66544-1-pablo@netfilter.org>
-        <20220315091513.66544-3-pablo@netfilter.org>
-        <20220315115644.66fab74b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <YjD2wbXm8XFiXgI8@salvia>
+        with ESMTP id S1343589AbiCOVx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 17:53:29 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [202.36.163.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA3D5BE72
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 14:52:15 -0700 (PDT)
+Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 901BA2C02D7;
+        Tue, 15 Mar 2022 21:52:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1647381133;
+        bh=jSMP2GY+BRoJAPT7lfNXwJIj8MAuXDNowgEYi4n43ns=;
+        h=From:To:Cc:Subject:Date:From;
+        b=n6nW6xqPYwnBezn4EgfzYCG/6Y0w9W9QhJ9x5z387YCTNgMGL6P/ZuSbHGI1/v3dC
+         th5VHzZIl0RbaNiSetN8EuN0HzWnkJPUWGx5xpKcIpx0d0wwIquKMKwJJzTWC5fQ9j
+         QE1UO+9fhDLZ5uuKezeCz56LQEaHI+uMhK4JM1M7I1yeZqSmSUgp4/EteJ+sB2PDRx
+         UmIyGRZm/AUN51PioGtlUyJd4CN1AjuBie8NTvdGfElTrDm9h1jw7OpgjtORepxvUn
+         aNN375stJfhBxpMvfi4ZIj0pusWaQhZS78M3Olgetqc3YSwCHmqsJrjZMnNDRoYvUk
+         S+j+DnMFEswDg==
+Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
+        id <B62310a8d0000>; Wed, 16 Mar 2022 10:52:13 +1300
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
+        by pat.atlnz.lc (Postfix) with ESMTP id 4B86C13EDD7;
+        Wed, 16 Mar 2022 10:52:13 +1300 (NZDT)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id 018C32A2678; Wed, 16 Mar 2022 10:52:09 +1300 (NZDT)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        thomas.petazzoni@bootlin.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH net-next v4 0/2] net: mvneta: Armada 98DX2530 SoC
+Date:   Wed, 16 Mar 2022 10:52:05 +1300
+Message-Id: <20220315215207.2746793-1-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-SEG-SpamProfiler-Analysis: v=2.3 cv=Cfh2G4jl c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=o8Y5sQTvuykA:10 a=VwQbUJbxAAAA:8 a=fHwNDZncxhfn92sU-sUA:9 a=AjGcO6oz07-iQ99wixmX:22
+X-SEG-SpamProfiler-Score: 0
+x-atlnz-ls: pat
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Mar 2022 21:27:45 +0100 Pablo Neira Ayuso wrote:
-> > is there a reason this one is IS_ENABLED() and everything else is ifdef?  
-> 
-> bridge might be compiled as a module, if the bridge infrastructure
-> also comes a module as well.
-> 
-> Anything else is either built-in or off.
+This is split off from [1] to let it go in via net-next rather than waiti=
+ng for
+the rest of the series to land.
 
-:o I thought ifdef works for modules, after checking the code 
-it makes sense, thanks!
+[1] - https://lore.kernel.org/lkml/20220314213143.2404162-1-chris.packham=
+@alliedtelesis.co.nz/
+
+Chris Packham (2):
+  dt-bindings: net: mvneta: Add marvell,armada-ac5-neta
+  net: mvneta: Add support for 98DX2530 Ethernet port
+
+ .../bindings/net/marvell-armada-370-neta.txt         |  1 +
+ drivers/net/ethernet/marvell/mvneta.c                | 12 ++++++++++++
+ 2 files changed, 13 insertions(+)
+
+--=20
+2.35.1
+
