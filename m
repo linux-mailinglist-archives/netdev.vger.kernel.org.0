@@ -2,140 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 811224D9FF2
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:25:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BBC74DA00F
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:29:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241701AbiCOQ0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 12:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37116 "EHLO
+        id S1350061AbiCOQaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 12:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235452AbiCOQ0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:26:42 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F7656C07;
-        Tue, 15 Mar 2022 09:25:30 -0700 (PDT)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nU9z1-0004dT-EN; Tue, 15 Mar 2022 17:25:15 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nU9z1-0002YV-31; Tue, 15 Mar 2022 17:25:15 +0100
-Subject: Re: [PATCH bpf-next] bpf, sockmap: Manual deletion of sockmap
- elements in user mode is not allowed
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        wangyufen <wangyufen@huawei.com>
-Cc:     ast@kernel.org, john.fastabend@gmail.com, lmb@cloudflare.com,
-        davem@davemloft.net, kafai@fb.com, dsahern@kernel.org,
-        kuba@kernel.org, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20220314124432.3050394-1-wangyufen@huawei.com>
- <87sfrky2bt.fsf@cloudflare.com>
- <ff9d0ecf-315b-00a3-8140-424714b204ff@huawei.com>
- <87fsnjxvho.fsf@cloudflare.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <79281351-b412-2c54-265b-c0ddf537fae1@iogearbox.net>
-Date:   Tue, 15 Mar 2022 17:25:14 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1350010AbiCOQap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:30:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D4A56C3E;
+        Tue, 15 Mar 2022 09:29:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647361773; x=1678897773;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=5bWJ1aLHhnxNHrTHdW/lDQbheo4ws+MyK4EncLb5sbM=;
+  b=KvA5YrFx2G3CWHBYBaMaGVg4YJiB5keas9t0cFEsg/KYBk8nj5f7PlT2
+   pTCIQ7j8m+XRM8oC835CmeZM8gnjMyO1r3U3VP4MXdtk/ZQTA0iNoxp1l
+   T5P+S5Gi+cpz2HQZCgmL+Cf7Kbj6MFDvl7QK6gMsTMXOQKiP/6+FC/OH9
+   jsD1BM6kQdHqPlbqg1Qwr8skEi7CKPhYpsq0+SSM5itpK5fwgEwahJF0I
+   WFPGzUQ4GkpC1fxAoCGRxN3POkrJ9irLvVlh0b39sqv/y8zfDjXbmMmcQ
+   tVBVg8VveMqafE/jyMWbVJ/WTR2MB2DErzTgbUDHzicxDL2OXBjJ1qTCR
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="281125062"
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="281125062"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:29:19 -0700
+X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
+   d="scan'208";a="690255507"
+Received: from lepple-mobl1.ger.corp.intel.com (HELO [10.252.56.30]) ([10.252.56.30])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:29:14 -0700
+Message-ID: <daf2136a-d6ff-558c-e9bb-c7a45dd1c43f@linux.intel.com>
+Date:   Tue, 15 Mar 2022 18:29:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <87fsnjxvho.fsf@cloudflare.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH bpf-next v2 03/28] HID: hook up with bpf
 Content-Language: en-US
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>
+Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
+ <20220304172852.274126-4-benjamin.tissoires@redhat.com>
+From:   Tero Kristo <tero.kristo@linux.intel.com>
+In-Reply-To: <20220304172852.274126-4-benjamin.tissoires@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26482/Tue Mar 15 09:26:17 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/22 1:12 PM, Jakub Sitnicki wrote:
-> On Tue, Mar 15, 2022 at 03:24 PM +08, wangyufen wrote:
->> 在 2022/3/14 23:30, Jakub Sitnicki 写道:
->>> On Mon, Mar 14, 2022 at 08:44 PM +08, Wang Yufen wrote:
->>>> A tcp socket in a sockmap. If user invokes bpf_map_delete_elem to delete
->>>> the sockmap element, the tcp socket will switch to use the TCP protocol
->>>> stack to send and receive packets. The switching process may cause some
->>>> issues, such as if some msgs exist in the ingress queue and are cleared
->>>> by sk_psock_drop(), the packets are lost, and the tcp data is abnormal.
->>>>
->>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->>>> ---
->>> Can you please tell us a bit more about the life-cycle of the socket in
->>> your workload? Questions that come to mind:
->>>
->>> 1) What triggers the removal of the socket from sockmap in your case?
->> We use sk_msg to redirect with sock hash, like this:
->>
->>   skA   redirect    skB
->>   Tx <-----------> skB,Rx
->>
->> And construct a scenario where the packet sending speed is high, the
->> packet receiving speed is slow, so the packets are stacked in the ingress
->> queue on the receiving side. In this case, if run bpf_map_delete_elem() to
->> delete the sockmap entry, will trigger the following procedure:
->>
->> sock_hash_delete_elem()
->>    sock_map_unref()
->>      sk_psock_put()
->>        sk_psock_drop()
->>          sk_psock_stop()
->>            __sk_psock_zap_ingress()
->>              __sk_psock_purge_ingress_msg()
->>
->>> 2) Would it still be a problem if removal from sockmap did not cause any
->>> packets to get dropped?
->> Yes, it still be a problem. If removal from sockmap  did not cause any
->> packets to get dropped, packet receiving process switches to use TCP
->> protocol stack. The packets in the psock ingress queue cannot be received
->>
->> by the user.
-> 
-> Thanks for the context. So, if I understand correctly, you want to avoid
-> breaking the network pipe by updating the sockmap from user-space.
-> 
-> This sounds awfully similar to BPF_MAP_FREEZE. Have you considered that?
+Hi Benjamin,
 
-+1
+On 04/03/2022 19:28, Benjamin Tissoires wrote:
+> Now that BPF can be compatible with HID, add the capability into HID.
+> drivers/hid/hid-bpf.c takes care of the glue between bpf and HID, and
+> hid-core can then inject any incoming event from the device into a BPF
+> program to filter/analyze it.
+>
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>
+> ---
+>
+> changes in v2:
+> - split the series by bpf/libbpf/hid/selftests and samples
+> - addressed review comments from v1
+> ---
+>   drivers/hid/Makefile   |   1 +
+>   drivers/hid/hid-bpf.c  | 157 +++++++++++++++++++++++++++++++++++++++++
+>   drivers/hid/hid-core.c |  21 +++++-
+>   include/linux/hid.h    |  11 +++
+>   4 files changed, 187 insertions(+), 3 deletions(-)
+>   create mode 100644 drivers/hid/hid-bpf.c
+>
+> diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
+> index 6d3e630e81af..08d2d7619937 100644
+> --- a/drivers/hid/Makefile
+> +++ b/drivers/hid/Makefile
+> @@ -4,6 +4,7 @@
+>   #
+>   hid-y			:= hid-core.o hid-input.o hid-quirks.o
+>   hid-$(CONFIG_DEBUG_FS)		+= hid-debug.o
+> +hid-$(CONFIG_BPF)		+= hid-bpf.o
+>   
+>   obj-$(CONFIG_HID)		+= hid.o
+>   obj-$(CONFIG_UHID)		+= uhid.o
+> diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
+> new file mode 100644
+> index 000000000000..8120e598de9f
+> --- /dev/null
+> +++ b/drivers/hid/hid-bpf.c
+> @@ -0,0 +1,157 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + *  BPF in HID support for Linux
+> + *
+> + *  Copyright (c) 2022 Benjamin Tissoires
+> + */
+> +
+> +#include <linux/filter.h>
+> +#include <linux/mutex.h>
+> +#include <linux/slab.h>
+> +
+> +#include <uapi/linux/bpf_hid.h>
+> +#include <linux/hid.h>
+> +
+> +static int __hid_bpf_match_sysfs(struct device *dev, const void *data)
+> +{
+> +	struct kernfs_node *kn = dev->kobj.sd;
+> +	struct kernfs_node *uevent_kn;
+> +
+> +	uevent_kn = kernfs_find_and_get_ns(kn, "uevent", NULL);
+> +
+> +	return uevent_kn == data;
+> +}
+> +
+> +static struct hid_device *hid_bpf_fd_to_hdev(int fd)
+> +{
+> +	struct device *dev;
+> +	struct hid_device *hdev;
+> +	struct fd f = fdget(fd);
+> +	struct inode *inode;
+> +	struct kernfs_node *node;
+> +
+> +	if (!f.file) {
+> +		hdev = ERR_PTR(-EBADF);
+> +		goto out;
+> +	}
+> +
+> +	inode = file_inode(f.file);
+> +	node = inode->i_private;
+> +
+> +	dev = bus_find_device(&hid_bus_type, NULL, node, __hid_bpf_match_sysfs);
+> +
+> +	if (dev)
+> +		hdev = to_hid_device(dev);
+> +	else
+> +		hdev = ERR_PTR(-EINVAL);
+> +
+> + out:
+> +	fdput(f);
+> +	return hdev;
+> +}
+> +
+> +static int hid_bpf_link_attach(struct hid_device *hdev, enum bpf_hid_attach_type type)
+> +{
+> +	int err = 0;
+> +
+> +	switch (type) {
+> +	case BPF_HID_ATTACH_DEVICE_EVENT:
+> +		if (!hdev->bpf.ctx) {
+> +			hdev->bpf.ctx = bpf_hid_allocate_ctx(hdev, HID_BPF_MAX_BUFFER_SIZE);
+> +			if (IS_ERR(hdev->bpf.ctx)) {
+> +				err = PTR_ERR(hdev->bpf.ctx);
+> +				hdev->bpf.ctx = NULL;
+> +			}
+> +		}
+> +		break;
+> +	default:
+> +		/* do nothing */
 
-Aside from that, the patch as-is also fails BPF CI in a lot of places, please
-make sure to check selftests:
+These cause following error:
 
-https://github.com/kernel-patches/bpf/runs/5537367301?check_suite_focus=true
 
-   [...]
-   #145/73 sockmap_listen/sockmap IPv6 test_udp_redir:OK
-   #145/74 sockmap_listen/sockmap IPv6 test_udp_unix_redir:OK
-   #145/75 sockmap_listen/sockmap Unix test_unix_redir:OK
-   #145/76 sockmap_listen/sockmap Unix test_unix_redir:OK
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   #145/77 sockmap_listen/sockhash IPv4 TCP test_insert_invalid:FAIL
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   #145/78 sockmap_listen/sockhash IPv4 TCP test_insert_opened:FAIL
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   #145/79 sockmap_listen/sockhash IPv4 TCP test_insert_bound:FAIL
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   ./test_progs:test_ops_cleanup:1424: map_delete: expected EINVAL/ENOENT: Operation not supported
-   test_ops_cleanup:FAIL:1424
-   [...]
+   CC      drivers/hid/hid-bpf.o
+drivers/hid/hid-bpf.c: In function ‘hid_bpf_link_attach’:
+drivers/hid/hid-bpf.c:88:2: error: label at end of compound statement
+    88 |  default:
+       |  ^~~~~~~
+drivers/hid/hid-bpf.c: In function ‘hid_bpf_link_attached’:
+drivers/hid/hid-bpf.c:101:2: error: label at end of compound statement
+   101 |  default:
+       |  ^~~~~~~
+drivers/hid/hid-bpf.c: In function ‘hid_bpf_array_detached’:
+drivers/hid/hid-bpf.c:116:2: error: label at end of compound statement
+   116 |  default:
+       |  ^~~~~~~
+make[2]: *** [scripts/Makefile.build:288: drivers/hid/hid-bpf.o] Error 1
+make[1]: *** [scripts/Makefile.build:550: drivers/hid] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1831: drivers] Error 2
 
-Thanks,
-Daniel
+To fix that, you need to add a break statement at end:
+
+default:
+
+     /* do nothing */
+
+     break;
+
+Same for couple of other occurrences in the file.
+
+-Tero
+
+
