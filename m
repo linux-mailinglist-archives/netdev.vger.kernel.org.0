@@ -2,128 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0EE04D93E6
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:33:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 035BF4D93EA
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:33:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245383AbiCOFeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 01:34:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60812 "EHLO
+        id S1344875AbiCOFeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 01:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242505AbiCOFeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:34:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053B52BF9;
-        Mon, 14 Mar 2022 22:32:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7452B6118F;
-        Tue, 15 Mar 2022 05:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 290D5C340E8;
-        Tue, 15 Mar 2022 05:32:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647322367;
-        bh=XwfpXnEY7+wrg7B2csX4wE7a6rKBiz6F6P9neGxhXwA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UBUqwwHGlWWkv2/0uGVZBkjaSlGMmZ1WBsYvT4MZVkLCkYoxa6d5Fi9HZXPaBQ6LG
-         kuBdq/Lj3Jz1+RL6rtrpY5qOrORwVS4sAfA422p7vDmvApGnOTQTnRIMurdHRj0HNo
-         y39TUyb4wZXrfkN500PxcuvKhPD0EwhWtZWkYsUVXta0DaSAOsfkLdRnRVTOw6K+Y8
-         35oPo1Kki+E8Ex5t3TrFcFdFhZStBArIsandoLNetv6WxyFM/1v6iS3cOjTQfkQ1qt
-         53YZqDGjWKPzvnUPbbaW89Kl6sx7YNTgwXf1mx40axxouESh5z+DeXl+MIjJs7xvvw
-         HDhaUR5otj3Iw==
-Date:   Mon, 14 Mar 2022 22:32:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v4 net-next 04/15] net: bridge: mst: Notify switchdev
- drivers of MST mode changes
-Message-ID: <20220314223246.45cf8305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220315002543.190587-5-tobias@waldekranz.com>
-References: <20220315002543.190587-1-tobias@waldekranz.com>
-        <20220315002543.190587-5-tobias@waldekranz.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1344876AbiCOFeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:34:18 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DA060ED;
+        Mon, 14 Mar 2022 22:33:05 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id j29so12593586ila.4;
+        Mon, 14 Mar 2022 22:33:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=VpoDEU/mWGmGEdjxwMsgpnfFjrvrmw3U8imrYuvmorM=;
+        b=mRNynIVKElGyBOJglKvSeBbPY4tJuikLW+gVh4+PVfSTtiDBJ4jnYIGSYuZjIkBRn0
+         pck23SCyXOHiXpU/yfM9CxAcYvoSdWwJXCnKlWEOsx5kcRgFlPADnWMEx+LUnf79opg5
+         ZSANmY8UzNe3LjuHZ1z04Gi/9H/LBmNTvPjsCOb6XCbeanYsGVza3f4tY5GBdFeg6PdI
+         LvrDljrutuP4bBqKuyGYkRVn8uFITYR9yPXTPM24tiGvGR+U1WERSW6uGj8A3OBa0Xls
+         nv2fkPZVAtvcpwR4SRyGtDPVOsfz2VMhyoW7KznrrYmhttnMfiKOtEh2rt29INJGFxPC
+         TLrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=VpoDEU/mWGmGEdjxwMsgpnfFjrvrmw3U8imrYuvmorM=;
+        b=uBhnknto7lp9I6szNsLhMPbz9awXNP1PK+kCWNT5gzS3QsJpsHmcIPhWux9OWuZDEy
+         ctDqGoa/Gri8vNokIlBu36BUGlfJv/8sgvSXy9qAgXCS19t2maXQAejvrK7JGQgvbu65
+         O7RX3RxnZTWLJ1Qk68NgeFQyFmFZPwQL8aBsxtvD8PO7IrY0aKBdgXhiSVnRjUPLfXub
+         RL1pvXclBrDQnjWKTouXC9Y1cK6Ws5BTOfTP7LZh8k7lnpMFdnYOLh4uRi/3A0Ux6Od0
+         WzDGYUDSjG93+iKl9FbC27yrK+zlbKB/FfDdpydx7IBjKe1zU1iyPYiubp/1qqbXZY3N
+         ywbw==
+X-Gm-Message-State: AOAM531LcS3pIU5iqCbse7GjYDXSnmON43m+dH8wzWOf37BFsWP70ZbD
+        e4SDsOPaEHfzSlZlLkErypg=
+X-Google-Smtp-Source: ABdhPJzAje9jLdysYFZvhxi4vr2d1JTTu4Bg7WUQ+94KSHY2uM1L9QzAduBIwYeHPAlisLgdQ7vIOg==
+X-Received: by 2002:a05:6e02:684:b0:2c6:3cc5:e83b with SMTP id o4-20020a056e02068400b002c63cc5e83bmr21409112ils.91.1647322385428;
+        Mon, 14 Mar 2022 22:33:05 -0700 (PDT)
+Received: from localhost ([99.197.200.79])
+        by smtp.gmail.com with ESMTPSA id l14-20020a056e0205ce00b002c782f5e905sm5871199ils.74.2022.03.14.22.33.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 22:33:05 -0700 (PDT)
+Date:   Mon, 14 Mar 2022 22:32:57 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, brouer@redhat.com, toke@redhat.com,
+        pabeni@redhat.com, echaudro@redhat.com,
+        lorenzo.bianconi@redhat.com, toshiaki.makita1@gmail.com,
+        andrii@kernel.org
+Message-ID: <62302509c2ca6_1301920891@john.notmuch>
+In-Reply-To: <b751d5324b772a7655635b0f516e0a4cf50529db.1646755129.git.lorenzo@kernel.org>
+References: <cover.1646755129.git.lorenzo@kernel.org>
+ <b751d5324b772a7655635b0f516e0a4cf50529db.1646755129.git.lorenzo@kernel.org>
+Subject: RE: [PATCH v4 bpf-next 1/3] net: veth: account total xdp_frame len
+ running ndo_xdp_xmit
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Mar 2022 01:25:32 +0100 Tobias Waldekranz wrote:
-> Trigger a switchdev event whenever the bridge's MST mode is
-> enabled/disabled. This allows constituent ports to either perform any
-> required hardware config, or refuse the change if it not supported.
->=20
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Lorenzo Bianconi wrote:
+> Even if this is a theoretical issue since it is not possible to perform
+> XDP_REDIRECT on a non-linear xdp_frame, veth driver does not account
+> paged area in ndo_xdp_xmit function pointer.
+> Introduce xdp_get_frame_len utility routine to get the xdp_frame full
+> length and account total frame size running XDP_REDIRECT of a
+> non-linear xdp frame into a veth device.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
 
-../net/bridge/br_mst.c: In function =E2=80=98br_mst_set_enabled=E2=80=99:
-../net/bridge/br_mst.c:102:16: error: variable =E2=80=98attr=E2=80=99 has i=
-nitializer but incomplete type
-  102 |         struct switchdev_attr attr =3D {
-      |                ^~~~~~~~~~~~~~
-../net/bridge/br_mst.c:103:18: error: =E2=80=98struct switchdev_attr=E2=80=
-=99 has no member named =E2=80=98id=E2=80=99
-  103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
-      |                  ^~
-../net/bridge/br_mst.c:103:23: error: =E2=80=98SWITCHDEV_ATTR_ID_BRIDGE_MST=
-=E2=80=99 undeclared (first use in this function)
-  103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
-      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../net/bridge/br_mst.c:103:23: note: each undeclared identifier is reported=
- only once for each function it appears in
-../net/bridge/br_mst.c:103:23: warning: excess elements in struct initializ=
-er
-../net/bridge/br_mst.c:103:23: note: (near initialization for =E2=80=98attr=
-=E2=80=99)
-../net/bridge/br_mst.c:104:18: error: =E2=80=98struct switchdev_attr=E2=80=
-=99 has no member named =E2=80=98orig_dev=E2=80=99
-  104 |                 .orig_dev =3D br->dev,
-      |                  ^~~~~~~~
-../net/bridge/br_mst.c:104:29: warning: excess elements in struct initializ=
-er
-  104 |                 .orig_dev =3D br->dev,
-      |                             ^~
-../net/bridge/br_mst.c:104:29: note: (near initialization for =E2=80=98attr=
-=E2=80=99)
-../net/bridge/br_mst.c:105:18: error: =E2=80=98struct switchdev_attr=E2=80=
-=99 has no member named =E2=80=98u=E2=80=99
-  105 |                 .u.mst =3D on,
-      |                  ^
-../net/bridge/br_mst.c:105:26: warning: excess elements in struct initializ=
-er
-  105 |                 .u.mst =3D on,
-      |                          ^~
-../net/bridge/br_mst.c:105:26: note: (near initialization for =E2=80=98attr=
-=E2=80=99)
-../net/bridge/br_mst.c:102:31: error: storage size of =E2=80=98attr=E2=80=
-=99 isn=E2=80=99t known
-  102 |         struct switchdev_attr attr =3D {
-      |                               ^~~~
-../net/bridge/br_mst.c:125:15: error: implicit declaration of function =E2=
-=80=98switchdev_port_attr_set=E2=80=99; did you mean =E2=80=98br_switchdev_=
-port_vlan_del=E2=80=99? [-Werror=3Dimplicit-function-declaration]
-  125 |         err =3D switchdev_port_attr_set(br->dev, &attr, extack);
-      |               ^~~~~~~~~~~~~~~~~~~~~~~
-      |               br_switchdev_port_vlan_del
-../net/bridge/br_mst.c:102:31: warning: unused variable =E2=80=98attr=E2=80=
-=99 [-Wunused-variable]
-  102 |         struct switchdev_attr attr =3D {
-      |                               ^~~~
+Acked-by: John Fastabend <john.fastabend@gmail.com>
