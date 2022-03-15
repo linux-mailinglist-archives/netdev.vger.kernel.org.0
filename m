@@ -2,126 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81CDB4D9279
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 03:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C08004D9287
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 03:22:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239068AbiCOCPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 22:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S1344375AbiCOCXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 22:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231442AbiCOCPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 22:15:04 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 405B3344DF;
-        Mon, 14 Mar 2022 19:13:52 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHcQj6TQxz4xRB;
-        Tue, 15 Mar 2022 13:13:49 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647310430;
-        bh=84nN59giJb6Wk9aHfEP/HVHFE7QFPITweDKcNwA7Qtg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=DKx1irAU2KXTgOeiHVael5I9JdsvauZ+Lh5IeD9w42hbzxZXnF8Dk0VF09lag5hP9
-         jCUkn9oUN+tH0ysPWmDrNFwG7tJ9t/OyFaau+BkizmM7p+tseNFDOAWbFvm7N6BHQM
-         vyQSxfI3yP+hoQNVY04odqtCFu0ysGksl9jQuCJq3hiWu1VElKgRCP4X5wk5SRFzQG
-         bGMBnycj/nDkQS0X1g0YOjWpMjhzRPSNpYELry+dwL2zRVGVpJc8K8mxwsbi00jGKC
-         V8aKAysfTUn0Fe6z4IthGHLap/t9tif0rIatGqvYwVMDf9jQZFaoLyULqEI42vIQYG
-         MAtWkfKryPn2Q==
-Date:   Tue, 15 Mar 2022 13:13:48 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: linux-next: manual merge of the tip tree with the net-next tree
-Message-ID: <20220315131348.421dd6c7@canb.auug.org.au>
+        with ESMTP id S236325AbiCOCXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 22:23:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAEC38D86;
+        Mon, 14 Mar 2022 19:21:59 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KHcYm71txz920r;
+        Tue, 15 Mar 2022 10:19:56 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 15 Mar 2022 10:21:56 +0800
+Subject: Re: [PATCH net-next 1/3] net: ipvlan: fix potential UAF problem for
+ phy_dev
+To:     Eric Dumazet <edumazet@google.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, <sakiwit@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <cover.1647255926.git.william.xuanziyang@huawei.com>
+ <751f88c0846df798a403643cefcaab53922ffe2f.1647255926.git.william.xuanziyang@huawei.com>
+ <CANn89iLK9theyFtU+++UQNHc-cn5cTz-Q_CP3BY44WBbfQfS8g@mail.gmail.com>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <6d02adae-f904-4830-f508-9aa52293c55e@huawei.com>
+Date:   Tue, 15 Mar 2022 10:21:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/KKKTz22ycwZs9Me/cI9EQnc";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CANn89iLK9theyFtU+++UQNHc-cn5cTz-Q_CP3BY44WBbfQfS8g@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/KKKTz22ycwZs9Me/cI9EQnc
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+> On Mon, Mar 14, 2022 at 3:54 AM Ziyang Xuan
+> <william.xuanziyang@huawei.com> wrote:
+>>
+>> Add the reference operation to phy_dev of ipvlan to avoid
+>> the potential UAF problem under the following known scenario:
+>>
+>> Someone module puts the NETDEV_UNREGISTER event handler to a
+>> work, and phy_dev is accessed in the work handler. But when
+>> the work is excuted, phy_dev has been destroyed because upper
+>> ipvlan did not get reference to phy_dev correctly.
+> 
+> Can you name the module deferring NETDEV_UNREGISTER to a work queue ?
 
-Hi all,
+The one I know is nb_netdevice netdevice notifier of roce_gid_mgmt.
+It will trigger vlan's real_dev UAF. It is a syzbot problem.
+See details:
+https://syzkaller.appspot.com/bug?extid=e4df4e1389e28972e955
 
-Today's linux-next merge of the tip tree got a conflict in:
+> 
+> This sounds like a bug to me.
+> 
+>>
+>> That likes as the scenario occurred by
+>> commit 563bcbae3ba2 ("net: vlan: fix a UAF in vlan_dev_real_dev()").
+> 
+> Mentioning a commit that added a bug and many other commits trying to
+> fix it is a bit unfortunate.
 
-  arch/x86/net/bpf_jit_comp.c
+Yes, I am sorry for that. I will keep improving the quality of my code.
 
-between commit:
+The related problems have solved by the series patches of
+commit faab39f63c1f ("net: allow out-of-order netdev unregistration").
+So I think it is the right time to fix other modules' potential problem.
 
-  1022a5498f6f ("bpf, x86_64: Use bpf_jit_binary_pack_alloc")
+> 
+> Can you instead add a Fixes: tag ?
 
-from the net-next tree and commit:
+The potential problem exists since macvlan and ipvlan were added.
 
-  9e1db76f44de ("x86,bpf: Fix bpf_arch_text_poke()")
+> 
+> Do you have a repro to trigger the bug ?
 
-from the tip tree.
+For macvlan and ipvlan, there are not repros now. I think it is necessary
+to give a right logic to cope with the constant evolution of the kernel.
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc arch/x86/net/bpf_jit_comp.c
-index 6b8de13faf83,b1c736be6545..000000000000
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@@ -380,7 -395,14 +391,14 @@@ int bpf_arch_text_poke(void *ip, enum b
-  		/* BPF poking in modules is not supported */
-  		return -EINVAL;
- =20
-+ 	/*
-+ 	 * See emit_prologue(), for IBT builds the trampoline hook is preceded
-+ 	 * with an ENDBR instruction.
-+ 	 */
-+ 	if (is_endbr(*(u32 *)ip))
-+ 		ip +=3D ENDBR_INSN_SIZE;
-+=20
- -	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
- +	return __bpf_arch_text_poke(ip, t, old_addr, new_addr);
-  }
- =20
-  #define EMIT_LFENCE()	EMIT3(0x0F, 0xAE, 0xE8)
-
---Sig_/KKKTz22ycwZs9Me/cI9EQnc
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIv9lwACgkQAVBC80lX
-0Gwwlwf+K5/ogSwfGTxRP3k/yF3BJBKuDcidTyc05arl3e2zsrueHLHifN/2Krtx
-DZNISDDCoWR3xoaYiuVUw38Y63+c4Z6XS6Cm4UfQIlYzOEMDO3DoHt2QCQM8Ov3H
-dJL5DbNZX/JUur1CyihRmidIVkMU8k72TQzPf2/z8I9FxIadRuJoXl71jUjK3jon
-U0SNqEYePcIYzt5BM23HDSzO8G+RXdAmShCvqaXQhdH6hh3kMAfshAlungwvC+j6
-opjnsB3PZ480crwi/Oy3vok3tp7Zt2+NF6+R6v7p+MdUq8ezGTDC9M+zCTY8VKp4
-nU8A+YX2XOdusWGwpD6X+/7MybJnUw==
-=nwU1
------END PGP SIGNATURE-----
-
---Sig_/KKKTz22ycwZs9Me/cI9EQnc--
+> 
+>>
+>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>> ---
+>>  drivers/net/ipvlan/ipvlan_main.c | 13 +++++++++++++
+>>  1 file changed, 13 insertions(+)
+>>
+>> diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+>> index 696e245f6d00..dcdc01403f22 100644
+>> --- a/drivers/net/ipvlan/ipvlan_main.c
+>> +++ b/drivers/net/ipvlan/ipvlan_main.c
+>> @@ -158,6 +158,10 @@ static int ipvlan_init(struct net_device *dev)
+>>         }
+>>         port = ipvlan_port_get_rtnl(phy_dev);
+>>         port->count += 1;
+>> +
+>> +       /* Get ipvlan's reference to phy_dev */
+>> +       dev_hold(phy_dev);
+>> +
+>>         return 0;
+>>  }
+>>
+>> @@ -665,6 +669,14 @@ void ipvlan_link_delete(struct net_device *dev, struct list_head *head)
+>>  }
+>>  EXPORT_SYMBOL_GPL(ipvlan_link_delete);
+>>
+>> +static void ipvlan_dev_free(struct net_device *dev)
+>> +{
+>> +       struct ipvl_dev *ipvlan = netdev_priv(dev);
+>> +
+>> +       /* Get rid of the ipvlan's reference to phy_dev */
+>> +       dev_put(ipvlan->phy_dev);
+>> +}
+>> +
+>>  void ipvlan_link_setup(struct net_device *dev)
+>>  {
+>>         ether_setup(dev);
+>> @@ -674,6 +686,7 @@ void ipvlan_link_setup(struct net_device *dev)
+>>         dev->priv_flags |= IFF_UNICAST_FLT | IFF_NO_QUEUE;
+>>         dev->netdev_ops = &ipvlan_netdev_ops;
+>>         dev->needs_free_netdev = true;
+>> +       dev->priv_destructor = ipvlan_dev_free;
+>>         dev->header_ops = &ipvlan_header_ops;
+>>         dev->ethtool_ops = &ipvlan_ethtool_ops;
+>>  }
+>> --
+>> 2.25.1
+>>
+> .
+> 
