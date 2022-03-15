@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 978414DA55A
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:27:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 022BD4DA569
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:28:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349124AbiCOW2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 18:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
+        id S1352254AbiCOW35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 18:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234619AbiCOW2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 18:28:18 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB4F5C66C
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:27:03 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id s25so840406lji.5
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:27:03 -0700 (PDT)
+        with ESMTP id S238437AbiCOW34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 18:29:56 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77297275EF
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:28:43 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id w27so863797lfa.5
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:28:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=1eFaiU5+NXOZ2eF/q2c9hS91JEU83jBZdMPIUzAUG/M=;
-        b=W9eHnbhnxZGkzFj4ctqYZx2unDRv0f6pILZnVE29yrAktO5wfV20/6Q5AYy2opt8kW
-         mEsUioTGfGdUFxKKKJLC1YaxkOCTeW2Z1Sx0akQKquuDbdLVis6ZPKyWY5GwYnpzo4xP
-         Jur81GGN4sb0B+FWmLvdm0DkYueYkSa2YrKABgXs+59DS3pNashgTBY1HOaB13LLpgow
-         Ofn21eFrtSHyBy/7w3XlI0057PBHN1Rv0myExHyAZlaWtktSbhS3OFHBvG20IDG2LW6c
-         jBVSKdDoRX5hO9X9MM+7RyHzzIgxbE7dObi9QuznBILzRbBqUSR80QmgHH1DaLxJG3n6
-         PThA==
+         :mime-version:content-transfer-encoding;
+        bh=w7BDs3bl+/ZPNAYyg8MK8EHAzhqEJFCQVGbId855EFw=;
+        b=UNKIKiXT8QfonLayJTWbx/cxsyCrYGovzyCMkmOQ0WbbLDyVWoFc+Uk1YSJdQ1ErVj
+         NSZ65OYFwoBxTx37iTZxofhPtQYuTz0inW2ISH8BrEsIVKWupQ1V/0v2AOTqnkzOqHIW
+         MVzHAKTAj6L5LAFrRjVFItdVTexCKpxRKzLUb91eMO3QhpYWVcExxhjIB3WbJnai2fTU
+         qfuNwPew+1Y3t6NU7MAANItoNNKZRVoZY9NnXqRDDEl6dp6M2w5ktTXMJ6Fflzyk/u8n
+         bGm8okMa05EECvOosBzkbLV4oB43ONkLUH1EODsepFAU/yZWqBY7ocKkvqsrQZA8Ubbx
+         k16w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=1eFaiU5+NXOZ2eF/q2c9hS91JEU83jBZdMPIUzAUG/M=;
-        b=6goGuVS5IbyFhDsr+TEemJ025edINTus1i3E/yxGonGhl5uSs4nzyOPzADtzzjSWWW
-         RRhk8phEpRWpTGnFwcMPLL+Q57+u0N5I2dwQBrcRGjku8Lmcb2nojX+2zIlslH2eXhAm
-         uIuXD5x49vfGs3RRZNvg6wj+wqqNPH7ron0Jz3iUHSoVlTyMTkFKSD7IEIC+XDlIEs0K
-         WVvcmBWt1Jn7pD/QVi79+VOH7qPzig8BlYj/ktjW8ljSOTzNsRSe+1ZP08lZLL2Io+eh
-         xzYFxvmIKG0bX40P35QK8vwhk+ZIe1z3ONwmTcmw8d40+syGk0TUZPJRmq8tnjkQw6gD
-         0y9g==
-X-Gm-Message-State: AOAM530q7gO5mBE0yRY3LXCjiQPY7l5dgiW+wTjWIaCKEhWg9eZCPiC/
-        S6JZGJMe/Lyni384M1I05v5vtg==
-X-Google-Smtp-Source: ABdhPJyqfX4MOlHUD1u/2Ymk1nux/6ggwGs0+zmsR8ejZc2pNkrCvxg3TIt1AV07eugD8SX7TSBlKg==
-X-Received: by 2002:a05:651c:160b:b0:247:f955:1b18 with SMTP id f11-20020a05651c160b00b00247f9551b18mr18676245ljq.427.1647383222035;
-        Tue, 15 Mar 2022 15:27:02 -0700 (PDT)
+         :message-id:mime-version:content-transfer-encoding;
+        bh=w7BDs3bl+/ZPNAYyg8MK8EHAzhqEJFCQVGbId855EFw=;
+        b=CzbXwz9D6Lm9mLRgBaMEIwxZroC7J4+0ThAIcdGtBAqeXFQF5GTNSbY0+rU5rehfJD
+         rqa2vbAloPyu9jFAKP9rYfgK1lvp1SKRWhN1KwgHiHAUzQ/cIlwrhMDK4CRx3Ee56Lqv
+         g4eophGFY4AAAtI0PeMuM1zAmaZVzd1e2VQS9CyjOkoM5T/Vb2KZUe7hswpRrILwRPsO
+         9AjW4Ogs2bGI8r7j087Qts2ocMoAlD389CUdFTnwYBRaYj5zYzlcFTpAMN4xB3fKiMQL
+         +9ajUpBQm04GXxB4yOrn9pEZG53jGdzMCjxwPw/gueuyPAAUxTDgRBbC3kf6ObcvSkcB
+         fR4A==
+X-Gm-Message-State: AOAM531YhaEAch69R+6ck5/+TU/HvjvEAvluCcALRbKIjhYpGi4xa1R4
+        9Q7xKUgpdB5nXWkRp7ZL+5l61w==
+X-Google-Smtp-Source: ABdhPJzSvTuOZ2Qd6cxpzVKDTdxQS6q1f1pKQ777CthPpVb5BrMo3DXztfZjgkzp4GIoFxE23grYmA==
+X-Received: by 2002:a05:6512:3e21:b0:448:53c7:178e with SMTP id i33-20020a0565123e2100b0044853c7178emr18805261lfv.374.1647383321771;
+        Tue, 15 Mar 2022 15:28:41 -0700 (PDT)
 Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id h1-20020a056512054100b0044847b32426sm19185lfl.156.2022.03.15.15.27.00
+        by smtp.gmail.com with ESMTPSA id i2-20020ac25b42000000b004488d7f5eadsm21083lfp.88.2022.03.15.15.28.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 15:27:01 -0700 (PDT)
+        Tue, 15 Mar 2022 15:28:41 -0700 (PDT)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>,
         Roopa Prabhu <roopa@nvidia.com>,
@@ -62,16 +63,17 @@ Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Matt Johnston <matt@codeconstruct.com.au>,
         Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v4 net-next 09/15] net: dsa: Never offload FDB entries
- on standalone ports
-In-Reply-To: <20220315163349.k2rmfdzrd3jvzbor@skbuf>
+Subject: Re: [PATCH v4 net-next 04/15] net: bridge: mst: Notify switchdev
+ drivers of MST mode changes
+In-Reply-To: <20220314223246.45cf8305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 References: <20220315002543.190587-1-tobias@waldekranz.com>
- <20220315002543.190587-10-tobias@waldekranz.com>
- <20220315163349.k2rmfdzrd3jvzbor@skbuf>
-Date:   Tue, 15 Mar 2022 23:26:59 +0100
-Message-ID: <87ee32lumk.fsf@waldekranz.com>
+ <20220315002543.190587-5-tobias@waldekranz.com>
+ <20220314223246.45cf8305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Tue, 15 Mar 2022 23:28:40 +0100
+Message-ID: <87bky6lujr.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -81,40 +83,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 18:33, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Mar 15, 2022 at 01:25:37AM +0100, Tobias Waldekranz wrote:
->> If a port joins a bridge that it can't offload, it will fallback to
->> standalone mode and software bridging. In this case, we never want to
->> offload any FDB entries to hardware either.
->> 
+On Mon, Mar 14, 2022 at 22:32, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 15 Mar 2022 01:25:32 +0100 Tobias Waldekranz wrote:
+>> Trigger a switchdev event whenever the bridge's MST mode is
+>> enabled/disabled. This allows constituent ports to either perform any
+>> required hardware config, or refuse the change if it not supported.
+>>=20
 >> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
->> ---
 >
-> When you resend, please send this patch separately, unless something
-> breaks really ugly with your MST series in place.
+> ../net/bridge/br_mst.c: In function =E2=80=98br_mst_set_enabled=E2=80=99:
+> ../net/bridge/br_mst.c:102:16: error: variable =E2=80=98attr=E2=80=99 has=
+ initializer but incomplete type
+>   102 |         struct switchdev_attr attr =3D {
+>       |                ^~~~~~~~~~~~~~
+> ../net/bridge/br_mst.c:103:18: error: =E2=80=98struct switchdev_attr=E2=
+=80=99 has no member named =E2=80=98id=E2=80=99
+>   103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
+>       |                  ^~
+> ../net/bridge/br_mst.c:103:23: error: =E2=80=98SWITCHDEV_ATTR_ID_BRIDGE_M=
+ST=E2=80=99 undeclared (first use in this function)
+>   103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
+>       |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> ../net/bridge/br_mst.c:103:23: note: each undeclared identifier is report=
+ed only once for each function it appears in
+> ../net/bridge/br_mst.c:103:23: warning: excess elements in struct initial=
+izer
+> ../net/bridge/br_mst.c:103:23: note: (near initialization for =E2=80=98at=
+tr=E2=80=99)
+> ../net/bridge/br_mst.c:104:18: error: =E2=80=98struct switchdev_attr=E2=
+=80=99 has no member named =E2=80=98orig_dev=E2=80=99
+>   104 |                 .orig_dev =3D br->dev,
+>       |                  ^~~~~~~~
+> ../net/bridge/br_mst.c:104:29: warning: excess elements in struct initial=
+izer
+>   104 |                 .orig_dev =3D br->dev,
+>       |                             ^~
+> ../net/bridge/br_mst.c:104:29: note: (near initialization for =E2=80=98at=
+tr=E2=80=99)
+> ../net/bridge/br_mst.c:105:18: error: =E2=80=98struct switchdev_attr=E2=
+=80=99 has no member named =E2=80=98u=E2=80=99
+>   105 |                 .u.mst =3D on,
+>       |                  ^
+> ../net/bridge/br_mst.c:105:26: warning: excess elements in struct initial=
+izer
+>   105 |                 .u.mst =3D on,
+>       |                          ^~
+> ../net/bridge/br_mst.c:105:26: note: (near initialization for =E2=80=98at=
+tr=E2=80=99)
+> ../net/bridge/br_mst.c:102:31: error: storage size of =E2=80=98attr=E2=80=
+=99 isn=E2=80=99t known
+>   102 |         struct switchdev_attr attr =3D {
+>       |                               ^~~~
+> ../net/bridge/br_mst.c:125:15: error: implicit declaration of function =
+=E2=80=98switchdev_port_attr_set=E2=80=99; did you mean =E2=80=98br_switchd=
+ev_port_vlan_del=E2=80=99? [-Werror=3Dimplicit-function-declaration]
+>   125 |         err =3D switchdev_port_attr_set(br->dev, &attr, extack);
+>       |               ^~~~~~~~~~~~~~~~~~~~~~~
+>       |               br_switchdev_port_vlan_del
+> ../net/bridge/br_mst.c:102:31: warning: unused variable =E2=80=98attr=E2=
+=80=99 [-Wunused-variable]
+>   102 |         struct switchdev_attr attr =3D {
+>       |                               ^~~~
 
-Sure. I found this while testing the software fallback. It prevents a
-segfault in dsa_port_bridge_host_fdb_add, which (rightly, I think)
-assumes that dp->bridge is valid. I feel like this should have a Fixes:
-tag, but I'm not sure which commit to blame. Any suggestions?
-
->>  net/dsa/slave.c | 3 +++
->>  1 file changed, 3 insertions(+)
->> 
->> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
->> index a61a7c54af20..647adee97f7f 100644
->> --- a/net/dsa/slave.c
->> +++ b/net/dsa/slave.c
->> @@ -2624,6 +2624,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
->>  	if (ctx && ctx != dp)
->>  		return 0;
->>  
->> +	if (!dp->bridge)
->> +		return 0;
->> +
->>  	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
->>  		if (dsa_port_offloads_bridge_port(dp, orig_dev))
->>  			return 0;
->> -- 
->> 2.25.1
->> 
+Sorry about that. Forgot to run the incremental build after the
+rebase. Will be fixed in v5.
