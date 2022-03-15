@@ -2,61 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 508754D9DA6
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB7EA4D9DB6
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:35:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349232AbiCOOfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 10:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43838 "EHLO
+        id S1349314AbiCOOfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 10:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349180AbiCOOfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:35:11 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65EE227FED;
-        Tue, 15 Mar 2022 07:33:57 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 15 Mar 2022 22:33:44
- +0800 (GMT+08:00)
-X-Originating-IP: [10.190.64.209]
-Date:   Tue, 15 Mar 2022 22:33:44 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
-To:     "Dan Carpenter" <dan.carpenter@oracle.com>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, jreuter@yaina.de, thomas@osterried.de
-Subject: Re: Re: Re: [PATCH net V4 1/2] ax25: Fix refcount leaks caused by
- ax25_cb_del()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220315141905.GB1841@kadam>
-References: <20220315015403.79201-1-duoming@zju.edu.cn>
- <20220315102657.GX3315@kadam>
- <15e4111b.5339.17f8deb1f24.Coremail.duoming@zju.edu.cn>
- <20220315141905.GB1841@kadam>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S1349180AbiCOOf1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:35:27 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC4314019;
+        Tue, 15 Mar 2022 07:34:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=eJsfs1ayMlkHRMVaZjiTJvsea1SB/3jhR8tU9VpMC4Q=; b=noTAN4Ep6VH8aqKxHHTygbvmc3
+        GAYZ0uSnZPDa80wL00A9Zed3nWWcHfqGIg9dZwNZK8THRjMmQEaGn/qaPmrGvepVa2eMBhZWPw+gk
+        CEKltoMLGKEa7cfbM0Qh4V6h0cdlEg5sjMhW/5xlJIyKMn/e6+g6WVJily/0hvNVFpos=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nU8FH-00Aybj-Jz; Tue, 15 Mar 2022 15:33:55 +0100
+Date:   Tue, 15 Mar 2022 15:33:55 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        catalin.marinas@arm.com, will@kernel.org,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
+        kostap@marvell.com, robert.marko@sartura.hr,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 4/8] pinctrl: mvebu: pinctrl driver for 98DX2530 SoC
+Message-ID: <YjCj07kxGh8n45GE@lunn.ch>
+References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+ <20220314213143.2404162-5-chris.packham@alliedtelesis.co.nz>
+ <04ed13f1-671f-7416-61d0-0bf452ae862e@canonical.com>
 MIME-Version: 1.0
-Message-ID: <3c2e97d4.5434.17f8dffc573.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgBnLrDIozBiK_UWAA--.2953W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgcKAVZdtYsBQgABs5
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VW7Jw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <04ed13f1-671f-7416-61d0-0bf452ae862e@canonical.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUdWUsIDE1IE1hciAyMDIyIDE3OjE5OjA1ICswMzAwLCBEYW4gQ2FycGVudGVy
-IHdyb3RlOgoKPiBTbyB0aGUgdjMgcGF0Y2ggd2FzIGJ1Z2d5PwpJIHRoaW5rIHYzIGlzIG5vdCBh
-IGdvb2QgcGF0Y2ggdGhhdCBjb3VsZCBiZSBhcHBsaWVkIGluIHRoZSByZWFsIHdvcmxkLgoKPiBX
-aHkgd2FzIHRoaXMgbm90IGV4cGxhaW5lZCB1bmRlciB0aGUgLS0tIGN1dCBvZmYgbGluZT8KCkkg
-d2lsbCBhZGQgZXhwbGFuYXRpb24gdW5kZXIgdGhlIC0tLSBjdXQgb2ZmIGxpbmUgaW4gW1BBVENI
-IG5ldCBWNSAxLzJdCmFuZCBzZW5kIGl0IHRvIHlvdSBhcyBzb29uIGFzIHBvc3NpYmxlLgoKQmVz
-dCB3aXNoZXMsCkR1b21pbmcgWmhvdQ==
+> > +static struct platform_driver ac5_pinctrl_driver = {
+> > +	.driver = {
+> > +		.name = "ac5-pinctrl",
+> > +		.of_match_table = of_match_ptr(ac5_pinctrl_of_match),
+> 
+> of_match_ptr() does not look correct for OF-only platform. This should
+> complain in W=1 compile tests on !OF config.
+
+The Marvell family of SoC which this embedded SoC borrows HW blocks
+from can boot using ACPI. I doubt anybody would boot this particularly
+SoC using ACPI, but the drivers Chris copied probably do build !OF for
+when ACPI is in us.
+
+     Andrew
