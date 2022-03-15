@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E4B4D9447
+	by mail.lfdr.de (Postfix) with ESMTP id 58A4E4D9445
 	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 07:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345099AbiCOGBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 02:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
+        id S1345062AbiCOGBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 02:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345005AbiCOGBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 02:01:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B3DF49F3D
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 23:00:20 -0700 (PDT)
+        with ESMTP id S1345005AbiCOGBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 02:01:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD69B47383
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 23:00:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE22B81118
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62840612CD
         for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 06:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C989DC36AE2;
-        Tue, 15 Mar 2022 06:00:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6820AC36AED;
+        Tue, 15 Mar 2022 06:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647324017;
-        bh=cl0PxrQPIzU76kiF1TO9XSRV0dyibwWuRAlnIJjHUuo=;
+        bh=nik0Y1O4AKUydLn7kOqnkj/OPz0Y9n9jcIDNXqlXbTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xlv3aEYLrmrhF4x0nRNjktyaIL6esXHX/VbqlZeLg/10U39qkKQ7Kdvm9FOuV1F9D
-         tqvJjLMzSwsIVzVo0VevnYEO+HR/AUFpSXzPcoCO1oS8BDvtGB168GRNSG2abZhszG
-         Y+OwlaKmmKFNGwqtvIqLu5eluXVxCbmG+173VeL8+axx6/67P1kI1TZ7RBpY9IJe7j
-         MJhVmqvn+2giMD0JQSU8J61VYXc7tMq2+Ti7keOWEGRjsWeP7kdZ7ZiSqCOK9l2Xb3
-         ZsCvM4isotOxWxIQfM4zal3rMXECbQNurBUTiF9Y472yFSrnRJbAzx+VVCAUW9vmPq
-         qrNi0cA5ov1Dw==
+        b=nX9NrhvrxwCqpEQ8NHXSbOYNUdaWyLRZBlOu17C4ZG1Ml8xEVTj9Ef754SYpDLPTt
+         /bupWkZBLl2MGLLwMspdaTN93W+ZtL8J+jBWd/s29NiSo/pt/J+jDnG63gKJzxn9rn
+         1F8c++ws17Qw20Oy2uAPT5VFhl3gd+3NnVHcMcYZIFLryUgTStQsVP6V8hz2lVVcVg
+         +6nJ+JmBQH+CZR9DNfG0bfTQ6U3zpKdKeBXUaFMQod6loXMD8UJmpCukiVzOZ2/87j
+         YmwTvigE5TF0upQO/mFIjVEJMuGUSqzs6XQvRfjkhF4qdoR6v7ACxoAtrnyhXXRonP
+         PTt04JrukJ5fw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, jiri@nvidia.com, idosch@nvidia.com,
         petrm@nvidia.com, simon.horman@corigine.com,
         louis.peens@corigine.com, leon@kernel.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/6] eth: nfp: replace driver's "pf" lock with devlink instance lock
-Date:   Mon, 14 Mar 2022 23:00:06 -0700
-Message-Id: <20220315060009.1028519-4-kuba@kernel.org>
+Subject: [PATCH net-next 4/6] eth: mlxsw: switch to explicit locking for port registration
+Date:   Mon, 14 Mar 2022 23:00:07 -0700
+Message-Id: <20220315060009.1028519-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220315060009.1028519-1-kuba@kernel.org>
 References: <20220315060009.1028519-1-kuba@kernel.org>
@@ -55,405 +55,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The whole reason for existence of the pf mutex is that we could
-not lock the devlink instance around port splitting. There are
-more types of reconfig which can make ports appear or disappear.
-Now that the devlink instance lock is exposed to drivers and
-"locked" helpers exist we can switch to using the devlink lock
-directly.
+Explicitly lock the devlink instance and use devl_ API.
 
-Next patches will move the locking inside .port_(un)split to
-the core.
+This will be used by the subsequent patch to invoke
+.port_split / .port_unsplit callbacks with devlink
+instance lock held.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_app.h  | 11 +++---
- .../net/ethernet/netronome/nfp/nfp_devlink.c  | 16 ++++-----
- drivers/net/ethernet/netronome/nfp/nfp_main.c | 19 ++++++-----
- drivers/net/ethernet/netronome/nfp/nfp_main.h |  6 ++--
- .../net/ethernet/netronome/nfp/nfp_net_main.c | 34 +++++++++++--------
- drivers/net/ethernet/netronome/nfp/nfp_port.c |  3 +-
- 6 files changed, 48 insertions(+), 41 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c     |  4 ++--
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c  |  6 ++++++
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 14 ++++++++++++++
+ 3 files changed, 22 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_app.h b/drivers/net/ethernet/netronome/nfp/nfp_app.h
-index 60cb8a71e02d..dd56207df246 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_app.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_app.h
-@@ -4,12 +4,10 @@
- #ifndef _NFP_APP_H
- #define _NFP_APP_H 1
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 0bf1d64644ba..e2a6a759eb6c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -2983,7 +2983,7 @@ static int __mlxsw_core_port_init(struct mlxsw_core *mlxsw_core, u16 local_port,
+ 	attrs.switch_id.id_len = switch_id_len;
+ 	mlxsw_core_port->local_port = local_port;
+ 	devlink_port_attrs_set(devlink_port, &attrs);
+-	err = devlink_port_register(devlink, devlink_port, local_port);
++	err = devl_port_register(devlink, devlink_port, local_port);
+ 	if (err)
+ 		memset(mlxsw_core_port, 0, sizeof(*mlxsw_core_port));
+ 	return err;
+@@ -2995,7 +2995,7 @@ static void __mlxsw_core_port_fini(struct mlxsw_core *mlxsw_core, u16 local_port
+ 					&mlxsw_core->ports[local_port];
+ 	struct devlink_port *devlink_port = &mlxsw_core_port->devlink_port;
  
--#include <linux/lockdep.h>
- #include <net/devlink.h>
+-	devlink_port_unregister(devlink_port);
++	devl_port_unregister(devlink_port);
+ 	memset(mlxsw_core_port, 0, sizeof(*mlxsw_core_port));
+ }
  
- #include <trace/events/devlink.h>
- 
--#include "nfp_main.h"
- #include "nfp_net_repr.h"
- 
- #define NFP_APP_CTRL_MTU_MAX	U32_MAX
-@@ -77,7 +75,7 @@ extern const struct nfp_app_type app_abm;
-  * @bpf:	BPF ndo offload-related calls
-  * @xdp_offload:    offload an XDP program
-  * @eswitch_mode_get:    get SR-IOV eswitch mode
-- * @eswitch_mode_set:    set SR-IOV eswitch mode (under pf->lock)
-+ * @eswitch_mode_set:    set SR-IOV eswitch mode
-  * @sriov_enable: app-specific sriov initialisation
-  * @sriov_disable: app-specific sriov clean-up
-  * @dev_get:	get representor or internal port representing netdev
-@@ -178,10 +176,13 @@ struct nfp_app {
- 
- static inline void assert_nfp_app_locked(struct nfp_app *app)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/minimal.c b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+index 060209983438..3bc012dafd08 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/minimal.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/minimal.c
+@@ -422,6 +422,7 @@ static int mlxsw_m_init(struct mlxsw_core *mlxsw_core,
+ 			struct netlink_ext_ack *extack)
  {
--	lockdep_assert_held(&app->pf->lock);
-+	devl_assert_locked(priv_to_devlink(app->pf));
- }
- 
--#define nfp_app_is_locked(app)	lockdep_is_held(&(app)->pf->lock)
-+static inline bool nfp_app_is_locked(struct nfp_app *app)
-+{
-+	return devl_lock_is_held(priv_to_devlink(app->pf));
-+}
- 
- void nfp_check_rhashtable_empty(void *ptr, void *arg);
- bool __nfp_ctrl_tx(struct nfp_net *nn, struct sk_buff *skb);
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-index bea978df7713..865f62958a72 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_devlink.c
-@@ -70,7 +70,7 @@ nfp_devlink_port_split(struct devlink *devlink, unsigned int port_index,
- 	unsigned int lanes;
- 	int ret;
- 
--	mutex_lock(&pf->lock);
-+	devl_lock(devlink);
- 
- 	rtnl_lock();
- 	ret = nfp_devlink_fill_eth_port_from_id(pf, port_index, &eth_port);
-@@ -90,7 +90,7 @@ nfp_devlink_port_split(struct devlink *devlink, unsigned int port_index,
- 
- 	ret = nfp_devlink_set_lanes(pf, eth_port.index, lanes);
- out:
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 
- 	return ret;
- }
-@@ -104,7 +104,7 @@ nfp_devlink_port_unsplit(struct devlink *devlink, unsigned int port_index,
- 	unsigned int lanes;
- 	int ret;
- 
--	mutex_lock(&pf->lock);
-+	devl_lock(devlink);
- 
- 	rtnl_lock();
- 	ret = nfp_devlink_fill_eth_port_from_id(pf, port_index, &eth_port);
-@@ -124,7 +124,7 @@ nfp_devlink_port_unsplit(struct devlink *devlink, unsigned int port_index,
- 
- 	ret = nfp_devlink_set_lanes(pf, eth_port.index, lanes);
- out:
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 
- 	return ret;
- }
-@@ -163,9 +163,9 @@ static int nfp_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 	struct nfp_pf *pf = devlink_priv(devlink);
- 	int ret;
- 
--	mutex_lock(&pf->lock);
-+	devl_lock(devlink);
- 	ret = nfp_app_eswitch_mode_set(pf->app, mode);
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 
- 	return ret;
- }
-@@ -375,12 +375,12 @@ int nfp_devlink_port_register(struct nfp_app *app, struct nfp_port *port)
- 
- 	devlink = priv_to_devlink(app->pf);
- 
--	return devlink_port_register(devlink, &port->dl_port, port->eth_id);
-+	return devl_port_register(devlink, &port->dl_port, port->eth_id);
- }
- 
- void nfp_devlink_port_unregister(struct nfp_port *port)
- {
--	devlink_port_unregister(&port->dl_port);
-+	devl_port_unregister(&port->dl_port);
- }
- 
- void nfp_devlink_port_type_eth_set(struct nfp_port *port)
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.c b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-index 8693f9905fbe..eeda39e34f84 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_main.c
-@@ -227,6 +227,7 @@ static int nfp_pcie_sriov_enable(struct pci_dev *pdev, int num_vfs)
- {
- #ifdef CONFIG_PCI_IOV
- 	struct nfp_pf *pf = pci_get_drvdata(pdev);
-+	struct devlink *devlink;
+ 	struct mlxsw_m *mlxsw_m = mlxsw_core_driver_priv(mlxsw_core);
++	struct devlink *devlink = priv_to_devlink(mlxsw_core);
  	int err;
  
- 	if (num_vfs > pf->limit_vfs) {
-@@ -241,7 +242,8 @@ static int nfp_pcie_sriov_enable(struct pci_dev *pdev, int num_vfs)
+ 	mlxsw_m->core = mlxsw_core;
+@@ -437,7 +438,9 @@ static int mlxsw_m_init(struct mlxsw_core *mlxsw_core,
  		return err;
  	}
  
--	mutex_lock(&pf->lock);
-+	devlink = priv_to_devlink(pf);
 +	devl_lock(devlink);
- 
- 	err = nfp_app_sriov_enable(pf->app, num_vfs);
+ 	err = mlxsw_m_ports_create(mlxsw_m);
++	devl_unlock(devlink);
  	if (err) {
-@@ -255,11 +257,11 @@ static int nfp_pcie_sriov_enable(struct pci_dev *pdev, int num_vfs)
- 
- 	dev_dbg(&pdev->dev, "Created %d VFs.\n", pf->num_vfs);
- 
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 	return num_vfs;
- 
- err_sriov_disable:
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 	pci_disable_sriov(pdev);
- 	return err;
- #endif
-@@ -270,8 +272,10 @@ static int nfp_pcie_sriov_disable(struct pci_dev *pdev)
+ 		dev_err(mlxsw_m->bus_info->dev, "Failed to create ports\n");
+ 		return err;
+@@ -449,8 +452,11 @@ static int mlxsw_m_init(struct mlxsw_core *mlxsw_core,
+ static void mlxsw_m_fini(struct mlxsw_core *mlxsw_core)
  {
- #ifdef CONFIG_PCI_IOV
- 	struct nfp_pf *pf = pci_get_drvdata(pdev);
-+	struct devlink *devlink;
+ 	struct mlxsw_m *mlxsw_m = mlxsw_core_driver_priv(mlxsw_core);
++	struct devlink *devlink = priv_to_devlink(mlxsw_core);
  
--	mutex_lock(&pf->lock);
-+	devlink = priv_to_devlink(pf);
 +	devl_lock(devlink);
- 
- 	/* If the VFs are assigned we cannot shut down SR-IOV without
- 	 * causing issues, so just leave the hardware available but
-@@ -279,7 +283,7 @@ static int nfp_pcie_sriov_disable(struct pci_dev *pdev)
- 	 */
- 	if (pci_vfs_assigned(pdev)) {
- 		dev_warn(&pdev->dev, "Disabling while VFs assigned - VFs will not be deallocated\n");
--		mutex_unlock(&pf->lock);
-+		devl_unlock(devlink);
- 		return -EPERM;
- 	}
- 
-@@ -287,7 +291,7 @@ static int nfp_pcie_sriov_disable(struct pci_dev *pdev)
- 
- 	pf->num_vfs = 0;
- 
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 
- 	pci_disable_sriov(pdev);
- 	dev_dbg(&pdev->dev, "Removed VFs.\n");
-@@ -707,7 +711,6 @@ static int nfp_pci_probe(struct pci_dev *pdev,
- 	pf = devlink_priv(devlink);
- 	INIT_LIST_HEAD(&pf->vnics);
- 	INIT_LIST_HEAD(&pf->ports);
--	mutex_init(&pf->lock);
- 	pci_set_drvdata(pdev, pf);
- 	pf->pdev = pdev;
- 	pf->dev_info = dev_info;
-@@ -798,7 +801,6 @@ static int nfp_pci_probe(struct pci_dev *pdev,
- 	destroy_workqueue(pf->wq);
- err_pci_priv_unset:
- 	pci_set_drvdata(pdev, NULL);
--	mutex_destroy(&pf->lock);
- 	devlink_free(devlink);
- err_rel_regions:
- 	pci_release_regions(pdev);
-@@ -835,7 +837,6 @@ static void __nfp_pci_shutdown(struct pci_dev *pdev, bool unload_fw)
- 
- 	kfree(pf->eth_tbl);
- 	kfree(pf->nspi);
--	mutex_destroy(&pf->lock);
- 	devlink_free(priv_to_devlink(pf));
- 	pci_release_regions(pdev);
- 	pci_disable_device(pdev);
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_main.h b/drivers/net/ethernet/netronome/nfp/nfp_main.h
-index 9c72a0ad18ea..f56ca11de134 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_main.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_main.h
-@@ -13,7 +13,6 @@
- #include <linux/list.h>
- #include <linux/types.h>
- #include <linux/msi.h>
--#include <linux/mutex.h>
- #include <linux/pci.h>
- #include <linux/workqueue.h>
- #include <net/devlink.h>
-@@ -85,7 +84,8 @@ struct nfp_dumpspec {
-  * @port_refresh_work:	Work entry for taking netdevs out
-  * @shared_bufs:	Array of shared buffer structures if FW has any SBs
-  * @num_shared_bufs:	Number of elements in @shared_bufs
-- * @lock:		Protects all fields which may change after probe
-+ *
-+ * Fields which may change after proble are protected by devlink instance lock.
-  */
- struct nfp_pf {
- 	struct pci_dev *pdev;
-@@ -141,8 +141,6 @@ struct nfp_pf {
- 
- 	struct nfp_shared_buf *shared_bufs;
- 	unsigned int num_shared_bufs;
--
--	struct mutex lock;
- };
- 
- extern struct pci_driver nfp_netvf_pci_driver;
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-index a18b99c93ab3..09a0a2076c6e 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
-@@ -308,6 +308,7 @@ static int nfp_net_pf_init_vnics(struct nfp_pf *pf)
- static int
- nfp_net_pf_app_init(struct nfp_pf *pf, u8 __iomem *qc_bar, unsigned int stride)
- {
-+	struct devlink *devlink = priv_to_devlink(pf);
- 	u8 __iomem *ctrl_bar;
- 	int err;
- 
-@@ -315,9 +316,9 @@ nfp_net_pf_app_init(struct nfp_pf *pf, u8 __iomem *qc_bar, unsigned int stride)
- 	if (IS_ERR(pf->app))
- 		return PTR_ERR(pf->app);
- 
--	mutex_lock(&pf->lock);
-+	devl_lock(devlink);
- 	err = nfp_app_init(pf->app);
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 	if (err)
- 		goto err_free;
- 
-@@ -344,9 +345,9 @@ nfp_net_pf_app_init(struct nfp_pf *pf, u8 __iomem *qc_bar, unsigned int stride)
- err_unmap:
- 	nfp_cpp_area_release_free(pf->ctrl_vnic_bar);
- err_app_clean:
--	mutex_lock(&pf->lock);
-+	devl_lock(devlink);
- 	nfp_app_clean(pf->app);
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- err_free:
- 	nfp_app_free(pf->app);
- 	pf->app = NULL;
-@@ -355,14 +356,16 @@ nfp_net_pf_app_init(struct nfp_pf *pf, u8 __iomem *qc_bar, unsigned int stride)
- 
- static void nfp_net_pf_app_clean(struct nfp_pf *pf)
- {
-+	struct devlink *devlink = priv_to_devlink(pf);
-+
- 	if (pf->ctrl_vnic) {
- 		nfp_net_pf_free_vnic(pf, pf->ctrl_vnic);
- 		nfp_cpp_area_release_free(pf->ctrl_vnic_bar);
- 	}
- 
--	mutex_lock(&pf->lock);
-+	devl_lock(devlink);
- 	nfp_app_clean(pf->app);
--	mutex_unlock(&pf->lock);
-+	devl_unlock(devlink);
- 
- 	nfp_app_free(pf->app);
- 	pf->app = NULL;
-@@ -548,12 +551,13 @@ nfp_net_eth_port_update(struct nfp_cpp *cpp, struct nfp_port *port,
- 
- int nfp_net_refresh_port_table_sync(struct nfp_pf *pf)
- {
-+	struct devlink *devlink = priv_to_devlink(pf);
- 	struct nfp_eth_table *eth_table;
- 	struct nfp_net *nn, *next;
- 	struct nfp_port *port;
- 	int err;
- 
--	lockdep_assert_held(&pf->lock);
-+	devl_assert_locked(devlink);
- 
- 	/* Check for nfp_net_pci_remove() racing against us */
- 	if (list_empty(&pf->vnics))
-@@ -602,10 +606,11 @@ static void nfp_net_refresh_vnics(struct work_struct *work)
- {
- 	struct nfp_pf *pf = container_of(work, struct nfp_pf,
- 					 port_refresh_work);
-+	struct devlink *devlink = priv_to_devlink(pf);
- 
--	mutex_lock(&pf->lock);
-+	devl_lock(devlink);
- 	nfp_net_refresh_port_table_sync(pf);
--	mutex_unlock(&pf->lock);
+ 	mlxsw_m_ports_remove(mlxsw_m);
 +	devl_unlock(devlink);
  }
  
- void nfp_net_refresh_port_table(struct nfp_port *port)
-@@ -711,7 +716,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 	if (err)
- 		goto err_shared_buf_unreg;
+ static const struct mlxsw_config_profile mlxsw_m_config_profile;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 7b7b17183d10..1e823b669d1c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -2025,6 +2025,7 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u16 local_port,
+ 			       struct netlink_ext_ack *extack)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
++	struct devlink *devlink = priv_to_devlink(mlxsw_core);
+ 	struct mlxsw_sp_port_mapping port_mapping;
+ 	struct mlxsw_sp_port *mlxsw_sp_port;
+ 	enum mlxsw_reg_pmtdb_status status;
+@@ -2062,6 +2063,7 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u16 local_port,
  
--	mutex_lock(&pf->lock);
+ 	port_mapping = mlxsw_sp_port->mapping;
+ 
 +	devl_lock(devlink);
- 	pf->ddir = nfp_net_debugfs_device_add(pf->pdev);
+ 	for (i = 0; i < count; i++) {
+ 		u16 s_local_port = mlxsw_reg_pmtdb_port_num_get(pmtdb_pl, i);
  
- 	/* Allocate the vnics and do basic init */
-@@ -731,7 +736,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 	if (err)
- 		goto err_stop_app;
- 
--	mutex_unlock(&pf->lock);
+@@ -2075,11 +2077,13 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u16 local_port,
+ 		dev_err(mlxsw_sp->bus_info->dev, "Failed to create split ports\n");
+ 		goto err_port_split_create;
+ 	}
 +	devl_unlock(devlink);
- 	devlink_register(devlink);
  
  	return 0;
-@@ -744,7 +749,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
- 	nfp_net_pf_free_vnics(pf);
- err_clean_ddir:
- 	nfp_net_debugfs_dir_clean(&pf->ddir);
--	mutex_unlock(&pf->lock);
+ 
+ err_port_split_create:
+ 	mlxsw_sp_port_unsplit_create(mlxsw_sp, count, pmtdb_pl);
 +	devl_unlock(devlink);
- 	nfp_devlink_params_unregister(pf);
- err_shared_buf_unreg:
- 	nfp_shared_buf_unregister(pf);
-@@ -758,10 +763,11 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
+ 	return err;
+ }
  
- void nfp_net_pci_remove(struct nfp_pf *pf)
+@@ -2087,6 +2091,7 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u16 local_port,
+ 				 struct netlink_ext_ack *extack)
  {
-+	struct devlink *devlink = priv_to_devlink(pf);
- 	struct nfp_net *nn, *next;
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
++	struct devlink *devlink = priv_to_devlink(mlxsw_core);
+ 	struct mlxsw_sp_port *mlxsw_sp_port;
+ 	char pmtdb_pl[MLXSW_REG_PMTDB_LEN];
+ 	unsigned int count;
+@@ -2118,6 +2123,7 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u16 local_port,
+ 		return err;
+ 	}
  
- 	devlink_unregister(priv_to_devlink(pf));
--	mutex_lock(&pf->lock);
 +	devl_lock(devlink);
- 	list_for_each_entry_safe(nn, next, &pf->vnics, vnic_list) {
- 		if (!nfp_net_is_data_vnic(nn))
- 			continue;
-@@ -773,7 +779,7 @@ void nfp_net_pci_remove(struct nfp_pf *pf)
- 	/* stop app first, to avoid double free of ctrl vNIC's ddir */
- 	nfp_net_debugfs_dir_clean(&pf->ddir);
+ 	for (i = 0; i < count; i++) {
+ 		u16 s_local_port = mlxsw_reg_pmtdb_port_num_get(pmtdb_pl, i);
  
--	mutex_unlock(&pf->lock);
+@@ -2126,6 +2132,7 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u16 local_port,
+ 	}
+ 
+ 	mlxsw_sp_port_unsplit_create(mlxsw_sp, count, pmtdb_pl);
 +	devl_unlock(devlink);
  
- 	nfp_devlink_params_unregister(pf);
- 	nfp_shared_buf_unregister(pf);
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_port.c b/drivers/net/ethernet/netronome/nfp/nfp_port.c
-index 93c5bfc0510b..236cd3c1201f 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_port.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_port.c
-@@ -78,9 +78,10 @@ int nfp_port_set_features(struct net_device *netdev, netdev_features_t features)
- struct nfp_port *
- nfp_port_from_id(struct nfp_pf *pf, enum nfp_port_type type, unsigned int id)
+ 	return 0;
+ }
+@@ -2818,6 +2825,7 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+ 			 struct netlink_ext_ack *extack)
  {
-+	struct devlink *devlink = priv_to_devlink(pf);
- 	struct nfp_port *port;
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
++	struct devlink *devlink = priv_to_devlink(mlxsw_core);
+ 	int err;
  
--	lockdep_assert_held(&pf->lock);
-+	devl_assert_locked(devlink);
+ 	mlxsw_sp->core = mlxsw_core;
+@@ -2978,7 +2986,9 @@ static int mlxsw_sp_init(struct mlxsw_core *mlxsw_core,
+ 		goto err_sample_trigger_init;
+ 	}
  
- 	if (type != NFP_PORT_PHYS_PORT)
- 		return NULL;
++	devl_lock(devlink);
+ 	err = mlxsw_sp_ports_create(mlxsw_sp);
++	devl_unlock(devlink);
+ 	if (err) {
+ 		dev_err(mlxsw_sp->bus_info->dev, "Failed to create ports\n");
+ 		goto err_ports_create;
+@@ -3159,8 +3169,12 @@ static int mlxsw_sp4_init(struct mlxsw_core *mlxsw_core,
+ static void mlxsw_sp_fini(struct mlxsw_core *mlxsw_core)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
++	struct devlink *devlink = priv_to_devlink(mlxsw_core);
+ 
++	devl_lock(devlink);
+ 	mlxsw_sp_ports_remove(mlxsw_sp);
++	devl_unlock(devlink);
++
+ 	rhashtable_destroy(&mlxsw_sp->sample_trigger_ht);
+ 	mlxsw_sp_port_module_info_fini(mlxsw_sp);
+ 	mlxsw_sp_dpipe_fini(mlxsw_sp);
 -- 
 2.34.1
 
