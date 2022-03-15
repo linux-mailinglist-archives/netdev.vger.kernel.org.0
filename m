@@ -2,152 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 210AA4DA284
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 19:39:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 258794DA28B
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 19:41:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351108AbiCOSlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 14:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
+        id S1345461AbiCOSmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 14:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351106AbiCOSlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 14:41:04 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE0B46646
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 11:39:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1647369593; x=1678905593;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=hCsqYx4goiy9TF85jJkLFf8hSZnVzKEepLMM73EOFr0=;
-  b=SwRuo5z6UGR69vmGOzx5Qv5EwrQ6SMw3PCRw11zEG7pwcM2VYEpUzvYr
-   Um38D1mrg6sDGwP/1OLFjtHlX8N53zRo8hSiTOaPZyJ6uZA3uREs199uU
-   yQExY0qzZPBvUSjSfEirWAtqrg1vcjvXow1scejlJCXEheK9JINcCJ0xZ
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.90,184,1643673600"; 
-   d="scan'208";a="186243765"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-8ac79c09.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 15 Mar 2022 18:39:52 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-8ac79c09.us-east-1.amazon.com (Postfix) with ESMTPS id AF6F3815D2;
-        Tue, 15 Mar 2022 18:39:49 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Tue, 15 Mar 2022 18:39:48 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.124) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 15 Mar 2022 18:39:45 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Rao Shoaib <Rao.Shoaib@oracle.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v3 net 2/2] af_unix: Support POLLPRI for OOB.
-Date:   Wed, 16 Mar 2022 03:38:55 +0900
-Message-ID: <20220315183855.15190-3-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220315183855.15190-1-kuniyu@amazon.co.jp>
-References: <20220315183855.15190-1-kuniyu@amazon.co.jp>
+        with ESMTP id S239074AbiCOSmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 14:42:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C881931933;
+        Tue, 15 Mar 2022 11:41:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D83C61696;
+        Tue, 15 Mar 2022 18:41:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A328FC340E8;
+        Tue, 15 Mar 2022 18:41:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647369688;
+        bh=6oUs/mx6wQln4IG1fFwGx9u0M0eAOSXZ12ymfyvVnOY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fvtjgtTpkOHrSw1w5biaauh+LWMEkSTWlHgojD70NFoG5ZsK9Ddirxmy3lI3Eov1M
+         68v3OXXRm1A1dzWE5W4Bl2NyzwVuOPYh1v6jLcy3t48NCpdBuIgZTcAi7zbg5Yu0t9
+         DfZY9J7+2O/sQ0LphAru6i0gsv5dmBvq9fTGzBpMJ7raGW5bZCq5wG0t50h3MHgkRF
+         GwQ5l3VoZ7oXAYX0y9WXYHV51tD8a4mE8c2+67cw9aG7tb7F92oY4CLWwmvhCRs+n2
+         090Ae00C10rntjhzuR13Hosi5DvpPcgpJUokN2zu+R6Xdgzz1hCMqhUbzOBxeQxTa7
+         kxQUfWCQ9o1mg==
+Date:   Tue, 15 Mar 2022 11:41:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Meng Tang <tangmeng@uniontech.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: tulip: de4x5: Optimize if branch in
+ de4x5_parse_params
+Message-ID: <20220315114127.7c9bb48d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220315074952.6577-1-tangmeng@uniontech.com>
+References: <20220315074952.6577-1-tangmeng@uniontech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.124]
-X-ClientProxiedBy: EX13D19UWA003.ant.amazon.com (10.43.160.170) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 314001f0bf92 ("af_unix: Add OOB support") introduced OOB for
-AF_UNIX, but it lacks some changes for POLLPRI.  Let's add the missing
-piece.
+On Tue, 15 Mar 2022 15:49:52 +0800 Meng Tang wrote:
+> In the de4x5_parse_params, 'if (strstr(p, "BNC_AUI"))' condition and
+> 'if (strstr(p, "BNC_AUI"))' condition are both execute the statement
+> 'lp->params.autosense = BNC', these two conditions can be combined.
+> 
+> In addition, in the current code logic, when p = "BNC", the judgments
+> need to be executed four times. In order to simplify the execution
+> process and keep the original code design, I used the statement which
+> is 'if (strstr(p, "BNC") || strstr(p, "BNC_AUI"))' to deal with it,
+> after that once 'strstr(p, "BNC")' is established, we no longer need
+> to judge whether 'strstr(p, "BNC_AUI")' is true(not NULL).
+> 
+> In this way, we can execute the judgment statement one time less.
+> 
+> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 
-In the selftest, normal datagrams are sent followed by OOB data, so this
-commit replaces `POLLIN | POLLPRI` with just `POLLPRI` in the first test
-case.
-
-Fixes: 314001f0bf92 ("af_unix: Add OOB support")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
-v2: https://lore.kernel.org/netdev/20220315054801.72035-1-kuniyu@amazon.co.jp/
-  - Add READ_ONCE() to avoid a race reported by KCSAN (Eric)
-  - Add IS_ENABLED(CONFIG_AF_UNIX_OOB) (Shoaib)
-
-v1: https://lore.kernel.org/netdev/20220314052110.53634-1-kuniyu@amazon.co.jp/
----
-net/unix/af_unix.c                                  | 10 +++++++---
- tools/testing/selftests/net/af_unix/test_unix_oob.c |  6 +++---
- 2 files changed, 10 insertions(+), 6 deletions(-)
-
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 0c37e5595aae..f94afaa5a696 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -2049,7 +2049,7 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
-  */
- #define UNIX_SKB_FRAGS_SZ (PAGE_SIZE << get_order(32768))
- 
--#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
-+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
- static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other)
- {
- 	struct unix_sock *ousk = unix_sk(other);
-@@ -2115,7 +2115,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- 
- 	err = -EOPNOTSUPP;
- 	if (msg->msg_flags & MSG_OOB) {
--#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
-+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
- 		if (len)
- 			len--;
- 		else
-@@ -2186,7 +2186,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- 		sent += size;
- 	}
- 
--#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
-+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
- 	if (msg->msg_flags & MSG_OOB) {
- 		err = queue_oob(sock, msg, other);
- 		if (err)
-@@ -3137,6 +3137,10 @@ static __poll_t unix_poll(struct file *file, struct socket *sock, poll_table *wa
- 		mask |= EPOLLIN | EPOLLRDNORM;
- 	if (sk_is_readable(sk))
- 		mask |= EPOLLIN | EPOLLRDNORM;
-+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
-+	if (READ_ONCE(unix_sk(sk)->oob_skb))
-+		mask |= EPOLLPRI;
-+#endif
- 
- 	/* Connection-based need to check for termination and startup */
- 	if ((sk->sk_type == SOCK_STREAM || sk->sk_type == SOCK_SEQPACKET) &&
-diff --git a/tools/testing/selftests/net/af_unix/test_unix_oob.c b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-index 3dece8b29253..b57e91e1c3f2 100644
---- a/tools/testing/selftests/net/af_unix/test_unix_oob.c
-+++ b/tools/testing/selftests/net/af_unix/test_unix_oob.c
-@@ -218,10 +218,10 @@ main(int argc, char **argv)
- 
- 	/* Test 1:
- 	 * veriyf that SIGURG is
--	 * delivered and 63 bytes are
--	 * read and oob is '@'
-+	 * delivered, 63 bytes are
-+	 * read, oob is '@', and POLLPRI works.
- 	 */
--	wait_for_data(pfd, POLLIN | POLLPRI);
-+	wait_for_data(pfd, POLLPRI);
- 	read_oob(pfd, &oob);
- 	len = read_data(pfd, buf, 1024);
- 	if (!signal_recvd || len != 63 || oob != '@') {
--- 
-2.30.2
-
+This is ancient code, let's leave it be.
