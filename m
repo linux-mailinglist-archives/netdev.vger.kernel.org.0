@@ -2,108 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FABF4D99D2
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 12:00:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 631304D99D7
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 12:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347736AbiCOLBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 07:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46136 "EHLO
+        id S1347762AbiCOLCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 07:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347734AbiCOLBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 07:01:33 -0400
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566953CFC5;
-        Tue, 15 Mar 2022 04:00:22 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id D99753201F82;
-        Tue, 15 Mar 2022 07:00:18 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Tue, 15 Mar 2022 07:00:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=NExbxl+i2kuO3Pvzdgbe/Iig/umuCg0Aqp3WMWOTS
-        DA=; b=bASI2gJC467wslZAh/G66t63jB1zY0shNB3Wuma/AJ/qKyNks5ywiEv9L
-        TjeFFh+XXl3Xba8pswlacUlwKsgv6XjO4tuUavk/8KW8tuiClxHPA2BzZajqfTYu
-        I/uZjMvH74mB/42xUXfqjI554e/RudCwZgpyiDh8kDwbjypE18L2y6YKTQmqJzjL
-        7mTcc53No0wnYWnN+33WTsR38tuTr69ke7QiYaGaF7iFoR6rqY7RJTwLnaMFAzEU
-        wbls6j+7Dt8oirYqY1Dbh6XhryFblkYZRiWcbtVCbeyEXYZsCO5bDI/c5Hr0/QTQ
-        zcvbWWTTfSjlrGpd4XCbuUKtKKfRg==
-X-ME-Sender: <xms:wHEwYhgcubcKtlyOpo7K_B0uun3VxRqKxmlunBgvA68gC2moawlKPA>
-    <xme:wHEwYmCiJIf315nEu7BpADDUVukfgf_NxMFYJRaqsvYGZT5EGvJkD-puNcBQY19W0
-    h0lFb_6ICuEujc>
-X-ME-Received: <xmr:wHEwYhG7W1ysFc7OfnA3ifivYxnV0YXZaUQMzYoqYvFWRtgU72_pi8NKZHK3p-KHPQaLThhl3M1-tCNJYVScMOWXhDs>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeftddgvdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepvdffveekfeeiieeuieetudefkeevkeeuhfeuieduudetkeegleefvdegheej
-    hefhnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:wHEwYmRYrzN_v3mGacJ4vuIAqMZVJ9Ssevhx1O329QV0o1bOlTijUQ>
-    <xmx:wHEwYuw-hvty131IEgbXViDinbwbv6yqrqT6ZCBYi20V2w4V7oFboA>
-    <xmx:wHEwYs5uJ987OkhhWOdCaxr-GgSNX_HwXgSsI1sjBCprMFf2yRMhXQ>
-    <xmx:wnEwYigrT9dPwh32_Vq4kNc4l-3wK6s2gVqtjVJsaGGjywalncunYw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 15 Mar 2022 07:00:15 -0400 (EDT)
-Date:   Tue, 15 Mar 2022 13:00:12 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 1/3] net: bridge: add fdb flag to extent locked
- port feature
-Message-ID: <YjBxvM+rYSMP8UNy@shredder>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
- <20220310142320.611738-2-schultz.hans+netdev@gmail.com>
- <Yi9fqkQ9wH3Duqhg@shredder>
- <86h77zha8b.fsf@gmail.com>
+        with ESMTP id S237136AbiCOLCn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 07:02:43 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BFC54348C;
+        Tue, 15 Mar 2022 04:01:29 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 88F165FD02;
+        Tue, 15 Mar 2022 14:01:26 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1647342086;
+        bh=RW5IjNKHFJtjqsH4ITCzR2lYLoB/q/SCRxVZYrFoF2M=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=muk+0uigRIiMIRqEOQ2SYbS71/y0+PA7hbtudQIn3xYGeSHuKLRplpsW70W4IbNl7
+         l7oxHA9vTTgKM6GJMg703xMSkaiyc6d8cWEjnwcLkYVUxYAl3wMa5Spbbd3m56jALy
+         2lt8fEI1vQxzBno8Uyl0RHXUS6pqUghnEO5CSPdlytIkIRIuAHMGYTvMIQdc4LNkK9
+         ghXaaMQ+uP7G36xYl/WO37ZBHnE0rWmFRg8GvPsyycv1d0eKPDVNpNS6iySZAMwML7
+         p1KwCGkopfnevYJw36OQ74qLhtiF1/lQr160pV5AsyRVti3GkMCZHx3qi+Oh135p9e
+         G5uzIoZc4q/pQ==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Tue, 15 Mar 2022 14:01:20 +0300 (MSK)
+From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
+        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v1 1/3] af_vsock: add two new tests for SOCK_SEQPACKET
+Thread-Topic: [RFC PATCH v1 1/3] af_vsock: add two new tests for
+ SOCK_SEQPACKET
+Thread-Index: AQHYNTYb8Fo8I4zas06sN3idOLyY0qy/9J+AgAAmooA=
+Date:   Tue, 15 Mar 2022 11:00:35 +0000
+Message-ID: <74154bf9-06c9-5072-af60-38819ff01fe3@sberdevices.ru>
+References: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
+ <20220315084257.lbrbsilpndswv3zy@sgarzare-redhat>
+In-Reply-To: <20220315084257.lbrbsilpndswv3zy@sgarzare-redhat>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E15ECCD410AEC24DAC43049E86EA6EAE@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <86h77zha8b.fsf@gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/15 06:52:00 #18973197
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 09:48:52AM +0100, Hans Schultz wrote:
-> On mån, mar 14, 2022 at 17:30, Ido Schimmel <idosch@idosch.org> wrote:
-> > On Thu, Mar 10, 2022 at 03:23:18PM +0100, Hans Schultz wrote:
-> >> @@ -94,8 +95,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
-> >>  			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
-> >>  
-> >>  		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
-> >> -		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
-> >> +		    test_bit(BR_FDB_LOCAL, &fdb_src->flags)) {
-> >> +			if (!fdb_src) {
-> >> +				set_bit(BR_FDB_ENTRY_LOCKED, &flags);
-> >
-> > This flag is read-only for user space, right? That is, the kernel needs
-> > to reject it during netlink policy validation.
-> >
-> 
-> Yes, the flag is only readable from user space, unless there is a wish
-> to change that.
-
-OK, so please spell it out in the commit message so that it is clear the
-flag can only be set by the kernel.
+T24gMTUuMDMuMjAyMiAxMTo0MiwgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBIaSBBcnNl
+bml5LA0KPiANCj4gT24gRnJpLCBNYXIgMTEsIDIwMjIgYXQgMTA6NTI6MzZBTSArMDAwMCwgS3Jh
+c25vdiBBcnNlbml5IFZsYWRpbWlyb3ZpY2ggd3JvdGU6DQo+PiBUaGlzIGFkZHMgdHdvIHRlc3Rz
+OiBmb3IgcmVjZWl2ZSB0aW1lb3V0IGFuZCByZWFkaW5nIHRvIGludmFsaWQNCj4+IGJ1ZmZlciBw
+cm92aWRlZCBieSB1c2VyLiBJIGZvcmdvdCB0byBwdXQgYm90aCBwYXRjaGVzIHRvIG1haW4NCj4+
+IHBhdGNoc2V0Lg0KPj4NCj4+IEFyc2VuaXkgS3Jhc25vdigyKToNCj4+DQo+PiBhZl92c29jazog
+U09DS19TRVFQQUNLRVQgcmVjZWl2ZSB0aW1lb3V0IHRlc3QNCj4+IGFmX3Zzb2NrOiBTT0NLX1NF
+UVBBQ0tFVCBicm9rZW4gYnVmZmVyIHRlc3QNCj4+DQo+PiB0b29scy90ZXN0aW5nL3Zzb2NrL3Zz
+b2NrX3Rlc3QuYyB8IDE3MCArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysN
+Cj4+IDEgZmlsZSBjaGFuZ2VkLCAxNzAgaW5zZXJ0aW9ucygrKQ0KPiANCj4gVGhhbmsgeW91IGZv
+ciB0aGVzZSB0ZXN0cyENCg0KR3JlYXQhIFRoYW5rIFlvdQ0KDQo+IA0KPiBJIGxlZnQgYSBmZXcg
+Y29tbWVudHMgYW5kIEknbSBub3Qgc3VyZSBhYm91dCB0aGUgJ2Jyb2tlbiBidWZmZXIgdGVzdCcg
+YmVoYXZpb3IuDQoNCkFjaw0KDQo+IA0KPiBBYm91dCB0aGUgc2VyaWVzLCBpdCBzb3VuZHMgbGlr
+ZSBzb21ldGhpbmcgaXMgd3Jvbmcgd2l0aCB5b3VyIHNldHVwLCB1c3VhbGx5IHRoZSBjb3ZlciBs
+ZXR0ZXIgaXMgInBhdGNoIiAwLiBJbiB0aGlzIGNhc2UgSSB3b3VsZCBoYXZlIGV4cGVjdGVkOg0K
+PiANCj4gwqDCoMKgIFswLzJdIGFmX3Zzb2NrOiBhZGQgdHdvIG5ldyB0ZXN0cyBmb3IgU09DS19T
+RVFQQUNLRVQNCj4gwqDCoMKgIFsxLzJdIGFmX3Zzb2NrOiBTT0NLX1NFUVBBQ0tFVCByZWNlaXZl
+IHRpbWVvdXQgdGVzdA0KPiDCoMKgwqAgWzIvMl0gYWZfdnNvY2s6IFNPQ0tfU0VRUEFDS0VUIGJy
+b2tlbiBidWZmZXIgdGVzdA0KDQpBY2sNCg0KPiANCj4gQXJlIHlvdSB1c2luZyBgZ2l0IHNlbmQt
+ZW1haWxgIG9yIGBnaXQgcHVibGlzaGA/DQo+IA0KDQpJJ20gdXNpbmcgdGh1bmRlcmJpcmQgdG8g
+c2VuZCBwYXRjaGVzPjwsIGJlY2F1c2Ugd2UgZG9uJ3QgaGF2ZSBTTVRQIHNlcnZlcihleGNoYW5n
+ZSBvbmx5KS4gDQoNCj4gDQo+IFdoZW4geW91IHdpbGwgcmVtb3ZlIHRoZSBSRkMsIHBsZWFzZSBh
+ZGQgYG5ldC1uZXh0YCBsYWJlbDoNCj4gW1BBVENIIG5ldC1uZXh0IDAvMl0sIGV0Yy4uDQo+IA0K
+PiBUaGFua3MsDQo+IFN0ZWZhbm8NCj4gDQoNCg==
