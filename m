@@ -2,199 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AFEE4D9A76
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 12:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D61B4D9A7D
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 12:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347962AbiCOLgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 07:36:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40392 "EHLO
+        id S238773AbiCOLj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 07:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347959AbiCOLgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 07:36:40 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2053.outbound.protection.outlook.com [40.107.94.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41E94FC7F
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 04:35:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VHRujhfMCIz5AZnBLMWHzmKwfkAwfhP9v0Pr+AiIfOWAWHVMkNl62GWvg30Gzu+iWNnTdNkWfP01n5HJb89alefmxzdrQRI/KvGg6HJX96v7IUtzr47ihDH7o6POlptmXie+AxYnol4GO1gxH1bUNU6/Uq9z224Ok2r2Y5JBfaUjCElomoWunw1ui2M1TMlSMZfVgV2Xul2JfHDbcY/06pM1PP3r8wrsQE5S29Ernj3zhrfnjKfTDUQU6JFhVW6Zalbi2e09GJ4cXpN8Aj3ZgnPCcNKX/RbROLswfR9VPBBdXIjfBpC8UnGbhv+SByw2GMCpOe3QmMfwSLYy1M9EEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NcbiKBx8VZb/C50uJv8PbdL7EHlL3LbbQ/Fb1QfyWn4=;
- b=jF4NyRM9cs/BvLNUf51bs8HYPbJLe07RZCaBxlLm7VSq6F0Syfw3L9BhWc8607W6TNqeycpkoNO9bGv9OT4PxQw71IpsujVc2qrRvPU5mNuFfylf0bniQvZZtIsdBdzJnJk7idSuU9akO/ZIu4XYaQtLY88DdLWqOgHJTmwYRO2Ni9fJjo/QvfcZspj7RNQ4KJ1xSUY2cT/Zy28BarjWVxd08rDQ3YqZcf9cvB02dEF5keStabyPwdXJ5CljYUIBvfphnPEZXzBflG0j77TypljWoIFnFjK/j++nLKS6YDNWuTpkpsOst93815RW1YVEdLYMoXk85cRNHSTX6mdExA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NcbiKBx8VZb/C50uJv8PbdL7EHlL3LbbQ/Fb1QfyWn4=;
- b=WQWaIWhETPDPTxYa8CnscTP2XhdKsWGTI34Mvk1m8DAK6wa7t3kzH74iw6ZaIqH4XzIUv1ps3IJNZfEshSXqP2d7QyFOMh4XZeehuOnClHeqjhJ9lkxL8U/TrkDAIGG8CDDG05nn6qjzKzaZcMSAQNGBtCR7nJakml9p44bCsXXjKj1VyOd4FRGkfdcMIaZWs6v2b+5gXCPMQby2ACGw6TQpmsSmCOTRc+CD0WrjdgbZ9aeNoiHV1MmjAG8fC378ENYEJpx/JqctQfQAB/h4sTPWRplMgifGPX2l2cFS7N9S1BKfj6dXoqHb5/RdWJ28S02IKj0vCkUwSZaiYZT2OQ==
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com (2603:10b6:8:3b::12) by
- MW2PR12MB2476.namprd12.prod.outlook.com (2603:10b6:907:c::29) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5061.26; Tue, 15 Mar 2022 11:35:26 +0000
-Received: from DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::c53a:18b3:d87f:f627]) by DM8PR12MB5400.namprd12.prod.outlook.com
- ([fe80::c53a:18b3:d87f:f627%5]) with mapi id 15.20.5081.014; Tue, 15 Mar 2022
- 11:35:26 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     David Ahern <dsahern@kernel.org>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        with ESMTP id S235775AbiCOLj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 07:39:58 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11D7B846
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 04:38:46 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nU5Vi-0000dI-J1; Tue, 15 Mar 2022 12:38:42 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nU5Vh-0005vj-Ee; Tue, 15 Mar 2022 12:38:41 +0100
+Date:   Tue, 15 Mar 2022 12:38:41 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "si-wei.liu@oracle.com" <si-wei.liu@oracle.com>
-CC:     "mst@redhat.com" <mst@redhat.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Parav Pandit <parav@nvidia.com>
-Subject: RE: [PATCH v7 2/4] vdpa: Allow for printing negotiated features of a
- device
-Thread-Topic: [PATCH v7 2/4] vdpa: Allow for printing negotiated features of a
- device
-Thread-Index: AQHYNv2IELmBUhoXUkSx7mD3Z/gSXKy+/I0AgAFVf+A=
-Date:   Tue, 15 Mar 2022 11:35:26 +0000
-Message-ID: <DM8PR12MB54007D9DEE61331CE6F1118FAB109@DM8PR12MB5400.namprd12.prod.outlook.com>
-References: <20220313171219.305089-1-elic@nvidia.com>
- <20220313171219.305089-3-elic@nvidia.com>
- <22fe6d6c-d665-e4ee-9e16-04010b184a98@kernel.org>
-In-Reply-To: <22fe6d6c-d665-e4ee-9e16-04010b184a98@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7147d04a-b701-486a-d98e-08da0677e6bd
-x-ms-traffictypediagnostic: MW2PR12MB2476:EE_
-x-microsoft-antispam-prvs: <MW2PR12MB2476626B4DE8B4FC9291FF56AB109@MW2PR12MB2476.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MxQZ8DRyu1e5Aqs2n3ZI0Uqz5OVbtGLlCYCXSIaHLWAg33m4SWWxP/YPKnmpNRpS9KgvrYiNT0RUsGCdd2wBSUPi4qHnbjZt7CzAjUrt8ZA4qzE/VDr6eXqQGS8Th/vlrli6Fs4SX4sKCRWZOh3kLVw+Xw/paBhTqzj17ArFEQbrmUfaMAR/MGf/PmxAhoU4a7+JHZRL439l8Vr/1XWGthX8imUdhYthsQwk9wsj9WEBUdyK1w1qfNsMBztHMuwjTX+jx/QDKncSoWbND5R7djXasSGxWGqb2np6ARQHlMP/GDgkLb2qfSQKaAH57L8R9TumBPvmWEdPUna+EveDT1XFdO3yAoYUfcoEVM1l+U+Nt1EZdBqGQqaOkHobV0OOW1H462z1YdZi/0hnwgG3EfwUOwgg9WbG7LCpAvb60rg6LXJYBAlu4oge9K4pJ3RUxqZjSECe+ir5yR5fVEHypnMtPBCvD4UehZ+O31mvpAQ4bqHHa48msXV8MZBtTHhxcsICNnbObqagIUBlELtE/Inl5zZl5LK5p4N60bN0aSZhD3QVw1LsFPacxWOddKoFLZqOxuzrn2tZU1clvk+WLZOLJegIg5qV9UEYqu1B5iwPal1dvg4Sk2r6BoPdL+TLyv4X9ZvbSSUgFAw+4apr8qEg0q3VVveAiwbkcvi3TfrLjqVwsgHc7ws1QA0Xugj5RlnPU4t4N6P4sod/gcQbdg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5400.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38070700005)(508600001)(86362001)(71200400001)(38100700002)(76116006)(122000001)(66946007)(66446008)(64756008)(66556008)(66476007)(316002)(110136005)(8676002)(107886003)(26005)(186003)(4326008)(54906003)(53546011)(9686003)(33656002)(7696005)(6506007)(83380400001)(2906002)(8936002)(52536014)(55016003)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Y2M4SFhvNkdOS3ZrVzgxSjRYUUlERithbFJ1bDVLT3JpZWRjWGlPL3daY0lC?=
- =?utf-8?B?MXJwZkdPSE45WVlZeGVSZHdqNUdsRUNCL0NCZEVmcVhZUUdlRFdRUFQxOCtG?=
- =?utf-8?B?bERWQWFGRFhqcVIvZFlaQzhRTnZZUEoybDdkUGdNSXNCRkJzeWthc0ZWd0JJ?=
- =?utf-8?B?SUR3RTNDckZuRjl6YnlsekxFVzJ1NlhTeTI1RWRXcm12QkNCVkVIcC9TVnA5?=
- =?utf-8?B?ejRYZGhyRGdhV2RweDVoUW9UVndERThCd1pDcG4vWExidUo1RHFQTTY5NFJM?=
- =?utf-8?B?ZjRyYmRMSkJjMjFXeHdtQmlZRUtwbFJONkZXWStvZ0tIUXRIWWxnM0VHZUMz?=
- =?utf-8?B?YXpCbFo1eDB2T3JLNk5DaWtENUF3ZVl1dnpoZGlpRkpFYkVzZktqQmhDLzNo?=
- =?utf-8?B?L01iN3Q0TkVWU1V2bytPZnNsNmJIemFzYkYrSjNVaFo5NG5jTjJxeVNmVE1X?=
- =?utf-8?B?RTFwSnpaZ0VZaHNTVzRkUjRqVHM2cHE5Ujk1MUpaTy9xR1kzd3c5MjNxcDJj?=
- =?utf-8?B?YnIrRFdiSGtrN1FnYzNwdjlWZStyNDhuMTU2ci92bjJlUks4UGtselpFNlZO?=
- =?utf-8?B?em5uWnRkUmNiVFkvUmR5V2paUnFhY21MOWlEZ2NlZFY4Z0FHUHhWSlFvUUk0?=
- =?utf-8?B?aFFha2hCekZ4QmhITS9XcitzVW5sc0t3bVNZdGwxOUhUbm5sOEQyeUNBalB5?=
- =?utf-8?B?Nndhak1zZngySWs3eXZKaE5HVDdsem1mTXplT3NUSEllMGE2dlVxVi9obnAx?=
- =?utf-8?B?ZEtucDEvU2NKSDZZamJJcHpqM1R2WFAyS3pxNHg4NCtqWlR4Rk10OWdmUFF6?=
- =?utf-8?B?cG5reUdmKzZHd2tSdWtmdy85Y2NLTHQ1T2Zqc2l6U0ZJWHhUQjdDeDE1QWFS?=
- =?utf-8?B?SHBWeXBDejdDS0VQVGVLendtNkxYaE00Sm5UeWYxSlZ6V0gyQTc5Yko5NUgv?=
- =?utf-8?B?Wkk2ZDg5VHRFRUtjekZYbDJxMjRuaDJDTDVSWnZpV2U1Q0JwS3hhSWtjcE5Y?=
- =?utf-8?B?Z0swVTdQOTdjTG1FN21jM0F4QVhScE0yUVF0UXVrYUt6VHFiOEpmL082OU5s?=
- =?utf-8?B?cEs2SzFBRnBlSDRzOHVMODk4Q0xWTW9vY3JuODlKWHJGVGxTZmY2Vkh0cjhT?=
- =?utf-8?B?N3FZYzdhNzZ5K0dTY0VPcFhXMmlkQUN4dml2ZStKOTFkUjMvSC82U0ZEQ1ZQ?=
- =?utf-8?B?WUdGSyttZ25yekM5QldWRFpZbzF4UjZaeG1LV3dINkJDSmFOSTJKUXQ5aHpr?=
- =?utf-8?B?cmdHb2VWY1NZZ3FqVysxNkp4b3ppNm1MOW51ekdJTk5SVXJJaU1nMDBubW14?=
- =?utf-8?B?VU9PeHpJU3RzWi9QT1M4elBWbTA5SDJlVzNzeHYzc2wwNnk5OTdIOTk2aUFC?=
- =?utf-8?B?dzBXamVpeFZJajc2N2wvRTJXVHZ0bVZqOHNRZzBoZk5wOThpUmNuczhOZGVJ?=
- =?utf-8?B?a0thMFhBZDM3bzk2c29XYWVkbTlHMmtuUm1lR21mMDJBNjhzRW9nS01JaXdX?=
- =?utf-8?B?dzRqWGdPUTg1TjFTUnJaZnJicHMzRHpKdGcxTDl5dDdqc2grS3ZoeXVQTFRG?=
- =?utf-8?B?eXZNK2hjMjNLSWM1Tkg2cm9tdmdXUVJwdDVSY1YvdUZqRVVkd1N5ckxqUHhi?=
- =?utf-8?B?aHFVVExxd0dwSWFUS250dkNVOElHcWk0Rm1jVnVGeFhuMllHZnNCZUpERWo1?=
- =?utf-8?B?bTlkRlBrUDFGK2JJUEZNQ2xtZGpwRmIzSE5yeFlJSEk2eDM2cEF4aFNhbEJt?=
- =?utf-8?B?MXBGSU4wVlUrYXgzc3RLSDdIU1BmeDhqdllBbGdCQjZ1TlpoZzRHU0tKdEJR?=
- =?utf-8?B?YlpmR0lYT0VUYXlGQUtENXd5ckgrU2VwYjFGUnNtQ1lEZmRvcDNuYmd1QVFh?=
- =?utf-8?B?VlM0RlRBSDRKdGZJNWtpZ2pJUGk3N1VEenJuZ1hPMkV0K0g3Rk5WMTNGQm5M?=
- =?utf-8?Q?tc8W55OXIHc=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: ordering of call to unbind() in usbnet_disconnect
+Message-ID: <20220315113841.GA22337@pengutronix.de>
+References: <62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com>
+ <20220310113820.GG15680@pengutronix.de>
+ <20220314184234.GA556@wunner.de>
+ <Yi+UHF37rb0URSwb@lunn.ch>
+ <20220315054403.GA14588@pengutronix.de>
+ <20220315083234.GA27883@wunner.de>
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5400.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7147d04a-b701-486a-d98e-08da0677e6bd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Mar 2022 11:35:26.7485
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: r7RkONOFw3gs+LAddXMehIgrP3e/oEaac8a5Xz1KqQzy8U5NZQ+IojYT/yGB0phO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2476
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,UPPERCASE_50_75 autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220315083234.GA27883@wunner.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 12:37:39 up 94 days, 20:23, 94 users,  load average: 0.31, 0.20,
+ 0.12
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiANCj4gT24gMy8xMy8yMiAxMToxMiBBTSwgRWxpIENvaGVuIHdyb3RlOg0KPiA+IEBAIC0zODUs
-NiArMzg4LDk3IEBAIHN0YXRpYyBjb25zdCBjaGFyICpwYXJzZV9jbGFzcyhpbnQgbnVtKQ0KPiA+
-ICAJcmV0dXJuIGNsYXNzID8gY2xhc3MgOiAiPCB1bmtub3duIGNsYXNzID4iOw0KPiA+ICB9DQo+
-ID4NCj4gPiArc3RhdGljIGNvbnN0IGNoYXIgKiBjb25zdCBuZXRfZmVhdHVyZV9zdHJzWzY0XSA9
-IHsNCj4gPiArCVtWSVJUSU9fTkVUX0ZfQ1NVTV0gPSAiQ1NVTSIsDQo+ID4gKwlbVklSVElPX05F
-VF9GX0dVRVNUX0NTVU1dID0gIkdVRVNUX0NTVU0iLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9DVFJM
-X0dVRVNUX09GRkxPQURTXSA9ICJDVFJMX0dVRVNUX09GRkxPQURTIiwNCj4gPiArCVtWSVJUSU9f
-TkVUX0ZfTVRVXSA9ICJNVFUiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9NQUNdID0gIk1BQyIsDQo+
-ID4gKwlbVklSVElPX05FVF9GX0dVRVNUX1RTTzRdID0gIkdVRVNUX1RTTzQiLA0KPiA+ICsJW1ZJ
-UlRJT19ORVRfRl9HVUVTVF9UU082XSA9ICJHVUVTVF9UU082IiwNCj4gPiArCVtWSVJUSU9fTkVU
-X0ZfR1VFU1RfRUNOXSA9ICJHVUVTVF9FQ04iLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9HVUVTVF9V
-Rk9dID0gIkdVRVNUX1VGTyIsDQo+ID4gKwlbVklSVElPX05FVF9GX0hPU1RfVFNPNF0gPSAiSE9T
-VF9UU080IiwNCj4gPiArCVtWSVJUSU9fTkVUX0ZfSE9TVF9UU082XSA9ICJIT1NUX1RTTzYiLA0K
-PiA+ICsJW1ZJUlRJT19ORVRfRl9IT1NUX0VDTl0gPSAiSE9TVF9FQ04iLA0KPiA+ICsJW1ZJUlRJ
-T19ORVRfRl9IT1NUX1VGT10gPSAiSE9TVF9VRk8iLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9NUkdf
-UlhCVUZdID0gIk1SR19SWEJVRiIsDQo+ID4gKwlbVklSVElPX05FVF9GX1NUQVRVU10gPSAiU1RB
-VFVTIiwNCj4gPiArCVtWSVJUSU9fTkVUX0ZfQ1RSTF9WUV0gPSAiQ1RSTF9WUSIsDQo+ID4gKwlb
-VklSVElPX05FVF9GX0NUUkxfUlhdID0gIkNUUkxfUlgiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9D
-VFJMX1ZMQU5dID0gIkNUUkxfVkxBTiIsDQo+ID4gKwlbVklSVElPX05FVF9GX0NUUkxfUlhfRVhU
-UkFdID0gIkNUUkxfUlhfRVhUUkEiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9HVUVTVF9BTk5PVU5D
-RV0gPSAiR1VFU1RfQU5OT1VOQ0UiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9NUV0gPSAiTVEiLA0K
-PiA+ICsJW1ZJUlRJT19GX05PVElGWV9PTl9FTVBUWV0gPSAiTk9USUZZX09OX0VNUFRZIiwNCj4g
-PiArCVtWSVJUSU9fTkVUX0ZfQ1RSTF9NQUNfQUREUl0gPSAiQ1RSTF9NQUNfQUREUiIsDQo+ID4g
-KwlbVklSVElPX0ZfQU5ZX0xBWU9VVF0gPSAiQU5ZX0xBWU9VVCIsDQo+ID4gKwlbVklSVElPX05F
-VF9GX1JTQ19FWFRdID0gIlJTQ19FWFQiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9IQVNIX1JFUE9S
-VF0gPSAiSEFTSF9SRVBPUlQiLA0KPiA+ICsJW1ZJUlRJT19ORVRfRl9SU1NdID0gIlJTUyIsDQo+
-ID4gKwlbVklSVElPX05FVF9GX1NUQU5EQlldID0gIlNUQU5EQlkiLA0KPiA+ICsJW1ZJUlRJT19O
-RVRfRl9TUEVFRF9EVVBMRVhdID0gIlNQRUVEX0RVUExFWCIsDQo+IA0KPiBub3QgdmVyeSBlYXN5
-IG9uIHRoZSBleWVzLiBQbGVhc2Ugc2VuZCBhIGZvbGxvd3VwIHRoYXQgY29sdW1uIGFsaWducyB0
-aGUNCj4gc3RyaW5ncy4gZS5nLiwNCj4gDQo+IEBAIC00MDMsOSArNDAzLDkgQEAgc3RhdGljIGNv
-bnN0IGNoYXIgKnBhcnNlX2NsYXNzKGludCBudW0pDQo+ICB9DQo+IA0KPiAgc3RhdGljIGNvbnN0
-IGNoYXIgKiBjb25zdCBuZXRfZmVhdHVyZV9zdHJzWzY0XSA9IHsNCj4gLSAgICAgICBbVklSVElP
-X05FVF9GX0NTVU1dID0gIkNTVU0iLA0KPiAtICAgICAgIFtWSVJUSU9fTkVUX0ZfR1VFU1RfQ1NV
-TV0gPSAiR1VFU1RfQ1NVTSIsDQo+IC0gICAgICAgW1ZJUlRJT19ORVRfRl9DVFJMX0dVRVNUX09G
-RkxPQURTXSA9ICJDVFJMX0dVRVNUX09GRkxPQURTIiwNCj4gKyAgICAgICBbVklSVElPX05FVF9G
-X0NTVU1dICAgICAgICAgICAgICAgICAgICAgPSAiQ1NVTSIsDQo+ICsgICAgICAgW1ZJUlRJT19O
-RVRfRl9HVUVTVF9DU1VNXSAgICAgICAgICAgICAgID0gIkdVRVNUX0NTVU0iLA0KPiArICAgICAg
-IFtWSVJUSU9fTkVUX0ZfQ1RSTF9HVUVTVF9PRkZMT0FEU10gICAgICA9ICJDVFJMX0dVRVNUX09G
-RkxPQURTIiwNCj4gLi4uDQo+IA0KPiANCj4gPiArfTsNCj4gPiArDQo+ID4gKyNkZWZpbmUgVklS
-VElPX0ZfSU5fT1JERVIgMzUNCj4gPiArI2RlZmluZSBWSVJUSU9fRl9OT1RJRklDQVRJT05fREFU
-QSAzOA0KPiA+ICsjZGVmaW5lIFZEUEFfRVhUX0ZFQVRVUkVTX1NaIChWSVJUSU9fVFJBTlNQT1JU
-X0ZfRU5EIC0gXA0KPiA+ICsJCQkgICAgICBWSVJUSU9fVFJBTlNQT1JUX0ZfU1RBUlQgKyAxKQ0K
-PiA+ICsNCj4gPiArc3RhdGljIGNvbnN0IGNoYXIgKiBjb25zdCBleHRfZmVhdHVyZV9zdHJzW1ZE
-UEFfRVhUX0ZFQVRVUkVTX1NaXSA9IHsNCj4gPiArCVtWSVJUSU9fUklOR19GX0lORElSRUNUX0RF
-U0MgLSBWSVJUSU9fVFJBTlNQT1JUX0ZfU1RBUlRdID0gIlJJTkdfSU5ESVJFQ1RfREVTQyIsDQo+
-ID4gKwlbVklSVElPX1JJTkdfRl9FVkVOVF9JRFggLSBWSVJUSU9fVFJBTlNQT1JUX0ZfU1RBUlRd
-ID0gIlJJTkdfRVZFTlRfSURYIiwNCj4gPiArCVtWSVJUSU9fRl9WRVJTSU9OXzEgLSBWSVJUSU9f
-VFJBTlNQT1JUX0ZfU1RBUlRdID0gIlZFUlNJT05fMSIsDQo+ID4gKwlbVklSVElPX0ZfQUNDRVNT
-X1BMQVRGT1JNIC0gVklSVElPX1RSQU5TUE9SVF9GX1NUQVJUXSA9ICJBQ0NFU1NfUExBVEZPUk0i
-LA0KPiA+ICsJW1ZJUlRJT19GX1JJTkdfUEFDS0VEIC0gVklSVElPX1RSQU5TUE9SVF9GX1NUQVJU
-XSA9ICJSSU5HX1BBQ0tFRCIsDQo+ID4gKwlbVklSVElPX0ZfSU5fT1JERVIgLSBWSVJUSU9fVFJB
-TlNQT1JUX0ZfU1RBUlRdID0gIklOX09SREVSIiwNCj4gPiArCVtWSVJUSU9fRl9PUkRFUl9QTEFU
-Rk9STSAtIFZJUlRJT19UUkFOU1BPUlRfRl9TVEFSVF0gPSAiT1JERVJfUExBVEZPUk0iLA0KPiA+
-ICsJW1ZJUlRJT19GX1NSX0lPViAtIFZJUlRJT19UUkFOU1BPUlRfRl9TVEFSVF0gPSAiU1JfSU9W
-IiwNCj4gPiArCVtWSVJUSU9fRl9OT1RJRklDQVRJT05fREFUQSAtIFZJUlRJT19UUkFOU1BPUlRf
-Rl9TVEFSVF0gPSAiTk9USUZJQ0FUSU9OX0RBVEEiLA0KPiANCj4gYW5kIHRoZSBlbnRyaWVzIGhl
-cmUgc2hvdWxkIGJlIGEgbWFjcm8gdG8gaGFuZGxlIHRoZQ0KPiBWSVJUSU9fVFJBTlNQT1JUX0Zf
-U1RBUlQgIG9mZnNldCB3aXRoIGNvbHVtbiBhbGlnbmVkIHN0cmluZ3MuDQo+DQoNCkkgZ3Vlc3Mg
-SSBjb3VsZCBkZWZpbmUgYSBtYWNybyBoZXJlIGlmIGFsbCB0aGUgZmxhZ3Mgd291bGQgc3RhcnQg
-d2l0aCAiVklSVElPX0ZfID0iIGJ1dCB1bmZvcnR1bmF0ZWx5LA0KdGhlIGZpcnN0IHR3byBmbGFn
-cyBkb24ndCBmb2xsb3cgdGhpcyBwYXR0ZXJuLg0KSSBjb3VsZCBzZW5kIGtlcm5lbCBwYXRjaGVz
-IHRvIHJlcGxhY2UgVklSVElPX1JJTkdfRl9JTkRJUkVDVF9ERVNDIGFuZA0KVklSVElPX1JJTkdf
-Rl9FVkVOVF9JRFggdG8gVklSVElPX0ZfUklOR19JTkRJUkVDVF9ERVNDIGFuZCBWSVJUSU9fRl9S
-SU5HX0VWRU5UX0lEWA0KYW5kIHRoZW4gZml4IHRoZSBmb3JtYXQgaGVyZS4NCg0KSWYgeW91IG1l
-YW50IHNvbWV0aGluZyBlbHNlLCBwbGVhc2UgYmUgbW9yZSBzcGVjaWZpYy4NCg==
+On Tue, Mar 15, 2022 at 09:32:34AM +0100, Lukas Wunner wrote:
+> On Tue, Mar 15, 2022 at 06:44:03AM +0100, Oleksij Rempel wrote:
+> > On Mon, Mar 14, 2022 at 08:14:36PM +0100, Andrew Lunn wrote:
+> > > On Mon, Mar 14, 2022 at 07:42:34PM +0100, Lukas Wunner wrote:
+> > > > On Thu, Mar 10, 2022 at 12:38:20PM +0100, Oleksij Rempel wrote:
+> > > > > On Thu, Mar 10, 2022 at 12:25:08PM +0100, Oliver Neukum wrote:
+> > > > > > I got bug reports that 2c9d6c2b871d ("usbnet: run unbind() before
+> > > > > > unregister_netdev()") is causing regressions.
+> > > > > > Rather than simply reverting it,
+> > > > > > it seems to me that the call needs to be split. One in the old place
+> > > > > > and one in the place you moved it to.
+> > > > 
+> > > > I disagree.  The commit message claims that the change is necessary
+> > > > because phy_disconnect() fails if called with
+> > > > phydev->attached_dev == NULL.
+> > > 
+> > > The only place i see which sets phydev->attached_dev is
+> > > phy_attach_direct(). So if phydev->attached_dev is NULL, the PHY has
+> > > not been attached, and hence there is no need to call
+> > > phy_disconnect().
+> > 
+> > phydev->attached_dev is not NULL.
+> 
+> Right, I was mistaken, sorry.
+> 
+> 
+> > It was linked to unregistered/freed
+> > netdev. This is why my patch changing the order to call phy_disconnect()
+> > first and then unregister_netdev().
+> 
+> Unregistered yes, but freed no.  Here's the order before 2c9d6c2b871d:
+> 
+>   usbnet_disconnect()
+>     unregister_netdev()
+>     ax88772_unbind()
+>       phy_disconnect()
+>     free_netdev()
+> 
+> Is it illegal to disconnect a PHY from an unregistered, but not yet freed
+> net_device?
+> 
+> Oleksij, the commit message of 2c9d6c2b871d says that disconnecting the
+> PHY "fails" in that situation.  Please elaborate what the failure looked
+> like.  Did you get a stacktrace?
+
+[   15.459655] asix 2-1.2:1.0 eth1: Link is Up - 100Mbps/Full - flow control off
+[   30.600242] usb 2-1.2: USB disconnect, device number 3
+[   30.611962] asix 2-1.2:1.0 eth1: unregister 'asix' usb-ci_hdrc.1-1.2, ASIX AX88772B USB 2.0 Ethernet
+[   30.649173] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
+[   30.657027] asix 2-1.2:1.0 eth1 (unregistered): Failed to write Medium Mode mode to 0x0000: ffffffed
+[   30.683006] asix 2-1.2:1.0 eth1 (unregistered): Link is Down
+[   30.689512] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
+[   30.697359] asix 2-1.2:1.0 eth1 (unregistered): Failed to enable software MII access
+[   30.706009] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
+[   30.714277] asix 2-1.2:1.0 eth1 (unregistered): Failed to enable software MII access
+[   30.732689] 8<--- cut here ---
+[   30.735757] Unable to handle kernel paging request at virtual address 2e839000
+[   30.742984] pgd = af824ad7
+[   30.745695] [2e839000] *pgd=00000000
+[   30.749282] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[   30.754602] Modules linked in:
+[   30.757663] CPU: 0 PID: 77 Comm: kworker/0:2 Not tainted 5.13.0-rc3-00818-g06edf1a940be #2
+[   30.765934] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[   30.772466] Workqueue: events linkwatch_event
+[   30.776841] PC is at linkwatch_do_dev+0x6c/0x88
+[   30.781380] LR is at __local_bh_enable_ip+0x6c/0x100
+[   30.786356] pc : [<c08637f4>]    lr : [<c013e5c4>]    psr: 60030093
+[   30.792625] sp : c1d2bed8  ip : 00000001  fp : c28d2000
+[   30.797852] r10: c0fcf19c  r9 : c0fcf170  r8 : 00000000
+[   30.803080] r7 : c102f044  r6 : c1d2beec  r5 : 00000063  r4 : c28d2000
+[   30.809611] r3 : 00000000  r2 : 00000000  r1 : 2e839000  r0 : 60030013
+[   30.816140] Flags: nZCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
+[   30.823367] Control: 10c5387d  Table: 12b54059  DAC: 00000051
+[   30.829114] Register r0 information: non-paged memory
+[   30.834174] Register r1 information: non-paged memory
+[   30.839231] Register r2 information: NULL pointer
+[   30.843941] Register r3 information: NULL pointer
+[   30.848649] Register r4 information: slab kmalloc-2k start c28d2000 pointer offset 0 size 2048
+[   30.857287] Register r5 information: non-paged memory
+[   30.862344] Register r6 information: non-slab/vmalloc memory
+[   30.868008] Register r7 information: non-slab/vmalloc memory
+[   30.873673] Register r8 information: NULL pointer
+[   30.878381] Register r9 information: non-slab/vmalloc memory
+[   30.884045] Register r10 information: non-slab/vmalloc memory
+[   30.889797] Register r11 information: slab kmalloc-2k start c28d2000 pointer offset 0 size 2048
+[   30.898516] Register r12 information: non-paged memory
+[   30.903662] Process kworker/0:2 (pid: 77, stack limit = 0xded42e9b)
+[   30.909935] Stack: (0xc1d2bed8 to 0xc1d2c000)
+[   30.914298] bec0:                                                       c28d22cc c0863a48
+[   30.922481] bee0: 00000000 c1d2a000 00000008 c1d2beec c1d2beec 73675768 c1d4da84 c0fcf170
+[   30.930663] bf00: c1ce0d80 ef6d28c0 ef6d5c00 00000000 00000000 c0fed000 ef6d28c0 c0863b8c
+[   30.938844] bf20: c0fcf170 c0155550 c1d2a000 c0a13fd4 ef6d28d8 c1ce0d80 ef6d28c0 c1ce0d94
+[   30.947026] bf40: ef6d28d8 c0f03d00 00000008 c1d2a000 ef6d28c0 c0155dc0 c1003e48 c0fec754
+[   30.955208] bf60: c1ce75e4 c1ce75c0 c1ce7fc0 c1d2a000 00000000 c1931eb4 c0155d5c c1ce0d80
+[   30.963389] bf80: c1ce75e4 c015bacc 00000000 c1ce7fc0 c015b954 00000000 00000000 00000000
+[   30.971570] bfa0: 00000000 00000000 00000000 c0100150 00000000 00000000 00000000 00000000
+[   30.979750] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[   30.987931] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+[   30.996114] [<c08637f4>] (linkwatch_do_dev) from [<c0863a48>] (__linkwatch_run_queue+0xe0/0x1f0)
+[   31.004917] [<c0863a48>] (__linkwatch_run_queue) from [<c0863b8c>] (linkwatch_event+0x34/0x3c)
+[   31.013540] [<c0863b8c>] (linkwatch_event) from [<c0155550>] (process_one_work+0x20c/0x5d0)
+[   31.021911] [<c0155550>] (process_one_work) from [<c0155dc0>] (worker_thread+0x64/0x570)
+[   31.030010] [<c0155dc0>] (worker_thread) from [<c015bacc>] (kthread+0x178/0x190)
+[   31.037421] [<c015bacc>] (kthread) from [<c0100150>] (ret_from_fork+0x14/0x24)
+[   31.044654] Exception stack(0xc1d2bfb0 to 0xc1d2bff8)
+[   31.049710] bfa0:                                     00000000 00000000 00000000 00000000
+[   31.057891] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[   31.066071] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[   31.072692] Code: e10f0000 f10c0080 e59432c8 ee1d1f90 (e7932001) 
+[   31.078788] ---[ end trace f80581862631ce84 ]---
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
