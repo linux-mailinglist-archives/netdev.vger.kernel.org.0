@@ -2,383 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4207D4D947C
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 07:17:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 432204D948F
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 07:26:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345114AbiCOGSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 02:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        id S1345160AbiCOG1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 02:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345184AbiCOGSi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 02:18:38 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8E74A913
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 23:17:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647325044; x=1678861044;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=l+vBW9FFTcW5sn2wNXgg9ej4eUlk3vFTs9C/q26q1lw=;
-  b=ZH6KZAqA4CUvYxr76IyU0mep5JWV+y1sRpREz5YqRWYv7dZjTqb7Zp1R
-   yvI/+CXIqfi7Kpl69J56GpQj2p2nszqftPKYSjUtnFkGPokGyZc5xcarn
-   wSIRD25CjSVO4edylMYOksP5U0qjXqmK8Ww9+0udlKzJ0wcjKMsQYupX8
-   IuPQC89xHNYLIVypeVGP2lGXcn7b2GLQDrXsnpV2CdErCrhhG6/KSFmkc
-   Ph+IMrXWFOH/TVt30wiwKaI4Me/1PiVmhDk4L5a1IGag0KVrjsp2EImqh
-   d5swWY64bht92tTgw+jEbEAzDcNP2OktJxChl+zZSVJm56wkdNho63kHg
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,182,1643698800"; 
-   d="scan'208";a="149191713"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Mar 2022 23:17:23 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 14 Mar 2022 23:17:22 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 14 Mar 2022 23:17:19 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
-Subject: [PATCH net-next 5/5] net: lan743x: Add support for PTP-IO Event Output (Periodic Output)
-Date:   Tue, 15 Mar 2022 11:47:01 +0530
-Message-ID: <20220315061701.3006-6-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220315061701.3006-1-Raju.Lakkaraju@microchip.com>
-References: <20220315061701.3006-1-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S240722AbiCOG1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 02:27:45 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759055F8B
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 23:26:34 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id p17so15422657plo.9
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 23:26:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sNbGvu9gxl2xK5UIPNKtEgnSMHuKMnS5rTnq6umhXus=;
+        b=LscTVbtyYMSx2YxakTTGtQ96bleP3FlFVFuMzxZlY/Y4Ibr3CA8goMBYBXGRv1Bhjv
+         WwQDS31/JLKuQ4W5WsTiLySsNQMuFpWLeJzhL6gkPAcL2An8q74YfAh2FUTHiYb40S7I
+         dYh3buJx7xOTlKrqfMLOrEQx/bSTlt4xb1V0iEFU6UmIQDRvayWFmkXXwUGkZz+x3YSK
+         OaxjhGAok9VVlF2w6fxJNWMgrWyWAMP44yokJSamWuVzOWn9ss0Im4pnOZpNITYVV34V
+         QS+Hrbqnl/LQQiL+Pz50gdmrrm0kBplBkMWhuj+Wvy2AKmpgs0+hWwFpo8YFZX9KI7pu
+         m9wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sNbGvu9gxl2xK5UIPNKtEgnSMHuKMnS5rTnq6umhXus=;
+        b=jYe+KLBA/3qqVCZqg3lxV/nnP8IJzDiSyCXdaAhj36SYjji1DU5w00qo7Yy1lby6ah
+         dNvNslZtdNSvexQA5GG2jneIsmy1ZQKxA/mbIgYAaZdVgn5GcU8ZXnU3ypdpx/7M5SBd
+         npVphJoR+T/p4gfYZKw1tYy+96TDs3hnLABhH03MoizibypuJV7HHf1swLWZfLF5t40L
+         qL2KAYkWpF5Nvdr1tA60ltpcwzVstfVB5k02dNmlCoyXCEUt8bKL0zel1SodRCvCkL6M
+         A3HKi76vihqTylYNjBLa8IL48Z3Vj9T8gdXt7IudbTSX+sjjyfKGDXU2TUTEVyTi8OZl
+         iNdA==
+X-Gm-Message-State: AOAM5301mwBsbVNZunVL+Ad5yY1ok/RirBcsgmHFANDfYx+wUU5LZriv
+        C9X3DVooMwjbet9BKzxQGKd8S9d+Msg=
+X-Google-Smtp-Source: ABdhPJxHzH7gUloj6WKy6OBnthq21jFyIhsZduW1MQPNjRPe+a8Umk8XuiGKKjC0Vbhzmij4HAUPQQ==
+X-Received: by 2002:a17:90b:4f8f:b0:1bf:84ad:1fe6 with SMTP id qe15-20020a17090b4f8f00b001bf84ad1fe6mr2857772pjb.189.1647325593665;
+        Mon, 14 Mar 2022 23:26:33 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x29-20020aa79a5d000000b004f0ef1822d3sm21523574pfj.128.2022.03.14.23.26.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Mar 2022 23:26:32 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Guillaume Nault <gnault@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Jianlin Shi <jishi@redhat.com>
+Subject: [PATCH net] bareudp: use ipv6_mod_enabled to check if IPv6 enabled
+Date:   Tue, 15 Mar 2022 14:26:18 +0800
+Message-Id: <20220315062618.156230-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for PTP-IO Event Output (Periodic Output - perout) for PCI11010/PCI11414 chips
+bareudp_create_sock() use AF_INET6 by default if IPv6 CONFIG enabled.
+But if user start kernel with ipv6.disable=1, the bareudp sock will
+created failed, which cause the interface open failed even with ethertype
+ip. e.g.
 
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+ # ip link add bareudp1 type bareudp dstport 2 ethertype ip
+ # ip link set bareudp1 up
+ RTNETLINK answers: Address family not supported by protocol
+
+Fix it by using ipv6_mod_enabled() to check if IPv6 enabled. There is
+no need to check IS_ENABLED(CONFIG_IPV6) as ipv6_mod_enabled() will
+return false when CONFIG_IPV6 no enabled in include/linux/ipv6.h.
+
+Reported-by: Jianlin Shi <jishi@redhat.com>
+Fixes: 571912c69f0e ("net: UDP tunnel encapsulation module for tunnelling different protocols like MPLS, IP, NSH etc.")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- drivers/net/ethernet/microchip/lan743x_main.h |  33 +++
- drivers/net/ethernet/microchip/lan743x_ptp.c  | 217 +++++++++++++++++-
- drivers/net/ethernet/microchip/lan743x_ptp.h  |   1 +
- 3 files changed, 249 insertions(+), 2 deletions(-)
+ drivers/net/bareudp.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 9c528705866f..1ca5f3216403 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -336,6 +336,7 @@
- #define INT_MOD_CFG9			(0x7E4)
+diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
+index ba587e5fc24f..683203f87ae2 100644
+--- a/drivers/net/bareudp.c
++++ b/drivers/net/bareudp.c
+@@ -148,14 +148,14 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
+ 	skb_reset_network_header(skb);
+ 	skb_reset_mac_header(skb);
  
- #define PTP_CMD_CTL					(0x0A00)
-+#define PTP_CMD_CTL_PTP_LTC_TARGET_READ_		BIT(13)
- #define PTP_CMD_CTL_PTP_CLK_STP_NSEC_			BIT(6)
- #define PTP_CMD_CTL_PTP_CLOCK_STEP_SEC_			BIT(5)
- #define PTP_CMD_CTL_PTP_CLOCK_LOAD_			BIT(4)
-@@ -357,6 +358,30 @@
- 	(((value) & 0x7) << (1 + ((channel) << 2)))
- #define PTP_GENERAL_CONFIG_RELOAD_ADD_X_(channel)	(BIT((channel) << 2))
+-	if (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
++	if (!ipv6_mod_enabled() || family == AF_INET)
+ 		err = IP_ECN_decapsulate(oiph, skb);
+ 	else
+ 		err = IP6_ECN_decapsulate(oiph, skb);
  
-+#define HS_PTP_GENERAL_CONFIG				(0x0A04)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_(channel) \
-+	(0xf << (4 + ((channel) << 2)))
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100NS_	(0)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500NS_	(1)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1US_		(2)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5US_		(3)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10US_		(4)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50US_		(5)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100US_	(6)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500US_	(7)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS_		(8)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5MS_		(9)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10MS_		(10)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50MS_		(11)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100MS_	(12)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_	(13)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_TOGG_		(14)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_INT_		(15)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_SET_(channel, value) \
-+	(((value) & 0xf) << (4 + ((channel) << 2)))
-+#define HS_PTP_GENERAL_CONFIG_EVENT_POL_X_(channel)	(BIT(1 + ((channel) * 2)))
-+#define HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(channel)	(BIT((channel) * 2))
-+
- #define PTP_INT_STS				(0x0A08)
- #define PTP_INT_IO_FE_MASK_			GENMASK(31, 24)
- #define PTP_INT_IO_FE_SHIFT_			(24)
-@@ -364,9 +389,17 @@
- #define PTP_INT_IO_RE_MASK_			GENMASK(23, 16)
- #define PTP_INT_IO_RE_SHIFT_			(16)
- #define PTP_INT_IO_RE_SET_(channel)		BIT(16 + (channel))
-+#define PTP_INT_TX_TS_OVRFL_INT_		BIT(14)
-+#define PTP_INT_TX_SWTS_ERR_INT_		BIT(13)
-+#define PTP_INT_TX_TS_INT_			BIT(12)
-+#define PTP_INT_RX_TS_OVRFL_INT_		BIT(9)
-+#define PTP_INT_RX_TS_INT_			BIT(8)
-+#define PTP_INT_TIMER_INT_B_			BIT(1)
-+#define PTP_INT_TIMER_INT_A_			BIT(0)
- #define PTP_INT_EN_SET				(0x0A0C)
- #define PTP_INT_EN_FE_EN_SET_(channel)		BIT(24 + (channel))
- #define PTP_INT_EN_RE_EN_SET_(channel)		BIT(16 + (channel))
-+#define PTP_INT_EN_TIMER_SET_(channel)		BIT(channel)
- #define PTP_INT_EN_CLR				(0x0A10)
- #define PTP_INT_EN_FE_EN_CLR_(channel)		BIT(24 + (channel))
- #define PTP_INT_EN_RE_EN_CLR_(channel)		BIT(16 + (channel))
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index 9fffce5baade..341e78643052 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -688,6 +688,214 @@ static int lan743x_ptp_perout(struct lan743x_adapter *adapter, int on,
- 	return ret;
- }
+ 	if (unlikely(err)) {
+ 		if (log_ecn_error) {
+-			if  (!IS_ENABLED(CONFIG_IPV6) || family == AF_INET)
++			if  (!ipv6_mod_enabled() || family == AF_INET)
+ 				net_info_ratelimited("non-ECT from %pI4 "
+ 						     "with TOS=%#x\n",
+ 						     &((struct iphdr *)oiph)->saddr,
+@@ -221,11 +221,12 @@ static struct socket *bareudp_create_sock(struct net *net, __be16 port)
+ 	int err;
  
-+static void lan743x_ptp_io_perout_off(struct lan743x_adapter *adapter,
-+				      u32 index)
-+{
-+	struct lan743x_ptp *ptp = &adapter->ptp;
-+	u32 general_config;
-+	int perout_pin;
-+	int event_ch;
-+	int val;
+ 	memset(&udp_conf, 0, sizeof(udp_conf));
+-#if IS_ENABLED(CONFIG_IPV6)
+-	udp_conf.family = AF_INET6;
+-#else
+-	udp_conf.family = AF_INET;
+-#endif
 +
-+	event_ch = ptp->ptp_io_perout[index];
-+	if (event_ch >= 0) {
-+		/* set target to far in the future, effectively disabling it */
-+		lan743x_csr_write(adapter,
-+				  PTP_CLOCK_TARGET_SEC_X(event_ch),
-+				  0xFFFF0000);
-+		lan743x_csr_write(adapter,
-+				  PTP_CLOCK_TARGET_NS_X(event_ch),
-+				  0);
-+
-+		general_config = lan743x_csr_read(adapter, HS_PTP_GENERAL_CONFIG);
-+		general_config &= ~(HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_
-+				    (event_ch));
-+		general_config &= ~(HS_PTP_GENERAL_CONFIG_EVENT_POL_X_
-+				    (event_ch));
-+		general_config |= HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(event_ch);
-+		lan743x_csr_write(adapter, HS_PTP_GENERAL_CONFIG, general_config);
-+		if (event_ch)
-+			lan743x_csr_write(adapter, PTP_INT_STS, PTP_INT_TIMER_INT_B_);
-+		else
-+			lan743x_csr_write(adapter, PTP_INT_STS, PTP_INT_TIMER_INT_A_);
-+		lan743x_ptp_release_event_ch(adapter, event_ch);
-+		ptp->ptp_io_perout[index] = -1;
-+	}
-+
-+	perout_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT, index);
-+
-+	/* Deselect Event output */
-+	val = lan743x_csr_read(adapter, PTP_IO_EVENT_OUTPUT_CFG);
-+
-+	/* Disables the output of Local Time Target compare events */
-+	val &= ~PTP_IO_EVENT_OUTPUT_CFG_EN_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_EVENT_OUTPUT_CFG, val);
-+
-+	/* Configured as an opendrain driver*/
-+	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
-+	val &= ~PTP_IO_PIN_CFG_OBUF_TYPE_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_PIN_CFG, val);
-+	/* Dummy read to make sure write operation success */
-+	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
-+}
-+
-+static int lan743x_ptp_io_perout(struct lan743x_adapter *adapter, int on,
-+				 struct ptp_perout_request *perout_request)
-+{
-+	struct lan743x_ptp *ptp = &adapter->ptp;
-+	u32 period_sec, period_nsec;
-+	u32 start_sec, start_nsec;
-+	u32 pulse_sec, pulse_nsec;
-+	u32 general_config;
-+	int pulse_width;
-+	int perout_pin;
-+	int event_ch;
-+	u32 index;
-+	int val;
-+
-+	index = perout_request->index;
-+	event_ch = ptp->ptp_io_perout[index];
-+
-+	if (on) {
-+		perout_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT, index);
-+		if (perout_pin < 0)
-+			return -EBUSY;
-+	} else {
-+		lan743x_ptp_io_perout_off(adapter, index);
-+		return 0;
-+	}
-+
-+	if (event_ch >= LAN743X_PTP_N_EVENT_CHAN) {
-+		/* already on, turn off first */
-+		lan743x_ptp_io_perout_off(adapter, index);
-+	}
-+
-+	event_ch = lan743x_ptp_reserve_event_ch(adapter, index);
-+	if (event_ch < 0) {
-+		netif_warn(adapter, drv, adapter->netdev,
-+			   "Failed to reserve event channel %d for PEROUT\n",
-+			   index);
-+		goto failed;
-+	}
-+	ptp->ptp_io_perout[index] = event_ch;
-+
-+	if (perout_request->flags & PTP_PEROUT_DUTY_CYCLE) {
-+		pulse_sec = perout_request->on.sec;
-+		pulse_sec += perout_request->on.nsec / 1000000000;
-+		pulse_nsec = perout_request->on.nsec % 1000000000;
-+	} else {
-+		pulse_sec = perout_request->period.sec;
-+		pulse_sec += perout_request->period.nsec / 1000000000;
-+		pulse_nsec = perout_request->period.nsec % 1000000000;
-+	}
-+
-+	if (pulse_sec == 0) {
-+		if (pulse_nsec >= 400000000) {
-+			pulse_width = PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
-+		} else if (pulse_nsec >= 200000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100MS_;
-+		} else if (pulse_nsec >= 100000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50MS_;
-+		} else if (pulse_nsec >= 20000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10MS_;
-+		} else if (pulse_nsec >= 10000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5MS_;
-+		} else if (pulse_nsec >= 2000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS_;
-+		} else if (pulse_nsec >= 1000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500US_;
-+		} else if (pulse_nsec >= 200000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100US_;
-+		} else if (pulse_nsec >= 100000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50US_;
-+		} else if (pulse_nsec >= 20000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10US_;
-+		} else if (pulse_nsec >= 10000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5US_;
-+		} else if (pulse_nsec >= 2000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1US_;
-+		} else if (pulse_nsec >= 1000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500NS_;
-+		} else if (pulse_nsec >= 200) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100NS_;
-+		} else {
-+			netif_warn(adapter, drv, adapter->netdev,
-+				   "perout period too small, minimum is 200nS\n");
-+			goto failed;
-+		}
-+	} else {
-+		pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
-+	}
-+
-+	/* turn off by setting target far in future */
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_SEC_X(event_ch),
-+			  0xFFFF0000);
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_NS_X(event_ch), 0);
-+
-+	/* Configure to pulse every period */
-+	general_config = lan743x_csr_read(adapter, HS_PTP_GENERAL_CONFIG);
-+	general_config &= ~(HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_(event_ch));
-+	general_config |= HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_SET_
-+			  (event_ch, pulse_width);
-+	general_config |= HS_PTP_GENERAL_CONFIG_EVENT_POL_X_(event_ch);
-+	general_config &= ~(HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(event_ch));
-+	lan743x_csr_write(adapter, HS_PTP_GENERAL_CONFIG, general_config);
-+
-+	/* set the reload to one toggle cycle */
-+	period_sec = perout_request->period.sec;
-+	period_sec += perout_request->period.nsec / 1000000000;
-+	period_nsec = perout_request->period.nsec % 1000000000;
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_RELOAD_SEC_X(event_ch),
-+			  period_sec);
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_RELOAD_NS_X(event_ch),
-+			  period_nsec);
-+
-+	start_sec = perout_request->start.sec;
-+	start_sec += perout_request->start.nsec / 1000000000;
-+	start_nsec = perout_request->start.nsec % 1000000000;
-+
-+	/* set the start time */
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_SEC_X(event_ch),
-+			  start_sec);
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_NS_X(event_ch),
-+			  start_nsec);
-+
-+	/* Enable LTC Target Read */
-+	val = lan743x_csr_read(adapter, PTP_CMD_CTL);
-+	val |= PTP_CMD_CTL_PTP_LTC_TARGET_READ_;
-+	lan743x_csr_write(adapter, PTP_CMD_CTL, val);
-+
-+	/* Configure as an push/pull driver */
-+	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
-+	val |= PTP_IO_PIN_CFG_OBUF_TYPE_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_PIN_CFG, val);
-+
-+	/* Select Event output */
-+	val = lan743x_csr_read(adapter, PTP_IO_EVENT_OUTPUT_CFG);
-+	if (event_ch)
-+		/* Channel B as the output */
-+		val |= PTP_IO_EVENT_OUTPUT_CFG_SEL_(perout_pin);
++	if (ipv6_mod_enabled())
++		udp_conf.family = AF_INET6;
 +	else
-+		/* Channel A as the output */
-+		val &= ~PTP_IO_EVENT_OUTPUT_CFG_SEL_(perout_pin);
++		udp_conf.family = AF_INET;
 +
-+	/* Enables the output of Local Time Target compare events */
-+	val |= PTP_IO_EVENT_OUTPUT_CFG_EN_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_EVENT_OUTPUT_CFG, val);
-+
-+	return 0;
-+
-+failed:
-+	lan743x_ptp_io_perout_off(adapter, index);
-+	return -ENODEV;
-+}
-+
- static void lan743x_ptp_io_extts_off(struct lan743x_adapter *adapter,
- 				     u32 index)
- {
-@@ -808,9 +1016,14 @@ static int lan743x_ptpci_enable(struct ptp_clock_info *ptpci,
- 							 &request->extts);
- 			return -EINVAL;
- 		case PTP_CLK_REQ_PEROUT:
--			if (request->perout.index < ptpci->n_per_out)
--				return lan743x_ptp_perout(adapter, on,
-+			if (request->perout.index < ptpci->n_per_out) {
-+				if (adapter->is_pci11x1x)
-+					return lan743x_ptp_io_perout(adapter, on,
-+							     &request->perout);
-+				else
-+					return lan743x_ptp_perout(adapter, on,
- 							  &request->perout);
-+			}
- 			return -EINVAL;
- 		case PTP_CLK_REQ_PPS:
- 			return -EINVAL;
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.h b/drivers/net/ethernet/microchip/lan743x_ptp.h
-index 96d3a134e788..e26d4eff7133 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.h
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.h
-@@ -80,6 +80,7 @@ struct lan743x_ptp {
+ 	udp_conf.local_udp_port = port;
+ 	/* Open UDP socket */
+ 	err = udp_sock_create(net, &udp_conf, &sock);
+@@ -448,7 +449,7 @@ static netdev_tx_t bareudp_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	}
  
- 	unsigned long used_event_ch;
- 	struct lan743x_ptp_perout perout[LAN743X_PTP_N_PEROUT];
-+	int ptp_io_perout[LAN743X_PTP_N_PEROUT]; /* PTP event channel (0=channel A, 1=channel B) */
- 	struct lan743x_extts extts[LAN743X_PTP_N_EXTTS];
+ 	rcu_read_lock();
+-	if (IS_ENABLED(CONFIG_IPV6) && info->mode & IP_TUNNEL_INFO_IPV6)
++	if (ipv6_mod_enabled() && info->mode & IP_TUNNEL_INFO_IPV6)
+ 		err = bareudp6_xmit_skb(skb, dev, bareudp, info);
+ 	else
+ 		err = bareudp_xmit_skb(skb, dev, bareudp, info);
+@@ -478,7 +479,7 @@ static int bareudp_fill_metadata_dst(struct net_device *dev,
  
- 	bool leds_multiplexed;
+ 	use_cache = ip_tunnel_dst_cache_usable(skb, info);
+ 
+-	if (!IS_ENABLED(CONFIG_IPV6) || ip_tunnel_info_af(info) == AF_INET) {
++	if (!ipv6_mod_enabled() || ip_tunnel_info_af(info) == AF_INET) {
+ 		struct rtable *rt;
+ 		__be32 saddr;
+ 
 -- 
-2.25.1
+2.35.1
 
