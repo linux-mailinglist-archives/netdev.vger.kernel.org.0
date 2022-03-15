@@ -2,103 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B684D9AA0
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 12:49:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 732124D9AA9
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 12:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348022AbiCOLus (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 07:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40638 "EHLO
+        id S1348041AbiCOLv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 07:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235597AbiCOLur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 07:50:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4682828E2D
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 04:49:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647344974;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PterqoyvBh+msSA0i+V9VnnV0+IT1msM0OrO0D3B12Q=;
-        b=MvH+of0RrqKqufDLcv/t9OLZEBi1wmrr1uMoDyBap4k0k191QGzParmsQmbxLZyO9Y8qeY
-        8P6GmjL9b6wxkK+b128XMunsS9rgecO6/BoofOff3lgoSNrGWmn2BTKNN/TR2pmU5hQnQu
-        rZc4tW7Q/enQk9xyeJQ3N0O+JWPrbyU=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-608-_bnuXO0GPYyED-LdAGB9Gg-1; Tue, 15 Mar 2022 07:49:33 -0400
-X-MC-Unique: _bnuXO0GPYyED-LdAGB9Gg-1
-Received: by mail-qv1-f70.google.com with SMTP id j6-20020a056214032600b004358f15c51bso16343763qvu.1
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 04:49:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PterqoyvBh+msSA0i+V9VnnV0+IT1msM0OrO0D3B12Q=;
-        b=zoRBqQtXpndOMTSD4X6J5AmCKe+QLs2huX6p7+M3E2qKr8U+0Q5LSEvIU9gpZXRHZr
-         id77uqFzL8J1P6xysvqKC7/v6vaKlzA/PzJzurXo5IfH2Z0QMndmHn6vxRmhnMwFrnOP
-         OuEGUCIV20NWLSTuvQUxYe0aK9kzgCOT3NuFNeJzoL6cmQ2O8uorkogKzVpohu908TLB
-         UDku0VBWz87SngV7G6n9oVV4JpZMYIYarb+uGr4n9l0IyBEEeNZyJXVEzttbJhm0yecs
-         F66nXF6a6JiYMgdMP5f/JW8kNAGpdvQPyOZwVwpWLX2fJphMOKT3eBGIrtFl60+oi1kR
-         +Ssw==
-X-Gm-Message-State: AOAM5324iSTKRhNUPUhoXR8+H9Z9udL0XR9iVZ7bm6JaW70S3obEjGvy
-        VkepJ8qsJZn0CnwIRMmLoskVvV5Lr13hmHnCt8hGrDxTQUr1NCRNYP83Tsmh9J7LI7vHraGDqy2
-        MMsITDO4yJmtDb1w8
-X-Received: by 2002:a05:620a:284d:b0:5ff:320d:c0a5 with SMTP id h13-20020a05620a284d00b005ff320dc0a5mr17984062qkp.681.1647344972639;
-        Tue, 15 Mar 2022 04:49:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwlVn8tnyxlBYGoPjGDSTQP/ITXgasxjqs34flNZkJRFrJ4Au6tkURG5Do6GTqcbi4TFZ7ZTQ==
-X-Received: by 2002:a05:620a:284d:b0:5ff:320d:c0a5 with SMTP id h13-20020a05620a284d00b005ff320dc0a5mr17984052qkp.681.1647344972385;
-        Tue, 15 Mar 2022 04:49:32 -0700 (PDT)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id s12-20020a05622a018c00b002e1cd88645dsm5305032qtw.74.2022.03.15.04.49.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 04:49:31 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 12:49:24 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Cc:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1 3/3] af_vsock: SOCK_SEQPACKET broken buffer test
-Message-ID: <20220315114924.er65xwzw6mg3zp6t@sgarzare-redhat>
-References: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
- <bc309cf9-5bcf-b645-577f-8e5b0cf6f220@sberdevices.ru>
- <20220315083617.n33naazzf3se4ozo@sgarzare-redhat>
- <b452aeac-9628-5e37-e0e6-d33f8bb47b22@sberdevices.ru>
+        with ESMTP id S1348050AbiCOLvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 07:51:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3CB506FA;
+        Tue, 15 Mar 2022 04:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11DD3B815D4;
+        Tue, 15 Mar 2022 11:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AF500C340ED;
+        Tue, 15 Mar 2022 11:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647345010;
+        bh=7zKKkK6thjRzy0CdUHiyxL71TTDDKxp55sKiyhoLiMk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lnBahXfuDLIJug7pPkf5023s6kVWhGbSyjti69A0PfUg+Vufr5p2AvBM6BBxcfQ1j
+         YJPIkg2vm5jfUhumyWim+V+UTtOprIyagNvwlyqTYxTdtrNRzrn+70uvOydaDLoef2
+         /s5AIcyNne71Jg291G7BC4/scQldl7Mp8TmNPfUKbtpc83hGu5aoJXafVqo+Lp9wJW
+         XSm7T19OVMeS5mysBza82hPyQqWBnPejZFBI3XSXu6eJRhz7uidOb/qoPcmOqWwCIH
+         TEsBg40fk7PMkGaDxclESb6yVFVqoiW6vZP/MDJ924uA0aVPADKnVJ2DA3KZO2Z1yB
+         tfD+zlFrw3OFg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 95293E8DD5B;
+        Tue, 15 Mar 2022 11:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <b452aeac-9628-5e37-e0e6-d33f8bb47b22@sberdevices.ru>
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv2] net: phy: Kconfig: micrel_phy: fix dependency issue
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164734501060.2501.2253199048865874913.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Mar 2022 11:50:10 +0000
+References: <20220314110254.12498-1-anders.roxell@linaro.org>
+In-Reply-To: <20220314110254.12498-1-anders.roxell@linaro.org>
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lkp@intel.com
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 09:34:35AM +0000, Krasnov Arseniy Vladimirovich 
-wrote:
->On 15.03.2022 11:36, Stefano Garzarella wrote:
->>
->> Is this the right behavior? If read() fails because the buffer is invalid, do we throw out the whole packet?
->>
->> I was expecting the packet not to be consumed, have you tried AF_UNIX, does it have the same behavior?
->
->I've just checked AF_UNIX implementation of SEQPACKET receive in net/unix/af_unix.c. So, if 'skb_copy_datagram_msg()'
->fails, it calls 'skb_free_datagram()'. I think this means that whole sk buff will be dropped, but anyway, i'll check
->this behaviour in practice. See '__unix_dgram_recvmsg()' in net/unix/af_unix.c.
->
+Hello:
 
-Yep. you are right it seems to be discarded but I don't know that
-code very well, so better to test as you said ;-)
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Thanks,
-Stefano
+On Mon, 14 Mar 2022 12:02:54 +0100 you wrote:
+> When building driver CONFIG_MICREL_PHY the follow error shows up:
+> 
+> aarch64-linux-gnu-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
+> micrel.c:(.text+0x1764): undefined reference to `ptp_clock_index'
+> micrel.c:(.text+0x1764): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ptp_clock_index'
+> aarch64-linux-gnu-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
+> micrel.c:(.text+0x4720): undefined reference to `ptp_clock_register'
+> micrel.c:(.text+0x4720): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `ptp_clock_register'
+> 
+> [...]
+
+Here is the summary with links:
+  - [PATCHv2] net: phy: Kconfig: micrel_phy: fix dependency issue
+    https://git.kernel.org/netdev/net-next/c/231fdac3e58f
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
