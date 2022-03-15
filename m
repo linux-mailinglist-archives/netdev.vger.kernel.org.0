@@ -2,245 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1219E4DA073
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:51:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 340224DA08A
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350213AbiCOQwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 12:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        id S1350295AbiCOQ4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 12:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350232AbiCOQwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:52:04 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC48C57B01;
-        Tue, 15 Mar 2022 09:50:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647363051; x=1678899051;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XXGgXF6pP41ECoDy55xbWxdrjJohWNzgAweyr9Pk7XA=;
-  b=DhBZAayiRaLFUPU1yXDT9lXszXsSVQrDy632mVs00kgJShHFWS/BKh5Y
-   s95EsOWrMzyuAKTLpgr995q8YF/mzZqMm4yhe1ypK3qyZZDPVIvLZH4jc
-   Dt8klpecVenpOk4zDBZTACbz+BlvUBL9KlrIS6Xrs96EkzjIbbH6fG+2D
-   B09MPSKoyFm5PdgL5P+j2Ftqp9kBZYkH/w6FXJgjRi4DipqwnO/tCSRCC
-   jC5oTlSnGNsA0bn9Hw0gnXI2Dc4q9kcl5DlG21V2pj9U8EffwgoLi+b8D
-   4y00fbtB3V9ivAgqkxaAO85UYRBiBVAZnW5T5vUhimDkuN34TVfvMDvPx
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="256548470"
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="256548470"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:49:27 -0700
-X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="690261831"
-Received: from lepple-mobl1.ger.corp.intel.com (HELO [10.252.56.30]) ([10.252.56.30])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 09:49:23 -0700
-Message-ID: <e1acd50f-fe67-14a8-846f-66b52e77abc0@linux.intel.com>
-Date:   Tue, 15 Mar 2022 18:49:20 +0200
+        with ESMTP id S235807AbiCOQ4L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:56:11 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67643193D7;
+        Tue, 15 Mar 2022 09:54:59 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id r13so42822226ejd.5;
+        Tue, 15 Mar 2022 09:54:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Qy5CIGpbJUXBMUFax/Gs3JPDrYnJFLZ0SC9FvW5pKqk=;
+        b=Zxs5hIHUnMp/4fwLFETPt0dMafEJXaocxaxZgCDCk9TWRRs61CJfUF9bxG8HbgcZ6Q
+         e/5TMX7xjIpoR9C/esaQ1wEPeLclV9Vv3ugpyEEzVw7tJORwHM4nNgN98ul0DtddsvCM
+         f7eDB5bwAIV27Vvo1y9TcJ/mD9yPRtKGU4QDfR9QIbwSeMho6rGfeOrT9BZ4rnPtieuO
+         eWzuiqRoiG05vRmarHaDXofQKhEcU3/qm8cD2KbY6tQicNqFnR/HNnwGmon2CTgC6a6y
+         r3ndEiDPdB1dBDwHGjDMLWLyfUHxHIh/afK3GgSRzUCcxaDxUPSzZsIqMwBji3f2qQg1
+         k5Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Qy5CIGpbJUXBMUFax/Gs3JPDrYnJFLZ0SC9FvW5pKqk=;
+        b=FRbm+Br3lmwFxfH0/6BPrtSLSJf1hjbl8bflKzaglN0R79AE8xXQAuPx72KkamzDMI
+         nNjefuYiQYWe+9+vnw9F8NuhCw7WXLIFpmomxzjoeGKCDwLD2WRnzePrQN/JOtOvsns7
+         U/WE0MzOLuy/1k3TEMvx8ONLKRWQ1J+W6467mjg8npuD1fVt10nFjTW5IpVu4KOjTvuo
+         zD7jhi6zdzbaBp847qsxu/6fs+BeDWg6WM1a23lEsZLBnbOV3auJ+9k8vGxXhpFs1NZv
+         2io97gXt2ZFBdnv5QUJfSTgScBXyoccKNlf6Xto9OxaM3CW+lNHfC/2hY01P6Tj/E9jY
+         0YEQ==
+X-Gm-Message-State: AOAM531QwZtKaCHJlfGXNmnRp4+irw/NZe42X5feKeefE5jj/Kiy4fYs
+        44/bYCo+m+LAXyBy2woc2xU=
+X-Google-Smtp-Source: ABdhPJwna+ZLplFZlfRYqNUJoffRemCmoeW6sb8yKaOsz5iQNy38QNP7G1ir+ePEw61BJavMlsJ37A==
+X-Received: by 2002:a17:907:8a04:b0:6b6:1f22:a5e with SMTP id sc4-20020a1709078a0400b006b61f220a5emr23443729ejc.528.1647363297897;
+        Tue, 15 Mar 2022 09:54:57 -0700 (PDT)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id l2-20020aa7cac2000000b003f9b3ac68d6sm9820877edt.15.2022.03.15.09.54.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 09:54:57 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 18:54:55 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v4 net-next 03/15] net: bridge: mst: Support setting and
+ reporting MST port states
+Message-ID: <20220315165455.3nakoccbm7c7d2w5@skbuf>
+References: <20220315002543.190587-1-tobias@waldekranz.com>
+ <20220315002543.190587-4-tobias@waldekranz.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH bpf-next v2 14/28] selftests/bpf: add tests for
- hid_{get|set}_data helpers
-Content-Language: en-US
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>
-Cc:     linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20220304172852.274126-1-benjamin.tissoires@redhat.com>
- <20220304172852.274126-15-benjamin.tissoires@redhat.com>
-From:   Tero Kristo <tero.kristo@linux.intel.com>
-In-Reply-To: <20220304172852.274126-15-benjamin.tissoires@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220315002543.190587-4-tobias@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Benjamin,
-
-On 04/03/2022 19:28, Benjamin Tissoires wrote:
-> Simple test added here, with one use of each helper.
->
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
+On Tue, Mar 15, 2022 at 01:25:31AM +0100, Tobias Waldekranz wrote:
+> Make it possible to change the port state in a given MSTI by extending
+> the bridge port netlink interface (RTM_SETLINK on PF_BRIDGE).The
+> proposed iproute2 interface would be:
+> 
+>     bridge mst set dev <PORT> msti <MSTI> state <STATE>
+> 
+> Current states in all applicable MSTIs can also be dumped via a
+> corresponding RTM_GETLINK. The proposed iproute interface looks like
+> this:
+> 
+> $ bridge mst
+> port              msti
+> vb1               0
+> 		    state forwarding
+> 		  100
+> 		    state disabled
+> vb2               0
+> 		    state forwarding
+> 		  100
+> 		    state forwarding
+> 
+> The preexisting per-VLAN states are still valid in the MST
+> mode (although they are read-only), and can be queried as usual if one
+> is interested in knowing a particular VLAN's state without having to
+> care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
+> bound to MSTI 100):
+> 
+> $ bridge -d vlan
+> port              vlan-id
+> vb1               10
+> 		    state forwarding mcast_router 1
+> 		  20
+> 		    state disabled mcast_router 1
+> 		  30
+> 		    state disabled mcast_router 1
+> 		  40
+> 		    state forwarding mcast_router 1
+> vb2               10
+> 		    state forwarding mcast_router 1
+> 		  20
+> 		    state forwarding mcast_router 1
+> 		  30
+> 		    state forwarding mcast_router 1
+> 		  40
+> 		    state forwarding mcast_router 1
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > ---
->
-> changes in v2:
-> - split the patch with libbpf left outside.
-> ---
->   tools/testing/selftests/bpf/prog_tests/hid.c | 65 ++++++++++++++++++++
->   tools/testing/selftests/bpf/progs/hid.c      | 45 ++++++++++++++
->   2 files changed, 110 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
-> index 91543b8078ca..74426523dd6f 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/hid.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/hid.c
-> @@ -297,6 +297,68 @@ static int test_hid_raw_event(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
->   	return ret;
->   }
->   
-> +/*
-> + * Attach hid_set_get_data to the given uhid device,
-> + * retrieve and open the matching hidraw node,
-> + * inject one event in the uhid device,
-> + * check that the program makes correct use of bpf_hid_{set|get}_data.
-> + */
-> +static int test_hid_set_get_data(struct hid *hid_skel, int uhid_fd, int sysfs_fd)
+> +static int br_mst_process_one(struct net_bridge_port *p,
+> +			      const struct nlattr *attr,
+> +			      struct netlink_ext_ack *extack)
 > +{
-> +	int err, hidraw_ino, hidraw_fd = -1;
-> +	char hidraw_path[64] = {0};
-> +	u8 buf[10] = {0};
-> +	int ret = -1;
+> +	struct nlattr *tb[IFLA_BRIDGE_MST_ENTRY_MAX + 1];
+> +	u16 msti;
+> +	u8 state;
+> +	int err;
 > +
-> +	/* attach hid_set_get_data program */
-> +	hid_skel->links.hid_set_get_data =
-> +		bpf_program__attach_hid(hid_skel->progs.hid_set_get_data, sysfs_fd);
-> +	if (!ASSERT_OK_PTR(hid_skel->links.hid_set_get_data,
-> +			   "attach_hid(hid_set_get_data)"))
-> +		return PTR_ERR(hid_skel->links.hid_set_get_data);
+> +	err = nla_parse_nested(tb, IFLA_BRIDGE_MST_ENTRY_MAX, attr,
+> +			       br_mst_nl_policy, extack);
+> +	if (err)
+> +		return err;
 > +
-> +	hidraw_ino = get_hidraw(hid_skel->links.hid_set_get_data);
-> +	if (!ASSERT_GE(hidraw_ino, 0, "get_hidraw"))
-> +		goto cleanup;
-> +
-> +	/* open hidraw node to check the other side of the pipe */
-> +	sprintf(hidraw_path, "/dev/hidraw%d", hidraw_ino);
-> +	hidraw_fd = open(hidraw_path, O_RDWR | O_NONBLOCK);
-> +
-> +	if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
-> +		goto cleanup;
-> +
-> +	/* inject one event */
-> +	buf[0] = 1;
-> +	buf[1] = 42;
-> +	send_event(uhid_fd, buf, 6);
-> +
-> +	/* read the data from hidraw */
-> +	memset(buf, 0, sizeof(buf));
-> +	err = read(hidraw_fd, buf, sizeof(buf));
-> +	if (!ASSERT_EQ(err, 6, "read_hidraw"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_EQ(buf[2], (42 >> 2), "hid_set_get_data"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_EQ(buf[3], 1, "hid_set_get_data"))
-> +		goto cleanup;
-> +
-> +	if (!ASSERT_EQ(buf[4], 42, "hid_set_get_data"))
-> +		goto cleanup;
-> +
-> +	ret = 0;
-> +
-> +cleanup:
-> +	if (hidraw_fd >= 0)
-> +		close(hidraw_fd);
-> +
-> +	hid__detach(hid_skel);
-> +
-> +	return ret;
-> +}
-> +
->   /*
->    * Attach hid_rdesc_fixup to the given uhid device,
->    * retrieve and open the matching hidraw node,
-> @@ -395,6 +457,9 @@ void serial_test_hid_bpf(void)
->   	err = test_hid_raw_event(hid_skel, uhid_fd, sysfs_fd);
->   	ASSERT_OK(err, "hid");
->   
-> +	err = test_hid_set_get_data(hid_skel, uhid_fd, sysfs_fd);
-> +	ASSERT_OK(err, "hid_set_get_data");
-> +
->   	err = test_rdesc_fixup(hid_skel, uhid_fd, sysfs_fd);
->   	ASSERT_OK(err, "hid_rdesc_fixup");
->   
-> diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
-> index 2270448d0d3f..de6668471940 100644
-> --- a/tools/testing/selftests/bpf/progs/hid.c
-> +++ b/tools/testing/selftests/bpf/progs/hid.c
-> @@ -66,3 +66,48 @@ int hid_rdesc_fixup(struct hid_bpf_ctx *ctx)
->   
->   	return 0;
->   }
-> +
-> +SEC("hid/device_event")
-> +int hid_set_get_data(struct hid_bpf_ctx *ctx)
-> +{
-> +	int ret;
-> +	__u8 *buf;
-> +
-> +	buf = bpf_ringbuf_reserve(&ringbuf, 8, 0);
-
-Ordering of patches is probably wrong, it seems the ringbuf is defined 
-in patch #21 but used here.
-
-Also, this usage of ringbuf leads into running out of available memory 
-in the buffer if used for long time, it is not evident from the test 
-case written here but I spent a couple of hours debugging my own BPF 
-program that used ringbuf in similar way as what is done here. Basically 
-the producer idx is increased with the bpf_ringbuf_reserve / discard, 
-but the consumer index is not if you don't have a consumer in place.
-
-I ended up using a global statically allocated buffer for the purpose 
-for now.
-
--Tero
-
-
-> +	if (!buf)
-> +		return -12; /* -ENOMEM */
-> +
-> +	/* first try read/write with n > 32 */
-> +	ret = bpf_hid_get_data(ctx, 0, 64, buf, 8);
-> +	if (ret < 0)
-> +		goto discard;
-> +
-> +	/* reinject it */
-> +	ret = bpf_hid_set_data(ctx, 24, 64, buf, 8);
-> +	if (ret < 0)
-> +		goto discard;
-> +
-> +	/* extract data at bit offset 10 of size 4 (half a byte) */
-> +	ret = bpf_hid_get_data(ctx, 10, 4, buf, 8);  /* expected to fail */
-> +	if (ret > 0) {
-> +		ret = -1;
-> +		goto discard;
+> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_MSTI]) {
+> +		NL_SET_ERR_MSG_MOD(extack, "MSTI not specified");
+> +		return -EINVAL;
 > +	}
 > +
-> +	ret = bpf_hid_get_data(ctx, 10, 4, buf, 4);
-> +	if (ret < 0)
-> +		goto discard;
+> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_STATE]) {
+> +		NL_SET_ERR_MSG_MOD(extack, "State not specified");
+> +		return -EINVAL;
+> +	}
 > +
-> +	/* reinject it */
-> +	ret = bpf_hid_set_data(ctx, 16, 4, buf, 4);
-> +	if (ret < 0)
-> +		goto discard;
+> +	msti = nla_get_u16(tb[IFLA_BRIDGE_MST_ENTRY_MSTI]);
+> +	state = nla_get_u8(tb[IFLA_BRIDGE_MST_ENTRY_STATE]);
 > +
-> +	ret = 0;
-> +
-> + discard:
-> +
-> +	bpf_ringbuf_discard(buf, 0);
-> +
-> +	return ret;
+> +	br_mst_set_state(p, msti, state);
+
+Is there any reason why this isn't propagating the error?
+
+> +	return 0;
 > +}
