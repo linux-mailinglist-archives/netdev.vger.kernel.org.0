@@ -2,326 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FB64D9904
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 11:43:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D92654D9979
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 11:49:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347197AbiCOKoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 06:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56314 "EHLO
+        id S1347619AbiCOKuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 06:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347190AbiCOKoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 06:44:15 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D28D5F5A
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 03:43:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647340983; x=1678876983;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WSnJH3Ds1nsAnkkAtlDxq3SfdIUO7BqcZ03CcxH2J/c=;
-  b=JrAMQeYLm5+tuqsK8aCgdvQbBjYPBHiR9V7dDriInfr7PvRgANwakx8E
-   NFJjYYkZ8mBU8kWhBGDmZCyjueE0LFxIorg8H+TFABt9+SpionnJLzjOC
-   p+iiz9Jw1EOeRtS9pafqEBPawzDBGij9aGzk9STLVL3dp7s/3G5bUVa4c
-   /YvhAY5Yaj7F/n9yJLvN/y6IJqDVWHqFyU6BONw3VXg226WtfW5+S81Pg
-   vb0vhjVF1g+ReedUS25sYEqvqVRC9biFRl5ViMXE0RT7ISgWf0EvRiAjt
-   XmV0VHK58j6jL09G2rfPIYkNEjCucO5bBjPUtTs3WWc51FKixuHvQ9EJc
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="316988493"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="316988493"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 03:43:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="690151160"
-Received: from unknown (HELO giewont.igk.intel.com) ([10.211.8.15])
-  by fmsmga001.fm.intel.com with ESMTP; 15 Mar 2022 03:43:02 -0700
-From:   Wojciech Drewek <wojciech.drewek@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org
-Subject: [PATCH iproute2-next v4 2/2] f_flower: Implement gtp options support
-Date:   Tue, 15 Mar 2022 11:42:59 +0100
-Message-Id: <20220315104259.578133-3-wojciech.drewek@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220315104259.578133-1-wojciech.drewek@intel.com>
-References: <20220315104259.578133-1-wojciech.drewek@intel.com>
+        with ESMTP id S1348555AbiCOKte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 06:49:34 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27DC52B21
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 03:47:23 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id C728B3F32D
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 10:47:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647341221;
+        bh=Lmjm3yJ63K0GrvAMWP5PfVOb2pmYpXft2AVK3iZtb90=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=qbwgPUj6x31pOvFpugsy0Vk5pH3/RYfG0uWWdUyjhYlfB3ASR1YF63RjkKjXJyh2z
+         2fJSTdnZQNe83ucgHKRcb65PJVTnkoLDW0gq6s9bNLC3F2tITM0/drq+a1CKdUBNt7
+         JPWxg2I8vsEvbQZ+WsxRL1sVlpUaEagMVGYAbmkQ65Y+Uql014Mx+0gMgOwI4G33hD
+         pjbTt+VsyRXaLkUzw2mUgyzmtfX/T13c0TQ2KpCqswxqh2XB9g6EdmFgIL/STcOTjB
+         ZAE1GfMHdm92oPTdbZi95OzJB3IR/DAOBdtzyOw/+lddWH7CXL4vIVw8uRLQNk7QNf
+         xV6gWADANsMuw==
+Received: by mail-ej1-f71.google.com with SMTP id gz16-20020a170907a05000b006db8b2baa10so7032764ejc.1
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 03:47:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Lmjm3yJ63K0GrvAMWP5PfVOb2pmYpXft2AVK3iZtb90=;
+        b=HS8Nvk6WIt428W6pI/dzoBLmXCuFwZ2ZFOy+Vf8Gw3P3v5klXWV7JvjEsdbsso4i13
+         6s7RsOii0lCt0Ws3uoYGSSx3X/goLJPBvzi23Nid0xW//zUpXacvnS9jw81zGm5r23hg
+         JBJ64I25XspuvMLefS3SxWQw7nXUWMcDoQ344xfToJkd9bAFwgE2A1SMwVyhwpc8Xj/6
+         S339PZ6cu0AcjdY8SQ+MeE4mAdh/sD2Ss5Cf+e84e8xhOPhRvY2tOYRQk5wWREuHCRpM
+         0Tu2o87hJTzd2OxuxacWLCRoIvo67gcLO1HmYgcBaLwxVKHbb1E5NSUqTfCFmDLU15pg
+         i92A==
+X-Gm-Message-State: AOAM531XDAZoJmrCeptegtIXLYfOvlO0HKK7KhN3oJYKuQQcdfORAu3Y
+        FqelUlHyZZVVKWjVR65TC8x5U6QZOG6mBA6aH9Xzh2eWupdoIK3a9bgfmyQE1RqAv9OyWQ4hfv2
+        f1oONFG06I+pC2lPiH+EJPWpSwsF5lALJew==
+X-Received: by 2002:a05:6402:278a:b0:418:ad9e:8b65 with SMTP id b10-20020a056402278a00b00418ad9e8b65mr2485491ede.9.1647341220840;
+        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz6nL12RCswbaC6DHPibcw16xO79D+Y2bi8IcqJHpaussAYU5/NVDJTAcwtyw7Q2DBt1I45Kg==
+X-Received: by 2002:a05:6402:278a:b0:418:ad9e:8b65 with SMTP id b10-20020a056402278a00b00418ad9e8b65mr2485476ede.9.1647341220628;
+        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
+Received: from [192.168.0.155] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.googlemail.com with ESMTPSA id w15-20020a056402268f00b00416474fbb42sm9477594edd.19.2022.03.15.03.46.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Mar 2022 03:47:00 -0700 (PDT)
+Message-ID: <4e6df448-5562-8f50-6f46-91acb279bc1a@canonical.com>
+Date:   Tue, 15 Mar 2022 11:46:59 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/8] dt-bindings: pinctrl: mvebu: Document bindings for
+ AC5
+Content-Language: en-US
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
+        catalin.marinas@arm.com, will@kernel.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
+        kostap@marvell.com, robert.marko@sartura.hr
+Cc:     linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
+ <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220314213143.2404162-2-chris.packham@alliedtelesis.co.nz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for parsing TCA_FLOWER_KEY_ENC_OPTS_GTP.
-Options are as follows: PDU_TYPE:QFI where each
-option is represented as 8-bit hexadecimal value.
+On 14/03/2022 22:31, Chris Packham wrote:
+> Add JSON schema for marvell,ac5-pinctrl present on the Marvell 98DX2530
+> SoC.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> ---
+> 
+> Notes:
+>     Changes in v2:
+>     - Remove syscon and simple-mfd compatibles
+> 
+>  .../bindings/pinctrl/marvell,ac5-pinctrl.yaml | 70 +++++++++++++++++++
+>  1 file changed, 70 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
+> new file mode 100644
+> index 000000000000..65af1d5f5fe0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/marvell,ac5-pinctrl.yaml
+> @@ -0,0 +1,70 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pinctrl/marvell,ac5-pinctrl.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Marvell AC5 pin controller
+> +
+> +maintainers:
+> +  - Chris Packham <chris.packham@alliedtelesis.co.nz>
+> +
+> +description:
+> +  Bindings for Marvell's AC5 memory-mapped pin controller.
+> +
+> +properties:
+> +  compatible:
+> +    const: marvell,ac5-pinctrl
+> +
+> +patternProperties:
+> +  '-pins$':
+> +    type: object
+> +    $ref: pinmux-node.yaml#
+> +
+> +    properties:
+> +      marvell,function:
+> +        $ref: "/schemas/types.yaml#/definitions/string"
+> +        description:
+> +          Indicates the function to select.
+> +        enum: [ gpio, i2c0, i2c1, nand, sdio, spi0, spi1, uart0, uart1, uart2, uart3 ]
+> +
+> +      marvell,pins:
+> +        $ref: /schemas/types.yaml#/definitions/string-array
+> +        description:
+> +          Array of MPP pins to be used for the given function.
+> +        minItems: 1
+> +        items:
+> +          enum: [ mpp0, mpp1, mpp2, mpp3, mpp4, mpp5, mpp6, mpp7, mpp8, mpp9,
+> +                  mpp10, mpp11, mpp12, mpp13, mpp14, mpp15, mpp16, mpp17, mpp18, mpp19,
+> +                  mpp20, mpp21, mpp22, mpp23, mpp24, mpp25, mpp26, mpp27, mpp28, mpp29,
+> +                  mpp30, mpp31, mpp32, mpp33, mpp34, mpp35, mpp36, mpp37, mpp38, mpp39,
+> +                  mpp40, mpp41, mpp42, mpp43, mpp44, mpp45 ]
+> +
+> +allOf:
+> +  - $ref: "pinctrl.yaml#"
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    system-controller@80020100 {
+> +      compatible = "syscon", "simple-mfd";
+> +      reg = <0x80020000 0x20>;
 
-e.g.
-  # ip link add gtp_dev type gtp role sgsn
-  # tc qdisc add dev gtp_dev ingress
-  # tc filter add dev gtp_dev protocol ip parent ffff: \
-      flower \
-        enc_key_id 11 \
-        gtp_opts 1:8/ff:ff \
-      action mirred egress redirect dev eth0
+This is unusual. Usually the pinctrl should be a device @80020100, not
+child of syscon node. Why do you need it? In v1 you mentioned that
+vendor sources do like this, but it's not correct to copy wrong DTS. :)
 
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
----
- include/uapi/linux/pkt_cls.h |  16 +++++
- man/man8/tc-flower.8         |  10 +++
- tc/f_flower.c                | 122 ++++++++++++++++++++++++++++++++++-
- 3 files changed, 146 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index ee38b35c3f57..30ff8da0631b 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -616,6 +616,10 @@ enum {
- 					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
- 					 * attributes
- 					 */
-+	TCA_FLOWER_KEY_ENC_OPTS_GTP,	/* Nested
-+					 * TCA_FLOWER_KEY_ENC_OPT_GTP_
-+					 * attributes
-+					 */
- 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
- };
- 
-@@ -654,6 +658,18 @@ enum {
- #define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
- 		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
- 
-+enum {
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_UNSPEC,
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,		/* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_QFI,			/* u8 */
-+
-+	__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX,
-+};
-+
-+#define TCA_FLOWER_KEY_ENC_OPT_GTP_MAX \
-+		(__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX - 1)
-+
-+
- enum {
- 	TCA_FLOWER_KEY_MPLS_OPTS_UNSPEC,
- 	TCA_FLOWER_KEY_MPLS_OPTS_LSE,
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index 4541d9372684..f918a06d2927 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -89,6 +89,8 @@ flower \- flow based traffic control filter
- .B vxlan_opts
- |
- .B erspan_opts
-+|
-+.B gtp_opts
- }
- .IR OPTIONS " | "
- .BR ip_flags
-@@ -411,6 +413,8 @@ Match the connection zone, and can be masked.
- .BI vxlan_opts " OPTIONS"
- .TQ
- .BI erspan_opts " OPTIONS"
-+.TQ
-+.BI gtp_opts " OPTIONS"
- Match on IP tunnel metadata. Key id
- .I NUMBER
- is a 32 bit tunnel key id (e.g. VNI for VXLAN tunnel).
-@@ -446,6 +450,12 @@ VERSION:INDEX:DIR:HWID/VERSION:INDEX_MASK:DIR_MASK:HWID_MASK, where VERSION is
- represented as a 8bit number, INDEX as an 32bit number, DIR and HWID as a 8bit
- number. Multiple options is not supported. Note INDEX/INDEX_MASK is used when
- VERSION is 1, and DIR/DIR_MASK and HWID/HWID_MASK are used when VERSION is 2.
-+gtp_opts
-+.I OPTIONS
-+doesn't support multiple options, and it consists of a key followed by a slash
-+and corresponding mask. If the mask is missing, \fBtc\fR assumes a full-length
-+match. The option can be described in the form PDU_TYPE:QFI/PDU_TYPE_MASK:QFI_MASK
-+where both PDU_TYPE and QFI are represented as a 8bit hexadecimal values.
- .TP
- .BI ip_flags " IP_FLAGS"
- .I IP_FLAGS
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index ad159719c05f..6c1d0df62255 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -1034,6 +1034,52 @@ static int flower_parse_erspan_opt(char *str, struct nlmsghdr *n)
- 	return 0;
- }
- 
-+static int flower_parse_gtp_opt(char *str, struct nlmsghdr *n)
-+{
-+	struct rtattr *nest;
-+	char *token;
-+	int arg, err;
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_GTP | NLA_F_NESTED);
-+
-+	token = strsep(&str, ":");
-+	for (arg = 1; arg <= TCA_FLOWER_KEY_ENC_OPT_GTP_MAX; arg++) {
-+		switch (arg) {
-+		case TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE:
-+		{
-+			__u8 pdu_type;
-+
-+			if (!strlen(token))
-+				break;
-+			err = get_u8(&pdu_type, token, 16);
-+			if (err)
-+				return err;
-+			addattr8(n, MAX_MSG, arg, pdu_type);
-+			break;
-+		}
-+		case TCA_FLOWER_KEY_ENC_OPT_GTP_QFI:
-+		{
-+			__u8 qfi;
-+
-+			if (!strlen(token))
-+				break;
-+			err = get_u8(&qfi, token, 16);
-+			if (err)
-+				return err;
-+			addattr8(n, MAX_MSG, arg, qfi);
-+			break;
-+		}
-+		default:
-+			fprintf(stderr, "Unknown \"gtp_opts\" type\n");
-+			return -1;
-+		}
-+		token = strsep(&str, ":");
-+	}
-+	addattr_nest_end(n, nest);
-+
-+	return 0;
-+}
-+
- static int flower_parse_geneve_opts(char *str, struct nlmsghdr *n)
- {
- 	char *token;
-@@ -1217,6 +1263,41 @@ static int flower_parse_enc_opts_erspan(char *str, struct nlmsghdr *n)
- 	return 0;
- }
- 
-+static int flower_parse_enc_opts_gtp(char *str, struct nlmsghdr *n)
-+{
-+	char key[XATTR_SIZE_MAX], mask[XATTR_SIZE_MAX];
-+	struct rtattr *nest;
-+	char *slash;
-+	int err;
-+
-+	slash = strchr(str, '/');
-+	if (slash) {
-+		*slash++ = '\0';
-+		if (strlen(slash) > XATTR_SIZE_MAX)
-+			return -1;
-+		strcpy(mask, slash);
-+	} else
-+		strcpy(mask, "ff:ff");
-+
-+	if (strlen(str) > XATTR_SIZE_MAX)
-+		return -1;
-+	strcpy(key, str);
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS | NLA_F_NESTED);
-+	err = flower_parse_gtp_opt(key, n);
-+	if (err)
-+		return err;
-+	addattr_nest_end(n, nest);
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_MASK | NLA_F_NESTED);
-+	err = flower_parse_gtp_opt(mask, n);
-+	if (err)
-+		return err;
-+	addattr_nest_end(n, nest);
-+
-+	return 0;
-+}
-+
- static int flower_parse_mpls_lse(int *argc_p, char ***argv_p,
- 				 struct nlmsghdr *nlh)
- {
-@@ -1869,6 +1950,13 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"erspan_opts\"\n");
- 				return -1;
- 			}
-+		} else if (matches(*argv, "gtp_opts") == 0) {
-+			NEXT_ARG();
-+			ret = flower_parse_enc_opts_gtp(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"gtp_opts\"\n");
-+				return -1;
-+			}
- 		} else if (matches(*argv, "action") == 0) {
- 			NEXT_ARG();
- 			ret = parse_action(&argc, &argv, TCA_FLOWER_ACT, n);
-@@ -2338,6 +2426,21 @@ static void flower_print_erspan_opts(const char *name, struct rtattr *attr,
- 	sprintf(strbuf, "%u:%u:%u:%u", ver, idx, dir, hwid);
- }
- 
-+static void flower_print_gtp_opts(const char *name, struct rtattr *attr,
-+				  char *strbuf, int len)
-+{
-+	struct rtattr *tb[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1];
-+	__u8 pdu_type, qfi;
-+
-+	parse_rtattr(tb, TCA_FLOWER_KEY_ENC_OPT_GTP_MAX, RTA_DATA(attr),
-+		     RTA_PAYLOAD(attr));
-+
-+	pdu_type = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]);
-+	qfi = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]);
-+
-+	snprintf(strbuf, len, "%02x:%02x", pdu_type, qfi);
-+}
-+
- static void __attribute__((format(printf, 2, 0)))
- flower_print_enc_parts(const char *name, const char *namefrm,
- 		       struct rtattr *attr, char *key, char *mask)
-@@ -2370,15 +2473,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
- 	struct rtattr *key_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
- 	struct rtattr *msk_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
- 	char *key, *msk;
-+	int len;
- 
- 	if (!attr)
- 		return;
- 
--	key = malloc(RTA_PAYLOAD(attr) * 2 + 1);
-+	len = RTA_PAYLOAD(attr) * 2 + 1;
-+
-+	key = malloc(len);
- 	if (!key)
- 		return;
- 
--	msk = malloc(RTA_PAYLOAD(attr) * 2 + 1);
-+	msk = malloc(len);
- 	if (!msk)
- 		goto err_key_free;
- 
-@@ -2415,6 +2521,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
- 
- 		flower_print_enc_parts(name, "  erspan_opts %s", attr, key,
- 				       msk);
-+	} else if (key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP]) {
-+		flower_print_gtp_opts("gtp_opt_key",
-+				      key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
-+				      key, len);
-+
-+		if (msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP])
-+			flower_print_gtp_opts("gtp_opt_mask",
-+					      msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
-+					      msk, len);
-+
-+		flower_print_enc_parts(name, "  gtp_opts %s", attr, key,
-+				       msk);
- 	}
- 
- 	free(msk);
--- 
-2.35.1
 
+Best regards,
+Krzysztof
