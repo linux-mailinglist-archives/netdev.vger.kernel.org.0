@@ -2,165 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 340224DA08A
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 17:55:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B31BE4DA0BE
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 18:02:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350295AbiCOQ4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 12:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40058 "EHLO
+        id S1350380AbiCORDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 13:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235807AbiCOQ4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 12:56:11 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67643193D7;
-        Tue, 15 Mar 2022 09:54:59 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id r13so42822226ejd.5;
-        Tue, 15 Mar 2022 09:54:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Qy5CIGpbJUXBMUFax/Gs3JPDrYnJFLZ0SC9FvW5pKqk=;
-        b=Zxs5hIHUnMp/4fwLFETPt0dMafEJXaocxaxZgCDCk9TWRRs61CJfUF9bxG8HbgcZ6Q
-         e/5TMX7xjIpoR9C/esaQ1wEPeLclV9Vv3ugpyEEzVw7tJORwHM4nNgN98ul0DtddsvCM
-         f7eDB5bwAIV27Vvo1y9TcJ/mD9yPRtKGU4QDfR9QIbwSeMho6rGfeOrT9BZ4rnPtieuO
-         eWzuiqRoiG05vRmarHaDXofQKhEcU3/qm8cD2KbY6tQicNqFnR/HNnwGmon2CTgC6a6y
-         r3ndEiDPdB1dBDwHGjDMLWLyfUHxHIh/afK3GgSRzUCcxaDxUPSzZsIqMwBji3f2qQg1
-         k5Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Qy5CIGpbJUXBMUFax/Gs3JPDrYnJFLZ0SC9FvW5pKqk=;
-        b=FRbm+Br3lmwFxfH0/6BPrtSLSJf1hjbl8bflKzaglN0R79AE8xXQAuPx72KkamzDMI
-         nNjefuYiQYWe+9+vnw9F8NuhCw7WXLIFpmomxzjoeGKCDwLD2WRnzePrQN/JOtOvsns7
-         U/WE0MzOLuy/1k3TEMvx8ONLKRWQ1J+W6467mjg8npuD1fVt10nFjTW5IpVu4KOjTvuo
-         zD7jhi6zdzbaBp847qsxu/6fs+BeDWg6WM1a23lEsZLBnbOV3auJ+9k8vGxXhpFs1NZv
-         2io97gXt2ZFBdnv5QUJfSTgScBXyoccKNlf6Xto9OxaM3CW+lNHfC/2hY01P6Tj/E9jY
-         0YEQ==
-X-Gm-Message-State: AOAM531QwZtKaCHJlfGXNmnRp4+irw/NZe42X5feKeefE5jj/Kiy4fYs
-        44/bYCo+m+LAXyBy2woc2xU=
-X-Google-Smtp-Source: ABdhPJwna+ZLplFZlfRYqNUJoffRemCmoeW6sb8yKaOsz5iQNy38QNP7G1ir+ePEw61BJavMlsJ37A==
-X-Received: by 2002:a17:907:8a04:b0:6b6:1f22:a5e with SMTP id sc4-20020a1709078a0400b006b61f220a5emr23443729ejc.528.1647363297897;
-        Tue, 15 Mar 2022 09:54:57 -0700 (PDT)
-Received: from skbuf ([188.25.231.156])
-        by smtp.gmail.com with ESMTPSA id l2-20020aa7cac2000000b003f9b3ac68d6sm9820877edt.15.2022.03.15.09.54.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 09:54:57 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 18:54:55 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v4 net-next 03/15] net: bridge: mst: Support setting and
- reporting MST port states
-Message-ID: <20220315165455.3nakoccbm7c7d2w5@skbuf>
-References: <20220315002543.190587-1-tobias@waldekranz.com>
- <20220315002543.190587-4-tobias@waldekranz.com>
+        with ESMTP id S1350395AbiCORDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 13:03:34 -0400
+Received: from smtp-1909.mail.infomaniak.ch (smtp-1909.mail.infomaniak.ch [IPv6:2001:1600:3:17::1909])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CAC580ED
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 10:02:20 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KJ07s4xPFzMppPQ;
+        Tue, 15 Mar 2022 18:02:17 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KJ07r6wTCzljsTq;
+        Tue, 15 Mar 2022 18:02:16 +0100 (CET)
+Message-ID: <c9333349-5e05-de95-85da-f6a0cd836162@digikod.net>
+Date:   Tue, 15 Mar 2022 18:02:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315002543.190587-4-tobias@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 00/15] Landlock LSM
+In-Reply-To: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 01:25:31AM +0100, Tobias Waldekranz wrote:
-> Make it possible to change the port state in a given MSTI by extending
-> the bridge port netlink interface (RTM_SETLINK on PF_BRIDGE).The
-> proposed iproute2 interface would be:
-> 
->     bridge mst set dev <PORT> msti <MSTI> state <STATE>
-> 
-> Current states in all applicable MSTIs can also be dumped via a
-> corresponding RTM_GETLINK. The proposed iproute interface looks like
-> this:
-> 
-> $ bridge mst
-> port              msti
-> vb1               0
-> 		    state forwarding
-> 		  100
-> 		    state disabled
-> vb2               0
-> 		    state forwarding
-> 		  100
-> 		    state forwarding
-> 
-> The preexisting per-VLAN states are still valid in the MST
-> mode (although they are read-only), and can be queried as usual if one
-> is interested in knowing a particular VLAN's state without having to
-> care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
-> bound to MSTI 100):
-> 
-> $ bridge -d vlan
-> port              vlan-id
-> vb1               10
-> 		    state forwarding mcast_router 1
-> 		  20
-> 		    state disabled mcast_router 1
-> 		  30
-> 		    state disabled mcast_router 1
-> 		  40
-> 		    state forwarding mcast_router 1
-> vb2               10
-> 		    state forwarding mcast_router 1
-> 		  20
-> 		    state forwarding mcast_router 1
-> 		  30
-> 		    state forwarding mcast_router 1
-> 		  40
-> 		    state forwarding mcast_router 1
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
-> +static int br_mst_process_one(struct net_bridge_port *p,
-> +			      const struct nlattr *attr,
-> +			      struct netlink_ext_ack *extack)
-> +{
-> +	struct nlattr *tb[IFLA_BRIDGE_MST_ENTRY_MAX + 1];
-> +	u16 msti;
-> +	u8 state;
-> +	int err;
-> +
-> +	err = nla_parse_nested(tb, IFLA_BRIDGE_MST_ENTRY_MAX, attr,
-> +			       br_mst_nl_policy, extack);
-> +	if (err)
-> +		return err;
-> +
-> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_MSTI]) {
-> +		NL_SET_ERR_MSG_MOD(extack, "MSTI not specified");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!tb[IFLA_BRIDGE_MST_ENTRY_STATE]) {
-> +		NL_SET_ERR_MSG_MOD(extack, "State not specified");
-> +		return -EINVAL;
-> +	}
-> +
-> +	msti = nla_get_u16(tb[IFLA_BRIDGE_MST_ENTRY_MSTI]);
-> +	state = nla_get_u8(tb[IFLA_BRIDGE_MST_ENTRY_STATE]);
-> +
-> +	br_mst_set_state(p, msti, state);
+Hi Konstantin,
 
-Is there any reason why this isn't propagating the error?
+This series looks good! Thanks for the split in multiple patches.
 
-> +	return 0;
-> +}
+
+On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+> Hi,
+> This is a new V4 bunch of RFC patches related to Landlock LSM network confinement.
+> It brings deep refactirong and commit splitting of previous version V3.
+> Also added additional selftests.
+> 
+> This patch series can be applied on top of v5.17-rc3.
+> 
+> All test were run in QEMU evironment and compiled with
+>   -static flag.
+>   1. network_test: 9/9 tests passed.
+
+I get a kernel warning running the network tests.
+
+>   2. base_test: 8/8 tests passed.
+>   3. fs_test: 46/46 tests passed.
+>   4. ptrace_test: 4/8 tests passed.
+
+Does your test machine use Yama? That would explain the 4/8. You can 
+disable it with the appropriate sysctl.
+
+> 
+> Tests were also launched for Landlock version without
+> v4 patch:
+>   1. base_test: 8/8 tests passed.
+>   2. fs_test: 46/46 tests passed.
+>   3. ptrace_test: 4/8 tests passed.
+> 
+> Could not provide test coverage cause had problems with tests
+> on VM (no -static flag the tests compiling, no v4 patch applied):
+
+You can build statically-linked tests with:
+make -C tools/testing/selftests/landlock CFLAGS=-static
+
+> 1. base_test: 7/8 tests passed.
+>   Error:
+>   # Starting 8 tests from 1 test cases.
+>   #  RUN           global.inconsistent_attr ...
+>   # base_test.c:51:inconsistent_attr:Expected ENOMSG (42) == errno (22)
+
+This looks like a bug in the syscall argument checks.
+
+>   # inconsistent_attr: Test terminated by assertion
+> 2. fs_test: 0 / 46 tests passed
+>   Error for all tests:
+>   # common.h:126:no_restriction:Expected -1 (-1) != cap_set_proc(cap_p) (-1)
+>   # common.h:127:no_restriction:Failed to cap_set_proc: Operation not permitted
+>   # fs_test.c:106:no_restriction:Expected 0 (0) == mkdir(path, 0700) (-1)
+>   # fs_test.c:107:no_restriction:Failed to create directory "tmp": File exists
+
+You need to run these tests as root.
+
+> 3. ptrace_test: 4 / 8 tests passed.
+> 
+> Previous versions:
+> v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
+> v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
+> v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
+
+Nice to have this history!
+
+> 
+> Konstantin Meskhidze (15):
+>    landlock: access mask renaming
+>    landlock: filesystem access mask helpers
+>    landlock: landlock_find/insert_rule refactoring
+>    landlock: merge and inherit function refactoring
+>    landlock: unmask_layers() function refactoring
+>    landlock: landlock_add_rule syscall refactoring
+>    landlock: user space API network support
+>    landlock: add support network rules
+>    landlock: TCP network hooks implementation
+>    seltest/landlock: add tests for bind() hooks
+>    seltest/landlock: add tests for connect() hooks
+>    seltest/landlock: connect() with AF_UNSPEC tests
+>    seltest/landlock: rules overlapping test
+>    seltest/landlock: ruleset expanding test
+>    seltest/landlock: invalid user input data test
+> 
+>   include/uapi/linux/landlock.h                 |  48 ++
+>   security/landlock/Kconfig                     |   1 +
+>   security/landlock/Makefile                    |   2 +-
+>   security/landlock/fs.c                        |  72 +-
+>   security/landlock/limits.h                    |   6 +
+>   security/landlock/net.c                       | 180 +++++
+>   security/landlock/net.h                       |  22 +
+>   security/landlock/ruleset.c                   | 383 ++++++++--
+>   security/landlock/ruleset.h                   |  72 +-
+>   security/landlock/setup.c                     |   2 +
+>   security/landlock/syscalls.c                  | 176 +++--
+>   .../testing/selftests/landlock/network_test.c | 665 ++++++++++++++++++
+>   12 files changed, 1434 insertions(+), 195 deletions(-)
+>   create mode 100644 security/landlock/net.c
+>   create mode 100644 security/landlock/net.h
+>   create mode 100644 tools/testing/selftests/landlock/network_test.c
+> 
+> --
+> 2.25.1
+> 
