@@ -2,233 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 656244D9D4A
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42F0B4D9D42
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349136AbiCOOUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 10:20:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46286 "EHLO
+        id S1349105AbiCOOU1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Mar 2022 10:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349151AbiCOOUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:20:49 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B71F54BEC;
-        Tue, 15 Mar 2022 07:19:38 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22FD59cO029158;
-        Tue, 15 Mar 2022 14:19:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=corp-2021-07-09;
- bh=hq6ofKC/WmplhDPhfQFIp+LSpb8/m8ARTe1zr6I4hDg=;
- b=CMgCTVI/Zux1ednO8+XNhC1dUwsfTUGvx54/dtPmJNvlyDEIBvKr+GuF8MfiC5kjnpU7
- 5cxjfIhAyXwmwrUVYDMNQpKYQyzMJ1kCjFPbNn3lEOQyEgsRB0RfOrSAa1gtkT+JMPR5
- OEimvH2uemG173vuyAcpAv8L8fvdtRtCQsuLX0fErbHIgWx949a61yI22itzjaTJLHuZ
- ZLmyKWRrgidZ+gOBsOGVhIg++juEZ153RoqwDRomR0ul/0zrzPcf0+dxbY+yinRA8wme
- gQ+peOIqjHmF6bDdaVe4GXYmVxqako2dYlHJX3ct1f5/CuhSzfgNLqiB8vtm9V2AfAfH cQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3et5xwk5tu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 14:19:25 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 22FEBFut110033;
-        Tue, 15 Mar 2022 14:19:23 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2172.outbound.protection.outlook.com [104.47.58.172])
-        by userp3020.oracle.com with ESMTP id 3et657ra1t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Mar 2022 14:19:23 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KwUqhAag11m5OCGfzogunMg3EAh7bE2Nhk8THca23qXk+2YN8FwE0puW+KUq5AP++dI86OKgnBU3CgZh0JHXjDjVqMQPJpfiJgimwu3r/j3LP9dD05ymjvL0qxjwuaMyJJp5BNe8zKgdq9CrZwhBxe/a1BU1vgF417r+dpEgXrG1TZdfgBHG0zJ+XpQlft7dtQXYtKoal759tsTwwdzzZIuwKMlUWnpFJW7jPlzdB+otR7DBDlpnILAoTWRaeqkv3D+atdKbUtam8mKwiCqDG7BzFDcot/wFUfIEmiRG82TQAXOhYzSYckX13iY63VK4y7hf2BQXkTXa4rndeY8dxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hq6ofKC/WmplhDPhfQFIp+LSpb8/m8ARTe1zr6I4hDg=;
- b=EVD/3nWOgFeDZ9nDqCIcmRMcmsujF6tyC/lhlCMwBTORmz59/GlDJtPbEHWWuVD+UNcbGmaycPucShhsMOSQpy93H+pIEsb/wQRm5G0BWgatAj/Yha8qvrshbK90PR2sfzAHkCpTzWzDrVwXTipL4DXCSFL4xEK/874wLQluSdXH2HQPcW6mgjY1ORNfYvBDO9F6USMPDDShz4LyF/oMti7AMSbK2rLuC4w/FwbgCXzzJxQ34jrFYM5SIkLO60C6Rygv+G0AiNCylasq4ww+dma5Ef2Fz/Da8onm9IpSMtwDjoqluCRJX3NHMVyUPkbaTGq6Qnt5JJJ79ODQC4zWZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hq6ofKC/WmplhDPhfQFIp+LSpb8/m8ARTe1zr6I4hDg=;
- b=Kl3NcupZ8C++Iej/ETdfn+7X/YZkwWUD4YoYuZeCCkRvBcvpx4bz6kwPCiYl2oDFYvGNqiRpL8dUdjNDC3fuMglhlVbUVxmgPwlxKUCNOtdqyprm93RRhoBvKWe/jazM9Z2z68cExqZ+rsmNy/DqB1lsmsN3/QSELyty0XUXwI8=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CH2PR10MB4198.namprd10.prod.outlook.com
- (2603:10b6:610:ab::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Tue, 15 Mar
- 2022 14:19:20 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.5061.022; Tue, 15 Mar 2022
- 14:19:20 +0000
-Date:   Tue, 15 Mar 2022 17:19:05 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     =?utf-8?B?5ZGo5aSa5piO?= <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, jreuter@yaina.de, thomas@osterried.de
-Subject: Re: Re: [PATCH net V4 1/2] ax25: Fix refcount leaks caused by
- ax25_cb_del()
-Message-ID: <20220315141905.GB1841@kadam>
-References: <20220315015403.79201-1-duoming@zju.edu.cn>
- <20220315102657.GX3315@kadam>
- <15e4111b.5339.17f8deb1f24.Coremail.duoming@zju.edu.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <15e4111b.5339.17f8deb1f24.Coremail.duoming@zju.edu.cn>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR2P264CA0012.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:1::24) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        with ESMTP id S1349110AbiCOOUZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:20:25 -0400
+Received: from mail.bix.bg (mail.bix.bg [193.105.196.21])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 10F163BA5A
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 07:19:08 -0700 (PDT)
+Received: (qmail 3116 invoked from network); 15 Mar 2022 14:19:06 -0000
+Received: from d2.declera.com (HELO ?212.116.131.122?) (212.116.131.122)
+  by indigo.declera.com with SMTP; 15 Mar 2022 14:19:06 -0000
+Message-ID: <5606063c65f9b67e036497c24fa8c527ebd24fae.camel@declera.com>
+Subject: Re: r8169: rtl8168ep_driver_stop disables the DASH port
+From:   Yanko Kaneti <yaneti@declera.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nicfae <Nicfae@realtek.com>,
+        Kevin_cheng <kevin_cheng@realtek.com>
+Date:   Tue, 15 Mar 2022 16:19:06 +0200
+In-Reply-To: <2c638572a97d9f598135e9e1b3a56d3f9592b502.camel@declera.com>
+References: <d654c98b90d98db13b84752477fe2c63834bcf59.camel@declera.com>
+         <42304a71ed72415c803ec22d3a750b33@realtek.com>
+         <ed2850b12b304a7cb89972850e503026@realtek.com>
+         <37bd0b005af4e10fd7e9ada2437775a4735d40a0.camel@declera.com>
+         <79606fda-ad17-954b-a2f2-7f155f142264@gmail.com>
+         <da6297799b82ffbac52a192019b8844c89bbf0b9.camel@declera.com>
+         <2c638572a97d9f598135e9e1b3a56d3f9592b502.camel@declera.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.43.3 (3.43.3-1.fc37) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5b300389-b64e-4f01-bf99-08da068ecbd2
-X-MS-TrafficTypeDiagnostic: CH2PR10MB4198:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR10MB419815075112140E39F1AD4F8E109@CH2PR10MB4198.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: a+T9O9AcH1q/oPlldwt9xnxgOMmpkuPUrUp8djtQWOR6KBflSQQTaNsdRa7lt/KrD436e5GQfYNU9pSKs6P3MI553o5bSt95/XKrBTVSclVeJ7j76ygiQeFJKH7nrZQUUySQLxvf3AGqPPwF0wh7/OnIz8jhnhXWC2M6hdvZnJbPKiCEW9+WBBPVBzmvP2McGRASxCat42xwwE44T8YjGHrEEW05ga4VEEJSGqqfa5v1BfSIwt07ERatzoPojsR9FZcGs82ieD4wJcpNU6cxs35dRy/jqXe8/0r50pLAu2lGqWgyybt60mI6OOrUHS5zWofhDCGagVPnWJallb9m4/lFhHiEVn4RraZ8tV9d9nFP0Iyt+wp/1P4o8A5ByzJlwzYxrh/dY+N9FJ+HRFj1JO8hqapP7Q3/MyYjsJOJVSiyLTrP5jFtkoi7Q4EKRIkyE7hCSEmiSCNC5FXOZhs+/VNC2oR9iJl/TipgO3KaXr5Y6SfKyoGelq+oq2XvQF+Rvg/0C5e4aYEsO7VIGrDiCCx5GahPnaZsq8c4C6mia8jyL3HAJtZ4uE9kr+61w9J/lv92xii+coQuwq/vVhjRvKKsMzp0eUaZWceo/SJBJ0XMCkOuQbTUfcuxLji9R+EQKmkykKUy6bxI2QMzRHsCV/AGJW1j8jG0s0I/u/cC1hLgr5wCl8hbBzeRAiaRqQayr0KssNg9BtBLgtpmAA85/Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(186003)(38100700002)(38350700002)(6506007)(33656002)(44832011)(66556008)(4326008)(6486002)(8676002)(66476007)(52116002)(66946007)(508600001)(26005)(9686003)(6512007)(6916009)(83380400001)(1076003)(5660300002)(2906002)(316002)(6666004)(86362001)(8936002)(33716001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d0J3eHMwbSswWnlxR0xob0tvK0VPL1k2TnFLZGZYZzRYWTNKZllNQ0NObFhW?=
- =?utf-8?B?V1pFTUxlK25Zay91Q2dzT0FlN0dXV3RzYnZTYklEbUxwcHpzbm9nSE1kcnBx?=
- =?utf-8?B?MHcwczZFYVFpdjJTZWdsbkN6TVRNR3BqUGhSdndKNnNNeU9Yc1JDTHlvREtk?=
- =?utf-8?B?OENzSWE1bXM1eXAxRnNhdXlrb3ZEUFg5cE5HV1ozelE2QkhTbkkxbHNVZFQr?=
- =?utf-8?B?MEM0dWordkdhQkRYVk1tL3ZYTExwZnBQR3RsZWtCblVZdU1NNzZOWGJSR0lW?=
- =?utf-8?B?T09tTnpPalB0SEZHZDByVGJ4aGx1ZlJ2QmxPTklkY2lCaXhncU0yRDNBSUVT?=
- =?utf-8?B?ZTJKNzVmQW9iNWdIczVpZEo4L2JveEtMNE5KWEFsV1hTdTdQR0FFNTNucUtG?=
- =?utf-8?B?cmpFek8vNmttclZMRWNpSUJZT3o3Ly9vQkFOUE9aaW1BSHF0UFpVUDFscFFx?=
- =?utf-8?B?VFpjM1RoczQ0bmhpWHpRYWFYQXZwVzIwUjBLYk9CTWJsK28wbEVma2tqV0NX?=
- =?utf-8?B?QVdqbHlOWmNzTmxpQUcxSkNzN0FUazNmOXJzSUQ0b0Q5bnd1T1NoRmw5NTU3?=
- =?utf-8?B?TjNlMzBFVFpGNUNpOWVxMit5TlhuQ0FQbGRDWkJKOUR0U2NlQmdiT3pQdG42?=
- =?utf-8?B?dkVvYWk4bjkvNmpKZ094UWRmRFZGaUVxbFlueU84Y2FDcXhJU0lCaWJOam12?=
- =?utf-8?B?N05KaTdQcTl4TlJDbXZ6cUZ3cHRCWnVlWjdOdEwyVEJleDNMTHRiK0pTUnZv?=
- =?utf-8?B?U0N3dGVSSytXaHRzRjJVa3Nnb0thUm44bmFacmo0c1I2SGlrRmpiL0NqU0lQ?=
- =?utf-8?B?ZEs0Y2lxbGJRSWNhVHR4Y3ZSS256Q0NraHhxa0lRQXFPY3VRK1Y1b25KQ0hW?=
- =?utf-8?B?Ym9LNTRFZHhlVjJVS1MwOEZBZ0lTQUJxSXdJTDlUcnFTbS82Vk1TMGNpRkhR?=
- =?utf-8?B?UVVHUkdaclBXd0ROQTkyQ3BtWVdQZTJyVHRUVXhETzhNYWwrRGdSQ2NZek81?=
- =?utf-8?B?dHFtLytkN2gzNmgvU2kzTDNNeXByT3FRV3NkajBQOFFJQm9PYkpvaURWSGFi?=
- =?utf-8?B?LzVXVUtiT2M3MnJZdlVOQW9hVENFUUh0MVJVNW9uM1RZZmkvMkpwbDFkbkM0?=
- =?utf-8?B?TENhMUdjZXlpSWxHdXZRVWRQTzRORi9QRlpJRy9McjBRMnBRUzBraDAzalpG?=
- =?utf-8?B?Slp6N0F4aG9hUXRnUW9KL2N1eWFSekVsTVhBYTFBQkFzK3BObmNCaHpkVGNp?=
- =?utf-8?B?bjhTZFUrbDFkNnYxeFlFK0tJcmlObHozdWJpd29uK3Vuc1VrVU9uSlFCbGhh?=
- =?utf-8?B?TDlSWnAwajRjTGp6eTlLT3lxNzVxcGdLNFVndEVxcElsem5TTktQL2Q3b3BP?=
- =?utf-8?B?R2pEa1lraG5oMjZkTmM2d0NKR0hmWWlLTkxua1FoNTdzVElJQlFhQS9BY2c4?=
- =?utf-8?B?MlUwbG9qQ05peUlZR0JIVlZScy9iYlZFZkJUYm5JUzJjejNMNXo4YzF3MHpR?=
- =?utf-8?B?S3k0TXFPeWJqNUg3eW1nZDhXVDcwRGc4d0pDa3AzbFV5eVg2SDdYNVFKUlhQ?=
- =?utf-8?B?WkxkTXRta2s5OVJOMndVTi9BQmtTTmxNVlkvMUJiQlk3WVJJUmdWZmlCWlIv?=
- =?utf-8?B?QnhaOVZEOCtRdHVpMVM1UXdsbnN6OGl4azlLOVNDSkdSM0lseEwvdjN5eHlM?=
- =?utf-8?B?RkhjU3J2WUwrTDRXOTBKNXlDMjE5clVERGZZaWY2MkZVV05EOW1UcXlQeG53?=
- =?utf-8?B?YkZ1bVVFcCtmbjdDYnQ1Y0pDT0tkWVljRDhzL04xYVN1TlQ5Um10WHhuaHJk?=
- =?utf-8?B?SkJ6ZVJCTmtGT3lJSW02U3h4dE1jSzdvZTRDdDFRM1pQckw0UXNpbDFtQ1Jh?=
- =?utf-8?B?b094Um5qSXhMWVJFbEwwRS81ZU1wRHYwN3BmMUtXWDVvTGxsQjByZk4zQWZ0?=
- =?utf-8?B?Zm5JUFV2UXdnQ1ErT0NFYXozOXByM0dxSytGVjRJTDcrcVg3bnpOcGlNVk83?=
- =?utf-8?B?THk1Vm1Udm93PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b300389-b64e-4f01-bf99-08da068ecbd2
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2022 14:19:20.2774
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 74/S4I8gSdGSGdzaioycP1ppbMMBQ+yYpH3eiu32qYDSrlClaM9erRrEd9+4FOVXgsMScBkUHRjbdmdBB/tw4bIU4hKdhNibVgb4g+N7e1Q=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4198
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10286 signatures=693139
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0
- malwarescore=0 adultscore=0 bulkscore=0 mlxscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203150093
-X-Proofpoint-GUID: b7yoYC0Ot07uzLJFPMtPe2e3PuyLYXq0
-X-Proofpoint-ORIG-GUID: b7yoYC0Ot07uzLJFPMtPe2e3PuyLYXq0
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 10:11:10PM +0800, 周多明 wrote:
-> Hello,
-> 
-> On Tue, 15 Mar 2022 13:26:57 +0300, Dan Carpenter wrote:
-> > I'm happy that this is simpler.  I'm not super happy about the
-> > if (sk->sk_wq) check.  That seems like a fragile side-effect condition
-> > instead of something deliberate.  But I don't know networking so maybe
-> > this is something which we can rely on.
-> 
-> The variable sk->sk_wq is the address of waiting queue of sock, it is initialized to the 
-> address of sock->wq through the following path:
-> sock_create->__sock_create->ax25_create()->sock_init_data()->RCU_INIT_POINTER(sk->sk_wq, &sock->wq).
-> Because we have used sock_alloc() to allocate the socket in __sock_create(), sock or the address of
-> sock->wq is not null.
-> What`s more, sk->sk_wq is set to null only in sock_orphan().
-> 
-> Another solution:
-> We could also use sk->sk_socket to check. We set sk->sk_socket to sock in the following path:
-> sock_create()->__sock_create()->ax25_create()->sock_init_data()->sk_set_socket(sk, sock).
-> Because we have used sock_alloc() to allocate the socket in __sock_create(), sock or sk->sk_socket
-> is not null.
-> What`s more, sk->sk_socket is set to null only in sock_orphan().
-> 
-> I will change the if (sk->sk_wq) check to if(sk->sk_socket) check, because I think it is 
-> easier to understand.
-> 
-> > When you sent the earlier patch then I asked if the devices in
-> > ax25_kill_by_device() were always bound and if we could just use a local
-> > variable instead of something tied to the ax25_dev struct.  I still
-> > wonder about that.  In other words, could we just do this?
+On Tue, 2022-03-15 at 12:25 +0200, Yanko Kaneti wrote:
+> On Tue, 2022-03-15 at 11:40 +0200, Yanko Kaneti wrote:
+> > On Mon, 2022-03-14 at 22:24 +0100, Heiner Kallweit wrote:
+> > > On 14.03.2022 15:05, Yanko Kaneti wrote:
+> > > > On Mon, 2022-03-14 at 01:00 +0000, Kevin_cheng wrote:
+> > > > Hello Kevin,
+> > > > 
+> > > > > Thanks for your email. Linux DASH requires specific driver and client
+> > > > > tool. It depends on the manufacturer’s requirement. You need to
+> > > > > contact ASRock to make sure they support Linux DASH and have verified
+> > > > > it.
+> > > > 
+> > > > Thanks for the answer but its not much help for me.
+> > > > I am not going to use a driver that's not in mainline.
+> > > > 
+> > > > I wasn't really expecting full DASH support but that at least
+> > > > r8169/linux does not prevent the limied DASH web interface functionality
+> > > > from working.
+> > > > 
+> > > > Currently this is not the case on this board with the current BIOS:
+> > > >  - Once the kernel is loaded the DASH web interface power management
+> > > > (reset, hard off) no longer works
+> > > >  - Normal shutdown or r8169 module unload actually disconnects the phy.
+> > > >  
+> > > > It would be nice if DASH basics worked without being broken/supported by
+> > > > the OS.
+> > > > 
+> > > > Regards
+> > > > Yanko
+> > > > 
+> > > > > 
+> > > > > Best Regards
+> > > > > Kevin Cheng
+> > > > > Technical Support Dept.
+> > > > > Realtek Semiconductor Corp.
+> > > > > 
+> > > > > -----Original Message-----
+> > > > > From: Yanko Kaneti <yaneti@declera.com> 
+> > > > > Sent: Friday, March 11, 2022 9:12 PM
+> > > > > To: Heiner Kallweit <hkallweit1@gmail.com>; nic_swsd
+> > > > > <nic_swsd@realtek.com>
+> > > > > Cc: netdev <netdev@vger.kernel.org>
+> > > > > Subject: r8169: rtl8168ep_driver_stop disables the DASH port
+> > > > > 
+> > > > > Hello,
+> > > > > 
+> > > > > Testing DASH on a ASRock A520M-HDVP/DASH, which has a RTL8111/8168 EP
+> > > > > chip. DASH is enabled and seems to work on BIOS/firmware level.
+> > > > > 
+> > > > > It seems that r8169's cleanup/exit in rtl8168ep_driver_stop manages to
+> > > > > actually stop the LAN port, hence cutting the system remote
+> > > > > management.
+> > > > > 
+> > > > > This is evident on plain shutdown or rmmod r8169.
+> > > > > If one does a hardware reset or echo "b" > /proc/sysrq-trigger  the
+> > > > > cleanup doesn't happen and the DASH firmware remains in working order
+> > > > > and the LAN port remains up.
+> > > > > 
+> > > > > A520M-HDVP/DASH BIOS ver 1.70
+> > > > > Reatlek fw:
+> > > > >  Firmware Version:               3.0.0.20200423
+> > > > >  Version String:         20200428.1200000113
+> > > > >  
+> > > > > I have no idea if its possible or how to update the realtek firmware,
+> > > > > preferably from Linux.
+> > > > > 
+> > > > > Various other DASH functionality seems to not work but basic working
+> > > > > power managements is really a deal breaker for the whole thing.
+> > > > > 
+> > > > > 
+> > > > > Regards
+> > > > > Yanko
+> > > > > ------Please consider the environment before printing this e-mail.
+> > > > 
+> > > 
+> > > Realtek doesn't provide any public datasheets, therefore it's hard to say
+> > > how DASH is handled in the chip.
+> > > However there are few places left where the PHY may be suspended w/o
+> > > checking for DASH. Can you try the following?
+> > > 
+> > > 
+> > > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> > > index 67014eb76..95788ce7a 100644
+> > > --- a/drivers/net/ethernet/realtek/r8169_main.c
+> > > +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> > > @@ -1397,8 +1397,13 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
+> > >  	rtl_lock_config_regs(tp);
+> > >  
+> > >  	device_set_wakeup_enable(tp_to_dev(tp), wolopts);
+> > > -	rtl_set_d3_pll_down(tp, !wolopts);
+> > > -	tp->dev->wol_enabled = wolopts ? 1 : 0;
+> > > +	if (tp->dash_type == RTL_DASH_NONE) {
+> > > +		rtl_set_d3_pll_down(tp, !wolopts);
+> > > +		tp->dev->wol_enabled = wolopts ? 1 : 0;
+> > > +	} else {
+> > > +		/* keep PHY from suspending if DASH is enabled */
+> > > +		tp->dev->wol_enabled = 1;
+> > > +	}
+> > >  }
+> > >  
+> > >  static int rtl8169_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+> > > @@ -4672,7 +4677,7 @@ static void r8169_phylink_handler(struct net_device *ndev)
+> > >  	if (netif_carrier_ok(ndev)) {
+> > >  		rtl_link_chg_patch(tp);
+> > >  		pm_request_resume(&tp->pci_dev->dev);
+> > > -	} else {
+> > > +	} else if (tp->dash_type == RTL_DASH_NONE) {
+> > >  		pm_runtime_idle(&tp->pci_dev->dev);
+> > >  	}
+> > >  
+> > > @@ -4978,7 +4983,8 @@ static void rtl_shutdown(struct pci_dev *pdev)
+> > >  	/* Restore original MAC address */
+> > >  	rtl_rar_set(tp, tp->dev->perm_addr);
+> > >  
+> > > -	if (system_state == SYSTEM_POWER_OFF) {
+> > > +	if (system_state == SYSTEM_POWER_OFF &&
+> > > +	    tp->dash_type == RTL_DASH_NONE) {
+> > >  		if (tp->saved_wolopts)
+> > >  			rtl_wol_shutdown_quirk(tp);
+> > >  
 > > 
-> > diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-> > index 6bd097180772..4af9d9a939c6 100644
-> > --- a/net/ax25/af_ax25.c
-> > +++ b/net/ax25/af_ax25.c
-> > @@ -78,6 +78,7 @@ static void ax25_kill_by_device(struct net_device *dev)
-> >  	ax25_dev *ax25_dev;
-> >  	ax25_cb *s;
-> >  	struct sock *sk;
-> > +	bool found = false;
+> > Thanks Heiner. 
+> > So I tried this over linus tip from today and unfortunately it doesn't
+> > help the shutdown or rmmod. 
+> > With the couple more additions below I can get it to stay up on rmmod  ,
+> > but still after that , shutdown still brings it down. Perhaps that
+> > leaves all to the BIOS/realtek firmware..
+> > 
+> > 
+> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> > index 19e2621e0645..d5d85a44be3e 100644
+> > --- a/drivers/net/ethernet/realtek/r8169_main.c
+> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> > @@ -4675,7 +4680,8 @@ static void rtl8169_down(struct rtl8169_private *tp)
+> >         /* Clear all task flags */
+> >         bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
 > >  
-> >  	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
-> >  		return;
-> > @@ -86,6 +87,7 @@ static void ax25_kill_by_device(struct net_device *dev)
-> >  again:
-> >  	ax25_for_each(s, &ax25_list) {
-> >  		if (s->ax25_dev == ax25_dev) {
-> > +			found = true;
-> >  			sk = s->sk;
-> >  			if (!sk) {
-> >  				spin_unlock_bh(&ax25_list_lock);
-> > @@ -115,6 +117,11 @@ static void ax25_kill_by_device(struct net_device *dev)
-> >  		}
-> >  	}
-> >  	spin_unlock_bh(&ax25_list_lock);
-> > +
-> > +	if (!found) {
-> > +		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
-> > +		ax25_dev_put(ax25_dev);
-> > +	}
-> >  }
+> > -       phy_stop(tp->phydev);
+> > +       if (tp->dash_type == RTL_DASH_NONE)
+> > +               phy_stop(tp->phydev);
+> >  
+> >         rtl8169_update_counters(tp);
+> >  
+> > @@ -4715,7 +4721,8 @@ static int rtl8169_close(struct net_device *dev)
+> >  
+> >         free_irq(tp->irq, tp);
+> >  
+> > -       phy_disconnect(tp->phydev);
+> > +       if (tp->dash_type == RTL_DASH_NONE)
+> > +               phy_disconnect(tp->phydev);
+> >  
+> >         dma_free_coherent(&pdev->dev, R8169_RX_RING_BYTES, tp->RxDescArray,
+> >                           tp->RxPhyAddr);
+> > 
 > 
-> If we just use ax25_dev_device_up() to bring device up without using ax25_bind(),
-> the "found" flag could be false when we enter ax25_kill_by_device() and the refcounts 
-> underflow will happen. So we should use two additional variables.
-
-That answers my question.  Thank you.
-
+> Some additional data points:
 > 
-> If we use additional variables to fix the bug, I think there is a problem.
+> - with r8169 blacklisted the link survives shutdown
+> 
+> - even with r8169 blacklisted the DASH web interface stops being able to
+> control power/off/reset
+> 
+> - with rtl8168_driver_start/stop commented followed by rmmod r8169 and
+> link still up  it still goes down on shutdown
 
-So the v3 patch was buggy?
+After some random poking I managed to keep the link up after shutdown. 
+All the previous bits plus this init tweak:
 
-Why was this not explained under the --- cut off line?
-
-regards,
-dan carpenter
+@@ -5409,7 +5417,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+        /* configure chip for default features */
+        rtl8169_set_features(dev, dev->features);
+ 
+-       rtl_set_d3_pll_down(tp, true);
++       if (tp->dash_type == RTL_DASH_NONE)
++               rtl_set_d3_pll_down(tp, true);
+ 
+        jumbo_max = rtl_jumbo_max(tp);
+        if (jumbo_max)
 
