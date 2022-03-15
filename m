@@ -2,49 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBDF44D93E1
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:32:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0EE04D93E6
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:33:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241365AbiCOFcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 01:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
+        id S245383AbiCOFeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 01:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236064AbiCOFcs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:32:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132444926A
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 22:31:37 -0700 (PDT)
+        with ESMTP id S242505AbiCOFeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:34:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053B52BF9;
+        Mon, 14 Mar 2022 22:32:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C24A611E3
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 05:31:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C97D7C340E8;
-        Tue, 15 Mar 2022 05:31:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7452B6118F;
+        Tue, 15 Mar 2022 05:32:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 290D5C340E8;
+        Tue, 15 Mar 2022 05:32:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647322296;
-        bh=qssovgxvnwLzcgqv29h/zmzhXs4elYmTb7CiGVzELKg=;
+        s=k20201202; t=1647322367;
+        bh=XwfpXnEY7+wrg7B2csX4wE7a6rKBiz6F6P9neGxhXwA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JISJZSeef1RrQvxkyjfjxY25kSpbJZkH9U4wTxh1Fa+QpEWZbsFTONOeKGT7swIZW
-         crPbWyBzWz6hZhR9Q+lguCKQPaHmpPob1re7uzczgW9yviY6a9i+Y0BRorIQ1QAvWK
-         JaYNkXXnVdnfzVkAI2OA9BTewsxHepFWaGUut/yZYDglAm83thFJkxZtYNB9tyHaM5
-         KfcdVO2DbqOfQ65LZiFZRXBO4AOrVJG6A3azatQyr1nwnzn7zLkGSbcUCS9/xG12fQ
-         cr/I1vuhPFoM0+R9zWjF6MhLZTgxYSZeFMUnOYrUzNqwPqKOo8Mc7J1y2k2fgCPw5e
-         +SCJsUdzPRYRg==
-Date:   Mon, 14 Mar 2022 22:31:34 -0700
+        b=UBUqwwHGlWWkv2/0uGVZBkjaSlGMmZ1WBsYvT4MZVkLCkYoxa6d5Fi9HZXPaBQ6LG
+         kuBdq/Lj3Jz1+RL6rtrpY5qOrORwVS4sAfA422p7vDmvApGnOTQTnRIMurdHRj0HNo
+         y39TUyb4wZXrfkN500PxcuvKhPD0EwhWtZWkYsUVXta0DaSAOsfkLdRnRVTOw6K+Y8
+         35oPo1Kki+E8Ex5t3TrFcFdFhZStBArIsandoLNetv6WxyFM/1v6iS3cOjTQfkQ1qt
+         53YZqDGjWKPzvnUPbbaW89Kl6sx7YNTgwXf1mx40axxouESh5z+DeXl+MIjJs7xvvw
+         HDhaUR5otj3Iw==
+Date:   Mon, 14 Mar 2022 22:32:46 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Petr Machata <petrm@nvidia.com>
-Cc:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next v3 1/3] netdevsim: Introduce support for L3
- offload xstats
-Message-ID: <20220314223134.51e28932@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <fa28d4ff7f55fec4928990850dc1abf8fac3eb45.1647265833.git.petrm@nvidia.com>
-References: <cover.1647265833.git.petrm@nvidia.com>
-        <fa28d4ff7f55fec4928990850dc1abf8fac3eb45.1647265833.git.petrm@nvidia.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v4 net-next 04/15] net: bridge: mst: Notify switchdev
+ drivers of MST mode changes
+Message-ID: <20220314223246.45cf8305@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220315002543.190587-5-tobias@waldekranz.com>
+References: <20220315002543.190587-1-tobias@waldekranz.com>
+        <20220315002543.190587-5-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,34 +67,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Mar 2022 15:01:15 +0100 Petr Machata wrote:
-> Add support for testing of HW stats support that was added recently, namely
-> the L3 stats support. L3 stats are provided for devices for which the L3
-> stats have been turned on, and that were enabled for netdevsim through a
-> debugfs toggle:
-> 
->     # echo $ifindex > /sys/kernel/debug/netdevsim/$DEV/hwstats/l3/enable_ifindex
-> 
-> For fully enabled netdevices, netdevsim counts 10pps of ingress traffic and
-> 20pps of egress traffic. Similarly, L3 stats can be disabled for a given
-> device, and netdevsim ceases pretending there is any HW traffic going on:
-> 
->     # echo $ifindex > /sys/kernel/debug/netdevsim/$DEV/hwstats/l3/disable_ifindex
-> 
-> Besides this, there is a third toggle to mark a device for future failure:
-> 
->     # echo $ifindex > /sys/kernel/debug/netdevsim/$DEV/hwstats/l3/fail_next_enable
-> 
-> A future request to enable L3 stats on such netdevice will be bounced by
-> netdevsim:
-> 
->     # ip -j l sh dev d | jq '.[].ifindex'
->     66
->     # echo 66 > /sys/kernel/debug/netdevsim/netdevsim10/hwstats/l3/enable_ifindex
->     # echo 66 > /sys/kernel/debug/netdevsim/netdevsim10/hwstats/l3/fail_next_enable
->     # ip stats set dev d l3_stats on
->     Error: netdevsim: Stats enablement set to fail.
-> 
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
+On Tue, 15 Mar 2022 01:25:32 +0100 Tobias Waldekranz wrote:
+> Trigger a switchdev event whenever the bridge's MST mode is
+> enabled/disabled. This allows constituent ports to either perform any
+> required hardware config, or refuse the change if it not supported.
+>=20
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+../net/bridge/br_mst.c: In function =E2=80=98br_mst_set_enabled=E2=80=99:
+../net/bridge/br_mst.c:102:16: error: variable =E2=80=98attr=E2=80=99 has i=
+nitializer but incomplete type
+  102 |         struct switchdev_attr attr =3D {
+      |                ^~~~~~~~~~~~~~
+../net/bridge/br_mst.c:103:18: error: =E2=80=98struct switchdev_attr=E2=80=
+=99 has no member named =E2=80=98id=E2=80=99
+  103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
+      |                  ^~
+../net/bridge/br_mst.c:103:23: error: =E2=80=98SWITCHDEV_ATTR_ID_BRIDGE_MST=
+=E2=80=99 undeclared (first use in this function)
+  103 |                 .id =3D SWITCHDEV_ATTR_ID_BRIDGE_MST,
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../net/bridge/br_mst.c:103:23: note: each undeclared identifier is reported=
+ only once for each function it appears in
+../net/bridge/br_mst.c:103:23: warning: excess elements in struct initializ=
+er
+../net/bridge/br_mst.c:103:23: note: (near initialization for =E2=80=98attr=
+=E2=80=99)
+../net/bridge/br_mst.c:104:18: error: =E2=80=98struct switchdev_attr=E2=80=
+=99 has no member named =E2=80=98orig_dev=E2=80=99
+  104 |                 .orig_dev =3D br->dev,
+      |                  ^~~~~~~~
+../net/bridge/br_mst.c:104:29: warning: excess elements in struct initializ=
+er
+  104 |                 .orig_dev =3D br->dev,
+      |                             ^~
+../net/bridge/br_mst.c:104:29: note: (near initialization for =E2=80=98attr=
+=E2=80=99)
+../net/bridge/br_mst.c:105:18: error: =E2=80=98struct switchdev_attr=E2=80=
+=99 has no member named =E2=80=98u=E2=80=99
+  105 |                 .u.mst =3D on,
+      |                  ^
+../net/bridge/br_mst.c:105:26: warning: excess elements in struct initializ=
+er
+  105 |                 .u.mst =3D on,
+      |                          ^~
+../net/bridge/br_mst.c:105:26: note: (near initialization for =E2=80=98attr=
+=E2=80=99)
+../net/bridge/br_mst.c:102:31: error: storage size of =E2=80=98attr=E2=80=
+=99 isn=E2=80=99t known
+  102 |         struct switchdev_attr attr =3D {
+      |                               ^~~~
+../net/bridge/br_mst.c:125:15: error: implicit declaration of function =E2=
+=80=98switchdev_port_attr_set=E2=80=99; did you mean =E2=80=98br_switchdev_=
+port_vlan_del=E2=80=99? [-Werror=3Dimplicit-function-declaration]
+  125 |         err =3D switchdev_port_attr_set(br->dev, &attr, extack);
+      |               ^~~~~~~~~~~~~~~~~~~~~~~
+      |               br_switchdev_port_vlan_del
+../net/bridge/br_mst.c:102:31: warning: unused variable =E2=80=98attr=E2=80=
+=99 [-Wunused-variable]
+  102 |         struct switchdev_attr attr =3D {
+      |                               ^~~~
