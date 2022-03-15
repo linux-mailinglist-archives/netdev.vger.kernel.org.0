@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18B3E4D930F
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 04:28:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 715CE4D930A
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 04:27:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344686AbiCOD3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Mar 2022 23:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
+        id S1344657AbiCOD2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Mar 2022 23:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344713AbiCOD1x (ORCPT
+        with ESMTP id S1344720AbiCOD1x (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Mar 2022 23:27:53 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59C54888B
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 20:26:39 -0700 (PDT)
-Received: from kwepemi100025.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KHf131ZhzzfYrn;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30949488A6
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 20:26:40 -0700 (PDT)
+Received: from kwepemi500011.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KHf1355rczfYxd;
         Tue, 15 Mar 2022 11:25:11 +0800 (CST)
 Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100025.china.huawei.com (7.221.188.158) with Microsoft SMTP Server
+ kwepemi500011.china.huawei.com (7.221.188.124) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 15 Mar 2022 11:26:37 +0800
+ 15.1.2308.21; Tue, 15 Mar 2022 11:26:38 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -33,15 +33,15 @@ CC:     <netdev@vger.kernel.org>, <huangguangbin2@huawei.com>,
         <moyufeng@huawei.com>, <linyunsheng@huawei.com>,
         <tanhuazhong@huawei.com>, <salil.mehta@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [RFC net-next 1/2] net: ethtool: add ethtool ability to set/get fresh device features
-Date:   Tue, 15 Mar 2022 11:21:07 +0800
-Message-ID: <20220315032108.57228-2-wangjie125@huawei.com>
+Subject: [RFC net-next 2/2] net: hns3: add ethtool set/get device features support for hns3 driver
+Date:   Tue, 15 Mar 2022 11:21:08 +0800
+Message-ID: <20220315032108.57228-3-wangjie125@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220315032108.57228-1-wangjie125@huawei.com>
 References: <20220315032108.57228-1-wangjie125@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [10.67.165.24]
 X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
  kwepemm600017.china.huawei.com (7.193.23.234)
@@ -55,156 +55,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As tx push is a standard feature for NICs, but netdev_feature which is
-controlled by ethtool -K has reached the maximum specification.
-
-so this patch adds a pair of new ethtool messages：'ETHTOOL_GDEVFEAT' and
-'ETHTOOL_SDEVFEAT' to be used to set/get features contained entirely to
-drivers. The message processing functions and function hooks in struct
-ethtool_ops are also added.
-
-set-devfeatures/show-devfeatures option(s) are designed to provide set
-and get function.
-set cmd:
-root@wj: ethtool --set-devfeatures eth4 tx-push [on | off]
-get cmd:
-root@wj: ethtool --show-devfeatures eth4
+This patch implements hns3 set_devfeatures/get_devfeatures hooks defined
+in struct ethtool_ops.
 
 Signed-off-by: Jie Wang <wangjie125@huawei.com>
 ---
- include/linux/ethtool.h      |  4 ++++
- include/uapi/linux/ethtool.h | 27 ++++++++++++++++++++++
- net/ethtool/ioctl.c          | 43 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 74 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  1 +
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 77 +++++++++++++++++++
+ 2 files changed, 78 insertions(+)
 
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index 11efc45de66a..1a34bb074720 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -750,6 +750,10 @@ struct ethtool_ops {
- 	int	(*set_module_power_mode)(struct net_device *dev,
- 					 const struct ethtool_module_power_mode_params *params,
- 					 struct netlink_ext_ack *extack);
-+	int	(*get_devfeatures)(struct net_device *dev,
-+				   struct ethtool_dev_features *dev_feat);
-+	int	(*set_devfeatures)(struct net_device *dev,
-+				   struct ethtool_dev_features *dev_feat);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 9298fbecb31a..9ae5b3318dc4 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -817,6 +817,7 @@ struct hnae3_roce_private_info {
+ 
+ enum hnae3_pflag {
+ 	HNAE3_PFLAG_LIMIT_PROMISC,
++	HNAE3_PFLAG_PUSH_ENABLE,
+ 	HNAE3_PFLAG_MAX
  };
  
- int ethtool_check_ops(const struct ethtool_ops *ops);
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index 7bc4b8def12c..319d7b2c6acb 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -1490,6 +1490,31 @@ enum ethtool_fec_config_bits {
- #define ETHTOOL_FEC_BASER		(1 << ETHTOOL_FEC_BASER_BIT)
- #define ETHTOOL_FEC_LLRS		(1 << ETHTOOL_FEC_LLRS_BIT)
- 
-+/**
-+ * struct ethtool_dev_features - device feature configurations
-+ * @cmd: Command number = %ETHTOOL_GDEVFEAT or %ETHTOOL_SDEVFEAT
-+ * @type: feature configuration type.
-+ * @data: feature configuration value.
-+ */
-+struct ethtool_dev_features {
-+	__u32 cmd;
-+	__u32 type;
-+	__u32 data;
-+};
-+
-+/**
-+ * enum ethtool_dev_features_type - flags definition of ethtool_dev_features
-+ * @ETHTOOL_DEV_TX_PUSH: nic tx push mode set bit.
-+ */
-+enum ethtool_dev_features_type {
-+	ETHTOOL_DEV_TX_PUSH,
-+	/*
-+	 * Add your fresh feature type above and remember to update
-+	 * feat_line[] in ethtool.c
-+	 */
-+	ETHTOOL_DEV_FEATURE_COUNT,
-+};
-+
- /* CMDs currently supported */
- #define ETHTOOL_GSET		0x00000001 /* DEPRECATED, Get settings.
- 					    * Please use ETHTOOL_GLINKSETTINGS
-@@ -1584,6 +1609,8 @@ enum ethtool_fec_config_bits {
- #define ETHTOOL_PHY_STUNABLE	0x0000004f /* Set PHY tunable configuration */
- #define ETHTOOL_GFECPARAM	0x00000050 /* Get FEC settings */
- #define ETHTOOL_SFECPARAM	0x00000051 /* Set FEC settings */
-+#define ETHTOOL_GDEVFEAT	0x00000052 /* Get device features */
-+#define ETHTOOL_SDEVFEAT	0x00000053 /* Set device features */
- 
- /* compatibility with older code */
- #define SPARC_ETH_GSET		ETHTOOL_GSET
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 326e14ee05db..efac23352eb9 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -2722,6 +2722,42 @@ static int ethtool_set_fecparam(struct net_device *dev, void __user *useraddr)
- 	return dev->ethtool_ops->set_fecparam(dev, &fecparam);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index c06c39ece80d..7ad141aed3aa 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1925,6 +1925,79 @@ static int hns3_get_link_ext_state(struct net_device *netdev,
+ 	return -ENODATA;
  }
  
-+static int ethtool_get_devfeatures(struct net_device *dev,
-+				   void __user *useraddr)
++static int hns3_set_tx_push(struct net_device *netdev,
++			    struct ethtool_dev_features *dev_feat)
 +{
-+	struct ethtool_dev_features dev_feat;
-+	int ret;
++	struct hns3_nic_priv *priv = netdev_priv(netdev);
++	struct hnae3_handle *h = hns3_get_handle(netdev);
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
 +
-+	if (!dev->ethtool_ops->get_devfeatures)
++	if (!test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps))
 +		return -EOPNOTSUPP;
 +
-+	if (copy_from_user(&dev_feat, useraddr, sizeof(dev_feat)))
-+		return -EFAULT;
-+
-+	ret = dev->ethtool_ops->get_devfeatures(dev, &dev_feat);
-+	if (ret)
-+		return ret;
-+
-+	if (copy_to_user(useraddr, &dev_feat, sizeof(dev_feat)))
-+		return -EFAULT;
++	if (dev_feat->data)
++		set_bit(HNAE3_PFLAG_PUSH_ENABLE, &priv->state);
++	else
++		clear_bit(HNAE3_PFLAG_PUSH_ENABLE, &priv->state);
 +
 +	return 0;
 +}
 +
-+static int ethtool_set_devfeatures(struct net_device *dev,
-+				   void __user *useraddr)
++static int hns3_set_devfeatures(struct net_device *netdev,
++				struct ethtool_dev_features *dev_feat)
 +{
-+	struct ethtool_dev_features dev_feat;
++	struct set_proto {
++		u64 type;
++		int (*set_func)(struct net_device *dev,
++				struct ethtool_dev_features *feat);
++	} set_arr[] = {
++		{ ETHTOOL_DEV_TX_PUSH, hns3_set_tx_push },
++	};
++	unsigned int i;
 +
-+	if (!dev->ethtool_ops->set_devfeatures)
-+		return -EOPNOTSUPP;
++	for (i = 0; i < ARRAY_SIZE(set_arr); ++i) {
++		if (set_arr[i].type == dev_feat->type && set_arr[i].set_func)
++			return set_arr[i].set_func(netdev, dev_feat);
++	}
 +
-+	if (copy_from_user(&dev_feat, useraddr, sizeof(dev_feat)))
-+		return -EFAULT;
-+
-+	return dev->ethtool_ops->set_devfeatures(dev, &dev_feat);
++	return -EINVAL;
 +}
 +
- /* The main entry point in this file.  Called from net/core/dev_ioctl.c */
++static int hns3_get_tx_push(struct net_device *netdev,
++			    struct ethtool_dev_features *dev_feat)
++{
++	struct hns3_nic_priv *priv = netdev_priv(netdev);
++	struct hnae3_handle *h = hns3_get_handle(netdev);
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
++
++	if (!test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps))
++		return -EOPNOTSUPP;
++
++	dev_feat->data = test_bit(HNAE3_PFLAG_PUSH_ENABLE, &priv->state);
++
++	return 0;
++}
++
++static int hns3_get_devfeatures(struct net_device *netdev,
++				struct ethtool_dev_features *dev_feat)
++{
++	struct get_proto {
++		u32 type;
++		int (*get_func)(struct net_device *netdev,
++				struct ethtool_dev_features *feat);
++	} get_arr[] = {
++		{ ETHTOOL_DEV_TX_PUSH, hns3_get_tx_push },
++	};
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(get_arr); ++i) {
++		if (get_arr[i].type == dev_feat->type && get_arr[i].get_func)
++			return get_arr[i].get_func(netdev, dev_feat);
++	}
++
++	return -EINVAL;
++}
++
+ static const struct ethtool_ops hns3vf_ethtool_ops = {
+ 	.supported_coalesce_params = HNS3_ETHTOOL_COALESCE,
+ 	.supported_ring_params = HNS3_ETHTOOL_RING,
+@@ -1955,6 +2028,8 @@ static const struct ethtool_ops hns3vf_ethtool_ops = {
+ 	.get_tunable = hns3_get_tunable,
+ 	.set_tunable = hns3_set_tunable,
+ 	.reset = hns3_set_reset,
++	.get_devfeatures = hns3_get_devfeatures,
++	.set_devfeatures = hns3_set_devfeatures,
+ };
  
- static int
-@@ -2781,6 +2817,7 @@ __dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr,
- 	case ETHTOOL_PHY_GTUNABLE:
- 	case ETHTOOL_GLINKSETTINGS:
- 	case ETHTOOL_GFECPARAM:
-+	case ETHTOOL_GDEVFEAT:
- 		break;
- 	default:
- 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
-@@ -3008,6 +3045,12 @@ __dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr,
- 	case ETHTOOL_SFECPARAM:
- 		rc = ethtool_set_fecparam(dev, useraddr);
- 		break;
-+	case ETHTOOL_GDEVFEAT:
-+		rc = ethtool_get_devfeatures(dev, useraddr);
-+		break;
-+	case ETHTOOL_SDEVFEAT:
-+		rc = ethtool_set_devfeatures(dev, useraddr);
-+		break;
- 	default:
- 		rc = -EOPNOTSUPP;
- 	}
+ static const struct ethtool_ops hns3_ethtool_ops = {
+@@ -1999,6 +2074,8 @@ static const struct ethtool_ops hns3_ethtool_ops = {
+ 	.set_tunable = hns3_set_tunable,
+ 	.reset = hns3_set_reset,
+ 	.get_link_ext_state = hns3_get_link_ext_state,
++	.get_devfeatures = hns3_get_devfeatures,
++	.set_devfeatures = hns3_set_devfeatures,
+ };
+ 
+ void hns3_ethtool_set_ops(struct net_device *netdev)
 -- 
 2.33.0
 
