@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 986654DA2C9
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 19:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14EE04DA2D5
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 20:00:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351189AbiCOS57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 14:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45494 "EHLO
+        id S1351193AbiCOTB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 15:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351177AbiCOS56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 14:57:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9910159A4D;
-        Tue, 15 Mar 2022 11:56:46 -0700 (PDT)
+        with ESMTP id S1343730AbiCOTB1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 15:01:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDC650E34;
+        Tue, 15 Mar 2022 12:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 33181615F8;
-        Tue, 15 Mar 2022 18:56:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 661CCC340EE;
-        Tue, 15 Mar 2022 18:56:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 195ECB81803;
+        Tue, 15 Mar 2022 19:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AFFF1C340F5;
+        Tue, 15 Mar 2022 19:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647370605;
-        bh=PcuV39IsErBrPwKL/fcwiUJYxGGPNPA+TfHf+Zawgm8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MkHhzZXa1AYOJY6fjc3CoX1kIC3/40ekAStsq3tUJAE6HRZCbup5jvtwGZ3kJuFBX
-         jYL79RMgNxbfipwc31G3azF7CFiM67m1QP54TmL3EaEYUsJz2h6jUwuuR4I1xDTXUV
-         3X3aF4f7sKYjCedo+L2DkGoNm7Bh6U0iTsrkOKwOis03a0A66TZGFtIXY/khrq2BIs
-         fG96e95Wm6UuJBZVfVuMACGPFMeD1wk8y5vVNjHCNX3UZiuLJUWk6k7L9JqFzq4guD
-         ZK4wwIsZoddJ76PnZoU2RIcAUPZmAgkxA3mr8VMFnFNgmf5hATzQYCJomSJSfDDgs8
-         FahifA9QE4c6g==
-Date:   Tue, 15 Mar 2022 11:56:44 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>, Phil Sutter <phil@nwl.cc>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH nf-next 2/6] netfilter: nf_tables: Reject tables of
- unsupported family
-Message-ID: <20220315115644.66fab74b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220315091513.66544-3-pablo@netfilter.org>
-References: <20220315091513.66544-1-pablo@netfilter.org>
-        <20220315091513.66544-3-pablo@netfilter.org>
+        s=k20201202; t=1647370812;
+        bh=vl4DMROik9qe1jQlUAwzgpIIvuCAozFHv1U0EdAVlJc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uWHqaekxJ2ElgNSffoOQJUvup5d5rKxmQdcqH8+c+TnQ0N3niWJK28YUFTkwtMno4
+         RU5/96sh6f2eqpZ6F+L6qjEZDZtYRaQxD9AU7cdxfi8sjX5zRoG58hPlFZLvlphC4D
+         I+HEJ4LH6p2VOcvHtIsnvv1MUu7I6eQKDddcx8otvJLKSQfKQOAceuh7NHZNmGO/xs
+         xrrkfyuc0jxdxImAyEs+WAPOSRNq6X/JG/LvI6GWR3KR2KSINoUgHJfCJwneK+c308
+         cVVdpBt5wOLQ9ln3xJS/ZVp194QRyJ9i9rhAGq0eIQIZBzYwiYMSQzReJPUAY2723E
+         o+IYNEsOgctsA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 84E9FE6D44B;
+        Tue, 15 Mar 2022 19:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH nf-next 1/6] Revert "netfilter: conntrack: mark UDP zero
+ checksum as CHECKSUM_UNNECESSARY"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164737081254.13795.2158434995988219572.git-patchwork-notify@kernel.org>
+Date:   Tue, 15 Mar 2022 19:00:12 +0000
+References: <20220315091513.66544-2-pablo@netfilter.org>
+In-Reply-To: <20220315091513.66544-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,33 +57,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Mar 2022 10:15:09 +0100 Pablo Neira Ayuso wrote:
-> +	return false
-> +#ifdef CONFIG_NF_TABLES_INET
-> +		|| family == NFPROTO_INET
-> +#endif
-> +#ifdef CONFIG_NF_TABLES_IPV4
-> +		|| family == NFPROTO_IPV4
-> +#endif
-> +#ifdef CONFIG_NF_TABLES_ARP
-> +		|| family == NFPROTO_ARP
-> +#endif
-> +#ifdef CONFIG_NF_TABLES_NETDEV
-> +		|| family == NFPROTO_NETDEV
-> +#endif
-> +#if IS_ENABLED(CONFIG_NF_TABLES_BRIDGE)
+Hello:
 
-is there a reason this one is IS_ENABLED() and everything else is ifdef?
+This series was applied to netdev/net-next.git (master)
+by Florian Westphal <fw@strlen.de>:
 
-> +		|| family == NFPROTO_BRIDGE
-> +#endif
-> +#ifdef CONFIG_NF_TABLES_IPV6
-> +		|| family == NFPROTO_IPV6
-> +#endif
-> +		;
+On Tue, 15 Mar 2022 10:15:08 +0100 you wrote:
+> From: Florian Westphal <fw@strlen.de>
+> 
+> This reverts commit 5bed9f3f63f8f9d2b1758c24640cbf77b5377511.
+> 
+> Gal Presman says:
+>  this patch broke geneve tunnels, or possibly all udp tunnels?
+>  A simple test that creates two geneve tunnels and runs tcp iperf fails
+>  and results in checksum errors (TcpInCsumErrors).
+> 
+> [...]
 
-	return (IS_ENABLED(CONFIG_NF_TABLES_INET) && family == NFPROTO_INET)) ||
-	       (IS_ENABLED(CONFIG_NF_TABLES_IPV4) && family == NFPROTO_IPV4)) ||
-		...
+Here is the summary with links:
+  - [nf-next,1/6] Revert "netfilter: conntrack: mark UDP zero checksum as CHECKSUM_UNNECESSARY"
+    https://git.kernel.org/netdev/net-next/c/bbfbf7a5e77e
+  - [nf-next,2/6] netfilter: nf_tables: Reject tables of unsupported family
+    https://git.kernel.org/netdev/net-next/c/f1082dd31fe4
+  - [nf-next,3/6] netfilter: flowtable: Support GRE
+    https://git.kernel.org/netdev/net-next/c/4e8d9584d154
+  - [nf-next,4/6] act_ct: Support GRE offload
+    https://git.kernel.org/netdev/net-next/c/fcb6aa86532c
+  - [nf-next,5/6] net/mlx5: Support GRE conntrack offload
+    https://git.kernel.org/netdev/net-next/c/1918ace1382d
+  - [nf-next,6/6] netfilter: bridge: clean up some inconsistent indenting
+    https://git.kernel.org/netdev/net-next/c/334ff12284fc
 
-would have also been an option, for future reference.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
