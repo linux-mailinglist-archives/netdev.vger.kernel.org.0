@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B93E14DA54E
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:23:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01B234DA544
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:23:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352216AbiCOWXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 18:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
+        id S1352212AbiCOWX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 18:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352196AbiCOWXR (ORCPT
+        with ESMTP id S1352195AbiCOWXR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 18:23:17 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB3E5C678
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58135C67C
         for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:22:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647382922; x=1678918922;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7U8UqCwr9imyCe+MajVcwv1jxl+14NgkVx6xH6kmuW8=;
-  b=NmgiIeYXdmu8n5VtnDl3+JPa2Y2MPo+91H0ZTxs+dwYOHQScwpWWJVDi
-   3Hm4fycPj4U42ooujEMLfpKZd8hHkzJoR4k7FeiEx1HEyr3u84uwvdNLR
-   knfolpOMvrhKc8oB+FchetKF9n3HM8xPczRty/ePXlZ+4wdVMICWbxHiK
-   NixypAjLCxRkDLzCN0bzK9Y/Fv5iDSe9abvRzrjEu3pS5Kh5jkMbE9gms
-   4PO2PZhNiI+7tMhJGtyqcXIVlCgjKn2iO8cw9Gn3R0waxblCFEyHZ8m0S
-   aMLUMuKm7rfa8EkN13QGXkXpHVSco77LRWTuNOqBzDZr8AAN8FgSDhp0b
+  bh=gsjB4S7F5dgCi7XdBI4naWV0ssfnNc4W7AXl0aAXeNY=;
+  b=cTF72nj3r8P5TnFQ+oLjmJVJaOZ7y8G1d3OpuFmbyhXNLNPwvri/e+5Y
+   nSv97ZZ6dLW7eVv6hHoj/qk0UWefVTfsFoZoxGxVQLkgNs97ahxBtICZN
+   74PNCRHEGkYYHidYwpIaFneXUuzm21EYTVHHXsTA1YWKRG8aP6MAmfzIB
+   MMMNQ1JS5fwzEti/ot0nDPEWaZSGHvA4WCySPZ+6pZPxDsBw17+o7VVBI
+   xPePNytDwXwwCnFpsqapyMacRVGCX075nrYP+lTTgU+vKZ2X/EKz8Fs0i
+   U6Pr9TD/WWZqnXOMe8DJs9DIN9lzweEHPJCtrmOu5CRvKmW63icbmDhzn
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255264555"
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255264557"
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="255264555"
+   d="scan'208";a="255264557"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 15:22:00 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,184,1643702400"; 
-   d="scan'208";a="690362227"
+   d="scan'208";a="690362230"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga001.fm.intel.com with ESMTP; 15 Mar 2022 15:22:00 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -42,9 +42,9 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         anthony.l.nguyen@intel.com,
         Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 08/14] ice: convert ice_reset_vf to standard error codes
-Date:   Tue, 15 Mar 2022 15:22:14 -0700
-Message-Id: <20220315222220.2925324-9-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 09/14] ice: convert ice_reset_vf to take flags
+Date:   Tue, 15 Mar 2022 15:22:15 -0700
+Message-Id: <20220315222220.2925324-10-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220315222220.2925324-1-anthony.l.nguyen@intel.com>
 References: <20220315222220.2925324-1-anthony.l.nguyen@intel.com>
@@ -62,106 +62,148 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The ice_reset_vf function returns a boolean value indicating whether or
-not the VF reset. This is a bit confusing since it means that callers
-need to know how to interpret the return value when needing to indicate
-an error.
+The ice_reset_vf function takes a boolean parameter which indicates
+whether or not the reset is due to a VFLR event.
 
-Refactor the function and call sites to report a regular error code. We
-still report success (i.e. return 0) in cases where the reset is in
-progress or is disabled.
+This is somewhat confusing to read because readers must interpret what
+"true" and "false" mean when seeing a line of code like
+"ice_reset_vf(vf, false)".
 
-Existing callers don't care because they do not check the return value.
-We keep the error code anyways instead of a void return because we
-expect future code which may care about or at least report the error
-value.
+We will want to add another toggle to the ice_reset_vf in a following
+change. To avoid proliferating many arguments, convert this function to
+take flags instead. ICE_VF_RESET_VFLR will indicate if this is a VFLR
+reset. A value of 0 indicates no flags.
+
+One could argue that "ice_reset_vf(vf, 0)" is no more readable than
+"ice_reset_vf(vf, false)".. However, this type of flags interface is
+somewhat common and using 0 to mean "no flags" makes sense in this
+context. We could bother to add a define for "ICE_VF_RESET_PLAIN" or
+something similar, but this can be confusing since its not an actual bit
+flag.
+
+This paves the way to add another flag to the function in a following
+change.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_vf_lib.c | 15 ++++++++-------
- drivers/net/ethernet/intel/ice/ice_vf_lib.h |  6 +++---
- 2 files changed, 11 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c   | 2 +-
+ drivers/net/ethernet/intel/ice/ice_sriov.c  | 6 +++---
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c | 9 ++++++---
+ drivers/net/ethernet/intel/ice/ice_vf_lib.h | 9 +++++++--
+ 4 files changed, 17 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 6f9e8383c69b..d37232197bde 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -446,10 +446,11 @@ void ice_reset_all_vfs(struct ice_pf *pf)
-  * @vf: pointer to the VF structure
-  * @is_vflr: true if VFLR was issued, false if not
-  *
-- * Returns true if the VF is currently in reset, resets successfully, or resets
-- * are disabled and false otherwise.
-+ * Returns 0 if the VF is currently in reset, if the resets are disabled, or
-+ * if the VF resets successfully. Returns an error code if the VF fails to
-+ * rebuild.
-  */
--bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
-+int ice_reset_vf(struct ice_vf *vf, bool is_vflr)
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 3cec52b09c6d..2e23fdc099e0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -1824,7 +1824,7 @@ static void ice_handle_mdd_event(struct ice_pf *pf)
+ 				 */
+ 				ice_print_vf_rx_mdd_event(vf);
+ 				mutex_lock(&vf->cfg_lock);
+-				ice_reset_vf(vf, false);
++				ice_reset_vf(vf, 0);
+ 				mutex_unlock(&vf->cfg_lock);
+ 			}
+ 		}
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index 4a8cf8f646c8..c234e4edc7f0 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -1393,7 +1393,7 @@ void ice_process_vflr_event(struct ice_pf *pf)
+ 		if (reg & BIT(bit_idx)) {
+ 			/* GLGEN_VFLRSTAT bit will be cleared in ice_reset_vf */
+ 			mutex_lock(&vf->cfg_lock);
+-			ice_reset_vf(vf, true);
++			ice_reset_vf(vf, ICE_VF_RESET_VFLR);
+ 			mutex_unlock(&vf->cfg_lock);
+ 		}
+ 	}
+@@ -1407,7 +1407,7 @@ void ice_process_vflr_event(struct ice_pf *pf)
+ static void ice_vc_reset_vf(struct ice_vf *vf)
  {
- 	struct ice_pf *pf = vf->pf;
- 	struct ice_vsi *vsi;
-@@ -466,13 +467,13 @@ bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
- 	if (test_bit(ICE_VF_RESETS_DISABLED, pf->state)) {
- 		dev_dbg(dev, "Trying to reset VF %d, but all VF resets are disabled\n",
- 			vf->vf_id);
--		return true;
-+		return 0;
- 	}
- 
- 	if (ice_is_vf_disabled(vf)) {
- 		dev_dbg(dev, "VF is already disabled, there is no need for resetting it, telling VM, all is fine %d\n",
- 			vf->vf_id);
--		return true;
-+		return 0;
- 	}
- 
- 	/* Set VF disable bit state here, before triggering reset */
-@@ -532,7 +533,7 @@ bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
- 	if (vf->vf_ops->vsi_rebuild(vf)) {
- 		dev_err(dev, "Failed to release and setup the VF%u's VSI\n",
- 			vf->vf_id);
--		return false;
-+		return -EFAULT;
- 	}
- 
- 	vf->vf_ops->post_vsi_rebuild(vf);
-@@ -546,7 +547,7 @@ bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
- 		dev_dbg(dev, "failed to clear malicious VF state for VF %u\n",
- 			vf->vf_id);
- 
--	return true;
-+	return 0;
+ 	ice_vc_notify_vf_reset(vf);
+-	ice_reset_vf(vf, false);
++	ice_reset_vf(vf, 0);
  }
  
  /**
+@@ -1724,7 +1724,7 @@ static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
+ static void ice_vc_reset_vf_msg(struct ice_vf *vf)
+ {
+ 	if (test_bit(ICE_VF_STATE_INIT, vf->vf_states))
+-		ice_reset_vf(vf, false);
++		ice_reset_vf(vf, 0);
+ }
+ 
+ /**
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index d37232197bde..3b4e55c62786 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -444,13 +444,16 @@ void ice_reset_all_vfs(struct ice_pf *pf)
+ /**
+  * ice_reset_vf - Reset a particular VF
+  * @vf: pointer to the VF structure
+- * @is_vflr: true if VFLR was issued, false if not
++ * @flags: flags controlling behavior of the reset
++ *
++ * Flags:
++ *   ICE_VF_RESET_VFLR - Indicates a reset is due to VFLR event
+  *
+  * Returns 0 if the VF is currently in reset, if the resets are disabled, or
+  * if the VF resets successfully. Returns an error code if the VF fails to
+  * rebuild.
+  */
+-int ice_reset_vf(struct ice_vf *vf, bool is_vflr)
++int ice_reset_vf(struct ice_vf *vf, u32 flags)
+ {
+ 	struct ice_pf *pf = vf->pf;
+ 	struct ice_vsi *vsi;
+@@ -478,7 +481,7 @@ int ice_reset_vf(struct ice_vf *vf, bool is_vflr)
+ 
+ 	/* Set VF disable bit state here, before triggering reset */
+ 	set_bit(ICE_VF_STATE_DIS, vf->vf_states);
+-	ice_trigger_vf_reset(vf, is_vflr, false);
++	ice_trigger_vf_reset(vf, flags & ICE_VF_RESET_VFLR, false);
+ 
+ 	vsi = ice_get_vf_vsi(vf);
+ 
 diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.h b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-index f7906111aeb3..811b6cc8ad67 100644
+index 811b6cc8ad67..071b7f99e2d9 100644
 --- a/drivers/net/ethernet/intel/ice/ice_vf_lib.h
 +++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.h
-@@ -212,7 +212,7 @@ int
+@@ -133,6 +133,11 @@ struct ice_vf {
+ 	struct devlink_port devlink_port;
+ };
+ 
++/* Flags for controlling behavior of ice_reset_vf */
++enum ice_vf_reset_flags {
++	ICE_VF_RESET_VFLR = BIT(0), /* Indicate a VFLR reset */
++};
++
+ static inline u16 ice_vf_get_port_vlan_id(struct ice_vf *vf)
+ {
+ 	return vf->port_vlan_info.vid;
+@@ -212,7 +217,7 @@ int
  ice_vf_set_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m);
  int
  ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m);
--bool ice_reset_vf(struct ice_vf *vf, bool is_vflr);
-+int ice_reset_vf(struct ice_vf *vf, bool is_vflr);
+-int ice_reset_vf(struct ice_vf *vf, bool is_vflr);
++int ice_reset_vf(struct ice_vf *vf, u32 flags);
  void ice_reset_all_vfs(struct ice_pf *pf);
  #else /* CONFIG_PCI_IOV */
  static inline struct ice_vf *ice_get_vf_by_id(struct ice_pf *pf, u16 vf_id)
-@@ -270,9 +270,9 @@ ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m)
+@@ -270,7 +275,7 @@ ice_vf_clear_vsi_promisc(struct ice_vf *vf, struct ice_vsi *vsi, u8 promisc_m)
  	return -EOPNOTSUPP;
  }
  
--static inline bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
-+static inline int ice_reset_vf(struct ice_vf *vf, bool is_vflr)
+-static inline int ice_reset_vf(struct ice_vf *vf, bool is_vflr)
++static inline int ice_reset_vf(struct ice_vf *vf, u32 flags)
  {
--	return true;
-+	return 0;
+ 	return 0;
  }
- 
- static inline void ice_reset_all_vfs(struct ice_pf *pf)
 -- 
 2.31.1
 
