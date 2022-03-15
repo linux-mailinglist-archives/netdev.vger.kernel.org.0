@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF85A4D9379
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:02:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 715A24D937A
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 06:02:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240551AbiCOFDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 01:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        id S241747AbiCOFEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 01:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235582AbiCOFDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:03:18 -0400
+        with ESMTP id S235582AbiCOFD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 01:03:59 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D80CA47079
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 22:02:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8F520A
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 22:02:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 965C0B810F6
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 05:02:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02FDCC340E8;
-        Tue, 15 Mar 2022 05:02:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31652B810F6
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 05:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E329C340E8;
+        Tue, 15 Mar 2022 05:02:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647320522;
-        bh=14N+LZwVbOriVcS40AU2JLYUKLIeHWIcp0ANImiyMGE=;
+        s=k20201202; t=1647320565;
+        bh=BznCpZa5qE8tlmDB2xniE3k+vhMfMG3hHwnuUBA+mTc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RjD0tgVUy0Ty3CIhH1d+D3hFl9fbwDN20yc0znTbzDNZuI+DMUvsRL349vN4Bf83a
-         7zwV3wMxINzy9OP/ESK1qnVStRKHh8qrt1hCeapj3LtOkwIUZcjfbYEyvp1/AROH9A
-         Q7kldfjmWZKM/n5wBfXkVBNRJLTTIOkK/fKFBeMzBfZuHjBM1S5lJ31e+pd/ymwoFG
-         V9QfzZHX/2+6YmLe0sBgDrVpcjDfMrR9YJU9pPrBFVYdWiA9cDNpMnU/uZxAgq5o/+
-         oBqn13CtfF4dpDhnlAAzGZvzQTiwBraMXpC3wkIU1VnhU+zfdGT5lpfbAacMb4MKso
-         nP6hFE/Ay1O+w==
-Date:   Mon, 14 Mar 2022 22:02:00 -0700
+        b=D0Tgf33EJj3O4mlmkh2LIeZnxe8Pn58qa9qCad5hgKdpcaFODES10nSqh6ldIHfFA
+         DGKakOk3+Xj+OK1ru2Dw7XgzOPA87WgyxZzGxWUFRU88zV7n1bVyySrRJ8Mw7UYrSq
+         7KRdZ6/SMnuHYh3G9jVSGGky/B06eQRAABa1A1d8F+U8N8L0cj/9EXPOnMG0aD3GS9
+         XhLVKRJSCP8XEYvOwd55T1HetUREG2ezJW1BgNz+oARzayMrYFF7/lE/8BKVnV/KOp
+         hmOi4mN8fBdmrD4R0Wpedw16aIr1AY1E3L/l/EoFXGB1fXWF3351cV25/B0zAtTRk7
+         dNidqdWVwnDRA==
+Date:   Mon, 14 Mar 2022 22:02:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Roi Dayan <roid@nvidia.com>
 Cc:     <netdev@vger.kernel.org>, Maor Dickman <maord@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         "Jamal Hadi Salim" <jhs@mojatatu.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 1/3] net/sched: add vlan push_eth and pop_eth
- action to the hardware IR
-Message-ID: <20220314220200.0b53e7a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220309130256.1402040-2-roid@nvidia.com>
+Subject: Re: [PATCH net-next 2/3] net/mlx5e: MPLSoUDP decap, use vlan
+ push_eth instead of pedit
+Message-ID: <20220314220244.5e8e3cb7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220309130256.1402040-3-roid@nvidia.com>
 References: <20220309130256.1402040-1-roid@nvidia.com>
-        <20220309130256.1402040-2-roid@nvidia.com>
+        <20220309130256.1402040-3-roid@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,44 +56,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for the late review.
+On Wed, 9 Mar 2022 15:02:55 +0200 Roi Dayan wrote:
+> +	case FLOW_ACTION_VLAN_PUSH_ETH:
+> +		if (!flow_flag_test(parse_state->flow, L3_TO_L2_DECAP))
+> +			return -EOPNOTSUPP;
+> +		parse_state->eth_push = true;
+> +		memcpy(attr->eth.h_dest, act->vlan_push_eth_dst, ETH_ALEN);
+> +		memcpy(attr->eth.h_source, act->vlan_push_eth_src, ETH_ALEN);
+> +		break;
 
-On Wed, 9 Mar 2022 15:02:54 +0200 Roi Dayan wrote:
-> @@ -211,6 +213,8 @@ struct flow_action_entry {
->  			__be16		proto;
->  			u8		prio;
->  		} vlan;
-> +		unsigned char vlan_push_eth_dst[ETH_ALEN];
-> +		unsigned char vlan_push_eth_src[ETH_ALEN];
-
-Let's wrap these two in a struct, like all other members here, 
-and add the customary comment indicating which action its for.
-
->  		struct {				/* FLOW_ACTION_MANGLE */
->  							/* FLOW_ACTION_ADD */
->  			enum flow_action_mangle_base htype;
-> diff --git a/include/net/tc_act/tc_vlan.h b/include/net/tc_act/tc_vlan.h
-> index f94b8bc26f9e..8a3422c70f9f 100644
-> --- a/include/net/tc_act/tc_vlan.h
-> +++ b/include/net/tc_act/tc_vlan.h
-> @@ -78,4 +78,18 @@ static inline u8 tcf_vlan_push_prio(const struct tc_action *a)
->  
->  	return tcfv_push_prio;
->  }
-> +
-> +static inline void tcf_vlan_push_dst(unsigned char *dest, const struct tc_action *a)
-> +{
-> +	rcu_read_lock();
-> +	memcpy(dest, rcu_dereference(to_vlan(a)->vlan_p)->tcfv_push_dst, ETH_ALEN);
-> +	rcu_read_unlock();
-> +}
-> +
-> +static inline void tcf_vlan_push_src(unsigned char *dest, const struct tc_action *a)
-> +{
-> +	rcu_read_lock();
-> +	memcpy(dest, rcu_dereference(to_vlan(a)->vlan_p)->tcfv_push_src, ETH_ALEN);
-> +	rcu_read_unlock();
-> +}
-
-The use of these two helpers separately makes no sense, we can't push
-half a header. It should be one helper populating both src and dst, IMO.
+How does the device know the proto? I kind of expected this code will
+require some form of a match on proto.
