@@ -2,90 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED0A44D9DE0
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:40:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C9F4D9DF4
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:42:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349261AbiCOOk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 10:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60720 "EHLO
+        id S1349394AbiCOOni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 10:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349333AbiCOOk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:40:58 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD637554B5
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 07:39:45 -0700 (PDT)
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S1349382AbiCOOnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:43:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C383355BD1;
+        Tue, 15 Mar 2022 07:42:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D6DFC3F32D
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 14:39:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647355182;
-        bh=nPejALOuOdUqemhzHbmVuYnKHib7XI81pmDxKpjtzkE=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=r2NAgkramzO1pG/5j3AZFVTJNRRUi7kpG4C3jKEVQM9DnfmXg1QCMyQNCpTf6BAO6
-         hf6z8vGlCob8HaGgy0V5tSkqbxlAYoZdlGaB+4CCbcRO48QDbVU5DvLV+vUyFwO8JB
-         3A3rKO0YdRPhqZRHkoDFYSxfY7UM2FfBHf5BN2GmbgskRka76BWRQ2/cpy6n5vln1n
-         Tx1beBNUBOG4DMzf8qd2etP9vplAjmcPFZdZ9YG0WK+SSvajG8IOtmLJsA8R7KtPUD
-         n2hgLc+PAn/9lVPIzcGUDCxh158l1RnbzMU9N1xty3uipI6ytAoPlhwfBZEnb2HIAf
-         +1qJ5jJHgtT3A==
-Received: by mail-ej1-f72.google.com with SMTP id gz16-20020a170907a05000b006db8b2baa10so7377061ejc.1
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 07:39:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nPejALOuOdUqemhzHbmVuYnKHib7XI81pmDxKpjtzkE=;
-        b=aMhuBvoLg6nez7c6jWWSCV0JvRzPW1e0SZSEdSsDm/FGBjViGDcH5sZRPo+w3UkVqQ
-         ZMfPHZP/GIDoQHA7vJo88TQSP2efgijV3/GgpZ3q5TjPbJ+wHhVazA8QQMwGqAAmV15u
-         XgvHPutPzpn2RTCBl3EtNF4sljUqk7USN6Pdwe0b8E5O5lO+vWaLCbImZiutrWTgDmUD
-         adLCOPc580FxmIBdhxgh100RVBH4bCGwoy2Iahga8+xGXJYPyPL5Z7nAWMmYA3aPps7E
-         nzREvaGvyOFQcIDz+9jmqgsLHS8xfGzPq37ZrqV4/ZHSK9a/sb+Ts/EoKZG4znUmg1d8
-         Eypw==
-X-Gm-Message-State: AOAM532ElXCHZIUA42tneoCvW4ptVE6YnB7v7AXUg7zr5y5bPQVJOH7f
-        dUQ4i0Gj/oo+7JIuUhvBBz7XcQGkmtxORSlDvDyiOFf3N2k1nqDVANZB8EBP4cO4Cya5uhqFNC3
-        h0UYOh7zLsdOg+eXielKA5/sdBXjqbUkfJA==
-X-Received: by 2002:aa7:c34d:0:b0:418:c96a:cb58 with SMTP id j13-20020aa7c34d000000b00418c96acb58mr2257798edr.49.1647355182014;
-        Tue, 15 Mar 2022 07:39:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyigKXtRY+yKVzsglw5ybBL5p8Qv91o3EGBORJFXc7hNx9TUa56VJmCYe7gKusief6LkADMqA==
-X-Received: by 2002:aa7:c34d:0:b0:418:c96a:cb58 with SMTP id j13-20020aa7c34d000000b00418c96acb58mr2257769edr.49.1647355181845;
-        Tue, 15 Mar 2022 07:39:41 -0700 (PDT)
-Received: from [192.168.0.156] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
-        by smtp.googlemail.com with ESMTPSA id r23-20020aa7da17000000b00415a1431488sm9739991eds.4.2022.03.15.07.39.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 07:39:41 -0700 (PDT)
-Message-ID: <5d9d99d7-b4da-d794-0d2a-9739bb1f3d66@canonical.com>
-Date:   Tue, 15 Mar 2022 15:39:40 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 4/8] pinctrl: mvebu: pinctrl driver for 98DX2530 SoC
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        huziji@marvell.com, ulf.hansson@linaro.org, robh+dt@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linus.walleij@linaro.org,
-        catalin.marinas@arm.com, will@kernel.org,
-        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
-        adrian.hunter@intel.com, thomas.petazzoni@bootlin.com,
-        kostap@marvell.com, robert.marko@sartura.hr,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220314213143.2404162-1-chris.packham@alliedtelesis.co.nz>
- <20220314213143.2404162-5-chris.packham@alliedtelesis.co.nz>
- <04ed13f1-671f-7416-61d0-0bf452ae862e@canonical.com>
- <YjCj07kxGh8n45GE@lunn.ch>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <YjCj07kxGh8n45GE@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6008A60EF2;
+        Tue, 15 Mar 2022 14:42:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 417C9C340EE;
+        Tue, 15 Mar 2022 14:42:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647355340;
+        bh=5n0xBkaFOIdU9mVDR5qVSvVvGAOz04JEo64OXCp4opI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dP17JQFCg6ehWM3a7uT5yOW6ACxF0Ek+UH8tru8urs9QSY0gIhAHmY5uowM0ooSIW
+         GOa/KLnQwB+vdUEjNK1nbrKM1FdixTo0ME9pgz63pXjbkaI4eCEyCOh1bQBRu86vOL
+         ppI04yj6SxB9sorGMppVnKDdgvjVsS09HGD8JG33WfDYeY/LMByiBDaPb3oNkmEUIe
+         BNs5/p/9nsUpmxsbLMbdRddaa2vhiz44usjk4XicDi9mDG4XYMCVooB1Y8+MvEjygx
+         OcZkFv4BeKUZRl2rkM0xTpN1E/prEJN4pbEId1D2IEr/g+UPqihOwUuHdI+5hyrfpS
+         qvx6IrOmSvPfA==
+Date:   Tue, 15 Mar 2022 23:42:14 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v12 bpf-next 00/12] fprobe: Introduce fprobe function
+ entry/exit probe
+Message-Id: <20220315234214.c9dee345347be30450061ac8@kernel.org>
+In-Reply-To: <164735281449.1084943.12438881786173547153.stgit@devnote2>
+References: <164735281449.1084943.12438881786173547153.stgit@devnote2>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,27 +66,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/03/2022 15:33, Andrew Lunn wrote:
->>> +static struct platform_driver ac5_pinctrl_driver = {
->>> +	.driver = {
->>> +		.name = "ac5-pinctrl",
->>> +		.of_match_table = of_match_ptr(ac5_pinctrl_of_match),
->>
->> of_match_ptr() does not look correct for OF-only platform. This should
->> complain in W=1 compile tests on !OF config.
+On Tue, 15 Mar 2022 23:00:14 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
+
+> Hi,
 > 
-> The Marvell family of SoC which this embedded SoC borrows HW blocks
-> from can boot using ACPI. I doubt anybody would boot this particularly
-> SoC using ACPI, but the drivers Chris copied probably do build !OF for
-> when ACPI is in us.
+> Here is the 12th version of fprobe. This version fixes a possible gcc-11 issue which
+> was reported as kretprobes on arm issue, and also I updated the fprobe document.
 
-What I wanted to say - current setting should cause warnings. Therefore
-choose:
-1. For ACPI && !OF this should be still without of_match_ptr, to allow
-ACPI matching by OF (PRP0001).
-2. For !OF with of_match_ptr() (weird setup... how to match then?) the
-ac5_pinctrl_of_match should be marked as maybe unused.
+Here is the gcc-11 build issue thread for reference.
+
+https://lore.kernel.org/all/202203150516.KTorSVVU-lkp@intel.com/T/#u
+
+Thank you,
+
+> 
+> The previous version (v11) is here[1];
+> 
+> [1] https://lore.kernel.org/all/164701432038.268462.3329725152949938527.stgit@devnote2/T/#u
+> 
+> This series introduces the fprobe, the function entry/exit probe
+> with multiple probe point support for x86, arm64 and powerpc64le.
+> This also introduces the rethook for hooking function return as same as
+> the kretprobe does. This abstraction will help us to generalize the fgraph
+> tracer, because we can just switch to it from the rethook in fprobe,
+> depending on the kernel configuration.
+> 
+> The patch [1/12] is from Jiri's series[2].
+> 
+> [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
+> 
+> And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
+> if user wants to share the same code (or share a same resource) on the
+> fprobe and the kprobes.
+> 
+> I forcibly updated my kprobes/fprobe branch, you can pull this series
+> from:
+> 
+>  https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git kprobes/fprobe
+> 
+> Thank you,
+> 
+> ---
+> 
+> Jiri Olsa (1):
+>       ftrace: Add ftrace_set_filter_ips function
+> 
+> Masami Hiramatsu (11):
+>       fprobe: Add ftrace based probe APIs
+>       rethook: Add a generic return hook
+>       rethook: x86: Add rethook x86 implementation
+>       arm64: rethook: Add arm64 rethook implementation
+>       powerpc: Add rethook support
+>       ARM: rethook: Add rethook arm implementation
+>       fprobe: Add exit_handler support
+>       fprobe: Add sample program for fprobe
+>       fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
+>       docs: fprobe: Add fprobe description to ftrace-use.rst
+>       fprobe: Add a selftest for fprobe
+> 
+> 
+>  Documentation/trace/fprobe.rst                |  174 +++++++++++++
+>  Documentation/trace/index.rst                 |    1 
+>  arch/arm/Kconfig                              |    1 
+>  arch/arm/include/asm/stacktrace.h             |    4 
+>  arch/arm/kernel/stacktrace.c                  |    6 
+>  arch/arm/probes/Makefile                      |    1 
+>  arch/arm/probes/rethook.c                     |  103 ++++++++
+>  arch/arm64/Kconfig                            |    1 
+>  arch/arm64/include/asm/stacktrace.h           |    2 
+>  arch/arm64/kernel/probes/Makefile             |    1 
+>  arch/arm64/kernel/probes/rethook.c            |   25 ++
+>  arch/arm64/kernel/probes/rethook_trampoline.S |   87 +++++++
+>  arch/arm64/kernel/stacktrace.c                |    7 -
+>  arch/powerpc/Kconfig                          |    1 
+>  arch/powerpc/kernel/Makefile                  |    1 
+>  arch/powerpc/kernel/rethook.c                 |   72 +++++
+>  arch/x86/Kconfig                              |    1 
+>  arch/x86/include/asm/unwind.h                 |    8 +
+>  arch/x86/kernel/Makefile                      |    1 
+>  arch/x86/kernel/kprobes/common.h              |    1 
+>  arch/x86/kernel/rethook.c                     |  119 +++++++++
+>  include/linux/fprobe.h                        |  105 ++++++++
+>  include/linux/ftrace.h                        |    3 
+>  include/linux/kprobes.h                       |    3 
+>  include/linux/rethook.h                       |  100 ++++++++
+>  include/linux/sched.h                         |    3 
+>  kernel/exit.c                                 |    2 
+>  kernel/fork.c                                 |    3 
+>  kernel/trace/Kconfig                          |   26 ++
+>  kernel/trace/Makefile                         |    2 
+>  kernel/trace/fprobe.c                         |  332 +++++++++++++++++++++++++
+>  kernel/trace/ftrace.c                         |   58 ++++
+>  kernel/trace/rethook.c                        |  317 ++++++++++++++++++++++++
+>  lib/Kconfig.debug                             |   12 +
+>  lib/Makefile                                  |    2 
+>  lib/test_fprobe.c                             |  174 +++++++++++++
+>  samples/Kconfig                               |    7 +
+>  samples/Makefile                              |    1 
+>  samples/fprobe/Makefile                       |    3 
+>  samples/fprobe/fprobe_example.c               |  120 +++++++++
+>  40 files changed, 1876 insertions(+), 14 deletions(-)
+>  create mode 100644 Documentation/trace/fprobe.rst
+>  create mode 100644 arch/arm/probes/rethook.c
+>  create mode 100644 arch/arm64/kernel/probes/rethook.c
+>  create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
+>  create mode 100644 arch/powerpc/kernel/rethook.c
+>  create mode 100644 arch/x86/kernel/rethook.c
+>  create mode 100644 include/linux/fprobe.h
+>  create mode 100644 include/linux/rethook.h
+>  create mode 100644 kernel/trace/fprobe.c
+>  create mode 100644 kernel/trace/rethook.c
+>  create mode 100644 lib/test_fprobe.c
+>  create mode 100644 samples/fprobe/Makefile
+>  create mode 100644 samples/fprobe/fprobe_example.c
+> 
+> --
+> Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
 
 
-Best regards,
-Krzysztof
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
