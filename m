@@ -2,95 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD3CB4DA556
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:26:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 978414DA55A
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 23:27:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352222AbiCOW1f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 18:27:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40758 "EHLO
+        id S1349124AbiCOW2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 18:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234619AbiCOW1a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 18:27:30 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E405C66A;
-        Tue, 15 Mar 2022 15:26:17 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id b19so480830wrh.11;
-        Tue, 15 Mar 2022 15:26:17 -0700 (PDT)
+        with ESMTP id S234619AbiCOW2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 18:28:18 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB4F5C66C
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:27:03 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id s25so840406lji.5
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 15:27:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d+7gsptSCcEneI6TJ6IZ79PWOc2Xel+uahXLSZntUag=;
-        b=VcvBmfSZbZGqcGB3qO8Czr6VUT5EVLRrSAeNopn67koxcESvdWZ0yXBUItmbeSfvJN
-         +nb1xRbrkN4/iXywG7iwJq1aS+2L+N0xa7Rf7EaZephFmfOFR8zi8p/BmofUu//Hu8A4
-         zzH39iCzT1dFQuUG77bO2FbdbXr6BVaOO+sCKM24tjc7iIHp7Esw+BB1ryNYawpR7Kel
-         y+2JqGgDlkM+kVgLLs9v74uMWkGujkh+I0Ws0IBI2fv/H4BORTft5lZ1l/V2AWjnZw6K
-         SaeMtpHwZaUzQxPruC2Tpt9AF9sgTX0iazad2DNivMYqAp38zeATnR2RIrn9wFtEnCgo
-         GV2Q==
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=1eFaiU5+NXOZ2eF/q2c9hS91JEU83jBZdMPIUzAUG/M=;
+        b=W9eHnbhnxZGkzFj4ctqYZx2unDRv0f6pILZnVE29yrAktO5wfV20/6Q5AYy2opt8kW
+         mEsUioTGfGdUFxKKKJLC1YaxkOCTeW2Z1Sx0akQKquuDbdLVis6ZPKyWY5GwYnpzo4xP
+         Jur81GGN4sb0B+FWmLvdm0DkYueYkSa2YrKABgXs+59DS3pNashgTBY1HOaB13LLpgow
+         Ofn21eFrtSHyBy/7w3XlI0057PBHN1Rv0myExHyAZlaWtktSbhS3OFHBvG20IDG2LW6c
+         jBVSKdDoRX5hO9X9MM+7RyHzzIgxbE7dObi9QuznBILzRbBqUSR80QmgHH1DaLxJG3n6
+         PThA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d+7gsptSCcEneI6TJ6IZ79PWOc2Xel+uahXLSZntUag=;
-        b=Sn6z7MGwYUc5G03v0+VKMI9GLTuwdfIVVdHeSVBOEMDS9NLwWYkcWNvmg0SBHF0GE4
-         NrS5DZfUv1fDvHtVYQgRbjDePgXJc0wCmlstN2ygY7naW5i5g7TAmE7zl0qaUbvBiTHK
-         /AOfnjUXP0TWzAwb5+fQvapcEl19dSANXgPJ8L9qiTMsiyPPshQH/NpF4W7yjpm4q+uJ
-         VLKDzEtRU3gH6hiBHpr3g6mVIOqlV6c+dmTUMOrdHABua4V/+XMht0e06HPiYj7mMprC
-         8vMNZj4qLGqrjVjA5UYRw8/TJL4bta+c+PjNpJU49vOfl4kKuBZCWBdQKDfMlZx8KJi6
-         yWVQ==
-X-Gm-Message-State: AOAM531+OyTmqcgyYsm+V6YtcfQ4ZF42gi9seht3ifipcuPQ42dnv6ud
-        SRGt0iWZxMg5W2HKHtJCzlkkN1yI2WWxrg==
-X-Google-Smtp-Source: ABdhPJzrvoqRxNXnTa1VtmcVGYIfbK7Xnsy3iA2OLrU5s6f7sViv5YbKf701tetRQ9Iyc0IlyaQRgA==
-X-Received: by 2002:a5d:6751:0:b0:1f0:4a7a:ba31 with SMTP id l17-20020a5d6751000000b001f04a7aba31mr21882773wrw.181.1647383176605;
-        Tue, 15 Mar 2022 15:26:16 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id l13-20020a05600002ad00b00203d64c5289sm155955wry.112.2022.03.15.15.26.16
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=1eFaiU5+NXOZ2eF/q2c9hS91JEU83jBZdMPIUzAUG/M=;
+        b=6goGuVS5IbyFhDsr+TEemJ025edINTus1i3E/yxGonGhl5uSs4nzyOPzADtzzjSWWW
+         RRhk8phEpRWpTGnFwcMPLL+Q57+u0N5I2dwQBrcRGjku8Lmcb2nojX+2zIlslH2eXhAm
+         uIuXD5x49vfGs3RRZNvg6wj+wqqNPH7ron0Jz3iUHSoVlTyMTkFKSD7IEIC+XDlIEs0K
+         WVvcmBWt1Jn7pD/QVi79+VOH7qPzig8BlYj/ktjW8ljSOTzNsRSe+1ZP08lZLL2Io+eh
+         xzYFxvmIKG0bX40P35QK8vwhk+ZIe1z3ONwmTcmw8d40+syGk0TUZPJRmq8tnjkQw6gD
+         0y9g==
+X-Gm-Message-State: AOAM530q7gO5mBE0yRY3LXCjiQPY7l5dgiW+wTjWIaCKEhWg9eZCPiC/
+        S6JZGJMe/Lyni384M1I05v5vtg==
+X-Google-Smtp-Source: ABdhPJyqfX4MOlHUD1u/2Ymk1nux/6ggwGs0+zmsR8ejZc2pNkrCvxg3TIt1AV07eugD8SX7TSBlKg==
+X-Received: by 2002:a05:651c:160b:b0:247:f955:1b18 with SMTP id f11-20020a05651c160b00b00247f9551b18mr18676245ljq.427.1647383222035;
+        Tue, 15 Mar 2022 15:27:02 -0700 (PDT)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id h1-20020a056512054100b0044847b32426sm19185lfl.156.2022.03.15.15.27.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 15:26:16 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Jeroen de Borst <jeroendb@google.com>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] gve: Fix spelling mistake "droping" -> "dropping"
-Date:   Tue, 15 Mar 2022 22:26:15 +0000
-Message-Id: <20220315222615.2960504-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 15 Mar 2022 15:27:01 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v4 net-next 09/15] net: dsa: Never offload FDB entries
+ on standalone ports
+In-Reply-To: <20220315163349.k2rmfdzrd3jvzbor@skbuf>
+References: <20220315002543.190587-1-tobias@waldekranz.com>
+ <20220315002543.190587-10-tobias@waldekranz.com>
+ <20220315163349.k2rmfdzrd3jvzbor@skbuf>
+Date:   Tue, 15 Mar 2022 23:26:59 +0100
+Message-ID: <87ee32lumk.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a spelling mistake in a netdev_warn warning. Fix it.
+On Tue, Mar 15, 2022 at 18:33, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Mar 15, 2022 at 01:25:37AM +0100, Tobias Waldekranz wrote:
+>> If a port joins a bridge that it can't offload, it will fallback to
+>> standalone mode and software bridging. In this case, we never want to
+>> offload any FDB entries to hardware either.
+>> 
+>> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+>> ---
+>
+> When you resend, please send this patch separately, unless something
+> breaks really ugly with your MST series in place.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/net/ethernet/google/gve/gve_rx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sure. I found this while testing the software fallback. It prevents a
+segfault in dsa_port_bridge_host_fdb_add, which (rightly, I think)
+assumes that dp->bridge is valid. I feel like this should have a Fixes:
+tag, but I'm not sure which commit to blame. Any suggestions?
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index e4e98aa7745f..021bbf308d68 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -439,7 +439,7 @@ static bool gve_rx_ctx_init(struct gve_rx_ctx *ctx, struct gve_rx_ring *rx)
- 		if (frag_size > rx->packet_buffer_size) {
- 			packet_size_error = true;
- 			netdev_warn(priv->dev,
--				    "RX fragment error: packet_buffer_size=%d, frag_size=%d, droping packet.",
-+				    "RX fragment error: packet_buffer_size=%d, frag_size=%d, dropping packet.",
- 				    rx->packet_buffer_size, be16_to_cpu(desc->len));
- 		}
- 		page_info = &rx->data.page_info[idx];
--- 
-2.35.1
-
+>>  net/dsa/slave.c | 3 +++
+>>  1 file changed, 3 insertions(+)
+>> 
+>> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+>> index a61a7c54af20..647adee97f7f 100644
+>> --- a/net/dsa/slave.c
+>> +++ b/net/dsa/slave.c
+>> @@ -2624,6 +2624,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+>>  	if (ctx && ctx != dp)
+>>  		return 0;
+>>  
+>> +	if (!dp->bridge)
+>> +		return 0;
+>> +
+>>  	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
+>>  		if (dsa_port_offloads_bridge_port(dp, orig_dev))
+>>  			return 0;
+>> -- 
+>> 2.25.1
+>> 
