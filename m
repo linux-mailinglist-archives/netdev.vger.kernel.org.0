@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5A154D947B
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 07:17:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4207D4D947C
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 07:17:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238534AbiCOGSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 02:18:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
+        id S1345114AbiCOGSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 02:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345161AbiCOGSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 02:18:36 -0400
+        with ESMTP id S1345184AbiCOGSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 02:18:38 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26964A3F6
-        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 23:17:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8E74A913
+        for <netdev@vger.kernel.org>; Mon, 14 Mar 2022 23:17:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647325039; x=1678861039;
+  t=1647325044; x=1678861044;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=qbRc/ogE8uVr9+wZOn0Q1cmhnBkZNCp8HID8ntjHLqE=;
-  b=Jh77qd5KOTCLaKLOzXUtqez5AjemKblRLRBKrpSJXqX9l0lmIJWlXIx4
-   G8Ttfr61p0GE3SvhBGPpYRMA4relmN8nfBhoXuDf9OGLTDMOkgq2Xo/Jp
-   /5UfwhnXjoYmGVYkYNA2GbiRS20I/Oe5d1a8yR9yLLKPMAlb7WWQGWMtw
-   thAjLzO8kJpF2r0k9mXHoHxWoPH7WMmiRFU7MOrgBEncGO7PEQMLQoNyr
-   mw5V31h+v757xXxvELGFOAsk9r/U78Azo++HW1j7DMBL5ku+R6yOFmdbi
-   o/LFVU+a+gF88MKZSMRfT92FyfkcLCfFYwMzM780ulmec09eOoDS1gym0
-   g==;
+  bh=l+vBW9FFTcW5sn2wNXgg9ej4eUlk3vFTs9C/q26q1lw=;
+  b=ZH6KZAqA4CUvYxr76IyU0mep5JWV+y1sRpREz5YqRWYv7dZjTqb7Zp1R
+   yvI/+CXIqfi7Kpl69J56GpQj2p2nszqftPKYSjUtnFkGPokGyZc5xcarn
+   wSIRD25CjSVO4edylMYOksP5U0qjXqmK8Ww9+0udlKzJ0wcjKMsQYupX8
+   IuPQC89xHNYLIVypeVGP2lGXcn7b2GLQDrXsnpV2CdErCrhhG6/KSFmkc
+   Ph+IMrXWFOH/TVt30wiwKaI4Me/1PiVmhDk4L5a1IGag0KVrjsp2EImqh
+   d5swWY64bht92tTgw+jEbEAzDcNP2OktJxChl+zZSVJm56wkdNho63kHg
+   w==;
 X-IronPort-AV: E=Sophos;i="5.90,182,1643698800"; 
-   d="scan'208";a="88938872"
+   d="scan'208";a="149191713"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Mar 2022 23:17:19 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Mar 2022 23:17:23 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 14 Mar 2022 23:17:18 -0700
+ 15.1.2375.17; Mon, 14 Mar 2022 23:17:22 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 14 Mar 2022 23:17:16 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 14 Mar 2022 23:17:19 -0700
 From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>,
         <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
-Subject: [PATCH net-next 4/5] net: lan743x: Add support for PTP-IO Event Input External Timestamp (extts)
-Date:   Tue, 15 Mar 2022 11:47:00 +0530
-Message-ID: <20220315061701.3006-5-Raju.Lakkaraju@microchip.com>
+Subject: [PATCH net-next 5/5] net: lan743x: Add support for PTP-IO Event Output (Periodic Output)
+Date:   Tue, 15 Mar 2022 11:47:01 +0530
+Message-ID: <20220315061701.3006-6-Raju.Lakkaraju@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220315061701.3006-1-Raju.Lakkaraju@microchip.com>
 References: <20220315061701.3006-1-Raju.Lakkaraju@microchip.com>
@@ -61,587 +61,324 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PTP-IOs block provides for time stamping PTP-IO input events.
-PTP-IOs are numbered from 0 to 11.
-When a PTP-IO is enabled by the corresponding bit in the PTP-IO
-Capture Configuration Register, a rising or falling edge,
-respectively, will capture the 1588 Local Time Counter
+Add support for PTP-IO Event Output (Periodic Output - perout) for PCI11010/PCI11414 chips
 
 Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 ---
- drivers/net/ethernet/microchip/lan743x_main.h |  73 ++++
- drivers/net/ethernet/microchip/lan743x_ptp.c  | 329 ++++++++++++++++--
- drivers/net/ethernet/microchip/lan743x_ptp.h  |   9 +
- 3 files changed, 375 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_main.h |  33 +++
+ drivers/net/ethernet/microchip/lan743x_ptp.c  | 217 +++++++++++++++++-
+ drivers/net/ethernet/microchip/lan743x_ptp.h  |   1 +
+ 3 files changed, 249 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index d1036a323c52..9c528705866f 100644
+index 9c528705866f..1ca5f3216403 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.h
 +++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -358,8 +358,18 @@
+@@ -336,6 +336,7 @@
+ #define INT_MOD_CFG9			(0x7E4)
+ 
+ #define PTP_CMD_CTL					(0x0A00)
++#define PTP_CMD_CTL_PTP_LTC_TARGET_READ_		BIT(13)
+ #define PTP_CMD_CTL_PTP_CLK_STP_NSEC_			BIT(6)
+ #define PTP_CMD_CTL_PTP_CLOCK_STEP_SEC_			BIT(5)
+ #define PTP_CMD_CTL_PTP_CLOCK_LOAD_			BIT(4)
+@@ -357,6 +358,30 @@
+ 	(((value) & 0x7) << (1 + ((channel) << 2)))
  #define PTP_GENERAL_CONFIG_RELOAD_ADD_X_(channel)	(BIT((channel) << 2))
  
- #define PTP_INT_STS				(0x0A08)
-+#define PTP_INT_IO_FE_MASK_			GENMASK(31, 24)
-+#define PTP_INT_IO_FE_SHIFT_			(24)
-+#define PTP_INT_IO_FE_SET_(channel)		BIT(24 + (channel))
-+#define PTP_INT_IO_RE_MASK_			GENMASK(23, 16)
-+#define PTP_INT_IO_RE_SHIFT_			(16)
-+#define PTP_INT_IO_RE_SET_(channel)		BIT(16 + (channel))
- #define PTP_INT_EN_SET				(0x0A0C)
-+#define PTP_INT_EN_FE_EN_SET_(channel)		BIT(24 + (channel))
-+#define PTP_INT_EN_RE_EN_SET_(channel)		BIT(16 + (channel))
- #define PTP_INT_EN_CLR				(0x0A10)
-+#define PTP_INT_EN_FE_EN_CLR_(channel)		BIT(24 + (channel))
-+#define PTP_INT_EN_RE_EN_CLR_(channel)		BIT(16 + (channel))
- #define PTP_INT_BIT_TX_SWTS_ERR_		BIT(13)
- #define PTP_INT_BIT_TX_TS_			BIT(12)
- #define PTP_INT_BIT_TIMER_B_			BIT(1)
-@@ -377,6 +387,16 @@
- #define PTP_CLOCK_TARGET_NS_X(channel)		(0x0A34 + ((channel) << 4))
- #define PTP_CLOCK_TARGET_RELOAD_SEC_X(channel)	(0x0A38 + ((channel) << 4))
- #define PTP_CLOCK_TARGET_RELOAD_NS_X(channel)	(0x0A3C + ((channel) << 4))
-+#define PTP_LTC_SET_SEC_HI			(0x0A50)
-+#define PTP_LTC_SET_SEC_HI_SEC_47_32_MASK_	GENMASK(15, 0)
-+#define PTP_VERSION				(0x0A54)
-+#define PTP_VERSION_TX_UP_MASK_			GENMASK(31, 24)
-+#define PTP_VERSION_TX_LO_MASK_			GENMASK(23, 16)
-+#define PTP_VERSION_RX_UP_MASK_			GENMASK(15, 8)
-+#define PTP_VERSION_RX_LO_MASK_			GENMASK(7, 0)
-+#define PTP_IO_SEL				(0x0A58)
-+#define PTP_IO_SEL_MASK_			GENMASK(10, 8)
-+#define PTP_IO_SEL_SHIFT_			(8)
- #define PTP_LATENCY				(0x0A5C)
- #define PTP_LATENCY_TX_SET_(tx_latency)		(((u32)(tx_latency)) << 16)
- #define PTP_LATENCY_RX_SET_(rx_latency)		\
-@@ -401,6 +421,59 @@
- #define PTP_TX_MSG_HEADER_MSG_TYPE_		(0x000F0000)
- #define PTP_TX_MSG_HEADER_MSG_TYPE_SYNC_	(0x00000000)
- 
-+#define PTP_TX_CAP_INFO				(0x0AB8)
-+#define PTP_TX_CAP_INFO_TX_CH_MASK_		GENMASK(1, 0)
-+#define PTP_TX_DOMAIN				(0x0ABC)
-+#define PTP_TX_DOMAIN_MASK_			GENMASK(23, 16)
-+#define PTP_TX_DOMAIN_RANGE_EN_			BIT(15)
-+#define PTP_TX_DOMAIN_RANGE_MASK_		GENMASK(7, 0)
-+#define PTP_TX_SDOID				(0x0AC0)
-+#define PTP_TX_SDOID_MASK_			GENMASK(23, 16)
-+#define PTP_TX_SDOID_RANGE_EN_			BIT(15)
-+#define PTP_TX_SDOID_11_0_MASK_			GENMASK(7, 0)
-+#define PTP_IO_CAP_CONFIG			(0x0AC4)
-+#define PTP_IO_CAP_CONFIG_LOCK_FE_(channel)	BIT(24 + (channel))
-+#define PTP_IO_CAP_CONFIG_LOCK_RE_(channel)	BIT(16 + (channel))
-+#define PTP_IO_CAP_CONFIG_FE_CAP_EN_(channel)	BIT(8 + (channel))
-+#define PTP_IO_CAP_CONFIG_RE_CAP_EN_(channel)	BIT(0 + (channel))
-+#define PTP_IO_RE_LTC_SEC_CAP_X			(0x0AC8)
-+#define PTP_IO_RE_LTC_NS_CAP_X			(0x0ACC)
-+#define PTP_IO_FE_LTC_SEC_CAP_X			(0x0AD0)
-+#define PTP_IO_FE_LTC_NS_CAP_X			(0x0AD4)
-+#define PTP_IO_EVENT_OUTPUT_CFG			(0x0AD8)
-+#define PTP_IO_EVENT_OUTPUT_CFG_SEL_(channel)	BIT(16 + (channel))
-+#define PTP_IO_EVENT_OUTPUT_CFG_EN_(channel)	BIT(0 + (channel))
-+#define PTP_IO_PIN_CFG				(0x0ADC)
-+#define PTP_IO_PIN_CFG_OBUF_TYPE_(channel)	BIT(0 + (channel))
-+#define PTP_LTC_RD_SEC_HI			(0x0AF0)
-+#define PTP_LTC_RD_SEC_HI_SEC_47_32_MASK_	GENMASK(15, 0)
-+#define PTP_LTC_RD_SEC_LO			(0x0AF4)
-+#define PTP_LTC_RD_NS				(0x0AF8)
-+#define PTP_LTC_RD_NS_29_0_MASK_		GENMASK(29, 0)
-+#define PTP_LTC_RD_SUBNS			(0x0AFC)
-+#define PTP_RX_USER_MAC_HI			(0x0B00)
-+#define PTP_RX_USER_MAC_HI_47_32_MASK_		GENMASK(15, 0)
-+#define PTP_RX_USER_MAC_LO			(0x0B04)
-+#define PTP_RX_USER_IP_ADDR_0			(0x0B20)
-+#define PTP_RX_USER_IP_ADDR_1			(0x0B24)
-+#define PTP_RX_USER_IP_ADDR_2			(0x0B28)
-+#define PTP_RX_USER_IP_ADDR_3			(0x0B2C)
-+#define PTP_RX_USER_IP_MASK_0			(0x0B30)
-+#define PTP_RX_USER_IP_MASK_1			(0x0B34)
-+#define PTP_RX_USER_IP_MASK_2			(0x0B38)
-+#define PTP_RX_USER_IP_MASK_3			(0x0B3C)
-+#define PTP_TX_USER_MAC_HI			(0x0B40)
-+#define PTP_TX_USER_MAC_HI_47_32_MASK_		GENMASK(15, 0)
-+#define PTP_TX_USER_MAC_LO			(0x0B44)
-+#define PTP_TX_USER_IP_ADDR_0			(0x0B60)
-+#define PTP_TX_USER_IP_ADDR_1			(0x0B64)
-+#define PTP_TX_USER_IP_ADDR_2			(0x0B68)
-+#define PTP_TX_USER_IP_ADDR_3			(0x0B6C)
-+#define PTP_TX_USER_IP_MASK_0			(0x0B70)
-+#define PTP_TX_USER_IP_MASK_1			(0x0B74)
-+#define PTP_TX_USER_IP_MASK_2			(0x0B78)
-+#define PTP_TX_USER_IP_MASK_3			(0x0B7C)
++#define HS_PTP_GENERAL_CONFIG				(0x0A04)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_(channel) \
++	(0xf << (4 + ((channel) << 2)))
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100NS_	(0)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500NS_	(1)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1US_		(2)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5US_		(3)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10US_		(4)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50US_		(5)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100US_	(6)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500US_	(7)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS_		(8)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5MS_		(9)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10MS_		(10)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50MS_		(11)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100MS_	(12)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_	(13)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_TOGG_		(14)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_INT_		(15)
++#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_SET_(channel, value) \
++	(((value) & 0xf) << (4 + ((channel) << 2)))
++#define HS_PTP_GENERAL_CONFIG_EVENT_POL_X_(channel)	(BIT(1 + ((channel) * 2)))
++#define HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(channel)	(BIT((channel) * 2))
 +
- #define DMAC_CFG				(0xC00)
- #define DMAC_CFG_COAL_EN_			BIT(16)
- #define DMAC_CFG_CH_ARB_SEL_RX_HIGH_		(0x00000000)
+ #define PTP_INT_STS				(0x0A08)
+ #define PTP_INT_IO_FE_MASK_			GENMASK(31, 24)
+ #define PTP_INT_IO_FE_SHIFT_			(24)
+@@ -364,9 +389,17 @@
+ #define PTP_INT_IO_RE_MASK_			GENMASK(23, 16)
+ #define PTP_INT_IO_RE_SHIFT_			(16)
+ #define PTP_INT_IO_RE_SET_(channel)		BIT(16 + (channel))
++#define PTP_INT_TX_TS_OVRFL_INT_		BIT(14)
++#define PTP_INT_TX_SWTS_ERR_INT_		BIT(13)
++#define PTP_INT_TX_TS_INT_			BIT(12)
++#define PTP_INT_RX_TS_OVRFL_INT_		BIT(9)
++#define PTP_INT_RX_TS_INT_			BIT(8)
++#define PTP_INT_TIMER_INT_B_			BIT(1)
++#define PTP_INT_TIMER_INT_A_			BIT(0)
+ #define PTP_INT_EN_SET				(0x0A0C)
+ #define PTP_INT_EN_FE_EN_SET_(channel)		BIT(24 + (channel))
+ #define PTP_INT_EN_RE_EN_SET_(channel)		BIT(16 + (channel))
++#define PTP_INT_EN_TIMER_SET_(channel)		BIT(channel)
+ #define PTP_INT_EN_CLR				(0x0A10)
+ #define PTP_INT_EN_FE_EN_CLR_(channel)		BIT(24 + (channel))
+ #define PTP_INT_EN_RE_EN_CLR_(channel)		BIT(16 + (channel))
 diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index ec082594bbbd..9fffce5baade 100644
+index 9fffce5baade..341e78643052 100644
 --- a/drivers/net/ethernet/microchip/lan743x_ptp.c
 +++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -25,6 +25,18 @@ static void lan743x_ptp_clock_set(struct lan743x_adapter *adapter,
- 				  u32 seconds, u32 nano_seconds,
- 				  u32 sub_nano_seconds);
- 
-+static int lan743x_get_channel(u32 ch_map)
-+{
-+	int idx;
-+
-+	for (idx = 0; idx < 32; idx++) {
-+		if (ch_map & (0x1 << idx))
-+			return idx;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- int lan743x_gpio_init(struct lan743x_adapter *adapter)
- {
- 	struct lan743x_gpio *gpio = &adapter->gpio;
-@@ -179,6 +191,8 @@ static void lan743x_ptp_release_event_ch(struct lan743x_adapter *adapter,
- static void lan743x_ptp_clock_get(struct lan743x_adapter *adapter,
- 				  u32 *seconds, u32 *nano_seconds,
- 				  u32 *sub_nano_seconds);
-+static void lan743x_ptp_io_clock_get(struct lan743x_adapter *adapter,
-+				     u32 *sec, u32 *nsec, u32 *sub_nsec);
- static void lan743x_ptp_clock_step(struct lan743x_adapter *adapter,
- 				   s64 time_step_ns);
- 
-@@ -407,7 +421,10 @@ static int lan743x_ptpci_gettime64(struct ptp_clock_info *ptpci,
- 	u32 nano_seconds = 0;
- 	u32 seconds = 0;
- 
--	lan743x_ptp_clock_get(adapter, &seconds, &nano_seconds, NULL);
-+	if (adapter->is_pci11x1x)
-+		lan743x_ptp_io_clock_get(adapter, &seconds, &nano_seconds, NULL);
-+	else
-+		lan743x_ptp_clock_get(adapter, &seconds, &nano_seconds, NULL);
- 	ts->tv_sec = seconds;
- 	ts->tv_nsec = nano_seconds;
- 
-@@ -671,6 +688,110 @@ static int lan743x_ptp_perout(struct lan743x_adapter *adapter, int on,
+@@ -688,6 +688,214 @@ static int lan743x_ptp_perout(struct lan743x_adapter *adapter, int on,
  	return ret;
  }
  
-+static void lan743x_ptp_io_extts_off(struct lan743x_adapter *adapter,
-+				     u32 index)
++static void lan743x_ptp_io_perout_off(struct lan743x_adapter *adapter,
++				      u32 index)
 +{
 +	struct lan743x_ptp *ptp = &adapter->ptp;
-+	struct lan743x_extts *extts;
++	u32 general_config;
++	int perout_pin;
++	int event_ch;
 +	int val;
 +
-+	extts = &ptp->extts[index];
-+	/* PTP Interrupt Enable Clear Register */
-+	if (extts->flags & PTP_FALLING_EDGE)
-+		val = PTP_INT_EN_FE_EN_CLR_(index);
-+	else
-+		val = PTP_INT_EN_RE_EN_CLR_(index);
-+	lan743x_csr_write(adapter, PTP_INT_EN_CLR, val);
++	event_ch = ptp->ptp_io_perout[index];
++	if (event_ch >= 0) {
++		/* set target to far in the future, effectively disabling it */
++		lan743x_csr_write(adapter,
++				  PTP_CLOCK_TARGET_SEC_X(event_ch),
++				  0xFFFF0000);
++		lan743x_csr_write(adapter,
++				  PTP_CLOCK_TARGET_NS_X(event_ch),
++				  0);
 +
-+	/* Disables PTP-IO edge lock */
-+	val = lan743x_csr_read(adapter, PTP_IO_CAP_CONFIG);
-+	if (extts->flags & PTP_FALLING_EDGE) {
-+		val &= ~PTP_IO_CAP_CONFIG_LOCK_FE_(index);
-+		val &= ~PTP_IO_CAP_CONFIG_FE_CAP_EN_(index);
-+	} else {
-+		val &= ~PTP_IO_CAP_CONFIG_LOCK_RE_(index);
-+		val &= ~PTP_IO_CAP_CONFIG_RE_CAP_EN_(index);
++		general_config = lan743x_csr_read(adapter, HS_PTP_GENERAL_CONFIG);
++		general_config &= ~(HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_
++				    (event_ch));
++		general_config &= ~(HS_PTP_GENERAL_CONFIG_EVENT_POL_X_
++				    (event_ch));
++		general_config |= HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(event_ch);
++		lan743x_csr_write(adapter, HS_PTP_GENERAL_CONFIG, general_config);
++		if (event_ch)
++			lan743x_csr_write(adapter, PTP_INT_STS, PTP_INT_TIMER_INT_B_);
++		else
++			lan743x_csr_write(adapter, PTP_INT_STS, PTP_INT_TIMER_INT_A_);
++		lan743x_ptp_release_event_ch(adapter, event_ch);
++		ptp->ptp_io_perout[index] = -1;
 +	}
-+	lan743x_csr_write(adapter, PTP_IO_CAP_CONFIG, val);
 +
-+	/* PTP-IO De-select register */
-+	val = lan743x_csr_read(adapter, PTP_IO_SEL);
-+	val &= ~PTP_IO_SEL_MASK_;
-+	lan743x_csr_write(adapter, PTP_IO_SEL, val);
++	perout_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT, index);
 +
-+	/* Clear timestamp */
-+	memset(&extts->ts, 0, sizeof(struct timespec64));
++	/* Deselect Event output */
++	val = lan743x_csr_read(adapter, PTP_IO_EVENT_OUTPUT_CFG);
++
++	/* Disables the output of Local Time Target compare events */
++	val &= ~PTP_IO_EVENT_OUTPUT_CFG_EN_(perout_pin);
++	lan743x_csr_write(adapter, PTP_IO_EVENT_OUTPUT_CFG, val);
++
++	/* Configured as an opendrain driver*/
++	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
++	val &= ~PTP_IO_PIN_CFG_OBUF_TYPE_(perout_pin);
++	lan743x_csr_write(adapter, PTP_IO_PIN_CFG, val);
++	/* Dummy read to make sure write operation success */
++	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
 +}
 +
-+static int lan743x_ptp_io_event_cap_en(struct lan743x_adapter *adapter,
-+				       u32 flags, u32 channel)
++static int lan743x_ptp_io_perout(struct lan743x_adapter *adapter, int on,
++				 struct ptp_perout_request *perout_request)
 +{
 +	struct lan743x_ptp *ptp = &adapter->ptp;
++	u32 period_sec, period_nsec;
++	u32 start_sec, start_nsec;
++	u32 pulse_sec, pulse_nsec;
++	u32 general_config;
++	int pulse_width;
++	int perout_pin;
++	int event_ch;
++	u32 index;
 +	int val;
 +
-+	if ((flags & PTP_EXTTS_EDGES) ==  PTP_EXTTS_EDGES)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&ptp->command_lock);
-+	/* PTP-IO Event Capture Enable */
-+	val = lan743x_csr_read(adapter, PTP_IO_CAP_CONFIG);
-+	if (flags & PTP_FALLING_EDGE) {
-+		val &= ~PTP_IO_CAP_CONFIG_LOCK_RE_(channel);
-+		val &= ~PTP_IO_CAP_CONFIG_RE_CAP_EN_(channel);
-+		val |= PTP_IO_CAP_CONFIG_LOCK_FE_(channel);
-+		val |= PTP_IO_CAP_CONFIG_FE_CAP_EN_(channel);
-+	} else {
-+		/* Rising eventing as Default */
-+		val &= ~PTP_IO_CAP_CONFIG_LOCK_FE_(channel);
-+		val &= ~PTP_IO_CAP_CONFIG_FE_CAP_EN_(channel);
-+		val |= PTP_IO_CAP_CONFIG_LOCK_RE_(channel);
-+		val |= PTP_IO_CAP_CONFIG_RE_CAP_EN_(channel);
-+	}
-+	lan743x_csr_write(adapter, PTP_IO_CAP_CONFIG, val);
-+
-+	/* PTP-IO Select */
-+	val = lan743x_csr_read(adapter, PTP_IO_SEL);
-+	val &= ~PTP_IO_SEL_MASK_;
-+	val |= channel << PTP_IO_SEL_SHIFT_;
-+	lan743x_csr_write(adapter, PTP_IO_SEL, val);
-+
-+	/* PTP Interrupt Enable Register */
-+	if (flags & PTP_FALLING_EDGE)
-+		val = PTP_INT_EN_FE_EN_SET_(channel);
-+	else
-+		val = PTP_INT_EN_RE_EN_SET_(channel);
-+	lan743x_csr_write(adapter, PTP_INT_EN_SET, val);
-+
-+	mutex_unlock(&ptp->command_lock);
-+
-+	return 0;
-+}
-+
-+static int lan743x_ptp_io_extts(struct lan743x_adapter *adapter, int on,
-+				struct ptp_extts_request *extts_request)
-+{
-+	struct lan743x_ptp *ptp = &adapter->ptp;
-+	u32 flags = extts_request->flags;
-+	u32 index = extts_request->index;
-+	struct lan743x_extts *extts;
-+	int extts_pin;
-+	int ret = 0;
-+
-+	extts = &ptp->extts[index];
++	index = perout_request->index;
++	event_ch = ptp->ptp_io_perout[index];
 +
 +	if (on) {
-+		extts_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS, index);
-+		if (extts_pin < 0)
++		perout_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT, index);
++		if (perout_pin < 0)
 +			return -EBUSY;
-+
-+		ret = lan743x_ptp_io_event_cap_en(adapter, flags, index);
 +	} else {
-+		lan743x_ptp_io_extts_off(adapter, index);
++		lan743x_ptp_io_perout_off(adapter, index);
++		return 0;
 +	}
 +
-+	return ret;
++	if (event_ch >= LAN743X_PTP_N_EVENT_CHAN) {
++		/* already on, turn off first */
++		lan743x_ptp_io_perout_off(adapter, index);
++	}
++
++	event_ch = lan743x_ptp_reserve_event_ch(adapter, index);
++	if (event_ch < 0) {
++		netif_warn(adapter, drv, adapter->netdev,
++			   "Failed to reserve event channel %d for PEROUT\n",
++			   index);
++		goto failed;
++	}
++	ptp->ptp_io_perout[index] = event_ch;
++
++	if (perout_request->flags & PTP_PEROUT_DUTY_CYCLE) {
++		pulse_sec = perout_request->on.sec;
++		pulse_sec += perout_request->on.nsec / 1000000000;
++		pulse_nsec = perout_request->on.nsec % 1000000000;
++	} else {
++		pulse_sec = perout_request->period.sec;
++		pulse_sec += perout_request->period.nsec / 1000000000;
++		pulse_nsec = perout_request->period.nsec % 1000000000;
++	}
++
++	if (pulse_sec == 0) {
++		if (pulse_nsec >= 400000000) {
++			pulse_width = PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
++		} else if (pulse_nsec >= 200000000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100MS_;
++		} else if (pulse_nsec >= 100000000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50MS_;
++		} else if (pulse_nsec >= 20000000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10MS_;
++		} else if (pulse_nsec >= 10000000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5MS_;
++		} else if (pulse_nsec >= 2000000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS_;
++		} else if (pulse_nsec >= 1000000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500US_;
++		} else if (pulse_nsec >= 200000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100US_;
++		} else if (pulse_nsec >= 100000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50US_;
++		} else if (pulse_nsec >= 20000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10US_;
++		} else if (pulse_nsec >= 10000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5US_;
++		} else if (pulse_nsec >= 2000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1US_;
++		} else if (pulse_nsec >= 1000) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500NS_;
++		} else if (pulse_nsec >= 200) {
++			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100NS_;
++		} else {
++			netif_warn(adapter, drv, adapter->netdev,
++				   "perout period too small, minimum is 200nS\n");
++			goto failed;
++		}
++	} else {
++		pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
++	}
++
++	/* turn off by setting target far in future */
++	lan743x_csr_write(adapter,
++			  PTP_CLOCK_TARGET_SEC_X(event_ch),
++			  0xFFFF0000);
++	lan743x_csr_write(adapter,
++			  PTP_CLOCK_TARGET_NS_X(event_ch), 0);
++
++	/* Configure to pulse every period */
++	general_config = lan743x_csr_read(adapter, HS_PTP_GENERAL_CONFIG);
++	general_config &= ~(HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_(event_ch));
++	general_config |= HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_SET_
++			  (event_ch, pulse_width);
++	general_config |= HS_PTP_GENERAL_CONFIG_EVENT_POL_X_(event_ch);
++	general_config &= ~(HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(event_ch));
++	lan743x_csr_write(adapter, HS_PTP_GENERAL_CONFIG, general_config);
++
++	/* set the reload to one toggle cycle */
++	period_sec = perout_request->period.sec;
++	period_sec += perout_request->period.nsec / 1000000000;
++	period_nsec = perout_request->period.nsec % 1000000000;
++	lan743x_csr_write(adapter,
++			  PTP_CLOCK_TARGET_RELOAD_SEC_X(event_ch),
++			  period_sec);
++	lan743x_csr_write(adapter,
++			  PTP_CLOCK_TARGET_RELOAD_NS_X(event_ch),
++			  period_nsec);
++
++	start_sec = perout_request->start.sec;
++	start_sec += perout_request->start.nsec / 1000000000;
++	start_nsec = perout_request->start.nsec % 1000000000;
++
++	/* set the start time */
++	lan743x_csr_write(adapter,
++			  PTP_CLOCK_TARGET_SEC_X(event_ch),
++			  start_sec);
++	lan743x_csr_write(adapter,
++			  PTP_CLOCK_TARGET_NS_X(event_ch),
++			  start_nsec);
++
++	/* Enable LTC Target Read */
++	val = lan743x_csr_read(adapter, PTP_CMD_CTL);
++	val |= PTP_CMD_CTL_PTP_LTC_TARGET_READ_;
++	lan743x_csr_write(adapter, PTP_CMD_CTL, val);
++
++	/* Configure as an push/pull driver */
++	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
++	val |= PTP_IO_PIN_CFG_OBUF_TYPE_(perout_pin);
++	lan743x_csr_write(adapter, PTP_IO_PIN_CFG, val);
++
++	/* Select Event output */
++	val = lan743x_csr_read(adapter, PTP_IO_EVENT_OUTPUT_CFG);
++	if (event_ch)
++		/* Channel B as the output */
++		val |= PTP_IO_EVENT_OUTPUT_CFG_SEL_(perout_pin);
++	else
++		/* Channel A as the output */
++		val &= ~PTP_IO_EVENT_OUTPUT_CFG_SEL_(perout_pin);
++
++	/* Enables the output of Local Time Target compare events */
++	val |= PTP_IO_EVENT_OUTPUT_CFG_EN_(perout_pin);
++	lan743x_csr_write(adapter, PTP_IO_EVENT_OUTPUT_CFG, val);
++
++	return 0;
++
++failed:
++	lan743x_ptp_io_perout_off(adapter, index);
++	return -ENODEV;
 +}
 +
- static int lan743x_ptpci_enable(struct ptp_clock_info *ptpci,
- 				struct ptp_clock_request *request, int on)
+ static void lan743x_ptp_io_extts_off(struct lan743x_adapter *adapter,
+ 				     u32 index)
  {
-@@ -682,6 +803,9 @@ static int lan743x_ptpci_enable(struct ptp_clock_info *ptpci,
- 	if (request) {
- 		switch (request->type) {
- 		case PTP_CLK_REQ_EXTTS:
-+			if (request->extts.index < ptpci->n_ext_ts)
-+				return lan743x_ptp_io_extts(adapter, on,
-+							 &request->extts);
+@@ -808,9 +1016,14 @@ static int lan743x_ptpci_enable(struct ptp_clock_info *ptpci,
+ 							 &request->extts);
  			return -EINVAL;
  		case PTP_CLK_REQ_PEROUT:
- 			if (request->perout.index < ptpci->n_per_out)
-@@ -715,8 +839,8 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
- 	switch (func) {
- 	case PTP_PF_NONE:
- 	case PTP_PF_PEROUT:
--		break;
- 	case PTP_PF_EXTTS:
-+		break;
- 	case PTP_PF_PHYSYNC:
- 	default:
- 		result = -1;
-@@ -725,6 +849,33 @@ static int lan743x_ptpci_verify_pin_config(struct ptp_clock_info *ptp,
- 	return result;
- }
- 
-+static void lan743x_ptp_io_event_clock_get(struct lan743x_adapter *adapter,
-+					   bool fe, u8 channel,
-+					   struct timespec64 *ts)
-+{
-+	struct lan743x_ptp *ptp = &adapter->ptp;
-+	struct lan743x_extts *extts;
-+	u32 sec, nsec;
-+
-+	mutex_lock(&ptp->command_lock);
-+	if (fe) {
-+		sec = lan743x_csr_read(adapter, PTP_IO_FE_LTC_SEC_CAP_X);
-+		nsec = lan743x_csr_read(adapter, PTP_IO_FE_LTC_NS_CAP_X);
-+	} else {
-+		sec = lan743x_csr_read(adapter, PTP_IO_RE_LTC_SEC_CAP_X);
-+		nsec = lan743x_csr_read(adapter, PTP_IO_RE_LTC_NS_CAP_X);
-+	}
-+
-+	mutex_unlock(&ptp->command_lock);
-+
-+	/* Update Local timestamp */
-+	extts = &ptp->extts[channel];
-+	extts->ts.tv_sec = sec;
-+	extts->ts.tv_nsec = nsec;
-+	ts->tv_sec = sec;
-+	ts->tv_nsec = nsec;
-+}
-+
- static long lan743x_ptpci_do_aux_work(struct ptp_clock_info *ptpci)
- {
- 	struct lan743x_ptp *ptp =
-@@ -733,41 +884,114 @@ static long lan743x_ptpci_do_aux_work(struct ptp_clock_info *ptpci)
- 		container_of(ptp, struct lan743x_adapter, ptp);
- 	u32 cap_info, cause, header, nsec, seconds;
- 	bool new_timestamp_available = false;
-+	struct ptp_clock_event ptp_event;
-+	struct timespec64 ts;
-+	int ptp_int_sts;
- 	int count = 0;
-+	int channel;
-+	s64 ns;
- 
--	while ((count < 100) &&
--	       (lan743x_csr_read(adapter, PTP_INT_STS) & PTP_INT_BIT_TX_TS_)) {
-+	ptp_int_sts = lan743x_csr_read(adapter, PTP_INT_STS);
-+	while ((count < 100) && ptp_int_sts) {
- 		count++;
--		cap_info = lan743x_csr_read(adapter, PTP_CAP_INFO);
--
--		if (PTP_CAP_INFO_TX_TS_CNT_GET_(cap_info) > 0) {
--			seconds = lan743x_csr_read(adapter,
--						   PTP_TX_EGRESS_SEC);
--			nsec = lan743x_csr_read(adapter, PTP_TX_EGRESS_NS);
--			cause = (nsec &
--				 PTP_TX_EGRESS_NS_CAPTURE_CAUSE_MASK_);
--			header = lan743x_csr_read(adapter,
--						  PTP_TX_MSG_HEADER);
--
--			if (cause == PTP_TX_EGRESS_NS_CAPTURE_CAUSE_SW_) {
--				nsec &= PTP_TX_EGRESS_NS_TS_NS_MASK_;
--				lan743x_ptp_tx_ts_enqueue_ts(adapter,
--							     seconds, nsec,
--							     header);
--				new_timestamp_available = true;
--			} else if (cause ==
--				PTP_TX_EGRESS_NS_CAPTURE_CAUSE_AUTO_) {
--				netif_err(adapter, drv, adapter->netdev,
--					  "Auto capture cause not supported\n");
-+
-+		if (ptp_int_sts & PTP_INT_BIT_TX_TS_) {
-+			cap_info = lan743x_csr_read(adapter, PTP_CAP_INFO);
-+
-+			if (PTP_CAP_INFO_TX_TS_CNT_GET_(cap_info) > 0) {
-+				seconds = lan743x_csr_read(adapter,
-+							   PTP_TX_EGRESS_SEC);
-+				nsec = lan743x_csr_read(adapter, PTP_TX_EGRESS_NS);
-+				cause = (nsec &
-+					 PTP_TX_EGRESS_NS_CAPTURE_CAUSE_MASK_);
-+				header = lan743x_csr_read(adapter,
-+							  PTP_TX_MSG_HEADER);
-+
-+				if (cause == PTP_TX_EGRESS_NS_CAPTURE_CAUSE_SW_) {
-+					nsec &= PTP_TX_EGRESS_NS_TS_NS_MASK_;
-+					lan743x_ptp_tx_ts_enqueue_ts(adapter,
-+								     seconds, nsec,
-+								     header);
-+					new_timestamp_available = true;
-+				} else if (cause ==
-+					   PTP_TX_EGRESS_NS_CAPTURE_CAUSE_AUTO_) {
-+					netif_err(adapter, drv, adapter->netdev,
-+						  "Auto capture cause not supported\n");
-+				} else {
-+					netif_warn(adapter, drv, adapter->netdev,
-+						   "unknown tx timestamp capture cause\n");
-+				}
- 			} else {
- 				netif_warn(adapter, drv, adapter->netdev,
--					   "unknown tx timestamp capture cause\n");
-+					   "TX TS INT but no TX TS CNT\n");
- 			}
--		} else {
--			netif_warn(adapter, drv, adapter->netdev,
--				   "TX TS INT but no TX TS CNT\n");
-+			lan743x_csr_write(adapter, PTP_INT_STS,
-+					  PTP_INT_BIT_TX_TS_);
- 		}
--		lan743x_csr_write(adapter, PTP_INT_STS, PTP_INT_BIT_TX_TS_);
-+
-+		if (ptp_int_sts & PTP_INT_IO_FE_MASK_) {
-+			do {
-+				channel = lan743x_get_channel((ptp_int_sts &
-+							PTP_INT_IO_FE_MASK_) >>
-+							PTP_INT_IO_FE_SHIFT_);
-+				if (channel >= 0 &&
-+				    channel < PCI11X1X_PTP_IO_MAX_CHANNELS) {
-+					lan743x_ptp_io_event_clock_get(adapter,
-+								       true,
-+								       channel,
-+								       &ts);
-+					/* PTP Falling Event post */
-+					ns = timespec64_to_ns(&ts);
-+					ptp_event.timestamp = ns;
-+					ptp_event.index = channel;
-+					ptp_event.type = PTP_CLOCK_EXTTS;
-+					ptp_clock_event(ptp->ptp_clock, &ptp_event);
-+					lan743x_csr_write(adapter, PTP_INT_STS,
-+							  PTP_INT_IO_FE_SET_(channel));
-+					ptp_int_sts &= ~(1 <<
-+							 (PTP_INT_IO_FE_SHIFT_ +
-+							  channel));
-+				} else {
-+					/* Clear falling event interrupts */
-+					lan743x_csr_write(adapter, PTP_INT_STS,
-+							  PTP_INT_IO_FE_MASK_);
-+					ptp_int_sts &= ~PTP_INT_IO_FE_MASK_;
-+				}
-+			} while (ptp_int_sts & PTP_INT_IO_FE_MASK_);
-+		}
-+
-+		if (ptp_int_sts & PTP_INT_IO_RE_MASK_) {
-+			do {
-+				channel = lan743x_get_channel((ptp_int_sts &
-+						       PTP_INT_IO_RE_MASK_) >>
-+						       PTP_INT_IO_RE_SHIFT_);
-+				if (channel >= 0 &&
-+				    channel < PCI11X1X_PTP_IO_MAX_CHANNELS) {
-+					lan743x_ptp_io_event_clock_get(adapter,
-+								       false,
-+								       channel,
-+								       &ts);
-+					/* PTP Rising Event post */
-+					ns = timespec64_to_ns(&ts);
-+					ptp_event.timestamp = ns;
-+					ptp_event.index = channel;
-+					ptp_event.type = PTP_CLOCK_EXTTS;
-+					ptp_clock_event(ptp->ptp_clock, &ptp_event);
-+					lan743x_csr_write(adapter, PTP_INT_STS,
-+							  PTP_INT_IO_RE_SET_(channel));
-+					ptp_int_sts &= ~(1 <<
-+							 (PTP_INT_IO_RE_SHIFT_ +
-+							  channel));
-+				} else {
-+					/* Clear Rising event interrupt */
-+					lan743x_csr_write(adapter, PTP_INT_STS,
-+							  PTP_INT_IO_RE_MASK_);
-+					ptp_int_sts &= ~PTP_INT_IO_RE_MASK_;
-+				}
-+			} while (ptp_int_sts & PTP_INT_IO_RE_MASK_);
-+		}
-+
-+		ptp_int_sts = lan743x_csr_read(adapter, PTP_INT_STS);
- 	}
- 
- 	if (new_timestamp_available)
-@@ -802,6 +1026,28 @@ static void lan743x_ptp_clock_get(struct lan743x_adapter *adapter,
- 	mutex_unlock(&ptp->command_lock);
- }
- 
-+static void lan743x_ptp_io_clock_get(struct lan743x_adapter *adapter,
-+				     u32 *sec, u32 *nsec, u32 *sub_nsec)
-+{
-+	struct lan743x_ptp *ptp = &adapter->ptp;
-+
-+	mutex_lock(&ptp->command_lock);
-+	lan743x_csr_write(adapter, PTP_CMD_CTL, PTP_CMD_CTL_PTP_CLOCK_READ_);
-+	lan743x_ptp_wait_till_cmd_done(adapter, PTP_CMD_CTL_PTP_CLOCK_READ_);
-+
-+	if (sec)
-+		(*sec) = lan743x_csr_read(adapter, PTP_LTC_RD_SEC_LO);
-+
-+	if (nsec)
-+		(*nsec) = lan743x_csr_read(adapter, PTP_LTC_RD_NS);
-+
-+	if (sub_nsec)
-+		(*sub_nsec) =
-+		lan743x_csr_read(adapter, PTP_LTC_RD_SUBNS);
-+
-+	mutex_unlock(&ptp->command_lock);
-+}
-+
- static void lan743x_ptp_clock_step(struct lan743x_adapter *adapter,
- 				   s64 time_step_ns)
- {
-@@ -815,8 +1061,12 @@ static void lan743x_ptp_clock_step(struct lan743x_adapter *adapter,
- 
- 	if (time_step_ns >  15000000000LL) {
- 		/* convert to clock set */
--		lan743x_ptp_clock_get(adapter, &unsigned_seconds,
--				      &nano_seconds, NULL);
-+		if (adapter->is_pci11x1x)
-+			lan743x_ptp_io_clock_get(adapter, &unsigned_seconds,
-+						 &nano_seconds, NULL);
-+		else
-+			lan743x_ptp_clock_get(adapter, &unsigned_seconds,
-+					      &nano_seconds, NULL);
- 		unsigned_seconds += div_u64_rem(time_step_ns, 1000000000LL,
- 						&remainder);
- 		nano_seconds += remainder;
-@@ -831,8 +1081,13 @@ static void lan743x_ptp_clock_step(struct lan743x_adapter *adapter,
- 		/* convert to clock set */
- 		time_step_ns = -time_step_ns;
- 
--		lan743x_ptp_clock_get(adapter, &unsigned_seconds,
--				      &nano_seconds, NULL);
-+		if (adapter->is_pci11x1x) {
-+			lan743x_ptp_io_clock_get(adapter, &unsigned_seconds,
-+						 &nano_seconds, NULL);
-+		} else {
-+			lan743x_ptp_clock_get(adapter, &unsigned_seconds,
-+					      &nano_seconds, NULL);
-+		}
- 		unsigned_seconds -= div_u64_rem(time_step_ns, 1000000000LL,
- 						&remainder);
- 		nano_seconds_step = remainder;
-@@ -1061,6 +1316,8 @@ int lan743x_ptp_open(struct lan743x_adapter *adapter)
- 		n_pins = LAN7430_N_GPIO;
- 		break;
- 	case ID_REV_ID_LAN7431_:
-+	case ID_REV_ID_A011_:
-+	case ID_REV_ID_A041_:
- 		n_pins = LAN7431_N_GPIO;
- 		break;
- 	default:
-@@ -1088,10 +1345,10 @@ int lan743x_ptp_open(struct lan743x_adapter *adapter)
- 		 adapter->netdev->dev_addr);
- 	ptp->ptp_clock_info.max_adj = LAN743X_PTP_MAX_FREQ_ADJ_IN_PPB;
- 	ptp->ptp_clock_info.n_alarm = 0;
--	ptp->ptp_clock_info.n_ext_ts = 0;
-+	ptp->ptp_clock_info.n_ext_ts = LAN743X_PTP_N_EXTTS;
- 	ptp->ptp_clock_info.n_per_out = LAN743X_PTP_N_EVENT_CHAN;
- 	ptp->ptp_clock_info.n_pins = n_pins;
--	ptp->ptp_clock_info.pps = 0;
-+	ptp->ptp_clock_info.pps = LAN743X_PTP_N_PPS;
- 	ptp->ptp_clock_info.pin_config = ptp->pin_config;
- 	ptp->ptp_clock_info.adjfine = lan743x_ptpci_adjfine;
- 	ptp->ptp_clock_info.adjfreq = lan743x_ptpci_adjfreq;
+-			if (request->perout.index < ptpci->n_per_out)
+-				return lan743x_ptp_perout(adapter, on,
++			if (request->perout.index < ptpci->n_per_out) {
++				if (adapter->is_pci11x1x)
++					return lan743x_ptp_io_perout(adapter, on,
++							     &request->perout);
++				else
++					return lan743x_ptp_perout(adapter, on,
+ 							  &request->perout);
++			}
+ 			return -EINVAL;
+ 		case PTP_CLK_REQ_PPS:
+ 			return -EINVAL;
 diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.h b/drivers/net/ethernet/microchip/lan743x_ptp.h
-index 7663bf5d2e33..96d3a134e788 100644
+index 96d3a134e788..e26d4eff7133 100644
 --- a/drivers/net/ethernet/microchip/lan743x_ptp.h
 +++ b/drivers/net/ethernet/microchip/lan743x_ptp.h
-@@ -18,6 +18,9 @@
-  */
- #define LAN743X_PTP_N_EVENT_CHAN	2
- #define LAN743X_PTP_N_PEROUT		LAN743X_PTP_N_EVENT_CHAN
-+#define LAN743X_PTP_N_EXTTS		4
-+#define LAN743X_PTP_N_PPS		0
-+#define PCI11X1X_PTP_IO_MAX_CHANNELS	8
- 
- struct lan743x_adapter;
- 
-@@ -60,6 +63,11 @@ struct lan743x_ptp_perout {
- 	int  gpio_pin;	/* GPIO pin where output appears */
- };
- 
-+struct lan743x_extts {
-+	int flags;
-+	struct timespec64 ts;
-+};
-+
- struct lan743x_ptp {
- 	int flags;
- 
-@@ -72,6 +80,7 @@ struct lan743x_ptp {
+@@ -80,6 +80,7 @@ struct lan743x_ptp {
  
  	unsigned long used_event_ch;
  	struct lan743x_ptp_perout perout[LAN743X_PTP_N_PEROUT];
-+	struct lan743x_extts extts[LAN743X_PTP_N_EXTTS];
++	int ptp_io_perout[LAN743X_PTP_N_PEROUT]; /* PTP event channel (0=channel A, 1=channel B) */
+ 	struct lan743x_extts extts[LAN743X_PTP_N_EXTTS];
  
  	bool leds_multiplexed;
- 	bool led_enabled[LAN7430_N_LED];
 -- 
 2.25.1
 
