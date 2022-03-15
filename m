@@ -2,133 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5687F4D95F4
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 09:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CBF14D962E
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 09:30:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345774AbiCOIQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 04:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
+        id S1345889AbiCOIbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 04:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345766AbiCOIQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 04:16:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3452349F13
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 01:15:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647332129;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tCvl2VW1cmsTMiDGSIxoASCMFsGS7CwQX41mH9mi7og=;
-        b=GLQ2QN3w2LMu/wbVMYfwVOcs6Z+0pket2OIHSSAUn4BPIRBRl5eCtPlwo94n4YgKQX9zri
-        ccA9F4tSHJ/Yw7UrZ13ukStMY2NmGS2f4m3g1WRuBztqDuN+KHRGMHyzvRpxLeENpJKT5i
-        /kpklsncn5YpFuOJBg9NvVDJ/Px+/D4=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-186-LBXMkoE9PlGq5s6psB3BLw-1; Tue, 15 Mar 2022 04:15:27 -0400
-X-MC-Unique: LBXMkoE9PlGq5s6psB3BLw-1
-Received: by mail-qk1-f197.google.com with SMTP id q24-20020a05620a0c9800b0060d5d0b7a90so13724642qki.11
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 01:15:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tCvl2VW1cmsTMiDGSIxoASCMFsGS7CwQX41mH9mi7og=;
-        b=T8D8F25tgvJYHA6AqLfSQmIx4QR5QCru73zhzRmRDOVnqld3jYzSwDVM9wRCSsD9n1
-         cn9NJ18lub7ho4kAB9SAi/ttrcwzjbI/WN5Y07b+CcEqlUme88xV7bvTQlixigxiboKL
-         n6hEiUnYkEklyO7wFhbUBBpzczGXX8ozKMt7/42G4WEKNlIJCPq8XVo236YAjbTmdxzZ
-         k2WIg+HUamI/txI0k8X0uU3l5lstcgW1MKE3Y6aOobLWBqpt1499tW7adSgvY+sYIL95
-         aWgKi4QMV4+YcSRBS3jaUrbVbtFxhBZovC9JE0hY3IBTWipId8gGSFHXP19Hv1OfPTX8
-         0unQ==
-X-Gm-Message-State: AOAM532st0XIdlbf4eYYVSLPXQ1lQSHXmS+403nHf7ReZtxSX9pHeoeI
-        1WHBm6yYz1ajKQf8fg6/9rMiZPWoD9hHNNVCAkXzUCuDAYnJZMpwhBcsTlMzU3yEBUa3p3pxJyi
-        G3WOMaSyYE4BehDuF
-X-Received: by 2002:a05:620a:424e:b0:67d:3607:6b50 with SMTP id w14-20020a05620a424e00b0067d36076b50mr17091972qko.194.1647332127179;
-        Tue, 15 Mar 2022 01:15:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzjgYb2HPocNtGnS6faY8OIC23ZTZlsPZ5W/DCuKMZo/aQnXkwFKl2eu1filb04x820ASXlIQ==
-X-Received: by 2002:a05:620a:424e:b0:67d:3607:6b50 with SMTP id w14-20020a05620a424e00b0067d36076b50mr17091955qko.194.1647332126634;
-        Tue, 15 Mar 2022 01:15:26 -0700 (PDT)
-Received: from sgarzare-redhat (host-212-171-187-184.pool212171.interbusiness.it. [212.171.187.184])
-        by smtp.gmail.com with ESMTPSA id b126-20020a376784000000b0067d21404704sm8982966qkc.131.2022.03.15.01.15.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 01:15:26 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 09:15:17 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
-Cc:     Krasnov Arseniy <oxffffaa@gmail.com>,
-        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1 2/3] af_vsock: SOCK_SEQPACKET receive timeout test
-Message-ID: <20220315081517.m7rvlpintqipdu6i@sgarzare-redhat>
-References: <1bb5ce91-da53-7de9-49ba-f49f76f45512@sberdevices.ru>
- <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
+        with ESMTP id S245292AbiCOIbQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 04:31:16 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFA624BFF3
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 01:30:04 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id C94EF320209A;
+        Tue, 15 Mar 2022 04:30:03 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 15 Mar 2022 04:30:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=N64dxln0YwyYuxH9d
+        HDYvWBrAP7mfNb3xKnV0IWa+x8=; b=cCiRhlMNnkkVKzo9JKjqC27jtKY0a3eX+
+        SMCmpBhouKDLZ6+9l8Gd3lf7ynn80z/euNPma7Frs2IfGxzRkzbzN2FlP5LDN221
+        LOn5X6GlDqbsbH+7zmDkuVxcTpR2Ex7KN0lrEbIx9QY4r+p4+RQ5wRb4jIKFo723
+        O0JfACDkAppz2XD4gfA6XjSr8KijAdqVeljBmnRu5D6QyN7Z8pV1akOX8UrL5/0a
+        C3SlOPgzyA+z2Oo2RBiMK2VlfIRBZ1vkbFQlvegHX+yw0VRq9zo/eA6EMGqTcuy/
+        QMAa0tTe1QDAD/RtrQWir45IVeF/dqaVFezpII8J6zmXwFKSMDICQ==
+X-ME-Sender: <xms:i04wYjlfYg8kTW1O4XQ20fzXqZkpjqrpKKRajW-T1AeVLeCcj_QOdQ>
+    <xme:i04wYm3d8WxR5SCB5NI7sGCMiHOpDPOMpro8DmxjNbWDNr-Gw6MF4MFxfm8MBglPA
+    AK_VfaI70O4_Ko>
+X-ME-Received: <xmr:i04wYpqNx01Yvj5k0SWnJ6ZNTi0mwfcCDSLgVhyYHQJRywcF46D9cOfEPRCd1HMt1wNwu4qO44ipkIc75FWBGkEIQ2k>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddvledguddukecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttd
+    ortddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpefgjeevhfdvgeeiudekteduveegue
+    ejfefffeefteekkeeuueehjeduledtjeeuudenucevlhhushhtvghrufhiiigvpedtnecu
+    rfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:i04wYrkSC8KhHspM8HZDk94cRhxky-kUKVURI0VrCvuatPHRipfl5g>
+    <xmx:i04wYh3zWH7vsJ-xyvlXYDgBVXt-Ik6Dz7t_LLDaQ-2sX-7ZOVmqFQ>
+    <xmx:i04wYqst7nvEycwka_V619zbWq5Rx3WB1OV4beXqKcGj09X-yYOlTQ>
+    <xmx:i04wYroE-t0KvEDHYrijJ4yjgGC95s77VahIfi_NzHReTbLKW3sN1g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 15 Mar 2022 04:30:02 -0400 (EDT)
+Date:   Tue, 15 Mar 2022 10:29:58 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@nvidia.com,
+        idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
+        louis.peens@corigine.com, leon@kernel.org
+Subject: Re: [PATCH net-next 4/6] eth: mlxsw: switch to explicit locking for
+ port registration
+Message-ID: <YjBOhgaqIyzopkVn@shredder>
+References: <20220315060009.1028519-1-kuba@kernel.org>
+ <20220315060009.1028519-5-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6981b132-4121-62d8-7172-dca28ad1e498@sberdevices.ru>
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220315060009.1028519-5-kuba@kernel.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 11, 2022 at 10:55:42AM +0000, Krasnov Arseniy Vladimirovich wrote:
->Test for receive timeout check: connection is established,
->receiver sets timeout, but sender does nothing. Receiver's
->'read()' call must return EAGAIN.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> tools/testing/vsock/vsock_test.c | 49 ++++++++++++++++++++++++++++++++
-> 1 file changed, 49 insertions(+)
->
->diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock_test.c
->index 2a3638c0a008..aa2de27d0f77 100644
->--- a/tools/testing/vsock/vsock_test.c
->+++ b/tools/testing/vsock/vsock_test.c
->@@ -391,6 +391,50 @@ static void test_seqpacket_msg_trunc_server(const struct test_opts *opts)
-> 	close(fd);
-> }
->
->+static void test_seqpacket_timeout_client(const struct test_opts *opts)
->+{
->+	int fd;
->+	struct timeval tv;
->+	char dummy;
->+
->+	fd = vsock_seqpacket_connect(opts->peer_cid, 1234);
->+	if (fd < 0) {
->+		perror("connect");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	tv.tv_sec = 1;
->+	tv.tv_usec = 0;
->+
->+	if (setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, (void *)&tv, sizeof(tv)) == -1) {
->+		perror("setsockopt 'SO_RCVTIMEO'");
->+		exit(EXIT_FAILURE);
->+	}
->+
->+	if ((read(fd, &dummy, sizeof(dummy)) != -1) ||
->+	    (errno != EAGAIN)) {
->+		perror("EAGAIN expected");
->+		exit(EXIT_FAILURE);
->+	}
+On Mon, Mar 14, 2022 at 11:00:07PM -0700, Jakub Kicinski wrote:
+> Explicitly lock the devlink instance and use devl_ API.
+> 
+> This will be used by the subsequent patch to invoke
+> .port_split / .port_unsplit callbacks with devlink
+> instance lock held.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-The patch LGTM, maybe the only thing I would add here is a check on the 
-time spent in the read(), to see that it is approximately the timeout we 
-have set.
-
-Thanks,
-Stefano
-
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Tested-by: Ido Schimmel <idosch@nvidia.com>
