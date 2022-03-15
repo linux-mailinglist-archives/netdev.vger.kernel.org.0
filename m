@@ -2,126 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4844D9ABD
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 12:57:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 579A04D9AED
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 13:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348086AbiCOL6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 07:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
+        id S1348171AbiCOMQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 08:16:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237957AbiCOL6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 07:58:43 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62E6C517F4;
-        Tue, 15 Mar 2022 04:57:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KHsN95Qmkz4xv5;
-        Tue, 15 Mar 2022 22:57:29 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647345450;
-        bh=Ak7hK5d/JM+xbamjqXCyzPd0/RbHwnu/7DSW2JD3+Cc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ap7qU96dQqXD5/iVZAfDmixyRtT0mCedTYWrOx223TAdieIVwXyriuzAQcjO9ywun
-         HNvyYOzeTaeUzG7yQuNu0pykG813P+sO1MOftnKOju+6RZ0o5cSUo4nNh54LjLY3lA
-         gOb+x76/sKefZGoJt1jEar4f/180RpDcfIHoSH2TmhTJDofvmVYvSWBDoRsY3/fjT2
-         RKezs/UFsRDoD02pQbwNqRHfW3L2F2budxIapfAUyI/MRRSvRF2/TWKOU0ImnL4RUk
-         EsFAvf2wfal7/sloo8FM29ZhvJdg2P47LnM/wtsHFm3cSD7lUt0/NUmAcYcHyeB3Rz
-         uf0BJzjY4ZR1Q==
-Date:   Tue, 15 Mar 2022 22:57:29 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, Hao Luo <haoluo@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: manual merge of the akpm-current tree with the bpf-next
- tree
-Message-ID: <20220315225729.241ca3e6@canb.auug.org.au>
+        with ESMTP id S1344714AbiCOMQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 08:16:31 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215D2488B2
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 05:15:18 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id p15so40825680ejc.7
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 05:15:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Vi+2325S3UhNuSwEkzE7zxDYlg80Gl90oVsQ1baVx6k=;
+        b=lXVeCHFZnVPl27HaQHK4dOGSxioAyOLmcaZ/jiS+FruLEekLCNYigdBkQBJ5q1ApYD
+         SFM0ziU6uMyn/RupOG6NClEswmDnENZLmayFZ+eJBq0Uby5QXkzbEOdy6PhGnks4/xb3
+         vyGDK2r5EE1+5tIMnnruypjXPtijUx9/clMN4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version:content-transfer-encoding;
+        bh=Vi+2325S3UhNuSwEkzE7zxDYlg80Gl90oVsQ1baVx6k=;
+        b=FH4b4zwNfFvrKMebjbSoIXDdguyglJ8T7ClbZQaE32iqqY5LwP5jhA5vY9BR5GSjvO
+         Bh626RM58TPPTs3wUGQGBPU0g2TlW+iYY4EwgQVrC+ACqkFZbM2lBigeN1tD66EsO1gZ
+         Of0IgpPG5s2R0SnV3Qy+bGnqJrS7CeUZBZ43SKMi0N7Sw8uezVDyRG3aVzWc69z6raEX
+         tmcw75QAgNqswl1R0qgqABI3pPdD90eEWScd8fPuhu/yy3jExR3OTTbXadn84lsO1q02
+         mjNRRNVwzctBDt5DQM8jGKxCC4IT6mtAIt4Y6hfoPCAiTx3GKMFLppSXMS00sOqFbX8p
+         GvWw==
+X-Gm-Message-State: AOAM531ZXrFmH7k9PPrBIvDE2lcWeF68eYMq0jVsPdQNHxQhUGhjV7xF
+        GCgDSA7n8m/8mMmKSB6OD1CczA==
+X-Google-Smtp-Source: ABdhPJwFooSX0DMCKphFL7uky55Q/OKWuvI2PKtqCcJCzp4TfqCEVQGpMc4BkqsFXywWBhD05MKwxQ==
+X-Received: by 2002:a17:907:6da8:b0:6db:f0cf:af75 with SMTP id sb40-20020a1709076da800b006dbf0cfaf75mr3141069ejc.548.1647346516084;
+        Tue, 15 Mar 2022 05:15:16 -0700 (PDT)
+Received: from cloudflare.com ([2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id k3-20020a05640212c300b0041605b2d9c1sm9104431edx.58.2022.03.15.05.15.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 05:15:15 -0700 (PDT)
+References: <20220314124432.3050394-1-wangyufen@huawei.com>
+ <87sfrky2bt.fsf@cloudflare.com>
+ <ff9d0ecf-315b-00a3-8140-424714b204ff@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     wangyufen <wangyufen@huawei.com>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, daniel@iogearbox.net,
+        lmb@cloudflare.com, davem@davemloft.net, kafai@fb.com,
+        dsahern@kernel.org, kuba@kernel.org, songliubraving@fb.com,
+        yhs@fb.com, kpsingh@kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next] bpf, sockmap: Manual deletion of sockmap
+ elements in user mode is not allowed
+Date:   Tue, 15 Mar 2022 13:12:08 +0100
+In-reply-to: <ff9d0ecf-315b-00a3-8140-424714b204ff@huawei.com>
+Message-ID: <87fsnjxvho.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/MDZB=SmDbWOFFH5rqQ/vIhF";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/MDZB=SmDbWOFFH5rqQ/vIhF
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Mar 15, 2022 at 03:24 PM +08, wangyufen wrote:
+> =E5=9C=A8 2022/3/14 23:30, Jakub Sitnicki =E5=86=99=E9=81=93:
+>> On Mon, Mar 14, 2022 at 08:44 PM +08, Wang Yufen wrote:
+>>> A tcp socket in a sockmap. If user invokes bpf_map_delete_elem to delete
+>>> the sockmap element, the tcp socket will switch to use the TCP protocol
+>>> stack to send and receive packets. The switching process may cause some
+>>> issues, such as if some msgs exist in the ingress queue and are cleared
+>>> by sk_psock_drop(), the packets are lost, and the tcp data is abnormal.
+>>>
+>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+>>> ---
+>> Can you please tell us a bit more about the life-cycle of the socket in
+>> your workload? Questions that come to mind:
+>>
+>> 1) What triggers the removal of the socket from sockmap in your case?
+> We use sk_msg to redirect with sock hash, like this:
+>
+> =C2=A0skA=C2=A0=C2=A0 redirect=C2=A0=C2=A0=C2=A0 skB
+> =C2=A0Tx <-----------> skB,Rx
+>
+> And construct a scenario where the packet sending speed is high, the
+> packet receiving speed is slow, so the packets are stacked in the ingress
+> queue on the receiving side. In this case, if run bpf_map_delete_elem() to
+> delete the sockmap entry, will trigger the following procedure:
+>
+> sock_hash_delete_elem()
+> =C2=A0 sock_map_unref()
+> =C2=A0=C2=A0=C2=A0 sk_psock_put()
+> =C2=A0=C2=A0=C2=A0 =C2=A0 sk_psock_drop()
+> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 sk_psock_stop()
+> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0 __sk_psock_zap_ingress()
+> =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 __sk_psock_purge=
+_ingress_msg()
+>
+>> 2) Would it still be a problem if removal from sockmap did not cause any
+>> packets to get dropped?
+> Yes, it still be a problem. If removal from sockmap=C2=A0 did not cause a=
+ny
+> packets to get dropped, packet receiving process switches to use TCP
+> protocol stack. The packets in the psock ingress queue cannot be received
+>
+> by the user.
 
-Hi all,
+Thanks for the context. So, if I understand correctly, you want to avoid
+breaking the network pipe by updating the sockmap from user-space.
 
-Today's linux-next merge of the akpm-current tree got a conflict in:
-
-  include/linux/compiler_types.h
-
-between commit:
-
-  6789ab9668d9 ("compiler_types: Refactor the use of btf_type_tag attribute=
-.")
-
-from the bpf-next tree and commit:
-
-  a7e15f5aee27 ("Documentation/sparse: add hints about __CHECKER__")
-
-from the akpm-current tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc include/linux/compiler_types.h
-index 1bc760ba400c,232dbd97f8b1..000000000000
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@@ -4,13 -4,7 +4,14 @@@
- =20
-  #ifndef __ASSEMBLY__
- =20
- +#if defined(CONFIG_DEBUG_INFO_BTF) && defined(CONFIG_PAHOLE_HAS_BTF_TAG) =
-&& \
- +	__has_attribute(btf_type_tag)
- +# define BTF_TYPE_TAG(value) __attribute__((btf_type_tag(#value)))
- +#else
- +# define BTF_TYPE_TAG(value) /* nothing */
- +#endif
- +
-+ /* sparse defines __CHECKER__; see Documentation/dev-tools/sparse.rst */
-  #ifdef __CHECKER__
-  /* address spaces */
-  # define __kernel	__attribute__((address_space(0)))
-
---Sig_/MDZB=SmDbWOFFH5rqQ/vIhF
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIwfykACgkQAVBC80lX
-0GzHIQf/QqiM0VdwCaZUqspSrULS5B3gbqkP7jCJv/5F16W3pUXcqK99DgyM7Jdr
-o0wk6qmTVesHvPWsH5Qax+tYGp4ldtwrai+I8347LeFUGF2Yd+hFsmmU7HxwivzW
-GQDiCA4eHQr5Ynz9jRDhfyuqqbf/Yo2rRZZbyLoknr+BRdPUfisHhIlIaU3cZF9w
-xeS2hevzgO8hxlY6cvSadkvx28DMmJO6rQGYIbGk79Cv0fYp4kzByQ++bz8WDHS/
-WE9z/0sPGXaorPtEkbAZmFDaoATwg9rh23MT2Q5bX4SQWfxVgM0293M14BkmQPaU
-EbtwWFdzpsA31G5tEzAOilJkp6NI2A==
-=Oumu
------END PGP SIGNATURE-----
-
---Sig_/MDZB=SmDbWOFFH5rqQ/vIhF--
+This sounds awfully similar to BPF_MAP_FREEZE. Have you considered that?
