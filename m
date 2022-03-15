@@ -2,51 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 530F34D9C36
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 14:28:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FF44D9C81
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 14:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348659AbiCON35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 09:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42522 "EHLO
+        id S1348801AbiCONmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 09:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231531AbiCON3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 09:29:55 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0BD45AF7
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 06:28:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WPW7uB8yWsgRGB6K8duwkRWMUBGfAkjc8UcTk7yc1Hs=; b=TXVfhLDq+26VRIlJjLh1caOiSu
-        UM5O0B7f3kW2Q3KGQYnZjt10dX3+uVSXUGGPRZSLbfDTdDqm9nlZeInI/yKSUVsPbUGk8TYXdPTpN
-        cEkOTWpjbJxYvCUUHUSO9OZk06Q6x9i9uO30zSq2PF4QXXrF/yUkILq257LpOjSoR6rQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nU7E0-00AxoY-TB; Tue, 15 Mar 2022 14:28:32 +0100
-Date:   Tue, 15 Mar 2022 14:28:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Lukas Wunner <lukas@wunner.de>, Oliver Neukum <oneukum@suse.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: ordering of call to unbind() in usbnet_disconnect
-Message-ID: <YjCUgCNHw6BUqJxr@lunn.ch>
-References: <62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com>
- <20220310113820.GG15680@pengutronix.de>
- <20220314184234.GA556@wunner.de>
- <Yi+UHF37rb0URSwb@lunn.ch>
- <20220315054403.GA14588@pengutronix.de>
- <20220315083234.GA27883@wunner.de>
- <20220315113841.GA22337@pengutronix.de>
+        with ESMTP id S1348757AbiCONmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 09:42:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DA152E66;
+        Tue, 15 Mar 2022 06:41:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD8FFB81677;
+        Tue, 15 Mar 2022 13:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A13C340E8;
+        Tue, 15 Mar 2022 13:40:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647351662;
+        bh=gvl9SFrDd+2JfY4XpOU21w5Fgp3RnrxgO3xzRNMW3ig=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=FpIzPAInqwcWVe7lVXyZMo10uysAvQH5/+0FSS06nOQud/sjKtVu2eXUrgVVwDtnS
+         K9saXWWZ1hCdhU07mL3gP1lbyLMM5ncodj0hAGG1sCe8guzPWwUCxCvCMd4UnYk0ij
+         MiKnX5ElR8cklFLsknUpJxfH63KChYC/OCTeoHADKe2d7sJJxnj+KlqJSXMWCfA0RW
+         7IMl8VYJBtsy0LvBdpwYawlVvfm1y/uovTsdBOXZktA8NvrkBJg6F9XHpbVdi97yvv
+         ktn0TMEJDT+qVku5scquwwLC4arp4ujY52Gxd5XtzcUD53EHdZUC9sEswg4SOYFru/
+         p422dM8tR7ngQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     Julia Lawall <Julia.Lawall@inria.fr>, linux-can@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        linux-media@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-perf-users@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        linux-arm-msm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        platform-driver-x86@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        target-devel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-s390@vger.kernel.org,
+        Jonas Karlman <jonas@kwiboo.se>, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-power@fi.rohmeurope.com,
+        linux-omap@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-leds@vger.kernel.org, linux-spi@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, linux-clk@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-scsi@vger.kernel.org,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-wireless@vger.kernel.org
+In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
+Subject: Re: (subset) [PATCH 00/30] fix typos in comments
+Message-Id: <164735165474.3687547.1964402001196947729.b4-ty@kernel.org>
+Date:   Tue, 15 Mar 2022 13:40:54 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315113841.GA22337@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,52 +76,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > It was linked to unregistered/freed
-> > > netdev. This is why my patch changing the order to call phy_disconnect()
-> > > first and then unregister_netdev().
-> > 
-> > Unregistered yes, but freed no.  Here's the order before 2c9d6c2b871d:
-> > 
-> >   usbnet_disconnect()
-> >     unregister_netdev()
-> >     ax88772_unbind()
-> >       phy_disconnect()
-> >     free_netdev()
-> > 
-> > Is it illegal to disconnect a PHY from an unregistered, but not yet freed
-> > net_device?
-
-There are drivers which unregistering and then calling
-phy_disconnect. In general that should be a valid pattern. But more
-MAC drivers actually connect the PHY on open and disconnect it on
-close. So it is less well used.
-
-> > Oleksij, the commit message of 2c9d6c2b871d says that disconnecting the
-> > PHY "fails" in that situation.  Please elaborate what the failure looked
-> > like.  Did you get a stacktrace?
+On Mon, 14 Mar 2022 12:53:24 +0100, Julia Lawall wrote:
+> Various spelling mistakes in comments.
+> Detected with the help of Coccinelle.
 > 
-> [   15.459655] asix 2-1.2:1.0 eth1: Link is Up - 100Mbps/Full - flow control off
-> [   30.600242] usb 2-1.2: USB disconnect, device number 3
-> [   30.611962] asix 2-1.2:1.0 eth1: unregister 'asix' usb-ci_hdrc.1-1.2, ASIX AX88772B USB 2.0 Ethernet
-> [   30.649173] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
-> [   30.657027] asix 2-1.2:1.0 eth1 (unregistered): Failed to write Medium Mode mode to 0x0000: ffffffed
-> [   30.683006] asix 2-1.2:1.0 eth1 (unregistered): Link is Down
-> [   30.689512] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
-> [   30.697359] asix 2-1.2:1.0 eth1 (unregistered): Failed to enable software MII access
-> [   30.706009] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
-> [   30.714277] asix 2-1.2:1.0 eth1 (unregistered): Failed to enable software MII access
-> [   30.732689] 8<--- cut here ---
-> [   30.735757] Unable to handle kernel paging request at virtual address 2e839000
-> [   30.996114] [<c08637f4>] (linkwatch_do_dev) from [<c0863a48>] (__linkwatch_run_queue+0xe0/0x1f0)
-> [   31.004917] [<c0863a48>] (__linkwatch_run_queue) from [<c0863b8c>] (linkwatch_event+0x34/0x3c)
-> [   31.013540] [<c0863b8c>] (linkwatch_event) from [<c0155550>] (process_one_work+0x20c/0x5d0)
-> [   31.021911] [<c0155550>] (process_one_work) from [<c0155dc0>] (worker_thread+0x64/0x570)
-> [   31.030010] [<c0155dc0>] (worker_thread) from [<c015bacc>] (kthread+0x178/0x190)
-> [   31.037421] [<c015bacc>] (kthread) from [<c0100150>] (ret_from_fork+0x14/0x24)
 
-This is not directly PHY related, although it could be indirect. This
-is to do with sending notifications after the link changed etc. It is
-async, so i wounder if by the time it runs the netdev has been freed?
-That would indicate some sort of bug, missing lock etc.
+Applied to
 
-     Andrew
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+
+Thanks!
+
+[21/30] spi: sun4i: fix typos in comments
+        commit: 2002c13243d595e211c0dad6b8e2e87f906f474b
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
