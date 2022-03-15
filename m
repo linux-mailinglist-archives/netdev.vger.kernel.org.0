@@ -2,61 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A354D9870
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 11:10:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 246354D98AE
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 11:26:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244227AbiCOKLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 06:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45104 "EHLO
+        id S1347006AbiCOK1I convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 15 Mar 2022 06:27:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239017AbiCOKLi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 06:11:38 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EE74FC63
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 03:10:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647339027; x=1678875027;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dyO6cJ7nxQB3Iumj74G/BSyRknWn8/ENJUPhOhBNoqc=;
-  b=VXuSOwdSW2lpDrAdVvMCD8nHMPHy2pFowYyRPqZKnwFlqEjt5F6VSL4Q
-   JJsNeAnOj5Ny++s2QqsmcoC4d1HhXxosXg0l9+/tU2Xh2tBgnacpODrAk
-   hTg/hsNeCdeBRzu3y8o3syrFZLE6UD0MzGki7m3DXk3kcQ/k4xTeVkqTK
-   OBRtyEFKhcC1jBZmMsnfb1vv1TEz/lxvMVYRzMTe5EPUv0fMlEVFADogq
-   QwDVTZkDzsEWYgN0MG9DudyC2dbRvJJTQ8UBvsK2tPMPtFRmOYe1ccG9W
-   zd+hCWBZ9j0wWFhe0oEpgHZ6sf1ubMJ0IURrZwszyH3QMNHOhUwgP/6gW
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="238429346"
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="238429346"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Mar 2022 03:10:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,183,1643702400"; 
-   d="scan'208";a="512554983"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 15 Mar 2022 03:10:24 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nU48G-000Ape-8u; Tue, 15 Mar 2022 10:10:24 +0000
-Date:   Tue, 15 Mar 2022 18:09:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, davem@davemloft.net, kuba@kernel.org,
-        UNGLinuxDriver@microchip.com, Ian.Saturley@microchip.com
-Subject: Re: [PATCH net-next 4/5] net: lan743x: Add support for PTP-IO Event
- Input External Timestamp (extts)
-Message-ID: <202203151833.ngWkLpqo-lkp@intel.com>
-References: <20220315061701.3006-5-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S235405AbiCOK1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 06:27:08 -0400
+Received: from mail.bix.bg (mail.bix.bg [193.105.196.21])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 30E2C4506D
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 03:25:55 -0700 (PDT)
+Received: (qmail 12937 invoked from network); 15 Mar 2022 10:25:55 -0000
+Received: from d2.declera.com (HELO ?212.116.131.122?) (212.116.131.122)
+  by indigo.declera.com with SMTP; 15 Mar 2022 10:25:55 -0000
+Message-ID: <2c638572a97d9f598135e9e1b3a56d3f9592b502.camel@declera.com>
+Subject: Re: r8169: rtl8168ep_driver_stop disables the DASH port
+From:   Yanko Kaneti <yaneti@declera.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nicfae <Nicfae@realtek.com>,
+        Kevin_cheng <kevin_cheng@realtek.com>
+Date:   Tue, 15 Mar 2022 12:25:55 +0200
+In-Reply-To: <da6297799b82ffbac52a192019b8844c89bbf0b9.camel@declera.com>
+References: <d654c98b90d98db13b84752477fe2c63834bcf59.camel@declera.com>
+         <42304a71ed72415c803ec22d3a750b33@realtek.com>
+         <ed2850b12b304a7cb89972850e503026@realtek.com>
+         <37bd0b005af4e10fd7e9ada2437775a4735d40a0.camel@declera.com>
+         <79606fda-ad17-954b-a2f2-7f155f142264@gmail.com>
+         <da6297799b82ffbac52a192019b8844c89bbf0b9.camel@declera.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.43.3 (3.43.3-1.fc37) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315061701.3006-5-Raju.Lakkaraju@microchip.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -65,67 +45,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Raju,
+On Tue, 2022-03-15 at 11:40 +0200, Yanko Kaneti wrote:
+> On Mon, 2022-03-14 at 22:24 +0100, Heiner Kallweit wrote:
+> > On 14.03.2022 15:05, Yanko Kaneti wrote:
+> > > On Mon, 2022-03-14 at 01:00 +0000, Kevin_cheng wrote:
+> > > Hello Kevin,
+> > > 
+> > > > Thanks for your email. Linux DASH requires specific driver and client
+> > > > tool. It depends on the manufacturer’s requirement. You need to
+> > > > contact ASRock to make sure they support Linux DASH and have verified
+> > > > it.
+> > > 
+> > > Thanks for the answer but its not much help for me.
+> > > I am not going to use a driver that's not in mainline.
+> > > 
+> > > I wasn't really expecting full DASH support but that at least
+> > > r8169/linux does not prevent the limied DASH web interface functionality
+> > > from working.
+> > > 
+> > > Currently this is not the case on this board with the current BIOS:
+> > >  - Once the kernel is loaded the DASH web interface power management
+> > > (reset, hard off) no longer works
+> > >  - Normal shutdown or r8169 module unload actually disconnects the phy.
+> > >  
+> > > It would be nice if DASH basics worked without being broken/supported by
+> > > the OS.
+> > > 
+> > > Regards
+> > > Yanko
+> > > 
+> > > > 
+> > > > Best Regards
+> > > > Kevin Cheng
+> > > > Technical Support Dept.
+> > > > Realtek Semiconductor Corp.
+> > > > 
+> > > > -----Original Message-----
+> > > > From: Yanko Kaneti <yaneti@declera.com> 
+> > > > Sent: Friday, March 11, 2022 9:12 PM
+> > > > To: Heiner Kallweit <hkallweit1@gmail.com>; nic_swsd
+> > > > <nic_swsd@realtek.com>
+> > > > Cc: netdev <netdev@vger.kernel.org>
+> > > > Subject: r8169: rtl8168ep_driver_stop disables the DASH port
+> > > > 
+> > > > Hello,
+> > > > 
+> > > > Testing DASH on a ASRock A520M-HDVP/DASH, which has a RTL8111/8168 EP
+> > > > chip. DASH is enabled and seems to work on BIOS/firmware level.
+> > > > 
+> > > > It seems that r8169's cleanup/exit in rtl8168ep_driver_stop manages to
+> > > > actually stop the LAN port, hence cutting the system remote
+> > > > management.
+> > > > 
+> > > > This is evident on plain shutdown or rmmod r8169.
+> > > > If one does a hardware reset or echo "b" > /proc/sysrq-trigger  the
+> > > > cleanup doesn't happen and the DASH firmware remains in working order
+> > > > and the LAN port remains up.
+> > > > 
+> > > > A520M-HDVP/DASH BIOS ver 1.70
+> > > > Reatlek fw:
+> > > >  Firmware Version:               3.0.0.20200423
+> > > >  Version String:         20200428.1200000113
+> > > >  
+> > > > I have no idea if its possible or how to update the realtek firmware,
+> > > > preferably from Linux.
+> > > > 
+> > > > Various other DASH functionality seems to not work but basic working
+> > > > power managements is really a deal breaker for the whole thing.
+> > > > 
+> > > > 
+> > > > Regards
+> > > > Yanko
+> > > > ------Please consider the environment before printing this e-mail.
+> > > 
+> > 
+> > Realtek doesn't provide any public datasheets, therefore it's hard to say
+> > how DASH is handled in the chip.
+> > However there are few places left where the PHY may be suspended w/o
+> > checking for DASH. Can you try the following?
+> > 
+> > 
+> > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> > index 67014eb76..95788ce7a 100644
+> > --- a/drivers/net/ethernet/realtek/r8169_main.c
+> > +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> > @@ -1397,8 +1397,13 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
+> >  	rtl_lock_config_regs(tp);
+> >  
+> >  	device_set_wakeup_enable(tp_to_dev(tp), wolopts);
+> > -	rtl_set_d3_pll_down(tp, !wolopts);
+> > -	tp->dev->wol_enabled = wolopts ? 1 : 0;
+> > +	if (tp->dash_type == RTL_DASH_NONE) {
+> > +		rtl_set_d3_pll_down(tp, !wolopts);
+> > +		tp->dev->wol_enabled = wolopts ? 1 : 0;
+> > +	} else {
+> > +		/* keep PHY from suspending if DASH is enabled */
+> > +		tp->dev->wol_enabled = 1;
+> > +	}
+> >  }
+> >  
+> >  static int rtl8169_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
+> > @@ -4672,7 +4677,7 @@ static void r8169_phylink_handler(struct net_device *ndev)
+> >  	if (netif_carrier_ok(ndev)) {
+> >  		rtl_link_chg_patch(tp);
+> >  		pm_request_resume(&tp->pci_dev->dev);
+> > -	} else {
+> > +	} else if (tp->dash_type == RTL_DASH_NONE) {
+> >  		pm_runtime_idle(&tp->pci_dev->dev);
+> >  	}
+> >  
+> > @@ -4978,7 +4983,8 @@ static void rtl_shutdown(struct pci_dev *pdev)
+> >  	/* Restore original MAC address */
+> >  	rtl_rar_set(tp, tp->dev->perm_addr);
+> >  
+> > -	if (system_state == SYSTEM_POWER_OFF) {
+> > +	if (system_state == SYSTEM_POWER_OFF &&
+> > +	    tp->dash_type == RTL_DASH_NONE) {
+> >  		if (tp->saved_wolopts)
+> >  			rtl_wol_shutdown_quirk(tp);
+> >  
+> 
+> Thanks Heiner. 
+> So I tried this over linus tip from today and unfortunately it doesn't
+> help the shutdown or rmmod. 
+> With the couple more additions below I can get it to stay up on rmmod  ,
+> but still after that , shutdown still brings it down. Perhaps that
+> leaves all to the BIOS/realtek firmware..
+> 
+> 
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 19e2621e0645..d5d85a44be3e 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -4675,7 +4680,8 @@ static void rtl8169_down(struct rtl8169_private *tp)
+>         /* Clear all task flags */
+>         bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
+>  
+> -       phy_stop(tp->phydev);
+> +       if (tp->dash_type == RTL_DASH_NONE)
+> +               phy_stop(tp->phydev);
+>  
+>         rtl8169_update_counters(tp);
+>  
+> @@ -4715,7 +4721,8 @@ static int rtl8169_close(struct net_device *dev)
+>  
+>         free_irq(tp->irq, tp);
+>  
+> -       phy_disconnect(tp->phydev);
+> +       if (tp->dash_type == RTL_DASH_NONE)
+> +               phy_disconnect(tp->phydev);
+>  
+>         dma_free_coherent(&pdev->dev, R8169_RX_RING_BYTES, tp->RxDescArray,
+>                           tp->RxPhyAddr);
+> 
 
-Thank you for the patch! Perhaps something to improve:
+Some additional data points:
 
-[auto build test WARNING on net-next/master]
+- with r8169 blacklisted the link survives shutdown
 
-url:    https://github.com/0day-ci/linux/commits/Raju-Lakkaraju/net-lan743x-PCI11010-PCI11414-devices-Enhancements/20220315-141814
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git bdd6a89de44b9e07d0b106076260d2367fe0e49a
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220315/202203151833.ngWkLpqo-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/11e2990b814fce8f91e9aa9d11d9dc04869d6856
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Raju-Lakkaraju/net-lan743x-PCI11010-PCI11414-devices-Enhancements/20220315-141814
-        git checkout 11e2990b814fce8f91e9aa9d11d9dc04869d6856
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/ethernet/microchip/
+- even with r8169 blacklisted the DASH web interface stops being able to
+control power/off/reset
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/ethernet/microchip/lan743x_ptp.c: In function 'lan743x_ptp_io_extts':
->> drivers/net/ethernet/microchip/lan743x_ptp.c:776:31: warning: variable 'extts' set but not used [-Wunused-but-set-variable]
-     776 |         struct lan743x_extts *extts;
-         |                               ^~~~~
+- with rtl8168_driver_start/stop commented followed by rmmod r8169 and
+link still up  it still goes down on shutdown
 
 
-vim +/extts +776 drivers/net/ethernet/microchip/lan743x_ptp.c
 
-   769	
-   770	static int lan743x_ptp_io_extts(struct lan743x_adapter *adapter, int on,
-   771					struct ptp_extts_request *extts_request)
-   772	{
-   773		struct lan743x_ptp *ptp = &adapter->ptp;
-   774		u32 flags = extts_request->flags;
-   775		u32 index = extts_request->index;
- > 776		struct lan743x_extts *extts;
-   777		int extts_pin;
-   778		int ret = 0;
-   779	
-   780		extts = &ptp->extts[index];
-   781	
-   782		if (on) {
-   783			extts_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS, index);
-   784			if (extts_pin < 0)
-   785				return -EBUSY;
-   786	
-   787			ret = lan743x_ptp_io_event_cap_en(adapter, flags, index);
-   788		} else {
-   789			lan743x_ptp_io_extts_off(adapter, index);
-   790		}
-   791	
-   792		return ret;
-   793	}
-   794	
-
----
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
