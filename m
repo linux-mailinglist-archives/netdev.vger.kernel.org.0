@@ -2,109 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73FF44D9C81
-	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 14:41:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7944D9CC0
+	for <lists+netdev@lfdr.de>; Tue, 15 Mar 2022 15:00:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348801AbiCONmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 09:42:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44524 "EHLO
+        id S1348885AbiCOOBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 10:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348757AbiCONmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 09:42:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DA152E66;
-        Tue, 15 Mar 2022 06:41:05 -0700 (PDT)
+        with ESMTP id S237766AbiCOOBe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 10:01:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E68A205E4;
+        Tue, 15 Mar 2022 07:00:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AD8FFB81677;
-        Tue, 15 Mar 2022 13:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A13C340E8;
-        Tue, 15 Mar 2022 13:40:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DC346167B;
+        Tue, 15 Mar 2022 14:00:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64598C340E8;
+        Tue, 15 Mar 2022 14:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647351662;
-        bh=gvl9SFrDd+2JfY4XpOU21w5Fgp3RnrxgO3xzRNMW3ig=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=FpIzPAInqwcWVe7lVXyZMo10uysAvQH5/+0FSS06nOQud/sjKtVu2eXUrgVVwDtnS
-         K9saXWWZ1hCdhU07mL3gP1lbyLMM5ncodj0hAGG1sCe8guzPWwUCxCvCMd4UnYk0ij
-         MiKnX5ElR8cklFLsknUpJxfH63KChYC/OCTeoHADKe2d7sJJxnj+KlqJSXMWCfA0RW
-         7IMl8VYJBtsy0LvBdpwYawlVvfm1y/uovTsdBOXZktA8NvrkBJg6F9XHpbVdi97yvv
-         ktn0TMEJDT+qVku5scquwwLC4arp4ujY52Gxd5XtzcUD53EHdZUC9sEswg4SOYFru/
-         p422dM8tR7ngQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     Julia Lawall <Julia.Lawall@inria.fr>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        linux-media@vger.kernel.org,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-perf-users@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        linux-arm-msm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        platform-driver-x86@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        target-devel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-s390@vger.kernel.org,
-        Jonas Karlman <jonas@kwiboo.se>, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-power@fi.rohmeurope.com,
-        linux-omap@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-leds@vger.kernel.org, linux-spi@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, linux-clk@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-scsi@vger.kernel.org,
-        Namhyung Kim <namhyung@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-wireless@vger.kernel.org
-In-Reply-To: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-References: <20220314115354.144023-1-Julia.Lawall@inria.fr>
-Subject: Re: (subset) [PATCH 00/30] fix typos in comments
-Message-Id: <164735165474.3687547.1964402001196947729.b4-ty@kernel.org>
-Date:   Tue, 15 Mar 2022 13:40:54 +0000
+        s=k20201202; t=1647352821;
+        bh=EjAuCNTyGd+K+FDiRLGJ9xByXnPdoT4aG1Xy8SmT0f4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cPX2/QdbfJ/4lrkG7TwAEmCmF0FPWRrixAtc7kaxz4mJeUoLh4W7dTdlcSeRxQQFk
+         V6NJeiLYzt9yuTnrrbVvida27lacdbsCb7hTadnMDpubzXw7r8lrdJdrS2FTMHeQ9c
+         ZlyIYGZevDSoN4ZfS9Vuws1nEtULH3BghxGC6rqyoRF+qIemwtBuSlKjdWB68qZYKX
+         BjnsZBEZDqFegC49MTf5bO4BG+u2p50lJmyo236ve9MP71QIEd7mVlDkOQTXDU44yu
+         K/fBRtEreqNlKGk8Aqx/ssXrgnu5ss4hGKymAneJR417afirf8F2tnmo71JRVrAqoE
+         oYmxFWUBX8zsA==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v12 bpf-next 00/12] fprobe: Introduce fprobe function entry/exit probe 
+Date:   Tue, 15 Mar 2022 23:00:14 +0900
+Message-Id: <164735281449.1084943.12438881786173547153.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Mar 2022 12:53:24 +0100, Julia Lawall wrote:
-> Various spelling mistakes in comments.
-> Detected with the help of Coccinelle.
-> 
+Hi,
 
-Applied to
+Here is the 12th version of fprobe. This version fixes a possible gcc-11 issue which
+was reported as kretprobes on arm issue, and also I updated the fprobe document.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+The previous version (v11) is here[1];
 
-Thanks!
+[1] https://lore.kernel.org/all/164701432038.268462.3329725152949938527.stgit@devnote2/T/#u
 
-[21/30] spi: sun4i: fix typos in comments
-        commit: 2002c13243d595e211c0dad6b8e2e87f906f474b
+This series introduces the fprobe, the function entry/exit probe
+with multiple probe point support for x86, arm64 and powerpc64le.
+This also introduces the rethook for hooking function return as same as
+the kretprobe does. This abstraction will help us to generalize the fgraph
+tracer, because we can just switch to it from the rethook in fprobe,
+depending on the kernel configuration.
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+The patch [1/12] is from Jiri's series[2].
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+[2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
+if user wants to share the same code (or share a same resource) on the
+fprobe and the kprobes.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+I forcibly updated my kprobes/fprobe branch, you can pull this series
+from:
 
-Thanks,
-Mark
+ https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git kprobes/fprobe
+
+Thank you,
+
+---
+
+Jiri Olsa (1):
+      ftrace: Add ftrace_set_filter_ips function
+
+Masami Hiramatsu (11):
+      fprobe: Add ftrace based probe APIs
+      rethook: Add a generic return hook
+      rethook: x86: Add rethook x86 implementation
+      arm64: rethook: Add arm64 rethook implementation
+      powerpc: Add rethook support
+      ARM: rethook: Add rethook arm implementation
+      fprobe: Add exit_handler support
+      fprobe: Add sample program for fprobe
+      fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
+      docs: fprobe: Add fprobe description to ftrace-use.rst
+      fprobe: Add a selftest for fprobe
+
+
+ Documentation/trace/fprobe.rst                |  174 +++++++++++++
+ Documentation/trace/index.rst                 |    1 
+ arch/arm/Kconfig                              |    1 
+ arch/arm/include/asm/stacktrace.h             |    4 
+ arch/arm/kernel/stacktrace.c                  |    6 
+ arch/arm/probes/Makefile                      |    1 
+ arch/arm/probes/rethook.c                     |  103 ++++++++
+ arch/arm64/Kconfig                            |    1 
+ arch/arm64/include/asm/stacktrace.h           |    2 
+ arch/arm64/kernel/probes/Makefile             |    1 
+ arch/arm64/kernel/probes/rethook.c            |   25 ++
+ arch/arm64/kernel/probes/rethook_trampoline.S |   87 +++++++
+ arch/arm64/kernel/stacktrace.c                |    7 -
+ arch/powerpc/Kconfig                          |    1 
+ arch/powerpc/kernel/Makefile                  |    1 
+ arch/powerpc/kernel/rethook.c                 |   72 +++++
+ arch/x86/Kconfig                              |    1 
+ arch/x86/include/asm/unwind.h                 |    8 +
+ arch/x86/kernel/Makefile                      |    1 
+ arch/x86/kernel/kprobes/common.h              |    1 
+ arch/x86/kernel/rethook.c                     |  119 +++++++++
+ include/linux/fprobe.h                        |  105 ++++++++
+ include/linux/ftrace.h                        |    3 
+ include/linux/kprobes.h                       |    3 
+ include/linux/rethook.h                       |  100 ++++++++
+ include/linux/sched.h                         |    3 
+ kernel/exit.c                                 |    2 
+ kernel/fork.c                                 |    3 
+ kernel/trace/Kconfig                          |   26 ++
+ kernel/trace/Makefile                         |    2 
+ kernel/trace/fprobe.c                         |  332 +++++++++++++++++++++++++
+ kernel/trace/ftrace.c                         |   58 ++++
+ kernel/trace/rethook.c                        |  317 ++++++++++++++++++++++++
+ lib/Kconfig.debug                             |   12 +
+ lib/Makefile                                  |    2 
+ lib/test_fprobe.c                             |  174 +++++++++++++
+ samples/Kconfig                               |    7 +
+ samples/Makefile                              |    1 
+ samples/fprobe/Makefile                       |    3 
+ samples/fprobe/fprobe_example.c               |  120 +++++++++
+ 40 files changed, 1876 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/trace/fprobe.rst
+ create mode 100644 arch/arm/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
+ create mode 100644 arch/powerpc/kernel/rethook.c
+ create mode 100644 arch/x86/kernel/rethook.c
+ create mode 100644 include/linux/fprobe.h
+ create mode 100644 include/linux/rethook.h
+ create mode 100644 kernel/trace/fprobe.c
+ create mode 100644 kernel/trace/rethook.c
+ create mode 100644 lib/test_fprobe.c
+ create mode 100644 samples/fprobe/Makefile
+ create mode 100644 samples/fprobe/fprobe_example.c
+
+--
+Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
