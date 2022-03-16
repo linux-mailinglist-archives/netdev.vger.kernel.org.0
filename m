@@ -2,118 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E1BB4DB836
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:52:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B5F4DB83C
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:53:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245718AbiCPSxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 14:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48484 "EHLO
+        id S1357785AbiCPSyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 14:54:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238326AbiCPSxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:53:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0121F6BDE0
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 11:52:33 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 96D57210F0;
-        Wed, 16 Mar 2022 18:52:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1647456752; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lnkKOOiU1ETiY0y3zxpYvKjnp4Sb3EQiWIiknCU8CQ8=;
-        b=LafSDfycolytbYjiKn5hfbYme9YbT5vAPiU35KJEGWi5L7txBtbylxyn6JNOtX4rjX4VxR
-        vvwcODMqqfZ3AeRnbIHG3gAL+uSppf1Z3GT4l2Bml+dkTh6GcHbQ21zcS5O7iz3BA2nN9/
-        cug3ENtvc4EBoNPPxLlBmSaZ2Qoj4hc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1647456752;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lnkKOOiU1ETiY0y3zxpYvKjnp4Sb3EQiWIiknCU8CQ8=;
-        b=Dvih3qncc7Q137BrOoxqM720wkXZUSB12aYFK0v+NrtbkhHcch6PpT84YcWA2ajKcHDvwN
-        0gviuCsJzOstFbAA==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        with ESMTP id S1354461AbiCPSyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:54:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC64517E30;
+        Wed, 16 Mar 2022 11:53:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 63C71A3B81;
-        Wed, 16 Mar 2022 18:52:32 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 3B303602FD; Wed, 16 Mar 2022 19:52:32 +0100 (CET)
-Date:   Wed, 16 Mar 2022 19:52:32 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Manish Chopra <manishc@marvell.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Ariel Elior <aelior@marvell.com>,
-        Sudarsana Reddy Kalluru <skalluru@marvell.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "it+netdev@molgen.mpg.de" <it+netdev@molgen.mpg.de>
-Subject: Re: [EXT] Re: bnx2x: ppc64le: Unable to set message level greater
- than 0x7fff
-Message-ID: <20220316185232.ttsuvp4wbdxztned@lion.mk-sys.cz>
-References: <0497a560-8c7b-7cf8-84ee-bde1470ae360@molgen.mpg.de>
- <20220315183529.255f2795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <db796473-69cf-122e-ec40-de62659517b0@molgen.mpg.de>
- <ade0ed87-be4f-e3c7-5e01-4bfdb78fae07@molgen.mpg.de>
- <BY3PR18MB4612AD5E7F7D59233990A21DAB119@BY3PR18MB4612.namprd18.prod.outlook.com>
- <20220316111754.5316bfb5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C31B618F9;
+        Wed, 16 Mar 2022 18:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B12A1C340E9;
+        Wed, 16 Mar 2022 18:53:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647456807;
+        bh=DbCDMVM1QylXDAIdBxRLZIn7utiL20SzLpF8Lqell+g=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=FfFqilKHDmeeEFc+aMchF+OFWCRODhZvB3tQ5wrS3pZaolcAu2CZm/3dpPhdCfuVY
+         m+6UnRbWFII37RfWLwwZKlZHfHUUmSkjzo+ZeiLmhd8Nn9a1AI2HCdO4FjsD5IHf9R
+         KkirZ9Nw0fFZJNcwTZwGAjWaaSH9OWuRQa+qiwlIzfM9IVJpQMfKlYzLUf5NfWKOq/
+         m9ggNsJ0cJdO0Zk7vB2eimu5lEFW5oGOvShx7zKK2a4wknG545BmVpxrfe96MQ0Ya7
+         NgJptqSGR0lYnsb/U8PulHwHjeue+2cqSsezsMXmGpFg3ePz75K5ym3SLYEl5t2zh1
+         NeQFYL/eCLWKw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iwlwifi: mei: fix building iwlmei
+References: <20220316183617.1470631-1-arnd@kernel.org>
+Date:   Wed, 16 Mar 2022 20:53:19 +0200
+In-Reply-To: <20220316183617.1470631-1-arnd@kernel.org> (Arnd Bergmann's
+        message of "Wed, 16 Mar 2022 19:36:03 +0100")
+Message-ID: <87czilpw4g.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="sqphjpr54tkrt3wv"
-Content-Disposition: inline
-In-Reply-To: <20220316111754.5316bfb5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Arnd Bergmann <arnd@kernel.org> writes:
 
---sqphjpr54tkrt3wv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> Building iwlmei without CONFIG_CFG80211 causes a link-time warning:
+>
+> ld.lld: error: undefined symbol: ieee80211_hdrlen
+>>>> referenced by net.c
+>>>>               net/wireless/intel/iwlwifi/mei/net.o:(iwl_mei_tx_copy_to_csme)
+>>>> in archive drivers/built-in.a
+>
+> Add an explicit dependency to avoid this. In theory it should not
+> be needed here, but it also seems pointless to allow IWLMEI
+> for configurations without CFG80211.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/net/wireless/intel/iwlwifi/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> I see this warning on 5.17-rc8, but did not test it on linux-next,
+> which may already have a fix.
 
-On Wed, Mar 16, 2022 at 11:17:54AM -0700, Jakub Kicinski wrote:
-> On Wed, 16 Mar 2022 11:49:39 +0000 Manish Chopra wrote:
-> > As ethtool over netlink has some limitations of the size,
-> > I believe you can configure ethtool with "--disable-netlink" and set th=
-ose message levels fine
->=20
-> Yup, IIUC it works for Paul on a 5.17 system, that system likely has
-> old ethtool user space tool which uses ioctls instead of netlink.
->=20
-> What makes the netlink path somewhat non-trivial is that there is=20
-> an expectation that the communication can be based on names (strings)
-> as well as bit positions. I think we'd need a complete parallel
-> attribute to carry vendor specific bits :S
+I just sent the last pull request to v5.17. Luca, should I take this to
+wireless-next? Ack?
 
-Yes, that would be a way to go. However, in such case I would prefer
-separating these driver/device specific message flags completely rather
-then letting drivers grab currently unused flags (as is the case here,
-IIUC) as those are likely to collide with future global ones.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Michal
-
---sqphjpr54tkrt3wv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmIyMeoACgkQ538sG/LR
-dpXXDwf+MojGtSLGC/uC3T0dwdw0tEaK0rWjy4+paRSL68FUFIFNkP4hQbyKbujD
-v69NqqPWru5/3ayVmr+/CXLxajEcX35+bgcPQctyO98ktgqeFlyp3oMUfLbRwIQE
-U2kD4diA9lZoQR+AsSy7wubP4TsIT7LtU37XErA3bKsIlPM3UKl1oty0+eh2FxAb
-oBlyGHaREIkQdDfbMoCfkYJkx8sWUtMHlw3KE7NoHnPqzRiRtqRt07z2ww/SmBkT
-+Bsxs3Q4dAKsbLH2jWHLU3v2zWKkaBwrEaIAyvX/v/PZqJdN9XxJZD9frKUH1rZq
-YxZwuCG6FWtc8VT44sDzrIgPRa22WQ==
-=MW/+
------END PGP SIGNATURE-----
-
---sqphjpr54tkrt3wv--
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
