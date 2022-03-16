@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A2514DB99D
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:42:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 395FB4DB9A3
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358014AbiCPUnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 16:43:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35826 "EHLO
+        id S1358036AbiCPUn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 16:43:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358003AbiCPUnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:43:15 -0400
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30072.outbound.protection.outlook.com [40.107.3.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74586E4F7
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:42:00 -0700 (PDT)
+        with ESMTP id S1358052AbiCPUnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:43:22 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2068.outbound.protection.outlook.com [40.107.21.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B990B6E572
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:42:04 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FW+fGCoXDifgZgjaQJd8f/qP8hM0SuM23kz5ifEZNNs6iJe8q/M1+JbXQ+KFFXCqEulpxzQcG9ZctgfMn2Lpxt40FcjuasjRYogl68SVlqQ8ivhZ02MAZK/mUwsT22yQbIvYDmYkNJdZCKo+S4apJQD8u/1fMP9CcKR1QdzWkBMTM3oTNTGI0YQkp52byKNSlV2UKYvT5+dvx7f4mXO0Eeesw+cYyuzoEAWR+hsx7gnlizqLI/pL6K/zfNHd08c611hnb9ag+sOeyoc+0H6l8Fu3aQR+5U+GgWho57katkstZ0HBxQ/He9ov+NZBRNP/MmPGN/bUiDfiA3xWvi0z0w==
+ b=CpEwy8Ku6MAJlSL5Hfi9wXSnfPTQbmtnNqJ3jmuUnIw5xEGiqfRkic9s78t3G4Y40LYCbBQgdGe3vRv8W+PGUm0vA5hTG7MmBVu58YIBgcLRw6/trDwiMw8gI4tXGbLYLxUiKc/Ci+Fo9oXVf4SdFmoAPV/OszrKIdIYb90RmRB16GqhRFabKOEUU810E8aD8j78J5wrmnrrz/sYRksQkLQUDQvxee9QssFyZd8PU8lrn07quMUkpLDFC1oQH/UF1569OTq9RjxdA/BpTPiolFQI/nojz3eHD2RJ7rgUjT22GKZRhi3gdzWPuwN+iCnbsO2AzlsjKG5V4Ok/K9IlVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0LRXOLk0xFXjevUMFgZEThdvIF4AMUKQveREGmHaft4=;
- b=I1dEapPAQYxIoBynvpCBw9S5Ft3g/6cOf3qEB5HDabntMQiDWj4pnGzxk+pla+aZTrJ3atkggjuGOxCKdOM6Uk3VLQMNsKSx8pJ7b/oL9WfpQBjdRFQirXZF3NmjZPs4Xf04F2ikM8yM3uHZTgTFACWMXukrg/g3Je+C/UxmHQlPYEic1/EuqpGPo57i4kh7mdrZMAGLEKP43nQ3u7vDXj1U3oS7VFRHsYHDctqvJD0k1KtWTYrEFT5CF0dc7NWR60gSHTJMZQJUHQTiKi7MP3pGZy+R14ERBB8oQce3D2iXXpiQFt7rGHdg9iSQO4YCucKveBmh+MDwSoEK1yYG6g==
+ bh=TjFXhUMgr7VmvSTmSI5BaU6AGVlKmBhtZ0ryBvyM4oU=;
+ b=hXA1gVWEikr+pw6YOeczhvY/xypTDiuxGUwP0fpbWBMBr8DdYHAzCUgp3t07YjjHLrJAitsBOEzqcbuf5mxMLLqmVL04632X9EjVoYsiL7CW8M29Ro/UWzfNCh3PvR8DuyJlByfjnFYEvQV35kdUgfcKKWudj0RzTT1OVtvteXFiugvdOrnYjM0z2NjpZIiBZ7b/xcS3eesBj6WjCGv0Utau/QQEHnNkTx8fj8bWOZQBAIlzu9Wb0HZ7nb4nIzMZJRFxuMTBDroEKhyexXN3V5qbUWWoZdX/3iCHLcNChhRyi0fHCjiK2tQoUArN1/pD7O61Dnx8bzJ11vw1Swkyng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0LRXOLk0xFXjevUMFgZEThdvIF4AMUKQveREGmHaft4=;
- b=DT5AeQKXKIWgcYZKHM8CHsI0y63sZ2ywzBOUlu+SkyS4AVZlZmOINrTBUVQe2Hnz0vKuRh0eIJEzbKkse2zidA84xubV1FqOf6gxRPCc5kNAFapzh/09sgl5EnZuLVmyFcFQuallJK38dQoNdNLfA9VJOkQD22i7cfO89PAC8YQ=
+ bh=TjFXhUMgr7VmvSTmSI5BaU6AGVlKmBhtZ0ryBvyM4oU=;
+ b=deFbo+rfFs0Li2zz2GA/M8BKtTKtCHRwrRJf9C4Cw6ePvdw7xz2MY79GEJ0Xf74PKkVrg+UqbQC22OLhlcGhbfjuv8UVN90ut5I57sAynQ8VfPIb0duhYtjJUaeXfVs7hI3og6Ka8PNn5ZkWyuVTvOKwYrUPL9dlbrNHRch3Iyc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
- by AM9PR04MB8398.eurprd04.prod.outlook.com (2603:10a6:20b:3b7::19) with
+ by VI1PR04MB3293.eurprd04.prod.outlook.com (2603:10a6:802:11::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Wed, 16 Mar
- 2022 20:41:56 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.29; Wed, 16 Mar
+ 2022 20:41:57 +0000
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::5cd3:29be:d82d:b08f]) by AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::5cd3:29be:d82d:b08f%6]) with mapi id 15.20.5081.015; Wed, 16 Mar 2022
- 20:41:56 +0000
+ 20:41:57 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -50,9 +50,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 3/6] net: mscc: ocelot: establish functions for handling VCAP aux resources
-Date:   Wed, 16 Mar 2022 22:41:41 +0200
-Message-Id: <20220316204144.2679277-4-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 4/6] net: mscc: ocelot: offload per-flow mirroring using tc-mirred and VCAP IS2
+Date:   Wed, 16 Mar 2022 22:41:42 +0200
+Message-Id: <20220316204144.2679277-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220316204144.2679277-1-vladimir.oltean@nxp.com>
 References: <20220316204144.2679277-1-vladimir.oltean@nxp.com>
@@ -63,51 +63,51 @@ X-ClientProxiedBy: AM6PR08CA0037.eurprd08.prod.outlook.com
  (2603:10a6:208:c1::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 99045e8b-80f8-402e-20fb-08da078d6939
-X-MS-TrafficTypeDiagnostic: AM9PR04MB8398:EE_
-X-Microsoft-Antispam-PRVS: <AM9PR04MB83980F5A44EE4FC5826E737FE0119@AM9PR04MB8398.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 6bfa8889-8eab-461e-7b1c-08da078d69b7
+X-MS-TrafficTypeDiagnostic: VI1PR04MB3293:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB3293A14B7D2DCD2B339AF1BBE0119@VI1PR04MB3293.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BF/YcqLJ0derPLAKsVdHRlF5X4sTmrdcHTzYOOgoTue32Ea/p2x0JWFqGL3t+45bmCmG0zElq7t/SBZBVTuCLNaqKzW340Bv6KsF3UR8Nhu8DaB1V80wzhkiozx/2pbqerzlZVsUSV019KqQM8/kwrs0NNhyEQW7PbrQ1K+KJ7AMAjSlikQ3ON38w96fe88rdc40i1jdc8AHDDsD/co1qTHETWV4eHYp6LZr/K8uwqOEFqzKUL4QsAOkrwedmRfuZxnU+MZUysN2kaIjPJ0SfGUZHiWVK25WkzY40oIaJ0iu7LSGtUjt1t4SEtaKo/nbRcRRwj4Fm8hgSXWCb21/2Evoyn4wVfX1lr2ZLtK1azOYR/wm8LZKhycMQP6+lW6v6RtmCx62gTOkoOsz86Rvt0PwK/H3IzJ907XT+etK+BOhyaTxGd3n+TVBtR7rEMQN9OBoHjM+audieKOP7AKIhTsbzUt1TKLnfMoZIJCJZBRagRpT5PzwzGur+4GNW5oJNcizgvoNAcoLIdshtX4HE3VgiM8T0oRhth9nRl+VeOvUpEGsMKID0RIAqG/GISlje98hlVaMyOrpNu2AGMHlt87wqDEIPQ3QXlzds+gz3da14J9wMWqzBCqIFY/ReEm95bs3pmzbSjydR8w7K8o61V0oEK/w1Zv6dcZ8As5TS/OBtKZ2ZjTPQNgtNxbIfiEXH/NaGiuNG8Z6ysa4kOHr0g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(2906002)(6916009)(54906003)(4326008)(6666004)(8676002)(26005)(186003)(86362001)(316002)(44832011)(36756003)(6486002)(38350700002)(66556008)(5660300002)(83380400001)(66946007)(66476007)(2616005)(6512007)(1076003)(508600001)(52116002)(38100700002)(6506007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: j2Gj2j7z6wqchMEzwjV+Q2vI1qa+77YcZYHOh9I81uaZYaYWipGIBVuay0YGoNL1n71tlM2FKnMkawo1TipD9Ny3Zd8eOLghtAHGj6lwpIu8JokJQ3amqOojSI/vxgG3YgaVebTUzDKX1cwCnIfiWwl62nFsf5hKeLGqS5vhVKmHWv6cakjZl9XcRQC47J1CFwza094zL9Em29r1wUrXAuo9FRQaJmh0if/kDC6P8zBeWBhX9LqReO6/RD+2FIjCkKTiHZrn5pAgnFczVlM0ZfxNRDZpP5GOzRNja8GuBBjFjeP1EqqTEvmvhqlyOGTd+frtEf0Jne431E5I5Mxx3NSsCStl29+Zi77AnPKPxM3NvxoZELz9O7C5v9xpmsd13AhH968bpBVV+lDaMTuZXegbB6NXS0EPXHF499NG4/XepGlRsdSy0/wmmsNf/viG97fclmk5rD64oTIUf3qMP5td9rIjJyGYyYjLbT7D/KJGna7b7nNVtsKGjCRnqp3VlR5Meoo8s1G9fNL1g78ovCuYVx5PobkknS21H3kjOSszHU85nloHTz2VtQDZtW6crI8dtV8ieN6qjWjNB8E3m6x+g9YAl7n9arrZ6iZJCNDhBBlHlJG4OuChBAFuxRAyHx8FJTUFpSt4dcKACG5SyIZjCTi2oQtE7UU4mLWKjSaTFr6venIvoUkY/iRVABcshhPdEyzsFLFsd8lbJKKK6w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38350700002)(86362001)(6916009)(316002)(6486002)(54906003)(5660300002)(36756003)(8936002)(44832011)(8676002)(66946007)(4326008)(66556008)(66476007)(2906002)(83380400001)(2616005)(1076003)(6506007)(508600001)(6512007)(6666004)(52116002)(186003)(26005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HyU1D7RKjJibWVhChIZb3a5oNAuMYI1F1Sw9KOAmSx9H5pPoIVDBsXCGXCh7?=
- =?us-ascii?Q?OPgFZVkBg+FZFpwEd64BHN/hjfAAKJ+OggUL0GUP8IoZ+UMzQ32Ut9pRFJuB?=
- =?us-ascii?Q?XbGTPzF/X6qoNsR6WEYN6x6KZKFvxoDbx2EFRpXUQbJwRewbJyM3jgL97P0A?=
- =?us-ascii?Q?PywflsQT+N57a/2XqkPmP3KzNau2tM4hf75uTGPoK4BIh6x4QSm0EeaG/A5H?=
- =?us-ascii?Q?g5kt1OFvgafZMWFJ9i8nBa9Ddon3p8OhkkUqSasRHVCBDNWFQNtevS6BW2ug?=
- =?us-ascii?Q?/0oSIdY7pD+RPp7fX/YmzKza2teYmzF2sxHCeTdmmx69eKA/e6rv18+hGcSL?=
- =?us-ascii?Q?P6X99DyZLdkBzo5axR8g/iZtYEUCgP8YwIdZH8i+Ucp25ZweMmRDECK7+Vyd?=
- =?us-ascii?Q?fq7OTxb0hQXUvtZQhxf70nd1nMSQuWeaLPPtI5R33ixbupcQx8OAZGwjlRR0?=
- =?us-ascii?Q?G9eHxxOSslgZsjToRg32gNEDYjZOEdycyOFjVEzOriYGRqaje+vjHtFtX8gG?=
- =?us-ascii?Q?/fKFJw6VYSgdmA1nuS2EIvPT42DA1rX+3QVJmHh1FFY5OUQH4xtCAQ2bXi/m?=
- =?us-ascii?Q?1Z302rGT+9tVyWWn9+hS/mnw2zPeJ3qhETuqWfykUSOnTC6w8GkZA/rhIeoc?=
- =?us-ascii?Q?RTPKQQpfqzhJ95RsmpiYNohyV04b+XeTrT077qciZq1TA8XbgXf0KNFUMHhF?=
- =?us-ascii?Q?bLTHuNugde96WFR7w6lsWK/J295w0Nsp7FyDYHu/BO7d6tvGGj8oGYXnty9o?=
- =?us-ascii?Q?8DqWmm0Jf61jyY6Z3FxPVHFXTibh7gKlzzqFXvU0MVelCm+hrb7TVGYoQq/x?=
- =?us-ascii?Q?Uo+iF7t8ziNmPIIPZhXFZa41bt8ue+ExqQWwlzaAmPxEYSgLloXcwqU3IS4u?=
- =?us-ascii?Q?QLBcWwIVhHE/offB+p/E5f7hxPg/hvj1saQsyQpaXCCgUo/jJiu69dkLqtAe?=
- =?us-ascii?Q?0Z+LWYGjmw1aziv9uWkqJhPGNYZcFgxL0UlVyjH+LXKbYcTqR629LvXQYm2i?=
- =?us-ascii?Q?DeW1YJRaali8bvnzmKYY2oNbiDfoGfJ6V+cTURYqoQzYxiZ63rIIt+HUx4dN?=
- =?us-ascii?Q?z/FJf+4gzFa4LLRkHYqrGBBqYSI5DuT7meCkIG5sr0KoSUFh4U9udRNuaxLL?=
- =?us-ascii?Q?aXiwFCuV+ZlTsmGd73eLPCMEQBXt9JiIjNmbNt2QXFcmdAYD/MWT5eCuVfee?=
- =?us-ascii?Q?ZREmzxRTb/wSsQmX7b9E3+uqN/38Rns+Fnp6d0zTpNLewwxBfs48+/YZHtqG?=
- =?us-ascii?Q?y+motbaglqfJJLbbVQpib7vXKnxQbQCGl5w89KaIFrsKdmyjXV5owPYpOEuL?=
- =?us-ascii?Q?U/RDGQ8FQcfComcjCJx0jCnr1fMcJVJbF2w4pPX1Sw+la6uPFhxB+IAKmkze?=
- =?us-ascii?Q?SRN2tel2q85J2cz1FsepPVPQQHPKFKCGhF9B7b3jMTZkZXX7NiF0f9+Y08/o?=
- =?us-ascii?Q?dqfwkuo2V+3iJMwLdNJJGffpB0q4JmU2ocb6YCSK4+iJujkzMB3zcg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+SXUWKCEyvEZ0FCBWY57zHlXWRs1133PibvDf+2m8CON/BAAVckel4TlpTy7?=
+ =?us-ascii?Q?2ldECSCg0rrkbaqv+k+cFWZUsly2IHMuYh8/cfqXqQcxUO5HetJEbdh+iNtC?=
+ =?us-ascii?Q?4CLewG6DqxZV/mixdF1wdlbEk+huW7bikHB+FhGByU65JzWT4xiWrIMjIPv8?=
+ =?us-ascii?Q?E+Hoy989pKO4V1L7vICQuq27iSZLHF5zFocRYNDUWblJ9n1fJnvbnLsQhCk8?=
+ =?us-ascii?Q?h4keXumvTvrkVcW/5EYrII12RNllZKowX0Lkf8oQJqe0NY7rNvlpIEld0q6+?=
+ =?us-ascii?Q?OsCnHuT8biOhZTIhf7isBKW9BVLO7ugNIdhMi+d5BTF78zB0dunZNCQLnHYH?=
+ =?us-ascii?Q?A31T3ytaEG4OR/SJUlKT8+n2h5RQmGjOz9AJXcHOdIE1AWm7+LX3jYnc7ZKt?=
+ =?us-ascii?Q?DdYgXznZ7QY1qqKm4mFlaW8n2Q3vqKIIG0dJHVAKWopZiUSXRN8FtWYMNNgl?=
+ =?us-ascii?Q?EBt5nGIa/N1uB02fUXhAWDbM3dnXc3TpTupmE53QwAK+4IXSfA3yl5WKclRv?=
+ =?us-ascii?Q?SI/z9q7gnJoJ/9842lMmRDNg/v4YuOl4+S5AMqTW63qDIjpJKXVXydMek7In?=
+ =?us-ascii?Q?BkEofVBQaBKzO5n+QJ3l6or7X2KOZiyv09y3dAud+S6Tq2j621FwSbtAUcAo?=
+ =?us-ascii?Q?A25ZEOLit5QalBo9hr57BTU/xw2HZklhf/oYrB7cntlZJyR6sS/Ok7O2NhIb?=
+ =?us-ascii?Q?IFhdD+4107b9YgDE+GSK9owliYe8wPFqXP/nBTPp6Y2XdGIyTJmyS9bi809W?=
+ =?us-ascii?Q?13kPaQEJJnALP2ti/kQyjg+/HfzyHeb2Tx5LhF3OoaTgDyG7Ip4Ofx6ASlXT?=
+ =?us-ascii?Q?AsraROvDgrBoHwAXAunPdEuWy8WtRwlfyepSDTl3CaiHOYiVua5vFAja5bFM?=
+ =?us-ascii?Q?aU8CB/Kz/KD2aHm8tkPm6Cs9oSg420DSLSfDlRMH78gelzrn7SzNh3q+coTO?=
+ =?us-ascii?Q?YHF+v2jefzMvyY2GXxBCrPWdnFBJdbU9WgLH2J0npb2kJtFCLOplkPbj0VT6?=
+ =?us-ascii?Q?MQreD9e/sA6SmDxYIvfLyOGohEaZwGSJGAeQ0BREI3sVa2zCu7Q1ZyV1ydKg?=
+ =?us-ascii?Q?nKVCjVLjm94oSGTvbgvIssCMYwAQxPvnRv27wTX8wHyOK8YsHXvvPNUEKdPw?=
+ =?us-ascii?Q?/jrcPPt7W430mdoq4xo6FLzim549cAZ30U0u6QmjcK0cd6tiSbnbTXP3bGkY?=
+ =?us-ascii?Q?P+OFtDc/2EgHkMkYMB+RaWymizJbJdfJNID/JDiVnId4/c5KYhg1rViaBKuz?=
+ =?us-ascii?Q?oUIuHe/h3JKwkFvMJ4DrtM5sBraFbIzKisv/3umMGUJ+KpziHsZ8TsKuNopJ?=
+ =?us-ascii?Q?5lhQCBU/Ir56noSkUB3qh/1m4U3Mt2yXb8meo6CgZgTxKXE+vnWK4f/Acjlk?=
+ =?us-ascii?Q?yHLpZ98EG4fydi0yt04Pk3227cojfTaXA9Td91Vuj6PJhIPFAAnmX5RnKhzx?=
+ =?us-ascii?Q?T7bKFIO/L4pKFZRwHOej5D0olupm+aPd1tfvedhQuwEDCFQt1MRVrw=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99045e8b-80f8-402e-20fb-08da078d6939
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bfa8889-8eab-461e-7b1c-08da078d69b7
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 20:41:56.5043
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 20:41:57.3636
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3plLPoQHec8PF2/Xpal5JBuLBBc2ADapHHQc292PBOEK/hToidxGJACnrEfMcyAfG14TSwcTy6pxM41SVQY4dA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8398
+X-MS-Exchange-CrossTenant-UserPrincipalName: vlcSDO+UvTNcY999klPGwHZAL9TweZkHrGQzQNHMePEuHdcCjDXJhffF6oP+ngeg2kCbw9DXBVnVCg6nM3UunA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3293
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -118,101 +118,161 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some VCAP filters utilize resources which are global to the switch, like
-for example VCAP IS2 policers take an index into a global policer pool.
+Per-flow mirroring with the VCAP IS2 TCAM (in itself handled as an
+offload for tc-flower) is done by setting the MIRROR_ENA bit from the
+action vector of the filter. The packet is mirrored to the port mask
+configured in the ANA:ANA:MIRRORPORTS register (the same port mask as
+the destinations for port-based mirroring).
 
-In commit c9a7fe1238e5 ("net: mscc: ocelot: add action of police on
-vcap_is2"), Xiaoliang expressed this by hooking into the low-level
-ocelot_vcap_filter_add_to_block() and ocelot_vcap_block_remove_filter()
-functions, and allocating/freeing the policers from there.
+Functionality was tested with:
 
-Evaluating the code, there probably isn't a better place, but we'll need
-to do something similar for the mirror ports, and the code will start to
-look even more hacked up than it is right now.
+tc qdisc add dev swp3 clsact
+tc filter add dev swp3 ingress protocol ip \
+	flower skip_sw ip_proto icmp \
+	action mirred egress mirror dev swp1
 
-Create two ocelot_vcap_filter_{add,del}_aux_resources() functions to
-contain the madness, and pollute less the body of other functions such
-as ocelot_vcap_filter_add_to_block().
+and pinging through swp3, while seeing that the ICMP replies are
+mirrored towards swp1.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot_vcap.c | 41 ++++++++++++++++++-------
- 1 file changed, 30 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c        |  6 +++---
+ drivers/net/ethernet/mscc/ocelot.h        |  4 ++++
+ drivers/net/ethernet/mscc/ocelot_flower.c | 21 +++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_vcap.c   | 12 ++++++++++++
+ include/soc/mscc/ocelot_vcap.h            |  2 ++
+ 5 files changed, 42 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index d38a9b498490..e443bd8b2d09 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -3023,8 +3023,8 @@ int ocelot_port_del_dscp_prio(struct ocelot *ocelot, int port, u8 dscp, u8 prio)
+ }
+ EXPORT_SYMBOL_GPL(ocelot_port_del_dscp_prio);
+ 
+-static struct ocelot_mirror *ocelot_mirror_get(struct ocelot *ocelot, int to,
+-					       struct netlink_ext_ack *extack)
++struct ocelot_mirror *ocelot_mirror_get(struct ocelot *ocelot, int to,
++					struct netlink_ext_ack *extack)
+ {
+ 	struct ocelot_mirror *m = ocelot->mirror;
+ 
+@@ -3053,7 +3053,7 @@ static struct ocelot_mirror *ocelot_mirror_get(struct ocelot *ocelot, int to,
+ 	return m;
+ }
+ 
+-static void ocelot_mirror_put(struct ocelot *ocelot)
++void ocelot_mirror_put(struct ocelot *ocelot)
+ {
+ 	struct ocelot_mirror *m = ocelot->mirror;
+ 
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index d5bd525e7ec2..d0fa8ab6cc81 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -112,6 +112,10 @@ int ocelot_trap_add(struct ocelot *ocelot, int port,
+ 		    void (*populate)(struct ocelot_vcap_filter *f));
+ int ocelot_trap_del(struct ocelot *ocelot, int port, unsigned long cookie);
+ 
++struct ocelot_mirror *ocelot_mirror_get(struct ocelot *ocelot, int to,
++					struct netlink_ext_ack *extack);
++void ocelot_mirror_put(struct ocelot *ocelot);
++
+ extern struct notifier_block ocelot_netdevice_nb;
+ extern struct notifier_block ocelot_switchdev_nb;
+ extern struct notifier_block ocelot_switchdev_blocking_nb;
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index bd9525867caa..03b5e59d033e 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -359,6 +359,27 @@ static int ocelot_flower_parse_action(struct ocelot *ocelot, int port,
+ 			filter->action.port_mask = BIT(egress_port);
+ 			filter->type = OCELOT_VCAP_FILTER_OFFLOAD;
+ 			break;
++		case FLOW_ACTION_MIRRED:
++			if (filter->block_id != VCAP_IS2) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Mirror action can only be offloaded to VCAP IS2");
++				return -EOPNOTSUPP;
++			}
++			if (filter->goto_target != -1) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Last action must be GOTO");
++				return -EOPNOTSUPP;
++			}
++			egress_port = ocelot->ops->netdev_to_port(a->dev);
++			if (egress_port < 0) {
++				NL_SET_ERR_MSG_MOD(extack,
++						   "Destination not an ocelot port");
++				return -EOPNOTSUPP;
++			}
++			filter->egress_port.value = egress_port;
++			filter->action.mirror_ena = true;
++			filter->type = OCELOT_VCAP_FILTER_OFFLOAD;
++			break;
+ 		case FLOW_ACTION_VLAN_POP:
+ 			if (filter->block_id != VCAP_IS1) {
+ 				NL_SET_ERR_MSG_MOD(extack,
 diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index b976d480aeb3..829fb55ea9dc 100644
+index 829fb55ea9dc..c8701ac955a8 100644
 --- a/drivers/net/ethernet/mscc/ocelot_vcap.c
 +++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -955,12 +955,11 @@ int ocelot_vcap_policer_del(struct ocelot *ocelot, u32 pol_ix)
- }
- EXPORT_SYMBOL(ocelot_vcap_policer_del);
+@@ -335,6 +335,7 @@ static void is2_action_set(struct ocelot *ocelot, struct vcap_data *data,
  
--static int ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
--					   struct ocelot_vcap_block *block,
--					   struct ocelot_vcap_filter *filter)
-+static int
-+ocelot_vcap_filter_add_aux_resources(struct ocelot *ocelot,
-+				     struct ocelot_vcap_filter *filter,
-+				     struct netlink_ext_ack *extack)
+ 	vcap_action_set(vcap, data, VCAP_IS2_ACT_MASK_MODE, a->mask_mode);
+ 	vcap_action_set(vcap, data, VCAP_IS2_ACT_PORT_MASK, a->port_mask);
++	vcap_action_set(vcap, data, VCAP_IS2_ACT_MIRROR_ENA, a->mirror_ena);
+ 	vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_ENA, a->police_ena);
+ 	vcap_action_set(vcap, data, VCAP_IS2_ACT_POLICE_IDX, a->pol_ix);
+ 	vcap_action_set(vcap, data, VCAP_IS2_ACT_CPU_QU_NUM, a->cpu_qu_num);
+@@ -960,8 +961,16 @@ ocelot_vcap_filter_add_aux_resources(struct ocelot *ocelot,
+ 				     struct ocelot_vcap_filter *filter,
+ 				     struct netlink_ext_ack *extack)
  {
--	struct ocelot_vcap_filter *tmp;
--	struct list_head *pos, *n;
++	struct ocelot_mirror *m;
  	int ret;
  
++	if (filter->block_id == VCAP_IS2 && filter->action.mirror_ena) {
++		m = ocelot_mirror_get(ocelot, filter->egress_port.value,
++				      extack);
++		if (IS_ERR(m))
++			return PTR_ERR(m);
++	}
++
  	if (filter->block_id == VCAP_IS2 && filter->action.police_ena) {
-@@ -970,6 +969,30 @@ static int ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
- 			return ret;
- 	}
- 
-+	return 0;
-+}
+ 		ret = ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
+ 					      &filter->action.pol);
+@@ -978,6 +987,9 @@ ocelot_vcap_filter_del_aux_resources(struct ocelot *ocelot,
+ {
+ 	if (filter->block_id == VCAP_IS2 && filter->action.police_ena)
+ 		ocelot_vcap_policer_del(ocelot, filter->action.pol_ix);
 +
-+static void
-+ocelot_vcap_filter_del_aux_resources(struct ocelot *ocelot,
-+				     struct ocelot_vcap_filter *filter)
-+{
-+	if (filter->block_id == VCAP_IS2 && filter->action.police_ena)
-+		ocelot_vcap_policer_del(ocelot, filter->action.pol_ix);
-+}
-+
-+static int ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
-+					   struct ocelot_vcap_block *block,
-+					   struct ocelot_vcap_filter *filter,
-+					   struct netlink_ext_ack *extack)
-+{
-+	struct ocelot_vcap_filter *tmp;
-+	struct list_head *pos, *n;
-+	int ret;
-+
-+	ret = ocelot_vcap_filter_add_aux_resources(ocelot, filter, extack);
-+	if (ret)
-+		return ret;
-+
- 	block->count++;
++	if (filter->block_id == VCAP_IS2 && filter->action.mirror_ena)
++		ocelot_mirror_put(ocelot);
+ }
  
- 	if (list_empty(&block->rules)) {
-@@ -1168,7 +1191,7 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
- 	}
+ static int ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
+diff --git a/include/soc/mscc/ocelot_vcap.h b/include/soc/mscc/ocelot_vcap.h
+index deb2ad9eb0a5..7b2bf9b1fe69 100644
+--- a/include/soc/mscc/ocelot_vcap.h
++++ b/include/soc/mscc/ocelot_vcap.h
+@@ -654,6 +654,7 @@ struct ocelot_vcap_action {
+ 			enum ocelot_mask_mode mask_mode;
+ 			unsigned long port_mask;
+ 			bool police_ena;
++			bool mirror_ena;
+ 			struct ocelot_policer pol;
+ 			u32 pol_ix;
+ 		};
+@@ -697,6 +698,7 @@ struct ocelot_vcap_filter {
+ 	unsigned long ingress_port_mask;
+ 	/* For VCAP ES0 */
+ 	struct ocelot_vcap_port ingress_port;
++	/* For VCAP IS2 mirrors and ES0 */
+ 	struct ocelot_vcap_port egress_port;
  
- 	/* Add filter to the linked list */
--	ret = ocelot_vcap_filter_add_to_block(ocelot, block, filter);
-+	ret = ocelot_vcap_filter_add_to_block(ocelot, block, filter, extack);
- 	if (ret)
- 		return ret;
- 
-@@ -1199,11 +1222,7 @@ static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
- 
- 	list_for_each_entry_safe(tmp, n, &block->rules, list) {
- 		if (ocelot_vcap_filter_equal(filter, tmp)) {
--			if (tmp->block_id == VCAP_IS2 &&
--			    tmp->action.police_ena)
--				ocelot_vcap_policer_del(ocelot,
--							tmp->action.pol_ix);
--
-+			ocelot_vcap_filter_del_aux_resources(ocelot, tmp);
- 			list_del(&tmp->list);
- 			kfree(tmp);
- 		}
+ 	enum ocelot_vcap_bit dmac_mc;
 -- 
 2.25.1
 
