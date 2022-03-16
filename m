@@ -2,121 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BB84DABFA
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 08:45:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8164DAC04
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 08:48:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354299AbiCPHqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 03:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59336 "EHLO
+        id S1354321AbiCPHtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 03:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354292AbiCPHqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 03:46:54 -0400
-Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C0F55BE9
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 00:45:40 -0700 (PDT)
-Received: by mail-oo1-xc36.google.com with SMTP id w20-20020a4ae9f4000000b003243aa2c71aso1826844ooc.0
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 00:45:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T87zTH0DkphGLesbWlrfLY37BYRGj5Dcsh6fZ7Tb2Io=;
-        b=r1XEXiASBQDYZ5V4TV73TqXbRPkoxgosJdV49eyGOPLU/Y8tV87HdLL086XkKTPyfH
-         MQFEjm1sPu217Jk6SkldXFKawlY+jNY7UCsWGUqkyeWmlP/qecm+wo74TK5aFSoha033
-         nICfZT38j16WTKmtm7Bn7uryf7ZzPLxV0ECLZyJOs3fP6oB6mH6Zf5AdGdrTGttuoMUP
-         2AY6haAAiY4SQTKEonDAlVrpH4NlpowXYIv/6DJYg9h13ril1KbWhfL+0NqaQD0xAlTE
-         Tl65DdltW7v38+WjqbO+OnC0giEL1gO7f1YFUmLZCD8Pjp68bGn6s7naqY0Fmwmg9zrx
-         NtCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T87zTH0DkphGLesbWlrfLY37BYRGj5Dcsh6fZ7Tb2Io=;
-        b=2FTff2MALQeG920Iicl5e0gdY/TYK6oUS+ub4e6JSIuaM71eKsAz7wgtJ2eqrfnZZZ
-         tjjPwfxE2synXJTOXesuXEqonQizomLBG/PZnwMNwJaEWLtYUxPC46EvnPAvJgkDxBRw
-         8J5yB9ZjhM/7x6H6RsMz7ktvtrh8rGN0JLsj7IRu10WDJosbDSOU/3t/zSW+NWAgaelv
-         5VQ+LH6IrjQld7dh6X2ghf2pBGn1BlcEQiJJIS/CrEWzIC1kYXS1dLnt5I4NX//FyaoR
-         Xkf78LftwI/HrQM89Zv64cCxDux3eM0Z1el3ruZWsaWPbypIJpbUaNDc58xL88GDlTZT
-         1xHw==
-X-Gm-Message-State: AOAM532Lqw+uBx6N+or74gTmY3AT69A8tIjF9k/VownJm3Rtrrp5eRrI
-        bmGB2oJCEfNj0IwTs2KA0V6C/KCu8ubODhVZETJSNg==
-X-Google-Smtp-Source: ABdhPJwzCR0t8OhcbK4m9h7T96CulLhfg0yY9yNAWIVbNLOCUnRCPgn7zHvpS8UjmFaaH1ztlBIszs4pNFw+zeng5vg=
-X-Received: by 2002:a05:6870:9619:b0:d9:a25e:ed55 with SMTP id
- d25-20020a056870961900b000d9a25eed55mr2840688oaq.163.1647416739279; Wed, 16
- Mar 2022 00:45:39 -0700 (PDT)
+        with ESMTP id S1354332AbiCPHtT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 03:49:19 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5FDDFBA
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 00:48:05 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nUOO3-0004pa-7F; Wed, 16 Mar 2022 08:48:03 +0100
+Received: from pengutronix.de (2a03-f580-87bc-d400-58ae-3d0e-218c-eca6.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:58ae:3d0e:218c:eca6])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 9CB6E4C3F6;
+        Wed, 16 Mar 2022 07:48:02 +0000 (UTC)
+Date:   Wed, 16 Mar 2022 08:48:02 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+Subject: Re: [net-next] can: isotp: sanitize CAN ID checks in isotp_bind()
+Message-ID: <20220316074802.b3xazftb7axziue3@pengutronix.de>
+References: <20220315203748.1892-1-socketcan@hartkopp.net>
+ <20220315185134.687fe506@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3922032f-c829-b609-e408-6dec83a0041a@hartkopp.net>
 MIME-Version: 1.0
-References: <0000000000009e7a1905b8295829@google.com> <00000000000003887a05da3e872c@google.com>
- <CAHk-=wj4HBk7o8_dbpk=YiTOFxvE9LTiH8Gk=1kgVxOq1jaH7g@mail.gmail.com>
-In-Reply-To: <CAHk-=wj4HBk7o8_dbpk=YiTOFxvE9LTiH8Gk=1kgVxOq1jaH7g@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 16 Mar 2022 08:45:28 +0100
-Message-ID: <CACT4Y+atgbwmYmiYqhFQT9_oHw5cD5oyp5bNyCJNz34wSaMgmg@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: out-of-bounds Read in ath9k_hif_usb_rx_cb (3)
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     syzbot <syzbot+3f1ca6a6fec34d601788@syzkaller.appspotmail.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        ath9k-devel@qca.qualcomm.com, chouhan.shreyansh630@gmail.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:USB GADGET/PERIPHERAL SUBSYSTEM" 
-        <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Zekun Shen <bruceshenzk@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="iqmkpn33uytbhv24"
+Content-Disposition: inline
+In-Reply-To: <3922032f-c829-b609-e408-6dec83a0041a@hartkopp.net>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Mar 2022 at 18:08, Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Tue, Mar 15, 2022 at 2:36 AM syzbot
-> <syzbot+3f1ca6a6fec34d601788@syzkaller.appspotmail.com> wrote:
-> >
-> > syzbot suspects this issue was fixed by commit
-> > 09688c0166e7 ("Linux 5.17-rc8")
->
-> No, I'm afraid that means that the bisection is broken:
->
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=140283ad700000
->
-> and yeah, looking at that log it looks like every single run has
->
->   testing commit [...]
->   run #0: crashed: KASAN: use-after-free Read in ath9k_hif_usb_rx_cb
->   ...
->   # git bisect good [...]
->
-> and you never saw a "bad" commit that didn't have the issue, so the
-> top-of-tree gets marked "good" (and I suspect you intentionally mark
-> the broken case "good" in order to find where it got fixed, so you're
-> using "git bisect" in a reverse way).
->
-> I didn't look closer, but it does seem to not reproduce very reliably,
-> maybe that is what confused the bot originally.
 
-Hi Linus,
+--iqmkpn33uytbhv24
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for taking a look. Yes, it's a "reverse" bisection that tries
-to find the fix.
-And your conclusion re flakiness looks right, there were few runs with
-only 1/20 crashes.
-But the bug looks to be fixed by something anyway. git log on the file
-pretty clearly points to:
+On 16.03.2022 08:35:58, Oliver Hartkopp wrote:
+>=20
+>=20
+> On 16.03.22 02:51, Jakub Kicinski wrote:
+> > On Tue, 15 Mar 2022 21:37:48 +0100 Oliver Hartkopp wrote:
+> > > Syzbot created an environment that lead to a state machine status that
+> > > can not be reached with a compliant CAN ID address configuration.
+> > > The provided address information consisted of CAN ID 0x6000001 and 0x=
+C28001
+> > > which both boil down to 11 bit CAN IDs 0x001 in sending and receiving.
+> > >=20
+> > > Sanitize the SFF/EFF CAN ID values before performing the address chec=
+ks.
+> > >=20
+> > > Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+> > > Reported-by: syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com
+> > > Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> >=20
+> > CC Marc, please make sure you CC maintainers.
+>=20
+> Oh, that would have been better! I'm maintaining the CAN network layer st=
+uff
+> together with Marc and there was no relevant stuff in can-next to be pull=
+ed
+> in the next days. So I sent it directly to hit the merge window and had a=
+ll
+> of us in the reply to the syzbot report.
+>=20
+> Will CC Marc next time when posting to netdev only!
+>=20
+> Maybe I treated this patch more urgent than it needed to be handled
+> =C2=AF\_(=E3=83=84)_/=C2=AF
 
-#syz fix: ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
+Should this go into net/master with stable on Cc or to net-next?
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--iqmkpn33uytbhv24
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIxli8ACgkQrX5LkNig
+0100nwf/f8+i4bn9wteTJ2mBsDGexIY1+unKOqXQBG/i4Ump+FtyBHcEuzDuuLrW
+h95CCwdpRNaNXJTlULY4EfWAYdJ1CywVKtppTc4ItvVFevZswhFEwqEMj6qSruN9
+KYkiavewhJgtNgrR0k9veISLOUcNFM6yBuOdvnYpYvb5ar/tyXbu9XUKVXfHwgv6
+b5qvR48z+Jd18Af0iovh/Z9BjLhXj2hLKOnECV3g6QvGHIUB5lfYMQIKY6gfK/LA
+3vFyOxSDF7sEiW1ZU3JHM5bsDq5Mo0HDTj7I0HQRjvs3rsZkbO27N3F6oxas0slx
+v/xBhqyc0XZZtZErQqQqPQopn5y/eg==
+=Ayxv
+-----END PGP SIGNATURE-----
+
+--iqmkpn33uytbhv24--
