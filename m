@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B3C4DA957
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 05:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 677E04DA958
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 05:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353528AbiCPEfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 00:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42622 "EHLO
+        id S1353536AbiCPEfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 00:35:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353521AbiCPEeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 00:34:44 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2B35EDD2;
-        Tue, 15 Mar 2022 21:33:31 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id q11so1098057iod.6;
-        Tue, 15 Mar 2022 21:33:31 -0700 (PDT)
+        with ESMTP id S1353548AbiCPEex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 00:34:53 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71585F8F5;
+        Tue, 15 Mar 2022 21:33:34 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id r11so1077983ioh.10;
+        Tue, 15 Mar 2022 21:33:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=70UoJWrmjI50t2swoz3ieIHZ1jDITBYJP+SxtcY68Bw=;
-        b=WRWGQSp4XimyBdEprQLaCVudyUc7Bod2u3sN0JVTzSVqinJn4lqwwHwZCac0F6bII1
-         9/F/bJVIl8aMIF2Y0wFZ39fQ/NKOtufwrc4rRBKbUkoRdzZcVYRxNrvOnHf7KoL5xaoJ
-         irWbKjMyKwJtNOqW8hd4rt84AZf76XLYYEnpCcz59tJa8wEF4FZmBrMDeLM+JQPVwCLP
-         p0iKMKPA5yAGyqJlP67yKI/VC5sWGZ1LGiyQcwqpnN6jlKBtQUSNIjPVVly5WHESkFcw
-         xxVA0B7wEiY+qIudiBN7YgV9hiYXDCtVena6fITA5S2+j7g2m+Gc/DqKx0ccO4wovdQE
-         KjjQ==
+        bh=rv8XGfo8/J8apTUMt+aR8vPgcR2lwR8ezZGt/y9vbe0=;
+        b=IlygeSPAuIn014UP51rg6bdwGddKOrVWzdwGqOEwoWVfl0i2BY7RsBk4oVkpYUSlGm
+         nK76Glbck9Q4XtUyPmjflrQdUCMYHpX3svgANUIrmLdLbRQJ8ajJSC82rGn9VgfYZxTL
+         VkOZFUksFxvWOe6DZBqOVp/kJTCPVkSfe1QcX/O55qzNcheFhZfA6Es2b/vxwuMmJ0p3
+         LiIbqKDiOliGCbaeVilSMc/b1u3zSDT/PI0ffPOmkh3qtXbBQJRktk2iy1620caF9RzX
+         oQocS0kxQxtrFz2fCg9pkiVIzPZ5jG3crSnjC5nbfSsMO648g0CQM0F13w+GCWAd5iry
+         hIBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=70UoJWrmjI50t2swoz3ieIHZ1jDITBYJP+SxtcY68Bw=;
-        b=vH1SE+2zb56e3G7rffFFltT2YHv/MxjB4gMz/5xMTj24rSZ4+JTcI/ez/AIXDIK15o
-         wNtxEpnDQsskeBVAMcVSftKqgpPVmb6QmlbQ2LRIgo9MgzwIIyNQe63Lc2avK8U4BqlY
-         MdgChSDlbotXDaPm3XV8St1KU61Olr/wxyOV+3vdmDxIJo9gbVXQAQrkphcJoWKmmfIB
-         sxu69vAkpqimAAdRXk7Bln+ZqEgU4E6q6ersyypUCnXynBNpiSE4N7OXkDjblLF7+22h
-         zllTDDjIrdNfDCuZ6ayCB0daQuRBMbJ8NkMXuwiApgay2urcYh1Dimf/wW5HfX3qu6hS
-         icUg==
-X-Gm-Message-State: AOAM533Wjfp/xfSGCcu5i2FvEW+DYddIVAuJmWBba5SwJrNPG8GJgE6e
-        pdRPiGTy7W+P7XLk7AqLJcO4EO+9TnYFEMVIV+0=
-X-Google-Smtp-Source: ABdhPJw7pvVezE2R8fHmGOewAJTOEBC8d6BG8Rd7OA50MsBbuBu8r5ZSw/Id4WMkkPwef5ZJaYUpb6n/6GVDjVboWy8=
-X-Received: by 2002:a05:6638:1035:b0:306:e5bd:36da with SMTP id
- n21-20020a056638103500b00306e5bd36damr25847669jan.145.1647405210960; Tue, 15
- Mar 2022 21:33:30 -0700 (PDT)
+        bh=rv8XGfo8/J8apTUMt+aR8vPgcR2lwR8ezZGt/y9vbe0=;
+        b=AyeC8bV9K5EJr3sxdUFWKfv9CsPpbROgRe3LJXzfEubN3SXBYYpohJiKzeSnhkTvTj
+         SJRz3VEVmT/S3crLmb9v6b76ioj9dOkbcbp+R6lJo/XqS7eFit+I5k4bEeaFq/LbWQCS
+         l/bfzvCgewZ0jRtOrLyPmeHiOTAEIVHSsDJi921xuh+0L7KRl7VPVQHns0zpJ159YGs0
+         kRKPLhjr/iFZQkkA667mQwUODjTCX0JcHlTvcX/PM+u/044GS3DArR65zlsNkdHbF4UJ
+         MrbG5xvUq/TEybP0mJikUZX0S7OIix5DtzBmCDN1qLF/YENbgbGYBNiL920N4Tw4+POY
+         4s1A==
+X-Gm-Message-State: AOAM531bLLcDOb8iOR8ONPhNHMJawNVBA95Tq2ALO7kJ4xN3fHyYwB84
+        wxVU5D+sQygiSi4ToRnaNQ96tbGjbJMLkq3ZM3U=
+X-Google-Smtp-Source: ABdhPJxhhX8Og2z3+3Rb4KBLEHxfKyvRW6OdgjizjLlOhLk0g4jz2x2AxALX1T2E/sPHtyHxUbCDfD+kJTbora+JkuY=
+X-Received: by 2002:a5d:948a:0:b0:645:b742:87c0 with SMTP id
+ v10-20020a5d948a000000b00645b74287c0mr23081823ioj.79.1647405214090; Tue, 15
+ Mar 2022 21:33:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <1647000658-16149-1-git-send-email-alan.maguire@oracle.com> <1647000658-16149-4-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1647000658-16149-4-git-send-email-alan.maguire@oracle.com>
+References: <1647000658-16149-1-git-send-email-alan.maguire@oracle.com> <1647000658-16149-5-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1647000658-16149-5-git-send-email-alan.maguire@oracle.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 15 Mar 2022 21:33:20 -0700
-Message-ID: <CAEf4BzaM9EMQ0XyFxGzf0U1Z5SVXMdcvChgBioSwVZTnCj+KdQ@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 3/5] libbpf: add auto-attach for uprobes based
- on section name
+Date:   Tue, 15 Mar 2022 21:33:23 -0700
+Message-ID: <CAEf4BzZuZukTfaD6tB8wRf_iNdxewcGc5GACennEh=CVadeQ4w@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 4/5] selftests/bpf: add tests for u[ret]probe
+ attach by name
 To:     Alan Maguire <alan.maguire@oracle.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -75,102 +75,83 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Mar 11, 2022 at 4:11 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> Now that u[ret]probes can use name-based specification, it makes
-> sense to add support for auto-attach based on SEC() definition.
-> The format proposed is
+> add tests that verify attaching by name for
 >
->         SEC("u[ret]probe/prog:[raw_offset|[function_name[+offset]]")
-
-nit: prog -> binary ? or prog -> path?
-
+> 1. local functions in a program
+> 2. library functions in a shared object; and
+> 3. library functions in a program
 >
-> For example, to trace malloc() in libc:
->
->         SEC("uprobe/libc.so.6:malloc")
->
-> ...or to trace function foo2 in /usr/bin/foo:
->
->         SEC("uprobe//usr/bin/foo:foo2")
->
-> Auto-attach is done for all tasks (pid -1).  prog can be an absolute
-> path or simply a program/library name; in the latter case, we use
-> PATH/LD_LIBRARY_PATH to resolve the full path, falling back to
-> standard locations (/usr/bin:/usr/sbin or /usr/lib64:/usr/lib) if
-> the file is not found via environment-variable specified locations.
+> ...succeed for uprobe and uretprobes using new "func_name"
+> option for bpf_program__attach_uprobe_opts().  Also verify
+> auto-attach works where uprobe, path to binary and function
+> name are specified, but fails with -EOPNOTSUPP when the format
+> does not match (the latter is to support backwards-compatibility).
 >
 > Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 > ---
->  tools/lib/bpf/libbpf.c | 68 ++++++++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 66 insertions(+), 2 deletions(-)
+>  .../selftests/bpf/prog_tests/attach_probe.c        | 89 ++++++++++++++++++----
+>  .../selftests/bpf/progs/test_attach_probe.c        | 37 +++++++++
+>  2 files changed, 113 insertions(+), 13 deletions(-)
 >
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 2b50b01..0dcbca8 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -8593,6 +8593,7 @@ int bpf_program__set_log_buf(struct bpf_program *prog, char *log_buf, size_t log
+> diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> index d48f6e5..b770e0e 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
+> @@ -11,15 +11,22 @@ static void trigger_func(void)
+>         asm volatile ("");
 >  }
 >
->  static int attach_kprobe(const struct bpf_program *prog, long cookie, struct bpf_link **link);
-> +static int attach_uprobe(const struct bpf_program *prog, long cookie, struct bpf_link **link);
->  static int attach_tp(const struct bpf_program *prog, long cookie, struct bpf_link **link);
->  static int attach_raw_tp(const struct bpf_program *prog, long cookie, struct bpf_link **link);
->  static int attach_trace(const struct bpf_program *prog, long cookie, struct bpf_link **link);
-> @@ -8604,9 +8605,9 @@ int bpf_program__set_log_buf(struct bpf_program *prog, char *log_buf, size_t log
->         SEC_DEF("sk_reuseport/migrate", SK_REUSEPORT, BPF_SK_REUSEPORT_SELECT_OR_MIGRATE, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
->         SEC_DEF("sk_reuseport",         SK_REUSEPORT, BPF_SK_REUSEPORT_SELECT, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
->         SEC_DEF("kprobe/",              KPROBE, 0, SEC_NONE, attach_kprobe),
-> -       SEC_DEF("uprobe/",              KPROBE, 0, SEC_NONE),
-> +       SEC_DEF("uprobe/",              KPROBE, 0, SEC_NONE, attach_uprobe),
->         SEC_DEF("kretprobe/",           KPROBE, 0, SEC_NONE, attach_kprobe),
-> -       SEC_DEF("uretprobe/",           KPROBE, 0, SEC_NONE),
-> +       SEC_DEF("uretprobe/",           KPROBE, 0, SEC_NONE, attach_uprobe),
->         SEC_DEF("tc",                   SCHED_CLS, 0, SEC_NONE),
->         SEC_DEF("classifier",           SCHED_CLS, 0, SEC_NONE | SEC_SLOPPY_PFX | SEC_DEPRECATED),
->         SEC_DEF("action",               SCHED_ACT, 0, SEC_NONE | SEC_SLOPPY_PFX),
-> @@ -10761,6 +10762,69 @@ struct bpf_link *bpf_program__attach_uprobe(const struct bpf_program *prog,
->         return bpf_program__attach_uprobe_opts(prog, pid, binary_path, func_offset, &opts);
->  }
->
-> +/* Format of u[ret]probe section definition supporting auto-attach:
-> + * u[ret]probe/prog:function[+offset]
-
-same about prog
-
-> + *
-> + * prog can be an absolute/relative path or a filename; the latter is resolved to a
-> + * full path via bpf_program__attach_uprobe_opts.
-> + *
-> + * Many uprobe programs do not avail of auto-attach, so we need to handle the
-
-do not avail of? meaning "can't be auto-attached due to missing information"?
-
-> + * case where the format is uprobe/myfunc by returning 0 with *link set to NULL
-> + * to identify the case where auto-attach is not supported.
-
-it's true that we supported SEC("uprobe/whatever") before and that's
-not enough to auto-attach. But let's not drag this legacy "syntax"
-forward. How about we check if LIBBPF_STRICT_SEC_NAME is set, and if
-yes, then it should either be plain SEC("uprobe") or a proper full
-form of SEC("uprobe/path:func...") that you are adding? libbpf
-supports such case, you just need to change SEC_DEF definition to
-uprobe/ -> uprobe+, which means that it is either SEC("uprobe") or
-SEC("uprobe/<something>").
-
-In legacy mode we just won't support auto-attach for uprobe.
-
-Thoughts?
-
-> + */
-> +static int attach_uprobe(const struct bpf_program *prog, long cookie, struct bpf_link **link)
+> +/* attach point for byname uprobe */
+> +static void trigger_func2(void)
 > +{
-> +       DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, opts);
-> +       char *func, *probe_name, *func_end;
-> +       char *func_name, binary_path[512];
-> +       unsigned long long raw_offset;
-> +       size_t offset = 0;
-> +       int n;
+> +       asm volatile ("");
+> +}
 > +
-> +       *link = NULL;
+>  void test_attach_probe(void)
+>  {
+>         DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, uprobe_opts);
+> -       int duration = 0;
+>         struct bpf_link *kprobe_link, *kretprobe_link;
+>         struct bpf_link *uprobe_link, *uretprobe_link;
+>         struct test_attach_probe* skel;
+>         ssize_t uprobe_offset, ref_ctr_offset;
+> +       struct bpf_link *uprobe_err_link;
+>         bool legacy;
+> +       char *mem;
+>
+>         /* Check if new-style kprobe/uprobe API is supported.
+>          * Kernels that support new FD-based kprobe and uprobe BPF attachment
+
+[...]
+
+> -       if (CHECK(skel->bss->uprobe_res != 3, "check_uprobe_res",
+> -                 "wrong uprobe res: %d\n", skel->bss->uprobe_res))
+> +       /* trigger & validate uprobe attached by name */
+> +       trigger_func2();
 > +
+> +       if (!ASSERT_EQ(skel->bss->kprobe_res, 1, "check_kprobe_res"))
+> +               goto cleanup;
+> +       if (!ASSERT_EQ(skel->bss->kretprobe_res, 2, "check_kretprobe_res"))
+> +               goto cleanup;
+> +       if (!ASSERT_EQ(skel->bss->uprobe_res, 3, "check_uprobe_res"))
+> +               goto cleanup;
+> +       if (!ASSERT_EQ(skel->bss->uretprobe_res, 4, "check_uretprobe_res"))
+> +               goto cleanup;
+> +       if (!ASSERT_EQ(skel->bss->uprobe_byname_res, 5, "check_uprobe_byname_res"))
+> +               goto cleanup;
+> +       if (!ASSERT_EQ(skel->bss->uretprobe_byname_res, 6, "check_uretprobe_byname_res"))
+> +               goto cleanup;
+> +       if (!ASSERT_EQ(skel->bss->uprobe_byname2_res, 7, "check_uprobe_byname2_res"))
+>                 goto cleanup;
+
+no need for all those goto cleanup. Just do unconditional ASSERT_EQ(),
+it doesn't hurt and is much cleaner.
+
+> -       if (CHECK(skel->bss->uretprobe_res != 4, "check_uretprobe_res",
+> -                 "wrong uretprobe res: %d\n", skel->bss->uretprobe_res))
+> +       if (!ASSERT_EQ(skel->bss->uretprobe_byname2_res, 8, "check_uretprobe_byname2_res"))
+>                 goto cleanup;
+>
+>  cleanup:
 
 [...]
