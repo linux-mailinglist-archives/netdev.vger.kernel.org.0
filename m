@@ -2,144 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE944DB948
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:24:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 386374DB989
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344321AbiCPUZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 16:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
+        id S1357645AbiCPUjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 16:39:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234459AbiCPUZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:25:46 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3122AC54
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:24:31 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id pv16so6681892ejb.0
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:24:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2BUOg6nzpx/rS6eVs0jjAsHQW75uUaBJm76wT5d4W1I=;
-        b=hfTSxmFC2vx3RQuiyx4WPTUpEZxKUCw9PCHT/9Y7hyvbvDZFbzIVDsjA7wvQH1KnsY
-         h0R+rs9a62Ps7GCnrZig3oPEwNHny6HOgL78b4zaKlOdEQzPP3q1RvAhoJ4diHifAWEt
-         Pw4FquwXZRhGWmQO4qPEI/uF5ol5s/7hY2hBqJiP6tAgQHivSG8jsICqQAlrwkemyFAb
-         VzFVOunUcHOhwM1n/W/WFJxI1sGNprEcnNVATM217WOAo0wPXBFVSlzcyPQCsejkMXyQ
-         RPYSTVZ5CiJDoP0/NEROU+9p4U+RO8uTBiFbg1KNwwBBw/qtfcokNEgn48ophucJPpc6
-         q9ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2BUOg6nzpx/rS6eVs0jjAsHQW75uUaBJm76wT5d4W1I=;
-        b=ILttmOaoiEzk/vtEoXx9DKACunzZS+aOexExtkKf7upzcWedGdcKtKnxlPxramg7Kz
-         VTedkBX837Ca/30/r1etyfmG6vIom2YD7g+gPTKSUEzd/whvwhUkoyAJDspJBP91d3p1
-         UCvmvXdU0x1NSLdYXhSwtID9UdaZt/0xTLAeumfXWjvjW0940mT942UbNnnZa3x6M4OU
-         +o0THIBK/S7pVj9m+DjYy6g1jiJTwe4p9WJRriPhV5m/FpwAmSwDZHnz/T+qm/LmJBZT
-         gH7QjJCDx0zFqJEHPdEh6yYHvuYzDvVdlorOAJDy50Tz78s8yTH+bbClHoWvoSO2dDSC
-         bVcQ==
-X-Gm-Message-State: AOAM53221lXjy/dec88WXRtA9fy70d2Q9ys87fuJyH/TR1cQHPZyLOdV
-        JGc69yq3q4839hmpHoPvOEyyN5hA3zUOEiwJJ0Y=
-X-Google-Smtp-Source: ABdhPJwWTg8xJQVRTfB71CCllxTbaKuUleo9hhXFrZpvFEDzResFK5/SSFfYY45QA5cDHNf7FxS/6N9bvsw397WqcWQ=
-X-Received: by 2002:a17:906:2584:b0:6d6:e5c9:221b with SMTP id
- m4-20020a170906258400b006d6e5c9221bmr1450972ejb.514.1647462269917; Wed, 16
- Mar 2022 13:24:29 -0700 (PDT)
+        with ESMTP id S1358128AbiCPUhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:37:48 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E3A6A057
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:36:25 -0700 (PDT)
+Received: from [192.168.0.3] (ip5f5aef39.dynamic.kabel-deutschland.de [95.90.239.57])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 917F961EA192E;
+        Wed, 16 Mar 2022 21:36:22 +0100 (CET)
+Message-ID: <cb7d704a-60bd-a06f-6511-95889bc0bc5f@molgen.mpg.de>
+Date:   Wed, 16 Mar 2022 21:36:22 +0100
 MIME-Version: 1.0
-References: <20220315211225.2923496-1-anthony.l.nguyen@intel.com>
- <20220315211225.2923496-2-anthony.l.nguyen@intel.com> <20220315202941.64319c5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <e0d1a5caf1714f303ae89c909dfa4d04ebdde3e4.camel@intel.com>
-In-Reply-To: <e0d1a5caf1714f303ae89c909dfa4d04ebdde3e4.camel@intel.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 16 Mar 2022 13:24:18 -0700
-Message-ID: <CAKgT0Uc3MPiVijAMc3opdqUmEXMT3umqYWMrowHznoT=L=-5nw@mail.gmail.com>
-Subject: Re: [PATCH net 1/3] ice: fix NULL pointer dereference in ice_update_vsi_tx_ring_stats()
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "kuba@kernel.org" <kuba@kernel.org>, lkp <lkp@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "dan.carpenter@oracle.com" <dan.carpenter@oracle.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "G, GurucharanX" <gurucharanx.g@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: bnx2x: How to log the firmware version? (was: [RFC net] bnx2x: fix
+ built-in kernel driver load failure)
+Content-Language: en-US
+To:     Manish Chopra <manishc@marvell.com>
+Cc:     Donald Buczek <buczek@molgen.mpg.de>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Ariel Elior <aelior@marvell.com>, it+netdev@molgen.mpg.de,
+        regressions@lists.linux.dev
+References: <20220316111842.28628-1-manishc@marvell.com>
+ <5f136c0c-2e16-d176-3d4a-caed6c3420a7@molgen.mpg.de>
+ <BY3PR18MB4612DEDE441A89EEE0470850AB119@BY3PR18MB4612.namprd18.prod.outlook.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <BY3PR18MB4612DEDE441A89EEE0470850AB119@BY3PR18MB4612.namprd18.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 12:01 PM Nguyen, Anthony L
-<anthony.l.nguyen@intel.com> wrote:
->
-> On Tue, 2022-03-15 at 20:29 -0700, Jakub Kicinski wrote:
-> > On Tue, 15 Mar 2022 14:12:23 -0700 Tony Nguyen wrote:
-> > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Dear Manish,
 
-<snip>
 
-> > > pointer is valid, but later on ring is accessed to propagate
-> > > gathered Tx
-> > > stats onto VSI stats.
-> > >
-> > > Change the existing logic to move to next ring when ring is NULL.
-> > >
-> > > Fixes: e72bba21355d ("ice: split ice_ring onto Tx/Rx separate
-> > > structs")
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > Acked-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > > Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent
-> > > worker at Intel)
-> > > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > > ---
-> > >  drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/intel/ice/ice_main.c
-> > > b/drivers/net/ethernet/intel/ice/ice_main.c
-> > > index 493942e910be..d4a7c39fd078 100644
-> > > --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> > > +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> > > @@ -5962,8 +5962,9 @@ ice_update_vsi_tx_ring_stats(struct ice_vsi
-> > > *vsi,
-> > >                 u64 pkts = 0, bytes = 0;
-> > >
-> > >                 ring = READ_ONCE(rings[i]);
-> >
-> > Not really related to this patch but why is there a read_once() here?
-> > Aren't stats read under rtnl_lock? What is this protecting against?
->
-> It looks like it was based on a patch from i40e [1]. From the commit, I
-> gather this is the reason:
->
-> "Previously the stats were 64 bit but highly racy due to the fact that
-> 64 bit transactions are not atomic on 32 bit systems."
->
-> Thanks,
->
-> Tony
->
-> [1]
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=980e9b1186424fa3eb766d59fc91003d0ed1ed6a
->
->
-> (Resending as some non-text formatting snuck in to my reply. Sorry for
-> the spam)
+Thank you for your answer.
 
-Actually the rcu locking and READ_ONCE has to do with the fact that
-the driver code for the igb/ixgbe/i40e driver had a bunch of code that
-could kick in from the sysfs and/or PCIe paths that would start
-tearing things down without necessarily holding the rtnl_lock as it
-should have.
+Am 16.03.22 um 19:25 schrieb Manish Chopra:
 
-It might make sense to reevaluate the usage of the READ_ONCE and rcu
-locking to determine if it is actually needed since much of that is a
-hold over from when we were doing this in the watchdog and not while
-holding the rtnl_lock in the stats call.
+>> -----Original Message-----
+>> From: Paul Menzel <pmenzel@molgen.mpg.de>
+
+[…]
+
+>> Hmm, with `CONFIG_BNX2X=y` and `bnx2x.debug=0x0100000`, bringing up
+>> net05 (.1) and then net04 (.0), I only see:
+>>
+>>       [ 3333.883697] bnx2x: [bnx2x_compare_fw_ver:2378(net04)]loaded fw f0d07 major 7 minor d rev f eng 0
+> 
+> I think this print is not good probably  (that's why it is default
+> disabled), it’s not really the firmware driver is supposed to work
+> with (it is something which was already loaded by any other PF
+> somewhere or some residue from earlier loads),
+Still interesting, when handling firmware files, and trying to wrap ones 
+head around the different versions flying around.
+
+> driver is always going to work with the firmware it gets from
+> request_firmware(). I suggest you to enable below prints to know
+> about which FW driver is going to work with. Perhaps, I will enable
+> below default.
+> 
+>          BNX2X_DEV_INFO("Loading %s\n", fw_file_name);
+> 
+>          rc = request_firmware(&bp->firmware, fw_file_name, &bp->pdev->dev);
+>          if (rc) {
+>                  BNX2X_DEV_INFO("Trying to load older fw %s\n", fw_file_name_v15);
+
+Indeed, after figuring out to enable `BNX2X_DEV_INFO()` by the probe 
+flag 0x2 – so either `bnx2x.debug=0x2` or `ethtool -s net04 msglvl 0x2`, 
+Linux logs:
+
+     $ dmesg --level=info | grep bnx2x | tail -8
+     [  242.987091] bnx2x 0000:45:00.1: fw_seq 0x0000003b
+     [  242.994144] bnx2x 0000:45:00.1: drv_pulse 0x6404
+     [  243.038239] bnx2x 0000:45:00.1: Loading bnx2x/bnx2x-e1h-7.13.21.0.fw
+     [  243.356284] bnx2x 0000:45:00.1 net05: using MSI-X  IRQs: sp 57 
+fp[0] 59 ... fp[7] 66
+     [  571.774061] bnx2x 0000:45:00.0: fw_seq 0x0000003b
+     [  571.781069] bnx2x 0000:45:00.0: drv_pulse 0x2149
+     [  571.799963] bnx2x 0000:45:00.0: Loading bnx2x/bnx2x-e1h-7.13.21.0.fw
+     [  571.811657] bnx2x 0000:45:00.0 net04: using MSI-X  IRQs: sp 46 
+fp[0] 48 ... fp[7] 55
+     $ dmesg --level=err | grep bnx2x
+     [  571.979621] bnx2x 0000:45:00.0 net04: Warning: Unqualified SFP+ 
+module detected, Port 0 from Intel Corp       part number AFBR-703SDZ-IN2
+
+Maybe the firmware version could be added to the line with the MSI-X and 
+IRQ info. Maybe also the old version on the device, which `ethtool -i 
+net04` shows.
+
+     $ ethtool -i net04 | grep firmware
+     firmware-version: 7.8.16 bc 6.2.26 phy aa0.406
+
+No idea, why ethtool does not show the loaded firmware.
+
+
+Kind regards,
+
+Paul
