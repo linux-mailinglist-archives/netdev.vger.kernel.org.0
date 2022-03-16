@@ -2,262 +2,386 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE364DB6EC
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 18:09:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7BD74DB6F0
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 18:11:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241750AbiCPRKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 13:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
+        id S244678AbiCPRMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 13:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241110AbiCPRKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 13:10:50 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5C63BF81
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 10:09:33 -0700 (PDT)
-Received: from [192.168.0.3] (ip5f5aef39.dynamic.kabel-deutschland.de [95.90.239.57])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4049961EA1930;
-        Wed, 16 Mar 2022 18:09:31 +0100 (CET)
-Message-ID: <5f136c0c-2e16-d176-3d4a-caed6c3420a7@molgen.mpg.de>
-Date:   Wed, 16 Mar 2022 18:09:30 +0100
+        with ESMTP id S237728AbiCPRMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 13:12:32 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215A512AEF;
+        Wed, 16 Mar 2022 10:11:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UQEYmpY2sVgpJM1wgkARVOFYY02a1fKQmd5lsn8mv7ZE66MlCCyw36znsdqHaJlQAz776fj68qrZVQftjyzTAbjY88S/CGshxfL+kyiZX8QZrZ5u5x3q9roWxnzElHeaFYBNF9VqZGA6E+hziJFSNuxlwg5URHOl1fH/kkQP5py3k8L0r/6RvwH0WtVJdiivQyanHVA9ne7HaXc14BrVP8ndDPHMRvE+VGfO4DCDTVAosUKQnJykspO2m22/I2ChGK+ud2FbDaX7/i5J/hQXEjpE6fAS3REiPYsW6xAl9d3oe9YPZxuRlkr7XIBVbzyq04ew1VT2dPnC7VRggxSrSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CFSyUBwgNdWE08Cy+O7YY2A8zJqd1BO5RQqAu2h54ys=;
+ b=dxe690bjUbiFVjqMG0AzW3lyfkTX3QZgBmlwdVXbnmghoypnBk4wWT04sZM2vyU68K5d/ucjwAkh8g63fn7ESfSJNOho0J1AkvIbSeseJOEDStH0/nCTBAJnyqGQF4fvRnxlc+mI3ZON/miaeBRvfS/PjkfsD4//Cwqn5dizVu00Y/gYBKfEZDLBs3mxvBtDrcHWwmY9c+Ndax9ZpF2ICWpXOPBd9M35K5omDq5OnGEOqRUcMyt710N0eH1B8OAqnAN/gX8TQV3gj44a3Mun46Vw46I/rhermSg1r6Mw1GvK9SEXAzmK37h+sHhP/ItROh9x9xTJOelV5CJ0MqQ2Fw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=grandegger.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CFSyUBwgNdWE08Cy+O7YY2A8zJqd1BO5RQqAu2h54ys=;
+ b=Leys4t4z6PQWOpbFvPggfoWOsvR06T1iyAjFg56Xx8DWcSQCBhtRm0dqeAKLUw3k38fBWh3PVcGuPxD6eRtXpSVg9PLjgkz7fkvtDIoIPElbn5K23JYOl5THCWe4cpy7RNlNC678rSguGqOsRx1GjHzNVZRFxdgSgR6Gf00M8iU=
+Received: from SN4PR0701CA0013.namprd07.prod.outlook.com
+ (2603:10b6:803:28::23) by CH2PR02MB6150.namprd02.prod.outlook.com
+ (2603:10b6:610:9::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Wed, 16 Mar
+ 2022 17:11:13 +0000
+Received: from SN1NAM02FT0026.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:28:cafe::a2) by SN4PR0701CA0013.outlook.office365.com
+ (2603:10b6:803:28::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.25 via Frontend
+ Transport; Wed, 16 Mar 2022 17:11:13 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0026.mail.protection.outlook.com (10.97.5.74) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5081.14 via Frontend Transport; Wed, 16 Mar 2022 17:11:13 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 16 Mar 2022 10:11:11 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 16 Mar 2022 10:11:11 -0700
+Envelope-to: git@xilinx.com,
+ wg@grandegger.com,
+ mkl@pengutronix.de,
+ davem@davemloft.net,
+ kuba@kernel.org,
+ robh+dt@kernel.org,
+ linux-can@vger.kernel.org,
+ netdev@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.140.6.18] (port=35714 helo=xhdlakshmis40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <amit.kumar-mahapatra@xilinx.com>)
+        id 1nUXB0-000EES-Vt; Wed, 16 Mar 2022 10:11:11 -0700
+From:   Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <robh+dt@kernel.org>,
+        <appana.durga.rao@xilinx.com>
+CC:     <git@xilinx.com>, <michal.simek@xilinx.com>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <akumarma@xilinx.com>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+Subject: [PATCH v4] dt-bindings: can: xilinx_can: Convert Xilinx CAN binding to YAML
+Date:   Wed, 16 Mar 2022 22:41:05 +0530
+Message-ID: <20220316171105.17654-1-amit.kumar-mahapatra@xilinx.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [RFC net] bnx2x: fix built-in kernel driver load failure
-Content-Language: en-US
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     buczek@molgen.mpg.de, kuba@kernel.org, netdev@vger.kernel.org,
-        aelior@marvell.com, it+netdev@molgen.mpg.de,
-        regressions@lists.linux.dev
-References: <20220316111842.28628-1-manishc@marvell.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220316111842.28628-1-manishc@marvell.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 412bdbfa-4128-47b0-0d8b-08da076ff95f
+X-MS-TrafficTypeDiagnostic: CH2PR02MB6150:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR02MB6150325916FABA2139988E73BA119@CH2PR02MB6150.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LDARUACNbDnS+KahbiLMGNxPzmcXqiTGMLHrjHM7krNWUhqPZ9yeJ7D6yDnNgqGR53fKA0oivQ0HW8j76scaRriD4kDb5Q9ZEcekC8NLwhgkAePJgbcyCkC1v8LwATGTPG6hRFOhv/W2p9YO9se/qy+MydjVrKPoQC+E9smHNkq19gcpuwMxYvXX2iVFCk2EYt7+/mGsOT/bOUIIen9h16kznqbCe9jj9EoVwHFNQHvOKNqXX4zIYN8Xi//qKAz442SDvHLmKXz/udDVil+D/O21nTZhVFsqbUw1MBItrayQpbsmo5JDgghx6W2hLr2+2m98zlJq5c1Tf6IijclpUnT3P2P4qRIxQkQzBm/nd92UFoW7EZqW/2ATmry/TBGDPLdIrD51DY41QwmzPKQdjBAP0yhvb03+6H2D/aRl8OqAjnFlqS5i8A7ZhXze7SXXnJyw8U2HbWUZtRR8qGGZMWeNAsqDayEkNNBCzVYb3rsWY89lCThmGpaFdzPgicSmrWcihbAWdiw7WsiL6CyVwRm7vxi/Y379sH9vxtx37Kw60JssQxROsZnEU+2gyKj54zyRj2nfgvstUYBLv++0tvMXIH0LmfPunp7aFyqRMJCkcgYuRFKrA0bpTuig8HtyAUIa8xk7oI5IecbRUI5LOsdLNDmD8HX2E8LuVRLkXDik7kiVeboyVkTm2d7Gc9SOn4MN0te8HAYj2XMa/IyZYxbp3Pf5Cbyz+67KjW/uWHvc+0NAjpDWJsoeP6YWvUh+HBztBks0Z6TWfYKiTxRlOrKZXPX/ts1zUaFq5gb1AA5SBh+R5aKhPOSFXFLJ76QM0L65yNumrOtm6pJ0/cRjvg==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(8676002)(82310400004)(6666004)(7696005)(7416002)(107886003)(2616005)(1076003)(426003)(26005)(336012)(8936002)(186003)(40460700003)(4326008)(2906002)(47076005)(508600001)(83380400001)(5660300002)(36860700001)(70206006)(70586007)(9786002)(7636003)(966005)(54906003)(110136005)(316002)(356005)(6636002)(36756003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 17:11:13.2085
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 412bdbfa-4128-47b0-0d8b-08da076ff95f
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0026.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6150
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Manish,
+Convert Xilinx CAN binding documentation to YAML.
 
+Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+---
+BRANCH: yaml
 
-Thank you for the patch.
+Changes in v2:
+ - Added reference to can-controller.yaml
+ - Added example node for canfd-2.0
 
-Am 16.03.22 um 12:18 schrieb Manish Chopra:
-> commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
-> added request_firmware() logic in probe() which caused
-> built-in kernel driver load failure as access to firmware
-> file is not feasible during the probe time.
+Changes in v3:
+ - Changed yaml file name from xilinx_can.yaml to xilinx,can.yaml
+ - Added "power-domains" to fix dts_check warnings
+ - Grouped "clock-names" and "clocks" together
+ - Added type $ref for all non-standard fields
+ - Defined compatible strings as enum
+ - Used defines,instead of hard-coded values, for GIC interrupts
+ - Droped unused labels in examples
+ - Droped description for standard fields
 
-… for example, when the initrd does not provide the firmware files.
+Changes in v4:
+ - Replaced additionalProperties with unevaluatedProperties
+ - Moved reg property just after compatible in all examples
+---
+ .../bindings/net/can/xilinx,can.yaml          | 161 ++++++++++++++++++
+ .../bindings/net/can/xilinx_can.txt           |  61 -------
+ 2 files changed, 161 insertions(+), 61 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/can/xilinx,can.yaml
+ delete mode 100644 Documentation/devicetree/bindings/net/can/xilinx_can.txt
 
-Please also paste one example error message.
+diff --git a/Documentation/devicetree/bindings/net/can/xilinx,can.yaml b/Documentation/devicetree/bindings/net/can/xilinx,can.yaml
+new file mode 100644
+index 000000000000..65af8183cb9c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/can/xilinx,can.yaml
+@@ -0,0 +1,161 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/can/xilinx,can.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title:
++  Xilinx Axi CAN/Zynq CANPS controller
++
++maintainers:
++  - Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
++
++properties:
++  compatible:
++    enum:
++      - xlnx,zynq-can-1.0
++      - xlnx,axi-can-1.00.a
++      - xlnx,canfd-1.0
++      - xlnx,canfd-2.0
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++    maxItems: 2
++
++  clock-names:
++    maxItems: 2
++
++  power-domains:
++    maxItems: 1
++
++  tx-fifo-depth:
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    description: CAN Tx fifo depth (Zynq, Axi CAN).
++
++  rx-fifo-depth:
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    description: CAN Rx fifo depth (Zynq, Axi CAN, CAN FD in sequential Rx mode)
++
++  tx-mailbox-count:
++    $ref: "/schemas/types.yaml#/definitions/uint32"
++    description: CAN Tx mailbox buffer count (CAN FD)
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++unevaluatedProperties: false
++
++allOf:
++  - $ref: can-controller.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - xlnx,zynq-can-1.0
++
++    then:
++      properties:
++        clock-names:
++          items:
++            - const: can_clk
++            - const: pclk
++      required:
++        - tx-fifo-depth
++        - rx-fifo-depth
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - xlnx,axi-can-1.00.a
++
++    then:
++      properties:
++        clock-names:
++          items:
++            - const: can_clk
++            - const: s_axi_aclk
++      required:
++        - tx-fifo-depth
++        - rx-fifo-depth
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - xlnx,canfd-1.0
++              - xlnx,canfd-2.0
++
++    then:
++      properties:
++        clock-names:
++          items:
++            - const: can_clk
++            - const: s_axi_aclk
++      required:
++        - tx-mailbox-count
++        - rx-fifo-depth
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    can@e0008000 {
++        compatible = "xlnx,zynq-can-1.0";
++        reg = <0xe0008000 0x1000>;
++        clocks = <&clkc 19>, <&clkc 36>;
++        clock-names = "can_clk", "pclk";
++        interrupts = <GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-parent = <&intc>;
++        tx-fifo-depth = <0x40>;
++        rx-fifo-depth = <0x40>;
++    };
++
++  - |
++    can@40000000 {
++        compatible = "xlnx,axi-can-1.00.a";
++        reg = <0x40000000 0x10000>;
++        clocks = <&clkc 0>, <&clkc 1>;
++        clock-names = "can_clk", "s_axi_aclk";
++        interrupt-parent = <&intc>;
++        interrupts = <GIC_SPI 59 IRQ_TYPE_EDGE_RISING>;
++        tx-fifo-depth = <0x40>;
++        rx-fifo-depth = <0x40>;
++    };
++
++  - |
++    can@40000000 {
++        compatible = "xlnx,canfd-1.0";
++        reg = <0x40000000 0x2000>;
++        clocks = <&clkc 0>, <&clkc 1>;
++        clock-names = "can_clk", "s_axi_aclk";
++        interrupt-parent = <&intc>;
++        interrupts = <GIC_SPI 59 IRQ_TYPE_EDGE_RISING>;
++        tx-mailbox-count = <0x20>;
++        rx-fifo-depth = <0x20>;
++    };
++
++  - |
++    can@ff060000 {
++        compatible = "xlnx,canfd-2.0";
++        reg = <0xff060000 0x6000>;
++        clocks = <&clkc 0>, <&clkc 1>;
++        clock-names = "can_clk", "s_axi_aclk";
++        interrupt-parent = <&intc>;
++        interrupts = <GIC_SPI 59 IRQ_TYPE_EDGE_RISING>;
++        tx-mailbox-count = <0x20>;
++        rx-fifo-depth = <0x40>;
++    };
+diff --git a/Documentation/devicetree/bindings/net/can/xilinx_can.txt b/Documentation/devicetree/bindings/net/can/xilinx_can.txt
+deleted file mode 100644
+index 100cc40b8510..000000000000
+--- a/Documentation/devicetree/bindings/net/can/xilinx_can.txt
++++ /dev/null
+@@ -1,61 +0,0 @@
+-Xilinx Axi CAN/Zynq CANPS controller Device Tree Bindings
+----------------------------------------------------------
+-
+-Required properties:
+-- compatible		: Should be:
+-			  - "xlnx,zynq-can-1.0" for Zynq CAN controllers
+-			  - "xlnx,axi-can-1.00.a" for Axi CAN controllers
+-			  - "xlnx,canfd-1.0" for CAN FD controllers
+-			  - "xlnx,canfd-2.0" for CAN FD 2.0 controllers
+-- reg			: Physical base address and size of the controller
+-			  registers map.
+-- interrupts		: Property with a value describing the interrupt
+-			  number.
+-- clock-names		: List of input clock names
+-			  - "can_clk", "pclk" (For CANPS),
+-			  - "can_clk", "s_axi_aclk" (For AXI CAN and CAN FD).
+-			  (See clock bindings for details).
+-- clocks		: Clock phandles (see clock bindings for details).
+-- tx-fifo-depth		: Can Tx fifo depth (Zynq, Axi CAN).
+-- rx-fifo-depth		: Can Rx fifo depth (Zynq, Axi CAN, CAN FD in
+-                          sequential Rx mode).
+-- tx-mailbox-count	: Can Tx mailbox buffer count (CAN FD).
+-- rx-mailbox-count	: Can Rx mailbox buffer count (CAN FD in mailbox Rx
+-			  mode).
+-
+-
+-Example:
+-
+-For Zynq CANPS Dts file:
+-	zynq_can_0: can@e0008000 {
+-			compatible = "xlnx,zynq-can-1.0";
+-			clocks = <&clkc 19>, <&clkc 36>;
+-			clock-names = "can_clk", "pclk";
+-			reg = <0xe0008000 0x1000>;
+-			interrupts = <0 28 4>;
+-			interrupt-parent = <&intc>;
+-			tx-fifo-depth = <0x40>;
+-			rx-fifo-depth = <0x40>;
+-		};
+-For Axi CAN Dts file:
+-	axi_can_0: axi-can@40000000 {
+-			compatible = "xlnx,axi-can-1.00.a";
+-			clocks = <&clkc 0>, <&clkc 1>;
+-			clock-names = "can_clk","s_axi_aclk" ;
+-			reg = <0x40000000 0x10000>;
+-			interrupt-parent = <&intc>;
+-			interrupts = <0 59 1>;
+-			tx-fifo-depth = <0x40>;
+-			rx-fifo-depth = <0x40>;
+-		};
+-For CAN FD Dts file:
+-	canfd_0: canfd@40000000 {
+-			compatible = "xlnx,canfd-1.0";
+-			clocks = <&clkc 0>, <&clkc 1>;
+-			clock-names = "can_clk", "s_axi_aclk";
+-			reg = <0x40000000 0x2000>;
+-			interrupt-parent = <&intc>;
+-			interrupts = <0 59 1>;
+-			tx-mailbox-count = <0x20>;
+-			rx-fifo-depth = <0x20>;
+-		};
+-- 
+2.17.1
 
-> This patch fixes this issue by -
-> 
-> 1. Removing request_firmware() logic from the probe() such
->     that open() handle it as it used to handle it earlier
-> 
-> 2. Relaxing a bit FW version comparisons against the loaded FW
->     (to allow many close/compatible FWs to run together now)
-
-I’d prefer if you also pasted one error message, and even split this out 
-into a separate commit with elaborate problem description.
-
-Style note: For the commit message, it’d be great if you used 75 
-characters per line.
-
-> Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-> Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
-
-The regzbot also asks to add the tag below [1].
-
-Link: 
-https://lore.kernel.org/r/46f2d9d9-ae7f-b332-ddeb-b59802be2bab@molgen.mpg.de
-
-> Signed-off-by: Manish Chopra <manishc@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
-> ---
-> 
-> Note that this patch is just for test and get feedback
-> from Paul Menzel about the issue reported by him on built-in
-> driver probe failure due to firmware files not found
-
-Tested-by: Paul Menzel <pmenzel@molgen.mpg.de>
-
-Dell PowerEdge R910/0KYD3D, BIOS 2.10.0 08/29/2013 with patch on top of 
-Linux 5.10.103 with 7.13.15.0 on the root partition:
-
-$ lspci -nn -s 45:00.1
-45:00.1 Ethernet controller [0200]: Broadcom Inc. and subsidiaries 
-NetXtreme II BCM57711 10-Gigabit PCIe [14e4:164f]
-$ ethtool -i net05
-driver: bnx2x
-version: 5.10.103.mx64.429-00016-g597b02
-firmware-version: 7.8.16 bc 6.2.26 phy aa0.406
-expansion-rom-version:
-bus-info: 0000:45:00.1
-supports-statistics: yes
-supports-test: yes
-supports-eeprom-access: yes
-supports-register-dump: yes
-supports-priv-flags: yes
-```
-
->   drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |  2 --
->   .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   | 28 +++++++++++--------
->   .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 15 ++--------
->   3 files changed, 19 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-> index a19dd6797070..2209d99b3404 100644
-> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-> @@ -2533,6 +2533,4 @@ void bnx2x_register_phc(struct bnx2x *bp);
->    * Meant for implicit re-load flows.
->    */
->   int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
-> -int bnx2x_init_firmware(struct bnx2x *bp);
-> -void bnx2x_release_firmware(struct bnx2x *bp);
->   #endif /* bnx2x.h */
-> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-> index 8d36ebbf08e1..5729a5ab059d 100644
-> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-> @@ -2364,24 +2364,30 @@ int bnx2x_compare_fw_ver(struct bnx2x *bp, u32 load_code, bool print_err)
->   	/* is another pf loaded on this engine? */
->   	if (load_code != FW_MSG_CODE_DRV_LOAD_COMMON_CHIP &&
->   	    load_code != FW_MSG_CODE_DRV_LOAD_COMMON) {
-> -		/* build my FW version dword */
-> -		u32 my_fw = (bp->fw_major) + (bp->fw_minor << 8) +
-> -				(bp->fw_rev << 16) + (bp->fw_eng << 24);
-> +		u8 loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng;
-> +		u32 loaded_fw;
-> 
->   		/* read loaded FW from chip */
-> -		u32 loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
-> +		loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
-> 
-> -		DP(BNX2X_MSG_SP, "loaded fw %x, my fw %x\n",
-> -		   loaded_fw, my_fw);
-> +		loaded_fw_major = loaded_fw & 0xff;
-> +		loaded_fw_minor = (loaded_fw >> 8) & 0xff;
-> +		loaded_fw_rev = (loaded_fw >> 16) & 0xff;
-> +		loaded_fw_eng = (loaded_fw >> 24) & 0xff;
-> +
-> +		DP(BNX2X_MSG_SP, "loaded fw 0x%x major 0x%x minor 0x%x rev 0x%x eng 0x%x\n",
-> +		   loaded_fw, loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng);
-
-Hmm, with `CONFIG_BNX2X=y` and `bnx2x.debug=0x0100000`, bringing up 
-net05 (.1) and then net04 (.0), I only see:
-
-     [ 3333.883697] bnx2x: [bnx2x_compare_fw_ver:2378(net04)]loaded fw 
-f0d07 major 7 minor d rev f eng 0
-
-For another patch, but the currently loaded firmware, and when loading 
-new firmware, the version of it, should also be logged by Linux (by 
-default, and not with debug level).
-
-Also copying the 7.13.21.0 firmware on the running system, bringing the 
-interfaces down and up again, the newer firmware is not loaded, but it 
-stays with the 7.13.15.0:
-
-     [ 3533.374046] bnx2x: [bnx2x_compare_fw_ver:2378(net04)]loaded fw 
-f0d07 major 7 minor d rev f eng 0
-
->   		/* abort nic load if version mismatch */
-> -		if (my_fw != loaded_fw) {
-> +		if (loaded_fw_major != BCM_5710_FW_MAJOR_VERSION ||
-> +		    loaded_fw_minor != BCM_5710_FW_MINOR_VERSION ||
-> +		    loaded_fw_eng != BCM_5710_FW_ENGINEERING_VERSION ||
-> +		    loaded_fw_rev < BCM_5710_FW_REVISION_VERSION_V15) {
->   			if (print_err)
-> -				BNX2X_ERR("bnx2x with FW %x was already loaded which mismatches my %x FW. Aborting\n",
-> -					  loaded_fw, my_fw);
-> +				BNX2X_ERR("loaded FW incompatible. Aborting\n");
->   			else
-> -				BNX2X_DEV_INFO("bnx2x with FW %x was already loaded which mismatches my %x FW, possibly due to MF UNDI\n",
-> -					       loaded_fw, my_fw);
-> +				BNX2X_DEV_INFO("loaded FW incompatible, possibly due to MF UNDI\n");
-> +
->   			return -EBUSY;
->   		}
->   	}
-> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-> index eedb48d945ed..c19b072f3a23 100644
-> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-> @@ -12319,15 +12319,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
-> 
->   	bnx2x_read_fwinfo(bp);
-> 
-> -	if (IS_PF(bp)) {
-> -		rc = bnx2x_init_firmware(bp);
-> -
-> -		if (rc) {
-> -			bnx2x_free_mem_bp(bp);
-> -			return rc;
-> -		}
-> -	}
-> -
->   	func = BP_FUNC(bp);
-> 
->   	/* need to reset chip if undi was active */
-> @@ -12340,7 +12331,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
-> 
->   		rc = bnx2x_prev_unload(bp);
->   		if (rc) {
-> -			bnx2x_release_firmware(bp);
->   			bnx2x_free_mem_bp(bp);
->   			return rc;
->   		}
-> @@ -13409,7 +13399,7 @@ do {									\
->   	     (u8 *)bp->arr, len);					\
->   } while (0)
-> 
-> -int bnx2x_init_firmware(struct bnx2x *bp)
-> +static int bnx2x_init_firmware(struct bnx2x *bp)
->   {
->   	const char *fw_file_name, *fw_file_name_v15;
->   	struct bnx2x_fw_file_hdr *fw_hdr;
-> @@ -13509,7 +13499,7 @@ int bnx2x_init_firmware(struct bnx2x *bp)
->   	return rc;
->   }
-> 
-> -void bnx2x_release_firmware(struct bnx2x *bp)
-> +static void bnx2x_release_firmware(struct bnx2x *bp)
->   {
->   	kfree(bp->init_ops_offsets);
->   	kfree(bp->init_ops);
-> @@ -14026,7 +14016,6 @@ static int bnx2x_init_one(struct pci_dev *pdev,
->   	return 0;
-> 
->   init_one_freemem:
-> -	bnx2x_release_firmware(bp);
->   	bnx2x_free_mem_bp(bp);
-> 
->   init_one_exit:
-> --
-> 2.35.1.273.ge6ebfd0
-
-So why was the earlier firmware version comparison needed in commit 
-b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")?
-
-I let the maintainers decide how to best go forward.
-
-
-Kind regards,
-
-Paul
-
-
-[1]: https://linux-regtracking.leemhuis.info/regzbot/mainline/
-      (click on the array to expand the information)
