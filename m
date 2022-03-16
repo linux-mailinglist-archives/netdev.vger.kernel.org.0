@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA334DAEB1
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 12:12:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56CDE4DAEB2
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 12:12:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355256AbiCPLNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1355258AbiCPLNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 16 Mar 2022 07:13:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45266 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242743AbiCPLNX (ORCPT
+        with ESMTP id S243826AbiCPLNX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 07:13:23 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78A063BFA
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB7564BC6
         for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 04:12:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1647429129; x=1678965129;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=hIhHCNQ49eBbUaP7c+bFREOOtFr5/ixo2ll33WftoGk=;
-  b=Bz+o8S3i8KAMrMObINGFVN49XKC/mfsm6YE1eI8CRr3F8IoAvhG0czDa
-   4kYrd3oiFaeecQbKjv8FUR+X43dxm/rOYBpdu+fmcnrl+rp0zw6wxIakZ
-   ruxVba6jDvFAvQZLuj8oTggtYaSfOQKB5pg5fQwBXuflp4YDnKiIHqP8t
-   otEStb6MWeA8GwFW9Qd97Yv5YjAxnhS/3uk8+pZr7hdJVLm74bxW7ak77
-   Gh2VwuFc6o1jV/Jm2B5VxJmeEQ7/QQ4ecb9NO3YFJynG2TNpYWBjzHf6a
-   sLF0jcr/XDdBIHQrR6Fi8VY3NI3qMBssdUy3qgnDH0pQIQ8a6rj2l++Yy
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="255382085"
+  bh=fYeTnsETI7IB641Ohm9kjQEUQBx0F0j/47UmyRJ0ztM=;
+  b=LRnQtHTnI9G+UevCRc83CBx2wwtgFVdlR9hQQq34J1OopmhiZ+u8/GMM
+   McWFrAfDaUc+tT2dApPdmbU7izimeElaKYih8BsRuj7jCmNEe0yTKmqtv
+   gy25UMVLRnchI0RRJWEogGJrTqcUXr6A/XiXH6O1sYVA+LPOoVf++UuDA
+   slz2A0mCSUObqcgcMjYeEEiLbTxnnbKPPqmtuJCwxEaskvK16LpLKjWz3
+   6oStAu9Oi1QlDUJHy0MhnHf0TrUYMChBPX5S7jiFzqHfRjXrDOtX1JJfR
+   C2hvNSgAuZXgS+E200KAvqIkBE3vd5AUDGsZCum17wcOgyyZ8aJDKw9UF
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10286"; a="317273421"
 X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="255382085"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 04:12:09 -0700
+   d="scan'208";a="317273421"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 04:12:09 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,186,1643702400"; 
-   d="scan'208";a="557390911"
+   d="scan'208";a="498393803"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga008.jf.intel.com with ESMTP; 16 Mar 2022 04:12:07 -0700
+  by orsmga003.jf.intel.com with ESMTP; 16 Mar 2022 04:12:08 -0700
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22GBC69W016809;
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22GBC69X016809;
         Wed, 16 Mar 2022 11:12:07 GMT
 From:   Wojciech Drewek <wojciech.drewek@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@gmail.com, stephen@networkplumber.org
-Subject: [PATCH iproute2-next v5 1/2] ip: GTP support in ip link
-Date:   Wed, 16 Mar 2022 12:08:14 +0100
-Message-Id: <20220316110815.46779-2-wojciech.drewek@intel.com>
+Subject: [PATCH iproute2-next v5 2/2] f_flower: Implement gtp options support
+Date:   Wed, 16 Mar 2022 12:08:15 +0100
+Message-Id: <20220316110815.46779-3-wojciech.drewek@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220316110815.46779-1-wojciech.drewek@intel.com>
 References: <20220316110815.46779-1-wojciech.drewek@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,261 +61,284 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for creating GTP devices through ip link. Two arguments
-can be specified by the user when adding device of the GTP type.
- - role (sgsn or ggsn) - indicates whether we are on the GGSN or SGSN
- - hsize - indicates the size of the hash table where PDP sessions
-   are stored
+Add support for parsing TCA_FLOWER_KEY_ENC_OPTS_GTP.
+Options are as follows: PDU_TYPE:QFI where each
+option is represented as 8-bit hexadecimal value.
 
-IFLA_GTP_FD0 and IFLA_GTP_FD1 arguments would not be provided. Those
-are file descriptores to the sockets created in the userspace. Since
-we are not going to create sockets in ip link, we don't have to
-provide them.
+e.g.
+  # ip link add gtp_dev type gtp role sgsn
+  # tc qdisc add dev gtp_dev ingress
+  # tc filter add dev gtp_dev protocol ip parent ffff: \
+      flower \
+        enc_key_id 11 \
+        gtp_opts 1:8/ff:ff \
+      action mirred egress redirect dev eth0
 
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
-Reviewed-by: Harald Welte <laforge@gnumonks.org>
 ---
 v2: use SPDX tag, use strcmp() instead of matches(), parse
     IFLA_GTP_RESTART_COUNT arg
 v3: IFLA_GTP_CREATE_SOCKETS attribute introduced, fix options
     alpha order
-v4: resolve merge conflict in ip/Makefile
+v5: add gtp_opts to explain function
 ---
- include/uapi/linux/if_link.h |   2 +
- ip/Makefile                  |   2 +-
- ip/iplink.c                  |   2 +-
- ip/iplink_gtp.c              | 128 +++++++++++++++++++++++++++++++++++
- man/man8/ip-link.8.in        |  29 +++++++-
- 5 files changed, 160 insertions(+), 3 deletions(-)
- create mode 100644 ip/iplink_gtp.c
+ include/uapi/linux/pkt_cls.h |  16 +++++
+ man/man8/tc-flower.8         |  10 +++
+ tc/f_flower.c                | 123 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 147 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 5f36ff8e8c26..3edc5547f8dd 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -885,6 +885,8 @@ enum {
- 	IFLA_GTP_FD1,
- 	IFLA_GTP_PDP_HASHSIZE,
- 	IFLA_GTP_ROLE,
-+	IFLA_GTP_CREATE_SOCKETS,
-+	IFLA_GTP_RESTART_COUNT,
- 	__IFLA_GTP_MAX,
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index ee38b35c3f57..30ff8da0631b 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -616,6 +616,10 @@ enum {
+ 					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
+ 					 * attributes
+ 					 */
++	TCA_FLOWER_KEY_ENC_OPTS_GTP,	/* Nested
++					 * TCA_FLOWER_KEY_ENC_OPT_GTP_
++					 * attributes
++					 */
+ 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
  };
- #define IFLA_GTP_MAX (__IFLA_GTP_MAX - 1)
-diff --git a/ip/Makefile b/ip/Makefile
-index 11a361cef5de..0f14c609a4f0 100644
---- a/ip/Makefile
-+++ b/ip/Makefile
-@@ -12,7 +12,7 @@ IPOBJ=ip.o ipaddress.o ipaddrlabel.o iproute.o iprule.o ipnetns.o \
-     iplink_geneve.o iplink_vrf.o iproute_lwtunnel.o ipmacsec.o ipila.o \
-     ipvrf.o iplink_xstats.o ipseg6.o iplink_netdevsim.o iplink_rmnet.o \
-     ipnexthop.o ipmptcp.o iplink_bareudp.o iplink_wwan.o ipioam6.o \
--    iplink_amt.o iplink_batadv.o
-+    iplink_amt.o iplink_batadv.o iplink_gtp.o
  
- RTMONOBJ=rtmon.o
+@@ -654,6 +658,18 @@ enum {
+ #define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
+ 		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
  
-diff --git a/ip/iplink.c b/ip/iplink.c
-index c0a3a9ad3e62..1fe163794d35 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -51,7 +51,7 @@ void iplink_types_usage(void)
- 	/* Remember to add new entry here if new type is added. */
- 	fprintf(stderr,
- 		"TYPE := { amt | bareudp | bond | bond_slave | bridge | bridge_slave |\n"
--		"          dummy | erspan | geneve | gre | gretap | ifb |\n"
-+		"          dummy | erspan | geneve | gre | gretap | gtp | ifb |\n"
- 		"          ip6erspan | ip6gre | ip6gretap | ip6tnl |\n"
- 		"          ipip | ipoib | ipvlan | ipvtap |\n"
- 		"          macsec | macvlan | macvtap |\n"
-diff --git a/ip/iplink_gtp.c b/ip/iplink_gtp.c
-new file mode 100644
-index 000000000000..6ba684876a66
---- /dev/null
-+++ b/ip/iplink_gtp.c
-@@ -0,0 +1,128 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
++enum {
++	TCA_FLOWER_KEY_ENC_OPT_GTP_UNSPEC,
++	TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,		/* u8 */
++	TCA_FLOWER_KEY_ENC_OPT_GTP_QFI,			/* u8 */
 +
-+#include <stdio.h>
++	__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX,
++};
 +
-+#include "rt_names.h"
-+#include "utils.h"
-+#include "ip_common.h"
++#define TCA_FLOWER_KEY_ENC_OPT_GTP_MAX \
++		(__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX - 1)
 +
-+#define GTP_ATTRSET(attrs, type) (((attrs) & (1L << (type))) != 0)
 +
-+static void print_explain(FILE *f)
+ enum {
+ 	TCA_FLOWER_KEY_MPLS_OPTS_UNSPEC,
+ 	TCA_FLOWER_KEY_MPLS_OPTS_LSE,
+diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
+index 4541d9372684..f918a06d2927 100644
+--- a/man/man8/tc-flower.8
++++ b/man/man8/tc-flower.8
+@@ -89,6 +89,8 @@ flower \- flow based traffic control filter
+ .B vxlan_opts
+ |
+ .B erspan_opts
++|
++.B gtp_opts
+ }
+ .IR OPTIONS " | "
+ .BR ip_flags
+@@ -411,6 +413,8 @@ Match the connection zone, and can be masked.
+ .BI vxlan_opts " OPTIONS"
+ .TQ
+ .BI erspan_opts " OPTIONS"
++.TQ
++.BI gtp_opts " OPTIONS"
+ Match on IP tunnel metadata. Key id
+ .I NUMBER
+ is a 32 bit tunnel key id (e.g. VNI for VXLAN tunnel).
+@@ -446,6 +450,12 @@ VERSION:INDEX:DIR:HWID/VERSION:INDEX_MASK:DIR_MASK:HWID_MASK, where VERSION is
+ represented as a 8bit number, INDEX as an 32bit number, DIR and HWID as a 8bit
+ number. Multiple options is not supported. Note INDEX/INDEX_MASK is used when
+ VERSION is 1, and DIR/DIR_MASK and HWID/HWID_MASK are used when VERSION is 2.
++gtp_opts
++.I OPTIONS
++doesn't support multiple options, and it consists of a key followed by a slash
++and corresponding mask. If the mask is missing, \fBtc\fR assumes a full-length
++match. The option can be described in the form PDU_TYPE:QFI/PDU_TYPE_MASK:QFI_MASK
++where both PDU_TYPE and QFI are represented as a 8bit hexadecimal values.
+ .TP
+ .BI ip_flags " IP_FLAGS"
+ .I IP_FLAGS
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index ad159719c05f..a541031f5a10 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -84,6 +84,7 @@ static void explain(void)
+ 		"			geneve_opts MASKED-OPTIONS |\n"
+ 		"			vxlan_opts MASKED-OPTIONS |\n"
+ 		"                       erspan_opts MASKED-OPTIONS |\n"
++		"			gtp_opts MASKED-OPTIONS |\n"
+ 		"			ip_flags IP-FLAGS |\n"
+ 		"			enc_dst_port [ port_number ] |\n"
+ 		"			ct_state MASKED_CT_STATE |\n"
+@@ -1034,6 +1035,52 @@ static int flower_parse_erspan_opt(char *str, struct nlmsghdr *n)
+ 	return 0;
+ }
+ 
++static int flower_parse_gtp_opt(char *str, struct nlmsghdr *n)
 +{
-+	fprintf(f,
-+		"Usage: ... gtp role ROLE\n"
-+		"		[ hsize HSIZE ]\n"
-+		"		[ restart_count RESTART_COUNT ]\n"
-+		"\n"
-+		"Where:	ROLE		:= { sgsn | ggsn }\n"
-+		"	HSIZE		:= 1-131071\n"
-+		"	RESTART_COUNT	:= 0-255\n"
-+	);
-+}
++	struct rtattr *nest;
++	char *token;
++	int arg, err;
 +
-+static void check_duparg(__u32 *attrs, int type, const char *key,
-+			 const char *argv)
-+{
-+	if (!GTP_ATTRSET(*attrs, type)) {
-+		*attrs |= (1L << type);
-+		return;
-+	}
-+	duparg2(key, argv);
-+}
++	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_GTP | NLA_F_NESTED);
 +
-+static int gtp_parse_opt(struct link_util *lu, int argc, char **argv,
-+			 struct nlmsghdr *n)
-+{
-+	__u32 attrs = 0;
++	token = strsep(&str, ":");
++	for (arg = 1; arg <= TCA_FLOWER_KEY_ENC_OPT_GTP_MAX; arg++) {
++		switch (arg) {
++		case TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE:
++		{
++			__u8 pdu_type;
 +
-+	/* When creating GTP device through ip link,
-+	 * this flag has to be set.
-+	 */
-+	addattr8(n, 1024, IFLA_GTP_CREATE_SOCKETS, true);
++			if (!strlen(token))
++				break;
++			err = get_u8(&pdu_type, token, 16);
++			if (err)
++				return err;
++			addattr8(n, MAX_MSG, arg, pdu_type);
++			break;
++		}
++		case TCA_FLOWER_KEY_ENC_OPT_GTP_QFI:
++		{
++			__u8 qfi;
 +
-+	while (argc > 0) {
-+		if (!strcmp(*argv, "role")) {
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_GTP_ROLE, "role", *argv);
-+			if (!strcmp(*argv, "sgsn"))
-+				addattr32(n, 1024, IFLA_GTP_ROLE, GTP_ROLE_SGSN);
-+			else if (!strcmp(*argv, "ggsn"))
-+				addattr32(n, 1024, IFLA_GTP_ROLE, GTP_ROLE_GGSN);
-+			else
-+				invarg("invalid role, use sgsn or ggsn", *argv);
-+		} else if (!strcmp(*argv, "hsize")) {
-+			__u32 hsize;
-+
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_GTP_PDP_HASHSIZE, "hsize", *argv);
-+
-+			if (get_u32(&hsize, *argv, 0))
-+				invarg("invalid PDP hash size", *argv);
-+			if (hsize >= 1u << 17)
-+				invarg("PDP hash size too big", *argv);
-+			addattr32(n, 1024, IFLA_GTP_PDP_HASHSIZE, hsize);
-+		} else if (!strcmp(*argv, "restart_count")) {
-+			__u8 restart_count;
-+
-+			NEXT_ARG();
-+			check_duparg(&attrs, IFLA_GTP_RESTART_COUNT, "restart_count", *argv);
-+
-+			if (get_u8(&restart_count, *argv, 10))
-+				invarg("invalid restart_count", *argv);
-+			addattr8(n, 1024, IFLA_GTP_RESTART_COUNT, restart_count);
-+		} else if (!strcmp(*argv, "help")) {
-+			print_explain(stderr);
++			if (!strlen(token))
++				break;
++			err = get_u8(&qfi, token, 16);
++			if (err)
++				return err;
++			addattr8(n, MAX_MSG, arg, qfi);
++			break;
++		}
++		default:
++			fprintf(stderr, "Unknown \"gtp_opts\" type\n");
 +			return -1;
 +		}
-+		argc--, argv++;
++		token = strsep(&str, ":");
 +	}
-+
-+	if (!GTP_ATTRSET(attrs, IFLA_GTP_ROLE)) {
-+		fprintf(stderr, "gtp: role of the gtp device was not specified\n");
-+		return -1;
-+	}
-+
-+	if (!GTP_ATTRSET(attrs, IFLA_GTP_PDP_HASHSIZE))
-+		addattr32(n, 1024, IFLA_GTP_PDP_HASHSIZE, 1024);
++	addattr_nest_end(n, nest);
 +
 +	return 0;
 +}
 +
-+static void gtp_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ static int flower_parse_geneve_opts(char *str, struct nlmsghdr *n)
+ {
+ 	char *token;
+@@ -1217,6 +1264,41 @@ static int flower_parse_enc_opts_erspan(char *str, struct nlmsghdr *n)
+ 	return 0;
+ }
+ 
++static int flower_parse_enc_opts_gtp(char *str, struct nlmsghdr *n)
 +{
++	char key[XATTR_SIZE_MAX], mask[XATTR_SIZE_MAX];
++	struct rtattr *nest;
++	char *slash;
++	int err;
 +
-+	if (tb[IFLA_GTP_ROLE]) {
-+		__u32 role = rta_getattr_u32(tb[IFLA_GTP_ROLE]);
++	slash = strchr(str, '/');
++	if (slash) {
++		*slash++ = '\0';
++		if (strlen(slash) > XATTR_SIZE_MAX)
++			return -1;
++		strcpy(mask, slash);
++	} else
++		strcpy(mask, "ff:ff");
 +
-+		print_string(PRINT_ANY, "role", "role %s ",
-+			     role == GTP_ROLE_SGSN ? "sgsn" : "ggsn");
-+	}
++	if (strlen(str) > XATTR_SIZE_MAX)
++		return -1;
++	strcpy(key, str);
 +
-+	if (tb[IFLA_GTP_PDP_HASHSIZE]) {
-+		__u32 hsize = rta_getattr_u32(tb[IFLA_GTP_PDP_HASHSIZE]);
++	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS | NLA_F_NESTED);
++	err = flower_parse_gtp_opt(key, n);
++	if (err)
++		return err;
++	addattr_nest_end(n, nest);
 +
-+		print_uint(PRINT_ANY, "hsize", "hsize %u ", hsize);
-+	}
++	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_MASK | NLA_F_NESTED);
++	err = flower_parse_gtp_opt(mask, n);
++	if (err)
++		return err;
++	addattr_nest_end(n, nest);
 +
-+	if (tb[IFLA_GTP_RESTART_COUNT]) {
-+		__u8 restart_count = rta_getattr_u8(tb[IFLA_GTP_RESTART_COUNT]);
-+
-+		print_uint(PRINT_ANY, "restart_count",
-+			   "restart_count %u ", restart_count);
-+	}
++	return 0;
 +}
 +
-+static void gtp_print_help(struct link_util *lu, int argc, char **argv,
-+			   FILE *f)
+ static int flower_parse_mpls_lse(int *argc_p, char ***argv_p,
+ 				 struct nlmsghdr *nlh)
+ {
+@@ -1869,6 +1951,13 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 				fprintf(stderr, "Illegal \"erspan_opts\"\n");
+ 				return -1;
+ 			}
++		} else if (matches(*argv, "gtp_opts") == 0) {
++			NEXT_ARG();
++			ret = flower_parse_enc_opts_gtp(*argv, n);
++			if (ret < 0) {
++				fprintf(stderr, "Illegal \"gtp_opts\"\n");
++				return -1;
++			}
+ 		} else if (matches(*argv, "action") == 0) {
+ 			NEXT_ARG();
+ 			ret = parse_action(&argc, &argv, TCA_FLOWER_ACT, n);
+@@ -2338,6 +2427,21 @@ static void flower_print_erspan_opts(const char *name, struct rtattr *attr,
+ 	sprintf(strbuf, "%u:%u:%u:%u", ver, idx, dir, hwid);
+ }
+ 
++static void flower_print_gtp_opts(const char *name, struct rtattr *attr,
++				  char *strbuf, int len)
 +{
-+	print_explain(f);
++	struct rtattr *tb[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1];
++	__u8 pdu_type, qfi;
++
++	parse_rtattr(tb, TCA_FLOWER_KEY_ENC_OPT_GTP_MAX, RTA_DATA(attr),
++		     RTA_PAYLOAD(attr));
++
++	pdu_type = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]);
++	qfi = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]);
++
++	snprintf(strbuf, len, "%02x:%02x", pdu_type, qfi);
 +}
 +
-+struct link_util gtp_link_util = {
-+	.id		= "gtp",
-+	.maxattr	= IFLA_GTP_MAX,
-+	.parse_opt	= gtp_parse_opt,
-+	.print_opt	= gtp_print_opt,
-+	.print_help	= gtp_print_help,
-+};
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index 93106d7f79ce..7a6753747468 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -243,7 +243,8 @@ ip-link \- network device configuration
- .BR macsec " |"
- .BR netdevsim " |"
- .BR rmnet " |"
--.BR xfrm " ]"
-+.BR xfrm " |"
-+.BR gtp " ]"
+ static void __attribute__((format(printf, 2, 0)))
+ flower_print_enc_parts(const char *name, const char *namefrm,
+ 		       struct rtattr *attr, char *key, char *mask)
+@@ -2370,15 +2474,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
+ 	struct rtattr *key_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
+ 	struct rtattr *msk_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
+ 	char *key, *msk;
++	int len;
  
- .ti -8
- .IR ETYPE " := [ " TYPE " |"
-@@ -392,6 +393,9 @@ Link types:
- .sp
- .BR xfrm
- - Virtual xfrm interface
-+.sp
-+.BR gtp
-+- GPRS Tunneling Protocol
- .in -8
+ 	if (!attr)
+ 		return;
  
- .TP
-@@ -1941,6 +1945,29 @@ policies. Policies must be configured with the same key. If not set, the key def
+-	key = malloc(RTA_PAYLOAD(attr) * 2 + 1);
++	len = RTA_PAYLOAD(attr) * 2 + 1;
++
++	key = malloc(len);
+ 	if (!key)
+ 		return;
  
- .in -8
+-	msk = malloc(RTA_PAYLOAD(attr) * 2 + 1);
++	msk = malloc(len);
+ 	if (!msk)
+ 		goto err_key_free;
  
-+.TP
-+GTP Type Support
-+For a link of type
-+.I GTP
-+the following additional arguments are supported:
-+
-+.BI "ip link add " DEVICE " type gtp role " ROLE " hsize " HSIZE
-+
-+.in +8
-+.sp
-+.BI role " ROLE "
-+- specifies the role of the GTP device, either sgsn or ggsn
-+
-+.sp
-+.BI hsize " HSIZE "
-+- specifies size of the hashtable which stores PDP contexts
-+
-+.sp
-+.BI restart_count " RESTART_COUNT "
-+- GTP instance restart counter
-+
-+.in -8
-+
- .SS ip link delete - delete virtual link
+@@ -2415,6 +2522,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
  
- .TP
+ 		flower_print_enc_parts(name, "  erspan_opts %s", attr, key,
+ 				       msk);
++	} else if (key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP]) {
++		flower_print_gtp_opts("gtp_opt_key",
++				      key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
++				      key, len);
++
++		if (msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP])
++			flower_print_gtp_opts("gtp_opt_mask",
++					      msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
++					      msk, len);
++
++		flower_print_enc_parts(name, "  gtp_opts %s", attr, key,
++				       msk);
+ 	}
+ 
+ 	free(msk);
 -- 
 2.31.1
 
