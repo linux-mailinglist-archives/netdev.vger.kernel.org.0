@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC05A4DB065
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 14:09:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C90824DB13C
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 14:21:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356008AbiCPNKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 09:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
+        id S1356324AbiCPNWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 09:22:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239772AbiCPNKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 09:10:11 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745FE27FC6;
-        Wed, 16 Mar 2022 06:08:57 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id dr20so4019795ejc.6;
-        Wed, 16 Mar 2022 06:08:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jDdo77E6bodwKomBqhyh/QFbllXF/eggXHy1SBgzqKk=;
-        b=KfJPqoODp5vXC/0ovUiSuFkJy9qoA9TeDaui0xqOmSWNJSPOdDZs6WG5GyEFkncY2V
-         qYne3m0ITU6LzsON/W5Y7OJ9VQL06vDxvGRLCyAIrLmSRXHLVgr4Y7urfOOm0QXAg0QC
-         pgKO/UZ7ADGlAQg4a9OCJXtesou/jdZbk9QKNd9teK30f7UWJDWyZWSPR0rpzRhVOGkX
-         h0u9s9YNAqOz2i8/uyd0fuwLHsDIGSbG5XbPBbeO2B4leWNxGAXuXIttZiJADMtyhf6y
-         1dgLlnQNzflL/cZRiKXOMVg5yQeRpJJNtnPUIdHil2QbnOZydEwzk013SaVI6wsAKsNQ
-         ncTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jDdo77E6bodwKomBqhyh/QFbllXF/eggXHy1SBgzqKk=;
-        b=BWQZIbemJ/wISHgtNq54r3/iBjTH91Y7pwiYhh6Gw2SPkj2OdFWzN75AOZ1iUSslsE
-         wAUp/vOkkerkmLTINDcJ2M2pw1MONCfj6TLNc1dyKZ5YFtZWmX/111GAalWESkLKnVQP
-         7fINNWYZFY9sWYFNnhXiyXjXb/GgZozXXkKVteWy/VCt6RsoOvdtYbLXaSgBh70z/uSO
-         WjMfqQ7aiOyG3jZwmZEyOEDh2B9Yesh/moYfHuCDNIQUGlJpcYJCYp+j0/4kNgbvPlIZ
-         +eHtGWpiKEKmwQ1l0agl2vRNrvSpK8J3/caVtTpXkaWQMiHCaB+15HobI5bVt3/AFMgq
-         VJJg==
-X-Gm-Message-State: AOAM531kjxYCWhWUvY3nwPhAbbJX/wPYeu/+CZ3L4C+YZmJ6STOia/ns
-        7ADWP+1JjOxD2CTkC4Z0QMY=
-X-Google-Smtp-Source: ABdhPJx+jBX6oHN4EG2/kgYKkkBWSOOnoD8t2IR/Q650mW+5jb8RfbrPvQbLJrUxjy41H6tWiuSAug==
-X-Received: by 2002:a17:907:1c16:b0:6d7:622b:efea with SMTP id nc22-20020a1709071c1600b006d7622befeamr26957234ejc.110.1647436133169;
-        Wed, 16 Mar 2022 06:08:53 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id d7-20020a50cd47000000b004187eacb4d6sm970570edj.37.2022.03.16.06.08.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 06:08:52 -0700 (PDT)
-Date:   Wed, 16 Mar 2022 15:08:51 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net-next] net: dsa: Never offload FDB entries on
- standalone ports
-Message-ID: <20220316130851.nrevmuktxuzkgxd3@skbuf>
-References: <20220315233033.1468071-1-tobias@waldekranz.com>
+        with ESMTP id S1356335AbiCPNWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 09:22:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB8C674CF;
+        Wed, 16 Mar 2022 06:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECE3EB81B35;
+        Wed, 16 Mar 2022 13:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 84EA1C340F0;
+        Wed, 16 Mar 2022 13:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647436812;
+        bh=tbcOFjyGFmBEwOjIh+3jseYE1fvFZySauTJiPWeHSxQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Gum5FAn1JMTLcenLuYd4xxPKwYN/TcLuars1ooFUTgakM/hpQeodftoHNBLqYRDP/
+         r4x9h0/sJC5MHmJInTBtUpjs0iMHG/moQHxyv4RbEYnucVidanSQVkSn++BT611/Bu
+         okPYd0KVL3soFDhwrHGgC6kaojRznvmTqVssOsdSqV6UTMBShUJYpUpVQqbGrQtGZb
+         UHfpJQmYMkjp3P4Yt7XCoB/ts5RbLgVRXn5tKFeAmfY/H386ao84G/HtZ3/+NOzNJK
+         luKf7p7YOdtAIjhjvnvWzJ2/KDDhciOQeJobgB8IOcyaRWR+eJMzR8EuyjnwChMFI8
+         g46+zgsaItBUQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 60947EAC09C;
+        Wed, 16 Mar 2022 13:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315233033.1468071-1-tobias@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v13 0/7] MediaTek Ethernet Patches on MT8195
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164743681238.18574.8037993673780755676.git-patchwork-notify@kernel.org>
+Date:   Wed, 16 Mar 2022 13:20:12 +0000
+References: <20220314075713.29140-1-biao.huang@mediatek.com>
+In-Reply-To: <20220314075713.29140-1-biao.huang@mediatek.com>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        angelogioacchino.delregno@collabora.com, matthias.bgg@gmail.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        srv_heupstream@mediatek.com, macpaul.lin@mediatek.com,
+        dkirjanov@suse.de
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 12:30:33AM +0100, Tobias Waldekranz wrote:
-> If a port joins a bridge that it can't offload, it will fallback to
-> standalone mode and software bridging. In this case, we never want to
-> offload any FDB entries to hardware either.
-> 
-> Previously, for host addresses, we would eventually end up in
-> dsa_port_bridge_host_fdb_add, which would unconditionally dereference
-> dp->bridge and cause a segfault.
-> 
-> Fixes: c26933639b54 ("net: dsa: request drivers to perform FDB isolation")
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
+Hello:
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
->  net/dsa/slave.c | 3 +++
->  1 file changed, 3 insertions(+)
+On Mon, 14 Mar 2022 15:57:06 +0800 you wrote:
+> Changes in v13:
+> 1. add reviewed-by in "net: dt-bindings: dwmac: add support for mt8195"
+>    as Rob's comments.
+> 2. drop num_clks defined in mediatek_dwmac_plat_data struct in "stmmac:
+>    dwmac-mediatek: Reuse more common features" as Angelo's comments.
 > 
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index f9cecda791d5..d24b6bf845c1 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -2847,6 +2847,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
->  	if (ctx && ctx != dp)
->  		return 0;
->  
-> +	if (!dp->bridge)
-> +		return 0;
-> +
->  	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
->  		if (dsa_port_offloads_bridge_port(dp, orig_dev))
->  			return 0;
-> -- 
-> 2.25.1
+> Changes in v12:
+> 1. add a new patch "stmmac: dwmac-mediatek: re-arrange clock setting" to
+>    this series, to simplify clock handling in driver, which benefits to
+>    binding file mediatek-dwmac.yaml.
+> 2. modify dt-binding description in patch "net: dt-bindings: dwmac: add
+>    support for mt8195" as Rob's comments in v10 series, put mac_cg to the
+>    end of clock list.
+> 3. there are small changes in patch "stmmac: dwmac-mediatek: add support
+>    for mt8195", @AngeloGioacchino, please review it kindly.
 > 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v13,1/7] stmmac: dwmac-mediatek: add platform level clocks management
+    https://git.kernel.org/netdev/net-next/c/3186bdad97d5
+  - [net-next,v13,2/7] stmmac: dwmac-mediatek: Reuse more common features
+    https://git.kernel.org/netdev/net-next/c/a71e67b21081
+  - [net-next,v13,3/7] stmmac: dwmac-mediatek: re-arrange clock setting
+    https://git.kernel.org/netdev/net-next/c/4fe3075fa699
+  - [net-next,v13,4/7] arm64: dts: mt2712: update ethernet device node
+    https://git.kernel.org/netdev/net-next/c/79e1177809f2
+  - [net-next,v13,5/7] net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
+    https://git.kernel.org/netdev/net-next/c/150b6adda6b1
+  - [net-next,v13,6/7] stmmac: dwmac-mediatek: add support for mt8195
+    https://git.kernel.org/netdev/net-next/c/f2d356a6ab71
+  - [net-next,v13,7/7] net: dt-bindings: dwmac: add support for mt8195
+    https://git.kernel.org/netdev/net-next/c/ee410d510032
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
