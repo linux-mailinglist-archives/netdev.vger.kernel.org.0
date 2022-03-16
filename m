@@ -2,220 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E8684DBA4C
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 22:47:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E246C4DBA7C
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 23:03:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245195AbiCPVtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 17:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
+        id S1358212AbiCPWEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 18:04:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234237AbiCPVs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 17:48:58 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29315299;
-        Wed, 16 Mar 2022 14:47:43 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22GG3tUR010116;
-        Wed, 16 Mar 2022 14:47:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=wJ9UnMRWsMdYFDnjwXnOZuvYq/t95WJIZkibcPo2wDM=;
- b=c3YuEBtVjKfprwXJo9bmG6Bu0wiU5BOnLl4RTA2U/wZqqEcXeF0y0latrBO3XhjGVTsw
- 9WMs83ctMKT9QQDcsBIzMm6GB0oGtE8WzOFIFEwvNT9K+EV0n8ogPXPjyPnllIYJuQsx
- qBR2c0OUPkxw5UeOakuY3yUMzTqE7K8VQKqglzDC0GrgHH7w590GRsGHcX8WVtXWQJyb
- 4o8kTkh+PVeBfawxWFrkjpwmwhCCo+n/4+BG3IzZhJFEfXt7q57xPOmrNs1z/2fnBwsJ
- NC8NsjnLYYk1qcc7LApixLQNXdoZqsg3fXkzibJnDKpiafe5kiokkSAl1OwYUiihQTQl qw== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3et64ar7r3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 16 Mar 2022 14:47:27 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 16 Mar
- 2022 14:47:25 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 16 Mar 2022 14:47:25 -0700
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id E1E853F7044;
-        Wed, 16 Mar 2022 14:47:25 -0700 (PDT)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 22GLkpZT006929;
-        Wed, 16 Mar 2022 14:46:56 -0700
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 22GLkFWr006920;
-        Wed, 16 Mar 2022 14:46:15 -0700
+        with ESMTP id S1358272AbiCPWEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 18:04:47 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A672324581
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 15:03:29 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22GIohKc027671;
+        Wed, 16 Mar 2022 15:03:21 -0700
+Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam08lp2049.outbound.protection.outlook.com [104.47.74.49])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3eue23k72a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Mar 2022 15:03:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YKUBP8Aapcw5SfAQkism8A3sBaKOUWXVkqQz2kmB3huoJyUH05YIWX+YrHlIcu+UHAOPZkAk2HxfRbr3tVoODEtzXV3B9RNN8da/kfH/J/yLlPuTmG2MVnrEqKE7Jys+t4NtK07vD+JQ5mfKoYqALCQhQWCvk9MgWqmZCu6yCnDoL8k1FVf5FabPuLKcegO2luSVyg1JqyHYR4NDUmyqkbiCwO7Nrg5V2J1lC4BmvH/6JkVNIlRXxxhCWYSwv/AXBrVDJ0J+Hq7tFwIrOy5MC/PV3XsnxsOcUxzelMWbbpqeUBBBZ1ZGqROySvI2EIh5tSqpyjTRIsQkrTL54NRaoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Yw8hIrLXvekXi+rc4SI10/ugY+zapQ/QRkx1Mc38s18=;
+ b=Dj8c9KGu0M4NTw1qVBMN15gWGlCxr/ol/LdZPQV3Zir4R1PqAmyPmNVB3g67CZYmOZqjW3JpAFSsPCClVudaYIqzyp85yZBMj/FGGk9FJn+WNjcyI6GpCNk4V5NtJq2PH23BUWnThxHpEhzjakwphZjqw1FINTz+SZzraH08p4GWIMwMMn0+upGrFgY/Dt9vl10vTn/6wzvq4AwDAOr9gFx5GHf131ptDaoM9oJRX8sZ4rMRpGrtZVromwf8XlHf4PIHS+g767rFQTVYG7KyEy5k3H0JL3fLbfl3jUDZWHCxUlCFxPagx13sDJEOUyb5FpdCE39RjdbGRY2bxoI8EA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Yw8hIrLXvekXi+rc4SI10/ugY+zapQ/QRkx1Mc38s18=;
+ b=Eq0hHXaSva48sYacbnmox21OdJ9Np5gDBCS3BDzkPKhscUYZcSC3vFNDF43U2tr3MK5oghEJnsZmMEoh4LoctKI0+ci/IMeP83UdpKkjxfOSdTgvtH33ZEuuX+WZXSzXIsIw60vKSzKUkhtsHPSn5ITk3MgRqHcJVp9DkSiv678=
+Received: from BY3PR18MB4612.namprd18.prod.outlook.com (2603:10b6:a03:3c3::8)
+ by BN8PR18MB3076.namprd18.prod.outlook.com (2603:10b6:408:73::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5061.29; Wed, 16 Mar
+ 2022 22:03:18 +0000
+Received: from BY3PR18MB4612.namprd18.prod.outlook.com
+ ([fe80::4ca0:dcd4:3a6:fde9]) by BY3PR18MB4612.namprd18.prod.outlook.com
+ ([fe80::4ca0:dcd4:3a6:fde9%6]) with mapi id 15.20.5081.015; Wed, 16 Mar 2022
+ 22:03:18 +0000
 From:   Manish Chopra <manishc@marvell.com>
-To:     <kuba@kernel.org>
-CC:     <pmenzel@molgen.mpg.de>, <netdev@vger.kernel.org>,
-        <aelior@marvell.com>, <regressions@lists.linux.dev>,
-        <stable@vger.kernel.org>
-Subject: [PATCH net] bnx2x: fix built-in kernel driver load failure
-Date:   Wed, 16 Mar 2022 14:46:13 -0700
-Message-ID: <20220316214613.6884-1-manishc@marvell.com>
-X-Mailer: git-send-email 2.12.0
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+CC:     Donald Buczek <buczek@molgen.mpg.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        "it+netdev@molgen.mpg.de" <it+netdev@molgen.mpg.de>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Subject: RE: [EXT] bnx2x: How to log the firmware version? (was: [RFC net]
+ bnx2x: fix built-in kernel driver load failure)
+Thread-Topic: [EXT] bnx2x: How to log the firmware version? (was: [RFC net]
+ bnx2x: fix built-in kernel driver load failure)
+Thread-Index: AQHYOXWDGtwJdUwtm0SzKIZYpl1Q06zCjRyg
+Date:   Wed, 16 Mar 2022 22:03:18 +0000
+Message-ID: <BY3PR18MB46126FF9D9C3F244D6EFB898AB119@BY3PR18MB4612.namprd18.prod.outlook.com>
+References: <20220316111842.28628-1-manishc@marvell.com>
+ <5f136c0c-2e16-d176-3d4a-caed6c3420a7@molgen.mpg.de>
+ <BY3PR18MB4612DEDE441A89EEE0470850AB119@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <cb7d704a-60bd-a06f-6511-95889bc0bc5f@molgen.mpg.de>
+In-Reply-To: <cb7d704a-60bd-a06f-6511-95889bc0bc5f@molgen.mpg.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dfad3ada-d37f-4f2d-813b-08da0798c734
+x-ms-traffictypediagnostic: BN8PR18MB3076:EE_
+x-microsoft-antispam-prvs: <BN8PR18MB307665960B0C31BB67A9EFEDAB119@BN8PR18MB3076.namprd18.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /QKsVF+8uZZsx97ZVoIOa/XMIxNCS+jZcy7fJl7mNfta2R0FiyQ3F8ul6lqCIWO/JS+w4qcPHReDVbdk4KYDIEtzsuypNT4OgWzePsgeBK2h3pk6ReY3ua/vVUSmlm5UIuQVQrzpPqPTOcMKOtCCUjwkLJViUbt6th7XQ7tmqb//FVAMK9sZZbwiaaF9cb8vgX6oUXm7leDVgBVxS2ns/lZqXiLkLJjlfy1miLOnDSsDS5mGI3hB72hTvNN0FzApI0Of1VjNjm3+o9+ZWhhK+qylYX2a4Vw4lVBKrHQZcTw2kzao+Se4Mb4RF/J401eJ3SPfTyfiBMLKlMsnQ1j309193Dy2Tnc9btKx8GA9MGHxYSI/Ib+WB2x5u2GGkmJYULYRe3KUlba8bXZEr6jPVCjTXWp4uw6tLT9ck6E498HswfaQw8wrYwVcyHuiBOEyr/xUUMaVu5pn5eiTtPei02vVbs54dD6/j7d4r6eTfm0jWgRuRud2mHavu9r8sJtV/F6WqBc0B6TW7nTA5VbpYdLodA+o6WSTxtBBKF5Xmqi1+8Cv748TxyBe6KWNhgSPtwIoTLY8JAThJZslbtvcDbBYQI7o0bRBgJ9DE8Xri0F/33uovG8S4qQaIv8jKxiqMapIWkmOIO+3dMgd0D2HruDRcMCEmVn0PAnL1Qzc1Sx8Zot6uN5WctH3Gj8Uymjg3Iq8F9/EpueUaoAabgKWoA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY3PR18MB4612.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(186003)(83380400001)(38070700005)(2906002)(55016003)(5660300002)(52536014)(33656002)(8936002)(54906003)(76116006)(316002)(4326008)(64756008)(8676002)(66946007)(66556008)(66476007)(66446008)(86362001)(7696005)(53546011)(6506007)(9686003)(38100700002)(122000001)(71200400001)(508600001)(6916009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NCsyYjhpMHVrV0Z5QUVLMmNaNHBQREwwaWk0OHJuSDN4TmlTMnlucGtlYjR6?=
+ =?utf-8?B?VFJNckYzWTNKV1hTN2NvUjZXWE1GRDZRTmYxb1krYlpMY2J6d3U2dlZJZnd4?=
+ =?utf-8?B?NHV6L3V5ejlvZURFWFFISzdIRURYVGdqbXpNdlR2N2hPZjV2cTNYZk9wU2hy?=
+ =?utf-8?B?dHVUaEtEK25mV3lJNXlqazdIYW1QMHBHRVErMzFvcnhZS3JZRXF3dm1EbVEz?=
+ =?utf-8?B?cWtOd1B2cDg2aHh1bWNmVUVOQjRoMytWQjVqQzhxaUZrWGl1eDQ3WWV1cVVp?=
+ =?utf-8?B?VElCUXNwS3RHL2VvOE1qVGw1MTBnUSs4VlphMFR3TUFWSXR1S1d1ZzYxYUF0?=
+ =?utf-8?B?MTMwNm5hYUtjVHFDUUltbXFyU1N3c2owQVNubmpNcGdLeFFKT1Nma2xRU29R?=
+ =?utf-8?B?b3Nkd1VKV0dkY0FJOFVkcUd4TDBOYWhubnZzRWRnK1RvK2k5MFRiSGIxdXVl?=
+ =?utf-8?B?Q0U5NGlwQlZTR0R5Vk1zZGpmTzZyVmI1L3FBb2RydXpTVTY5VGNxdk9VbkZi?=
+ =?utf-8?B?VEZyZ2xQUDZwSzgxSWUxOHIrM1JMKzJITkM0TmhoTHRQd3Q1Y1o2Y2NQS0tQ?=
+ =?utf-8?B?cHhTZ2V1eUQ4dEVWSkNKVzFVOHZLbEdqdGNram03VmoyKzQxL0JPcndDR04r?=
+ =?utf-8?B?YWN5ZWtKSGRWRU1YWDFXeUZTbEs4ZFU4dHZ5ZWs2RGdYSWc5dExrQXBqYVlX?=
+ =?utf-8?B?TEhMUU5pOWV4ZFplTWhsSEw4MU9FaVQyK2VRaTVQdmZsVGw2dWl0OTNTMEZS?=
+ =?utf-8?B?ejAxUGlzYWhGYmE5RGtENzVZQ0JFRWp3TmR2aThzakd1U2J0WWVGOVY0UTJ3?=
+ =?utf-8?B?QmZxNFczRGVZdkxCVXVsaEE2ZEovTkszMkJmYXJDMDBBZzJ4QzVkSEZLbEZW?=
+ =?utf-8?B?a1ZmU0Zja0ZRR3diRFR5L3FidnRCaytxKzd4ZWE3MHEvR0c5bCtyNkZJc2xI?=
+ =?utf-8?B?ZHN0SXF1UUlFNU03WSt5M1JreDR2TW0yQnF2VlNNRE9OeVZqU29XMFJ4cDkr?=
+ =?utf-8?B?NzJWc1d3Z25zVXpWbnBsL3h0anAwV2NraG5FYndhQ3JJSHdqS2JyZnFpQUlR?=
+ =?utf-8?B?QzcyWmdiZWpza29NSHNweDFlcktSMWs0SjF6bGptcVFKb25zM3RPQUQ0NVh2?=
+ =?utf-8?B?UDQ1UldJZlJXT3NHQ3lNcXc1UkIrYWdOV3d4KzdWcEpDaFVHdSs4TkZiVm1s?=
+ =?utf-8?B?R3J1U292VDcyQ05iL005aUhkOU1JQ1FrZTdVeFFGclU0VjEzbTM3NXpBZkhL?=
+ =?utf-8?B?akZnbUxwakFURWZwd0VWTktabno0NURPNG9hRXlSNHN6MG1qM1dkenlPUGxR?=
+ =?utf-8?B?QW9id2lBVDNjbVJjQlF1TnBmTmhGQVFBN3Q0YXBaVGZLbU1WL21TblQvQmhH?=
+ =?utf-8?B?ZXROd3pvZlkwaHNxMmErMVpDMlgyMGM1ejQzZ0hZK3FSS3lKU0g2WWI3ajZY?=
+ =?utf-8?B?ck1odXM3M0ZoYUFPa1hxcFBwczlha01yZWtQK0tvdFh6aVczMkdGbEZVdTJa?=
+ =?utf-8?B?b2N0NUVOUGo5U09YZlhvZjdnTkVjMTlhYitMVmxYM2tKbkEyMThZWFk0cTNq?=
+ =?utf-8?B?ZG1FLytjRUs1ZGgwNnFxMHFWOTJGKzdFb1lkQ1ZUN1IzT3hVYURJNmZpUERa?=
+ =?utf-8?B?ZHlqc21UU0VWWTVmYXA3UjYzdStqd2Y3dElIWjBYb0ttdjNlUTZ1QzNuNW1Z?=
+ =?utf-8?B?OHFtRGM1NzAyNSs3SWJETVczVlNpZThRRERlRzYycHBjL3d3ejh3d2FudEh2?=
+ =?utf-8?B?YWJyb3lPbk9UaDhrV2pwOEVFTUlVMDUxSzZDcnZ0TVMyR09ETFdsaW5Ra3c4?=
+ =?utf-8?B?K25veUh6Z2pCdlZzeC9ZUm1MaFB0VjdKL2RRUm9aY2JTaVZhSXFXMW8wLzZv?=
+ =?utf-8?B?S1VMYzk3SHF2MS93MHBlTWh0SVRRUEZYNWJ6QnV2S0NpcHF3R2xKRXlBQTlL?=
+ =?utf-8?B?VDdRbmlQRWdFa21OcDRXcGdPQ3FiWktMVklMeWFjdGhUZk1Bby9VMTJQZHgw?=
+ =?utf-8?B?RWprSSt4aFViUTdFOGZqWWVUZU9aaVpZS1FsOXRDRWNpMEljc1VrcnJ0czkx?=
+ =?utf-8?Q?vroylQ?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: NbbWkX58m6uCzFPvjAgj_9CYZVlfWBsV
-X-Proofpoint-GUID: NbbWkX58m6uCzFPvjAgj_9CYZVlfWBsV
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY3PR18MB4612.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dfad3ada-d37f-4f2d-813b-08da0798c734
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Mar 2022 22:03:18.3783
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PfDLuXC1SrL6tyTJqoIZAYi3q9PeftyvED3DGUbZdy2YBGaaBVxuWOOQf1Lj8Pj529HIkIj1vqWDyWe0hCZl6g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR18MB3076
+X-Proofpoint-GUID: OG7favD-sSbroljNYzADtzyv-2Ttc63O
+X-Proofpoint-ORIG-GUID: OG7favD-sSbroljNYzADtzyv-2Ttc63O
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
  definitions=2022-03-16_09,2022-03-15_01,2022-02-23_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
-added request_firmware() logic in probe() which caused
-built-in kernel driver (CONFIG_BNX2X=y) load failure (below),
-as access to firmware file is not feasible during the probe.
-
-"Direct firmware load for bnx2x/bnx2x-e2-7.13.21.0.fw
-failed with error -2"
-
-This patch fixes this issue by -
-
-1. Removing request_firmware() logic from the probe()
-   such that .ndo_open() handle it as it used to handle
-   it earlier
-
-2. Given request_firmware() is removed from probe(), so
-   driver has to relax FW version comparisons a bit against
-   the already loaded FW version (by some other PFs of same
-   adapter) to allow different compatible/close FWs with which
-   multiple PFs may run with (in different environments), as the
-   given PF who is in probe flow has no idea now with which firmware
-   file version it is going to initialize the device in ndo_open()
-
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/all/46f2d9d9-ae7f-b332-ddeb-b59802be2bab@molgen.mpg.de/
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Tested-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
----
- drivers/net/ethernet/broadcom/bnx2x/bnx2x.h   |  2 --
- .../net/ethernet/broadcom/bnx2x/bnx2x_cmn.c   | 28 +++++++++++--------
- .../net/ethernet/broadcom/bnx2x/bnx2x_main.c  | 15 ++--------
- 3 files changed, 19 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-index a19dd6797070..2209d99b3404 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
-@@ -2533,6 +2533,4 @@ void bnx2x_register_phc(struct bnx2x *bp);
-  * Meant for implicit re-load flows.
-  */
- int bnx2x_vlan_reconfigure_vid(struct bnx2x *bp);
--int bnx2x_init_firmware(struct bnx2x *bp);
--void bnx2x_release_firmware(struct bnx2x *bp);
- #endif /* bnx2x.h */
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-index 8d36ebbf08e1..5729a5ab059d 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
-@@ -2364,24 +2364,30 @@ int bnx2x_compare_fw_ver(struct bnx2x *bp, u32 load_code, bool print_err)
- 	/* is another pf loaded on this engine? */
- 	if (load_code != FW_MSG_CODE_DRV_LOAD_COMMON_CHIP &&
- 	    load_code != FW_MSG_CODE_DRV_LOAD_COMMON) {
--		/* build my FW version dword */
--		u32 my_fw = (bp->fw_major) + (bp->fw_minor << 8) +
--				(bp->fw_rev << 16) + (bp->fw_eng << 24);
-+		u8 loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng;
-+		u32 loaded_fw;
- 
- 		/* read loaded FW from chip */
--		u32 loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
-+		loaded_fw = REG_RD(bp, XSEM_REG_PRAM);
- 
--		DP(BNX2X_MSG_SP, "loaded fw %x, my fw %x\n",
--		   loaded_fw, my_fw);
-+		loaded_fw_major = loaded_fw & 0xff;
-+		loaded_fw_minor = (loaded_fw >> 8) & 0xff;
-+		loaded_fw_rev = (loaded_fw >> 16) & 0xff;
-+		loaded_fw_eng = (loaded_fw >> 24) & 0xff;
-+
-+		DP(BNX2X_MSG_SP, "loaded fw 0x%x major 0x%x minor 0x%x rev 0x%x eng 0x%x\n",
-+		   loaded_fw, loaded_fw_major, loaded_fw_minor, loaded_fw_rev, loaded_fw_eng);
- 
- 		/* abort nic load if version mismatch */
--		if (my_fw != loaded_fw) {
-+		if (loaded_fw_major != BCM_5710_FW_MAJOR_VERSION ||
-+		    loaded_fw_minor != BCM_5710_FW_MINOR_VERSION ||
-+		    loaded_fw_eng != BCM_5710_FW_ENGINEERING_VERSION ||
-+		    loaded_fw_rev < BCM_5710_FW_REVISION_VERSION_V15) {
- 			if (print_err)
--				BNX2X_ERR("bnx2x with FW %x was already loaded which mismatches my %x FW. Aborting\n",
--					  loaded_fw, my_fw);
-+				BNX2X_ERR("loaded FW incompatible. Aborting\n");
- 			else
--				BNX2X_DEV_INFO("bnx2x with FW %x was already loaded which mismatches my %x FW, possibly due to MF UNDI\n",
--					       loaded_fw, my_fw);
-+				BNX2X_DEV_INFO("loaded FW incompatible, possibly due to MF UNDI\n");
-+
- 			return -EBUSY;
- 		}
- 	}
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index eedb48d945ed..c19b072f3a23 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -12319,15 +12319,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
- 
- 	bnx2x_read_fwinfo(bp);
- 
--	if (IS_PF(bp)) {
--		rc = bnx2x_init_firmware(bp);
--
--		if (rc) {
--			bnx2x_free_mem_bp(bp);
--			return rc;
--		}
--	}
--
- 	func = BP_FUNC(bp);
- 
- 	/* need to reset chip if undi was active */
-@@ -12340,7 +12331,6 @@ static int bnx2x_init_bp(struct bnx2x *bp)
- 
- 		rc = bnx2x_prev_unload(bp);
- 		if (rc) {
--			bnx2x_release_firmware(bp);
- 			bnx2x_free_mem_bp(bp);
- 			return rc;
- 		}
-@@ -13409,7 +13399,7 @@ do {									\
- 	     (u8 *)bp->arr, len);					\
- } while (0)
- 
--int bnx2x_init_firmware(struct bnx2x *bp)
-+static int bnx2x_init_firmware(struct bnx2x *bp)
- {
- 	const char *fw_file_name, *fw_file_name_v15;
- 	struct bnx2x_fw_file_hdr *fw_hdr;
-@@ -13509,7 +13499,7 @@ int bnx2x_init_firmware(struct bnx2x *bp)
- 	return rc;
- }
- 
--void bnx2x_release_firmware(struct bnx2x *bp)
-+static void bnx2x_release_firmware(struct bnx2x *bp)
- {
- 	kfree(bp->init_ops_offsets);
- 	kfree(bp->init_ops);
-@@ -14026,7 +14016,6 @@ static int bnx2x_init_one(struct pci_dev *pdev,
- 	return 0;
- 
- init_one_freemem:
--	bnx2x_release_firmware(bp);
- 	bnx2x_free_mem_bp(bp);
- 
- init_one_exit:
--- 
-2.35.1.273.ge6ebfd0
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQYXVsIE1lbnplbCA8cG1lbnpl
+bEBtb2xnZW4ubXBnLmRlPg0KPiBTZW50OiBUaHVyc2RheSwgTWFyY2ggMTcsIDIwMjIgMjowNiBB
+TQ0KPiBUbzogTWFuaXNoIENob3ByYSA8bWFuaXNoY0BtYXJ2ZWxsLmNvbT4NCj4gQ2M6IERvbmFs
+ZCBCdWN6ZWsgPGJ1Y3pla0Btb2xnZW4ubXBnLmRlPjsgSmFrdWIgS2ljaW5za2kNCj4gPGt1YmFA
+a2VybmVsLm9yZz47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IEFyaWVsIEVsaW9yDQo+IDxhZWxp
+b3JAbWFydmVsbC5jb20+OyBpdCtuZXRkZXZAbW9sZ2VuLm1wZy5kZTsNCj4gcmVncmVzc2lvbnNA
+bGlzdHMubGludXguZGV2DQo+IFN1YmplY3Q6IFtFWFRdIGJueDJ4OiBIb3cgdG8gbG9nIHRoZSBm
+aXJtd2FyZSB2ZXJzaW9uPyAod2FzOiBbUkZDIG5ldF0gYm54Mng6DQo+IGZpeCBidWlsdC1pbiBr
+ZXJuZWwgZHJpdmVyIGxvYWQgZmFpbHVyZSkNCj4gDQo+IEV4dGVybmFsIEVtYWlsDQo+IA0KPiAt
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tDQo+IERlYXIgTWFuaXNoLA0KPiANCj4gDQo+IFRoYW5rIHlvdSBmb3IgeW91
+ciBhbnN3ZXIuDQo+IA0KPiBBbSAxNi4wMy4yMiB1bSAxOToyNSBzY2hyaWViIE1hbmlzaCBDaG9w
+cmE6DQo+IA0KPiA+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+PiBGcm9tOiBQYXVs
+IE1lbnplbCA8cG1lbnplbEBtb2xnZW4ubXBnLmRlPg0KPiANCj4gW+KApl0NCj4gDQo+ID4+IEht
+bSwgd2l0aCBgQ09ORklHX0JOWDJYPXlgIGFuZCBgYm54MnguZGVidWc9MHgwMTAwMDAwYCwgYnJp
+bmdpbmcgdXANCj4gPj4gbmV0MDUgKC4xKSBhbmQgdGhlbiBuZXQwNCAoLjApLCBJIG9ubHkgc2Vl
+Og0KPiA+Pg0KPiA+PiAgICAgICBbIDMzMzMuODgzNjk3XSBibngyeDogW2JueDJ4X2NvbXBhcmVf
+ZndfdmVyOjIzNzgobmV0MDQpXWxvYWRlZA0KPiA+PiBmdyBmMGQwNyBtYWpvciA3IG1pbm9yIGQg
+cmV2IGYgZW5nIDANCj4gPg0KPiA+IEkgdGhpbmsgdGhpcyBwcmludCBpcyBub3QgZ29vZCBwcm9i
+YWJseSAgKHRoYXQncyB3aHkgaXQgaXMgZGVmYXVsdA0KPiA+IGRpc2FibGVkKSwgaXTigJlzIG5v
+dCByZWFsbHkgdGhlIGZpcm13YXJlIGRyaXZlciBpcyBzdXBwb3NlZCB0byB3b3JrDQo+ID4gd2l0
+aCAoaXQgaXMgc29tZXRoaW5nIHdoaWNoIHdhcyBhbHJlYWR5IGxvYWRlZCBieSBhbnkgb3RoZXIg
+UEYNCj4gPiBzb21ld2hlcmUgb3Igc29tZSByZXNpZHVlIGZyb20gZWFybGllciBsb2FkcyksDQo+
+IFN0aWxsIGludGVyZXN0aW5nLCB3aGVuIGhhbmRsaW5nIGZpcm13YXJlIGZpbGVzLCBhbmQgdHJ5
+aW5nIHRvIHdyYXAgb25lcyBoZWFkDQo+IGFyb3VuZCB0aGUgZGlmZmVyZW50IHZlcnNpb25zIGZs
+eWluZyBhcm91bmQuDQo+IA0KPiA+IGRyaXZlciBpcyBhbHdheXMgZ29pbmcgdG8gd29yayB3aXRo
+IHRoZSBmaXJtd2FyZSBpdCBnZXRzIGZyb20NCj4gPiByZXF1ZXN0X2Zpcm13YXJlKCkuIEkgc3Vn
+Z2VzdCB5b3UgdG8gZW5hYmxlIGJlbG93IHByaW50cyB0byBrbm93IGFib3V0DQo+ID4gd2hpY2gg
+RlcgZHJpdmVyIGlzIGdvaW5nIHRvIHdvcmsgd2l0aC4gUGVyaGFwcywgSSB3aWxsIGVuYWJsZSBi
+ZWxvdw0KPiA+IGRlZmF1bHQuDQo+ID4NCj4gPiAgICAgICAgICBCTlgyWF9ERVZfSU5GTygiTG9h
+ZGluZyAlc1xuIiwgZndfZmlsZV9uYW1lKTsNCj4gPg0KPiA+ICAgICAgICAgIHJjID0gcmVxdWVz
+dF9maXJtd2FyZSgmYnAtPmZpcm13YXJlLCBmd19maWxlX25hbWUsICZicC0+cGRldi0NCj4gPmRl
+dik7DQo+ID4gICAgICAgICAgaWYgKHJjKSB7DQo+ID4gICAgICAgICAgICAgICAgICBCTlgyWF9E
+RVZfSU5GTygiVHJ5aW5nIHRvIGxvYWQgb2xkZXIgZncgJXNcbiIsDQo+ID4gZndfZmlsZV9uYW1l
+X3YxNSk7DQo+IA0KPiBJbmRlZWQsIGFmdGVyIGZpZ3VyaW5nIG91dCB0byBlbmFibGUgYEJOWDJY
+X0RFVl9JTkZPKClgIGJ5IHRoZSBwcm9iZSBmbGFnIDB4Mg0KPiDigJMgc28gZWl0aGVyIGBibngy
+eC5kZWJ1Zz0weDJgIG9yIGBldGh0b29sIC1zIG5ldDA0IG1zZ2x2bCAweDJgLCBMaW51eCBsb2dz
+Og0KPiANCj4gICAgICAkIGRtZXNnIC0tbGV2ZWw9aW5mbyB8IGdyZXAgYm54MnggfCB0YWlsIC04
+DQo+ICAgICAgWyAgMjQyLjk4NzA5MV0gYm54MnggMDAwMDo0NTowMC4xOiBmd19zZXEgMHgwMDAw
+MDAzYg0KPiAgICAgIFsgIDI0Mi45OTQxNDRdIGJueDJ4IDAwMDA6NDU6MDAuMTogZHJ2X3B1bHNl
+IDB4NjQwNA0KPiAgICAgIFsgIDI0My4wMzgyMzldIGJueDJ4IDAwMDA6NDU6MDAuMTogTG9hZGlu
+ZyBibngyeC9ibngyeC1lMWgtNy4xMy4yMS4wLmZ3DQo+ICAgICAgWyAgMjQzLjM1NjI4NF0gYm54
+MnggMDAwMDo0NTowMC4xIG5ldDA1OiB1c2luZyBNU0ktWCAgSVJRczogc3AgNTcgZnBbMF0gNTkN
+Cj4gLi4uIGZwWzddIDY2DQo+ICAgICAgWyAgNTcxLjc3NDA2MV0gYm54MnggMDAwMDo0NTowMC4w
+OiBmd19zZXEgMHgwMDAwMDAzYg0KPiAgICAgIFsgIDU3MS43ODEwNjldIGJueDJ4IDAwMDA6NDU6
+MDAuMDogZHJ2X3B1bHNlIDB4MjE0OQ0KPiAgICAgIFsgIDU3MS43OTk5NjNdIGJueDJ4IDAwMDA6
+NDU6MDAuMDogTG9hZGluZyBibngyeC9ibngyeC1lMWgtNy4xMy4yMS4wLmZ3DQo+ICAgICAgWyAg
+NTcxLjgxMTY1N10gYm54MnggMDAwMDo0NTowMC4wIG5ldDA0OiB1c2luZyBNU0ktWCAgSVJRczog
+c3AgNDYgZnBbMF0gNDgNCj4gLi4uIGZwWzddIDU1DQo+ICAgICAgJCBkbWVzZyAtLWxldmVsPWVy
+ciB8IGdyZXAgYm54MngNCj4gICAgICBbICA1NzEuOTc5NjIxXSBibngyeCAwMDAwOjQ1OjAwLjAg
+bmV0MDQ6IFdhcm5pbmc6IFVucXVhbGlmaWVkIFNGUCsNCj4gbW9kdWxlIGRldGVjdGVkLCBQb3J0
+IDAgZnJvbSBJbnRlbCBDb3JwICAgICAgIHBhcnQgbnVtYmVyIEFGQlItNzAzU0RaLUlOMg0KPiAN
+Cj4gTWF5YmUgdGhlIGZpcm13YXJlIHZlcnNpb24gY291bGQgYmUgYWRkZWQgdG8gdGhlIGxpbmUg
+d2l0aCB0aGUgTVNJLVggYW5kDQo+IElSUSBpbmZvLiBNYXliZSBhbHNvIHRoZSBvbGQgdmVyc2lv
+biBvbiB0aGUgZGV2aWNlLCB3aGljaCBgZXRodG9vbCAtaSBuZXQwNGANCj4gc2hvd3MuDQo+IA0K
+PiAgICAgICQgZXRodG9vbCAtaSBuZXQwNCB8IGdyZXAgZmlybXdhcmUNCj4gICAgICBmaXJtd2Fy
+ZS12ZXJzaW9uOiA3LjguMTYgYmMgNi4yLjI2IHBoeSBhYTAuNDA2DQo+IA0KPiBObyBpZGVhLCB3
+aHkgZXRodG9vbCBkb2VzIG5vdCBzaG93IHRoZSBsb2FkZWQgZmlybXdhcmUuDQoNCnRoYW5rcyBQ
+YXVsIGZvciB5b3VyIHF1ZXN0aW9ucy9zdWdnZXN0aW9ucyBhbmQgc3BlY2lhbGx5IHZlcmlmaWNh
+dGlvbiBvZiB0aGUgZml4Lg0KSSB3b3VsZCBwcmVmZXIgdG8gZW5hYmxlL2FkanVzdCBvciBhZGQg
+YW55IG5ldyBsb2dzIGluIGEgc2VwYXJhdGUgY29tbWl0IChqdXN0IG5vdCB0byBhZGQgbWFueSB0
+aGluZ3MgaW4gc2FtZSBjb21taXQpDQpUaGUgdmVyc2lvbiB5b3Ugc2VlIGluIGV0aHRvb2wgaXMg
+YWN0dWFsbHkgYSBkaWZmZXJlbnQgZmlybXdhcmUgY2FsbGVkIGFzIG1hbmFnZW1lbnQgZmlybXdh
+cmUgKE1GVykgcnVubmluZyBvbiB0aGUgZGV2aWNlLg0KTWF5IGJlIHdlIGNhbiBjaGVjayB0aGUg
+ZmVhc2liaWxpdHkgb2YgcmVwb3J0aW5nIGJvdGggdGhlIEZXIHZlcnNpb25zIChNRlcgYW5kIEZX
+IGZpbGUgdmVyc2lvbiBvbiB0aGUgaG9zdCkgaW4gZXRodG9vbC4NCk9yIHBlcmhhcHMgTUZXIGlu
+IHN5c3RlbSBsb2cgYW5kIEZXIGZpbGUgdmVyc2lvbiBpbiBldGh0b29sLg0KDQpUaGFua3MuDQoN
+Cg==
