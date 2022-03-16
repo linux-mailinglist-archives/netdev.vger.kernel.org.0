@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 275A84DB9A0
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:42:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 845E24DB9A4
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:42:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358019AbiCPUnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 16:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35984 "EHLO
+        id S1358038AbiCPUn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 16:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358059AbiCPUnW (ORCPT
+        with ESMTP id S1358063AbiCPUnW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:43:22 -0400
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2068.outbound.protection.outlook.com [40.107.21.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9ED6E579
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:42:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A886948B
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:42:07 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nWq98yvnxtXuIkppksmt+8OURIfT3rcPm+7bRrugMKQ/jNSWcDbDm9F7MPnHnjTukUmwiG0/GYdDGKKz+UI9o5LVYP6bEsblkeF5JMUSezqLO64jsDYQLh+y8Hs8f/vB2c9b20dEs+ModZLLBb2HRfdxjiuIiFNsCy3TpUDR0NHqxGmHTvxMgpT3/p4n2TGgwuiT7lPtRAxxzjOAraZCrJk5sE//Rpeut3FV75ab8XvI8yXCAgEYC//J6y2l8unI438U1cqKrQ8bfmYq38R2FH5JSs2JHXrdUoajVY66xKdihDD6BqJOUL8CuU969Nxws6QSXq5VoO2fvP54QJloXQ==
+ b=aZOMIAwxpM0TcC8LwCK9WqMbwzkVWG59RPAMn3e7dy31THi652xbTnkTWYasLinHPcMq/2ctKbWBtxiTBWQzQ511BRm5re8+XvTY4mx7fJgFlVJpKvH8acxqZ06t/f9DJCB8ruy5lg/IgoFEhOz2+t7OTv2Kx1u4LQ8n99wcPVzOhKNWQuzhviGnfZy3uOUoyCfeZMabqrGV0Y4Oz5Rm+ekUbGKxm/20Db+b/UuLqORlq95Qi3wpgMArZ8m2rT0fjKc7hYmqk7SoTdxxisVxc+zI6wnglT4uhqejB5xGYaWqyeOnFok69L2f8VEYQ0u8ZHMiSlENG261Wbc15PTMcA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=muVLRVezr1vWUDs2v1tSLPpklF+6OTtL9Dbu9eIl8rk=;
- b=ffA9HLQLFaZSD6bxc08bARrmB2FvR+T7Y0A71cK0vqtmCci0b0QHLTUG43W5RrxPmnYjLcYSglLHQ+Wj4grxOqbJfwJoDmECP4BpZgj3rkVF8JJlmKwRiCmq/5cICWcG9HeST6UyWPR1fPTjomxT8kc+oBxYX9pX/bYj96q/GkbB3lD/AofdaK7mLsGF/JryhyYxv73XJ3/NNKvkwMXCXA55ssxoR8N640Ox0nBQBSMjT5IJbVWyn834C91nUunWSiFZrHJD0C9Tqhj4Sk5K1NeZbvVInn3ZyXneOaIYL722OKZerE8hnYqSvsea49ZwvrRGGLng6MaIjemDT0XRfw==
+ bh=lm24Q4k4WVHwa7P1em5q0ffDwzvnS+WVbf3JInAM1FE=;
+ b=dvakgkaVfC6GPND3u2dMavolZXCuCeOCB7uhuABSQcmfhkDuIxTeWCoPhZb0ZfdN6O77sjHS44EGaNptaKESVheTAI/hYZqpjIfdHgKrtrb3IcVf9aFQXJx1UGhoPDj/COkx334ULtBoT60yqZuZl3rg77CfpdoF1Jf+2skIHDJi7jRnjiLoAfhoWOU4F8BQskNHck3nsBJZ1jXR92ZLPKOYsqPPt7E8utuhW+zur0hP2ox3XkiDgHV3CPhHSJWstRVsiuQutxS2lYwixnl50yTU+snHiIS7wU2RJmEwBctmHwytBLk3rBRc9efw8ih6M49xdQCMCuzuP8nP4szooA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=muVLRVezr1vWUDs2v1tSLPpklF+6OTtL9Dbu9eIl8rk=;
- b=J2VYhg1opDhzqJygMMu0ZJ45E3thEqPpD1mOBgjfa0dAUm4iQhB20HKFM3vIzI09qjJjxCXwaqTZAp4VLSpDtFyVUjaVpPj7Rb2rN6Ll6rPAZwYz2E/Jg0+cvcJtNX7jptfcwTdcSGPVGDusAQGLHXGAzzoJwQ5wCQoXkApa2RY=
+ bh=lm24Q4k4WVHwa7P1em5q0ffDwzvnS+WVbf3JInAM1FE=;
+ b=WhNzvMx9UFm/nPw5yGgg7VA4KowR9ibYJGhmibgRTESFkMHbd/w0YXbdDbrJBovFyFT7OICGy7WRW3Zos5+yeO5ldnbqf4f6704IKGfS2ouUbYOOP8615dcThFuaempUcdZIBsIUwBQhckqvEGikD4t9z/+SZVX4gba1wOKFE9A=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
@@ -50,9 +50,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 5/6] net: dsa: pass extack to dsa_switch_ops :: port_mirror_add()
-Date:   Wed, 16 Mar 2022 22:41:43 +0200
-Message-Id: <20220316204144.2679277-6-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 6/6] net: dsa: felix: add port mirroring support
+Date:   Wed, 16 Mar 2022 22:41:44 +0200
+Message-Id: <20220316204144.2679277-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220316204144.2679277-1-vladimir.oltean@nxp.com>
 References: <20220316204144.2679277-1-vladimir.oltean@nxp.com>
@@ -63,50 +63,50 @@ X-ClientProxiedBy: AM6PR08CA0037.eurprd08.prod.outlook.com
  (2603:10a6:208:c1::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2a4599c2-1fdb-4e4d-5e82-08da078d6a3f
+X-MS-Office365-Filtering-Correlation-Id: 8eb3d898-01bc-478d-2f74-08da078d6ab4
 X-MS-TrafficTypeDiagnostic: VI1PR04MB3293:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB3293E685455BBFFF8272C204E0119@VI1PR04MB3293.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <VI1PR04MB329345F817CDF6800AFE3D4BE0119@VI1PR04MB3293.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CWcI4QPIcQDAHDzbNNeRlqfl/yaEFAGPRvwce3uzGzK4cUwa2y/lxYo9CwYQ4ps2s+DGBfIhp0gNNQZ4dv7DwtFv0ocjvEDgReXvZfieU7NH41jWk3AdXBygh8ZjbytZhxNKYeIiU/qMZpncKIDhsonKwxKv7XZYxxJMF6YAqQI8UfeLurOqIPYxwUh9UrYz5fGakU3R3pr+ItpzIaB7scsH2sw6YMvTjJRvLhFhLIpVtxQVKCFGKMTNkLsL2C3uozYZvjyiS30bE6AXKmWQQDy+ClqWk5bOHOyWAu1QxPVLcGj1Gmzuhcl2t6fHeHCChWvqSQk2NXOAFp0P1qz1AC0ZhlTz6sawFPrQzWOj3C0v/8GpUwYT6H4Xownf9ydDlUxePE2qLdj9Cuv/zXSWE0LTHbdrvu8xYnOr+f0S+bYckgbhhCego97nIv4aScS5UNf+RfLKTo3dKbi9a8foE0QKEuB2fSjPQGHqjDG1zCGD0ZB3nTQXDGHxg6HfEAbs6jVpNnhO6ncNfUexwwn0nPIJfx3X/egpAK+sfeuP9dhsLGQJlS3iA8lYkcx520B1i82Uy2hGALsx/tBNCz3FsaFeree25G+5X5mhs6Pa3XCu5pVvPfbfmNT5hUTZD5AUZaoS9d6xUxE56s1omYxkeio59pPp6Jt6u9EmQtmN9Qp74vxMjnr5PCO9w/bemuOyCN5R6BlSVe6RLxv7QToxxw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38350700002)(86362001)(6916009)(316002)(6486002)(54906003)(5660300002)(36756003)(8936002)(44832011)(8676002)(66946007)(4326008)(66556008)(66476007)(2906002)(83380400001)(2616005)(1076003)(6506007)(508600001)(6512007)(6666004)(52116002)(186003)(26005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: eV6/x0my7SIbpYklEZ9zPoKRAB0LeG/+wHQlLNGqQubHCC9lwdyxqqYJ5NV2EiZ37etXVd87sXh5XJ60K0yxtWRUvjOljVDAxiFQqkneMonaJSlWSe9cjRZuYpjLa5+qVt1OzQOQsAcrRTqWpbOQ83br7d1lz+jM3z8xXdN7RASNdetMkziOZ1VtHl32fKXBu+Tj/dpMijXwUFLCoJnOn4rgVuzW5cXV33b6H1LkIcaZ0rmN5jUjmMPQWqbUKj2m4752zvam8RAC9Po+g8mFX3s022+d8+NtRJ5S4leCspEtaUb09DkocGCFd4MJzsmbJe6uoS9/i0n+xaTqX+Xzb3u9220J4pySK0XjW7UdAfTrWxwhF0OmCkxoaWTTvJu6R8cAaCLVxkrtGtoFUUA/QGc2nMIu0aLb02w/eFLZ1aiYBwQmKDITi6z+lpnqE6XBukhKfisSGsLv5FRXXFnersiyehqMkYRW2L8QNAPc2kGf52N095f7d8TMN2Qie9bbHhBKiz+thtQQlq/e6FOidmkxa8gh1hQG+efplq9U8LX+DL0MSeHKCRDuZqvelx3NO3NsdgsBIkTafjI2W+AnpDNA19SmFIGFYggNft7PQGmo2OEPINYNM5Fis0OE4QkABYYB9yN9zmivsfmAVHUEgJEGPxh9Ubr38KE6DZRqzsbEqw5J7RE5mZ5P8QmfxBS8fTj9MzY/GkjKhnS6JwGAXg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38350700002)(86362001)(6916009)(316002)(6486002)(54906003)(5660300002)(36756003)(8936002)(44832011)(8676002)(66946007)(4326008)(66556008)(66476007)(2906002)(2616005)(1076003)(6506007)(508600001)(6512007)(6666004)(52116002)(186003)(26005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h49RflsSPWz2vpRi8BxRvIDMQtnP7pPPlNNkWCcUhh1c+epAhmVaCsd9d9K5?=
- =?us-ascii?Q?ISLXHaWMd6jiRKI4DnYTfBGQB7H5c+WdS6P/Zup6ZrqFMhPbysY2s/PkyiOs?=
- =?us-ascii?Q?Ugu31Rt2hZNxm5/MSWkqNXXsn9RCpcHIkMFWAD3lAPbGKWu61TtFZRUx3EET?=
- =?us-ascii?Q?c5xeIHnId6ahcLh1bHvyunntEuLUhuE2PpSUxwSnGORNg45NPQoSCcEPkHFt?=
- =?us-ascii?Q?ZWAQ2TLxTY3hJtmLX2sNHPHKXaIOiptfVnjudKh2EPilEvaAfhutAE/nkq6F?=
- =?us-ascii?Q?AqjCWX0drryThagfoOFfLv3gU03uMnBTQHuRNr/fBPII80oZOZTUMHMD7AeM?=
- =?us-ascii?Q?L9hHuBQCPhJN01cT/AkrApdJNl8QbkfNoyrzPnaVIEnctk16+NEdGoVuODEF?=
- =?us-ascii?Q?sh6rugXcatuhd52TdyruA9r82uhYJphsfc941hdg0w/D63O6HXdWp+1JqxLo?=
- =?us-ascii?Q?yijHw4/XOTpBSovPkLUfjrDkV9fgrreL2rbonsxkuFqsbTYqyQrLWVag7mCQ?=
- =?us-ascii?Q?lMXj24Bdewz7Hxj4dONA5MQej1crzLgb2vOf+EIWKdkTiBypNTKzyoJP9YJZ?=
- =?us-ascii?Q?jre0RrJVpia5jkA7mW+mlaJrH/JzpayqFtAykK+lq5qFGcGhYCXa29qSc6R5?=
- =?us-ascii?Q?I/VolkYp2KoYdm4Kb/ywQqJFzjdRuo3kQ8RvInuhuX5c60bAPd+4wg/OnnSe?=
- =?us-ascii?Q?aLTiX5AY7HViMMER2Gi9Qiu6JyGXQCViYQgUBAntt9XECGEX8vYVxrWGtPQ1?=
- =?us-ascii?Q?utEhvko/VBw+VbVEOJ+Z3korfEEvtu2ZIwNnGvLPAJe3jvMu42kv/g/FXYtP?=
- =?us-ascii?Q?YMcv0NrzBVD/RBFUswk3onZg6R/m/egdh+9zqKzuMQ8Gl5pr/cPOsFiQwCHI?=
- =?us-ascii?Q?ymVqq7IsKVUrkmJnqINBDm8fKw5wYEXOQM6J7wLR+VtQkGieOo6TNJrzsnG4?=
- =?us-ascii?Q?wQScA23gNy6GtBiQmS23shSwaTSDvUyLlhv3Sa9BobavqWPJSFL4ahLqggpA?=
- =?us-ascii?Q?5s5ILsmi255DhsE1+00pPw5gUBO9sJddoGJVyVLcTeFPkFnmk7CMmNRSlgNY?=
- =?us-ascii?Q?RtCxXI347SAmt1rA4wpqrPQTEZl6Cw5tt1i8esljrhMA1fq9rCEN6dO4U8Nc?=
- =?us-ascii?Q?fddWagEOwrPn/fYMS8l/kv092ysSxzC3zFMg8j2NWkGS5LyV+zD7+g729WSK?=
- =?us-ascii?Q?1MiOTjunIaJim5xMd4ot6vw4QQyem1QlDidIAf7rVcZ0NDw/rzz0c9HVAjbF?=
- =?us-ascii?Q?//vAptNUlBJEULoUmIcexjRU8vKMTj/J/U0JYTop6Ncx8uYohp/rVnVwpAX0?=
- =?us-ascii?Q?i9vRyzsHx2qCa2pjDnx2dR1wJxxSWXG54XXGukfBmqg/FdgKFrm1B+6DaGWz?=
- =?us-ascii?Q?gdu2uSmbEER/LzRrhOclEWOKQaO6kQbSycaq23+OUqON7utunUljQB3IQAmH?=
- =?us-ascii?Q?u2gA941lRsFSN4xlYLPjoqyaETnFyHzUmOlMlqnfCtEKc/cWaKtY9w=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?foVxljFSq64QHm7d/vHEfJVQGRwdfv3la07UplACj6BgPkXnXHNI31D+KUZL?=
+ =?us-ascii?Q?jrGYCXOT3qIK5g4SdKZYyPNQWZfcXCpE9VUgBEDz3U34Bcfz4+iG87BAxApe?=
+ =?us-ascii?Q?lZRL3Z6qOGNN/taQ+FAjofrjh+ZRl1c0OM8Yh3i/nZcKzHf+sMAMyauzqWlt?=
+ =?us-ascii?Q?d18fc6VKJJiYZtI6MvUWt7me02VflDFNQCzS7t8c8CZ+47eEYiLWiT/GheAl?=
+ =?us-ascii?Q?ZjfxvkaxdfB5PLgIdqe4R/iSSCs2wOQNSbj0xI2FZ49uP4alqGSztpoTYIz1?=
+ =?us-ascii?Q?CPNZNau9SSw9oXPVXyAgZ1aCHhWeHBXP+rJfgSnqdXQHmD/kG9miXJBassTK?=
+ =?us-ascii?Q?0SUw+BUFIkXUh8Xt2MioJYH73ujHZTGaSpKu44MyOqgr9m8BzGHMFFRLdM3Q?=
+ =?us-ascii?Q?Hxc+j0Me1pDcyDjSukWNt4vnSrPblXCdHfgnLIc5fkpfINTNN9HSYfuBg3FL?=
+ =?us-ascii?Q?i797TssE8Wi+EhMRQIF5RKQO9MHVdfCj8m5wvUcT/SVkbUg4tlylASFxcM15?=
+ =?us-ascii?Q?LFtArMRBaQXkuVjG3LHVPL0XSmeCJ1O8DJ4NEGQMBZMQwNRpdJ9g/Iqw2yTR?=
+ =?us-ascii?Q?hbmxtLN3n1P/EfhGGJ85JhZgu8vytKQXGcFWu/HeecJgLDftXaDpdZ9C7sOG?=
+ =?us-ascii?Q?T3VqqZVW9q2JmeGEu2vhHuzR3kImKHx+zPp2f/Ys/TPO9AsHvXETpdkbwV16?=
+ =?us-ascii?Q?vTlDG6qwVJpwyMEh98et1XriWMJpGkeb+VuvwSnNIC82Y/Wa6KXpCIEkk9FY?=
+ =?us-ascii?Q?vu6fusZ1HkeMCjOsAsDOQqxNzeXfm+BqJB5T5HY1Zg+sGaZfybbczc93bATh?=
+ =?us-ascii?Q?7LdYI14IdU9vwDQmazR8oiuNu3hPIlV3VKCwgzLUZH+LanQGJapZlLz5if44?=
+ =?us-ascii?Q?Tnvc26zTH8lOZ5NlaGGPFkDOOq39W+Xomf0sXg11ahWB3lsKuYU+1nowtxEx?=
+ =?us-ascii?Q?nmbRKQwYn5m58zj71yPxwsdVXLzpC6ckubtAGDWRsK95A/RjZqBZct0VxF65?=
+ =?us-ascii?Q?fFyRWS7fkioltnCRelW07lUJYg1yMHkpUtZcUQLztQcKyYyteFYUiZSw9f4J?=
+ =?us-ascii?Q?q3v2KmMSKNvPcTDe3kOLNqYJXra1hxgUdaoDPxEpQkKGHirN/Z+H1/YgJ8I2?=
+ =?us-ascii?Q?S91jVCxzRYSeI6o0EVMVc6ND39IqM7BXRU9ggPYljnl0FchT2CK9HKI0AqPJ?=
+ =?us-ascii?Q?aQtI1s1wjBeuFjtRhPhTKkrucN+36HIYecXAWsdvGTlg5slfgjdgcB9m65C6?=
+ =?us-ascii?Q?VEKzOsHIeOAuo17WSEqpCjzxsXxTPJaJ8M3NgNrV7F17AJskpmivlEoiYX2D?=
+ =?us-ascii?Q?d2FBGKuJ1OQcqmbA7fUCPa5EY3o8JRsx7qMXGwzXRcPJEsB0sAojFvWv5XLo?=
+ =?us-ascii?Q?CQgPDWCzfJzWmRk6oVehFJiHgEK7ivd38WBlXZDQDYI1JK+3cDafgzQmIgnG?=
+ =?us-ascii?Q?prlk4JmEUVwvAmtQP/Y9IJMr9Ffn9JxtP7zv1d30YtkV8AQzYTRE1g=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a4599c2-1fdb-4e4d-5e82-08da078d6a3f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8eb3d898-01bc-478d-2f74-08da078d6ab4
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 20:41:58.2073
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 20:41:58.9885
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sGjNoMJEd55wLWMMYEbbHYrqasQzFDqsiAL+y2TT2ezNt72Qu9Qv8kOu4lUA6xMKK5JVRm3ziY4yK2Xz4/xFeg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2rSJh5Zy7InARnrW44WF7qaXTW+6fJeNLmtMM8jsYYXsV7HADdUU9m5m1WWFaPs0YolNaC1UWEYpW+9vhcN78g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3293
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -118,167 +118,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drivers might have error messages to propagate to user space, most
-common being that they support a single mirror port.
-
-Propagate the netlink extack so that they can inform user space in a
-verbal way of their limitations.
+Gain support for port mirroring using tc-matchall by forwarding the
+calls to the ocelot switch library.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/b53/b53_common.c       | 3 ++-
- drivers/net/dsa/b53/b53_priv.h         | 3 ++-
- drivers/net/dsa/microchip/ksz8795.c    | 2 +-
- drivers/net/dsa/microchip/ksz9477.c    | 2 +-
- drivers/net/dsa/mt7530.c               | 2 +-
- drivers/net/dsa/mv88e6xxx/chip.c       | 3 ++-
- drivers/net/dsa/qca8k.c                | 2 +-
- drivers/net/dsa/sja1105/sja1105_main.c | 2 +-
- include/net/dsa.h                      | 2 +-
- net/dsa/slave.c                        | 3 ++-
- 10 files changed, 14 insertions(+), 10 deletions(-)
+ drivers/net/dsa/ocelot/felix.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 122e63762979..77501f9c5915 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -2110,7 +2110,8 @@ enum dsa_tag_protocol b53_get_tag_protocol(struct dsa_switch *ds, int port,
- EXPORT_SYMBOL(b53_get_tag_protocol);
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 13d6b178777c..413b0006e9a2 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -1650,6 +1650,24 @@ static void felix_port_policer_del(struct dsa_switch *ds, int port)
+ 	ocelot_port_policer_del(ocelot, port);
+ }
  
- int b53_mirror_add(struct dsa_switch *ds, int port,
--		   struct dsa_mall_mirror_tc_entry *mirror, bool ingress)
-+		   struct dsa_mall_mirror_tc_entry *mirror, bool ingress,
-+		   struct netlink_ext_ack *extack)
- {
- 	struct b53_device *dev = ds->priv;
- 	u16 reg, loc;
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index 86e7eb7924e7..3085b6cc7d40 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -373,7 +373,8 @@ int b53_mdb_del(struct dsa_switch *ds, int port,
- 		const struct switchdev_obj_port_mdb *mdb,
- 		struct dsa_db db);
- int b53_mirror_add(struct dsa_switch *ds, int port,
--		   struct dsa_mall_mirror_tc_entry *mirror, bool ingress);
-+		   struct dsa_mall_mirror_tc_entry *mirror, bool ingress,
-+		   struct netlink_ext_ack *extack);
- enum dsa_tag_protocol b53_get_tag_protocol(struct dsa_switch *ds, int port,
- 					   enum dsa_tag_protocol mprot);
- void b53_mirror_del(struct dsa_switch *ds, int port,
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 5dc9899bc0a6..19050a0216fb 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1213,7 +1213,7 @@ static int ksz8_port_vlan_del(struct dsa_switch *ds, int port,
- 
- static int ksz8_port_mirror_add(struct dsa_switch *ds, int port,
- 				struct dsa_mall_mirror_tc_entry *mirror,
--				bool ingress)
-+				bool ingress, struct netlink_ext_ack *extack)
- {
- 	struct ksz_device *dev = ds->priv;
- 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index a4699481c746..8222c8a6c5ec 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1018,7 +1018,7 @@ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
- 
- static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror,
--				   bool ingress)
-+				   bool ingress, struct netlink_ext_ack *extack)
- {
- 	struct ksz_device *dev = ds->priv;
- 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 669f008528ec..19f0035d4410 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1714,7 +1714,7 @@ static int mt753x_mirror_port_set(unsigned int id, u32 val)
- 
- static int mt753x_port_mirror_add(struct dsa_switch *ds, int port,
- 				  struct dsa_mall_mirror_tc_entry *mirror,
--				  bool ingress)
-+				  bool ingress, struct netlink_ext_ack *extack)
- {
- 	struct mt7530_priv *priv = ds->priv;
- 	int monitor_port;
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 84b90fc36c58..d733b07b406c 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -6036,7 +6036,8 @@ static int mv88e6xxx_port_mdb_del(struct dsa_switch *ds, int port,
- 
- static int mv88e6xxx_port_mirror_add(struct dsa_switch *ds, int port,
- 				     struct dsa_mall_mirror_tc_entry *mirror,
--				     bool ingress)
-+				     bool ingress,
-+				     struct netlink_ext_ack *extack)
- {
- 	enum mv88e6xxx_egress_direction direction = ingress ?
- 						MV88E6XXX_EGRESS_DIR_INGRESS :
-diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index ee0dbf324268..d3ed0a7f8077 100644
---- a/drivers/net/dsa/qca8k.c
-+++ b/drivers/net/dsa/qca8k.c
-@@ -2473,7 +2473,7 @@ qca8k_port_mdb_del(struct dsa_switch *ds, int port,
- static int
- qca8k_port_mirror_add(struct dsa_switch *ds, int port,
- 		      struct dsa_mall_mirror_tc_entry *mirror,
--		      bool ingress)
-+		      bool ingress, struct netlink_ext_ack *extack)
- {
- 	struct qca8k_priv *priv = ds->priv;
- 	int monitor_port, ret;
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 3358e979342c..b33841c6507a 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2847,7 +2847,7 @@ static int sja1105_mirror_apply(struct sja1105_private *priv, int from, int to,
- 
- static int sja1105_mirror_add(struct dsa_switch *ds, int port,
- 			      struct dsa_mall_mirror_tc_entry *mirror,
--			      bool ingress)
-+			      bool ingress, struct netlink_ext_ack *extack)
- {
- 	return sja1105_mirror_apply(ds->priv, port, mirror->to_local_port,
- 				    ingress, true);
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 9bfe984fcdbf..fa9413f625f1 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -1022,7 +1022,7 @@ struct dsa_switch_ops {
- 				    struct flow_cls_offload *cls, bool ingress);
- 	int	(*port_mirror_add)(struct dsa_switch *ds, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror,
--				   bool ingress);
-+				   bool ingress, struct netlink_ext_ack *extack);
- 	void	(*port_mirror_del)(struct dsa_switch *ds, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror);
- 	int	(*port_policer_add)(struct dsa_switch *ds, int port,
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index f9cecda791d5..7bff7023f877 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1155,6 +1155,7 @@ dsa_slave_add_cls_matchall_mirred(struct net_device *dev,
- 				  struct tc_cls_matchall_offload *cls,
- 				  bool ingress)
- {
-+	struct netlink_ext_ack *extack = cls->common.extack;
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	struct dsa_slave_priv *p = netdev_priv(dev);
- 	struct dsa_mall_mirror_tc_entry *mirror;
-@@ -1192,7 +1193,7 @@ dsa_slave_add_cls_matchall_mirred(struct net_device *dev,
- 	mirror->to_local_port = to_dp->index;
- 	mirror->ingress = ingress;
- 
--	err = ds->ops->port_mirror_add(ds, dp->index, mirror, ingress);
-+	err = ds->ops->port_mirror_add(ds, dp->index, mirror, ingress, extack);
- 	if (err) {
- 		kfree(mall_tc_entry);
- 		return err;
++static int felix_port_mirror_add(struct dsa_switch *ds, int port,
++				 struct dsa_mall_mirror_tc_entry *mirror,
++				 bool ingress, struct netlink_ext_ack *extack)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_port_mirror_add(ocelot, port, mirror->to_local_port,
++				      ingress, extack);
++}
++
++static void felix_port_mirror_del(struct dsa_switch *ds, int port,
++				  struct dsa_mall_mirror_tc_entry *mirror)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	ocelot_port_mirror_del(ocelot, port, mirror->ingress);
++}
++
+ static int felix_port_setup_tc(struct dsa_switch *ds, int port,
+ 			       enum tc_setup_type type,
+ 			       void *type_data)
+@@ -1880,6 +1898,8 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.port_max_mtu			= felix_get_max_mtu,
+ 	.port_policer_add		= felix_port_policer_add,
+ 	.port_policer_del		= felix_port_policer_del,
++	.port_mirror_add		= felix_port_mirror_add,
++	.port_mirror_del		= felix_port_mirror_del,
+ 	.cls_flower_add			= felix_cls_flower_add,
+ 	.cls_flower_del			= felix_cls_flower_del,
+ 	.cls_flower_stats		= felix_cls_flower_stats,
 -- 
 2.25.1
 
