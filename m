@@ -2,65 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42E434DA910
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 04:51:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C264DA926
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 05:00:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353504AbiCPDwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 23:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55824 "EHLO
+        id S231822AbiCPEBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 00:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353510AbiCPDwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 23:52:10 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEDA5F8FB;
-        Tue, 15 Mar 2022 20:50:57 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id r11so1014240ioh.10;
-        Tue, 15 Mar 2022 20:50:57 -0700 (PDT)
+        with ESMTP id S229437AbiCPEBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 00:01:30 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6915B4832A;
+        Tue, 15 Mar 2022 21:00:17 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id n16so786063ile.11;
+        Tue, 15 Mar 2022 21:00:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=2YWxnhGUr74RaA4Fgl+4zc1b50wr4mfFgMA+iq41ak4=;
-        b=o/lz198jRvsibNYSqyw3ViIzpHrrgK9q6aYamrFp9Jfp4zWkxSLpU9chGHYWYC0v8A
-         8E4ieefk0+31bTHvQUElhD5/JpzBWMfIiuzc45MNfYb3sXbVZb9qoXgXWMUWczsVZwto
-         waIH0lLisRW62rByXg9hWAMTwC2OGoEakIezCj6fl7vq3duUqjFn3M/Dg3UvdAtwIhEW
-         YpHJwhUuNhL2gmT7Ib5ESD9dn+X9X0x3kU/xyqdw8WgSssArH4xwRCILIVc1bvmy8rBw
-         yPu0KRj8P4d8TcFkrWUHz5tpgnx/MTQNRfBLrkP54eARSwXcW1B+zJrCKmtTvNd16Fqb
-         RVgQ==
+        bh=rSzgmk+B5Ar8ei69IOGqcC1Qk1yUbI7eByB01Wx0p6I=;
+        b=pP5JYTkoc1Y3kyWz0sEb7RMEKSR9QwoKjSSgKdF7oKCLUkEqxztDffUqt7ULe9JuqQ
+         DvY85KTODVlRhWEKwGnEKeN33CQEDzKnBxiJoWvJ1ttrih/Q9bNTWGXQFqS1Vo/pkn8R
+         tFPgWZXfB/2gNSagNbmUMKrXII7XOh7ufEFnvLWmrDn6w45r/ZLAHFIqBvxMfNL1GWts
+         RR2f4TztVYWFotKToGRQtFMT8TL9+ZLOsyvF97rSckWJXDIIjjRw5E7Vme4BPSyPt+ET
+         UfINMbqGGQE2JIigkNROI8lfvALNfPWe2XyMsIstLE2NrTwwVwdvOItV20cfTECJPyJz
+         GHHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=2YWxnhGUr74RaA4Fgl+4zc1b50wr4mfFgMA+iq41ak4=;
-        b=yoIM55yBWnppnuOssGMmZM3+chfYIczboh8Xe68hBm6bJJzIefR1F/pVH2SUfTPTgQ
-         BVmJP1nEGHesOpeo5k7K/Y4E1oQqccb6nQsf788uye/ydSKGBfAMnHFO1MFHs0ppPQMQ
-         zUza5rLqy4ZG6X6MgJlyeTx7g0ifGuY8auo8ku3xZrHNDhRXLtX3s946pt1/oDpvy1cT
-         WfR3RhM7bp9LBxXde+IWHeCYcXMby2ZDKxt8cQ5Bbb9kKzSV4pgqxnPpqJDVYPWScCBd
-         0Z86UMw0YB9xIWJeXwaEG248xcJ6YYsuMoShSGAzhI4lHMqTTftDyPzR00S5yNhU0wLD
-         htdw==
-X-Gm-Message-State: AOAM531efFg5KqkYQavM7DdEkBfo4o2mOk5nDbxR7U3GcfOVcj6ZIxjQ
-        shiTiscLv4gp88Kmdx6uRc8=
-X-Google-Smtp-Source: ABdhPJwwAp0GszTQYy7vNBG0qrRUvl6Ugq29iZ5kHySCCaseDTpZvwEIZ2uk97Sgfla93mx8LzSzMA==
-X-Received: by 2002:a02:666b:0:b0:31a:104a:c484 with SMTP id l43-20020a02666b000000b0031a104ac484mr6114487jaf.172.1647402656568;
-        Tue, 15 Mar 2022 20:50:56 -0700 (PDT)
+        bh=rSzgmk+B5Ar8ei69IOGqcC1Qk1yUbI7eByB01Wx0p6I=;
+        b=SgI6qPRLvep36QyE61/1ey/xnOuKgsE6Ebfq/382rMGx2TXtM9RLvIINfluQRKD0TS
+         pHTDzVkd0rraEMC59Oju0tTBLI8Rx2qmpJE/RixUy4I728KnTttQeNAgt8X9yW+uWYDl
+         fyvoulBV1HGhuOJmj3aKUK6pqGlbcqa8mOVvMSpIxXMGzc8iszB+6t3Wx6Nn4KEkvz5B
+         hXpsddERHsr/0x2EmG3OrIwFx0fR70NV8oRfqdTZEDkvazmwuQ4R55pPX8tFreViaoGy
+         rBQ8xzxbZ2Hx46PvrqwCNMTKW8U8RrfzR6Iux811SFgiVDRylnBXvbv4ZPK9oFwkx8MF
+         VHSg==
+X-Gm-Message-State: AOAM532hu63R01PMdF9kr1SLVkltXhzrr4tm4s04KeJPXQdjKDfaHojh
+        D8htqNvXT2NEaFMBcC3uPXU=
+X-Google-Smtp-Source: ABdhPJzcQtEEU6gs4sIbbvZZqOiXwIIa8EE8ZqemjxybuOlWxKZK73jsohn2CtnA0MnNCtAmZLtl/Q==
+X-Received: by 2002:a92:130b:0:b0:2c5:66a6:cad8 with SMTP id 11-20020a92130b000000b002c566a6cad8mr22375500ilt.285.1647403216754;
+        Tue, 15 Mar 2022 21:00:16 -0700 (PDT)
 Received: from localhost ([99.197.200.79])
-        by smtp.gmail.com with ESMTPSA id l1-20020a056e021aa100b002c790f388c6sm531750ilv.77.2022.03.15.20.50.55
+        by smtp.gmail.com with ESMTPSA id q197-20020a6b8ece000000b00648d615e80csm426357iod.41.2022.03.15.21.00.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 20:50:56 -0700 (PDT)
-Date:   Tue, 15 Mar 2022 20:50:49 -0700
+        Tue, 15 Mar 2022 21:00:16 -0700 (PDT)
+Date:   Tue, 15 Mar 2022 21:00:09 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, brouer@redhat.com, toke@redhat.com,
-        pabeni@redhat.com, echaudro@redhat.com,
-        lorenzo.bianconi@redhat.com, toshiaki.makita1@gmail.com,
-        andrii@kernel.org
-Message-ID: <62315e99df50b_94df208c8@john.notmuch>
-In-Reply-To: <d5dc039c3d4123426e7023a488c449181a7bc57f.1646989407.git.lorenzo@kernel.org>
-References: <cover.1646989407.git.lorenzo@kernel.org>
- <d5dc039c3d4123426e7023a488c449181a7bc57f.1646989407.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v5 bpf-next 3/3] veth: allow jumbo frames in xdp mode
+To:     "liujian (CE)" <liujian56@huawei.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Cc:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "sdf@google.com" <sdf@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Message-ID: <623160c966680_94df20819@john.notmuch>
+In-Reply-To: <4f937ace70a3458580c6242fa68ea549@huawei.com>
+References: <20220315123916.110409-1-liujian56@huawei.com>
+ <20220315195822.sonic5avyizrufsv@kafai-mbp.dhcp.thefacebook.com>
+ <4f937ace70a3458580c6242fa68ea549@huawei.com>
+Subject: RE: [PATCH bpf-next] net: Use skb->len to check the validity of the
+ parameters in bpf_skb_load_bytes
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -75,13 +84,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi wrote:
-> Allow increasing the MTU over page boundaries on veth devices
-> if the attached xdp program declares to support xdp fragments.
+liujian (CE) wrote:
 > 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
+> 
+> > -----Original Message-----
+> > From: Martin KaFai Lau [mailto:kafai@fb.com]
+> > Sent: Wednesday, March 16, 2022 3:58 AM
+> > To: liujian (CE) <liujian56@huawei.com>
+> > Cc: ast@kernel.org; daniel@iogearbox.net; andrii@kernel.org;
+> > songliubraving@fb.com; yhs@fb.com; john.fastabend@gmail.com;
+> > kpsingh@kernel.org; davem@davemloft.net; kuba@kernel.org;
+> > sdf@google.com; netdev@vger.kernel.org; bpf@vger.kernel.org
+> > Subject: Re: [PATCH bpf-next] net: Use skb->len to check the validity of the
+> > parameters in bpf_skb_load_bytes
+> > 
+> > On Tue, Mar 15, 2022 at 08:39:16PM +0800, Liu Jian wrote:
+> > > The data length of skb frags + frag_list may be greater than 0xffff,
+> > > so here use skb->len to check the validity of the parameters.
+> > What is the use case that needs to look beyond 0xffff ?
 
-Thanks!
+> I use sockmap with strparser, the stm->strp.offset (the begin of one
+> application layer protocol message) maybe beyond 0xffff, but i need
+> load the message head to do something.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+This would explain skb_load_bytes but not the other two right? Also
+if we are doing this why not just remove those two checks in
+flow_dissector_load() I think skb_header_pointer() does duplicate
+checks. Please check.
