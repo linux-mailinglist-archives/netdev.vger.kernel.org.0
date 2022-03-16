@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7664DBB45
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 00:42:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6E04DBB4E
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 00:46:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349723AbiCPXoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 19:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44644 "EHLO
+        id S1345185AbiCPXrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 19:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238833AbiCPXoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 19:44:01 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9F11AD86;
-        Wed, 16 Mar 2022 16:42:45 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id j17so5185075wrc.0;
-        Wed, 16 Mar 2022 16:42:45 -0700 (PDT)
+        with ESMTP id S237308AbiCPXri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 19:47:38 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6CAE89;
+        Wed, 16 Mar 2022 16:46:23 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id m42-20020a05600c3b2a00b00382ab337e14so4064592wms.3;
+        Wed, 16 Mar 2022 16:46:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9GllwDD1lbwf5TdbQUghkmXuyp60McuGtPv3Aj+W5Go=;
-        b=mDD+sPjAuJQoC7C5Am/WO2Wsonxpx/hUAZwYXHzAT+YKEM1o7bO8aHOT+QrRd8RXrn
-         xEscKX2S0JBAQcGrmW2ytZ9rJVP4VdoZtFOTHAcovTBpvQQswajvJ82OjCzgQpi6Hrmm
-         7WblHE81ndtm6zkv/2xcteUc6rBDb1MUy4OLgKn9BPx//0/Iz9iNVnyCtlnpBIkoZ8+Z
-         KprSeQA/4qYN4/6aOd5PTsN6YAcfoYUdEUaTx15tVhmc983SMhdpc29cuaOZ6fIVcrUx
-         JWJvLMHmP++asFHbwV6cPpjpRqmCxufxxA8A9wR+0vVCsNAJDpiXvNRn1l395a3HQw7u
-         ZxVw==
+        bh=RSX5Rth7wwj83rxTYc+rwdv+c14uPhz18sTsRPEgR/E=;
+        b=cDeXbYS8Zb7+0/CDX+L3jB2qUzVT/9dkvRHVIlv9xeSwjYyGVNRSEK2EnP9tx34m4Q
+         owsQe6WKA7D6BDCGu0GbZ8Eb9rP1LkGzPad+/fntJsAGWKwSMKlt1dcp/8zf7n9rsRah
+         q3ajz9xH0DJeaMc2c1L8z6n/QRswEGS9G5hvphVgOlgsqno6YB2VJggTYRcZjrBRhXFq
+         Z9rdEKWCwDmdX1dJPsCxg+0tI8aaDbGhDBJhdmswM0ZERBvUS1hc9kLBl5d5EH8f3vqF
+         y5/CGf/93cEzW2rnuQK7zDWJkXd4JlVphWgjIKDhxa0ZRWc+uLkImmpQRL2TBE+vSLOv
+         annQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=9GllwDD1lbwf5TdbQUghkmXuyp60McuGtPv3Aj+W5Go=;
-        b=1CAcdhVyJTYoMkQHTSXtCRng8qVY07elJwM4kixUNg0xVy29wE6THkRahWa0xTFO4Q
-         z4uiE/7fnF1kn5WYyaH+7X9ghcDlWuhJO2cz5agWncp5vG+7FwrCMhh8mBwnz3gqJOls
-         mTowpa9cZJ62yGRH+KN8GMWU0QM5Rg4wfY4gQDuAnvAlRttoUhEnXQdIHqrHG6sRBJ7m
-         EOQzaOEuwcc+0f6FUBCgs6t9iyEGoIxP0IUJSrzpnvgCp+vjvFclLRM8eulpARc5Kwr5
-         HTEY9C8lm75C0k1RzfjDkQhfZ/f4gx/eQa+oA0rVd0bgsYnIG3kwMBaao+TU7nemGmYf
-         /IOQ==
-X-Gm-Message-State: AOAM53300YoICbvrtsn/HLDQWHCGMuomONu65MMm4RSIWi5CmT4+4j0P
-        kNgZz25rGhD8KUfZRF8Ei2F0QilBamKfIw==
-X-Google-Smtp-Source: ABdhPJx+ifk/0d/5lefPj0dTm/N0bmsw3Ym25Aw1wpy8wOkWUPMJBtSc4nAyoD2h3byfIx2uXXl4sQ==
-X-Received: by 2002:a5d:64c5:0:b0:1f1:e6b8:bd3c with SMTP id f5-20020a5d64c5000000b001f1e6b8bd3cmr1711097wri.686.1647474164008;
-        Wed, 16 Mar 2022 16:42:44 -0700 (PDT)
+        bh=RSX5Rth7wwj83rxTYc+rwdv+c14uPhz18sTsRPEgR/E=;
+        b=FFX+pG8XW/gceIQjzslWMvNErvZoYm1fBejJjwckeJo7DSli8T0ckBFvsrNG5lnNka
+         L0E5ZMZnSCv5qL6qa0bWdgxg4O81qpMToBcSbXFhBQZhVJhuYzE68ei1k5x3MNTtOuv+
+         utxe4AqTUutr1tVF7ZDPCuhic2WBWISKRUKaqbo7jhw43kZz4H7cP9jAp0Xr+hj3kEt0
+         ek7bi76Nut6CAphAVAQ2jwRHBkOqn7RvMxBGaxNqkoUTKIflCjDMvO1UqGhry8o4GCXU
+         dYnFlKPrDC9vxRXpSvOP2i/ziUtkClLJ/bTfq3/KmQq7PVDNlUIpLqLYlbStZ6CzGXUu
+         kV9g==
+X-Gm-Message-State: AOAM532LYGhVdF48gVJsrXrO5BpUv1dOzcn5CuYpVYWWxHyQT4GBwYN9
+        nI+ckVWk56UqmRrhDn3hdrs=
+X-Google-Smtp-Source: ABdhPJyxcNhyV4ys0YsNVf6IfPElpeiApCn9unzK7l2es+CC4mQwMkYYrz86YyuiUTom73kbiVIMEA==
+X-Received: by 2002:a05:600c:264e:b0:389:802e:c7fa with SMTP id 14-20020a05600c264e00b00389802ec7famr1622306wmy.93.1647474381806;
+        Wed, 16 Mar 2022 16:46:21 -0700 (PDT)
 Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id a14-20020a05600c348e00b00389ab74c033sm2779518wmq.4.2022.03.16.16.42.43
+        by smtp.gmail.com with ESMTPSA id u15-20020a5d6daf000000b00203db33b2e4sm2825884wrs.26.2022.03.16.16.46.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 16:42:43 -0700 (PDT)
+        Wed, 16 Mar 2022 16:46:21 -0700 (PDT)
 From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] rtw89: Fix spelling mistake "Mis-Match" -> "Mismatch"
-Date:   Wed, 16 Mar 2022 23:42:42 +0000
-Message-Id: <20220316234242.55515-1-colin.i.king@gmail.com>
+Subject: [PATCH] ethernet: sun: Fix spelling mistake "mis-matched" -> "mismatched"
+Date:   Wed, 16 Mar 2022 23:46:20 +0000
+Message-Id: <20220316234620.55885-1-colin.i.king@gmail.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -70,41 +68,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are some spelling mistakes in some literal strings. Fix them.
+There is a spelling mistake in a dev_err message. Fix it.
 
 Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/net/wireless/realtek/rtw89/coex.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/sun/niu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/coex.c b/drivers/net/wireless/realtek/rtw89/coex.c
-index 07f26718b66f..99abd0fe7f15 100644
---- a/drivers/net/wireless/realtek/rtw89/coex.c
-+++ b/drivers/net/wireless/realtek/rtw89/coex.c
-@@ -4623,12 +4623,12 @@ static void _show_cx_info(struct rtw89_dev *rtwdev, struct seq_file *m)
- 	ver_hotfix = FIELD_GET(GENMASK(15, 8), chip->wlcx_desired);
- 	seq_printf(m, "(%s, desired:%d.%d.%d), ",
- 		   (wl->ver_info.fw_coex >= chip->wlcx_desired ?
--		   "Match" : "Mis-Match"), ver_main, ver_sub, ver_hotfix);
-+		   "Match" : "Mismatch"), ver_main, ver_sub, ver_hotfix);
- 
- 	seq_printf(m, "BT_FW_coex:%d(%s, desired:%d)\n",
- 		   bt->ver_info.fw_coex,
- 		   (bt->ver_info.fw_coex >= chip->btcx_desired ?
--		   "Match" : "Mis-Match"), chip->btcx_desired);
-+		   "Match" : "Mismatch"), chip->btcx_desired);
- 
- 	if (bt->enable.now && bt->ver_info.fw == 0)
- 		rtw89_btc_fw_en_rpt(rtwdev, RPT_EN_BT_VER_INFO, true);
-@@ -5075,7 +5075,7 @@ static void _show_dm_info(struct rtw89_dev *rtwdev, struct seq_file *m)
- 	seq_printf(m, "leak_ap:%d, fw_offload:%s%s\n", dm->leak_ap,
- 		   (BTC_CX_FW_OFFLOAD ? "Y" : "N"),
- 		   (dm->wl_fw_cx_offload == BTC_CX_FW_OFFLOAD ?
--		    "" : "(Mis-Match!!)"));
-+		    "" : "(Mismatch!!)"));
- 
- 	if (dm->rf_trx_para.wl_tx_power == 0xff)
- 		seq_printf(m,
+diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
+index ba8ad76313a9..42460c0885fc 100644
+--- a/drivers/net/ethernet/sun/niu.c
++++ b/drivers/net/ethernet/sun/niu.c
+@@ -7909,7 +7909,7 @@ static int niu_ldg_assign_ldn(struct niu *np, struct niu_parent *parent,
+ 		 * won't get any interrupts and that's painful to debug.
+ 		 */
+ 		if (nr64(LDG_NUM(ldn)) != ldg) {
+-			dev_err(np->device, "Port %u, mis-matched LDG assignment for ldn %d, should be %d is %llu\n",
++			dev_err(np->device, "Port %u, mismatched LDG assignment for ldn %d, should be %d is %llu\n",
+ 				np->port, ldn, ldg,
+ 				(unsigned long long) nr64(LDG_NUM(ldn)));
+ 			return -EINVAL;
 -- 
 2.35.1
 
