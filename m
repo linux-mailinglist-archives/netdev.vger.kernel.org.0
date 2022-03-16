@@ -2,85 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 446F44DB3DA
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 16:03:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FDB84DB479
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 16:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241655AbiCPPEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 11:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
+        id S1356985AbiCPPLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 11:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235064AbiCPPEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 11:04:10 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2942719C
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:02:54 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id w27so4225517lfa.5
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:02:54 -0700 (PDT)
+        with ESMTP id S1357047AbiCPPKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 11:10:49 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C448466AE5
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:09:16 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id pv16so4946205ejb.0
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:09:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=jtHkXdxbxWXHKD5rdP6nM1QkeT2vkJpBRGPpLY6uAjs=;
-        b=PPBGjRJSN7CRorCjB6lrzB8a3MoejhiCBCKMx1WfbkJjbJiFjTbHBWcY1Vb+1mdYjZ
-         DKWA8BuNsrwPgfz99RZS116IN4E4vodgmk1MP0DQkSdPjmNeTPFCUKYHu7KxBpkFC3xI
-         r99cnoFuAdIrOZIt2U2035S8x3HaEKeKaivD4=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1uM3Ajnc2/MBiNc9CcMnaQVg+VU4YA+9xRWqL9SnqK4=;
+        b=Vr50vsM+V7VSPJGTIt2LQ1kCywVc+UU33/U2fR9LsV0SnuFvYUm/jd/1bua+xSZRR6
+         3UNwgbYIS7VrbuyUoLfrWdDHuUF5aumDHImDN9wNmsunEU9+DQxKqfVfkFvWv9HWDR+c
+         tDJ9smDqjHRdGxgCbi6AQ4ABXej0d3fFkN4Qa0PHHJlp/P9/JGcvYv7BsXX+UyfggjPI
+         UppSfqKKbuGdzeNOILqK1JYk7WxQIp8PXdrJBnD9TTTSY+f1IB8oEe+hWvHNdmxVMyie
+         u2zjlc/hcHxCH1Zo7bjvxvrJ/sZGdNLNVwPBhb/oZmUOW6NcZovivOMc4csWdaxLwixv
+         dqAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=jtHkXdxbxWXHKD5rdP6nM1QkeT2vkJpBRGPpLY6uAjs=;
-        b=7pXZyV1XJCGBisZ0xziVjs2E9cZMBYTB9eQxoRhtl/20wckI+WcHaWHohTxgSF9cdT
-         JtZK1Ngw3/a4JoDIymy36tdS91YIrvZP9LWByosUAS93YJnRWQ4dbqN5NO0p19kBHsHE
-         Edrp7kkTDCoLAzImBOtRV4XT+M1JlFSbf0mILuusvXyuCPTYF13W0CBt2LDjDeookyBL
-         PL68QqExE0AtgAYBtZx7o+/XFXgxRz95XPJC93Ju4wXRdK8B5zii84Tyuf68zCOoMDAm
-         aVjXdKehMw1M/tLe7fVW0x62CJPDw6V5TV12+r2TdnOvQM7F7qhsfQ4OpwiDJbL42g0v
-         BlGw==
-X-Gm-Message-State: AOAM530tcfV6iD1iGG3afX2ue4KqdSVy2bRM3WePrio2bxkdY2gCbp5g
-        Abb0hrjU88jcMEXwyYjk0dHSHQ==
-X-Google-Smtp-Source: ABdhPJxRPKV24bj9n5oMYGPQe0VmdBPsBQXhifImBm+Cbd9ORgxvh5K9ZfHVzlf+wX7W6GegttrUKA==
-X-Received: by 2002:a05:6512:1382:b0:445:9536:903 with SMTP id p2-20020a056512138200b0044595360903mr56999lfa.89.1647442971825;
-        Wed, 16 Mar 2022 08:02:51 -0700 (PDT)
-Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id e13-20020ac2546d000000b0044827065453sm198889lfn.169.2022.03.16.08.02.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 08:02:51 -0700 (PDT)
-References: <20220314124432.3050394-1-wangyufen@huawei.com>
- <87sfrky2bt.fsf@cloudflare.com>
- <ff9d0ecf-315b-00a3-8140-424714b204ff@huawei.com>
- <87fsnjxvho.fsf@cloudflare.com>
- <79281351-b412-2c54-265b-c0ddf537fae1@iogearbox.net>
- <f5a45e95-bac2-e1be-2d7b-5e6d55f9b408@huawei.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     wangyufen <wangyufen@huawei.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        john.fastabend@gmail.com, lmb@cloudflare.com, davem@davemloft.net,
-        kafai@fb.com, dsahern@kernel.org, kuba@kernel.org,
-        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] bpf, sockmap: Manual deletion of sockmap
- elements in user mode is not allowed
-Date:   Wed, 16 Mar 2022 15:57:07 +0100
-In-reply-to: <f5a45e95-bac2-e1be-2d7b-5e6d55f9b408@huawei.com>
-Message-ID: <87bky6ey91.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1uM3Ajnc2/MBiNc9CcMnaQVg+VU4YA+9xRWqL9SnqK4=;
+        b=EVMauNO1jAWH7I+OUIaznTWnew9vSqxbAZ5afEpDN5UftYF7f44goLnBVaC4WncjzK
+         X+5wI0X2cXCTkY7WpxSOvQaCZ1NT183pEuAyKfPR76rqh5RC5A3asje1f6fVYL0OlPpc
+         8Sp+1V65ZNDAIlj569D1qpLaU+vicUX82F5hqUd3NusJPCE4CF1RXfkgKppkhroLfgUM
+         Qw4NNLkhv2E85CR4un5e8QIpIDDkfInJGH7lDAnIBfnXBWNEjndP15Da+aAlF1MfttyU
+         ekXz4yVFQD9YdS5SUrzE3L6hbjWgn66+98TAlfOxUzzHWze7mzr9PFi5t5dNyBXWD0wx
+         XfLg==
+X-Gm-Message-State: AOAM530GFmF2xyduYlRVH6GvkXnkS2WzTZ5+kmaqKtGkUKWdRpoDk7R5
+        DnlcpFothXueYu1OP0lRstV4xPzFxOt/mQ1JhdQ=
+X-Google-Smtp-Source: ABdhPJxaKNUN/lmrw0ZSjFVQp6B8yCYEG4yfJqjrafZkBW6kKzGv5AygylE7xqW1SLLhyZbh0VuwPqRax1Y81DkdFHQ=
+X-Received: by 2002:a17:907:c05:b0:6db:f118:8834 with SMTP id
+ ga5-20020a1709070c0500b006dbf1188834mr368890ejc.536.1647443355125; Wed, 16
+ Mar 2022 08:09:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20220222125628.39363-1-xiangxia.m.yue@gmail.com> <YhWOETp0UB9IpU6R@bombadil.infradead.org>
+In-Reply-To: <YhWOETp0UB9IpU6R@bombadil.infradead.org>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Wed, 16 Mar 2022 23:08:38 +0800
+Message-ID: <CAMDZJNVtxNGiSXvGsBqcZ_Xkq+DjH9qzr-NZTUsBmOCZTEqPxA@mail.gmail.com>
+Subject: Re: [net-next] net: core: use shared sysctl macro
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:42 AM +08, wangyufen wrote:
-
-[...]
-
-> I'm not sure about this patch. The main purpose is to point out the possible problems
+On Wed, Feb 23, 2022 at 9:29 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
 >
-> when the socket is deleted from the map. I'm sorry for the trouble. 
+> On Tue, Feb 22, 2022 at 08:56:28PM +0800, xiangxia.m.yue@gmail.com wrote:
+> > diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
+> > index 6353d6db69b2..b2ac6542455f 100644
+> > --- a/include/linux/sysctl.h
+> > +++ b/include/linux/sysctl.h
+> > @@ -42,12 +42,13 @@ struct ctl_dir;
+> >  #define SYSCTL_ZERO                  ((void *)&sysctl_vals[1])
+> >  #define SYSCTL_ONE                   ((void *)&sysctl_vals[2])
+> >  #define SYSCTL_TWO                   ((void *)&sysctl_vals[3])
+> > -#define SYSCTL_FOUR                  ((void *)&sysctl_vals[4])
+> > -#define SYSCTL_ONE_HUNDRED           ((void *)&sysctl_vals[5])
+> > -#define SYSCTL_TWO_HUNDRED           ((void *)&sysctl_vals[6])
+> > -#define SYSCTL_ONE_THOUSAND          ((void *)&sysctl_vals[7])
+> > -#define SYSCTL_THREE_THOUSAND                ((void *)&sysctl_vals[8])
+> > -#define SYSCTL_INT_MAX                       ((void *)&sysctl_vals[9])
+> > +#define SYSCTL_THREE                 ((void *)&sysctl_vals[4])
+> > +#define SYSCTL_FOUR                  ((void *)&sysctl_vals[5])
+> > +#define SYSCTL_ONE_HUNDRED           ((void *)&sysctl_vals[6])
+> > +#define SYSCTL_TWO_HUNDRED           ((void *)&sysctl_vals[7])
+> > +#define SYSCTL_ONE_THOUSAND          ((void *)&sysctl_vals[8])
+> > +#define SYSCTL_THREE_THOUSAND                ((void *)&sysctl_vals[9])
+> > +#define SYSCTL_INT_MAX                       ((void *)&sysctl_vals[10])
+>
+> xiangxia, thanks for you patch!
+>
+> I welcome this change but can you please also extend lib/test_sysctl.c
+> (selftests) and/or kernel/sysctl-test.c (UML kunit test) to ensure we
+> don't regress any existing mappings here.
+>
+> The test can be really simply and would seem stupid but it would be of
+> great help. It would just make sure SYSCTL_ONE == 1, SYSCTL_TWO == 2, etc.
+>
+> I think using kunit makes more sense here. Once you then then have this
+> test, you can use it to verify you have not introduced a regression and
+> re-send the patch.
+Sorry for taking so long to reply.
 
-No problem at all. Happy to see sockmap gaining wider adoption.
+KUnit:
+[23:03:58] ================ sysctl_test (10 subtests) =================
+[23:03:58] [PASSED] sysctl_test_api_dointvec_null_tbl_data
+[23:03:58] [PASSED] sysctl_test_api_dointvec_table_maxlen_unset
+[23:03:58] [PASSED] sysctl_test_api_dointvec_table_len_is_zero
+[23:03:58] [PASSED] sysctl_test_api_dointvec_table_read_but_position_set
+[23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_positive
+[23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_negative
+[23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_positive
+[23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_negative
+[23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_less_int_min
+[23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_greater_int_max
+[23:03:58] =================== [PASSED] sysctl_test ===================
+
+
+./run_kselftest.sh -c sysctl
+....
+# Running test: sysctl_test_0006 - run #49
+# Checking bitmap handler... ok
+# Wed Mar 16 14:58:41 UTC 2022
+# Running test: sysctl_test_0007 - run #0
+# Boot param test only possible sysctl_test is built-in, not module:
+# CONFIG_TEST_SYSCTL=m
+ok 1 selftests: sysctl: sysctl.sh
+
+
+> Thanks!
+>
+>   Luis
+
+
+
+-- 
+Best regards, Tonghao
