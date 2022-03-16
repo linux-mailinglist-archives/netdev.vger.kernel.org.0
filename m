@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D78E34DB893
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 20:20:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 873954DB8BC
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 20:22:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357914AbiCPTVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 15:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
+        id S1357987AbiCPTWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 15:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357851AbiCPTVl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 15:21:41 -0400
+        with ESMTP id S1357860AbiCPTVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 15:21:42 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAF940A3F;
-        Wed, 16 Mar 2022 12:20:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A1340A3F;
+        Wed, 16 Mar 2022 12:20:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:
-        To:From:Sender:Reply-To:Content-ID:Content-Description;
-        bh=4Krw3MostSzdRmJotMI0a/aFHrz6hD4Rnz4KlkBsZsY=; b=oMmN0YOyCxbwsqUbjdCoYoeLS5
-        xwOMYvr9c6y0ZD0gLE9DMUnynweLItGGubfTLvG/AFTS8gDdpV6qbKOe2/SN3s2MVuCKG2ip8Mj1T
-        daPYsOGmw7rRzY22M54r0qxbz7gAzmEjzHxFdcWBVn37bavK9d81on5K0p1gEE5WIrLXqWY8/fU6M
-        s5P/mifVEcH7CseJqbey8V+DTjHnfTd9wcLrhUE4NbrJGroreYsn7JZe2n7d0wMy7AotAiFE9ZHGk
-        8JL0YSuhRL0OVQ5l3GWEQSBBUdGvXVahxlykI44NQpLaQo/Se64NnCywaP3JRAx3A9pSa/0AcvqOF
-        CO5qvuzA==;
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+        :Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=I73CgbF6729wI2OMfPa7NCxG3sEoqNqrUxCVuaWYikI=; b=vfQEJC7clJiDCX70jOXFjsAqVr
+        RsHe0lFIEd1MJgFbYE0gt+pK9/bBQ9yr/XHgb6PlXtKVNnE4grHpTSqJXg+QKYQKUpGnsBonJ9U01
+        hDerMUrt6itAF3TL6Llq6sGGjgWz0n599JPSP5lVrYGGZTJrOpKqSEWKxM3DdyX/hO6EDO6WwFV5C
+        SobsjsMQ5TbbMAVQdJlaP8GZyf1U8kWywA8fSEQxcpsaz/Da6CGPqDfObwvZPtq5v+9H3k0mO94hs
+        HAGJyirDT+UWjgACI8PEJ0FufcIHgw7aJb7xm7hWahssEZydzz68UNUu2l9JpqX2qCyCWQXC/V06+
+        cVrWMhgA==;
 Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUZC5-00EArp-Jb; Wed, 16 Mar 2022 19:20:25 +0000
+        id 1nUZC7-00EArp-Gg; Wed, 16 Mar 2022 19:20:27 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
@@ -73,14 +73,13 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
         linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
         virtualization@lists.linux-foundation.org, x86@kernel.org
-Subject: [PATCH 6/9] usb: gadget: eliminate anonymous module_init & module_exit
-Date:   Wed, 16 Mar 2022 12:20:07 -0700
-Message-Id: <20220316192010.19001-7-rdunlap@infradead.org>
+Subject: [PATCH 7/9] usb: usbip: eliminate anonymous module_init & module_exit
+Date:   Wed, 16 Mar 2022 12:20:08 -0700
+Message-Id: <20220316192010.19001-8-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220316192010.19001-1-rdunlap@infradead.org>
 References: <20220316192010.19001-1-rdunlap@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
@@ -112,109 +111,48 @@ Example 2: (initcall_debug log)
  calling  init+0x0/0x9a @ 1
  initcall init+0x0/0x9a returned 0 after 74 usecs
 
-Fixes: bd25a14edb75 ("usb: gadget: legacy/serial: allow dynamic removal")
-Fixes: 7bb5ea54be47 ("usb gadget serial: use composite gadget framework")
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 80fd9cd52de6 ("usbip: vudc: Add VUDC main file")
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+Cc: Krzysztof Opasiak <k.opasiak@samsung.com>
+Cc: Igor Kotrasinski <i.kotrasinsk@samsung.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Valentina Manea <valentina.manea.m@gmail.com>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
 Cc: linux-usb@vger.kernel.org
 ---
- drivers/usb/gadget/legacy/inode.c  |    8 ++++----
- drivers/usb/gadget/legacy/serial.c |   10 +++++-----
- drivers/usb/gadget/udc/dummy_hcd.c |    8 ++++----
- 3 files changed, 13 insertions(+), 13 deletions(-)
+ drivers/usb/usbip/vudc_main.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- lnx-517-rc8.orig/drivers/usb/gadget/legacy/serial.c
-+++ lnx-517-rc8/drivers/usb/gadget/legacy/serial.c
-@@ -273,7 +273,7 @@ static struct usb_composite_driver gseri
- static int switch_gserial_enable(bool do_enable)
- {
- 	if (!serial_config_driver.label)
--		/* init() was not called, yet */
-+		/* gserial_init() was not called, yet */
- 		return 0;
+--- lnx-517-rc8.orig/drivers/usb/usbip/vudc_main.c
++++ lnx-517-rc8/drivers/usb/usbip/vudc_main.c
+@@ -28,7 +28,7 @@ static struct platform_driver vudc_drive
  
- 	if (do_enable)
-@@ -283,7 +283,7 @@ static int switch_gserial_enable(bool do
- 	return 0;
- }
+ static struct list_head vudc_devices = LIST_HEAD_INIT(vudc_devices);
  
 -static int __init init(void)
-+static int __init gserial_init(void)
++static int __init vudc_init(void)
  {
- 	/* We *could* export two configs; that'd be much cleaner...
- 	 * but neither of these product IDs was defined that way.
-@@ -314,11 +314,11 @@ static int __init init(void)
- 
- 	return usb_composite_probe(&gserial_driver);
- }
--module_init(init);
-+module_init(gserial_init);
- 
--static void __exit cleanup(void)
-+static void __exit gserial_cleanup(void)
- {
- 	if (enable)
- 		usb_composite_unregister(&gserial_driver);
- }
--module_exit(cleanup);
-+module_exit(gserial_cleanup);
---- lnx-517-rc8.orig/drivers/usb/gadget/udc/dummy_hcd.c
-+++ lnx-517-rc8/drivers/usb/gadget/udc/dummy_hcd.c
-@@ -2765,7 +2765,7 @@ static struct platform_driver dummy_hcd_
- static struct platform_device *the_udc_pdev[MAX_NUM_UDC];
- static struct platform_device *the_hcd_pdev[MAX_NUM_UDC];
- 
--static int __init init(void)
-+static int __init dummy_hcd_init(void)
- {
- 	int	retval = -ENOMEM;
- 	int	i;
-@@ -2887,9 +2887,9 @@ err_alloc_udc:
- 		platform_device_put(the_hcd_pdev[i]);
+ 	int retval = -ENOMEM;
+ 	int i;
+@@ -86,9 +86,9 @@ cleanup:
+ out:
  	return retval;
  }
 -module_init(init);
-+module_init(dummy_hcd_init);
++module_init(vudc_init);
  
 -static void __exit cleanup(void)
-+static void __exit dummy_hcd_cleanup(void)
++static void __exit vudc_cleanup(void)
  {
- 	int i;
+ 	struct vudc_device *udc_dev = NULL, *udc_dev2 = NULL;
  
-@@ -2905,4 +2905,4 @@ static void __exit cleanup(void)
- 	platform_driver_unregister(&dummy_udc_driver);
- 	platform_driver_unregister(&dummy_hcd_driver);
+@@ -103,7 +103,7 @@ static void __exit cleanup(void)
+ 	}
+ 	platform_driver_unregister(&vudc_driver);
  }
 -module_exit(cleanup);
-+module_exit(dummy_hcd_cleanup);
---- lnx-517-rc8.orig/drivers/usb/gadget/legacy/inode.c
-+++ lnx-517-rc8/drivers/usb/gadget/legacy/inode.c
-@@ -2101,7 +2101,7 @@ MODULE_ALIAS_FS("gadgetfs");
++module_exit(vudc_cleanup);
  
- /*----------------------------------------------------------------------*/
- 
--static int __init init (void)
-+static int __init gadgetfs_init (void)
- {
- 	int status;
- 
-@@ -2111,12 +2111,12 @@ static int __init init (void)
- 			shortname, driver_desc);
- 	return status;
- }
--module_init (init);
-+module_init (gadgetfs_init);
- 
--static void __exit cleanup (void)
-+static void __exit gadgetfs_cleanup (void)
- {
- 	pr_debug ("unregister %s\n", shortname);
- 	unregister_filesystem (&gadgetfs_type);
- }
--module_exit (cleanup);
-+module_exit (gadgetfs_cleanup);
- 
+ MODULE_DESCRIPTION("USB over IP Device Controller");
+ MODULE_AUTHOR("Krzysztof Opasiak, Karol Kosik, Igor Kotrasinski");
