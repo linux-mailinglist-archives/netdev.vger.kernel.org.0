@@ -2,46 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F6AA4DA9E2
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 06:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5F3C4DAA42
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 07:03:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238258AbiCPFfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 01:35:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
+        id S1351610AbiCPGEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 02:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232644AbiCPFfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 01:35:00 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0B35A5A8
-        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 22:33:45 -0700 (PDT)
-Received: from [192.168.0.3] (ip5f5aef39.dynamic.kabel-deutschland.de [95.90.239.57])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 55D1061EA1929;
-        Wed, 16 Mar 2022 06:33:44 +0100 (CET)
-Message-ID: <ade0ed87-be4f-e3c7-5e01-4bfdb78fae07@molgen.mpg.de>
-Date:   Wed, 16 Mar 2022 06:33:44 +0100
+        with ESMTP id S1353747AbiCPGEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 02:04:10 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E161D80;
+        Tue, 15 Mar 2022 23:02:56 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id p15so1962884ejc.7;
+        Tue, 15 Mar 2022 23:02:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=At97fA0HmKfWfV8mwVNkglbXerPcXccwlj7t+RjkhDI=;
+        b=Ri99XcB8MavGs4BcqLM8NYg/fbh6nsMzXFCUVObxdBlv8wvb8CNP1FQF7RnOx+g/vc
+         5Cove3Kl6cYuDn1s9bpx7ULhTEGvdMJZibCAoCSzePOePFjEV/WZOlq1w2PMbcUWCPfN
+         76EL8ppxkeSlZA+d6gJ77IcygoSCLLygz+ifuBIZmoZd+rAOR1sCng3FqlseX+C8+LPz
+         dVLG1af69yP2+GyeMBMWIg3YkxedVLwqJT4jW0h+s0Seey+bsuwm4V27ayC8aYdBAzrS
+         98p4zbIbgdnE2CesVllweZ5DYEOIFNKYnkGousEYD7kZgw7sG68P705MspE0c3GvWyTN
+         p1iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=At97fA0HmKfWfV8mwVNkglbXerPcXccwlj7t+RjkhDI=;
+        b=X5F4li04XzaqnDcWUXJdcLCLr5t8Ox1WeQwq6STbI55vj27UqpFCO0pYcojf4We0sx
+         DF/IAP/mOiUN5YJugGblsBP9BUsY9QeL1Nh2TQFAUQ2frUnqBJl0HkKQlIiahwlLMnRo
+         W4NNS/JedIMqXI3eELBUi+5HIQFUsp+enLkG8QiGpADZQG0axDkGjh+xzytbhH02K/FC
+         clwpwtQhcYZhMUvkxjCPJz3MRT8ouVWqLtoi/BSWylUmtN7VmNpIDhMNKKdgGNWrMMWA
+         pbEvQM/qVwaAD+q1OMVG+lmhzarjHfrCxwUScczxmIIIYyM5Si2DBQ0LpcmKGrehDNAs
+         igRw==
+X-Gm-Message-State: AOAM532gNslCcZF3nOKB6BwODDnrNgk2EXm80Gvlb6wdmkDFM8roWIvT
+        H/bGWeLzTx4qktsluM+F4iLHp8DLPsR7q/xrEyY=
+X-Google-Smtp-Source: ABdhPJzONdUb/QZQW4LZbMP3hqXpsftHqyD2wTz1/CdxfoE7sPbmt6tQbce52e+RlGtXWRFqzJoFzVWfX/4tbSXuMRA=
+X-Received: by 2002:a17:907:2d29:b0:6db:2b1f:333a with SMTP id
+ gs41-20020a1709072d2900b006db2b1f333amr25583477ejc.704.1647410574646; Tue, 15
+ Mar 2022 23:02:54 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: bnx2x: ppc64le: Unable to set message level greater than 0x7fff
-Content-Language: en-US
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     Jakub Kicinski <kuba@kernel.org>, Michal Kubecek <mkubecek@suse.cz>
-Cc:     Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        Manish Chopra <manishc@marvell.com>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, it+netdev@molgen.mpg.de
-References: <0497a560-8c7b-7cf8-84ee-bde1470ae360@molgen.mpg.de>
- <20220315183529.255f2795@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <db796473-69cf-122e-ec40-de62659517b0@molgen.mpg.de>
-In-Reply-To: <db796473-69cf-122e-ec40-de62659517b0@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220316024606.689731-1-imagedong@tencent.com> <20220316024606.689731-3-imagedong@tencent.com>
+In-Reply-To: <20220316024606.689731-3-imagedong@tencent.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 16 Mar 2022 14:02:42 +0800
+Message-ID: <CADxym3aLgg+ALDHmPx6Zonznn2MYqiU+feP-UeQ10WO5i72wVA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/3] net: icmp: introduce __ping_queue_rcv_skb()
+ to report drop reasons
+To:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Biao Jiang <benbjiang@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,154 +79,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Jakub,
+On Wed, Mar 16, 2022 at 10:47 AM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> In order to avoid to change the return value of ping_queue_rcv_skb(),
+> introduce the function __ping_queue_rcv_skb(), which is able to report
+> the reasons of skb drop as its return value, as Paolo suggested.
+>
+> Meanwhile, make ping_queue_rcv_skb() a simple call to
+> __ping_queue_rcv_skb().
+>
+> The kfree_skb() and sock_queue_rcv_skb() used in ping_queue_rcv_skb()
+> are replaced with kfree_skb_reason() and sock_queue_rcv_skb_reason()
+> now.
+>
+> Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+> Reviewed-by: Biao Jiang <benbjiang@tencent.com>
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+> v2:
+> - introduce __ping_queue_rcv_skb() instead of change the return value
+>   of ping_queue_rcv_skb()
+> ---
+>  net/ipv4/ping.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
+>
+> diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+> index 3ee947557b88..138eeed7727b 100644
+> --- a/net/ipv4/ping.c
+> +++ b/net/ipv4/ping.c
+> @@ -934,16 +934,24 @@ int ping_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
+>  }
+>  EXPORT_SYMBOL_GPL(ping_recvmsg);
+>
+> -int ping_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+> +static enum skb_drop_reason __ping_queue_rcv_skb(struct sock *sk,
+> +                                         struct sk_buff *skb)
 
+Oops, there is an alignment problem here...I'll send a new version.
 
-Sorry, one more addition.
-
-Am 16.03.22 um 06:16 schrieb Paul Menzel:
-
-> Am 16.03.22 um 02:35 schrieb Jakub Kicinski:
->> On Tue, 15 Mar 2022 22:58:57 +0100 Paul Menzel wrote:
->>> On the POWER8 server IBM S822LC (ppc64le), I am unable to set the
->>> message level for the network device to 0x0100000 but it fails.
->>>
->>>       $ sudo ethtool -s enP1p1s0f2 msglvl 0x0100000
->>>       netlink error: cannot modify bits past kernel bitset size (offset 56)
->>>       netlink error: Invalid argument
->>>
->>> Below is more information. 0x7fff is the largest value I am able to set.
->>>
->>> ```
->>> $ sudo ethtool -i enP1p1s0f2
->>> driver: bnx2x
->>> version: 5.17.0-rc7+
->>> firmware-version: bc 7.10.4
->>> expansion-rom-version:
->>> bus-info: 0001:01:00.2
->>> supports-statistics: yes
->>> supports-test: yes
->>> supports-eeprom-access: yes
->>> supports-register-dump: yes
->>> supports-priv-flags: yes
->>> $ sudo ethtool -s enP1p1s0f2 msglvl 0x7fff
->>> $ sudo ethtool enP1p1s0f2
->>> Settings for enP1p1s0f2:
->>>           Supported ports: [ TP ]
->>>           Supported link modes:   10baseT/Half 10baseT/Full
->>>                                   100baseT/Half 100baseT/Full
->>>                                   1000baseT/Full
->>>           Supported pause frame use: Symmetric Receive-only
->>>           Supports auto-negotiation: Yes
->>>           Supported FEC modes: Not reported
->>>           Advertised link modes:  10baseT/Half 10baseT/Full
->>>                                   100baseT/Half 100baseT/Full
->>>                                   1000baseT/Full
->>>           Advertised pause frame use: Symmetric Receive-only
->>>           Advertised auto-negotiation: Yes
->>>           Advertised FEC modes: Not reported
->>>           Speed: Unknown!
->>>           Duplex: Unknown! (255)
->>>           Auto-negotiation: on
->>>           Port: Twisted Pair
->>>           PHYAD: 17
->>>           Transceiver: internal
->>>           MDI-X: Unknown
->>>           Supports Wake-on: g
->>>           Wake-on: d
->>>           Current message level: 0x00007fff (32767)
->>>                                  drv probe link timer ifdown ifup rx_err tx_err tx_queued intr tx_done rx_status pktdata hw wol
->>>           Link detected: no
->>> $ sudo ethtool -s enP1p1s0f2 msglvl 0x8000
->>> netlink error: cannot modify bits past kernel bitset size (offset 56)
->>> netlink error: Invalid argument
->>> ```
->>
->> The new ethtool-over-netlink API limits the msg levels to the ones
->> officially defined by the kernel (NETIF_MSG_CLASS_COUNT).
->>
->> CC: Michal
-> 
-> Thank you for the prompt reply. So, it’s unrelated to the architecture, 
-> and to the Linux kernel version, as it works on x86_64 with Linux 5.10.x.
-> 
-> Michal, how do I turn on certain bnx2x messages?
-> 
->      $ git grep BNX2X_MSG_SP drivers/net/ethernet/broadcom/bnx2x/bnx2x.h
->      drivers/net/ethernet/broadcom/bnx2x/bnx2x.h:#define BNX2X_MSG_SP 
->                       0x0100000 /* was: NETIF_MSG_INTR */
-
-Testing this on the x86_64 Dell OptiPlex 5055 with a Broadcom NetXtreme 
-BCM5762 Gigabit Ethernet PCIe [14e4:1687], it still works.
-
-```
-$ uname -a
-Linux serotimor.molgen.mpg.de 5.17.0-rc5.mx64.428 #1 SMP PREEMPT Mon Feb 
-21 04:00:47 CET 2022 x86_64 GNU/Linux
-$ sudo ethtool -s net00 msglvl 0x0100000
-$ ethtool net00
-Settings for net00:
-	Supported ports: [ TP ]
-	Supported link modes:   10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Half 1000baseT/Full
-	Supported pause frame use: No
-	Supports auto-negotiation: Yes
-	Advertised link modes:  10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Half 1000baseT/Full
-	Advertised pause frame use: Symmetric
-	Advertised auto-negotiation: Yes
-	Link partner advertised link modes:  10baseT/Half 10baseT/Full
-	                                     100baseT/Half 100baseT/Full
-	                                     1000baseT/Full
-	Link partner advertised pause frame use: No
-	Link partner advertised auto-negotiation: Yes
-	Speed: 1000Mb/s
-	Duplex: Full
-	Port: Twisted Pair
-	PHYAD: 1
-	Transceiver: internal
-	Auto-negotiation: on
-	MDI-X: off
-Cannot get wake-on-lan settings: Operation not permitted
-	Current message level: 0x00100000 (1048576)
-			       0x100000
-	Link detected: yes
-$ sudo ethtool -s net00 msglvl 0xfffffff
-$ ethtool net00
-Settings for net00:
-	Supported ports: [ TP ]
-	Supported link modes:   10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Half 1000baseT/Full
-	Supported pause frame use: No
-	Supports auto-negotiation: Yes
-	Advertised link modes:  10baseT/Half 10baseT/Full
-	                        100baseT/Half 100baseT/Full
-	                        1000baseT/Half 1000baseT/Full
-	Advertised pause frame use: Symmetric
-	Advertised auto-negotiation: Yes
-	Link partner advertised link modes:  10baseT/Half 10baseT/Full
-	                                     100baseT/Half 100baseT/Full
-	                                     1000baseT/Full
-	Link partner advertised pause frame use: No
-	Link partner advertised auto-negotiation: Yes
-	Speed: 1000Mb/s
-	Duplex: Full
-	Port: Twisted Pair
-	PHYAD: 1
-	Transceiver: internal
-	Auto-negotiation: on
-	MDI-X: off
-Cannot get wake-on-lan settings: Operation not permitted
-	Current message level: 0x0fffffff (268435455)
-			       drv probe link timer ifdown ifup rx_err tx_err tx_queued intr 
-tx_done rx_status pktdata hw wol 0xfff8000
-	Link detected: yes
-```
-
-
-Kind regards,
-
-Paul
+>  {
+> +       enum skb_drop_reason reason;
+> +
+>         pr_debug("ping_queue_rcv_skb(sk=%p,sk->num=%d,skb=%p)\n",
+>                  inet_sk(sk), inet_sk(sk)->inet_num, skb);
+> -       if (sock_queue_rcv_skb(sk, skb) < 0) {
+> -               kfree_skb(skb);
+> +       if (sock_queue_rcv_skb_reason(sk, skb, &reason) < 0) {
+> +               kfree_skb_reason(skb, reason);
+>                 pr_debug("ping_queue_rcv_skb -> failed\n");
+> -               return -1;
+> +               return reason;
+>         }
+> -       return 0;
+> +       return SKB_NOT_DROPPED_YET;
+> +}
+> +
+> +int ping_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+> +{
+> +       return __ping_queue_rcv_skb(sk, skb) ?: -1;
+>  }
+>  EXPORT_SYMBOL_GPL(ping_queue_rcv_skb);
+>
+> --
+> 2.35.1
+>
