@@ -2,107 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 747D04DA8DF
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 04:25:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2745D4DA8E6
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 04:29:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345561AbiCPD0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Mar 2022 23:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
+        id S1353454AbiCPDa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Mar 2022 23:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244144AbiCPD0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 23:26:18 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF94ABEA;
-        Tue, 15 Mar 2022 20:25:04 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJFwk67vVzfYsR;
-        Wed, 16 Mar 2022 11:23:34 +0800 (CST)
-Received: from [10.174.177.215] (10.174.177.215) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Mar 2022 11:25:01 +0800
-Subject: Re: [PATCH bpf-next] bpf, sockmap: Manual deletion of sockmap
- elements in user mode is not allowed
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-CC:     <ast@kernel.org>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <lmb@cloudflare.com>,
-        <davem@davemloft.net>, <kafai@fb.com>, <dsahern@kernel.org>,
-        <kuba@kernel.org>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-References: <20220314124432.3050394-1-wangyufen@huawei.com>
- <87sfrky2bt.fsf@cloudflare.com>
- <ff9d0ecf-315b-00a3-8140-424714b204ff@huawei.com>
- <87fsnjxvho.fsf@cloudflare.com>
-From:   wangyufen <wangyufen@huawei.com>
-Message-ID: <a844850b-af56-d097-e156-0d30154589f6@huawei.com>
-Date:   Wed, 16 Mar 2022 11:25:01 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        with ESMTP id S1353450AbiCPDa7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Mar 2022 23:30:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FC53981F
+        for <netdev@vger.kernel.org>; Tue, 15 Mar 2022 20:29:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C464B81883
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 03:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA1D1C340E8;
+        Wed, 16 Mar 2022 03:29:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647401383;
+        bh=EHpUZOZEiSgdMUuvgTA3olgt22btU1Oo1nMY3jQFWTE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JL2mUiNAEXaAZVMoavqE8Vos3KjDznn/zqzTw1uxjuHAswsgaholCygLE7b9qAax3
+         wyfE0t3mgfJtsgLXcSqGfgd+S977ieTx3i8ZEhyRzz8k3KuQXtlyo2WOR6MMqQWz/c
+         QsxWAis5fj/qkqQ8hpE59vIQQItlZ2hz83FYfv5Vod5X8svctbpLoxf2oLMf0uAJKW
+         w6RpVGOyjmzV1i9RaiH1xW3F3N6c1Md+0DWnBvk2JMm0J0BZD3tsuRFcrt6weSCgom
+         w4PJNQ9VJN+q45BMjCUVu9SbmhP/tdXR3UHso4yiaisgSX9c908qs2gyqNuDtHwfI7
+         VtQepUxVP300w==
+Date:   Tue, 15 Mar 2022 20:29:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net 1/3] ice: fix NULL pointer dereference in
+ ice_update_vsi_tx_ring_stats()
+Message-ID: <20220315202941.64319c5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220315211225.2923496-2-anthony.l.nguyen@intel.com>
+References: <20220315211225.2923496-1-anthony.l.nguyen@intel.com>
+        <20220315211225.2923496-2-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <87fsnjxvho.fsf@cloudflare.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.215]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 15 Mar 2022 14:12:23 -0700 Tony Nguyen wrote:
+> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> 
+> It is possible to do NULL pointer dereference in routine that updates
+> Tx ring stats. Currently only stats and bytes are updated when ring
 
-在 2022/3/15 20:12, Jakub Sitnicki 写道:
-> On Tue, Mar 15, 2022 at 03:24 PM +08, wangyufen wrote:
->> 在 2022/3/14 23:30, Jakub Sitnicki 写道:
->>> On Mon, Mar 14, 2022 at 08:44 PM +08, Wang Yufen wrote:
->>>> A tcp socket in a sockmap. If user invokes bpf_map_delete_elem to delete
->>>> the sockmap element, the tcp socket will switch to use the TCP protocol
->>>> stack to send and receive packets. The switching process may cause some
->>>> issues, such as if some msgs exist in the ingress queue and are cleared
->>>> by sk_psock_drop(), the packets are lost, and the tcp data is abnormal.
->>>>
->>>> Signed-off-by: Wang Yufen <wangyufen@huawei.com>
->>>> ---
->>> Can you please tell us a bit more about the life-cycle of the socket in
->>> your workload? Questions that come to mind:
->>>
->>> 1) What triggers the removal of the socket from sockmap in your case?
->> We use sk_msg to redirect with sock hash, like this:
->>
->>   skA   redirect    skB
->>   Tx <-----------> skB,Rx
->>
->> And construct a scenario where the packet sending speed is high, the
->> packet receiving speed is slow, so the packets are stacked in the ingress
->> queue on the receiving side. In this case, if run bpf_map_delete_elem() to
->> delete the sockmap entry, will trigger the following procedure:
->>
->> sock_hash_delete_elem()
->>    sock_map_unref()
->>      sk_psock_put()
->>        sk_psock_drop()
->>          sk_psock_stop()
->>            __sk_psock_zap_ingress()
->>              __sk_psock_purge_ingress_msg()
->>
->>> 2) Would it still be a problem if removal from sockmap did not cause any
->>> packets to get dropped?
->> Yes, it still be a problem. If removal from sockmap  did not cause any
->> packets to get dropped, packet receiving process switches to use TCP
->> protocol stack. The packets in the psock ingress queue cannot be received
->>
->> by the user.
-> Thanks for the context. So, if I understand correctly, you want to avoid
-> breaking the network pipe by updating the sockmap from user-space.
->
-> This sounds awfully similar to BPF_MAP_FREEZE. Have you considered that?
-> .
-Sorry, I didn't notice this. I used BPF_MAP_FREEZE to verify, can solve 
-my problem, thanks.
+s/stats/packets/ ?
+
+> pointer is valid, but later on ring is accessed to propagate gathered Tx
+> stats onto VSI stats.
+> 
+> Change the existing logic to move to next ring when ring is NULL.
+> 
+> Fixes: e72bba21355d ("ice: split ice_ring onto Tx/Rx separate structs")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Acked-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index 493942e910be..d4a7c39fd078 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -5962,8 +5962,9 @@ ice_update_vsi_tx_ring_stats(struct ice_vsi *vsi,
+>  		u64 pkts = 0, bytes = 0;
+>  
+>  		ring = READ_ONCE(rings[i]);
+
+Not really related to this patch but why is there a read_once() here?
+Aren't stats read under rtnl_lock? What is this protecting against?
+
+> -		if (ring)
+> -			ice_fetch_u64_stats_per_ring(&ring->syncp, ring->stats, &pkts, &bytes);
+> +		if (!ring)
+> +			continue;
+> +		ice_fetch_u64_stats_per_ring(&ring->syncp, ring->stats, &pkts, &bytes);
