@@ -2,49 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C32E4DB7EE
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:30:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FA754DB7F2
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:34:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354950AbiCPSb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 14:31:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        id S240033AbiCPSfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 14:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354613AbiCPSb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:31:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53056D95D;
-        Wed, 16 Mar 2022 11:30:13 -0700 (PDT)
+        with ESMTP id S240131AbiCPSfN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:35:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BD0642D;
+        Wed, 16 Mar 2022 11:33:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E407B81A71;
-        Wed, 16 Mar 2022 18:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 022D0C340F2;
-        Wed, 16 Mar 2022 18:30:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CFC1618C1;
+        Wed, 16 Mar 2022 18:33:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7159C340E9;
+        Wed, 16 Mar 2022 18:33:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647455411;
-        bh=LO/RUu00sqiUYvB9f0a9zQ1Khjj7+kdyjKMfrelj+MI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kCw1NNsxhVnPoy2xHJH6HUCGpcQWYlxo0ojzc5zU5EJ5ef97syNoGbnSkC5/Luxml
-         3an0gax9UViaRDB7vAqPM/98ROwoO2XOz6Q/caR//ki0KaCzsUeiD6ZtiuSReixYCl
-         NuphHrDmJzJXNdO2OrKny3h3uwbJv48lIxbabgfRwyhFntRwFFTGu0AQb6dKKsyloC
-         ARvNQ6w7zoBhZp3u/MjHhOSyzhe3gUwKIZqpB5UVuv7Fkkho3RNSiCcML7V2Ucq+iJ
-         TPggqF7v5JYxn4OJXGrPZyM/YzJTjD26VFEVKIOzRQhkuKDMncnv5dPeJjaKB6QelA
-         VOJu99aav0Jzg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CEB61F0383F;
-        Wed, 16 Mar 2022 18:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1647455638;
+        bh=BBntHNa6ogo6orHLVRJgt98BQRdO7DhrSgNocBna7ts=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rkY9FEiSlijPlVVyQYZiouLT9kD19CPgbgai+cyCPG8H9rCoDrbBOTk76sZQD8VQD
+         aMhCB1vSQytu+6MAwFAlEVA7S1+6mgydTXYYqW+e/KBk7D5XfJu+r3JtVpLMhseIGx
+         1QgRUGYN318M/z5FURchqQwx1Si6l/LCQpXkp/GSyQXBgGUi65nKJofD6l2fGm6+Q4
+         8zjJmIiCoaIMmIJmHS0Qe1q0GCH/P04MMr78TWan0dbx/zxvQ0EHckwS7di9751Cem
+         XP26ivUnjPXd/yLQzjxCjwNywjUx3zjgCUphIPK3bGskBuBqrhKHzoCT+EgCrRkKfP
+         ookG3NPK5mmMg==
+Date:   Wed, 16 Mar 2022 11:33:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
+        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
+        linux-can <linux-can@vger.kernel.org>
+Subject: Re: [net-next] can: isotp: sanitize CAN ID checks in isotp_bind()
+Message-ID: <20220316113356.6bee9428@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ec2adb66-2199-2f9d-15ce-6641562c54f2@hartkopp.net>
+References: <20220315203748.1892-1-socketcan@hartkopp.net>
+        <20220315185134.687fe506@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3922032f-c829-b609-e408-6dec83a0041a@hartkopp.net>
+        <20220316074802.b3xazftb7axziue3@pengutronix.de>
+        <7445f2f1-4d89-116e-0cf7-fc7338c2901f@hartkopp.net>
+        <20220316080111.s2hlj6krlzcroxh6@pengutronix.de>
+        <ec2adb66-2199-2f9d-15ce-6641562c54f2@hartkopp.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-2022-03-16
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164745541084.25916.10068737564049624683.git-patchwork-notify@kernel.org>
-Date:   Wed, 16 Mar 2022 18:30:10 +0000
-References: <20220316130249.B5225C340EC@smtp.kernel.org>
-In-Reply-To: <20220316130249.B5225C340EC@smtp.kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,28 +60,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 16 Mar 2022 13:02:49 +0000 (UTC) you wrote:
-> Hi,
+On Wed, 16 Mar 2022 09:42:14 +0100 Oliver Hartkopp wrote:
+> > Another option is to port the patch to net/master with the hope that
+> > back porting is easier.  
 > 
-> here's a pull request to net tree, more info below. Please let me know if there
-> are any problems.
+> I have a patch here for net/master that also properly applies down to 
+> linux-5.10.y
+> If requested I could post it instantly.
 > 
-> Kalle
+> > Then talk to Jakub and David about the merge
+> > conflict when net/master is merged to net-next/master.  
 > 
-> [...]
+> Yes. There will be a merge conflict. Therefore I thought bringing that 
+> patch for the released 5.17 and the stable trees later would be less 
+> effort for Jakub and David.
 
-Here is the summary with links:
-  - pull-request: wireless-2022-03-16
-    https://git.kernel.org/netdev/net/c/1bbdcbaeda44
+No strong preference in this particular case, -rc9 is very unlikely 
+so won't be much difference between it getting merge to net or net-next.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+If you don't have a preference either let's got with the usual process
+and send the patch to net, just share the conflict resolution and we
+can deal with it.
