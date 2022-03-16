@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFDDD4DAFB5
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 13:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE4D34DAFBD
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 13:27:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237950AbiCPM2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 08:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55800 "EHLO
+        id S1355758AbiCPM2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 08:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355826AbiCPM1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 08:27:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A72065D3E;
-        Wed, 16 Mar 2022 05:26:38 -0700 (PDT)
+        with ESMTP id S239568AbiCPM2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 08:28:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E651E6581E;
+        Wed, 16 Mar 2022 05:26:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB8E3B81AE7;
-        Wed, 16 Mar 2022 12:26:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D50C36AE2;
-        Wed, 16 Mar 2022 12:26:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C9886172E;
+        Wed, 16 Mar 2022 12:26:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57385C340E9;
+        Wed, 16 Mar 2022 12:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647433595;
-        bh=ZCd4B8vBZb5AlYNluqFEAZYkx4pah3M8EdqYo8dnBoM=;
+        s=k20201202; t=1647433606;
+        bh=66R3zZj85jSysiXBEgXB0opsMdpMlVAcGjh+SYQrebs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAuo1d5RF3+zL/GjL47k08U0YDPhFDouwYDSjuP7yadILFReSZcLY+hKQawANuLD6
-         6+jn2aR4PqVo4IN+6hugV41LaS6S6l2epxaVsn6WAbx2LVLOGuNF+3iRRdS7Dz1CSb
-         o2CfVOrm59pPG4vqqBKM2VDJaZTs47pqBLTCPYb1+kTVxAjyS9wk8MqYG6pHdE581W
-         4Huu+x5c1YrcaX+yIukAc9I9dH32zBLxnPqnKMRJXqffjLchrcQ3LzmM4wAIMDUmQT
-         cdRz49QdIFw0AYbYkUcQ7ubjd4zG6xr9Ge04UTUk1W6sfKzw6ntWiG0tE1cHs2HFdI
-         ihLSaBf/zLaiA==
+        b=VMSC7At9eC9t3Cbe6G9kHyDm3ScxGHQXXAE7fepmqoNrIiyCifCRAPZ8e862h3hix
+         8o8ZfiW63SgFHQya6G66vTC7rhKo3J7KZOhWTZbFdBjw5lLpFNd8I32pnjMGv0XjD4
+         h9M7O/tktc/u7V83y7+t8ImsTp7aV5DO63Ip26aMaGbg6R1QLVFPv1+44a1gvleAdi
+         heyurH33DpxBW+Pfe5vl0dNSfDQoTusFsij10syUQxQDZcC+nxvG0KJhNbm33gHuW0
+         1AQok1aVyOROOUzmTygxT2u2rJNLP4GzGq4v662A/g6KdRGBXKfkjV4SmAgp7fTvO9
+         ekDVgbAncPPZQ==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -43,9 +43,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCHv3 bpf-next 11/13] selftests/bpf: Add kprobe_multi bpf_cookie test
-Date:   Wed, 16 Mar 2022 13:24:17 +0100
-Message-Id: <20220316122419.933957-12-jolsa@kernel.org>
+Subject: [PATCHv3 bpf-next 12/13] selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts
+Date:   Wed, 16 Mar 2022 13:24:18 +0100
+Message-Id: <20220316122419.933957-13-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316122419.933957-1-jolsa@kernel.org>
 References: <20220316122419.933957-1-jolsa@kernel.org>
@@ -61,82 +61,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding bpf_cookie test for programs attached by kprobe_multi links.
+Adding tests for bpf_program__attach_kprobe_multi_opts function,
+that test attach with pattern, symbols and addrs.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- .../selftests/bpf/prog_tests/bpf_cookie.c     | 109 ++++++++++++++++++
- .../selftests/bpf/progs/kprobe_multi.c        |  41 ++++---
- 2 files changed, 131 insertions(+), 19 deletions(-)
+ .../bpf/prog_tests/kprobe_multi_test.c        | 204 +++++++++++++++++-
+ 1 file changed, 193 insertions(+), 11 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-index 0612e79a9281..6671d4dc0b5d 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-@@ -7,6 +7,7 @@
- #include <unistd.h>
- #include <test_progs.h>
- #include "test_bpf_cookie.skel.h"
-+#include "kprobe_multi.skel.h"
+diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+index ded6b8c8ec05..b9876b55fc0c 100644
+--- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
++++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+@@ -3,7 +3,7 @@
+ #include "kprobe_multi.skel.h"
+ #include "trace_helpers.h"
  
- /* uprobe attach point */
- static void trigger_func(void)
-@@ -63,6 +64,112 @@ static void kprobe_subtest(struct test_bpf_cookie *skel)
- 	bpf_link__destroy(retlink2);
+-static void kprobe_multi_test_run(struct kprobe_multi *skel)
++static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
+ {
+ 	LIBBPF_OPTS(bpf_test_run_opts, topts);
+ 	int err, prog_fd;
+@@ -22,14 +22,16 @@ static void kprobe_multi_test_run(struct kprobe_multi *skel)
+ 	ASSERT_EQ(skel->bss->kprobe_test7_result, 1, "kprobe_test7_result");
+ 	ASSERT_EQ(skel->bss->kprobe_test8_result, 1, "kprobe_test8_result");
+ 
+-	ASSERT_EQ(skel->bss->kretprobe_test1_result, 1, "kretprobe_test1_result");
+-	ASSERT_EQ(skel->bss->kretprobe_test2_result, 1, "kretprobe_test2_result");
+-	ASSERT_EQ(skel->bss->kretprobe_test3_result, 1, "kretprobe_test3_result");
+-	ASSERT_EQ(skel->bss->kretprobe_test4_result, 1, "kretprobe_test4_result");
+-	ASSERT_EQ(skel->bss->kretprobe_test5_result, 1, "kretprobe_test5_result");
+-	ASSERT_EQ(skel->bss->kretprobe_test6_result, 1, "kretprobe_test6_result");
+-	ASSERT_EQ(skel->bss->kretprobe_test7_result, 1, "kretprobe_test7_result");
+-	ASSERT_EQ(skel->bss->kretprobe_test8_result, 1, "kretprobe_test8_result");
++	if (test_return) {
++		ASSERT_EQ(skel->bss->kretprobe_test1_result, 1, "kretprobe_test1_result");
++		ASSERT_EQ(skel->bss->kretprobe_test2_result, 1, "kretprobe_test2_result");
++		ASSERT_EQ(skel->bss->kretprobe_test3_result, 1, "kretprobe_test3_result");
++		ASSERT_EQ(skel->bss->kretprobe_test4_result, 1, "kretprobe_test4_result");
++		ASSERT_EQ(skel->bss->kretprobe_test5_result, 1, "kretprobe_test5_result");
++		ASSERT_EQ(skel->bss->kretprobe_test6_result, 1, "kretprobe_test6_result");
++		ASSERT_EQ(skel->bss->kretprobe_test7_result, 1, "kretprobe_test7_result");
++		ASSERT_EQ(skel->bss->kretprobe_test8_result, 1, "kretprobe_test8_result");
++	}
  }
  
-+static void kprobe_multi_test_run(struct kprobe_multi *skel)
+ static void test_skel_api(void)
+@@ -46,7 +48,7 @@ static void test_skel_api(void)
+ 	if (!ASSERT_OK(err, "kprobe_multi__attach"))
+ 		goto cleanup;
+ 
+-	kprobe_multi_test_run(skel);
++	kprobe_multi_test_run(skel, true);
+ 
+ cleanup:
+ 	kprobe_multi__destroy(skel);
+@@ -73,7 +75,7 @@ static void test_link_api(struct bpf_link_create_opts *opts)
+ 	if (!ASSERT_GE(link2_fd, 0, "link_fd"))
+ 		goto cleanup;
+ 
+-	kprobe_multi_test_run(skel);
++	kprobe_multi_test_run(skel, true);
+ 
+ cleanup:
+ 	if (link1_fd != -1)
+@@ -127,6 +129,178 @@ static void test_link_api_syms(void)
+ 	test_link_api(&opts);
+ }
+ 
++static void
++test_attach_api(const char *pattern, struct bpf_kprobe_multi_opts *opts)
 +{
-+	LIBBPF_OPTS(bpf_test_run_opts, topts);
-+	int err, prog_fd;
-+
-+	prog_fd = bpf_program__fd(skel->progs.trigger);
-+	err = bpf_prog_test_run_opts(prog_fd, &topts);
-+	ASSERT_OK(err, "test_run");
-+	ASSERT_EQ(topts.retval, 0, "test_run");
-+
-+	ASSERT_EQ(skel->bss->kprobe_test1_result, 1, "kprobe_test1_result");
-+	ASSERT_EQ(skel->bss->kprobe_test2_result, 1, "kprobe_test2_result");
-+	ASSERT_EQ(skel->bss->kprobe_test3_result, 1, "kprobe_test3_result");
-+	ASSERT_EQ(skel->bss->kprobe_test4_result, 1, "kprobe_test4_result");
-+	ASSERT_EQ(skel->bss->kprobe_test5_result, 1, "kprobe_test5_result");
-+	ASSERT_EQ(skel->bss->kprobe_test6_result, 1, "kprobe_test6_result");
-+	ASSERT_EQ(skel->bss->kprobe_test7_result, 1, "kprobe_test7_result");
-+	ASSERT_EQ(skel->bss->kprobe_test8_result, 1, "kprobe_test8_result");
-+
-+	ASSERT_EQ(skel->bss->kretprobe_test1_result, 1, "kretprobe_test1_result");
-+	ASSERT_EQ(skel->bss->kretprobe_test2_result, 1, "kretprobe_test2_result");
-+	ASSERT_EQ(skel->bss->kretprobe_test3_result, 1, "kretprobe_test3_result");
-+	ASSERT_EQ(skel->bss->kretprobe_test4_result, 1, "kretprobe_test4_result");
-+	ASSERT_EQ(skel->bss->kretprobe_test5_result, 1, "kretprobe_test5_result");
-+	ASSERT_EQ(skel->bss->kretprobe_test6_result, 1, "kretprobe_test6_result");
-+	ASSERT_EQ(skel->bss->kretprobe_test7_result, 1, "kretprobe_test7_result");
-+	ASSERT_EQ(skel->bss->kretprobe_test8_result, 1, "kretprobe_test8_result");
-+}
-+
-+static void kprobe_multi_link_api_subtest(void)
-+{
-+	int prog_fd, link1_fd = -1, link2_fd = -1;
++	struct bpf_link *link1 = NULL, *link2 = NULL;
 +	struct kprobe_multi *skel = NULL;
-+	LIBBPF_OPTS(bpf_link_create_opts, opts);
-+	unsigned long long addrs[8];
-+	__u64 cookies[8];
-+
-+	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
-+		goto cleanup;
 +
 +	skel = kprobe_multi__open_and_load();
 +	if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
 +		goto cleanup;
 +
 +	skel->bss->pid = getpid();
-+	skel->bss->test_cookie = true;
++	link1 = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe,
++						      pattern, opts);
++	if (!ASSERT_OK_PTR(link1, "bpf_program__attach_kprobe_multi_opts"))
++		goto cleanup;
 +
-+#define GET_ADDR(__sym, __addr) ({				\
-+	__addr = ksym_get_addr(__sym);				\
-+	if (!ASSERT_NEQ(__addr, 0, "ksym_get_addr " #__sym))	\
-+		goto cleanup;					\
-+})
++	if (opts) {
++		opts->retprobe = true;
++		link2 = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kretprobe,
++							      pattern, opts);
++		if (!ASSERT_OK_PTR(link2, "bpf_program__attach_kprobe_multi_opts"))
++			goto cleanup;
++	}
++
++	kprobe_multi_test_run(skel, !!opts);
++
++cleanup:
++	bpf_link__destroy(link2);
++	bpf_link__destroy(link1);
++	kprobe_multi__destroy(skel);
++}
++
++static void test_attach_api_pattern(void)
++{
++	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
++
++	test_attach_api("bpf_fentry_test*", &opts);
++	test_attach_api("bpf_fentry_test?", NULL);
++}
++
++static void test_attach_api_addrs(void)
++{
++	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
++	unsigned long long addrs[8];
 +
 +	GET_ADDR("bpf_fentry_test1", addrs[0]);
 +	GET_ADDR("bpf_fentry_test2", addrs[1]);
@@ -147,127 +183,140 @@ index 0612e79a9281..6671d4dc0b5d 100644
 +	GET_ADDR("bpf_fentry_test7", addrs[6]);
 +	GET_ADDR("bpf_fentry_test8", addrs[7]);
 +
-+#undef GET_ADDR
++	opts.addrs = (const unsigned long *) addrs;
++	opts.cnt = ARRAY_SIZE(addrs);
++	test_attach_api(NULL, &opts);
++}
 +
-+	cookies[0] = 1;
-+	cookies[1] = 2;
-+	cookies[2] = 3;
-+	cookies[3] = 4;
-+	cookies[4] = 5;
-+	cookies[5] = 6;
-+	cookies[6] = 7;
-+	cookies[7] = 8;
++static void test_attach_api_syms(void)
++{
++	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
++	const char *syms[8] = {
++		"bpf_fentry_test1",
++		"bpf_fentry_test2",
++		"bpf_fentry_test3",
++		"bpf_fentry_test4",
++		"bpf_fentry_test5",
++		"bpf_fentry_test6",
++		"bpf_fentry_test7",
++		"bpf_fentry_test8",
++	};
 +
-+	opts.kprobe_multi.addrs = (const unsigned long *) &addrs;
-+	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
-+	opts.kprobe_multi.cookies = (const __u64 *) &cookies;
-+	prog_fd = bpf_program__fd(skel->progs.test_kprobe);
++	opts.syms = syms;
++	opts.cnt = ARRAY_SIZE(syms);
++	test_attach_api(NULL, &opts);
++}
 +
-+	link1_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, &opts);
-+	if (!ASSERT_GE(link1_fd, 0, "link1_fd"))
++static void test_attach_api_fails(void)
++{
++	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
++	struct kprobe_multi *skel = NULL;
++	struct bpf_link *link = NULL;
++	unsigned long long addrs[2];
++	const char *syms[2] = {
++		"bpf_fentry_test1",
++		"bpf_fentry_test2",
++	};
++	__u64 cookies[2];
++
++	addrs[0] = ksym_get_addr("bpf_fentry_test1");
++	addrs[1] = ksym_get_addr("bpf_fentry_test2");
++
++	if (!ASSERT_FALSE(!addrs[0] || !addrs[1], "ksym_get_addr"))
 +		goto cleanup;
 +
-+	cookies[0] = 8;
-+	cookies[1] = 7;
-+	cookies[2] = 6;
-+	cookies[3] = 5;
-+	cookies[4] = 4;
-+	cookies[5] = 3;
-+	cookies[6] = 2;
-+	cookies[7] = 1;
-+
-+	opts.kprobe_multi.flags = BPF_F_KPROBE_MULTI_RETURN;
-+	prog_fd = bpf_program__fd(skel->progs.test_kretprobe);
-+
-+	link2_fd = bpf_link_create(prog_fd, 0, BPF_TRACE_KPROBE_MULTI, &opts);
-+	if (!ASSERT_GE(link2_fd, 0, "link2_fd"))
++	skel = kprobe_multi__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "fentry_raw_skel_load"))
 +		goto cleanup;
 +
-+	kprobe_multi_test_run(skel);
++	skel->bss->pid = getpid();
++
++	/* fail_1 - pattern and opts NULL */
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe,
++						     NULL, NULL);
++	if (!ASSERT_ERR_PTR(link, "fail_1"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_1_error"))
++		goto cleanup;
++
++	/* fail_2 - both addrs and syms set */
++	opts.addrs = (const unsigned long *) addrs;
++	opts.syms = syms;
++	opts.cnt = ARRAY_SIZE(syms);
++	opts.cookies = NULL;
++
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe,
++						     NULL, &opts);
++	if (!ASSERT_ERR_PTR(link, "fail_2"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_2_error"))
++		goto cleanup;
++
++	/* fail_3 - pattern and addrs set */
++	opts.addrs = (const unsigned long *) addrs;
++	opts.syms = NULL;
++	opts.cnt = ARRAY_SIZE(syms);
++	opts.cookies = NULL;
++
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe,
++						     "ksys_*", &opts);
++	if (!ASSERT_ERR_PTR(link, "fail_3"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_3_error"))
++		goto cleanup;
++
++	/* fail_4 - pattern and cnt set */
++	opts.addrs = NULL;
++	opts.syms = NULL;
++	opts.cnt = ARRAY_SIZE(syms);
++	opts.cookies = NULL;
++
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe,
++						     "ksys_*", &opts);
++	if (!ASSERT_ERR_PTR(link, "fail_4"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_4_error"))
++		goto cleanup;
++
++	/* fail_5 - pattern and cookies */
++	opts.addrs = NULL;
++	opts.syms = NULL;
++	opts.cnt = 0;
++	opts.cookies = cookies;
++
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe,
++						     "ksys_*", &opts);
++	if (!ASSERT_ERR_PTR(link, "fail_5"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(libbpf_get_error(link), -EINVAL, "fail_5_error"))
++		goto cleanup;
 +
 +cleanup:
-+	close(link1_fd);
-+	close(link2_fd);
++	bpf_link__destroy(link);
 +	kprobe_multi__destroy(skel);
 +}
 +
- static void uprobe_subtest(struct test_bpf_cookie *skel)
+ void test_kprobe_multi_test(void)
  {
- 	DECLARE_LIBBPF_OPTS(bpf_uprobe_opts, opts);
-@@ -249,6 +356,8 @@ void test_bpf_cookie(void)
- 
- 	if (test__start_subtest("kprobe"))
- 		kprobe_subtest(skel);
-+	if (test__start_subtest("multi_kprobe_link_api"))
-+		kprobe_multi_link_api_subtest();
- 	if (test__start_subtest("uprobe"))
- 		uprobe_subtest(skel);
- 	if (test__start_subtest("tracepoint"))
-diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi.c b/tools/testing/selftests/bpf/progs/kprobe_multi.c
-index 6616c082c8c2..af27d2c6fce8 100644
---- a/tools/testing/selftests/bpf/progs/kprobe_multi.c
-+++ b/tools/testing/selftests/bpf/progs/kprobe_multi.c
-@@ -16,6 +16,7 @@ extern const void bpf_fentry_test7 __ksym;
- extern const void bpf_fentry_test8 __ksym;
- 
- int pid = 0;
-+bool test_cookie = false;
- 
- __u64 kprobe_test1_result = 0;
- __u64 kprobe_test2_result = 0;
-@@ -40,31 +41,33 @@ static void kprobe_multi_check(void *ctx, bool is_return)
- 	if (bpf_get_current_pid_tgid() >> 32 != pid)
- 		return;
- 
-+	__u64 cookie = test_cookie ? bpf_get_attach_cookie(ctx) : 0;
- 	__u64 addr = bpf_get_func_ip(ctx);
- 
--#define SET(__var, __addr) ({			\
--	if ((const void *) addr == __addr) 	\
--		__var = 1;			\
-+#define SET(__var, __addr, __cookie) ({			\
-+	if (((const void *) addr == __addr) &&		\
-+	     (!test_cookie || (cookie == __cookie)))	\
-+		__var = 1;				\
- })
- 
- 	if (is_return) {
--		SET(kretprobe_test1_result, &bpf_fentry_test1);
--		SET(kretprobe_test2_result, &bpf_fentry_test2);
--		SET(kretprobe_test3_result, &bpf_fentry_test3);
--		SET(kretprobe_test4_result, &bpf_fentry_test4);
--		SET(kretprobe_test5_result, &bpf_fentry_test5);
--		SET(kretprobe_test6_result, &bpf_fentry_test6);
--		SET(kretprobe_test7_result, &bpf_fentry_test7);
--		SET(kretprobe_test8_result, &bpf_fentry_test8);
-+		SET(kretprobe_test1_result, &bpf_fentry_test1, 8);
-+		SET(kretprobe_test2_result, &bpf_fentry_test2, 7);
-+		SET(kretprobe_test3_result, &bpf_fentry_test3, 6);
-+		SET(kretprobe_test4_result, &bpf_fentry_test4, 5);
-+		SET(kretprobe_test5_result, &bpf_fentry_test5, 4);
-+		SET(kretprobe_test6_result, &bpf_fentry_test6, 3);
-+		SET(kretprobe_test7_result, &bpf_fentry_test7, 2);
-+		SET(kretprobe_test8_result, &bpf_fentry_test8, 1);
- 	} else {
--		SET(kprobe_test1_result, &bpf_fentry_test1);
--		SET(kprobe_test2_result, &bpf_fentry_test2);
--		SET(kprobe_test3_result, &bpf_fentry_test3);
--		SET(kprobe_test4_result, &bpf_fentry_test4);
--		SET(kprobe_test5_result, &bpf_fentry_test5);
--		SET(kprobe_test6_result, &bpf_fentry_test6);
--		SET(kprobe_test7_result, &bpf_fentry_test7);
--		SET(kprobe_test8_result, &bpf_fentry_test8);
-+		SET(kprobe_test1_result, &bpf_fentry_test1, 1);
-+		SET(kprobe_test2_result, &bpf_fentry_test2, 2);
-+		SET(kprobe_test3_result, &bpf_fentry_test3, 3);
-+		SET(kprobe_test4_result, &bpf_fentry_test4, 4);
-+		SET(kprobe_test5_result, &bpf_fentry_test5, 5);
-+		SET(kprobe_test6_result, &bpf_fentry_test6, 6);
-+		SET(kprobe_test7_result, &bpf_fentry_test7, 7);
-+		SET(kprobe_test8_result, &bpf_fentry_test8, 8);
- 	}
- 
- #undef SET
+ 	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
+@@ -138,4 +312,12 @@ void test_kprobe_multi_test(void)
+ 		test_link_api_syms();
+ 	if (test__start_subtest("link_api_syms"))
+ 		test_link_api_addrs();
++	if (test__start_subtest("attach_api_pattern"))
++		test_attach_api_pattern();
++	if (test__start_subtest("attach_api_addrs"))
++		test_attach_api_addrs();
++	if (test__start_subtest("attach_api_syms"))
++		test_attach_api_syms();
++	if (test__start_subtest("attach_api_fails"))
++		test_attach_api_fails();
+ }
 -- 
 2.35.1
 
