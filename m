@@ -2,298 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B294DAD92
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 10:34:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D14AF4DAD96
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 10:35:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354911AbiCPJfh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Mar 2022 05:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52598 "EHLO
+        id S1354916AbiCPJgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 05:36:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239646AbiCPJfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 05:35:36 -0400
-Received: from mail.bix.bg (mail.bix.bg [193.105.196.21])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id A030C27CDB
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 02:34:21 -0700 (PDT)
-Received: (qmail 12467 invoked from network); 16 Mar 2022 09:34:19 -0000
-Received: from d2.declera.com (HELO ?212.116.131.122?) (212.116.131.122)
-  by indigo.declera.com with SMTP; 16 Mar 2022 09:34:19 -0000
-Message-ID: <8654558413ef4f15891afbfb22ff16eab2af892c.camel@declera.com>
-Subject: Re: r8169: rtl8168ep_driver_stop disables the DASH port
-From:   Yanko Kaneti <yaneti@declera.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Nicfae <Nicfae@realtek.com>,
-        Kevin_cheng <kevin_cheng@realtek.com>
-Date:   Wed, 16 Mar 2022 11:34:19 +0200
-In-Reply-To: <1198ce91-24ee-3d66-6045-9cf287f23459@gmail.com>
-References: <d654c98b90d98db13b84752477fe2c63834bcf59.camel@declera.com>
-         <42304a71ed72415c803ec22d3a750b33@realtek.com>
-         <ed2850b12b304a7cb89972850e503026@realtek.com>
-         <37bd0b005af4e10fd7e9ada2437775a4735d40a0.camel@declera.com>
-         <79606fda-ad17-954b-a2f2-7f155f142264@gmail.com>
-         <da6297799b82ffbac52a192019b8844c89bbf0b9.camel@declera.com>
-         <2c638572a97d9f598135e9e1b3a56d3f9592b502.camel@declera.com>
-         <5606063c65f9b67e036497c24fa8c527ebd24fae.camel@declera.com>
-         <1198ce91-24ee-3d66-6045-9cf287f23459@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.43.3 (3.43.3-1.fc37) 
+        with ESMTP id S1354912AbiCPJgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 05:36:50 -0400
+Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466492E0A4
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 02:35:35 -0700 (PDT)
+Received: by mail-vk1-xa44.google.com with SMTP id d6so886143vkn.7
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 02:35:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=X41+jG72x03P7WchvoWXtwXk/0DV9vHShkJLSHTwz4A=;
+        b=fXMbZqG7MlcS4n5zMLeHAZbJOTDxIlbOPZseXUVy74od0KsH9YV+e43U6BUc1sqqH3
+         H2Taw4GkBC9SvVtJvU5wJv59bIX28CicfF0htNaj3vaJ9v9QraQ+n3O1ukQjGGRjRQvK
+         leTWbljIfDdgni8tWGO5xQyr9m9D8uDp0fM7bp0rdnwY5putrft8merflBbd/zXPoSYX
+         6m21PmicQnxaJilHPNy4KP4sJaQ6HKZMa2qR4ff0PN6QSRm81DmFaHHvAQTRQUpFOfwy
+         N2rHAlNnnZ7wFkv3qpCrVNGo5oC0VSu++yKGCaKPRGEg9x+Kf0LR2iLxyPzvjbXqQ+Eh
+         NVfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=X41+jG72x03P7WchvoWXtwXk/0DV9vHShkJLSHTwz4A=;
+        b=IdqD8er/NaSV4v7exo+BrO71TJcCvwfGjX18ElpPSbIbEaltTz8K2yZ23tQVDDaoqN
+         K5u6eutD28TWRH57uf1MCLqibelQU1OUvn8weZJd3LMrWgla4eaS3kwK3DXkgkwQScw4
+         kvYftM+7y7FnIAX6/4/p0D85tRac3wT5J2iXgZV4TSMHsrYNKHMDC9tihORl9zXQ2tEQ
+         8UYwsdaDmvTpmHLXEbQILr4/9jIFKf1MXT5sZ+qFB7Beuz35Os7ea+WvdOoXm318Gfdq
+         VfGS5f8AkURJvRS0EbRIARtvX61FeRMeoxJsUOZoM/Z3YuVkowchvdybt63Ny67UlNH1
+         Fw0Q==
+X-Gm-Message-State: AOAM533zpWJqvGp8vIHVLMzXXz/k3MwGgebCeNQeQzxoofAKFdQU7qXa
+        CtW1oPGN0IetvIPaM7YpM5jkmJ+pAjF/itHAPQA=
+X-Google-Smtp-Source: ABdhPJzSSiJuQekb8yu0JgbtkEelcrtRWO0++tTUPYpOJUIGPADOL753ys3dWurgDxEU+kwo3W6VCkwD3n5DNFj+t/s=
+X-Received: by 2002:a1f:6101:0:b0:336:ea3c:48b0 with SMTP id
+ v1-20020a1f6101000000b00336ea3c48b0mr13107349vkb.19.1647423333893; Wed, 16
+ Mar 2022 02:35:33 -0700 (PDT)
 MIME-Version: 1.0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Sender: aliamohamed495@gmail.com
+Received: by 2002:a59:c58e:0:b0:29c:1ca2:c18 with HTTP; Wed, 16 Mar 2022
+ 02:35:33 -0700 (PDT)
+From:   "Dr. Aisha al-gaddafi." <dr.aishaalgaddafi09@gmail.com>
+Date:   Wed, 16 Mar 2022 09:35:33 +0000
+X-Google-Sender-Auth: aFR0TV6xZCrVH5UW2U6Oy0hhbX8
+Message-ID: <CAFe_VbW2m0R4tEU3KcewqUj2djWd=Pp=D0W4mU8W25ShAS3=Vg@mail.gmail.com>
+Subject: Hola
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.3 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        BAYES_50,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:a44 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [aliamohamed495[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [aliamohamed495[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  2.4 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-03-15 at 20:24 +0100, Heiner Kallweit wrote:
-> On 15.03.2022 15:19, Yanko Kaneti wrote:
-> > On Tue, 2022-03-15 at 12:25 +0200, Yanko Kaneti wrote:
-> > > On Tue, 2022-03-15 at 11:40 +0200, Yanko Kaneti wrote:
-> > > > On Mon, 2022-03-14 at 22:24 +0100, Heiner Kallweit wrote:
-> > > > > On 14.03.2022 15:05, Yanko Kaneti wrote:
-> > > > > > On Mon, 2022-03-14 at 01:00 +0000, Kevin_cheng wrote:
-> > > > > > Hello Kevin,
-> > > > > > 
-> > > > > > > Thanks for your email. Linux DASH requires specific driver and client
-> > > > > > > tool. It depends on the manufacturer’s requirement. You need to
-> > > > > > > contact ASRock to make sure they support Linux DASH and have verified
-> > > > > > > it.
-> > > > > > 
-> > > > > > Thanks for the answer but its not much help for me.
-> > > > > > I am not going to use a driver that's not in mainline.
-> > > > > > 
-> > > > > > I wasn't really expecting full DASH support but that at least
-> > > > > > r8169/linux does not prevent the limied DASH web interface functionality
-> > > > > > from working.
-> > > > > > 
-> > > > > > Currently this is not the case on this board with the current BIOS:
-> > > > > >  - Once the kernel is loaded the DASH web interface power management
-> > > > > > (reset, hard off) no longer works
-> > > > > >  - Normal shutdown or r8169 module unload actually disconnects the phy.
-> > > > > >  
-> > > > > > It would be nice if DASH basics worked without being broken/supported by
-> > > > > > the OS.
-> > > > > > 
-> > > > > > Regards
-> > > > > > Yanko
-> > > > > > 
-> > > > > > > 
-> > > > > > > Best Regards
-> > > > > > > Kevin Cheng
-> > > > > > > Technical Support Dept.
-> > > > > > > Realtek Semiconductor Corp.
-> > > > > > > 
-> > > > > > > -----Original Message-----
-> > > > > > > From: Yanko Kaneti <yaneti@declera.com> 
-> > > > > > > Sent: Friday, March 11, 2022 9:12 PM
-> > > > > > > To: Heiner Kallweit <hkallweit1@gmail.com>; nic_swsd
-> > > > > > > <nic_swsd@realtek.com>
-> > > > > > > Cc: netdev <netdev@vger.kernel.org>
-> > > > > > > Subject: r8169: rtl8168ep_driver_stop disables the DASH port
-> > > > > > > 
-> > > > > > > Hello,
-> > > > > > > 
-> > > > > > > Testing DASH on a ASRock A520M-HDVP/DASH, which has a RTL8111/8168 EP
-> > > > > > > chip. DASH is enabled and seems to work on BIOS/firmware level.
-> > > > > > > 
-> > > > > > > It seems that r8169's cleanup/exit in rtl8168ep_driver_stop manages to
-> > > > > > > actually stop the LAN port, hence cutting the system remote
-> > > > > > > management.
-> > > > > > > 
-> > > > > > > This is evident on plain shutdown or rmmod r8169.
-> > > > > > > If one does a hardware reset or echo "b" > /proc/sysrq-trigger  the
-> > > > > > > cleanup doesn't happen and the DASH firmware remains in working order
-> > > > > > > and the LAN port remains up.
-> > > > > > > 
-> > > > > > > A520M-HDVP/DASH BIOS ver 1.70
-> > > > > > > Reatlek fw:
-> > > > > > >  Firmware Version:               3.0.0.20200423
-> > > > > > >  Version String:         20200428.1200000113
-> > > > > > >  
-> > > > > > > I have no idea if its possible or how to update the realtek firmware,
-> > > > > > > preferably from Linux.
-> > > > > > > 
-> > > > > > > Various other DASH functionality seems to not work but basic working
-> > > > > > > power managements is really a deal breaker for the whole thing.
-> > > > > > > 
-> > > > > > > 
-> > > > > > > Regards
-> > > > > > > Yanko
-> > > > > > > ------Please consider the environment before printing this e-mail.
-> > > > > > 
-> > > > > 
-> > > > > Realtek doesn't provide any public datasheets, therefore it's hard to say
-> > > > > how DASH is handled in the chip.
-> > > > > However there are few places left where the PHY may be suspended w/o
-> > > > > checking for DASH. Can you try the following?
-> > > > > 
-> > > > > 
-> > > > > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> > > > > index 67014eb76..95788ce7a 100644
-> > > > > --- a/drivers/net/ethernet/realtek/r8169_main.c
-> > > > > +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> > > > > @@ -1397,8 +1397,13 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
-> > > > >  	rtl_lock_config_regs(tp);
-> > > > >  
-> > > > >  	device_set_wakeup_enable(tp_to_dev(tp), wolopts);
-> > > > > -	rtl_set_d3_pll_down(tp, !wolopts);
-> > > > > -	tp->dev->wol_enabled = wolopts ? 1 : 0;
-> > > > > +	if (tp->dash_type == RTL_DASH_NONE) {
-> > > > > +		rtl_set_d3_pll_down(tp, !wolopts);
-> > > > > +		tp->dev->wol_enabled = wolopts ? 1 : 0;
-> > > > > +	} else {
-> > > > > +		/* keep PHY from suspending if DASH is enabled */
-> > > > > +		tp->dev->wol_enabled = 1;
-> > > > > +	}
-> > > > >  }
-> > > > >  
-> > > > >  static int rtl8169_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
-> > > > > @@ -4672,7 +4677,7 @@ static void r8169_phylink_handler(struct net_device *ndev)
-> > > > >  	if (netif_carrier_ok(ndev)) {
-> > > > >  		rtl_link_chg_patch(tp);
-> > > > >  		pm_request_resume(&tp->pci_dev->dev);
-> > > > > -	} else {
-> > > > > +	} else if (tp->dash_type == RTL_DASH_NONE) {
-> > > > >  		pm_runtime_idle(&tp->pci_dev->dev);
-> > > > >  	}
-> > > > >  
-> > > > > @@ -4978,7 +4983,8 @@ static void rtl_shutdown(struct pci_dev *pdev)
-> > > > >  	/* Restore original MAC address */
-> > > > >  	rtl_rar_set(tp, tp->dev->perm_addr);
-> > > > >  
-> > > > > -	if (system_state == SYSTEM_POWER_OFF) {
-> > > > > +	if (system_state == SYSTEM_POWER_OFF &&
-> > > > > +	    tp->dash_type == RTL_DASH_NONE) {
-> > > > >  		if (tp->saved_wolopts)
-> > > > >  			rtl_wol_shutdown_quirk(tp);
-> > > > >  
-> > > > 
-> > > > Thanks Heiner. 
-> > > > So I tried this over linus tip from today and unfortunately it doesn't
-> > > > help the shutdown or rmmod. 
-> > > > With the couple more additions below I can get it to stay up on rmmod  ,
-> > > > but still after that , shutdown still brings it down. Perhaps that
-> > > > leaves all to the BIOS/realtek firmware..
-> > > > 
-> > > > 
-> > > > diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> > > > index 19e2621e0645..d5d85a44be3e 100644
-> > > > --- a/drivers/net/ethernet/realtek/r8169_main.c
-> > > > +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> > > > @@ -4675,7 +4680,8 @@ static void rtl8169_down(struct rtl8169_private *tp)
-> > > >         /* Clear all task flags */
-> > > >         bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
-> > > >  
-> > > > -       phy_stop(tp->phydev);
-> > > > +       if (tp->dash_type == RTL_DASH_NONE)
-> > > > +               phy_stop(tp->phydev);
-> > > >  
-> > > >         rtl8169_update_counters(tp);
-> > > >  
-> > > > @@ -4715,7 +4721,8 @@ static int rtl8169_close(struct net_device *dev)
-> > > >  
-> > > >         free_irq(tp->irq, tp);
-> > > >  
-> > > > -       phy_disconnect(tp->phydev);
-> > > > +       if (tp->dash_type == RTL_DASH_NONE)
-> > > > +               phy_disconnect(tp->phydev);
-> > > >  
-> > > >         dma_free_coherent(&pdev->dev, R8169_RX_RING_BYTES, tp->RxDescArray,
-> > > >                           tp->RxPhyAddr);
-> > > > 
-> > > 
-> > > Some additional data points:
-> > > 
-> > > - with r8169 blacklisted the link survives shutdown
-> > > 
-> > > - even with r8169 blacklisted the DASH web interface stops being able to
-> > > control power/off/reset
-> > > 
-> > > - with rtl8168_driver_start/stop commented followed by rmmod r8169 and
-> > > link still up  it still goes down on shutdown
-> > 
-> > After some random poking I managed to keep the link up after shutdown. 
-> > All the previous bits plus this init tweak:
-> > 
-> > @@ -5409,7 +5417,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
-> >         /* configure chip for default features */
-> >         rtl8169_set_features(dev, dev->features);
-> >  
-> > -       rtl_set_d3_pll_down(tp, true);
-> > +       if (tp->dash_type == RTL_DASH_NONE)
-> > +               rtl_set_d3_pll_down(tp, true);
-> >  
-> >         jumbo_max = rtl_jumbo_max(tp);
-> >         if (jumbo_max)
-> > 
-> 
-> Thanks for your efforts. We can not omit the phy_.. calls in the non-DASH case,
-> therefore could you please test the following (replacing the first attempt)?
-> 
-> 
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index 67014eb76..33f5c5698 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -1397,8 +1397,11 @@ static void __rtl8169_set_wol(struct rtl8169_private *tp, u32 wolopts)
->  	rtl_lock_config_regs(tp);
->  
->  	device_set_wakeup_enable(tp_to_dev(tp), wolopts);
-> -	rtl_set_d3_pll_down(tp, !wolopts);
-> -	tp->dev->wol_enabled = wolopts ? 1 : 0;
-> +
-> +	if (tp->dash_type == RTL_DASH_NONE) {
-> +		rtl_set_d3_pll_down(tp, !wolopts);
-> +		tp->dev->wol_enabled = wolopts ? 1 : 0;
-> +	}
->  }
->  
->  static int rtl8169_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
-> @@ -4938,6 +4941,9 @@ static int rtl8169_runtime_idle(struct device *device)
->  {
->  	struct rtl8169_private *tp = dev_get_drvdata(device);
->  
-> +	if (tp->dash_type != RTL_DASH_NONE)
-> +		return -EBUSY;
-> +
->  	if (!netif_running(tp->dev) || !netif_carrier_ok(tp->dev))
->  		pm_schedule_suspend(device, 10000);
->  
-> @@ -4978,7 +4984,8 @@ static void rtl_shutdown(struct pci_dev *pdev)
->  	/* Restore original MAC address */
->  	rtl_rar_set(tp, tp->dev->perm_addr);
->  
-> -	if (system_state == SYSTEM_POWER_OFF) {
-> +	if (system_state == SYSTEM_POWER_OFF &&
-> +	    tp->dash_type == RTL_DASH_NONE) {
->  		if (tp->saved_wolopts)
->  			rtl_wol_shutdown_quirk(tp);
->  
-> @@ -5449,7 +5456,12 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	/* configure chip for default features */
->  	rtl8169_set_features(dev, dev->features);
->  
-> -	rtl_set_d3_pll_down(tp, true);
-> +	if (tp->dash_type == RTL_DASH_NONE) {
-> +		rtl_set_d3_pll_down(tp, true);
-> +	} else {
-> +		rtl_set_d3_pll_down(tp, false);
-> +		dev->wol_enabled = 1;
-> +	}
->  
->  	jumbo_max = rtl_jumbo_max(tp);
->  	if (jumbo_max)
+Hi,
 
-Thanks Heiner, that does it! 
-The link survives both rmmod and shutdown.
+I am Dr. Aisha al-Gaddafi, the daughter of the late Libyan president,
 
-Now if only someone could figure out how to trick the realtek DASH
-firmware web interface to keep managing the power state after the OS is
-booted. Being able to reset a stuck system is the minimum I would think.
-Anyone at Realtek that can help  here?
+ i am contacting you, because I need a Partner or an investor
 
+Who will help me in investing the sum of $27.5 MillionUSD  in his or
+her country?
 
+The funds are deposited  in Burkina Faso, where I am living for the
+moment with my children Please after reading this mail try to  contact
+me through  this my private email if you really want me to see your
+response
 
+Thanks, I await your response
+
+Dr. Aisha al-gaddafi.
