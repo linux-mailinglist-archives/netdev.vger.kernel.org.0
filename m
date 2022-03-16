@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D9AF4DB917
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 20:59:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3044A4DB91D
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:02:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345055AbiCPUBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 16:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
+        id S235842AbiCPUDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 16:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244611AbiCPUA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:00:59 -0400
+        with ESMTP id S234038AbiCPUDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:03:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAD56A04F
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 12:59:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A2C58E5F
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:01:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 529AD60FED
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 19:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62B6EC340E9;
-        Wed, 16 Mar 2022 19:59:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7164B61117
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 20:01:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86977C340E9;
+        Wed, 16 Mar 2022 20:01:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647460782;
-        bh=ultL9CAuMrYi6naQcd/u8pT8X8fnpin6JUaqG9z1DCw=;
+        s=k20201202; t=1647460915;
+        bh=AaS16rAgdoCF3/TZ7wYgj15Nb0isouGWpPCSfLyolgI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uOX0vdneF+Kdmsa20/4qLB0KAkOPkJgTzNr5wZ7G815r67uG/PndKnmFT9fZfbO5v
-         mpVTc2a/fW/Ifn3GkK/a0xdOJfysKI9oPkaX8P07UmaH/Ewb/6BpH7eupnM+ScMaRu
-         iBIjVjjyTpQ1+YyYMst/bxV9QE73/8Kq7VATkX/VpaTdoDaju1cFisqMMmhFnfTx5n
-         l9Mvl1DC1kgOY2ihh+3QZVICiS0cv0I9hrdEgxyCvPyn/6eO7nFSbpNABt+KslYvw6
-         ZtFdV7LvHCV8pi07G1Wt5kCxojRpL87K0p/AQGGNl6BvIUT2tePBLYw4C/E/U20+LP
-         MxQka+BqHIEHQ==
-Date:   Wed, 16 Mar 2022 12:59:41 -0700
+        b=N7tHg90DOiVFVhQ6iH/3zA7NlFeapg8lLHJEpADP9OLKK427Cxxj/bamQNtYCKqoT
+         QhGUcPrdzQbzGYfbXrcQcLvGs6n5oE4wfrcM6aw8gyL9z2p23bPsFs3jRIGp28REB+
+         rh0BKSl9IV3qSVLH+DPqRqiqJnOvNxwzRs+QNEE6IuLKXy262+nMfqgfijKpDGQz3s
+         s4uvW360vzoKAn0opV/5Tg8xgkF1ilOdFyXwF5Bupe1m3GccINSdPvlC/pzeZ5e6Xh
+         RyWXzpWytzVGT1x5z09pNkDrIshU+27Zk+xVoJadd0FMWeyDaJEV+uCoVDb+9+gJyk
+         iU9O9Nk/d2wdA==
+Date:   Wed, 16 Mar 2022 13:01:54 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, Brian King <brking@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>,
-        Vaishnavi Bhat <vaish123@in.ibm.com>
-Subject: Re: [PATCH net 1/1] ibmvnic: fix race between xmit and reset
-Message-ID: <20220316125941.2a11d68e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220316012315.1880265-1-sukadev@linux.ibm.com>
-References: <20220316012315.1880265-1-sukadev@linux.ibm.com>
+To:     Andy Chiu <andy.chiu@sifive.com>
+Cc:     davem@davemloft.net, michal.simek@xilinx.com,
+        linux@armlinux.org.uk, robert.hancock@calian.co,
+        netdev@vger.kernel.org, Greentime Hu <greentime.hu@sifive.com>
+Subject: Re: [PATCH] net: axiemac: initialize PHY before device reset
+Message-ID: <20220316130154.44db510a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220316075707.61321-1-andy.chiu@sifive.com>
+References: <20220316075707.61321-1-andy.chiu@sifive.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,11 +54,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 15 Mar 2022 18:23:15 -0700 Sukadev Bhattiprolu wrote:
-> Subject: [PATCH net 1/1] ibmvnic: fix race between xmit and reset
-> 
-> There is a race between reset and the transmit paths that can lead to
-> ibmvnic_xmit() accessing an scrq after it has been freed in the reset
-> path. It can result in a crash like:
+On Wed, 16 Mar 2022 15:57:07 +0800 Andy Chiu wrote:
+> Related-to: 'd836ed73a3cb ("net: axienet: reset core on initialization prior to MDIO access")'
 
-This one does not apply cleanly on net.
+What's Related-to signifying? You can have multiple Fixes tags 
+if you need to.
+
+> Fixes: '1a02556086fc ("net: axienet: Properly handle PCS/PMA PHY for 1000BaseX mode")'
+
+There should be no ' quotes around the tag, please fix and repost.
