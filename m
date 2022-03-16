@@ -2,135 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66E194DB482
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 16:10:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAA34DB4BD
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 16:19:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357193AbiCPPL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 11:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
+        id S1357129AbiCPPU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 11:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357102AbiCPPLN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 11:11:13 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AB9692BE
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:09:22 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id kj21so2015124qvb.11
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:09:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mIB5oA28+mdJt//WPIP0/rKaAtJF8R0hwGv6A9XPIF0=;
-        b=ZZ9sVAmcuMXneZ2TOrhARt09vqdRtfQt2AAVN3meodkTUPNYaTETkC8xo1SnuRomZY
-         rJi3KY1MptlIddJz61BdH/Cc+I9kQM63aWTyQje6ZMG7NEBKeED2ugRH0i4Gt8TL4wqG
-         xCg+QEt+KvZYzuOCKs0NaspjxYKYAR6JU/1R5neKJwlza1e4Esg3wqd/JoJtr2HwFrIG
-         xKnO1ByYI87syCEnQHAdsghm9vRwKJG+BsX+Ann0Adydq5azhSlg0JWbbSXpLaOSdfy2
-         3jDWk6iJDdi7+rUHKON6NyxCU5lueUp0CSTehqn4jeXdMW1fNECvNgiMzdR5Xds3vysO
-         QgjA==
+        with ESMTP id S1357228AbiCPPU2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 11:20:28 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF1664BEF
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:19:13 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B35A43F4C0
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 15:19:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1647443951;
+        bh=l6KBwGM0uiIwlc1rKLa9ZFBDgTPatr0zsqNmkU7zEfs=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=hnBMVm5NuJPHWUriNwJEAOlygXoDV5wbnmaQGBeNGuOR2ufAhiBRhADZ5jGjxW/jN
+         5AadvsvS3O5L9v3mhL0W7zT/03qdMNrR9nubb7I/Jnk6gxQEBVH81vvgjTYrhxMD5k
+         Yf672IqY3tzqVH8QZqAdY/9H4IswTQUNZ/ZK4ucawyxfyJEYyellQdPdklM7BTEPrn
+         SfYY/WVrSYopzf2S96gnPaU//uWNVxHm6QdBCDwdveD5046ANkOu/SiQeQ2/lFPzfR
+         qrgAGstoNxy+CkqxX7F3jPh6xaQv6SjA8ljmGNhXTEps1X7qGtiSzKVqqL38Myac3q
+         ZFMLp+AuaQ8oQ==
+Received: by mail-ej1-f71.google.com with SMTP id x2-20020a1709065ac200b006d9b316257fso1344546ejs.12
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mIB5oA28+mdJt//WPIP0/rKaAtJF8R0hwGv6A9XPIF0=;
-        b=fJTQFx5dl2ZbLR1oyBcBv3LEkdECNpJHDodGGr1hXzSyU1WBWELynjnHe3uIfXoaDk
-         nYb+U1AGThf3LZzKOKMCqHh3zRoWQ3lIUFZGPuw3SDT2iCyz3/OTvwsVduJ9CuiR505g
-         efDAd/LvSiX+9WCUYKiLbnoNd8oTMVzShfOfuxtRLhjVmBROBS84z4sUkp+t/Y+ISUf9
-         G9UG143+GtCw/9GebkZfs+F8ry2YLYkNlap8YnxDygB4S4vQBAyvRCk6pD75DajtRdiv
-         9R77TqpBkF/Tz7V+JeoEfJH5MSWPn0Owh8cOL8tzuDA+tIMZoAP4BtqcNojCpa5Ezx7i
-         1sxg==
-X-Gm-Message-State: AOAM5326RHl7kvN3cKDExlWWJDDYYc1z9lnXDUUxXPL+iKH5J8mu6ycF
-        deQPq3u+YZviHxpxIN0/nLp5e3VoCvjwS0qYay05kg==
-X-Google-Smtp-Source: ABdhPJzziGoR/WLqsuk0m0WIJ3DG4jCEq8Kak1OC4PtmPF4mBzRffN72LMDD67iCVCvg8Od1LPXpkf0jRlr5EmQYMFM=
-X-Received: by 2002:ad4:5c8b:0:b0:440:cc89:d57d with SMTP id
- o11-20020ad45c8b000000b00440cc89d57dmr263780qvh.80.1647443361272; Wed, 16 Mar
- 2022 08:09:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=l6KBwGM0uiIwlc1rKLa9ZFBDgTPatr0zsqNmkU7zEfs=;
+        b=FZMnxR8/4447M6CY5p8UADcHcAliM/lI07vMHKOp2lJtFNmh6NnAPrteyEyUjUbbPU
+         pJ1uP7ucWhoC8gOtP7p+CT5iweB6L2VCguj6Yu77unyOkmGQ+TzWJ+O+N0LDtYx4aPMB
+         6gqsWrR0uQgaaNS4r1EBmctrygNkap8QKgXokMhfFmn5AymfBcFPFBp8VU6irn0gJxGq
+         oY97VxVX0F5jF4EM94EJbSnYBzULsM73X+qm/+QMTsZVYNFFFNlQV/p6Ucz2zvNhboZ2
+         OKP3vS9rZ1atWzdpwAmrVj/JqUYzNNurqWyt9dwQ+KOEzAgXY4l3NpIxv3vFeY4ke5YA
+         09UQ==
+X-Gm-Message-State: AOAM533psx+Kv0/3jAAfvcLYMqNOkf5wsSdbQEYIIGAEBIB8B2orgJfU
+        8oE+3qWTE8c+BSK85YiklhmtCH5J9iaPAsDw+5UXJjuhrvgixAlLITkK6yH1nmcdEUMWPnRWVNR
+        oAE2os2DnnJNV+P04RqYZmfZITFnk4nlgsA==
+X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id e18-20020a17090658d200b006dab635fbf3mr432683ejs.40.1647443951296;
+        Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxoPSUJMHOAL6T3mNLew5/+8ilp8MWnQTCLDeDxeKP/9TPhEl9ftEH1knZ3RViNX+M9VfXG4g==
+X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id e18-20020a17090658d200b006dab635fbf3mr432665ejs.40.1647443951025;
+        Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
+Received: from localhost.localdomain ([194.191.244.86])
+        by smtp.gmail.com with ESMTPSA id d8-20020a170906640800b006d5853081b7sm1016788ejm.70.2022.03.16.08.19.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 08:19:10 -0700 (PDT)
+From:   Juerg Haefliger <juerg.haefliger@canonical.com>
+X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux@armlinux.org.uk
+Cc:     linux-kernel@vger.kernel.org,
+        Juerg Haefliger <juergh@canonical.com>
+Subject: [PATCH] net: phy: mscc: Add MODULE_FIRMWARE macros
+Date:   Wed, 16 Mar 2022 16:18:35 +0100
+Message-Id: <20220316151835.88765-1-juergh@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220315123916.110409-1-liujian56@huawei.com> <20220315195822.sonic5avyizrufsv@kafai-mbp.dhcp.thefacebook.com>
- <4f937ace70a3458580c6242fa68ea549@huawei.com> <623160c966680_94df20819@john.notmuch>
- <5cee2fb729624f168415d303cff4ee8f@huawei.com>
-In-Reply-To: <5cee2fb729624f168415d303cff4ee8f@huawei.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Wed, 16 Mar 2022 08:09:10 -0700
-Message-ID: <CAKH8qBuBoyJqSEBX+2iG4b7C7tXPZUtVX6qZysrwddT3LE9ieg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] net: Use skb->len to check the validity of the
- parameters in bpf_skb_load_bytes
-To:     "liujian (CE)" <liujian56@huawei.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 6:08 AM liujian (CE) <liujian56@huawei.com> wrote:
->
->
->
-> > -----Original Message-----
-> > From: John Fastabend [mailto:john.fastabend@gmail.com]
-> > Sent: Wednesday, March 16, 2022 12:00 PM
-> > To: liujian (CE) <liujian56@huawei.com>; Martin KaFai Lau <kafai@fb.com>
-> > Cc: ast@kernel.org; daniel@iogearbox.net; andrii@kernel.org;
-> > songliubraving@fb.com; yhs@fb.com; john.fastabend@gmail.com;
-> > kpsingh@kernel.org; davem@davemloft.net; kuba@kernel.org;
-> > sdf@google.com; netdev@vger.kernel.org; bpf@vger.kernel.org
-> > Subject: RE: [PATCH bpf-next] net: Use skb->len to check the validity of the
-> > parameters in bpf_skb_load_bytes
-> >
-> > liujian (CE) wrote:
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: Martin KaFai Lau [mailto:kafai@fb.com]
-> > > > Sent: Wednesday, March 16, 2022 3:58 AM
-> > > > To: liujian (CE) <liujian56@huawei.com>
-> > > > Cc: ast@kernel.org; daniel@iogearbox.net; andrii@kernel.org;
-> > > > songliubraving@fb.com; yhs@fb.com; john.fastabend@gmail.com;
-> > > > kpsingh@kernel.org; davem@davemloft.net; kuba@kernel.org;
-> > > > sdf@google.com; netdev@vger.kernel.org; bpf@vger.kernel.org
-> > > > Subject: Re: [PATCH bpf-next] net: Use skb->len to check the
-> > > > validity of the parameters in bpf_skb_load_bytes
-> > > >
-> > > > On Tue, Mar 15, 2022 at 08:39:16PM +0800, Liu Jian wrote:
-> > > > > The data length of skb frags + frag_list may be greater than
-> > > > > 0xffff, so here use skb->len to check the validity of the parameters.
-> > > > What is the use case that needs to look beyond 0xffff ?
-> >
-> > > I use sockmap with strparser, the stm->strp.offset (the begin of one
-> > > application layer protocol message) maybe beyond 0xffff, but i need
-> > > load the message head to do something.
-> >
-> > This would explain skb_load_bytes but not the other two right? Also if we
-> Yes, I just see that these two functions have the same judgment.
-> > are doing this why not just remove those two checks in
-> > flow_dissector_load() I think skb_header_pointer() does duplicate checks.
-> > Please check.
-> Yes, skb_header_pointer() have checked as below, and I will send v2 to remove 0xffff check.
-> ----skb_header_pointer
-> -------- __skb_header_pointer
-> ------------skb_copy_bits
-> ---------------- if (offset > (int)skb->len - len)
-> --------------------goto fault;
->
-> Thank you~
+The driver requires firmware so define MODULE_FIRMWARE so that modinfo
+provides the details.
 
-Do we need to have at least "offset <= 0x7fffffff" check? IOW, do we
-need to enforce the unsignedness of the offset? Or does
-skb_header_pointer et all properly work with the negative offsets?
+Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+---
+ drivers/net/phy/mscc/mscc_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index ebfeeb3c67c1..7e3017e7a1c0 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -2685,3 +2685,6 @@ MODULE_DEVICE_TABLE(mdio, vsc85xx_tbl);
+ MODULE_DESCRIPTION("Microsemi VSC85xx PHY driver");
+ MODULE_AUTHOR("Nagaraju Lakkaraju");
+ MODULE_LICENSE("Dual MIT/GPL");
++
++MODULE_FIRMWARE(MSCC_VSC8584_REVB_INT8051_FW);
++MODULE_FIRMWARE(MSCC_VSC8574_REVB_INT8051_FW);
+-- 
+2.32.0
+
