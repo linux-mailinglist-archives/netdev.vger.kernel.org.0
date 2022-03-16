@@ -2,50 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8296C4DB80A
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 195A64DB813
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:44:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244970AbiCPSlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 14:41:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50002 "EHLO
+        id S1357750AbiCPSp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 14:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235282AbiCPSlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:41:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C212055204
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 11:39:53 -0700 (PDT)
+        with ESMTP id S1353677AbiCPSpz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:45:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A837369F9
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 11:44:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 709F7B81CAA
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 18:39:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CC50C340EC;
-        Wed, 16 Mar 2022 18:39:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02D3661882
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 18:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35F99C340EC;
+        Wed, 16 Mar 2022 18:44:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647455991;
-        bh=k+n9cLXH9OZ4YQOpiyTf6Tu0Eey44zrFuJrOv45GhXM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oYHyK3DtsUcwirG0WKinFSjScRLkoPTpEugoprnSFcPH7jKHQNTawRPwo2xOmKAHc
-         LS0w8I81njrmNEDgN+LHLrcZ43nDWMgrSJK3dcIZc3CfF8mOp5YGZLIS6mXBKsjuHT
-         9MfcJIkyhy0UUe/yOFsGYvIV/syiQo3q0KmmIzHfoK9Dsl3qIZBSCbhsQJn54T1KQe
-         d+ravtrHMHLwHCRFiSnMap+V6se/GiTvWh3qjATX7yOpPv2PPbqTxPDAYofFS28JHX
-         x5hWdwJ64/4LWC6ZjVMbIva4S3jQmJEiswW+3+LRyxAKhuwGdYkjKY2hBT3Np+qVNI
-         xM75gdjO9JUzQ==
-Date:   Wed, 16 Mar 2022 20:39:46 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@nvidia.com,
-        idosch@nvidia.com, petrm@nvidia.com, simon.horman@corigine.com,
-        louis.peens@corigine.com
-Subject: Re: [PATCH net-next 1/6] devlink: expose instance locking and add
- locked port registering
-Message-ID: <YjIu8rf/1hFHuhHE@unreal>
-References: <20220315060009.1028519-1-kuba@kernel.org>
- <20220315060009.1028519-2-kuba@kernel.org>
+        s=k20201202; t=1647456280;
+        bh=bE4FpuFV95noyMaJfN/xuhac8qrvWy9jju8fFD55ENo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MJhwcezahr3GbGXh2+cSQwHIjI/jiAm/ahIf6kIkIDs4T670M9wJMXASwpKUZJZMd
+         bChBllKVfZ4byrT5UT5AOTqmZZiBij+BhZgEi9mOQN3OwdGX9KHI3sPHi3dXfH0d2L
+         jlrYPTbHd/+YXjEJWlKLNhh6UikzU3rxXm+cnnk49187HU1ZgRfYeIkUCVRSfAyWHa
+         WTjB1pHXKAwnK46kcW9rpxiyIqkBVsurrgiZhXGFyV8PndpJKUmwxiZDAr/VfWsfsm
+         fzq+GQjuyZrK1E0gxHc5xrrtJCsB0qb/zgaun55Qwpn4N6OJ8uulMR5EgQT69iLoD3
+         oraGpA/VdIFbQ==
+Date:   Wed, 16 Mar 2022 11:44:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>
+Subject: Re: pull request (net): ipsec 2022-03-16
+Message-ID: <20220316114438.11955749@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220316121142.3142336-1-steffen.klassert@secunet.com>
+References: <20220316121142.3142336-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315060009.1028519-2-kuba@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,30 +54,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 14, 2022 at 11:00:04PM -0700, Jakub Kicinski wrote:
-> It should be familiar and beneficial to expose devlink instance
-> lock to the drivers. This way drivers can block devlink from
-> calling them during critical sections without breakneck locking.
+On Wed, 16 Mar 2022 13:11:40 +0100 Steffen Klassert wrote:
+> Two last fixes for this release cycle:
 > 
-> Add port helpers, port splitting callbacks will be the first
-> target.
+> 1) Fix a kernel-info-leak in pfkey.
+>    From Haimin Zhang.
 > 
-> Use 'devl_' prefix for "explicitly locked" API. Initial RFC used
-> '__devlink' but that's too much typing.
-> 
-> devl_lock_is_held() is not defined without lockdep, which is
-> the same behavior as lockdep_is_held() itself.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> v1: - add a small section to the docs
->     - redo the lockdep ifdef
-> ---
->  Documentation/networking/devlink/index.rst | 16 ++++
->  include/net/devlink.h                      | 11 +++
->  net/core/devlink.c                         | 95 ++++++++++++++++------
->  3 files changed, 98 insertions(+), 24 deletions(-)
-> 
+> 2) Fix an incorrect check of the return value of ipv6_skip_exthdr.
+>    From Sabrina Dubroca.
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Excellent, thank you!
+
+> Please pull or let me know if there are problems.
+
+One minor improvement to appease patchwork would be to add / keep the
+[PATCH 0/n] prefix on the PR / cover letter when posting the patches
+under it. It seems that patchwork is hopeless in delineating the
+patches and the PR if that's not there. For whatever reason it grouped
+the PR and patch 2 as a series and patch 1 was left separate :S
