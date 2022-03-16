@@ -2,163 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C14394DAD51
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 10:17:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C5784DAD7D
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 10:29:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348877AbiCPJSr convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 16 Mar 2022 05:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38636 "EHLO
+        id S1354886AbiCPJaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 05:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243385AbiCPJSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 05:18:46 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31915DE73;
-        Wed, 16 Mar 2022 02:17:31 -0700 (PDT)
-Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nUPma-0002EN-Hk; Wed, 16 Mar 2022 10:17:28 +0100
-Message-ID: <5e56c644-2311-c094-e099-cfe0d574703b@leemhuis.info>
-Date:   Wed, 16 Mar 2022 10:17:27 +0100
+        with ESMTP id S1349506AbiCPJap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 05:30:45 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2111.outbound.protection.outlook.com [40.107.215.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353B76541D;
+        Wed, 16 Mar 2022 02:29:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RmEBU29bDGS6E7UYqyNz8B+EgbRNxvriExcD+90VMXwnKcMyEHRwNY8ePaIEwf4Rc162O+lUk8lgCedc78jrPHH0RzHwMC5DGW/oTRsM6HYpiPpAHElm8njws8LZBOAWBzq4hJQRLVc70OneVXBVswGLRBjeHEJ4raFijTKKtXiyP6uVYXeJs+0s+4gZF8+NfL5GiD2361GT1oGwoJ2WvZBSMN4GeaFw/NksIGbNqJIcAzz3r/bzDsPZsYBCAY0rt5H3zqjeoD14n3Ii5LECffxg1YxZVmBGksN506X71hsHFZQ+Xzc5oYceGIdapta2un/0opM60Gs+mr2095olLA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=H2cqAJcJIp1kOdVc0FVmG5i2Ne6EPVa4cmPNPfj9I/4=;
+ b=JtSrhavIxXDGdZUnab2y/8E4L4HpJi0jSJbB1zrJitNPNqXLLBHZbvS721GMQ9mj6TbiNYzQV4Ue2XgSt4UT1NkEQvQ5i4YzgxmMhrXL6UVcddC/+cuS36uOTmQCLi+LIGhlJjARmFv7lkouRQIii0uUT+mqo28MqRYaBZg4zUDnm4clMT/JUQ64v3+yu3riWTUsSVxNN8EUQ+a7MXc5p0QmzsZJK5hslWnTy3qCcFkvJrBzacwlZ/UYtce9p1dak4goYXGjxJLA2/uFVudgcsy818mHxihVHN/B23LNejru3g64+5V6RRnBkXoba64y3E5kLkkaZdyTnB8sMVs7ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=H2cqAJcJIp1kOdVc0FVmG5i2Ne6EPVa4cmPNPfj9I/4=;
+ b=Hd3tN96Goeiqe9954XuQOVjDqtEwpRUaAsZr3DiFoa2gn2nllXCkWZy+zXVeSjHlQhp2XCiDPWg2pYkhRndKXQfUptXSUom3M50vGHzd5zk5iJbU+e7YciLAKluyXAMgQTKSOk4bWeRSUIjY5VAzSEyHLFUKqf7iKSVQfDVmu+4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
+ by TY0PR06MB4893.apcprd06.prod.outlook.com (2603:1096:400:149::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Wed, 16 Mar
+ 2022 09:29:27 +0000
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59]) by HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59%5]) with mapi id 15.20.5061.029; Wed, 16 Mar 2022
+ 09:29:26 +0000
+From:   Guo Zhengkui <guozhengkui@vivo.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        linux-kernel@vger.kernel.org (open list),
+        bpf@vger.kernel.org (open list:BPF (Safe dynamic programs and tools))
+Cc:     zhengkui_guo@outlook.com, Guo Zhengkui <guozhengkui@vivo.com>
+Subject: [PATCH] selftests: net: fix array_size.cocci warning
+Date:   Wed, 16 Mar 2022 17:28:57 +0800
+Message-Id: <20220316092858.9398-1-guozhengkui@vivo.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR02CA0003.apcprd02.prod.outlook.com
+ (2603:1096:3:17::15) To HK2PR06MB3492.apcprd06.prod.outlook.com
+ (2603:1096:202:2f::10)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: Intermittent performance regression related to ipset between 5.10
- and 5.15
-Content-Language: en-US
-To:     "McLean, Patrick" <Patrick.Mclean@sony.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "U'ren, Aaron" <Aaron.U'ren@sony.com>,
-        "Brown, Russell" <Russell.Brown@sony.com>,
-        "Rueger, Manuel" <manuel.rueger@sony.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <BY5PR13MB3604D24C813A042A114B639DEE109@BY5PR13MB3604.namprd13.prod.outlook.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <BY5PR13MB3604D24C813A042A114B639DEE109@BY5PR13MB3604.namprd13.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1647422251;50fd62e0;
-X-HE-SMSGID: 1nUPma-0002EN-Hk
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b87213dd-d8eb-4c1d-6675-08da072f76bb
+X-MS-TrafficTypeDiagnostic: TY0PR06MB4893:EE_
+X-Microsoft-Antispam-PRVS: <TY0PR06MB48931F04E3FFE53C70A53F7EC7119@TY0PR06MB4893.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +reMUqvAMAKgCTpHxHts866b+mRJnzqh+j1MSm5jzXBTspyzuPwuT4XgI/hF+0wfR6JGpW1EbHdq0lmSR7RNgVdPcQzfuWO5y5lZKChQPakISJLCQV03HR22cxYRo0AuHcirzguw13swOuQvkkJiVIASwRGyCWEjZvbtbngEhNaJP3vmaZ/gRvhhu/PPMa9RATh6NEQ5NE86fB8XpASRnyJtlkqWhEJf7U+3Bwq/gEaL812/SRglICQ3+UI8t8jlLY5ER4xTOHkKD5ysc83h9QZmkRkDXREMZqbJ6/yJSemXTzUjiNkFcQ4rkIhRqIOvrdCUbcaHVGnvc2OTQxuL1s/Z9oj1lcb5K173zEedu8CKkO43XHkFzS8qbKEucafcja8SYqNnilFUirQdBnSRWUoRxK4c19+v4x1zdI1NiDBTvyPiJXMKzZrRzjD5t/l329344ji+N4xhlur/ZGh3ygf/Nb+dVoDczK6xRQtXgY00cpU6lxeiqC1XFX6I2SZ1kjXD8Xd1FU9QUSiRZeQr26W8QAKC4BciWqGC7GuQFn59ewFJ4ozVpgwcBaHHSaJvB/O4mHN1d55XJErDaARAoJIHfhpJCq3VyfBuNkvctWN2IV7GbaYd9cVi/xo3aghzR0vbXKIgsL3zwgLxToxNEX3gf4A7lyF4wUDkG89Pt4jgxOZ0UDFFT6OfWc1FkjL5V7INGLyGmwDqDLnjtzhwsEcf5Z6sY2g/J8k6Vdm/8Hc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(8936002)(921005)(6486002)(38350700002)(38100700002)(66946007)(508600001)(66476007)(66556008)(86362001)(5660300002)(4326008)(110136005)(1076003)(186003)(26005)(6506007)(316002)(52116002)(2616005)(8676002)(7416002)(2906002)(36756003)(6666004)(6512007)(107886003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Vz1z+GMxlcUZeRw9YsWIEXFus+/oMTmFNu1MEXDZtoUgn0WIYx1dCDoM9h+p?=
+ =?us-ascii?Q?+4A3zQiRZfM/rTLelkonoxq57QM1Pj2kW/aARHjG7NIN4h4hpYj93o5nsr3X?=
+ =?us-ascii?Q?zerHPliPKJWHYC7Pdd7L6U0v5u19ttCw9IxZQus7qj57hrHVaEVNdwEpvVv2?=
+ =?us-ascii?Q?08y5MMStYNlIZLOEtr5ILtnH57UHW7hQ1pJ6DP5qeST2cSJMRWNcZ+7ix0o1?=
+ =?us-ascii?Q?juNmr8dBFwf6K6mN75A8KDfdnPlxsKIxGD/om97PZZmznWNssmLsK3XlsQFh?=
+ =?us-ascii?Q?0sJvODhEJINSjgLjCA3rdnrgHVi2gEQvnzXGlwOf43KrumFh2DVGxzJEMpwz?=
+ =?us-ascii?Q?OMfVuOKDlMl/5w9fJv4fbchw001a5GSFzKuoouNVf3Ohy0V0RsHV883xWEfn?=
+ =?us-ascii?Q?gnJbgfDnTTjr9KnLx8BuFPtrbNrjH2bO8fShWYJF2W1NtzCTB3lCCxZxizg5?=
+ =?us-ascii?Q?8XUd7Xofp764uOrM2xIqfCyfYJNv6x7gDJiF/XJOiJKUFcGNpRoJVLeV7S6o?=
+ =?us-ascii?Q?kpNjmdN4MP7xX/3JEGAxa4AlYlLC40+RioyRLaW+ObGztjzKNEmrV2pwYdS7?=
+ =?us-ascii?Q?vtZuEVZbHdqh7/b6gWmDOaAeyP8OZeC4JInjp0TnCTKSkg4hgzheEeejDHAQ?=
+ =?us-ascii?Q?Y5y+u8a5ZqT/C++2prdcb3tpdBw/+e+xALnzYKi7Gxc+BLXlx/EU/y+pzX94?=
+ =?us-ascii?Q?RmoHVRH0cStD3DmHwAaBHgAA3ghenQUhWGGOdnBK6VCUiurCDU27vSLmsel1?=
+ =?us-ascii?Q?JU7EywHptbV+UpZWw8kqLay1DhOm8OycIiqA8nR+hz5djyOhi5b5glCrUu6r?=
+ =?us-ascii?Q?ou7tL/OBDf3xak+tmUPBspnrcziPsGShRW/ibmhyo01tFJdzfSPQcsULw0Lf?=
+ =?us-ascii?Q?x4rcmeiWjZiVliVA02P+kNlN97jgO44GACQOqWxaeqcDgqyZ+8AciR/rmfqF?=
+ =?us-ascii?Q?NX2lSWmQdU7HzmXkyfYH4LprB9djBPDKeSRbVw2EMZZskFbpc5BQQi0WVlgO?=
+ =?us-ascii?Q?Jbxt4mcuvPdu8TYGs0B5zRN0kXNThfHrSZmS32dfnQ9/8+RKUKq8e3/Mc8y3?=
+ =?us-ascii?Q?0ZhouTbhe08SfH8bw6GfC07LtTeMVBEUwfimLBGrQsDvZc3JnM0xrADiEeLI?=
+ =?us-ascii?Q?NhjX59fw73MnqU80NW06VtE15llnEZPyz7U+a3OE+jMPyUtrmJmu4b1veRAR?=
+ =?us-ascii?Q?fYehvHpuHpXC04Bo4CPy1kCEb/BxBOHEynWjIyFF778RQDJ7KZuNBuCFb7V6?=
+ =?us-ascii?Q?166L34pd6cwKXlQfg9gFY6sIrXP0M+qHtUjLeHKz2pkVJBDjEYFhxrS9cYAs?=
+ =?us-ascii?Q?+nQB7Tv8g2goUNXkyO7p5yVg8wvNqthr77gQTz3HAqo105W6B9w6fjY55hfB?=
+ =?us-ascii?Q?B7y+El74N696W2AwOBvZkZx/U7Hjw4ra+W2GQC7N7QnCeumDvBAp62bop2Iq?=
+ =?us-ascii?Q?asbGX6hp+TC8dLeenH3tdScux7aIcNs6?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b87213dd-d8eb-4c1d-6675-08da072f76bb
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2022 09:29:26.5384
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r3+j/y7O8Uo8+yLYKxhdvbbREpCGtg9hpWL6zAJGc0e9Dtm0E4MKONHNZ9mVjBeBW+hdvoi6fdgWkLCC/RD5ug==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY0PR06MB4893
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[TLDR: I'm adding the regression report below to regzbot, the Linux
-kernel regression tracking bot; all text you find below is compiled from
-a few templates paragraphs you might have encountered already already
-from similar mails.]
+Fix array_size.cocci warning in tools/testing/selftests/net.
 
-On 16.03.22 00:15, McLean, Patrick wrote:
-> When we upgraded from the 5.10 (5.10.61) series to the 5.15 (5.15.16) series, we encountered an intermittent performance regression that appears to be related to iptables / ipset. This regression was noticed on Kubernetes hosts that run kube-router and experience a high amount of churn to both iptables and ipsets. Specifically, when we run the nftables (iptables-1.8.7 / nftables-1.0.0) iptables wrapper xtables-nft-multi on the 5.15 series kernel, we end up getting extremely laggy response times when iptables attempts to lookup information on the ipsets that are used in the iptables definition. This issue isn’t reproducible on all hosts. However, our experience has been that across a fleet of ~50 hosts we experienced this issue on ~40% of the hosts. When the problem evidences, the time that it takes to run unrestricted iptables list commands like iptables -L or iptables-save gradually increases over the course of about 1 - 2 hours. Growing from less than a second to run, to taking sometimes over 2 minutes to run. After that 2 hour mark it seems to plateau and not grow any longer. Flushing tables or ipsets doesn’t seem to have any affect on the issue. However, rebooting the host does reset the issue. Occasionally, a machine that was evidencing the problem may no longer evidence it after being rebooted.
-> 
-> We did try to debug this to find a root cause, but ultimately ran short on time. We were not able to perform a set of bisects to hopefully narrow down the issue as the problem isn’t consistently reproducible. We were able to get some straces where it appears that most of the time is spent on getsockopt() operations. It appears that during iptables operations, it attempts to do some work to resolve the ipsets that are linked to the iptables definitions (perhaps getting the names of the ipsets themselves?). Slowly that getsockopt request takes more and more time on affected hosts. Here is an example strace of the operation in question:
-> 
-> 0.000074 newfstatat(AT_FDCWD, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=539, ...}, 0) = 0 <0.000017>
-> 0.000064 openat(AT_FDCWD, "/var/db/protocols.db", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory) <0.000017>
-> 0.000057 openat(AT_FDCWD, "/etc/protocols", O_RDONLY|O_CLOEXEC) = 4 <0.000013>
-> 0.000034 newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=6108, ...}, AT_EMPTY_PATH) = 0 <0.000009>
-> 0.000032 lseek(4, 0, SEEK_SET)     = 0 <0.000008>
-> 0.000025 read(4, "# /etc/protocols\n#\n# Internet (I"..., 4096) = 4096 <0.000010>
-> 0.000036 close(4)                  = 0 <0.000008>
-> 0.000028 write(1, "ANGME7BF25 - [0:0]\n:KUBE-POD-FW-"..., 4096) = 4096 <0.000028>
-> 0.000049 socket(AF_INET, SOCK_RAW, IPPROTO_RAW) = 4 <0.000015>
-> 0.000032 fcntl(4, F_SETFD, FD_CLOEXEC) = 0 <0.000008>
-> 0.000024 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\0\1\0\0\7\0\0\0", [8]) = 0 <0.000024>
-> 0.000046 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\7\0\0\0\7\0\0\0KUBE-DST-VBH27M7NWLDOZIE"..., [40]) = 0 <0.109384>
-> 0.109456 close(4)                  = 0 <0.000022>
-> 
-> On a host that is not evidencing the performance regression we normally see that operation take ~ 0.00001 as opposed to 0.109384.Additionally, hosts that were evidencing the problem we also saw high lock times with `klockstat` (unfortunately at the time we did not know about or run echo "0" > /proc/sys/kernel/kptr_restrict to get the callers of the below commands).
-> 
-> klockstat -i 5 -n 10 (on a host experiencing the problem)
-> Caller   Avg Hold  Count   Max hold Total hold
-> b'[unknown]'  118490772     83  179899470 9834734132
-> b'[unknown]'  118416941     83  179850047 9828606138
-> # or somewhere later while iptables -vnL was running:
-> Caller   Avg Hold  Count   Max hold Total hold
-> b'[unknown]'  496466236     46 17919955720 22837446860
-> b'[unknown]'  496391064     46 17919893843 22833988950
-> 
-> klockstat -i 5 -n 10 (on a host not experiencing the problem)
-> Caller   Avg Hold  Count   Max hold Total hold
-> b'[unknown]'     120316   1510   85537797  181677885
-> b'[unknown]'    7119070     24   85527251  170857690
+Use `ARRAY_SIZE(arr)` instead of forms like `sizeof(arr)/sizeof(arr[0])`.
 
-Hi, this is your Linux kernel regression tracker.
+It has been tested with gcc (Debian 8.3.0-6) 8.3.0.
 
-Thanks for the report.
+Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+---
+ tools/testing/selftests/net/cmsg_sender.c  | 4 +++-
+ tools/testing/selftests/net/psock_fanout.c | 5 +++--
+ tools/testing/selftests/net/toeplitz.c     | 6 ++++--
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
-CCing the regression mailing list, as it should be in the loop for all
-regressions, as explained here:
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
-
-To be sure below issue doesn't fall through the cracks unnoticed, I'm
-adding it to regzbot, my Linux kernel regression tracking bot:
-
-#regzbot ^introduced v5.10..v5.15
-#regzbot title net: netfilter: Intermittent performance regression
-related to ipset
-#regzbot ignore-activity
-
-If it turns out this isn't a regression, free free to remove it from the
-tracking by sending a reply to this thread containing a paragraph like
-"#regzbot invalid: reason why this is invalid" (without the quotes).
-
-Reminder for developers: when fixing the issue, please add a 'Link:'
-tags pointing to the report (the mail quoted above) using
-lore.kernel.org/r/, as explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'. Regzbot needs them to
-automatically connect reports with fixes, but they are useful in
-general, too.
-
-I'm sending this to everyone that got the initial report, to make
-everyone aware of the tracking. I also hope that messages like this
-motivate people to directly get at least the regression mailing list and
-ideally even regzbot involved when dealing with regressions, as messages
-like this wouldn't be needed then. And don't worry, if I need to send
-other mails regarding this regression only relevant for regzbot I'll
-send them to the regressions lists only (with a tag in the subject so
-people can filter them away). With a bit of luck no such messages will
-be needed anyway.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I'm getting a lot of
-reports on my table. I can only look briefly into most of them and lack
-knowledge about most of the areas they concern. I thus unfortunately
-will sometimes get things wrong or miss something important. I hope
-that's not the case here; if you think it is, don't hesitate to tell me
-in a public reply, it's in everyone's interest to set the public record
-straight.
-
+diff --git a/tools/testing/selftests/net/cmsg_sender.c b/tools/testing/selftests/net/cmsg_sender.c
+index aed7845c08a8..bc2162909a1a 100644
+--- a/tools/testing/selftests/net/cmsg_sender.c
++++ b/tools/testing/selftests/net/cmsg_sender.c
+@@ -16,6 +16,8 @@
+ #include <linux/udp.h>
+ #include <sys/socket.h>
+ 
++#include "../kselftest.h"
++
+ enum {
+ 	ERN_SUCCESS = 0,
+ 	/* Well defined errors, callers may depend on these */
+@@ -318,7 +320,7 @@ static const char *cs_ts_info2str(unsigned int info)
+ 		[SCM_TSTAMP_ACK]	= "ACK",
+ 	};
+ 
+-	if (info < sizeof(names) / sizeof(names[0]))
++	if (info < ARRAY_SIZE(names))
+ 		return names[info];
+ 	return "unknown";
+ }
+diff --git a/tools/testing/selftests/net/psock_fanout.c b/tools/testing/selftests/net/psock_fanout.c
+index 3653d6468c67..1a736f700be4 100644
+--- a/tools/testing/selftests/net/psock_fanout.c
++++ b/tools/testing/selftests/net/psock_fanout.c
+@@ -53,6 +53,7 @@
+ #include <unistd.h>
+ 
+ #include "psock_lib.h"
++#include "../kselftest.h"
+ 
+ #define RING_NUM_FRAMES			20
+ 
+@@ -117,7 +118,7 @@ static void sock_fanout_set_cbpf(int fd)
+ 	struct sock_fprog bpf_prog;
+ 
+ 	bpf_prog.filter = bpf_filter;
+-	bpf_prog.len = sizeof(bpf_filter) / sizeof(struct sock_filter);
++	bpf_prog.len = ARRAY_SIZE(bpf_filter);
+ 
+ 	if (setsockopt(fd, SOL_PACKET, PACKET_FANOUT_DATA, &bpf_prog,
+ 		       sizeof(bpf_prog))) {
+@@ -162,7 +163,7 @@ static void sock_fanout_set_ebpf(int fd)
+ 	memset(&attr, 0, sizeof(attr));
+ 	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
+ 	attr.insns = (unsigned long) prog;
+-	attr.insn_cnt = sizeof(prog) / sizeof(prog[0]);
++	attr.insn_cnt = ARRAY_SIZE(prog);
+ 	attr.license = (unsigned long) "GPL";
+ 	attr.log_buf = (unsigned long) log_buf,
+ 	attr.log_size = sizeof(log_buf),
+diff --git a/tools/testing/selftests/net/toeplitz.c b/tools/testing/selftests/net/toeplitz.c
+index c5489341cfb8..90026a27eac0 100644
+--- a/tools/testing/selftests/net/toeplitz.c
++++ b/tools/testing/selftests/net/toeplitz.c
+@@ -52,6 +52,8 @@
+ #include <sys/types.h>
+ #include <unistd.h>
+ 
++#include "../kselftest.h"
++
+ #define TOEPLITZ_KEY_MIN_LEN	40
+ #define TOEPLITZ_KEY_MAX_LEN	60
+ 
+@@ -295,7 +297,7 @@ static void __set_filter(int fd, int off_proto, uint8_t proto, int off_dport)
+ 	struct sock_fprog prog = {};
+ 
+ 	prog.filter = filter;
+-	prog.len = sizeof(filter) / sizeof(struct sock_filter);
++	prog.len = ARRAY_SIZE(filter);
+ 	if (setsockopt(fd, SOL_SOCKET, SO_ATTACH_FILTER, &prog, sizeof(prog)))
+ 		error(1, errno, "setsockopt filter");
+ }
+@@ -324,7 +326,7 @@ static void set_filter_null(int fd)
+ 	struct sock_fprog prog = {};
+ 
+ 	prog.filter = filter;
+-	prog.len = sizeof(filter) / sizeof(struct sock_filter);
++	prog.len = ARRAY_SIZE(filter);
+ 	if (setsockopt(fd, SOL_SOCKET, SO_ATTACH_FILTER, &prog, sizeof(prog)))
+ 		error(1, errno, "setsockopt filter");
+ }
 -- 
-Additional information about regzbot:
+2.20.1
 
-If you want to know more about regzbot, check out its web-interface, the
-getting start guide, and the references documentation:
-
-https://linux-regtracking.leemhuis.info/regzbot/
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
-https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
-
-The last two documents will explain how you can interact with regzbot
-yourself if your want to.
-
-Hint for reporters: when reporting a regression it's in your interest to
-CC the regression list and tell regzbot about the issue, as that ensures
-the regression makes it onto the radar of the Linux kernel's regression
-tracker -- that's in your interest, as it ensures your report won't fall
-through the cracks unnoticed.
-
-Hint for developers: you normally don't need to care about regzbot once
-it's involved. Fix the issue as you normally would, just remember to
-include 'Link:' tag in the patch descriptions pointing to all reports
-about the issue. This has been expected from developers even before
-regzbot showed up for reasons explained in
-'Documentation/process/submitting-patches.rst' and
-'Documentation/process/5.Posting.rst'.
