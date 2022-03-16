@@ -2,73 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF7FF4DAAAD
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 07:22:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F20C34DAAB6
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 07:32:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353888AbiCPGXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 02:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59740 "EHLO
+        id S1351336AbiCPGdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 02:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240322AbiCPGWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 02:22:52 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAA3A60D96;
-        Tue, 15 Mar 2022 23:21:37 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id dr20so2024675ejc.6;
-        Tue, 15 Mar 2022 23:21:37 -0700 (PDT)
+        with ESMTP id S234562AbiCPGdp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 02:33:45 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808835A0AC;
+        Tue, 15 Mar 2022 23:32:32 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id q11so993581pln.11;
+        Tue, 15 Mar 2022 23:32:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hgpsIXhWXZ3F8B3VLBgLArpvJDiuNjo8cGLlauM+oRM=;
-        b=fcn5Mw2spLnzVl7JnZNa4eAUt+cPHW5WHsChwl4MbXQt94FY0iSG6neOwmJQmuU0Bn
-         GqRl9f6i+0ZQR9CchwTe4eF/iSHDGvWUg13K06KGFL6Lo8fFjPmj+8qYgm8cW11tgQ8G
-         Q7vPVz2Ij7J65XgoN8YKfKpy47OlALjWTDzn7Aup/6tj7xbotjUPA5W4Lr9HDZOCU+pF
-         IMbX1gQ/eVhWYTZG6emAnuBveZIAdnEdFBgdEA274uD8PdmUrJ06vM3nDyioSe5DlAs9
-         brsmoy4rqsXxB5Ae53AFM5ZJUE/YTnihXM9dAt733j2RjXR2L7o2UXDed1DksnJvBdXf
-         136g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MYNgZuT9RwosGy33P4OxF/lMtZK6sphhDQVtouX96JU=;
+        b=XPtlfzPWrrM++bQMfhGUumNLM3Ba/M1Eb0yT5H9F4OIMLQGo0ZRCmC8x1z0dcBmj0D
+         KN1wDaLh/8+96sWfXOtlhZf3C9+fcL+DvT5Aj6kXId935GRs630nh0LbQrn9EVBmkGJM
+         w16nLGbdr2czIDwnqfznPf8xQVVAxbzSJuwfeWgJ1Xr9DyCq2wmmgBPPYuKgdQ8LuI7q
+         x26Xqeq5IpSbFZJIMx1N+qJyh3OFYo4qS7lIBxWFLWIms0TBw+8acehjdoWDQGUAr41s
+         PKEcg5Ha+ZZw+7p27IMuJHTC9B8BYp3ExkvyXqggtxQAdM8isFSv12F1XNu1UYlYgx7D
+         Eg9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hgpsIXhWXZ3F8B3VLBgLArpvJDiuNjo8cGLlauM+oRM=;
-        b=Bs+JFnWfL8Q6m7b03eU69ebucLLFWU6eODNeVykYOnfBrefvQRd+Nm3QLPg19KXzhf
-         CG8RdaSdMX/xLj2Ga6cQLHJA8eSm3c1jbABCX53mw6zc+qxBpTcbI8YyL3w/DGiyllNO
-         1rXwR5HhO9pk6b4qGho4w2v+J3ngrGEu3quhwk2XQHSSBcHJ719WkkEKLwb1kmDwszEf
-         ckJxkXqdAHnyIznM2hSjZfPYK6XqpKqR+QFuVkIUc6yLUMYirF1WnWE0cKAKG9d5mDQL
-         WaAc0nGCznhM5baYSO9VojGfB6llZZUt9kc5hndoiuNOx4xHXsjOVDuhB/FJhcQOGiVt
-         EPlw==
-X-Gm-Message-State: AOAM532IQH1kzHR2F/Weh2zGjHCl/X6oRO7bmLaIzbvENIcH+CCSBBfS
-        pH+Du7qRx5dh9ZIEv9AOefts/DaocPWK74Humy0=
-X-Google-Smtp-Source: ABdhPJwA1jJigHg/FBOIIUD5uLCtHnBLNVuez+GZ5eMj96EXdiBTqJO+J5suoQCjusSrRs4dI1W1SWT1b0D+dO/pb3c=
-X-Received: by 2002:a17:907:2d29:b0:6db:2b1f:333a with SMTP id
- gs41-20020a1709072d2900b006db2b1f333amr25629444ejc.704.1647411696231; Tue, 15
- Mar 2022 23:21:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MYNgZuT9RwosGy33P4OxF/lMtZK6sphhDQVtouX96JU=;
+        b=osZNC6bmm7WkJl1WE2KP5aCaIwquzxKBGmUiPRv+helvWfy1ZAhKrZS6VzXB31X8pv
+         63TiQyPxls5u6svsgj9POx95KYr6jL0qklY4MX7ELryDxSBCTAnbfUzcoGFZ/FMuUq1W
+         29DqLvrsV+e6MZEJb/zNwBw+bn2Ei55kdZWpXHthpdaL52xx0mAW67NjGTkDJBa/Q1kA
+         ZFXhCjYvT0bHFDCI2+ixyh3PqO/InKk59mUq1xaDxs+jvT4Vsd4IN0Tvp7XT+hkyqaRZ
+         vKGqhQ6wXpR4CpKeIi1+toqyNxUJmWx04oEpXttO9kKerB591BzfDasK3MS6Dk8+HieL
+         x6KQ==
+X-Gm-Message-State: AOAM533ivRRALR8TQcm2EHv/elNw7HDVpCbLsBonEd3Me0yuK18ezYU+
+        WugGTtJMQFn20/C6bl1VBOk=
+X-Google-Smtp-Source: ABdhPJz2KghKbw9h8XB9jTdEvhauCdmDy7nbhFcVvWkcDXfoWZxf3TnnrYR1H4MbWOAuzU3aLspdVQ==
+X-Received: by 2002:a17:90a:1db:b0:1bf:711d:267a with SMTP id 27-20020a17090a01db00b001bf711d267amr8569691pjd.155.1647412352040;
+        Tue, 15 Mar 2022 23:32:32 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.111])
+        by smtp.gmail.com with ESMTPSA id k11-20020a056a00168b00b004f7e1555538sm1438314pfc.190.2022.03.15.23.32.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Mar 2022 23:32:31 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
+Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
+        flyingpeng@tencent.com, mengensun@tencent.com,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, benbjiang@tencent.com
+Subject: [PATCH net-next v3 0/3] net: icmp: add skb drop reasons to icmp
+Date:   Wed, 16 Mar 2022 14:31:45 +0800
+Message-Id: <20220316063148.700769-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220314133312.336653-1-imagedong@tencent.com>
- <20220314133312.336653-4-imagedong@tencent.com> <20220315201706.464d5ecd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220315201706.464d5ecd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Wed, 16 Mar 2022 14:21:24 +0800
-Message-ID: <CADxym3Yj58gXe9kHRxNvxxMfNMYjvzbrdcq7sNAo6SQHXb98nQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/3] net: ipgre: add skb drop reasons to gre_rcv()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Hao Peng <flyingpeng@tencent.com>,
-        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Biao Jiang <benbjiang@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -79,123 +73,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:17 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Mon, 14 Mar 2022 21:33:12 +0800 menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > Replace kfree_skb() used in gre_rcv() with kfree_skb_reason(). With
-> > previous patch, we can tell that no tunnel device is found when
-> > PACKET_NEXT is returned by erspan_rcv() or ipgre_rcv().
-> >
-> > In this commit, following new drop reasons are added:
-> >
-> > SKB_DROP_REASON_GRE_CSUM
-> > SKB_DROP_REASON_GRE_NOTUNNEL
-> >
-> > Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-> > Reviewed-by: Biao Jiang <benbjiang@tencent.com>
-> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > ---
-> >  include/linux/skbuff.h     |  2 ++
-> >  include/trace/events/skb.h |  2 ++
-> >  net/ipv4/ip_gre.c          | 28 ++++++++++++++++++----------
-> >  3 files changed, 22 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > index 5edb704af5bb..4f5e58e717ee 100644
-> > --- a/include/linux/skbuff.h
-> > +++ b/include/linux/skbuff.h
-> > @@ -448,6 +448,8 @@ enum skb_drop_reason {
-> >       SKB_DROP_REASON_GRE_NOHANDLER,  /* no handler found (version not
-> >                                        * supported?)
-> >                                        */
-> > +     SKB_DROP_REASON_GRE_CSUM,       /* GRE csum error */
-> > +     SKB_DROP_REASON_GRE_NOTUNNEL,   /* no tunnel device found */
-> >       SKB_DROP_REASON_MAX,
-> >  };
-> >
-> > diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-> > index f2bcffdc4bae..e8f95c96cf9d 100644
-> > --- a/include/trace/events/skb.h
-> > +++ b/include/trace/events/skb.h
-> > @@ -63,6 +63,8 @@
-> >       EM(SKB_DROP_REASON_TAP_TXFILTER, TAP_TXFILTER)          \
-> >       EM(SKB_DROP_REASON_GRE_VERSION, GRE_VERSION)            \
-> >       EM(SKB_DROP_REASON_GRE_NOHANDLER, GRE_NOHANDLER)        \
-> > +     EM(SKB_DROP_REASON_GRE_CSUM, GRE_CSUM)                  \
-> > +     EM(SKB_DROP_REASON_GRE_NOTUNNEL, GRE_NOTUNNEL)          \
-> >       EMe(SKB_DROP_REASON_MAX, MAX)
-> >
-> >  #undef EM
-> > diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-> > index b1579d8374fd..b989239e4abc 100644
-> > --- a/net/ipv4/ip_gre.c
-> > +++ b/net/ipv4/ip_gre.c
-> > @@ -421,9 +421,10 @@ static int ipgre_rcv(struct sk_buff *skb, const struct tnl_ptk_info *tpi,
-> >
-> >  static int gre_rcv(struct sk_buff *skb)
-> >  {
-> > +     enum skb_drop_reason reason = SKB_DROP_REASON_NOT_SPECIFIED;
-> >       struct tnl_ptk_info tpi;
-> >       bool csum_err = false;
-> > -     int hdr_len;
-> > +     int hdr_len, ret;
-> >
-> >  #ifdef CONFIG_NET_IPGRE_BROADCAST
-> >       if (ipv4_is_multicast(ip_hdr(skb)->daddr)) {
-> > @@ -438,19 +439,26 @@ static int gre_rcv(struct sk_buff *skb)
->
-> I feel like gre_parse_header() is a good candidate for converting
-> to return a reason instead of errno.
->
+From: Menglong Dong <imagedong@tencent.com>
 
-Enn...isn't gre_parse_header() returning the header length? And I
-didn't find much useful reason in this function.
+In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
+we added the support of reporting the reasons of skb drops to kfree_skb
+tracepoint. And in this series patches, reasons for skb drops are added
+to ICMP protocol.
 
->
-> >               goto drop;
-> >
-> >       if (unlikely(tpi.proto == htons(ETH_P_ERSPAN) ||
-> > -                  tpi.proto == htons(ETH_P_ERSPAN2))) {
-> > -             if (erspan_rcv(skb, &tpi, hdr_len) == PACKET_RCVD)
-> > -                     return 0;
-> > -             goto out;
-> > -     }
-> > +                  tpi.proto == htons(ETH_P_ERSPAN2)))
-> > +             ret = erspan_rcv(skb, &tpi, hdr_len);
-> > +     else
-> > +             ret = ipgre_rcv(skb, &tpi, hdr_len);
->
-> ipgre_rcv() OTOH may be better off taking the reason as an output
-> argument. Assuming PACKET_REJECT means NOMEM is a little fragile.
+In order to report the reasons of skb drops in 'sock_queue_rcv_skb()',
+the function 'sock_queue_rcv_skb_reason()' is introduced in the 1th
+patch, which is used in the 2th patch.
 
-Yeah, it seems not friendly. I think it's ok to ignore such 'NOMEM' reasons?
-Therefore, we only need to consider the PACKET_NEXT return value, and
-keep ipgre_rcv() still.
+In the 2th patch, we introduce the new function __ping_queue_rcv_skb()
+to report drop reasons by its return value.
 
->
-> >
-> > -     if (ipgre_rcv(skb, &tpi, hdr_len) == PACKET_RCVD)
-> > +     switch (ret) {
-> > +     case PACKET_NEXT:
-> > +             reason = SKB_DROP_REASON_GRE_NOTUNNEL;
-> > +             break;
-> > +     case PACKET_RCVD:
-> >               return 0;
-> > -
-> > -out:
-> > +     case PACKET_REJECT:
-> > +             reason = SKB_DROP_REASON_NOMEM;
-> > +             break;
-> > +     }
-> >       icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
-> >  drop:
-> > -     kfree_skb(skb);
-> > +     if (csum_err)
-> > +             reason = SKB_DROP_REASON_GRE_CSUM;
-> > +     kfree_skb_reason(skb, reason);
-> >       return 0;
-> >  }
-> >
->
+In the 3th patch, we make ICMP message handler functions return drop
+reasons, which means we change the return type of 'handler()' in
+'struct icmp_control' from 'bool' to 'enum skb_drop_reason'. This
+changed its original intention, as 'false' means failure, but
+'SKB_NOT_DROPPED_YET', which is 0, means success now. Therefore, we
+have to change all usages of these handler. Following "handler" functions
+are involved:
+
+icmp_unreach()
+icmp_redirect()
+icmp_echo()
+icmp_timestamp()
+icmp_discard()
+
+And following drop reasons are added(what they mean can be see
+in the document for them):
+
+SKB_DROP_REASON_ICMP_CSUM
+SKB_DROP_REASON_ICMP_TYPE
+SKB_DROP_REASON_ICMP_BROADCAST
+
+Changes since v2:
+- fix aliegnment problem in the 2th patch
+
+Changes since v1:
+- introduce __ping_queue_rcv_skb() instead of change the return value
+  of ping_queue_rcv_skb() in the 2th patch, as Paolo suggested
+
+Menglong Dong (3):
+  net: sock: introduce sock_queue_rcv_skb_reason()
+  net: icmp: introduce __ping_queue_rcv_skb() to report drop reasons
+  net: icmp: add reasons of the skb drops to icmp protocol
+
+ include/linux/skbuff.h     |  5 +++
+ include/net/ping.h         |  2 +-
+ include/net/sock.h         |  9 ++++-
+ include/trace/events/skb.h |  3 ++
+ net/core/sock.c            | 30 ++++++++++++---
+ net/ipv4/icmp.c            | 75 ++++++++++++++++++++++----------------
+ net/ipv4/ping.c            | 32 ++++++++++------
+ net/ipv6/icmp.c            | 24 +++++++-----
+ 8 files changed, 121 insertions(+), 59 deletions(-)
+
+-- 
+2.35.1
+
