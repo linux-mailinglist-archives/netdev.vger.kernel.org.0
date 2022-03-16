@@ -2,97 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7D124DB3C7
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 15:56:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 446F44DB3DA
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 16:03:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356905AbiCPO5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 10:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        id S241655AbiCPPEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 11:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346464AbiCPO5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 10:57:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BDD66AE4;
-        Wed, 16 Mar 2022 07:56:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76602B81B9C;
-        Wed, 16 Mar 2022 14:56:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F068DC340E9;
-        Wed, 16 Mar 2022 14:56:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647442576;
-        bh=qqQodrddbOG2kNSyXN0MaEI+Rphq9l9zxCo9YGmpGCo=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=VVj07273ngZHg/dCg+geeWRkBS/WwhTqptxMeYb72lfXqSo2jFoi4dvm8VP76dJG9
-         iSay+S/X0pDaygtTkSl1nQ8gbP9hW75Qrvv273piCITyiqlyzS6cOGqDQ2536pLpt+
-         QZe3SKyfcvfNlkblA9+uTsBJBqqMyoLBRf3757ZxWlYqCQUhKtank+rN36qcJ3MZZw
-         QGrN2C/Jo40McV2HCjDjIGb5yT7y0J5PkJhlpz/elAqUm6MRXkxjU5n5dD8ElEyHUR
-         TZr2PVUBNJiywU3eXv6ririiGPCo5J9+1P2ybh/31PDQuotXoXNlg0Yn/uFXfhEMoT
-         ANB1uqSIB+W1g==
-Message-ID: <30b0991a-8c41-2571-b1b6-9edc7dc9c702@kernel.org>
-Date:   Wed, 16 Mar 2022 08:56:14 -0600
+        with ESMTP id S235064AbiCPPEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 11:04:10 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2942719C
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:02:54 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id w27so4225517lfa.5
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:02:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=jtHkXdxbxWXHKD5rdP6nM1QkeT2vkJpBRGPpLY6uAjs=;
+        b=PPBGjRJSN7CRorCjB6lrzB8a3MoejhiCBCKMx1WfbkJjbJiFjTbHBWcY1Vb+1mdYjZ
+         DKWA8BuNsrwPgfz99RZS116IN4E4vodgmk1MP0DQkSdPjmNeTPFCUKYHu7KxBpkFC3xI
+         r99cnoFuAdIrOZIt2U2035S8x3HaEKeKaivD4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=jtHkXdxbxWXHKD5rdP6nM1QkeT2vkJpBRGPpLY6uAjs=;
+        b=7pXZyV1XJCGBisZ0xziVjs2E9cZMBYTB9eQxoRhtl/20wckI+WcHaWHohTxgSF9cdT
+         JtZK1Ngw3/a4JoDIymy36tdS91YIrvZP9LWByosUAS93YJnRWQ4dbqN5NO0p19kBHsHE
+         Edrp7kkTDCoLAzImBOtRV4XT+M1JlFSbf0mILuusvXyuCPTYF13W0CBt2LDjDeookyBL
+         PL68QqExE0AtgAYBtZx7o+/XFXgxRz95XPJC93Ju4wXRdK8B5zii84Tyuf68zCOoMDAm
+         aVjXdKehMw1M/tLe7fVW0x62CJPDw6V5TV12+r2TdnOvQM7F7qhsfQ4OpwiDJbL42g0v
+         BlGw==
+X-Gm-Message-State: AOAM530tcfV6iD1iGG3afX2ue4KqdSVy2bRM3WePrio2bxkdY2gCbp5g
+        Abb0hrjU88jcMEXwyYjk0dHSHQ==
+X-Google-Smtp-Source: ABdhPJxRPKV24bj9n5oMYGPQe0VmdBPsBQXhifImBm+Cbd9ORgxvh5K9ZfHVzlf+wX7W6GegttrUKA==
+X-Received: by 2002:a05:6512:1382:b0:445:9536:903 with SMTP id p2-20020a056512138200b0044595360903mr56999lfa.89.1647442971825;
+        Wed, 16 Mar 2022 08:02:51 -0700 (PDT)
+Received: from cloudflare.com (2a01-110f-4809-d800-0000-0000-0000-0f9c.aa.ipv6.supernova.orange.pl. [2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id e13-20020ac2546d000000b0044827065453sm198889lfn.169.2022.03.16.08.02.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 08:02:51 -0700 (PDT)
+References: <20220314124432.3050394-1-wangyufen@huawei.com>
+ <87sfrky2bt.fsf@cloudflare.com>
+ <ff9d0ecf-315b-00a3-8140-424714b204ff@huawei.com>
+ <87fsnjxvho.fsf@cloudflare.com>
+ <79281351-b412-2c54-265b-c0ddf537fae1@iogearbox.net>
+ <f5a45e95-bac2-e1be-2d7b-5e6d55f9b408@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     wangyufen <wangyufen@huawei.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        john.fastabend@gmail.com, lmb@cloudflare.com, davem@davemloft.net,
+        kafai@fb.com, dsahern@kernel.org, kuba@kernel.org,
+        songliubraving@fb.com, yhs@fb.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next] bpf, sockmap: Manual deletion of sockmap
+ elements in user mode is not allowed
+Date:   Wed, 16 Mar 2022 15:57:07 +0100
+In-reply-to: <f5a45e95-bac2-e1be-2d7b-5e6d55f9b408@huawei.com>
+Message-ID: <87bky6ey91.fsf@cloudflare.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH net-next 1/3] net: gre_demux: add skb drop reasons to
- gre_rcv()
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     menglong8.dong@gmail.com, rostedt@goodmis.org, mingo@redhat.com,
-        xeb@mail.ru, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Biao Jiang <benbjiang@tencent.com>
-References: <20220314133312.336653-1-imagedong@tencent.com>
- <20220314133312.336653-2-imagedong@tencent.com>
- <20220315200847.68c2efee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <daa287f3-fbed-515d-8f37-f2a36234cc8a@kernel.org>
- <20220315215553.676a5d24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220315215553.676a5d24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/22 10:55 PM, Jakub Kicinski wrote:
-> On Tue, 15 Mar 2022 21:49:01 -0600 David Ahern wrote:
->>>>  	ver = skb->data[1]&0x7f;
->>>> -	if (ver >= GREPROTO_MAX)
->>>> +	if (ver >= GREPROTO_MAX) {
->>>> +		reason = SKB_DROP_REASON_GRE_VERSION;  
->>>
->>> TBH I'm still not sure what level of granularity we should be shooting
->>> for with the reasons. I'd throw all unexpected header values into one 
->>> bucket, not go for a reason per field, per protocol. But as I'm said
->>> I'm not sure myself, so we can keep what you have..  
->>
->> I have stated before I do not believe every single drop point in the
->> kernel needs a unique reason code. This is overkill. The reason augments
->> information we already have -- the IP from kfree_skb tracepoint.
-> 
-> That's certainly true. I wonder if there is a systematic way of
-> approaching these additions that'd help us picking the points were 
-> we add reasons less of a judgment call.
+On Wed, Mar 16, 2022 at 11:42 AM +08, wangyufen wrote:
 
-In my head it's split between OS housekeeping and user visible data.
-Housekeeping side of it is more the technical failure points like skb
-manipulations - maybe interesting to a user collecting stats about how a
-node is performing, but more than likely not. IMHO, those are ignored
-for now (NOT_SPECIFIED).
+[...]
 
-The immediate big win is for packets from a network where an analysis
-can show code location (instruction pointer), user focused reason (csum
-failure, 'otherhost', no socket open, no socket buffer space, ...) and
-traceable to a specific host (headers in skb data).
+> I'm not sure about this patch. The main purpose is to point out the possible problems
+>
+> when the socket is deleted from the map. I'm sorry for the trouble. 
+
+No problem at all. Happy to see sockmap gaining wider adoption.
