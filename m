@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E48814DB264
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 15:16:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 474234DB28C
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 15:17:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348790AbiCPORe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 10:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
+        id S1356516AbiCPOR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 10:17:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356523AbiCPOR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 10:17:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EB569283;
-        Wed, 16 Mar 2022 07:16:11 -0700 (PDT)
+        with ESMTP id S1356498AbiCPORi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 10:17:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0871268FA1;
+        Wed, 16 Mar 2022 07:16:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4FAE3CE1F5B;
-        Wed, 16 Mar 2022 14:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11BDCC36AE2;
-        Wed, 16 Mar 2022 14:16:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7D16B81B7A;
+        Wed, 16 Mar 2022 14:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE833C36AE5;
+        Wed, 16 Mar 2022 14:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647440168;
-        bh=phvGUHsXFOLPomNHzIm2cSjQu/2gooFu3UGi58CobJI=;
+        s=k20201202; t=1647440181;
+        bh=icmzaQjTA2AMAeSYFVcRD2WKyO+/3zIAb8Ggsg0MqkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RnJZ7XbvckzdFDvQDbJOmdEe6tVnbClcnl1Pw2bKASfG+QO+FvzC+vMf0lEgxfxMs
-         WzJKO/hr6EWZQ7b3OGw935QPJVpy0p3iRz3FzZQwwd7pf3j7G0DU1+25pY2u7tmq1s
-         2XPMt6v1Q/tP2v6gacNp0NDNvUonNpMeByCBwXBhzujRCSfwAmoKSjxzAdCwbk47/q
-         L193JGwgEAhYXMdCFDSLeOhFV9xmaWuvwigviY3MC9ZKlrcLX258ttWYZJ+nHd6IAl
-         5Uqb7Pf5JShNvwKwYzsygHuxTGX3uLmUZyHwkmGVBaixfzq4lxP+fGhPjfrB4vHM4x
-         8N/WB3tb29HCA==
+        b=awteJB27jGwsLVxwsvzS2aqXl6BjhazDV2lcQDGVv3Q1k1UuFfe3NLGc4GLY+aAjh
+         Zl5x8klbVhZyRduemZo04KkFB6JNPxoQtzaEUGzayvWwUBmUqejbcGcFPO655atnfA
+         qn3mTdKm5b3qz+Q1xkGPNvULjUutIQ+Sh4YKePnH5wJhEqglT9g51x4WiN0Aivshgu
+         Eh0//vebcPSXUCBCr4eLz++CWICv/hkl5G7MaKy57qO8jqwq2yG4wSxdUwHMF9cCIX
+         XzLG6e3hrwa1RUVcDR9csbWFd7Bnmftkak54qT3Ot0DbygvCXRuBqflkZdHVLSssEs
+         cAW+mon+aKH3Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai Lueke <kailueke@linux.microsoft.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/13] Revert "xfrm: state and policy should fail if XFRMA_IF_ID 0"
-Date:   Wed, 16 Mar 2022 10:15:08 -0400
-Message-Id: <20220316141513.247965-8-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        christophe.jaillet@wanadoo.fr, tanghui20@huawei.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/13] ethernet: sun: Free the coherent when failing in probing
+Date:   Wed, 16 Mar 2022 10:15:10 -0400
+Message-Id: <20220316141513.247965-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220316141513.247965-1-sashal@kernel.org>
 References: <20220316141513.247965-1-sashal@kernel.org>
@@ -57,72 +58,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kai Lueke <kailueke@linux.microsoft.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit a3d9001b4e287fc043e5539d03d71a32ab114bcb ]
+[ Upstream commit bb77bd31c281f70ec77c9c4f584950a779e05cf8 ]
 
-This reverts commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 because ID
-0 was meant to be used for configuring the policy/state without
-matching for a specific interface (e.g., Cilium is affected, see
-https://github.com/cilium/cilium/pull/18789 and
-https://github.com/cilium/cilium/pull/19019).
+When the driver fails to register net device, it should free the DMA
+region first, and then do other cleanup.
 
-Signed-off-by: Kai Lueke <kailueke@linux.microsoft.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_user.c | 21 +++------------------
- 1 file changed, 3 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/sun/sunhme.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index b10f88822c0d..e13198f7e4e9 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -629,13 +629,8 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index 62f81b0d14ed..b05ee2e0e305 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -3139,7 +3139,7 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
+ 	if (err) {
+ 		printk(KERN_ERR "happymeal(PCI): Cannot register net device, "
+ 		       "aborting.\n");
+-		goto err_out_iounmap;
++		goto err_out_free_coherent;
+ 	}
  
- 	xfrm_smark_init(attrs, &x->props.smark);
+ 	pci_set_drvdata(pdev, hp);
+@@ -3172,6 +3172,10 @@ static int happy_meal_pci_probe(struct pci_dev *pdev,
  
--	if (attrs[XFRMA_IF_ID]) {
-+	if (attrs[XFRMA_IF_ID])
- 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
--		if (!x->if_id) {
--			err = -EINVAL;
--			goto error;
--		}
--	}
+ 	return 0;
  
- 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
- 	if (err)
-@@ -1431,13 +1426,8 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
++err_out_free_coherent:
++	dma_free_coherent(hp->dma_dev, PAGE_SIZE,
++			  hp->happy_block, hp->hblock_dvma);
++
+ err_out_iounmap:
+ 	iounmap(hp->gregs);
  
- 	mark = xfrm_mark_get(attrs, &m);
- 
--	if (attrs[XFRMA_IF_ID]) {
-+	if (attrs[XFRMA_IF_ID])
- 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
--		if (!if_id) {
--			err = -EINVAL;
--			goto out_noput;
--		}
--	}
- 
- 	if (p->info.seq) {
- 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
-@@ -1750,13 +1740,8 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_us
- 
- 	xfrm_mark_get(attrs, &xp->mark);
- 
--	if (attrs[XFRMA_IF_ID]) {
-+	if (attrs[XFRMA_IF_ID])
- 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
--		if (!xp->if_id) {
--			err = -EINVAL;
--			goto error;
--		}
--	}
- 
- 	return xp;
-  error:
 -- 
 2.34.1
 
