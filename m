@@ -2,100 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FAA34DB4BD
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 16:19:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 154464DB4C3
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 16:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357129AbiCPPU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 11:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47370 "EHLO
+        id S1357252AbiCPPWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 11:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357228AbiCPPU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 11:20:28 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF1664BEF
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:19:13 -0700 (PDT)
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id B35A43F4C0
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 15:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1647443951;
-        bh=l6KBwGM0uiIwlc1rKLa9ZFBDgTPatr0zsqNmkU7zEfs=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=hnBMVm5NuJPHWUriNwJEAOlygXoDV5wbnmaQGBeNGuOR2ufAhiBRhADZ5jGjxW/jN
-         5AadvsvS3O5L9v3mhL0W7zT/03qdMNrR9nubb7I/Jnk6gxQEBVH81vvgjTYrhxMD5k
-         Yf672IqY3tzqVH8QZqAdY/9H4IswTQUNZ/ZK4ucawyxfyJEYyellQdPdklM7BTEPrn
-         SfYY/WVrSYopzf2S96gnPaU//uWNVxHm6QdBCDwdveD5046ANkOu/SiQeQ2/lFPzfR
-         qrgAGstoNxy+CkqxX7F3jPh6xaQv6SjA8ljmGNhXTEps1X7qGtiSzKVqqL38Myac3q
-         ZFMLp+AuaQ8oQ==
-Received: by mail-ej1-f71.google.com with SMTP id x2-20020a1709065ac200b006d9b316257fso1344546ejs.12
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
+        with ESMTP id S1351322AbiCPPWR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 11:22:17 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFC26C91C
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:21:03 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bg10so4934997ejb.4
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 08:21:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RtjHsmXPT8LE+jJTyR39fP968xbgt2lw05SHk5jQS8s=;
+        b=ladl5qMJYh8eWYEPBOE0kNvMnkur6GAkQG8+IENKJMv8BN6NUjo8VwC7lshRiqSt9I
+         BonGyikuj4q+vE6Fm+FRDtErf2ZHNYx33Kh+NUgcLVekUIWBL85jz+axOBYmLk28B87A
+         JEc9MagCf7m57VkNUkfAlkFMDfQ7PIcG7ZAbsFdL42uH3ZuAP+JNpHBdQ++iVLKYX5be
+         j0YyihkTlxt9u4uDG3xkWCUSrnaTh/3jWIungPMFfM5K96sIZ4d/fWr82BtoBMGOwuSU
+         W//tDd3HYyn06c4XgwUuA3NKN4n3+aowgENGJGzUKFqKgZ7Zpfjro+zMhzoUvnk4PApe
+         LfwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=l6KBwGM0uiIwlc1rKLa9ZFBDgTPatr0zsqNmkU7zEfs=;
-        b=FZMnxR8/4447M6CY5p8UADcHcAliM/lI07vMHKOp2lJtFNmh6NnAPrteyEyUjUbbPU
-         pJ1uP7ucWhoC8gOtP7p+CT5iweB6L2VCguj6Yu77unyOkmGQ+TzWJ+O+N0LDtYx4aPMB
-         6gqsWrR0uQgaaNS4r1EBmctrygNkap8QKgXokMhfFmn5AymfBcFPFBp8VU6irn0gJxGq
-         oY97VxVX0F5jF4EM94EJbSnYBzULsM73X+qm/+QMTsZVYNFFFNlQV/p6Ucz2zvNhboZ2
-         OKP3vS9rZ1atWzdpwAmrVj/JqUYzNNurqWyt9dwQ+KOEzAgXY4l3NpIxv3vFeY4ke5YA
-         09UQ==
-X-Gm-Message-State: AOAM533psx+Kv0/3jAAfvcLYMqNOkf5wsSdbQEYIIGAEBIB8B2orgJfU
-        8oE+3qWTE8c+BSK85YiklhmtCH5J9iaPAsDw+5UXJjuhrvgixAlLITkK6yH1nmcdEUMWPnRWVNR
-        oAE2os2DnnJNV+P04RqYZmfZITFnk4nlgsA==
-X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id e18-20020a17090658d200b006dab635fbf3mr432683ejs.40.1647443951296;
-        Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxoPSUJMHOAL6T3mNLew5/+8ilp8MWnQTCLDeDxeKP/9TPhEl9ftEH1knZ3RViNX+M9VfXG4g==
-X-Received: by 2002:a17:906:58d2:b0:6da:b635:fbf3 with SMTP id e18-20020a17090658d200b006dab635fbf3mr432665ejs.40.1647443951025;
-        Wed, 16 Mar 2022 08:19:11 -0700 (PDT)
-Received: from localhost.localdomain ([194.191.244.86])
-        by smtp.gmail.com with ESMTPSA id d8-20020a170906640800b006d5853081b7sm1016788ejm.70.2022.03.16.08.19.10
+        bh=RtjHsmXPT8LE+jJTyR39fP968xbgt2lw05SHk5jQS8s=;
+        b=wlu1yypo7nII7vcItL0+V1meBXN8KgImncgPmSdkyDGmI8J1shd9yZV1aGwLQ/EQu6
+         cX6G1dluCd2SCWW4/+FLhXS9lX7yWCGwPiKR/3P7+28d28UG3kOBub4mLXn0KQmMaBkt
+         30TgOV/ZaxcrN47A/PybF9Rcmj37tmBzF4MlOVY+Vo5pvsSqxItQI1sas1bQxgZhHJp+
+         ZVj3z+yXVRedkvgfKfwo8gHQdXoXsp+bnCRh5MCa8+uZtCxRZw5i86sM+WewZltvq9OR
+         F84CH6c3O02e5fZpWVQXOMlIIclgRQOlZpcOaJQau3o3ycxVd9RGYCUauzxqqToKr3Wn
+         Q5tw==
+X-Gm-Message-State: AOAM531AI+4kV2PiK4XLSgIiP6yJ7e3NxHSXZ0kehndViq7I1twwXvyh
+        S9z2vN250VvH9Vr3EMWIHbF8cYiFYk2BTA==
+X-Google-Smtp-Source: ABdhPJyQEzMXrbt3MDDvI/dm6rvyeEYPJGHqynHUty1bqmT0ZLyYnNITj1TlX6pR5Q6Vn8a5jvwByQ==
+X-Received: by 2002:a17:907:1c19:b0:6dc:c19e:8cc5 with SMTP id nc25-20020a1709071c1900b006dcc19e8cc5mr391436ejc.333.1647444061226;
+        Wed, 16 Mar 2022 08:21:01 -0700 (PDT)
+Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
+        by smtp.gmail.com with ESMTPSA id f1-20020a056402194100b00416b174987asm1161523edz.35.2022.03.16.08.21.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 08:19:10 -0700 (PDT)
-From:   Juerg Haefliger <juerg.haefliger@canonical.com>
-X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux@armlinux.org.uk
-Cc:     linux-kernel@vger.kernel.org,
-        Juerg Haefliger <juergh@canonical.com>
-Subject: [PATCH] net: phy: mscc: Add MODULE_FIRMWARE macros
-Date:   Wed, 16 Mar 2022 16:18:35 +0100
-Message-Id: <20220316151835.88765-1-juergh@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 16 Mar 2022 08:21:00 -0700 (PDT)
+From:   Niels Dossche <dossche.niels@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Niels Dossche <dossche.niels@gmail.com>
+Subject: [PATCH] Bluetooth: call hci_le_conn_failed with hdev lock in hci_le_conn_failed
+Date:   Wed, 16 Mar 2022 16:20:28 +0100
+Message-Id: <20220316152027.9988-1-dossche.niels@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver requires firmware so define MODULE_FIRMWARE so that modinfo
-provides the details.
+hci_le_conn_failed function's documentation says that the caller must
+hold hdev->lock. The only callsite that does not hold that lock is
+hci_le_conn_failed. The other 3 callsites hold the hdev->lock very
+locally. The solution is to hold the lock during the call to
+hci_le_conn_failed.
 
-Signed-off-by: Juerg Haefliger <juergh@canonical.com>
+Fixes: 3c857757ef6e ("Bluetooth: Add directed advertising support through connect()")
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 ---
- drivers/net/phy/mscc/mscc_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/bluetooth/hci_conn.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index ebfeeb3c67c1..7e3017e7a1c0 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -2685,3 +2685,6 @@ MODULE_DEVICE_TABLE(mdio, vsc85xx_tbl);
- MODULE_DESCRIPTION("Microsemi VSC85xx PHY driver");
- MODULE_AUTHOR("Nagaraju Lakkaraju");
- MODULE_LICENSE("Dual MIT/GPL");
-+
-+MODULE_FIRMWARE(MSCC_VSC8584_REVB_INT8051_FW);
-+MODULE_FIRMWARE(MSCC_VSC8574_REVB_INT8051_FW);
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index 04ebe901e86f..3bb2b3b6a1c9 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -669,7 +669,9 @@ static void le_conn_timeout(struct work_struct *work)
+ 	if (conn->role == HCI_ROLE_SLAVE) {
+ 		/* Disable LE Advertising */
+ 		le_disable_advertising(hdev);
++		hci_dev_lock(hdev);
+ 		hci_le_conn_failed(conn, HCI_ERROR_ADVERTISING_TIMEOUT);
++		hci_dev_unlock(hdev);
+ 		return;
+ 	}
+ 
 -- 
-2.32.0
+2.35.1
 
