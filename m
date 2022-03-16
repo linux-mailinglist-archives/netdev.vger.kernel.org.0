@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F20C34DAAB6
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 07:32:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B591C4DAAB9
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 07:32:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351336AbiCPGdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 02:33:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52796 "EHLO
+        id S1353925AbiCPGd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 02:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234562AbiCPGdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 02:33:45 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808835A0AC;
-        Tue, 15 Mar 2022 23:32:32 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id q11so993581pln.11;
-        Tue, 15 Mar 2022 23:32:32 -0700 (PDT)
+        with ESMTP id S1353907AbiCPGdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 02:33:50 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FF160DB7;
+        Tue, 15 Mar 2022 23:32:37 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id b8so1354341pjb.4;
+        Tue, 15 Mar 2022 23:32:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MYNgZuT9RwosGy33P4OxF/lMtZK6sphhDQVtouX96JU=;
-        b=XPtlfzPWrrM++bQMfhGUumNLM3Ba/M1Eb0yT5H9F4OIMLQGo0ZRCmC8x1z0dcBmj0D
-         KN1wDaLh/8+96sWfXOtlhZf3C9+fcL+DvT5Aj6kXId935GRs630nh0LbQrn9EVBmkGJM
-         w16nLGbdr2czIDwnqfznPf8xQVVAxbzSJuwfeWgJ1Xr9DyCq2wmmgBPPYuKgdQ8LuI7q
-         x26Xqeq5IpSbFZJIMx1N+qJyh3OFYo4qS7lIBxWFLWIms0TBw+8acehjdoWDQGUAr41s
-         PKEcg5Ha+ZZw+7p27IMuJHTC9B8BYp3ExkvyXqggtxQAdM8isFSv12F1XNu1UYlYgx7D
-         Eg9A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qIQAXIraFBo7pp9F+UKiJewbp52XCbv0LyD3lJdVZ6Q=;
+        b=Y5HM6jnjkeSZUSvP8fbzwE8KndpA72qtVsCclyqzhMYuveOC+l+N05YURAT7rOC6RG
+         Co6mqSgu1FoN6GMOXjfZEQWhCtYn12/chPREz5yaLK9plQ8BXsVbZiDAiL2U+g32mt9N
+         ys17w4YolRTadNNBZDVHvmjhNsBrXUnvQOSFGdAdSXsrnsZ5uWmq3zO9S2896ELtiNYd
+         XdNrqAe+liu5v4whPj/Zg63VVWFn9GTLTM7BhCAMZy77F0+xKuGo6ypS6Clkx0Imr6ir
+         ZUOa79h7M+TEOd2TyvbjG6/JpVmyN3/xmIkU8yHn+By2EfuBjJVXXShFY/T6TYYNKRYF
+         pNqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MYNgZuT9RwosGy33P4OxF/lMtZK6sphhDQVtouX96JU=;
-        b=osZNC6bmm7WkJl1WE2KP5aCaIwquzxKBGmUiPRv+helvWfy1ZAhKrZS6VzXB31X8pv
-         63TiQyPxls5u6svsgj9POx95KYr6jL0qklY4MX7ELryDxSBCTAnbfUzcoGFZ/FMuUq1W
-         29DqLvrsV+e6MZEJb/zNwBw+bn2Ei55kdZWpXHthpdaL52xx0mAW67NjGTkDJBa/Q1kA
-         ZFXhCjYvT0bHFDCI2+ixyh3PqO/InKk59mUq1xaDxs+jvT4Vsd4IN0Tvp7XT+hkyqaRZ
-         vKGqhQ6wXpR4CpKeIi1+toqyNxUJmWx04oEpXttO9kKerB591BzfDasK3MS6Dk8+HieL
-         x6KQ==
-X-Gm-Message-State: AOAM533ivRRALR8TQcm2EHv/elNw7HDVpCbLsBonEd3Me0yuK18ezYU+
-        WugGTtJMQFn20/C6bl1VBOk=
-X-Google-Smtp-Source: ABdhPJz2KghKbw9h8XB9jTdEvhauCdmDy7nbhFcVvWkcDXfoWZxf3TnnrYR1H4MbWOAuzU3aLspdVQ==
-X-Received: by 2002:a17:90a:1db:b0:1bf:711d:267a with SMTP id 27-20020a17090a01db00b001bf711d267amr8569691pjd.155.1647412352040;
-        Tue, 15 Mar 2022 23:32:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qIQAXIraFBo7pp9F+UKiJewbp52XCbv0LyD3lJdVZ6Q=;
+        b=3d1+6ZetFk9flsmeweNNvoKruzqx+iKwanVbi05pFRn8chuEFEWNHMbbKu7hD/IBly
+         vjpGp4zvzrRkMns7DIl61MXsLysqd16o6ii0vp7XachixDMzbBOGvWyj5dXZMwb/d44e
+         joIK3qzYW4yWYqGdrDG4ke86LmQbRKb7RwHSteP1hnykFDswGTBURS4tDw6Ej3pE4MVB
+         wIv2ydX9tevwVPgpbCzw9JmaCf4Q7kyepyFtDw9vqk4cx4USxbzHDCPh3VpJ5sQTRVs5
+         EVhKZt459IGqXPSeO5nM1sd3tUDnjABH1nSGk26UqT9tWOqEv+oHn05y3TejnaQuAUFp
+         gHzA==
+X-Gm-Message-State: AOAM5302Wwq2XmZtLOT4HUSPtZlzBMj7EbenXwC+FXfToT6y6tTUVYMX
+        1hR8/uby6lzEsncFXLKiMUE=
+X-Google-Smtp-Source: ABdhPJyf78h5VrYPglLbmAvmyWK5lHde66AL3ljC97R+ZMWI4xkXtdQwK++DdJByFw1ZdP31peydBg==
+X-Received: by 2002:a17:90b:f87:b0:1bf:77b7:1d40 with SMTP id ft7-20020a17090b0f8700b001bf77b71d40mr8516041pjb.26.1647412356671;
+        Tue, 15 Mar 2022 23:32:36 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.111])
-        by smtp.gmail.com with ESMTPSA id k11-20020a056a00168b00b004f7e1555538sm1438314pfc.190.2022.03.15.23.32.27
+        by smtp.gmail.com with ESMTPSA id k11-20020a056a00168b00b004f7e1555538sm1438314pfc.190.2022.03.15.23.32.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 23:32:31 -0700 (PDT)
+        Tue, 15 Mar 2022 23:32:36 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
@@ -57,10 +57,12 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
         flyingpeng@tencent.com, mengensun@tencent.com,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, benbjiang@tencent.com
-Subject: [PATCH net-next v3 0/3] net: icmp: add skb drop reasons to icmp
-Date:   Wed, 16 Mar 2022 14:31:45 +0800
-Message-Id: <20220316063148.700769-1-imagedong@tencent.com>
+Subject: [PATCH net-next v3 1/3] net: sock: introduce sock_queue_rcv_skb_reason()
+Date:   Wed, 16 Mar 2022 14:31:46 +0800
+Message-Id: <20220316063148.700769-2-imagedong@tencent.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220316063148.700769-1-imagedong@tencent.com>
+References: <20220316063148.700769-1-imagedong@tencent.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -75,61 +77,91 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
-we added the support of reporting the reasons of skb drops to kfree_skb
-tracepoint. And in this series patches, reasons for skb drops are added
-to ICMP protocol.
-
 In order to report the reasons of skb drops in 'sock_queue_rcv_skb()',
-the function 'sock_queue_rcv_skb_reason()' is introduced in the 1th
-patch, which is used in the 2th patch.
+introduce the function 'sock_queue_rcv_skb_reason()'.
 
-In the 2th patch, we introduce the new function __ping_queue_rcv_skb()
-to report drop reasons by its return value.
+As the return value of 'sock_queue_rcv_skb()' is used as the error code,
+we can't make it as drop reason and have to pass extra output argument.
+'sock_queue_rcv_skb()' is used in many places, so we can't change it
+directly.
 
-In the 3th patch, we make ICMP message handler functions return drop
-reasons, which means we change the return type of 'handler()' in
-'struct icmp_control' from 'bool' to 'enum skb_drop_reason'. This
-changed its original intention, as 'false' means failure, but
-'SKB_NOT_DROPPED_YET', which is 0, means success now. Therefore, we
-have to change all usages of these handler. Following "handler" functions
-are involved:
+Introduce the new function 'sock_queue_rcv_skb_reason()' and make
+'sock_queue_rcv_skb()' an inline call to it.
 
-icmp_unreach()
-icmp_redirect()
-icmp_echo()
-icmp_timestamp()
-icmp_discard()
+Reviewed-by: Hao Peng <flyingpeng@tencent.com>
+Reviewed-by: Jiang Biao <benbjiang@tencent.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+ include/net/sock.h |  9 ++++++++-
+ net/core/sock.c    | 30 ++++++++++++++++++++++++------
+ 2 files changed, 32 insertions(+), 7 deletions(-)
 
-And following drop reasons are added(what they mean can be see
-in the document for them):
-
-SKB_DROP_REASON_ICMP_CSUM
-SKB_DROP_REASON_ICMP_TYPE
-SKB_DROP_REASON_ICMP_BROADCAST
-
-Changes since v2:
-- fix aliegnment problem in the 2th patch
-
-Changes since v1:
-- introduce __ping_queue_rcv_skb() instead of change the return value
-  of ping_queue_rcv_skb() in the 2th patch, as Paolo suggested
-
-Menglong Dong (3):
-  net: sock: introduce sock_queue_rcv_skb_reason()
-  net: icmp: introduce __ping_queue_rcv_skb() to report drop reasons
-  net: icmp: add reasons of the skb drops to icmp protocol
-
- include/linux/skbuff.h     |  5 +++
- include/net/ping.h         |  2 +-
- include/net/sock.h         |  9 ++++-
- include/trace/events/skb.h |  3 ++
- net/core/sock.c            | 30 ++++++++++++---
- net/ipv4/icmp.c            | 75 ++++++++++++++++++++++----------------
- net/ipv4/ping.c            | 32 ++++++++++------
- net/ipv6/icmp.c            | 24 +++++++-----
- 8 files changed, 121 insertions(+), 59 deletions(-)
-
+diff --git a/include/net/sock.h b/include/net/sock.h
+index c4b91fc19b9c..1a988e605f09 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2392,7 +2392,14 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
+ 			void (*destructor)(struct sock *sk,
+ 					   struct sk_buff *skb));
+ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
+-int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
++
++int sock_queue_rcv_skb_reason(struct sock *sk, struct sk_buff *skb,
++			      enum skb_drop_reason *reason);
++
++static inline int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
++{
++	return sock_queue_rcv_skb_reason(sk, skb, NULL);
++}
+ 
+ int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb);
+ struct sk_buff *sock_dequeue_err_skb(struct sock *sk);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 1180a0cb0110..2cae991f817e 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -503,17 +503,35 @@ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ }
+ EXPORT_SYMBOL(__sock_queue_rcv_skb);
+ 
+-int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
++int sock_queue_rcv_skb_reason(struct sock *sk, struct sk_buff *skb,
++			      enum skb_drop_reason *reason)
+ {
++	enum skb_drop_reason drop_reason;
+ 	int err;
+ 
+ 	err = sk_filter(sk, skb);
+-	if (err)
+-		return err;
+-
+-	return __sock_queue_rcv_skb(sk, skb);
++	if (err) {
++		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
++		goto out;
++	}
++	err = __sock_queue_rcv_skb(sk, skb);
++	switch (err) {
++	case -ENOMEM:
++		drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
++		break;
++	case -ENOBUFS:
++		drop_reason = SKB_DROP_REASON_PROTO_MEM;
++		break;
++	default:
++		drop_reason = SKB_NOT_DROPPED_YET;
++		break;
++	}
++out:
++	if (reason)
++		*reason = drop_reason;
++	return err;
+ }
+-EXPORT_SYMBOL(sock_queue_rcv_skb);
++EXPORT_SYMBOL(sock_queue_rcv_skb_reason);
+ 
+ int __sk_receive_skb(struct sock *sk, struct sk_buff *skb,
+ 		     const int nested, unsigned int trim_cap, bool refcounted)
 -- 
 2.35.1
 
