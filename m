@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FA754DB7F2
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBDDB4DB7FB
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 19:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240033AbiCPSfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 14:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
+        id S1357712AbiCPShl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 14:37:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240131AbiCPSfN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:35:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BD0642D;
-        Wed, 16 Mar 2022 11:33:58 -0700 (PDT)
+        with ESMTP id S239413AbiCPShi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 14:37:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA125F4CB;
+        Wed, 16 Mar 2022 11:36:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CFC1618C1;
-        Wed, 16 Mar 2022 18:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7159C340E9;
-        Wed, 16 Mar 2022 18:33:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC8BD618D3;
+        Wed, 16 Mar 2022 18:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA04BC340EC;
+        Wed, 16 Mar 2022 18:36:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647455638;
-        bh=BBntHNa6ogo6orHLVRJgt98BQRdO7DhrSgNocBna7ts=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rkY9FEiSlijPlVVyQYZiouLT9kD19CPgbgai+cyCPG8H9rCoDrbBOTk76sZQD8VQD
-         aMhCB1vSQytu+6MAwFAlEVA7S1+6mgydTXYYqW+e/KBk7D5XfJu+r3JtVpLMhseIGx
-         1QgRUGYN318M/z5FURchqQwx1Si6l/LCQpXkp/GSyQXBgGUi65nKJofD6l2fGm6+Q4
-         8zjJmIiCoaIMmIJmHS0Qe1q0GCH/P04MMr78TWan0dbx/zxvQ0EHckwS7di9751Cem
-         XP26ivUnjPXd/yLQzjxCjwNywjUx3zjgCUphIPK3bGskBuBqrhKHzoCT+EgCrRkKfP
-         ookG3NPK5mmMg==
-Date:   Wed, 16 Mar 2022 11:33:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
-        syzbot+2339c27f5c66c652843e@syzkaller.appspotmail.com,
-        linux-can <linux-can@vger.kernel.org>
-Subject: Re: [net-next] can: isotp: sanitize CAN ID checks in isotp_bind()
-Message-ID: <20220316113356.6bee9428@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <ec2adb66-2199-2f9d-15ce-6641562c54f2@hartkopp.net>
-References: <20220315203748.1892-1-socketcan@hartkopp.net>
-        <20220315185134.687fe506@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3922032f-c829-b609-e408-6dec83a0041a@hartkopp.net>
-        <20220316074802.b3xazftb7axziue3@pengutronix.de>
-        <7445f2f1-4d89-116e-0cf7-fc7338c2901f@hartkopp.net>
-        <20220316080111.s2hlj6krlzcroxh6@pengutronix.de>
-        <ec2adb66-2199-2f9d-15ce-6641562c54f2@hartkopp.net>
+        s=k20201202; t=1647455783;
+        bh=5kfVOxiNs9Lfjb/f3WQydUgKBkkYnRcyc4hj7F3zqys=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RUJz0qKmBWGiMdYQNI3NyveSUlZnvQbnK9DfdZE1KuSKzA0cuE8OOCJNiiysq8G5F
+         Ph71rzGyePcrhyHuHT77TMAk6oaRa/yyskiEXsvfK2cumn9zpTfJVVgE4xqJVGh8gk
+         iBNnVYYxl5elULDvrXuLkXQ8Z4FEonsPFjb9hrsZv7LccPrmqBw2srG1NQK7PiLW4I
+         TKkvxGGjwZWzF1c6oV0AXmLACydvQ/P7nL8X4phF0KdhrGAyljxLFa/ss8JcTQHO6V
+         xzOW7CjDcmIM1hlWVlBM4byVVHJo4mgG5QnM+kL+NAxFrPYwicuXU8oBoffGmdzsKJ
+         /HMU5JA5ZbzmA==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iwlwifi: mei: fix building iwlmei
+Date:   Wed, 16 Mar 2022 19:36:03 +0100
+Message-Id: <20220316183617.1470631-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,24 +57,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Mar 2022 09:42:14 +0100 Oliver Hartkopp wrote:
-> > Another option is to port the patch to net/master with the hope that
-> > back porting is easier.  
-> 
-> I have a patch here for net/master that also properly applies down to 
-> linux-5.10.y
-> If requested I could post it instantly.
-> 
-> > Then talk to Jakub and David about the merge
-> > conflict when net/master is merged to net-next/master.  
-> 
-> Yes. There will be a merge conflict. Therefore I thought bringing that 
-> patch for the released 5.17 and the stable trees later would be less 
-> effort for Jakub and David.
+From: Arnd Bergmann <arnd@arndb.de>
 
-No strong preference in this particular case, -rc9 is very unlikely 
-so won't be much difference between it getting merge to net or net-next.
+Building iwlmei without CONFIG_CFG80211 causes a link-time warning:
 
-If you don't have a preference either let's got with the usual process
-and send the patch to net, just share the conflict resolution and we
-can deal with it.
+ld.lld: error: undefined symbol: ieee80211_hdrlen
+>>> referenced by net.c
+>>>               net/wireless/intel/iwlwifi/mei/net.o:(iwl_mei_tx_copy_to_csme) in archive drivers/built-in.a
+
+Add an explicit dependency to avoid this. In theory it should not
+be needed here, but it also seems pointless to allow IWLMEI
+for configurations without CFG80211.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/wireless/intel/iwlwifi/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+I see this warning on 5.17-rc8, but did not test it on linux-next,
+which may already have a fix.
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/wireless/intel/iwlwifi/Kconfig
+index 85e704283755..a647a406b87b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/Kconfig
++++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
+@@ -139,6 +139,7 @@ config IWLMEI
+ 	tristate "Intel Management Engine communication over WLAN"
+ 	depends on INTEL_MEI
+ 	depends on PM
++	depends on CFG80211
+ 	help
+ 	  Enables the iwlmei kernel module.
+ 
+-- 
+2.29.2
+
