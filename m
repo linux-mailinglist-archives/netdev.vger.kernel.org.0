@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CABDB4DBAF7
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 00:24:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A6B4DBB1D
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 00:34:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244330AbiCPXZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 19:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
+        id S1345175AbiCPXgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 19:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239181AbiCPXZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 19:25:49 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F36A63AD;
-        Wed, 16 Mar 2022 16:24:35 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id d18so3045563plr.6;
-        Wed, 16 Mar 2022 16:24:35 -0700 (PDT)
+        with ESMTP id S232408AbiCPXgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 19:36:07 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAD2167DF;
+        Wed, 16 Mar 2022 16:34:52 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id ja24so1958841ejc.11;
+        Wed, 16 Mar 2022 16:34:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=G+B8PYofFQmB5bQg2/zmTVhP0vn5BLMq4NTw0OI7YZ4=;
-        b=gNWxk6ELs485vb6iIjGlrEQUnqNt8dKzPs07QEUsL9LqGK5jU3xRo9hyoNQFgyji8E
-         r/1dHlWf5bu1t2mfl5eemQjOpRsuxhZ0Wvok/xP9J7dq3LDg0Tv+L8xnY+QSpHPsjJUf
-         XDw59AziiyL0ixjIq7cZNlXxBWTb1/SIkJ38PC0dJ8iPjQOxhfiBV3eM6V65hwA+Scr1
-         GnUdhCt3uQSKUwwcjCdSevizpfCyKLrJ8kAiNL5UymtOb8mEJVh/iScqBTJarVwkvwLL
-         kAHEkMxHYLRPsKJwbRXgftraEmGuS1YUjI1MvS4pPA3Kb+C2lF78cd1CoRVZb7QZ1qQi
-         5IzQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ARERQSDKxTIHCnmFYNI1ElJI4Oo2Aq2UKhPNaAbSNg4=;
+        b=Sg3427dW092vAOLJR2XEcQ/K29NB/DZt5twKJ8gVmA9TrPScdCEOtwyPlsi4FCZsiQ
+         bN6oZmE9p4etd9Y6inAr5Puw1utDZX1rFnBWQ/Kpw1SJwyJvdV92GzUsabqabxxpvrUw
+         SuzDuuIWz9zSPEAhmuwzs5F3vzZwI94orfMmhn15cY4No379IIbQ/JRjSzJKRW3gtKKD
+         rxnRnwNQyJvEIEh4HtC9XgiNZGXrJ4PnKGxAYhTfEkNyZz1Hr0L41eJNWrJGUv7Avdcz
+         DmvCS0goyAE/O66WKrs1t7lWQet5Au9SV2XSJTjXfMpLlMmnET6Qdd40ZCIJXPmUKBRG
+         Fj5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=G+B8PYofFQmB5bQg2/zmTVhP0vn5BLMq4NTw0OI7YZ4=;
-        b=amj6/TDSvzX9+oJLW9TUdtcGgKxu1rxey4XT7JeZld/I0FF4wdTOw2Af7Sx/mW/wlH
-         oKbgts6BenVF76OImWDueQl/hgEazw4gBLodfglStzJEn9uyzeqBlSZ2b+z/TEwq7Jgt
-         NkIBPTRWQCbPBPfmcVq42DwJqpBZRzwjoMIPDOtkvgb/rnvkVwlJVSxCuIcuaIAt8TRy
-         F1LY8j7kZbbhTZh5ArHm+o4xjrct5enIx1nOBcJ/zg981dRTrHWvZ3vRgWKWQp+QLK8U
-         0nnvFGpeQKDNJqcFxjKM9KTtlzREifvpLIAGLKsMS2gzGpfBGw3ZtHAu5rQ/+f0Qw1p3
-         wS6w==
-X-Gm-Message-State: AOAM533KliiAHvrECmOX9fkmjp0FK9bTWvQG7D+pWoS8GifvgaVuRd0m
-        Lw0tGCYMO/NViLVl4GhJpl5zV+TdWjY=
-X-Google-Smtp-Source: ABdhPJzrWTgL6poswUS7VkyKDbqCzmVKQnT3yHXN8WdQInlLsPcUiqBIQX3LmjNfGb+1A6eba8/pFg==
-X-Received: by 2002:a17:90a:4214:b0:1bf:6ae9:f62a with SMTP id o20-20020a17090a421400b001bf6ae9f62amr12641462pjg.64.1647473074117;
-        Wed, 16 Mar 2022 16:24:34 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ij17-20020a17090af81100b001c67c964d93sm639714pjb.2.2022.03.16.16.24.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 16:24:33 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next] net: dsa: Never offload FDB entries on
- standalone ports
-To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ARERQSDKxTIHCnmFYNI1ElJI4Oo2Aq2UKhPNaAbSNg4=;
+        b=xYAT4y0G75ohW22UICSAs5bWNIe9pFlR27c19Qs/ibS/r6TDfGlwEaxIiqKNszVl8z
+         dVXsjJpDnTPsP+BWH1/AA+exNUMUPjzaKdxL4cHnpeuO7xKAJ93KbzMHZfJtybAsdXU9
+         kB8IYI8b/gtRXpywn1ve+lYHQtn24PCTVKooSSpHoIvv4j06HKEBM6oaRk/q1AH3tnTq
+         IlFYShQnGoThH/LT8kppB2AKGnv1iuSXH/0s+C/nxgsiT8hd+b+YF66gVIiTyYaK1Uaz
+         c91kyauEW1WBbDqy1FeBVMsmYULaHAEy8ReZpb5VcyXB6OhifRRzOiknCMuAQP8zFdW4
+         /gFQ==
+X-Gm-Message-State: AOAM531bg0w0LvVl8OWZNsT9xvjJOtECzblHIPeYo/8ECg2athyDyLzP
+        x0KmHUDxPEFUPipWfCCpLpw=
+X-Google-Smtp-Source: ABdhPJwzQis6t91nexEui4K1KPa23MRwnqFeO4w44T/uxSjtpflFDPZt8DNsrj9ZuyA0q7D5SMSOpQ==
+X-Received: by 2002:a17:906:a398:b0:6ce:71b:deff with SMTP id k24-20020a170906a39800b006ce071bdeffmr1962568ejz.204.1647473690310;
+        Wed, 16 Mar 2022 16:34:50 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id l9-20020a170906078900b006dac5f336f8sm1505354ejc.124.2022.03.16.16.34.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 16:34:49 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 01:34:47 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220315233033.1468071-1-tobias@waldekranz.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3799afd4-438c-5a63-c2d2-c95aafd0326c@gmail.com>
-Date:   Wed, 16 Mar 2022 16:24:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+Message-ID: <20220316233447.kwyirxckgancdqmh@skbuf>
+References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
+ <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
+ <20220310142836.m5onuelv4jej5gvs@skbuf>
+ <86r17495gk.fsf@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220315233033.1468071-1-tobias@waldekranz.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <86r17495gk.fsf@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,18 +82,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/22 4:30 PM, Tobias Waldekranz wrote:
-> If a port joins a bridge that it can't offload, it will fallback to
-> standalone mode and software bridging. In this case, we never want to
-> offload any FDB entries to hardware either.
+On Mon, Mar 14, 2022 at 11:46:51AM +0100, Hans Schultz wrote:
+> >> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
+> >>  				    "ATU miss violation for %pM portvec %x spid %d\n",
+> >>  				    entry.mac, entry.portvec, spid);
+> >>  		chip->ports[spid].atu_miss_violation++;
+> >> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
+> >> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
+> >> +									    chip->ports[spid].port,
+> >> +									    &entry,
+> >> +									    fid);
+> >
+> > Do we want to suppress the ATU miss violation warnings if we're going to
+> > notify the bridge, or is it better to keep them for some reason?
+> > My logic is that they're part of normal operation, so suppressing makes
+> > sense.
+> >
 > 
-> Previously, for host addresses, we would eventually end up in
-> dsa_port_bridge_host_fdb_add, which would unconditionally dereference
-> dp->bridge and cause a segfault.
-> 
-> Fixes: c26933639b54 ("net: dsa: request drivers to perform FDB isolation")
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> I have been seeing many ATU member violations after the miss violation is
+> handled (using ping), and I think it could be considered to suppress the ATU member
+> violations interrupts by setting the IgnoreWrongData bit for the
+> port (sect 4.4.7). This would be something to do whenever a port is set in locked mode?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+So the first packet with a given MAC SA triggers an ATU miss violation
+interrupt.
+
+You program that MAC SA into the ATU with a destination port mask of all
+zeroes. This suppresses further ATU miss interrupts for this MAC SA, but
+now generates ATU member violations, because the MAC SA _is_ present in
+the ATU, but not towards the expected port (in fact, towards _no_ port).
+
+Especially if user space decides it doesn't want to authorize this MAC
+SA, it really becomes a problem because this is now a vector for denial
+of service, with every packet triggering an ATU member violation
+interrupt.
+
+So your suggestion is to set the IgnoreWrongData bit on locked ports,
+and this will suppress the actual member violation interrupts for
+traffic coming from these ports.
+
+So if the user decides to unplug a previously authorized printer from
+switch port 1 and move it to port 2, how is this handled? If there isn't
+a mechanism in place to delete the locked FDB entry when the printer
+goes away, then by setting IgnoreWrongData you're effectively also
+suppressing migration notifications.
+
+Oh, btw, my question was: could you consider suppressing the _prints_ on
+an ATU miss violation on a locked port?
