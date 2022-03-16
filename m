@@ -2,96 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCDCB4DB9BC
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:50:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D424DB9C7
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 21:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358068AbiCPUvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 16:51:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50736 "EHLO
+        id S1358086AbiCPUwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 16:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358064AbiCPUvF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:51:05 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEB96E57B
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:49:44 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nUaaL-0003rM-Hs; Wed, 16 Mar 2022 21:49:33 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-0549-f74e-91ef-4d7d.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:549:f74e:91ef:4d7d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id A094A4CBBD;
-        Wed, 16 Mar 2022 20:48:20 +0000 (UTC)
-Date:   Wed, 16 Mar 2022 21:48:20 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, appana.durga.rao@xilinx.com, git@xilinx.com,
-        michal.simek@xilinx.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        akumarma@xilinx.com
-Subject: Re: [PATCH v4] dt-bindings: can: xilinx_can: Convert Xilinx CAN
- binding to YAML
-Message-ID: <20220316204820.j3l4ltr3wihmlrop@pengutronix.de>
-References: <20220316171105.17654-1-amit.kumar-mahapatra@xilinx.com>
+        with ESMTP id S239166AbiCPUv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 16:51:59 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BCC5A5B6
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 13:50:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647463845; x=1678999845;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dVG9+OWl3+PaAqbEgZhaN0JTSnfFMyBO3Solt6p4Ww0=;
+  b=g7dJg5JQ1kCRzpu8pwPA/rJugkEcVbUUXD2b6I8+Ddcmfg4Kif96wywu
+   TCRk9wD50s27NyBG8khk5hXiYPBIO0t/nmx48hjDgn2Piy6vGY2Bg2nOR
+   5LveeAvyiP/IEVpKwKCicDPiaFY5Ci4YBa8xtuxIiJU4kSiJ1eGuHAYMG
+   qiwU6ngys9RVrIW06RqOduyr5EYdaeoda2e9O99oy8DJ/D5Vna5JemQvh
+   k5bccvy1SBM6QQgYjwY51g/bguOW3ZQ4LMS+jTHtfchXLDvrVbI44fsPd
+   FjjA53pwUwYFf/YfD4yBOaaBylaOxGb1TYFObkB8kl5QtTcd2hChlfdUI
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="256436100"
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="256436100"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 13:50:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,187,1643702400"; 
+   d="scan'208";a="635127816"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 16 Mar 2022 13:50:41 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUabQ-000CuV-JU; Wed, 16 Mar 2022 20:50:40 +0000
+Date:   Thu, 17 Mar 2022 04:49:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Mattias Forsblad <mattias.forsblad+netdev@gmail.com>
+Subject: Re: [PATCH v2 net-next 2/5] net: bridge: Implement bridge flood flag
+Message-ID: <202203170401.hynO2BwT-lkp@intel.com>
+References: <20220316153059.2503153-3-mattias.forsblad+netdev@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="a5b6yhozna6aet3p"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220316171105.17654-1-amit.kumar-mahapatra@xilinx.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220316153059.2503153-3-mattias.forsblad+netdev@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Mattias,
 
---a5b6yhozna6aet3p
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the patch! Perhaps something to improve:
 
-On 16.03.2022 22:41:05, Amit Kumar Mahapatra wrote:
-> Convert Xilinx CAN binding documentation to YAML.
->=20
-> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+[auto build test WARNING on net-next/master]
 
-Added to linux-can-next/testing
+url:    https://github.com/0day-ci/linux/commits/Mattias-Forsblad/bridge-dsa-switchdev-mv88e6xxx-Implement-bridge-flood-flags/20220316-233416
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9f01cfbf2922432668c2fd4dfc0413342aaff48b
+config: hexagon-randconfig-r045-20220313 (https://download.01.org/0day-ci/archive/20220317/202203170401.hynO2BwT-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project a6ec1e3d798f8eab43fb3a91028c6ab04e115fcb)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/4c003fec67078a4e8c1c6e36c7b9fc6303a3bb6f
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Mattias-Forsblad/bridge-dsa-switchdev-mv88e6xxx-Implement-bridge-flood-flags/20220316-233416
+        git checkout 4c003fec67078a4e8c1c6e36c7b9fc6303a3bb6f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/bridge/
 
-regards,
-Marc
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+All warnings (new ones prefixed by >>):
 
---a5b6yhozna6aet3p
-Content-Type: application/pgp-signature; name="signature.asc"
+   net/bridge/br.c:347:26: warning: unused variable 'bm' [-Wunused-variable]
+           struct br_boolopt_multi bm;
+                                   ^
+>> net/bridge/br.c:361:2: warning: variable 'bropt' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
+           default:
+           ^~~~~~~
+   net/bridge/br.c:365:20: note: uninitialized use occurs here
+           br_opt_toggle(br, bropt, on);
+                             ^~~~~
+   net/bridge/br.c:348:2: note: variable 'bropt' is declared here
+           enum net_bridge_opts bropt;
+           ^
+   2 warnings generated.
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIyTREACgkQrX5LkNig
-013Piwf/e5VTDTzBS0Dh8q/NqJaCXA3U43tW8E/puSKudGMfRUawcd9s4Rn8yrDU
-F+T953TYsHC4AaZJvCVGs43K9zOi2hsN3vvk0q1gQKCtVifXPqAZlZACTnaN2C3P
-gzYvbVcrDnx95IFWi0/EJa1qpKBa1AtSY41cs2v+yjc4931ZIGWVlCsbwfxZ3ySC
-ENwf5RYqW4EdmwRLUuLQCPY+BaJX+w0BYSB/a6qT0L/N8RLjoIDPpZgHERi44PtP
-YHWg5rlcGAg3xhCHUzTJWzox/Je8IzzdLKrqydm8qlOFRT8trDROGaoMG7lFBh9Q
-KTh5Fs5El+8/8BwFYkp6NE/QipPfJg==
-=rasR
------END PGP SIGNATURE-----
+vim +/bropt +361 net/bridge/br.c
 
---a5b6yhozna6aet3p--
+   338	
+   339	int br_flood_toggle(struct net_bridge *br, enum br_boolopt_id opt,
+   340			    bool on)
+   341	{
+   342		struct switchdev_attr attr = {
+   343			.orig_dev = br->dev,
+   344			.id = SWITCHDEV_ATTR_ID_BRIDGE_FLOOD,
+   345			.flags = SWITCHDEV_F_DEFER,
+   346		};
+   347		struct br_boolopt_multi bm;
+   348		enum net_bridge_opts bropt;
+   349		int ret;
+   350	
+   351		switch (opt) {
+   352		case BR_BOOLOPT_FLOOD:
+   353			bropt = BROPT_FLOOD;
+   354			break;
+   355		case BR_BOOLOPT_MCAST_FLOOD:
+   356			bropt = BROPT_MCAST_FLOOD;
+   357			break;
+   358		case BR_BOOLOPT_BCAST_FLOOD:
+   359			bropt = BROPT_BCAST_FLOOD;
+   360			break;
+ > 361		default:
+   362			WARN_ON(1);
+   363			break;
+   364		}
+   365		br_opt_toggle(br, bropt, on);
+   366	
+   367		attr.u.brport_flags.mask = BIT(bropt);
+   368		attr.u.brport_flags.val = on << bropt;
+   369		ret = switchdev_port_attr_set(br->dev, &attr, NULL);
+   370	
+   371		return ret;
+   372	}
+   373	
+
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
