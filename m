@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 873954DB8BC
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 20:22:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCE1E4DB8C3
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 20:22:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357987AbiCPTWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 15:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
+        id S1357992AbiCPTWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 15:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357860AbiCPTVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 15:21:42 -0400
+        with ESMTP id S1357917AbiCPTVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 15:21:46 -0400
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17A1340A3F;
-        Wed, 16 Mar 2022 12:20:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC376A00C;
+        Wed, 16 Mar 2022 12:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=I73CgbF6729wI2OMfPa7NCxG3sEoqNqrUxCVuaWYikI=; b=vfQEJC7clJiDCX70jOXFjsAqVr
-        RsHe0lFIEd1MJgFbYE0gt+pK9/bBQ9yr/XHgb6PlXtKVNnE4grHpTSqJXg+QKYQKUpGnsBonJ9U01
-        hDerMUrt6itAF3TL6Llq6sGGjgWz0n599JPSP5lVrYGGZTJrOpKqSEWKxM3DdyX/hO6EDO6WwFV5C
-        SobsjsMQ5TbbMAVQdJlaP8GZyf1U8kWywA8fSEQxcpsaz/Da6CGPqDfObwvZPtq5v+9H3k0mO94hs
-        HAGJyirDT+UWjgACI8PEJ0FufcIHgw7aJb7xm7hWahssEZydzz68UNUu2l9JpqX2qCyCWQXC/V06+
-        cVrWMhgA==;
+        bh=mAEBdlB3OIVWW6VHbg2SecqMSqz6buQ0aUi+Rw762/Y=; b=QU8xTqKmgiaf0d2RYK0H55UDCG
+        aLJvbEgjnyUe31XqnajbeerGSgezvbj7E6vzKNEkthY9gGqTCGwCgSKs/P6N/RAY4zpEqVLmXvKbP
+        uiSRzPcbdU7p3lSpluXCtlaLUMBZuaHvqoH09vYAF9WublfayTlpUU/qLQX/IDYXeABeZH5o+zC2W
+        8kZMfKNRXr6lT1/BQuMttKB9AK/4vNhr0ZbmY9ozWZm9W0S5VvcJ8UryNdPz0mWnabak/ruaUP3LR
+        RSlCpaIl4OEVlR7bIZCUxDmvaJ/Q+Xkkx2o2F4c2Wa2eoa9/E3ikl20nvmBdUIbACnjGJJLK415O7
+        7YK7glNg==;
 Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nUZC7-00EArp-Gg; Wed, 16 Mar 2022 19:20:27 +0000
+        id 1nUZCA-00EArp-3R; Wed, 16 Mar 2022 19:20:30 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
@@ -73,9 +73,9 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
         linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
         virtualization@lists.linux-foundation.org, x86@kernel.org
-Subject: [PATCH 7/9] usb: usbip: eliminate anonymous module_init & module_exit
-Date:   Wed, 16 Mar 2022 12:20:08 -0700
-Message-Id: <20220316192010.19001-8-rdunlap@infradead.org>
+Subject: [PATCH 8/9] x86/crypto: eliminate anonymous module_init & module_exit
+Date:   Wed, 16 Mar 2022 12:20:09 -0700
+Message-Id: <20220316192010.19001-9-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220316192010.19001-1-rdunlap@infradead.org>
 References: <20220316192010.19001-1-rdunlap@infradead.org>
@@ -111,48 +111,167 @@ Example 2: (initcall_debug log)
  calling  init+0x0/0x9a @ 1
  initcall init+0x0/0x9a returned 0 after 74 usecs
 
-Fixes: 80fd9cd52de6 ("usbip: vudc: Add VUDC main file")
+Fixes: 64b94ceae8c1 ("crypto: blowfish - add x86_64 assembly implementation")
+Fixes: 676a38046f4f ("crypto: camellia-x86_64 - module init/exit functions should be static")
+Fixes: 0b95ec56ae19 ("crypto: camellia - add assembler implementation for x86_64")
+Fixes: 56d76c96a9f3 ("crypto: serpent - add AVX2/x86_64 assembler implementation of serpent cipher")
+Fixes: b9f535ffe38f ("[CRYPTO] twofish: i586 assembly version")
+Fixes: ff0a70fe0536 ("crypto: twofish-x86_64-3way - module init/exit functions should be static")
+Fixes: 8280daad436e ("crypto: twofish - add 3-way parallel x86_64 assembler implemention")
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Krzysztof Opasiak <k.opasiak@samsung.com>
-Cc: Igor Kotrasinski <i.kotrasinsk@samsung.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Valentina Manea <valentina.manea.m@gmail.com>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: Shuah Khan <skhan@linuxfoundation.org>
-Cc: linux-usb@vger.kernel.org
+Cc: Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
+Cc: Joachim Fritschi <jfritschi@freenet.de>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: linux-crypto@vger.kernel.org
+Cc: x86@kernel.org
 ---
- drivers/usb/usbip/vudc_main.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/crypto/blowfish_glue.c     |    8 ++++----
+ arch/x86/crypto/camellia_glue.c     |    8 ++++----
+ arch/x86/crypto/serpent_avx2_glue.c |    8 ++++----
+ arch/x86/crypto/twofish_glue.c      |    8 ++++----
+ arch/x86/crypto/twofish_glue_3way.c |    8 ++++----
+ 5 files changed, 20 insertions(+), 20 deletions(-)
 
---- lnx-517-rc8.orig/drivers/usb/usbip/vudc_main.c
-+++ lnx-517-rc8/drivers/usb/usbip/vudc_main.c
-@@ -28,7 +28,7 @@ static struct platform_driver vudc_drive
- 
- static struct list_head vudc_devices = LIST_HEAD_INIT(vudc_devices);
+--- lnx-517-rc8.orig/arch/x86/crypto/blowfish_glue.c
++++ lnx-517-rc8/arch/x86/crypto/blowfish_glue.c
+@@ -315,7 +315,7 @@ static int force;
+ module_param(force, int, 0);
+ MODULE_PARM_DESC(force, "Force module load, ignore CPU blacklist");
  
 -static int __init init(void)
-+static int __init vudc_init(void)
++static int __init blowfish_init(void)
  {
- 	int retval = -ENOMEM;
- 	int i;
-@@ -86,9 +86,9 @@ cleanup:
- out:
- 	return retval;
+ 	int err;
+ 
+@@ -339,15 +339,15 @@ static int __init init(void)
+ 	return err;
  }
+ 
+-static void __exit fini(void)
++static void __exit blowfish_fini(void)
+ {
+ 	crypto_unregister_alg(&bf_cipher_alg);
+ 	crypto_unregister_skciphers(bf_skcipher_algs,
+ 				    ARRAY_SIZE(bf_skcipher_algs));
+ }
+ 
 -module_init(init);
-+module_init(vudc_init);
+-module_exit(fini);
++module_init(blowfish_init);
++module_exit(blowfish_fini);
  
--static void __exit cleanup(void)
-+static void __exit vudc_cleanup(void)
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Blowfish Cipher Algorithm, asm optimized");
+--- lnx-517-rc8.orig/arch/x86/crypto/camellia_glue.c
++++ lnx-517-rc8/arch/x86/crypto/camellia_glue.c
+@@ -1377,7 +1377,7 @@ static int force;
+ module_param(force, int, 0);
+ MODULE_PARM_DESC(force, "Force module load, ignore CPU blacklist");
+ 
+-static int __init init(void)
++static int __init camellia_init(void)
  {
- 	struct vudc_device *udc_dev = NULL, *udc_dev2 = NULL;
+ 	int err;
  
-@@ -103,7 +103,7 @@ static void __exit cleanup(void)
- 	}
- 	platform_driver_unregister(&vudc_driver);
+@@ -1401,15 +1401,15 @@ static int __init init(void)
+ 	return err;
  }
--module_exit(cleanup);
-+module_exit(vudc_cleanup);
  
- MODULE_DESCRIPTION("USB over IP Device Controller");
- MODULE_AUTHOR("Krzysztof Opasiak, Karol Kosik, Igor Kotrasinski");
+-static void __exit fini(void)
++static void __exit camellia_fini(void)
+ {
+ 	crypto_unregister_alg(&camellia_cipher_alg);
+ 	crypto_unregister_skciphers(camellia_skcipher_algs,
+ 				    ARRAY_SIZE(camellia_skcipher_algs));
+ }
+ 
+-module_init(init);
+-module_exit(fini);
++module_init(camellia_init);
++module_exit(camellia_fini);
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Camellia Cipher Algorithm, asm optimized");
+--- lnx-517-rc8.orig/arch/x86/crypto/serpent_avx2_glue.c
++++ lnx-517-rc8/arch/x86/crypto/serpent_avx2_glue.c
+@@ -96,7 +96,7 @@ static struct skcipher_alg serpent_algs[
+ 
+ static struct simd_skcipher_alg *serpent_simd_algs[ARRAY_SIZE(serpent_algs)];
+ 
+-static int __init init(void)
++static int __init serpent_avx2_init(void)
+ {
+ 	const char *feature_name;
+ 
+@@ -115,14 +115,14 @@ static int __init init(void)
+ 					      serpent_simd_algs);
+ }
+ 
+-static void __exit fini(void)
++static void __exit serpent_avx2_fini(void)
+ {
+ 	simd_unregister_skciphers(serpent_algs, ARRAY_SIZE(serpent_algs),
+ 				  serpent_simd_algs);
+ }
+ 
+-module_init(init);
+-module_exit(fini);
++module_init(serpent_avx2_init);
++module_exit(serpent_avx2_fini);
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Serpent Cipher Algorithm, AVX2 optimized");
+--- lnx-517-rc8.orig/arch/x86/crypto/twofish_glue.c
++++ lnx-517-rc8/arch/x86/crypto/twofish_glue.c
+@@ -81,18 +81,18 @@ static struct crypto_alg alg = {
+ 	}
+ };
+ 
+-static int __init init(void)
++static int __init twofish_glue_init(void)
+ {
+ 	return crypto_register_alg(&alg);
+ }
+ 
+-static void __exit fini(void)
++static void __exit twofish_glue_fini(void)
+ {
+ 	crypto_unregister_alg(&alg);
+ }
+ 
+-module_init(init);
+-module_exit(fini);
++module_init(twofish_glue_init);
++module_exit(twofish_glue_fini);
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION ("Twofish Cipher Algorithm, asm optimized");
+--- lnx-517-rc8.orig/arch/x86/crypto/twofish_glue_3way.c
++++ lnx-517-rc8/arch/x86/crypto/twofish_glue_3way.c
+@@ -140,7 +140,7 @@ static int force;
+ module_param(force, int, 0);
+ MODULE_PARM_DESC(force, "Force module load, ignore CPU blacklist");
+ 
+-static int __init init(void)
++static int __init twofish_3way_init(void)
+ {
+ 	if (!force && is_blacklisted_cpu()) {
+ 		printk(KERN_INFO
+@@ -154,13 +154,13 @@ static int __init init(void)
+ 					 ARRAY_SIZE(tf_skciphers));
+ }
+ 
+-static void __exit fini(void)
++static void __exit twofish_3way_fini(void)
+ {
+ 	crypto_unregister_skciphers(tf_skciphers, ARRAY_SIZE(tf_skciphers));
+ }
+ 
+-module_init(init);
+-module_exit(fini);
++module_init(twofish_3way_init);
++module_exit(twofish_3way_fini);
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Twofish Cipher Algorithm, 3-way parallel asm optimized");
