@@ -2,109 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C2E14DB064
-	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 14:08:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC05A4DB065
+	for <lists+netdev@lfdr.de>; Wed, 16 Mar 2022 14:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355982AbiCPNJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 09:09:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
+        id S1356008AbiCPNKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 09:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239772AbiCPNJl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 09:09:41 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EAB51CB19;
-        Wed, 16 Mar 2022 06:08:26 -0700 (PDT)
-Received: from canpemm100009.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KJVsr50QczfYsf;
-        Wed, 16 Mar 2022 21:06:56 +0800 (CST)
-Received: from canpemm500010.china.huawei.com (7.192.105.118) by
- canpemm100009.china.huawei.com (7.192.105.213) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 16 Mar 2022 21:08:24 +0800
-Received: from canpemm500010.china.huawei.com ([7.192.105.118]) by
- canpemm500010.china.huawei.com ([7.192.105.118]) with mapi id 15.01.2308.021;
- Wed, 16 Mar 2022 21:08:24 +0800
-From:   "liujian (CE)" <liujian56@huawei.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>
-CC:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "sdf@google.com" <sdf@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: RE: [PATCH bpf-next] net: Use skb->len to check the validity of the
- parameters in bpf_skb_load_bytes
-Thread-Topic: [PATCH bpf-next] net: Use skb->len to check the validity of the
- parameters in bpf_skb_load_bytes
-Thread-Index: AQHYOGk2O/XwDW4Ml0q7jRHCigZ/yqzAVx0AgADbdhD//6smgIABGg3Q
-Date:   Wed, 16 Mar 2022 13:08:24 +0000
-Message-ID: <5cee2fb729624f168415d303cff4ee8f@huawei.com>
-References: <20220315123916.110409-1-liujian56@huawei.com>
- <20220315195822.sonic5avyizrufsv@kafai-mbp.dhcp.thefacebook.com>
- <4f937ace70a3458580c6242fa68ea549@huawei.com>
- <623160c966680_94df20819@john.notmuch>
-In-Reply-To: <623160c966680_94df20819@john.notmuch>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.176.93]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S239772AbiCPNKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 09:10:11 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745FE27FC6;
+        Wed, 16 Mar 2022 06:08:57 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id dr20so4019795ejc.6;
+        Wed, 16 Mar 2022 06:08:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jDdo77E6bodwKomBqhyh/QFbllXF/eggXHy1SBgzqKk=;
+        b=KfJPqoODp5vXC/0ovUiSuFkJy9qoA9TeDaui0xqOmSWNJSPOdDZs6WG5GyEFkncY2V
+         qYne3m0ITU6LzsON/W5Y7OJ9VQL06vDxvGRLCyAIrLmSRXHLVgr4Y7urfOOm0QXAg0QC
+         pgKO/UZ7ADGlAQg4a9OCJXtesou/jdZbk9QKNd9teK30f7UWJDWyZWSPR0rpzRhVOGkX
+         h0u9s9YNAqOz2i8/uyd0fuwLHsDIGSbG5XbPBbeO2B4leWNxGAXuXIttZiJADMtyhf6y
+         1dgLlnQNzflL/cZRiKXOMVg5yQeRpJJNtnPUIdHil2QbnOZydEwzk013SaVI6wsAKsNQ
+         ncTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jDdo77E6bodwKomBqhyh/QFbllXF/eggXHy1SBgzqKk=;
+        b=BWQZIbemJ/wISHgtNq54r3/iBjTH91Y7pwiYhh6Gw2SPkj2OdFWzN75AOZ1iUSslsE
+         wAUp/vOkkerkmLTINDcJ2M2pw1MONCfj6TLNc1dyKZ5YFtZWmX/111GAalWESkLKnVQP
+         7fINNWYZFY9sWYFNnhXiyXjXb/GgZozXXkKVteWy/VCt6RsoOvdtYbLXaSgBh70z/uSO
+         WjMfqQ7aiOyG3jZwmZEyOEDh2B9Yesh/moYfHuCDNIQUGlJpcYJCYp+j0/4kNgbvPlIZ
+         +eHtGWpiKEKmwQ1l0agl2vRNrvSpK8J3/caVtTpXkaWQMiHCaB+15HobI5bVt3/AFMgq
+         VJJg==
+X-Gm-Message-State: AOAM531kjxYCWhWUvY3nwPhAbbJX/wPYeu/+CZ3L4C+YZmJ6STOia/ns
+        7ADWP+1JjOxD2CTkC4Z0QMY=
+X-Google-Smtp-Source: ABdhPJx+jBX6oHN4EG2/kgYKkkBWSOOnoD8t2IR/Q650mW+5jb8RfbrPvQbLJrUxjy41H6tWiuSAug==
+X-Received: by 2002:a17:907:1c16:b0:6d7:622b:efea with SMTP id nc22-20020a1709071c1600b006d7622befeamr26957234ejc.110.1647436133169;
+        Wed, 16 Mar 2022 06:08:53 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id d7-20020a50cd47000000b004187eacb4d6sm970570edj.37.2022.03.16.06.08.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 06:08:52 -0700 (PDT)
+Date:   Wed, 16 Mar 2022 15:08:51 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] net: dsa: Never offload FDB entries on
+ standalone ports
+Message-ID: <20220316130851.nrevmuktxuzkgxd3@skbuf>
+References: <20220315233033.1468071-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220315233033.1468071-1-tobias@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9obiBGYXN0YWJlbmQg
-W21haWx0bzpqb2huLmZhc3RhYmVuZEBnbWFpbC5jb21dDQo+IFNlbnQ6IFdlZG5lc2RheSwgTWFy
-Y2ggMTYsIDIwMjIgMTI6MDAgUE0NCj4gVG86IGxpdWppYW4gKENFKSA8bGl1amlhbjU2QGh1YXdl
-aS5jb20+OyBNYXJ0aW4gS2FGYWkgTGF1IDxrYWZhaUBmYi5jb20+DQo+IENjOiBhc3RAa2VybmVs
-Lm9yZzsgZGFuaWVsQGlvZ2VhcmJveC5uZXQ7IGFuZHJpaUBrZXJuZWwub3JnOw0KPiBzb25nbGl1
-YnJhdmluZ0BmYi5jb207IHloc0BmYi5jb207IGpvaG4uZmFzdGFiZW5kQGdtYWlsLmNvbTsNCj4g
-a3BzaW5naEBrZXJuZWwub3JnOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBrdWJhQGtlcm5lbC5vcmc7
-DQo+IHNkZkBnb29nbGUuY29tOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBicGZAdmdlci5rZXJu
-ZWwub3JnDQo+IFN1YmplY3Q6IFJFOiBbUEFUQ0ggYnBmLW5leHRdIG5ldDogVXNlIHNrYi0+bGVu
-IHRvIGNoZWNrIHRoZSB2YWxpZGl0eSBvZiB0aGUNCj4gcGFyYW1ldGVycyBpbiBicGZfc2tiX2xv
-YWRfYnl0ZXMNCj4gDQo+IGxpdWppYW4gKENFKSB3cm90ZToNCj4gPg0KPiA+DQo+ID4gPiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+ID4gRnJvbTogTWFydGluIEthRmFpIExhdSBbbWFp
-bHRvOmthZmFpQGZiLmNvbV0NCj4gPiA+IFNlbnQ6IFdlZG5lc2RheSwgTWFyY2ggMTYsIDIwMjIg
-Mzo1OCBBTQ0KPiA+ID4gVG86IGxpdWppYW4gKENFKSA8bGl1amlhbjU2QGh1YXdlaS5jb20+DQo+
-ID4gPiBDYzogYXN0QGtlcm5lbC5vcmc7IGRhbmllbEBpb2dlYXJib3gubmV0OyBhbmRyaWlAa2Vy
-bmVsLm9yZzsNCj4gPiA+IHNvbmdsaXVicmF2aW5nQGZiLmNvbTsgeWhzQGZiLmNvbTsgam9obi5m
-YXN0YWJlbmRAZ21haWwuY29tOw0KPiA+ID4ga3BzaW5naEBrZXJuZWwub3JnOyBkYXZlbUBkYXZl
-bWxvZnQubmV0OyBrdWJhQGtlcm5lbC5vcmc7DQo+ID4gPiBzZGZAZ29vZ2xlLmNvbTsgbmV0ZGV2
-QHZnZXIua2VybmVsLm9yZzsgYnBmQHZnZXIua2VybmVsLm9yZw0KPiA+ID4gU3ViamVjdDogUmU6
-IFtQQVRDSCBicGYtbmV4dF0gbmV0OiBVc2Ugc2tiLT5sZW4gdG8gY2hlY2sgdGhlDQo+ID4gPiB2
-YWxpZGl0eSBvZiB0aGUgcGFyYW1ldGVycyBpbiBicGZfc2tiX2xvYWRfYnl0ZXMNCj4gPiA+DQo+
-ID4gPiBPbiBUdWUsIE1hciAxNSwgMjAyMiBhdCAwODozOToxNlBNICswODAwLCBMaXUgSmlhbiB3
-cm90ZToNCj4gPiA+ID4gVGhlIGRhdGEgbGVuZ3RoIG9mIHNrYiBmcmFncyArIGZyYWdfbGlzdCBt
-YXkgYmUgZ3JlYXRlciB0aGFuDQo+ID4gPiA+IDB4ZmZmZiwgc28gaGVyZSB1c2Ugc2tiLT5sZW4g
-dG8gY2hlY2sgdGhlIHZhbGlkaXR5IG9mIHRoZSBwYXJhbWV0ZXJzLg0KPiA+ID4gV2hhdCBpcyB0
-aGUgdXNlIGNhc2UgdGhhdCBuZWVkcyB0byBsb29rIGJleW9uZCAweGZmZmYgPw0KPiANCj4gPiBJ
-IHVzZSBzb2NrbWFwIHdpdGggc3RycGFyc2VyLCB0aGUgc3RtLT5zdHJwLm9mZnNldCAodGhlIGJl
-Z2luIG9mIG9uZQ0KPiA+IGFwcGxpY2F0aW9uIGxheWVyIHByb3RvY29sIG1lc3NhZ2UpIG1heWJl
-IGJleW9uZCAweGZmZmYsIGJ1dCBpIG5lZWQNCj4gPiBsb2FkIHRoZSBtZXNzYWdlIGhlYWQgdG8g
-ZG8gc29tZXRoaW5nLg0KPiANCj4gVGhpcyB3b3VsZCBleHBsYWluIHNrYl9sb2FkX2J5dGVzIGJ1
-dCBub3QgdGhlIG90aGVyIHR3byByaWdodD8gQWxzbyBpZiB3ZQ0KWWVzLCBJIGp1c3Qgc2VlIHRo
-YXQgdGhlc2UgdHdvIGZ1bmN0aW9ucyBoYXZlIHRoZSBzYW1lIGp1ZGdtZW50Lg0KPiBhcmUgZG9p
-bmcgdGhpcyB3aHkgbm90IGp1c3QgcmVtb3ZlIHRob3NlIHR3byBjaGVja3MgaW4NCj4gZmxvd19k
-aXNzZWN0b3JfbG9hZCgpIEkgdGhpbmsgc2tiX2hlYWRlcl9wb2ludGVyKCkgZG9lcyBkdXBsaWNh
-dGUgY2hlY2tzLg0KPiBQbGVhc2UgY2hlY2suDQpZZXMsIHNrYl9oZWFkZXJfcG9pbnRlcigpIGhh
-dmUgY2hlY2tlZCBhcyBiZWxvdywgYW5kIEkgd2lsbCBzZW5kIHYyIHRvIHJlbW92ZSAweGZmZmYg
-Y2hlY2suDQotLS0tc2tiX2hlYWRlcl9wb2ludGVyDQotLS0tLS0tLSBfX3NrYl9oZWFkZXJfcG9p
-bnRlcg0KLS0tLS0tLS0tLS0tc2tiX2NvcHlfYml0cw0KLS0tLS0tLS0tLS0tLS0tLSBpZiAob2Zm
-c2V0ID4gKGludClza2ItPmxlbiAtIGxlbikNCi0tLS0tLS0tLS0tLS0tLS0tLS0tZ290byBmYXVs
-dDsNCg0KVGhhbmsgeW91fg0K
+On Wed, Mar 16, 2022 at 12:30:33AM +0100, Tobias Waldekranz wrote:
+> If a port joins a bridge that it can't offload, it will fallback to
+> standalone mode and software bridging. In this case, we never want to
+> offload any FDB entries to hardware either.
+> 
+> Previously, for host addresses, we would eventually end up in
+> dsa_port_bridge_host_fdb_add, which would unconditionally dereference
+> dp->bridge and cause a segfault.
+> 
+> Fixes: c26933639b54 ("net: dsa: request drivers to perform FDB isolation")
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+>  net/dsa/slave.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index f9cecda791d5..d24b6bf845c1 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -2847,6 +2847,9 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+>  	if (ctx && ctx != dp)
+>  		return 0;
+>  
+> +	if (!dp->bridge)
+> +		return 0;
+> +
+>  	if (switchdev_fdb_is_dynamically_learned(fdb_info)) {
+>  		if (dsa_port_offloads_bridge_port(dp, orig_dev))
+>  			return 0;
+> -- 
+> 2.25.1
+> 
