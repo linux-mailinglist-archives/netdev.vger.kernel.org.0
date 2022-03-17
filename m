@@ -2,82 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 662D24DBDD7
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 05:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32D7B4DBDDD
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 05:55:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbiCQE4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 00:56:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
+        id S229454AbiCQEsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 00:48:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiCQE4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 00:56:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CFF76672;
-        Wed, 16 Mar 2022 21:37:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 551FC61772;
-        Thu, 17 Mar 2022 04:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AF5E0C340EF;
-        Thu, 17 Mar 2022 04:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647491410;
-        bh=7a+f7L0oz8IEDDEvR4RPVhJ+O5RpuwZPbYxAKeJ6eRU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rA/UegHcJdeGWwJLThyGDABLsFV3iVDG2zLN0AA7jdyfVq3/cuB2M0+76vRGfUWV9
-         e5kd569c+9nZAZOdrMC5zio22abVWc/gjo5kdrfFhFxKCYWUTKPAQK5/yQftZChPJr
-         lxr/m5dOtYnWpxvutTVln7GlmM4O/p+ym611Qi2C7+e+U9Pgzb822yw54AE8xbriZO
-         M+ju4W/0DzQCs/FQ1RWeiRYTR2F3oH2d2P3dLuexFDX2GynaOtbBdLEqjBt2XlyVJh
-         Mt1HhUJbH3m1dhuU7fv8qmJi8WjWSeFMwCCDNLMu5hR8UWm41FGi3My3Tm+2jc3Uje
-         9y/7YTWnlxEpw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C39AE6D3DD;
-        Thu, 17 Mar 2022 04:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229460AbiCQEsJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 00:48:09 -0400
+Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D8E126FB7
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 21:40:09 -0700 (PDT)
+X-QQ-mid: bizesmtp85t1647491636t0mm7bcn
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 17 Mar 2022 12:33:47 +0800 (CST)
+X-QQ-SSF: 01400000002000D0H000B00A0000000
+X-QQ-FEAT: RMVj0UrY8cC0YGAUx/2nKiGC/VzxwmGLjHnmxBG/tXl+3Rzg4sxVsUFyBB4UN
+        w6bSm+qsBc5e1KXquUKV2h3yZjONLMwC9YrHc+iqDCVm7RRHYGEjADV9TtK+bk2L33oEbHq
+        2bAs1gTjrPbMFVwMEItex/8GLqMKbDKW6CTirY/vCs8KosZCOK4Jf7BHZ9Wo5wcXcCWnElS
+        t8ZAwE7Uqhi9yAvfwYXA/tcFqlJCF1/X3xZzNHihT3F/PkjtFZNNQp2Yq55tFmD299aJA0g
+        k+yZWUhU8mQiE+co69Jbrbp0l+RIVv01KmfI3MWv3Y2xogG5jBP0DchPVgCLiHNsHXVELn9
+        bq7BzTjwh3tLajF/afaasR8CmY7zA==
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     klassert@kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH] net: 3com: 3c59x: Change the conditional processing for vortex_ioctl
+Date:   Thu, 17 Mar 2022 12:33:44 +0800
+Message-Id: <20220317043344.15317-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: handle ARPHRD_PIMREG in dev_is_mac_header_xmit()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164749141056.16049.16131083554740518822.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Mar 2022 04:30:10 +0000
-References: <20220315092008.31423-1-nicolas.dichtel@6wind.com>
-In-Reply-To: <20220315092008.31423-1-nicolas.dichtel@6wind.com>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, stable@vger.kernel.org
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign4
+X-QQ-Bgrelay: 1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+In the vortex_ioctl, there are two places where there can be better
+and easier to understand:
+First, it should be better to reverse the check on 'VORTEX_PCI(vp)'
+and returned early in order to be easier to understand.
+Second, no need to make two 'if(state != 0)' judgments, we can
+simplify the execution process.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+---
+ drivers/net/ethernet/3com/3c59x.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-On Tue, 15 Mar 2022 10:20:08 +0100 you wrote:
-> This kind of interface doesn't have a mac header. This patch fixes
-> bpf_redirect() to a PIM interface.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 27b29f63058d ("bpf: add bpf_redirect() helper")
-> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v2] net: handle ARPHRD_PIMREG in dev_is_mac_header_xmit()
-    https://git.kernel.org/netdev/net/c/4ee06de7729d
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
+index ccf07667aa5e..c22de3c8cd12 100644
+--- a/drivers/net/ethernet/3com/3c59x.c
++++ b/drivers/net/ethernet/3com/3c59x.c
+@@ -3032,16 +3032,19 @@ static int vortex_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ 	struct vortex_private *vp = netdev_priv(dev);
+ 	pci_power_t state = 0;
+ 
+-	if(VORTEX_PCI(vp))
+-		state = VORTEX_PCI(vp)->current_state;
++	if (!VORTEX_PCI(vp))
++		return -EOPNOTSUPP;
+ 
+-	/* The kernel core really should have pci_get_power_state() */
++	state = VORTEX_PCI(vp)->current_state;
+ 
+-	if(state != 0)
++	/* The kernel core really should have pci_get_power_state() */
++	if (!state) {
++		err = generic_mii_ioctl(&vp->mii, if_mii(rq), cmd, NULL);
++	} else {
+ 		pci_set_power_state(VORTEX_PCI(vp), PCI_D0);
+-	err = generic_mii_ioctl(&vp->mii, if_mii(rq), cmd, NULL);
+-	if(state != 0)
++		err = generic_mii_ioctl(&vp->mii, if_mii(rq), cmd, NULL);
+ 		pci_set_power_state(VORTEX_PCI(vp), state);
++	}
+ 
+ 	return err;
+ }
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+2.20.1
+
 
 
