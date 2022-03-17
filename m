@@ -2,213 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B4134DC369
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 10:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7CAC4DC38E
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 11:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbiCQJ5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 05:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
+        id S232318AbiCQKFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 06:05:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231995AbiCQJ5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 05:57:48 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C321DB8B0
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 02:56:31 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id yy13so9553874ejb.2
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 02:56:31 -0700 (PDT)
+        with ESMTP id S232314AbiCQKFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 06:05:50 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F911DBABC
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 03:04:34 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id 17-20020a9d0611000000b005b251571643so3188413otn.2
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 03:04:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LKI5osEQPlJQ9O41BUKV52XR7DzjpxsT1kue581cMEE=;
-        b=wtF2cm1chUMImmLChI8MkXLIoXzRJv/4c2ZfBPQXNLIW3gztpjO9Vus4qB80F9/9Ac
-         UfctFxEEUiedV5c74UYBUcZbTl7TAnqIDK/81wFUViIAyzwtnGBDk/nEfWIu4dOZq3UY
-         dU772LEIPywn+CzvVwK16LoMS8QaDRouGG8Ra7DddwEVLt3oRdY1hvMUB8H9AIXtgvwj
-         v+laEHqfmmio6d79AWCPC9XC9JU2ad1QjY1he8lLN/UplsOA70S56ox/4B+pz62Dgp3L
-         3UKH4xjoixBzd2DeF+Z3lSqd6kkiE+ouS+Y1reWWY2fTs+L5B4x9E6PUniJymHyX+99H
-         2pIw==
+        d=sifive.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u9nUpgzxfAbZV4T52RCZIvcr/DfDTjQKuSh0K5ZGlvE=;
+        b=abPaoLiZdx3ecilJzTIn3NriIeqU+n/NqrMMgfuAwsp+ri8WrFq8OtBBEY+LuRvFIU
+         voR/ua3F9ZYY5VmnR3McaCXrcsKN30qy7R+Kw4sBRq7t8/3Lo9E0B0GgD0Xe3Vxi/1CN
+         Mma+OzbtzI+lWUv0QShxiANMoG5lgyn4GG8SY3q44pUZfCJ/oPKL0gnRmhZ+DEpCgBrB
+         /2iz0p3/WQ9dBW7p6T4LwBhGfvTn9hu1ZvuGN6MrE/LBTD5Z/LPMapmRDpDarZKOrhet
+         3QHOM3Qy7S9QAkfSuyQ61AcknUoVLr1JhXUVDYYHNbD0UVpv9/LrZUvXXUKNzwCzCPGL
+         Q/Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LKI5osEQPlJQ9O41BUKV52XR7DzjpxsT1kue581cMEE=;
-        b=wyigXdRV5+J3Pxi1/DpYUhVH3AzzYAmavjxUPzlgdTEERMXY2gJ2W3skyvUnR1uWWl
-         oWXiOtE9o5qp4Fh4YIiI2g/ORZsMKr3jUb4ETC2azFLO3n3LjtYUAdQI1ZW1UTWDvDmV
-         fui2esGM+9isp+Fy2qZWDTgPe0eo8/17aQXHDVwQjlqFASNk57kAStakuhLLk8Uni0i+
-         jOVTXJcRuqYyvffGN/MGVC/VYJsut0DBGDGmE57QQx1gVzDI/HZqfZ9o8QjA47PGZNIr
-         45S3/hJT271AGXoht5bWxL5QsXb7a6d8TZFXwYuzbT4mMewQEEoRkAwKmTYupTAbrTqZ
-         WWsA==
-X-Gm-Message-State: AOAM530fa//jjfduJlYtM5m0y3gVCrpMG+HFK2AHFridv72dXj878g3o
-        z0XTgVyakTYWoZwbxMqBfN1Rcw==
-X-Google-Smtp-Source: ABdhPJzruCPaoIxNIBvpP+LfzFl7/FwTivyoElXEcL44kAFVVQxza9J2S8xYas7tVKVC8JIZgQmL6w==
-X-Received: by 2002:a17:907:9910:b0:6d5:acd6:8d02 with SMTP id ka16-20020a170907991000b006d5acd68d02mr3560951ejc.173.1647510989856;
-        Thu, 17 Mar 2022 02:56:29 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id n6-20020aa7c786000000b00410d2403ccfsm2382081eds.21.2022.03.17.02.56.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Mar 2022 02:56:29 -0700 (PDT)
-Message-ID: <65f72950-8cfa-132d-f455-06213dae4327@blackwall.org>
-Date:   Thu, 17 Mar 2022 11:56:27 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u9nUpgzxfAbZV4T52RCZIvcr/DfDTjQKuSh0K5ZGlvE=;
+        b=wvyezNSFoS3o0jplu8zu7P2FXyaqRqn6xEx/qkY4Xu472a6JGGL6tG1XFudpGoDc71
+         6GNk4s24BrbR09SXFVQs5gOA5vZUMLogZDN89MUZb/Hpdt68v46X+LdDor1kq98EHJ7l
+         PLGz8M+nLIDLENCCClu9sn1Ti64s716sgsJSJSSxZ0iK/FJK78dnHvhA7jbrDq+MzSnY
+         TaCP4Bq/ERrXP9sX7LSY+UFm/al5yWaHLoIh67DbR7g/WUt04msPi7VFCUCz+IKNSicM
+         YIrWfpau0lgeBDobwwAbzL2eMhIBWOaB/pWUyUIfkW/1tOAXUj70CVZnLIpySS2TEKX+
+         GlNQ==
+X-Gm-Message-State: AOAM533ZSpFuSGJ3EkwjzwKRLfVI0jU+d/XGOAV2CIwj+PtBq8vTC5Ns
+        KNa2vYvGszEADw5j9RVxNhWCHhRT3MvFElKKESRmfA==
+X-Google-Smtp-Source: ABdhPJzwfFzBhrRDqvgE0InBEBQROYhXvwuPi4voMAzEwABwx5FappeX8bR+bfRME3eYybKak2lxfWoQMRjHCMjQOTE=
+X-Received: by 2002:a05:6830:1b78:b0:5c9:48b3:8ab with SMTP id
+ d24-20020a0568301b7800b005c948b308abmr1288721ote.235.1647511473444; Thu, 17
+ Mar 2022 03:04:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 net-next 00/15] net: bridge: Multiple Spanning Trees
-Content-Language: en-US
-To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Petr Machata <petrm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Matt Johnston <matt@codeconstruct.com.au>,
-        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-References: <20220316150857.2442916-1-tobias@waldekranz.com>
- <610eb6cc-4df4-f0fc-462a-b33145334a12@blackwall.org>
- <87tubwkiw2.fsf@waldekranz.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <87tubwkiw2.fsf@waldekranz.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220317091926.86765-1-andy.chiu@sifive.com>
+In-Reply-To: <20220317091926.86765-1-andy.chiu@sifive.com>
+From:   Andy Chiu <andy.chiu@sifive.com>
+Date:   Thu, 17 Mar 2022 18:02:35 +0800
+Message-ID: <CABgGipUd67TSoPz3eeKf2kXzzwy8NWJMkGYtkikdcBKiaJd8Bg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: xilinx_axienet: add pcs-handle attribute
+To:     davem@davemloft.net, kuba@kernel.org, michal.simek@xilinx.com,
+        linux@armlinux.org.uk, Robert Hancock <robert.hancock@calian.com>,
+        andrew@lunn.ch, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        radhey.shyam.pandey@xilinx.com
+Cc:     Greentime Hu <greentime.hu@sifive.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/03/2022 11:50, Tobias Waldekranz wrote:
-> On Thu, Mar 17, 2022 at 11:00, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->> On 16/03/2022 17:08, Tobias Waldekranz wrote:
->>> The bridge has had per-VLAN STP support for a while now, since:
->>>
->>> https://lore.kernel.org/netdev/20200124114022.10883-1-nikolay@cumulusnetworks.com/
->>>
->>> The current implementation has some problems:
->>>
->>> - The mapping from VLAN to STP state is fixed as 1:1, i.e. each VLAN
->>>   is managed independently. This is awkward from an MSTP (802.1Q-2018,
->>>   Clause 13.5) point of view, where the model is that multiple VLANs
->>>   are grouped into MST instances.
->>>
->>>   Because of the way that the standard is written, presumably, this is
->>>   also reflected in hardware implementations. It is not uncommon for a
->>>   switch to support the full 4k range of VIDs, but that the pool of
->>>   MST instances is much smaller. Some examples:
->>>
->>>   Marvell LinkStreet (mv88e6xxx): 4k VLANs, but only 64 MSTIs
->>>   Marvell Prestera: 4k VLANs, but only 128 MSTIs
->>>   Microchip SparX-5i: 4k VLANs, but only 128 MSTIs
->>>
->>> - By default, the feature is enabled, and there is no way to disable
->>>   it. This makes it hard to add offloading in a backwards compatible
->>>   way, since any underlying switchdevs have no way to refuse the
->>>   function if the hardware does not support it
->>>
->>> - The port-global STP state has precedence over per-VLAN states. In
->>>   MSTP, as far as I understand it, all VLANs will use the common
->>>   spanning tree (CST) by default - through traffic engineering you can
->>>   then optimize your network to group subsets of VLANs to use
->>>   different trees (MSTI). To my understanding, the way this is
->>>   typically managed in silicon is roughly:
->>>
->>>   Incoming packet:
->>>   .----.----.--------------.----.-------------
->>>   | DA | SA | 802.1Q VID=X | ET | Payload ...
->>>   '----'----'--------------'----'-------------
->>>                         |
->>>                         '->|\     .----------------------------.
->>>                            | +--> | VID | Members | ... | MSTI |
->>>                    PVID -->|/     |-----|---------|-----|------|
->>>                                   |   1 | 0001001 | ... |    0 |
->>>                                   |   2 | 0001010 | ... |   10 |
->>>                                   |   3 | 0001100 | ... |   10 |
->>>                                   '----------------------------'
->>>                                                              |
->>>                                .-----------------------------'
->>>                                |  .------------------------.
->>>                                '->| MSTI | Fwding | Lrning |
->>>                                   |------|--------|--------|
->>>                                   |    0 | 111110 | 111110 |
->>>                                   |   10 | 110111 | 110111 |
->>>                                   '------------------------'
->>>
->>>   What this is trying to show is that the STP state (whether MSTP is
->>>   used, or ye olde STP) is always accessed via the VLAN table. If STP
->>>   is running, all MSTI pointers in that table will reference the same
->>>   index in the STP stable - if MSTP is running, some VLANs may point
->>>   to other trees (like in this example).
->>>
->>>   The fact that in the Linux bridge, the global state (think: index 0
->>>   in most hardware implementations) is supposed to override the
->>>   per-VLAN state, is very awkward to offload. In effect, this means
->>>   that when the global state changes to blocking, drivers will have to
->>>   iterate over all MSTIs in use, and alter them all to match. This
->>>   also means that you have to cache whether the hardware state is
->>>   currently tracking the global state or the per-VLAN state. In the
->>>   first case, you also have to cache the per-VLAN state so that you
->>>   can restore it if the global state transitions back to forwarding.
->>>
->>> This series adds a new mst_enable bridge setting (as suggested by Nik)
->>> that can only be changed when no VLANs are configured on the
->>> bridge. Enabling this mode has the following effect:
->>>
->>> - The port-global STP state is used to represent the CST (Common
->>>   Spanning Tree) (1/15)
->>>
->>> - Ingress STP filtering is deferred until the frame's VLAN has been
->>>   resolved (1/15)
->>>
->>> - The preexisting per-VLAN states can no longer be controlled directly
->>>   (1/15). They are instead placed under the MST module's control,
->>>   which is managed using a new netlink interface (described in 3/15)
->>>
->>> - VLANs can br mapped to MSTIs in an arbitrary M:N fashion, using a
->>>   new global VLAN option (2/15)
->>>
->>> Switchdev notifications are added so that a driver can track:
->>> - MST enabled state
->>> - VID to MSTI mappings
->>> - MST port states
->>>
->>> An offloading implementation is this provided for mv88e6xxx.
->>>
->>> A proposal for the corresponding iproute2 interface is available here:
->>>
->>> https://github.com/wkz/iproute2/tree/mst
->>>
->>
->> Hi Tobias,
->> One major missing thing is the selftests for this new feature. Do you
->> have a plan to upstream them?
-> 
-> 100% agree. I have an internal test that I plan to adapt to run as a
-> kselftest. There's a bootstrapping problem here though. I can't send the
-> iproute2 series until the kernel support is merged - and until I know
-> how the iproute2 support ends up looking I can't add a kselftest.
-> 
+loop in: radhey.shyam.pandey@xilinx.com
 
-That's ok, some people choose to send the iproute2 with the set, others
-send the iproute2 patches separately and add selftests after those are
-accepted (that's my personal preference for the same reasons above).
-Personally I don't mind either way as long as the tests end up materializing. :)
 
-Just in case you've missed it - most of the bridge tests reside in
-tools/testing/selftests/net/forwarding.
-
-> Ideally, tools/iproute2 would be a thing in the kernel. Then you could
-> send the entire implementation as one series. I'm sure that's probably
-> been discussed many times already, but my Google-fu fails me.
-
-Cheers,
- Nik
+On Thu, Mar 17, 2022 at 5:21 PM Andy Chiu <andy.chiu@sifive.com> wrote:
+>
+> Document the new pcs-handle attribute to support connecting to an
+> external PHY in SGMII or 1000Base-X modes through the internal PCS/PMA
+> PHY.
+>
+> Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+> Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+> ---
+>  Documentation/devicetree/bindings/net/xilinx_axienet.txt | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+> index b8e4894bc634..2a9a3a90eb63 100644
+> --- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+> +++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+> @@ -68,6 +68,11 @@ Optional properties:
+>                   required through the core's MDIO interface (i.e. always,
+>                   unless the PHY is accessed through a different bus).
+>
+> + - pcs-handle:           Phandle to the internal PCS/PMA PHY, if a fixed external PHY
+> +                 is tied to it in SGMII or 1000Base-X modes. This is not
+> +                 required for SFP connection. The driver would use phy-handle
+> +                 to reference the PCS/PMA PHY in such case.
+> +
+>  Example:
+>         axi_ethernet_eth: ethernet@40c00000 {
+>                 compatible = "xlnx,axi-ethernet-1.00.a";
+> --
+> 2.34.1
+>
