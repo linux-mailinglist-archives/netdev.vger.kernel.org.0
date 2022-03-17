@@ -2,259 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0350A4DCC40
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 18:20:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 838504DCC56
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 18:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236829AbiCQRVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 13:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
+        id S236845AbiCQR1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 13:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiCQRVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 13:21:35 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538F715AAFE;
-        Thu, 17 Mar 2022 10:20:17 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id ja24so6765241ejc.11;
-        Thu, 17 Mar 2022 10:20:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7PCJ9fN5SE0WkjzHs63nhyK5sez+MQV2zN2NN2P5nj8=;
-        b=SHRCcqH12Kl12d4RiZKFfVQGhG8rLaxCCz7TV2G9HF8XbQCOmBia85KlYflIMhy4rF
-         oRFSIpxg+Cs2gDDrlEG3jh1njqAiSQQdPes7EwLB5sqmdUBjLTWGMxa8DC1jPOQDOG8V
-         pegxb+jL9ZfA2IB0u0mxwHUb6mjptuzvVTh3vK/KeDxyz8VSEzvetK2cg0IU2F4AOsJk
-         RHADNCfTCpAN5vPqfn398MXqSoEj4xUgaqpdxePH3V5jgFwIEIfv7URm32fKOXg8rH99
-         8pgmZHxYIW0DNn0maFh55y7tpNHdwvHwdB2XrbG1mCKVuXPxdtcOcpRQjCsCa0uytUAk
-         T2yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7PCJ9fN5SE0WkjzHs63nhyK5sez+MQV2zN2NN2P5nj8=;
-        b=Y/0eRA9QyIBRWnIiJo28wOzxD3MCG27Zb6DYUgFqSTFL0bvQvHibR+U4yre+Tax/LJ
-         l5Bm7LlqCZI6ci5hAfbMnal1L16bUC31fpILWb542Lz+f112HWfUzNp9Esgr8BS5eVj1
-         KPFoTYCvfx9jjLGrVKzMe9YRpD7fV5o7q7v3wRdstN9WLGT7LI3IDqE28HzQlgoq3mHv
-         cL5R8mgAwq3W0iiKUPKfePmwd8CZRKLVhBiaCo7nztk+8MOAD6DkGC7wZQ6/ghmRNpds
-         tlAfaQFjczdGUytPqc1BgvZYWUe8jowPdKpcq6otj3b5F6oVzAPp8zLap9oRBqjfU45i
-         UNRg==
-X-Gm-Message-State: AOAM531kw29FSEEhAAo7bcIdPbaebvVkJxqWhTSLkp70k+nLjdOmAWEs
-        LF5SScItn/ojy6aReDBCCw0=
-X-Google-Smtp-Source: ABdhPJzzsJ0jH71tuvX1cwq4H9bfTXxwU+gFujoW6nvTrYMJBJPKFXBPIrI4FrgSUx9LGU156jKKrg==
-X-Received: by 2002:a17:907:1b20:b0:6da:649b:d99e with SMTP id mp32-20020a1709071b2000b006da649bd99emr5491392ejc.712.1647537615743;
-        Thu, 17 Mar 2022 10:20:15 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id pg27-20020a170907205b00b006d6e5102ca2sm2576432ejb.97.2022.03.17.10.20.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 10:20:15 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 19:20:13 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20220317172013.rhjvknre5w7mfmlo@skbuf>
-References: <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
- <20220310142836.m5onuelv4jej5gvs@skbuf>
- <86r17495gk.fsf@gmail.com>
- <20220316233447.kwyirxckgancdqmh@skbuf>
- <86lex9hsg0.fsf@gmail.com>
- <YjNDgnrYaYfviNTi@lunn.ch>
- <20220317153625.2ld5zgtuhoxbcgvo@skbuf>
- <86ilscr2a4.fsf@gmail.com>
- <20220317161808.psftauoz5iaecduy@skbuf>
- <8635jg5xe5.fsf@gmail.com>
+        with ESMTP id S236543AbiCQR1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 13:27:23 -0400
+X-Greylist: delayed 118762 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 17 Mar 2022 10:26:02 PDT
+Received: from smtp-8fa9.mail.infomaniak.ch (smtp-8fa9.mail.infomaniak.ch [83.166.143.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC94F114FC4
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 10:26:02 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KKDZK00LMzMqNMV;
+        Thu, 17 Mar 2022 18:26:01 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KKDZJ35qMzlhRVB;
+        Thu, 17 Mar 2022 18:26:00 +0100 (CET)
+Message-ID: <ef128eed-65a3-1617-d630-275f3cfa8220@digikod.net>
+Date:   Thu, 17 Mar 2022 18:26:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8635jg5xe5.fsf@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <c9333349-5e05-de95-85da-f6a0cd836162@digikod.net>
+ <29244d4d-70cc-9c4f-6d0f-e3ce3beb2623@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 00/15] Landlock LSM
+In-Reply-To: <29244d4d-70cc-9c4f-6d0f-e3ce3beb2623@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 05:58:26PM +0100, Hans Schultz wrote:
-> On tor, mar 17, 2022 at 18:18, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Thu, Mar 17, 2022 at 05:07:15PM +0100, Hans Schultz wrote:
-> >> On tor, mar 17, 2022 at 17:36, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >> > On Thu, Mar 17, 2022 at 03:19:46PM +0100, Andrew Lunn wrote:
-> >> >> On Thu, Mar 17, 2022 at 09:52:15AM +0100, Hans Schultz wrote:
-> >> >> > On tor, mar 17, 2022 at 01:34, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >> >> > > On Mon, Mar 14, 2022 at 11:46:51AM +0100, Hans Schultz wrote:
-> >> >> > >> >> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
-> >> >> > >> >>  				    "ATU miss violation for %pM portvec %x spid %d\n",
-> >> >> > >> >>  				    entry.mac, entry.portvec, spid);
-> >> >> > >> >>  		chip->ports[spid].atu_miss_violation++;
-> >> >> > >> >> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
-> >> >> > >> >> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
-> >> >> > >> >> +									    chip->ports[spid].port,
-> >> >> > >> >> +									    &entry,
-> >> >> > >> >> +									    fid);
-> >> >> > >> >
-> >> >> > >> > Do we want to suppress the ATU miss violation warnings if we're going to
-> >> >> > >> > notify the bridge, or is it better to keep them for some reason?
-> >> >> > >> > My logic is that they're part of normal operation, so suppressing makes
-> >> >> > >> > sense.
-> >> >> > >> >
-> >> >> > >> 
-> >> >> > >> I have been seeing many ATU member violations after the miss violation is
-> >> >> > >> handled (using ping), and I think it could be considered to suppress the ATU member
-> >> >> > >> violations interrupts by setting the IgnoreWrongData bit for the
-> >> >> > >> port (sect 4.4.7). This would be something to do whenever a port is set in locked mode?
-> >> >> > >
-> >> >> > > So the first packet with a given MAC SA triggers an ATU miss violation
-> >> >> > > interrupt.
-> >> >> > >
-> >> >> > > You program that MAC SA into the ATU with a destination port mask of all
-> >> >> > > zeroes. This suppresses further ATU miss interrupts for this MAC SA, but
-> >> >> > > now generates ATU member violations, because the MAC SA _is_ present in
-> >> >> > > the ATU, but not towards the expected port (in fact, towards _no_ port).
-> >> >> > >
-> >> >> > > Especially if user space decides it doesn't want to authorize this MAC
-> >> >> > > SA, it really becomes a problem because this is now a vector for denial
-> >> >> > > of service, with every packet triggering an ATU member violation
-> >> >> > > interrupt.
-> >> >> > >
-> >> >> > > So your suggestion is to set the IgnoreWrongData bit on locked ports,
-> >> >> > > and this will suppress the actual member violation interrupts for
-> >> >> > > traffic coming from these ports.
-> >> >> > >
-> >> >> > > So if the user decides to unplug a previously authorized printer from
-> >> >> > > switch port 1 and move it to port 2, how is this handled? If there isn't
-> >> >> > > a mechanism in place to delete the locked FDB entry when the printer
-> >> >> > > goes away, then by setting IgnoreWrongData you're effectively also
-> >> >> > > suppressing migration notifications.
-> >> >> > 
-> >> >> > I don't think such a scenario is so realistic, as changing port is not
-> >> >> > just something done casually, besides port 2 then must also be a locked
-> >> >> > port to have the same policy.
-> >> >> 
-> >> >> I think it is very realistic. It is also something which does not work
-> >> >> is going to cause a lot of confusion. People will blame the printer,
-> >> >> when in fact they should be blaming the switch. They will be rebooting
-> >> >> the printer, when in fact, they need to reboot the switch etc.
-> >> >> 
-> >> >> I expect there is a way to cleanly support this, you just need to
-> >> >> figure it out.
-> >> >
-> >> > Hans, why must port 2 also be a locked port? The FDB entry with no
-> >> > destinations is present in the ATU, and static, why would just locked
-> >> > ports match it?
-> >> >
-> >> You are right of course, but it was more from a policy standpoint as I
-> >> pointed out. If the FDB entry is removed after some timeout and the
-> >> device in the meantime somehow is on another port that is not locked
-> >> with full access, the device will of course get full access.
-> >> But since it was not given access in the first instance, the policy is
-> >> not consistent.
-> >> 
-> >> >> > The other aspect is that the user space daemon that authorizes catches
-> >> >> > the fdb add entry events and checks if it is a locked entry. So it will
-> >> >> > be up to said daemon to decide the policy, like remove the fdb entry
-> >> >> > after a timeout.
-> >> >
-> >> > When you say 'timeout', what is the moment when the timer starts counting?
-> >> > The last reception of the user space daemon of a packet with this MAC SA,
-> >> > or the moment when the FDB entry originally became unlocked?
-> >> 
-> >> I think that if the device is not given access, a timer should be
-> >> started at that moment. No further FDB add events with the same MAC
-> >> address will come of course until the FDB entry is removed, which I
-> >> think would be done based on the said timer.
-> >> >
-> >> > I expect that once a device is authorized, and forwarding towards the
-> >> > devices that it wants to talk to is handled in hardware, that the CPU no
-> >> > longer receives packets from this device. In other words, are you saying
-> >> > that you're going to break networking for the printer every 5 minutes,
-> >> > as a keepalive measure?
-> >> 
-> >> No, I don't think that would be a good idea, but as we are in userspace,
-> >> that is a policy decision of those creating the daemon. The kernel just
-> >> facilitates, it does not make those decisions as far as I think.
-> >> >
-> >> > I still think there should be a functional fast path for authorized
-> >> > station migrations.
-> >> >
-> >> I am not sure in what way you are suggesting that should be, if the
-> >> kernel should actively do something there? If a station is authorized,
-> >> and somehow is transferred to another port, if that port is not locked it
-> >> will get access, if the port is locked a miss violation will occur etc...
-> >
-> > Wait, if the new port is locked and the device was previously
-> > authorized, why will the new port trigger a miss violation? This is the
-> > part I'm not following. The authorization is still present in the form
-> > of an ATU entry on the old locked port, is it not?
-> >
-> I am sure (have not tested) that a miss violation will occur. It might
-> be a member violation in this instance though.
-> When thinking of it, afaik there is no way today of having fine control
-> over the DPV when adding a FDB entry.
-> If the DPV could be finer controlled the entry could cover several
-> possible ports and the fast (immediate migration) will be accomplished?
 
-I'm not sure I understand this, either.
+On 17/03/2022 14:01, Konstantin Meskhidze wrote:
+> 
+> 
+> 3/15/2022 8:02 PM, Mickaël Salaün пишет:
+>> Hi Konstantin,
+>>
+>> This series looks good! Thanks for the split in multiple patches.
+>>
+>   Thanks. I follow your recommendations.
+>>
+>> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>>> Hi,
+>>> This is a new V4 bunch of RFC patches related to Landlock LSM network 
+>>> confinement.
+>>> It brings deep refactirong and commit splitting of previous version V3.
+>>> Also added additional selftests.
+>>>
+>>> This patch series can be applied on top of v5.17-rc3.
+>>>
+>>> All test were run in QEMU evironment and compiled with
+>>>   -static flag.
+>>>   1. network_test: 9/9 tests passed.
+>>
+>> I get a kernel warning running the network tests.
+> 
+>    What kind of warning? Can you provide it please?
 
-You're saying we should configure the authorizations as de-facto
-multicast ATU entries towards all locked ports, so that there wouldn't
-be any violation when a station migrates, because the new port is still
-in the destination port mask of the ATU entry?
+You really need to get a setup that gives you such kernel warning. When 
+running network_test you should get:
+WARNING: CPU: 3 PID: 742 at security/landlock/ruleset.c:218 
+insert_rule+0x220/0x270
 
-Yes, but... this leaks traffic between ports to a significant degree.
-Any packet that targets your printer now targets your colleague's printer too.
+Before sending new patches, please make sure you're able to catch such 
+issues.
 
-I was expecting you'd say that when the cable is unplugged from the
-switch, the authorization daemon is notified through rtnetlink of the
-link state change, and it flushes the port of addresses it has added
-(because the kernel surely does not do this).
 
-This could work to an extent, but it wouldn't handle the case where the
-printer isn't connected directly to the 802.1X port, but through
-another dumb switch. I don't know enough about 802.1X, but I don't see
-why this isn't a valid configuration.
+>>
+>>>   2. base_test: 8/8 tests passed.
+>>>   3. fs_test: 46/46 tests passed.
+>>>   4. ptrace_test: 4/8 tests passed.
+>>
+>> Does your test machine use Yama? That would explain the 4/8. You can 
+>> disable it with the appropriate sysctl.
 
-To explain what I'm thinking of. At office, IT gave one Ethernet port to
-each desk, but I have multiple devices. I have a PC, a printer, and a
-development board, each with a single Ethernet port, so I use a dumb
-4-port switch to connect all these devices to the 802.1X port beneath my
-desk. I talked to IT, brought my printer to them, they agreed to bypass
-802.1X authorization for it based on the MAC address on its label.
+Can you answer this question?
 
-I've been working from home for the past few years, but now I need to
-return to office. But since years have passed, some colleagues left,
-some new colleagues came, and I need to change my desk. The new one
-belonged to a co-worker who also had a dumb switch on his desk, so I see
-no reason to move mine too. I unplug the printer from my dumb switch,
-plug it into the new one, but it doesn't work. What do I do, open a
-ticket to IT asking for halp?
 
-To be honest this is purely fictional and I haven't tried it, but it
-sounds like I should when I get the chance, to get a better image of how
-things are supposed to work.
+>>
+>>>
+>>> Tests were also launched for Landlock version without
+>>> v4 patch:
+>>>   1. base_test: 8/8 tests passed.
+>>>   2. fs_test: 46/46 tests passed.
+>>>   3. ptrace_test: 4/8 tests passed.
+>>>
+>>> Could not provide test coverage cause had problems with tests
+>>> on VM (no -static flag the tests compiling, no v4 patch applied):
+>>
+>> You can build statically-linked tests with:
+>> make -C tools/testing/selftests/landlock CFLAGS=-static
+> 
+>   Ok. I will try. Thanks.
+>>
+>>> 1. base_test: 7/8 tests passed.
+>>>   Error:
+>>>   # Starting 8 tests from 1 test cases.
+>>>   #  RUN           global.inconsistent_attr ...
+>>>   # base_test.c:51:inconsistent_attr:Expected ENOMSG (42) == errno (22)
+>>
+>> This looks like a bug in the syscall argument checks.
+> 
+>    This bug I just get when don't use -static option. With -static base 
+> test passes 8/8.
 
-> >> >> > > Oh, btw, my question was: could you consider suppressing the _prints_ on
-> >> >> > > an ATU miss violation on a locked port?
-> >> >> > 
-> >> >> > As there will only be such on the first packet, I think it should be
-> >> >> > logged and those prints serve that purpose, so I think it is best to
-> >> >> > keep the print.
-> >> >> > If in the future some tests or other can argue for suppressing the
-> >> >> > prints, it is an easy thing to do.
-> >> >> 
-> >> >> Please use a traffic generator and try to DOS one of your own
-> >> >> switches. Can you?
-> >> >> 
-> >> >> 	  Andrew
+Weird, I'd like to know what is the cause of this issue. What disto and 
+version do you use as host and guest VM? Do you have some warning when 
+compiling?
