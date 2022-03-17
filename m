@@ -2,208 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 613044DCDEF
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:50:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06DAA4DCE12
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:54:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237608AbiCQSvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:51:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53020 "EHLO
+        id S237694AbiCQSyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237650AbiCQSvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:51:07 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175251557EF;
-        Thu, 17 Mar 2022 11:49:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647542984; x=1679078984;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RIdhHdpM5nL7HMZXAvGb9SlP3iancAtq9XoW3asZ+fA=;
-  b=Pu3O+0bCfB/IKGjZYx6GfB0vBGF8KVblmJHZccAHDx2rEVuqT8pvX+b+
-   eShCNihi+xCwupmgA7JAwtVhXZLTkp3evRevZoAkFEBaq6CKB+1FmP938
-   mMxxUVnb7kEhFdJ4fN/ihjAfolVMCu6hzp+UsSb5lRGlYWCBIUOsEXydu
-   AuvTmKMDloBlqZ2Ll+i8QCh+q3/9d3CL540ctehq9Ofk1/1CdehPxvu2D
-   JOdeKYfPzHrpEURUVpjlj+DRu/mvbXgFy782wkGgm6Z0BQEHv+ma6s3CG
-   JpKDLwDfF9DyzK/6QUv6j/Tz0uLKGZL0OcbVl8wpSuQ2eZJ+wNn2R2nWn
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
-   d="scan'208";a="152385628"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 11:49:39 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Mar 2022 11:49:34 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 17 Mar 2022 11:49:32 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 5/5] net: lan96x: Update FDMA to change MTU.
-Date:   Thu, 17 Mar 2022 19:51:59 +0100
-Message-ID: <20220317185159.1661469-6-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
-References: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
+        with ESMTP id S232822AbiCQSyK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:54:10 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E5E223237;
+        Thu, 17 Mar 2022 11:52:53 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id m12so7666677edc.12;
+        Thu, 17 Mar 2022 11:52:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gzPNpJdEUpw3mjUuvvjyqVBEBTyj2FECQV6z8PHyMUo=;
+        b=o8xcG4Q+J5j5DHCk14HT66nrZU0u6AZoeh/Aw+tjG1dcVctOCVXQEOFDdRTJXLRJRR
+         zhPKcAj1o02tj+2vcRXRPR2Q44pFKEIX0pe7g2Ex3Q+cFcg8wfcQnZS6g0YSwH3JmLj7
+         4d9Nii3rvYgFt6yAABgUxDloQQo2XDDOppA9jTFKk3z7I3/fVH5w+h46mFevPqG1NvqG
+         HroOsgPHDweuLvtuhPTZP9QH35NSUL9nniqT31QUIR0al8skfmpm59tzwywtVvN0B++l
+         qkoekCxEe/+IbL7nzeo5BYQras2tEbtT5XUYcwCP/BeEHVIWKly9fFRy3ypfIGmVIrio
+         VJCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gzPNpJdEUpw3mjUuvvjyqVBEBTyj2FECQV6z8PHyMUo=;
+        b=bRNHHp7FV0Y1BBQi2qdPc/sqh+407xVVDCmNET3FHY0NZdccaohp5U3l0g0x0SY9Cd
+         sGgpR5dKXRoU3B3xfot/UnOOap5lU4feMlYCJjXKZEx/U+jBnPkhNJEa9jtj2pZiKRuB
+         9BwcyJPLCX3X2/TPNqnnLr2TizZzkJ+BhVihX2/avSbVNDngsuNIKW5oZmPaAV+5wdfu
+         l1EV35HLu0ibcbOkx8SshrPn7Lze0hBm3WkAuleEd/v3pozc85VARZfn9jOOiL9uufSe
+         m6KnlI8ysTwrbcaOUzs73EJhc2UaDUUGuTMJF1HnascgY4AyQLmUeUfu7tTBkXJV5NpX
+         gAFQ==
+X-Gm-Message-State: AOAM533J9qsTaCj+5ESr66mW2D6E7tWlAGlhle74I1dDaT7l0nH/ZV/p
+        patVwT7aoazIa92esmQtxLo=
+X-Google-Smtp-Source: ABdhPJxGrv4Uv97ZSvQ2Qc4XMAXAd/7yWAQZiZ3RUMtorHOVIudOPLE7TAOqKap7BPA+lba5yVEbBg==
+X-Received: by 2002:a05:6402:3483:b0:418:fb7c:8d23 with SMTP id v3-20020a056402348300b00418fb7c8d23mr4175401edc.249.1647543171871;
+        Thu, 17 Mar 2022 11:52:51 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id f4-20020a170906738400b006df8b6787afsm1811219ejl.13.2022.03.17.11.52.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 11:52:51 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 20:52:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jianbo Liu <jianbol@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
+        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        simon.horman@corigine.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        baowen.zheng@corigine.com, louis.peens@netronome.com,
+        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
+Subject: Re: [PATCH net-next v3 1/2] net: flow_offload: add tc police action
+ parameters
+Message-ID: <20220317185249.5mff5u2x624pjewv@skbuf>
+References: <20220224102908.5255-1-jianbol@nvidia.com>
+ <20220224102908.5255-2-jianbol@nvidia.com>
+ <20220315191358.taujzi2kwxlp6iuf@skbuf>
+ <YjM2IhX4k5XHnya0@shredder>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjM2IhX4k5XHnya0@shredder>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When changing the MTU, it is required to change also the size of the
-DBs. In case those frames will arrive to CPU.
+On Thu, Mar 17, 2022 at 03:22:42PM +0200, Ido Schimmel wrote:
+> > I don't know why just now, but I observed an apparent regression here
+> > with these commands:
+> > 
+> > root@debian:~# tc qdisc add dev swp3 clsact
+> > root@debian:~# tc filter add dev swp3 ingress protocol ip flower skip_sw ip_proto icmp action police rate 100Mbit burst 10000
+> > [   45.767900] tcf_police_act_to_flow_act: 434: tc_act 1
+> > [   45.773100] tcf_police_offload_act_setup: 475, act_id -95
+> > Error: cls_flower: Failed to setup flow action.
+> > We have an error talking to the kernel, -1
+> > 
+> > The reason why I'm not sure is because I don't know if this should have
+> > worked as intended or not. I am remarking just now in "man tc-police"
+> > that the default conform-exceed action is "reclassify".
+> > 
+> > So if I specify "conform-exceed drop", things are as expected, but with
+> > the default (implicitly "conform-exceed reclassify") things fail with
+> > -EOPNOTSUPP because tcf_police_act_to_flow_act() doesn't handle a
+> > police->tcf_action of TC_ACT_RECLASSIFY.
+> > 
+> > Should it?
+> 
+> Even if tcf_police_act_to_flow_act() handled "reclassify", the
+> configuration would have been rejected later on by the relevant device
+> driver since they all support "drop" for exceed action and nothing else.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 95 +++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.c |  2 +-
- .../ethernet/microchip/lan966x/lan966x_main.h |  1 +
- 3 files changed, 97 insertions(+), 1 deletion(-)
+This is correct, but currently, the error is:
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-index c23e521a1f8b..a33329cc4834 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-@@ -633,6 +633,101 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
- 	return err;
- }
- 
-+static int lan966x_fdma_get_max_mtu(struct lan966x *lan966x)
-+{
-+	int max_mtu = 0;
-+	int i;
-+
-+	for (i = 0; i < lan966x->num_phys_ports; ++i) {
-+		int mtu;
-+
-+		if (!lan966x->ports[i])
-+			continue;
-+
-+		mtu = lan966x->ports[i]->dev->mtu;
-+		if (mtu > max_mtu)
-+			max_mtu = mtu;
-+	}
-+
-+	return max_mtu;
-+}
-+
-+static int lan966x_qsys_sw_status(struct lan966x *lan966x)
-+{
-+	return lan_rd(lan966x, QSYS_SW_STATUS(CPU_PORT));
-+}
-+
-+static void lan966x_fdma_reload(struct lan966x *lan966x, int new_mtu)
-+{
-+	void *rx_dcb, *tx_dcb, *tx_dcb_buf;
-+	dma_addr_t rx_dma, tx_dma;
-+	unsigned long flags;
-+	u32 size;
-+
-+	/* Store these for later to free them */
-+	rx_dma = lan966x->rx.dma;
-+	tx_dma = lan966x->tx.dma;
-+	rx_dcb = lan966x->rx.dcbs;
-+	tx_dcb = lan966x->tx.dcbs;
-+	tx_dcb_buf = lan966x->tx.dcbs_buf;
-+
-+	lan966x_fdma_rx_disable(&lan966x->rx);
-+	lan966x_fdma_rx_free_skbs(&lan966x->rx);
-+	lan966x->rx.page_order = round_up(new_mtu, PAGE_SIZE) / PAGE_SIZE - 1;
-+	lan966x_fdma_rx_alloc(&lan966x->rx);
-+	lan966x_fdma_rx_start(&lan966x->rx);
-+
-+	spin_lock_irqsave(&lan966x->tx_lock, flags);
-+	lan966x_fdma_tx_disable(&lan966x->tx);
-+	lan966x_fdma_tx_alloc(&lan966x->tx);
-+	spin_unlock_irqrestore(&lan966x->tx_lock, flags);
-+
-+	/* Now it is possible to clean */
-+	size = sizeof(struct lan966x_tx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+	dma_free_coherent(lan966x->dev, size, tx_dcb, tx_dma);
-+
-+	kfree(tx_dcb_buf);
-+
-+	size = sizeof(struct lan966x_rx_dcb) * FDMA_DCB_MAX;
-+	size = ALIGN(size, PAGE_SIZE);
-+	dma_free_coherent(lan966x->dev, size, rx_dcb, rx_dma);
-+}
-+
-+int lan966x_fdma_change_mtu(struct lan966x *lan966x)
-+{
-+	int max_mtu;
-+	u32 val;
-+
-+	max_mtu = lan966x_fdma_get_max_mtu(lan966x);
-+	if (round_up(max_mtu, PAGE_SIZE) / PAGE_SIZE - 1 ==
-+	    lan966x->rx.page_order)
-+		return 0;
-+
-+	/* Disable the CPU port */
-+	lan_rmw(QSYS_SW_PORT_MODE_PORT_ENA_SET(0),
-+		QSYS_SW_PORT_MODE_PORT_ENA,
-+		lan966x, QSYS_SW_PORT_MODE(CPU_PORT));
-+
-+	/* Flush the CPU queues */
-+	readx_poll_timeout(lan966x_qsys_sw_status, lan966x,
-+			   val, !(QSYS_SW_STATUS_EQ_AVAIL_GET(val)),
-+			   READL_SLEEP_US, READL_TIMEOUT_US);
-+
-+	/* Add a sleep in case there are frames between the queues and the CPU
-+	 * port
-+	 */
-+	usleep_range(1000, 2000);
-+
-+	lan966x_fdma_reload(lan966x, max_mtu);
-+
-+	/* Enable back the CPU port */
-+	lan_rmw(QSYS_SW_PORT_MODE_PORT_ENA_SET(1),
-+		QSYS_SW_PORT_MODE_PORT_ENA,
-+		lan966x,  QSYS_SW_PORT_MODE(CPU_PORT));
-+	return 0;
-+}
-+
- void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev)
- {
- 	if (lan966x->fdma_ndev)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 6cb9fffc3058..a78fee5471e7 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -359,7 +359,7 @@ static int lan966x_port_change_mtu(struct net_device *dev, int new_mtu)
- 	       lan966x, DEV_MAC_MAXLEN_CFG(port->chip_port));
- 	dev->mtu = new_mtu;
- 
--	return 0;
-+	return !lan966x->fdma ? 0 : lan966x_fdma_change_mtu(lan966x);
- }
- 
- static int lan966x_mc_unsync(struct net_device *dev, const unsigned char *addr)
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-index bfa7feea2b56..fa4016f2b5d4 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
-@@ -397,6 +397,7 @@ void lan966x_ptp_txtstamp_release(struct lan966x_port *port,
- irqreturn_t lan966x_ptp_irq_handler(int irq, void *args);
- 
- int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev);
-+int lan966x_fdma_change_mtu(struct lan966x *lan966x);
- void lan966x_fdma_netdev_init(struct lan966x *lan966x, struct net_device *dev);
- void lan966x_fdma_netdev_deinit(struct lan966x *lan966x, struct net_device *dev);
- void lan966x_fdma_init(struct lan966x *lan966x);
--- 
-2.33.0
+Error: cls_flower: Failed to setup flow action.
+We have an error talking to the kernel, -1
 
+I'd appreciate if the error was instead:
+
+Error: mscc_ocelot: Offload not supported when exceed action is not drop.
+
+which is basically what Jianbo was trying to achieve when he added the
+policer_validate() functions. At least I'd know what's wrong. No?
+
+> I don't know why iproute2 defaults to "reclassify", but the
+> configuration in the example does something different in the SW and HW
+> data paths. One ugly suggestion to keep this case working it to have
+> tcf_police_act_to_flow_act() default to "drop" and emit a warning via
+> extack so that user space is at least aware of this misconfiguration.
+
+I don't want to force a reinterpretation of "reclassify" just to make
+something that used to work by mistake continue to work. It sucks to
+have to adapt, but not being able to make progress because of such
+things sucks even more.
+
+I'd just like the 'reclassify' action to be propagated in some reasonable
+way to flow offload, considering that at the moment the error is quite cryptic.
+
+> > > +		if (act_id < 0)
+> > > +			return act_id;
+> > > +
+> > > +		entry->police.exceed.act_id = act_id;
+> > > +
+> > > +		act_id = tcf_police_act_to_flow_act(p->tcfp_result,
+> > > +						    &entry->police.notexceed.extval);
+> > > +		if (act_id < 0)
+> > > +			return act_id;
+> > > +
+> > > +		entry->police.notexceed.act_id = act_id;
+> > > +
+> > >  		*index_inc = 1;
+> > >  	} else {
+> > >  		struct flow_offload_action *fl_action = entry_data;
+> > > -- 
+> > > 2.26.2
+> > > 
