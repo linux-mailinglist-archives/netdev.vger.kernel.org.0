@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A93704DBBFB
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 01:58:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDA194DBC14
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 02:10:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355269AbiCQBAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 21:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52328 "EHLO
+        id S1350803AbiCQBL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 21:11:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355930AbiCQA76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 20:59:58 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5E113E31
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 17:58:40 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id w127so4169924oig.10
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 17:58:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=73JwOaCUEMBMS9Z8XZ30f1vfEK61WWpxTXG0NNJeeKo=;
-        b=C340OfqU1HJ7/DUuFVU2SN8hHyLCiTh6MR7fHeW5X7S9911ixPG6PzKZtwRh+J0w7a
-         9XnQR/UYMnWV9HsCbs8TR2oqyJAFNQmUb7qRBXAQXno9qnid/dr9r6F1EBHHR5jQOzmW
-         5f6H4QOwv+mFmziubzqgnr0WtRPq/hZL0YQRmJDihLK/6bnN72yICXs8uHTzeInyeI4m
-         PcTibreBO4OyRw2ds0ooeILxCR1dvj9Mhmoxm4bNIcHpuPjT+YuDE/iiBsGPzCVmorUJ
-         00mr1TM8SSya9bswy08w8t7cPiPHuUSJC13BGT4n+zM9uvhRaFX3R5VpVJ7HkKUX1Sal
-         6apQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=73JwOaCUEMBMS9Z8XZ30f1vfEK61WWpxTXG0NNJeeKo=;
-        b=ND1a4MYBqT9Fv4czn2cSuAu0gt4IrT1mLDAvt7Tbxg50gK0w11zVt/O3XeQr8YT3Xo
-         I+qsQDSHqUvcUvZ8g2pKeUSAGNuzb/rtxvtdxa9xOq0DXKZ+R+Pmrq2fH8UFqKdpZ89Y
-         batUh3C57t1/+oJfGIYZlV2W/UECNAWaPL4vK2FaobgG8TWxU+QA9ULXzrnX+79oOBnE
-         mwMGkmaUtjTPzDSy4U2UdRTdR1ZJPbuoLeDlw8AtpdYwPyBwZTo+RwNJF1Zhhf3pE+pS
-         2OmTOs/u30odR6/sjzXxlR56pkbL0Rv8TeYgd6p0uC4npQkc+KtZ7FWQ6OFg9hJ7Yl/w
-         1t3g==
-X-Gm-Message-State: AOAM533ogXOwHT4QzwU46HiTRp7JWx153vcpqFiSR28BcK9wx65BpqGY
-        3lyEw5Vg6oKS5UAzNCmULrQ=
-X-Google-Smtp-Source: ABdhPJwrumKzVt1O1oKExoB9B3tpGlv2o7itPontYyXFNWKZGSkVHE+kk0HSWuLRndzAnce3hGVJ0g==
-X-Received: by 2002:a05:6808:8cb:b0:2ee:f75b:41f1 with SMTP id k11-20020a05680808cb00b002eef75b41f1mr2314778oij.123.1647478719260;
-        Wed, 16 Mar 2022 17:58:39 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.65])
-        by smtp.googlemail.com with ESMTPSA id y128-20020acae186000000b002d97bda3873sm1728072oig.56.2022.03.16.17.58.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Mar 2022 17:58:38 -0700 (PDT)
-Message-ID: <95c69336-4aa5-eed7-22bb-ba1f20044d7f@gmail.com>
-Date:   Wed, 16 Mar 2022 18:58:38 -0600
+        with ESMTP id S242548AbiCQBL0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 21:11:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5661D301
+        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 18:10:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 151D361761
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 01:10:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 77A90C340EF;
+        Thu, 17 Mar 2022 01:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647479410;
+        bh=ibuDjf4pnPyHzgh481xgZ3Wmi0Bk0+AWqr6sDCAP8Y4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ql6meQwCEJtvP9qkdkrJ7mY8Rf+8GLHUNGj6oZ/r/YrSLSLZR6UYaHMGtJ4TF8/or
+         lD+SjkrYZ91DcTPIHFpBS94aOFNqXq+HSrnGB6IP759SfEJHGe+7Lwi+AW6eh2M6EJ
+         0JsSlcfpgApDyNzADeOyuYaKjV4PENmJyLhCgPH2xIJ81RBinIvNsgaGOqOFf8IJhR
+         LXVFCJruRC5wxAI5ln3FYQrstE+VUPtzpY/wKNhl3fp1VO75d63P6ctK04j+px/mwS
+         KJRR8EAsmq9FQGW43KqVdy3A228Bl+L0wcf/T2ET4jHi29SqDDUc0uoD2hX/9bXkQH
+         fPf7JmUKQ1T/g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4B724E8DD5B;
+        Thu, 17 Mar 2022 01:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH iproute2-next v5 2/2] f_flower: Implement gtp options
- support
-Content-Language: en-US
-To:     Wojciech Drewek <wojciech.drewek@intel.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <20220316110815.46779-1-wojciech.drewek@intel.com>
- <20220316110815.46779-3-wojciech.drewek@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220316110815.46779-3-wojciech.drewek@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] vdpa: Update man page with added support to configure max vq
+ pair
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164747941030.23040.1804187689944474995.git-patchwork-notify@kernel.org>
+Date:   Thu, 17 Mar 2022 01:10:10 +0000
+References: <20220315131358.7210-1-elic@nvidia.com>
+In-Reply-To: <20220315131358.7210-1-elic@nvidia.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     dsahern@kernel.org, stephen@networkplumber.org,
+        netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        jasowang@redhat.com, si-wei.liu@oracle.com, mst@redhat.com,
+        lulu@redhat.com, parav@nvidia.com
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/22 5:08 AM, Wojciech Drewek wrote:
-> @@ -1869,6 +1951,13 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
->  				fprintf(stderr, "Illegal \"erspan_opts\"\n");
->  				return -1;
->  			}
-> +		} else if (matches(*argv, "gtp_opts") == 0) {
+Hello:
 
-strcmp(). not allowing any more matches for new options.
+This patch was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
+
+On Tue, 15 Mar 2022 15:13:58 +0200 you wrote:
+> Update man page to include information how to configure the max
+> virtqueue pairs for a vdpa device when creating one.
+> 
+> Signed-off-by: Eli Cohen <elic@nvidia.com>
+> ---
+>  man/man8/vdpa-dev.8 | 6 ++++++
+>  1 file changed, 6 insertions(+)
+
+Here is the summary with links:
+  - vdpa: Update man page with added support to configure max vq pair
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=8130653dabe6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
