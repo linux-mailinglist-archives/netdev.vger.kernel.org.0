@@ -2,125 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A17544DBD4A
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 03:57:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36D5E4DBD52
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 04:02:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351780AbiCQC6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 22:58:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58008 "EHLO
+        id S240548AbiCQDDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 23:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347012AbiCQC6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 22:58:08 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0FA20F6F
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 19:56:51 -0700 (PDT)
+        with ESMTP id S229861AbiCQDDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 23:03:13 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D5CF201BC;
+        Wed, 16 Mar 2022 20:01:58 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id o6-20020a17090a9f8600b001c6562049d9so4281282pjp.3;
+        Wed, 16 Mar 2022 20:01:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1647485812; x=1679021812;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RvP0MfVS6aEk/gSCHtNVMbEW/ZsgyD5QfpgxGSMYiHE=;
-  b=C5jw7cvbmWX9Mf9hl1vnRGOBgtOnI3dX/MN1nZNKCfTg/SpiFBTqfkSK
-   HKddQuv1JDzS5h1a9YLC1i8t2uVTUKwTR1yQYpw6aPpqWEEdyAiV5o81r
-   faHVqIw7l9qS05uTDrdZ88ZoB6KkJKFawrdGAqssku+5/PTnXERCAaZr6
-   E=;
-X-IronPort-AV: E=Sophos;i="5.90,188,1643673600"; 
-   d="scan'208";a="202957152"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-ff3df2fe.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 17 Mar 2022 02:56:51 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-ff3df2fe.us-west-2.amazon.com (Postfix) with ESMTPS id A39CC41F4A;
-        Thu, 17 Mar 2022 02:56:50 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Thu, 17 Mar 2022 02:56:50 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.118) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Thu, 17 Mar 2022 02:56:46 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kuba@kernel.org>
-CC:     <Rao.Shoaib@oracle.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 net 2/2] af_unix: Support POLLPRI for OOB.
-Date:   Thu, 17 Mar 2022 11:56:43 +0900
-Message-ID: <20220317025643.62875-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220316194614.3e38cadc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220316194614.3e38cadc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bW9+q/9DwRXDLHNrIZZ/P9kRXSJfYeSaV3DA8Q5JRv4=;
+        b=b1peUcfkYv9TPtgx1X3WqhvxAvkvLBXzLgo3imFWUVeEneSj5cJkwjJpfKC7cH62cK
+         kBYhIDxUtoDhnEgQPxXvhmvrxwZE7eLAhd7ks1WzWBTvoiffZry/F1Lmi26i7czxJEw1
+         wierKAuzuPU4eactCjcfxeRyQ+ark5rLYRRGXv/XLDGXky8yMv32FdQ0rvHEQdpA7coB
+         xCaW2k2VE1FUPnk0ddzd2FoCrt9JjpirMvqPZ+8RMNIlKslGqjxDZITktHsQnJH8/wY7
+         FV59ZHK4Y2i8m6mGvqerQcAtwVY07lpY+e9vK81Yt2iZhhXgzW0LWxIQ4G9ZtMbDmrhF
+         4iWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bW9+q/9DwRXDLHNrIZZ/P9kRXSJfYeSaV3DA8Q5JRv4=;
+        b=lb2B+nnULV2+f2nkqjImX8KhSqKz5bYMtVMNJzkBWblN/Yq7t0iOQqXWKvqCrBGHQ4
+         sTpRX3G0Y3iAav1wYBxL232N5kgp2Gsn7dOXhFMpKhox8bIM1Os1muNwitpNbYtvCtCW
+         6otbIRMcl0JMZALgO6ihd3bSsV2Yk65XQTiY6BUoNs6uTgRiU48FXVdgYkxnZHXAK5zL
+         XhH2JlKY0e3xf9L8Jr7c7i7ob26QYEntsLMIsJ4yH3kgayeXBm/AEwE1FjlkH9jKt/ut
+         DliaeBh5bzYztXziSnhEWy9Q1czUCkPgDKZCKfjPQzutYQRC0YlMO4YG4LqFoyd+6U3u
+         A8rw==
+X-Gm-Message-State: AOAM531TwHMm38viV0yDZxxex57ehTuL7ixIg2g35cgSo+5YOElbUR9k
+        88rINK3MUyfuWKQcP9+Dk9U=
+X-Google-Smtp-Source: ABdhPJyvTCaZCTHpNlEIYKI142s3jeY3M0F8Ct/E1H/vK+HfB5ZhmJSy60u3kauO3RfFra6p4VWznw==
+X-Received: by 2002:a17:90b:1bc1:b0:1bf:7dc6:bc78 with SMTP id oa1-20020a17090b1bc100b001bf7dc6bc78mr2928126pjb.122.1647486118027;
+        Wed, 16 Mar 2022 20:01:58 -0700 (PDT)
+Received: from slim.das-security.cn ([103.84.139.54])
+        by smtp.gmail.com with ESMTPSA id o5-20020a056a0015c500b004f7988f16c3sm5015705pfu.30.2022.03.16.20.01.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Mar 2022 20:01:57 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     rcsekar@samsung.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] can: m_can: fix a possible use after free in m_can_tx_handler()
+Date:   Thu, 17 Mar 2022 11:01:43 +0800
+Message-Id: <20220317030143.14668-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.118]
-X-ClientProxiedBy: EX13D45UWA002.ant.amazon.com (10.43.160.38) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Jakub Kicinski <kuba@kernel.org>
-Date:   Wed, 16 Mar 2022 19:46:14 -0700
-> On Wed, 16 Mar 2022 03:38:55 +0900 Kuniyuki Iwashima wrote:
->> The commit 314001f0bf92 ("af_unix: Add OOB support") introduced OOB for
->> AF_UNIX, but it lacks some changes for POLLPRI.  Let's add the missing
->> piece.
->> 
->> In the selftest, normal datagrams are sent followed by OOB data, so this
->> commit replaces `POLLIN | POLLPRI` with just `POLLPRI` in the first test
->> case.
->> 
->> Fixes: 314001f0bf92 ("af_unix: Add OOB support")
->> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> 
->> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
->> index 0c37e5595aae..f94afaa5a696 100644
->> --- a/net/unix/af_unix.c
->> +++ b/net/unix/af_unix.c
->> @@ -2049,7 +2049,7 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
->>   */
->>  #define UNIX_SKB_FRAGS_SZ (PAGE_SIZE << get_order(32768))
->>  
->> -#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
->> +#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
->>  static int queue_oob(struct socket *sock, struct msghdr *msg, struct sock *other)
->>  {
->>  	struct unix_sock *ousk = unix_sk(other);
->> @@ -2115,7 +2115,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
->>  
->>  	err = -EOPNOTSUPP;
->>  	if (msg->msg_flags & MSG_OOB) {
->> -#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
->> +#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
->>  		if (len)
->>  			len--;
->>  		else
->> @@ -2186,7 +2186,7 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
->>  		sent += size;
->>  	}
->>  
->> -#if (IS_ENABLED(CONFIG_AF_UNIX_OOB))
->> +#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
->>  	if (msg->msg_flags & MSG_OOB) {
->>  		err = queue_oob(sock, msg, other);
->>  		if (err)
-> 
-> If we want to keep this change structured as a fix and backported we
-> should avoid making unnecessary changes. Fixes need to be minimal
-> as per stable rules.
+can_put_echo_skb will clone skb then free the skb. It is better to avoid using
+skb after can_put_echo_skb.
 
-Exactly, I should have taken care of that more.
-I'll will keep this in mind.
-Sorry for bothering and thank you!
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+---
+ drivers/net/can/m_can/m_can.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 1a4b56f6fa8c..98be5742f4f5 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1607,6 +1607,7 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 	u32 cccr, fdflags;
+ 	int err;
+ 	int putidx;
++	unsigned int len = skb->len;
+ 
+ 	cdev->tx_skb = NULL;
+ 
+@@ -1642,7 +1643,7 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 		if (cdev->can.ctrlmode & CAN_CTRLMODE_FD) {
+ 			cccr = m_can_read(cdev, M_CAN_CCCR);
+ 			cccr &= ~CCCR_CMR_MASK;
+-			if (can_is_canfd_skb(skb)) {
++			if (len == CANFD_MTU) {
+ 				if (cf->flags & CANFD_BRS)
+ 					cccr |= FIELD_PREP(CCCR_CMR_MASK,
+ 							   CCCR_CMR_CANFD_BRS);
+-- 
+2.25.1
 
-> 
-> Could you make removal of the brackets a patch separate from this
-> series and targeted at net-next?
-
-Sure, I will submit v4 and separate one soon.
