@@ -2,196 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAD694DCAB1
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:03:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB854DCABF
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:06:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236311AbiCQQEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 12:04:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35004 "EHLO
+        id S236329AbiCQQIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 12:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236300AbiCQQEE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:04:04 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A07321352A
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:02:46 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id s29so9731202lfb.13
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=KqSbW1jQevNaYgxLTZ1J9zqPO7M3Xn1F5ABmOMvHM1w=;
-        b=BBxT7zMM9973f7zTKvA7frEw5bk4NQ3mVj+a98nMKXQE1yuR8hIunoeyym5ce5Jrre
-         a+U1ghqyZQMexEPR4MG8zhX9ABZPadLllVU7IM15aPpaAVYWK0w01BvWP3A8d5AC+cX4
-         fpL2paMR9IOWN7et5Pi609NRJnV3N9JZadAQFCIh2rMfLdmXnHdz5EMeJsNaz6FfkZvN
-         xpkHfdYfk1VigTHUDenzSKEVcOLM9UEN23e4POsv4bshNkRlyh2+rSwq2HYybHSx52xR
-         uVrNFWPDQpmmKG30oxdHwWnH5YfIcj1UN9Hm/HHoPxBBXUem38dT//MzkmZf6ErD4qqC
-         LGdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=KqSbW1jQevNaYgxLTZ1J9zqPO7M3Xn1F5ABmOMvHM1w=;
-        b=lfks9xTpi9nfuK0kLJATMpujq2rHYPV4UWuwOtvZPaFlyMtKEhQGgsNWtNUcbyggwh
-         d7H0wlweEGNVEOMsPAGCfeBynWsKbpLD61D68TppDyHMQPCdwwkNSbqCXEOesZXFuEPH
-         EATv/lcy3Z6vfgHqJfHhwI/l4CyzgEppb3i8F5M3okrLUMsZU4H25mY5IP8xRxI/6vw6
-         jqwult0jvA8C3j7TJaiT4nWMnmzZyrKunUffP1+xuKv5YuDpDAxMHfJ/bfTh4ue3YZU2
-         rn3i0us4L1EgwmtQpN83AFmWNnoh1/b5Q6neT5LuL4eE8XCMy203/qdLdq4uSh1OJOT/
-         EoJw==
-X-Gm-Message-State: AOAM533G4d+z5vAby+NLsLNbI1PaokzmdB9T1bagVI1w5sl1AmBLZ3v5
-        BbQRa1Cz+zpUNS6hv5ALUxoZIg==
-X-Google-Smtp-Source: ABdhPJyWoXmi4yd8mP/RD39Tjn8DW2fuYVj0gAcfHbLZ/Io+HaTCCoW9JtmbQojvlSJj2dAqmZmjcg==
-X-Received: by 2002:a05:6512:21ac:b0:449:524b:585b with SMTP id c12-20020a05651221ac00b00449524b585bmr3490355lft.334.1647532964237;
-        Thu, 17 Mar 2022 09:02:44 -0700 (PDT)
-Received: from wkz-x280 (a124.broadband3.quicknet.se. [46.17.184.124])
-        by smtp.gmail.com with ESMTPSA id k9-20020a05651210c900b00448956cb40csm479948lfg.109.2022.03.17.09.02.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 09:02:43 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH 2/5] net: bridge: Implement bridge flood flag
-In-Reply-To: <YjNBWsAsOidtTtIB@shredder>
-References: <20220317065031.3830481-1-mattias.forsblad@gmail.com>
- <20220317065031.3830481-3-mattias.forsblad@gmail.com>
- <87r1717xrz.fsf@gmail.com>
- <50f4e8b0-4eea-d202-383b-bf2c2824322d@gmail.com>
- <cf7af730-1f98-f845-038b-43104fa060cd@blackwall.org>
- <YjMo9xyoycXgSWXS@shredder> <87r170k8i9.fsf@waldekranz.com>
- <YjNBWsAsOidtTtIB@shredder>
-Date:   Thu, 17 Mar 2022 17:02:42 +0100
-Message-ID: <87mthok1nh.fsf@waldekranz.com>
+        with ESMTP id S236028AbiCQQHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:07:54 -0400
+Received: from mx0c-0054df01.pphosted.com (mx0c-0054df01.pphosted.com [67.231.159.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1B7214075
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:06:37 -0700 (PDT)
+Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22HA0Xb2020692;
+        Thu, 17 Mar 2022 12:06:19 -0400
+Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2055.outbound.protection.outlook.com [104.47.60.55])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3et64ktkt1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Mar 2022 12:06:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BOjXzy3o1YBqCYE3zupVDQR3OLUyufXt2tIC3vF92O85udZ1DSjRwH2zgBbOnmS1g2yoKjCz+LX1PS1rtfMzajg6IIOMyOuxRlQnqVJ96fQNZdK1E5JkMR7uyu1osJcEn8x5vqnpJ+uxoKE7Yi3zhoMN5wsJfhDhPZTjsZB1saj95oQ/KySRLj2pkX1jBjj6b7tsRwUSAUf3gxy1zd5p9HF5F82gaPQXpg2j063CHyxKq7jMA+tt07CUPwPKqc/oXUiZ0+8aNN6vHU3MWkq8QqYXGMPdPghF33q79IcnfSBB5q8fsOVLqRjTTnqqS4xvCYdsY1Rzuiq40dpEH6OoHw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qskhwHCNrhn30P4FIrDYw1+jAzPcEU06bdnxZ7MtZpo=;
+ b=Rz6ecE8c1m7RQU5O/tRv3dl9vJWMTHoELuq5qjecv1g4X/zAZlf+8ZyXI0xjfyhV4+eBYvY0XtWSJws68PRcaZ8TTupJO2TahJDpeXB6lMYA6fi0UUm7PmuafWGn5+oS3S0WHsfQ6o4nlOob5oQzBQnJ8sRBhtBfpCokrbvUoeKGkhUMQH8fN/cksmWQCrudUOaeog7JXsPjsvrqCi3Vovbb1Rh+JTL2c9OuR/Y+62ofpP+SToaV5EAUEJ1OBUO9jkMzNbz1BoxBf+yPO6f7/knm5p3u/ZypoO6arYFz+kUAJztBiQkIVfRmf7FB5f9sN3zDtTYSJii191FQaMo56A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qskhwHCNrhn30P4FIrDYw1+jAzPcEU06bdnxZ7MtZpo=;
+ b=mlPxmxqIkYu6+amsY43vmMyz50bGQE1ebjKjrUx26XR5nok7NFjgdaOiYhsv/QFmWJKv5NbUkKqdQusmG5KxzDe3r83lCNCVvkr6K4Y7oLDG1xE6Y8mIl3QGT6LJIBaPrXIvy8kDmncTbd10N7VXAAH1pL74VmQgM5jOCvUHvuA=
+Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:6a::19)
+ by YQXPR01MB6090.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:c01:3f::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.15; Thu, 17 Mar
+ 2022 16:06:17 +0000
+Received: from YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::e8a8:1158:905f:8230]) by YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::e8a8:1158:905f:8230%7]) with mapi id 15.20.5061.024; Thu, 17 Mar 2022
+ 16:06:17 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andy.chiu@sifive.com" <andy.chiu@sifive.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "greentime.hu@sifive.com" <greentime.hu@sifive.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: xilinx_axienet: add pcs-handle
+ attribute
+Thread-Topic: [PATCH v2 1/2] dt-bindings: net: xilinx_axienet: add pcs-handle
+ attribute
+Thread-Index: AQHYOeBenngk9+RYokmqKO+eu5OSmKzDWH+AgABlnAA=
+Date:   Thu, 17 Mar 2022 16:06:17 +0000
+Message-ID: <27534eccd05cd035773c1a4f1ea55fe6bd4a3f48.camel@calian.com>
+References: <20220317091926.86765-1-andy.chiu@sifive.com>
+         <CABgGipUd67TSoPz3eeKf2kXzzwy8NWJMkGYtkikdcBKiaJd8Bg@mail.gmail.com>
+In-Reply-To: <CABgGipUd67TSoPz3eeKf2kXzzwy8NWJMkGYtkikdcBKiaJd8Bg@mail.gmail.com>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 374f8dd0-54f5-4f37-8efb-08da08301192
+x-ms-traffictypediagnostic: YQXPR01MB6090:EE_
+x-microsoft-antispam-prvs: <YQXPR01MB60908311BD1D73E2A46C8EA0EC129@YQXPR01MB6090.CANPRD01.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bF3F0BeP0VOH0F+fg9jiaUvJ6WqXe1Qg+Zc7hQao4QiwwVnJWTIPzSBYG+8rvntpX20JqyNsmkE3i6DK8ggX/EEeogd5+zW8xtenhKfZ2kRBJKhS0Jany7LsMMAcCq/PYRPtGSH8g8ftel/2i7K/rWMCdBbgreVf8cRmDyRUnxFxLqVDF6qS2XjKbsxZ+GXx5JWBmICIX2sDLx1h5mTnSXVcf4Pm7PXxODC1XC98Zm3WjJj7CsxCBZHvGJFMA547dClKixpMJaC9QVpzWDYvUBfGH/cYTThyMIHl0dtI7yAAhhKCwtGuX/qwy4aSHmzmZH/pJiIhNazWPBQEuvRsSOx/NFXADA5X0mZ9383IfICb6GSuzMYVMVs3y6H7h8Mou33K+KwzFXn/LoXG+bLd2aqQXb+SvEoe5zc3UvEsoL6cwZb7VBoJ8hcUX7skaoxEdRupTphcsEQ4oJ+1vPbbW3DA0b7t2cpTFcLUXMVrUYfw76y20C43MkSm+Nkjqp5rRV1BwVtBM97zsp21FAMotROMnByfplU7k8o+LPgDoDfoo05A+kgbkUyIwE/Hr/tlxyaRRwKEMZQvKeMPDxAoqaZO/OQVL5cRQz1M6/wAxNEEGjWokOT7dKi8RPbj6K7kd9VZ7sEpHvJExgRQcDbRvkF08jn8J+mUlI9L2KGJ1zcM2NDriqaVQLVme0wKuHx+Zpn1jsQsbk5KOGHkZT+jMiGnt2Gpd/a9vtHF3ydLkd/yqiOs8xVIk2bKlzk442xUXkAyw+DA60n9IiLDF2iM28MsipzGr9gmXsJIICvybbwArPcmMSm5bGo8xcEg5q17+VOzKVs2j6sg8SE6lv9RmtqKZSB+gK4X7HHGnAEBy7E=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(76116006)(2906002)(508600001)(8676002)(64756008)(66446008)(66476007)(66556008)(66946007)(110136005)(71200400001)(6486002)(15974865002)(86362001)(36756003)(6506007)(53546011)(2616005)(6512007)(91956017)(316002)(83380400001)(4326008)(26005)(186003)(122000001)(38100700002)(38070700005)(8936002)(7416002)(5660300002)(44832011)(99106002)(18886075002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SGR4SVJVUnJVQlJUWDBSNmRsbmtENzQvSTEvdmJqa2h0cVA5Z21lM3BVVEFF?=
+ =?utf-8?B?bG5xZEdVc2NmbCt6OTFIRXNHOWRNRE12QS9reDhITFc3Skk4Y0dNODB6YTd6?=
+ =?utf-8?B?M0hibnBqRm8vb2ZPdUQweVBDdWdlVjQ0azFUQ1dQc0pzY2J0MVUwRnBPbDdp?=
+ =?utf-8?B?Nk1vM0w5MEI1cUhta0p0bGtrbngxOEc2bXVEd25VVVdsQmpPMTNsODVCbGZN?=
+ =?utf-8?B?L2VzT2t6NTVGczVuaFRVUHZWenNGbWxPWll6djFmcG8yY3Q4Qkhja1QzQnpn?=
+ =?utf-8?B?S0RtUk5MT20vYkdzVmU0bjI2QkYrK0JNSDYrYVlIRkpXQndtZGVwUGo0STIr?=
+ =?utf-8?B?UUNtdVk2ZllCSXYwUm1LR0tHQUJ5MnM2SzcwQmttazdQZzRWZzJOS1RXcXRS?=
+ =?utf-8?B?dE4zL2V1OXlLdnNzblp0R0wwTUNVUy9kN3RVbEg4YytqVFc2UlJIR2VHRmJW?=
+ =?utf-8?B?NmpodzFVd295a2xaZXVyVDRrNDF1cEJiVXVKNXMrOUdaUG9oRTA0LzdFRjJ1?=
+ =?utf-8?B?UHJRVWpGL2FCK3I0UWFKS21zR0FMdGJDNlZqSkFhbmJCK3RpTHBvcDUydEU4?=
+ =?utf-8?B?S0Y3TEY3Q1M2WURKRnhDN3h6RzRmZWVpUkg5cERnbW9iT0Nwc3NrMEx0UTVD?=
+ =?utf-8?B?U1VOZnZSSXRWbHdWTmxnenJTVDdxKzBGeGs0NWwwZlR5MVRMay9CQU04K3hQ?=
+ =?utf-8?B?MGx0Kzl4c0dPNGl5bVhuZElpY0VwdVh3SVB3dlVGRzZIOEpUaGE4eVN6Q0ZK?=
+ =?utf-8?B?cU43VnZudzI0T2g1RVgzeitmUlRaeHB5ZkE3N2N6cDlhYUNYZWdCZzhPU2p0?=
+ =?utf-8?B?UDZmYWNrUUQ0TFRQSi9RMlNzUno1UnNobUpvZHFSMUJnUjNOMWRmZkZKa2NR?=
+ =?utf-8?B?d2h3VGFHcWp2OE5icWk5b25xQUJ6OExPR09uMkdYR1hUcWxOZTNkSFRSMWwz?=
+ =?utf-8?B?T0xpaFZXS3JsdnFLZEtDR1BnTm1nZm5LM2lqZGlJdFJqcUo5elF2QVlZUWN4?=
+ =?utf-8?B?d2ZmTGdzTmxiRU5SUUhNai9LU3plT0xYdW9RVE82YWdhNEZYMGxaWHhYTjZq?=
+ =?utf-8?B?L05wNzhFdEQvRlQ2eWhJTlU2Tkd1QzFDQXM4ZloydGo4TW9hZ1U4LzNhamda?=
+ =?utf-8?B?U3Rld3RhMjhWK1BEd3VmNDhmUXBrWUZFR3J4cUlIUWpCeVhnVHY4T3VEZlJm?=
+ =?utf-8?B?cUx3SkllVFEybzhseVpxK1VOTVZCWmNWRHhSNU4wM1NsUEx4VEVYMUJ2L1Qw?=
+ =?utf-8?B?T1pmZzRIVzBPdU5zTld2QUF0L0ZRczZVSUF3d3BmL3prODBFVlE0MUlUdFVK?=
+ =?utf-8?B?cTB3aTVZaHI5cGVmc0pIVmhxTmxXYWJHekxBT1VJNDluSGZ6UEZ4TkVCT0lG?=
+ =?utf-8?B?OEJnSUlLQVI0bkVlZHV4ZzQ5ODA3ekVxeG10ZkVsb1RsMkloc0pJQkxQUlhH?=
+ =?utf-8?B?b0JMTTg0WjV0alNaMjlZWGx4Q3ZybVNRTnZEREdMUUhFTXhFdDBzeHlhcThs?=
+ =?utf-8?B?a0U4VlhuQUpiRXEvM1hlL2g3TGdJZDlsYSttaEVoR1FhSGYvOXRsaFF0alBU?=
+ =?utf-8?B?RXcwRmRhaXFsTklxMzlOLzNVdTNnVlo1Q2pLaGEvTEVjTnRhbnBYZEo1ODRU?=
+ =?utf-8?B?U0M5VDhwZE4wNGNITkg3SzBGYWZJY3c2MDJKbHZRSnVsUVpCSUtJMlJDZnhO?=
+ =?utf-8?B?N2pxSnRYOTNBdk5KKzZBeTZYd2xXb3N4MGJ1U2V6eTA4eFM3YnU5K2RoeUtS?=
+ =?utf-8?B?OHlVNzRBUE1qVFNjbXJGLzlQSTFaNy9EdUpjd0ptUDU2eEk3cFc1U1B5QWpt?=
+ =?utf-8?B?OWN3em5TUU1WN0dJRUVTb20wSW44VkFDQUtsWVBqM1hpaG9hSXpuVzdqOCtE?=
+ =?utf-8?B?bGdpMWtnNjQ4MDhYOUlpRjNWTWNZWmxmelprTm5MN0V3REg0cnBWOUc1N2xp?=
+ =?utf-8?B?ME5yRW9nN2QzaGZjb3JMNkFJQXlQUHI2RXZ3NjlUd2wvS2phT1RMYzFDblR6?=
+ =?utf-8?Q?M8Xd3rnxTX9uZhb/txhHYkqzPl0byc=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2C2D0CA15734534C929CDFE8B1BCD785@CANPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: YT3PR01MB6274.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 374f8dd0-54f5-4f37-8efb-08da08301192
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2022 16:06:17.1679
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tgGsN+N4u0p24GcvaVlphVk1DQpFyjxK/H1QS2UaihMHT2lQ7y24hLWsNwrOrgLqaiIjD+lmkTc1//vSwIHKfy3GRFrzv8nS3ZOr2wn+NtU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YQXPR01MB6090
+X-Proofpoint-GUID: 7H46MEhM_I-oYzbEjbfn5iYGzMt3BcQB
+X-Proofpoint-ORIG-GUID: 7H46MEhM_I-oYzbEjbfn5iYGzMt3BcQB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-17_06,2022-03-15_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 phishscore=0
+ priorityscore=1501 spamscore=0 adultscore=0 bulkscore=0 impostorscore=0
+ mlxscore=0 lowpriorityscore=0 mlxlogscore=999 suspectscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203170092
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 16:10, Ido Schimmel <idosch@idosch.org> wrote:
-> On Thu, Mar 17, 2022 at 02:34:38PM +0100, Tobias Waldekranz wrote:
->> On Thu, Mar 17, 2022 at 14:26, Ido Schimmel <idosch@idosch.org> wrote:
->> > On Thu, Mar 17, 2022 at 01:42:55PM +0200, Nikolay Aleksandrov wrote:
->> >> On 17/03/2022 13:39, Mattias Forsblad wrote:
->> >> > On 2022-03-17 10:07, Joachim Wiberg wrote:
->> >> >> On Thu, Mar 17, 2022 at 07:50, Mattias Forsblad <mattias.forsblad@gmail.com> wrote:
->> >> >>> This patch implements the bridge flood flags. There are three different
->> >> >>> flags matching unicast, multicast and broadcast. When the corresponding
->> >> >>> flag is cleared packets received on bridge ports will not be flooded
->> >> >>> towards the bridge.
->> >> >>
->> >> >> If I've not completely misunderstood things, I believe the flood and
->> >> >> mcast_flood flags operate on unknown unicast and multicast.  With that
->> >> >> in mind I think the hot path in br_input.c needs a bit more eyes.  I'll
->> >> >> add my own comments below.
->> >> >>
->> >> >> Happy incident I saw this patch set, I have a very similar one for these
->> >> >> flags to the bridge itself, with the intent to improve handling of all
->> >> >> classes of multicast to/from the bridge itself.
->> >> >>
->> >> >>> [snip]
->> >> >>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
->> >> >>> index e0c13fcc50ed..fcb0757bfdcc 100644
->> >> >>> --- a/net/bridge/br_input.c
->> >> >>> +++ b/net/bridge/br_input.c
->> >> >>> @@ -109,11 +109,12 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
->> >> >>>  		/* by definition the broadcast is also a multicast address */
->> >> >>>  		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
->> >> >>>  			pkt_type = BR_PKT_BROADCAST;
->> >> >>> -			local_rcv = true;
->> >> >>> +			local_rcv = true && br_opt_get(br, BROPT_BCAST_FLOOD);
->> >> >>
->> >> >> Minor comment, I believe the preferred style is more like this:
->> >> >>
->> >> >> 	if (br_opt_get(br, BROPT_BCAST_FLOOD))
->> >> >>         	local_rcv = true;
->> >> >>
->> >> >>>  		} else {
->> >> >>>  			pkt_type = BR_PKT_MULTICAST;
->> >> >>> -			if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
->> >> >>> -				goto drop;
->> >> >>> +			if (br_opt_get(br, BROPT_MCAST_FLOOD))
->> >> >>> +				if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
->> >> >>> +					goto drop;
->> >> >>
->> >> >> Since the BROPT_MCAST_FLOOD flag should only control uknown multicast,
->> >> >> we cannot bypass the call to br_multicast_rcv(), which helps with the
->> >> >> classifcation.  E.g., we want IGMP/MLD reports to be forwarded to all
->> >> >> router ports, while the mdb lookup (below) is what an tell us if we
->> >> >> have uknown multicast and there we can check the BROPT_MCAST_FLOOD
->> >> >> flag for the bridge itself.
->> >> > 
->> >> > The original flag was name was local_receive to separate it from being
->> >> > mistaken for the flood unknown flags. However the comment I've got was
->> >> > to align it with the existing (port) flags. These flags have nothing to do with
->> >> > the port flood unknown flags. Imagine the setup below:
->> >> > 
->> >> >            vlan1
->> >> >              |
->> >> >             br0             br1
->> >> >            /   \           /   \
->> >> >          swp1 swp2       swp3 swp4
->> >> > 
->> >> > We want to have swp1/2 as member of a normal vlan filtering bridge br0 /w learning on. 
->> >> > On br1 we want to just forward packets between swp3/4 and disable learning. 
->> >> > Additional we don't want this traffic to impact the CPU. 
->> >> > If we disable learning on swp3/4 all traffic will be unknown and if we also 
->> >> > have flood unknown on the CPU-port because of requirements for br0 it will
->> >> > impact the traffic to br1. Thus we want to restrict traffic between swp3/4<->CPU port
->> >> > with the help of the PVT.
->> >> > 
->> >> > /Mattias
->> >> 
->> >> The feedback was correct and we all assumed unknown traffic control.
->> >> If you don't want any local receive then use filtering rules. Don't add unnecessary flags.
->> >
->> > Yep. Very easy with tc:
->> >
->> > # tc qdisc add dev br1 clsact
->> > # tc filter add dev br1 ingress pref 1 proto all matchall action drop
->> >
->> > This can be fully implemented inside the relevant device driver, no
->> > changes needed in the bridge driver.
->> 
->> Interesting. Are you saying that a switchdev driver can offload rules
->> for a netdev that it does not directly control (e.g. bridge that it is
->> connected to)? It thought that you had to bind the relevant ports to the
->> same block to approximate that. If so, are any drivers implementing
->> this? I did a quick scan of mlxsw, but could not find anything obvious.
->
-> Yes, currently mlxsw only supports filters configured on physical
-> netdevs, but the HW can support more advanced configurations such as
-> filters on a bridge device (or a VLAN upper). These would be translated
-> to ACLs configured on the ingress/egress router interface (RIF) backing
-> the netdev. NIC drivers support much more advanced tc offloads due to
-> the prevalent usage of OVS in this space, so might be better to check
-> them instead.
->
-> TBH, I never looked too deeply into this, but assumed it's supported via
-> the indirect tc block infra. See commit 7f76fa36754b ("net: sched:
-> register callbacks for indirect tc block binds") for more details.
-
-Thanks for this pointer! That does indeed seem possible.
-
-For others who may be interested, the API seems to have moved a bit, but
-there are a few implementations. The current entry point seems to be:
-
-flow_indr_dev_register
-
-> Even if I got it wrong, it would be beneficial to extend the tc offload
-> infra rather than patching the bridge driver to achieve a functionality
-> that is already supported in the SW data path via tc.
-
-Agreed! I just had no idea that it was already possible.
+T24gVGh1LCAyMDIyLTAzLTE3IGF0IDE4OjAyICswODAwLCBBbmR5IENoaXUgd3JvdGU6DQo+IGxv
+b3AgaW46IHJhZGhleS5zaHlhbS5wYW5kZXlAeGlsaW54LmNvbQ0KPiANCj4gDQo+IE9uIFRodSwg
+TWFyIDE3LCAyMDIyIGF0IDU6MjEgUE0gQW5keSBDaGl1IDxhbmR5LmNoaXVAc2lmaXZlLmNvbT4g
+d3JvdGU6DQo+ID4gRG9jdW1lbnQgdGhlIG5ldyBwY3MtaGFuZGxlIGF0dHJpYnV0ZSB0byBzdXBw
+b3J0IGNvbm5lY3RpbmcgdG8gYW4NCj4gPiBleHRlcm5hbCBQSFkgaW4gU0dNSUkgb3IgMTAwMEJh
+c2UtWCBtb2RlcyB0aHJvdWdoIHRoZSBpbnRlcm5hbCBQQ1MvUE1BDQo+ID4gUEhZLg0KPiA+IA0K
+PiA+IFNpZ25lZC1vZmYtYnk6IEFuZHkgQ2hpdSA8YW5keS5jaGl1QHNpZml2ZS5jb20+DQo+ID4g
+UmV2aWV3ZWQtYnk6IEdyZWVudGltZSBIdSA8Z3JlZW50aW1lLmh1QHNpZml2ZS5jb20+DQo+ID4g
+LS0tDQo+ID4gIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQveGlsaW54X2F4
+aWVuZXQudHh0IHwgNSArKysrKw0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCsp
+DQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
+cy9uZXQveGlsaW54X2F4aWVuZXQudHh0DQo+ID4gYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUv
+YmluZGluZ3MvbmV0L3hpbGlueF9heGllbmV0LnR4dA0KPiA+IGluZGV4IGI4ZTQ4OTRiYzYzNC4u
+MmE5YTNhOTBlYjYzIDEwMDY0NA0KPiA+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
+aW5kaW5ncy9uZXQveGlsaW54X2F4aWVuZXQudHh0DQo+ID4gKysrIGIvRG9jdW1lbnRhdGlvbi9k
+ZXZpY2V0cmVlL2JpbmRpbmdzL25ldC94aWxpbnhfYXhpZW5ldC50eHQNCj4gPiBAQCAtNjgsNiAr
+NjgsMTEgQEAgT3B0aW9uYWwgcHJvcGVydGllczoNCj4gPiAgICAgICAgICAgICAgICAgICByZXF1
+aXJlZCB0aHJvdWdoIHRoZSBjb3JlJ3MgTURJTyBpbnRlcmZhY2UgKGkuZS4gYWx3YXlzLA0KPiA+
+ICAgICAgICAgICAgICAgICAgIHVubGVzcyB0aGUgUEhZIGlzIGFjY2Vzc2VkIHRocm91Z2ggYSBk
+aWZmZXJlbnQgYnVzKS4NCj4gPiANCj4gPiArIC0gcGNzLWhhbmRsZTogICAgICAgICAgIFBoYW5k
+bGUgdG8gdGhlIGludGVybmFsIFBDUy9QTUEgUEhZLCBpZiBhIGZpeGVkDQo+ID4gZXh0ZXJuYWwg
+UEhZDQo+ID4gKyAgICAgICAgICAgICAgICAgaXMgdGllZCB0byBpdCBpbiBTR01JSSBvciAxMDAw
+QmFzZS1YIG1vZGVzLiBUaGlzIGlzIG5vdA0KPiA+ICsgICAgICAgICAgICAgICAgIHJlcXVpcmVk
+IGZvciBTRlAgY29ubmVjdGlvbi4gVGhlIGRyaXZlciB3b3VsZCB1c2UgcGh5LQ0KPiA+IGhhbmRs
+ZQ0KPiA+ICsgICAgICAgICAgICAgICAgIHRvIHJlZmVyZW5jZSB0aGUgUENTL1BNQSBQSFkgaW4g
+c3VjaCBjYXNlLg0KPiA+ICsNCg0KSSB3b3VsZCBzYXkgcGNzLWhhbmRsZSBzaG91bGQgYmUgcHJl
+ZmVyYWJseSB1c2VkIHRvIHBvaW50IHRvIHRoZSBQQ1MvUE1BIGluIGFsbA0KY2FzZXMuIHBoeS1o
+YW5kbGUgc2hvdWxkIGJlIHVzZWQgZm9yIGEgZml4ZWQgUEhZIGRvd25zdHJlYW0gb2YgdGhlIFBD
+Uy9QTUEgaWYNCm9uZSBleGlzdHMgLSB1c2luZyB0aGF0IGZvciB0aGUgUENTL1BNQSB3b3VsZCBi
+ZSBqdXN0IGZvciBiYWNrd2FyZA0KY29tcGF0aWJpbGl0eSB3aXRoIG9sZCBkZXZpY2UgdHJlZXMu
+DQoNCk1pZ2h0IHdhbnQgYSBjb21tZW50IGFzIHN1Y2ggaW4gdGhlIGNvZGUgYXMgd2VsbCwgd2hl
+cmUgaXQgaXMgcmV0cmlldmluZyBwaHktDQpoYW5kbGUgZm9yIHRoZSBQQ1MgYW5kIHBjcy1oYW5k
+bGUgaXMgbm90IHByZXNlbnQuDQoNCj4gPiAgRXhhbXBsZToNCj4gPiAgICAgICAgIGF4aV9ldGhl
+cm5ldF9ldGg6IGV0aGVybmV0QDQwYzAwMDAwIHsNCj4gPiAgICAgICAgICAgICAgICAgY29tcGF0
+aWJsZSA9ICJ4bG54LGF4aS1ldGhlcm5ldC0xLjAwLmEiOw0KPiA+IC0tDQo+ID4gMi4zNC4xDQo+
+ID4gDQotLSANClJvYmVydCBIYW5jb2NrDQpTZW5pb3IgSGFyZHdhcmUgRGVzaWduZXIsIENhbGlh
+biBBZHZhbmNlZCBUZWNobm9sb2dpZXMNCnd3dy5jYWxpYW4uY29tDQo=
