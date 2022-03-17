@@ -2,181 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5064DCA20
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 16:37:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85F6E4DCA32
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 16:41:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235824AbiCQPhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 11:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
+        id S235285AbiCQPk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 11:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234018AbiCQPhq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 11:37:46 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3603020A955;
-        Thu, 17 Mar 2022 08:36:29 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id yy13so11574329ejb.2;
-        Thu, 17 Mar 2022 08:36:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TVn5dRq4Q2f2mDB25LghomZuVFKBVotFIBV9iK80cMY=;
-        b=g8bOl2TeTGUk2xJWTqymUR4Iy78hgvu3Od0Vte65QgxzOzCqWoTx+oxtxqoILuxUuG
-         N1I4MYcFIh5+JJHLpCIYlJpYQe9E1CXAQc400cY70WvVMX2ltU35JH+PWboJRfCk/vOU
-         555qV0STdAaX04ujNEsdizS7yYjNXOftAJ9uzu+1awFPftTOX4d6QFMy7znFwSav1FwC
-         85z8GhR3JJxttcmifL7BPtFsyOzoSfrZG1wLPC4n5y/TI6R2mYJhEkTyDxlsYvBDlW6c
-         1CKxEuXC5crBqrOJav9hTjoNsJReAVrL0bpC4/oYB4hZp7CLvRy09pFwIYG/hj7pyUhd
-         wXMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TVn5dRq4Q2f2mDB25LghomZuVFKBVotFIBV9iK80cMY=;
-        b=6RHYzt/3T6VP+nmOuvdQslQkRhpi7KE6jXn5vFPfmShYTKVAW+2m1XnMnJ+ovTgzuF
-         f5teY5pCIgos20z7dHACQB1KyGz0f4jEY70rdt0XHAzxEgDqug799yiwsQplLsHLwn5x
-         2CRVvSLNCfrXJ5GO2Y17vhlGre10o2c2qheqCIfjsOKZdP8POegDmc82W0AQPW8iDwzK
-         1lBPQ8yvtYs3QLPa9Xcw5VGh1s7VRiT/pPnQFz6dXrXBQWXQl11MADIMGLDRNZ4fd2zb
-         f8pkdB2Q4WuEQy1lU4q0pdOTo1SiX9K6jd8Wy5l9x6xanYrGR0vnySJJmAFjGfaZNc2n
-         57Bw==
-X-Gm-Message-State: AOAM532qXzP6wIHdbNRm89lOYsomKo94BjkYYbdrU9L1lQY/GBD/2uKH
-        grOXt/UF15T1C7pp10U/LkU=
-X-Google-Smtp-Source: ABdhPJz2Et99ZeBW2NDUki3je6YA4m4DGJwln6jslvIbG+6DKyz3FSjVNWRUaRvC5soY47CBS4QseA==
-X-Received: by 2002:a17:907:9706:b0:6db:566a:4408 with SMTP id jg6-20020a170907970600b006db566a4408mr5005975ejc.374.1647531387471;
-        Thu, 17 Mar 2022 08:36:27 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id t7-20020a1709063e4700b006da6357b1c0sm2521561eji.196.2022.03.17.08.36.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 08:36:26 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 17:36:25 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20220317153625.2ld5zgtuhoxbcgvo@skbuf>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
- <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
- <20220310142836.m5onuelv4jej5gvs@skbuf>
- <86r17495gk.fsf@gmail.com>
- <20220316233447.kwyirxckgancdqmh@skbuf>
- <86lex9hsg0.fsf@gmail.com>
- <YjNDgnrYaYfviNTi@lunn.ch>
+        with ESMTP id S236015AbiCQPk5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 11:40:57 -0400
+Received: from unicorn.mansr.com (unicorn.mansr.com [IPv6:2001:8b0:ca0d:8d8e::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D508220C2E0;
+        Thu, 17 Mar 2022 08:39:38 -0700 (PDT)
+Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
+        by unicorn.mansr.com (Postfix) with ESMTPS id EF05B15360;
+        Thu, 17 Mar 2022 15:39:35 +0000 (GMT)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+        id 86495210BC8; Thu, 17 Mar 2022 15:39:35 +0000 (GMT)
+From:   Mans Rullgard <mans@mansr.com>
+To:     Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vitaly Bordug <vbordug@ru.mvista.com>,
+        Dan Malek <dan@embeddededge.com>,
+        Joakim Tjernlund <joakim.tjernlund@lumentis.se>,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [RFC][PATCH] net: fs_enet: fix tx error handling
+Date:   Thu, 17 Mar 2022 15:38:58 +0000
+Message-Id: <20220317153858.20719-1-mans@mansr.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjNDgnrYaYfviNTi@lunn.ch>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 03:19:46PM +0100, Andrew Lunn wrote:
-> On Thu, Mar 17, 2022 at 09:52:15AM +0100, Hans Schultz wrote:
-> > On tor, mar 17, 2022 at 01:34, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > On Mon, Mar 14, 2022 at 11:46:51AM +0100, Hans Schultz wrote:
-> > >> >> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
-> > >> >>  				    "ATU miss violation for %pM portvec %x spid %d\n",
-> > >> >>  				    entry.mac, entry.portvec, spid);
-> > >> >>  		chip->ports[spid].atu_miss_violation++;
-> > >> >> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
-> > >> >> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
-> > >> >> +									    chip->ports[spid].port,
-> > >> >> +									    &entry,
-> > >> >> +									    fid);
-> > >> >
-> > >> > Do we want to suppress the ATU miss violation warnings if we're going to
-> > >> > notify the bridge, or is it better to keep them for some reason?
-> > >> > My logic is that they're part of normal operation, so suppressing makes
-> > >> > sense.
-> > >> >
-> > >> 
-> > >> I have been seeing many ATU member violations after the miss violation is
-> > >> handled (using ping), and I think it could be considered to suppress the ATU member
-> > >> violations interrupts by setting the IgnoreWrongData bit for the
-> > >> port (sect 4.4.7). This would be something to do whenever a port is set in locked mode?
-> > >
-> > > So the first packet with a given MAC SA triggers an ATU miss violation
-> > > interrupt.
-> > >
-> > > You program that MAC SA into the ATU with a destination port mask of all
-> > > zeroes. This suppresses further ATU miss interrupts for this MAC SA, but
-> > > now generates ATU member violations, because the MAC SA _is_ present in
-> > > the ATU, but not towards the expected port (in fact, towards _no_ port).
-> > >
-> > > Especially if user space decides it doesn't want to authorize this MAC
-> > > SA, it really becomes a problem because this is now a vector for denial
-> > > of service, with every packet triggering an ATU member violation
-> > > interrupt.
-> > >
-> > > So your suggestion is to set the IgnoreWrongData bit on locked ports,
-> > > and this will suppress the actual member violation interrupts for
-> > > traffic coming from these ports.
-> > >
-> > > So if the user decides to unplug a previously authorized printer from
-> > > switch port 1 and move it to port 2, how is this handled? If there isn't
-> > > a mechanism in place to delete the locked FDB entry when the printer
-> > > goes away, then by setting IgnoreWrongData you're effectively also
-> > > suppressing migration notifications.
-> > 
-> > I don't think such a scenario is so realistic, as changing port is not
-> > just something done casually, besides port 2 then must also be a locked
-> > port to have the same policy.
-> 
-> I think it is very realistic. It is also something which does not work
-> is going to cause a lot of confusion. People will blame the printer,
-> when in fact they should be blaming the switch. They will be rebooting
-> the printer, when in fact, they need to reboot the switch etc.
-> 
-> I expect there is a way to cleanly support this, you just need to
-> figure it out.
+In some cases, the TXE flag is apparently set without any error
+indication in the buffer descriptor status. When this happens, tx
+stalls until the tx_restart() function is called via the device
+watchdog which can take a long time.
 
-Hans, why must port 2 also be a locked port? The FDB entry with no
-destinations is present in the ATU, and static, why would just locked
-ports match it?
+To fix this, check for TXE in the napi poll function and trigger a
+tx_restart() call as for errors reported in the buffer descriptor.
 
-> > The other aspect is that the user space daemon that authorizes catches
-> > the fdb add entry events and checks if it is a locked entry. So it will
-> > be up to said daemon to decide the policy, like remove the fdb entry
-> > after a timeout.
+This change makes the FCC based Ethernet controller on MPC82xx devices
+usable. It probably breaks the other modes (FEC, SCC) which I have no
+way of testing.
 
-When you say 'timeout', what is the moment when the timer starts counting?
-The last reception of the user space daemon of a packet with this MAC SA,
-or the moment when the FDB entry originally became unlocked?
+Signed-off-by: Mans Rullgard <mans@mansr.com>
+---
+ .../ethernet/freescale/fs_enet/fs_enet-main.c | 47 +++++++------------
+ .../net/ethernet/freescale/fs_enet/mac-fcc.c  |  2 +-
+ 2 files changed, 19 insertions(+), 30 deletions(-)
 
-I expect that once a device is authorized, and forwarding towards the
-devices that it wants to talk to is handled in hardware, that the CPU no
-longer receives packets from this device. In other words, are you saying
-that you're going to break networking for the printer every 5 minutes,
-as a keepalive measure?
+diff --git a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
+index 78e008b81374..4276becd07cf 100644
+--- a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
++++ b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
+@@ -94,14 +94,22 @@ static int fs_enet_napi(struct napi_struct *napi, int budget)
+ 	int curidx;
+ 	int dirtyidx, do_wake, do_restart;
+ 	int tx_left = TX_RING_SIZE;
++	u32 int_events;
+ 
+ 	spin_lock(&fep->tx_lock);
+ 	bdp = fep->dirty_tx;
++	do_wake = do_restart = 0;
++
++	int_events = (*fep->ops->get_int_events)(dev);
++
++	if (int_events & fep->ev_err) {
++		(*fep->ops->ev_error)(dev, int_events);
++		do_restart = 1;
++	}
+ 
+ 	/* clear status bits for napi*/
+ 	(*fep->ops->napi_clear_event)(dev);
+ 
+-	do_wake = do_restart = 0;
+ 	while (((sc = CBDR_SC(bdp)) & BD_ENET_TX_READY) == 0 && tx_left) {
+ 		dirtyidx = bdp - fep->tx_bd_base;
+ 
+@@ -318,43 +326,24 @@ fs_enet_interrupt(int irq, void *dev_id)
+ {
+ 	struct net_device *dev = dev_id;
+ 	struct fs_enet_private *fep;
+-	const struct fs_platform_info *fpi;
+ 	u32 int_events;
+-	u32 int_clr_events;
+-	int nr, napi_ok;
+-	int handled;
+ 
+ 	fep = netdev_priv(dev);
+-	fpi = fep->fpi;
+ 
+-	nr = 0;
+-	while ((int_events = (*fep->ops->get_int_events)(dev)) != 0) {
+-		nr++;
++	int_events = (*fep->ops->get_int_events)(dev);
++	if (!int_events)
++		return IRQ_NONE;
+ 
+-		int_clr_events = int_events;
+-		int_clr_events &= ~fep->ev_napi;
++	int_events &= ~fep->ev_napi;
+ 
+-		(*fep->ops->clear_int_events)(dev, int_clr_events);
+-
+-		if (int_events & fep->ev_err)
+-			(*fep->ops->ev_error)(dev, int_events);
+-
+-		if (int_events & fep->ev) {
+-			napi_ok = napi_schedule_prep(&fep->napi);
+-
+-			(*fep->ops->napi_disable)(dev);
+-			(*fep->ops->clear_int_events)(dev, fep->ev_napi);
+-
+-			/* NOTE: it is possible for FCCs in NAPI mode    */
+-			/* to submit a spurious interrupt while in poll  */
+-			if (napi_ok)
+-				__napi_schedule(&fep->napi);
+-		}
++	(*fep->ops->clear_int_events)(dev, int_events);
+ 
++	if (napi_schedule_prep(&fep->napi)) {
++		(*fep->ops->napi_disable)(dev);
++		__napi_schedule(&fep->napi);
+ 	}
+ 
+-	handled = nr > 0;
+-	return IRQ_RETVAL(handled);
++	return IRQ_HANDLED;
+ }
+ 
+ void fs_init_bds(struct net_device *dev)
+diff --git a/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c b/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c
+index b47490be872c..66c8f82a8333 100644
+--- a/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c
++++ b/drivers/net/ethernet/freescale/fs_enet/mac-fcc.c
+@@ -124,7 +124,7 @@ static int do_pd_setup(struct fs_enet_private *fep)
+ 	return ret;
+ }
+ 
+-#define FCC_NAPI_EVENT_MSK	(FCC_ENET_RXF | FCC_ENET_RXB | FCC_ENET_TXB)
++#define FCC_NAPI_EVENT_MSK	(FCC_ENET_RXF | FCC_ENET_RXB | FCC_ENET_TXB | FCC_ENET_TXE)
+ #define FCC_EVENT		(FCC_ENET_RXF | FCC_ENET_TXB)
+ #define FCC_ERR_EVENT_MSK	(FCC_ENET_TXE)
+ 
+-- 
+2.35.1
 
-I still think there should be a functional fast path for authorized
-station migrations.
-
-> > > Oh, btw, my question was: could you consider suppressing the _prints_ on
-> > > an ATU miss violation on a locked port?
-> > 
-> > As there will only be such on the first packet, I think it should be
-> > logged and those prints serve that purpose, so I think it is best to
-> > keep the print.
-> > If in the future some tests or other can argue for suppressing the
-> > prints, it is an easy thing to do.
-> 
-> Please use a traffic generator and try to DOS one of your own
-> switches. Can you?
-> 
-> 	  Andrew
