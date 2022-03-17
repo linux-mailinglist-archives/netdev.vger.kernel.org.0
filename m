@@ -2,78 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E432F4DCDCA
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:42:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 991764DCDF6
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:50:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237542AbiCQSn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:43:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        id S237645AbiCQSv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237534AbiCQSn0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:43:26 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A249D21351F;
-        Thu, 17 Mar 2022 11:42:08 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id p15so12605081ejc.7;
-        Thu, 17 Mar 2022 11:42:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oXxajodOegFpu3qLtW7meKAMsmhaC7A4cIBe9jeyyy8=;
-        b=T1CXfgoLZaxde5dXFF4LTNE2qLUFot42LriRrOoKQgCswwyNCHb6anbnIZ/6Gvsqb4
-         vmwMIhiVo7o5dlgWLclkHWo/VuqWp19QoWTUmVOdLyIxFs2qubQmR/wJrqOAKwyizCL+
-         GGzDyV6Y04zs11XcJL8FLm0IQ9NUA3LGAErmZxba7krGizP2TtvcI4V+tiiAnL/g+7W0
-         d+8z/Secp8G0iFoukRBbcCkDVfxNZCfccCC9S8ASJzhefj5KjNmOHKTUnNxGoP4ngWZF
-         r3cuM+OGw1wWW+5g6LlM+EWzfDWy9Hebr25O9RlbPEtwvSJuDR9VyCV6u6zY+YSfZRsA
-         Nm7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oXxajodOegFpu3qLtW7meKAMsmhaC7A4cIBe9jeyyy8=;
-        b=Pq+518DrjBvpisgbmB8BX2gm/2NV/YBAowaMRFWFCDqDpcnuvVZvNaJgmm2u/yQ/KQ
-         ZhTNbvb+KzcfZaGiktxcVDH9Ysr23IGQCf9WHjzlFpcawbn0umrY982T6IswMybPHPkC
-         GAIoeeC4AHU7XwsInYRk4NX/K0dk2GWTSNVdKHF8jbpFbdpUAZPNJCV7LYofGwW0EVkb
-         iJWab+we3B4fOrGMty5w2X3kivS0qRbCajApdOiyBFh8nZoEK+KYVhLy+s5nUsy87Q2N
-         IVno8VSllqUK6uiKJpRtdCE1Bxf/Cv2ME1Li1MmFvl+obeR7kft3ETEWKQUvi2rntSnj
-         s/ww==
-X-Gm-Message-State: AOAM530srT1KQPzcwCDBMjHErZDumb5LKJjHQzJGyxsfBuR8s+za7MX9
-        SWGgJxG2vSC4L1jKnHimm/I=
-X-Google-Smtp-Source: ABdhPJyI7FbCW2YhqjttBaWbUwZA3WvvirdR9td3755YlbQ0QHnT8pu0jP7DlVdmg4nQ31ePLujjcg==
-X-Received: by 2002:a17:906:d54f:b0:6df:a9d8:cbaa with SMTP id cr15-20020a170906d54f00b006dfa9d8cbaamr1943701ejc.183.1647542526979;
-        Thu, 17 Mar 2022 11:42:06 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id w14-20020a170906d20e00b006cee22553f7sm2780238ejz.213.2022.03.17.11.42.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 11:42:06 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 20:42:04 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 0/3] Extend locked port feature with FDB locked
- flag (MAC-Auth/MAB)
-Message-ID: <20220317184204.wehqmziioscdz33t@skbuf>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
- <f9b3ecf5-c2a4-3a7a-5d19-1dbeae5acb69@gmail.com>
- <86o825htih.fsf@gmail.com>
+        with ESMTP id S237639AbiCQSvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:51:19 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1F315855B;
+        Thu, 17 Mar 2022 11:49:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6FED0CE2421;
+        Thu, 17 Mar 2022 18:49:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 135C9C340E9;
+        Thu, 17 Mar 2022 18:49:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647542995;
+        bh=8Z1XVSc7H5Hxk/DGfrhzpPCrEGYqxRVGj582MxmoFts=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=U3LXXsy3YjBCtFZPHXFuI+X3DzcHg9tNdkwTCn41x6XEtrKMh3VnpNf2c5OdXAnE7
+         KhvplqlDxTu2OOaKmyuftp1QXcf4QWlG9f1yuUq9O1LKWsD8mIgOHy221LWkCSlkvB
+         GHaTdbaWApjIIgUPhzzR3I5sSsBnOHaAub0Yl3oVPdrPWR7CUKc2xhvR3X6lpslVr+
+         UAR4tiFy6QKhruRCWIKPxm/GvmRrzKixSTNJoCaMSaVV/d8CzPYzPJW4vDhJ6DMcMq
+         t886+vI3CLO2tPJfkfgM8Ugb7mgmsEcY11uATWRnW11ZnhAtXijoSG6wC7Ezir6lB3
+         BAy6hg5eSJnRQ==
+Message-ID: <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
+Date:   Thu, 17 Mar 2022 12:49:54 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86o825htih.fsf@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb
+ mode
+Content-Language: en-US
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, yoshfuji@linux-ipv6.org, oliver@neukum.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,61 +59,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 09:29:10AM +0100, Hans Schultz wrote:
-> On ons, mar 16, 2022 at 17:18, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> > On 3/10/2022 6:23 AM, Hans Schultz wrote:
-> >> This patch set extends the locked port feature for devices
-> >> that are behind a locked port, but do not have the ability to
-> >> authorize themselves as a supplicant using IEEE 802.1X.
-> >> Such devices can be printers, meters or anything related to
-> >> fixed installations. Instead of 802.1X authorization, devices
-> >> can get access based on their MAC addresses being whitelisted.
-> >> 
-> >> For an authorization daemon to detect that a device is trying
-> >> to get access through a locked port, the bridge will add the
-> >> MAC address of the device to the FDB with a locked flag to it.
-> >> Thus the authorization daemon can catch the FDB add event and
-> >> check if the MAC address is in the whitelist and if so replace
-> >> the FDB entry without the locked flag enabled, and thus open
-> >> the port for the device.
-> >> 
-> >> This feature is known as MAC-Auth or MAC Authentication Bypass
-> >> (MAB) in Cisco terminology, where the full MAB concept involves
-> >> additional Cisco infrastructure for authorization. There is no
-> >> real authentication process, as the MAC address of the device
-> >> is the only input the authorization daemon, in the general
-> >> case, has to base the decision if to unlock the port or not.
-> >> 
-> >> With this patch set, an implementation of the offloaded case is
-> >> supplied for the mv88e6xxx driver. When a packet ingresses on
-> >> a locked port, an ATU miss violation event will occur. When
-> >> handling such ATU miss violation interrupts, the MAC address of
-> >> the device is added to the FDB with a zero destination port
-> >> vector (DPV) and the MAC address is communicated through the
-> >> switchdev layer to the bridge, so that a FDB entry with the
-> >> locked flag enabled can be added.
-> >
-> > FWIW, we may have about a 30% - 70% split between switches that will 
-> > signal ATU violations over a side band interrupt, like mv88e6xxx will, 
-> > and the rest will likely signal such events via the proprietary tag
-> > format.
+On 3/17/22 12:15 AM, Sun Shouxin wrote:
+> This patch is implementing IPV6 RLB for balance-alb mode.
 > 
-> I guess that the proprietary tag scheme a scenario where the packet can
-> be forwarded to the bridge module's ingress queue on the respective
-> port?
+> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+> ---
+> changelog:
+> v1-->v2:
+> -Remove ndisc_bond_send_na and refactor ndisc_send_na.
+> -In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
+> -Don't send neighbor advertisement message when receiving
+>  neighbor advertisement message in rlb6_update_entry_from_na.
+> 
+> v2-->v3:
+> -Don't export ndisc_send_na.
+> -Use ipv6_stub->ndisc_send_na to replace ndisc_send_na
+>  in rlb6_update_client.
+> 
+> v3-->v4:
+> -Submit all code at a whole patch.
 
-I'm not sure what you mean by forwarding to the bridge module's ingress
-queue. I expect that both cases of drivers to interact with the bridge
-in the exact same way, expect one of them calls call_switchdev_notifiers()
-from an interrupt context, and the other from NET_RX softirq context,
-from the tagging protocol driver (ok, maybe not directly, it depends
-upon whether we need rtnl_lock which sleeps, things like that).
+you misunderstood Jakub's comment. The code should evolve with small,
+focused patches and each patch needs to compile and function correctly
+(ie., no breakage).
 
-I might be just projecting based on what I know, but the way I interpret
-what Florian has said is by thinking of "learn frames" as described here:
-https://patchwork.kernel.org/project/netdevbpf/cover/20220209130538.533699-1-schultz.hans+netdev@gmail.com/#24734685
-The advantage of signaling ATU misses or membership violations via learn
-frames is that you have a much wider toolbox of mitigations for denial
-of service. Instead of one ATU interrupt per packet, you have NAPI on
-the DSA master, interrupt coalescing, policers on the DSA master, rate
-limiting for learn frames in the switch...
+You need to respond to Jiri's question about why this feature is needed.
+After that:
+
+1. patch 1 adds void *data to ndisc_send_na stub function and
+ndisc_send_na direct function. Update all places that use both
+ndisc_send_na to pass NULL as the data parameter.
+
+2. patch 2 refactors ndisc_send_na to handle the new data argument
+
+3. patch 3 exports any IPv6 functions. explain why each needs to be
+exported.
+
+4. patch 4 .... bonding changes. (bonding folks can respond on how to
+introduce that change).
+
