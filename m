@@ -2,74 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35E304DC49A
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 12:15:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B374DC49D
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 12:16:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232360AbiCQLRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 07:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
+        id S232561AbiCQLR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 07:17:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229596AbiCQLRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 07:17:06 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D61DC3377
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 04:15:49 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b15so6119962edn.4
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 04:15:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ASiXAOOcNeE6rv+Z1l3iwbTE+WGoAnClOQabJsW+llY=;
-        b=DxAUqhYDdDxgkpoScW12RoSNGnV2CwVuZnBpwkbxovXliPNdSQ9s449rzwJDDxXX0Z
-         kaiyQRWQjokgFtjO2usGSkio8Omoc5+cEnmxNvO2HyRb9LhZQFqOTpsCzq03xzJ7Glmr
-         tHKYySNCcTtspNGPHDMrR8BVeT0GI/1Z3LxOfIaKb0WuJRnYzTH9ButqK8AjZUv+++ai
-         +DHx+PoGdY/JORkcAE9uV0ir+rpx/k7H/SOs2m2sMhehlYrOZniFdFKh71hnMc2Z6ndO
-         l/1FXfdp9Ikr29KN26Gi0/qVAfT4ioVGOYrlQAofdb3JcYQSaWWk/zq7IEE/663m+wws
-         3ayg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ASiXAOOcNeE6rv+Z1l3iwbTE+WGoAnClOQabJsW+llY=;
-        b=Nrx3K7v7+AZCGp7NgmivuhqaHqTYN7Ee73wPtNkPyBgGB8b8Xo7nqi94NSkyEc24eW
-         RASd7BsjsOtWpBa8hYew0JFy8KFeS0YXU1JCCdcojaR60Pp8OnMRr8ntmBpinYHs24qP
-         EFUV5Wovhh1xht7p0cvYG7e2xyDEL6tKQKzL73xH4JbjvVF6AZn1AkZ7YmOCXq3DKaDa
-         rhAwE7zG4BrV9AWihY6JsdQIwojCtPbdMu5LhoxfKglnDrx0ntSKvVZJV28JQdXz9Ekk
-         rgWWf4n7K3hm8MXyA7OCWGS+OPFmjWlEtW1eOK24cqqd9H/vOnAwRkRDh8SxZodKfWJh
-         fnPQ==
-X-Gm-Message-State: AOAM533pAo2YnduLu4CcSAOG+8qKq0TelCPaARZa4jSpYXJ9uu0SnCPT
-        IF8vRvgfPX8dThnong5ky5I=
-X-Google-Smtp-Source: ABdhPJwS9BNkMVYTwQSnx8i93E1uMm4Pm4d94Qveq7q15Ef52a2FYKK8c9TLs4Uw2NokMxZA8sKGuw==
-X-Received: by 2002:a05:6402:35c7:b0:418:6577:9eb0 with SMTP id z7-20020a05640235c700b0041865779eb0mr3687759edc.343.1647515747870;
-        Thu, 17 Mar 2022 04:15:47 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id da23-20020a056402177700b0041394d8173csm2412678edb.31.2022.03.17.04.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 04:15:47 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 13:15:45 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Joachim Wiberg <troglobit@gmail.com>
-Subject: Re: [PATCH 2/5] net: bridge: Implement bridge flood flag
-Message-ID: <20220317111545.3e7dxu3oqocdmves@skbuf>
-References: <20220317065031.3830481-1-mattias.forsblad@gmail.com>
- <20220317065031.3830481-3-mattias.forsblad@gmail.com>
- <f2104e0e-45f2-1fe6-5cf9-ef3fa0f1475d@blackwall.org>
+        with ESMTP id S232874AbiCQLRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 07:17:46 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1221E3744
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 04:16:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647515789; x=1679051789;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=rP2Oa8wJ2+Uh+FXiM8KIc8JWfxeVKwu0oFtxEwgkMV0=;
+  b=HAiOz/WyyuIIHu4SREwysN4nEyKeRj8OPpGzOB037Ou3VdWFfgoIq7EN
+   m65fpxNql/grt2BJm6QDW3C2tD040jkGUu/hDMIZ3hMvn9ggjWuJxpxso
+   S2reslMxyaPIW9YIFF72VDabMcK6sZh5Nk6P7Qz3BCK8QUO9IcCsMnXZ7
+   gVzlZa9hoGRNtkg2WVu8w0ysZswUzC5QnhOmp89S7BqWIPuowvSnrdwYN
+   KYLpuNMRZF8nBhjtgFHls5lhr7NCGdyowpJK9wOHF4Tv7e/8QH4PbNDMA
+   3+ThviTimUwxySGeA5wVH7x8DYst7rBMFIhdW4nsRUl1AyRFsiw1Y6dF6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="257028537"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="257028537"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 04:16:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="613966462"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmsmga004.fm.intel.com with ESMTP; 17 Mar 2022 04:16:29 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 04:16:28 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 17 Mar 2022 04:16:28 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21 via Frontend Transport; Thu, 17 Mar 2022 04:16:28 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.42) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.21; Thu, 17 Mar 2022 04:16:28 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ca/AxAHMjxt3GF8k5HbKjXIBbD6hpx1DvEp0CdRW+mQuKx/x1GUXMuIU6ik76vtIWR5SuhyDlEPg1651yXQ1iIvjTYBJOtV7RsovYQP9nK+Mm2G4UufbbuiIv/jjgtabPRWTqzcWSLpHVaoOS6QeyohvN+ab6uE+e7LqZeFlCeE77ZfCNvI7dhfeTo6IgBixAfdRNhf6/mF11PGWqg07PlH75Q7ilAU0PcwvFIDWhZVOI6KJFn9MPF6r+jnaFHPqiB3YJIOyjTosZ6TtCflv77dHh1QkKEJ9Y2r1zvEEhBWcZCeXyMB+kDN9+kfCyH8WdfQ7uGd9xsz8t6345PYf0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zeXuLUoqxWuZPY3Sl1DKiU7HfBYquqnqTbp1O+xS2oc=;
+ b=W83lG9g5r959Hk4EDzLHgbHzRHK4i/TwASnwHErDqMjRp7u8CvJbPCvAhOll89kzXk1kvVXZLdUgU6eyN9JbEc16Keh+YhYAXUKCpkdEyYDVs6cIXMFwInEbXXUHycbFXYzXCkeOeZg/UutY1xOs4yNqM8lVeFyK0EBimpKFDiy7OLjCz55oBvZV2xRhi/US2m1gJFXWfq5X+dMF9uPikFa1omswnRpGYwQSS3vCVATT7EuvlAY0o/eiMGbLn0U8+BvQ1v2F6WZcYmqshsI1V4FhNmNujR5N9TioV8/yjiYzAXgDMAp4aIOFfP6CDPWEvX1fCDKvddZmBZzjVdoQEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW4PR11MB5776.namprd11.prod.outlook.com (2603:10b6:303:183::9)
+ by PH0PR11MB5596.namprd11.prod.outlook.com (2603:10b6:510:eb::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Thu, 17 Mar
+ 2022 11:16:26 +0000
+Received: from MW4PR11MB5776.namprd11.prod.outlook.com
+ ([fe80::79bd:61ad:6fb6:b739]) by MW4PR11MB5776.namprd11.prod.outlook.com
+ ([fe80::79bd:61ad:6fb6:b739%6]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
+ 11:16:26 +0000
+From:   "Drewek, Wojciech" <wojciech.drewek@intel.com>
+To:     Harald Welte <laforge@gnumonks.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "michal.swiatkowski@linux.intel.com" 
+        <michal.swiatkowski@linux.intel.com>,
+        Marcin Szycik <marcin.szycik@linux.intel.com>
+Subject: RE: PFCP support in kernel
+Thread-Topic: PFCP support in kernel
+Thread-Index: Adgzonf8LBvYss0DRt2kM5s+Tem75AAP01oAACqSnwAABsH3gAFSN8pg
+Date:   Thu, 17 Mar 2022 11:16:26 +0000
+Message-ID: <MW4PR11MB577638A44AABF97C854FD383FD129@MW4PR11MB5776.namprd11.prod.outlook.com>
+References: <MW4PR11MB577600AC075530F7C3D2F06DFD0A9@MW4PR11MB5776.namprd11.prod.outlook.com>
+ <Yiju8kbN87kROucg@nataraja>
+ <MW4PR11MB5776AB46BC5702BD0120A7C3FD0B9@MW4PR11MB5776.namprd11.prod.outlook.com>
+ <Yio5/+Ko77tu4Vi6@nataraja>
+In-Reply-To: <Yio5/+Ko77tu4Vi6@nataraja>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1a02b6d7-118d-4473-583f-08da080793bb
+x-ms-traffictypediagnostic: PH0PR11MB5596:EE_
+x-microsoft-antispam-prvs: <PH0PR11MB55964F1645AD68F0D37CA4DAFD129@PH0PR11MB5596.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 8l7LnnDBGll/50S7H6oFIGTQgU4Yv/vloZaGNjT7Q8qh4dyxfhemVjyuHpjfs69Qxqz/r5xXsWpF61WsHZK6kj+bVEfqca+hqL8+c5mdnoYkpMWLbwMRkB+eTviBfDN1k/tQ5CYUuI2zyNesAslu4hCzi2lQCZTRd5DfoXEG4DZdf82UPjJwoYn0lVCbQyOvqSsB4ojCPqmARXozOczpNSJ1lYMJJMWEZFNkf6GUyYa1WgbN8CNes96N6Re8SdEpGj2Q3cJ+LyZ2lSVkSFtGQgHJ5k2pV69njbbRdXE18Ir9WSrNm0Cs8BfUMxBIKsAmouLYgh2Az+xXNsy7j46EbpGm9YQQy+cPnU5o/mtATIkGgkQbNEY/Iet5DD3O5i805kJmDigZl9xWDGmGtOS50d0hYN7LIgC0y+xqjJx+GhO/MHN8VGMjtV6Zs3AY2deJS51g4eqMmxYJlIYfyVECIQkVw2vrC3EJKZW7CbPqrMJ5QvSM+7A3Dcio3ncLGiEktc+C9ZSFwF51au4A2YFqgoscjeG2BoGIfF3WWrTX8zJg5XYccIRqGcJCjImIcx5m9XQ88RmU5QQadMmK9si19/6IJG7xktaYAAESBtiF7Gv73w1E2pJF2aPtOfZsdNdT6CHuGOXa107+kLwjoU+zG7yU1wA26l2Flyg3Pzavq0bw24asO37xZ3M+44RUYdT3EdFj6IpLuYnZeP9t/UBFmlRtFR8U0n3nFPkBafIjYiCcHajJQMHvoa4UwFUak+UfdTuLC0XGkp775kB9n9bQuA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5776.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(82960400001)(55016003)(7696005)(186003)(2906002)(26005)(316002)(966005)(6506007)(71200400001)(53546011)(9686003)(122000001)(54906003)(6916009)(38100700002)(76116006)(66556008)(66946007)(66476007)(8676002)(38070700005)(4326008)(86362001)(66446008)(64756008)(508600001)(5660300002)(3480700007)(33656002)(83380400001)(52536014)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?emWdDizlzWQ8vc29IjAdpVJYUoZMV1tqDCZ99rMSkeWzx+YbIZk+uCv9hnOm?=
+ =?us-ascii?Q?OBAcueryyjmkSHj/CwMf5ZtAkTYpBT+xBLnXvhI4agbspllTh3kbzCTdBH+A?=
+ =?us-ascii?Q?dAQXLV4ctGdLcrpjti7M+KQAXEyp5Nb0QKlbVvs5vDTIsws1N1bfLKdVijQ1?=
+ =?us-ascii?Q?Hnv4hTQA/p68ZJlOdgIBHH1Gyr75QKI/4Sf0rCoNOUVwWnJAj8+KBDRp41db?=
+ =?us-ascii?Q?Al3T/zhI+FKcXxL7XjlPrHRNG8WwwjSmGD18Nh9G3LnF3K4Tu7dMTJT1RNAc?=
+ =?us-ascii?Q?GAHmK+pREMZMt7Ojt6xVw3VfXbPdgXU7SCADpH2x3Dw/tpAhPj0b19uaMcUl?=
+ =?us-ascii?Q?JoqZmxVyRvXlSrK2CIdUFt9Wh6tMWtQ0EyZzLCW5Qy1nKfWh0DeqNIa2yWZ2?=
+ =?us-ascii?Q?e46GRoXaj7JzNpVBCG3kuJirKzi7CjJ28CKQUDiBNoZOd6gFu0kIwLvrTZup?=
+ =?us-ascii?Q?iGAXb/8JnHVHn5GOFF2B3L/TPs2s2Kl07uBKYZ9yJ+DWqDJWgeGla4hr4uE7?=
+ =?us-ascii?Q?/PYhvRCM44VleBJQ9j2yvWrJT81cjgoL3H13ktcQPpy3lLlYwju60xnAQ/6O?=
+ =?us-ascii?Q?KyHv2oXJmju3shJ/sLiZAJLeeWIE9XapZgwnTtjlLOXkj1kq117PatY+HbxX?=
+ =?us-ascii?Q?CbV4XEF1lTzn1bCFZtBIOnvCcTy54kFiLwsGazzS0aXWf9UZ3RjsIeGyjkE4?=
+ =?us-ascii?Q?QTh6OaC81cKHjXy5Yb8kOOAcsC+6YBrgUmu7WnrAO43R7CU+cI1Jo7vaB1ig?=
+ =?us-ascii?Q?tyQ0ykPD9bFw7sjUMTVB17M4zFojgdgQiwEYg2Eol4XFCdhWyx8Fc1N1nnLA?=
+ =?us-ascii?Q?9qwyTlbtHxzQcYxkQC4xGcb/KPql5s3tGcjeWOlx6yREdJL9zxUNiF4sHFLS?=
+ =?us-ascii?Q?s0ZyaQeYl3lg3q4ltAvmHSgc1K8HfxvBzy3CxGgzsWcEIj04fHk3EvpOdsJx?=
+ =?us-ascii?Q?IBNYbAg3kfVkuSd9ESY/EH/iqyWgVqH0LjIcrTY1ALHcSVXAik5yHfREU2Zd?=
+ =?us-ascii?Q?wPP80O7OnQzpQexzjeMTIrmjdlP/ZlIcd/DszSMbte5Sv3sP+pH62jNVCoGF?=
+ =?us-ascii?Q?yRnkKMBH4KAe2Y8tCAqKtY5XXGZR8bX7RzOMS6amVaCqpFueSzltrPReX8NK?=
+ =?us-ascii?Q?0el8+vFKJN8JQlDconEredMiag8seYcTlyY5mBfs3Czreg0rsZ0sg0+vr9nZ?=
+ =?us-ascii?Q?xsWP05XmGEwFq3FoN4fUz759od+Dhf6ew9KY5gwPj91XmpHwVqCw/5BnwxTI?=
+ =?us-ascii?Q?c3ugKYpwPC7pcNHo/GON6RBe0gyiI9gc+8OydjIobMgt7lTtWOhrpcBvuRq8?=
+ =?us-ascii?Q?jmUYdxWYLnDdgh9KeoqX/NZSLK5c6jLew3XABLSjgvnbiKs9jtlYbXVPP30j?=
+ =?us-ascii?Q?BMs0SZgpeJ4997BTpqdGGzJxLtoKsaN8EL0fSTq9WxHrJh4ZN6ydQso1H3yv?=
+ =?us-ascii?Q?yVFwu+LYx2yBSAvsmxbVyEpX2ayoluqU?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f2104e0e-45f2-1fe6-5cf9-ef3fa0f1475d@blackwall.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5776.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a02b6d7-118d-4473-583f-08da080793bb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2022 11:16:26.1574
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KwFWJreKU5us3BwsCpHkMj/mlSXDZJB5l8aVoqNhwIk3VmT7n2aTHI/RNH4d+D5WndcGt5D0jz4fbb/CHzf/IPdEA+P4aFJeaM7CktW9zyY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5596
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,263 +156,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 12:11:40PM +0200, Nikolay Aleksandrov wrote:
-> On 17/03/2022 08:50, Mattias Forsblad wrote:
-> > This patch implements the bridge flood flags. There are three different
-> > flags matching unicast, multicast and broadcast. When the corresponding
-> > flag is cleared packets received on bridge ports will not be flooded
-> > towards the bridge.
-> > This makes is possible to only forward selected traffic between the
-> > port members of the bridge.
-> > 
-> > Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
-> > ---
-> >  include/linux/if_bridge.h      |  6 +++++
-> >  include/uapi/linux/if_bridge.h |  9 ++++++-
-> >  net/bridge/br.c                | 45 ++++++++++++++++++++++++++++++++++
-> >  net/bridge/br_device.c         |  3 +++
-> >  net/bridge/br_input.c          | 23 ++++++++++++++---
-> >  net/bridge/br_private.h        |  4 +++
-> >  6 files changed, 85 insertions(+), 5 deletions(-)
-> > 
-> Please always CC bridge maintainers for bridge patches.
-> I almost missed this one. I'll add my reply to Joachim's notes
-> which are pretty spot on.
+Hi Harald,
 
-And DSA maintainers for DSA patches ;) I was aimlessly scrolling through
-patchwork when I happened to notice these, and the series is already at v3.
+> -----Original Message-----
+> From: Harald Welte <laforge@gnumonks.org>
+> Sent: czwartek, 10 marca 2022 18:49
+> To: Drewek, Wojciech <wojciech.drewek@intel.com>
+> Cc: netdev@vger.kernel.org; michal.swiatkowski@linux.intel.com; Marcin Sz=
+ycik <marcin.szycik@linux.intel.com>
+> Subject: Re: PFCP support in kernel
+>=20
+> Hi Wojciech,
+>=20
+> On Thu, Mar 10, 2022 at 03:24:07PM +0000, Drewek, Wojciech wrote:
+>=20
+> > > I'm sorry, I have very limited insight into geneve/vxlan.  It may
+> > > be of interest to you that within Osmocom we are currently implementi=
+ng
+> > > a UPF that uses nftables as the backend.  The UPF runs in userspace,
+> > > handles a minimal subset of PFCP (no qos/shaping, for example), and t=
+hen
+> > > installs rules into nftables to perform packet matching and
+> > > manipulation.  Contrary to the old kernel GTP driver, this approach i=
+s
+> > > more flexible as it can also cover the TEID mapping case which you fi=
+nd
+> > > at SGSN/S-GW or in roaming hubs.  We currently are just about to
+> > > complete a prof-of-concept of that.
+> >
+> > That's interesting, I have two questions:
+> > - is it going to be possible to math packets based on SEID?
+>=20
+> I'm sorry, I'm not following you.  The SEID I know (TS 29.244 Section 5.6=
+.2)
+> has only significance on the PFCP session between control and user plane.
+>=20
+> The PFCP peers (e.g. SMF and UPF in a PGW use case) use the SEID to
+> differentiate between different PFCP sessions.
+>=20
+> IMHO this has nothing to do with matching of user plane packets in the
+> actual UFP?
 
-As a matter of fact, I downloaded these patches from the mailing list
-with the intention of giving them a spin on mv88e6xxx to see what
-they're about, and to my surprise, this particular patch (I haven't even
-reached the offloading part) breaks DHCP on my bridge, so it can no
-longer get an IP address. I haven't toggled any bridge flag through
-netlink, just booted the board with systemd-networkd. The same thing
-happens with my LS1028A board. Further investigation to come, but this
-isn't off to a good start, I'm afraid...
+Ok, I think I got it. Thanks for explanation!
+>=20
+> > - any options for offloading this nftables  filters to the hardware?
+>=20
+> You would have to talk to the netfilter project if there are any related
+> approaches for nftables hardware offload, I am no longer involved in
+> netfilter development for more than a decade by now.
+>=20
+> In the context of the "osmo-upf" proof-of-concept we're working on at
+> sysmocom, the task is explicitly to avoid any type of hardware
+> acceleration and to see what kind of performance we can reach with a
+> current mainline kernel in pure software.
 
-> 
-> > diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-> > index 3aae023a9353..fa8e000a6fb9 100644
-> > --- a/include/linux/if_bridge.h
-> > +++ b/include/linux/if_bridge.h
-> > @@ -157,6 +157,7 @@ static inline int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
-> >  struct net_device *br_fdb_find_port(const struct net_device *br_dev,
-> >  				    const unsigned char *addr,
-> >  				    __u16 vid);
-> > +bool br_flood_enabled(const struct net_device *dev);
-> >  void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
-> >  bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
-> >  u8 br_port_get_stp_state(const struct net_device *dev);
-> > @@ -170,6 +171,11 @@ br_fdb_find_port(const struct net_device *br_dev,
-> >  	return NULL;
-> >  }
-> >  
-> > +static inline bool br_flood_enabled(const struct net_device *dev)
-> > +{
-> > +	return true;
-> > +}
-> > +
-> >  static inline void br_fdb_clear_offload(const struct net_device *dev, u16 vid)
-> >  {
-> >  }
-> > diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-> > index 2711c3522010..765ed70c9b28 100644
-> > --- a/include/uapi/linux/if_bridge.h
-> > +++ b/include/uapi/linux/if_bridge.h
-> > @@ -72,6 +72,7 @@ struct __bridge_info {
-> >  	__u32 tcn_timer_value;
-> >  	__u32 topology_change_timer_value;
-> >  	__u32 gc_timer_value;
-> > +	__u8 flood;
-> >  };
-> >  
-> >  struct __port_info {
-> > @@ -752,13 +753,19 @@ struct br_mcast_stats {
-> >  /* bridge boolean options
-> >   * BR_BOOLOPT_NO_LL_LEARN - disable learning from link-local packets
-> >   * BR_BOOLOPT_MCAST_VLAN_SNOOPING - control vlan multicast snooping
-> > + * BR_BOOLOPT_FLOOD - control bridge flood flag
-> > + * BR_BOOLOPT_MCAST_FLOOD - control bridge multicast flood flag
-> > + * BR_BOOLOPT_BCAST_FLOOD - control bridge broadcast flood flag
-> >   *
-> >   * IMPORTANT: if adding a new option do not forget to handle
-> > - *            it in br_boolopt_toggle/get and bridge sysfs
-> > + *            it in br_boolopt_toggle/get
-> >   */
-> >  enum br_boolopt_id {
-> >  	BR_BOOLOPT_NO_LL_LEARN,
-> >  	BR_BOOLOPT_MCAST_VLAN_SNOOPING,
-> > +	BR_BOOLOPT_FLOOD,
-> > +	BR_BOOLOPT_MCAST_FLOOD,
-> > +	BR_BOOLOPT_BCAST_FLOOD,
-> >  	BR_BOOLOPT_MAX
-> >  };
-> >  
-> > diff --git a/net/bridge/br.c b/net/bridge/br.c
-> > index b1dea3febeea..63a17bed6c63 100644
-> > --- a/net/bridge/br.c
-> > +++ b/net/bridge/br.c
-> > @@ -265,6 +265,11 @@ int br_boolopt_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on,
-> >  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
-> >  		err = br_multicast_toggle_vlan_snooping(br, on, extack);
-> >  		break;
-> > +	case BR_BOOLOPT_FLOOD:
-> > +	case BR_BOOLOPT_MCAST_FLOOD:
-> > +	case BR_BOOLOPT_BCAST_FLOOD:
-> > +		err = br_flood_toggle(br, opt, on);
-> > +		break;
-> >  	default:
-> >  		/* shouldn't be called with unsupported options */
-> >  		WARN_ON(1);
-> > @@ -281,6 +286,12 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
-> >  		return br_opt_get(br, BROPT_NO_LL_LEARN);
-> >  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
-> >  		return br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED);
-> > +	case BR_BOOLOPT_FLOOD:
-> > +		return br_opt_get(br, BROPT_FLOOD);
-> > +	case BR_BOOLOPT_MCAST_FLOOD:
-> > +		return br_opt_get(br, BROPT_MCAST_FLOOD);
-> > +	case BR_BOOLOPT_BCAST_FLOOD:
-> > +		return br_opt_get(br, BROPT_BCAST_FLOOD);
-> >  	default:
-> >  		/* shouldn't be called with unsupported options */
-> >  		WARN_ON(1);
-> > @@ -325,6 +336,40 @@ void br_boolopt_multi_get(const struct net_bridge *br,
-> >  	bm->optmask = GENMASK((BR_BOOLOPT_MAX - 1), 0);
-> >  }
-> >  
-> > +int br_flood_toggle(struct net_bridge *br, enum br_boolopt_id opt,
-> > +		    bool on)
-> > +{
-> > +	struct switchdev_attr attr = {
-> > +		.orig_dev = br->dev,
-> > +		.id = SWITCHDEV_ATTR_ID_BRIDGE_FLOOD,
-> > +		.flags = SWITCHDEV_F_DEFER,
-> > +	};
-> > +	enum net_bridge_opts bropt;
-> > +	int ret;
-> > +
-> > +	switch (opt) {
-> > +	case BR_BOOLOPT_FLOOD:
-> > +		bropt = BROPT_FLOOD;
-> > +		break;
-> > +	case BR_BOOLOPT_MCAST_FLOOD:
-> > +		bropt = BROPT_MCAST_FLOOD;
-> > +		break;
-> > +	case BR_BOOLOPT_BCAST_FLOOD:
-> > +		bropt = BROPT_BCAST_FLOOD;
-> > +		break;
-> > +	default:
-> > +		WARN_ON(1);
-> > +		return -EINVAL;
-> > +	}
-> > +	br_opt_toggle(br, bropt, on);
-> > +
-> > +	attr.u.brport_flags.mask = BIT(bropt);
-> > +	attr.u.brport_flags.val = on << bropt;
-> > +	ret = switchdev_port_attr_set(br->dev, &attr, NULL);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> >  /* private bridge options, controlled by the kernel */
-> >  void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on)
-> >  {
-> > diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-> > index 8d6bab244c4a..fafaef9d4b3a 100644
-> > --- a/net/bridge/br_device.c
-> > +++ b/net/bridge/br_device.c
-> > @@ -524,6 +524,9 @@ void br_dev_setup(struct net_device *dev)
-> >  	br->bridge_hello_time = br->hello_time = 2 * HZ;
-> >  	br->bridge_forward_delay = br->forward_delay = 15 * HZ;
-> >  	br->bridge_ageing_time = br->ageing_time = BR_DEFAULT_AGEING_TIME;
-> > +	br_opt_toggle(br, BROPT_FLOOD, true);
-> > +	br_opt_toggle(br, BROPT_MCAST_FLOOD, true);
-> > +	br_opt_toggle(br, BROPT_BCAST_FLOOD, true);
-> >  	dev->max_mtu = ETH_MAX_MTU;
-> >  
-> >  	br_netfilter_rtable_init(br);
-> > diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> > index e0c13fcc50ed..fcb0757bfdcc 100644
-> > --- a/net/bridge/br_input.c
-> > +++ b/net/bridge/br_input.c
-> > @@ -109,11 +109,12 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
-> >  		/* by definition the broadcast is also a multicast address */
-> >  		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
-> >  			pkt_type = BR_PKT_BROADCAST;
-> > -			local_rcv = true;
-> > +			local_rcv = true && br_opt_get(br, BROPT_BCAST_FLOOD);
-> >  		} else {
-> >  			pkt_type = BR_PKT_MULTICAST;
-> > -			if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
-> > -				goto drop;
-> > +			if (br_opt_get(br, BROPT_MCAST_FLOOD))
-> > +				if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
-> > +					goto drop;
-> >  		}
-> >  	}
-> >  
-> > @@ -155,9 +156,13 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
-> >  			local_rcv = true;
-> >  			br->dev->stats.multicast++;
-> >  		}
-> > +		if (!br_opt_get(br, BROPT_MCAST_FLOOD))
-> > +			local_rcv = false;
-> >  		break;
-> >  	case BR_PKT_UNICAST:
-> >  		dst = br_fdb_find_rcu(br, eth_hdr(skb)->h_dest, vid);
-> > +		if (!br_opt_get(br, BROPT_FLOOD))
-> > +			local_rcv = false;
-> >  		break;
-> >  	default:
-> >  		break;
-> > @@ -166,7 +171,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
-> >  	if (dst) {
-> >  		unsigned long now = jiffies;
-> >  
-> > -		if (test_bit(BR_FDB_LOCAL, &dst->flags))
-> > +		if (test_bit(BR_FDB_LOCAL, &dst->flags) && local_rcv)
-> >  			return br_pass_frame_up(skb);
-> >  
-> >  		if (now != dst->used)
-> > @@ -190,6 +195,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
-> >  }
-> >  EXPORT_SYMBOL_GPL(br_handle_frame_finish);
-> >  
-> > +bool br_flood_enabled(const struct net_device *dev)
-> > +{
-> > +	struct net_bridge *br = netdev_priv(dev);
-> > +
-> > +	return !!(br_opt_get(br, BROPT_FLOOD) ||
-> > +		   br_opt_get(br, BROPT_MCAST_FLOOD) ||
-> > +		   br_opt_get(br, BROPT_BCAST_FLOOD));
-> > +}
-> > +EXPORT_SYMBOL_GPL(br_flood_enabled);
-> > +
-> >  static void __br_handle_local_finish(struct sk_buff *skb)
-> >  {
-> >  	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
-> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> > index 48bc61ebc211..cf88dce0b92b 100644
-> > --- a/net/bridge/br_private.h
-> > +++ b/net/bridge/br_private.h
-> > @@ -445,6 +445,9 @@ enum net_bridge_opts {
-> >  	BROPT_NO_LL_LEARN,
-> >  	BROPT_VLAN_BRIDGE_BINDING,
-> >  	BROPT_MCAST_VLAN_SNOOPING_ENABLED,
-> > +	BROPT_FLOOD,
-> > +	BROPT_MCAST_FLOOD,
-> > +	BROPT_BCAST_FLOOD,
-> >  };
-> >  
-> >  struct net_bridge {
-> > @@ -720,6 +723,7 @@ int br_boolopt_multi_toggle(struct net_bridge *br,
-> >  void br_boolopt_multi_get(const struct net_bridge *br,
-> >  			  struct br_boolopt_multi *bm);
-> >  void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on);
-> > +int br_flood_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on);
-> >  
-> >  /* br_device.c */
-> >  void br_dev_setup(struct net_device *dev);
-> 
+Thanks for answer, so I think we will try with TC tool for now.
+>=20
+> --
+> - Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.o=
+rg/
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+> "Privacy in residential applications is a desirable marketing option."
+>                                                   (ETSI EN 300 175-7 Ch. =
+A6)
