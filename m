@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CCCF4DCE2B
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9957F4DCE29
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237512AbiCQSzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
+        id S237727AbiCQSz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234146AbiCQSzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D071637F1
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:29 -0700 (PDT)
+        with ESMTP id S237718AbiCQSzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9AC163E3B
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D06C961744
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F26E5C340E9;
-        Thu, 17 Mar 2022 18:54:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D90DB81F9C
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E4A4C340F2;
+        Thu, 17 Mar 2022 18:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647543268;
-        bh=zmADk2Qcu0bG158GcZCItX80BAQK0XtiVslaRoDBBzo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Y+G+hOSQ98RcbjneeXm5oNhl5lbYVFmKVihTNu2Bby3EWq6KS3bccKhsAQuddjv39
-         wz3a8Ee0zdFufN3U9N/fL3zwlAIN+Zoqs1bGkxKCEajM0V0xey7YHQmrreZM+Oz+WL
-         W8lmm5oo/aJCbk6gbTvGxlukEoc0VGTw3GHmGdoh2gbKchgFpdCSiTh4+VmBnd5YXy
-         KNGf7rTKkmqp3h38PB84f81pRGz/dhBRFGzCNODddWHxmhxWP8Q0fsnezhNe1A5gLc
-         pQypEMsBBuqN6dUeDA/Yb1hF+/CS8xj0czouKtyWh6x3KhuZhMcVpfJX7KvT+lF+73
-         106lOksjH/dcQ==
+        bh=W205W1UQ6hwi4k7FHWP2MrqI8HX34gfSa7dq9uaoULY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NWztsx8sD3RBxF70QDUauzBuD6o1avKtFZ0P6kKdeU88dZ2z91qFQVMdZR86jtIML
+         8A2HzvecnjgPdhNFPXgBlnTrW/gmAh9i0s8d368r8+XnOrwdBAWba628ax7oFYP48r
+         bjI0bXjl5559vcJomOHAbnpgOTQ6UIO3aedPWCFJj8aE9GYpItX3AdrMzwYzkMOtn3
+         ON791ACbPEWpTgjjLx6KiIP4laRp/+SKxE4QxK0GnHTIFD3Upq2FsVJzmXoN/9CNwQ
+         M2bET4yETaTYPiwoeWkP+y5/N02D3BuVXSO2C7jQlViwtqasUaVmNWgH7adAcZEJtd
+         nT+zb6JtdiV+w==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/15] mlx5 updates 2022-03-17
-Date:   Thu, 17 Mar 2022 11:54:09 -0700
-Message-Id: <20220317185424.287982-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 01/15] net/mlx5e: Validate MTU when building non-linear legacy RQ fragments info
+Date:   Thu, 17 Mar 2022 11:54:10 -0700
+Message-Id: <20220317185424.287982-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220317185424.287982-1-saeed@kernel.org>
+References: <20220317185424.287982-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -51,103 +55,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-Hi Dave, Hi Jakub,
+mlx5e_build_rq_frags_info() assumes that MTU is not bigger than
+PAGE_SIZE * MLX5E_MAX_RX_FRAGS, which is 16K for 4K pages. Currently,
+the firmware limits MTU to 10K, so the assumption doesn't lead to a bug.
 
-This series adds some updates to mlx5 driver:
- 1) Preparation for XDP Multi-buffer support
- 2) Memory consumption reduction in SW steering component of the driver
+This commits adds an additional driver check for reliability, since the
+firmware boundary might be changed.
 
-For more information please see tag log below.
+The calculation is taken to a separate function with a comment
+explaining it. It's a preparation for the following patches that
+introcuce XDP multi buffer support.
 
-Please pull and let me know if there is any problem.
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../ethernet/mellanox/mlx5/core/en/params.c   | 34 +++++++++++++++----
+ 1 file changed, 27 insertions(+), 7 deletions(-)
 
-Thanks,
-Saeed.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+index 0bd8698f7226..0f258e7a65e0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
+@@ -392,16 +392,23 @@ void mlx5e_build_create_cq_param(struct mlx5e_create_cq_param *ccp, struct mlx5e
+ 	};
+ }
+ 
++static int mlx5e_max_nonlinear_mtu(int frag_size)
++{
++	/* Optimization for small packets: the last fragment is bigger than the others. */
++	return (MLX5E_MAX_RX_FRAGS - 1) * frag_size + PAGE_SIZE;
++}
++
+ #define DEFAULT_FRAG_SIZE (2048)
+ 
+-static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+-				      struct mlx5e_params *params,
+-				      struct mlx5e_xsk_param *xsk,
+-				      struct mlx5e_rq_frags_info *info)
++static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
++				     struct mlx5e_params *params,
++				     struct mlx5e_xsk_param *xsk,
++				     struct mlx5e_rq_frags_info *info)
+ {
+ 	u32 byte_count = MLX5E_SW2HW_MTU(params, params->sw_mtu);
+ 	int frag_size_max = DEFAULT_FRAG_SIZE;
+ 	u32 buf_size = 0;
++	int max_mtu;
+ 	int i;
+ 
+ 	if (mlx5_fpga_is_ipsec_device(mdev))
+@@ -420,10 +427,18 @@ static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+ 		goto out;
+ 	}
+ 
+-	if (byte_count > PAGE_SIZE +
+-	    (MLX5E_MAX_RX_FRAGS - 1) * frag_size_max)
++	max_mtu = mlx5e_max_nonlinear_mtu(frag_size_max);
++	if (byte_count > max_mtu) {
+ 		frag_size_max = PAGE_SIZE;
+ 
++		max_mtu = mlx5e_max_nonlinear_mtu(frag_size_max);
++		if (byte_count > max_mtu) {
++			mlx5_core_err(mdev, "MTU %u is too big for non-linear legacy RQ (max %d)\n",
++				      params->sw_mtu, max_mtu);
++			return -EINVAL;
++		}
++	}
++
+ 	i = 0;
+ 	while (buf_size < byte_count) {
+ 		int frag_size = byte_count - buf_size;
+@@ -444,6 +459,8 @@ static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+ out:
+ 	info->wqe_bulk = max_t(u8, info->wqe_bulk, 8);
+ 	info->log_num_frags = order_base_2(info->num_frags);
++
++	return 0;
+ }
+ 
+ static u8 mlx5e_get_rqwq_log_stride(u8 wq_type, int ndsegs)
+@@ -540,6 +557,7 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
+ 	void *rqc = param->rqc;
+ 	void *wq = MLX5_ADDR_OF(rqc, rqc, wq);
+ 	int ndsegs = 1;
++	int err;
+ 
+ 	switch (params->rq_wq_type) {
+ 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ: {
+@@ -579,7 +597,9 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
+ 	}
+ 	default: /* MLX5_WQ_TYPE_CYCLIC */
+ 		MLX5_SET(wq, wq, log_wq_sz, params->log_rq_mtu_frames);
+-		mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
++		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
++		if (err)
++			return err;
+ 		ndsegs = param->frags_info.num_frags;
+ 	}
+ 
+-- 
+2.35.1
 
-
-The following changes since commit 1abea24af42c35c6eb537e4402836e2cde2a5b13:
-
-  selftests: net: fix array_size.cocci warning (2022-03-17 15:21:16 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-03-17
-
-for you to fetch changes up to 770c9a3a01af178a90368a78c75eb91707c7233c:
-
-  net/mlx5: Remove unused fill page array API function (2022-03-17 11:51:58 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2022-03-17
-
-1) From Maxim Mikityanskiy,
-   Datapath improvements in preparation for XDP multi buffer
-
-   This series contains general improvements for the datapath that are
-   useful for the upcoming XDP multi buffer support:
-
-   a. Non-linear legacy RQ: validate MTU for robustness, build the linear
-      part of SKB over the first hardware fragment (instead of copying the
-      packet headers), adjust headroom calculations to allow enabling headroom
-      in the non-linear mode (useful for XDP multi buffer).
-
-   b. XDP: do the XDP program test before function call, optimize
-      parameters of mlx5e_xdp_handle.
-
-2) From Rongwei Liu, DR, reduce steering memory usage
-   Currently, mlx5 driver uses mlx5_htbl/chunk/ste to organize
-   steering logic. However there is a little memory waste.
-
-   This update targets to reduce steering memory footprint by:
-   a. Adjust struct member layout.
-   b. Remove duplicated indicator by using simple functions call.
-
-   With 500k TX rules(3 ste) plus 500k RX rules(6 stes), these patches
-   can save around 17% memory.
-
-3) Three cleanup commits at the end of this series.
-
-----------------------------------------------------------------
-Maxim Mikityanskiy (5):
-      net/mlx5e: Validate MTU when building non-linear legacy RQ fragments info
-      net/mlx5e: Add headroom only to the first fragment in legacy RQ
-      net/mlx5e: Build SKB in place over the first fragment in non-linear legacy RQ
-      net/mlx5e: Drop the len output parameter from mlx5e_xdp_handle
-      net/mlx5e: Drop cqe_bcnt32 from mlx5e_skb_from_cqe_mpwrq_linear
-
-Paul Blakey (1):
-      net/mlx5: CT: Remove extra rhashtable remove on tuple entries
-
-Rongwei Liu (6):
-      net/mlx5: DR, Adjust structure member to reduce memory hole
-      net/mlx5: DR, Remove mr_addr rkey from struct mlx5dr_icm_chunk
-      net/mlx5: DR, Remove icm_addr from mlx5dr_icm_chunk to reduce memory
-      net/mlx5: DR, Remove num_of_entries byte_size from struct mlx5_dr_icm_chunk
-      net/mlx5: DR, Remove 4 members from mlx5dr_ste_htbl to reduce memory
-      net/mlx5: DR, Remove hw_ste from mlx5dr_ste to reduce memory
-
-Tariq Toukan (3):
-      net/mlx5e: RX, Test the XDP program existence out of the handler
-      net/mlx5: Remove unused exported contiguous coherent buffer allocation API
-      net/mlx5: Remove unused fill page array API function
-
- drivers/net/ethernet/mellanox/mlx5/core/alloc.c    |  60 -----------
- .../net/ethernet/mellanox/mlx5/core/en/params.c    |  69 ++++++++++---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   1 -
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |   7 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |   2 +-
- .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    |  16 +--
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 111 ++++++++++++---------
- .../mellanox/mlx5/core/steering/dr_action.c        |  12 ++-
- .../ethernet/mellanox/mlx5/core/steering/dr_dbg.c  |  14 ++-
- .../mellanox/mlx5/core/steering/dr_icm_pool.c      |  57 ++++++++---
- .../mellanox/mlx5/core/steering/dr_matcher.c       |  18 ++--
- .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  71 +++++++------
- .../ethernet/mellanox/mlx5/core/steering/dr_send.c |  34 ++++---
- .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 105 ++++++++++---------
- .../mellanox/mlx5/core/steering/dr_table.c         |  18 ++--
- .../mellanox/mlx5/core/steering/dr_types.h         |  31 +++---
- include/linux/mlx5/driver.h                        |   4 -
- 17 files changed, 338 insertions(+), 292 deletions(-)
