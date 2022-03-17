@@ -2,76 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10ED24DCD18
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:00:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 980344DCD24
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:03:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235096AbiCQSBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
+        id S237163AbiCQSEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiCQSBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:01:11 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6471208C20;
-        Thu, 17 Mar 2022 10:59:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647539995; x=1679075995;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=mrEoFatINvPQoB5zn9lLrgr2v+iqz1+qM+CwhwiS228=;
-  b=jEXp0qhvOql3l3QwEGzmrXKvXEwVHeR/Pv2AImmVnYtCSLjkKTfRXNdg
-   qlBsTnPs0xcWo0yuzFy9yyksJVXRYOAOycWDCvpfI/qFrau/KHtf58AOU
-   r6ceOpz7v9iCe5QjgJwWyWzZSXpmqOD3itnVe1nqjQ5bvRcxDTxENhWbG
-   nJt1jwGA9p5nsqCYXm2k39mARfd93ipR9KuVe/yYl3X3HtJkKBppH7dsg
-   LoYzUtoVFw3zO8TTFyKgKs/sHp1l4rt3qLHgNKViBilrbD0cM+1LPVyx3
-   v1TlcHLq3/pDc0kPdRDzDbconPhW//XCx63vzdcMNqmABfQ7EmRuhp4SW
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="236883755"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="236883755"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 10:59:54 -0700
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="581386489"
-Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.212.192.243]) ([10.212.192.243])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 10:59:53 -0700
-Message-ID: <4131e7b3-94f1-40f1-3d4f-df44cda0e5da@linux.intel.com>
-Date:   Thu, 17 Mar 2022 10:59:53 -0700
+        with ESMTP id S232679AbiCQSEe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:04:34 -0400
+Received: from smtp-190e.mail.infomaniak.ch (smtp-190e.mail.infomaniak.ch [IPv6:2001:1600:4:17::190e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06413EE4CD;
+        Thu, 17 Mar 2022 11:03:15 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KKFPF37jZzMpy1c;
+        Thu, 17 Mar 2022 19:03:13 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KKFPD5nW5zljsTW;
+        Thu, 17 Mar 2022 19:03:12 +0100 (CET)
+Message-ID: <88eacf2d-357b-f986-5cb6-88f276432602@digikod.net>
+Date:   Thu, 17 Mar 2022 19:03:57 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next v5 05/13] net: wwan: t7xx: Add control port
+User-Agent: 
 Content-Language: en-US
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        chandrashekar.devegowda@intel.com,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        ilpo.johannes.jarvinen@intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        madhusmita.sahu@intel.com
-References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com>
- <20220223223326.28021-6-ricardo.martinez@linux.intel.com>
- <CAHNKnsTUSfieWKuw5WOFPidezoVWDKkLqQV6xnDs560QAGXiCQ@mail.gmail.com>
-From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-In-Reply-To: <CAHNKnsTUSfieWKuw5WOFPidezoVWDKkLqQV6xnDs560QAGXiCQ@mail.gmail.com>
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-3-konstantin.meskhidze@huawei.com>
+ <a28c8bec-3671-2613-9107-2b911305c274@digikod.net>
+ <fb652db3-6a1f-ca36-cb89-04c8b8daa938@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 02/15] landlock: filesystem access mask helpers
+In-Reply-To: <fb652db3-6a1f-ca36-cb89-04c8b8daa938@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -79,75 +49,211 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-Hi Sergey,
+On 17/03/2022 14:25, Konstantin Meskhidze wrote:
+> 
+> 
+> 3/15/2022 8:48 PM, Mickaël Salaün пишет:
 
-On 3/6/2022 6:55 PM, Sergey Ryazanov wrote:
-> On Thu, Feb 24, 2022 at 1:35 AM Ricardo Martinez
-> <ricardo.martinez@linux.intel.com> wrote:
->> From: Haijun Liu <haijun.liu@mediatek.com>
+…
+
+>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>>> index 78341a0538de..a6212b752549 100644
+>>> --- a/security/landlock/ruleset.c
+>>> +++ b/security/landlock/ruleset.c
+>>> @@ -44,16 +44,30 @@ static struct landlock_ruleset 
+>>> *create_ruleset(const u32 num_layers)
+>>>       return new_ruleset;
+>>>   }
+>>>
+>>> -struct landlock_ruleset *landlock_create_ruleset(const u32 access_mask)
+>>> +/* A helper function to set a filesystem mask */
+>>> +void landlock_set_fs_access_mask(struct landlock_ruleset *ruleset,
 >>
->> Control Port implements driver control messages such as modem-host
->> handshaking, controls port enumeration, and handles exception messages.
+>> struct landlock_ruleset *const ruleset
 >>
->> The handshaking process between the driver and the modem happens during
->> the init sequence. The process involves the exchange of a list of
->> supported runtime features to make sure that modem and host are ready
->> to provide proper feature lists including port enumeration. Further
->> features can be enabled and controlled in this handshaking process.
+>> Please use const as much as possible even in function arguments: e.g. 
+>> access_masks_set, mask_level…
 >>
-...
->> +static void t7xx_core_hk_handler(struct t7xx_modem *md, struct t7xx_fsm_ctl *ctl,
->> +                                enum t7xx_fsm_event_state event_id,
->> +                                enum t7xx_fsm_event_state err_detect)
->> +{
->> +       struct t7xx_sys_info *core_info = &md->core_md;
->> +       struct device *dev = &md->t7xx_dev->pdev->dev;
->> +       struct t7xx_fsm_event *event, *event_next;
->> +       unsigned long flags;
->> +       void *event_data;
->> +       int ret;
->> +
->> +       t7xx_prepare_host_rt_data_query(core_info);
->> +
->> +       while (!kthread_should_stop()) {
->> +               bool event_received = false;
->> +
->> +               spin_lock_irqsave(&ctl->event_lock, flags);
->> +               list_for_each_entry_safe(event, event_next, &ctl->event_queue, entry) {
->> +                       if (event->event_id == err_detect) {
->> +                               list_del(&event->entry);
->> +                               spin_unlock_irqrestore(&ctl->event_lock, flags);
->> +                               dev_err(dev, "Core handshake error event received\n");
->> +                               goto err_free_event;
->> +                       } else if (event->event_id == event_id) {
->> +                               list_del(&event->entry);
->> +                               event_received = true;
->> +                               break;
->> +                       }
->> +               }
->> +               spin_unlock_irqrestore(&ctl->event_lock, flags);
->> +
->> +               if (event_received)
->> +                       break;
->> +
->> +               wait_event_interruptible(ctl->event_wq, !list_empty(&ctl->event_queue) ||
->> +                                        kthread_should_stop());
->> +               if (kthread_should_stop())
->> +                       goto err_free_event;
->> +       }
->> +
->> +       if (ctl->exp_flg)
->> +               goto err_free_event;
->> +
->> +       event_data = (void *)event + sizeof(*event);
-> In the V2, the event structure has a data field. But then it was
-> dropped and now the attached data offset is manually calculated. Why
-> did you do this, why event->data is not suitable here?
+>>> +                 const struct landlock_access_mask *access_mask_set,
+> 
+>   Ok. Got it.
+>>
+>> nit: no need for "_set" suffix.
+> 
+>   Ok. Thanks
+>>
+>> Why do you need a struct landlock_access_mask and not just u16 (which 
+>> will probably become a subset of access_mask_t, see [1])? 
+>> landlock_create_ruleset() could just take two masks as argument instead.
+>>
+>> [1] https://lore.kernel.org/all/20220221212522.320243-2-mic@digikod.net/
+> 
+>    This was your suggestion in previous patch V3:
+> 
+>    " To make it easier and avoid mistakes, you could use a dedicated
+>     struct to properly manage masks passing and conversions:
+>    struct landlock_access_mask {
+>      u16 fs; // TODO: make sure at build-time that all access rights
+>                     fit in.
+>      u16 net; // TODO: ditto for network access rights.
+>    }
+> 
+>    get_access_masks(const struct landlock_ruleset *, struct
+>    landlock_access_mask *);
+>    set_access_masks(struct landlock_ruleset *, const struct
+>    landlock_access_mask *);
+> 
+>    This should also be part of a standalone patch."
+> 
+> 
+> https://lore.kernel.org/linux-security-module/ed2bd420-a22b-2912-1ff5-f48ab352d8e7@digikod.net/ 
 
-It was removed along with other zero length arrays, although it was 
-declared as an empty array.
+Indeed! What is nice about struct is that it enables to easily 
+differentiate same-type values (e.g. fs mask from net mask). However, 
+because this struct is mainly passed once to initialize a ruleset, it 
+looks like this was not worth it. Please get back to how you dealt with 
+that previously but with a new access_mask_t typedef, which will 
+conflict with my latest patchset but that will be trivial to fix. You 
+can also merge the landlock_set_*_access_mask() into 
+landlock_create_ruleset() because they are not use elsewhere (and then 
+it would have been much less useful to have a dedicated struct).
 
-The next iteration will use C99 flexible arrays where required, instead 
-of calculating the data offset manually.
 
-...
+> 
+> 
+>>
+>>> +                 u16 mask_level)
+>>> +{
+>>> +    ruleset->access_masks[mask_level] = access_mask_set->fs;
+>>> +}
+>>> +
+>>> +/* A helper function to get a filesystem mask */
+>>> +u32 landlock_get_fs_access_mask(const struct landlock_ruleset 
+>>> *ruleset, u16 mask_level)
+>>> +{
+>>> +    return ruleset->access_masks[mask_level];
+>>> +}
+>>
+>> You can move these two helpers to ruleset.h and make them static inline.
+> 
+>    Ok. I got it.
+>>
+>>> +
+>>> +struct landlock_ruleset *landlock_create_ruleset(const struct 
+>>> landlock_access_mask *access_mask_set)
+>>>   {
+>>>       struct landlock_ruleset *new_ruleset;
+>>>
+>>>       /* Informs about useless ruleset. */
+>>> -    if (!access_mask)
+>>> +    if (!access_mask_set->fs)
+>>>           return ERR_PTR(-ENOMSG);
+>>>       new_ruleset = create_ruleset(1);
+>>>       if (!IS_ERR(new_ruleset))
+>>> -        new_ruleset->access_masks[0] = access_mask;
+>>> +        landlock_set_fs_access_mask(new_ruleset, access_mask_set, 0);
+>>>       return new_ruleset;
+>>>   }
+>>>
+>>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>>> index 32d90ce72428..bc87e5f787f7 100644
+>>> --- a/security/landlock/ruleset.h
+>>> +++ b/security/landlock/ruleset.h
+>>> @@ -16,6 +16,16 @@
+>>>
+>>>   #include "object.h"
+>>>
+>>> +/**
+>>> + * struct landlock_access_mask - A helper structure to handle 
+>>> different mask types
+>>> + */
+>>> +struct landlock_access_mask {
+>>> +    /**
+>>> +     * @fs: Filesystem access mask.
+>>> +     */
+>>> +    u16 fs;
+>>> +};
+>>
+>> Removing this struct would simplify the code.
+> 
+>    I followed your recommendation to use such kind of structure.
+>    Please check previous patch V3 review:
+> 
+> 
+> https://lore.kernel.org/linux-security-module/ed2bd420-a22b-2912-1ff5-f48ab352d8e7@digikod.net/ 
+> 
+> 
+>>
+>>> +
+>>>   /**
+>>>    * struct landlock_layer - Access rights for a given layer
+>>>    */
+>>> @@ -140,7 +150,8 @@ struct landlock_ruleset {
+>>>       };
+>>>   };
+>>>
+>>> -struct landlock_ruleset *landlock_create_ruleset(const u32 
+>>> access_mask);
+>>> +struct landlock_ruleset *landlock_create_ruleset(const struct 
+>>> landlock_access_mask
+>>> +                                    *access_mask_set);
+>>>
+>>>   void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
+>>>   void landlock_put_ruleset_deferred(struct landlock_ruleset *const 
+>>> ruleset);
+>>> @@ -162,4 +173,10 @@ static inline void landlock_get_ruleset(struct 
+>>> landlock_ruleset *const ruleset)
+>>>           refcount_inc(&ruleset->usage);
+>>>   }
+>>>
+>>> +void landlock_set_fs_access_mask(struct landlock_ruleset *ruleset,
+>>> +                 const struct landlock_access_mask *access_mask_set,
+>>> +                 u16 mask_level);
+>>> +
+>>> +u32 landlock_get_fs_access_mask(const struct landlock_ruleset 
+>>> *ruleset, u16 mask_level);
+>>> +
+>>>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
+>>> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+>>> index f1d86311df7e..5931b666321d 100644
+>>> --- a/security/landlock/syscalls.c
+>>> +++ b/security/landlock/syscalls.c
+>>> @@ -159,6 +159,7 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
+>>>   {
+>>>       struct landlock_ruleset_attr ruleset_attr;
+>>>       struct landlock_ruleset *ruleset;
+>>> +    struct landlock_access_mask access_mask_set = {.fs = 0};
+>>>       int err, ruleset_fd;
+>>>
+>>>       /* Build-time checks. */
+>>> @@ -185,9 +186,10 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
+>>>       if ((ruleset_attr.handled_access_fs | LANDLOCK_MASK_ACCESS_FS) !=
+>>>               LANDLOCK_MASK_ACCESS_FS)
+>>>           return -EINVAL;
+>>> +    access_mask_set.fs = ruleset_attr.handled_access_fs;
+>>>
+>>>       /* Checks arguments and transforms to kernel struct. */
+>>> -    ruleset = landlock_create_ruleset(ruleset_attr.handled_access_fs);
+>>> +    ruleset = landlock_create_ruleset(&access_mask_set);
+>>>       if (IS_ERR(ruleset))
+>>>           return PTR_ERR(ruleset);
+>>>
+>>> @@ -343,8 +345,9 @@ SYSCALL_DEFINE4(landlock_add_rule,
+>>>        * Checks that allowed_access matches the @ruleset constraints
+>>>        * (ruleset->access_masks[0] is automatically upgraded to 
+>>> 64-bits).
+>>>        */
+>>> -    if ((path_beneath_attr.allowed_access | 
+>>> ruleset->access_masks[0]) !=
+>>> -            ruleset->access_masks[0]) {
+>>> +
+>>> +    if ((path_beneath_attr.allowed_access | 
+>>> landlock_get_fs_access_mask(ruleset, 0)) !=
+>>> +                        landlock_get_fs_access_mask(ruleset, 0)) {
+>>>           err = -EINVAL;
+>>>           goto out_put_ruleset;
+>>>       }
+>>> -- 
+>>> 2.25.1
+>>>
+>> .
