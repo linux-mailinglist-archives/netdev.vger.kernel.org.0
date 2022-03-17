@@ -2,75 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1298B4DC92F
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 15:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 997274DC933
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 15:48:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235399AbiCQOtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 10:49:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55492 "EHLO
+        id S234209AbiCQOuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 10:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235397AbiCQOtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 10:49:06 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAEAF2016B9
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 07:47:50 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id z7so6157147iom.1
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 07:47:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fX2usQW7VgeZMIAWoRfD3t8cBll4opaLh+6N8QASKf8=;
-        b=QwD61V6jtzGk9aRtoIOEdfATT+bRHQugc1LTVNtgvAtC3x5bGNcr+o+9afIqvlchiC
-         SKD802dlJnZbV9ciODxS+dHAmG+Hl0JwG308TkSaXsyo7ggb2NNZR6ERSp3GqlKLc29V
-         2szRd7By5nO5/dWzJTaepwf63AA1SfMP/6dUtU6E/WYCfjdw4J/k0SCfQ8OqJ98YksQD
-         RmHT6NyuJrif6gNlok028FE9p9GCQSl/+LGP9K2Ok+03/vf7hi21IGSU09Y210d4YrZa
-         oq1sW9PMi+sQ08sPN5JjCVuh5awE/nc6V5SeohxfkPGDv6uec/5T+mirAMOKVj4uuMee
-         ohww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fX2usQW7VgeZMIAWoRfD3t8cBll4opaLh+6N8QASKf8=;
-        b=VaZErSSRkK34lPRSjxCxYvbkPNFLySMi9nYKPgNtRetG8lG+rpvr7WnaUEr9MkXagk
-         1HAX+Hy4tcHdu+g/iKYdXO6DZO46kFR7u0W5DwcS1ULtz2B/BdvtpSOU/P8fWJ0Tggnl
-         cod8r9S05A4THVtY2YVHQ3U7NACwVql0iWqGPpKcSWeULutxdh5tkDucn8DuiVJzgMmh
-         xKYex+pGB1ceYlTEztP5WcqWvRYLpyF9ToSk5ziqjkQAiujFB2lzN/dGj+x3oUTcwI1F
-         0ZlEXT3QpS/Y9TkFvWBxhngaUzlWXPs5ynNYbonsz0ND07tAI7ItI9ahcg6O6eCMuxEq
-         drSQ==
-X-Gm-Message-State: AOAM532Hbs92dLjvlvzFw1O6BziNe3TSuUnSkS23YpoVI4esfP4YJkem
-        toJM0GxH8OyKRCm1Sv92KDY=
-X-Google-Smtp-Source: ABdhPJyclkD6A1WBncVP/qBDNKh+lLZS4AGojQYto/QfCmPP+9wuPu2oF013ntKB2QbVzIOHoEVDIw==
-X-Received: by 2002:a05:6638:531:b0:317:af7d:d934 with SMTP id j17-20020a056638053100b00317af7dd934mr2110519jar.307.1647528470038;
-        Thu, 17 Mar 2022 07:47:50 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.58])
-        by smtp.googlemail.com with ESMTPSA id y12-20020a056e021bec00b002c786b37889sm3278916ilv.47.2022.03.17.07.47.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Mar 2022 07:47:49 -0700 (PDT)
-Message-ID: <5d2d7c77-2c08-7c6e-b816-bbab21c36171@gmail.com>
-Date:   Thu, 17 Mar 2022 08:47:48 -0600
+        with ESMTP id S235403AbiCQOuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 10:50:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A230BC6244;
+        Thu, 17 Mar 2022 07:48:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DE06618E3;
+        Thu, 17 Mar 2022 14:48:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05A49C340E9;
+        Thu, 17 Mar 2022 14:48:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647528526;
+        bh=eSx/h17S9s0irOtmnOXZ/7IILNo/qKjLl5f/FVn+xtE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=iHo+dxIdxNgJpuIc8Knho0CUGjHwXH+k4bLlwEpqNqqj80QpQSDYcVo6uHO58qxVO
+         9ZnBFuSgHSmcYOfEX4WB90Tlk1+Nk4y3//xo5z0qriVqb7fUAF1Y1+XVqAg6XpxOmj
+         zxJzHd7HJCOrhXZeRgsSU8Mmk0zMvLcheJelO8KXFAeJYMiFnv+KGSU4E/97evO/DX
+         vrws0WY+K6Bn5XMYgysN4gxvHb/PVL/j0FMqRAXN0cLPHPr2ldW4B/NgG/AsvCDVv7
+         Wu+eRy0x+gGBWJtyQl/bbqqLUSyxC97kGLBb1Rq4aNPqIWom9iyUuXeHhQxrU1Hrnx
+         XvaglhmaAVw1Q==
+Message-ID: <f787c35b-0984-ecaf-ad97-c7580fcdbbad@kernel.org>
+Date:   Thu, 17 Mar 2022 08:48:44 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH iproute2-next v5 1/2] ip: GTP support in ip link
+Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
+ to icmp protocol
 Content-Language: en-US
-To:     Harald Welte <laforge@gnumonks.org>,
-        "Drewek, Wojciech" <wojciech.drewek@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>
-References: <20220316110815.46779-1-wojciech.drewek@intel.com>
- <20220316110815.46779-2-wojciech.drewek@intel.com>
- <c1cb87c2-0107-7b0d-966f-b26f44b23d80@gmail.com>
- <MW4PR11MB57765F252A537045612889E4FD129@MW4PR11MB5776.namprd11.prod.outlook.com>
- <YjM/jXnaCDaBrTNX@nataraja>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <YjM/jXnaCDaBrTNX@nataraja>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     menglong8.dong@gmail.com, pabeni@redhat.com, rostedt@goodmis.org,
+        mingo@redhat.com, xeb@mail.ru, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, imagedong@tencent.com,
+        edumazet@google.com, kafai@fb.com, talalahmad@google.com,
+        keescook@chromium.org, alobakin@pm.me, flyingpeng@tencent.com,
+        mengensun@tencent.com, dongli.zhang@oracle.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        benbjiang@tencent.com
+References: <20220316063148.700769-1-imagedong@tencent.com>
+ <20220316063148.700769-4-imagedong@tencent.com>
+ <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org>
+ <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,19 +67,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/17/22 8:02 AM, Harald Welte wrote:
-> Hi Wojciech, David,
-> 
-> On Thu, Mar 17, 2022 at 11:11:40AM +0000, Drewek, Wojciech wrote:
->>> as a u32 does that mean more roles might get added? Seems like this
->>> should have a attr to string converter that handles future additions.
+On 3/16/22 10:05 PM, Jakub Kicinski wrote:
+> On Wed, 16 Mar 2022 21:35:47 -0600 David Ahern wrote:
+>> On 3/16/22 9:18 PM, Jakub Kicinski wrote:
+>>>
+>>> I guess this set raises the follow up question to Dave if adding 
+>>> drop reasons to places with MIB exception stats means improving 
+>>> the granularity or one MIB stat == one reason?
 >>
->> I think no more roles are expected but we can ask Harald.
+>> There are a few examples where multiple MIB stats are bumped on a drop,
+>> but the reason code should always be set based on first failure. Did you
+>> mean something else with your question?
 > 
-> I also don't currently know of any situation where we would want to add
-> more roles.
-> 
+> I meant whether we want to differentiate between TYPE, and BROADCAST or
+> whatever other possible invalid protocol cases we can get here or just
+> dump them all into a single protocol error code.
 
-Better safe than giving users wrong information. I would prefer if this
-attribute to string conversion handle the 2 known roles and return
-"unknown" if a new value pops up.
+I think a single one is a good starting point.
