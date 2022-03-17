@@ -2,117 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D374E4DC498
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 12:13:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35E304DC49A
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 12:15:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232413AbiCQLPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 07:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58488 "EHLO
+        id S232360AbiCQLRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 07:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232926AbiCQLPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 07:15:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14387B82D9
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 04:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647515628;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LVcqPPiLXW5cGN3IUXIR0PaHVVdLGQieih+Vbii4/G0=;
-        b=FCNcVC7EwQu6vD311dmt0YckeY+xFIM+0NhkwA6yZN7ryx9JkafalTUlFHTe4vkfM3oxpa
-        GDRIKHVrtznGUILjABjdborZROn6p1LUiApUGVqGp1NwINJkc4IaxJEXy2je95onoRq9xy
-        aSdGDHfpbURaREO9E9+uopxUlimbY/0=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-377-veKFyUXnNhCi1HcCsod0zw-1; Thu, 17 Mar 2022 07:13:47 -0400
-X-MC-Unique: veKFyUXnNhCi1HcCsod0zw-1
-Received: by mail-qv1-f72.google.com with SMTP id r2-20020a056214068200b00440e24889e6so1637746qvz.23
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 04:13:47 -0700 (PDT)
+        with ESMTP id S229596AbiCQLRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 07:17:06 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D61DC3377
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 04:15:49 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id b15so6119962edn.4
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 04:15:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ASiXAOOcNeE6rv+Z1l3iwbTE+WGoAnClOQabJsW+llY=;
+        b=DxAUqhYDdDxgkpoScW12RoSNGnV2CwVuZnBpwkbxovXliPNdSQ9s449rzwJDDxXX0Z
+         kaiyQRWQjokgFtjO2usGSkio8Omoc5+cEnmxNvO2HyRb9LhZQFqOTpsCzq03xzJ7Glmr
+         tHKYySNCcTtspNGPHDMrR8BVeT0GI/1Z3LxOfIaKb0WuJRnYzTH9ButqK8AjZUv+++ai
+         +DHx+PoGdY/JORkcAE9uV0ir+rpx/k7H/SOs2m2sMhehlYrOZniFdFKh71hnMc2Z6ndO
+         l/1FXfdp9Ikr29KN26Gi0/qVAfT4ioVGOYrlQAofdb3JcYQSaWWk/zq7IEE/663m+wws
+         3ayg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=LVcqPPiLXW5cGN3IUXIR0PaHVVdLGQieih+Vbii4/G0=;
-        b=tskb6YisSiaasdGd4mgULva70wukOusoPQPSUo4Z8MMBvciJBqqZBY/vpiiDGPZlz7
-         WiQXftzeB6exFq9UZgjvho/LKYAQ4quNZCLumHKihUs0zYVuDu2a0eSARoiy4JNeUjJY
-         5YFWeE00b07YmxMWIMRdRg2IvSaymCQC9WdCDNTshrhKBUjuwyY6sT1S9oC8vImXz3PW
-         vRlTfDjKWHy2Fjx1xIadMjYpSJVuIxAHJ7rl+NDCr+5BZaHgchDQ/UdvGrOpSSAKr5GJ
-         Z9f73q7xBjZiE/L3/pRvhKBHV2lmcJZ9NaYg0C1Rvhx0HjD7n9mwUfzSXepQnLeasWYw
-         Wp8w==
-X-Gm-Message-State: AOAM533SCulPXtRYFF+meCofAJYY4Rv0wdbE59S0q8IlL4y0eb96ribv
-        hal7nCR6eZqBucLX7GnzWmBgukmybuDIpqfrO/l1KXC78JhLvdjjDMlFrpNHW659CPeg6YO92yh
-        TOlrnExUNF3msnbXN
-X-Received: by 2002:ad4:5de3:0:b0:440:d7a9:dccc with SMTP id jn3-20020ad45de3000000b00440d7a9dcccmr2660929qvb.62.1647515626443;
-        Thu, 17 Mar 2022 04:13:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy3MMBjSYSRGru14m9hfeyr0VF+gnbSFp4iQzmbijekCShk/SWVj4UrOdUjYGeKCfByOpfj3Q==
-X-Received: by 2002:ad4:5de3:0:b0:440:d7a9:dccc with SMTP id jn3-20020ad45de3000000b00440d7a9dcccmr2660917qvb.62.1647515626234;
-        Thu, 17 Mar 2022 04:13:46 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id t28-20020a05620a005c00b00662fb1899d2sm2236271qkt.0.2022.03.17.04.13.44
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ASiXAOOcNeE6rv+Z1l3iwbTE+WGoAnClOQabJsW+llY=;
+        b=Nrx3K7v7+AZCGp7NgmivuhqaHqTYN7Ee73wPtNkPyBgGB8b8Xo7nqi94NSkyEc24eW
+         RASd7BsjsOtWpBa8hYew0JFy8KFeS0YXU1JCCdcojaR60Pp8OnMRr8ntmBpinYHs24qP
+         EFUV5Wovhh1xht7p0cvYG7e2xyDEL6tKQKzL73xH4JbjvVF6AZn1AkZ7YmOCXq3DKaDa
+         rhAwE7zG4BrV9AWihY6JsdQIwojCtPbdMu5LhoxfKglnDrx0ntSKvVZJV28JQdXz9Ekk
+         rgWWf4n7K3hm8MXyA7OCWGS+OPFmjWlEtW1eOK24cqqd9H/vOnAwRkRDh8SxZodKfWJh
+         fnPQ==
+X-Gm-Message-State: AOAM533pAo2YnduLu4CcSAOG+8qKq0TelCPaARZa4jSpYXJ9uu0SnCPT
+        IF8vRvgfPX8dThnong5ky5I=
+X-Google-Smtp-Source: ABdhPJwS9BNkMVYTwQSnx8i93E1uMm4Pm4d94Qveq7q15Ef52a2FYKK8c9TLs4Uw2NokMxZA8sKGuw==
+X-Received: by 2002:a05:6402:35c7:b0:418:6577:9eb0 with SMTP id z7-20020a05640235c700b0041865779eb0mr3687759edc.343.1647515747870;
+        Thu, 17 Mar 2022 04:15:47 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id da23-20020a056402177700b0041394d8173csm2412678edb.31.2022.03.17.04.15.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 04:13:45 -0700 (PDT)
-Message-ID: <37e7909450ebd3b1abcc83119603aa75ab8fc22b.camel@redhat.com>
-Subject: Re: [PATCH] ipv6: acquire write lock for addr_list in
- dev_forward_change
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Niels Dossche <dossche.niels@gmail.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Date:   Thu, 17 Mar 2022 12:13:41 +0100
-In-Reply-To: <20220315230222.49793-1-dossche.niels@gmail.com>
-References: <20220315230222.49793-1-dossche.niels@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Thu, 17 Mar 2022 04:15:47 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 13:15:45 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Joachim Wiberg <troglobit@gmail.com>
+Subject: Re: [PATCH 2/5] net: bridge: Implement bridge flood flag
+Message-ID: <20220317111545.3e7dxu3oqocdmves@skbuf>
+References: <20220317065031.3830481-1-mattias.forsblad@gmail.com>
+ <20220317065031.3830481-3-mattias.forsblad@gmail.com>
+ <f2104e0e-45f2-1fe6-5cf9-ef3fa0f1475d@blackwall.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f2104e0e-45f2-1fe6-5cf9-ef3fa0f1475d@blackwall.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-03-16 at 00:02 +0100, Niels Dossche wrote:
-> No path towards dev_forward_change (common ancestor of paths is in
-> addrconf_fixup_forwarding) acquires idev->lock for idev->addr_list.
-> Since addrconf_{join,leave}_anycast acquire a write lock on addr_list in
-> __ipv6_dev_ac_inc and __ipv6_dev_ac_dec, temporarily unlock when calling
-> addrconf_{join,leave}_anycast analogous to how it's done in
-> addrconf_ifdown.
+On Thu, Mar 17, 2022 at 12:11:40PM +0200, Nikolay Aleksandrov wrote:
+> On 17/03/2022 08:50, Mattias Forsblad wrote:
+> > This patch implements the bridge flood flags. There are three different
+> > flags matching unicast, multicast and broadcast. When the corresponding
+> > flag is cleared packets received on bridge ports will not be flooded
+> > towards the bridge.
+> > This makes is possible to only forward selected traffic between the
+> > port members of the bridge.
+> > 
+> > Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+> > ---
+> >  include/linux/if_bridge.h      |  6 +++++
+> >  include/uapi/linux/if_bridge.h |  9 ++++++-
+> >  net/bridge/br.c                | 45 ++++++++++++++++++++++++++++++++++
+> >  net/bridge/br_device.c         |  3 +++
+> >  net/bridge/br_input.c          | 23 ++++++++++++++---
+> >  net/bridge/br_private.h        |  4 +++
+> >  6 files changed, 85 insertions(+), 5 deletions(-)
+> > 
+> Please always CC bridge maintainers for bridge patches.
+> I almost missed this one. I'll add my reply to Joachim's notes
+> which are pretty spot on.
+
+And DSA maintainers for DSA patches ;) I was aimlessly scrolling through
+patchwork when I happened to notice these, and the series is already at v3.
+
+As a matter of fact, I downloaded these patches from the mailing list
+with the intention of giving them a spin on mv88e6xxx to see what
+they're about, and to my surprise, this particular patch (I haven't even
+reached the offloading part) breaks DHCP on my bridge, so it can no
+longer get an IP address. I haven't toggled any bridge flag through
+netlink, just booted the board with systemd-networkd. The same thing
+happens with my LS1028A board. Further investigation to come, but this
+isn't off to a good start, I'm afraid...
+
 > 
-> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-> ---
->  net/ipv6/addrconf.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> > diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+> > index 3aae023a9353..fa8e000a6fb9 100644
+> > --- a/include/linux/if_bridge.h
+> > +++ b/include/linux/if_bridge.h
+> > @@ -157,6 +157,7 @@ static inline int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
+> >  struct net_device *br_fdb_find_port(const struct net_device *br_dev,
+> >  				    const unsigned char *addr,
+> >  				    __u16 vid);
+> > +bool br_flood_enabled(const struct net_device *dev);
+> >  void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
+> >  bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
+> >  u8 br_port_get_stp_state(const struct net_device *dev);
+> > @@ -170,6 +171,11 @@ br_fdb_find_port(const struct net_device *br_dev,
+> >  	return NULL;
+> >  }
+> >  
+> > +static inline bool br_flood_enabled(const struct net_device *dev)
+> > +{
+> > +	return true;
+> > +}
+> > +
+> >  static inline void br_fdb_clear_offload(const struct net_device *dev, u16 vid)
+> >  {
+> >  }
+> > diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+> > index 2711c3522010..765ed70c9b28 100644
+> > --- a/include/uapi/linux/if_bridge.h
+> > +++ b/include/uapi/linux/if_bridge.h
+> > @@ -72,6 +72,7 @@ struct __bridge_info {
+> >  	__u32 tcn_timer_value;
+> >  	__u32 topology_change_timer_value;
+> >  	__u32 gc_timer_value;
+> > +	__u8 flood;
+> >  };
+> >  
+> >  struct __port_info {
+> > @@ -752,13 +753,19 @@ struct br_mcast_stats {
+> >  /* bridge boolean options
+> >   * BR_BOOLOPT_NO_LL_LEARN - disable learning from link-local packets
+> >   * BR_BOOLOPT_MCAST_VLAN_SNOOPING - control vlan multicast snooping
+> > + * BR_BOOLOPT_FLOOD - control bridge flood flag
+> > + * BR_BOOLOPT_MCAST_FLOOD - control bridge multicast flood flag
+> > + * BR_BOOLOPT_BCAST_FLOOD - control bridge broadcast flood flag
+> >   *
+> >   * IMPORTANT: if adding a new option do not forget to handle
+> > - *            it in br_boolopt_toggle/get and bridge sysfs
+> > + *            it in br_boolopt_toggle/get
+> >   */
+> >  enum br_boolopt_id {
+> >  	BR_BOOLOPT_NO_LL_LEARN,
+> >  	BR_BOOLOPT_MCAST_VLAN_SNOOPING,
+> > +	BR_BOOLOPT_FLOOD,
+> > +	BR_BOOLOPT_MCAST_FLOOD,
+> > +	BR_BOOLOPT_BCAST_FLOOD,
+> >  	BR_BOOLOPT_MAX
+> >  };
+> >  
+> > diff --git a/net/bridge/br.c b/net/bridge/br.c
+> > index b1dea3febeea..63a17bed6c63 100644
+> > --- a/net/bridge/br.c
+> > +++ b/net/bridge/br.c
+> > @@ -265,6 +265,11 @@ int br_boolopt_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on,
+> >  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
+> >  		err = br_multicast_toggle_vlan_snooping(br, on, extack);
+> >  		break;
+> > +	case BR_BOOLOPT_FLOOD:
+> > +	case BR_BOOLOPT_MCAST_FLOOD:
+> > +	case BR_BOOLOPT_BCAST_FLOOD:
+> > +		err = br_flood_toggle(br, opt, on);
+> > +		break;
+> >  	default:
+> >  		/* shouldn't be called with unsupported options */
+> >  		WARN_ON(1);
+> > @@ -281,6 +286,12 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
+> >  		return br_opt_get(br, BROPT_NO_LL_LEARN);
+> >  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
+> >  		return br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED);
+> > +	case BR_BOOLOPT_FLOOD:
+> > +		return br_opt_get(br, BROPT_FLOOD);
+> > +	case BR_BOOLOPT_MCAST_FLOOD:
+> > +		return br_opt_get(br, BROPT_MCAST_FLOOD);
+> > +	case BR_BOOLOPT_BCAST_FLOOD:
+> > +		return br_opt_get(br, BROPT_BCAST_FLOOD);
+> >  	default:
+> >  		/* shouldn't be called with unsupported options */
+> >  		WARN_ON(1);
+> > @@ -325,6 +336,40 @@ void br_boolopt_multi_get(const struct net_bridge *br,
+> >  	bm->optmask = GENMASK((BR_BOOLOPT_MAX - 1), 0);
+> >  }
+> >  
+> > +int br_flood_toggle(struct net_bridge *br, enum br_boolopt_id opt,
+> > +		    bool on)
+> > +{
+> > +	struct switchdev_attr attr = {
+> > +		.orig_dev = br->dev,
+> > +		.id = SWITCHDEV_ATTR_ID_BRIDGE_FLOOD,
+> > +		.flags = SWITCHDEV_F_DEFER,
+> > +	};
+> > +	enum net_bridge_opts bropt;
+> > +	int ret;
+> > +
+> > +	switch (opt) {
+> > +	case BR_BOOLOPT_FLOOD:
+> > +		bropt = BROPT_FLOOD;
+> > +		break;
+> > +	case BR_BOOLOPT_MCAST_FLOOD:
+> > +		bropt = BROPT_MCAST_FLOOD;
+> > +		break;
+> > +	case BR_BOOLOPT_BCAST_FLOOD:
+> > +		bropt = BROPT_BCAST_FLOOD;
+> > +		break;
+> > +	default:
+> > +		WARN_ON(1);
+> > +		return -EINVAL;
+> > +	}
+> > +	br_opt_toggle(br, bropt, on);
+> > +
+> > +	attr.u.brport_flags.mask = BIT(bropt);
+> > +	attr.u.brport_flags.val = on << bropt;
+> > +	ret = switchdev_port_attr_set(br->dev, &attr, NULL);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  /* private bridge options, controlled by the kernel */
+> >  void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on)
+> >  {
+> > diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+> > index 8d6bab244c4a..fafaef9d4b3a 100644
+> > --- a/net/bridge/br_device.c
+> > +++ b/net/bridge/br_device.c
+> > @@ -524,6 +524,9 @@ void br_dev_setup(struct net_device *dev)
+> >  	br->bridge_hello_time = br->hello_time = 2 * HZ;
+> >  	br->bridge_forward_delay = br->forward_delay = 15 * HZ;
+> >  	br->bridge_ageing_time = br->ageing_time = BR_DEFAULT_AGEING_TIME;
+> > +	br_opt_toggle(br, BROPT_FLOOD, true);
+> > +	br_opt_toggle(br, BROPT_MCAST_FLOOD, true);
+> > +	br_opt_toggle(br, BROPT_BCAST_FLOOD, true);
+> >  	dev->max_mtu = ETH_MAX_MTU;
+> >  
+> >  	br_netfilter_rtable_init(br);
+> > diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> > index e0c13fcc50ed..fcb0757bfdcc 100644
+> > --- a/net/bridge/br_input.c
+> > +++ b/net/bridge/br_input.c
+> > @@ -109,11 +109,12 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+> >  		/* by definition the broadcast is also a multicast address */
+> >  		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
+> >  			pkt_type = BR_PKT_BROADCAST;
+> > -			local_rcv = true;
+> > +			local_rcv = true && br_opt_get(br, BROPT_BCAST_FLOOD);
+> >  		} else {
+> >  			pkt_type = BR_PKT_MULTICAST;
+> > -			if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
+> > -				goto drop;
+> > +			if (br_opt_get(br, BROPT_MCAST_FLOOD))
+> > +				if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
+> > +					goto drop;
+> >  		}
+> >  	}
+> >  
+> > @@ -155,9 +156,13 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+> >  			local_rcv = true;
+> >  			br->dev->stats.multicast++;
+> >  		}
+> > +		if (!br_opt_get(br, BROPT_MCAST_FLOOD))
+> > +			local_rcv = false;
+> >  		break;
+> >  	case BR_PKT_UNICAST:
+> >  		dst = br_fdb_find_rcu(br, eth_hdr(skb)->h_dest, vid);
+> > +		if (!br_opt_get(br, BROPT_FLOOD))
+> > +			local_rcv = false;
+> >  		break;
+> >  	default:
+> >  		break;
+> > @@ -166,7 +171,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+> >  	if (dst) {
+> >  		unsigned long now = jiffies;
+> >  
+> > -		if (test_bit(BR_FDB_LOCAL, &dst->flags))
+> > +		if (test_bit(BR_FDB_LOCAL, &dst->flags) && local_rcv)
+> >  			return br_pass_frame_up(skb);
+> >  
+> >  		if (now != dst->used)
+> > @@ -190,6 +195,16 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+> >  }
+> >  EXPORT_SYMBOL_GPL(br_handle_frame_finish);
+> >  
+> > +bool br_flood_enabled(const struct net_device *dev)
+> > +{
+> > +	struct net_bridge *br = netdev_priv(dev);
+> > +
+> > +	return !!(br_opt_get(br, BROPT_FLOOD) ||
+> > +		   br_opt_get(br, BROPT_MCAST_FLOOD) ||
+> > +		   br_opt_get(br, BROPT_BCAST_FLOOD));
+> > +}
+> > +EXPORT_SYMBOL_GPL(br_flood_enabled);
+> > +
+> >  static void __br_handle_local_finish(struct sk_buff *skb)
+> >  {
+> >  	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
+> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> > index 48bc61ebc211..cf88dce0b92b 100644
+> > --- a/net/bridge/br_private.h
+> > +++ b/net/bridge/br_private.h
+> > @@ -445,6 +445,9 @@ enum net_bridge_opts {
+> >  	BROPT_NO_LL_LEARN,
+> >  	BROPT_VLAN_BRIDGE_BINDING,
+> >  	BROPT_MCAST_VLAN_SNOOPING_ENABLED,
+> > +	BROPT_FLOOD,
+> > +	BROPT_MCAST_FLOOD,
+> > +	BROPT_BCAST_FLOOD,
+> >  };
+> >  
+> >  struct net_bridge {
+> > @@ -720,6 +723,7 @@ int br_boolopt_multi_toggle(struct net_bridge *br,
+> >  void br_boolopt_multi_get(const struct net_bridge *br,
+> >  			  struct br_boolopt_multi *bm);
+> >  void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on);
+> > +int br_flood_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on);
+> >  
+> >  /* br_device.c */
+> >  void br_dev_setup(struct net_device *dev);
 > 
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index f908e2fd30b2..4055ded4b7bf 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -818,14 +818,18 @@ static void dev_forward_change(struct inet6_dev *idev)
->  		}
->  	}
->  
-> +	write_lock_bh(&idev->lock);
->  	list_for_each_entry(ifa, &idev->addr_list, if_list) {
->  		if (ifa->flags&IFA_F_TENTATIVE)
->  			continue;
-> +		write_unlock_bh(&idev->lock);
-
-This looks weird?!? if 'addr_list' integrity is guaranteed by 
-idev->lock, than this patch looks incorrect. If addr_list integrity is
-ensured elsewhere, why acquiring idev->lock at all?
-
-@David: can you please comment here?
-
-Thanks!
-
-Paolo
-
