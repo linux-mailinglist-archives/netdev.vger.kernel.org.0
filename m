@@ -2,216 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C094DCBE8
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:58:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A09A04DCBEC
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:58:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236721AbiCQRAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 13:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35656 "EHLO
+        id S236736AbiCQRAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 13:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236738AbiCQQ76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:59:58 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFD557DE09;
-        Thu, 17 Mar 2022 09:58:37 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id b28so10054871lfc.4;
-        Thu, 17 Mar 2022 09:58:37 -0700 (PDT)
+        with ESMTP id S236722AbiCQQ74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:59:56 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC037B574
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:58:32 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id r22so8065353ljd.4
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:58:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=7RjURph1ulhWbgSxbLltAc1F3xHz1q5y5PeCWCvajco=;
-        b=cbEAAnej0o9xlpSdtxKRVZhY7GC6oaM1nv1v9twreZqw6lrPBziaqNeBb2e1Utf9GS
-         u5ZBKctfZ6QBBZb/gQ6Zmg7e/Lcfq2vRuuW0lX4bC+yuv77r0LpdODSBr50JWir+iik8
-         OYAq1jK57FPIDWyTApnM3r0ior3f7XqxdSMAVz0PyTrv1Bo+8rLu8k4x6SubSZNwpwss
-         RxJxbAs1dz8UP8tR92DhA4oh08nty57zjVm3kuu8yrUi/O+U0ZRMD/nG6H9OR943NwCU
-         6hiBBLV//0VxzQgw3RWnR3BHtXFzMdO5ETdfweROJLPKN2qTQjP6Wo5q4LcNyb0BMpmm
-         J1qg==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=LwPiq0aOP34Qyg6rVQlymRAJ3+fiKOCehhtJ/fLH+0Q=;
+        b=ZXwmYAJpocVs+zNgytE9eJ8NaB21z8nL/WSOwkErfEgHXBvCoCWK0Dcc15H8WiS3zj
+         BnNbmECGbtSiJiwResAnkHdcKok/net5IBj7xhPpxs1GLlsE5NeSuWxonAGe8fo88A9E
+         dXV+3dYN+QDYRNIwQl2bBTbeNqWW2LwMTXMN0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=7RjURph1ulhWbgSxbLltAc1F3xHz1q5y5PeCWCvajco=;
-        b=R4TDwbHA9j9hrJ3rNEVlI48wris8nsYjhQtVUV7Q2sMxV0bt1ksO6WKmwowYMu0TUY
-         9Sh4JcFhv/oPWQ6hfTABRmvGyxRVjfH/u2vn2VMD5eYFgsc09ydT6wdFXEMY8X7pea3g
-         qlDXt7CAhPqJAQwdi//2agjfUaRIclE/DaASQ/O9iezUbDUzhZm3Z9MV/Z1MGXfhAIub
-         8T5tiVpKWZYMGz8fB9SZrwZtXtcbw9Ifr/X2qhB2Al0hGuoq0wDxRi55DiwHB9Hy6LiR
-         wUIP+BlL67KQiKG03VN7i4/s3rJ0Aw9af/bqEEGN6x6BPFlHZtt7baDM3bTN1nHm7Oo/
-         hSwg==
-X-Gm-Message-State: AOAM531vSIJon+Uel7095VWrb/4DemVwQSofCzsRBB0/ANb9sA7B/pCk
-        zgIThU7bD1xd1usoqJm2QDg=
-X-Google-Smtp-Source: ABdhPJyKrUREvMZTEAjZc2Ua7Whpe4wV/DLxSKhf8JOStOUH/yu5GlY/GxpA3MtpkBCN8t3bhJrogw==
-X-Received: by 2002:a05:6512:96e:b0:448:4bd7:fff7 with SMTP id v14-20020a056512096e00b004484bd7fff7mr3490483lft.605.1647536315655;
-        Thu, 17 Mar 2022 09:58:35 -0700 (PDT)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id d6-20020a056512320600b00448bb4da3a2sm426276lfe.10.2022.03.17.09.58.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LwPiq0aOP34Qyg6rVQlymRAJ3+fiKOCehhtJ/fLH+0Q=;
+        b=zI6dG7ndsnsKXmHULUgNgf24IfJlnXM465umS+lxADX5h56LX6Z0NYWiw3AiaXZs2b
+         34raWHYp/eNEv+2ugBUPHOrlEXqMH57t29zTimpjvhF1ifclicTX/oSaVluL1t1d9g+r
+         mRALIR0GKkJ14MKOZ63lCBbLoj5piYK5NQw4tO8LfNrU0B64FVdDg2h1KJa2lWsOEKjH
+         9ffY7Cwbwo+21O0eJb96SPaLzZdLH3SfffIySNpq+tWxrWgH1GxJoXV+ghCEOLoTHrRX
+         r5xDYq+XIlSwyZ8lUXCNI5sIbwRBZU8yOAlfc1/DAcIi33dw8quQZWnEdilktc6dVb5X
+         NfVQ==
+X-Gm-Message-State: AOAM532el6VPIbrGHUE9nWGnb0qgY1y4DUrZksZk1c0VopKxeGX8tSt1
+        70WeFYDOXD0yl6PV5oC7YWXPHB0dE3viqw==
+X-Google-Smtp-Source: ABdhPJxlHTxernOQ5RXtusjHurF794ZK8sfGX58mtDyrWHi3Tm1wvaargTP+OKZjCjsY0AcEWYPUPA==
+X-Received: by 2002:a05:651c:90a:b0:249:5d82:fe9c with SMTP id e10-20020a05651c090a00b002495d82fe9cmr3387251ljq.300.1647536310229;
+        Thu, 17 Mar 2022 09:58:30 -0700 (PDT)
+Received: from cloudflare.com ([2a01:110f:4809:d800::f9c])
+        by smtp.gmail.com with ESMTPSA id j7-20020a2e3c07000000b00247fd2f7f46sm474083lja.47.2022.03.17.09.58.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 09:58:35 -0700 (PDT)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
+        Thu, 17 Mar 2022 09:58:29 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-In-Reply-To: <20220317161808.psftauoz5iaecduy@skbuf>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
- <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
- <20220310142836.m5onuelv4jej5gvs@skbuf> <86r17495gk.fsf@gmail.com>
- <20220316233447.kwyirxckgancdqmh@skbuf> <86lex9hsg0.fsf@gmail.com>
- <YjNDgnrYaYfviNTi@lunn.ch> <20220317153625.2ld5zgtuhoxbcgvo@skbuf>
- <86ilscr2a4.fsf@gmail.com> <20220317161808.psftauoz5iaecduy@skbuf>
+        Andrii Nakryiko <andrii@kernel.org>,
+        kernel-team@cloudflare.com, Ilya Leoshkevich <iii@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH bpf-next 3/3] selftests/bpf: Fix test for 4-byte load from remote_port on big-endian
 Date:   Thu, 17 Mar 2022 17:58:26 +0100
-Message-ID: <8635jg5xe5.fsf@gmail.com>
+Message-Id: <20220317165826.1099418-4-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220317165826.1099418-1-jakub@cloudflare.com>
+References: <20220317165826.1099418-1-jakub@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On tor, mar 17, 2022 at 18:18, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Thu, Mar 17, 2022 at 05:07:15PM +0100, Hans Schultz wrote:
->> On tor, mar 17, 2022 at 17:36, Vladimir Oltean <olteanv@gmail.com> wrote:
->> > On Thu, Mar 17, 2022 at 03:19:46PM +0100, Andrew Lunn wrote:
->> >> On Thu, Mar 17, 2022 at 09:52:15AM +0100, Hans Schultz wrote:
->> >> > On tor, mar 17, 2022 at 01:34, Vladimir Oltean <olteanv@gmail.com> wrote:
->> >> > > On Mon, Mar 14, 2022 at 11:46:51AM +0100, Hans Schultz wrote:
->> >> > >> >> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
->> >> > >> >>  				    "ATU miss violation for %pM portvec %x spid %d\n",
->> >> > >> >>  				    entry.mac, entry.portvec, spid);
->> >> > >> >>  		chip->ports[spid].atu_miss_violation++;
->> >> > >> >> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
->> >> > >> >> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
->> >> > >> >> +									    chip->ports[spid].port,
->> >> > >> >> +									    &entry,
->> >> > >> >> +									    fid);
->> >> > >> >
->> >> > >> > Do we want to suppress the ATU miss violation warnings if we're going to
->> >> > >> > notify the bridge, or is it better to keep them for some reason?
->> >> > >> > My logic is that they're part of normal operation, so suppressing makes
->> >> > >> > sense.
->> >> > >> >
->> >> > >> 
->> >> > >> I have been seeing many ATU member violations after the miss violation is
->> >> > >> handled (using ping), and I think it could be considered to suppress the ATU member
->> >> > >> violations interrupts by setting the IgnoreWrongData bit for the
->> >> > >> port (sect 4.4.7). This would be something to do whenever a port is set in locked mode?
->> >> > >
->> >> > > So the first packet with a given MAC SA triggers an ATU miss violation
->> >> > > interrupt.
->> >> > >
->> >> > > You program that MAC SA into the ATU with a destination port mask of all
->> >> > > zeroes. This suppresses further ATU miss interrupts for this MAC SA, but
->> >> > > now generates ATU member violations, because the MAC SA _is_ present in
->> >> > > the ATU, but not towards the expected port (in fact, towards _no_ port).
->> >> > >
->> >> > > Especially if user space decides it doesn't want to authorize this MAC
->> >> > > SA, it really becomes a problem because this is now a vector for denial
->> >> > > of service, with every packet triggering an ATU member violation
->> >> > > interrupt.
->> >> > >
->> >> > > So your suggestion is to set the IgnoreWrongData bit on locked ports,
->> >> > > and this will suppress the actual member violation interrupts for
->> >> > > traffic coming from these ports.
->> >> > >
->> >> > > So if the user decides to unplug a previously authorized printer from
->> >> > > switch port 1 and move it to port 2, how is this handled? If there isn't
->> >> > > a mechanism in place to delete the locked FDB entry when the printer
->> >> > > goes away, then by setting IgnoreWrongData you're effectively also
->> >> > > suppressing migration notifications.
->> >> > 
->> >> > I don't think such a scenario is so realistic, as changing port is not
->> >> > just something done casually, besides port 2 then must also be a locked
->> >> > port to have the same policy.
->> >> 
->> >> I think it is very realistic. It is also something which does not work
->> >> is going to cause a lot of confusion. People will blame the printer,
->> >> when in fact they should be blaming the switch. They will be rebooting
->> >> the printer, when in fact, they need to reboot the switch etc.
->> >> 
->> >> I expect there is a way to cleanly support this, you just need to
->> >> figure it out.
->> >
->> > Hans, why must port 2 also be a locked port? The FDB entry with no
->> > destinations is present in the ATU, and static, why would just locked
->> > ports match it?
->> >
->> You are right of course, but it was more from a policy standpoint as I
->> pointed out. If the FDB entry is removed after some timeout and the
->> device in the meantime somehow is on another port that is not locked
->> with full access, the device will of course get full access.
->> But since it was not given access in the first instance, the policy is
->> not consistent.
->> 
->> >> > The other aspect is that the user space daemon that authorizes catches
->> >> > the fdb add entry events and checks if it is a locked entry. So it will
->> >> > be up to said daemon to decide the policy, like remove the fdb entry
->> >> > after a timeout.
->> >
->> > When you say 'timeout', what is the moment when the timer starts counting?
->> > The last reception of the user space daemon of a packet with this MAC SA,
->> > or the moment when the FDB entry originally became unlocked?
->> 
->> I think that if the device is not given access, a timer should be
->> started at that moment. No further FDB add events with the same MAC
->> address will come of course until the FDB entry is removed, which I
->> think would be done based on the said timer.
->> >
->> > I expect that once a device is authorized, and forwarding towards the
->> > devices that it wants to talk to is handled in hardware, that the CPU no
->> > longer receives packets from this device. In other words, are you saying
->> > that you're going to break networking for the printer every 5 minutes,
->> > as a keepalive measure?
->> 
->> No, I don't think that would be a good idea, but as we are in userspace,
->> that is a policy decision of those creating the daemon. The kernel just
->> facilitates, it does not make those decisions as far as I think.
->> >
->> > I still think there should be a functional fast path for authorized
->> > station migrations.
->> >
->> I am not sure in what way you are suggesting that should be, if the
->> kernel should actively do something there? If a station is authorized,
->> and somehow is transferred to another port, if that port is not locked it
->> will get access, if the port is locked a miss violation will occur etc...
->
-> Wait, if the new port is locked and the device was previously
-> authorized, why will the new port trigger a miss violation? This is the
-> part I'm not following. The authorization is still present in the form
-> of an ATU entry on the old locked port, is it not?
->
-I am sure (have not tested) that a miss violation will occur. It might
-be a member violation in this instance though.
-When thinking of it, afaik there is no way today of having fine control
-over the DPV when adding a FDB entry.
-If the DPV could be finer controlled the entry could cover several
-possible ports and the fast (immediate migration) will be accomplished?
+The context access converter rewrites the 4-byte load from
+bpf_sk_lookup->remote_port to a 2-byte load from bpf_sk_lookup_kern
+structure.
 
->> >> > > Oh, btw, my question was: could you consider suppressing the _prints_ on
->> >> > > an ATU miss violation on a locked port?
->> >> > 
->> >> > As there will only be such on the first packet, I think it should be
->> >> > logged and those prints serve that purpose, so I think it is best to
->> >> > keep the print.
->> >> > If in the future some tests or other can argue for suppressing the
->> >> > prints, it is an easy thing to do.
->> >> 
->> >> Please use a traffic generator and try to DOS one of your own
->> >> switches. Can you?
->> >> 
->> >> 	  Andrew
+It means that we cannot treat the destination register contents as a 32-bit
+value, or the code will not be portable across big- and little-endian
+architectures.
+
+This is exactly the same case as with 4-byte loads from bpf_sock->dst_port
+so follow the approach outlined in [1] and treat the register contents as a
+16-bit value in the test.
+
+[1]: https://lore.kernel.org/bpf/20220317113920.1068535-5-jakub@cloudflare.com/
+
+Fixes: 2ed0dc5937d3 ("selftests/bpf: Cover 4-byte load from remote_port in bpf_sk_lookup")
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+---
+ tools/testing/selftests/bpf/progs/test_sk_lookup.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+index 38b7a1fe67b6..6058dcb11b36 100644
+--- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
++++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
+@@ -418,9 +418,15 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
+ 	if (LSW(ctx->remote_port, 0) != SRC_PORT)
+ 		return SK_DROP;
+ 
+-	/* Load from remote_port field with zero padding (backward compatibility) */
++	/*
++	 * NOTE: 4-byte load from bpf_sk_lookup at remote_port offset
++	 * is quirky. It gets rewritten by the access converter to a
++	 * 2-byte load for backward compatibility. Treating the load
++	 * result as a be16 value makes the code portable across
++	 * little- and big-endian platforms.
++	 */
+ 	val_u32 = *(__u32 *)&ctx->remote_port;
+-	if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
++	if (val_u32 != SRC_PORT)
+ 		return SK_DROP;
+ 
+ 	/* Narrow loads from local_port field. Expect DST_PORT. */
+-- 
+2.35.1
+
