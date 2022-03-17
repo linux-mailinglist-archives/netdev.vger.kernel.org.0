@@ -2,391 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CA954DC430
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 11:44:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C830A4DC432
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 11:45:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232699AbiCQKpA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 06:45:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38476 "EHLO
+        id S232721AbiCQKqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 06:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232675AbiCQKo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 06:44:57 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B191DEC36;
-        Thu, 17 Mar 2022 03:43:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647513815; x=1679049815;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FLCIXkIQjq98zexzlVC7iTcxXTGbEUj86VVCms2xe78=;
-  b=iupHe/uSEI8VIlaB1QAVH2ncyTekOqaU5U2KZsCoM2blSCtLVxUq5r0Y
-   u0XkP2M3EY9tSFQZ/Wm0Q8FMCpzbkjCOd+j71ASY7bAXxcrz7X2CAVpC9
-   63okBASbe1vGkOHKu3/hh3LqIoqmrQjJvPtKyXDP9IAwkYsxUVyaR8Rem
-   bjSv6InE4pXvhbwApgRrmoMHXAw0l0B7qOoF3iOYRvzBr6zigvZ3liW8P
-   1iclxh4o93I7DAHrCO01gjP4xMWr8pONdb/N5I4/nmb63yb1kGr0KBsK+
-   LuQBeFHrJcjN2C/FugBwleq9El7inJhLRyowPLamvznwUc9E3sC4U5IaQ
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
-   d="scan'208";a="152326648"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 03:43:34 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Mar 2022 03:43:34 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 17 Mar 2022 03:43:31 -0700
-From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
-        <richardcochran@gmail.com>, <UNGLinuxDriver@microchip.com>,
-        <Ian.Saturley@microchip.com>
-Subject: [PATCH net-next V1 5/5] net: lan743x: Add support for PTP-IO Event Output (Periodic Output)
-Date:   Thu, 17 Mar 2022 16:13:10 +0530
-Message-ID: <20220317104310.61091-6-Raju.Lakkaraju@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220317104310.61091-1-Raju.Lakkaraju@microchip.com>
-References: <20220317104310.61091-1-Raju.Lakkaraju@microchip.com>
+        with ESMTP id S232715AbiCQKqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 06:46:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BB6716AA5F
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 03:45:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647513933;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZuoRHSiS5sMoIOb7MZ6BQa2RBfHZJ9wFo+kGOXs9LKw=;
+        b=P/5Vn6chuR98mZEF7tk9SReUSl7lbOPuq5ZWA6SRFwKY8pb0YnMrYXEbBQsXNyJLZmAf4E
+        htE0OrwN32QZRy/L2zfTpq103VRJcXP2gEADdiugWs70IpVWD4jlM5elbiK4OiKRPRl3Mo
+        +BregFJfoRyxw8Vd5ZcX3XLY8WWBrho=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-62-k1Mx3SeaPEmGbW7fj8nQYg-1; Thu, 17 Mar 2022 06:45:28 -0400
+X-MC-Unique: k1Mx3SeaPEmGbW7fj8nQYg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F224E1C06909;
+        Thu, 17 Mar 2022 10:45:27 +0000 (UTC)
+Received: from ceranb.redhat.com (unknown [10.40.193.33])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BD363C28100;
+        Thu, 17 Mar 2022 10:45:25 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     poros@redhat.com, Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Slawomir Laba <slawomirx.laba@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Phani Burra <phani.r.burra@intel.com>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] iavf: Fix hang during reboot/shutdown
+Date:   Thu, 17 Mar 2022 11:45:24 +0100
+Message-Id: <20220317104524.2802848-1-ivecera@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for PTP-IO Event Output (Periodic Output - perout) for
-PCI11010/PCI11414 chips
+Recent commit 974578017fc1 ("iavf: Add waiting so the port is
+initialized in remove") adds a wait-loop at the beginning of
+iavf_remove() to ensure that port initialization is finished
+prior unregistering net device. This causes a regression
+in reboot/shutdown scenario because in this case callback
+iavf_shutdown() is called and this callback detaches the device,
+makes it down if it is running and sets its state to __IAVF_REMOVE.
+Later shutdown callback of associated PF driver (e.g. ice_shutdown)
+is called. That callback calls among other things sriov_disable()
+that calls indirectly iavf_remove() (see stack trace below).
+As the adapter state is already __IAVF_REMOVE then the mentioned
+loop is end-less and shutdown process hangs.
 
-Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+The patch fixes this by checking adapter's state at the beginning
+of iavf_remove() and skips the rest of the function if the adapter
+is already in remove state (shutdown is in progress).
+
+Reproducer:
+1. Create VF on PF driven by ice or i40e driver
+2. Ensure that the VF is bound to iavf driver
+3. Reboot
+
+[52625.981294] sysrq: SysRq : Show Blocked State
+[52625.988377] task:reboot          state:D stack:    0 pid:17359 ppid:     1 f2
+[52625.996732] Call Trace:
+[52625.999187]  __schedule+0x2d1/0x830
+[52626.007400]  schedule+0x35/0xa0
+[52626.010545]  schedule_hrtimeout_range_clock+0x83/0x100
+[52626.020046]  usleep_range+0x5b/0x80
+[52626.023540]  iavf_remove+0x63/0x5b0 [iavf]
+[52626.027645]  pci_device_remove+0x3b/0xc0
+[52626.031572]  device_release_driver_internal+0x103/0x1f0
+[52626.036805]  pci_stop_bus_device+0x72/0xa0
+[52626.040904]  pci_stop_and_remove_bus_device+0xe/0x20
+[52626.045870]  pci_iov_remove_virtfn+0xba/0x120
+[52626.050232]  sriov_disable+0x2f/0xe0
+[52626.053813]  ice_free_vfs+0x7c/0x340 [ice]
+[52626.057946]  ice_remove+0x220/0x240 [ice]
+[52626.061967]  ice_shutdown+0x16/0x50 [ice]
+[52626.065987]  pci_device_shutdown+0x34/0x60
+[52626.070086]  device_shutdown+0x165/0x1c5
+[52626.074011]  kernel_restart+0xe/0x30
+[52626.077593]  __do_sys_reboot+0x1d2/0x210
+[52626.093815]  do_syscall_64+0x5b/0x1a0
+[52626.097483]  entry_SYSCALL_64_after_hwframe+0x65/0xca
+
+Fixes: 974578017fc1 ("iavf: Add waiting so the port is initialized in remove")
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
 ---
-Change List:                                                                    
-V0 -> V1:                                                                       
- 1. Fix the checkpatch warnings
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
- drivers/net/ethernet/microchip/lan743x_main.h |  33 +++
- drivers/net/ethernet/microchip/lan743x_ptp.c  | 218 +++++++++++++++++-
- drivers/net/ethernet/microchip/lan743x_ptp.h  |   1 +
- 3 files changed, 250 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 9c528705866f..1ca5f3216403 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.h
-+++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -336,6 +336,7 @@
- #define INT_MOD_CFG9			(0x7E4)
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 45570e3f782e..0e178a0a59c5 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -4620,6 +4620,13 @@ static void iavf_remove(struct pci_dev *pdev)
+ 	struct iavf_hw *hw = &adapter->hw;
+ 	int err;
  
- #define PTP_CMD_CTL					(0x0A00)
-+#define PTP_CMD_CTL_PTP_LTC_TARGET_READ_		BIT(13)
- #define PTP_CMD_CTL_PTP_CLK_STP_NSEC_			BIT(6)
- #define PTP_CMD_CTL_PTP_CLOCK_STEP_SEC_			BIT(5)
- #define PTP_CMD_CTL_PTP_CLOCK_LOAD_			BIT(4)
-@@ -357,6 +358,30 @@
- 	(((value) & 0x7) << (1 + ((channel) << 2)))
- #define PTP_GENERAL_CONFIG_RELOAD_ADD_X_(channel)	(BIT((channel) << 2))
- 
-+#define HS_PTP_GENERAL_CONFIG				(0x0A04)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_(channel) \
-+	(0xf << (4 + ((channel) << 2)))
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100NS_	(0)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500NS_	(1)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1US_		(2)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5US_		(3)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10US_		(4)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50US_		(5)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100US_	(6)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500US_	(7)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS_		(8)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5MS_		(9)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10MS_		(10)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50MS_		(11)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100MS_	(12)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_	(13)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_TOGG_		(14)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_INT_		(15)
-+#define HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_SET_(channel, value) \
-+	(((value) & 0xf) << (4 + ((channel) << 2)))
-+#define HS_PTP_GENERAL_CONFIG_EVENT_POL_X_(channel)	(BIT(1 + ((channel) * 2)))
-+#define HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(channel)	(BIT((channel) * 2))
++	/* When reboot/shutdown is in progress no need to do anything
++	 * as the adapter is already REMOVE state that was set during
++	 * iavf_shutdown() callback.
++	 */
++	if (adapter->state == __IAVF_REMOVE)
++		return;
 +
- #define PTP_INT_STS				(0x0A08)
- #define PTP_INT_IO_FE_MASK_			GENMASK(31, 24)
- #define PTP_INT_IO_FE_SHIFT_			(24)
-@@ -364,9 +389,17 @@
- #define PTP_INT_IO_RE_MASK_			GENMASK(23, 16)
- #define PTP_INT_IO_RE_SHIFT_			(16)
- #define PTP_INT_IO_RE_SET_(channel)		BIT(16 + (channel))
-+#define PTP_INT_TX_TS_OVRFL_INT_		BIT(14)
-+#define PTP_INT_TX_SWTS_ERR_INT_		BIT(13)
-+#define PTP_INT_TX_TS_INT_			BIT(12)
-+#define PTP_INT_RX_TS_OVRFL_INT_		BIT(9)
-+#define PTP_INT_RX_TS_INT_			BIT(8)
-+#define PTP_INT_TIMER_INT_B_			BIT(1)
-+#define PTP_INT_TIMER_INT_A_			BIT(0)
- #define PTP_INT_EN_SET				(0x0A0C)
- #define PTP_INT_EN_FE_EN_SET_(channel)		BIT(24 + (channel))
- #define PTP_INT_EN_RE_EN_SET_(channel)		BIT(16 + (channel))
-+#define PTP_INT_EN_TIMER_SET_(channel)		BIT(channel)
- #define PTP_INT_EN_CLR				(0x0A10)
- #define PTP_INT_EN_FE_EN_CLR_(channel)		BIT(24 + (channel))
- #define PTP_INT_EN_RE_EN_CLR_(channel)		BIT(16 + (channel))
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index 470d9050df0c..6a11e2ceb013 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -689,6 +689,215 @@ static int lan743x_ptp_perout(struct lan743x_adapter *adapter, int on,
- 	return ret;
- }
- 
-+static void lan743x_ptp_io_perout_off(struct lan743x_adapter *adapter,
-+				      u32 index)
-+{
-+	struct lan743x_ptp *ptp = &adapter->ptp;
-+	int perout_pin;
-+	int event_ch;
-+	u32 gen_cfg;
-+	int val;
-+
-+	event_ch = ptp->ptp_io_perout[index];
-+	if (event_ch >= 0) {
-+		/* set target to far in the future, effectively disabling it */
-+		lan743x_csr_write(adapter,
-+				  PTP_CLOCK_TARGET_SEC_X(event_ch),
-+				  0xFFFF0000);
-+		lan743x_csr_write(adapter,
-+				  PTP_CLOCK_TARGET_NS_X(event_ch),
-+				  0);
-+
-+		gen_cfg = lan743x_csr_read(adapter, HS_PTP_GENERAL_CONFIG);
-+		gen_cfg &= ~(HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_
-+				    (event_ch));
-+		gen_cfg &= ~(HS_PTP_GENERAL_CONFIG_EVENT_POL_X_(event_ch));
-+		gen_cfg |= HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(event_ch);
-+		lan743x_csr_write(adapter, HS_PTP_GENERAL_CONFIG, gen_cfg);
-+		if (event_ch)
-+			lan743x_csr_write(adapter, PTP_INT_STS,
-+					  PTP_INT_TIMER_INT_B_);
-+		else
-+			lan743x_csr_write(adapter, PTP_INT_STS,
-+					  PTP_INT_TIMER_INT_A_);
-+		lan743x_ptp_release_event_ch(adapter, event_ch);
-+		ptp->ptp_io_perout[index] = -1;
-+	}
-+
-+	perout_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT, index);
-+
-+	/* Deselect Event output */
-+	val = lan743x_csr_read(adapter, PTP_IO_EVENT_OUTPUT_CFG);
-+
-+	/* Disables the output of Local Time Target compare events */
-+	val &= ~PTP_IO_EVENT_OUTPUT_CFG_EN_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_EVENT_OUTPUT_CFG, val);
-+
-+	/* Configured as an opendrain driver*/
-+	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
-+	val &= ~PTP_IO_PIN_CFG_OBUF_TYPE_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_PIN_CFG, val);
-+	/* Dummy read to make sure write operation success */
-+	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
-+}
-+
-+static int lan743x_ptp_io_perout(struct lan743x_adapter *adapter, int on,
-+				 struct ptp_perout_request *perout_request)
-+{
-+	struct lan743x_ptp *ptp = &adapter->ptp;
-+	u32 period_sec, period_nsec;
-+	u32 start_sec, start_nsec;
-+	u32 pulse_sec, pulse_nsec;
-+	int pulse_width;
-+	int perout_pin;
-+	int event_ch;
-+	u32 gen_cfg;
-+	u32 index;
-+	int val;
-+
-+	index = perout_request->index;
-+	event_ch = ptp->ptp_io_perout[index];
-+
-+	if (on) {
-+		perout_pin = ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT, index);
-+		if (perout_pin < 0)
-+			return -EBUSY;
-+	} else {
-+		lan743x_ptp_io_perout_off(adapter, index);
-+		return 0;
-+	}
-+
-+	if (event_ch >= LAN743X_PTP_N_EVENT_CHAN) {
-+		/* already on, turn off first */
-+		lan743x_ptp_io_perout_off(adapter, index);
-+	}
-+
-+	event_ch = lan743x_ptp_reserve_event_ch(adapter, index);
-+	if (event_ch < 0) {
-+		netif_warn(adapter, drv, adapter->netdev,
-+			   "Failed to reserve event channel %d for PEROUT\n",
-+			   index);
-+		goto failed;
-+	}
-+	ptp->ptp_io_perout[index] = event_ch;
-+
-+	if (perout_request->flags & PTP_PEROUT_DUTY_CYCLE) {
-+		pulse_sec = perout_request->on.sec;
-+		pulse_sec += perout_request->on.nsec / 1000000000;
-+		pulse_nsec = perout_request->on.nsec % 1000000000;
-+	} else {
-+		pulse_sec = perout_request->period.sec;
-+		pulse_sec += perout_request->period.nsec / 1000000000;
-+		pulse_nsec = perout_request->period.nsec % 1000000000;
-+	}
-+
-+	if (pulse_sec == 0) {
-+		if (pulse_nsec >= 400000000) {
-+			pulse_width = PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
-+		} else if (pulse_nsec >= 200000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100MS_;
-+		} else if (pulse_nsec >= 100000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50MS_;
-+		} else if (pulse_nsec >= 20000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10MS_;
-+		} else if (pulse_nsec >= 10000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5MS_;
-+		} else if (pulse_nsec >= 2000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1MS_;
-+		} else if (pulse_nsec >= 1000000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500US_;
-+		} else if (pulse_nsec >= 200000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100US_;
-+		} else if (pulse_nsec >= 100000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_50US_;
-+		} else if (pulse_nsec >= 20000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_10US_;
-+		} else if (pulse_nsec >= 10000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_5US_;
-+		} else if (pulse_nsec >= 2000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_1US_;
-+		} else if (pulse_nsec >= 1000) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_500NS_;
-+		} else if (pulse_nsec >= 200) {
-+			pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_100NS_;
-+		} else {
-+			netif_warn(adapter, drv, adapter->netdev,
-+				   "perout period too small, min is 200nS\n");
-+			goto failed;
-+		}
-+	} else {
-+		pulse_width = HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_200MS_;
-+	}
-+
-+	/* turn off by setting target far in future */
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_SEC_X(event_ch),
-+			  0xFFFF0000);
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_NS_X(event_ch), 0);
-+
-+	/* Configure to pulse every period */
-+	gen_cfg = lan743x_csr_read(adapter, HS_PTP_GENERAL_CONFIG);
-+	gen_cfg &= ~(HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_MASK_(event_ch));
-+	gen_cfg |= HS_PTP_GENERAL_CONFIG_CLOCK_EVENT_X_SET_
-+			  (event_ch, pulse_width);
-+	gen_cfg |= HS_PTP_GENERAL_CONFIG_EVENT_POL_X_(event_ch);
-+	gen_cfg &= ~(HS_PTP_GENERAL_CONFIG_RELOAD_ADD_X_(event_ch));
-+	lan743x_csr_write(adapter, HS_PTP_GENERAL_CONFIG, gen_cfg);
-+
-+	/* set the reload to one toggle cycle */
-+	period_sec = perout_request->period.sec;
-+	period_sec += perout_request->period.nsec / 1000000000;
-+	period_nsec = perout_request->period.nsec % 1000000000;
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_RELOAD_SEC_X(event_ch),
-+			  period_sec);
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_RELOAD_NS_X(event_ch),
-+			  period_nsec);
-+
-+	start_sec = perout_request->start.sec;
-+	start_sec += perout_request->start.nsec / 1000000000;
-+	start_nsec = perout_request->start.nsec % 1000000000;
-+
-+	/* set the start time */
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_SEC_X(event_ch),
-+			  start_sec);
-+	lan743x_csr_write(adapter,
-+			  PTP_CLOCK_TARGET_NS_X(event_ch),
-+			  start_nsec);
-+
-+	/* Enable LTC Target Read */
-+	val = lan743x_csr_read(adapter, PTP_CMD_CTL);
-+	val |= PTP_CMD_CTL_PTP_LTC_TARGET_READ_;
-+	lan743x_csr_write(adapter, PTP_CMD_CTL, val);
-+
-+	/* Configure as an push/pull driver */
-+	val = lan743x_csr_read(adapter, PTP_IO_PIN_CFG);
-+	val |= PTP_IO_PIN_CFG_OBUF_TYPE_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_PIN_CFG, val);
-+
-+	/* Select Event output */
-+	val = lan743x_csr_read(adapter, PTP_IO_EVENT_OUTPUT_CFG);
-+	if (event_ch)
-+		/* Channel B as the output */
-+		val |= PTP_IO_EVENT_OUTPUT_CFG_SEL_(perout_pin);
-+	else
-+		/* Channel A as the output */
-+		val &= ~PTP_IO_EVENT_OUTPUT_CFG_SEL_(perout_pin);
-+
-+	/* Enables the output of Local Time Target compare events */
-+	val |= PTP_IO_EVENT_OUTPUT_CFG_EN_(perout_pin);
-+	lan743x_csr_write(adapter, PTP_IO_EVENT_OUTPUT_CFG, val);
-+
-+	return 0;
-+
-+failed:
-+	lan743x_ptp_io_perout_off(adapter, index);
-+	return -ENODEV;
-+}
-+
- static void lan743x_ptp_io_extts_off(struct lan743x_adapter *adapter,
- 				     u32 index)
- {
-@@ -812,9 +1021,14 @@ static int lan743x_ptpci_enable(struct ptp_clock_info *ptpci,
- 							 &request->extts);
- 			return -EINVAL;
- 		case PTP_CLK_REQ_PEROUT:
--			if (request->perout.index < ptpci->n_per_out)
--				return lan743x_ptp_perout(adapter, on,
-+			if (request->perout.index < ptpci->n_per_out) {
-+				if (adapter->is_pci11x1x)
-+					return lan743x_ptp_io_perout(adapter, on,
-+							     &request->perout);
-+				else
-+					return lan743x_ptp_perout(adapter, on,
- 							  &request->perout);
-+			}
- 			return -EINVAL;
- 		case PTP_CLK_REQ_PPS:
- 			return -EINVAL;
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.h b/drivers/net/ethernet/microchip/lan743x_ptp.h
-index 96d3a134e788..e26d4eff7133 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.h
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.h
-@@ -80,6 +80,7 @@ struct lan743x_ptp {
- 
- 	unsigned long used_event_ch;
- 	struct lan743x_ptp_perout perout[LAN743X_PTP_N_PEROUT];
-+	int ptp_io_perout[LAN743X_PTP_N_PEROUT]; /* PTP event channel (0=channel A, 1=channel B) */
- 	struct lan743x_extts extts[LAN743X_PTP_N_EXTTS];
- 
- 	bool leds_multiplexed;
+ 	set_bit(__IAVF_IN_REMOVE_TASK, &adapter->crit_section);
+ 	/* Wait until port initialization is complete.
+ 	 * There are flows where register/unregister netdev may race.
 -- 
-2.25.1
+2.34.1
 
