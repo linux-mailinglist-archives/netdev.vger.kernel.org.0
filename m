@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9957F4DCE29
+	by mail.lfdr.de (Postfix) with ESMTP id E58BD4DCE2A
 	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237727AbiCQSz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41772 "EHLO
+        id S237528AbiCQSzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237718AbiCQSzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9AC163E3B
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:32 -0700 (PDT)
+        with ESMTP id S237493AbiCQSzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0DADFDF7
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D90DB81F9C
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E4A4C340F2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8A36617AE
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED5DDC340E9;
         Thu, 17 Mar 2022 18:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647543268;
-        bh=W205W1UQ6hwi4k7FHWP2MrqI8HX34gfSa7dq9uaoULY=;
+        s=k20201202; t=1647543269;
+        bh=L8brqgHgkfE3Vp7CWJ0SL8hKhSo70n894auJIB/S00s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NWztsx8sD3RBxF70QDUauzBuD6o1avKtFZ0P6kKdeU88dZ2z91qFQVMdZR86jtIML
-         8A2HzvecnjgPdhNFPXgBlnTrW/gmAh9i0s8d368r8+XnOrwdBAWba628ax7oFYP48r
-         bjI0bXjl5559vcJomOHAbnpgOTQ6UIO3aedPWCFJj8aE9GYpItX3AdrMzwYzkMOtn3
-         ON791ACbPEWpTgjjLx6KiIP4laRp/+SKxE4QxK0GnHTIFD3Upq2FsVJzmXoN/9CNwQ
-         M2bET4yETaTYPiwoeWkP+y5/N02D3BuVXSO2C7jQlViwtqasUaVmNWgH7adAcZEJtd
-         nT+zb6JtdiV+w==
+        b=p6V0Euu1t+PTJGOInCRU3fyJx9yOOmZQKBvOn30XSBXt4plnXlDMeEdZgs3H4ITgl
+         /W9VS+gjyuvBG4JbFGHEAXrpzZG83H/52Jw4hjQKh4R1o85OTCTsLjEOkg0tCQvpj/
+         FinI/TY/I5iOZ9os5iDKuFDdz7FXglatw6xmDySFBn4uV26WUVdI4zgaU2FfG2cXel
+         ZHpYohiqdRTJHhG0X343Ee4pb6PzCRU1kQhZRyGmxGsWNHLHMHwa0OqlJXtguNA8Xf
+         XYXhjk1AsX/xDtBnTpowd25w4JnJ8n1TlSRUNnmEKP7c+mylDgGP3oLtcMk4XcxnZS
+         Ylo1IeuNGdhUw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 01/15] net/mlx5e: Validate MTU when building non-linear legacy RQ fragments info
-Date:   Thu, 17 Mar 2022 11:54:10 -0700
-Message-Id: <20220317185424.287982-2-saeed@kernel.org>
+Subject: [net-next 02/15] net/mlx5e: Add headroom only to the first fragment in legacy RQ
+Date:   Thu, 17 Mar 2022 11:54:11 -0700
+Message-Id: <20220317185424.287982-3-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317185424.287982-1-saeed@kernel.org>
 References: <20220317185424.287982-1-saeed@kernel.org>
@@ -57,105 +57,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-mlx5e_build_rq_frags_info() assumes that MTU is not bigger than
-PAGE_SIZE * MLX5E_MAX_RX_FRAGS, which is 16K for 4K pages. Currently,
-the firmware limits MTU to 10K, so the assumption doesn't lead to a bug.
+Currently, rq->buff.headroom is applied to all fragments in legacy RQ.
+In the linear mode, there is a non-zero headroom, but there is only one
+fragment per packet. In the non-linear mode, the headroom is zero.
 
-This commits adds an additional driver check for reliability, since the
-firmware boundary might be changed.
-
-The calculation is taken to a separate function with a comment
-explaining it. It's a preparation for the following patches that
-introcuce XDP multi buffer support.
+This commit changes the logic to apply the headroom only to the first
+fragment. The current behavior remains the same for both linear and
+non-linear modes. However, it allows the next commit to enable headroom
+for the non-linear mode, which will be applied only to the first
+fragment.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/params.c   | 34 +++++++++++++++----
- 1 file changed, 27 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 0bd8698f7226..0f258e7a65e0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -392,16 +392,23 @@ void mlx5e_build_create_cq_param(struct mlx5e_create_cq_param *ccp, struct mlx5e
- 	};
- }
- 
-+static int mlx5e_max_nonlinear_mtu(int frag_size)
-+{
-+	/* Optimization for small packets: the last fragment is bigger than the others. */
-+	return (MLX5E_MAX_RX_FRAGS - 1) * frag_size + PAGE_SIZE;
-+}
-+
- #define DEFAULT_FRAG_SIZE (2048)
- 
--static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
--				      struct mlx5e_params *params,
--				      struct mlx5e_xsk_param *xsk,
--				      struct mlx5e_rq_frags_info *info)
-+static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
-+				     struct mlx5e_params *params,
-+				     struct mlx5e_xsk_param *xsk,
-+				     struct mlx5e_rq_frags_info *info)
- {
- 	u32 byte_count = MLX5E_SW2HW_MTU(params, params->sw_mtu);
- 	int frag_size_max = DEFAULT_FRAG_SIZE;
- 	u32 buf_size = 0;
-+	int max_mtu;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 074a44b281b6..6eda906342c0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -373,12 +373,15 @@ static int mlx5e_alloc_rx_wqe(struct mlx5e_rq *rq, struct mlx5e_rx_wqe_cyc *wqe,
  	int i;
  
- 	if (mlx5_fpga_is_ipsec_device(mdev))
-@@ -420,10 +427,18 @@ static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 		goto out;
- 	}
- 
--	if (byte_count > PAGE_SIZE +
--	    (MLX5E_MAX_RX_FRAGS - 1) * frag_size_max)
-+	max_mtu = mlx5e_max_nonlinear_mtu(frag_size_max);
-+	if (byte_count > max_mtu) {
- 		frag_size_max = PAGE_SIZE;
- 
-+		max_mtu = mlx5e_max_nonlinear_mtu(frag_size_max);
-+		if (byte_count > max_mtu) {
-+			mlx5_core_err(mdev, "MTU %u is too big for non-linear legacy RQ (max %d)\n",
-+				      params->sw_mtu, max_mtu);
-+			return -EINVAL;
-+		}
-+	}
+ 	for (i = 0; i < rq->wqe.info.num_frags; i++, frag++) {
++		u16 headroom;
 +
- 	i = 0;
- 	while (buf_size < byte_count) {
- 		int frag_size = byte_count - buf_size;
-@@ -444,6 +459,8 @@ static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- out:
- 	info->wqe_bulk = max_t(u8, info->wqe_bulk, 8);
- 	info->log_num_frags = order_base_2(info->num_frags);
-+
-+	return 0;
- }
+ 		err = mlx5e_get_rx_frag(rq, frag);
+ 		if (unlikely(err))
+ 			goto free_frags;
  
- static u8 mlx5e_get_rqwq_log_stride(u8 wq_type, int ndsegs)
-@@ -540,6 +557,7 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
- 	void *rqc = param->rqc;
- 	void *wq = MLX5_ADDR_OF(rqc, rqc, wq);
- 	int ndsegs = 1;
-+	int err;
- 
- 	switch (params->rq_wq_type) {
- 	case MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ: {
-@@ -579,7 +597,9 @@ int mlx5e_build_rq_param(struct mlx5_core_dev *mdev,
- 	}
- 	default: /* MLX5_WQ_TYPE_CYCLIC */
- 		MLX5_SET(wq, wq, log_wq_sz, params->log_rq_mtu_frames);
--		mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
-+		err = mlx5e_build_rq_frags_info(mdev, params, xsk, &param->frags_info);
-+		if (err)
-+			return err;
- 		ndsegs = param->frags_info.num_frags;
++		headroom = i == 0 ? rq->buff.headroom : 0;
+ 		wqe->data[i].addr = cpu_to_be64(frag->di->addr +
+-						frag->offset + rq->buff.headroom);
++						frag->offset + headroom);
  	}
  
+ 	return 0;
 -- 
 2.35.1
 
