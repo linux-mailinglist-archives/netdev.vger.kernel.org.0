@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF814DC96E
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 15:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F1004DC9A4
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 16:11:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234722AbiCQPAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 11:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
+        id S235652AbiCQPMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 11:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbiCQPAv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 11:00:51 -0400
+        with ESMTP id S235651AbiCQPMJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 11:12:09 -0400
 Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD780E6175;
-        Thu, 17 Mar 2022 07:59:34 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4E9F25C0151;
-        Thu, 17 Mar 2022 10:59:34 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3AE104A74
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 08:10:53 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id A02F45C0248;
+        Thu, 17 Mar 2022 11:10:52 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 17 Mar 2022 10:59:34 -0400
+  by compute4.internal (MEProxy); Thu, 17 Mar 2022 11:10:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=eq8Q3Wf36/Ac2wsVD
-        zrJSDqU/+NPSnDNknTC94Rn3ys=; b=Z+u61UZF2MpFvWSlO9RK9pImFvyFmJi45
-        jy6JXcXuXSm3frv6E3GS/SPdGVUx5jdEEFQ+QqdpGZu7HAE6uNYkS9LgMYaQn6Zk
-        cRRvPrhYr46PgsDMZ0jQskLD2kuL7U6XppwJNiCHbvB3SxYso8QLkVtRg5Km+CWJ
-        +1xP7shOd/FYQ7MTQdkVOZ4nJ5EuGNWy65PAxIBkgpphPWlQKfGyF+RCr0BJocYu
-        qpUyh1nzzUhRZPMb7oJAfWWKpsc/EEoUvnPYjgH55dqG/yctgtg5MnjHJHJPuQio
-        FPPlokROP7Nb3zWA9Rdjw0C02G7ih2Fp8snt5Brdtr6g8AwFYLxVQ==
-X-ME-Sender: <xms:1kwzYvKi6OJoZcDf1ohLpIaz-iALK7M0VXI5dHQp6UvMUhMWETnLwQ>
-    <xme:1kwzYjLpgPqNWh6A-lf_RnHAD2c2_4DVSLvJdss0XCoV5bNdpfO4R7MSGJgP44CWc
-    xiRAI9SqQoGudc>
-X-ME-Received: <xmr:1kwzYnuO3seh2DcMdygVIma-0AZGl6IWGE5MSluGDDx9zVf5JK4XQNL5l6IbZmuGDAwpFQmpTGW6B1qpnT0rdg36Ccc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefgedgieelucetufdoteggodetrfdotf
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=UmOzO//VgaCsOCZvn
+        SlXNtWZ4ThdzlWedz8inn3GitY=; b=Q379xlAJUBjFD6SO/Jq6qcGFXMRmSXWUF
+        uBZnc1KjiScuIamR88Wfht1WDnYw6g2dPMijBzzxOEmuXKMYT5tpQOQmOTBETNnr
+        0mbfZ/0tGMTnx0hbxhBxHSL+AL3MmJ81Cuy13/h9SfeQXYZMuQwUp2tyMkadmFb6
+        LUbAVeuj/vzahgiQsjzRb7Szhzu5aDDnT0umLw7fH/LBPYo/A3NPpi6I6YBCBoHE
+        eV9nmFSFAmaehYE5wdWvcZhNhtz1ssHh/lOZB8CZXRcNa4qZc7QozKa5hdVWaBJo
+        rpIBbioclogmN+G78cSS3GvUCjauTY6HQoxUEME1Bb8zPmA6hkNfQ==
+X-ME-Sender: <xms:fE8zYnF49dNd-ldLGGhwpthnlRqtwILvnx0qR2_ImPQ8SrGghCdQPA>
+    <xme:fE8zYkXq2xcpP_KZXG3Q8KBPZ6J-fJoIcfu_jjqL6TXXlWjPUHml7pm5FEMWGwa4V
+    Gu17dzoxRdlNQ0>
+X-ME-Received: <xmr:fE8zYpIVGYIT4gwtSOy9NHoRkbOfOxmPQ6dHiwa_pnmIWV8xMM0lqQP9viyApyHxj3GYqIJS-oCMTnHcNErm16xcdgY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefgedgjedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
     tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:1kwzYoaYDFZUxE0dWyf7_xLUwQ47t76Pr9ikIlA6iCY_xUlUXl45Ww>
-    <xmx:1kwzYmYZMQD9FLICF9kfhzXBzZ6BjNCZ7rAwB-MnKldKySbdAHT70A>
-    <xmx:1kwzYsAQqJDrpGJXu9P0bYF92lmyFg0yiQvgoCBc85odvVXAettUhg>
-    <xmx:1kwzYrJ_GBAM-ZcZmgscS90xvQEe77iMkzH6g9-n1lHskbTXTyUFSg>
+    gvrhhnpefgffekkeejvdetgeevuedtudejgfelgeeugffgjeeigeetkeduhfefjeejgfdt
+    leenucffohhmrghinheplhifnhdrnhgvthenucevlhhushhtvghrufhiiigvpedtnecurf
+    grrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:fE8zYlHHirE447wUEt5kSUxSdQizEe0hoPEaTz44NwuL2Rc69LWy8A>
+    <xmx:fE8zYtVnGYBEaIBykUVMVy47zb4P_FX31lwFWr_YkI6G-Y9BISCuXw>
+    <xmx:fE8zYgMwXU34zq-M7c7oQi8nRfVnRJHnpYXJYSBx2bv28Oj5wctcSg>
+    <xmx:fE8zYqi6V1SEEqegd5ckrC63CyaK4QQ7dMjYsBW57Gi_cPj_HPaLbQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Mar 2022 10:59:33 -0400 (EDT)
-Date:   Thu, 17 Mar 2022 16:59:30 +0200
+ 17 Mar 2022 11:10:51 -0400 (EDT)
+Date:   Thu, 17 Mar 2022 17:10:49 +0200
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     razor@blackwall.org, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-Message-ID: <YjNM0ugG2dcZSD2r@shredder>
-References: <20220317093902.1305816-1-schultz.hans+netdev@gmail.com>
- <20220317093902.1305816-2-schultz.hans+netdev@gmail.com>
- <YjM7Iwx4MDdGEHFA@shredder>
- <86ilsciqfh.fsf@gmail.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net] af_netlink: Fix shift out of bounds in group mask
+ calculation
+Message-ID: <YjNPeZrOxRjSgqF4@shredder>
+References: <2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <86ilsciqfh.fsf@gmail.com>
+In-Reply-To: <2bef6aabf201d1fc16cca139a744700cff9dcb04.1647527635.git.petrm@nvidia.com>
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
         SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -83,27 +72,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 03:50:26PM +0100, Hans Schultz wrote:
-> On tor, mar 17, 2022 at 15:44, Ido Schimmel <idosch@idosch.org> wrote:
-> > On Thu, Mar 17, 2022 at 10:38:59AM +0100, Hans Schultz wrote:
-> >> Add an intermediate state for clients behind a locked port to allow for
-> >> possible opening of the port for said clients. This feature corresponds
-> >> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
-> >> latter defined by Cisco.
-> >> Only the kernel can set this FDB entry flag, while userspace can read
-> >> the flag and remove it by deleting the FDB entry.
-> >
-> > Can you explain where this flag is rejected by the kernel?
-> >
-> Is it an effort to set the flag from iproute2 on adding a fdb entry?
-
-I'm not sure what you are asking, but even if iproute2 can't set the
-flag it doesn't mean the kernel shouldn't reject it
-
+On Thu, Mar 17, 2022 at 03:53:06PM +0100, Petr Machata wrote:
+> When a netlink message is received, netlink_recvmsg() fills in the address
+> of the sender. One of the fields is the 32-bit bitfield nl_groups, which
+> carries the multicast group on which the message was received. The least
+> significant bit corresponds to group 1, and therefore the highest group
+> that the field can represent is 32. Above that, the UB sanitizer flags the
+> out-of-bounds shift attempts.
 > 
-> > Nik, it seems the bridge ignores 'NDA_FLAGS_EXT', but I think that for
-> > new flags we should do a better job and reject unsupported
-> > configurations. WDYT?
-> >
-> > The neighbour code will correctly reject the new flag due to
-> > 'NTF_EXT_MASK'.
+> Which bits end up being set in such case is implementation defined, but
+> it's either going to be a wrong non-zero value, or zero, which is at least
+> not misleading. Make the latter choice deterministic by always setting to 0
+> for higher-numbered multicast groups.
+> 
+> To get information about membership in groups >= 32, userspace is expected
+> to use nl_pktinfo control messages[0], which are enabled by NETLINK_PKTINFO
+> socket option.
+> [0] https://lwn.net/Articles/147608/
+> 
+> The way to trigger this issue is e.g. through monitoring the BRVLAN group:
+> 
+> 	# bridge monitor vlan &
+> 	# ip link add name br type bridge
+> 
+> Which produces the following citation:
+> 
+> 	UBSAN: shift-out-of-bounds in net/netlink/af_netlink.c:162:19
+> 	shift exponent 32 is too large for 32-bit type 'int'
+> 
+> Fixes: f7fa9b10edbb ("[NETLINK]: Support dynamic number of multicast groups per netlink family")
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
