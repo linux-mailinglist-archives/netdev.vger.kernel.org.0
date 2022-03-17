@@ -2,94 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46BCC4DCDB9
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:37:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F254DCDC7
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237472AbiCQSjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46608 "EHLO
+        id S237529AbiCQSln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237479AbiCQSjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:39:01 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C80B114DDE;
-        Thu, 17 Mar 2022 11:37:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647542263; x=1679078263;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+aM5r8r1moVYf5XPT33TV5YGB8tm7BfoYyZ/LZfWi6A=;
-  b=K3mA1IR+WkA9j+KieCSbx2AgK3o1EDSy0RXXo0vPtPYpaRujAlcG15cd
-   fveqqVoXIRXi1YfH9qnAW2UQSPQ0HLPa+0yo2FpH+rBomutpea2fZzYpR
-   6PEyFYp2cbAUNAXvpiupi3Ueml2bGoDSDDnBTOMGPtGlTozgPq1Lekm83
-   2DOo2qEWby7dqEWxtsrNprQSp5elXt2GI9JzM99TGMwZrlAFhuus92Up8
-   Rrna4Z7LcSAG5Xw3Ud0WXjp6Ca3YbOXXri3ubUa+S8EwOoZ3Zv2is5Ipa
-   C0UwktBZdnupXQGZbbkwPeoI+Y4ePJuMOItzXMLMCKCippuwIgs/jc2iV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="244405597"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="244405597"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 11:37:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="558057204"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga008.jf.intel.com with ESMTP; 17 Mar 2022 11:37:40 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, davem@davemloft.net,
-        magnus.karlsson@intel.com, alexandr.lobakin@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH intel-net 3/3] ice: clear cmd_type_offset_bsz for TX rings
-Date:   Thu, 17 Mar 2022 19:36:29 +0100
-Message-Id: <20220317183629.340350-4-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220317183629.340350-1-maciej.fijalkowski@intel.com>
-References: <20220317183629.340350-1-maciej.fijalkowski@intel.com>
+        with ESMTP id S237519AbiCQSlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:41:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3562F2128D7;
+        Thu, 17 Mar 2022 11:40:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4B5261739;
+        Thu, 17 Mar 2022 18:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76000C340E9;
+        Thu, 17 Mar 2022 18:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647542425;
+        bh=iIu1V23+6QwynGK7oa/GN5GSITG4WWL20FQ8vV5zwJw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=BsgoW73Z0ZEjGdDzrnb7dJiPRBwqkKM3mnMb+JwDYVSkTQU5tHAU54XPyD2fEF+GX
+         VpY2UYcEr/InN4CSWeSdpgaHzut+IwBihrAh6JB7veCponOzGtjU+whyYA695zYsau
+         zKG1REuebsb2dMcV202ykf2r0KPC+ePZpriILmUU75WHzCtcaqc/esHglVXPpFu+iX
+         qV1y+NddKSgxLpdI2O9XFVNLragRHJ86zaWtJkDATRL0EGu2ojyJ1o2ZAnrgQ03Sy5
+         ujaprGTile1OFMb+LSG1Ue008CY8LEsgdxohduJqVKoOdur1NanYeXReCnOfl2+KUH
+         OPFZISZAPNA/Q==
+Message-ID: <50e99bc2-b0ca-1e83-004d-ca550294cc95@kernel.org>
+Date:   Thu, 17 Mar 2022 12:40:23 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.2
+Subject: Re: [PATCH net v2 1/2] ipv4: Fix route lookups when handling ICMP
+ redirects and PMTU updates
+Content-Language: en-US
+To:     Guillaume Nault <gnault@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+References: <cover.1647519748.git.gnault@redhat.com>
+ <8cbc1e6f2319dd50d4289bec6604174484ca615c.1647519748.git.gnault@redhat.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <8cbc1e6f2319dd50d4289bec6604174484ca615c.1647519748.git.gnault@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently when XDP rings are created, each descriptor gets its DD bit
-set, which turns out to be the wrong approach as it can lead to a
-situation where more descriptors get cleaned than it was supposed to,
-e.g. when AF_XDP busy poll is run with a large batch size. In this
-situation, the driver would request for more buffers than it is able to
-handle.
+On 3/17/22 6:45 AM, Guillaume Nault wrote:
+> The PMTU update and ICMP redirect helper functions initialise their fl4
+> variable with either __build_flow_key() or build_sk_flow_key(). These
+> initialisation functions always set ->flowi4_scope with
+> RT_SCOPE_UNIVERSE and might set the ECN bits of ->flowi4_tos. This is
+> not a problem when the route lookup is later done via
+> ip_route_output_key_hash(), which properly clears the ECN bits from
+> ->flowi4_tos and initialises ->flowi4_scope based on the RTO_ONLINK
+> flag. However, some helpers call fib_lookup() directly, without
+> sanitising the tos and scope fields, so the route lookup can fail and,
+> as a result, the ICMP redirect or PMTU update aren't taken into
+> account.
+> 
+> Fix this by extracting the ->flowi4_tos and ->flowi4_scope sanitisation
+> code into ip_rt_fix_tos(), then use this function in handlers that call
+> fib_lookup() directly.
+> 
+> Note 1: We can't sanitise ->flowi4_tos and ->flowi4_scope in a central
+> place (like __build_flow_key() or flowi4_init_output()), because
+> ip_route_output_key_hash() expects non-sanitised values. When called
+> with sanitised values, it can erroneously overwrite RT_SCOPE_LINK with
+> RT_SCOPE_UNIVERSE in ->flowi4_scope. Therefore we have to be careful to
+> sanitise the values only for those paths that don't call
+> ip_route_output_key_hash().
+> 
+> Note 2: The problem is mostly about sanitising ->flowi4_tos. Having
+> ->flowi4_scope initialised with RT_SCOPE_UNIVERSE instead of
+> RT_SCOPE_LINK probably wasn't really a problem: sockets with the
+> SOCK_LOCALROUTE flag set (those that'd result in RTO_ONLINK being set)
+> normally shouldn't receive ICMP redirects or PMTU updates.
+> 
+> Fixes: 4895c771c7f0 ("ipv4: Add FIB nexthop exceptions.")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
+>  net/ipv4/route.c | 18 ++++++++++++++----
+>  1 file changed, 14 insertions(+), 4 deletions(-)
+> 
 
-Fix this by not setting the DD bits in ice_xdp_alloc_setup_rings(). They
-should be initialized to zero instead.
-
-Fixes: 9610bd988df9 ("ice: optimize XDP_TX workloads")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index c3c73a61bfd0..5332bb24001a 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2533,7 +2533,7 @@ static int ice_xdp_alloc_setup_rings(struct ice_vsi *vsi)
- 		spin_lock_init(&xdp_ring->tx_lock);
- 		for (j = 0; j < xdp_ring->count; j++) {
- 			tx_desc = ICE_TX_DESC(xdp_ring, j);
--			tx_desc->cmd_type_offset_bsz = cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE);
-+			tx_desc->cmd_type_offset_bsz = 0;
- 		}
- 	}
- 
--- 
-2.27.0
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
