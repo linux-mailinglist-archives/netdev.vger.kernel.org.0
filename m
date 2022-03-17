@@ -2,344 +2,318 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62FA14DC57F
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 13:05:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C1F44DC58F
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 13:09:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233419AbiCQMG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 08:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41696 "EHLO
+        id S233449AbiCQMKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 08:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231928AbiCQMGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 08:06:53 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E351925AA
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 05:05:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647518736; x=1679054736;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2fo2ZK3Yeu0gglCvRx2G2ahUzEvUiWXp7qo4wedaBmw=;
-  b=MVwpOMSjI5A2XpxbEKDwQIIZDPzhCba0wrLmLQsxNgmVDFIe7ms0wlEE
-   87L8vxDN9Sd5A6/TUWZ8bbvqIztxKqldpEfJ5UxR6G3uMzffuSvLGmDMK
-   GTct0q0I65duRWYUDVM1MWxg3tvehALMKZkHF1Ym74FkoYopiSIQzTF2a
-   Qol78G7wtk+m98IDvBQ8YJMrCuJvfQaqSdivzG7qFppOf5+yCcw+KFcoX
-   dtfLj2nVPul5JhfJNVq4Y4Z0aOzPCiWZdObuB0rF2DjMZLbEIbrdj6Pe/
-   62KlmhyKukgTfpW5yQVno72dZp10+xmYsJM4vhhDsCrWGp7u6CbBldmYM
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="281638560"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="281638560"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 05:05:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="783814283"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Mar 2022 05:05:34 -0700
-Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22HC5WAK029827;
-        Thu, 17 Mar 2022 12:05:33 GMT
-From:   Wojciech Drewek <wojciech.drewek@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, jiri@mellanox.com
-Subject: [PATCH iproute2-next v6 2/2] f_flower: Implement gtp options support
-Date:   Thu, 17 Mar 2022 13:01:43 +0100
-Message-Id: <20220317120143.92480-3-wojciech.drewek@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220317120143.92480-1-wojciech.drewek@intel.com>
-References: <20220317120143.92480-1-wojciech.drewek@intel.com>
+        with ESMTP id S233438AbiCQMKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 08:10:20 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96793171EE8
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 05:09:02 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id b28so8654889lfc.4
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 05:09:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=bb6LfXoL5Q5pGeuJSTt1JWFN2kWGULeSvMc4mkWgMSk=;
+        b=mfc55g2doSzcgrkZU7D3W5YzqjOR9zqCTZFIPs6PLHWfw9YJaG3Av+VohLXRxAx9UX
+         op9Z2H2XNPknID6XHncjKz9Q5vuUDI8/QzZ9K91cpgDS0V5BmKN3ju6D7sJ1VZe1dbnJ
+         o57q+8xPbG7/8Kv73zlo29FD+lt7qgYU7Mg2KLB5v0TuV9Qznc8GquwCQwWMxDJj3vSA
+         bxn/A+z2QDROSA/ME4hX429/qxAUqJRMoU91GYCQUrPMJvFaVOHm64C9J8BTkoy32kXC
+         YkUUUwl8mfXsNaenvxzgtQgi6BcaOdEkRpqjvja7ARhhYDLm2mgTMLbipNKWIrPPgKw9
+         SH3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bb6LfXoL5Q5pGeuJSTt1JWFN2kWGULeSvMc4mkWgMSk=;
+        b=F8Dp/J3AEYL7w7oQbYcACmA2d2SagnH6jQ3kW8dnzUanoq0loD+C2pSA6dHgIU0fKu
+         CgU/VTxOohouvbhXrISBXS/q53zMIdaZYSmfz4PBMerRuJMLM/adBasFVGLMkFnrdu68
+         4lIhVDEBwTuZV3oWgKyU2ewIlF6VLa/5s09nqfLMAvnfAL1blpkf4o4xnUsm0kUFiwhX
+         D7R2BYKdAv1cvH3dET3GCRsKSR6WSYqVvac2RhaGDKJcT57uxo3dZ+nz1hMBtW2S7qNy
+         4ofJEbh94rs+AaFCdunIHLlHdCo+GFSjWnt6TC2FLwj3sRxyqHrHy1fJOQGZaxKoR4IX
+         hLfg==
+X-Gm-Message-State: AOAM5311pXID0cd78lV3hkTds52eL8FfF6trCRopeHL0WGgEjDMK6iyZ
+        yPn3tMKGs8YVMSywn7+Nt5o=
+X-Google-Smtp-Source: ABdhPJwuSxHF+b7nmFQihWxoK/I0ZUhAEugyTUOlY+LjhlufJAr0iAJveK8kc9jX1Lv9G7VBrXbEZg==
+X-Received: by 2002:ac2:4e42:0:b0:448:b502:8865 with SMTP id f2-20020ac24e42000000b00448b5028865mr2790364lfr.545.1647518940712;
+        Thu, 17 Mar 2022 05:09:00 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
+        by smtp.gmail.com with ESMTPSA id h21-20020a19ca55000000b004481d401734sm432914lfj.91.2022.03.17.05.08.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 05:08:59 -0700 (PDT)
+Message-ID: <c85e031b-b4ed-a638-6448-205ef9803aa8@gmail.com>
+Date:   Thu, 17 Mar 2022 13:08:58 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 2/5] net: bridge: Implement bridge flood flag
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Joachim Wiberg <troglobit@gmail.com>
+References: <20220317065031.3830481-1-mattias.forsblad@gmail.com>
+ <20220317065031.3830481-3-mattias.forsblad@gmail.com>
+ <f2104e0e-45f2-1fe6-5cf9-ef3fa0f1475d@blackwall.org>
+ <20220317111545.3e7dxu3oqocdmves@skbuf>
+ <20220317115703.vg47gitbnbev4etu@skbuf>
+ <20220317115900.5vfomgespvzvgzdt@skbuf>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <20220317115900.5vfomgespvzvgzdt@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for parsing TCA_FLOWER_KEY_ENC_OPTS_GTP.
-Options are as follows: PDU_TYPE:QFI where each
-option is represented as 8-bit hexadecimal value.
+On 2022-03-17 12:59, Vladimir Oltean wrote:
+> On Thu, Mar 17, 2022 at 01:57:03PM +0200, Vladimir Oltean wrote:
+>> On Thu, Mar 17, 2022 at 01:15:45PM +0200, Vladimir Oltean wrote:
+>>> On Thu, Mar 17, 2022 at 12:11:40PM +0200, Nikolay Aleksandrov wrote:
+>>>> On 17/03/2022 08:50, Mattias Forsblad wrote:
+>>>>> This patch implements the bridge flood flags. There are three different
+>>>>> flags matching unicast, multicast and broadcast. When the corresponding
+>>>>> flag is cleared packets received on bridge ports will not be flooded
+>>>>> towards the bridge.
+>>>>> This makes is possible to only forward selected traffic between the
+>>>>> port members of the bridge.
+>>>>>
+>>>>> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+>>>>> ---
+>>>>>  include/linux/if_bridge.h      |  6 +++++
+>>>>>  include/uapi/linux/if_bridge.h |  9 ++++++-
+>>>>>  net/bridge/br.c                | 45 ++++++++++++++++++++++++++++++++++
+>>>>>  net/bridge/br_device.c         |  3 +++
+>>>>>  net/bridge/br_input.c          | 23 ++++++++++++++---
+>>>>>  net/bridge/br_private.h        |  4 +++
+>>>>>  6 files changed, 85 insertions(+), 5 deletions(-)
+>>>>>
+>>>> Please always CC bridge maintainers for bridge patches.
+>>>> I almost missed this one. I'll add my reply to Joachim's notes
+>>>> which are pretty spot on.
+>>>
+>>> And DSA maintainers for DSA patches ;) I was aimlessly scrolling through
+>>> patchwork when I happened to notice these, and the series is already at v3.
+>>>
+>>> As a matter of fact, I downloaded these patches from the mailing list
+>>> with the intention of giving them a spin on mv88e6xxx to see what
+>>> they're about, and to my surprise, this particular patch (I haven't even
+>>> reached the offloading part) breaks DHCP on my bridge, so it can no
+>>> longer get an IP address. I haven't toggled any bridge flag through
+>>> netlink, just booted the board with systemd-networkd. The same thing
+>>> happens with my LS1028A board. Further investigation to come, but this
+>>> isn't off to a good start, I'm afraid...
+>>>
+>>>>
+>>>>> diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+>>>>> index 3aae023a9353..fa8e000a6fb9 100644
+>>>>> --- a/include/linux/if_bridge.h
+>>>>> +++ b/include/linux/if_bridge.h
+>>>>> @@ -157,6 +157,7 @@ static inline int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
+>>>>>  struct net_device *br_fdb_find_port(const struct net_device *br_dev,
+>>>>>  				    const unsigned char *addr,
+>>>>>  				    __u16 vid);
+>>>>> +bool br_flood_enabled(const struct net_device *dev);
+>>>>>  void br_fdb_clear_offload(const struct net_device *dev, u16 vid);
+>>>>>  bool br_port_flag_is_set(const struct net_device *dev, unsigned long flag);
+>>>>>  u8 br_port_get_stp_state(const struct net_device *dev);
+>>>>> @@ -170,6 +171,11 @@ br_fdb_find_port(const struct net_device *br_dev,
+>>>>>  	return NULL;
+>>>>>  }
+>>>>>  
+>>>>> +static inline bool br_flood_enabled(const struct net_device *dev)
+>>>>> +{
+>>>>> +	return true;
+>>>>> +}
+>>>>> +
+>>>>>  static inline void br_fdb_clear_offload(const struct net_device *dev, u16 vid)
+>>>>>  {
+>>>>>  }
+>>>>> diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+>>>>> index 2711c3522010..765ed70c9b28 100644
+>>>>> --- a/include/uapi/linux/if_bridge.h
+>>>>> +++ b/include/uapi/linux/if_bridge.h
+>>>>> @@ -72,6 +72,7 @@ struct __bridge_info {
+>>>>>  	__u32 tcn_timer_value;
+>>>>>  	__u32 topology_change_timer_value;
+>>>>>  	__u32 gc_timer_value;
+>>>>> +	__u8 flood;
+>>>>>  };
+>>>>>  
+>>>>>  struct __port_info {
+>>>>> @@ -752,13 +753,19 @@ struct br_mcast_stats {
+>>>>>  /* bridge boolean options
+>>>>>   * BR_BOOLOPT_NO_LL_LEARN - disable learning from link-local packets
+>>>>>   * BR_BOOLOPT_MCAST_VLAN_SNOOPING - control vlan multicast snooping
+>>>>> + * BR_BOOLOPT_FLOOD - control bridge flood flag
+>>>>> + * BR_BOOLOPT_MCAST_FLOOD - control bridge multicast flood flag
+>>>>> + * BR_BOOLOPT_BCAST_FLOOD - control bridge broadcast flood flag
+>>>>>   *
+>>>>>   * IMPORTANT: if adding a new option do not forget to handle
+>>>>> - *            it in br_boolopt_toggle/get and bridge sysfs
+>>>>> + *            it in br_boolopt_toggle/get
+>>>>>   */
+>>>>>  enum br_boolopt_id {
+>>>>>  	BR_BOOLOPT_NO_LL_LEARN,
+>>>>>  	BR_BOOLOPT_MCAST_VLAN_SNOOPING,
+>>>>> +	BR_BOOLOPT_FLOOD,
+>>>>> +	BR_BOOLOPT_MCAST_FLOOD,
+>>>>> +	BR_BOOLOPT_BCAST_FLOOD,
+>>>>>  	BR_BOOLOPT_MAX
+>>>>>  };
+>>>>>  
+>>>>> diff --git a/net/bridge/br.c b/net/bridge/br.c
+>>>>> index b1dea3febeea..63a17bed6c63 100644
+>>>>> --- a/net/bridge/br.c
+>>>>> +++ b/net/bridge/br.c
+>>>>> @@ -265,6 +265,11 @@ int br_boolopt_toggle(struct net_bridge *br, enum br_boolopt_id opt, bool on,
+>>>>>  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
+>>>>>  		err = br_multicast_toggle_vlan_snooping(br, on, extack);
+>>>>>  		break;
+>>>>> +	case BR_BOOLOPT_FLOOD:
+>>>>> +	case BR_BOOLOPT_MCAST_FLOOD:
+>>>>> +	case BR_BOOLOPT_BCAST_FLOOD:
+>>>>> +		err = br_flood_toggle(br, opt, on);
+>>>>> +		break;
+>>>>>  	default:
+>>>>>  		/* shouldn't be called with unsupported options */
+>>>>>  		WARN_ON(1);
+>>>>> @@ -281,6 +286,12 @@ int br_boolopt_get(const struct net_bridge *br, enum br_boolopt_id opt)
+>>>>>  		return br_opt_get(br, BROPT_NO_LL_LEARN);
+>>>>>  	case BR_BOOLOPT_MCAST_VLAN_SNOOPING:
+>>>>>  		return br_opt_get(br, BROPT_MCAST_VLAN_SNOOPING_ENABLED);
+>>>>> +	case BR_BOOLOPT_FLOOD:
+>>>>> +		return br_opt_get(br, BROPT_FLOOD);
+>>>>> +	case BR_BOOLOPT_MCAST_FLOOD:
+>>>>> +		return br_opt_get(br, BROPT_MCAST_FLOOD);
+>>>>> +	case BR_BOOLOPT_BCAST_FLOOD:
+>>>>> +		return br_opt_get(br, BROPT_BCAST_FLOOD);
+>>>>>  	default:
+>>>>>  		/* shouldn't be called with unsupported options */
+>>>>>  		WARN_ON(1);
+>>>>> @@ -325,6 +336,40 @@ void br_boolopt_multi_get(const struct net_bridge *br,
+>>>>>  	bm->optmask = GENMASK((BR_BOOLOPT_MAX - 1), 0);
+>>>>>  }
+>>>>>  
+>>>>> +int br_flood_toggle(struct net_bridge *br, enum br_boolopt_id opt,
+>>>>> +		    bool on)
+>>>>> +{
+>>>>> +	struct switchdev_attr attr = {
+>>>>> +		.orig_dev = br->dev,
+>>>>> +		.id = SWITCHDEV_ATTR_ID_BRIDGE_FLOOD,
+>>>>> +		.flags = SWITCHDEV_F_DEFER,
+>>>>> +	};
+>>>>> +	enum net_bridge_opts bropt;
+>>>>> +	int ret;
+>>>>> +
+>>>>> +	switch (opt) {
+>>>>> +	case BR_BOOLOPT_FLOOD:
+>>>>> +		bropt = BROPT_FLOOD;
+>>>>> +		break;
+>>>>> +	case BR_BOOLOPT_MCAST_FLOOD:
+>>>>> +		bropt = BROPT_MCAST_FLOOD;
+>>>>> +		break;
+>>>>> +	case BR_BOOLOPT_BCAST_FLOOD:
+>>>>> +		bropt = BROPT_BCAST_FLOOD;
+>>>>> +		break;
+>>>>> +	default:
+>>>>> +		WARN_ON(1);
+>>>>> +		return -EINVAL;
+>>>>> +	}
+>>>>> +	br_opt_toggle(br, bropt, on);
+>>>>> +
+>>>>> +	attr.u.brport_flags.mask = BIT(bropt);
+>>>>> +	attr.u.brport_flags.val = on << bropt;
+>>>>> +	ret = switchdev_port_attr_set(br->dev, &attr, NULL);
+>>>>> +
+>>>>> +	return ret;
+>>>>> +}
+>>>>> +
+>>>>>  /* private bridge options, controlled by the kernel */
+>>>>>  void br_opt_toggle(struct net_bridge *br, enum net_bridge_opts opt, bool on)
+>>>>>  {
+>>>>> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+>>>>> index 8d6bab244c4a..fafaef9d4b3a 100644
+>>>>> --- a/net/bridge/br_device.c
+>>>>> +++ b/net/bridge/br_device.c
+>>>>> @@ -524,6 +524,9 @@ void br_dev_setup(struct net_device *dev)
+>>>>>  	br->bridge_hello_time = br->hello_time = 2 * HZ;
+>>>>>  	br->bridge_forward_delay = br->forward_delay = 15 * HZ;
+>>>>>  	br->bridge_ageing_time = br->ageing_time = BR_DEFAULT_AGEING_TIME;
+>>>>> +	br_opt_toggle(br, BROPT_FLOOD, true);
+>>>>> +	br_opt_toggle(br, BROPT_MCAST_FLOOD, true);
+>>>>> +	br_opt_toggle(br, BROPT_BCAST_FLOOD, true);
+>>>>>  	dev->max_mtu = ETH_MAX_MTU;
+>>>>>  
+>>>>>  	br_netfilter_rtable_init(br);
+>>>>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+>>>>> index e0c13fcc50ed..fcb0757bfdcc 100644
+>>>>> --- a/net/bridge/br_input.c
+>>>>> +++ b/net/bridge/br_input.c
+>>>>> @@ -109,11 +109,12 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>>>  		/* by definition the broadcast is also a multicast address */
+>>>>>  		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
+>>>>>  			pkt_type = BR_PKT_BROADCAST;
+>>>>> -			local_rcv = true;
+>>>>> +			local_rcv = true && br_opt_get(br, BROPT_BCAST_FLOOD);
+>>>>>  		} else {
+>>>>>  			pkt_type = BR_PKT_MULTICAST;
+>>>>> -			if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
+>>>>> -				goto drop;
+>>>>> +			if (br_opt_get(br, BROPT_MCAST_FLOOD))
+>>>>> +				if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
+>>>>> +					goto drop;
+>>>>>  		}
+>>>>>  	}
+>>>>>  
+>>>>> @@ -155,9 +156,13 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>>>  			local_rcv = true;
+>>>>>  			br->dev->stats.multicast++;
+>>>>>  		}
+>>>>> +		if (!br_opt_get(br, BROPT_MCAST_FLOOD))
+>>>>> +			local_rcv = false;
+>>>>>  		break;
+>>>>>  	case BR_PKT_UNICAST:
+>>>>>  		dst = br_fdb_find_rcu(br, eth_hdr(skb)->h_dest, vid);
+>>>>> +		if (!br_opt_get(br, BROPT_FLOOD))
+>>>>> +			local_rcv = false;
+>>>>>  		break;
+>>>>>  	default:
+>>>>>  		break;
+>>>>> @@ -166,7 +171,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>>>  	if (dst) {
+>>>>>  		unsigned long now = jiffies;
+>>>>>  
+>>>>> -		if (test_bit(BR_FDB_LOCAL, &dst->flags))
+>>>>> +		if (test_bit(BR_FDB_LOCAL, &dst->flags) && local_rcv)
+>>
+>> So this is the line that breaks local termination. Could you explain
+>> the reasoning for this change? For unicast packets matching a local FDB
+>> entry, local_rcv used to be irrelevant (and wasn't even set to true,
+>> unless the bridge device was promiscuous).
+> 
+> Sorry, it wasn't obvious from the To: field, but the question was
+> targeted to Mattias and not to Nikolay.
+> 
 
-e.g.
-  # ip link add gtp_dev type gtp role sgsn
-  # tc qdisc add dev gtp_dev ingress
-  # tc filter add dev gtp_dev protocol ip parent ffff: \
-      flower \
-        enc_key_id 11 \
-        gtp_opts 1:8/ff:ff \
-      action mirred egress redirect dev eth0
+It might as simple be that I've misunderstood that flow.
 
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
----
-v2: use SPDX tag, use strcmp() instead of matches(), parse
-    IFLA_GTP_RESTART_COUNT arg
-v3: IFLA_GTP_CREATE_SOCKETS attribute introduced, fix options
-    alpha order
-v5: add gtp_opts to explain function
-v6: use strcmp instead of matches
----
- include/uapi/linux/pkt_cls.h |  16 +++++
- man/man8/tc-flower.8         |  10 +++
- tc/f_flower.c                | 123 ++++++++++++++++++++++++++++++++++-
- 3 files changed, 147 insertions(+), 2 deletions(-)
-
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index ee38b35c3f57..30ff8da0631b 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -616,6 +616,10 @@ enum {
- 					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
- 					 * attributes
- 					 */
-+	TCA_FLOWER_KEY_ENC_OPTS_GTP,	/* Nested
-+					 * TCA_FLOWER_KEY_ENC_OPT_GTP_
-+					 * attributes
-+					 */
- 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
- };
- 
-@@ -654,6 +658,18 @@ enum {
- #define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
- 		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
- 
-+enum {
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_UNSPEC,
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,		/* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_QFI,			/* u8 */
-+
-+	__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX,
-+};
-+
-+#define TCA_FLOWER_KEY_ENC_OPT_GTP_MAX \
-+		(__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX - 1)
-+
-+
- enum {
- 	TCA_FLOWER_KEY_MPLS_OPTS_UNSPEC,
- 	TCA_FLOWER_KEY_MPLS_OPTS_LSE,
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index 4541d9372684..f918a06d2927 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -89,6 +89,8 @@ flower \- flow based traffic control filter
- .B vxlan_opts
- |
- .B erspan_opts
-+|
-+.B gtp_opts
- }
- .IR OPTIONS " | "
- .BR ip_flags
-@@ -411,6 +413,8 @@ Match the connection zone, and can be masked.
- .BI vxlan_opts " OPTIONS"
- .TQ
- .BI erspan_opts " OPTIONS"
-+.TQ
-+.BI gtp_opts " OPTIONS"
- Match on IP tunnel metadata. Key id
- .I NUMBER
- is a 32 bit tunnel key id (e.g. VNI for VXLAN tunnel).
-@@ -446,6 +450,12 @@ VERSION:INDEX:DIR:HWID/VERSION:INDEX_MASK:DIR_MASK:HWID_MASK, where VERSION is
- represented as a 8bit number, INDEX as an 32bit number, DIR and HWID as a 8bit
- number. Multiple options is not supported. Note INDEX/INDEX_MASK is used when
- VERSION is 1, and DIR/DIR_MASK and HWID/HWID_MASK are used when VERSION is 2.
-+gtp_opts
-+.I OPTIONS
-+doesn't support multiple options, and it consists of a key followed by a slash
-+and corresponding mask. If the mask is missing, \fBtc\fR assumes a full-length
-+match. The option can be described in the form PDU_TYPE:QFI/PDU_TYPE_MASK:QFI_MASK
-+where both PDU_TYPE and QFI are represented as a 8bit hexadecimal values.
- .TP
- .BI ip_flags " IP_FLAGS"
- .I IP_FLAGS
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index ad159719c05f..686cf12140a7 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -84,6 +84,7 @@ static void explain(void)
- 		"			geneve_opts MASKED-OPTIONS |\n"
- 		"			vxlan_opts MASKED-OPTIONS |\n"
- 		"                       erspan_opts MASKED-OPTIONS |\n"
-+		"			gtp_opts MASKED-OPTIONS |\n"
- 		"			ip_flags IP-FLAGS |\n"
- 		"			enc_dst_port [ port_number ] |\n"
- 		"			ct_state MASKED_CT_STATE |\n"
-@@ -1034,6 +1035,52 @@ static int flower_parse_erspan_opt(char *str, struct nlmsghdr *n)
- 	return 0;
- }
- 
-+static int flower_parse_gtp_opt(char *str, struct nlmsghdr *n)
-+{
-+	struct rtattr *nest;
-+	char *token;
-+	int arg, err;
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_GTP | NLA_F_NESTED);
-+
-+	token = strsep(&str, ":");
-+	for (arg = 1; arg <= TCA_FLOWER_KEY_ENC_OPT_GTP_MAX; arg++) {
-+		switch (arg) {
-+		case TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE:
-+		{
-+			__u8 pdu_type;
-+
-+			if (!strlen(token))
-+				break;
-+			err = get_u8(&pdu_type, token, 16);
-+			if (err)
-+				return err;
-+			addattr8(n, MAX_MSG, arg, pdu_type);
-+			break;
-+		}
-+		case TCA_FLOWER_KEY_ENC_OPT_GTP_QFI:
-+		{
-+			__u8 qfi;
-+
-+			if (!strlen(token))
-+				break;
-+			err = get_u8(&qfi, token, 16);
-+			if (err)
-+				return err;
-+			addattr8(n, MAX_MSG, arg, qfi);
-+			break;
-+		}
-+		default:
-+			fprintf(stderr, "Unknown \"gtp_opts\" type\n");
-+			return -1;
-+		}
-+		token = strsep(&str, ":");
-+	}
-+	addattr_nest_end(n, nest);
-+
-+	return 0;
-+}
-+
- static int flower_parse_geneve_opts(char *str, struct nlmsghdr *n)
- {
- 	char *token;
-@@ -1217,6 +1264,41 @@ static int flower_parse_enc_opts_erspan(char *str, struct nlmsghdr *n)
- 	return 0;
- }
- 
-+static int flower_parse_enc_opts_gtp(char *str, struct nlmsghdr *n)
-+{
-+	char key[XATTR_SIZE_MAX], mask[XATTR_SIZE_MAX];
-+	struct rtattr *nest;
-+	char *slash;
-+	int err;
-+
-+	slash = strchr(str, '/');
-+	if (slash) {
-+		*slash++ = '\0';
-+		if (strlen(slash) > XATTR_SIZE_MAX)
-+			return -1;
-+		strcpy(mask, slash);
-+	} else
-+		strcpy(mask, "ff:ff");
-+
-+	if (strlen(str) > XATTR_SIZE_MAX)
-+		return -1;
-+	strcpy(key, str);
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS | NLA_F_NESTED);
-+	err = flower_parse_gtp_opt(key, n);
-+	if (err)
-+		return err;
-+	addattr_nest_end(n, nest);
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_MASK | NLA_F_NESTED);
-+	err = flower_parse_gtp_opt(mask, n);
-+	if (err)
-+		return err;
-+	addattr_nest_end(n, nest);
-+
-+	return 0;
-+}
-+
- static int flower_parse_mpls_lse(int *argc_p, char ***argv_p,
- 				 struct nlmsghdr *nlh)
- {
-@@ -1869,6 +1951,13 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"erspan_opts\"\n");
- 				return -1;
- 			}
-+		} else if (!strcmp(*argv, "gtp_opts")) {
-+			NEXT_ARG();
-+			ret = flower_parse_enc_opts_gtp(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"gtp_opts\"\n");
-+				return -1;
-+			}
- 		} else if (matches(*argv, "action") == 0) {
- 			NEXT_ARG();
- 			ret = parse_action(&argc, &argv, TCA_FLOWER_ACT, n);
-@@ -2338,6 +2427,21 @@ static void flower_print_erspan_opts(const char *name, struct rtattr *attr,
- 	sprintf(strbuf, "%u:%u:%u:%u", ver, idx, dir, hwid);
- }
- 
-+static void flower_print_gtp_opts(const char *name, struct rtattr *attr,
-+				  char *strbuf, int len)
-+{
-+	struct rtattr *tb[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1];
-+	__u8 pdu_type, qfi;
-+
-+	parse_rtattr(tb, TCA_FLOWER_KEY_ENC_OPT_GTP_MAX, RTA_DATA(attr),
-+		     RTA_PAYLOAD(attr));
-+
-+	pdu_type = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]);
-+	qfi = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]);
-+
-+	snprintf(strbuf, len, "%02x:%02x", pdu_type, qfi);
-+}
-+
- static void __attribute__((format(printf, 2, 0)))
- flower_print_enc_parts(const char *name, const char *namefrm,
- 		       struct rtattr *attr, char *key, char *mask)
-@@ -2370,15 +2474,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
- 	struct rtattr *key_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
- 	struct rtattr *msk_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
- 	char *key, *msk;
-+	int len;
- 
- 	if (!attr)
- 		return;
- 
--	key = malloc(RTA_PAYLOAD(attr) * 2 + 1);
-+	len = RTA_PAYLOAD(attr) * 2 + 1;
-+
-+	key = malloc(len);
- 	if (!key)
- 		return;
- 
--	msk = malloc(RTA_PAYLOAD(attr) * 2 + 1);
-+	msk = malloc(len);
- 	if (!msk)
- 		goto err_key_free;
- 
-@@ -2415,6 +2522,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
- 
- 		flower_print_enc_parts(name, "  erspan_opts %s", attr, key,
- 				       msk);
-+	} else if (key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP]) {
-+		flower_print_gtp_opts("gtp_opt_key",
-+				      key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
-+				      key, len);
-+
-+		if (msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP])
-+			flower_print_gtp_opts("gtp_opt_mask",
-+					      msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
-+					      msk, len);
-+
-+		flower_print_enc_parts(name, "  gtp_opts %s", attr, key,
-+				       msk);
- 	}
- 
- 	free(msk);
--- 
-2.31.1
-
+/Mattias
