@@ -2,297 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2BB4DBFAC
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 07:51:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B61FC4DBFBA
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 07:52:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbiCQGwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 02:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
+        id S230016AbiCQGxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 02:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiCQGwE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 02:52:04 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD301DFD5D
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 23:50:46 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id t25so7407507lfg.7
-        for <netdev@vger.kernel.org>; Wed, 16 Mar 2022 23:50:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5BQ/V8CPJ+RYXBNXY3dT0PtjCSslwMLQ/gsT556KJdE=;
-        b=SJGpWAPq+CP/uDdIdMqT0zq5YY01cLpwOkCuiKB+0dWmiqEOIkAqM7qMBSVYVK2Gh5
-         aCU6e5mbvDTfo7tryt80xvRQazkHCKQgQiNJYfyF333Pp2r1971X0Y2przm9Ydb0Ome2
-         P6lAz4W/F0kPK3VBpfk1N65p6m/awjfQ7NECyvPgWkK0WMv0Bx1uVNklfM/QQupHfywu
-         9hX3GodMPcPbddWiBZ9GQllAOKoXEsfxzcVuCVbBxeFGrYq4hF9phczqVkqzg191ePDB
-         63fr0CXZdfeE4Gh+xqthW588Tyb7hKkR/M1ywWubw1N9/7QffLBio2rtdZQI3VRDZNFs
-         MKKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5BQ/V8CPJ+RYXBNXY3dT0PtjCSslwMLQ/gsT556KJdE=;
-        b=WWnbdffm7rr592Km44KB19e+W1Ua+8LSy2Lll+eN3AZfAb36vIl0n+7WEwQIILIUv5
-         64YbRcWzqS9k11F1fZOUvp5igYK2Bb/CN5QWT05QqWGslwFUobou37Hkv2PKelxi4rdd
-         HmWkdP3RMNjWUfGPwzuxjQjE5sEqNclPcqywV84V/AImqSYU5vqP9obuMTXDk+/pe51z
-         b9wwZK0BgpYGdY09cx7Tx2SJfFoE/nRcW0bvFggVwJd+78Fa6fbutD1bvRvbvgyTc1gx
-         LupsJNKvSOXmDqJq0ii8InuZ5zBHXP7/CjXUdFDixnXP1+6Vzfi+5DRMzyUGvvWF4r/7
-         8AGA==
-X-Gm-Message-State: AOAM530/bmMq0MdsX6Vx1p1306PtyKvSYrIBzsPgSsqKvwyUPGJfkbMT
-        3eHXcQLMqt5hLe9LxTn+0zgL7nY4m3afm9hI
-X-Google-Smtp-Source: ABdhPJw00BrdyeQose4+vpQXwzMPItoX/cmUP3HmwmQWx4lYHTvOoARyfzSoO3ruO1+ca66DU5VUpQ==
-X-Received: by 2002:a05:6512:1045:b0:448:a174:8a0 with SMTP id c5-20020a056512104500b00448a17408a0mr1991466lfb.255.1647499844749;
-        Wed, 16 Mar 2022 23:50:44 -0700 (PDT)
-Received: from wse-c0089.raspi.local (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id l25-20020ac25559000000b0044825a2539csm362215lfk.59.2022.03.16.23.50.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 23:50:43 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH 5/5] selftest: Add bridge flood flag tests
-Date:   Thu, 17 Mar 2022 07:50:31 +0100
-Message-Id: <20220317065031.3830481-6-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220317065031.3830481-1-mattias.forsblad@gmail.com>
-References: <20220317065031.3830481-1-mattias.forsblad@gmail.com>
+        with ESMTP id S229735AbiCQGxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 02:53:20 -0400
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2115.outbound.protection.outlook.com [40.107.215.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40399BE38;
+        Wed, 16 Mar 2022 23:52:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EpMSq0W9FxkqXdXQM5Tkq9KtDRdLIYJ5B7JkzQcz++W7oIdGxWFSQq+NBzOMuK6lGPMMPGI7XHVyKiLwoAn+vnVHN42b2I5tqH99p7aJbHBb/b6XJeoSpINzPDZjE5Ms9T+eZTzSiuun6CymsufhwUZ1+drEadeROslmOY9wm2421pZiFWrEd5s32pVjFeaf/czaK14ARIlA0oQZj9TOdjBaXZNohxY5KDLHz5roteBCFHFQbEbX8mfFKBzzYdEzdYDC7vX4QkPaXlQffafz/KtyOTHytAlRQfmOjvqrOU28LO8rxF6W3wxLmllIcSwmda2fAebn11B/5IxgAaDplQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VzHd/AlbQWIw66Ext+NH2rgaI1dhjO/c0r9FFu2DftE=;
+ b=Jq9pQx99yWU6rUoRUOXH8/bu85M6oSCup0YwDlNVONMdXzjx3ogb/fqYdqbecVFy9MOwnUZua+vAE8inDNhPoo6LJ6p4rHzmadncck9b+2hcGZhytHhRxjU1rvvMaK/JIyCf3Fk641cZY7PbEPdeZ2MRG+pWlo8FpJzqZ+BDhsa2Dee+7n0pheQCLAMKH2Ipgq9OkF+teNk7aITQaHL+dQ+h1wwX8QswSbJx7RdX35P0OvPH1wMrUoiYv40OGxmz/2gXKzkcAxKRnD0Kt9vX5dYip0jcRJMaK4Ok4n5eyGXcY8UfusJPDr9YdwvtV+37wmIOGtwNGz8UHLn0xk0PqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VzHd/AlbQWIw66Ext+NH2rgaI1dhjO/c0r9FFu2DftE=;
+ b=flwxBC5Lvx00NRlIaiKTeThIkAlWXKSZg+3VOvuHYK4wYA2JQ85Owoa3GTfqvrw0TTQao3dw833qa9XGpV1Rl7XTpabwOab8OjmBrnLVnK7ez8+URGduTOOdZebNnRuY8ftxXEPa8pV07GtFK7X3Na+P6z0jnz6URweKXPYPIW8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
+ by KL1PR0601MB4082.apcprd06.prod.outlook.com (2603:1096:820:2f::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Thu, 17 Mar
+ 2022 06:51:55 +0000
+Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59]) by HK2PR06MB3492.apcprd06.prod.outlook.com
+ ([fe80::d924:a610:681d:6d59%5]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
+ 06:51:55 +0000
+Message-ID: <1d21ee8a-837d-807d-14a4-4ee1af640089@vivo.com>
+Date:   Thu, 17 Mar 2022 14:51:51 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] selftests: net: fix warning when compiling selftest/net
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "zhengkui_guo@outlook.com" <zhengkui_guo@outlook.com>
+References: <20220316115040.10876-1-guozhengkui@vivo.com>
+ <20220316202251.382b687e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Guo Zhengkui <guozhengkui@vivo.com>
+In-Reply-To: <20220316202251.382b687e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: HK2PR03CA0053.apcprd03.prod.outlook.com
+ (2603:1096:202:17::23) To HK2PR06MB3492.apcprd06.prod.outlook.com
+ (2603:1096:202:2f::10)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: abe26f91-b6af-42af-90ab-08da07e29f4c
+X-MS-TrafficTypeDiagnostic: KL1PR0601MB4082:EE_
+X-Microsoft-Antispam-PRVS: <KL1PR0601MB4082F3469E0BD329C33DBBBFC7129@KL1PR0601MB4082.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8ohaWy2s8i6CWX6AKE1GvKCoiAmvICgKX2TeueJ5HYEQok6Hsa3JAfLuKptujhgOv2XRIIC0Dxwyn4sLBT+xfJrS+DpfNjf+Eg22JFXSwvARdRSiBE0eVMhiMVSQ1Fy82ocZcPHgc84NNu4UQmvzROETR4RV2WyZOBGp/9dRvfteij4W9cIgUH3OeN1KMeLlHv90FWRW/g0tGNJZBno9tgeYFEn+HS1989D3/c4Z/8qPBz2Zxi74ymvoIU9u2LwlybEIRjy1z7aqntlbn0XNgV/WNTuWfbo6nUG3avlvRkcqF7b1bSP6rO8qKFSHbWlNjBl4g5FlPvYkumlgH69aXKTb8dRWdv16/3JX1SegZTnH0wZqhxgGO0ENjcnc5s9U73yRia5rIkBez58zPhuKREWM49SFSYBEsLiwFXujBq1ieffQ8Y0NIRx06HFhfzi09ZMI+fr3r5PVuRfUKlvcPIVp/L/Yw5WAP9q4909ly2VtX6aAhhoI3tDL1GJKr6Q7UVnFJ+fCJ8TeCnRX765uFMp/DUtuhvDpFylvS5Wz9dkQtADEe1lldtsQFNt8wOdGYiLgNaDwT1IrQhrrYdIo9lj2LMPoQEsKmPwcwooytGXu/9ieJLBsFc4VLhLAeWAGYjDVVRXrDIPel67j0BxGzDocBb3f/Pkud7SCH2GWF4vKuSk4LcV/0zp6j+sED+JYa7vD0Xrg4vOC0pRKPsPJbbt7M/C1T698WI0FwoN//cD5HEfZOzNxzMgON4oZxNYZuo3L4KQOasRzil4YAyjkSQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(31686004)(52116002)(36756003)(6506007)(6916009)(186003)(54906003)(53546011)(38100700002)(38350700002)(508600001)(8676002)(4326008)(8936002)(83380400001)(6512007)(6666004)(6486002)(86362001)(2616005)(2906002)(31696002)(316002)(5660300002)(66946007)(66556008)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VGIrMExrSHRWK2xaZW1ZVFlBOFM4TzNBNEVVa1YrQzJ3V2tXaVBRaTNZRWpl?=
+ =?utf-8?B?K2dyVTc2eW1oYzdWdW1SdkMxZyttKy9BS0pqU2pvRVplVS8veEt5Mkx0Z3Vr?=
+ =?utf-8?B?RWxyUEJTYnFXRUJRdVdmRE9pVzRWZ1pock5HUW8rSU04OHpRTUpyVklGSXpY?=
+ =?utf-8?B?b01sNXp0cWlDMCttM3diQ3VIOVQ2VVJTa0xQdkRmUzlHbUtZbURncnVGSXBB?=
+ =?utf-8?B?dVYxS0lnNWlzSjBBZFVtejhTL05SUmNtc3ZyV1JROWd2eEhkYnZDVXhDeTI1?=
+ =?utf-8?B?djJJZjlBQ2wxdncwa0gyM1JOU3EvNTFYcmRMVTBsb282RlB4RUpST3FRcVhM?=
+ =?utf-8?B?VUxSMGMwU29WTzhVa2VNOFRCTEJwdmJ6QnZjTDJJTmk4UjlRRU1QZkxrcTBG?=
+ =?utf-8?B?bGZpdVVQWWMvRnZ4TjhCREd2UUR3bFdGK2tZSmRubHRrcTlMY0d5YUhsdk5Y?=
+ =?utf-8?B?ZmNoUmU5Y3krRDEyaXlEUXJQaXRoOFpObFBxL04xdHlaMGhUTlVvS3RjQTZE?=
+ =?utf-8?B?ejB4Q0lxQUd4Uk4xVzlrQy9FV2E5YThKQmlSV1dwdDE2cFJPSmxLR3h3b2ls?=
+ =?utf-8?B?ODl5K2FhNlZQbEFhSmVaTWtUNHY4WTZhVFA0RzBkZXBMZms3SFhrTXJaK05Q?=
+ =?utf-8?B?SmpzdDI3V2F3dmJVbFdGQUY4L29sc3ZkV2hBck95UVFMLzJ0bGFHNlFydnda?=
+ =?utf-8?B?Y1FMODlmL2FnZS9HV24xT1l2eXBORk9PZnJabnpJeks4encrL0VxZ0NNbVpN?=
+ =?utf-8?B?K3hzZjRJcnB2cDMyQVNVa0VJeTdKazkxZHUrYXVsRWpEUHBTblJrMWFhUDRk?=
+ =?utf-8?B?TEJMbExUeXRzZENwemorNTliKzVvRHg5cWFiajVZejhMWXliYWhERFhmOGpp?=
+ =?utf-8?B?Y1daT1BjZUk1NGRTR1RxL29MWVpNTzVHblBzeC9Ib2NYeTV1TTRySnJpb1Nm?=
+ =?utf-8?B?akFTMGhIeEVnUWpUS2FGWEpOV3Zpd0hOam5FY29NZ1R0cHVxOENWV2syVEpm?=
+ =?utf-8?B?NGk3R0tSYlVUL3F4QUF2MHB5NzA5L1RzWWJZOGYxUEJWcUMxaVZRTmI4T1I1?=
+ =?utf-8?B?b2J1TzZSdm9hWHpvTmx0N1MwRFhhZFNoRHo2cXNkcnNrZzNtMHFRb3Q0UURy?=
+ =?utf-8?B?d0ZpZG5aSFhYRkNsZXprZU1nUW1aMDNHblpJZEdrWEU5SUFmeWY5TUljRmRO?=
+ =?utf-8?B?b2tFU2FFZGZwMlY4UzJJMS96dDc2UWpuUkZJTHV5K29vNS9pS3FlTytaVEti?=
+ =?utf-8?B?eHptOElZeTk1SVcxZm9hTHJ6RFB5OGRpMndzQlpDUXFIZ1ZnSjdod1JvMW5y?=
+ =?utf-8?B?NUNEMGFWTkdGd044YzlISFBRR3hrVkU2NEkrbFMyWlpVUzgzTUVpMzZFdmU3?=
+ =?utf-8?B?a2lDM1VwcDc1QmRiRmZWbDQzdEkyZUVvS1NuL2NjQ2ppaXlQeStHNHRrMFBw?=
+ =?utf-8?B?Ulc0MFNuSE1PbjkrUFVqQW51Z2ZsR2FYMkIxNlE3Wk5MdmdxRTJtVXlmVGtV?=
+ =?utf-8?B?VkRQckxJTzZOa0FSSzhjcFJpZHd5THdyeVdVSStOcEtwTlprcDRjUGMwL3RM?=
+ =?utf-8?B?RU13SkRrZTFWbU0xNTJYQjdqbENwcVNuVncyUHRScEVvbDNSTGE1UVdJTG1R?=
+ =?utf-8?B?dWg5Wm00c0FnVUF3emcvVGZaTTAreEU3UHp0Y0I3S3FIeUE3VFJ2d0taZW8x?=
+ =?utf-8?B?cS9nQWZLU1Z4RmJFS2RLWVBOa0xQQ2FxYThjd1cySGZWY2h0NFU3REY3RXdO?=
+ =?utf-8?B?UnkrWlVQYUtEaFZkQ0NFS1JJQ1EyR1l5N1EzNnV1ZkdiczJPMnlUdE8zblh5?=
+ =?utf-8?B?bVRSOVppaU1neWxGeFpHeXl1NEFTSS83Z0FmSkNIR1hDZEdHTmtlM2ltSUps?=
+ =?utf-8?B?ckRRMkg5RjY1Y05zaW1LWXhPVVpLT1pOUnRLS1Q5RjRibmQxbUJkTkcyRG40?=
+ =?utf-8?Q?Z5knw/XHgmIK3VDQcceddstDo6EpwDhc?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: abe26f91-b6af-42af-90ab-08da07e29f4c
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 06:51:54.8100
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vp4lyXToj6zCfv0VDlgSoExcM84TXbh2gU4VshT5siL2Idizhp2p+EDwMkSrKxo2dATpVRKt2keTP3zLronFXA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0601MB4082
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add test to check that the bridge flood flags works correctly.
-When the bridge flag {flood,mcast_flood,bcast_flood} are cleared
-no packets of the corresponding type should be flooded to the
-bridge.
+On 2022/3/17 11:22, Jakub Kicinski wrote:
+> On Wed, 16 Mar 2022 19:50:40 +0800 Guo Zhengkui wrote:
+>> When I compile tools/testing/selftests/net/ by
+>> `make -C tools/testing/selftests/net` with gcc (Debian 8.3.0-6) 8.3.0,
+>> it reports the following warnings:
+>>
+>> txtimestamp.c: In function 'validate_timestamp':
+>> txtimestamp.c:164:29: warning: format '%lu' expects argument of type
+>> 'long unsigned int', but argument 3 has type 'int64_t'
+>> {aka 'long long int'} [-Wformat=]
+>>     fprintf(stderr, "ERROR: %lu us expected between %d and %d\n",
+>>                             ~~^
+>>                             %llu
+>>       cur64 - start64, min_delay, max_delay);
+>>       ~~~~~~~~~~~~~~~
+>> txtimestamp.c: In function '__print_ts_delta_formatted':
+>> txtimestamp.c:173:22: warning: format '%lu' expects argument of type
+>> 'long unsigned int', but argument 3 has type 'int64_t'
+>> {aka 'long long int'} [-Wformat=]
+>>     fprintf(stderr, "%lu ns", ts_delta);
+>>                      ~~^      ~~~~~~~~
+>>                      %llu
+>> txtimestamp.c:175:22: warning: format '%lu' expects argument of type
+>> 'long unsigned int', but argument 3 has type 'int64_t'
+>> {aka 'long long int'} [-Wformat=]
+>>     fprintf(stderr, "%lu us", ts_delta / NSEC_PER_USEC);
+>>                      ~~^
+>>                      %llu
+>>
+>> `int64_t` is the alias for `long long int`. '%lld' is more suitable.
+> 
+> That's on 32bit machines, I think what you need to use is PRId64.
+> Or just cast the result / change variable types to long long.
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- .../testing/selftests/net/forwarding/Makefile |   1 +
- .../selftests/net/forwarding/bridge_flood.sh  | 169 ++++++++++++++++++
- tools/testing/selftests/net/forwarding/lib.sh |   8 +
- 3 files changed, 178 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/bridge_flood.sh
+But it should be '%ld' instead of '%lu', right?
 
-diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
-index 8fa97ae9af9e..24ca6a333edd 100644
---- a/tools/testing/selftests/net/forwarding/Makefile
-+++ b/tools/testing/selftests/net/forwarding/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0+ OR MIT
- 
- TEST_PROGS = bridge_igmp.sh \
-+	bridge_flood.sh \
- 	bridge_locked_port.sh \
- 	bridge_port_isolation.sh \
- 	bridge_sticky_fdb.sh \
-diff --git a/tools/testing/selftests/net/forwarding/bridge_flood.sh b/tools/testing/selftests/net/forwarding/bridge_flood.sh
-new file mode 100755
-index 000000000000..ea3e7da139aa
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/bridge_flood.sh
-@@ -0,0 +1,169 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+ALL_TESTS="ping_test bridge_flood"
-+NUM_NETIFS=4
-+CHECK_TC="no"
-+source lib.sh
-+bridge=br3
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.2.1/24 2001:db8:1::1/64
-+}
-+
-+h1_destroy()
-+{
-+	simple_if_fini $h1 192.0.2.1/24 2001:db8:1::1/64
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 192.0.2.2/24 2001:db8:1::2/64
-+}
-+
-+h2_destroy()
-+{
-+	simple_if_fini $h2 192.0.2.2/24 2001:db8:1::2/64
-+}
-+
-+switch_create()
-+{
-+	ip link add dev $bridge type bridge
-+
-+	ip link set dev $swp1 master $bridge
-+	ip link set dev $swp2 master $bridge
-+	ip link set dev $swp1 type bridge_slave learning off
-+	ip link set dev $swp2 type bridge_slave learning off
-+
-+	ip link set dev $bridge type bridge flood 0 mcast_flood 0 bcast_flood 0
-+	check_err $? "Can't set bridge flooding off on $bridge"
-+
-+	ip link set dev $bridge up
-+	ip link set dev $bridge promisc on
-+	ip link set dev $swp1 up
-+	ip link set dev $swp2 up
-+}
-+
-+switch_destroy()
-+{
-+	ip link set dev $swp2 down
-+	ip link set dev $swp1 down
-+
-+	ip link del dev $bridge
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	swp1=${NETIFS[p2]}
-+
-+	swp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+
-+	switch_create
-+}
-+
-+ping_test()
-+{
-+	echo "Check connectivity /w ping"
-+	ping_do $h1 192.0.2.2
-+	check_err $? "ping fail"
-+	log_test "ping test"
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	switch_destroy
-+
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+bridge_flood_test_do()
-+{
-+	local should_flood=$1
-+	local mac=$2
-+	local ip=$3
-+	local host1_if=$4
-+	local err=0
-+	local vrf_name
-+
-+
-+	# Add an ACL on `host2_if` which will tell us whether the packet
-+	# was flooded to it or not.
-+	tc qdisc add dev $bridge ingress
-+	tc filter add dev $bridge ingress protocol ip pref 1 handle 101 \
-+		flower dst_mac $mac action drop
-+
-+	vrf_name=$(master_name_get $host1_if)
-+	ip vrf exec $vrf_name \
-+		$MZ $host1_if -c 1 -p 64 -b $mac -B $ip -t ip -q
-+	sleep 1
-+
-+	tc -j -s filter show dev $bridge ingress \
-+		| jq -e ".[] | select(.options.handle == 101) \
-+		| select(.options.actions[0].stats.packets == 1)" &> /dev/null
-+	if [[ $? -ne 0 && $should_flood == "true" || \
-+	      $? -eq 0 && $should_flood == "false" ]]; then
-+		err=1
-+	fi
-+
-+	tc filter del dev $bridge ingress protocol ip pref 1 handle 101 flower
-+	tc qdisc del dev $bridge ingress
-+
-+	return $err
-+}
-+
-+bridge_flood_test()
-+{
-+	local mac=$1
-+	local ip=$2
-+	local flag=$3
-+
-+	RET=0
-+
-+	ip link set dev $bridge type bridge $flag 0
-+
-+	bridge_flood_test_do false $mac $ip $h1 $bridge
-+	check_err $? "Packet flooded when should not"
-+	log_test "Bridge test flag $flag disabled"
-+
-+	ip link set dev $bridge type bridge $flag 1
-+
-+	bridge_flood_test_do true $mac $ip $h1 $bridge
-+	check_err $? "Packet was not flooded when should"
-+
-+	log_test "Bridge test flag $flag enabled"
-+}
-+
-+bridge_flood()
-+{
-+	RET=0
-+
-+	check_bridge_flood_support $bridge || return 0
-+
-+	bridge_flood_test de:ad:be:ef:13:37 192.0.2.100 flood
-+
-+	bridge_flood_test 01:00:5e:00:00:01 239.0.0.1 mcast_flood
-+
-+	bridge_flood_test ff:ff:ff:ff:ff:ff 192.0.2.100 bcast_flood
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 664b9ecaf228..12e69837374e 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -134,6 +134,14 @@ check_locked_port_support()
- 	fi
- }
- 
-+check_bridge_flood_support()
-+{
-+	if ! ip -d link show dev $1 | grep -q " flood"; then
-+		echo "SKIP: iproute2 too old; Bridge flood feature not supported."
-+		return $ksft_skip
-+	fi
-+}
-+
- if [[ "$(id -u)" -ne 0 ]]; then
- 	echo "SKIP: need root privileges"
- 	exit $ksft_skip
--- 
-2.25.1
+Zhengkui
 
