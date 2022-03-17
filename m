@@ -2,128 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F80C4DCEDB
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 20:30:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE104DCEE9
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 20:37:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237613AbiCQTb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 15:31:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50992 "EHLO
+        id S229771AbiCQTiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 15:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238030AbiCQTbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 15:31:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF406220FD5;
-        Thu, 17 Mar 2022 12:30:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647545408; x=1679081408;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IagItVMT2rUUwCmK8ANP5MZ4EDtOTPxf97HiwqLwsGw=;
-  b=OqQhSXFWKEjmMkydURFBQjIxO/DQu1AxV5BeFiKeCzvL0JPflgrPqYQZ
-   QMO+iFYSpYEzWqMvgBaBr9goL1nsiYN08AUTmqYStrTzKUsd0aeKBhtEy
-   NYG/kicWaDPlO5PCu9yagg8JNJznG/PTmP4Fau3FZY0XXcIEyr5NYEPXb
-   87mY5lXmjL7WWesANdUxMHVY0NuD4O0VcD6NyxBtopbq8y9nmkqX9jxss
-   JBwU2SO1vK7MUjaJrgJvG1PKonsN35LQQ7bWSXag3mqHvn5uAAr4ithrT
-   CVBqzPgVmGiffE01PR536NFde6E9Yg/qTwHbmbl8QY6ymizRooJJ52qj0
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
-   d="scan'208";a="156845369"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 12:30:08 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Mar 2022 12:30:06 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 17 Mar 2022 12:30:06 -0700
-Date:   Thu, 17 Mar 2022 20:30:05 +0100
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Michael Walle <michael@walle.cc>,
-        <patchwork-bot+netdevbpf@kernel.org>,
-        <Divya.Koppera@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <madhuri.sripada@microchip.com>, <manohar.puri@microchip.com>,
-        <netdev@vger.kernel.org>, <richardcochran@gmail.com>,
-        <robh+dt@kernel.org>
-Subject: Re: [PATCH net-next 0/3] Add support for 1588 in LAN8814
-Message-ID: <20220317193005.q7kna75jpmy5ysw5@den-dk-m31684h>
-References: <164639821168.27302.1826304809342359025.git-patchwork-notify@kernel.org>
- <20220317121650.934899-1-michael@walle.cc>
- <20220317140559.f52cuvw6gswyrfn6@den-dk-m31684h>
- <YjNH+jahuTwDyVso@lunn.ch>
+        with ESMTP id S230511AbiCQTio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 15:38:44 -0400
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0440022C8EB;
+        Thu, 17 Mar 2022 12:37:24 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6CE6F580118;
+        Thu, 17 Mar 2022 15:37:22 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Thu, 17 Mar 2022 15:37:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ecemDGKnnBa5cVr1w
+        YmFWwjSaNN3bHFjxej6wbuHiHw=; b=cyCH9Rgha4F/UAg7rrVWRHqyL2PVtF0K6
+        Pl760BlIXMdb5jYFTuCKuUDmGe/itXLz92Q56VeiYNp/K3qxKnv8mbWy49KS7z1P
+        QHMl/pi5YIqIog4ctJ8G/DxzDdBEIqZeDB3ROpV+ZwaJxtlStGAqB5NLCNOtzbg6
+        gyXNchQkGwRCimQ4dFpvl52Qm5HUmp8dzvHQn+Bj+yHSazoza9fnp//GfOQdPL/A
+        KDb/IkJ10yxnSS07nTOnVRrWVF78WphRV2EHdIIjwAXkADDE1tu1v4GD9y4LOXqs
+        rLUgy0+asZ3k8dQBh06BuoleaKu8UxUOKw2c4GlM+rNw0ZR3PMkHA==
+X-ME-Sender: <xms:8Y0zYkvNmzVtdD_Mg9D0BOPxhknU00Qhzau0VkrdBUSwNkmH6V0UeQ>
+    <xme:8Y0zYhfn4WBX-dXvMB5MvAv6CcJiJZr6Ix5jC0NqDEsSsjXMegBe-xryGP4jwwr88
+    00RqA6PAMMoH1k>
+X-ME-Received: <xmr:8Y0zYvxmYigNrElxe3yOmVKTK4oV0WjMtJgN0rcoHacC6v_PTIYpB5yjkL3bSTtmd7b9Sfsavy2lEtu3RkuerusNfQs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefgedguddvhecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:8Y0zYnOtn1fwVbCAtSOUpL00BiTCAY_gesSZKhaEA4G_Wm18QcItjA>
+    <xmx:8Y0zYk_wGaEv3WGlZKLo4RHm7UThwnkAXljtDFccioBukjbkgwe6og>
+    <xmx:8Y0zYvXnrHEEBQVQWwU5_0km4Hwqs14YlLg-y0CInq_STi7Pf-qOGg>
+    <xmx:8o0zYoITybH0xFaXWb2p_x0DwmHlYkg6WnT86RJuJMRaRsJG4P56Lw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 17 Mar 2022 15:37:20 -0400 (EDT)
+Date:   Thu, 17 Mar 2022 21:37:15 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Jianbo Liu <jianbol@nvidia.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
+        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        simon.horman@corigine.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        baowen.zheng@corigine.com, louis.peens@netronome.com,
+        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
+Subject: Re: [PATCH net-next v3 1/2] net: flow_offload: add tc police action
+ parameters
+Message-ID: <YjON61Hum0+B4m6y@shredder>
+References: <20220224102908.5255-1-jianbol@nvidia.com>
+ <20220224102908.5255-2-jianbol@nvidia.com>
+ <20220315191358.taujzi2kwxlp6iuf@skbuf>
+ <YjM2IhX4k5XHnya0@shredder>
+ <20220317185249.5mff5u2x624pjewv@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YjNH+jahuTwDyVso@lunn.ch>
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220317185249.5mff5u2x624pjewv@skbuf>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 03:38:50PM +0100, Andrew Lunn wrote:
-> On Thu, Mar 17, 2022 at 03:05:59PM +0100, Allan W. Nielsen wrote:
-> > Hi,
-> >
-> > On Thu, Mar 17, 2022 at 01:16:50PM +0100, Michael Walle wrote:
-> > > From: patchwork-bot+netdevbpf@kernel.org
-> > > > Here is the summary with links:
-> > > >   - [net-next,1/3] net: phy: micrel: Fix concurrent register access
-> > > >     https://git.kernel.org/netdev/net-next/c/4488f6b61480
-> > > >   - [net-next,2/3] dt-bindings: net: micrel: Configure latency values and timestamping check for LAN8814 phy
-> > > >     https://git.kernel.org/netdev/net-next/c/2358dd3fd325
-> > > >   - [net-next,3/3] net: phy: micrel: 1588 support for LAN8814 phy
-> > > >     https://git.kernel.org/netdev/net-next/c/ece19502834d
-> > >
-> > > I'm almost afraid to ask.. but will this series be reverted (or
-> > > the device tree bindings patch)? There were quite a few remarks, even
-> > > about the naming of the properties. So, will it be part of the next
-> > > kernel release or will it be reverted?
-> > Thanks for bringing this up - was about to ask myself.
-> >
-> > Not sure what is the normal procedure here.
-> 
-> I assume this is in net-next. So we have two weeks of the merge window
-> followed by around 7 weeks of the -rc in order to clean this up. It is
-> only when the code is released in a final kernel does it become an
-> ABI.
-> 
-> > If not reverted, we can do a patch to remove the dt-bindings (and also
-> > the code in the driver using them). Also, a few other minor comments was
-> > given and we can fix those.
-> 
-> Patches would be good. Ideally the patches would be posted in the next
-> couple of weeks, even if we do have a lot longer.
-> 
-> > The elefant in the room is the 'lan8814_latencies' structure containing
-> > the default latency values in the driver, which Richard is unhappy with.
-> 
-> The important thing is getting the ABI fixed. So the DT properties
-> need to be removed, etc.
-We will do that.
+On Thu, Mar 17, 2022 at 08:52:49PM +0200, Vladimir Oltean wrote:
+> I'd just like the 'reclassify' action to be propagated in some reasonable
+> way to flow offload, considering that at the moment the error is quite cryptic.
 
-> To some extend the corrections are ABI. If the corrections change the
-> user space configuration also needs to change when trying to get the
-> best out of the hardware. So depending on how long the elefant is
-> around, it might make sense to actually do a revert, or at minimum
-> disabling PTP, so time can be spent implementing new APIs or whatever
-> is decided.
-ACK.
-
-> So i would suggest a two pronged attach:
-> 
-> Fixup patchs
-> Try to bring the discussion to a close and implement whatever is decided.
-Make sense - we will do the fix-ups and try restart the dicussion.
-
--- 
-/Allan
+OK, will check next week. Might be best to simply propagate extack to
+offload_act_setup() and return a meaningful message in
+tcf_police_offload_act_setup(). There are a bunch of other actions whose
+callback simply returns '-EOPNOTSUPP' that can benefit from it.
