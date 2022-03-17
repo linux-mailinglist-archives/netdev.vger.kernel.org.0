@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1E554DCDE4
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:49:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 584EE4DCDE7
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:49:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237594AbiCQSum (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52212 "EHLO
+        id S237584AbiCQSut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237584AbiCQSul (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:50:41 -0400
+        with ESMTP id S237598AbiCQSun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:50:43 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A366514964C;
-        Thu, 17 Mar 2022 11:49:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8A414A913;
+        Thu, 17 Mar 2022 11:49:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647542964; x=1679078964;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ZmwolZ5iOd/9V4MN6DapEmj7rhiSSyG/Olfb51uk8Nk=;
-  b=P2FE7yt0lsG78FVzk+y0JJV83P6YNuMRk2OeIijCX/br6YUpfFvq5Sb4
-   wHqUSAsrr//Mkwqvw/t0uZdkSOQrSx4qheBsu+Qb2Owsx0d5IIJZSb0zy
-   GjR6by5YXKG4Ud6NdOqjx5M7W4sx4rNKEx/W0rStLFoATWMRKOBnWJvBP
-   ivl25OYn3BbkNNSdTtevvb1v85oE4ESi24RVU3BfYXqTx0HkVoENg3eUt
-   CvcptiUffaObytPWJ2AC41Cb+PPCHR/ph59mnFIt4zko61z6MCjASvMvS
-   MVcNYq2lillaQ0t3VARlsNiXTZ6Rr9C29YkQC8PapPwL6dGu86CCmmA8u
-   g==;
+  t=1647542966; x=1679078966;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=PZK7t6renrW3eZPCm7Lk7qffTcGlqKELQtWdjAVV5iw=;
+  b=q0Ox4f5zH/04Ef7JuMZNQtPh1iIneWaLI+2Hz00W7v03kdCJeERoaaqO
+   OYqt+MfuRAl8mGn03nfcq08+1rQ9EnZqPmTTU+WqublWB9NYDuWQ07Nuk
+   IKUgIezssVOqfBgschQ1v2gAgvuiizyCU9ieEQX0uRA4Rijzkgoh9rbSK
+   ldCVdLv+zB1aNyg5EmmKLubZipOXPtdsStrzOxZ4g/da5g2PU0lvKJXKg
+   nvL4Eh9EGPXOSy/2v+KMtC/qZ0XMtYeTF7x1gXp36apDQYcZeGUrPzue5
+   BqkXM2iX91zi4SOmMSmC2xD0GeipA0rWtJzTIJEPuBcMr/BWJKm9Y/Xs/
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
-   d="scan'208";a="89304216"
+   d="scan'208";a="152385615"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 11:49:23 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 11:49:25 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 17 Mar 2022 11:49:23 -0700
+ 15.1.2375.17; Thu, 17 Mar 2022 11:49:25 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 17 Mar 2022 11:49:21 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 17 Mar 2022 11:49:23 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <robh+dt@kernel.org>,
         <UNGLinuxDriver@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next 0/5] net: lan966x: Add support for FDMA
-Date:   Thu, 17 Mar 2022 19:51:54 +0100
-Message-ID: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next 1/5] dt-bindings: net: lan966x: Extend with FDMA interrupt
+Date:   Thu, 17 Mar 2022 19:51:55 +0100
+Message-ID: <20220317185159.1661469-2-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
+References: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -61,29 +63,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently when injecting or extracting a frame from CPU, the frame
-is given to the HW each word at a time. There is another way to
-inject/extract frames from CPU using FDMA(Frame Direct Memory Access).
-In this way the entire frame is given to the HW. This improves both
-RX and TX bitrate.
+Extend dt-bindings for lan966x with FDMA interrupt. This is generated
+when receiving a frame or when a frame was transmitted. The interrupt
+needs to be enable for each frame.
 
-Horatiu Vultur (5):
-  dt-bindings: net: lan966x: Extend with FDMA interrupt
-  net: lan966x: Add registers that are used for FDMA.
-  net: lan966x: Expose functions that are needed by FDMA
-  net: lan966x: Add FDMA functionality
-  net: lan96x: Update FDMA to change MTU.
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+ .../devicetree/bindings/net/microchip,lan966x-switch.yaml       | 2 ++
+ 1 file changed, 2 insertions(+)
 
- .../net/microchip,lan966x-switch.yaml         |   2 +
- .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
- .../ethernet/microchip/lan966x/lan966x_fdma.c | 772 ++++++++++++++++++
- .../ethernet/microchip/lan966x/lan966x_main.c |  44 +-
- .../ethernet/microchip/lan966x/lan966x_main.h | 120 +++
- .../ethernet/microchip/lan966x/lan966x_port.c |   3 +
- .../ethernet/microchip/lan966x/lan966x_regs.h | 106 +++
- 7 files changed, 1037 insertions(+), 12 deletions(-)
- create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-
+diff --git a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
+index 13812768b923..14e0bae5965f 100644
+--- a/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
++++ b/Documentation/devicetree/bindings/net/microchip,lan966x-switch.yaml
+@@ -39,6 +39,7 @@ properties:
+       - description: frame dma based extraction
+       - description: analyzer interrupt
+       - description: ptp interrupt
++      - description: fdma interrupt
+ 
+   interrupt-names:
+     minItems: 1
+@@ -47,6 +48,7 @@ properties:
+       - const: fdma
+       - const: ana
+       - const: ptp
++      - const: fdma
+ 
+   resets:
+     items:
 -- 
 2.33.0
 
