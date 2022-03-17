@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8340B4DCE35
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E07234DCE33
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237746AbiCQS4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:56:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
+        id S237742AbiCQS4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237553AbiCQSzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DAA1637DD
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:38 -0700 (PDT)
+        with ESMTP id S237737AbiCQSzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E773B165AA8
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21B82B81F9D
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75185C340EE;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C253617B6
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F095DC340F2;
         Thu, 17 Mar 2022 18:54:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647543275;
-        bh=8SOp2VTWmwoba19bl5NOw95YcRTwQ6O4ahodxgZQMj8=;
+        s=k20201202; t=1647543276;
+        bh=i6ufKBbj6RUDiMTeu3D5eHbhE6zqs8JdvkPgV4bcoRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AKpMFzu0eCBoXzpcrkVPY/DxwbZrOYhWGtbSN3NLbM7inDJL5FyPZY8C4sgRCAII6
-         4wDTYhLcq2g9hdgvopF7pfBY4CBmJ5pfrtYJjfvCcgcNo1nD0OCe/Tu8irNeCyu213
-         zZmJMeiLx15e6I3J83oDcMbP668aNWaIhmVzQo0yTCZJmangBMhtwRxqHpttgImrvn
-         hziRMBZvtvN9JzfDphc92tA7eJ1tYJsSyyy94LZ9cq20OZY6UeaCLR8KpyihBjct1G
-         OsmPftB7M5hu6MMQWeiHvswi1Ei1Hc6ylPiZ+/K2C9+lVYvWG1e3SIDyI54WLTs/h3
-         vh2OopZvuE3kQ==
+        b=R3fmWferd3O6/ud5LxJg4h6ufsOxB+MxaMUSHb7l7J52GuHhZ0RTDodu/7pRoCSMK
+         iQP+LdQqO0wp2g8p3yfKR0clNMfmQPz/M9k4xLRNy+6pjfshYBjy4wiVm5GeO5xFEJ
+         iB9vbozvCqr0Bn4XYhKNTCAVxbLwRyWPUhBJUAnflaD/aGz1kC7SBXQwDwLTv56E9Z
+         s2RZcI41OzprAnc2IYLpSzlMAzeplhjq4hL1d5fZd/VX91vqLnDuxTU41/UPSfF763
+         CEonvPeLmFMt9CLAv+m8hgIruhNkbVIgRT/MfViOCqFJzX8kHqBeOQ2WzwJQ+Wq8RU
+         OV4tmvVknEfNw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 14/15] net/mlx5: Remove unused exported contiguous coherent buffer allocation API
-Date:   Thu, 17 Mar 2022 11:54:23 -0700
-Message-Id: <20220317185424.287982-15-saeed@kernel.org>
+Subject: [net-next 15/15] net/mlx5: Remove unused fill page array API function
+Date:   Thu, 17 Mar 2022 11:54:24 -0700
+Message-Id: <20220317185424.287982-16-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317185424.287982-1-saeed@kernel.org>
 References: <20220317185424.287982-1-saeed@kernel.org>
@@ -57,90 +57,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tariq Toukan <tariqt@nvidia.com>
 
-All WQ types moved to using the fragmented allocation API
-for coherent memory. Contiguous API is not used anymore.
+mlx5_fill_page_array API function is not used.
 Remove it, reduce the number of exported functions.
 
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/alloc.c   | 47 -------------------
- include/linux/mlx5/driver.h                   |  3 --
- 2 files changed, 50 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/alloc.c | 13 -------------
+ include/linux/mlx5/driver.h                     |  1 -
+ 2 files changed, 14 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
-index d5408f6ce5a7..1762c5c36042 100644
+index 1762c5c36042..e52b0bac09da 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
-@@ -71,53 +71,6 @@ static void *mlx5_dma_zalloc_coherent_node(struct mlx5_core_dev *dev,
- 	return cpu_handle;
+@@ -239,19 +239,6 @@ void mlx5_db_free(struct mlx5_core_dev *dev, struct mlx5_db *db)
  }
+ EXPORT_SYMBOL_GPL(mlx5_db_free);
  
--static int mlx5_buf_alloc_node(struct mlx5_core_dev *dev, int size,
--			       struct mlx5_frag_buf *buf, int node)
+-void mlx5_fill_page_array(struct mlx5_frag_buf *buf, __be64 *pas)
 -{
--	dma_addr_t t;
+-	u64 addr;
+-	int i;
 -
--	buf->size = size;
--	buf->npages       = 1;
--	buf->page_shift   = (u8)get_order(size) + PAGE_SHIFT;
+-	for (i = 0; i < buf->npages; i++) {
+-		addr = buf->frags->map + (i << buf->page_shift);
 -
--	buf->frags = kzalloc(sizeof(*buf->frags), GFP_KERNEL);
--	if (!buf->frags)
--		return -ENOMEM;
--
--	buf->frags->buf   = mlx5_dma_zalloc_coherent_node(dev, size,
--							  &t, node);
--	if (!buf->frags->buf)
--		goto err_out;
--
--	buf->frags->map = t;
--
--	while (t & ((1 << buf->page_shift) - 1)) {
--		--buf->page_shift;
--		buf->npages *= 2;
+-		pas[i] = cpu_to_be64(addr);
 -	}
--
--	return 0;
--err_out:
--	kfree(buf->frags);
--	return -ENOMEM;
 -}
+-EXPORT_SYMBOL_GPL(mlx5_fill_page_array);
 -
--int mlx5_buf_alloc(struct mlx5_core_dev *dev,
--		   int size, struct mlx5_frag_buf *buf)
--{
--	return mlx5_buf_alloc_node(dev, size, buf, dev->priv.numa_node);
--}
--EXPORT_SYMBOL(mlx5_buf_alloc);
--
--void mlx5_buf_free(struct mlx5_core_dev *dev, struct mlx5_frag_buf *buf)
--{
--	dma_free_coherent(mlx5_core_dma_dev(dev), buf->size, buf->frags->buf,
--			  buf->frags->map);
--
--	kfree(buf->frags);
--}
--EXPORT_SYMBOL_GPL(mlx5_buf_free);
--
- int mlx5_frag_buf_alloc_node(struct mlx5_core_dev *dev, int size,
- 			     struct mlx5_frag_buf *buf, int node)
+ void mlx5_fill_page_frag_array_perm(struct mlx5_frag_buf *buf, __be64 *pas, u8 perm)
  {
+ 	int i;
 diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 00a914b0716e..a386aec1eb65 100644
+index a386aec1eb65..96cd740d94a3 100644
 --- a/include/linux/mlx5/driver.h
 +++ b/include/linux/mlx5/driver.h
-@@ -1009,9 +1009,6 @@ void mlx5_start_health_poll(struct mlx5_core_dev *dev);
- void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health);
- void mlx5_drain_health_wq(struct mlx5_core_dev *dev);
- void mlx5_trigger_health_work(struct mlx5_core_dev *dev);
--int mlx5_buf_alloc(struct mlx5_core_dev *dev,
--		   int size, struct mlx5_frag_buf *buf);
--void mlx5_buf_free(struct mlx5_core_dev *dev, struct mlx5_frag_buf *buf);
- int mlx5_frag_buf_alloc_node(struct mlx5_core_dev *dev, int size,
- 			     struct mlx5_frag_buf *buf, int node);
- void mlx5_frag_buf_free(struct mlx5_core_dev *dev, struct mlx5_frag_buf *buf);
+@@ -1036,7 +1036,6 @@ int mlx5_reclaim_startup_pages(struct mlx5_core_dev *dev);
+ void mlx5_register_debugfs(void);
+ void mlx5_unregister_debugfs(void);
+ 
+-void mlx5_fill_page_array(struct mlx5_frag_buf *buf, __be64 *pas);
+ void mlx5_fill_page_frag_array_perm(struct mlx5_frag_buf *buf, __be64 *pas, u8 perm);
+ void mlx5_fill_page_frag_array(struct mlx5_frag_buf *frag_buf, __be64 *pas);
+ int mlx5_vector2eqn(struct mlx5_core_dev *dev, int vector, int *eqn);
 -- 
 2.35.1
 
