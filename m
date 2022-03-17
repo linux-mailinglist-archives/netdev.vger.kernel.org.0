@@ -2,344 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE7BE4DCB7A
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:32:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FF624DCB67
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:28:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236586AbiCQQdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 12:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
+        id S234290AbiCQQ3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 12:29:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236583AbiCQQdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:33:13 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8197321590E
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647534716; x=1679070716;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2fo2ZK3Yeu0gglCvRx2G2ahUzEvUiWXp7qo4wedaBmw=;
-  b=kZHcLREmij65Ynwd5uBqTvq5ywYQL9irn2ad0EB/qkJsQX2VTe5yaNEt
-   Llz0PpCXK3RdMR+p+YzvNvR8V2lbZkj6imd0Xh/o2cWBKpeAwL8HiYvcx
-   EdQa5SGknbwDIWCfj4iVM8822GI7PPL9/M5wB9R5csvQIqbSe2NubX4Ne
-   xPYVLOIbM7rovp7tLsgrR1QzhjlipZJvG+eGb6zGbU0Oy3b8cVNuxJTv5
-   LgZt98SNs/bOp09MDgAhnqQK/LZqrW7TLz2En0eBgXeiHSmVPnrJKDOWC
-   C7jpRRMfvRIYKmdMRWbrb4pn4XpjHdg0+UF+YwrjvTv8LNHOlFK6dpozx
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="239070831"
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="239070831"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 09:31:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="635417226"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 17 Mar 2022 09:31:52 -0700
-Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22HGVoCo012391;
-        Thu, 17 Mar 2022 16:31:51 GMT
-From:   Wojciech Drewek <wojciech.drewek@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, jiri@mellanox.com
-Subject: [PATCH iproute2-next v7 2/2] f_flower: Implement gtp options support
-Date:   Thu, 17 Mar 2022 17:27:55 +0100
-Message-Id: <20220317162755.4359-3-wojciech.drewek@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220317162755.4359-1-wojciech.drewek@intel.com>
-References: <20220317162755.4359-1-wojciech.drewek@intel.com>
+        with ESMTP id S230006AbiCQQ3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:29:30 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77385F61F5;
+        Thu, 17 Mar 2022 09:28:12 -0700 (PDT)
+Received: from [192.168.0.3] (ip5f5aef3c.dynamic.kabel-deutschland.de [95.90.239.60])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7E29261EA1923;
+        Thu, 17 Mar 2022 17:28:09 +0100 (CET)
+Message-ID: <d0955a71-4b29-d915-f2ff-c90e8776eb41@molgen.mpg.de>
+Date:   Thu, 17 Mar 2022 17:28:09 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [EXT] Re: [PATCH net] bnx2x: fix built-in kernel driver load
+ failure
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Manish Chopra <manishc@marvell.com>, netdev@vger.kernel.org,
+        Ariel Elior <aelior@marvell.com>, regressions@lists.linux.dev,
+        stable@vger.kernel.org, it+netdev@molgen.mpg.de
+References: <20220316214613.6884-1-manishc@marvell.com>
+ <35d305f5-aa84-2c47-7efd-66fffb91c398@molgen.mpg.de>
+ <BY3PR18MB46129020BC8C93377CA16FB8AB129@BY3PR18MB4612.namprd18.prod.outlook.com>
+ <1986e70f-9e3b-cc64-4c15-dbc2abd1dc8d@molgen.mpg.de>
+ <20220317083314.54f360b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220317083314.54f360b3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for parsing TCA_FLOWER_KEY_ENC_OPTS_GTP.
-Options are as follows: PDU_TYPE:QFI where each
-option is represented as 8-bit hexadecimal value.
+Dear Jakub,
 
-e.g.
-  # ip link add gtp_dev type gtp role sgsn
-  # tc qdisc add dev gtp_dev ingress
-  # tc filter add dev gtp_dev protocol ip parent ffff: \
-      flower \
-        enc_key_id 11 \
-        gtp_opts 1:8/ff:ff \
-      action mirred egress redirect dev eth0
 
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
----
-v2: use SPDX tag, use strcmp() instead of matches(), parse
-    IFLA_GTP_RESTART_COUNT arg
-v3: IFLA_GTP_CREATE_SOCKETS attribute introduced, fix options
-    alpha order
-v5: add gtp_opts to explain function
-v6: use strcmp instead of matches
----
- include/uapi/linux/pkt_cls.h |  16 +++++
- man/man8/tc-flower.8         |  10 +++
- tc/f_flower.c                | 123 ++++++++++++++++++++++++++++++++++-
- 3 files changed, 147 insertions(+), 2 deletions(-)
+Am 17.03.22 um 16:33 schrieb Jakub Kicinski:
+> On Thu, 17 Mar 2022 14:31:45 +0100 Paul Menzel wrote:
+>>>> I think it’s important to document, that the firmware was not present in the
+>>>> initrd.
+>>>
+>>> I believe this problem has nothing to do with initrd module/FW but
+>>> rather a module built in the kernel/vmlinuz (CONFIG_BNX2X=y) itself,
+>>> A module load from initrd works fine and can access the initrd FW
+>>> files present in initrd file system even during the probe. For
+>>> example, when I had CONFIG_BNX2X=m, it loads the module fine from
+>>> initrd with FW files present in initrd file system. When I had
+>>> CONFIG_BNX2X=y, which I believe doesn't install/load module in/from
+>>> initrd but in kernel (vmlinuz) itself, that's where it can't access
+>>> the firmware file and cause the load failure.
+>>
+>> I can only say, that adding the firmware to the initrd worked around the
+>> problem on our side with `CONFIG_BNX2X=y`.
+> 
+> I'd like to ship this one to Linus today. It sounds like it's
+> okay from functional perspective, can I improve the commit message as
+> you were suggesting and leave the comment / print improvements to a
+> later patch?
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index ee38b35c3f57..30ff8da0631b 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -616,6 +616,10 @@ enum {
- 					 * TCA_FLOWER_KEY_ENC_OPT_ERSPAN_
- 					 * attributes
- 					 */
-+	TCA_FLOWER_KEY_ENC_OPTS_GTP,	/* Nested
-+					 * TCA_FLOWER_KEY_ENC_OPT_GTP_
-+					 * attributes
-+					 */
- 	__TCA_FLOWER_KEY_ENC_OPTS_MAX,
- };
- 
-@@ -654,6 +658,18 @@ enum {
- #define TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX \
- 		(__TCA_FLOWER_KEY_ENC_OPT_ERSPAN_MAX - 1)
- 
-+enum {
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_UNSPEC,
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE,		/* u8 */
-+	TCA_FLOWER_KEY_ENC_OPT_GTP_QFI,			/* u8 */
-+
-+	__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX,
-+};
-+
-+#define TCA_FLOWER_KEY_ENC_OPT_GTP_MAX \
-+		(__TCA_FLOWER_KEY_ENC_OPT_GTP_MAX - 1)
-+
-+
- enum {
- 	TCA_FLOWER_KEY_MPLS_OPTS_UNSPEC,
- 	TCA_FLOWER_KEY_MPLS_OPTS_LSE,
-diff --git a/man/man8/tc-flower.8 b/man/man8/tc-flower.8
-index 4541d9372684..f918a06d2927 100644
---- a/man/man8/tc-flower.8
-+++ b/man/man8/tc-flower.8
-@@ -89,6 +89,8 @@ flower \- flow based traffic control filter
- .B vxlan_opts
- |
- .B erspan_opts
-+|
-+.B gtp_opts
- }
- .IR OPTIONS " | "
- .BR ip_flags
-@@ -411,6 +413,8 @@ Match the connection zone, and can be masked.
- .BI vxlan_opts " OPTIONS"
- .TQ
- .BI erspan_opts " OPTIONS"
-+.TQ
-+.BI gtp_opts " OPTIONS"
- Match on IP tunnel metadata. Key id
- .I NUMBER
- is a 32 bit tunnel key id (e.g. VNI for VXLAN tunnel).
-@@ -446,6 +450,12 @@ VERSION:INDEX:DIR:HWID/VERSION:INDEX_MASK:DIR_MASK:HWID_MASK, where VERSION is
- represented as a 8bit number, INDEX as an 32bit number, DIR and HWID as a 8bit
- number. Multiple options is not supported. Note INDEX/INDEX_MASK is used when
- VERSION is 1, and DIR/DIR_MASK and HWID/HWID_MASK are used when VERSION is 2.
-+gtp_opts
-+.I OPTIONS
-+doesn't support multiple options, and it consists of a key followed by a slash
-+and corresponding mask. If the mask is missing, \fBtc\fR assumes a full-length
-+match. The option can be described in the form PDU_TYPE:QFI/PDU_TYPE_MASK:QFI_MASK
-+where both PDU_TYPE and QFI are represented as a 8bit hexadecimal values.
- .TP
- .BI ip_flags " IP_FLAGS"
- .I IP_FLAGS
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index ad159719c05f..686cf12140a7 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -84,6 +84,7 @@ static void explain(void)
- 		"			geneve_opts MASKED-OPTIONS |\n"
- 		"			vxlan_opts MASKED-OPTIONS |\n"
- 		"                       erspan_opts MASKED-OPTIONS |\n"
-+		"			gtp_opts MASKED-OPTIONS |\n"
- 		"			ip_flags IP-FLAGS |\n"
- 		"			enc_dst_port [ port_number ] |\n"
- 		"			ct_state MASKED_CT_STATE |\n"
-@@ -1034,6 +1035,52 @@ static int flower_parse_erspan_opt(char *str, struct nlmsghdr *n)
- 	return 0;
- }
- 
-+static int flower_parse_gtp_opt(char *str, struct nlmsghdr *n)
-+{
-+	struct rtattr *nest;
-+	char *token;
-+	int arg, err;
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_GTP | NLA_F_NESTED);
-+
-+	token = strsep(&str, ":");
-+	for (arg = 1; arg <= TCA_FLOWER_KEY_ENC_OPT_GTP_MAX; arg++) {
-+		switch (arg) {
-+		case TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE:
-+		{
-+			__u8 pdu_type;
-+
-+			if (!strlen(token))
-+				break;
-+			err = get_u8(&pdu_type, token, 16);
-+			if (err)
-+				return err;
-+			addattr8(n, MAX_MSG, arg, pdu_type);
-+			break;
-+		}
-+		case TCA_FLOWER_KEY_ENC_OPT_GTP_QFI:
-+		{
-+			__u8 qfi;
-+
-+			if (!strlen(token))
-+				break;
-+			err = get_u8(&qfi, token, 16);
-+			if (err)
-+				return err;
-+			addattr8(n, MAX_MSG, arg, qfi);
-+			break;
-+		}
-+		default:
-+			fprintf(stderr, "Unknown \"gtp_opts\" type\n");
-+			return -1;
-+		}
-+		token = strsep(&str, ":");
-+	}
-+	addattr_nest_end(n, nest);
-+
-+	return 0;
-+}
-+
- static int flower_parse_geneve_opts(char *str, struct nlmsghdr *n)
- {
- 	char *token;
-@@ -1217,6 +1264,41 @@ static int flower_parse_enc_opts_erspan(char *str, struct nlmsghdr *n)
- 	return 0;
- }
- 
-+static int flower_parse_enc_opts_gtp(char *str, struct nlmsghdr *n)
-+{
-+	char key[XATTR_SIZE_MAX], mask[XATTR_SIZE_MAX];
-+	struct rtattr *nest;
-+	char *slash;
-+	int err;
-+
-+	slash = strchr(str, '/');
-+	if (slash) {
-+		*slash++ = '\0';
-+		if (strlen(slash) > XATTR_SIZE_MAX)
-+			return -1;
-+		strcpy(mask, slash);
-+	} else
-+		strcpy(mask, "ff:ff");
-+
-+	if (strlen(str) > XATTR_SIZE_MAX)
-+		return -1;
-+	strcpy(key, str);
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS | NLA_F_NESTED);
-+	err = flower_parse_gtp_opt(key, n);
-+	if (err)
-+		return err;
-+	addattr_nest_end(n, nest);
-+
-+	nest = addattr_nest(n, MAX_MSG, TCA_FLOWER_KEY_ENC_OPTS_MASK | NLA_F_NESTED);
-+	err = flower_parse_gtp_opt(mask, n);
-+	if (err)
-+		return err;
-+	addattr_nest_end(n, nest);
-+
-+	return 0;
-+}
-+
- static int flower_parse_mpls_lse(int *argc_p, char ***argv_p,
- 				 struct nlmsghdr *nlh)
- {
-@@ -1869,6 +1951,13 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
- 				fprintf(stderr, "Illegal \"erspan_opts\"\n");
- 				return -1;
- 			}
-+		} else if (!strcmp(*argv, "gtp_opts")) {
-+			NEXT_ARG();
-+			ret = flower_parse_enc_opts_gtp(*argv, n);
-+			if (ret < 0) {
-+				fprintf(stderr, "Illegal \"gtp_opts\"\n");
-+				return -1;
-+			}
- 		} else if (matches(*argv, "action") == 0) {
- 			NEXT_ARG();
- 			ret = parse_action(&argc, &argv, TCA_FLOWER_ACT, n);
-@@ -2338,6 +2427,21 @@ static void flower_print_erspan_opts(const char *name, struct rtattr *attr,
- 	sprintf(strbuf, "%u:%u:%u:%u", ver, idx, dir, hwid);
- }
- 
-+static void flower_print_gtp_opts(const char *name, struct rtattr *attr,
-+				  char *strbuf, int len)
-+{
-+	struct rtattr *tb[TCA_FLOWER_KEY_ENC_OPT_GTP_MAX + 1];
-+	__u8 pdu_type, qfi;
-+
-+	parse_rtattr(tb, TCA_FLOWER_KEY_ENC_OPT_GTP_MAX, RTA_DATA(attr),
-+		     RTA_PAYLOAD(attr));
-+
-+	pdu_type = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_PDU_TYPE]);
-+	qfi = rta_getattr_u8(tb[TCA_FLOWER_KEY_ENC_OPT_GTP_QFI]);
-+
-+	snprintf(strbuf, len, "%02x:%02x", pdu_type, qfi);
-+}
-+
- static void __attribute__((format(printf, 2, 0)))
- flower_print_enc_parts(const char *name, const char *namefrm,
- 		       struct rtattr *attr, char *key, char *mask)
-@@ -2370,15 +2474,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
- 	struct rtattr *key_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
- 	struct rtattr *msk_tb[TCA_FLOWER_KEY_ENC_OPTS_MAX + 1];
- 	char *key, *msk;
-+	int len;
- 
- 	if (!attr)
- 		return;
- 
--	key = malloc(RTA_PAYLOAD(attr) * 2 + 1);
-+	len = RTA_PAYLOAD(attr) * 2 + 1;
-+
-+	key = malloc(len);
- 	if (!key)
- 		return;
- 
--	msk = malloc(RTA_PAYLOAD(attr) * 2 + 1);
-+	msk = malloc(len);
- 	if (!msk)
- 		goto err_key_free;
- 
-@@ -2415,6 +2522,18 @@ static void flower_print_enc_opts(const char *name, struct rtattr *attr,
- 
- 		flower_print_enc_parts(name, "  erspan_opts %s", attr, key,
- 				       msk);
-+	} else if (key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP]) {
-+		flower_print_gtp_opts("gtp_opt_key",
-+				      key_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
-+				      key, len);
-+
-+		if (msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP])
-+			flower_print_gtp_opts("gtp_opt_mask",
-+					      msk_tb[TCA_FLOWER_KEY_ENC_OPTS_GTP],
-+					      msk, len);
-+
-+		flower_print_enc_parts(name, "  gtp_opts %s", attr, key,
-+				       msk);
- 	}
- 
- 	free(msk);
--- 
-2.31.1
+Sure, fine by me.
 
+
+Kind regards,
+
+Paul
