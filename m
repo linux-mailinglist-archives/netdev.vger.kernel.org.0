@@ -2,84 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C55334DC591
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 13:10:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D35B04DC598
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 13:12:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233450AbiCQML2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 08:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33056 "EHLO
+        id S233471AbiCQMOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 08:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233380AbiCQML2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 08:11:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5DB1A7763
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 05:10:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6489160BD4
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 12:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BF4CEC340ED;
-        Thu, 17 Mar 2022 12:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647519010;
-        bh=9GS0ROgyZQs8bT/fKKu6vWOiKYEGqgynNHgUBQg60aY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HKIxuyzMOdEz9TqbzGrwdkJIykib/oUaRG3LQ400Bsbl6+19su6jfdSRHWNLdSG9y
-         wzFvXhJVMNQIwSlxYBZoy4veHSSMcFgyfUEuoJIjqL55sIRWJAibxVMJW0yG3at60z
-         qaIQJSE/l9iMNNIx/s4HMflWXzzZGDktnOQCP94tlZQvbI3CslRTWvJw8kvXBpfmN8
-         6zQzcb5P9x/5oILscHO/owcrUwBHqN+3Wa/mzO1Up54FBd9oU7d+GOKKfDRomRFFmh
-         WVjQN9/wLRDW0fLnnH+IiCoOvhYe/Nxn/03l8h0RhEXZbHHvTIPwVFnEWK0woCrckj
-         yt4owk+cTmp9g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A6761E6D3DD;
-        Thu, 17 Mar 2022 12:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232728AbiCQMOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 08:14:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E30906355
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 05:12:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647519171;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TpH3JV8H/hBysLsSPACSn7BYG305VEM8y03PDlONOH0=;
+        b=DeotR6qfo8Mq8v+jiG0tX63JsycSIr66um52ixIVd9CyqzfpP5y0eFNSmr0JQSpavEYrMb
+        LKKHRW8p/KoVTp9X0OmuxaBlyvFPq2Jp1XOH1XE4/RI7keWPpkxs5G2os0zyjhfzbdA6PN
+        Az+RtJU+92+kp90yTQy5ca/ZXv9NKKQ=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-sPivr61vOoG6FgJC_fi2hA-1; Thu, 17 Mar 2022 08:12:50 -0400
+X-MC-Unique: sPivr61vOoG6FgJC_fi2hA-1
+Received: by mail-qv1-f69.google.com with SMTP id x16-20020a0ce250000000b00432ec6eaf85so3794978qvl.15
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 05:12:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=TpH3JV8H/hBysLsSPACSn7BYG305VEM8y03PDlONOH0=;
+        b=u5kLD8sccRHf3sDdZO5VOK1ddwML72uiY+MFUFez7UIosoViWHcQpAgtHq8/IYLdD+
+         vHTr3uS8Q6uxfJmlLGe5sMSe/zhLpZf/PKeHlEHPa7fwyCJDL5DAG90zvEewAIqNgfBd
+         7zMnJiBNUwVHUyvZd1tGW4OZHtWPvl8CwWCtqibfo0ltE0k28UNb5tNBkIHrN1mB4sNH
+         x+EY0ccT8rGmuuejq5BsaqBqSkbU+p3jwzc5WIn8KzzXvhQMno4HfpMfG9u31XirCfY8
+         OJjzk/eUK4NxcTZYlonus06a3BEApDmQ9BdOzBOrUDfD7j+WSRqD0R3huHol9EUh/jNP
+         pDOQ==
+X-Gm-Message-State: AOAM530c/RnozTz7c3pNtHbp84rHgTrkEYuWrEVqHW6a6NkfebO5OgNZ
+        N6sw4QbUcpWslOIiL9XvU57qtMHVD9PzMtEwZRjP+xhcPKp9sEGc0nfdjH1gHXLhyMc994KxrvF
+        Zz7PNhmnL0VRntwyX
+X-Received: by 2002:a05:6214:21cd:b0:440:a6cb:5bf2 with SMTP id d13-20020a05621421cd00b00440a6cb5bf2mr3203757qvh.83.1647519169423;
+        Thu, 17 Mar 2022 05:12:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz0282MxVT5wTQA5SXHwuMHUlHvbvAy1gr0IsD1S0zCapPMh/n+mIXggm2nFNJUpg23kg6AgA==
+X-Received: by 2002:a05:6214:21cd:b0:440:a6cb:5bf2 with SMTP id d13-20020a05621421cd00b00440a6cb5bf2mr3203736qvh.83.1647519169216;
+        Thu, 17 Mar 2022 05:12:49 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
+        by smtp.gmail.com with ESMTPSA id 22-20020ac85756000000b002e1cabad999sm3510820qtx.89.2022.03.17.05.12.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Mar 2022 05:12:48 -0700 (PDT)
+Message-ID: <3036d6cbac282ea1a4a9cbf54a4e643f051710c7.camel@redhat.com>
+Subject: Re: [PATCH] net: dsa: Add missing of_node_put() in dsa_port_parse_of
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Miaoqian Lin <linmq006@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 17 Mar 2022 13:12:44 +0100
+In-Reply-To: <20220316082602.10785-1-linmq006@gmail.com>
+References: <20220316082602.10785-1-linmq006@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next,v3] net: geneve: support IPv4/IPv6 as inner protocol
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164751901067.7780.6193168284529969363.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Mar 2022 12:10:10 +0000
-References: <20220316061557.431872-1-eyal.birger@gmail.com>
-In-Reply-To: <20220316061557.431872-1-eyal.birger@gmail.com>
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     roopa@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        shmulik.ladkani@gmail.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Wed, 16 Mar 2022 08:15:57 +0200 you wrote:
-> This patch adds support for encapsulating IPv4/IPv6 within GENEVE.
+On Wed, 2022-03-16 at 08:26 +0000, Miaoqian Lin wrote:
+> The device_node pointer is returned by of_parse_phandle()  with refcount
+> incremented. We should use of_node_put() on it when done.
 > 
-> In order to use this, a new IFLA_GENEVE_INNER_PROTO_INHERIT flag needs
-> to be provided at device creation. This property cannot be changed for
-> the time being.
-> 
-> In case IP traffic is received on a non-tun device the drop count is
-> increased.
-> 
-> [...]
+> Fixes: 6d4e5c570c2d ("net: dsa: get port type at parse time")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 
-Here is the summary with links:
-  - [net-next,v3] net: geneve: support IPv4/IPv6 as inner protocol
-    https://git.kernel.org/netdev/net-next/c/435fe1c0c1f7
+LGTM, thanks! 
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+For the records, it looks like there is a similar issue in
+net/dsa/port.c: dsa_port_link_register_of().
 
+Thanks!
+
+Paolo
 
