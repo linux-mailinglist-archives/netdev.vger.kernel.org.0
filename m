@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D38234DCE2D
+	by mail.lfdr.de (Postfix) with ESMTP id 882F74DCE2C
 	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237739AbiCQSzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41632 "EHLO
+        id S237723AbiCQSzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237493AbiCQSzr (ORCPT
+        with ESMTP id S237533AbiCQSzr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0661637DD
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF111637F1
         for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69600617AF
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FF69617B0
         for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78D6AC340F3;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01DA8C340EC;
         Thu, 17 Mar 2022 18:54:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647543269;
-        bh=gsmnkEh76OHSiPlp0KOflJkXB/o+HWlfIwoNQW0rsBA=;
+        s=k20201202; t=1647543270;
+        bh=JKu6yx0xHGA7JVcpXXEOtPXJ1mGO3lSpJ4k850iiCRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ID3er3aCDdvKpNZCkJa+x4fjGcQnJiLikpy8aKwYjDPZ3AKJ+IV6v0BTiDmhXHnen
-         VwkoVgziA0G+QzxvN2WwPF4rEZ6MgJJAsLQ6sGD8oUmBRmDp6NnbVoH2w824KAoTO+
-         FenLaz2iW9+NFbuGjIZ9nEIx4IDF0F0fuX65a4F3CFvPlav5m2l3tlfY1hvGvCtzr8
-         hv/UQ3IixUJW2yt9oS0KN0AbaCAZoqKnkkg/9+6jV8+zvyz1GPRCtOTnbfiCmZUR6U
-         mAjFbQaqtBAbmXsjh3OOPqha3l55/0/qRn/jRVtJ7beDatKKauX7CMkecYIHDghLHH
-         8me3KbnD63Xng==
+        b=nCgyJjO3AwalOMPPVoj80nSPXncD79mP3k2pSFnVAcYdB+BX9Tu9LqmbcIqjz5L1F
+         EN1/4+FUibEAWIJC9NZcKswtXp6jlVCyndDtQM4UWpyRKinEjCJz2T/qWuJCUzm50e
+         iN8wPLiGLjWgSAaQj8YeGgCBVC9Gdhpd3gYfvqQdVLLJoIQMLTO/oCTFs6Bix0mvvt
+         a3CqvthnyA/E2H8h9ymzvMwsh4c4P+2WN4lFd1V4em511HzPBt01hFq9IMvieg/cGq
+         VifsDRyuNr2DjN5i8MCu9wM2q9BerdWmzNm1WlvjbnqoYuGH7IODmnfaq7fF4vSqkm
+         pTNR1S1+kCaew==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 03/15] net/mlx5e: Build SKB in place over the first fragment in non-linear legacy RQ
-Date:   Thu, 17 Mar 2022 11:54:12 -0700
-Message-Id: <20220317185424.287982-4-saeed@kernel.org>
+Subject: [net-next 04/15] net/mlx5e: RX, Test the XDP program existence out of the handler
+Date:   Thu, 17 Mar 2022 11:54:13 -0700
+Message-Id: <20220317185424.287982-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220317185424.287982-1-saeed@kernel.org>
 References: <20220317185424.287982-1-saeed@kernel.org>
@@ -55,190 +55,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@nvidia.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-As a performance optimization and preparation to enabling XDP multi
-buffer on non-linear legacy RQ, build the linear part of the SKB over
-the first fragment, instead of allocating a new buffer and copying the
-first 256 bytes there.
+Instead of early return inside mlx5e_xdp_handle(), let the caller check
+if an XDP program is loaded.  This allows saving a few unnecessary
+function calls and calculations in case !prog.
 
-To achieve this, add headroom and tailroom to the first fragment.
+Performance test: single core, drop packets in iptables
+Before: 3,872,504 pps
+After:  3,975,628 pps (+2.66%)
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/params.c   | 43 ++++++++++++-----
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 48 ++++++++++---------
- 2 files changed, 57 insertions(+), 34 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.c  |  5 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xdp.h  |  1 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |  9 +++-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   | 49 ++++++++++++-------
+ 4 files changed, 39 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 0f258e7a65e0..5c4711be6fae 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -188,12 +188,18 @@ u16 mlx5e_get_rq_headroom(struct mlx5_core_dev *mdev,
- 			  struct mlx5e_params *params,
- 			  struct mlx5e_xsk_param *xsk)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+index a7f020399370..fcb84971b138 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+@@ -120,15 +120,12 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
+ 
+ /* returns true if packet was consumed by xdp */
+ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
++		      struct bpf_prog *prog,
+ 		      u32 *len, struct xdp_buff *xdp)
  {
--	bool is_linear_skb = (params->rq_wq_type == MLX5_WQ_TYPE_CYCLIC) ?
--		mlx5e_rx_is_linear_skb(params, xsk) :
--		mlx5e_rx_mpwqe_is_linear_skb(mdev, params, xsk);
-+	u16 linear_headroom = mlx5e_get_linear_rq_headroom(params, xsk);
+-	struct bpf_prog *prog = rcu_dereference(rq->xdp_prog);
+ 	u32 act;
+ 	int err;
  
--	return is_linear_skb || params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO ?
--		mlx5e_get_linear_rq_headroom(params, xsk) : 0;
-+	if (params->rq_wq_type == MLX5_WQ_TYPE_CYCLIC)
-+		return linear_headroom;
-+
-+	if (mlx5e_rx_mpwqe_is_linear_skb(mdev, params, xsk))
-+		return linear_headroom;
-+
-+	if (params->packet_merge.type == MLX5E_PACKET_MERGE_SHAMPO)
-+		return linear_headroom;
-+
-+	return 0;
- }
+-	if (!prog)
+-		return false;
+-
+ 	act = bpf_prog_run_xdp(prog, xdp);
+ 	switch (act) {
+ 	case XDP_PASS:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+index c62f11d7ef6a..850540e94bb4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h
+@@ -48,6 +48,7 @@
+ struct mlx5e_xsk_param;
+ int mlx5e_xdp_max_mtu(struct mlx5e_params *params, struct mlx5e_xsk_param *xsk);
+ bool mlx5e_xdp_handle(struct mlx5e_rq *rq, struct mlx5e_dma_info *di,
++		      struct bpf_prog *prog,
+ 		      u32 *len, struct xdp_buff *xdp);
+ void mlx5e_xdp_mpwqe_complete(struct mlx5e_xdpsq *sq);
+ bool mlx5e_poll_xdpsq_cq(struct mlx5e_cq *cq);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+index 8e7b877d8a12..162513594862 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+@@ -4,6 +4,7 @@
+ #include "rx.h"
+ #include "en/xdp.h"
+ #include <net/xdp_sock_drv.h>
++#include <linux/filter.h>
  
- u16 mlx5e_calc_sq_stop_room(struct mlx5_core_dev *mdev, struct mlx5e_params *params)
-@@ -392,10 +398,10 @@ void mlx5e_build_create_cq_param(struct mlx5e_create_cq_param *ccp, struct mlx5e
- 	};
- }
+ /* RX data path */
  
--static int mlx5e_max_nonlinear_mtu(int frag_size)
-+static int mlx5e_max_nonlinear_mtu(int first_frag_size, int frag_size)
+@@ -31,6 +32,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
  {
- 	/* Optimization for small packets: the last fragment is bigger than the others. */
--	return (MLX5E_MAX_RX_FRAGS - 1) * frag_size + PAGE_SIZE;
-+	return first_frag_size + (MLX5E_MAX_RX_FRAGS - 2) * frag_size + PAGE_SIZE;
- }
+ 	struct xdp_buff *xdp = wi->umr.dma_info[page_idx].xsk;
+ 	u32 cqe_bcnt32 = cqe_bcnt;
++	struct bpf_prog *prog;
  
- #define DEFAULT_FRAG_SIZE (2048)
-@@ -407,7 +413,9 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
+ 	/* Check packet size. Note LRO doesn't use linear SKB */
+ 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
+@@ -65,7 +67,8 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+ 	 * allocated first from the Reuse Ring, so it has enough space.
+ 	 */
+ 
+-	if (likely(mlx5e_xdp_handle(rq, NULL, &cqe_bcnt32, xdp))) {
++	prog = rcu_dereference(rq->xdp_prog);
++	if (likely(prog && mlx5e_xdp_handle(rq, NULL, prog, &cqe_bcnt32, xdp))) {
+ 		if (likely(__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags)))
+ 			__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
+ 		return NULL; /* page/packet was consumed by XDP */
+@@ -83,6 +86,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
+ 					      u32 cqe_bcnt)
  {
- 	u32 byte_count = MLX5E_SW2HW_MTU(params, params->sw_mtu);
- 	int frag_size_max = DEFAULT_FRAG_SIZE;
-+	int first_frag_size_max;
- 	u32 buf_size = 0;
-+	u16 headroom;
- 	int max_mtu;
- 	int i;
+ 	struct xdp_buff *xdp = wi->di->xsk;
++	struct bpf_prog *prog;
  
-@@ -427,11 +435,15 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 		goto out;
+ 	/* wi->offset is not used in this function, because xdp->data and the
+ 	 * DMA address point directly to the necessary place. Furthermore, the
+@@ -101,7 +105,8 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
+ 		return NULL;
  	}
  
--	max_mtu = mlx5e_max_nonlinear_mtu(frag_size_max);
-+	headroom = mlx5e_get_linear_rq_headroom(params, xsk);
-+	first_frag_size_max = SKB_WITH_OVERHEAD(frag_size_max - headroom);
-+
-+	max_mtu = mlx5e_max_nonlinear_mtu(first_frag_size_max, frag_size_max);
- 	if (byte_count > max_mtu) {
- 		frag_size_max = PAGE_SIZE;
-+		first_frag_size_max = SKB_WITH_OVERHEAD(frag_size_max - headroom);
+-	if (likely(mlx5e_xdp_handle(rq, NULL, &cqe_bcnt, xdp)))
++	prog = rcu_dereference(rq->xdp_prog);
++	if (likely(prog && mlx5e_xdp_handle(rq, NULL, prog, &cqe_bcnt, xdp)))
+ 		return NULL; /* page/packet was consumed by XDP */
  
--		max_mtu = mlx5e_max_nonlinear_mtu(frag_size_max);
-+		max_mtu = mlx5e_max_nonlinear_mtu(first_frag_size_max, frag_size_max);
- 		if (byte_count > max_mtu) {
- 			mlx5_core_err(mdev, "MTU %u is too big for non-linear legacy RQ (max %d)\n",
- 				      params->sw_mtu, max_mtu);
-@@ -443,13 +455,22 @@ static int mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 	while (buf_size < byte_count) {
- 		int frag_size = byte_count - buf_size;
- 
--		if (i < MLX5E_MAX_RX_FRAGS - 1)
-+		if (i == 0)
-+			frag_size = min(frag_size, first_frag_size_max);
-+		else if (i < MLX5E_MAX_RX_FRAGS - 1)
- 			frag_size = min(frag_size, frag_size_max);
- 
- 		info->arr[i].frag_size = frag_size;
-+		buf_size += frag_size;
-+
-+		if (i == 0) {
-+			/* Ensure that headroom and tailroom are included. */
-+			frag_size += headroom;
-+			frag_size += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
-+		}
-+
- 		info->arr[i].frag_stride = roundup_pow_of_two(frag_size);
- 
--		buf_size += frag_size;
- 		i++;
- 	}
- 	info->num_frags = i;
+ 	/* XDP_PASS: copy the data from the UMEM to a new SKB. The frame reuse
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 6eda906342c0..b06aac087b2a 100644
+index b06aac087b2a..60c640fc430c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1560,43 +1560,45 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
- 			     struct mlx5e_wqe_frag_info *wi, u32 cqe_bcnt)
+@@ -34,6 +34,7 @@
+ #include <linux/ipv6.h>
+ #include <linux/tcp.h>
+ #include <linux/bitmap.h>
++#include <linux/filter.h>
+ #include <net/ip6_checksum.h>
+ #include <net/page_pool.h>
+ #include <net/inet_ecn.h>
+@@ -1523,11 +1524,11 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
  {
- 	struct mlx5e_rq_frag_info *frag_info = &rq->wqe.info.arr[0];
--	struct mlx5e_wqe_frag_info *head_wi = wi;
--	u16 headlen      = min_t(u32, MLX5E_RX_MAX_HEAD, cqe_bcnt);
--	u16 frag_headlen = headlen;
--	u16 byte_cnt     = cqe_bcnt - headlen;
-+	u16 rx_headroom = rq->buff.headroom;
-+	struct mlx5e_dma_info *di = wi->di;
-+	u32 frag_consumed_bytes;
-+	u32 first_frag_size;
+ 	struct mlx5e_dma_info *di = wi->di;
+ 	u16 rx_headroom = rq->buff.headroom;
+-	struct xdp_buff xdp;
++	struct bpf_prog *prog;
  	struct sk_buff *skb;
-+	void *va;
-+
-+	va = page_address(di->page) + wi->offset;
-+	frag_consumed_bytes = min_t(u32, frag_info->frag_size, cqe_bcnt);
-+	first_frag_size = MLX5_SKB_FRAG_SZ(rx_headroom + frag_consumed_bytes);
-+
-+	dma_sync_single_range_for_cpu(rq->pdev, di->addr, wi->offset,
-+				      first_frag_size, DMA_FROM_DEVICE);
-+	net_prefetch(va + rx_headroom);
++	u32 metasize = 0;
+ 	void *va, *data;
+ 	u32 frag_size;
+-	u32 metasize;
  
- 	/* XDP is not supported in this configuration, as incoming packets
- 	 * might spread among multiple pages.
- 	 */
--	skb = napi_alloc_skb(rq->cq.napi,
--			     ALIGN(MLX5E_RX_MAX_HEAD, sizeof(long)));
--	if (unlikely(!skb)) {
--		rq->stats->buff_alloc_err++;
-+	skb = mlx5e_build_linear_skb(rq, va, first_frag_size, rx_headroom,
-+				     frag_consumed_bytes, 0);
-+	if (unlikely(!skb))
+ 	va             = page_address(di->page) + wi->offset;
+ 	data           = va + rx_headroom;
+@@ -1535,16 +1536,21 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+ 
+ 	dma_sync_single_range_for_cpu(rq->pdev, di->addr, wi->offset,
+ 				      frag_size, DMA_FROM_DEVICE);
+-	net_prefetchw(va); /* xdp_frame data area */
+ 	net_prefetch(data);
+ 
+-	mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
+-	if (mlx5e_xdp_handle(rq, di, &cqe_bcnt, &xdp))
+-		return NULL; /* page/packet was consumed by XDP */
++	prog = rcu_dereference(rq->xdp_prog);
++	if (prog) {
++		struct xdp_buff xdp;
+ 
+-	rx_headroom = xdp.data - xdp.data_hard_start;
++		net_prefetchw(va); /* xdp_frame data area */
++		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt, &xdp);
++		if (mlx5e_xdp_handle(rq, di, prog, &cqe_bcnt, &xdp))
++			return NULL; /* page/packet was consumed by XDP */
++
++		rx_headroom = xdp.data - xdp.data_hard_start;
++		metasize = xdp.data - xdp.data_meta;
++	}
+ 	frag_size = MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt);
+-	metasize = xdp.data - xdp.data_meta;
+ 	skb = mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt, metasize);
+ 	if (unlikely(!skb))
  		return NULL;
+@@ -1842,11 +1848,11 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 	struct mlx5e_dma_info *di = &wi->umr.dma_info[page_idx];
+ 	u16 rx_headroom = rq->buff.headroom;
+ 	u32 cqe_bcnt32 = cqe_bcnt;
+-	struct xdp_buff xdp;
++	struct bpf_prog *prog;
+ 	struct sk_buff *skb;
++	u32 metasize = 0;
+ 	void *va, *data;
+ 	u32 frag_size;
+-	u32 metasize;
+ 
+ 	/* Check packet size. Note LRO doesn't use linear SKB */
+ 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
+@@ -1860,19 +1866,24 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 
+ 	dma_sync_single_range_for_cpu(rq->pdev, di->addr, head_offset,
+ 				      frag_size, DMA_FROM_DEVICE);
+-	net_prefetchw(va); /* xdp_frame data area */
+ 	net_prefetch(data);
+ 
+-	mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt32, &xdp);
+-	if (mlx5e_xdp_handle(rq, di, &cqe_bcnt32, &xdp)) {
+-		if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
+-			__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
+-		return NULL; /* page/packet was consumed by XDP */
 -	}
++	prog = rcu_dereference(rq->xdp_prog);
++	if (prog) {
++		struct xdp_buff xdp;
  
--	net_prefetchw(skb->data);
-+	page_ref_inc(di->page);
- 
--	while (byte_cnt) {
--		u16 frag_consumed_bytes =
--			min_t(u16, frag_info->frag_size - frag_headlen, byte_cnt);
-+	cqe_bcnt -= frag_consumed_bytes;
-+	frag_info++;
-+	wi++;
- 
--		mlx5e_add_skb_frag(rq, skb, wi->di, wi->offset + frag_headlen,
-+	while (cqe_bcnt) {
-+		frag_consumed_bytes = min_t(u32, frag_info->frag_size, cqe_bcnt);
+-	rx_headroom = xdp.data - xdp.data_hard_start;
++		net_prefetchw(va); /* xdp_frame data area */
++		mlx5e_fill_xdp_buff(rq, va, rx_headroom, cqe_bcnt32, &xdp);
++		if (mlx5e_xdp_handle(rq, di, prog, &cqe_bcnt32, &xdp)) {
++			if (__test_and_clear_bit(MLX5E_RQ_FLAG_XDP_XMIT, rq->flags))
++				__set_bit(page_idx, wi->xdp_xmit_bitmap); /* non-atomic */
++			return NULL; /* page/packet was consumed by XDP */
++		}
 +
-+		mlx5e_add_skb_frag(rq, skb, wi->di, wi->offset,
- 				   frag_consumed_bytes, frag_info->frag_stride);
--		byte_cnt -= frag_consumed_bytes;
--		frag_headlen = 0;
-+		cqe_bcnt -= frag_consumed_bytes;
- 		frag_info++;
- 		wi++;
- 	}
- 
--	/* copy header */
--	mlx5e_copy_skb_header(rq->pdev, skb, head_wi->di, head_wi->offset, head_wi->offset,
--			      headlen);
--	/* skb linear part was allocated with headlen and aligned to long */
--	skb->tail += headlen;
--	skb->len  += headlen;
--
- 	return skb;
- }
- 
++		rx_headroom = xdp.data - xdp.data_hard_start;
++		metasize = xdp.data - xdp.data_meta;
++	}
+ 	frag_size = MLX5_SKB_FRAG_SZ(rx_headroom + cqe_bcnt32);
+-	metasize = xdp.data - xdp.data_meta;
+ 	skb = mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt32, metasize);
+ 	if (unlikely(!skb))
+ 		return NULL;
 -- 
 2.35.1
 
