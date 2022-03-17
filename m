@@ -2,96 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B8984DD003
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 22:15:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C7374DD08A
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 23:10:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230164AbiCQVQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 17:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51130 "EHLO
+        id S229634AbiCQWLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 18:11:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiCQVQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 17:16:10 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5A3247C26;
-        Thu, 17 Mar 2022 14:14:52 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KKKfK64NNz4xw7;
-        Fri, 18 Mar 2022 08:14:49 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647551691;
-        bh=MZK+qMZWlkhk6Pszi8zLGu3p8NpkMEGMJLuYRUBSOjU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=PEJY4CXHG93LvI4P9n1PN3z5LX5uf9zb548RypM2C7IEwXrjMCSd788YSD/W0sEbH
-         O9gPMAINYA/68YCT7eMReI84ftvpgSky4g5LLtXZG3122ZDZfrkr7Fzq3yZiwPsyTb
-         I77NvCQP8TBopYWpNIvrz3fmj03OC49Xju40vhiPTBnTiTS55JAKxww4853Z98142R
-         fNfkO5j9E7TT1mg8yBOQSkGFOnAtmdMNlGYcnAvM4N2OUFEbaqRMPxSSaePReWcdLO
-         V2aBd6J+OD7FjGj5Q5ZwS5B1uWrY5Frcpoy2WLDpVbvyIeaQNgRzb34sGdS7G2c63c
-         CsQgaUiuH8nXw==
-Date:   Fri, 18 Mar 2022 08:14:48 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Kaixi Fan <fankaixi.li@bytedance.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the bpf-next tree
-Message-ID: <20220318081448.586adc42@canb.auug.org.au>
+        with ESMTP id S229453AbiCQWL2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 18:11:28 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C4C1FDFE3;
+        Thu, 17 Mar 2022 15:10:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647555010; x=1679091010;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=QpWbczOzLS4au3qRyyNQY/DJiO8OZbjCj8/kWLrheTM=;
+  b=WnehGXa1UhX8180TRwCdm1/0jqguxcSXcsdS4S/wqGEsYNdCkRiQD6it
+   3avw0I6IaHwhJQEkXpckJ55X+XPDdBaNktEsinN8XZqLmE4AMAM5m2OnP
+   rV+Y6GleoDLAAg1ptNy/pBZ6fm+iOu9ao/ZDhwBVQFKOrF9dmgijxKand
+   cZUL3dYgDu0QSZRMCofKs6WhhbPKBrtAfrLJTuQ7p6UX+73olle+O7tKd
+   xx5Nbqj/Xz6ljkCxLdqmhpKHh8OlbgWbP4BloGT+4jxINML4ActMjoE7r
+   ayTZwjpiHqSyDEv8H40oaW9DCesA03qMvU08ywTJL681jxR73G7mCKil9
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="255821066"
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="255821066"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 15:10:10 -0700
+X-IronPort-AV: E=Sophos;i="5.90,190,1643702400"; 
+   d="scan'208";a="599259580"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.9.212])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 15:10:09 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Yonglong Li <liyonglong@chinatelecom.cn>, davem@davemloft.net,
+        kuba@kernel.org, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev, stable@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net] mptcp: Fix crash due to tcp_tsorted_anchor was initialized before release skb
+Date:   Thu, 17 Mar 2022 15:09:53 -0700
+Message-Id: <20220317220953.426024-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/SM1ktpCV0NyCJ=79+77cuM7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/SM1ktpCV0NyCJ=79+77cuM7
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Yonglong Li <liyonglong@chinatelecom.cn>
 
-Hi all,
+Got crash when doing pressure test of mptcp:
 
-In commit
+===========================================================================
+dst_release: dst:ffffa06ce6e5c058 refcnt:-1
+kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
+BUG: unable to handle kernel paging request at ffffa06ce6e5c058
+PGD 190a01067 P4D 190a01067 PUD 43fffb067 PMD 22e403063 PTE 8000000226e5c063
+Oops: 0011 [#1] SMP PTI
+CPU: 7 PID: 7823 Comm: kworker/7:0 Kdump: loaded Tainted: G            E
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.2.1 04/01/2014
+Call Trace:
+ ? skb_release_head_state+0x68/0x100
+ ? skb_release_all+0xe/0x30
+ ? kfree_skb+0x32/0xa0
+ ? mptcp_sendmsg_frag+0x57e/0x750
+ ? __mptcp_retrans+0x21b/0x3c0
+ ? __switch_to_asm+0x35/0x70
+ ? mptcp_worker+0x25e/0x320
+ ? process_one_work+0x1a7/0x360
+ ? worker_thread+0x30/0x390
+ ? create_worker+0x1a0/0x1a0
+ ? kthread+0x112/0x130
+ ? kthread_flush_work_fn+0x10/0x10
+ ? ret_from_fork+0x35/0x40
+===========================================================================
 
-  a50cbac6d81a ("selftests/bpf: Fix tunnel remote IP comments")
+In __mptcp_alloc_tx_skb skb was allocated and skb->tcp_tsorted_anchor will
+be initialized, in under memory pressure situation sk_wmem_schedule will
+return false and then kfree_skb. In this case skb->_skb_refdst is not null
+because_skb_refdst and tcp_tsorted_anchor are stored in the same mem, and
+kfree_skb will try to release dst and cause crash.
 
-Fixes tag
+Fixes: f70cad1085d1 ("mptcp: stop relying on tcp_tx_skb_cache")
+Cc: stable@vger.kernel.org
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ net/mptcp/protocol.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-  Fixes: 933a741e ("selftests/bpf: bpf tunnel test.")
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 1c72f25f083e..014c9d88f947 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1196,6 +1196,7 @@ static struct sk_buff *__mptcp_alloc_tx_skb(struct sock *sk, struct sock *ssk, g
+ 		tcp_skb_entail(ssk, skb);
+ 		return skb;
+ 	}
++	tcp_skb_tsorted_anchor_cleanup(skb);
+ 	kfree_skb(skb);
+ 	return NULL;
+ }
 
-has these problem(s):
+base-commit: 551acdc3c3d2b6bc97f11e31dcf960bc36343bfc
+-- 
+2.35.1
 
-  - SHA1 should be at least 12 digits long
-    This can be fixed for the future by setting core.abbrev to 12 (or
-    more) or (for git v2.11 or later) just making sure it is not set
-    (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/SM1ktpCV0NyCJ=79+77cuM7
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIzpMgACgkQAVBC80lX
-0Gz/4wf+On4vnxj/D2y0yuq4X2GXj7qJSK1hYLct1XPJV8RZnbMuUuN3e98EqcOv
-tGZmE1Ndc3NncRQ/zC6iRVyLZZXibcRdLl5iwyP6xPKtkurts8iaMAVcPdz8AASW
-Vgk+OVMwcPxparEl1DDckmf1OE8HdYFVotYuXVirvFsF6R370IuqZN1DwmG5nNQM
-x8ZgsjAUcvI30gPVy+vTlBWShP2HURFbS3yV56PR3lavYvd4Q7LADO9y2s7JCl4S
-t8FNLrKHN96JuTnrG4orprlgSPONGS+QbFGw55+8txI/A6kWlPgb1hyF1e2f9P4Q
-xF+FVgKcluJb8GhiVaLkRKBcwST8Rw==
-=1Q2P
------END PGP SIGNATURE-----
-
---Sig_/SM1ktpCV0NyCJ=79+77cuM7--
