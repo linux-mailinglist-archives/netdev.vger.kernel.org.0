@@ -2,444 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC1C4DD0E5
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 23:50:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAC5C4DD10F
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 00:11:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbiCQWwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 18:52:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        id S229480AbiCQXMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 19:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229948AbiCQWwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 18:52:10 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60054.outbound.protection.outlook.com [40.107.6.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952791B2C49
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 15:50:52 -0700 (PDT)
+        with ESMTP id S229459AbiCQXMr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 19:12:47 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D875D292D9D
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 16:11:29 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22HM3UU5031227;
+        Thu, 17 Mar 2022 16:11:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=/JMfq6bci+pxiP60gzqfacu6wGwhNOySIw27/ILND7Y=;
+ b=JT0kBAXRklogmmtgWAWwbFW8d8v64GXel8XOfVqhtnyO/jo2lvKs6+RWmVcqsGApjH/F
+ popesCBPnqaNI0F+DGGsW7t20aflJ5Vz87CEiyGEZmT7Tvnl4RYcWccaZwMkoCfvhGRd
+ dCA+gJkkO4Fsj7VMaTQGvMrv+2gt9Hih73Q= 
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2103.outbound.protection.outlook.com [104.47.70.103])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3eutf001xg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 17 Mar 2022 16:11:25 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kcu/NaBe0/gIlQGuVuKvEIkZgxdUaIKwc0RNWQNsEX4JfzJM+Sg06hm8STZv2QiPIAf1cde9lL8caIvW+xLCF8L0UKmIhd9oD3/zH7EzdjNnqQmLAGVSijtfzelrNtMTJjbzkIsmeSn5p+Dhu8rY+77XyYC90epw7uKwS09HJ8kB22kxo6FvwDv1fVP3CHD7NtiY8Y/BegiThJjUcoHAiJv8BrzwGGIzRy8PXxI5FlJ/knntYAMqKbIC/jUHnrhP/1ObGPOaIXAdj5Kn48QG36lm4kpAajEi5ONPB6xeSl7YgQz+2BMEubFx3QZCs2qOJ57Tno/p7LZIeIJUZqSaQQ==
+ b=eSJevS+pkFvbvUKThyNBg1rewWetuWqBNNhqGg0HOPu0sGzXza2+hDk2k4h4+LY+Eu2YYr3GVDgQPmPyERe2B5dZDZfYws7ws7odqGJf6K1AJQ749U8/OZ+y+NTLG+CNLb5mczWWhK0TyO9kFDar8u4Eshbse/pL6Bwj8xIbcaJAUOGzo0L8XuN2YQc2j8nLAqsrgqqzXCAKVFVv9fcpmK8z8plWCgW1cjt1HWSSC1Y3geMG+Xc2aXSyHhTq5tKN27ydufi/tGg4CQi2cUM2kYEqV5AcHQLTvLyzEd6nltYhz6nYdwcfXcPkaAu7KU5pQCheScTRhbpEWV+SwcK4Gw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X7Tx0InyNMzzLhWaGQQ53ktB+W4lTcPvTNLZ1ji3IKA=;
- b=WJ4SNJKxu5pzeJea4y3gwIUN7CMC0plCsmszD6LN2Iofez4dagUBenwylpimiBbjvZYwEcF/+/0wkPdMI1Tgf98OIt9+eTC85q2/aosnzdWzrE8bHk/HYQUMIaenIXL0IGc+mrys0qi7d6GeQ0DrXOxOds/5VmKWqnGzQHMc4AU6hS5jl9RGJSOa+KJC9KwPyNaTmCmVs2orxUVK3VfvYyzl27DKdGC0lvxIsm16xcpQJ/UMgJHY17clRdnA+7OfqD0q6Z0JhjCusdd02AhmcWR3F0whzjF4F/LLDP+NY3FQPQB313iWcy1TU4rxszGs7RuYbzWrmXt7krBsptqmvA==
+ bh=/JMfq6bci+pxiP60gzqfacu6wGwhNOySIw27/ILND7Y=;
+ b=ggnVz4tKJmk7cuviuj2Icad9zG9uPhVEHdDgBVWwKJxtTeOwaqfwlRuYP89Y9ujV/XSzSgIkUPm4XSYoJYAOqvvJYfv+OdSP8Z0nsFUwJ162Ica49ar1iMwVgQxN9WzxDt81G62as4WsweGiBrEOU0+/yRXfrudh6FlCV5rgWcTo0Xbr3VBNWp4ddNZR00z7fUg0dlgiJPkZsde5DL44lzlzDNvJ2uajHi2NjpPAhSGuOJ3uCxGxCPi/w8VxHdRtlMBua5Ge+SZUViz9pl0bTNGRSetufFfPhRcz4INxZf6AxIZvcKAdGN1Ok5h9qri9nqKoeJmvaIjR2kSE8gFeTQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X7Tx0InyNMzzLhWaGQQ53ktB+W4lTcPvTNLZ1ji3IKA=;
- b=Ds457BFCcEIvx6WT1pxKhOpngfl/1XYWenC32GTVjAlpb9M1H+9RinEbc6Nzf8/idW100jiFledwFZcmXRz1kkSDi6rTAfSb75779RTXb1WfPJPyjQ7oLicyTGNd5ma2JTO6m/gbJ1OPxUM5v/Z/MEFLsFCuyDFllNs418XvFQ0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB7PR04MB4777.eurprd04.prod.outlook.com (2603:10a6:10:15::23) with
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SN6PR1501MB2190.namprd15.prod.outlook.com (2603:10b6:805:5::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Thu, 17 Mar
- 2022 22:50:49 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::de5:11ee:c7ea:1d37]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::de5:11ee:c7ea:1d37%7]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
- 22:50:49 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [RFC PATCH net-next] net: create a NETDEV_ETH_IOCTL notifier for DSA to reject PTP on DSA master
-Date:   Fri, 18 Mar 2022 00:50:35 +0200
-Message-Id: <20220317225035.3475538-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM6PR08CA0040.eurprd08.prod.outlook.com
- (2603:10a6:20b:c0::28) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+ 2022 23:11:23 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::708c:84b0:641f:e7ca]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::708c:84b0:641f:e7ca%3]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
+ 23:11:23 +0000
+Date:   Thu, 17 Mar 2022 16:11:20 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, ycheng@google.com,
+        weiwan@google.com, netdev@vger.kernel.org, ntspring@fb.com
+Subject: Re: [RFC net] tcp: ensure PMTU updates are processed during fastopen
+Message-ID: <20220317231120.3l3ow3vb7vgs6twb@kafai-mbp.dhcp.thefacebook.com>
+References: <20220316235908.1246615-1-kuba@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220316235908.1246615-1-kuba@kernel.org>
+X-ClientProxiedBy: MW4P221CA0017.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:303:8b::22) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9b492fdf-8789-4a83-2659-08da086894a7
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4777:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB4777D9941DB70D9D34296FDCE0129@DB7PR04MB4777.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: ceb74265-3d52-4a5d-ca97-08da086b7441
+X-MS-TrafficTypeDiagnostic: SN6PR1501MB2190:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR1501MB21904145D9C9DCCE5B452A98D5129@SN6PR1501MB2190.namprd15.prod.outlook.com>
+X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sLcV5aNkppQlXBuWBVpx4hIsa4JsPSxpm22aAe2/4QAXf6Dw+6HwN5SI7B+AdQJN090dAsaM7H4oS3lZNE2hd78FL3HDeu5nOxru8VQOiCP4JJ2qLm89G+tFgQX8S9Yw+wR9JIBKQGT4XQvv8Dl7jioCgoqkaPXNWHSuaTW3JHG+u1Ds2cgwGGbArxlfFQtXxyP/JMXU68XxII2mEDi56MFkkkHSHtbO0N3pkeHEFT1qpg1hAhvmijorVeutv7KtoIEkALCNnJ5DLiA8GsgOGnDgAXsH8/wAv43qchU9YbTdiJKN3BszQR1isph1t40VEm4anoLEbo2iPHJHyc7ovVDejhyP23JdCdTEZkIJicgz2HlNGyVY6xwNLJf6hPdsMRKzFgNc5hhNEn8pWDjk1zZ969fjbrsfNf6EpgO0KxPHK4MAv0QIHUvk9L5PB0CBhV1MSKycx3i2kHxY9JIFW5SlN9CPUT+uHAPJ58CiSwDovYinsZo281hh/3PKeu4Hi74vKAIXPVidl+5YHgDbnxZg72cv/hK1K644DQOjKPVb03XVa6ohva+78TSiI6beW6B4gASGihTX7zC/M5MmzoRwsv3hx6RHcOJZYrwYq5WBgkdZMBRMmyMfpOU3MoY0lCL5YPr9A+wL08+Qe/ZgPh/1uNgm7MxKVwn3qiSvHyjyr2ZOfluLxWE9932VflZ8LSKp71cCm6n/81OamuXy/g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(186003)(1076003)(26005)(36756003)(6666004)(6506007)(6512007)(38350700002)(38100700002)(52116002)(83380400001)(2616005)(30864003)(66946007)(2906002)(44832011)(54906003)(8936002)(66476007)(508600001)(66556008)(86362001)(6486002)(8676002)(316002)(6916009)(4326008);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: aLTo6H/zh1QW4U141uEYYrnnRcspAGnss3yVASekrpSuRG7LXrMhanWNjrxhGhGwAAo8N763dlWG4K3LbvPiI+y5SoN1a1pS88qQ+iQxj+Hn1K44pDaW2BH7TLDr44zB9IUtXOJwgYkvOvGI1ylmkaZpSO2RN13GsRhJnKzhek8lsb28XnkAG+G/L/ZIzK4rT5CFrSYwgh4rwA7Oikr1gDnI/3vSKjESk9YZxCF88rXfnUtBOYUSzY1CoulfdYIN9vOOHWwW81tPMgR2reROl3s0WSrOruo7eZiRHrab2eCuOT0CS5sGMBT/QlD6PkBk9xp+f9auvyenPUWcrz8yjShA0nyER70D9bAlV8u5P4RZ4Awx7MyXF8J7tjW6QduSuDnjzojZV2m8o/aj7NuQ1CWubdAAKlTrEy2Rj0LjzoqefF5e6byQgcPWm1pGbF9GbgPuyPMg/vcVrdIxSLJNQXlcJR9fe/RadFDsUCyZSNBufA2q/EQh0cwKSuk6wgw18TaZ8qMOdr0pzOSwe6w6IpbQq+uSzR61YQYnflIegqsq4HffluZehMO3hr34eMhEPatpbF5N14qp55SyAs2R75IuVcMknMK49A6RSkTJ1WFJ3Mdx0xCeWmETlU1EmPzYPYEmotqzDgfWgCnUwydNxA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(5660300002)(8936002)(508600001)(86362001)(4744005)(38100700002)(15650500001)(6486002)(316002)(66476007)(8676002)(4326008)(66946007)(6506007)(66556008)(6916009)(1076003)(186003)(83380400001)(9686003)(2906002)(6512007)(52116002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ltJ3+p7nEp3oB8vo4Ezll9b7vF8OBEdUe9EGjeSG3aohq50hET864Spj0Xs0?=
- =?us-ascii?Q?DtMZGRSFUq7sOdP9HMSMKkrTaZLyW0Qho/OF1ABagO5NOIdAlrmySSSAn1IF?=
- =?us-ascii?Q?atSsRrDCt3W49kPZ/fBpCeTNN+ZPzBUHbQhfG9UENYnjMa03FXxo9m0MAh7l?=
- =?us-ascii?Q?1ShatBXwCuNUcXksHXzCYP52ZH5ZvzjQpXYHspSR8husyRpQbFobrnEgQiQH?=
- =?us-ascii?Q?+0IhXb/6cr+syrA8jMf4+Lc1QRmOR8sz8GZmX/nJZdFtLsJoyaVaqTa/aNYR?=
- =?us-ascii?Q?8uPlCI/F4LENKc2krcwpCYaM9k2BTCCHe2+Cs0q+oNQyu5gq9N7D5ToyI4yi?=
- =?us-ascii?Q?MiOyIAUdxqUmL8WqLu1lBg5PqxBJrx8sh9Y+CsKb4iAhzgDzH5iCH51uUApa?=
- =?us-ascii?Q?TDGKNsjUN+kLtPY3MSAaevEDey9M62/wno2eXveu0/IfqZ0FE8m8VZjXqpgS?=
- =?us-ascii?Q?CLuK2go+gos0H/dtV62MtAGl+toUtDjrkebR5e+zzIcN8qyeta3g6RgmDcF1?=
- =?us-ascii?Q?ZlkOWxeiFXVZ93T0utYGUKd1B4JTkI40SPeDbQ82DZdYDfqqSUyiUyzEjgWN?=
- =?us-ascii?Q?r/mZf2cMGuKLrpHYat8OUK5FgQIAL0qcg9b46q1wi9a7vAYSyAdf2Szsbu5e?=
- =?us-ascii?Q?Krj8Y2UONIkMSFfW2CdIYbGjzLvc9fXh7suecTCHVreP/qfz/OtDrDnpdZHc?=
- =?us-ascii?Q?zkkHjDmk9JjXj+ZSgR5tH9O+01e2WbNX1o0KnI1thB8/Fv0qfHUap7+sHnfa?=
- =?us-ascii?Q?ZQQJFgu7CNZsLL9ZHuawrrNziA9DHexipl2akf8DP6Y9356aEYgGTiiggIeO?=
- =?us-ascii?Q?ZP95SpsANYi5EIrlhw1FdBcHkiThKMAkkl/LdqNW96PQNgyJA6V8VTnxJOiO?=
- =?us-ascii?Q?heqr1MPmJ92t/PjftaDXxK6iBfgNLtAzzPf1QCgL6gHEbYFQaqM5YgUpJCRx?=
- =?us-ascii?Q?jJnyBg1ubJc9Oht/rF9i7nrnZKOu7HDR+clc72Jqd4DSZ8TuZEkW0Js9GTPf?=
- =?us-ascii?Q?+5ncFpyjY0PSQClFC97DOEQe/RzUkI7VPfz56OW+kWywd9+VblaYTUNaildu?=
- =?us-ascii?Q?1mNEY1TPXPzz2fdCzmlQuV8upUKApqJxNSqMTgOBLZGiIq5Q71GozsY0eS2t?=
- =?us-ascii?Q?LqeCmXMkKw+eSUl/ki2i3/D0eqdI4Rig4fnKkNsGgSjN9x9GuqWq1hUAz3w4?=
- =?us-ascii?Q?7jiCd6ECEachH7mG46ibrifeTJRyTp+IjrOCZdAAGPgip03O3YvxjB0BP6Fo?=
- =?us-ascii?Q?jzqpb8g6UnWCc4ZfAMtHT35gUgrJFOi+NKUGOXVzvwTl/scX/csr4OMJjTzb?=
- =?us-ascii?Q?1cgoQq6wgh5nb9WFhFLdEB2eHB7LkF4Ag+MZ0MSvEZHQMVcDnwvQaumYbfjQ?=
- =?us-ascii?Q?B6rWGQYWMrn6yFar3NVxNq/p77o3FoepVz8rEc6ZNkgkr4/nQjw1NHj4/X1f?=
- =?us-ascii?Q?KP5Z/1b5SSvbLFavlxrNEaWRFo1W0gCvC+WNf3espcVZvU0Z+CncZQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b492fdf-8789-4a83-2659-08da086894a7
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FrZOWVEjDm8EbjphnGN2jTtmWQZp+zeceBmgJUpar9XVA8/qFW3tlTKBqb5b?=
+ =?us-ascii?Q?wpGvt9dOJBCmYWCTZmT2PmtB8StlQq8n30usqBHU0jnYwwtLt5N5Ijk9S2du?=
+ =?us-ascii?Q?rtjDJ4WCweTEwZwuC4NElOQ8gIte2flsvKtYmSd8FFlirv9gXapTufSdpD/w?=
+ =?us-ascii?Q?zSTr3CFbebSYLdWRw3yGM/waZHGl+07B5uXBJahvYrRyp1UO2lYlWL2k5PkD?=
+ =?us-ascii?Q?RgMAAhRzur2zLeGKrAh4B1tG244EPRPf7ld2ML65mJI/I96EmV54JdNuKYvp?=
+ =?us-ascii?Q?xOyFzQRvtFD7Gong4sPjBxeVv6PvVDEaN+vpqVGV8QYJNx3Dleo3rozC/WKl?=
+ =?us-ascii?Q?BzrrrE5I3tf+FlB4JNiSKu9JQGy2315EaVmlHfnWWDUAHcFNLavmE3sCl2Ob?=
+ =?us-ascii?Q?8YI90DO382k7gDUShIoBd4M3VjdRWhx2U9AYF3CjiwRzQUBE9g/KUZM3w0FM?=
+ =?us-ascii?Q?/WQjdvwweVZwX9p0iWbC7XUQUQPq42gaxuHHku2sw0oXZCv/8rzd9ArAc2i1?=
+ =?us-ascii?Q?AlvBUoHlpewAKM+K67lcC2kw7iikCUFOH+lyFyYJEmVgX9Kj86cZIOfGGawF?=
+ =?us-ascii?Q?b0XHA1YBMYwxTHVETUl5e1cH/J4fAWVLKNWjEolO1vhuS8+HT4rl+wCYhj4q?=
+ =?us-ascii?Q?iHAyC4hrIkk5KYR61KS4LhQ6+1sxyMvGzEGtelMwNAeYm7EXtKk9DFrNHsUd?=
+ =?us-ascii?Q?23q1WKymY/xe5R7GuvpS72HA7g3caME9eQZS+k3eBeSFbu6EyUQR4XO3kuRK?=
+ =?us-ascii?Q?0U3xtbVCfrFPoHKcu5BFCOAd6HjLF9+YZVY383NMV1vKwR2QcqXyfSp+zpsx?=
+ =?us-ascii?Q?BXbRymoKX61bNWz3jXDNZGUjKAW/2mgGu5/T3D5zTKQCuxRJqcwYfBZqcgr1?=
+ =?us-ascii?Q?Izk/woujFgPj5JzPNcXslR28eePjRt8Kbl++ahkQOvOMYA9oivQ0hMwtnEwV?=
+ =?us-ascii?Q?tvHZ+ifxW08BhJCHKYf4oeeTfSW3hAdjKCgcgrHGw3t+4fLe13Hi7pIGRLVp?=
+ =?us-ascii?Q?AAALVifDUA8Nb/2WE+Tz/SXB2ZJsSbw7Smtm4/KBkX4G0JRIiHXWO8M/kaV2?=
+ =?us-ascii?Q?J44PC995Ft+NpKvoHf3ZBq8+TzXFYZG+2pZslHnS6QPwNFw/zKMkG9V+lhOw?=
+ =?us-ascii?Q?okEerqIPSbLTryEIMz1OUFk6j2Lw5VsweD+hXhv/TraSvqo9DgcFyptyL/Fi?=
+ =?us-ascii?Q?aPVDT1P/XHZncdAxB68DNBsA7I8/WIwkTQGXbz2AFKgXoeTKt4DJaqng11hU?=
+ =?us-ascii?Q?4xSGb1l5wvsU6mkcGZmgHYTMAESLJz2kbLkRCp0/7LmffFjKrOgC21YwbRo2?=
+ =?us-ascii?Q?/vCylSwZeE/ZeVxbYKGitdobYo30RmfEYYqXLL0FtHiWjrZQoOyMV0ArLcPA?=
+ =?us-ascii?Q?2NuBlrPNJyBryXnQ7zpBTKkLbWHRjtyHbCOUKfsmmSTa2IO67iQQ0hom2zB0?=
+ =?us-ascii?Q?OQjcGW6BGJI0EcUEEUgawK0WzFnIPqU0XIwweBSkSb2l8jkqXmNj9w=3D=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ceb74265-3d52-4a5d-ca97-08da086b7441
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 22:50:49.4793
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2022 23:11:23.3368
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3DGwgC9yQI+/+qOh++lGTXUP/9eic9eHmLA/ajg35GpTF2uyl0mx0ljdKgGHU8dDYNm1qzw3Tz+aF55ecx96Lg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4777
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2xq4sAzaDy3IrQ1CV7DNkXC7mslVOKlVHmoqooWxT75sP6z8J/Jxp1hj2pq9I1G4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR1501MB2190
+X-Proofpoint-GUID: bX8jmdq9BwpuFc89ni-lbj5Mv5MNIZU-
+X-Proofpoint-ORIG-GUID: bX8jmdq9BwpuFc89ni-lbj5Mv5MNIZU-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-17_07,2022-03-15_01,2022-02-23_01
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The fact that PTP 2-step TX timestamping is deeply broken on DSA
-switches if the master also timestamps the same packets is well
-documented by commit f685e609a301 ("net: dsa: Deny PTP on master if
-switch supports it"). We attempt to help the users avoid shooting
-themselves in the foot by making DSA reject the timestamping ioctls on
-an interface that is a DSA master, and the switch tree beneath it
-contains switches which are aware of PTP.
-
-The only problem is that there isn't an established way of intercepting
-ndo_eth_ioctl calls, so DSA creates avoidable burden upon the network
-stack by creating a struct dsa_netdevice_ops with overlaid function
-pointers that are manually checked from the relevant call sites. There
-used to be 2 such dsa_netdevice_ops, but now, ndo_eth_ioctl is the only
-one left.
-
-In fact, the underlying reason which is prompting me to make this change
-is that I'd like to hide as many DSA data structures from public API as
-I can. But struct net_device :: dsa_ptr is a struct dsa_port (which is a
-huge structure), and I'd like to create a smaller structure. I'd like
-struct dsa_netdevice_ops to not be a part of this, so this is how the
-need to delete it arose.
-
-The established way for unrelated modules to react on a net device event
-is via netdevice notifiers. These have the advantage of loose coupling,
-i.e. they work even when DSA is built as module, without resorting to
-static inline functions (which cannot offer the desired data structure
-encapsulation).
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-I'd mostly like to take this opportunity to raise a discussion about how
-to handle this. It's clear that calling the notifier chain is less
-efficient than having some dev->dsa_ptr checks, but I'm not sure if the
-ndo_eth_ioctl can tolerate the extra performance hit at the expense of
-some code cleanliness.
-
-Of course, what would be great is if we didn't have the limitation to
-begin with, but the effort to add UAPI for multiple TX timestamps per
-packet isn't proportional to the stated goal here, which is to hide some
-DSA data structures.
-
- include/linux/netdevice.h | 10 +++++++-
- include/net/dsa.h         | 51 ---------------------------------------
- net/core/dev.c            |  7 +++---
- net/core/dev_ioctl.c      | 10 ++++++--
- net/dsa/dsa_priv.h        |  1 +
- net/dsa/master.c          | 26 +++-----------------
- net/dsa/slave.c           | 10 ++++++++
- 7 files changed, 35 insertions(+), 80 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 8cbe96ce0a2c..4b3f22b87193 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2736,6 +2736,7 @@ enum netdev_cmd {
- 	NETDEV_OFFLOAD_XSTATS_DISABLE,
- 	NETDEV_OFFLOAD_XSTATS_REPORT_USED,
- 	NETDEV_OFFLOAD_XSTATS_REPORT_DELTA,
-+	NETDEV_ETH_IOCTL,
- };
- const char *netdev_cmd_to_name(enum netdev_cmd cmd);
- 
-@@ -2786,6 +2787,12 @@ struct netdev_notifier_pre_changeaddr_info {
- 	const unsigned char *dev_addr;
- };
- 
-+struct netdev_notifier_eth_ioctl_info {
-+	struct netdev_notifier_info info; /* must be first */
-+	struct ifreq *ifr;
-+	unsigned int cmd;
-+};
-+
- enum netdev_offload_xstats_type {
- 	NETDEV_OFFLOAD_XSTATS_TYPE_L3 = 1,
- };
-@@ -2842,7 +2849,8 @@ netdev_notifier_info_to_extack(const struct netdev_notifier_info *info)
- }
- 
- int call_netdevice_notifiers(unsigned long val, struct net_device *dev);
--
-+int call_netdevice_notifiers_info(unsigned long val,
-+				  struct netdev_notifier_info *info);
- 
- extern rwlock_t				dev_base_lock;		/* Device list lock */
- 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index a2a68f532f59..d80dd68ae5d8 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -103,16 +103,6 @@ struct dsa_device_ops {
- 	bool promisc_on_master;
- };
- 
--/* This structure defines the control interfaces that are overlayed by the
-- * DSA layer on top of the DSA CPU/management net_device instance. This is
-- * used by the core net_device layer while calling various net_device_ops
-- * function pointers.
-- */
--struct dsa_netdevice_ops {
--	int (*ndo_eth_ioctl)(struct net_device *dev, struct ifreq *ifr,
--			     int cmd);
--};
--
- #define DSA_TAG_DRIVER_ALIAS "dsa_tag-"
- #define MODULE_ALIAS_DSA_TAG_DRIVER(__proto)				\
- 	MODULE_ALIAS(DSA_TAG_DRIVER_ALIAS __stringify(__proto##_VALUE))
-@@ -314,11 +304,6 @@ struct dsa_port {
- 	 */
- 	const struct ethtool_ops *orig_ethtool_ops;
- 
--	/*
--	 * Original copy of the master netdev net_device_ops
--	 */
--	const struct dsa_netdevice_ops *netdev_ops;
--
- 	/* List of MAC addresses that must be forwarded on this port.
- 	 * These are only valid on CPU ports and DSA links.
- 	 */
-@@ -1278,42 +1263,6 @@ static inline void dsa_tag_generic_flow_dissect(const struct sk_buff *skb,
- #endif
- }
- 
--#if IS_ENABLED(CONFIG_NET_DSA)
--static inline int __dsa_netdevice_ops_check(struct net_device *dev)
--{
--	int err = -EOPNOTSUPP;
--
--	if (!dev->dsa_ptr)
--		return err;
--
--	if (!dev->dsa_ptr->netdev_ops)
--		return err;
--
--	return 0;
--}
--
--static inline int dsa_ndo_eth_ioctl(struct net_device *dev, struct ifreq *ifr,
--				    int cmd)
--{
--	const struct dsa_netdevice_ops *ops;
--	int err;
--
--	err = __dsa_netdevice_ops_check(dev);
--	if (err)
--		return err;
--
--	ops = dev->dsa_ptr->netdev_ops;
--
--	return ops->ndo_eth_ioctl(dev, ifr, cmd);
--}
--#else
--static inline int dsa_ndo_eth_ioctl(struct net_device *dev, struct ifreq *ifr,
--				    int cmd)
--{
--	return -EOPNOTSUPP;
--}
--#endif
--
- void dsa_unregister_switch(struct dsa_switch *ds);
- int dsa_register_switch(struct dsa_switch *ds);
- void dsa_switch_shutdown(struct dsa_switch *ds);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 75bab5b0dbae..49ab1895a319 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -159,8 +159,6 @@ struct list_head ptype_base[PTYPE_HASH_SIZE] __read_mostly;
- struct list_head ptype_all __read_mostly;	/* Taps */
- 
- static int netif_rx_internal(struct sk_buff *skb);
--static int call_netdevice_notifiers_info(unsigned long val,
--					 struct netdev_notifier_info *info);
- static int call_netdevice_notifiers_extack(unsigned long val,
- 					   struct net_device *dev,
- 					   struct netlink_ext_ack *extack);
-@@ -1622,6 +1620,7 @@ const char *netdev_cmd_to_name(enum netdev_cmd cmd)
- 	N(SVLAN_FILTER_PUSH_INFO) N(SVLAN_FILTER_DROP_INFO)
- 	N(PRE_CHANGEADDR) N(OFFLOAD_XSTATS_ENABLE) N(OFFLOAD_XSTATS_DISABLE)
- 	N(OFFLOAD_XSTATS_REPORT_USED) N(OFFLOAD_XSTATS_REPORT_DELTA)
-+	N(ETH_IOCTL)
- 	}
- #undef N
- 	return "UNKNOWN_NETDEV_EVENT";
-@@ -1920,8 +1919,8 @@ static void move_netdevice_notifiers_dev_net(struct net_device *dev,
-  *	are as for raw_notifier_call_chain().
-  */
- 
--static int call_netdevice_notifiers_info(unsigned long val,
--					 struct netdev_notifier_info *info)
-+int call_netdevice_notifiers_info(unsigned long val,
-+				  struct netdev_notifier_info *info)
- {
- 	struct net *net = dev_net(info->dev);
- 	int ret;
-diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
-index 1b807d119da5..c6f3d5e22ee4 100644
---- a/net/core/dev_ioctl.c
-+++ b/net/core/dev_ioctl.c
-@@ -244,10 +244,16 @@ static int dev_eth_ioctl(struct net_device *dev,
- 			 struct ifreq *ifr, unsigned int cmd)
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
-+	struct netdev_notifier_eth_ioctl_info info = {
-+		.info.dev = dev,
-+		.ifr = ifr,
-+		.cmd = cmd,
-+	};
- 	int err;
- 
--	err = dsa_ndo_eth_ioctl(dev, ifr, cmd);
--	if (err == 0 || err != -EOPNOTSUPP)
-+	err = call_netdevice_notifiers_info(NETDEV_ETH_IOCTL, &info.info);
-+	err = notifier_to_errno(err);
-+	if (err)
- 		return err;
- 
- 	if (ops->ndo_eth_ioctl) {
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index f20bdd8ea0a8..04b8723c23bb 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -195,6 +195,7 @@ static inline int dsa_tag_protocol_overhead(const struct dsa_device_ops *ops)
- /* master.c */
- int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp);
- void dsa_master_teardown(struct net_device *dev);
-+int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
- 
- static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
- 						       int device, int port)
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index 991c2930d631..e84d5d35bbd8 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -187,12 +187,11 @@ static void dsa_master_get_strings(struct net_device *dev, uint32_t stringset,
- 	}
- }
- 
--static int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-+int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- {
- 	struct dsa_port *cpu_dp = dev->dsa_ptr;
- 	struct dsa_switch *ds = cpu_dp->ds;
- 	struct dsa_switch_tree *dst;
--	int err = -EOPNOTSUPP;
- 	struct dsa_port *dp;
- 
- 	dst = ds->dst;
-@@ -210,16 +209,9 @@ static int dsa_master_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 		break;
- 	}
- 
--	if (dev->netdev_ops->ndo_eth_ioctl)
--		err = dev->netdev_ops->ndo_eth_ioctl(dev, ifr, cmd);
--
--	return err;
-+	return 0;
- }
- 
--static const struct dsa_netdevice_ops dsa_netdev_ops = {
--	.ndo_eth_ioctl = dsa_master_ioctl,
--};
--
- static int dsa_master_ethtool_setup(struct net_device *dev)
- {
- 	struct dsa_port *cpu_dp = dev->dsa_ptr;
-@@ -254,12 +246,6 @@ static void dsa_master_ethtool_teardown(struct net_device *dev)
- 	cpu_dp->orig_ethtool_ops = NULL;
- }
- 
--static void dsa_netdev_ops_set(struct net_device *dev,
--			       const struct dsa_netdevice_ops *ops)
--{
--	dev->dsa_ptr->netdev_ops = ops;
--}
--
- /* Keep the master always promiscuous if the tagging protocol requires that
-  * (garbles MAC DA) or if it doesn't support unicast filtering, case in which
-  * it would revert to promiscuous mode as soon as we call dev_uc_add() on it
-@@ -363,16 +349,13 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- 	if (ret)
- 		goto out_err_reset_promisc;
- 
--	dsa_netdev_ops_set(dev, &dsa_netdev_ops);
--
- 	ret = sysfs_create_group(&dev->dev.kobj, &dsa_group);
- 	if (ret)
--		goto out_err_ndo_teardown;
-+		goto out_err_ethtool_teardown;
- 
- 	return ret;
- 
--out_err_ndo_teardown:
--	dsa_netdev_ops_set(dev, NULL);
-+out_err_ethtool_teardown:
- 	dsa_master_ethtool_teardown(dev);
- out_err_reset_promisc:
- 	dsa_master_set_promiscuity(dev, -1);
-@@ -382,7 +365,6 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- void dsa_master_teardown(struct net_device *dev)
- {
- 	sysfs_remove_group(&dev->dev.kobj, &dsa_group);
--	dsa_netdev_ops_set(dev, NULL);
- 	dsa_master_ethtool_teardown(dev);
- 	dsa_master_set_promiscuity(dev, -1);
- 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index d24b6bf845c1..7e4186f523c8 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2749,6 +2749,16 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
- 
- 		return NOTIFY_OK;
- 	}
-+	case NETDEV_ETH_IOCTL: {
-+		struct netdev_notifier_eth_ioctl_info *info = ptr;
-+		int err;
-+
-+		if (!netdev_uses_dsa(dev))
-+			return NOTIFY_DONE;
-+
-+		err = dsa_master_ioctl(dev, info->ifr, info->cmd);
-+		return notifier_from_errno(err);
-+	}
- 	default:
- 		break;
- 	}
--- 
-2.25.1
-
+On Wed, Mar 16, 2022 at 04:59:08PM -0700, Jakub Kicinski wrote:
+> tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
+> rise it to the local MSS. tp->mss_cache is not updated, however:
+> 
+> tcp_v6_connect():
+>   tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
+>   tcp_connect():
+>      tcp_connect_init():
+>        tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
+>      tcp_send_syn_data():
+>        tp->rx_opt.mss_clamp = tp->advmss
+> 
+> After recent fixes to ICMPv6 PTB handling we started dropping
+> PMTU updates higher than tp->mss_cache. Because of the stale
+> tp->mss_cache value PMTU updates during TFO are always dropped.
+> 
+> Thanks to Wei for helping zero in on the problem and the fix!
+> 
+> Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
+> Reported-by: Andre Nash <alnash@fb.com>
+> Reported-by: Neil Spring <ntspring@fb.com>
+> Reviewed-by: Wei Wang <weiwan@google.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
