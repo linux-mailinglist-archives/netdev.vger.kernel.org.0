@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 088574DBBD8
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 01:41:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1934DBBDB
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 01:42:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244236AbiCQAmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 20:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
+        id S1345383AbiCQAnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 20:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229586AbiCQAmh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 20:42:37 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CC762FE;
-        Wed, 16 Mar 2022 17:41:21 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id qa43so7508830ejc.12;
-        Wed, 16 Mar 2022 17:41:21 -0700 (PDT)
+        with ESMTP id S242804AbiCQAnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 20:43:49 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C314862FE;
+        Wed, 16 Mar 2022 17:42:33 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id w4so4718735edc.7;
+        Wed, 16 Mar 2022 17:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=puT3IgmYzTu6AuFh52Q7IDj5+ZEUZuLDjwQ4QyI52W0=;
-        b=QgXd0svzMbNIP2g2rA9c9EUijFq9dm/8soUIjK73L/NfXjS4ps3CVSug8zfay+8hHv
-         rLgugrG1f/iBupGJBEpfXAvMALWrhin8tGou8GYifVo99aIZsX13g8/DAodWWxghbliR
-         5FeXfzsejLgAD5ucGtMKUtCImIJUTlRiAJIuCFn1LsP3IdgAAL1sZ5JrhipoCe8VYbKf
-         j67ANWCkbXB4myPbg2ZhWhjCgOOJOgaZSEjrSSe/BAhtpTRvfexagbpwHtaOND1j92oD
-         ReFLZ6GjpbT+9rM+gdhV+AGzNiADUksDvG1kI0jtZAp9Gf6fuTscA2NSOySbgnM5JtrP
-         nAcw==
+        bh=H0nknxMHezOvYCsNqm3RZDRFJz+VXWQYJZtH3Zk/57k=;
+        b=ZbMebK+la9jrpPCHWvD3tQQxGQ4KzQZg2fxez0hesY7cRQoFosiRqCeEjOt6GnU0Yi
+         +keXpYbNgjeTelQZrOwfk8RtCsWcCQSmhT0yK6DttJ6dylS/8sdtXb271fYLg5xG4gd7
+         M/eG4A8n9mpTOeJ8rMDVx9oEZ5oJUVJKRRULKVcmg/L6fM4rIPPeIrfRevA0Nqz5am6V
+         Rz7sdM9PrlUAIlQrsDHxyrr3Yx1lv4u73Qw0GnPaJp7N/EmajnHunod0MYov8qxh4fZZ
+         otYuPHC8Ed9v5aqhRmiJcQreTsZnCht2VnUcPRhUhlmNCd6ah90nPlipbQEbX7+aaQPx
+         X81A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=puT3IgmYzTu6AuFh52Q7IDj5+ZEUZuLDjwQ4QyI52W0=;
-        b=GAlMh4QmVQMXK6XWmB2kAzJx5xyijmnH2J3+ILQ0kom6Xcw5gzmKWl6rVvVukOdnjG
-         kxNoDXhCj66aXnDqaSVvLn5yFCFSe9pZE8sBA44goPSat9HuzZ4WK+mO+x1PkBuUCnEc
-         hopvIbdioyZTzGWSAZq6Hju5m35FsmxJCcukCa06D/E8v5eExDYLJo0hLfTpO0wZLV1G
-         TDIMSyyB7YFx0EItb9Grw51Y06k/0A4Gf22jdPTuU6nJbtW0Ew4tVGx8ri0rQm0njAZQ
-         Zps81uLzT/C/gALIQqcu95IGsHPqn8p2rKkycWYW4aXQgfxJd42rJ+ImPuq+hHIwmB/H
-         yyWA==
-X-Gm-Message-State: AOAM530UZ4dvygmvhKv+KsiMf+lvxSBi2tBxnu5uQ/+7zaAgeOxh4GSE
-        KqGVn0W0uVnVSlnTZAGRYgs=
-X-Google-Smtp-Source: ABdhPJzPRk6YhBpWOdHQ0FEhwSP//JJXwdofxX9Q2WwjKdLT7SVeJhIto+QyGJvQ73CyHRGPFW2jHA==
-X-Received: by 2002:a17:906:a38e:b0:6da:a1f9:f9ee with SMTP id k14-20020a170906a38e00b006daa1f9f9eemr2003763ejz.27.1647477679866;
-        Wed, 16 Mar 2022 17:41:19 -0700 (PDT)
+        bh=H0nknxMHezOvYCsNqm3RZDRFJz+VXWQYJZtH3Zk/57k=;
+        b=TnlNSoT1IXVpPpFs2YAyQ8nnOkyNtsVzzrDSASeWDyA6Aktx2zQxVuZkfgE+peGXQm
+         hg+QAg9dmXWBx63TBwX0FARE8QXxlgQHjpoZCTq6zDx5ElKxW6YKw4CURqkyqc1wO67J
+         W2y8HNa788DpSupC//UG7gfZyBQgHSpaxgPlrt2qV7b3UTbAB/S0I2B8j/tuKROy4wyU
+         9EMD9FGms0h89vxkMr31ZccNNLrukwbpzKPEgJ397e0lpagpeYzD03BMwB5e9jm52PSs
+         HhMNaNUlWgLzJNeqC4SfG2/IR/ztYg7T4LNp0Hc9ufWsnRjFjA1yHyA/NR+SnBctrLhV
+         3rcw==
+X-Gm-Message-State: AOAM532/Gap++aRuNnETGkhdKEL6dBOkqs1RLfBH0yGOxtfdY9rbns9I
+        WeGACRJauReH6hpw+VXMkGE=
+X-Google-Smtp-Source: ABdhPJw1C8yIP3Qjd3GFx4zVRMAvdLwbqbJ2QzhL6I+Of0+SDQFe383BLZw0BLZ0kl+9wgwwCz+6/w==
+X-Received: by 2002:a05:6402:2065:b0:407:eb07:740 with SMTP id bd5-20020a056402206500b00407eb070740mr1918745edb.406.1647477752122;
+        Wed, 16 Mar 2022 17:42:32 -0700 (PDT)
 Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id bd12-20020a056402206c00b00418c9bf71cbsm1717601edb.68.2022.03.16.17.41.18
+        by smtp.gmail.com with ESMTPSA id a22-20020a50ff16000000b00410d029ea5csm1716880edu.96.2022.03.16.17.42.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 17:41:19 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 02:41:17 +0200
+        Wed, 16 Mar 2022 17:42:31 -0700 (PDT)
+Date:   Thu, 17 Mar 2022 02:42:29 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Tobias Waldekranz <tobias@waldekranz.com>
 Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
@@ -63,15 +63,15 @@ Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Matt Johnston <matt@codeconstruct.com.au>,
         Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH v5 net-next 09/15] net: bridge: mst: Add helper to query
- a port's MST state
-Message-ID: <20220317004117.sudxyvmteipz4y32@skbuf>
+Subject: Re: [PATCH v5 net-next 08/15] net: bridge: mst: Add helper to check
+ if MST is enabled
+Message-ID: <20220317004229.dub2qoinhur76co7@skbuf>
 References: <20220316150857.2442916-1-tobias@waldekranz.com>
- <20220316150857.2442916-10-tobias@waldekranz.com>
+ <20220316150857.2442916-9-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220316150857.2442916-10-tobias@waldekranz.com>
+In-Reply-To: <20220316150857.2442916-9-tobias@waldekranz.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,82 +82,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 04:08:51PM +0100, Tobias Waldekranz wrote:
-> This is useful for switchdev drivers who are offloading MST states
-> into hardware. As an example, a driver may wish to flush the FDB for a
-> port when it transitions from forwarding to blocking - which means
-> that the previous state must be discoverable.
+On Wed, Mar 16, 2022 at 04:08:50PM +0100, Tobias Waldekranz wrote:
+> This is useful for switchdev drivers that might want to refuse to join
+> a bridge where MST is enabled, if the hardware can't support it.
 > 
 > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 > ---
 
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
->  include/linux/if_bridge.h |  6 ++++++
->  net/bridge/br_mst.c       | 25 +++++++++++++++++++++++++
->  2 files changed, 31 insertions(+)
+>  include/linux/if_bridge.h | 6 ++++++
+>  net/bridge/br_mst.c       | 9 +++++++++
+>  2 files changed, 15 insertions(+)
 > 
 > diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-> index 4efd5540279a..d62ef428e3aa 100644
+> index 1cf0cc46d90d..4efd5540279a 100644
 > --- a/include/linux/if_bridge.h
 > +++ b/include/linux/if_bridge.h
-> @@ -121,6 +121,7 @@ int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
+> @@ -119,6 +119,7 @@ int br_vlan_get_info(const struct net_device *dev, u16 vid,
+>  		     struct bridge_vlan_info *p_vinfo);
+>  int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
 >  			 struct bridge_vlan_info *p_vinfo);
->  bool br_mst_enabled(const struct net_device *dev);
+> +bool br_mst_enabled(const struct net_device *dev);
 >  int br_mst_get_info(const struct net_device *dev, u16 msti, unsigned long *vids);
-> +int br_mst_get_state(const struct net_device *dev, u16 msti, u8 *state);
 >  #else
 >  static inline bool br_vlan_enabled(const struct net_device *dev)
->  {
-> @@ -164,6 +165,11 @@ static inline int br_mst_get_info(const struct net_device *dev, u16 msti,
->  {
+> @@ -153,6 +154,11 @@ static inline int br_vlan_get_info_rcu(const struct net_device *dev, u16 vid,
 >  	return -EINVAL;
 >  }
-> +static inline int br_mst_get_state(const struct net_device *dev, u16 msti,
-> +				   u8 *state)
-> +{
-> +	return -EINVAL;
-> +}
->  #endif
 >  
->  #if IS_ENABLED(CONFIG_BRIDGE)
+> +static inline bool br_mst_enabled(const struct net_device *dev)
+> +{
+> +	return false;
+> +}
+> +
+>  static inline int br_mst_get_info(const struct net_device *dev, u16 msti,
+>  				  unsigned long *vids)
+>  {
 > diff --git a/net/bridge/br_mst.c b/net/bridge/br_mst.c
-> index 830a5746479f..ee680adcee17 100644
+> index 00b36e629224..830a5746479f 100644
 > --- a/net/bridge/br_mst.c
 > +++ b/net/bridge/br_mst.c
-> @@ -48,6 +48,31 @@ int br_mst_get_info(const struct net_device *dev, u16 msti, unsigned long *vids)
->  }
->  EXPORT_SYMBOL_GPL(br_mst_get_info);
+> @@ -13,6 +13,15 @@
 >  
-> +int br_mst_get_state(const struct net_device *dev, u16 msti, u8 *state)
+>  DEFINE_STATIC_KEY_FALSE(br_mst_used);
+>  
+> +bool br_mst_enabled(const struct net_device *dev)
 > +{
-> +	const struct net_bridge_port *p = NULL;
-> +	const struct net_bridge_vlan_group *vg;
-> +	const struct net_bridge_vlan *v;
+> +	if (!netif_is_bridge_master(dev))
+> +		return false;
 > +
-> +	ASSERT_RTNL();
-> +
-> +	p = br_port_get_check_rtnl(dev);
-> +	if (!p || !br_opt_get(p->br, BROPT_MST_ENABLED))
-> +		return -EINVAL;
-> +
-> +	vg = nbp_vlan_group(p);
-> +
-> +	list_for_each_entry(v, &vg->vlan_list, vlist) {
-> +		if (v->brvlan->msti == msti) {
-> +			*state = v->state;
-> +			return 0;
-> +		}
-> +	}
-> +
-> +	return -ENOENT;
+> +	return br_opt_get(netdev_priv(dev), BROPT_MST_ENABLED);
 > +}
-> +EXPORT_SYMBOL_GPL(br_mst_get_state);
+> +EXPORT_SYMBOL_GPL(br_mst_enabled);
 > +
->  static void br_mst_vlan_set_state(struct net_bridge_port *p, struct net_bridge_vlan *v,
->  				  u8 state)
+>  int br_mst_get_info(const struct net_device *dev, u16 msti, unsigned long *vids)
 >  {
+>  	const struct net_bridge_vlan_group *vg;
 > -- 
 > 2.25.1
 > 
-
