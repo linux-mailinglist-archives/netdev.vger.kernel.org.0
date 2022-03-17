@@ -2,251 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E914DCF0B
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 20:52:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F30A4DCF16
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 20:57:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiCQTyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 15:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
+        id S229565AbiCQT6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 15:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiCQTyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 15:54:09 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530E3284E4A;
-        Thu, 17 Mar 2022 12:52:50 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id a17so6827440edm.9;
-        Thu, 17 Mar 2022 12:52:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bavSzS8RD+OPK6XigG8tAuoWzal+4J6X0wvgjdYgqmo=;
-        b=Xauc0qPk8zQuXoOmENXet51q+jgjMjqcI56cLCoLqIqfbBAcTciWxN0Dys+kiH12ue
-         en9cFrYoiCoqTla5VDHzvl1bvK1+et569hSCb+Lun8m2IQUDOey4/ceuiGJwbNTAr+k+
-         PXOP4RDNsP4l42aPUlLtDj024ybdgYU1RxpXwFr1PqmM4vpzDNFk1D2MajHty0TSgFU2
-         4x25j75sr/VqLyCeXxmt5pXTsQ6cfmZcNo1WHRTiGTJueT3bfC63Df2nghH7VGesrDaV
-         PTbU5YeJOfp+XuIIgW6F+iTSbXtGrGo064mU0PQ9pXpzdDbd412kju84Qd5XNLzT8ENN
-         jcgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bavSzS8RD+OPK6XigG8tAuoWzal+4J6X0wvgjdYgqmo=;
-        b=xwGQkfoxHkHl1Ef5TB8cNSQwH09NI7ZOIHs3WiOrqPZ8mAGflh/YHRYwLwkvZDU0XH
-         d3avUhfWG7bBOuWJHR+TGPn1AHy7lu9/A6A2ZNHqHeQXKQTQKRc06G7GfCtoXrb+vBH1
-         vW3WOUchOJaIb9Sn3tSFdqTYXHT2hIiN1Di/ME4PyMSI1CvSZl5jAKk81bzA7JW/DvhJ
-         BFRgTDJ4YTeiuKbBG9LxiMecrG4Dtd4P0wF/ZjWnkX9M6rpv9nHRhU7PdJvkLzWiCVAr
-         iLREamJXHXvv1SjkrOAmUPs/BC2OB5XVPXXpRnTVrHrV0n8CJRPQNdXHGrdIa8UYSbht
-         Z8Tw==
-X-Gm-Message-State: AOAM532jZQQJMf/rDzGQrPwNvEkr3uhJKyMVtwRRKKFU2QitmpCrhN8L
-        Nh4DnuSxdak11538qx2tQvo=
-X-Google-Smtp-Source: ABdhPJzZ8GGLH73Ksk8NxvDN1R3p5zUL1G5dVEZpLwbquwD+NVrK3kO0thyk2RlH+yzuxrFQ1dPYHQ==
-X-Received: by 2002:a50:d711:0:b0:410:a51a:77c5 with SMTP id t17-20020a50d711000000b00410a51a77c5mr6250033edi.154.1647546768763;
-        Thu, 17 Mar 2022 12:52:48 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id l9-20020a170906078900b006dac5f336f8sm2782164ejc.124.2022.03.17.12.52.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 12:52:48 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 21:52:46 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8795: handle eee
- specif erratum
-Message-ID: <20220317195246.jy43gwrnao4drljp@skbuf>
-References: <20220316125529.1489045-1-o.rempel@pengutronix.de>
+        with ESMTP id S229457AbiCQT6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 15:58:30 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BEC273808
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 12:57:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647547023;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=Cc:To:Subject:From:Date:Message-ID:Cc:Date:From:Subject:Sender;
+    bh=0kHIYtNRyfc63kuFEWIsqQh0ypHZqcGdcH+UyuiJeAs=;
+    b=oUpuHYu6KUyjk7GTCVPrpvPWVhvZku2T5GztWn4cNjALuIr2vJdGv4+rMKhezVV7Ox
+    DlapIvoa2IJ5jMayg3Daw1ridqwB2FyU4veGbrJ9eM2Lp6lYunsvHcdm6led9n53ij4B
+    OA4M8jzmYkejOm1vtbR6lRN5vTNy9eNCjPLvnNjwuP7S8QHZEyRzthejZ9e818rP9/5V
+    2EOmPAmeIxATcp+l9JFToFToE1x3TPOIVJQQy+TyRLmcWlxzisXpg+bTAtjihskkGkTd
+    aYmcbJV2xeLewWMXEG7oBzg8UpArFKU1lB4N4Y74EwW46QyyEjwhcTwEhZW0UG2h7EPG
+    Eh7Q==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.41.1 AUTH)
+    with ESMTPSA id cc2803y2HJv33fx
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 17 Mar 2022 20:57:03 +0100 (CET)
+Message-ID: <18e04a04-2aed-13de-b2fc-dbf5df864359@hartkopp.net>
+Date:   Thu, 17 Mar 2022 20:56:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220316125529.1489045-1-o.rempel@pengutronix.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: net-next: regression: patch "iwlwifi: acpi: move ppag code from mvm
+ to fw/acpi" (e8e10a37c51c) breaks wifi
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Matt Chen <matt.chen@intel.com>
+Cc:     netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 01:55:29PM +0100, Oleksij Rempel wrote:
-> According to erratum described in DS80000687C[1]: "Module 2: Link drops with
-> some EEE link partners.", we need to "Disable the EEE next page
-> exchange in EEE Global Register 2"
-> 
-> 1 - https://ww1.microchip.com/downloads/en/DeviceDoc/KSZ87xx-Errata-DS80000687C.pdf
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
+Hi all,
 
-I don't possess KSZ8 switches, but there doesn't look anything wrong to
-me with this patch, so:
+the patch "iwlwifi: acpi: move ppag code from mvm to fw/acpi" (net-next 
+commit e8e10a37c51c) breaks the wifi on my HP Elitebook 840 G5.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+I detected the problem when working on the latest net-next tree and the 
+wifi was fine until this patch.
 
->  drivers/net/dsa/microchip/ksz8.h        |  1 +
->  drivers/net/dsa/microchip/ksz8795.c     | 45 ++++++++++++++++++++++++-
->  drivers/net/dsa/microchip/ksz8795_reg.h |  4 +++
->  drivers/net/dsa/microchip/ksz_common.h  |  1 +
->  4 files changed, 50 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
-> index 9d611895d3cf..03da369675c6 100644
-> --- a/drivers/net/dsa/microchip/ksz8.h
-> +++ b/drivers/net/dsa/microchip/ksz8.h
-> @@ -16,6 +16,7 @@ enum ksz_regs {
->  	REG_IND_DATA_HI,
->  	REG_IND_DATA_LO,
->  	REG_IND_MIB_CHECK,
-> +	REG_IND_BYTE,
->  	P_FORCE_CTRL,
->  	P_LINK_STATUS,
->  	P_LOCAL_CTRL,
-> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-> index 5dc9899bc0a6..6f9cdd5204fb 100644
-> --- a/drivers/net/dsa/microchip/ksz8795.c
-> +++ b/drivers/net/dsa/microchip/ksz8795.c
-> @@ -33,6 +33,7 @@ static const u8 ksz8795_regs[] = {
->  	[REG_IND_DATA_HI]		= 0x71,
->  	[REG_IND_DATA_LO]		= 0x75,
->  	[REG_IND_MIB_CHECK]		= 0x74,
-> +	[REG_IND_BYTE]			= 0xA0,
->  	[P_FORCE_CTRL]			= 0x0C,
->  	[P_LINK_STATUS]			= 0x0E,
->  	[P_LOCAL_CTRL]			= 0x07,
-> @@ -222,6 +223,25 @@ static void ksz_port_cfg(struct ksz_device *dev, int port, int offset, u8 bits,
->  			   bits, set ? bits : 0);
->  }
->  
-> +static int ksz8_ind_write8(struct ksz_device *dev, u8 table, u16 addr, u8 data)
-> +{
-> +	struct ksz8 *ksz8 = dev->priv;
-> +	const u8 *regs = ksz8->regs;
-> +	u16 ctrl_addr;
-> +	int ret = 0;
-> +
-> +	mutex_lock(&dev->alu_mutex);
-> +
-> +	ctrl_addr = IND_ACC_TABLE(table) | addr;
-> +	ret = ksz_write8(dev, regs[REG_IND_BYTE], data);
-> +	if (!ret)
-> +		ret = ksz_write16(dev, regs[REG_IND_CTRL_0], ctrl_addr);
-> +
-> +	mutex_unlock(&dev->alu_mutex);
-> +
-> +	return ret;
-> +}
-> +
->  static int ksz8_reset_switch(struct ksz_device *dev)
->  {
->  	if (ksz_is_ksz88x3(dev)) {
-> @@ -1391,6 +1411,23 @@ static void ksz8_config_cpu_port(struct dsa_switch *ds)
->  	}
->  }
->  
-> +static int ksz8_handle_global_errata(struct dsa_switch *ds)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	int ret = 0;
-> +
-> +	/* KSZ87xx Errata DS80000687C.
-> +	 * Module 2: Link drops with some EEE link partners.
-> +	 *   An issue with the EEE next page exchange between the
-> +	 *   KSZ879x/KSZ877x/KSZ876x and some EEE link partners may result in
-> +	 *   the link dropping.
-> +	 */
-> +	if (dev->ksz87xx_eee_link_erratum)
-> +		ret = ksz8_ind_write8(dev, TABLE_EEE, REG_IND_EEE_GLOB2_HI, 0);
-> +
-> +	return ret;
-> +}
-> +
->  static int ksz8_setup(struct dsa_switch *ds)
->  {
->  	struct ksz_device *dev = ds->priv;
-> @@ -1458,7 +1495,7 @@ static int ksz8_setup(struct dsa_switch *ds)
->  
->  	ds->configure_vlan_while_not_filtering = false;
->  
-> -	return 0;
-> +	return ksz8_handle_global_errata(ds);
->  }
->  
->  static void ksz8_get_caps(struct dsa_switch *ds, int port,
-> @@ -1575,6 +1612,7 @@ struct ksz_chip_data {
->  	int num_statics;
->  	int cpu_ports;
->  	int port_cnt;
-> +	bool ksz87xx_eee_link_erratum;
->  };
->  
->  static const struct ksz_chip_data ksz8_switch_chips[] = {
-> @@ -1586,6 +1624,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
->  		.num_statics = 8,
->  		.cpu_ports = 0x10,	/* can be configured as cpu port */
->  		.port_cnt = 5,		/* total cpu and user ports */
-> +		.ksz87xx_eee_link_erratum = true,
->  	},
->  	{
->  		/*
-> @@ -1609,6 +1648,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
->  		.num_statics = 8,
->  		.cpu_ports = 0x10,	/* can be configured as cpu port */
->  		.port_cnt = 4,		/* total cpu and user ports */
-> +		.ksz87xx_eee_link_erratum = true,
->  	},
->  	{
->  		.chip_id = 0x8765,
-> @@ -1618,6 +1658,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
->  		.num_statics = 8,
->  		.cpu_ports = 0x10,	/* can be configured as cpu port */
->  		.port_cnt = 5,		/* total cpu and user ports */
-> +		.ksz87xx_eee_link_erratum = true,
->  	},
->  	{
->  		.chip_id = 0x8830,
-> @@ -1652,6 +1693,8 @@ static int ksz8_switch_init(struct ksz_device *dev)
->  			dev->host_mask = chip->cpu_ports;
->  			dev->port_mask = (BIT(dev->phy_port_cnt) - 1) |
->  					 chip->cpu_ports;
-> +			dev->ksz87xx_eee_link_erratum =
-> +				chip->ksz87xx_eee_link_erratum;
->  			break;
->  		}
->  	}
-> diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-> index 6b40bc25f7ff..d74defcd86b4 100644
-> --- a/drivers/net/dsa/microchip/ksz8795_reg.h
-> +++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-> @@ -812,6 +812,10 @@
->  
->  #define IND_ACC_TABLE(table)		((table) << 8)
->  
-> +/* */
-> +#define REG_IND_EEE_GLOB2_LO		0x34
-> +#define REG_IND_EEE_GLOB2_HI		0x35
-> +
->  /* Driver set switch broadcast storm protection at 10% rate. */
->  #define BROADCAST_STORM_PROT_RATE	10
->  
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index fa39ee73cbd2..485d4a948c38 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -77,6 +77,7 @@ struct ksz_device {
->  	phy_interface_t compat_interface;
->  	u32 regs_size;
->  	bool phy_errata_9477;
-> +	bool ksz87xx_eee_link_erratum;
->  	bool synclko_125;
->  	bool synclko_disable;
->  
-> -- 
-> 2.30.2
-> 
+Please let me know if you need support for testing.
+
+Regards,
+Oliver
+
+[    0.000000] Linux version 5.17.0-rc3-nn-01325-ge8e10a37c51c (xxx) 
+(gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 
+2.35.2) #15 SMP PREEMPT Thu Mar 17 20:41:21 CET 2022
+(..)
+[   12.001911] cfg80211: Loading compiled-in X.509 certificates for 
+regulatory database
+[   12.029737] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[   12.034170] cfg80211: loaded regulatory.db is malformed or signature 
+is missing/invalid
+[   12.086287] Bluetooth: Core ver 2.22
+[   12.087533] NET: Registered PF_BLUETOOTH protocol family
+[   12.090401] Bluetooth: HCI device and connection manager initialized
+[   12.090452] Bluetooth: HCI socket layer initialized
+[   12.090457] Bluetooth: L2CAP socket layer initialized
+[   12.090516] Bluetooth: SCO socket layer initialized
+[   12.136999] Intel(R) Wireless WiFi driver for Linux
+[   12.138353] iwlwifi 0000:01:00.0: enabling device (0000 -> 0002)
+[   12.144928] iwlwifi 0000:01:00.0: loaded firmware version 
+36.ad812ee0.0 8265-36.ucode op_mode iwlmvm
+[   12.224682] usbcore: registered new interface driver btusb
+[   12.248689] Bluetooth: hci0: Bootloader revision 0.0 build 26 week 38 
+2015
+[   12.250374] Bluetooth: hci0: Device revision is 16
+[   12.251288] Bluetooth: hci0: Secure boot is enabled
+[   12.252377] Bluetooth: hci0: OTP lock is enabled
+[   12.253229] Bluetooth: hci0: API lock is enabled
+[   12.254090] Bluetooth: hci0: Debug lock is disabled
+[   12.255009] Bluetooth: hci0: Minimum firmware build 1 week 10 2014
+[   12.260320] Bluetooth: hci0: Found device firmware: intel/ibt-12-16.sfi
+[   12.373476] iwlwifi 0000:01:00.0: Detected Intel(R) Dual Band 
+Wireless AC 8265, REV=0x230
+[   12.442732] iwlwifi 0000:01:00.0: base HW address: 48:89:e7:1b:ee:64, 
+OTP minor version: 0x0
+[   12.545287] intel_rapl_common: Found RAPL domain package
+[   12.545326] intel_rapl_common: Found RAPL domain core
+[   12.545350] intel_rapl_common: Found RAPL domain uncore
+[   12.545375] intel_rapl_common: Found RAPL domain psys
+[   12.545785] ieee80211 phy0: Selected rate control algorithm 'iwl-mvm-rs'
+[   12.850332] hp_wmi: query 0x4 returned error 0x5
+[   12.852738] hp_wmi: query 0xd returned error 0x5
+[   12.894436] input: HP WMI hotkeys as /devices/virtual/input/input23
+[   12.960086] hp_wmi: query 0x1b returned error 0x5
+[   13.053127] iwlwifi 0000:01:00.0 wlp1s0: renamed from wlan0
+[   13.114622] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+[   13.114625] Bluetooth: BNEP filters: protocol multicast
+[   13.114631] Bluetooth: BNEP socket layer initialized
+[   13.811222] Bluetooth: hci0: Waiting for firmware download to complete
+[   13.811636] Bluetooth: hci0: Firmware loaded in 1514074 usecs
+[   13.812493] Bluetooth: hci0: Waiting for device to boot
+[   13.824416] Bluetooth: hci0: Device booted in 12199 usecs
+[   13.824418] Bluetooth: hci0: Malformed MSFT vendor event: 0x02
+[   13.824806] Bluetooth: hci0: Found Intel DDC parameters: 
+intel/ibt-12-16.ddc
+[   13.827429] Bluetooth: hci0: Applying Intel DDC parameters completed
+[   13.828449] Bluetooth: hci0: Firmware revision 0.1 build 50 week 12 2019
+[   13.845837] iwlwifi 0000:01:00.0: mac start retry 0
+[   13.895993] NET: Registered PF_ALG protocol family
+[   14.100027] iwlwifi 0000:01:00.0: mac start retry 1
+[   14.349522] iwlwifi 0000:01:00.0: mac start retry 2
+[   14.594141] iwlwifi 0000:01:00.0: mac start retry 0
+[   14.835957] iwlwifi 0000:01:00.0: mac start retry 1
+[   15.075966] iwlwifi 0000:01:00.0: mac start retry 2
+[   15.326159] iwlwifi 0000:01:00.0: mac start retry 0
+[   15.568003] iwlwifi 0000:01:00.0: mac start retry 1
+[   15.570772] Bluetooth: RFCOMM TTY layer initialized
+[   15.570784] Bluetooth: RFCOMM socket layer initialized
+[   15.570800] Bluetooth: RFCOMM ver 1.11
+[   15.832467] iwlwifi 0000:01:00.0: mac start retry 2
+[   16.109220] iwlwifi 0000:01:00.0: mac start retry 0
+[   16.378910] iwlwifi 0000:01:00.0: mac start retry 1
+[   16.646092] iwlwifi 0000:01:00.0: mac start retry 2
+[   27.288232] iwlwifi 0000:01:00.0: mac start retry 0
+[   27.553616] iwlwifi 0000:01:00.0: mac start retry 1
+[   27.818481] iwlwifi 0000:01:00.0: mac start retry 2
+[   28.088457] iwlwifi 0000:01:00.0: mac start retry 0
+[   28.354671] iwlwifi 0000:01:00.0: mac start retry 1
+[   28.620348] iwlwifi 0000:01:00.0: mac start retry 2
+[   39.290524] iwlwifi 0000:01:00.0: mac start retry 0
+[   39.554416] iwlwifi 0000:01:00.0: mac start retry 1
+[   39.820355] iwlwifi 0000:01:00.0: mac start retry 2
+[   40.085494] iwlwifi 0000:01:00.0: mac start retry 0
+[   40.348142] iwlwifi 0000:01:00.0: mac start retry 1
+[   40.614622] iwlwifi 0000:01:00.0: mac start retry 2
+[   51.296158] iwlwifi 0000:01:00.0: mac start retry 0
+[   51.564189] iwlwifi 0000:01:00.0: mac start retry 1
+[   51.832335] iwlwifi 0000:01:00.0: mac start retry 2
+[   52.100712] iwlwifi 0000:01:00.0: mac start retry 0
+[   52.366818] iwlwifi 0000:01:00.0: mac start retry 1
+[   52.630498] iwlwifi 0000:01:00.0: mac start retry 2
+[   63.300472] iwlwifi 0000:01:00.0: mac start retry 0
+[   63.570028] iwlwifi 0000:01:00.0: mac start retry 1
+[   63.836321] iwlwifi 0000:01:00.0: mac start retry 2
+[   64.107436] iwlwifi 0000:01:00.0: mac start retry 0
+[   64.377235] iwlwifi 0000:01:00.0: mac start retry 1
+[   64.646305] iwlwifi 0000:01:00.0: mac start retry 2
+[   75.298137] iwlwifi 0000:01:00.0: mac start retry 0
+[   75.564421] iwlwifi 0000:01:00.0: mac start retry 1
+[   75.829962] iwlwifi 0000:01:00.0: mac start retry 2
+[   76.102979] iwlwifi 0000:01:00.0: mac start retry 0
+[   76.372426] iwlwifi 0000:01:00.0: mac start retry 1
+[   76.641806] iwlwifi 0000:01:00.0: mac start retry 2
+
+
