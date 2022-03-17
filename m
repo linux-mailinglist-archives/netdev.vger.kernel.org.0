@@ -2,1150 +2,819 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF004DBF70
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 07:23:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3DD4DBF7C
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 07:24:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiCQGYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 02:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41276 "EHLO
+        id S230107AbiCQGZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 02:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiCQGYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 02:24:40 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4564D158DBF;
-        Wed, 16 Mar 2022 23:17:02 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.48:53606.1514678939
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.39 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id BDBD6280083;
-        Thu, 17 Mar 2022 14:16:48 +0800 (CST)
-X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id 49958f897f46428990b288c91cecf15b for j.vosburgh@gmail.com;
-        Thu, 17 Mar 2022 14:16:53 CST
-X-Transaction-ID: 49958f897f46428990b288c91cecf15b
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, oliver@neukum.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
-Subject: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb mode
-Date:   Thu, 17 Mar 2022 02:15:21 -0400
-Message-Id: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S230064AbiCQGZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 02:25:19 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E33F61F2;
+        Wed, 16 Mar 2022 23:18:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647497898; x=1679033898;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nTSTxSGj7Nc7Muhp0FwkYy1FNPvjFQ48Sy84VgDOtFw=;
+  b=buWaW6AeOCfq2v7HY3cnonACzj7UqYd5jfd7jIV0EpdPVI/1rRmmTgkl
+   cr3Mq+IXTUYOEwMILiO/j3U59X4Cmj7TcJf83IhiP49/pRSRTblKAvC/z
+   PWFR1jS68OgEUV/Eiw1+OZt7cdwejJdv7p526rVAOYTIrJjdwswTTeS3o
+   M0fXIPc5fq9DEUt2ibOvxIBTFYjjceKgnwn5RGlzOdouujRtVv+JYhOxJ
+   9J9p24TbBoPNdaBzpOz0lIyQaXa1ffQRvrLWxQ7bdLVtpnqQQ/+8WJbPe
+   Lne/rpYWZ3kei6weh8c6Ds4QMv8QjLWtzFnazAhfuLDXjKmTNyzmaTCsG
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10288"; a="237399392"
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="237399392"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2022 23:18:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
+   d="scan'208";a="581189632"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 16 Mar 2022 23:18:12 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nUjSd-000DMs-LG; Thu, 17 Mar 2022 06:18:11 +0000
+Date:   Thu, 17 Mar 2022 14:18:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     usb-storage@lists.one-eyed-alien.net,
+        uclinux-h8-devel@lists.sourceforge.jp, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-sh@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-rdma@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-hardening@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-btrfs@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-alpha@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 8a11187eb62b8b910d2c5484e1f5d160e8b11eb4
+Message-ID: <6232d299.9omOW8g6S6l31UFc%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,SUSPICIOUS_RECIPS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is implementing IPV6 RLB for balance-alb mode.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 8a11187eb62b8b910d2c5484e1f5d160e8b11eb4  Add linux-next specific files for 20220316
 
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+Error/Warning reports:
+
+https://lore.kernel.org/linux-doc/202202240704.pQD40A9L-lkp@intel.com
+https://lore.kernel.org/linux-doc/202202240705.t3QbMnlt-lkp@intel.com
+https://lore.kernel.org/linux-media/202203160306.SfWO9QWV-lkp@intel.com
+https://lore.kernel.org/linux-media/202203170501.AhqUekoF-lkp@intel.com
+https://lore.kernel.org/linux-mm/202203160358.yulPl6b4-lkp@intel.com
+https://lore.kernel.org/llvm/202202241039.g8GKEE4O-lkp@intel.com
+
+Error/Warning:
+
+ERROR: dtschema minimum version is v2022.3
+ERROR: modpost: "__v4l2_async_nf_add_fwnode_remote" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "perf_pmu_migrate_context" [drivers/nvdimm/libnvdimm.ko] undefined!
+ERROR: modpost: "perf_pmu_register" [drivers/nvdimm/libnvdimm.ko] undefined!
+ERROR: modpost: "perf_pmu_unregister" [drivers/nvdimm/libnvdimm.ko] undefined!
+ERROR: modpost: "v4l2_async_nf_init" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l2_async_register_subdev" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l2_async_subdev_nf_register" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l2_async_unregister_subdev" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l2_fwnode_endpoint_parse" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l2_subdev_get_fwnode_pad_1_to_1" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l2_subdev_init" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l2_subdev_link_validate" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+ERROR: modpost: "v4l_bound_align_image" [drivers/media/platform/nxp/imx-mipi-csis.ko] undefined!
+arch/arm/mach-iop32x/cp6.c:10:6: warning: no previous prototype for 'iop_enable_cp6' [-Wmissing-prototypes]
+drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h:35:6: warning: no previous prototype for 'fimc_isp_video_device_unregister' [-Wmissing-prototypes]
+drivers/spi/spi-amd.c:296:21: warning: cast to smaller integer type 'enum amd_spi_versions' from 'const void *' [-Wvoid-pointer-to-enum-cast]
+drm_dp_mst_topology.c:(.text+0x2db0): undefined reference to `__drm_atomic_helper_private_obj_duplicate_state'
+drm_dp_mst_topology.c:(.text+0x36c4): undefined reference to `drm_kms_helper_hotplug_event'
+fs/btrfs/ordered-data.c:168: warning: expecting prototype for Add an ordered extent to the per(). Prototype was for btrfs_add_ordered_extent() instead
+fs/btrfs/tree-log.c:6934: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+
+Unverified Error/Warning (likely false positive, please contact us if interested):
+
+Makefile:662: arch/nds32/Makefile: No such file or directory
+arch/Kconfig:10: can't open file "arch/nds32/Kconfig"
+arch/alpha/include/asm/string.h:22:16: warning: '__builtin_memcpy' forming offset [40, 2051] is out of the bounds [0, 40] of object 'tag_buf' with type 'unsigned char[40]' [-Warray-bounds]
+arch/s390/kernel/machine_kexec.c:57:9: warning: 'memcpy' offset [0, 511] is out of the bounds [0, 0] [-Warray-bounds]
+arch/sh/kernel/machvec.c:105:33: warning: array subscript 'struct sh_machine_vector[0]' is partly outside array bounds of 'long int[1]' [-Warray-bounds]
+drivers/bus/imx-weim.c:373:23: sparse: sparse: symbol 'weim_of_notifier' was not declared. Should it be static?
+drivers/clk/imx/clk-pll14xx.c:166:2: warning: Value stored to 'pll_div_ctl1' is never read [clang-analyzer-deadcode.DeadStores]
+drivers/firmware/turris-mox-rwtm.c:146:1: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link.c:4330:7: warning: Dereference of null pointer [clang-analyzer-core.NullDereference]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:1633:6: warning: no previous prototype for 'is_timing_changed' [-Wmissing-prototypes]
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:1633:6: warning: no previous prototype for function 'is_timing_changed' [-Wmissing-prototypes]
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/calcs/dce_calcs.c:77:13: warning: stack frame size (5280) exceeds limit (2048) in 'calculate_bandwidth' [-Wframe-larger-than]
+drivers/hid/hid-core.c:1665:30: warning: Although the value stored to 'field' is used in the enclosing expression, the value is never actually read from 'field' [clang-analyzer-deadcode.DeadStores]
+drivers/hwmon/nsa320-hwmon.c:114:9: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+drivers/iio/frequency/admv1014.c:703:22: sparse: sparse: dubious: x & !y
+drivers/infiniband/core/user_mad.c:564:50: warning: array subscript 'struct ib_rmpp_mad[0]' is partly outside array bounds of 'unsigned char[124]' [-Warray-bounds]
+drivers/input/serio/ps2-gpio.c:223:4: warning: Value stored to 'rxflags' is never read [clang-analyzer-deadcode.DeadStores]
+drivers/leds/trigger/ledtrig-tty.c:33:9: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+drivers/memory/brcmstb_dpfe.c:707:10: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+drivers/memory/tegra/tegra30-emc.c:1164:3: warning: Value stored to 'dram_type_str' is never read [clang-analyzer-deadcode.DeadStores]
+drivers/mmc/host/omap_hsmmc.c:747:9: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+drivers/net/vxlan/vxlan_core.c:440:34: sparse: sparse: incorrect type in argument 2 (different base types)
+drivers/nvmem/sunplus-ocotp.c:74:29: sparse: sparse: symbol 'sp_otp_v0' was not declared. Should it be static?
+drivers/pci/vgaarb.c:213:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
+drivers/phy/broadcom/phy-brcm-usb.c:233:9: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+drivers/scsi/lpfc/lpfc_els.c:7983:38: sparse:    left side has type unsigned int
+drivers/scsi/lpfc/lpfc_els.c:7983:38: sparse:    right side has type restricted __be32
+drivers/scsi/lpfc/lpfc_els.c:7983:38: sparse: sparse: invalid assignment: |=
+drivers/scsi/lpfc/lpfc_els.c:8504:33: sparse: sparse: incorrect type in assignment (different base types)
+drivers/soc/rockchip/dtpm.c:15:12: sparse: sparse: obsolete array initializer, use C99 syntax
+drivers/staging/greybus/arche-apb-ctrl.c:302:10: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+drivers/staging/wfx/bus_spi.c:164:8-33: WARNING: Threaded IRQ with no primary handler requested without IRQF_ONESHOT (unless it is nested IRQ)
+drivers/tty/serial/sunplus-uart.c:501:26: sparse: sparse: symbol 'sunplus_console_ports' was not declared. Should it be static?
+drivers/usb/storage/ene_ub6250.c:2416:27: warning: array subscript 'struct SD_STATUS[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
+drivers/usb/storage/ene_ub6250.c:2417:27: warning: array subscript 'struct MS_STATUS[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
+drivers/usb/storage/ene_ub6250.c:2418:27: warning: array subscript 'struct SM_STATUS[0]' is partly outside array bounds of 'u8[1]' {aka 'unsigned char[1]'} [-Warray-bounds]
+drm_gem_shmem_helper.c:(.text+0x1dc): undefined reference to `vmf_insert_pfn'
+fs/f2fs/file.c:2057 f2fs_ioc_start_atomic_write() warn: inconsistent returns '&inode->i_rwsem'.
+fs/reiserfs/lbalance.o: warning: objtool: leaf_copy_boundary_item()+0x30ae: stack state mismatch: cfa1=4+232 cfa2=4+224
+fs/reiserfs/lbalance.o: warning: objtool: leaf_copy_boundary_item()+0x30eb: stack state mismatch: cfa1=4+232 cfa2=4+224
+include/linux/cacheflush.h:12:46: warning: 'struct folio' declared inside parameter list will not be visible outside of this definition or declaration
+include/linux/fortify-string.h:336:4: warning: call to __read_overflow2_field declared with 'warning' attribute: detected read beyond size of field (2nd parameter); maybe use struct_group()? [-Wattribute-warning]
+include/linux/fortify-string.h:45:33: warning: '__builtin_memcpy' offset [0, 511] is out of the bounds [0, 0] [-Warray-bounds]
+make[1]: *** No rule to make target 'arch/nds32/Makefile'.
+mips64-linux-ld: page_alloc.c:(.init.text+0x5654): undefined reference to `node_data'
+nd_perf.c:(.text+0x21e): undefined reference to `perf_pmu_migrate_context'
+nd_perf.c:(.text+0x434): undefined reference to `perf_pmu_register'
+nd_perf.c:(.text+0x4e0): undefined reference to `perf_pmu_migrate_context'
+nd_perf.c:(.text+0x57c): undefined reference to `perf_pmu_unregister'
+nd_perf.c:(.text+0x682): undefined reference to `perf_pmu_migrate_context'
+nd_perf.c:(.text+0x770): undefined reference to `perf_pmu_register'
+nd_perf.c:(.text+0xa28): undefined reference to `perf_pmu_unregister'
+net.c:(.text+0xe2): undefined reference to `ieee80211_hdrlen'
+net/core/pktgen.c:1312:4: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+net/ipv4/tcp_input.c:5012:2: warning: Value stored to 'reason' is never read [clang-analyzer-deadcode.DeadStores]
+page_alloc.c:(.init.text+0x5648): undefined reference to `node_data'
+{standard input}:1989: Error: unknown pseudo-op: `.sec'
+
+Error/Warning ids grouped by kconfigs:
+
+gcc_recent_errors
+|-- alpha-allmodconfig
+|   |-- arch-alpha-include-asm-string.h:warning:__builtin_memcpy-forming-offset-is-out-of-the-bounds-of-object-tag_buf-with-type-unsigned-char
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- drivers-iio-frequency-admv1014.c:sparse:sparse:dubious:x-y
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-nvmem-sunplus-ocotp.c:sparse:sparse:symbol-sp_otp_v0-was-not-declared.-Should-it-be-static
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- alpha-allyesconfig
+|   |-- arch-alpha-include-asm-string.h:warning:__builtin_memcpy-forming-offset-is-out-of-the-bounds-of-object-tag_buf-with-type-unsigned-char
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- drivers-iio-frequency-admv1014.c:sparse:sparse:dubious:x-y
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-nvmem-sunplus-ocotp.c:sparse:sparse:symbol-sp_otp_v0-was-not-declared.-Should-it-be-static
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- alpha-buildonly-randconfig-r002-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-nvmem-sunplus-ocotp.c:sparse:sparse:symbol-sp_otp_v0-was-not-declared.-Should-it-be-static
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arc-randconfig-c023-20220314
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arc-randconfig-p002-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arc-randconfig-r043-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arm-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arm-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arm-defconfig
+|   `-- ERROR:dtschema-minimum-version-is-v2022.
+|-- arm-qcom_defconfig
+|   |-- drm_dp_mst_topology.c:(.text):undefined-reference-to-__drm_atomic_helper_private_obj_duplicate_state
+|   `-- drm_dp_mst_topology.c:(.text):undefined-reference-to-drm_kms_helper_hotplug_event
+|-- arm-randconfig-c002-20220314
+|   |-- drm_gem_shmem_helper.c:(.text):undefined-reference-to-vmf_insert_pfn
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arm-randconfig-c023-20220313
+|   `-- drivers-staging-wfx-bus_spi.c:WARNING:Threaded-IRQ-with-no-primary-handler-requested-without-IRQF_ONESHOT-(unless-it-is-nested-IRQ)
+|-- arm-randconfig-s031-20220313
+|   |-- arch-arm-mach-iop32x-cp6.c:warning:no-previous-prototype-for-iop_enable_cp6
+|   |-- drivers-usb-storage-ene_ub6250.c:warning:array-subscript-struct-MS_STATUS-is-partly-outside-array-bounds-of-u8-aka-unsigned-char
+|   |-- drivers-usb-storage-ene_ub6250.c:warning:array-subscript-struct-SD_STATUS-is-partly-outside-array-bounds-of-u8-aka-unsigned-char
+|   `-- drivers-usb-storage-ene_ub6250.c:warning:array-subscript-struct-SM_STATUS-is-partly-outside-array-bounds-of-u8-aka-unsigned-char
+|-- arm64-allmodconfig
+|   |-- drivers-bus-imx-weim.c:sparse:sparse:symbol-weim_of_notifier-was-not-declared.-Should-it-be-static
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- drivers-iio-frequency-admv1014.c:sparse:sparse:dubious:x-y
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-nvmem-sunplus-ocotp.c:sparse:sparse:symbol-sp_otp_v0-was-not-declared.-Should-it-be-static
+|   |-- drivers-scsi-hisi_sas-hisi_sas_v3_hw.c:sparse:sparse:restricted-__le32-degrades-to-integer
+|   |-- drivers-soc-rockchip-dtpm.c:sparse:sparse:obsolete-array-initializer-use-C99-syntax
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arm64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arm64-defconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- csky-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- csky-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- csky-randconfig-c023-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- h8300-allmodconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- h8300-allyesconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- include-linux-cacheflush.h:warning:struct-folio-declared-inside-parameter-list-will-not-be-visible-outside-of-this-definition-or-declaration
+|-- h8300-randconfig-s031-20220316
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
+|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
+|   `-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
+|-- i386-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- drivers-gpu-drm-gma500-intel_bios.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-const-p-got-unsigned-char-noderef-usertype-__iomem
+|   |-- drivers-gpu-drm-gma500-opregion.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-const-p-got-void-noderef-__iomem-assigned-base
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:left-side-has-type-unsigned-int
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:right-side-has-type-restricted-__be32
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-int-usertype-linkFailureCnt-got-restricted-__be32-usertype
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:invalid-assignment:
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-debian-10.3
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-debian-10.3-kselftests
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a001-20220314
+|   `-- net.c:(.text):undefined-reference-to-ieee80211_hdrlen
+|-- i386-randconfig-a002-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a004-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a006-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-c001-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-c021-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-s001
+|   |-- drivers-gpu-drm-gma500-intel_bios.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-const-p-got-unsigned-char-noderef-usertype-__iomem
+|   `-- drivers-gpu-drm-gma500-opregion.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-const-p-got-void-noderef-__iomem-assigned-base
+|-- i386-randconfig-s002
+|   |-- drivers-gpu-drm-gma500-intel_bios.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-const-p-got-unsigned-char-noderef-usertype-__iomem
+|   |-- drivers-gpu-drm-gma500-opregion.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-const-p-got-void-noderef-__iomem-assigned-base
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- ia64-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- ia64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_migrate_context
+|-- ia64-randconfig-r001-20220313
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|-- ia64-randconfig-r001-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- ia64-randconfig-r031-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- ia64-randconfig-r036-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- m68k-allmodconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- m68k-allyesconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- m68k-apollo_defconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- m68k-defconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- m68k-randconfig-r032-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- mips-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- mips-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- mips-randconfig-p002-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   |-- mips64-linux-ld:page_alloc.c:(.init.text):undefined-reference-to-node_data
+|   |-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_migrate_context
+|   |-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_register
+|   |-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_unregister
+|   `-- page_alloc.c:(.init.text):undefined-reference-to-node_data
+|-- nds32-allmodconfig
+|   |-- Makefile:arch-nds32-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-nds32-Kconfig
+|   `-- make:No-rule-to-make-target-arch-nds32-Makefile-.
+|-- nds32-allnoconfig
+|   |-- Makefile:arch-nds32-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-nds32-Kconfig
+|   `-- make:No-rule-to-make-target-arch-nds32-Makefile-.
+|-- nds32-allyesconfig
+|   |-- Makefile:arch-nds32-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-nds32-Kconfig
+|   `-- make:No-rule-to-make-target-arch-nds32-Makefile-.
+|-- nds32-defconfig
+|   |-- Makefile:arch-nds32-Makefile:No-such-file-or-directory
+|   `-- make:No-rule-to-make-target-arch-nds32-Makefile-.
+|-- nds32-randconfig-c024-20220313
+|   |-- Makefile:arch-nds32-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-nds32-Kconfig
+|   `-- make:No-rule-to-make-target-arch-nds32-Makefile-.
+|-- nds32-randconfig-r023-20220314
+|   |-- Makefile:arch-nds32-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-nds32-Kconfig
+|   `-- make:No-rule-to-make-target-arch-nds32-Makefile-.
+|-- nios2-allmodconfig
+|   |-- arch-nios2-kernel-misaligned.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-noderef-__user-to-got-unsigned-char-usertype-__pu_ptr
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-nvmem-sunplus-ocotp.c:sparse:sparse:symbol-sp_otp_v0-was-not-declared.-Should-it-be-static
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- nios2-allyesconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- nios2-buildonly-randconfig-r005-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- nios2-randconfig-r004-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- nios2-randconfig-r006-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- nios2-randconfig-r014-20220317
+|   |-- ERROR:__v4l2_async_nf_add_fwnode_remote-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_async_nf_init-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_async_register_subdev-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_async_subdev_nf_register-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_async_unregister_subdev-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_fwnode_endpoint_parse-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_subdev_get_fwnode_pad_1_to_1-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_subdev_init-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   |-- ERROR:v4l2_subdev_link_validate-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|   `-- ERROR:v4l_bound_align_image-drivers-media-platform-nxp-imx-mipi-csis.ko-undefined
+|-- parisc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- parisc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- parisc-randconfig-m031-20220317
+|   `-- fs-f2fs-file.c-f2fs_ioc_start_atomic_write()-warn:inconsistent-returns-inode-i_rwsem-.
+|-- parisc-randconfig-r025-20220313
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|-- parisc-randconfig-r033-20220314
+|   |-- drivers-infiniband-core-user_mad.c:warning:array-subscript-struct-ib_rmpp_mad-is-partly-outside-array-bounds-of-unsigned-char
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- parisc64-defconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- powerpc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- powerpc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- powerpc64-buildonly-randconfig-r005-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- powerpc64-randconfig-m031-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- powerpc64-randconfig-p001-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- powerpc64-randconfig-r034-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- riscv-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- riscv-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- riscv-randconfig-r042-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- s390-allmodconfig
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- s390-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- s390-defconfig
+|   |-- arch-s390-kernel-machine_kexec.c:warning:memcpy-offset-is-out-of-the-bounds
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- s390-randconfig-c003-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- s390-randconfig-r002-20220314
+|   |-- ERROR:perf_pmu_migrate_context-drivers-nvdimm-libnvdimm.ko-undefined
+|   |-- ERROR:perf_pmu_register-drivers-nvdimm-libnvdimm.ko-undefined
+|   |-- ERROR:perf_pmu_unregister-drivers-nvdimm-libnvdimm.ko-undefined
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- s390-randconfig-r044-20220313
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- include-linux-fortify-string.h:warning:__builtin_memcpy-offset-is-out-of-the-bounds
+|   |-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_migrate_context
+|   |-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_register
+|   `-- nd_perf.c:(.text):undefined-reference-to-perf_pmu_unregister
+|-- sh-allmodconfig
+|   |-- arch-sh-kernel-machvec.c:warning:array-subscript-struct-sh_machine_vector-is-partly-outside-array-bounds-of-long-int
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- standard-input:Error:unknown-pseudo-op:sec
+|-- sh-allyesconfig
+|   |-- arch-sh-kernel-machvec.c:warning:array-subscript-struct-sh_machine_vector-is-partly-outside-array-bounds-of-long-int
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- standard-input:Error:unknown-pseudo-op:sec
+|-- sh-randconfig-s032-20220313
+|   |-- arch-sh-kernel-machvec.c:warning:array-subscript-struct-sh_machine_vector-is-partly-outside-array-bounds-of-long-int
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- sh-se7712_defconfig
+|   `-- arch-sh-kernel-machvec.c:warning:array-subscript-struct-sh_machine_vector-is-partly-outside-array-bounds-of-long-int
+|-- sparc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- drivers-iio-frequency-admv1014.c:sparse:sparse:dubious:x-y
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-nvmem-sunplus-ocotp.c:sparse:sparse:symbol-sp_otp_v0-was-not-declared.-Should-it-be-static
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- sparc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- sparc-randconfig-r021-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- sparc64-randconfig-m031-20220314
+|   |-- drivers-media-platform-samsung-exynos4-is-fimc-isp-video.h:warning:no-previous-prototype-for-fimc_isp_video_device_unregister
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- drivers-iio-frequency-admv1014.c:sparse:sparse:dubious:x-y
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:left-side-has-type-unsigned-int
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:right-side-has-type-restricted-__be32
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-int-usertype-linkFailureCnt-got-restricted-__be32-usertype
+|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:invalid-assignment:
+|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-kexec
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-randconfig-a002-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-randconfig-a004-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-randconfig-a006-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-randconfig-m001-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-rhel-8.3
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-rhel-8.3-func
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-rhel-8.3-kselftests
+|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-rhel-8.3-kunit
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- xtensa-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- xtensa-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- xtensa-buildonly-randconfig-r003-20220314
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+`-- xtensa-randconfig-r005-20220314
+    |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-is_timing_changed
+    |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+    `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+
+clang_recent_errors
+|-- arm-randconfig-c002-20220313
+|   |-- drivers-clk-imx-clk-pll14xx.c:warning:Value-stored-to-pll_div_ctl1-is-never-read-clang-analyzer-deadcode.DeadStores
+|   |-- drivers-firmware-turris-mox-rwtm.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-ana
+|   |-- drivers-hid-hid-core.c:warning:Although-the-value-stored-to-field-is-used-in-the-enclosing-expression-the-value-is-never-actually-read-from-field-clang-analyzer-deadcode.DeadStores
+|   |-- drivers-hwmon-nsa320-hwmon.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-analogous
+|   |-- drivers-input-serio-ps2-gpio.c:warning:Value-stored-to-rxflags-is-never-read-clang-analyzer-deadcode.DeadStores
+|   |-- drivers-leds-trigger-ledtrig-tty.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-ana
+|   |-- drivers-memory-brcmstb_dpfe.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-analogou
+|   |-- drivers-memory-tegra-tegra30-emc.c:warning:Value-stored-to-dram_type_str-is-never-read-clang-analyzer-deadcode.DeadStores
+|   |-- drivers-mmc-host-omap_hsmmc.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-analogou
+|   |-- drivers-phy-broadcom-phy-brcm-usb.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-an
+|   |-- drivers-staging-greybus-arche-apb-ctrl.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-wi
+|   |-- include-linux-fortify-string.h:warning:call-to-__read_overflow2_field-declared-with-warning-attribute:detected-read-beyond-size-of-field-(2nd-parameter)-maybe-use-struct_group()
+|   |-- net-core-pktgen.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-analogous-functions-
+|   `-- net-ipv4-tcp_input.c:warning:Value-stored-to-reason-is-never-read-clang-analyzer-deadcode.DeadStores
+|-- arm-randconfig-r022-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- arm64-randconfig-r026-20220314
+|   `-- drivers-spi-spi-amd.c:warning:cast-to-smaller-integer-type-enum-amd_spi_versions-from-const-void
+|-- hexagon-randconfig-r041-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- hexagon-randconfig-r045-20220313
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a011-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a012-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a013-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a014-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a015-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-a016-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- i386-randconfig-c001
+|   |-- drivers-hid-hid-core.c:warning:Although-the-value-stored-to-field-is-used-in-the-enclosing-expression-the-value-is-never-actually-read-from-field-clang-analyzer-deadcode.DeadStores
+|   `-- net-ipv4-tcp_input.c:warning:Value-stored-to-reason-is-never-read-clang-analyzer-deadcode.DeadStores
+|-- riscv-randconfig-c006-20220310
+|   `-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_link.c:warning:Dereference-of-null-pointer-clang-analyzer-core.NullDereference
+|-- riscv-randconfig-c006-20220313
+|   |-- drivers-clk-imx-clk-pll14xx.c:warning:Value-stored-to-pll_div_ctl1-is-never-read-clang-analyzer-deadcode.DeadStores
+|   |-- drivers-hid-hid-core.c:warning:Although-the-value-stored-to-field-is-used-in-the-enclosing-expression-the-value-is-never-actually-read-from-field-clang-analyzer-deadcode.DeadStores
+|   |-- drivers-phy-broadcom-phy-brcm-usb.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-with-an
+|   |-- drivers-staging-greybus-arche-apb-ctrl.c:warning:Call-to-function-sprintf-is-insecure-as-it-does-not-provide-bounding-of-the-memory-buffer-or-security-checks-introduced-in-the-C11-standard.-Replace-wi
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- s390-randconfig-c005-20220313
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-core-dc_resource.c:warning:no-previous-prototype-for-function-is_timing_changed
+|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dml-calcs-dce_calcs.c:warning:stack-frame-size-()-exceeds-limit-()-in-calculate_bandwidth
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   `-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|-- x86_64-randconfig-a011-20220314
+|   |-- drivers-spi-spi-amd.c:warning:cast-to-smaller-integer-type-enum-amd_spi_versions-from-const-void
+|   `-- include-linux-fortify-string.h:warning:call-to-__read_overflow2_field-declared-with-warning-attribute:detected-read-beyond-size-of-field-(2nd-parameter)-maybe-use-struct_group()
+|-- x86_64-randconfig-a012-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- include-linux-fortify-string.h:warning:call-to-__read_overflow2_field-declared-with-warning-attribute:detected-read-beyond-size-of-field-(2nd-parameter)-maybe-use-struct_group()
+|-- x86_64-randconfig-a013-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   |-- fs-reiserfs-lbalance.o:warning:objtool:leaf_copy_boundary_item():stack-state-mismatch:cfa1-cfa2
+|   `-- include-linux-fortify-string.h:warning:call-to-__read_overflow2_field-declared-with-warning-attribute:detected-read-beyond-size-of-field-(2nd-parameter)-maybe-use-struct_group()
+|-- x86_64-randconfig-a014-20220314
+|   |-- drivers-spi-spi-amd.c:warning:cast-to-smaller-integer-type-enum-amd_spi_versions-from-const-void
+|   |-- fs-reiserfs-lbalance.o:warning:objtool:leaf_copy_boundary_item():stack-state-mismatch:cfa1-cfa2
+|   `-- include-linux-fortify-string.h:warning:call-to-__read_overflow2_field-declared-with-warning-attribute:detected-read-beyond-size-of-field-(2nd-parameter)-maybe-use-struct_group()
+|-- x86_64-randconfig-a015-20220314
+|   |-- fs-btrfs-ordered-data.c:warning:expecting-prototype-for-Add-an-ordered-extent-to-the-per().-Prototype-was-for-btrfs_add_ordered_extent()-instead
+|   |-- fs-btrfs-tree-log.c:warning:This-comment-starts-with-but-isn-t-a-kernel-doc-comment.-Refer-Documentation-doc-guide-kernel-doc.rst
+|   `-- include-linux-fortify-string.h:warning:call-to-__read_overflow2_field-declared-with-warning-attribute:detected-read-beyond-size-of-field-(2nd-parameter)-maybe-use-struct_group()
+|-- x86_64-randconfig-a016-20220314
+|   |-- drivers-spi-spi-amd.c:warning:cast-to-smaller-integer-type-enum-amd_spi_versions-from-const-void
+|   `-- include-linux-fortify-string.h:warning:call-to-__read_overflow2_field-declared-with-warning-attribute:detected-read-beyond-size-of-field-(2nd-parameter)-maybe-use-struct_group()
+`-- x86_64-randconfig-c007
+    |-- drivers-hid-hid-core.c:warning:Although-the-value-stored-to-field-is-used-in-the-enclosing-expression-the-value-is-never-actually-read-from-field-clang-analyzer-deadcode.DeadStores
+    |-- drivers-pci-vgaarb.c:warning:Value-stored-to-dev-during-its-initialization-is-never-read-clang-analyzer-deadcode.DeadStores
+    `-- net-ipv4-tcp_input.c:warning:Value-stored-to-reason-is-never-read-clang-analyzer-deadcode.DeadStores
+
+elapsed time: 754m
+
+configs tested: 119
+configs skipped: 3
+
+gcc tested configs:
+arm                                 defconfig
+arm64                               defconfig
+arm64                            allyesconfig
+arm                              allmodconfig
+arm                              allyesconfig
+i386                 randconfig-c001-20220314
+mips                 randconfig-c004-20220314
+um                             i386_defconfig
+mips                             allmodconfig
+riscv                            allmodconfig
+um                           x86_64_defconfig
+mips                             allyesconfig
+riscv                            allyesconfig
+sh                               allmodconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+parisc                           allyesconfig
+alpha                            allyesconfig
+arc                              allyesconfig
+nios2                            allyesconfig
+m68k                         apollo_defconfig
+powerpc                      tqm8xx_defconfig
+sh                        edosk7760_defconfig
+xtensa                       common_defconfig
+sh                           se7712_defconfig
+arm                         nhk8815_defconfig
+h8300                            alldefconfig
+powerpc                         wii_defconfig
+arm                        oxnas_v6_defconfig
+m68k                       m5275evb_defconfig
+arm                            qcom_defconfig
+mips                         db1xxx_defconfig
+arm                        mvebu_v7_defconfig
+xtensa                    smp_lx200_defconfig
+powerpc                     asp8347_defconfig
+arm                  randconfig-c002-20220313
+arm                  randconfig-c002-20220314
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                                defconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+nds32                             allnoconfig
+nios2                               defconfig
+csky                                defconfig
+alpha                               defconfig
+nds32                               defconfig
+arc                                 defconfig
+parisc                              defconfig
+parisc64                            defconfig
+s390                             allmodconfig
+s390                             allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+i386                              debian-10.3
+i386                   debian-10.3-kselftests
+i386                                defconfig
+sparc                            allyesconfig
+sparc                               defconfig
+powerpc                           allnoconfig
+powerpc                          allmodconfig
+powerpc                          allyesconfig
+i386                 randconfig-a001-20220314
+i386                 randconfig-a002-20220314
+i386                 randconfig-a004-20220314
+i386                 randconfig-a006-20220314
+i386                 randconfig-a003-20220314
+i386                 randconfig-a005-20220314
+x86_64               randconfig-a005-20220314
+x86_64               randconfig-a002-20220314
+x86_64               randconfig-a001-20220314
+x86_64               randconfig-a003-20220314
+x86_64               randconfig-a004-20220314
+x86_64               randconfig-a006-20220314
+arc                  randconfig-r043-20220313
+riscv                randconfig-r042-20220313
+s390                 randconfig-r044-20220313
+riscv                    nommu_k210_defconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+x86_64                    rhel-8.3-kselftests
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+
+clang tested configs:
+x86_64                        randconfig-c007
+s390                 randconfig-c005-20220313
+mips                 randconfig-c004-20220313
+riscv                randconfig-c006-20220313
+arm                  randconfig-c002-20220313
+i386                          randconfig-c001
+powerpc              randconfig-c003-20220313
+hexagon                          alldefconfig
+powerpc                     pseries_defconfig
+powerpc                      katmai_defconfig
+mips                            e55_defconfig
+arm                          ep93xx_defconfig
+powerpc                   bluestone_defconfig
+mips                        omega2p_defconfig
+mips                        maltaup_defconfig
+mips                           mtx1_defconfig
+x86_64               randconfig-a011-20220314
+x86_64               randconfig-a014-20220314
+x86_64               randconfig-a013-20220314
+x86_64               randconfig-a012-20220314
+x86_64               randconfig-a015-20220314
+x86_64               randconfig-a016-20220314
+i386                 randconfig-a012-20220314
+i386                 randconfig-a016-20220314
+i386                 randconfig-a011-20220314
+i386                 randconfig-a013-20220314
+i386                 randconfig-a014-20220314
+i386                 randconfig-a015-20220314
+hexagon              randconfig-r045-20220313
+hexagon              randconfig-r041-20220313
+
 ---
-changelog:
-v1-->v2:
--Remove ndisc_bond_send_na and refactor ndisc_send_na.
--In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
--Don't send neighbor advertisement message when receiving
- neighbor advertisement message in rlb6_update_entry_from_na.
-
-v2-->v3:
--Don't export ndisc_send_na.
--Use ipv6_stub->ndisc_send_na to replace ndisc_send_na
- in rlb6_update_client.
-
-v3-->v4:
--Submit all code at a whole patch.
----
- drivers/net/bonding/bond_3ad.c     |   2 +-
- drivers/net/bonding/bond_alb.c     | 592 ++++++++++++++++++++++++++++-
- drivers/net/bonding/bond_debugfs.c |  14 +
- drivers/net/bonding/bond_main.c    |   6 +-
- drivers/net/usb/cdc_mbim.c         |   2 +-
- include/net/bond_3ad.h             |   2 +-
- include/net/bond_alb.h             |   7 +
- include/net/bonding.h              |   6 +-
- include/net/ipv6_stubs.h           |   3 +-
- include/net/ndisc.h                |   9 +-
- net/ipv6/addrconf.c                |   4 +-
- net/ipv6/ndisc.c                   |  64 +++-
- 12 files changed, 675 insertions(+), 36 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index a86b1f71762e..3cba269f12e2 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2682,7 +2682,7 @@ int bond_3ad_get_active_agg_info(struct bonding *bond, struct ad_info *ad_info)
- 	return ret;
- }
- 
--int bond_3ad_lacpdu_recv(const struct sk_buff *skb, struct bonding *bond,
-+int bond_3ad_lacpdu_recv(struct sk_buff *skb, struct bonding *bond,
- 			 struct slave *slave)
- {
- 	struct lacpdu *lacpdu, _lacpdu;
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 303c8d32d451..06a4557e00e3 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -23,6 +23,9 @@
- #include <asm/byteorder.h>
- #include <net/bonding.h>
- #include <net/bond_alb.h>
-+#include <net/addrconf.h>
-+#include <net/ip6_checksum.h>
-+#include <net/ipv6_stubs.h>
- 
- static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
- 	0x33, 0x33, 0x00, 0x00, 0x00, 0x01
-@@ -57,6 +60,13 @@ static void rlb_purge_src_ip(struct bonding *bond, struct arp_pkt *arp);
- static void rlb_src_unlink(struct bonding *bond, u32 index);
- static void rlb_src_link(struct bonding *bond, u32 ip_src_hash,
- 			 u32 ip_dst_hash);
-+static void rlb6_delete_table_entry(struct bonding *bond, u32 index);
-+static u8 *alb_get_lladdr(struct sk_buff *skb);
-+static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
-+			      struct slave *tx_slave);
-+static bool alb_determine_ipv6_nd(struct sk_buff *skb, struct bonding *bond);
-+static int rlb_recv(struct sk_buff *skb, struct bonding *bond,
-+		    struct slave *slave);
- 
- static inline u8 _simple_hash(const u8 *hash_start, int hash_size)
- {
-@@ -269,7 +279,7 @@ static void rlb_update_entry_from_arp(struct bonding *bond, struct arp_pkt *arp)
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
--static int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
-+static int rlb_arp_recv(struct sk_buff *skb, struct bonding *bond,
- 			struct slave *slave)
- {
- 	struct arp_pkt *arp, _arp;
-@@ -415,6 +425,31 @@ static void rlb_clear_slave(struct bonding *bond, struct slave *slave)
- 		}
- 	}
- 
-+	rx_hash_table = bond_info->rx6_hashtbl;
-+	index = bond_info->rx6_hashtbl_used_head;
-+	for (; index != RLB_NULL_INDEX; index = next_index) {
-+		next_index = rx_hash_table[index].used_next;
-+		if (rx_hash_table[index].slave == slave) {
-+			struct slave *assigned_slave = rlb_next_rx_slave(bond);
-+
-+			if (assigned_slave) {
-+				u8 mac_dst[ETH_ALEN];
-+
-+				rx_hash_table[index].slave = assigned_slave;
-+				memcpy(mac_dst, rx_hash_table[index].mac_dst,
-+				       sizeof(mac_dst));
-+				if (is_valid_ether_addr(mac_dst)) {
-+					bond_info->rx6_hashtbl[index].ntt = 1;
-+					bond_info->rx6_ntt = 1;
-+					bond_info->rlb6_update_retry_counter =
-+						RLB_UPDATE_RETRY;
-+				}
-+			} else {  /* there is no active slave */
-+				rx_hash_table[index].slave = NULL;
-+			}
-+		}
-+	}
-+
- 	spin_unlock_bh(&bond->mode_lock);
- 
- 	if (slave != rtnl_dereference(bond->curr_active_slave))
-@@ -704,7 +739,7 @@ static void rlb_rebalance(struct bonding *bond)
- 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
- 	struct slave *assigned_slave;
- 	struct rlb_client_info *client_info;
--	int ntt;
-+	int ntt, ntt_ip6;
- 	u32 hash_index;
- 
- 	spin_lock_bh(&bond->mode_lock);
-@@ -724,9 +759,27 @@ static void rlb_rebalance(struct bonding *bond)
- 		}
- 	}
- 
-+	ntt_ip6 = 0;
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+		 hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		assigned_slave = __rlb_next_rx_slave(bond);
-+		if (assigned_slave && client_info->slave != assigned_slave) {
-+			client_info->slave = assigned_slave;
-+			if (!is_zero_ether_addr(client_info->mac_dst)) {
-+				client_info->ntt = 1;
-+				ntt_ip6 = 1;
-+			}
-+		}
-+	}
-+
- 	/* update the team's flag only after the whole iteration */
- 	if (ntt)
- 		bond_info->rx_ntt = 1;
-+
-+	if (ntt_ip6)
-+		bond_info->rx6_ntt = 1;
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
-@@ -846,6 +899,7 @@ static int rlb_initialize(struct bonding *bond)
- {
- 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
- 	struct rlb_client_info	*new_hashtbl;
-+	struct rlb_client_info	*new6_hashtbl;
- 	int size = RLB_HASH_TABLE_SIZE * sizeof(struct rlb_client_info);
- 	int i;
- 
-@@ -853,19 +907,29 @@ static int rlb_initialize(struct bonding *bond)
- 	if (!new_hashtbl)
- 		return -1;
- 
-+	new6_hashtbl = kmalloc(size, GFP_KERNEL);
-+	if (!new6_hashtbl) {
-+		kfree(new_hashtbl);
-+		return -1;
-+	}
-+
- 	spin_lock_bh(&bond->mode_lock);
- 
- 	bond_info->rx_hashtbl = new_hashtbl;
-+	bond_info->rx6_hashtbl = new6_hashtbl;
- 
- 	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
-+	bond_info->rx6_hashtbl_used_head = RLB_NULL_INDEX;
- 
--	for (i = 0; i < RLB_HASH_TABLE_SIZE; i++)
-+	for (i = 0; i < RLB_HASH_TABLE_SIZE; i++) {
- 		rlb_init_table_entry(bond_info->rx_hashtbl + i);
-+		rlb_init_table_entry(bond_info->rx6_hashtbl + i);
-+	}
- 
- 	spin_unlock_bh(&bond->mode_lock);
- 
- 	/* register to receive ARPs */
--	bond->recv_probe = rlb_arp_recv;
-+	bond->recv_probe = rlb_recv;
- 
- 	return 0;
- }
-@@ -880,6 +944,10 @@ static void rlb_deinitialize(struct bonding *bond)
- 	bond_info->rx_hashtbl = NULL;
- 	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
- 
-+	kfree(bond_info->rx6_hashtbl);
-+	bond_info->rx6_hashtbl = NULL;
-+	bond_info->rx6_hashtbl_used_head = RLB_NULL_INDEX;
-+
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
-@@ -901,9 +969,397 @@ static void rlb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
- 		curr_index = next_index;
- 	}
- 
-+	curr_index = bond_info->rx6_hashtbl_used_head;
-+	while (curr_index != RLB_NULL_INDEX) {
-+		struct rlb_client_info *curr = &bond_info->rx6_hashtbl[curr_index];
-+		u32 next_index = bond_info->rx6_hashtbl[curr_index].used_next;
-+
-+		if (curr->vlan_id == vlan_id)
-+			rlb6_delete_table_entry(bond, curr_index);
-+
-+		curr_index = next_index;
-+	}
-+
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+/*********************** ipv6 rlb specific functions ***************************/
-+static void rlb6_update_client(struct rlb_client_info *client_info)
-+{
-+	struct nd_sendinfo sendinfo;
-+	int i;
-+
-+	if (!client_info->slave || !is_valid_ether_addr(client_info->mac_dst))
-+		return;
-+
-+	sendinfo.vlanid = client_info->vlan_id;
-+	sendinfo.mac_dst = client_info->mac_dst;
-+	sendinfo.mac_src = client_info->slave->dev->dev_addr;
-+
-+	for (i = 0; i < RLB_ARP_BURST_SIZE; i++) {
-+		ipv6_stub->ndisc_send_na(client_info->slave->dev,
-+					 &client_info->ip6_dst,
-+					 &client_info->ip6_src,
-+					 false, false, true, true,
-+					 &sendinfo);
-+	}
-+}
-+
-+static void rlb6_update_rx_clients(struct bonding *bond)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 hash_index;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+	    hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		if (client_info->ntt) {
-+			rlb6_update_client(client_info);
-+			if (bond_info->rlb6_update_retry_counter == 0)
-+				client_info->ntt = 0;
-+		}
-+	}
-+
-+	bond_info->rlb6_update_delay_counter = RLB_UPDATE_DELAY;
-+
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+static void rlb6_delete_table_entry_dst(struct bonding *bond, u32 index)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	u32 next_index = bond_info->rx6_hashtbl[index].used_next;
-+	u32 prev_index = bond_info->rx6_hashtbl[index].used_prev;
-+
-+	if (index == bond_info->rx6_hashtbl_used_head)
-+		bond_info->rx6_hashtbl_used_head = next_index;
-+
-+	if (next_index != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[next_index].used_prev = prev_index;
-+
-+	if (prev_index != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[prev_index].used_next = next_index;
-+}
-+
-+static void rlb6_src_link(struct bonding *bond, u32 ip_src_hash,
-+			  u32 ip_dst_hash)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	u32 next;
-+
-+	bond_info->rx6_hashtbl[ip_dst_hash].src_prev = ip_src_hash;
-+	next = bond_info->rx6_hashtbl[ip_src_hash].src_first;
-+	bond_info->rx6_hashtbl[ip_dst_hash].src_next = next;
-+	if (next != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[next].src_prev = ip_dst_hash;
-+	bond_info->rx6_hashtbl[ip_src_hash].src_first = ip_dst_hash;
-+}
-+
-+static void rlb6_src_unlink(struct bonding *bond, u32 index)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	u32 next_index = bond_info->rx6_hashtbl[index].src_next;
-+	u32 prev_index = bond_info->rx6_hashtbl[index].src_prev;
-+
-+	bond_info->rx6_hashtbl[index].src_next = RLB_NULL_INDEX;
-+	bond_info->rx6_hashtbl[index].src_prev = RLB_NULL_INDEX;
-+
-+	if (next_index != RLB_NULL_INDEX)
-+		bond_info->rx6_hashtbl[next_index].src_prev = prev_index;
-+
-+	if (prev_index == RLB_NULL_INDEX)
-+		return;
-+
-+	if (bond_info->rx6_hashtbl[prev_index].src_first == index)
-+		bond_info->rx6_hashtbl[prev_index].src_first = next_index;
-+	else
-+		bond_info->rx6_hashtbl[prev_index].src_next = next_index;
-+}
-+
-+static void rlb6_req_update_slave_clients(struct bonding *bond,
-+					  struct slave *slave)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 hash_index;
-+	int ntt = 0;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+	    hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		if (client_info->slave == slave &&
-+		    is_valid_ether_addr(client_info->mac_dst)) {
-+			client_info->ntt = 1;
-+			ntt = 1;
-+		}
-+	}
-+
-+	if (ntt) {
-+		bond_info->rx6_ntt = 1;
-+		bond_info->rlb6_update_retry_counter =
-+			RLB_UPDATE_RETRY;
-+	}
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+static struct slave *rlb6_nd_choose_channel(struct sk_buff *skb,
-+					    struct bonding *bond,
-+					    struct ipv6hdr *ip6hdr,
-+					    u8 type)
-+{
-+	struct nd_msg *msg;
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct slave *assigned_slave, *curr_active_slave;
-+	struct rlb_client_info *client_info;
-+	struct ethhdr *eth_data;
-+	u8 *dst_ip;
-+	u32 hash_index = 0;
-+
-+	spin_lock(&bond->mode_lock);
-+
-+	msg = (struct nd_msg *)skb_transport_header(skb);
-+	eth_data = eth_hdr(skb);
-+	curr_active_slave = rcu_dereference(bond->curr_active_slave);
-+
-+	if (type == NDISC_NEIGHBOUR_SOLICITATION)
-+		dst_ip = (u8 *)msg->target.s6_addr;
-+	else
-+		dst_ip = (u8 *)ip6hdr->daddr.s6_addr;
-+
-+	hash_index = _simple_hash(dst_ip,
-+				  sizeof(struct in6_addr));
-+	client_info = &bond_info->rx6_hashtbl[hash_index];
-+
-+	if (client_info->assigned) {
-+		if (!memcmp(client_info->ip6_dst.s6_addr, dst_ip,
-+			    sizeof(struct in6_addr)) &&
-+			    !memcmp(client_info->ip6_src.s6_addr,
-+			    ip6hdr->saddr.s6_addr,
-+			    sizeof(ip6hdr->saddr.s6_addr))) {
-+			ether_addr_copy(client_info->mac_src,
-+					eth_data->h_source);
-+
-+			assigned_slave = client_info->slave;
-+			if (assigned_slave) {
-+				spin_unlock(&bond->mode_lock);
-+				return assigned_slave;
-+			}
-+		} else {
-+			if (curr_active_slave &&
-+			    curr_active_slave != client_info->slave) {
-+				client_info->slave = curr_active_slave;
-+				rlb6_update_client(client_info);
-+			}
-+		}
-+	}
-+
-+	/* assign a new slave */
-+	assigned_slave = __rlb_next_rx_slave(bond);
-+
-+	if (assigned_slave) {
-+		if (!(client_info->assigned &&
-+		      !memcmp(client_info->ip6_src.s6_addr,
-+		      ip6hdr->saddr.s6_addr, sizeof(ip6hdr->saddr.s6_addr)))) {
-+			u32 hash_src = _simple_hash((u8 *)ip6hdr->saddr.s6_addr,
-+						sizeof(ip6hdr->saddr.s6_addr));
-+
-+			rlb6_src_unlink(bond, hash_index);
-+			rlb6_src_link(bond, hash_src, hash_index);
-+		}
-+
-+		memcpy(client_info->ip6_src.s6_addr, ip6hdr->saddr.s6_addr,
-+		       sizeof(ip6hdr->saddr.s6_addr));
-+		memcpy(client_info->ip6_dst.s6_addr, dst_ip,
-+		       sizeof(struct in6_addr));
-+
-+		ether_addr_copy(client_info->mac_dst, eth_data->h_dest);
-+		ether_addr_copy(client_info->mac_src, eth_data->h_source);
-+
-+		client_info->slave = assigned_slave;
-+
-+		if (is_valid_ether_addr(client_info->mac_dst)) {
-+			client_info->ntt = 1;
-+			bond->alb_info.rx6_ntt = 1;
-+		} else {
-+			client_info->ntt = 0;
-+		}
-+
-+		if (vlan_get_tag(skb, &client_info->vlan_id))
-+			client_info->vlan_id = 0;
-+
-+		if (!client_info->assigned) {
-+			u32 prev_tbl_head = bond_info->rx6_hashtbl_used_head;
-+
-+			bond_info->rx6_hashtbl_used_head = hash_index;
-+			client_info->used_next = prev_tbl_head;
-+			if (prev_tbl_head != RLB_NULL_INDEX)
-+				bond_info->rx6_hashtbl[prev_tbl_head].used_prev = hash_index;
-+			client_info->assigned = 1;
-+		}
-+	}
-+
-+	spin_unlock(&bond->mode_lock);
-+
-+	return assigned_slave;
-+}
-+
-+static struct slave *rlb_nd_xmit(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct slave *tx_slave = NULL;
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+	u8 *lladdr;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
-+		return NULL;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+	if (ip6hdr->nexthdr != IPPROTO_ICMPV6)
-+		return NULL;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
-+		return NULL;
-+
-+	hdr = icmp6_hdr(skb);
-+
-+	if (hdr->icmp6_type != NDISC_NEIGHBOUR_ADVERTISEMENT &&
-+	    hdr->icmp6_type != NDISC_NEIGHBOUR_SOLICITATION) {
-+		return NULL;
-+	}
-+
-+	lladdr = alb_get_lladdr(skb);
-+	if (!lladdr)
-+		return NULL;
-+
-+	if (!bond_slave_has_mac_rx(bond, lladdr)) {
-+		tx_slave = rcu_dereference(bond->curr_active_slave);
-+		return tx_slave;
-+	}
-+
-+	tx_slave = rlb6_nd_choose_channel(skb, bond, ip6hdr, hdr->icmp6_type);
-+	if (!tx_slave)
-+		return NULL;
-+
-+	alb_set_nd_option(skb, bond, tx_slave);
-+
-+	return tx_slave;
-+}
-+
-+static void rlb6_update_entry_from_na(struct bonding *bond,
-+				      struct ipv6hdr *ip6hdr, u8 *lladdr)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 hash_index;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	hash_index = _simple_hash(ip6hdr->saddr.s6_addr,
-+				  sizeof(ip6hdr->saddr.s6_addr));
-+	client_info = &bond_info->rx6_hashtbl[hash_index];
-+
-+	if (client_info->assigned &&
-+	    !memcmp(ip6hdr->saddr.s6_addr, client_info->ip6_dst.s6_addr,
-+	    sizeof(ip6hdr->saddr.s6_addr)) && !memcmp(ip6hdr->daddr.s6_addr,
-+	    client_info->ip6_src.s6_addr, sizeof(ip6hdr->daddr.s6_addr)) &&
-+	    !ether_addr_equal_64bits(client_info->mac_dst, lladdr)) {
-+		memcpy(client_info->mac_dst, lladdr,
-+		       sizeof(client_info->mac_dst));
-+	}
- 	spin_unlock_bh(&bond->mode_lock);
- }
- 
-+static void rlb6_delete_table_entry(struct bonding *bond, u32 index)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *entry = &bond_info->rx_hashtbl[index];
-+
-+	rlb6_delete_table_entry_dst(bond, index);
-+	rlb_init_table_entry_dst(entry);
-+	rlb6_src_unlink(bond, index);
-+}
-+
-+static void rlb6_purge_src_ip(struct bonding *bond, struct ipv6hdr *ip6hdr,
-+			      u8 *lladdr)
-+{
-+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
-+	struct rlb_client_info *client_info;
-+	u32 ip_src_hash = _simple_hash((u8 *)ip6hdr->saddr.s6_addr,
-+					sizeof(ip6hdr->saddr.s6_addr));
-+	u32 index, next_index;
-+
-+	spin_lock_bh(&bond->mode_lock);
-+
-+	index = bond_info->rx6_hashtbl[ip_src_hash].src_first;
-+	while (index != RLB_NULL_INDEX) {
-+		client_info = &bond_info->rx6_hashtbl[index];
-+		next_index = client_info->src_next;
-+
-+		if (!memcmp(client_info->ip6_src.s6_addr,
-+			    ip6hdr->saddr.s6_addr,
-+			    sizeof(ip6hdr->saddr.s6_addr)) &&
-+			    !ether_addr_equal_64bits(lladdr,
-+			    client_info->mac_src))
-+			rlb6_delete_table_entry(bond, index);
-+		index = next_index;
-+	}
-+
-+	spin_unlock_bh(&bond->mode_lock);
-+}
-+
-+static int rlb_nd_recv(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct nd_msg *msg;
-+	struct inet6_ifaddr *ifp;
-+	u8 *lladdr;
-+
-+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
-+		return RX_HANDLER_ANOTHER;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+
-+	ifp = ipv6_get_ifaddr(dev_net(skb->dev), &ip6hdr->saddr, NULL, 0);
-+	if (ifp) {
-+		in6_ifa_put(ifp);
-+		return RX_HANDLER_ANOTHER;
-+	}
-+
-+	if (!pskb_network_may_pull(skb, sizeof(struct ipv6hdr) +
-+				sizeof(struct nd_msg)))
-+		return RX_HANDLER_ANOTHER;
-+
-+	msg = (struct nd_msg *)skb_transport_header(skb);
-+	lladdr = alb_get_lladdr(skb);
-+	if (!lladdr)
-+		return RX_HANDLER_ANOTHER;
-+
-+	rlb6_purge_src_ip(bond, ip6hdr, lladdr);
-+
-+	if (msg->icmph.icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT)
-+		rlb6_update_entry_from_na(bond, ip6hdr, lladdr);
-+
-+	return RX_HANDLER_ANOTHER;
-+}
-+
-+static int rlb_recv(struct sk_buff *skb, struct bonding *bond,
-+		    struct slave *slave)
-+{
-+	if (skb->protocol == cpu_to_be16(ETH_P_ARP))
-+		return rlb_arp_recv(skb, bond, slave);
-+	else if (alb_determine_ipv6_nd(skb, bond))
-+		return rlb_nd_recv(skb, bond);
-+
-+	return RX_HANDLER_ANOTHER;
-+}
-+
- /*********************** tlb/rlb shared functions *********************/
- 
- static void alb_send_lp_vid(struct slave *slave, const u8 mac_addr[],
-@@ -1068,6 +1524,7 @@ static void alb_fasten_mac_swap(struct bonding *bond, struct slave *slave1,
- 			 * has changed
- 			 */
- 			rlb_req_update_slave_clients(bond, slave1);
-+			rlb6_req_update_slave_clients(bond, slave1);
- 		}
- 	} else {
- 		disabled_slave = slave1;
-@@ -1080,6 +1537,7 @@ static void alb_fasten_mac_swap(struct bonding *bond, struct slave *slave1,
- 			 * has changed
- 			 */
- 			rlb_req_update_slave_clients(bond, slave2);
-+			rlb6_req_update_slave_clients(bond, slave2);
- 		}
- 	} else {
- 		disabled_slave = slave2;
-@@ -1291,6 +1749,111 @@ static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
- 		hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION;
- }
- 
-+static bool alb_determine_ipv6_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	if (skb->protocol == htons(ETH_P_IPV6)) {
-+		if (skb_vlan_tag_present(skb))
-+			skb->transport_header = skb->network_header + sizeof(struct ipv6hdr);
-+		return alb_determine_nd(skb, bond);
-+	}
-+
-+	return false;
-+}
-+
-+static void alb_change_nd_option(struct sk_buff *skb, const void *data)
-+{
-+	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
-+	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
-+	struct net_device *dev = skb->dev;
-+	struct icmp6hdr *icmp6h = icmp6_hdr(skb);
-+	struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
-+	u8 *lladdr = NULL;
-+	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
-+				offsetof(struct nd_msg, opt));
-+
-+	while (ndoptlen) {
-+		int l;
-+
-+		switch (nd_opt->nd_opt_type) {
-+		case ND_OPT_SOURCE_LL_ADDR:
-+		case ND_OPT_TARGET_LL_ADDR:
-+			lladdr = ndisc_opt_addr_data(nd_opt, dev);
-+			break;
-+
-+		default:
-+			lladdr = NULL;
-+			break;
-+		}
-+
-+		l = nd_opt->nd_opt_len << 3;
-+
-+		if (ndoptlen < l || l == 0)
-+			return;
-+
-+		if (lladdr) {
-+			memcpy(lladdr, data, dev->addr_len);
-+			icmp6h->icmp6_cksum = 0;
-+
-+			icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
-+							      &ip6hdr->daddr,
-+						ntohs(ip6hdr->payload_len),
-+						IPPROTO_ICMPV6,
-+						csum_partial(icmp6h,
-+							     ntohs(ip6hdr->payload_len),
-+							     0));
-+			return;
-+		}
-+		ndoptlen -= l;
-+		nd_opt = ((void *)nd_opt) + l;
-+	}
-+}
-+
-+static u8 *alb_get_lladdr(struct sk_buff *skb)
-+{
-+	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
-+	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
-+	struct net_device *dev = skb->dev;
-+	u8 *lladdr = NULL;
-+	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
-+				offsetof(struct nd_msg, opt));
-+
-+	while (ndoptlen) {
-+		int l;
-+
-+		switch (nd_opt->nd_opt_type) {
-+		case ND_OPT_SOURCE_LL_ADDR:
-+		case ND_OPT_TARGET_LL_ADDR:
-+			lladdr = ndisc_opt_addr_data(nd_opt, dev);
-+			break;
-+
-+		default:
-+			break;
-+		}
-+
-+		l = nd_opt->nd_opt_len << 3;
-+
-+		if (ndoptlen < l || l == 0)
-+			return NULL;
-+
-+		if (lladdr)
-+			return lladdr;
-+
-+		ndoptlen -= l;
-+		nd_opt = ((void *)nd_opt) + l;
-+	}
-+
-+	return lladdr;
-+}
-+
-+static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
-+			      struct slave *tx_slave)
-+{
-+	if (tx_slave != rcu_access_pointer(bond->curr_active_slave)) {
-+		if (alb_determine_nd(skb, bond))
-+			alb_change_nd_option(skb, tx_slave->dev->dev_addr);
-+	}
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1457,12 +2020,17 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
--		if (alb_determine_nd(skb, bond)) {
-+		tx_slave = rlb_nd_xmit(skb, bond);
-+		if (tx_slave) {
-+			do_tx_balance = false;
-+			break;
-+		}
-+
-+		if (!pskb_network_may_pull(skb, sizeof(*ip6hdr))) {
- 			do_tx_balance = false;
- 			break;
- 		}
- 
--		/* The IPv6 header is pulled by alb_determine_nd */
- 		/* Additionally, DAD probes should not be tx-balanced as that
- 		 * will lead to false positives for duplicate addresses and
- 		 * prevent address configuration from working.
-@@ -1612,6 +2180,17 @@ void bond_alb_monitor(struct work_struct *work)
- 					bond_info->rx_ntt = 0;
- 			}
- 		}
-+		if (bond_info->rx6_ntt) {
-+			if (bond_info->rlb6_update_delay_counter) {
-+				--bond_info->rlb6_update_delay_counter;
-+			} else {
-+				rlb6_update_rx_clients(bond);
-+				if (bond_info->rlb6_update_retry_counter)
-+					--bond_info->rlb6_update_retry_counter;
-+				else
-+					bond_info->rx6_ntt = 0;
-+			}
-+		}
- 	}
- 	rcu_read_unlock();
- re_arm:
-@@ -1812,6 +2391,7 @@ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr)
- 		if (bond->alb_info.rlb_enabled) {
- 			/* inform clients mac address has changed */
- 			rlb_req_update_slave_clients(bond, curr_active);
-+			rlb6_req_update_slave_clients(bond, curr_active);
- 		}
- 	}
- 
-diff --git a/drivers/net/bonding/bond_debugfs.c b/drivers/net/bonding/bond_debugfs.c
-index 4f9b4a18c74c..90e88ff9b2bf 100644
---- a/drivers/net/bonding/bond_debugfs.c
-+++ b/drivers/net/bonding/bond_debugfs.c
-@@ -41,6 +41,20 @@ static int bond_debug_rlb_hash_show(struct seq_file *m, void *v)
- 			client_info->slave->dev->name);
- 	}
- 
-+	seq_puts(m, "SourceIP                                 DestinationIP                           Destination MAC   Src MAC           DEV\n");
-+
-+	hash_index = bond_info->rx6_hashtbl_used_head;
-+	for (; hash_index != RLB_NULL_INDEX;
-+	     hash_index = client_info->used_next) {
-+		client_info = &bond_info->rx6_hashtbl[hash_index];
-+		seq_printf(m, "%-40pI6 %-40pI6 %-17pM %-17pM %s\n",
-+			   &client_info->ip6_src,
-+			   &client_info->ip6_dst,
-+			   &client_info->mac_dst,
-+			   &client_info->mac_src,
-+			   client_info->slave->dev->name);
-+	}
-+
- 	spin_unlock_bh(&bond->mode_lock);
- 
- 	return 0;
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 15eddca7b4b6..b6252b181940 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1510,8 +1510,8 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
- 	struct sk_buff *skb = *pskb;
- 	struct slave *slave;
- 	struct bonding *bond;
--	int (*recv_probe)(const struct sk_buff *, struct bonding *,
--			  struct slave *);
-+	int (*recv_probe)(struct sk_buff *skb, struct bonding *bond,
-+			  struct slave *slave);
- 	int ret = RX_HANDLER_ANOTHER;
- 
- 	skb = skb_share_check(skb, GFP_ATOMIC);
-@@ -3228,7 +3228,7 @@ static int bond_na_rcv(const struct sk_buff *skb, struct bonding *bond,
- }
- #endif
- 
--int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond,
-+int bond_rcv_validate(struct sk_buff *skb, struct bonding *bond,
- 		      struct slave *slave)
- {
- #if IS_ENABLED(CONFIG_IPV6)
-diff --git a/drivers/net/usb/cdc_mbim.c b/drivers/net/usb/cdc_mbim.c
-index c89639381eca..70f4327dbd2a 100644
---- a/drivers/net/usb/cdc_mbim.c
-+++ b/drivers/net/usb/cdc_mbim.c
-@@ -347,7 +347,7 @@ static void do_neigh_solicit(struct usbnet *dev, u8 *buf, u16 tci)
- 				 is_router /* router */,
- 				 true /* solicited */,
- 				 false /* override */,
--				 true /* inc_opt */);
-+				 true /* inc_opt */, NULL);
- out:
- 	dev_put(netdev);
- }
-diff --git a/include/net/bond_3ad.h b/include/net/bond_3ad.h
-index 184105d68294..51886d9c928d 100644
---- a/include/net/bond_3ad.h
-+++ b/include/net/bond_3ad.h
-@@ -300,7 +300,7 @@ void bond_3ad_handle_link_change(struct slave *slave, char link);
- int  bond_3ad_get_active_agg_info(struct bonding *bond, struct ad_info *ad_info);
- int  __bond_3ad_get_active_agg_info(struct bonding *bond,
- 				    struct ad_info *ad_info);
--int bond_3ad_lacpdu_recv(const struct sk_buff *skb, struct bonding *bond,
-+int bond_3ad_lacpdu_recv(struct sk_buff *skb, struct bonding *bond,
- 			 struct slave *slave);
- int bond_3ad_set_carrier(struct bonding *bond);
- void bond_3ad_update_lacp_active(struct bonding *bond);
-diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index 191c36afa1f4..b1a572eead31 100644
---- a/include/net/bond_alb.h
-+++ b/include/net/bond_alb.h
-@@ -94,6 +94,8 @@ struct tlb_client_info {
- struct rlb_client_info {
- 	__be32 ip_src;		/* the server IP address */
- 	__be32 ip_dst;		/* the client IP address */
-+	struct in6_addr	ip6_src;
-+	struct in6_addr	ip6_dst;
- 	u8  mac_src[ETH_ALEN];	/* the server MAC address */
- 	u8  mac_dst[ETH_ALEN];	/* the client MAC address */
- 
-@@ -131,10 +133,13 @@ struct alb_bond_info {
- 	/* -------- rlb parameters -------- */
- 	int rlb_enabled;
- 	struct rlb_client_info	*rx_hashtbl;	/* Receive hash table */
-+	struct rlb_client_info	*rx6_hashtbl;	/* Receive hash table */
- 	u32			rx_hashtbl_used_head;
-+	u32			rx6_hashtbl_used_head;
- 	u8			rx_ntt;	/* flag - need to transmit
- 					 * to all rx clients
- 					 */
-+	u8			rx6_ntt;
- 	struct slave		*rx_slave;/* last slave to xmit from */
- 	u8			primary_is_promisc;	   /* boolean */
- 	u32			rlb_promisc_timeout_counter;/* counts primary
-@@ -144,6 +149,8 @@ struct alb_bond_info {
- 	u32			rlb_update_retry_counter;/* counter of retries
- 							  * of client update
- 							  */
-+	u32			rlb6_update_delay_counter;
-+	u32			rlb6_update_retry_counter;
- 	u8			rlb_rebalance;	/* flag - indicates that the
- 						 * rx traffic should be
- 						 * rebalanced
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index b14f4c0b4e9e..552bce0168d1 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -220,8 +220,8 @@ struct bonding {
- 	struct   bond_up_slave __rcu *all_slaves;
- 	bool     force_primary;
- 	s32      slave_cnt; /* never change this value outside the attach/detach wrappers */
--	int     (*recv_probe)(const struct sk_buff *, struct bonding *,
--			      struct slave *);
-+	int     (*recv_probe)(struct sk_buff *skb, struct bonding *bond,
-+			      struct slave *slave);
- 	/* mode_lock is used for mode-specific locking needs, currently used by:
- 	 * 3ad mode (4) - protect against running bond_3ad_unbind_slave() and
- 	 *                bond_3ad_state_machine_handler() concurrently and also
-@@ -639,7 +639,7 @@ struct bond_net {
- 	struct class_attribute	class_attr_bonding_masters;
- };
- 
--int bond_rcv_validate(const struct sk_buff *skb, struct bonding *bond, struct slave *slave);
-+int bond_rcv_validate(struct sk_buff *skb, struct bonding *bond, struct slave *slave);
- netdev_tx_t bond_dev_queue_xmit(struct bonding *bond, struct sk_buff *skb, struct net_device *slave_dev);
- int bond_create(struct net *net, const char *name);
- int bond_create_sysfs(struct bond_net *net);
-diff --git a/include/net/ipv6_stubs.h b/include/net/ipv6_stubs.h
-index 45e0339be6fa..2b64ea6590b6 100644
---- a/include/net/ipv6_stubs.h
-+++ b/include/net/ipv6_stubs.h
-@@ -56,7 +56,8 @@ struct ipv6_stub {
- 	void (*udpv6_encap_enable)(void);
- 	void (*ndisc_send_na)(struct net_device *dev, const struct in6_addr *daddr,
- 			      const struct in6_addr *solicited_addr,
--			      bool router, bool solicited, bool override, bool inc_opt);
-+			      bool router, bool solicited, bool override,
-+			      bool inc_opt, void *data);
- #if IS_ENABLED(CONFIG_XFRM)
- 	void (*xfrm6_local_rxpmtu)(struct sk_buff *skb, u32 mtu);
- 	int (*xfrm6_udp_encap_rcv)(struct sock *sk, struct sk_buff *skb);
-diff --git a/include/net/ndisc.h b/include/net/ndisc.h
-index da7eec8669ec..e71702a44a3d 100644
---- a/include/net/ndisc.h
-+++ b/include/net/ndisc.h
-@@ -107,6 +107,12 @@ struct nd_opt_hdr {
- 	__u8		nd_opt_len;
- } __packed;
- 
-+struct nd_sendinfo {
-+	__u16 vlanid;
-+	void *mac_dst;
-+	const void *mac_src;
-+};
-+
- /* ND options */
- struct ndisc_options {
- 	struct nd_opt_hdr *nd_opt_array[__ND_OPT_ARRAY_MAX];
-@@ -460,7 +466,8 @@ void ndisc_send_rs(struct net_device *dev,
- 		   const struct in6_addr *saddr, const struct in6_addr *daddr);
- void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
- 		   const struct in6_addr *solicited_addr,
--		   bool router, bool solicited, bool override, bool inc_opt);
-+		   bool router, bool solicited, bool override, bool inc_opt,
-+		   void *data);
- 
- void ndisc_send_redirect(struct sk_buff *skb, const struct in6_addr *target);
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index b22504176588..6825d70c34fb 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -975,6 +975,7 @@ void inet6_ifa_finish_destroy(struct inet6_ifaddr *ifp)
- 
- 	kfree_rcu(ifp, rcu);
- }
-+EXPORT_SYMBOL(inet6_ifa_finish_destroy);
- 
- static void
- ipv6_link_dev_addr(struct inet6_dev *idev, struct inet6_ifaddr *ifp)
-@@ -2037,6 +2038,7 @@ struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6_addr *add
- 
- 	return result;
- }
-+EXPORT_SYMBOL(ipv6_get_ifaddr);
- 
- /* Gets referenced address, destroys ifaddr */
- 
-@@ -4217,7 +4219,7 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
- 		ndisc_send_na(dev, &in6addr_linklocal_allnodes, &ifp->addr,
- 			      /*router=*/ !!ifp->idev->cnf.forwarding,
- 			      /*solicited=*/ false, /*override=*/ true,
--			      /*inc_opt=*/ true);
-+			      /*inc_opt=*/ true, NULL);
- 	}
- 
- 	if (send_rs) {
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index fcb288b0ae13..47875aab86e5 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -518,29 +518,37 @@ EXPORT_SYMBOL(ndisc_send_skb);
- 
- void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
- 		   const struct in6_addr *solicited_addr,
--		   bool router, bool solicited, bool override, bool inc_opt)
-+		   bool router, bool solicited, bool override, bool inc_opt,
-+		   void *data)
- {
- 	struct sk_buff *skb;
- 	struct in6_addr tmpaddr;
- 	struct inet6_ifaddr *ifp;
- 	const struct in6_addr *src_addr;
- 	struct nd_msg *msg;
-+	struct nd_sendinfo *sendinfo = data;
-+	struct net *net = dev_net(dev);
-+	struct sock *sk = net->ipv6.ndisc_sk;
- 	int optlen = 0;
- 
--	/* for anycast or proxy, solicited_addr != src_addr */
--	ifp = ipv6_get_ifaddr(dev_net(dev), solicited_addr, dev, 1);
--	if (ifp) {
--		src_addr = solicited_addr;
--		if (ifp->flags & IFA_F_OPTIMISTIC)
--			override = false;
--		inc_opt |= ifp->idev->cnf.force_tllao;
--		in6_ifa_put(ifp);
-+	if (!sendinfo) {
-+		/* for anycast or proxy, solicited_addr != src_addr */
-+		ifp = ipv6_get_ifaddr(dev_net(dev), solicited_addr, dev, 1);
-+		if (ifp) {
-+			src_addr = solicited_addr;
-+			if (ifp->flags & IFA_F_OPTIMISTIC)
-+				override = false;
-+			inc_opt |= ifp->idev->cnf.force_tllao;
-+			in6_ifa_put(ifp);
-+		} else {
-+			if (ipv6_dev_get_saddr(dev_net(dev), dev, daddr,
-+					       inet6_sk(dev_net(dev)->ipv6.ndisc_sk)->srcprefs,
-+					       &tmpaddr))
-+				return;
-+			src_addr = &tmpaddr;
-+		}
- 	} else {
--		if (ipv6_dev_get_saddr(dev_net(dev), dev, daddr,
--				       inet6_sk(dev_net(dev)->ipv6.ndisc_sk)->srcprefs,
--				       &tmpaddr))
--			return;
--		src_addr = &tmpaddr;
-+		src_addr = solicited_addr;
- 	}
- 
- 	if (!dev->addr_len)
-@@ -568,8 +576,28 @@ void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
- 		ndisc_fill_addr_option(skb, ND_OPT_TARGET_LL_ADDR,
- 				       dev->dev_addr,
- 				       NDISC_NEIGHBOUR_ADVERTISEMENT);
-+	if (!sendinfo) {
-+		ndisc_send_skb(skb, daddr, src_addr);
-+	} else {
-+		if (sendinfo->vlanid)
-+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-+					       sendinfo->vlanid);
-+
-+		msg->icmph.icmp6_cksum = csum_ipv6_magic(src_addr, daddr, skb->len,
-+							 IPPROTO_ICMPV6,
-+							 csum_partial(&msg->icmph,
-+								      skb->len, 0));
- 
--	ndisc_send_skb(skb, daddr, src_addr);
-+		ip6_nd_hdr(skb, src_addr, daddr, inet6_sk(sk)->hop_limit, skb->len);
-+
-+		skb->protocol = htons(ETH_P_IPV6);
-+		skb->dev = dev;
-+		if (dev_hard_header(skb, dev, ETH_P_IPV6, sendinfo->mac_dst,
-+				    sendinfo->mac_src, skb->len) < 0)
-+			return;
-+
-+		dev_queue_xmit(skb);
-+	}
- }
- 
- static void ndisc_send_unsol_na(struct net_device *dev)
-@@ -591,7 +619,7 @@ static void ndisc_send_unsol_na(struct net_device *dev)
- 		ndisc_send_na(dev, &in6addr_linklocal_allnodes, &ifa->addr,
- 			      /*router=*/ !!idev->cnf.forwarding,
- 			      /*solicited=*/ false, /*override=*/ true,
--			      /*inc_opt=*/ true);
-+			      /*inc_opt=*/ true, NULL);
- 	}
- 	read_unlock_bh(&idev->lock);
- 
-@@ -932,7 +960,7 @@ static void ndisc_recv_ns(struct sk_buff *skb)
- 
- 	if (dad) {
- 		ndisc_send_na(dev, &in6addr_linklocal_allnodes, &msg->target,
--			      !!is_router, false, (ifp != NULL), true);
-+			      !!is_router, false, ifp, true, NULL);
- 		goto out;
- 	}
- 
-@@ -954,7 +982,7 @@ static void ndisc_recv_ns(struct sk_buff *skb)
- 			     NDISC_NEIGHBOUR_SOLICITATION, &ndopts);
- 	if (neigh || !dev->header_ops) {
- 		ndisc_send_na(dev, saddr, &msg->target, !!is_router,
--			      true, (ifp != NULL && inc), inc);
-+			      true, (ifp && inc), inc, NULL);
- 		if (neigh)
- 			neigh_release(neigh);
- 	}
-
-base-commit: c84d86a0295c24487db5b7db1a61d9c0eddfbb66
--- 
-2.27.0
-
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
