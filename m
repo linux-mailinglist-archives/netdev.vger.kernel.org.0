@@ -2,148 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEAE14DC1EA
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 09:52:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C3494DC1FE
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 09:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230403AbiCQIxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 04:53:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44854 "EHLO
+        id S231313AbiCQI5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 04:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbiCQIxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 04:53:41 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D605D1CFB;
-        Thu, 17 Mar 2022 01:52:25 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id c15so6290697ljr.9;
-        Thu, 17 Mar 2022 01:52:25 -0700 (PDT)
+        with ESMTP id S230392AbiCQI5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 04:57:16 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929F41CAF18
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 01:56:00 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id b15so5692719edn.4
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 01:56:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=utKCqy7VusDzWJzGDfUfuV+/FoQNmgt468RWLPQd6V0=;
-        b=NM6sOaIQvQf9NIJbbFjBIfyieIyU0skVM5rgUkl9FvZneQx2HSPloiBsWeAcsEJzIb
-         NP+QzwvBMcuqA2GBaLyzFGxWzrlnzsV8VrzL7WNizIZj9AmgCSOpfy8PHPEhYNC07GNK
-         uAmgZWBx9AvC75LJ+jAqm51M56zcFNQyiW3wpajVfafRVeSUAesvWV+m1NrZ32VEQ+KY
-         ev2CHEKQf6mBiYGgLNdxzKfXjACQoAbLDzyD7hwFj74JBAXw0BfifRaX7j07i4Hvlofx
-         BNBp4OySem/jZbF3Bhd8Ssrowh7qIzGpf0ApNsr8qB4IHbqjlzraGU8nhnfdgS8aUZdn
-         AXuw==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PuxphhtSyojHBQ+/3yS9PotueY01xJQMUnQnfyRU8xE=;
+        b=e0ChA5vHBfySfK2dyMjln2cPS59EYlQLojTArVGCStxvXk2T9CLcJ4nqzFp5g7uJ9o
+         2OjHeIOgvN3GxF/2AeDiy9a9I+VkoIAW8aefLLgqedaYsCx86FG0v3pE4r+01dEysYWA
+         8O6kcme2AkqMtYb2Kq7O2fZPPBQjGW874EC28OKCX6DY4U5mpsknygnAZJbArYy4Bscv
+         4oT9kUeLmGQis/UdflkN74IJU9mJGxfF9R2D4CGELJd+XegKCFiw7t8CmlskHRmDQqpC
+         VHZ1l2Z08drqUZqNKSKQ8KNGGOcGWPjIjMbQemoWboiLE215K73qlONfGbOYqfaq8dcR
+         4gPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=utKCqy7VusDzWJzGDfUfuV+/FoQNmgt468RWLPQd6V0=;
-        b=S+ziMxVRiBZLxUaDAO2dHcBBf1ghNTZczgvWkxUXPFF2+Cqrg6wSUDwNSM9iRmyPxs
-         nes51uc62Wfu5F4CRbEZiKUmtKtoT2JJuKI+bJpi2fQlxBIvIq4QHebpb0NTBPuJrCJl
-         LTAb+DFnp+4tfg3JiBpWWgOje3btArkL30Ugbx5KPCkpqdyX4jL9E1RZe2vRtNCmlX7A
-         1Dl1yravnFqAt8sUr+y2KFQ3vrV926v0pGYvuDNKKEsMEAl0uKAnOC28r7CUxyteHIVg
-         tCpE2LRbTGdxiSNIfD20j6XnshBbczhEdhlYFp63QQSFLIDwTq4rVhwGkixOkyJ4CO3d
-         8hOg==
-X-Gm-Message-State: AOAM533B+q/Ys74P9eHQb/qP6nWPpQh/gDFpqRa/TEJaWB934WhuKgTU
-        Sdv1/+vHP/rL7iinQDhSSjI=
-X-Google-Smtp-Source: ABdhPJwoAa1OhOh+IkuyXalL41IHoOBMMg8O2b36bpTO7l5x0ToxGn+f9QvlfvC2lUqe8mYWqoDMiA==
-X-Received: by 2002:a2e:bd13:0:b0:246:1ff8:6da1 with SMTP id n19-20020a2ebd13000000b002461ff86da1mr2173758ljq.219.1647507143460;
-        Thu, 17 Mar 2022 01:52:23 -0700 (PDT)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id u27-20020ac25bdb000000b004485984616bsm388993lfn.296.2022.03.17.01.52.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 01:52:22 -0700 (PDT)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PuxphhtSyojHBQ+/3yS9PotueY01xJQMUnQnfyRU8xE=;
+        b=goJpGxkPOf9/qxqbPF8UmKqSPBtDn/HyDQaOfpQfg9GWw0a+0G+H0oSBBDff0xy0oX
+         ne1yYayF8WyNuI2h7hSKFLa6bxahl7Bwq5hhmQrr4DWNGdgLY5y/euGkfbjFCp4YYsL9
+         vty5kREd75Vcv6OFYtsqSxL4ApBeZj8278rAjb6d9OpFmpkWuoDM46faAnNr5OKSGd0O
+         U0C2aHyuAXQoPq8hfqxM3YvxULB5kAWFwCXrJnLmuIC+1m/IDMWdVQ53L/cw2OmXVgn9
+         kt4sUBpfb3EKSFKctcPnPnX7rgsk8klaSSl6sGIGOYy/v6fbqZByei2iEOL07WAhNJ0U
+         /YhQ==
+X-Gm-Message-State: AOAM531d17ajThT7/dQwkq8yVHwqXVtJ3AND/pAJWW8kw4OV2gSK3wIf
+        k2TCMwQRd072ZLTAwvJEBwKfLQ==
+X-Google-Smtp-Source: ABdhPJxx+3rbfd+yUOiVEOKjGCs7l/0IlgBmtPN16acGL+h8oBvpej4iEAVuQ6tFEsBGdjbE+9cNEQ==
+X-Received: by 2002:aa7:c789:0:b0:413:605d:8d17 with SMTP id n9-20020aa7c789000000b00413605d8d17mr3282373eds.100.1647507358926;
+        Thu, 17 Mar 2022 01:55:58 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id u5-20020a170906b10500b006ce6fa4f510sm2035490ejy.165.2022.03.17.01.55.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Mar 2022 01:55:58 -0700 (PDT)
+Message-ID: <181d6379-aef0-e606-a1f1-b9f986d8c14d@blackwall.org>
+Date:   Thu, 17 Mar 2022 10:55:56 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 net-next 03/15] net: bridge: mst: Support setting and
+ reporting MST port states
+Content-Language: en-US
+To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>,
         Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-In-Reply-To: <20220316233447.kwyirxckgancdqmh@skbuf>
-References: <20220310142320.611738-1-schultz.hans+netdev@gmail.com>
- <20220310142320.611738-4-schultz.hans+netdev@gmail.com>
- <20220310142836.m5onuelv4jej5gvs@skbuf> <86r17495gk.fsf@gmail.com>
- <20220316233447.kwyirxckgancdqmh@skbuf>
-Date:   Thu, 17 Mar 2022 09:52:15 +0100
-Message-ID: <86lex9hsg0.fsf@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        Cooper Lees <me@cooperlees.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+References: <20220316150857.2442916-1-tobias@waldekranz.com>
+ <20220316150857.2442916-4-tobias@waldekranz.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220316150857.2442916-4-tobias@waldekranz.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On tor, mar 17, 2022 at 01:34, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Mon, Mar 14, 2022 at 11:46:51AM +0100, Hans Schultz wrote:
->> >> @@ -396,6 +414,13 @@ static irqreturn_t mv88e6xxx_g1_atu_prob_irq_thread_fn(int irq, void *dev_id)
->> >>  				    "ATU miss violation for %pM portvec %x spid %d\n",
->> >>  				    entry.mac, entry.portvec, spid);
->> >>  		chip->ports[spid].atu_miss_violation++;
->> >> +		if (mv88e6xxx_port_is_locked(chip, chip->ports[spid].port))
->> >> +			err = mv88e6xxx_switchdev_handle_atu_miss_violation(chip,
->> >> +									    chip->ports[spid].port,
->> >> +									    &entry,
->> >> +									    fid);
->> >
->> > Do we want to suppress the ATU miss violation warnings if we're going to
->> > notify the bridge, or is it better to keep them for some reason?
->> > My logic is that they're part of normal operation, so suppressing makes
->> > sense.
->> >
->> 
->> I have been seeing many ATU member violations after the miss violation is
->> handled (using ping), and I think it could be considered to suppress the ATU member
->> violations interrupts by setting the IgnoreWrongData bit for the
->> port (sect 4.4.7). This would be something to do whenever a port is set in locked mode?
->
-> So the first packet with a given MAC SA triggers an ATU miss violation
-> interrupt.
->
-> You program that MAC SA into the ATU with a destination port mask of all
-> zeroes. This suppresses further ATU miss interrupts for this MAC SA, but
-> now generates ATU member violations, because the MAC SA _is_ present in
-> the ATU, but not towards the expected port (in fact, towards _no_ port).
->
-> Especially if user space decides it doesn't want to authorize this MAC
-> SA, it really becomes a problem because this is now a vector for denial
-> of service, with every packet triggering an ATU member violation
-> interrupt.
->
-> So your suggestion is to set the IgnoreWrongData bit on locked ports,
-> and this will suppress the actual member violation interrupts for
-> traffic coming from these ports.
->
-> So if the user decides to unplug a previously authorized printer from
-> switch port 1 and move it to port 2, how is this handled? If there isn't
-> a mechanism in place to delete the locked FDB entry when the printer
-> goes away, then by setting IgnoreWrongData you're effectively also
-> suppressing migration notifications.
+On 16/03/2022 17:08, Tobias Waldekranz wrote:
+> Make it possible to change the port state in a given MSTI by extending
+> the bridge port netlink interface (RTM_SETLINK on PF_BRIDGE).The
+> proposed iproute2 interface would be:
+> 
+>     bridge mst set dev <PORT> msti <MSTI> state <STATE>
+> 
+> Current states in all applicable MSTIs can also be dumped via a
+> corresponding RTM_GETLINK. The proposed iproute interface looks like
+> this:
+> 
+> $ bridge mst
+> port              msti
+> vb1               0
+> 		    state forwarding
+> 		  100
+> 		    state disabled
+> vb2               0
+> 		    state forwarding
+> 		  100
+> 		    state forwarding
+> 
+> The preexisting per-VLAN states are still valid in the MST
+> mode (although they are read-only), and can be queried as usual if one
+> is interested in knowing a particular VLAN's state without having to
+> care about the VID to MSTI mapping (in this example VLAN 20 and 30 are
+> bound to MSTI 100):
+> 
+> $ bridge -d vlan
+> port              vlan-id
+> vb1               10
+> 		    state forwarding mcast_router 1
+> 		  20
+> 		    state disabled mcast_router 1
+> 		  30
+> 		    state disabled mcast_router 1
+> 		  40
+> 		    state forwarding mcast_router 1
+> vb2               10
+> 		    state forwarding mcast_router 1
+> 		  20
+> 		    state forwarding mcast_router 1
+> 		  30
+> 		    state forwarding mcast_router 1
+> 		  40
+> 		    state forwarding mcast_router 1
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+>  include/uapi/linux/if_bridge.h |  16 +++++
+>  include/uapi/linux/rtnetlink.h |   1 +
+>  net/bridge/br_mst.c            | 126 +++++++++++++++++++++++++++++++++
+>  net/bridge/br_netlink.c        |  44 +++++++++++-
+>  net/bridge/br_private.h        |  23 ++++++
+>  5 files changed, 209 insertions(+), 1 deletion(-)
+> 
 
-I don't think such a scenario is so realistic, as changing port is not
-just something done casually, besides port 2 then must also be a locked
-port to have the same policy.
+Acked-by: Nikolay Aleksandrov <razor@blackwall.org>
 
-The other aspect is that the user space daemon that authorizes catches
-the fdb add entry events and checks if it is a locked entry. So it will
-be up to said daemon to decide the policy, like remove the fdb entry
-after a timeout.
 
->
-> Oh, btw, my question was: could you consider suppressing the _prints_ on
-> an ATU miss violation on a locked port?
-
-As there will only be such on the first packet, I think it should be
-logged and those prints serve that purpose, so I think it is best to
-keep the print.
-If in the future some tests or other can argue for suppressing the
-prints, it is an easy thing to do.
