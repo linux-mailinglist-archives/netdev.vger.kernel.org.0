@@ -2,85 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0789E4DCB93
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:40:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 539AD4DCB97
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 17:41:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236603AbiCQQlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 12:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
+        id S236617AbiCQQmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 12:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236396AbiCQQla (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:41:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35793124C27;
-        Thu, 17 Mar 2022 09:40:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB644B81F38;
-        Thu, 17 Mar 2022 16:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 55C8EC340F3;
-        Thu, 17 Mar 2022 16:40:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647535211;
-        bh=Sp40xu3ePRcdg/dpm8P4EPWXw8rRilG/SWyjSEz56ik=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nouG5n/UM9l+6zLbdb7OHfXAlqUZH+mgrAsgJmVddtETE3Wl+eq/Lz49t/mMNQanZ
-         w/qiV90fc2+OlH2QoPmLlmpAMQA9P4WtwLjfKNg6Vr7qiPVG905t/idMy/84nwL5xP
-         cN/70t04TDHOEmqRhLjcyB7qnhjkAImSHTC8BWQ61TNM93jI3LkvYwsE7RQMf4b+gf
-         /iu+RTXoxwixQuHN5VwSnMOHy0SqhN6VPaavqdUbfoFMPBQNQI5tC9Q3/5ClrcetM/
-         eXLI4RO87H759m0iJ/KJo2UnBMcVUuvQ1ydfODvjbW4+rShrBBXzogcvvHmnSMMa7e
-         afCqg6ZJBDXUA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3CD08E8DD5B;
-        Thu, 17 Mar 2022 16:40:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S236396AbiCQQms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 12:42:48 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FE41FE562
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:41:31 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id j17so8232604wrc.0
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 09:41:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FtyCFHKTjJ/cNZ6M8Zwv+bkgifY/oMoUc9tuSAPLstY=;
+        b=bgHw1JWDP886pJjwfWWnWEmzEy27aSDH/7p9I6Lc5G4MdB1UyDopJKG9FKc86s+ovh
+         oDd9RdVGOwfxZxtsQgHDtGijl/JJ/UT6Bi/oyNi3pDQ3bV6qcj43a6bG3cIv0wEzwmst
+         TTj/U8XOIH3z17FrhO7kNTNu7GR8RpUvmWKay/0fOS/WQe83O6mnc+0si9lx1+O9Zb5L
+         2QL3h6Pb4LOJX3SU+nfCx2iASXnuNwjpLxex7NuOmq8Tni7m7we0WweBTXgjdUlezMVg
+         U9J9Uwl0D9tXYnHZ7xSDdG3GJ8awJls2H5jXfTM/vJa8CDdfFCnH8G/DMn9/9mmyvOux
+         wKng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FtyCFHKTjJ/cNZ6M8Zwv+bkgifY/oMoUc9tuSAPLstY=;
+        b=ub5NnV1tzVHlADnj++6bp87OuqeYSEmGYQKAm9ckuP0xCe8tVYstkzlp2AgMKZkp/k
+         7Lq4U+AVKmmliPlSf3BE0NBCACp/++d577uUg6ruMIyfHw9b6eyeKrgbmJrC+T6+oHnA
+         1KSRSfGfs1ZIvacz1Px2MSBi8vWvYaO6SoIp6U2+PguVOmHVvJLblxvoor9GQmHI8d4t
+         lZPqomWNIQv/6XFZVihW3RlF34OiNZGTn4oHjPOQC6kVy67OwlOPrF64iOiosVGgHVPt
+         ADcOSKvvVrju5T+nZk2t2itEbuF15qQ0ykH3RaHKZve4rarmP6lBCwigIE+bnasLAab6
+         KJKQ==
+X-Gm-Message-State: AOAM531wGvaVnGSWyQIGecll4PyhbdxnNw1le/ho1gdwLaCWwclWOpxJ
+        orpYCMbGBzgmgE22fWOjV4uETPmsTcBn14HH0P/5S+GyLGk=
+X-Google-Smtp-Source: ABdhPJz9Qm3dGbfRwThau3HEn7qjgEfAWEmtjFnJL3HuXA6cWzVIZ1IIDXa4l69Zh9gSM34e4KhijU8n3lJ/IjnJUk8=
+X-Received: by 2002:a05:6000:1a89:b0:203:706f:7c67 with SMTP id
+ f9-20020a0560001a8900b00203706f7c67mr4821329wry.471.1647535289965; Thu, 17
+ Mar 2022 09:41:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: bcmgenet: skip invalid partial checksums
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164753521124.23544.3849930377237051985.git-patchwork-notify@kernel.org>
-Date:   Thu, 17 Mar 2022 16:40:11 +0000
-References: <20220317012812.1313196-1-opendmb@gmail.com>
-In-Reply-To: <20220317012812.1313196-1-opendmb@gmail.com>
-To:     Doug Berger <opendmb@gmail.com>
-Cc:     davem@davemloft.net, f.fainelli@gmail.com, kuba@kernel.org,
-        pabeni@redhat.com, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220316235908.1246615-1-kuba@kernel.org>
+In-Reply-To: <20220316235908.1246615-1-kuba@kernel.org>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Thu, 17 Mar 2022 09:40:53 -0700
+Message-ID: <CAK6E8=cGVkB4=yZMQ5eOBHRzNSyrO7ZwqkRvjVAuspTJOJTW=Q@mail.gmail.com>
+Subject: Re: [RFC net] tcp: ensure PMTU updates are processed during fastopen
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, weiwan@google.com,
+        netdev@vger.kernel.org, ntspring@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Mar 16, 2022 at 4:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
+> rise it to the local MSS. tp->mss_cache is not updated, however:
+>
+> tcp_v6_connect():
+>   tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
+>   tcp_connect():
+>      tcp_connect_init():
+>        tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
+>      tcp_send_syn_data():
+>        tp->rx_opt.mss_clamp = tp->advmss
+>
+> After recent fixes to ICMPv6 PTB handling we started dropping
+> PMTU updates higher than tp->mss_cache. Because of the stale
+> tp->mss_cache value PMTU updates during TFO are always dropped.
+>
+> Thanks to Wei for helping zero in on the problem and the fix!
+>
+> Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
+> Reported-by: Andre Nash <alnash@fb.com>
+> Reported-by: Neil Spring <ntspring@fb.com>
+> Reviewed-by: Wei Wang <weiwan@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Thanks for the fix.
 
-On Wed, 16 Mar 2022 18:28:12 -0700 you wrote:
-> The RXCHK block will return a partial checksum of 0 if it encounters
-> a problem while receiving a packet. Since a 1's complement sum can
-> only produce this result if no bits are set in the received data
-> stream it is fair to treat it as an invalid partial checksum and
-> not pass it up the stack.
-> 
-> Fixes: 810155397890 ("net: bcmgenet: use CHECKSUM_COMPLETE for NETIF_F_RXCSUM")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net] net: bcmgenet: skip invalid partial checksums
-    https://git.kernel.org/netdev/net/c/0f643c88c8d2
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/ipv4/tcp_output.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 5079832af5c1..257780f93305 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -3719,6 +3719,7 @@ static void tcp_connect_queue_skb(struct sock *sk, struct sk_buff *skb)
+>   */
+>  static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
+>  {
+> +       struct inet_connection_sock *icsk = inet_csk(sk);
+>         struct tcp_sock *tp = tcp_sk(sk);
+>         struct tcp_fastopen_request *fo = tp->fastopen_req;
+>         int space, err = 0;
+> @@ -3733,8 +3734,10 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
+>          * private TCP options. The cost is reduced data space in SYN :(
+>          */
+>         tp->rx_opt.mss_clamp = tcp_mss_clamp(tp, tp->rx_opt.mss_clamp);
+> +       /* Sync mss_cache after updating the mss_clamp */
+> +       tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+>
+> -       space = __tcp_mtu_to_mss(sk, inet_csk(sk)->icsk_pmtu_cookie) -
+> +       space = __tcp_mtu_to_mss(sk, icsk->icsk_pmtu_cookie) -
+>                 MAX_TCP_OPTION_SPACE;
+>
+>         space = min_t(size_t, space, fo->size);
+> --
+> 2.34.1
+>
