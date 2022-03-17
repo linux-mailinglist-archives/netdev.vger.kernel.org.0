@@ -2,56 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 132094DCD0A
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 18:57:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10ED24DCD18
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:00:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237125AbiCQR7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 13:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33674 "EHLO
+        id S235096AbiCQSBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237120AbiCQR7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 13:59:01 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D413021C069;
-        Thu, 17 Mar 2022 10:57:44 -0700 (PDT)
+        with ESMTP id S230443AbiCQSBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:01:11 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6471208C20;
+        Thu, 17 Mar 2022 10:59:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647539864; x=1679075864;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nEv5bKsEAap2hI7uLbqGDVy2KLkyTKhKSiHGliTE7jE=;
-  b=TfzgozaLX12RQ0PAMNfDHX9JH0fdxGX0m27Naf+qaGzEeGjsEPAsCguQ
-   3wcxiemXjzMERjKbE8fS7NAVOKHww0vVQ+vfUsJCCPC6YINsLCC9obN7z
-   9fegrDhGSo/zF38QpaHOl8qH/lrj7HthmbTivbEIswk+hofLjFbiC6WT9
-   I4WrPyEjTljJuwNOHnVUhvyJCW7Xd0xjFTStNL4TX9tSPkMOIz6/p7BhH
-   xSrej3xFVOW+IVsKAjDE2fM1I1vdSJoNiYBR4VYIakiC7YaJ9cEulv/Lr
-   nsiSRR5oEaaJ8lGF+uBWoS6x6FCqtxbPgGKWIfj59zN9zVjEOtcz0Leds
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="320150058"
+  t=1647539995; x=1679075995;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mrEoFatINvPQoB5zn9lLrgr2v+iqz1+qM+CwhwiS228=;
+  b=jEXp0qhvOql3l3QwEGzmrXKvXEwVHeR/Pv2AImmVnYtCSLjkKTfRXNdg
+   qlBsTnPs0xcWo0yuzFy9yyksJVXRYOAOycWDCvpfI/qFrau/KHtf58AOU
+   r6ceOpz7v9iCe5QjgJwWyWzZSXpmqOD3itnVe1nqjQ5bvRcxDTxENhWbG
+   nJt1jwGA9p5nsqCYXm2k39mARfd93ipR9KuVe/yYl3X3HtJkKBppH7dsg
+   LoYzUtoVFw3zO8TTFyKgKs/sHp1l4rt3qLHgNKViBilrbD0cM+1LPVyx3
+   v1TlcHLq3/pDc0kPdRDzDbconPhW//XCx63vzdcMNqmABfQ7EmRuhp4SW
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10289"; a="236883755"
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="320150058"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 10:57:44 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="236883755"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 10:59:54 -0700
 X-IronPort-AV: E=Sophos;i="5.90,188,1643702400"; 
-   d="scan'208";a="513515788"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga002.jf.intel.com with ESMTP; 17 Mar 2022 10:57:42 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        anthony.l.nguyen@intel.com, kuba@kernel.org, davem@davemloft.net,
-        magnus.karlsson@intel.com, alexandr.lobakin@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH intel-next] ice: xsk: check if Rx ring was filled up to the end
-Date:   Thu, 17 Mar 2022 18:57:27 +0100
-Message-Id: <20220317175727.340251-1-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
+   d="scan'208";a="581386489"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.212.192.243]) ([10.212.192.243])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2022 10:59:53 -0700
+Message-ID: <4131e7b3-94f1-40f1-3d4f-df44cda0e5da@linux.intel.com>
+Date:   Thu, 17 Mar 2022 10:59:53 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v5 05/13] net: wwan: t7xx: Add control port
+Content-Language: en-US
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        ilpo.johannes.jarvinen@intel.com, moises.veleta@intel.com,
+        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
+        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
+        madhusmita.sahu@intel.com
+References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com>
+ <20220223223326.28021-6-ricardo.martinez@linux.intel.com>
+ <CAHNKnsTUSfieWKuw5WOFPidezoVWDKkLqQV6xnDs560QAGXiCQ@mail.gmail.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <CAHNKnsTUSfieWKuw5WOFPidezoVWDKkLqQV6xnDs560QAGXiCQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,62 +78,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__ice_alloc_rx_bufs_zc() checks if a number of the descriptors to be
-allocated would cause the ring wrap. In that case, driver will issue two
-calls to xsk_buff_alloc_batch() - one that will fill the ring up to the
-end and the second one that will start with filling descriptors from the
-beginning of the ring.
 
-ice_fill_rx_descs() is a wrapper for taking care of what
-xsk_buff_alloc_batch() gave back to the driver. It works in a best
-effort approach, so for example when driver asks for 64 buffers,
-ice_fill_rx_descs() could assign only 32. Such case needs to be checked
-when ring is being filled up to the end, because in that situation ntu
-might not reached the end of the ring.
+Hi Sergey,
 
-Fix the ring wrap by checking if nb_buffs_extra has the expected value.
-If not, bump ntu and go directly to tail update.
+On 3/6/2022 6:55 PM, Sergey Ryazanov wrote:
+> On Thu, Feb 24, 2022 at 1:35 AM Ricardo Martinez
+> <ricardo.martinez@linux.intel.com> wrote:
+>> From: Haijun Liu <haijun.liu@mediatek.com>
+>>
+>> Control Port implements driver control messages such as modem-host
+>> handshaking, controls port enumeration, and handles exception messages.
+>>
+>> The handshaking process between the driver and the modem happens during
+>> the init sequence. The process involves the exchange of a list of
+>> supported runtime features to make sure that modem and host are ready
+>> to provide proper feature lists including port enumeration. Further
+>> features can be enabled and controlled in this handshaking process.
+>>
+...
+>> +static void t7xx_core_hk_handler(struct t7xx_modem *md, struct t7xx_fsm_ctl *ctl,
+>> +                                enum t7xx_fsm_event_state event_id,
+>> +                                enum t7xx_fsm_event_state err_detect)
+>> +{
+>> +       struct t7xx_sys_info *core_info = &md->core_md;
+>> +       struct device *dev = &md->t7xx_dev->pdev->dev;
+>> +       struct t7xx_fsm_event *event, *event_next;
+>> +       unsigned long flags;
+>> +       void *event_data;
+>> +       int ret;
+>> +
+>> +       t7xx_prepare_host_rt_data_query(core_info);
+>> +
+>> +       while (!kthread_should_stop()) {
+>> +               bool event_received = false;
+>> +
+>> +               spin_lock_irqsave(&ctl->event_lock, flags);
+>> +               list_for_each_entry_safe(event, event_next, &ctl->event_queue, entry) {
+>> +                       if (event->event_id == err_detect) {
+>> +                               list_del(&event->entry);
+>> +                               spin_unlock_irqrestore(&ctl->event_lock, flags);
+>> +                               dev_err(dev, "Core handshake error event received\n");
+>> +                               goto err_free_event;
+>> +                       } else if (event->event_id == event_id) {
+>> +                               list_del(&event->entry);
+>> +                               event_received = true;
+>> +                               break;
+>> +                       }
+>> +               }
+>> +               spin_unlock_irqrestore(&ctl->event_lock, flags);
+>> +
+>> +               if (event_received)
+>> +                       break;
+>> +
+>> +               wait_event_interruptible(ctl->event_wq, !list_empty(&ctl->event_queue) ||
+>> +                                        kthread_should_stop());
+>> +               if (kthread_should_stop())
+>> +                       goto err_free_event;
+>> +       }
+>> +
+>> +       if (ctl->exp_flg)
+>> +               goto err_free_event;
+>> +
+>> +       event_data = (void *)event + sizeof(*event);
+> In the V2, the event structure has a data field. But then it was
+> dropped and now the attached data offset is manually calculated. Why
+> did you do this, why event->data is not suitable here?
 
-Fixes: 3876ff525de7 ("ice: xsk: Handle SW XDP ring wrap and bump tail more often")
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_xsk.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+It was removed along with other zero length arrays, although it was 
+declared as an empty array.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 88853a6ed931..6f15aa69cd5f 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -413,8 +413,8 @@ static u16 ice_fill_rx_descs(struct xsk_buff_pool *pool, struct xdp_buff **xdp,
-  */
- static bool __ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
- {
-+	u32 nb_buffs_extra = 0, nb_buffs = 0;
- 	union ice_32b_rx_flex_desc *rx_desc;
--	u32 nb_buffs_extra = 0, nb_buffs;
- 	u16 ntu = rx_ring->next_to_use;
- 	u16 total_count = count;
- 	struct xdp_buff **xdp;
-@@ -426,6 +426,10 @@ static bool __ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
- 		nb_buffs_extra = ice_fill_rx_descs(rx_ring->xsk_pool, xdp,
- 						   rx_desc,
- 						   rx_ring->count - ntu);
-+		if (nb_buffs_extra != rx_ring->count - ntu) {
-+			ntu += nb_buffs_extra;
-+			goto exit;
-+		}
- 		rx_desc = ICE_RX_DESC(rx_ring, 0);
- 		xdp = ice_xdp_buf(rx_ring, 0);
- 		ntu = 0;
-@@ -439,6 +443,7 @@ static bool __ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
- 	if (ntu == rx_ring->count)
- 		ntu = 0;
- 
-+exit:
- 	if (rx_ring->next_to_use != ntu)
- 		ice_release_rx_desc(rx_ring, ntu);
- 
--- 
-2.27.0
+The next iteration will use C99 flexible arrays where required, instead 
+of calculating the data offset manually.
 
+...
