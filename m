@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99FCE4DBD6C
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 04:18:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F40E94DBD80
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 04:23:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbiCQDUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 16 Mar 2022 23:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39918 "EHLO
+        id S231462AbiCQDYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 16 Mar 2022 23:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbiCQDUL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 23:20:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B6321255;
-        Wed, 16 Mar 2022 20:18:56 -0700 (PDT)
+        with ESMTP id S230274AbiCQDYO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 16 Mar 2022 23:24:14 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19C84140E7;
+        Wed, 16 Mar 2022 20:22:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE8C761336;
-        Thu, 17 Mar 2022 03:18:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 315FEC340EC;
-        Thu, 17 Mar 2022 03:18:54 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 57550CE2277;
+        Thu, 17 Mar 2022 03:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D606C340EC;
+        Thu, 17 Mar 2022 03:22:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647487135;
-        bh=gvE3+/ElSE9yvoZpZIsRKB6D9Lnqy5SmG41P0Reg/AU=;
+        s=k20201202; t=1647487373;
+        bh=qZ6toP24YyEEfXrXc9wOoXI919Sb4ygcZxGBlcSjMsc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZQVy5cIVgYdNDSu0mjNhiXNloQ+KBPGaUD2ENJxZvAA59CDLtPeunLeckpW124o+J
-         wlRSAWRSyFdGkK8n7AKV6Eif59zXOjnma/q+ySUcIqVLalvwDtnKiC8GhT16erK85i
-         ljp3ocnqtPoDNb+JcXWb6T62KDc/59EaETsSQbebrvjLlq8rm1KdA4IzawX8JkhP24
-         3N9rPf3Rowsn/XTbXwaKWnVlolzUqG+0zNQ4wkSoVW0Se8YWq+AJYkWpTpNWn2ZkN4
-         2FyYVyAAol5MyPzajWMtZ9wVWYv+eRtxCDjtgksamYtWvdoc7FXES3sM9i2d19c1Xh
-         QrEqoshZefUFg==
-Date:   Wed, 16 Mar 2022 20:18:53 -0700
+        b=ck1dhiSYK2gDKz0mWgRR8Cwcwfk/Liz0XBZZvQf3cu+S7ZAo32EUzJ9fU9btfr+bB
+         9a1hSmFbOJeDdCcVAnJslsOvKmJBgU/z5mj3RX7y9WV+Tpac7uN9LU/EcT3/HJdUdA
+         GweuAdgJAbCHQ+DQ/aZjGLk5GvNPYtv25n1GrQd534QsEUmMEKqO37ZpO1q1CEFp9x
+         Be9zHXY7HCKhnyiMoWrGVMj/bpXgsbm4kq9dvNfDEPjweo0jY8SRlX2MTCf2ctWpSL
+         ni/DEiCTDqoCU0r2r/cXOVOIPHHwg5X00VhqIBBCSN/0I6NQU+khOpnUFb+DuBz/iI
+         LzhfIvd3w6fJw==
+Date:   Wed, 16 Mar 2022 20:22:51 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     menglong8.dong@gmail.com, dsahern@kernel.org
-Cc:     pabeni@redhat.com, rostedt@goodmis.org, mingo@redhat.com,
-        xeb@mail.ru, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        imagedong@tencent.com, edumazet@google.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org, alobakin@pm.me,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, benbjiang@tencent.com
-Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
- to icmp protocol
-Message-ID: <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220316063148.700769-4-imagedong@tencent.com>
-References: <20220316063148.700769-1-imagedong@tencent.com>
-        <20220316063148.700769-4-imagedong@tencent.com>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        linux-kernel@vger.kernel.org (open list),
+        zhengkui_guo@outlook.com
+Subject: Re: [PATCH] selftests: net: fix warning when compiling selftest/net
+Message-ID: <20220316202251.382b687e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220316115040.10876-1-guozhengkui@vivo.com>
+References: <20220316115040.10876-1-guozhengkui@vivo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,65 +57,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 16 Mar 2022 14:31:48 +0800 menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+On Wed, 16 Mar 2022 19:50:40 +0800 Guo Zhengkui wrote:
+> When I compile tools/testing/selftests/net/ by
+> `make -C tools/testing/selftests/net` with gcc (Debian 8.3.0-6) 8.3.0,
+> it reports the following warnings:
 > 
-> Replace kfree_skb() used in icmp_rcv() and icmpv6_rcv() with
-> kfree_skb_reason().
+> txtimestamp.c: In function 'validate_timestamp':
+> txtimestamp.c:164:29: warning: format '%lu' expects argument of type
+> 'long unsigned int', but argument 3 has type 'int64_t'
+> {aka 'long long int'} [-Wformat=]
+>    fprintf(stderr, "ERROR: %lu us expected between %d and %d\n",
+>                            ~~^
+>                            %llu
+>      cur64 - start64, min_delay, max_delay);
+>      ~~~~~~~~~~~~~~~
+> txtimestamp.c: In function '__print_ts_delta_formatted':
+> txtimestamp.c:173:22: warning: format '%lu' expects argument of type
+> 'long unsigned int', but argument 3 has type 'int64_t'
+> {aka 'long long int'} [-Wformat=]
+>    fprintf(stderr, "%lu ns", ts_delta);
+>                     ~~^      ~~~~~~~~
+>                     %llu
+> txtimestamp.c:175:22: warning: format '%lu' expects argument of type
+> 'long unsigned int', but argument 3 has type 'int64_t'
+> {aka 'long long int'} [-Wformat=]
+>    fprintf(stderr, "%lu us", ts_delta / NSEC_PER_USEC);
+>                     ~~^
+>                     %llu
 > 
-> In order to get the reasons of the skb drops after icmp message handle,
-> we change the return type of 'handler()' in 'struct icmp_control' from
-> 'bool' to 'enum skb_drop_reason'. This may change its original
-> intention, as 'false' means failure, but 'SKB_NOT_DROPPED_YET' means
-> success now. Therefore, all 'handler' and the call of them need to be
-> handled. Following 'handler' functions are involved:
-> 
-> icmp_unreach()
-> icmp_redirect()
-> icmp_echo()
-> icmp_timestamp()
-> icmp_discard()
-> 
-> And following new drop reasons are added:
-> 
-> SKB_DROP_REASON_ICMP_CSUM
-> SKB_DROP_REASON_ICMP_TYPE
-> SKB_DROP_REASON_ICMP_BROADCAST
-> 
-> Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-> Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> `int64_t` is the alias for `long long int`. '%lld' is more suitable.
 
-I guess this set raises the follow up question to Dave if adding 
-drop reasons to places with MIB exception stats means improving 
-the granularity or one MIB stat == one reason?
-
-> -bool ping_rcv(struct sk_buff *skb)
-> +enum skb_drop_reason ping_rcv(struct sk_buff *skb)
->  {
-> +	enum skb_drop_reason reason = SKB_DROP_REASON_NO_SOCKET;
->  	struct sock *sk;
->  	struct net *net = dev_net(skb->dev);
->  	struct icmphdr *icmph = icmp_hdr(skb);
-> -	bool rc = false;
->  
->  	/* We assume the packet has already been checked by icmp_rcv */
->  
-> @@ -980,15 +980,17 @@ bool ping_rcv(struct sk_buff *skb)
->  		struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
->  
->  		pr_debug("rcv on socket %p\n", sk);
-> -		if (skb2 && !ping_queue_rcv_skb(sk, skb2))
-> -			rc = true;
-> +		if (skb2)
-> +			reason = __ping_queue_rcv_skb(sk, skb2);
-> +		else
-> +			reason = SKB_DROP_REASON_NOMEM;
->  		sock_put(sk);
->  	}
->  
-> -	if (!rc)
-> +	if (reason)
->  		pr_debug("no socket, dropping\n");
-
-This is going to be printed on memory allocation failures now as well.
+That's on 32bit machines, I think what you need to use is PRId64.
+Or just cast the result / change variable types to long long.
