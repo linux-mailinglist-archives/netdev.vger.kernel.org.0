@@ -2,78 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2297C4DC5C6
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 13:26:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CC654DC5ED
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 13:40:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230134AbiCQM15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 08:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
+        id S233624AbiCQMla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 08:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233599AbiCQM1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 08:27:54 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911611CABF5
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 05:26:38 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 29F015C0195;
-        Thu, 17 Mar 2022 08:26:36 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 17 Mar 2022 08:26:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=E5F1iZE2erkYDbr1G
-        AMKhk6q/sgDL/5bHJDCFXXFM88=; b=REDM8jq8awSrZCjEVt2nubSa9KvZs+tmq
-        QuCLY29ktIL7p4J6V0wH7UylriphtFQNtNDVtSGVy4g7APKF6MZQO3BFJW41FEja
-        GKEhNkXtIjgWaVl+u+QLrk7llWWMRfFxdFrX+vO4msZUOsU7ZJBxXizKfVt95Tu/
-        GfRGPoUj/mWpVMt9MjfrrWKQbZcRR7Mq/Z60wuyrzwdERanOH9BcIcl5kI5SmIIB
-        vnswVIViLpoP4O5bxDHFaNOYUmverLctIpuh8SZRu1eEJQ2WUAlTygCc0qfgFbB8
-        aWkcwXq94lMf1SBJUeHght2km4vC0phRM2XpXwm/zLPfuSnuL4akw==
-X-ME-Sender: <xms:-ygzYl9DQVn2OnT2EKID_IXyWLiZit8_dQvCvWiSq1fMFDXWzT2Uvg>
-    <xme:-ygzYpsl22hlvsYIT11C0JV-AnE-DKb4dWpf_ZM-eD08TWNXagkEcwpzfJE72pB-F
-    NMD_RRFSIcU58M>
-X-ME-Received: <xmr:-ygzYjCdXJUjZpssYwmCicwhs7XO67MryBYfF1dpmT02A5OtH25rux-p5GQ8hepyP7elonDDDxlKKqJSjAyWe-Cr6r8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefgedgfeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:-ygzYpd5y5qVlpdVXi9UpLd0xTrZWYkrWuw20mcTMsB-JMmytQLY7A>
-    <xmx:-ygzYqMzWP3ak1wVwSIgM3NbIRA-pVSWjeeJqxqRygOtcq3ukmWB1A>
-    <xmx:-ygzYrkKHZIJOo9orNbcrOUZxNBcdF31Pa1qvJU-ZgYoRhgnDI1sVg>
-    <xmx:_CgzYhouHrqc2ywFl0IuqaOelmANb_LlNP65TgU-DM1FyY58y2SEqA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Mar 2022 08:26:35 -0400 (EDT)
-Date:   Thu, 17 Mar 2022 14:26:31 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     Mattias Forsblad <mattias.forsblad@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH 2/5] net: bridge: Implement bridge flood flag
-Message-ID: <YjMo9xyoycXgSWXS@shredder>
-References: <20220317065031.3830481-1-mattias.forsblad@gmail.com>
- <20220317065031.3830481-3-mattias.forsblad@gmail.com>
- <87r1717xrz.fsf@gmail.com>
- <50f4e8b0-4eea-d202-383b-bf2c2824322d@gmail.com>
- <cf7af730-1f98-f845-038b-43104fa060cd@blackwall.org>
+        with ESMTP id S233620AbiCQMla (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 08:41:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4111E95D6;
+        Thu, 17 Mar 2022 05:40:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1D2DB81E86;
+        Thu, 17 Mar 2022 12:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3D985C340ED;
+        Thu, 17 Mar 2022 12:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647520810;
+        bh=VTMMpw0s+cXz9DTBEHX6o/Y+VT1YN7uXrMm1FmMVLtY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=e/CEWHiJp1j19M22+rzCdjGIY7YwKmzbWhG9eo3WH/vun/UEjo6d9lZdsnxKio+Fo
+         CVpTbXBoQCsJTu7U1es6tzqsXLjmr0A172igY94NI+RJ/QEHyHsNmCMFddvcElprkr
+         OkLFdaVIJavk6dZD7ePyVkeJtcCJx1gnHg2akif/8amv7yxkc2DIg+5z773gdj+CQi
+         Id2DUzGBHnnPvJKseYcxBukfv693vL6m7U0aL/j0613QrbjO82UfLV4wNyscPE1Wys
+         tXB2POhLJlSs7xItq80Wpi+6dO/C5WlUA4AICzlyoE9wvPMd+R8/xZSXSwMFqliIvH
+         EYEvVmMpNenvg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 213AFE8DD5B;
+        Thu, 17 Mar 2022 12:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cf7af730-1f98-f845-038b-43104fa060cd@blackwall.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: dsa: Add missing of_node_put() in dsa_port_parse_of
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164752081013.22810.17954436878989879996.git-patchwork-notify@kernel.org>
+Date:   Thu, 17 Mar 2022 12:40:10 +0000
+References: <20220316082602.10785-1-linmq006@gmail.com>
+In-Reply-To: <20220316082602.10785-1-linmq006@gmail.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,84 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 01:42:55PM +0200, Nikolay Aleksandrov wrote:
-> On 17/03/2022 13:39, Mattias Forsblad wrote:
-> > On 2022-03-17 10:07, Joachim Wiberg wrote:
-> >> On Thu, Mar 17, 2022 at 07:50, Mattias Forsblad <mattias.forsblad@gmail.com> wrote:
-> >>> This patch implements the bridge flood flags. There are three different
-> >>> flags matching unicast, multicast and broadcast. When the corresponding
-> >>> flag is cleared packets received on bridge ports will not be flooded
-> >>> towards the bridge.
-> >>
-> >> If I've not completely misunderstood things, I believe the flood and
-> >> mcast_flood flags operate on unknown unicast and multicast.  With that
-> >> in mind I think the hot path in br_input.c needs a bit more eyes.  I'll
-> >> add my own comments below.
-> >>
-> >> Happy incident I saw this patch set, I have a very similar one for these
-> >> flags to the bridge itself, with the intent to improve handling of all
-> >> classes of multicast to/from the bridge itself.
-> >>
-> >>> [snip]
-> >>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> >>> index e0c13fcc50ed..fcb0757bfdcc 100644
-> >>> --- a/net/bridge/br_input.c
-> >>> +++ b/net/bridge/br_input.c
-> >>> @@ -109,11 +109,12 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
-> >>>  		/* by definition the broadcast is also a multicast address */
-> >>>  		if (is_broadcast_ether_addr(eth_hdr(skb)->h_dest)) {
-> >>>  			pkt_type = BR_PKT_BROADCAST;
-> >>> -			local_rcv = true;
-> >>> +			local_rcv = true && br_opt_get(br, BROPT_BCAST_FLOOD);
-> >>
-> >> Minor comment, I believe the preferred style is more like this:
-> >>
-> >> 	if (br_opt_get(br, BROPT_BCAST_FLOOD))
-> >>         	local_rcv = true;
-> >>
-> >>>  		} else {
-> >>>  			pkt_type = BR_PKT_MULTICAST;
-> >>> -			if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
-> >>> -				goto drop;
-> >>> +			if (br_opt_get(br, BROPT_MCAST_FLOOD))
-> >>> +				if (br_multicast_rcv(&brmctx, &pmctx, vlan, skb, vid))
-> >>> +					goto drop;
-> >>
-> >> Since the BROPT_MCAST_FLOOD flag should only control uknown multicast,
-> >> we cannot bypass the call to br_multicast_rcv(), which helps with the
-> >> classifcation.  E.g., we want IGMP/MLD reports to be forwarded to all
-> >> router ports, while the mdb lookup (below) is what an tell us if we
-> >> have uknown multicast and there we can check the BROPT_MCAST_FLOOD
-> >> flag for the bridge itself.
-> > 
-> > The original flag was name was local_receive to separate it from being
-> > mistaken for the flood unknown flags. However the comment I've got was
-> > to align it with the existing (port) flags. These flags have nothing to do with
-> > the port flood unknown flags. Imagine the setup below:
-> > 
-> >            vlan1
-> >              |
-> >             br0             br1
-> >            /   \           /   \
-> >          swp1 swp2       swp3 swp4
-> > 
-> > We want to have swp1/2 as member of a normal vlan filtering bridge br0 /w learning on. 
-> > On br1 we want to just forward packets between swp3/4 and disable learning. 
-> > Additional we don't want this traffic to impact the CPU. 
-> > If we disable learning on swp3/4 all traffic will be unknown and if we also 
-> > have flood unknown on the CPU-port because of requirements for br0 it will
-> > impact the traffic to br1. Thus we want to restrict traffic between swp3/4<->CPU port
-> > with the help of the PVT.
-> > 
-> > /Mattias
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Wed, 16 Mar 2022 08:26:02 +0000 you wrote:
+> The device_node pointer is returned by of_parse_phandle()  with refcount
+> incremented. We should use of_node_put() on it when done.
 > 
-> The feedback was correct and we all assumed unknown traffic control.
-> If you don't want any local receive then use filtering rules. Don't add unnecessary flags.
+> Fixes: 6d4e5c570c2d ("net: dsa: get port type at parse time")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  net/dsa/dsa2.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-Yep. Very easy with tc:
+Here is the summary with links:
+  - net: dsa: Add missing of_node_put() in dsa_port_parse_of
+    https://git.kernel.org/netdev/net/c/cb0b430b4e3a
 
-# tc qdisc add dev br1 clsact
-# tc filter add dev br1 ingress pref 1 proto all matchall action drop
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-This can be fully implemented inside the relevant device driver, no
-changes needed in the bridge driver.
+
