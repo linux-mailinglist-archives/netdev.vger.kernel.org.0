@@ -2,108 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E07234DCE33
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E4A4DCE7E
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 20:11:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237742AbiCQS4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42126 "EHLO
+        id S237863AbiCQTMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 15:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237737AbiCQSzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E773B165AA8
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C253617B6
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F095DC340F2;
-        Thu, 17 Mar 2022 18:54:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647543276;
-        bh=i6ufKBbj6RUDiMTeu3D5eHbhE6zqs8JdvkPgV4bcoRQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R3fmWferd3O6/ud5LxJg4h6ufsOxB+MxaMUSHb7l7J52GuHhZ0RTDodu/7pRoCSMK
-         iQP+LdQqO0wp2g8p3yfKR0clNMfmQPz/M9k4xLRNy+6pjfshYBjy4wiVm5GeO5xFEJ
-         iB9vbozvCqr0Bn4XYhKNTCAVxbLwRyWPUhBJUAnflaD/aGz1kC7SBXQwDwLTv56E9Z
-         s2RZcI41OzprAnc2IYLpSzlMAzeplhjq4hL1d5fZd/VX91vqLnDuxTU41/UPSfF763
-         CEonvPeLmFMt9CLAv+m8hgIruhNkbVIgRT/MfViOCqFJzX8kHqBeOQ2WzwJQ+Wq8RU
-         OV4tmvVknEfNw==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 15/15] net/mlx5: Remove unused fill page array API function
-Date:   Thu, 17 Mar 2022 11:54:24 -0700
-Message-Id: <20220317185424.287982-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220317185424.287982-1-saeed@kernel.org>
-References: <20220317185424.287982-1-saeed@kernel.org>
+        with ESMTP id S234978AbiCQTM3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 15:12:29 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2BFE994B;
+        Thu, 17 Mar 2022 12:11:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1647544270; x=1679080270;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fmhExObKJfb9BUNo4OAayqN1xl6unRSZn3MfjAV8Bug=;
+  b=dIcw9GlpVUZYE2C8r9jV/KJOPAgKt4E7RGx6xS+BWgvs1KVnO7TbkjqP
+   IMTX/htfpMwzdKX9sC0Tb4z1MFTw7lKpo5bnXfAbhxvsgBLqGcTPY/qpU
+   KIYM0RV0oUCHt4LHVy+9N951U942h91qdylf5CKlgcDlnTJqcUYlcX4X+
+   NXzCvZkp/kfVnue7CWfZ/GzHkkv1+nm5lSEmCMWTRnxJgUtNARFnUyIcy
+   98tbC7Y1GwvODEznP5cHDwWkFSJJie/B8u0uLLBXpS30m3lbuXT6D0S9y
+   oqVQzz/XwnA17GFQ/koIBCvWxEECOwTf8rDgpwteHGhSSYReRk9Q5wCdt
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,188,1643698800"; 
+   d="scan'208";a="89307365"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Mar 2022 12:11:09 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 17 Mar 2022 12:11:09 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 17 Mar 2022 12:11:08 -0700
+Date:   Thu, 17 Mar 2022 20:14:06 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     Krzysztof Kozlowski <krzk@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Subject: Re: [PATCH net-next v2 1/3] dt-bindings: net: mscc-miim: add lan966x
+ compatible
+Message-ID: <20220317191406.5ivtfkdlwzngmobi@soft-dev3-1.localhost>
+References: <20220313002536.13068-1-michael@walle.cc>
+ <20220313002536.13068-2-michael@walle.cc>
+ <08b89b3f-d0d3-e96f-d1c3-80e8dfd0798f@kernel.org>
+ <d18291ff8d81f03a58900935d92115f2@walle.cc>
+ <2d35127c-d4ef-6644-289a-5c10bcbbbf84@kernel.org>
+ <145fc079ce8c266b8c2265aacfd3b077@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <145fc079ce8c266b8c2265aacfd3b077@walle.cc>
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+The 03/13/2022 17:30, Michael Walle wrote:
 
-mlx5_fill_page_array API function is not used.
-Remove it, reduce the number of exported functions.
+Hi Michael,
 
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/alloc.c | 13 -------------
- include/linux/mlx5/driver.h                     |  1 -
- 2 files changed, 14 deletions(-)
+> 
+> [adding Horatiu and Kavyasree from Microchip]
+> 
+> Am 2022-03-13 17:10, schrieb Krzysztof Kozlowski:
+> > On 13/03/2022 11:47, Michael Walle wrote:
+> > > Am 2022-03-13 10:47, schrieb Krzysztof Kozlowski:
+> > > > On 13/03/2022 01:25, Michael Walle wrote:
+> > > > > The MDIO controller has support to release the internal PHYs from
+> > > > > reset
+> > > > > by specifying a second memory resource. This is different between
+> > > > > the
+> > > > > currently supported SparX-5 and the LAN966x. Add a new compatible to
+> > > > > distiguish between these two.
+> > 
+> > Typo here, BTW.
+> > 
+> > > > > 
+> > > > > Signed-off-by: Michael Walle <michael@walle.cc>
+> > > > > ---
+> > > > >  Documentation/devicetree/bindings/net/mscc-miim.txt | 2 +-
+> > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > > > 
+> > > > > diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt
+> > > > > b/Documentation/devicetree/bindings/net/mscc-miim.txt
+> > > > > index 7104679cf59d..a9efff252ca6 100644
+> > > > > --- a/Documentation/devicetree/bindings/net/mscc-miim.txt
+> > > > > +++ b/Documentation/devicetree/bindings/net/mscc-miim.txt
+> > > > > @@ -2,7 +2,7 @@ Microsemi MII Management Controller (MIIM) / MDIO
+> > > > >  =================================================
+> > > > > 
+> > > > >  Properties:
+> > > > > -- compatible: must be "mscc,ocelot-miim"
+> > > > > +- compatible: must be "mscc,ocelot-miim" or "mscc,lan966x-miim"
+> > > > 
+> > > > No wildcards, use one, specific compatible.
+> > > 
+> > > I'm in a kind of dilemma here, have a look yourself:
+> > > grep -r "lan966[28x]-" Documentation
+> > > 
+> > > Should I deviate from the common "name" now? To make things
+> > > worse, there was a similar request by Arnd [1]. But the
+> > > solution feels like cheating ("lan966x" -> "lan966") ;)
+> > 
+> > The previous 966x cases were added by one person from Microchip, so he
+> > actually might know something. But do you know whether lan966x will
+> > cover all current and future designs from Microchip? E.g. lan9669 (if
+> > ever made) will be the same? Avoiding wildcard is the easiest, just
+> > choose one implementation, e.g. "lan9662".
+> 
+> So if Microchip would review/ack this it would be ok? I don't really
+> have a strong opinion, I just want to avoid any inconsistencies. If no
+> one from Microchip will answer, I'll use microchip,lan9668-miim.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
-index 1762c5c36042..e52b0bac09da 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
-@@ -239,19 +239,6 @@ void mlx5_db_free(struct mlx5_core_dev *dev, struct mlx5_db *db)
- }
- EXPORT_SYMBOL_GPL(mlx5_db_free);
- 
--void mlx5_fill_page_array(struct mlx5_frag_buf *buf, __be64 *pas)
--{
--	u64 addr;
--	int i;
--
--	for (i = 0; i < buf->npages; i++) {
--		addr = buf->frags->map + (i << buf->page_shift);
--
--		pas[i] = cpu_to_be64(addr);
--	}
--}
--EXPORT_SYMBOL_GPL(mlx5_fill_page_array);
--
- void mlx5_fill_page_frag_array_perm(struct mlx5_frag_buf *buf, __be64 *pas, u8 perm)
- {
- 	int i;
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index a386aec1eb65..96cd740d94a3 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1036,7 +1036,6 @@ int mlx5_reclaim_startup_pages(struct mlx5_core_dev *dev);
- void mlx5_register_debugfs(void);
- void mlx5_unregister_debugfs(void);
- 
--void mlx5_fill_page_array(struct mlx5_frag_buf *buf, __be64 *pas);
- void mlx5_fill_page_frag_array_perm(struct mlx5_frag_buf *buf, __be64 *pas, u8 perm);
- void mlx5_fill_page_frag_array(struct mlx5_frag_buf *frag_buf, __be64 *pas);
- int mlx5_vector2eqn(struct mlx5_core_dev *dev, int vector, int *eqn);
+I think it is OK to use microchip,lan966x.
+I am not aware of any plans to create future lan966x designed(lan9664 or
+lan9669). But we can also be on the safe side and use microchip,lan9668.
+I don't have any strong opinion on this.
+
+Acked-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+
+> 
+> > Different topic is that all current lan966[28] are from Microchip and
+> > you still add Microsemi, even though it was acquired by Microchip.
+> > That's an inconsistency which should be rather fixed.
+> 
+> Agreed, that was an oversight by me.
+> 
+> > > On a side note, I understand that there should be no wildcards,
+> > > because the compatible should target one specific implementation,
+> > > right? But then the codename "ocelot" represents a whole series of
+> > > chips. Therefore, names for whole families shouldn't be used neither,
+> > > right?
+> > 
+> > You're not adding "ocelot" now, so it is separate topic. However a
+> > compatible like "mscc,ocelot" feels wrong, unless it is used as a
+> > fallback (see: git grep 'apple,').
+> 
+> Sure, it was just a question for my understanding, not to make a
+> point for a discussion.
+> 
+> -michael
+
 -- 
-2.35.1
-
+/Horatiu
