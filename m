@@ -2,110 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 697F74DC950
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 15:54:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 872EA4DC96A
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 15:59:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235477AbiCQOzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 10:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
+        id S235449AbiCQO6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 10:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235475AbiCQOzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 10:55:12 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADFE1DE93A
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 07:53:53 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-321-P6g7D78BM56_TDs4X2OSiw-1; Thu, 17 Mar 2022 14:53:50 +0000
-X-MC-Unique: P6g7D78BM56_TDs4X2OSiw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Thu, 17 Mar 2022 14:53:50 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Thu, 17 Mar 2022 14:53:50 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'David Ahern' <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     "menglong8.dong@gmail.com" <menglong8.dong@gmail.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mingo@redhat.com" <mingo@redhat.com>, "xeb@mail.ru" <xeb@mail.ru>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>,
-        "imagedong@tencent.com" <imagedong@tencent.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "talalahmad@google.com" <talalahmad@google.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "alobakin@pm.me" <alobakin@pm.me>,
-        "flyingpeng@tencent.com" <flyingpeng@tencent.com>,
-        "mengensun@tencent.com" <mengensun@tencent.com>,
-        "dongli.zhang@oracle.com" <dongli.zhang@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "benbjiang@tencent.com" <benbjiang@tencent.com>
-Subject: RE: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
- to icmp protocol
-Thread-Topic: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
- to icmp protocol
-Thread-Index: AQHYOg4fPu4cJYiuNkyikVGsIDB36azDqG8w
-Date:   Thu, 17 Mar 2022 14:53:49 +0000
-Message-ID: <b08e2dc3e0694068a1a9d698475f8992@AcuMS.aculab.com>
-References: <20220316063148.700769-1-imagedong@tencent.com>
- <20220316063148.700769-4-imagedong@tencent.com>
- <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org>
- <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <f787c35b-0984-ecaf-ad97-c7580fcdbbad@kernel.org>
-In-Reply-To: <f787c35b-0984-ecaf-ad97-c7580fcdbbad@kernel.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S233311AbiCQO6m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 10:58:42 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0B2203A70;
+        Thu, 17 Mar 2022 07:57:23 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 033ED5C0164;
+        Thu, 17 Mar 2022 10:57:21 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Thu, 17 Mar 2022 10:57:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=dn5WetjsAweDFdDrV
+        E4l3jAwTI6fbXOJu2TtvBSryHA=; b=LPpPYa+uaec9c9tSWDa/a1qlX0DXYY3jS
+        RzshbqmdO7dVF5xENoH4gUmkN1VmVq71AeGh5/2aKK3C3/wkIQ3ltbJ3zZ3ZNI0q
+        RCzcsWxvFuG2hNRV9pgsfdRmzrFDnPUMZqmgKSF9/pD5PDg9Mc9rS7x5iCccEqFt
+        RWORpzNXsgm1ZJuULqEpBFfmU6cjr7dYAHL8lNt5o7Ew26AISo6jHxUpdUYb2+Y7
+        kHivUhf54VhAKl40e7KSIMzPOlUsMHx9xNm2VB073ZQbUKxcIiI3QJoWjkCrQm8W
+        V0fLprnZFEnyIdy86Tnd0+8u7nTPvEfOsHnBUgEctlov3U1h2LCYA==
+X-ME-Sender: <xms:UEwzYnx8imVwNadmf9T5wmcXeTk_PiuAmRVc_L5qdXd0OBqYxo6VVw>
+    <xme:UEwzYvSEFDr2fBOQb0O0fO831TEMLfAxbOq_lkPNefK3AQalsIsrg27K70Hw7braY
+    _zttmgu50q2p8A>
+X-ME-Received: <xmr:UEwzYhUsgErk4upt7LyYekkhnE6P3mZhbi0qGRKL4FOIWudK7tyjYZmCjs-rL1IwHxzr5h1RLr1UPSVqdMJTVuZb2ms>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudefgedgieelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:UEwzYhgPbf42vYVNC2Lp84jwwoa8QY0GAZ9udVRHc52zl5coCa5FUg>
+    <xmx:UEwzYpDBYkbViPfRJK2TYF3eECYQ-bXa8oRvhq9e_I0RStB2Xa0VtA>
+    <xmx:UEwzYqJmmoNuj_puZPQYNtACEfbiLNnTgz6c3WfPmyaZrPOMmdvQrg>
+    <xmx:UEwzYrxsnMax2EWyvttA0B0uHw6-yv4e3EhSltgziVUXynPmsm0FiQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 17 Mar 2022 10:57:19 -0400 (EDT)
+Date:   Thu, 17 Mar 2022 16:57:15 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 4/4] selftests: forwarding: add test of
+ MAC-Auth Bypass to locked port tests
+Message-ID: <YjNMS6aFG+93ejj5@shredder>
+References: <20220317093902.1305816-1-schultz.hans+netdev@gmail.com>
+ <20220317093902.1305816-5-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220317093902.1305816-5-schultz.hans+netdev@gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgQWhlcm4NCj4gU2VudDogMTcgTWFyY2ggMjAyMiAxNDo0OQ0KPiANCj4gT24g
-My8xNi8yMiAxMDowNSBQTSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+ID4gT24gV2VkLCAxNiBN
-YXIgMjAyMiAyMTozNTo0NyAtMDYwMCBEYXZpZCBBaGVybiB3cm90ZToNCj4gPj4gT24gMy8xNi8y
-MiA5OjE4IFBNLCBKYWt1YiBLaWNpbnNraSB3cm90ZToNCj4gPj4+DQo+ID4+PiBJIGd1ZXNzIHRo
-aXMgc2V0IHJhaXNlcyB0aGUgZm9sbG93IHVwIHF1ZXN0aW9uIHRvIERhdmUgaWYgYWRkaW5nDQo+
-ID4+PiBkcm9wIHJlYXNvbnMgdG8gcGxhY2VzIHdpdGggTUlCIGV4Y2VwdGlvbiBzdGF0cyBtZWFu
-cyBpbXByb3ZpbmcNCj4gPj4+IHRoZSBncmFudWxhcml0eSBvciBvbmUgTUlCIHN0YXQgPT0gb25l
-IHJlYXNvbj8NCj4gPj4NCj4gPj4gVGhlcmUgYXJlIGEgZmV3IGV4YW1wbGVzIHdoZXJlIG11bHRp
-cGxlIE1JQiBzdGF0cyBhcmUgYnVtcGVkIG9uIGEgZHJvcCwNCj4gPj4gYnV0IHRoZSByZWFzb24g
-Y29kZSBzaG91bGQgYWx3YXlzIGJlIHNldCBiYXNlZCBvbiBmaXJzdCBmYWlsdXJlLiBEaWQgeW91
-DQo+ID4+IG1lYW4gc29tZXRoaW5nIGVsc2Ugd2l0aCB5b3VyIHF1ZXN0aW9uPw0KPiA+DQo+ID4g
-SSBtZWFudCB3aGV0aGVyIHdlIHdhbnQgdG8gZGlmZmVyZW50aWF0ZSBiZXR3ZWVuIFRZUEUsIGFu
-ZCBCUk9BRENBU1Qgb3INCj4gPiB3aGF0ZXZlciBvdGhlciBwb3NzaWJsZSBpbnZhbGlkIHByb3Rv
-Y29sIGNhc2VzIHdlIGNhbiBnZXQgaGVyZSBvciBqdXN0DQo+ID4gZHVtcCB0aGVtIGFsbCBpbnRv
-IGEgc2luZ2xlIHByb3RvY29sIGVycm9yIGNvZGUuDQo+IA0KPiBJIHRoaW5rIGEgc2luZ2xlIG9u
-ZSBpcyBhIGdvb2Qgc3RhcnRpbmcgcG9pbnQuDQoNCkkgcmVtZW1iZXIgbG9va2luZyBhdCAoSSB0
-aGluaykgdGhlIHBhY2tldCBkcm9wIHN0YXRzIGEgd2hpbGUgYmFjay4NClR3byBtYWNoaW5lcyBv
-biB0aGUgc2FtZSBMQU4gd2VyZSByZXBvcnRpbmcgcmF0aGVyIGRpZmZlcmVudCB2YWx1ZXMuDQpC
-YXNpY2FsbHkgMCB2IHF1aXRlIGEgZmV3Lg0KDQpJdCB0dXJuZWQgb3V0IHRoYXQgcGFzc2luZyB0
-aGUgcGFja2V0cyB0byBkaGNwIHdhcyBkZWVtZWQgZW5vdWdoDQp0byBzdG9wIHRoZW0gYmVpbmcg
-cmVwb3J0ZWQgYXMgJ2Ryb3BwZWQnLg0KQW5kIEkgdGhpbmsgdGhhdCB2ZXJzaW9uIG9mIGRoY3Ag
-ZmVkIGV2ZXJ5IHBhY2tlZCBpbnRvIGl0cyBCUEY/IGZpbHRlci4NCihJIG5ldmVyIGRpZCBkZWNp
-ZGUgd2hldGhlciB0aGF0IGNhdXNlZCBldmVyeSBza2IgdG8gYmUgZHVwbGljYXRlZC4pDQoNCglE
-YXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91
-bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5
-NzM4NiAoV2FsZXMpDQo=
+On Thu, Mar 17, 2022 at 10:39:02AM +0100, Hans Schultz wrote:
+> Verify that the MAC-Auth mechanism works by adding a FDB entry with the
+> locked flag set. denying access until the FDB entry is replaced with a
+> FDB entry without the locked flag set.
+> 
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> ---
+>  .../net/forwarding/bridge_locked_port.sh      | 29 ++++++++++++++++++-
+>  1 file changed, 28 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+> index 6e98efa6d371..2f9519e814b6 100755
+> --- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+> +++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+> @@ -1,7 +1,7 @@
+>  #!/bin/bash
+>  # SPDX-License-Identifier: GPL-2.0
+>  
+> -ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
+> +ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan locked_port_mab"
+>  NUM_NETIFS=4
+>  CHECK_TC="no"
+>  source lib.sh
+> @@ -170,6 +170,33 @@ locked_port_ipv6()
+>  	log_test "Locked port ipv6"
+>  }
+>  
+> +locked_port_mab()
+> +{
+> +	RET=0
+> +	check_locked_port_support || return 0
+> +
+> +	ping_do $h1 192.0.2.2
+> +	check_err $? "MAB: Ping did not work before locking port"
+> +
+> +	bridge link set dev $swp1 locked on
+> +	bridge link set dev $swp1 learning on
+> +
+> +	ping_do $h1 192.0.2.2
+> +	check_fail $? "MAB: Ping worked on port just locked"
+> +
+> +	if ! bridge fdb show | grep `mac_get $h1` | grep -q "locked"; then
+> +		RET=1
+> +		retmsg="MAB: No locked fdb entry after ping on locked port"
+> +	fi
 
+bridge fdb show | grep `mac_get $h1 | grep -q "locked"
+check_err $? "MAB: No locked fdb entry after ping on locked port"
+
+> +
+> +	bridge fdb del `mac_get $h1` dev $swp1 master
+> +	bridge fdb add `mac_get $h1` dev $swp1 master static
+
+bridge fdb replace `mac_get $h1` dev $swp1 master static
+
+> +
+> +	ping_do $h1 192.0.2.2
+> +	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
+> +
+> +	log_test "Locked port MAB"
+
+Clean up after the test to revert to initial state:
+
+bridge fdb del `mac_get $h1` dev $swp1 master
+bridge link set dev $swp1 locked off
+
+
+> +}
+>  trap cleanup EXIT
+>  
+>  setup_prepare
+> -- 
+> 2.30.2
+> 
