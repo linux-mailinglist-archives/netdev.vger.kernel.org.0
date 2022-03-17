@@ -2,152 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 251074DCC9D
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 18:37:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 728E24DCCBD
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 18:46:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236964AbiCQRi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 13:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55790 "EHLO
+        id S237037AbiCQRrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 13:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234796AbiCQRi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 13:38:28 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70089.outbound.protection.outlook.com [40.107.7.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A712217943;
-        Thu, 17 Mar 2022 10:37:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DmHeMPYkgNZoY8MGjete8bG5MZ069sU30pJ7Y7oYO2vYivpZ22ODjWG77D8Lh4g8/lpvf6vrbiP9a/KQAs35+3H9CBd2ohuTchxgMLehebiLSArUUP/KK6hSv5a6B2v2fr4G+GD9ukJ9iG44OM6nogOKZpANuF1M89b4zOZI4iBkwQ5I0YybU/OCyiAG5dTr1Jq6eiluOr70a+kltGMjQLjY0NVaqnwNDcZa1UBQkba1uSR/VMkX6jQp+4N3rHZcBpo4lcWneF8PEXGNiS/Kpp/q9fFb7IWh8Rhs5MlriGB8+lp0JtVOegQg+INu86hv3QYkezHI7SlbUq7NxMLqAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1pPvysizrdy8QXCRh/OGt86snDOtCZ4vyCwovREc1go=;
- b=cJRSF42NOMscWaXLleZybupvNK6s6/PDSe4D6Z1h8FIwu25Ub5zZqMcRi4HBn2irF2c26LDE5al+yyPPJVAvUWrGtK7XXRcm6s0sjZCgGf1M9HCzJl1Gd/bI6H1Cms6W7VE0TMaMTrouovQqDkr+uBU8mgp/BVF9BpVHNQfmxzWXGa7abIbjwkf9i9dm/VG0m7LA/5UCHlDMYSYc31pwQt9mMcsIA2meSiBuod5lyba3MTnhWZ/kDHtFbcwJjXUZG3yfMEaxTnsHWwuhF7nkoHJPDyKmbe+qWp0HzWtg2OMxCctvEvoFErmk75JKD1xyChwxadZMUbQvocPAPS2CQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1pPvysizrdy8QXCRh/OGt86snDOtCZ4vyCwovREc1go=;
- b=ArdIRIfcQt0sOgpNw7Zv909LDxPzfmqc2QL5inCUEh33EglPo48dq1bJ7iEE60uC1peSE8DCXhx+tVT0UPybAweJxfA6Zx8HVdtmXkGRV4/7ZspLpiJdPCk84oUEgIadri5sNzeHsBU1bp5mAkcDOiEk+OV2zBUOfQhxp2hvmgo=
-Received: from AM9PR04MB8397.eurprd04.prod.outlook.com (2603:10a6:20b:3b5::5)
- by DB8PR04MB6777.eurprd04.prod.outlook.com (2603:10a6:10:11f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.17; Thu, 17 Mar
- 2022 17:37:09 +0000
-Received: from AM9PR04MB8397.eurprd04.prod.outlook.com
- ([fe80::e52e:aa62:6425:9e9b]) by AM9PR04MB8397.eurprd04.prod.outlook.com
- ([fe80::e52e:aa62:6425:9e9b%8]) with mapi id 15.20.5081.017; Thu, 17 Mar 2022
- 17:37:09 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     Bill Wendling <morbo@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
-Subject: RE: [PATCH] enetc: use correct format characters
-Thread-Topic: [PATCH] enetc: use correct format characters
-Thread-Index: AQHYOX0qnqFJ37bnYU+9UBnfRcMWZazD12GA
-Date:   Thu, 17 Mar 2022 17:37:09 +0000
-Message-ID: <AM9PR04MB8397B7734E38A4E60C6965DB96129@AM9PR04MB8397.eurprd04.prod.outlook.com>
-References: <20220316213109.2352015-1-morbo@google.com>
-In-Reply-To: <20220316213109.2352015-1-morbo@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d9c90f1b-4dc8-42b5-163f-08da083cc335
-x-ms-traffictypediagnostic: DB8PR04MB6777:EE_
-x-microsoft-antispam-prvs: <DB8PR04MB67774DD071651BBDD8BDFE1096129@DB8PR04MB6777.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HouohZ5P/gCvowk+bd/KqfEf4M1PMkNhyBdg21/1n+eqEJDnVbIzy3xclnCkpoagyGdxKOq6pQVv8mZxY9iGTAXFaI6M1FMFoPhkUgjIcNIUD6rTnpJUf7pZmiAYVwQPmoFrZKTcGsIN8dJ3xwJ9+c168XjkiUN/VaZpA+vS6GjlW6vuRI2Qwuu1PMCcplhuYtpLFrrLbUV93dCq9uUAQ+nOe5H1gOSSCKwartM5VZmdhOmpNGmz0A+sbSRTq9WvsXXC8P3Zd76R8QhfqVNNGjjdbykKCuPhu2BHpsepx8+JfFq43lZk1hqJrnRxlpvAM/x9JMb3OwvCXlKOUtbnYXItJbf3nEog9IYn8qj0Wgc250iv/2w8VGqY5CjhV4oqPNk4YeOAns5EeSuz1n8lCzXvqkFz1nXsefpwcIdtsTA4lbMALgn7f26LkPBhSFvsOXT+TqUmhw5GWQ7lqAcwFWycIM52JgyigBsgCtyGCJV891hTnJolYfs3ldrODCT0mfdwUp5LOi09vQlS+f1mPNu16h+L505RefUfTVT9p8qeQUCtColkj3WmLZ+g16Yy422hlU21DH9SK8fqbbv/tJR7OQnc/e81hbUMkCBXNGJaiGDPfEU6+aNS4VGCq4TarKuvYjXPGGGbWy6z+82ywBz+h0NiKUBlAQ+azCg2n3riSf08JkLlwbDcSo58/VNWssT6WheuAg8TB5ZP9TgKow==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8397.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(38070700005)(64756008)(66446008)(86362001)(33656002)(66946007)(66556008)(71200400001)(55016003)(19627235002)(66476007)(76116006)(9686003)(5660300002)(316002)(186003)(44832011)(26005)(122000001)(52536014)(7696005)(8936002)(55236004)(83380400001)(110136005)(38100700002)(508600001)(53546011)(8676002)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dzNzZC9IZlVmWGltWE5DNFdUVFVtL01vd3M3emo0QVVZcVB1cUdTbENvNkJI?=
- =?utf-8?B?VUZQWk5TVHNJSjBtSWtkOVZTbi9iYjZVMytvVyt3VHM0QWc5elB4Y3FjbUpz?=
- =?utf-8?B?Y09DSEVvWUpUY2pZZXdaWDhuN1g1NFRmdjI4emd3VXE2Y2ZqRm54WWtnNnQz?=
- =?utf-8?B?ZDhFTDlOU1ZrS0h0Q2dwMStldS9ncW1uNGpOTGZnK0dYQ3piRklEYzBqQzh5?=
- =?utf-8?B?Unc2OUdvc1RtOUVJVTJ4alhZNWE2Qm1XeEd6dXliNGVKN2RlMGJRcHE1V3VP?=
- =?utf-8?B?TGUxWFZZb1BwN1ZVdUVQZk4vc2xoV21sVzVzWnQ2aWprWEptbW5wM0xMMEF4?=
- =?utf-8?B?Vi9LNy9OWjdPUnJZWndNZlB5T0xmdVdEWFFkY09ZYVB6Z0NqaE1BUGZRN0pn?=
- =?utf-8?B?WjJ6NkNEZFFlbmcrT0dubUcxd24zZHlKVGFLWkFEK0I5SGRMNmUvYzBYeXAy?=
- =?utf-8?B?RW9uR2xCaVJuS1hmWWZ1aWNNS0ViVFdLVWVuMFFNMHVLNWYyWDJlWGh2bFZw?=
- =?utf-8?B?Yzd1dXNydk5nTGhPN0VlaWxTS25zdTVuSGpMay9YNS9FdHJGcE5GRWRFNHRp?=
- =?utf-8?B?eGcvdTNvbXF1eWFqN1B6N1I5RTRuWWVQZ201ZlB4c1E2WEZjYUdPOHlJTHlh?=
- =?utf-8?B?L3ZyZ004TWxhd1NBS3ZuZndOOE5rUkxnRFp4K2tKcE5ta2VuWmE5b0UyZUZI?=
- =?utf-8?B?WnpXVUZGaDZFdm91d3dTNGxNSFJkU2lCZ2tGb1pEaDB1akZVNWkreFZTSWR6?=
- =?utf-8?B?Q1ZldGliRHlqS3JkSnpLRFBtRmlpMUNtek8zYzZycy9HS3llNVdPSUJNNFNn?=
- =?utf-8?B?a2xaQzk4OXV0SXNEQ3d4NUN0WkVLeWRGN1psTGNEL2p6RXBXL0hNYmlmM05B?=
- =?utf-8?B?ZmduSTREUC83eWxIYUxWbTJTS3E2dG9rTGUyeFZwRXJvR0FuOHdIOHVJK0Ur?=
- =?utf-8?B?eFJBTXVaNlhiRUVCS3lRbFk1UkxOcGs4MEhtbE1nU0lrQjJReWdXaGhjbC9R?=
- =?utf-8?B?Q3dOM200bUNLYk9hT0E1VXN2OEhBcWxiVVJwbzdOaEdETVhnQkdsYVRScHlk?=
- =?utf-8?B?c0o1UVBRV0hQNWNyb2ZPZGhTTVZiZmgrWU1pU0p1dVdrZ2VGTDFVdW9KQ2NH?=
- =?utf-8?B?dVBVcXVpdUZVK20yME9IWmRUUEx1MG1Nd3hPdmh5dUFRdUFna0ZyZ1FiVUlJ?=
- =?utf-8?B?TWJlZVRlK1VqeUp3WHNpZE45cHBac0JHUjk4bTZxQTBabUVXL1NiYy91SUN4?=
- =?utf-8?B?UUxzNUxUZS90WlFjNWtxSXRsdVdaaStLbHZXWmgySDMvVG9hUWUzNktQcnNW?=
- =?utf-8?B?TzRMcGRzaklHaFhDWEEvQUIzNVlIQzlSVnFMMXhZUHJudDlWYnJnRVVuUmRl?=
- =?utf-8?B?bjBqUk15N1grSC9DN0ZQcXhsNTVaY2pvTWpzOC9NWDV5eVUycTd1MjFXU3B2?=
- =?utf-8?B?b3pCeUpRd05WOUQxbHQ4eW9YbVFjdDAzdVJVOU01a0dmTGZ0bHFhcnFraXlU?=
- =?utf-8?B?TmN4L0o5UWNWdnY2TjdZcUdYUEZSUVozVm1QTUlPallQb21Xd2hIc2RVZVhW?=
- =?utf-8?B?TmxoQVNpZTRzaW1HUWRFa05EeWpFOEtPaWpLY3o2UndsWmloNFlZVXJKbzMz?=
- =?utf-8?B?aEdod3g5M2hBSEVyM3RrTXliUk5WKzdZZVJzVzFUbE52bVloaFczYVE2SXhC?=
- =?utf-8?B?WTdBVW83MG1TZXZuSUZTU1Fsa3RRVFVuZzNxQy9BWUxLWml0djJ3NXczUmV2?=
- =?utf-8?B?Z2xFcG5RcGcwZ0d5UFhPTTZiQUFHU0dqSjFyR1FST2dIdHZQc0NmSThZMCtN?=
- =?utf-8?B?ait2eWE0UEwvNUFRcDdDbEhPNDMwVUpQZ3hGZS8rOXZESHd6WjJrVlF3Tkds?=
- =?utf-8?B?c3Q1ZmRYVXoyekQ1Q2dlKy9uN0ZpS3Vra0tzaHdyYmxLSnQwNE5aMWtsZitB?=
- =?utf-8?Q?9eE2CMe8mrZEHgvZOrIEISVBu0VsVf+a?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S235157AbiCQRrE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 13:47:04 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBAF12E774
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 10:45:47 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id h11so8243581ljb.2
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 10:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zHshqBWGJ/SV2YPbuPDFrgx/gOxOVu0NYFvOIDDz6P8=;
+        b=NjJ2cVELZgj39GRzHgeM+sRMfylN6RWqK2oK19xM0xuxDADvtdbX+32HbF3ut3azsr
+         Mxynv9/QFhUo5Tq41WPnSD/HKZECZOb702TUT/wBQZ05zJnIRKNa8znXzuGztlKITnol
+         5dCxB+5dPF28RRzsFKyqYBVLeO+ghASW5/j7o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zHshqBWGJ/SV2YPbuPDFrgx/gOxOVu0NYFvOIDDz6P8=;
+        b=DHLmIJoHEKvu95oLRm7L0gl/sVf2j8T291eH/sh50+1w6krrfC2zyzKtzV3fL0P39S
+         PiZEZgGnuD6VP/DVTaHcyY9YRERjuOA34oMimW4gUps654JvlidhPAMQgZB92BoFuNzR
+         qyfKlEEg53uy8lg+L6M6cJwCsK81KoaVrqqqGOIifsAYGCPWRUlwavPNVwY65SIiFZVs
+         xbog1AW3y9xNrgiTAsEdhzHmSsyChhhRsc9bikLzVObEwOwAIAX6kt7RridbF7Q7QGSQ
+         XiJJxpLQxqWlif9Cvav4GcVEoUJ/JTqSwX/fPUiAZ127Q1TR51OGAmauOmmZb9LZmL0p
+         eFRw==
+X-Gm-Message-State: AOAM530q6ibCfFaM1CXCt8b48A2LPf6asFNK9FpJ1z9NWqWdnfmJe3YY
+        dWkSQJAqnuWSJC9tQFFcyQ8HROKGtEIuZBOT698NsmLiBH4jBlgSWE66NyhJqr36mtGm6/K/chH
+        LLkRcqOWrc9zFwHOxTo4iP4j6Pj8E
+X-Google-Smtp-Source: ABdhPJx/XoBGzoRzEMvFTkOjgznxoXdebxaXqXsLsAy3lDMkOusiRwBYobSj99V27eidgpMcj6M3ZBrwOqlxKFYek14=
+X-Received: by 2002:a05:651c:543:b0:247:e3b1:9ac3 with SMTP id
+ q3-20020a05651c054300b00247e3b19ac3mr3697910ljp.438.1647539145240; Thu, 17
+ Mar 2022 10:45:45 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8397.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9c90f1b-4dc8-42b5-163f-08da083cc335
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2022 17:37:09.1192
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hUyln6AUzK+KTFRZvSkki6ynlqQBE2i8XGV0M/oZTGXCRHfjiDirmt07vlv/wmkAcAD4TD8NM/gno89a064LbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6777
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220317042023.1470039-1-kuba@kernel.org> <20220317042023.1470039-2-kuba@kernel.org>
+ <CACKFLi=O4ffBLgP=Xi_CFzwpFVc+zGRH4pmZ15h_YP-imzNpvw@mail.gmail.com>
+In-Reply-To: <CACKFLi=O4ffBLgP=Xi_CFzwpFVc+zGRH4pmZ15h_YP-imzNpvw@mail.gmail.com>
+From:   Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Date:   Thu, 17 Mar 2022 23:15:33 +0530
+Message-ID: <CAHHeUGU5Ppkj+YgCnfkGMzsF_2hUcKeemSqk5_PZreC535EgNg@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/5] bnxt: use the devlink instance lock to
+ protect sriov
+To:     netdev@vger.kernel.org,
+        =?UTF-8?B?SmnFmcOtIFDDrXJrbw==?= <jiri@resnulli.us>,
+        leonro@nvidia.com, saeedm@nvidia.com, idosch@idosch.org,
+        Michael Chan <michael.chan@broadcom.com>,
+        simon.horman@corigine.com, kuba@kernel.org
+Cc:     Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000088b4f205da6d99da"
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBCaWxsIFdlbmRsaW5nIDxtb3Ji
-b0Bnb29nbGUuY29tPg0KPiBTZW50OiBXZWRuZXNkYXksIE1hcmNoIDE2LCAyMDIyIDExOjMxIFBN
-DQpbLi4uXQ0KPiBTdWJqZWN0OiBbUEFUQ0hdIGVuZXRjOiB1c2UgY29ycmVjdCBmb3JtYXQgY2hh
-cmFjdGVycw0KPiANCj4gV2hlbiBjb21waWxpbmcgd2l0aCAtV2Zvcm1hdCwgY2xhbmcgZW1pdHMg
-dGhlIGZvbGxvd2luZyB3YXJuaW5nOg0KPiANCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNj
-YWxlL2VuZXRjL2VuZXRjX21kaW8uYzoxNTE6MjI6IHdhcm5pbmc6DQo+IGZvcm1hdCBzcGVjaWZp
-ZXMgdHlwZSAndW5zaWduZWQgY2hhcicgYnV0IHRoZSBhcmd1bWVudCBoYXMgdHlwZSAnaW50Jw0K
-PiBbLVdmb3JtYXRdDQo+ICAgICAgICAgICAgICAgICAgICAgICAgIHBoeV9pZCwgZGV2X2FkZHIs
-IHJlZ251bSk7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5+
-fn5+fg0KPiAuL2luY2x1ZGUvbGludXgvZGV2X3ByaW50ay5oOjE2Mzo0Nzogbm90ZTogZXhwYW5k
-ZWQgZnJvbSBtYWNybyAnZGV2X2RiZycNCj4gICAgICAgICAgICAgICAgIGRldl9wcmludGsoS0VS
-Tl9ERUJVRywgZGV2LCBkZXZfZm10KGZtdCksICMjX19WQV9BUkdTX18pOyBcDQo+ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB+fn4gICAgIF5+fn5+
-fn5+fn5+DQo+IC4vaW5jbHVkZS9saW51eC9kZXZfcHJpbnRrLmg6MTI5OjM0OiBub3RlOiBleHBh
-bmRlZCBmcm9tIG1hY3JvDQo+ICdkZXZfcHJpbnRrJw0KPiAgICAgICAgICAgICAgICAgX2Rldl9w
-cmludGsobGV2ZWwsIGRldiwgZm10LCAjI19fVkFfQVJHU19fKTsgICAgICAgICAgICBcDQo+ICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB+fn4gICAgXn5+fn5+fn5+fn4N
-Cj4gDQo+IFRoZSB0eXBlcyBvZiB0aGVzZSBhcmd1bWVudHMgYXJlIHVuY29uZGl0aW9uYWxseSBk
-ZWZpbmVkLCBzbyB0aGlzIHBhdGNoDQo+IHVwZGF0ZXMgdGhlIGZvcm1hdCBjaGFyYWN0ZXIgdG8g
-dGhlIGNvcnJlY3Qgb25lcyBmb3IgaW50cyBhbmQgdW5zaWduZWQgaW50cy4NCj4gDQo+IExpbms6
-IENsYW5nQnVpbHRMaW51eC9saW51eCMzNzgNCj4gU2lnbmVkLW9mZi1ieTogQmlsbCBXZW5kbGlu
-ZyA8bW9yYm9AZ29vZ2xlLmNvbT4NCg0KUmV2aWV3ZWQtYnk6IENsYXVkaXUgTWFub2lsIDxjbGF1
-ZGl1Lm1hbm9pbEBueHAuY29tPg0KRml4ZXM6IGViZmNiMjNkNjJhYiAoImVuZXRjOiBBZGQgRU5F
-VEMgUEYgbGV2ZWwgZXh0ZXJuYWwgTURJTyBzdXBwb3J0IikNCg0KQ2FuIGJlIGFsc28gbmV0LW5l
-eHQgbWF0ZXJpYWwuIEl0J3MgdXAgdG8geW91LiBUaHguDQo=
+--00000000000088b4f205da6d99da
+Content-Type: text/plain; charset="UTF-8"
+
+>
+>
+> In prep for .eswitch_mode_set being called with the devlink instance
+> lock held use that lock explicitly instead of creating a local mutex
+> just for the sriov reconfig.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c       | 1 -
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.h       | 6 ------
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 4 ++--
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c   | 4 ++--
+>  4 files changed, 4 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> index 92a1a43b3bee..1c28495875cf 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> @@ -13470,7 +13470,6 @@ static int bnxt_init_one(struct pci_dev *pdev,
+> const struct pci_device_id *ent)
+>
+>  #ifdef CONFIG_BNXT_SRIOV
+>         init_waitqueue_head(&bp->sriov_cfg_wait);
+> -       mutex_init(&bp->sriov_lock);
+>  #endif
+>         if (BNXT_SUPPORTS_TPA(bp)) {
+>                 bp->gro_func = bnxt_gro_func_5730x;
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+> b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+> index 447a9406b8a2..61aa3e8c5952 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+> @@ -2072,12 +2072,6 @@ struct bnxt {
+>         wait_queue_head_t       sriov_cfg_wait;
+>         bool                    sriov_cfg;
+>  #define BNXT_SRIOV_CFG_WAIT_TMO        msecs_to_jiffies(10000)
+> -
+> -       /* lock to protect VF-rep creation/cleanup via
+> -        * multiple paths such as ->sriov_configure() and
+> -        * devlink ->eswitch_mode_set()
+> -        */
+> -       struct mutex            sriov_lock;
+>  #endif
+>
+>  #if BITS_PER_LONG == 32
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> index 1d177fed44a6..ddf2f3963abe 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+> @@ -846,7 +846,7 @@ void bnxt_sriov_disable(struct bnxt *bp)
+>                 return;
+>
+>         /* synchronize VF and VF-rep create and destroy */
+> -       mutex_lock(&bp->sriov_lock);
+> +       devl_lock(bp->dl);
+>         bnxt_vf_reps_destroy(bp);
+>
+>         if (pci_vfs_assigned(bp->pdev)) {
+> @@ -859,7 +859,7 @@ void bnxt_sriov_disable(struct bnxt *bp)
+>                 /* Free the HW resources reserved for various VF's */
+>                 bnxt_hwrm_func_vf_resource_free(bp, num_vfs);
+>         }
+> -       mutex_unlock(&bp->sriov_lock);
+> +       devl_unlock(bp->dl);
+>
+>         bnxt_free_vf_resources(bp);
+>
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> index 8eb28e088582..b2a9528b456b 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
+> @@ -561,7 +561,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink
+> *devlink, u16 mode,
+>         struct bnxt *bp = bnxt_get_bp_from_dl(devlink);
+>         int rc = 0;
+>
+> -       mutex_lock(&bp->sriov_lock);
+> +       devl_lock(devlink);
+>         if (bp->eswitch_mode == mode) {
+>                 netdev_info(bp->dev, "already in %s eswitch mode\n",
+>                             mode == DEVLINK_ESWITCH_MODE_LEGACY ?
+> @@ -595,7 +595,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink
+> *devlink, u16 mode,
+>                 goto done;
+>         }
+>  done:
+> -       mutex_unlock(&bp->sriov_lock);
+> +       devl_unlock(devlink);
+>         return rc;
+>  }
+>
+> --
+> 2.34.1
+
+Hi Jakub,
+
+The changes look good to me overall. But I have a few concerns. This
+change introduces a lock that is held across modules and if there's
+any upcall from the driver into devlink that might potentially acquire
+the same lock, then it could result in a deadlock. I'm not familiar
+with the internals of devlink, but just want to make sure this point
+is considered. Also, the driver needs to be aware of this lock and use
+it in new code paths within the driver to synchronize with switchdev
+operations. This may not be so obvious when compared to a driver
+private lock.
+
+Thanks,
+-Harsha
+
+-- 
+This electronic communication and the information and any files transmitted 
+with it, or attached to it, are confidential and are intended solely for 
+the use of the individual or entity to whom it is addressed and may contain 
+information that is confidential, legally privileged, protected by privacy 
+laws, or otherwise restricted from disclosure to anyone else. If you are 
+not the intended recipient or the person responsible for delivering the 
+e-mail to the intended recipient, you are hereby notified that any use, 
+copying, distributing, dissemination, forwarding, printing, or copying of 
+this e-mail is strictly prohibited. If you received this e-mail in error, 
+please return the e-mail to the sender, delete it from your computer, and 
+destroy any printed copy of it.
+
+--00000000000088b4f205da6d99da
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQiAYJKoZIhvcNAQcCoIIQeTCCEHUCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3fMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBWcwggRPoAMCAQICDHwPOVVHl1xko7arzjANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDIwMDBaFw0yMjA5MjIxNDUzNDZaMIGg
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xHjAcBgNVBAMTFVNyaWhhcnNoYSBCYXNhdmFwYXRuYTExMC8G
+CSqGSIb3DQEJARYic3JpaGFyc2hhLmJhc2F2YXBhdG5hQGJyb2FkY29tLmNvbTCCASIwDQYJKoZI
+hvcNAQEBBQADggEPADCCAQoCggEBANPB6e2ecGIzq17ATbtSoNTcXs3+3KxQtJrNDKkNrObMJp/b
+VakVcchCETCMmJftnC3FjsVElVAg9WIJLt3KnGDZAzSsLyxCHI9SXo5+RlBf+hv1zfcBe67ReEmJ
+QknQwUMcKk5UzdF9hFK7V3pBvmOa6roe8kxfNIjLnLVAs1TAsWsdQRhkn9XHPxmSlXI+jIgBlgEp
+n4cHM9kULWou6X82i6YpNgk6jcy3RbH/5CZi2ma0trXNxG1AT5PU7lQHtDlpZUFzMJrdpxcZAGme
+OWPVVc2Vqo/UjFeRyb85PywwGEI6DD0kN+JCXXvNFYSrP5+OLfYuYzZn/P0dhTlpVBECAwEAAaOC
+AeMwggHfMA4GA1UdDwEB/wQEAwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0
+dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2Ey
+MDIwLmNydDBBBggrBgEFBQcwAYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3Bl
+cnNvbmFsc2lnbjJjYTIwMjAwTQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEW
+Jmh0dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0f
+BEIwQDA+oDygOoY4aHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMC5jcmwwLQYDVR0RBCYwJIEic3JpaGFyc2hhLmJhc2F2YXBhdG5hQGJyb2FkY29tLmNv
+bTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAd
+BgNVHQ4EFgQU4iyqaHpN7h0t+lm5ZP6dwo9UwSIwDQYJKoZIhvcNAQELBQADggEBAKesjSeypac1
+qslWkfD+g52UNPe0MbS7zcqWwURf5yxzgNbMIbNhWneeVqxlk2gC5b7UnGbGS4hteg/PDKQJpSnu
+Mrudx5Kj1a0DBtKbnsOg/BjSe8icKl1WJZU6Csxh6jBRMn2MkmmFIUejZLdfOJZs9USE1a8EVCc9
+7WU4KWzYAfMupI62STY+35xBdioPjWMFpYS9k2stCCqXO0HjMDA6IYlftQTxOB9GHO6DggLtk5hW
+tcixnNCu9VS7kminQ+ZQHcE7F7h7nwyN3NRS1krFg1or6JNvhHck/cJc/rLE9xkh3HzTk87hL5Rb
+3N8pa3Us3las0xeybFAj7ss75GwxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
+ExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNp
+Z24gMiBDQSAyMDIwAgx8DzlVR5dcZKO2q84wDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkE
+MSIEIGRs9qSYrmU+wbkjuE3naMCjcnMo5j1Wo3J6DCNvsfvLMBgGCSqGSIb3DQEJAzELBgkqhkiG
+9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMxNzE3NDU0NVowaQYJKoZIhvcNAQkPMVwwWjALBglg
+hkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0B
+AQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCcsuNvOL5M/XlS
+Jc6ixMcjsUXXQEvlN8Aklvgo9XuFYMB8zffoAlzff5NS6nsdclR8etlblfSijq7Gxr0SNraUmeyT
+1up3rq/IgCR+CrP9diWWph+e5kGwlUq6yeaMwgPq1n3sLFXAPs2INjhtRGt0kC3lyX2JChYpDHt6
+iMAJ/fGfM1XKx9KfhPND2oG2Cn/gFtjuDHrlqlrV0DYn27iaFLHttXtM9av8157THtmao39JCY7g
+SwDXkvh4Kb//jGEBvYwP1qRs3Et3nQ70OliM7IxTEyCUumnzOTTGRMGJ5yGr6/HGQZj6Aq7jIy6m
+NEWkp254FoCyrCl1Fm1UpwBQ
+--00000000000088b4f205da6d99da--
