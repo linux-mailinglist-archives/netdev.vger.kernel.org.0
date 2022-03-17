@@ -2,154 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06DAA4DCE12
-	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CCCF4DCE2B
+	for <lists+netdev@lfdr.de>; Thu, 17 Mar 2022 19:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237694AbiCQSyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 14:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34204 "EHLO
+        id S237512AbiCQSzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 14:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232822AbiCQSyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:54:10 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E5E223237;
-        Thu, 17 Mar 2022 11:52:53 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id m12so7666677edc.12;
-        Thu, 17 Mar 2022 11:52:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gzPNpJdEUpw3mjUuvvjyqVBEBTyj2FECQV6z8PHyMUo=;
-        b=o8xcG4Q+J5j5DHCk14HT66nrZU0u6AZoeh/Aw+tjG1dcVctOCVXQEOFDdRTJXLRJRR
-         zhPKcAj1o02tj+2vcRXRPR2Q44pFKEIX0pe7g2Ex3Q+cFcg8wfcQnZS6g0YSwH3JmLj7
-         4d9Nii3rvYgFt6yAABgUxDloQQo2XDDOppA9jTFKk3z7I3/fVH5w+h46mFevPqG1NvqG
-         HroOsgPHDweuLvtuhPTZP9QH35NSUL9nniqT31QUIR0al8skfmpm59tzwywtVvN0B++l
-         qkoekCxEe/+IbL7nzeo5BYQras2tEbtT5XUYcwCP/BeEHVIWKly9fFRy3ypfIGmVIrio
-         VJCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gzPNpJdEUpw3mjUuvvjyqVBEBTyj2FECQV6z8PHyMUo=;
-        b=bRNHHp7FV0Y1BBQi2qdPc/sqh+407xVVDCmNET3FHY0NZdccaohp5U3l0g0x0SY9Cd
-         sGgpR5dKXRoU3B3xfot/UnOOap5lU4feMlYCJjXKZEx/U+jBnPkhNJEa9jtj2pZiKRuB
-         9BwcyJPLCX3X2/TPNqnnLr2TizZzkJ+BhVihX2/avSbVNDngsuNIKW5oZmPaAV+5wdfu
-         l1EV35HLu0ibcbOkx8SshrPn7Lze0hBm3WkAuleEd/v3pozc85VARZfn9jOOiL9uufSe
-         m6KnlI8ysTwrbcaOUzs73EJhc2UaDUUGuTMJF1HnascgY4AyQLmUeUfu7tTBkXJV5NpX
-         gAFQ==
-X-Gm-Message-State: AOAM533J9qsTaCj+5ESr66mW2D6E7tWlAGlhle74I1dDaT7l0nH/ZV/p
-        patVwT7aoazIa92esmQtxLo=
-X-Google-Smtp-Source: ABdhPJxGrv4Uv97ZSvQ2Qc4XMAXAd/7yWAQZiZ3RUMtorHOVIudOPLE7TAOqKap7BPA+lba5yVEbBg==
-X-Received: by 2002:a05:6402:3483:b0:418:fb7c:8d23 with SMTP id v3-20020a056402348300b00418fb7c8d23mr4175401edc.249.1647543171871;
-        Thu, 17 Mar 2022 11:52:51 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id f4-20020a170906738400b006df8b6787afsm1811219ejl.13.2022.03.17.11.52.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 17 Mar 2022 11:52:51 -0700 (PDT)
-Date:   Thu, 17 Mar 2022 20:52:49 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Jianbo Liu <jianbol@nvidia.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
-        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
-        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
-        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
-        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
-        simon.horman@corigine.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        baowen.zheng@corigine.com, louis.peens@netronome.com,
-        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
-Subject: Re: [PATCH net-next v3 1/2] net: flow_offload: add tc police action
- parameters
-Message-ID: <20220317185249.5mff5u2x624pjewv@skbuf>
-References: <20220224102908.5255-1-jianbol@nvidia.com>
- <20220224102908.5255-2-jianbol@nvidia.com>
- <20220315191358.taujzi2kwxlp6iuf@skbuf>
- <YjM2IhX4k5XHnya0@shredder>
+        with ESMTP id S234146AbiCQSzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 14:55:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D071637F1
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 11:54:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D06C961744
+        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 18:54:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F26E5C340E9;
+        Thu, 17 Mar 2022 18:54:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647543268;
+        bh=zmADk2Qcu0bG158GcZCItX80BAQK0XtiVslaRoDBBzo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Y+G+hOSQ98RcbjneeXm5oNhl5lbYVFmKVihTNu2Bby3EWq6KS3bccKhsAQuddjv39
+         wz3a8Ee0zdFufN3U9N/fL3zwlAIN+Zoqs1bGkxKCEajM0V0xey7YHQmrreZM+Oz+WL
+         W8lmm5oo/aJCbk6gbTvGxlukEoc0VGTw3GHmGdoh2gbKchgFpdCSiTh4+VmBnd5YXy
+         KNGf7rTKkmqp3h38PB84f81pRGz/dhBRFGzCNODddWHxmhxWP8Q0fsnezhNe1A5gLc
+         pQypEMsBBuqN6dUeDA/Yb1hF+/CS8xj0czouKtyWh6x3KhuZhMcVpfJX7KvT+lF+73
+         106lOksjH/dcQ==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/15] mlx5 updates 2022-03-17
+Date:   Thu, 17 Mar 2022 11:54:09 -0700
+Message-Id: <20220317185424.287982-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjM2IhX4k5XHnya0@shredder>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 03:22:42PM +0200, Ido Schimmel wrote:
-> > I don't know why just now, but I observed an apparent regression here
-> > with these commands:
-> > 
-> > root@debian:~# tc qdisc add dev swp3 clsact
-> > root@debian:~# tc filter add dev swp3 ingress protocol ip flower skip_sw ip_proto icmp action police rate 100Mbit burst 10000
-> > [   45.767900] tcf_police_act_to_flow_act: 434: tc_act 1
-> > [   45.773100] tcf_police_offload_act_setup: 475, act_id -95
-> > Error: cls_flower: Failed to setup flow action.
-> > We have an error talking to the kernel, -1
-> > 
-> > The reason why I'm not sure is because I don't know if this should have
-> > worked as intended or not. I am remarking just now in "man tc-police"
-> > that the default conform-exceed action is "reclassify".
-> > 
-> > So if I specify "conform-exceed drop", things are as expected, but with
-> > the default (implicitly "conform-exceed reclassify") things fail with
-> > -EOPNOTSUPP because tcf_police_act_to_flow_act() doesn't handle a
-> > police->tcf_action of TC_ACT_RECLASSIFY.
-> > 
-> > Should it?
-> 
-> Even if tcf_police_act_to_flow_act() handled "reclassify", the
-> configuration would have been rejected later on by the relevant device
-> driver since they all support "drop" for exceed action and nothing else.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-This is correct, but currently, the error is:
+Hi Dave, Hi Jakub,
 
-Error: cls_flower: Failed to setup flow action.
-We have an error talking to the kernel, -1
+This series adds some updates to mlx5 driver:
+ 1) Preparation for XDP Multi-buffer support
+ 2) Memory consumption reduction in SW steering component of the driver
 
-I'd appreciate if the error was instead:
+For more information please see tag log below.
 
-Error: mscc_ocelot: Offload not supported when exceed action is not drop.
+Please pull and let me know if there is any problem.
 
-which is basically what Jianbo was trying to achieve when he added the
-policer_validate() functions. At least I'd know what's wrong. No?
+Thanks,
+Saeed.
 
-> I don't know why iproute2 defaults to "reclassify", but the
-> configuration in the example does something different in the SW and HW
-> data paths. One ugly suggestion to keep this case working it to have
-> tcf_police_act_to_flow_act() default to "drop" and emit a warning via
-> extack so that user space is at least aware of this misconfiguration.
 
-I don't want to force a reinterpretation of "reclassify" just to make
-something that used to work by mistake continue to work. It sucks to
-have to adapt, but not being able to make progress because of such
-things sucks even more.
+The following changes since commit 1abea24af42c35c6eb537e4402836e2cde2a5b13:
 
-I'd just like the 'reclassify' action to be propagated in some reasonable
-way to flow offload, considering that at the moment the error is quite cryptic.
+  selftests: net: fix array_size.cocci warning (2022-03-17 15:21:16 +0100)
 
-> > > +		if (act_id < 0)
-> > > +			return act_id;
-> > > +
-> > > +		entry->police.exceed.act_id = act_id;
-> > > +
-> > > +		act_id = tcf_police_act_to_flow_act(p->tcfp_result,
-> > > +						    &entry->police.notexceed.extval);
-> > > +		if (act_id < 0)
-> > > +			return act_id;
-> > > +
-> > > +		entry->police.notexceed.act_id = act_id;
-> > > +
-> > >  		*index_inc = 1;
-> > >  	} else {
-> > >  		struct flow_offload_action *fl_action = entry_data;
-> > > -- 
-> > > 2.26.2
-> > > 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-03-17
+
+for you to fetch changes up to 770c9a3a01af178a90368a78c75eb91707c7233c:
+
+  net/mlx5: Remove unused fill page array API function (2022-03-17 11:51:58 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2022-03-17
+
+1) From Maxim Mikityanskiy,
+   Datapath improvements in preparation for XDP multi buffer
+
+   This series contains general improvements for the datapath that are
+   useful for the upcoming XDP multi buffer support:
+
+   a. Non-linear legacy RQ: validate MTU for robustness, build the linear
+      part of SKB over the first hardware fragment (instead of copying the
+      packet headers), adjust headroom calculations to allow enabling headroom
+      in the non-linear mode (useful for XDP multi buffer).
+
+   b. XDP: do the XDP program test before function call, optimize
+      parameters of mlx5e_xdp_handle.
+
+2) From Rongwei Liu, DR, reduce steering memory usage
+   Currently, mlx5 driver uses mlx5_htbl/chunk/ste to organize
+   steering logic. However there is a little memory waste.
+
+   This update targets to reduce steering memory footprint by:
+   a. Adjust struct member layout.
+   b. Remove duplicated indicator by using simple functions call.
+
+   With 500k TX rules(3 ste) plus 500k RX rules(6 stes), these patches
+   can save around 17% memory.
+
+3) Three cleanup commits at the end of this series.
+
+----------------------------------------------------------------
+Maxim Mikityanskiy (5):
+      net/mlx5e: Validate MTU when building non-linear legacy RQ fragments info
+      net/mlx5e: Add headroom only to the first fragment in legacy RQ
+      net/mlx5e: Build SKB in place over the first fragment in non-linear legacy RQ
+      net/mlx5e: Drop the len output parameter from mlx5e_xdp_handle
+      net/mlx5e: Drop cqe_bcnt32 from mlx5e_skb_from_cqe_mpwrq_linear
+
+Paul Blakey (1):
+      net/mlx5: CT: Remove extra rhashtable remove on tuple entries
+
+Rongwei Liu (6):
+      net/mlx5: DR, Adjust structure member to reduce memory hole
+      net/mlx5: DR, Remove mr_addr rkey from struct mlx5dr_icm_chunk
+      net/mlx5: DR, Remove icm_addr from mlx5dr_icm_chunk to reduce memory
+      net/mlx5: DR, Remove num_of_entries byte_size from struct mlx5_dr_icm_chunk
+      net/mlx5: DR, Remove 4 members from mlx5dr_ste_htbl to reduce memory
+      net/mlx5: DR, Remove hw_ste from mlx5dr_ste to reduce memory
+
+Tariq Toukan (3):
+      net/mlx5e: RX, Test the XDP program existence out of the handler
+      net/mlx5: Remove unused exported contiguous coherent buffer allocation API
+      net/mlx5: Remove unused fill page array API function
+
+ drivers/net/ethernet/mellanox/mlx5/core/alloc.c    |  60 -----------
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |  69 ++++++++++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |   1 -
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c   |   7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    |  16 +--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 111 ++++++++++++---------
+ .../mellanox/mlx5/core/steering/dr_action.c        |  12 ++-
+ .../ethernet/mellanox/mlx5/core/steering/dr_dbg.c  |  14 ++-
+ .../mellanox/mlx5/core/steering/dr_icm_pool.c      |  57 ++++++++---
+ .../mellanox/mlx5/core/steering/dr_matcher.c       |  18 ++--
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  71 +++++++------
+ .../ethernet/mellanox/mlx5/core/steering/dr_send.c |  34 ++++---
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 105 ++++++++++---------
+ .../mellanox/mlx5/core/steering/dr_table.c         |  18 ++--
+ .../mellanox/mlx5/core/steering/dr_types.h         |  31 +++---
+ include/linux/mlx5/driver.h                        |   4 -
+ 17 files changed, 338 insertions(+), 292 deletions(-)
