@@ -2,100 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4867D4DDF1D
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:34:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10D3E4DDF25
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:34:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236637AbiCRQeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 12:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        id S238823AbiCRQeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 12:34:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229838AbiCRQeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:34:25 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A033C2274D7;
-        Fri, 18 Mar 2022 09:33:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647621185; x=1679157185;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=3fSyc4Om/f1qBKQ2VmW5hQXw8+AXsDQPbICnqW/FgR0=;
-  b=SQYRr4wrWgQ6XVcfwOPFv9wvNsxbX5FYw9cBThf+WG1+/OJHR1EF27RZ
-   QwmN8JNoxFCeLjP9eVCllQFT82JZG9q4U09FVzW4F/1Qh1QLGou/H/jHM
-   PoPDI+Fg/h4x/C6EhjBqf2+wu80z931apdivkqk3yQlzmxLmBBqWBZQHT
-   DsJTwjCt+ivv/2N3ZahCESP75UGG+iSuO+A3X6sslZpfb24OXWwCjpRp3
-   zyrjJ5UoQtw9L+lh0cUobyNWlnme3enQ6qd6SVB5XdBYOvQNgFxRHrGDP
-   Iu7ug8XlfC9dELV8gHawI7ddA1f2MFHeZqGWPQJIJeaiZCzF8tkKvsVLf
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="320379302"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="320379302"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:33:02 -0700
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="635813087"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 09:32:56 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nVFWT-002KJ7-A0;
-        Fri, 18 Mar 2022 18:32:17 +0200
-Date:   Fri, 18 Mar 2022 18:32:17 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "'Rafael J . Wysocki '" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 6/6] net: sfp: add support for fwnode
-Message-ID: <YjS0EbKOUb4Q++mF@smile.fi.intel.com>
-References: <20220318160059.328208-1-clement.leger@bootlin.com>
- <20220318160059.328208-7-clement.leger@bootlin.com>
+        with ESMTP id S237533AbiCRQe1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:34:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A5A22AC7A;
+        Fri, 18 Mar 2022 09:33:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E990B61865;
+        Fri, 18 Mar 2022 16:33:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA5B9C340E8;
+        Fri, 18 Mar 2022 16:33:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647621187;
+        bh=xtSwSPaoFLC5ehk1fTDfehgtPHunIjRVtLC4eP8LWBc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W7Gzt4NbQxu+sP6dj0hqQISSSRDRMdJwCP3ou48EYo/MvtaHSrTM4SZb9MXxDGbFx
+         dm6q+zYgqlkShQY3/+mhhOZMbI6ch0AQol0zoOuGCNx3YtrHBZQBaNJiZq3bWVV7FB
+         0yedbH2TNlfCrGavJV61Xk3tzk9vaIlBMHzqibDzHUiW853EPgJbfM+uTiztbT0jcB
+         WSbG7g7AqA+Hl+73p+OLQ4Ju5Sq1PmJnBvBWQW10LvDBXHutnxFVzGcxJ3CnCXlO85
+         C/04/nMcDY4vigmF8mlpxILy3ar6a3UIK3UYbVj/mfuUqAcf9KiQHi3moyH6PYfLNZ
+         AjxuqgSjgRrKQ==
+Date:   Fri, 18 Mar 2022 09:33:00 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Guo Zhengkui <guozhengkui@vivo.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        linux-kernel@vger.kernel.org (open list),
+        zhengkui_guo@outlook.com
+Subject: Re: [PATCH linux-next v2] selftests: net: change fprintf format
+ specifiers
+Message-ID: <20220318093300.2938e068@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220318075013.48964-1-guozhengkui@vivo.com>
+References: <1d21ee8a-837d-807d-14a4-4ee1af640089@vivo.com>
+        <20220318075013.48964-1-guozhengkui@vivo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220318160059.328208-7-clement.leger@bootlin.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 05:00:52PM +0100, Clément Léger wrote:
-> Add support to retrieve a i2c bus in sfp with a fwnode. This support
-> is using the fwnode API which also works with device-tree and ACPI.
-> For this purpose, the device-tree and ACPI code handling the i2c
-> adapter retrieval was factorized with the new code. This also allows
-> i2c devices using a software_node description to be used by sfp code.
+On Fri, 18 Mar 2022 15:50:13 +0800 Guo Zhengkui wrote:
+> `cur64`, `start64` and `ts_delta` are int64_t. Change
+> format specifiers in fprintf from '%lu' to '%ld'.
+> 
+> It has been tested with gcc (Ubuntu 7.5.0-3ubuntu1~18.04) 7.5.0
+> on x86_64.
 
-> +		i2c = fwnode_find_i2c_adapter_by_node(np);
-
-Despite using this, I believe you may split this patch to at least two where
-first one is preparatory (converting whatever parts is possible to fwnode
-(looks like ACPI case may be optimized) followed by this change.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+No, not like that. Please read up on printing int64_t.
