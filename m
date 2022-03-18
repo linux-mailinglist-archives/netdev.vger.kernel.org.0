@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA8D4DE174
+	by mail.lfdr.de (Postfix) with ESMTP id C6C1A4DE175
 	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 19:57:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240265AbiCRS6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 14:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        id S240272AbiCRS6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 14:58:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240269AbiCRS6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 14:58:12 -0400
+        with ESMTP id S240273AbiCRS6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 14:58:21 -0400
 Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525EF22C6D7;
-        Fri, 18 Mar 2022 11:56:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A14231910;
+        Fri, 18 Mar 2022 11:56:54 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 77F63C0004;
-        Fri, 18 Mar 2022 18:56:50 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id E3061C000A;
+        Fri, 18 Mar 2022 18:56:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647629811;
+        t=1647629813;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=KjQVyusI/NoALoNPcEIOjSAiTZnq5f6jB56z0p4Letc=;
-        b=DUUBqZPpnOEHs7eNnLNw+aV838Ev+4EYkioDRr0ErEgfkk5qcIyXob5Kia7UZxM4xu6fSD
-        UC5GdlEuWz16ncNWNHRq1TSApdukAAvm9KLx8bTPnoomxVUyAPLMGNtcFimkzccz8A6Ifq
-        9B0IRCu7lFMol9N4tPu8T2sgmS/GsAlXdqJ/lCmicpNx0JYkFYoIHeGUzaLt6mH9BkINmC
-        RtuYUuEe2F4cYvGDP5Yhd/eHTXIapUxIqN+zIW33+wYYCYxGRexPpBzLEZPKUfmHSl4J0y
-        gIzAeKYA8NsATW0RmKyCS85Zbi5bNgHRbvAyfQuGFLHC7UTL1wZrsdzy+rqjug==
+        bh=n5jr2HZibOMccdD7IWSqEplpempekA+Ea10O2Ew10SE=;
+        b=opg6y/RqsEd9UjBX5HapLUQ6+J1U6jb8qAEWn5kcK5+BXuzMxfvt0jie+vd7/67ShDt9YR
+        bpXnrY2IsLgAJzaiPI6Hs8SXx4iHzjabqjISgWc5VsJW8IGfSH0++mpxtjQ3QKWF+OUZPC
+        A1f+gThpTAw3LDOA74FdrzZo5/gNkqhokaxak9USK+70uOLQawJ0TzTL1PnWuMDwM7eLcU
+        zB8E8UDfZSSPjTGsksvSNunB9JJ4wvfzHqaDz/VHJ0JMsJ/rdELsBcMRpsvsRFC6pOManj
+        0lj9M+DftTC3CW0IX2Zv4U3msMapQlOzpWW3vudkhxiZooSvbe28fcLMrQ2eHQ==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v4 03/11] net: mac802154: Save a global error code on transmissions
-Date:   Fri, 18 Mar 2022 19:56:36 +0100
-Message-Id: <20220318185644.517164-4-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v4 04/11] net: mac802154: Create a transmit error helper
+Date:   Fri, 18 Mar 2022 19:56:37 +0100
+Message-Id: <20220318185644.517164-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220318185644.517164-1-miquel.raynal@bootlin.com>
 References: <20220318185644.517164-1-miquel.raynal@bootlin.com>
@@ -60,49 +60,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So far no error is returned from a failing transmission. However it
-might sometimes be useful, and particularly easy to use during sync
-transfers (for certain MLME commands). Let's create an internal variable
-for that, global to the device. Right now only success are registered,
-which is rather useless, but soon we will have more situations filling
-this field.
+So far there is only a helper for successful transmission, which led
+device drivers to implement their own handling in case of
+error. Unfortunately, we really need all the drivers to give the hand
+back to the core once they are done in order to be able to build a
+proper synchronous API. So let's create a _xmit_error() helper and take
+this opportunity to fill the new device-global field storing Tx
+statuses.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/mac802154/ieee802154_i.h | 2 ++
- net/mac802154/util.c         | 5 ++++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ include/net/mac802154.h | 10 ++++++++++
+ net/mac802154/util.c    | 11 +++++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-index 702560acc8ce..1381e6a5e180 100644
---- a/net/mac802154/ieee802154_i.h
-+++ b/net/mac802154/ieee802154_i.h
-@@ -56,6 +56,8 @@ struct ieee802154_local {
+diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+index 2c3bbc6645ba..abbe88dc9df5 100644
+--- a/include/net/mac802154.h
++++ b/include/net/mac802154.h
+@@ -498,4 +498,14 @@ void ieee802154_stop_queue(struct ieee802154_hw *hw);
+ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 			      bool ifs_handling);
  
- 	struct sk_buff *tx_skb;
- 	struct work_struct tx_work;
-+	/* A negative Linux error code or a null/positive MLME error status */
-+	int tx_result;
- };
- 
- enum {
++/**
++ * ieee802154_xmit_error - frame transmission failed
++ *
++ * @hw: pointer as obtained from ieee802154_alloc_hw().
++ * @skb: buffer for transmission
++ * @reason: error code
++ */
++void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
++			   int reason);
++
+ #endif /* NET_MAC802154_H */
 diff --git a/net/mac802154/util.c b/net/mac802154/util.c
-index f2078238718b..0bf46f174de3 100644
+index 0bf46f174de3..ec523335336c 100644
 --- a/net/mac802154/util.c
 +++ b/net/mac802154/util.c
-@@ -58,8 +58,11 @@ enum hrtimer_restart ieee802154_xmit_ifs_timer(struct hrtimer *timer)
- void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
- 			      bool ifs_handling)
- {
+@@ -91,6 +91,17 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ }
+ EXPORT_SYMBOL(ieee802154_xmit_complete);
+ 
++void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
++			   int reason)
++{
 +	struct ieee802154_local *local = hw_to_local(hw);
 +
-+	local->tx_result = IEEE802154_SUCCESS;
++	local->tx_result = reason;
++	ieee802154_wake_queue(hw);
++	dev_kfree_skb_any(skb);
++}
++EXPORT_SYMBOL(ieee802154_xmit_error);
 +
- 	if (ifs_handling) {
--		struct ieee802154_local *local = hw_to_local(hw);
- 		u8 max_sifs_size;
- 
- 		/* If transceiver sets CRC on his own we need to use lifs
+ void ieee802154_stop_device(struct ieee802154_local *local)
+ {
+ 	flush_workqueue(local->workqueue);
 -- 
 2.27.0
 
