@@ -2,81 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F7164DE1AD
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:20:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46C994DE1AF
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:21:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240319AbiCRTVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 15:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52030 "EHLO
+        id S234575AbiCRTV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 15:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232488AbiCRTVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:21:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9BC2E8420;
-        Fri, 18 Mar 2022 12:20:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC0E061BA0;
-        Fri, 18 Mar 2022 19:20:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 117C1C340ED;
-        Fri, 18 Mar 2022 19:20:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647631223;
-        bh=MiiDT3FzEK6tLZQja3IOFckulnk8Uz/WOuBFOepDFvc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=g3qYN2Z29gNmucFkvsCvmIHRdNVrKjwLWppWY8aTWhcxjxRaTlR9ZFbksLwcgCtTK
-         QPQXMgdvHzmeGhh3GrcQcScoKZ3B+k6ZxUk/FWR1KJvdYyK7Oli5I1CajCzfhRXO4T
-         wEQtsdY0T1ddr7Ef0+4SSutSADUhm/yqXmpT5yk+IZo8C7a0y2Re1R6N8Fka3wTAoB
-         pBtx/f0oZ+DaMvANz1kHGhhC8L8fzb3R4ehzEVEewjx+TqArobwBAOMmr7+TbaYGBq
-         A3IxDMQsGLFDHjQW5qamQgQAlglF2zTp8PSxUX9k/qc1EC7BZcMHljmjkdjANEBAQ+
-         wqGGX/BrqNvRw==
-Date:   Fri, 18 Mar 2022 12:20:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Peter Robinson <pbrobinson@gmail.com>,
-        Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org,
-        opendmb@gmail.com, davem@davemloft.net,
-        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: bcmgenet: Use stronger register read/writes to
- assure ordering
-Message-ID: <20220318122017.24341eb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <472540d2-3a61-beca-70df-d5f152e1cfd1@gmail.com>
-References: <20220310045358.224350-1-jeremy.linton@arm.com>
-        <f831a4c6-58c9-20bd-94e8-e221369609e8@gmail.com>
-        <de28c0ec-56a7-bfff-0c41-72aeef097ee3@arm.com>
-        <2167202d-327c-f87d-bded-702b39ae49e1@gmail.com>
-        <CALeDE9MerhZWwJrkg+2OEaQ=_9C6PHYv7kQ_XEQ6Kp7aV2R31A@mail.gmail.com>
-        <472540d2-3a61-beca-70df-d5f152e1cfd1@gmail.com>
+        with ESMTP id S240331AbiCRTVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:21:55 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD592EDC25
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:20:36 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id p15so4862085lfk.8
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:20:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Da58XaamdPOR/ut8eZdkl+mrEW3bShbo5Rc5hbiuMTM=;
+        b=w3A1gmFvMBRV3VcP/tlmmxK7SilLiBhMJY7WX6sR0dQPXbJyHi2G3x8KvjDqadbTeM
+         pDC4QBTprn67FUQAukRopeIB/t/3tOqqaD4o0O9jqZoIUQp27KTMVGZpB3yAXwsn5ngE
+         Bnv+gkpdhpG3aROoWmZVzvauuqQb0XIkc+X8d6zREBy65qbG4SekhSisr067zD3zzxje
+         k1FgYHpERi61ysgFAE/jF5nwIXaJ0pvF8Zvj7pOP/DpvxXkG/uqJCt0ATcD0vmO6h90w
+         eEkCq/H1n/YorE+CgGemeczBw6KMnDF5FlEgELxYdGIwSMDZ3HE6W9QCUdZiSfUnw0CH
+         C+KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Da58XaamdPOR/ut8eZdkl+mrEW3bShbo5Rc5hbiuMTM=;
+        b=Xe1QGeLlHmNBefGinTWG3HYDnMcbA2paGUCSX4RoKsW58rNoE78PKn2VsvbWrrvjiD
+         NPigq3wYwJENDREvhpPWY+Mq2igAUWtIWdF0TWKbMhjuVN5qqtJeXxkFsEg60De/ifE6
+         hyQ9fOF7DGF7Rizir4H/KKBJ4qazHVd9aUXtrkRt8o8x3A03JlsJ+I9mguyiv2U1Cni2
+         qLXpLLVtoBDNvBzPuL0XWOVaCFxBisRXZwtaoqkUzAjS0J47ChShHuYkk4rf9U0hMGxR
+         oCJzHkzeCnJhsQN17f5ZjvMSpZBQc3mFJZOfmMO74HvjgZo7l3rQy7Rw2HyeztLf/PUy
+         10BA==
+X-Gm-Message-State: AOAM530IoQIn0T5lg6FmIA++5Hj3mvIYiIVXP5EmW1a02nHCwbwTmBbb
+        1Q757U6HD3mLXPl1T7LfHc1lAQR6CliY2skX
+X-Google-Smtp-Source: ABdhPJyFO7/fz3qPOxGG1FljVa+GCYdqUk/XsNQFolR0haSMWpOejHbzuD2hZpyE4qLFsulQq7XQFw==
+X-Received: by 2002:ac2:57d4:0:b0:448:2cba:6c86 with SMTP id k20-20020ac257d4000000b004482cba6c86mr6599009lfo.201.1647631234624;
+        Fri, 18 Mar 2022 12:20:34 -0700 (PDT)
+Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
+        by smtp.gmail.com with ESMTPSA id bq8-20020a056512150800b00448ab58bd53sm971692lfb.40.2022.03.18.12.20.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 12:20:34 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: mv88e6xxx broken on 6176 with "Disentangle STU from VTU"
+In-Reply-To: <20220318182817.5ade8ecd@dellmb>
+References: <20220318182817.5ade8ecd@dellmb>
+Date:   Fri, 18 Mar 2022 20:20:33 +0100
+Message-ID: <87a6dnjce6.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Mar 2022 12:01:20 -0700 Florian Fainelli wrote:
-> Given the time crunch we should go with Jeremy's patch that uses
-> stronger I/O access method and then we will work with Jeremy offline to
-> make sure that our version of GCC12 is exactly the same as his, as well
-> as the compiler options (like -mtune/-march) to reproduce this.
-> 
-> If we believe this is only a problem with GCC12 and 5.17 in Fedora, then
-> I would be inclined to remove the Fixes tag such that when we come up
-> with a more localized solution we do not have to revert "net: bcmgenet:
-> Use stronger register read/writes to assure ordering" from stable
-> branches. This would be mostly a courtesy to our future selves, but an
-> argument could be made that this probably has always existed, and that
-> different compilers could behave more or less like GCC12.
+On Fri, Mar 18, 2022 at 18:28, Marek Beh=C3=BAn <kabel@kernel.org> wrote:
+> Hello Tobias,
+>
+> mv88e6xxx fails to probe in net-next on Turris Omnia, bisect leads to
+> commit
+>   49c98c1dc7d9 ("net: dsa: mv88e6xxx: Disentangle STU from VTU")
 
-Are you expecting this patch to make 5.17? If Linus cuts final this
-weekend, as he most likely will, unless we do something special the
-patch in question will end up getting merged during the merge window.
-Without the Fixes tag you'll need to manually instruct Greg to pull 
-it in. Is that the plan?
+Oh wow, really sorry about that! I have it reproduced, and I understand
+the issue.
+
+> Trace:
+>   mv88e6xxx_setup
+>     mv88e6xxx_setup_port
+>       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_STANDALONE) OK
+>       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_BRIDGED) -EOPNOTSUPP
+>
+
+Thanks, that make it easy to find. There is a mismatch between what the
+family-info struct says and what the chip-specific ops struct supports.
+
+I'll try to send a fix ASAP.
