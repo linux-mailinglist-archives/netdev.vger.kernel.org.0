@@ -2,180 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A6D04DE374
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 22:21:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 260DB4DE376
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 22:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbiCRVW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 17:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55404 "EHLO
+        id S237812AbiCRVYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 17:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241103AbiCRVW1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 17:22:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEC421FC6F;
-        Fri, 18 Mar 2022 14:21:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AE6B612AC;
-        Fri, 18 Mar 2022 21:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8EF4C36AE3;
-        Fri, 18 Mar 2022 21:21:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647638467;
-        bh=Vk5mzHbIg17vZ6G2aaaTRJ/qc3wtRp4U3dpTA+mQTzk=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ELbYGJ5s13fJLbEKv95M5pVw7hO7DtSYZ0YpTw3usN05tXHbv2RI/LMOrZ9RvazFC
-         LKvWI9DHFrTXTdQ5NF2TNzFoQuiFV6G24Br9GEyC8hQHayVOTzJDPf+w1s2IMdy6yU
-         wqF+2/LEOGg59KR03baTx/feAPOiwR72Cu1smHzVen/JSY4ll7IJwKloDR1RUnuTLT
-         VhrSdPTUQt8lLE52izSQjSw/0mKq7ehBlQSqMiyXv70d3eNWHEPv3ZQT6CKSIbG/Sj
-         DYF2fr/vqXxhPOxtVSzMbHqaZm5yjFlwapmRWSrtHJHkI9yDBsyOZH82JGzw9qNIDQ
-         B+0vj43BUdwXQ==
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2e5a8a8c1cdso95489317b3.3;
-        Fri, 18 Mar 2022 14:21:07 -0700 (PDT)
-X-Gm-Message-State: AOAM533GGYVhVaqQnOb4korkjuBryjjBMfznHfUsdMGF1bnP4djVeMdf
-        ZLWUzWnKjaszKkuxcQGEnm4POyxOMHcn3X9XavU=
-X-Google-Smtp-Source: ABdhPJy9p6xLR9FKRtMxw8beAYraAaLqJ52YfwUWGPSjxPQqNRKqdW6sylYGLO220Y1ivS1CkbruJKJ4SGRK3Hm/jho=
-X-Received: by 2002:a81:a006:0:b0:2e5:963a:4c42 with SMTP id
- x6-20020a81a006000000b002e5963a4c42mr12976417ywg.73.1647638466787; Fri, 18
- Mar 2022 14:21:06 -0700 (PDT)
+        with ESMTP id S233199AbiCRVYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 17:24:08 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0FD2EDC1F
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 14:22:48 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id o3-20020a17090a3d4300b001c6bc749227so2011035pjf.1
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 14:22:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lZF3K3v6AzQxxSQQgRTl+ejSMbRcJZHLWjFM0XUDJFA=;
+        b=lsMdoJloJU89gC1xnoJPuEgHM3XO57J2ndZE+ziuXq5uqO0WYjDqSpA86qYnpOGjbB
+         Xv0D7MFOg5TcdW9bYZxMzPVyKgeLiP2Mos9pse571ddfKC5Bc2yv0gjugSKgd0Drp8iW
+         hIQ5kBDtUr/ixEZSFv/BlgL7HZexB70i2XSVzbLYiqhnmxkN73xtEzbWRUcaH7rGBfju
+         APZEHIUblVVzIn+TrUGzuMhnx6KHeT30HF5VwgdqA6BLX45+24ikd/IESnXYlYmnZT/T
+         NtHOOzBMb07IRwEU0+TGdzIoJjMCgB8pPcyWsBKYTkeughOkmHtl/nlsfr3B9uGUGZs6
+         mxUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lZF3K3v6AzQxxSQQgRTl+ejSMbRcJZHLWjFM0XUDJFA=;
+        b=59UnW+0KMofiHYVPxuqzn5Ss0YRT3zMu0nB3f0NBzR5joi7LfGlRzSDczTvPT0GFSx
+         J8+/L/fbMQauFY+ajo36x5BjE2oYtH87Tvw0gJ5Msm5DFR/CIvtLXshX0kq24zEHpVuX
+         GPZaYjSOhBws/Kj5P6gYvH+NUIH7XsT2UMtlxG6ML6ec2OSi8FzSgQrdQDJelxy3YtX+
+         vvnaM5417sthrOJOokAxfw+gC/3xL/ZJ8NbEjxJuKJkx2dr21E7PtD5DopuRDRYqhRAd
+         NHWsQTqv49mFKik9tHZWJiEDEnx5BKe+4WRfWF6HSJW5QJfWse6BswcmIAsjF7YLof3o
+         bl+Q==
+X-Gm-Message-State: AOAM533hzRvtrFtIjtBiKQ1YjOUsHlBFUvwIemDHrAbruRhO+AAc9Zmk
+        /KMNHxRFcXCdLUNWqyLf0kFiE7hQ1j8=
+X-Google-Smtp-Source: ABdhPJxgBDupFb3Q/WLPibCbqRvGsR0BUjMAZlg2RLCpk8NrQag0StpiWj+221iKv3QYS7bhcQugug==
+X-Received: by 2002:a17:90b:4c8f:b0:1bc:a64b:805 with SMTP id my15-20020a17090b4c8f00b001bca64b0805mr13249554pjb.156.1647638568330;
+        Fri, 18 Mar 2022 14:22:48 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id 124-20020a621682000000b004f6a2e59a4dsm9817666pfw.121.2022.03.18.14.22.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Mar 2022 14:22:47 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: felix: allow
+ PHY_INTERFACE_MODE_INTERNAL on port 5
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Colin Foster <colin.foster@in-advantage.com>
+References: <20220318195812.276276-1-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <78658409-40f6-227e-78e7-92364cffabd2@gmail.com>
+Date:   Fri, 18 Mar 2022 14:22:44 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com> <20220318161528.1531164-14-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220318161528.1531164-14-benjamin.tissoires@redhat.com>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 18 Mar 2022 14:20:56 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5mKPT+Vw4FVFBokwnY1kkCm9i_HA3Pd2DUznHJfqV+4A@mail.gmail.com>
-Message-ID: <CAPhsuW5mKPT+Vw4FVFBokwnY1kkCm9i_HA3Pd2DUznHJfqV+4A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 13/17] HID: bpf: implement hid_bpf_get|set_bits
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220318195812.276276-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 9:18 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> Export implement() outside of hid-core.c and use this and
+On 3/18/22 12:58 PM, Vladimir Oltean wrote:
+> The Felix switch has 6 ports, 2 of which are internal.
+> Due to some misunderstanding, my initial suggestion for
+> vsc9959_port_modes[]:
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220129220221.2823127-10-colin.foster@in-advantage.com/#24718277
+> 
+> got translated by Colin into a 5-port array, leading to an all-zero port
+> mode mask for port 5.
+> 
+> Fixes: acf242fc739e ("net: dsa: felix: remove prevalidate_phy_mode interface")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Maybe rename implement() to something that makes sense?
-
-> hid_field_extract() to implement the helprs for hid-bpf.
->
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
-> ---
->
-> changes in v3:
-> - renamed hid_{get|set}_data into hid_{get|set}_bits
->
-> changes in v2:
-> - split the series by bpf/libbpf/hid/selftests and samples
-> - allow for n > 32, by relying on memcpy
-> ---
->  drivers/hid/hid-bpf.c  | 29 +++++++++++++++++++++++++++++
->  drivers/hid/hid-core.c |  4 ++--
->  include/linux/hid.h    |  2 ++
->  3 files changed, 33 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/hid/hid-bpf.c b/drivers/hid/hid-bpf.c
-> index 45c87ff47324..650dd5e54919 100644
-> --- a/drivers/hid/hid-bpf.c
-> +++ b/drivers/hid/hid-bpf.c
-> @@ -122,6 +122,33 @@ static void hid_bpf_array_detach(struct hid_device *hdev, enum bpf_hid_attach_ty
->         }
->  }
->
-> +static int hid_bpf_get_bits(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
-> +                           u32 *data)
-> +{
-> +       if (n > 32)
-> +               return -EINVAL;
-> +
-> +       if (((offset + n) >> 3) >= buf_size)
-> +               return -E2BIG;
-> +
-> +       *data = hid_field_extract(hdev, buf, offset, n);
-> +       return n;
-> +}
-> +
-> +static int hid_bpf_set_bits(struct hid_device *hdev, u8 *buf, size_t buf_size, u64 offset, u32 n,
-> +                           u32 data)
-> +{
-> +       if (n > 32)
-> +               return -EINVAL;
-> +
-> +       if (((offset + n) >> 3) >= buf_size)
-> +               return -E2BIG;
-> +
-> +       /* data must be a pointer to a u32 */
-> +       implement(hdev, buf, offset, n, data);
-> +       return n;
-> +}
-> +
->  static int hid_bpf_run_progs(struct hid_device *hdev, struct hid_bpf_ctx_kern *ctx)
->  {
->         enum bpf_hid_attach_type type;
-> @@ -223,6 +250,8 @@ int __init hid_bpf_module_init(void)
->                 .pre_link_attach = hid_bpf_pre_link_attach,
->                 .post_link_attach = hid_bpf_post_link_attach,
->                 .array_detach = hid_bpf_array_detach,
-> +               .hid_get_bits = hid_bpf_get_bits,
-> +               .hid_set_bits = hid_bpf_set_bits,
->         };
->
->         bpf_hid_set_hooks(&hooks);
-> diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-> index 3182c39db006..4f669dcddc08 100644
-> --- a/drivers/hid/hid-core.c
-> +++ b/drivers/hid/hid-core.c
-> @@ -1416,8 +1416,8 @@ static void __implement(u8 *report, unsigned offset, int n, u32 value)
->         }
->  }
->
-> -static void implement(const struct hid_device *hid, u8 *report,
-> -                     unsigned offset, unsigned n, u32 value)
-> +void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
-> +              u32 value)
->  {
->         if (unlikely(n > 32)) {
->                 hid_warn(hid, "%s() called with n (%d) > 32! (%s)\n",
-> diff --git a/include/linux/hid.h b/include/linux/hid.h
-> index 66d949d10b78..7454e844324c 100644
-> --- a/include/linux/hid.h
-> +++ b/include/linux/hid.h
-> @@ -944,6 +944,8 @@ bool hid_compare_device_paths(struct hid_device *hdev_a,
->  s32 hid_snto32(__u32 value, unsigned n);
->  __u32 hid_field_extract(const struct hid_device *hid, __u8 *report,
->                      unsigned offset, unsigned n);
-> +void implement(const struct hid_device *hid, u8 *report, unsigned int offset, unsigned int n,
-> +              u32 value);
->
->  #ifdef CONFIG_PM
->  int hid_driver_suspend(struct hid_device *hdev, pm_message_t state);
-> --
-> 2.35.1
->
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
