@@ -2,195 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC0E44DE235
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:14:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E6624DE24D
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:18:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240540AbiCRUPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 16:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
+        id S239788AbiCRUTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 16:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239948AbiCRUO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 16:14:58 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1DE19C5BF;
-        Fri, 18 Mar 2022 13:13:37 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 29670223F0;
-        Fri, 18 Mar 2022 21:13:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647634416;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/DLo4n9LcEDq3m+ys72xRNV4+0sMmookIoTiaSxWb4Y=;
-        b=HzaHDuVAE8+iwwhaowp63U1TPFyre7RwmpUi4gQjsQp30EUulJxZ0AooOJhxb2BVQKzPYR
-        rs6vJYVvu1aZWwJgm06g8yTg21Efc+zq1kNhnuO3/PvHfc7C5JUkNsbi1uYS/P4jwc5loz
-        RE2dUUCqtB2dXk0DUW/h/QqXDa0dPJQ=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 3/3] net: mdio: mscc-miim: add lan966x internal phy reset support
-Date:   Fri, 18 Mar 2022 21:13:24 +0100
-Message-Id: <20220318201324.1647416-4-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220318201324.1647416-1-michael@walle.cc>
-References: <20220318201324.1647416-1-michael@walle.cc>
+        with ESMTP id S231994AbiCRUTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 16:19:49 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8689412A88
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 13:18:28 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id h1so11496540edj.1
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 13:18:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=zD4DtQCQOV4Vw/bOvTCBxiOZ+hVEugLE/iEy9KuHKhk=;
+        b=OoDYFWhEpw7voN8KckfCGqK5Aoor9IAZ6Lny4wXtrF7sjDyOtif+Z9GhMTINtHkAs+
+         75kojreHdF2TvYg4v/i9KFgElCCIKw3RQAx+HJNk78WOM5oO8UedjnKfXqwJ9B+pXFAe
+         AM3EaXgSvkN5MxM1hCUFjkDETu/b1dNYMzgCsjWKwhgCw3nPVUbCnfdRm3ZlWiWnUu+M
+         ohMDL3RA5VCUWN8UgsT7pdr6i+NPsi7IBruSjzj0c/zPbtPoqM6kqVLFsQxUUi03uEhv
+         4QZS/cPaccA5aeUBiOg526wmtofoOMajbet62pTsRMRcCsIVN2oXlf3bAXeqPocqE/r2
+         DG/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=zD4DtQCQOV4Vw/bOvTCBxiOZ+hVEugLE/iEy9KuHKhk=;
+        b=VGJz3BJXmaIV6PUKpUylo6INDEFY4bSmUfHIgqhz8vVDdidLtOIgsQBgcktKRBCfWP
+         Lloki3xTSKxxG4OI0n83DTSzmuyth3+11DBS9FAzceBIcPMJz3oEtw9+iUQgmqlU4KOm
+         9ZKFrIgnu007W8ZKJ/ycLLrT741jZxSBdivZwIB0rJgZ5BSbjwT5g5oSmwio3tdtNlBg
+         rpRBY5pyyYPKiPeunoaf2X6Qw7ia2YSJQmRtfmEUEERF/z/bhBqhqARlhH2ZMIqrds59
+         B4R4Hsms/aFPdoSZI64sAccgkGOGZR/dzAeUFbA0t0GrGCFHAkYeKqGA7m1YaEbIUBU8
+         rS8A==
+X-Gm-Message-State: AOAM533x0j9UZ5qWEYVJEZwj1Uv+Z2a1FUprMX6k0gxnU3/c5h+QLY2T
+        X8LgfsKbbdLSb5ASUbP6OZmAM7GUZ4E=
+X-Google-Smtp-Source: ABdhPJyMHxlNP3vo2Nh9OlDcYq09bNCwVIEhWfKJtV0ra4wwdeRm1B9tQ/sAlu7VfCFUW2oSs/IdPQ==
+X-Received: by 2002:a05:6402:486:b0:413:bd00:4f3f with SMTP id k6-20020a056402048600b00413bd004f3fmr11255168edv.103.1647634706855;
+        Fri, 18 Mar 2022 13:18:26 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id gl2-20020a170906e0c200b006a767d52373sm4055289ejb.182.2022.03.18.13.18.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 13:18:26 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 22:18:25 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: mv88e6xxx broken on 6176 with "Disentangle STU from VTU"
+Message-ID: <20220318201825.azuoawgdl7guafrp@skbuf>
+References: <20220318182817.5ade8ecd@dellmb>
+ <87a6dnjce6.fsf@waldekranz.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <87a6dnjce6.fsf@waldekranz.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The LAN966x has two internal PHYs which are in reset by default. The
-driver already supported the internal PHYs of the SparX-5. Now add
-support for the LAN966x, too. Add a new compatible to distinguish them.
+Hello Tobias,
 
-The LAN966x has additional control bits in this register, thus convert
-the regmap_write() to regmap_update_bits() to leave the remaining bits
-untouched. This doesn't change anything for the SparX-5 SoC, because
-there, the register consists only of reset bits.
+On Fri, Mar 18, 2022 at 08:20:33PM +0100, Tobias Waldekranz wrote:
+> On Fri, Mar 18, 2022 at 18:28, Marek Behún <kabel@kernel.org> wrote:
+> > Hello Tobias,
+> >
+> > mv88e6xxx fails to probe in net-next on Turris Omnia, bisect leads to
+> > commit
+> >   49c98c1dc7d9 ("net: dsa: mv88e6xxx: Disentangle STU from VTU")
+> 
+> Oh wow, really sorry about that! I have it reproduced, and I understand
+> the issue.
+> 
+> > Trace:
+> >   mv88e6xxx_setup
+> >     mv88e6xxx_setup_port
+> >       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_STANDALONE) OK
+> >       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_BRIDGED) -EOPNOTSUPP
+> >
+> 
+> Thanks, that make it easy to find. There is a mismatch between what the
+> family-info struct says and what the chip-specific ops struct supports.
+> 
+> I'll try to send a fix ASAP.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/mdio/mdio-mscc-miim.c | 67 ++++++++++++++++++++++---------
- 1 file changed, 49 insertions(+), 18 deletions(-)
+I've seen your patches, but I don't understand the problem they fix.
+For switches like 6190 indeed this is a problem. It has max_stu = 63 but
+mv88e6190_ops has no stu_getnext or stu_loadpurge. That I understand.
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index 2f77bf75288d..c483ba67c21f 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -15,6 +15,7 @@
- #include <linux/of_mdio.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- 
- #define MSCC_MIIM_REG_STATUS		0x0
-@@ -36,11 +37,19 @@
- #define		PHY_CFG_PHY_RESET	(BIT(5) | BIT(6) | BIT(7) | BIT(8))
- #define MSCC_PHY_REG_PHY_STATUS	0x4
- 
-+#define LAN966X_CUPHY_COMMON_CFG	0x0
-+#define		CUPHY_COMMON_CFG_RESET_N	BIT(0)
-+
-+struct mscc_miim_info {
-+	unsigned int phy_reset_offset;
-+	unsigned int phy_reset_bits;
-+};
-+
- struct mscc_miim_dev {
- 	struct regmap *regs;
- 	int mii_status_offset;
- 	struct regmap *phy_regs;
--	int phy_reset_offset;
-+	const struct mscc_miim_info *info;
- };
- 
- /* When high resolution timers aren't built-in: we can't use usleep_range() as
-@@ -157,27 +166,29 @@ static int mscc_miim_write(struct mii_bus *bus, int mii_id,
- static int mscc_miim_reset(struct mii_bus *bus)
- {
- 	struct mscc_miim_dev *miim = bus->priv;
--	int offset = miim->phy_reset_offset;
--	int reset_bits = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
--			 PHY_CFG_PHY_RESET;
-+	unsigned int offset, bits;
- 	int ret;
- 
--	if (miim->phy_regs) {
--		ret = regmap_write(miim->phy_regs, offset, 0);
--		if (ret < 0) {
--			WARN_ONCE(1, "mscc reset set error %d\n", ret);
--			return ret;
--		}
-+	if (!miim->phy_regs)
-+		return 0;
- 
--		ret = regmap_write(miim->phy_regs, offset, reset_bits);
--		if (ret < 0) {
--			WARN_ONCE(1, "mscc reset clear error %d\n", ret);
--			return ret;
--		}
-+	offset = miim->info->phy_reset_offset;
-+	bits = miim->info->phy_reset_bits;
-+
-+	ret = regmap_update_bits(miim->phy_regs, offset, bits, 0);
-+	if (ret < 0) {
-+		WARN_ONCE(1, "mscc reset set error %d\n", ret);
-+		return ret;
-+	}
- 
--		mdelay(500);
-+	ret = regmap_update_bits(miim->phy_regs, offset, bits, bits);
-+	if (ret < 0) {
-+		WARN_ONCE(1, "mscc reset clear error %d\n", ret);
-+		return ret;
- 	}
- 
-+	mdelay(500);
-+
- 	return 0;
- }
- 
-@@ -272,7 +283,10 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 
- 	miim = bus->priv;
- 	miim->phy_regs = phy_regmap;
--	miim->phy_reset_offset = MSCC_PHY_REG_PHY_CFG;
-+
-+	miim->info = device_get_match_data(&pdev->dev);
-+	if (!miim->info)
-+		return -EINVAL;
- 
- 	ret = of_mdiobus_register(bus, pdev->dev.of_node);
- 	if (ret < 0) {
-@@ -294,8 +308,25 @@ static int mscc_miim_remove(struct platform_device *pdev)
- 	return 0;
- }
- 
-+static const struct mscc_miim_info mscc_ocelot_miim_info = {
-+	.phy_reset_offset = MSCC_PHY_REG_PHY_CFG,
-+	.phy_reset_bits = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
-+			  PHY_CFG_PHY_RESET,
-+};
-+
-+static const struct mscc_miim_info microchip_lan966x_miim_info = {
-+	.phy_reset_offset = LAN966X_CUPHY_COMMON_CFG,
-+	.phy_reset_bits = CUPHY_COMMON_CFG_RESET_N,
-+};
-+
- static const struct of_device_id mscc_miim_match[] = {
--	{ .compatible = "mscc,ocelot-miim" },
-+	{
-+		.compatible = "mscc,ocelot-miim",
-+		.data = &mscc_ocelot_miim_info
-+	}, {
-+		.compatible = "microchip,lan966x-miim",
-+		.data = &microchip_lan966x_miim_info
-+	},
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, mscc_miim_match);
--- 
-2.30.2
-
+But Marek reported the problem on 6176. There, max_sid is 0, so
+mv88e6xxx_has_stu() should already return false. Where is the
+-EOPNOTSUPP returned from?
