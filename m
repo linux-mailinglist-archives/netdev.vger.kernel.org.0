@@ -2,299 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97F834DD6A4
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 09:57:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38F894DD6B7
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 10:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234135AbiCRI6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 04:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
+        id S231246AbiCRJAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 05:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234066AbiCRI6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 04:58:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9501F3795;
-        Fri, 18 Mar 2022 01:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647593812; x=1679129812;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FRV68PvEU6woG91FSzS6CNU+zWPsLt5jY9+EhUc4HvA=;
-  b=TN9OKXTe3KNaxHqcEnHVa4CO4nXFp+ABf0014YbeDiZsIaGJqPiKOOmj
-   qb/Mf5N5jvbhX+ZiFmcetGQOKzGbLl9VsoyLagwwBm42EqsMdRpFf1IQQ
-   ds1zBU98cUL68AfjPAeyShoIxGIBBWuRRhNUfOcFmVeGMVUVIAz5VncEM
-   RyoC/8quZehYAblcJ9196SJxwHXNsDXEit78whm+HpXyWgOspz1SWQMjC
-   dh59g5WcwMbrmaPWfg3b8Up8nd453UGMPlAPZDrI1RY9DxE4cWrBXY58n
-   77OJAud6H7hUOos89TkshJdvKI3jX+uDuZGLh2XByg+d2Pp06YzKDYs74
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,191,1643698800"; 
-   d="scan'208";a="152459849"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 01:56:51 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Mar 2022 01:56:50 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 01:56:45 -0700
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
-        <robh+dt@kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v9 net-next 11/11] net: dsa: microchip: add support for vlan operations
-Date:   Fri, 18 Mar 2022 14:25:40 +0530
-Message-ID: <20220318085540.281721-12-prasanna.vengateshan@microchip.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
-References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
+        with ESMTP id S229497AbiCRJAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 05:00:36 -0400
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184CF2709;
+        Fri, 18 Mar 2022 01:59:14 -0700 (PDT)
+Received: by mail-lj1-f181.google.com with SMTP id bn33so10461190ljb.6;
+        Fri, 18 Mar 2022 01:59:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:content-language:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=I+DAvFkKurUFDaU4un333ZxZazdliPSkbA9dCCZ/O8M=;
+        b=ND2h6f2unmfi2/b3lcmdVe81O6BBrgd78NNprYuTvT5muc5bz6xLZYYyJ8t79l1jFi
+         NK7Nx6iyLbCW9PK09bGNXg/EBrMQrEM97/1UlpyJay0riBOG/zemDq7gQGXrBElm3Qn9
+         GwQ35e7JbC9qaw4HsNTOYknI/nkWLo4bPyKmkdb1oPpptULwil8DvzhGJgOQ1raODy8b
+         4lY03hkPC4Nla4bDbL5Wm5I88rQlBvSuqqcMI3zYUrtZDlzgXF3xWf2e7J4i9dREnUal
+         EdXKz+OxI12z5vh4ciBXPpjhBkyy1OyZEInj/RtXMdyMRrokvDRCBAWaWlq6bWfwTzJU
+         ic1g==
+X-Gm-Message-State: AOAM532udjepHI0A2nMxH9PaEBwV5ebeLSGPS5oG0BOcmCWpLfhx7H0x
+        +M6+ZLf9vGY3oa23cSGFlwI=
+X-Google-Smtp-Source: ABdhPJzVJulFHn2cmxPUGFqexOrRZs5KpUv1/PMGVOHmOXq9fbd7jj9GCBJR7b6QDKRdgb9CSErT5g==
+X-Received: by 2002:a05:651c:90a:b0:249:5d82:fe9c with SMTP id e10-20020a05651c090a00b002495d82fe9cmr5377070ljq.300.1647593952390;
+        Fri, 18 Mar 2022 01:59:12 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id w27-20020ac2599b000000b004481e254f08sm751643lfn.240.2022.03.18.01.59.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 18 Mar 2022 01:59:11 -0700 (PDT)
+Message-ID: <5cada983-ece8-9d44-6ffc-0bbceaa6c11f@kernel.org>
+Date:   Fri, 18 Mar 2022 09:59:10 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   krzk@kernel.org
+Subject: Re: [PATCH -next] nfc: st21nfca: remove unnecessary skb check before
+ kfree_skb()
+Content-Language: en-US
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, colin.king@intel.com, kuba@kernel.org,
+        davem@davemloft.net
+References: <20220318072728.2659578-1-yangyingliang@huawei.com>
+In-Reply-To: <20220318072728.2659578-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for VLAN add, del, prepare and filtering operations.
+On 18/03/2022 08:27, Yang Yingliang wrote:
+> The skb will be checked in kfree_skb(), so remove the outside check.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/nfc/st21nfca/i2c.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
 
-The VLAN aware is a global setting. Mixed vlan filterings
-are not supported. vlan_filtering_is_global is made as true
-in lan937x_setup function.
 
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/microchip/lan937x_main.c | 186 +++++++++++++++++++++++
- 1 file changed, 186 insertions(+)
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index d7546b294ce5..35486fd4c713 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -17,6 +17,14 @@
- #include "ksz_common.h"
- #include "lan937x_dev.h"
- 
-+static int lan937x_wait_vlan_ctrl_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[0], REG_SW_VLAN_CTRL, val,
-+					!(val & VLAN_START), 10, 1000);
-+}
-+
- static u8 lan937x_get_fid(u16 vid)
- {
- 	if (vid > ALU_FID_SIZE)
-@@ -25,6 +33,97 @@ static u8 lan937x_get_fid(u16 vid)
- 		return vid;
- }
- 
-+static int lan937x_get_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_READ | VLAN_START);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY__4, &data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	vlan_entry->valid = !!(data & VLAN_VALID);
-+	vlan_entry->fid	= data & VLAN_FID_M;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			 &vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_read32(dev, REG_SW_VLAN_ENTRY_PORTS__4,
-+			 &vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, 0);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
-+static int lan937x_set_vlan_table(struct ksz_device *dev, u16 vid,
-+				  struct lan937x_vlan *vlan_entry)
-+{
-+	u32 data;
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	data = vlan_entry->valid ? VLAN_VALID : 0;
-+	data |= vlan_entry->fid;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY__4, data);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_UNTAG__4,
-+			  vlan_entry->untag_prtmap);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write32(dev, REG_SW_VLAN_ENTRY_PORTS__4, vlan_entry->fwd_map);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	if (ret < 0)
-+		goto exit;
-+
-+	ret = ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_START | VLAN_WRITE);
-+	if (ret < 0)
-+		goto exit;
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret < 0)
-+		goto exit;
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
- static int lan937x_read_table(struct ksz_device *dev, u32 *table)
- {
- 	int ret;
-@@ -162,6 +261,90 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 	ksz_update_port_member(dev, port);
- }
- 
-+static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
-+				       bool flag,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	/* enable/disable VLAN mode, once enabled, look up process starts
-+	 * and then forwarding and discarding are done based on port
-+	 * membership of the VLAN table
-+	 */
-+	return lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE, flag);
-+}
-+
-+static int lan937x_port_vlan_add(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan,
-+				 struct netlink_ext_ack *extack)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	int ret;
-+
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to get vlan table");
-+		return ret;
-+	}
-+
-+	vlan_entry.fid = lan937x_get_fid(vlan->vid);
-+	vlan_entry.valid = true;
-+
-+	/* set/clear switch port when updating vlan table registers */
-+	if (untagged)
-+		vlan_entry.untag_prtmap |= BIT(port);
-+	else
-+		vlan_entry.untag_prtmap &= ~BIT(port);
-+
-+	vlan_entry.fwd_map |= BIT(port);
-+
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to set vlan table");
-+		return ret;
-+	}
-+
-+	/* change PVID */
-+	if (vlan->flags & BRIDGE_VLAN_INFO_PVID) {
-+		ret = lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID,
-+				       vlan->vid);
-+		if (ret < 0) {
-+			NL_SET_ERR_MSG_MOD(extack, "Failed to set pvid");
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct lan937x_vlan vlan_entry;
-+	int ret;
-+
-+	ret = lan937x_get_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to get vlan table\n");
-+		return ret;
-+	}
-+
-+	/* clear port fwd map & untag entries*/
-+	vlan_entry.fwd_map &= ~BIT(port);
-+	vlan_entry.untag_prtmap &= ~BIT(port);
-+
-+	ret = lan937x_set_vlan_table(dev, vlan->vid, &vlan_entry);
-+	if (ret < 0) {
-+		dev_err(dev->dev, "Failed to set vlan table\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int lan937x_port_fdb_add(struct dsa_switch *ds, int port,
- 				const unsigned char *addr, u16 vid,
- 				struct dsa_db db)
-@@ -1100,6 +1283,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_bridge_leave = ksz_port_bridge_leave,
- 	.port_stp_state_set = lan937x_port_stp_state_set,
- 	.port_fast_age = ksz_port_fast_age,
-+	.port_vlan_filtering = lan937x_port_vlan_filtering,
-+	.port_vlan_add = lan937x_port_vlan_add,
-+	.port_vlan_del = lan937x_port_vlan_del,
- 	.port_fdb_dump = lan937x_port_fdb_dump,
- 	.port_fdb_add = lan937x_port_fdb_add,
- 	.port_fdb_del = lan937x_port_fdb_del,
--- 
-2.30.2
 
+Best regards,
+Krzysztof
