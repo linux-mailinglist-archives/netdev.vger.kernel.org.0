@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 968CF4DE17D
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 19:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C01F4DE17F
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 19:57:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240273AbiCRS63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 14:58:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54836 "EHLO
+        id S240283AbiCRS6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 14:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240279AbiCRS6W (ORCPT
+        with ESMTP id S240282AbiCRS6W (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 14:58:22 -0400
 Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF480232D3D;
-        Fri, 18 Mar 2022 11:56:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9E2234574;
+        Fri, 18 Mar 2022 11:56:59 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id EE046C0003;
-        Fri, 18 Mar 2022 18:56:54 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7B9A7C0007;
+        Fri, 18 Mar 2022 18:56:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647629816;
+        t=1647629817;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0VBTWFnPt10DhCOjE82lW1MDcj14jZmYXZWn9//SL0M=;
-        b=EZZhdBWnA/c3gGpg8ExPsmiyktDNhQ2j4f+F2cUN8U3vrX44Bmh5/LNgxbz0BPWyROZyCc
-        1kNqMJbfgJOsUimgEJxFKtrpoZejh/NstvhoEo4k6BE7Fs2exaLg3ElvNKfT5iee5qzQJj
-        iEIZVCz54VSh5NiWza8dmA9P4p95U2XYu2SPCfUGyCEUwM2jUFnEDVnvzjST+vvYvivUFS
-        p7KIsLKiuN03+elg5TE7c/tz4L7NtjyrzVri5Nh8fXDpUX5sWrwuliBkk3OVr9znhMegGn
-        ziowKYXPFIqTvlMDVDpM0QALru2UPn/PR213v57vldtQvQfk+raz6Cg02Y6srw==
+        bh=ELjyb7lKL1uYu4MFcTREKc/GLttvlsuO2ZSUwZP1ZF0=;
+        b=gQSQ93m8k1xGNHa186GCRpuMsCeXRaOe/LhOmcEnturwLKHj9MJCgikSOmOQrdsFcJBHEd
+        AJZb8Ru6EILu0GgtEQe+S5Yez/Bjgay98SNxOINAYib8bp1nZongO7PJ5zW4HKHVuv8cpp
+        NrFcf/4MEfNtCFHcGceFLw0o0RMQ1MKh7JE2L0czgBbB8OJzyewQ7QQmkZqXyAEUg5xLBz
+        d3xzuBODWV/YZoylRwU9noph59cOxD9NdUAxXTbjZmCzFDi01HH5biKbVjF+nr0NHq7e2i
+        +IDukXUh7gR5X2ZK/cUmQ2iAtA5jEWpbnqpDXqrYKF6GjxnlCTKwSVP9bkrtNg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v4 06/11] net: ieee802154: at86rf230: Error out upon failed offloaded transmissions
-Date:   Fri, 18 Mar 2022 19:56:39 +0100
-Message-Id: <20220318185644.517164-7-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v4 07/11] net: ieee802154: at86rf230: Provide meaningful error codes when possible
+Date:   Fri, 18 Mar 2022 19:56:40 +0100
+Message-Id: <20220318185644.517164-8-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220318185644.517164-1-miquel.raynal@bootlin.com>
 References: <20220318185644.517164-1-miquel.raynal@bootlin.com>
@@ -60,56 +60,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let's parse the TRAC register in the Tx path in order to know if the
-offloaded transmission was successful. If not, let's return early with
-an error code.
+Either the spi operation failed, or the offloaded transmit operation
+failed and returned a TRAC value. Use this value when available or use
+the default "SYSTEM_ERROR" otherwise, in order to propagate one step
+above the error.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/at86rf230.c | 10 +++++++++-
- drivers/net/ieee802154/at86rf230.h |  8 ++++++++
- 2 files changed, 17 insertions(+), 1 deletion(-)
+ drivers/net/ieee802154/at86rf230.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 8a03722cd1f7..d3cf6d23b57e 100644
+index d3cf6d23b57e..34d199f597c9 100644
 --- a/drivers/net/ieee802154/at86rf230.c
 +++ b/drivers/net/ieee802154/at86rf230.c
-@@ -660,8 +660,16 @@ at86rf230_tx_trac_check(void *context)
+@@ -358,7 +358,23 @@ static inline void
+ at86rf230_async_error(struct at86rf230_local *lp,
+ 		      struct at86rf230_state_change *ctx, int rc)
  {
- 	struct at86rf230_state_change *ctx = context;
- 	struct at86rf230_local *lp = ctx->lp;
-+	u8 trac = TRAC_MASK(ctx->buf[1]);
- 
--	at86rf230_async_state_change(lp, ctx, STATE_TX_ON, at86rf230_tx_on);
-+	switch (trac) {
-+	case TRAC_SUCCESS:
-+	case TRAC_SUCCESS_DATA_PENDING:
-+		at86rf230_async_state_change(lp, ctx, STATE_TX_ON, at86rf230_tx_on);
+-	dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
++	int reason;
++
++	switch (rc) {
++	case TRAC_CHANNEL_ACCESS_FAILURE:
++		reason = IEEE802154_CHANNEL_ACCESS_FAILURE;
++		break;
++	case TRAC_NO_ACK:
++		reason = IEEE802154_NO_ACK;
 +		break;
 +	default:
-+		at86rf230_async_error(lp, ctx, -EIO);
++		reason = IEEE802154_SYSTEM_ERROR;
 +	}
++
++	if (rc < 0)
++		dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
++	else
++		dev_err(&lp->spi->dev, "xceiver error %d\n", reason);
+ 
+ 	at86rf230_async_state_change(lp, ctx, STATE_FORCE_TRX_OFF,
+ 				     at86rf230_async_error_recover);
+@@ -666,10 +682,15 @@ at86rf230_tx_trac_check(void *context)
+ 	case TRAC_SUCCESS:
+ 	case TRAC_SUCCESS_DATA_PENDING:
+ 		at86rf230_async_state_change(lp, ctx, STATE_TX_ON, at86rf230_tx_on);
++		return;
++	case TRAC_CHANNEL_ACCESS_FAILURE:
++	case TRAC_NO_ACK:
+ 		break;
+ 	default:
+-		at86rf230_async_error(lp, ctx, -EIO);
++		trac = TRAC_INVALID;
+ 	}
++
++	at86rf230_async_error(lp, ctx, trac);
  }
  
  static void
-diff --git a/drivers/net/ieee802154/at86rf230.h b/drivers/net/ieee802154/at86rf230.h
-index fbdfb705c7a3..042bb27287a3 100644
---- a/drivers/net/ieee802154/at86rf230.h
-+++ b/drivers/net/ieee802154/at86rf230.h
-@@ -208,5 +208,13 @@
- #define STATE_TRANSITION_IN_PROGRESS 0x1F
- 
- #define TRX_STATE_MASK		(0x1F)
-+#define TRAC_MASK(x)		((x & 0xe0) >> 5)
-+
-+#define TRAC_SUCCESS			0
-+#define TRAC_SUCCESS_DATA_PENDING	1
-+#define TRAC_SUCCESS_WAIT_FOR_ACK	2
-+#define TRAC_CHANNEL_ACCESS_FAILURE	3
-+#define TRAC_NO_ACK			5
-+#define TRAC_INVALID			7
- 
- #endif /* !_AT86RF230_H */
 -- 
 2.27.0
 
