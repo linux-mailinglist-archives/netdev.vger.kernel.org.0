@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD6BC4DDD8C
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:04:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C45364DDD83
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:04:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238477AbiCRQFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 12:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
+        id S238485AbiCRQFS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 12:05:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238386AbiCRQEv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:04:51 -0400
+        with ESMTP id S238421AbiCRQE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:04:58 -0400
 Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2DA2FA;
-        Fri, 18 Mar 2022 09:03:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5850C1275F;
+        Fri, 18 Mar 2022 09:03:20 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8AF7240010;
-        Fri, 18 Mar 2022 16:03:16 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3917440025;
+        Fri, 18 Mar 2022 16:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647619398;
+        t=1647619399;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ocoul7ljnoZTu5D9WXKfAGT93AKe2N6I6+O6VziLVXM=;
-        b=JgukWiqmvJP2LB94bzrJ6k92wsnksVy3gUg8f+rgXMif7z9FNa6tU4kEt0N2juG78W5oky
-        lm6qSlRqPBSoDcUuWyvqnPCqPiKByqnEk54UCWXVgRKFNhqujXUkRgyhWD+aXzOOwlLNC2
-        rZPwYGCKMUTpyUtShkdofWsK89ZP8So/uExfWgjX2pMfNJ9UPYUO/5tqzMimDMyyz0uY1J
-        /umyNjlvAih07ofEy70b32vXwUXZNWNjXp80ppHmYexcTXpVHPC/7pVka7peo/BdLdcCAE
-        fTAXCJh0zj/t1SxknChQL0Mv3PEIyAryEWHeamFBMf/kMwGFQhAPHudicXIVyg==
+        bh=hkT3kxdBeyWxML9PLamI62loW/3vgqU0z8FJV3BD28o=;
+        b=kNvOi6EATLgSqKXnMWrlPMk7/BcKZmBbzxRfGyehpI9Epj0ormYcWZpz/4ifFYkhjdPANp
+        jZppFt7fzG6Tkk3zzSnHo71zfBhnTIgoBaD3NSflqJUAVfaq43FkrZuuPqG7KStRonlg8Y
+        3y85yjIlgLlQDeBOh5tDkjwk9orxe6m2gsLhhO3U+RuuN8KmqYc15nS6R22WzALGbe+T2J
+        c+ClbGhnC37WaprN3+TH16p4VbdbuAK8n8V/GspxTWAnt6JpUxTKBJeF8pFLZ74Fztlb25
+        KpIpjOz4K4+LX2TVuqtvuloU20z6WbMFH0p2YuIiVDOvxSj+NXdPTZ7UOKDbpg==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Daniel Scally <djrscally@gmail.com>,
@@ -50,9 +50,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH 5/6] i2c: mux: add support for fwnode
-Date:   Fri, 18 Mar 2022 17:00:51 +0100
-Message-Id: <20220318160059.328208-6-clement.leger@bootlin.com>
+Subject: [PATCH 6/6] net: sfp: add support for fwnode
+Date:   Fri, 18 Mar 2022 17:00:52 +0100
+Message-Id: <20220318160059.328208-7-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220318160059.328208-1-clement.leger@bootlin.com>
 References: <20220318160059.328208-1-clement.leger@bootlin.com>
@@ -69,109 +69,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modify i2c_mux_add_adapter() to use with fwnode API to allow creating
-mux adapters with fwnode based devices. This allows to have a node
-independent support for i2c muxes.
+Add support to retrieve a i2c bus in sfp with a fwnode. This support
+is using the fwnode API which also works with device-tree and ACPI.
+For this purpose, the device-tree and ACPI code handling the i2c
+adapter retrieval was factorized with the new code. This also allows
+i2c devices using a software_node description to be used by sfp code.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/i2c/i2c-mux.c | 39 ++++++++++++++++++---------------------
- 1 file changed, 18 insertions(+), 21 deletions(-)
+ drivers/net/phy/sfp.c | 46 +++++++++++++------------------------------
+ 1 file changed, 14 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
-index 774507b54b57..93c916220da5 100644
---- a/drivers/i2c/i2c-mux.c
-+++ b/drivers/i2c/i2c-mux.c
-@@ -24,7 +24,7 @@
- #include <linux/i2c-mux.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
--#include <linux/of.h>
-+#include <linux/property.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 4720b24ca51b..3f57b1fbf413 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -2483,7 +2483,7 @@ static void sfp_cleanup(void *data)
+ static int sfp_probe(struct platform_device *pdev)
+ {
+ 	const struct sff_data *sff;
+-	struct i2c_adapter *i2c;
++	struct i2c_adapter *i2c = NULL;
+ 	char *sfp_irq_name;
+ 	struct sfp *sfp;
+ 	int err, i;
+@@ -2499,43 +2499,25 @@ static int sfp_probe(struct platform_device *pdev)
+ 		return err;
  
-@@ -347,38 +347,35 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 	else
- 		priv->adap.class = class;
+ 	sff = sfp->type = &sfp_data;
++	if (dev_fwnode(&pdev->dev)) {
++		struct fwnode_handle *fwnode = dev_fwnode(&pdev->dev);
++		struct fwnode_handle *np;
  
--	/*
--	 * Try to populate the mux adapter's of_node, expands to
--	 * nothing if !CONFIG_OF.
--	 */
--	if (muxc->dev->of_node) {
--		struct device_node *dev_node = muxc->dev->of_node;
--		struct device_node *mux_node, *child = NULL;
-+	/* Try to populate the mux adapter's device node */
-+	if (dev_fwnode(muxc->dev) && !has_acpi_companion(muxc->dev)) {
-+		struct fwnode_handle *dev_node = dev_fwnode(muxc->dev);
-+		struct fwnode_handle *mux_node, *child = NULL;
- 		u32 reg;
+-	if (pdev->dev.of_node) {
+-		struct device_node *node = pdev->dev.of_node;
+-		const struct of_device_id *id;
+-		struct device_node *np;
+-
+-		id = of_match_node(sfp_of_match, node);
+-		if (WARN_ON(!id))
+-			return -EINVAL;
++		if (!is_acpi_device_node(fwnode)) {
++			sff = device_get_match_data(&pdev->dev);
++			if (WARN_ON(!sff))
++				return -EINVAL;
  
- 		if (muxc->arbitrator)
--			mux_node = of_get_child_by_name(dev_node, "i2c-arb");
-+			mux_node = fwnode_get_named_child_node(dev_node, "i2c-arb");
- 		else if (muxc->gate)
--			mux_node = of_get_child_by_name(dev_node, "i2c-gate");
-+			mux_node = fwnode_get_named_child_node(dev_node, "i2c-gate");
- 		else
--			mux_node = of_get_child_by_name(dev_node, "i2c-mux");
-+			mux_node = fwnode_get_named_child_node(dev_node, "i2c-mux");
- 
- 		if (mux_node) {
- 			/* A "reg" property indicates an old-style DT entry */
--			if (!of_property_read_u32(mux_node, "reg", &reg)) {
--				of_node_put(mux_node);
-+			if (!fwnode_property_read_u32(mux_node, "reg", &reg)) {
-+				fwnode_handle_put(mux_node);
- 				mux_node = NULL;
- 			}
+-		sff = sfp->type = id->data;
+-
+-		np = of_parse_phandle(node, "i2c-bus", 0);
+-		if (!np) {
+-			dev_err(sfp->dev, "missing 'i2c-bus' property\n");
+-			return -ENODEV;
++			sfp->type = sff;
  		}
  
- 		if (!mux_node)
--			mux_node = of_node_get(dev_node);
-+			mux_node = fwnode_handle_get(dev_node);
- 		else if (muxc->arbitrator || muxc->gate)
--			child = of_node_get(mux_node);
-+			child = fwnode_handle_get(mux_node);
- 
- 		if (!child) {
--			for_each_child_of_node(mux_node, child) {
--				ret = of_property_read_u32(child, "reg", &reg);
-+			fwnode_for_each_child_node(mux_node, child) {
-+				ret = fwnode_property_read_u32(child, "reg", &reg);
- 				if (ret)
- 					continue;
- 				if (chan_id == reg)
-@@ -386,8 +383,8 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
- 			}
- 		}
- 
--		priv->adap.dev.of_node = child;
--		of_node_put(mux_node);
-+		device_set_node(&priv->adap.dev, child);
-+		fwnode_handle_put(mux_node);
- 	}
- 
- 	/*
-@@ -444,7 +441,7 @@ void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
- 	while (muxc->num_adapters) {
- 		struct i2c_adapter *adap = muxc->adapter[--muxc->num_adapters];
- 		struct i2c_mux_priv *priv = adap->algo_data;
--		struct device_node *np = adap->dev.of_node;
-+		struct fwnode_handle *np = dev_fwnode(&adap->dev);
- 
- 		muxc->adapter[muxc->num_adapters] = NULL;
- 
-@@ -454,7 +451,7 @@ void i2c_mux_del_adapters(struct i2c_mux_core *muxc)
- 
- 		sysfs_remove_link(&priv->adap.dev.kobj, "mux_device");
- 		i2c_del_adapter(adap);
+-		i2c = of_find_i2c_adapter_by_node(np);
 -		of_node_put(np);
+-	} else if (has_acpi_companion(&pdev->dev)) {
+-		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
+-		struct fwnode_handle *fw = acpi_fwnode_handle(adev);
+-		struct fwnode_reference_args args;
+-		struct acpi_handle *acpi_handle;
+-		int ret;
+-
+-		ret = acpi_node_get_property_reference(fw, "i2c-bus", 0, &args);
+-		if (ret || !is_acpi_device_node(args.fwnode)) {
+-			dev_err(&pdev->dev, "missing 'i2c-bus' property\n");
++		np = fwnode_find_reference(fwnode, "i2c-bus", 0);
++		if (!np) {
++			dev_err(&pdev->dev, "Cannot parse i2c-bus\n");
+ 			return -ENODEV;
+ 		}
+-
+-		acpi_handle = ACPI_HANDLE_FWNODE(args.fwnode);
+-		i2c = i2c_acpi_find_adapter_by_handle(acpi_handle);
+-	} else {
+-		return -EINVAL;
++		i2c = fwnode_find_i2c_adapter_by_node(np);
 +		fwnode_handle_put(np);
- 		kfree(priv);
  	}
- }
+ 
+ 	if (!i2c)
 -- 
 2.34.1
 
