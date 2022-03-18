@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2AF4DDD93
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:04:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E68B4DDD95
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:04:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236146AbiCRQFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 12:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59994 "EHLO
+        id S234055AbiCRQFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 12:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238387AbiCRQFG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:05:06 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB72E43A6;
-        Fri, 18 Mar 2022 09:03:22 -0700 (PDT)
+        with ESMTP id S238427AbiCRQFP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:05:15 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F1AEDB2;
+        Fri, 18 Mar 2022 09:03:24 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id CEBE14001F;
-        Fri, 18 Mar 2022 16:03:19 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 943B140026;
+        Fri, 18 Mar 2022 16:03:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647619401;
+        t=1647619403;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=wD9g/HyfpaihMjtAUh4hRheF6myO2JbJgNrI9rB+wpM=;
-        b=L0Y/tZtk7DLghzqVAQiSQahZGme4qAf5hNmEzNo2cEBQR29IfIEonYV0hKqsyu0R+aXz0E
-        iq+GEPXNc7XmLfOlk2oF52AoDvnvtZOarWn2XoS4DEnAXiiAWoHgVoPYcTkOA8Kjq7ztFy
-        6OebfisSCUOZWzjwULVrymk8D69OtYm01Vybu89AJoZ+JDl+jL22pC+tpZmFDSaVSZqMky
-        evqQOuq7VortooI60sg0NIKxoZU6F7uOKQ5MBoF8maKm1vNh0IziBGYadL6QHNh3CsJuS5
-        1q6ZKslpIFzz+8xUksTyJ7wHPXhaOMVs2WiyVTXiem8tJonRRV+yttFSdCVtcA==
+        bh=K6nzaAfWaNMngOEuYPSa1o6WfkdK08VPd1q8M2c4niI=;
+        b=cb9gC1v4IXMS2p4ICVZAErsULyQb7troOYqCFSga9tTXSK8qVibNwVRRi77gWaWxKma7Ey
+        5OBxiogVP9cIbLMmnaF06fuCcPIdfl93fOwAM5bM5M7P0CU1ERWnWSE9YMpK+DpaDvJknz
+        Aqxs3OH/OYkxuM9oITd5KwvTVg0xs9jhPIwVayWpX63pM61/5tU/ANvzdHFdSObeQy+Pvt
+        ExGiwvsXEhdEl7CMAjhl8nnee15agMjdRC7zFgn5No7bJLZJy91asZnAyFI9u9QlMBHRPg
+        5wICs9o7OGgRNXotxIvOi72cqaElL60+qCkDMEX6ovFa/V506qR4SE28sJXm/A==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Daniel Scally <djrscally@gmail.com>,
@@ -50,9 +50,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH 0/6] introduce fwnode in the I2C subsystem
-Date:   Fri, 18 Mar 2022 17:00:53 +0100
-Message-Id: <20220318160059.328208-8-clement.leger@bootlin.com>
+Subject: [PATCH 1/6] property: add fwnode_property_read_string_index()
+Date:   Fri, 18 Mar 2022 17:00:54 +0100
+Message-Id: <20220318160059.328208-9-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220318160059.328208-1-clement.leger@bootlin.com>
 References: <20220318160059.328208-1-clement.leger@bootlin.com>
@@ -60,48 +60,98 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to allow the I2C subsystem to be usable with fwnode, add
-some functions to retrieve an i2c_adapter from a fwnode and use
-these functions in both i2c mux and sfp. ACPI and device-tree are
-handled to allow these modifications to work with both descriptions.
+Add fwnode_property_read_string_index() function which allows to
+retrieve a string from an array by its index. This function is the
+equivalent of of_property_read_string_index() but for fwnode support.
 
-This series is a subset of the one that was first submitted as a larger
-series to add swnode support [1]. In this one, it will be focused on
-fwnode support only since it seems to have reach a consensus that
-adding fwnode to subsystems makes sense.
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+---
+ drivers/base/property.c  | 48 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/property.h |  3 +++
+ 2 files changed, 51 insertions(+)
 
-[1] https://lore.kernel.org/netdev/YhPSkz8+BIcdb72R@smile.fi.intel.com/T/
-
-Clément Léger (6):
-  property: add fwnode_property_read_string_index()
-  i2c: fwnode: add fwnode_find_i2c_adapter_by_node()
-  i2c: of: use fwnode_get_i2c_adapter_by_node()
-  i2c: mux: pinctrl: remove CONFIG_OF dependency and use fwnode API
-  i2c: mux: add support for fwnode
-  net: sfp: add support for fwnode
-
- drivers/base/property.c             | 48 +++++++++++++++++++++++++++++
- drivers/i2c/Makefile                |  1 +
- drivers/i2c/i2c-core-fwnode.c       | 41 ++++++++++++++++++++++++
- drivers/i2c/i2c-core-of.c           | 30 ------------------
- drivers/i2c/i2c-mux.c               | 39 +++++++++++------------
- drivers/i2c/muxes/Kconfig           |  1 -
- drivers/i2c/muxes/i2c-mux-pinctrl.c | 21 +++++++------
- drivers/net/phy/sfp.c               | 46 +++++++++------------------
- include/linux/i2c.h                 |  7 ++++-
- include/linux/property.h            |  3 ++
- 10 files changed, 142 insertions(+), 95 deletions(-)
- create mode 100644 drivers/i2c/i2c-core-fwnode.c
-
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index e6497f6877ee..67c33c11f00c 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -451,6 +451,54 @@ int fwnode_property_match_string(const struct fwnode_handle *fwnode,
+ }
+ EXPORT_SYMBOL_GPL(fwnode_property_match_string);
+ 
++/**
++ * fwnode_property_read_string_index - read a string in an array using an index
++ * @fwnode: Firmware node to get the property of
++ * @propname: Name of the property holding the array
++ * @index: Index of the string to look for
++ * @string: Pointer to the string if found
++ *
++ * Find a string by a given index in a string array and if it is found return
++ * the string value in @string.
++ *
++ * Return: %0 if the property was found (success),
++ *	   %-EINVAL if given arguments are not valid,
++ *	   %-ENODATA if the property does not have a value,
++ *	   %-EPROTO if the property is not an array of strings,
++ *	   %-ENXIO if no suitable firmware interface is present.
++ */
++int fwnode_property_read_string_index(const struct fwnode_handle *fwnode,
++				      const char *propname, int index,
++				      const char **string)
++{
++	const char **values;
++	int nval, ret;
++
++	nval = fwnode_property_read_string_array(fwnode, propname, NULL, 0);
++	if (nval < 0)
++		return nval;
++
++	if (index >= nval)
++		return -EINVAL;
++
++	if (nval == 0)
++		return -ENODATA;
++
++	values = kcalloc(nval, sizeof(*values), GFP_KERNEL);
++	if (!values)
++		return -ENOMEM;
++
++	ret = fwnode_property_read_string_array(fwnode, propname, values, nval);
++	if (ret < 0)
++		goto out;
++
++	*string = values[index];
++out:
++	kfree(values);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(fwnode_property_read_string_index);
++
+ /**
+  * fwnode_property_get_reference_args() - Find a reference with arguments
+  * @fwnode:	Firmware node where to look for the reference
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 7399a0b45f98..a033920eb10a 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -70,6 +70,9 @@ int fwnode_property_read_string_array(const struct fwnode_handle *fwnode,
+ 				      size_t nval);
+ int fwnode_property_read_string(const struct fwnode_handle *fwnode,
+ 				const char *propname, const char **val);
++int fwnode_property_read_string_index(const struct fwnode_handle *fwnode,
++				      const char *propname, int index,
++				      const char **string);
+ int fwnode_property_match_string(const struct fwnode_handle *fwnode,
+ 				 const char *propname, const char *string);
+ int fwnode_property_get_reference_args(const struct fwnode_handle *fwnode,
 -- 
 2.34.1
 
