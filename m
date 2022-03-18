@@ -2,184 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86EBA4DE464
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 00:02:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A6F4DE478
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 00:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241438AbiCRXDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 19:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
+        id S241491AbiCRXZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 19:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234425AbiCRXDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 19:03:52 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE16B2F24E8
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 16:02:32 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id d10so19649001eje.10
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 16:02:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=68UcBWCxr9f6UE6zB0F3Jacphuan0SZVsJqVb6T4PBw=;
-        b=Ui21BtDmeIFQ/1Tnu/4TDUmVBeDveLrFvn2jYuv5hPbcSsvXMGJEx1g34El4PQp/2d
-         2QrfYjDu7Ip/fqjuQLuY3+PA6OzCDkPIrYwXa8td06VKz2AHvAIGT0ZanAyEB21Y6J6u
-         fv+/pgmmOoLphOiy75cw/+xnUsBCKjpOeMx/e3AGV9Rf8b7JVpl2apLK/RzhSUaGukG0
-         Au25oWbaCpYZc8nQV02CGqUvRJIdl82z/U0iDLSxAonpJl0Fy3VJUOvkDU2vPLQMMw8T
-         wRvijoCD/c7dgR/WEt1Nw8PFFjsUh8tXEUvPbDjpVEarJCps7zKTvef33of4UYN21mL+
-         J9lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=68UcBWCxr9f6UE6zB0F3Jacphuan0SZVsJqVb6T4PBw=;
-        b=8H2FxSaywPsxddc5/ec683HYlpyDnkJEyGblkSVHjtgi42c4Oj0LdZBNDNHkfIHFlB
-         5YoYGLOvlpdL+yt/l20k6uvTJklANXJ/gjAmFvDSCj1gHIzUUjVSnTs+o21+/1U6EbF/
-         ZwbYJsE9exZPPHVDpKdX78EK0D69DrSOqgX6RQFUfKfSaxTmjt3tjsXJebkoUFpMfRGB
-         mOtd6zvNyvo8OxFqDAVZ0LAqu9pESR/awbFRpnKEOwKCMd1XOsGprdbm/m3mTjIgpkZp
-         m7wm1idyECiZx3lxkZW9HhtPorLQMdxLnTf51YAKHMbbN6PkBlLnenbIwhj8yVGqhPLR
-         grLA==
-X-Gm-Message-State: AOAM530GsphqBFiMJDVtZH8bvS7kOqEfbh4eyfReRPz+nQ2Vj+KQHwAh
-        njDB/A4FwKOR2HTCXJeaoVvnrIW/OWk=
-X-Google-Smtp-Source: ABdhPJx8WYgDi71jDRrt6JXeH+hxAjytDvXr5n313t74iHHxftCbwYApIf4E6OnCvRuOe4KFI2SSqA==
-X-Received: by 2002:a17:907:1b27:b0:6d9:ceb6:7967 with SMTP id mp39-20020a1709071b2700b006d9ceb67967mr11438544ejc.186.1647644551051;
-        Fri, 18 Mar 2022 16:02:31 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id y27-20020a170906519b00b006dfaf4466ebsm1747444ejk.116.2022.03.18.16.02.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 16:02:30 -0700 (PDT)
-Date:   Sat, 19 Mar 2022 01:02:29 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: Re: mv88e6xxx broken on 6176 with "Disentangle STU from VTU"
-Message-ID: <20220318230229.urddx3t7x4hk356t@skbuf>
-References: <20220318182817.5ade8ecd@dellmb>
- <87a6dnjce6.fsf@waldekranz.com>
- <20220318201825.azuoawgdl7guafrp@skbuf>
- <874k3vj708.fsf@waldekranz.com>
+        with ESMTP id S238224AbiCRXZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 19:25:15 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26807CB02;
+        Fri, 18 Mar 2022 16:23:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647645835; x=1679181835;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fw5CouShSdBsa1NlwiPhlJnkwyVroPMYx6gZHCqRoXI=;
+  b=LUvLdZiFu7dMq7u5NoweMbG95MC0BC6pDhG1FLVul5Dgrz2MIGnynOcr
+   i3QOB68vgwK37nH00hnpmUzm9sjttn1nIrb3SHWZWEXQCLOfB+Cn2dgCS
+   iKyLVSqDljkNrtxebN6O0UVcI5tAnL7RiqraG/+ItFgeiMJh95vZtNwsC
+   y23VrwrH7uR1b0bg1My5wk64aTiLvZG3PIkTe/2KU6Jhmmq9PueS82jpk
+   EddnkujWnvgOpyhgVv8A5vlfC2FMrjyQ3krTZ/ugVQ8kWEaSIlofjxpmb
+   0JMJa2KdbRjxfsc+VWCjqUXLXQMqEBsaVu9rkpn6eJVs1WEsWeAuhSa66
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="237188681"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="237188681"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 16:23:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="581952226"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 18 Mar 2022 16:23:52 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nVLwl-000FHT-IT; Fri, 18 Mar 2022 23:23:51 +0000
+Date:   Sat, 19 Mar 2022 07:23:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Edmond Gagnon <egagnon@squareup.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     kbuild-all@lists.01.org, Edmond Gagnon <egagnon@squareup.com>,
+        Benjamin Li <benl@squareup.com>,
+        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] wcn36xx: Implement tx_rate reporting
+Message-ID: <202203190720.E8jZHrLo-lkp@intel.com>
+References: <20220318195804.4169686-3-egagnon@squareup.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <874k3vj708.fsf@waldekranz.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220318195804.4169686-3-egagnon@squareup.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 10:16:55PM +0100, Tobias Waldekranz wrote:
-> On Fri, Mar 18, 2022 at 22:18, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > Hello Tobias,
-> >
-> > On Fri, Mar 18, 2022 at 08:20:33PM +0100, Tobias Waldekranz wrote:
-> >> On Fri, Mar 18, 2022 at 18:28, Marek Behún <kabel@kernel.org> wrote:
-> >> > Hello Tobias,
-> >> >
-> >> > mv88e6xxx fails to probe in net-next on Turris Omnia, bisect leads to
-> >> > commit
-> >> >   49c98c1dc7d9 ("net: dsa: mv88e6xxx: Disentangle STU from VTU")
-> >> 
-> >> Oh wow, really sorry about that! I have it reproduced, and I understand
-> >> the issue.
-> >> 
-> >> > Trace:
-> >> >   mv88e6xxx_setup
-> >> >     mv88e6xxx_setup_port
-> >> >       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_STANDALONE) OK
-> >> >       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_BRIDGED) -EOPNOTSUPP
-> >> >
-> >> 
-> >> Thanks, that make it easy to find. There is a mismatch between what the
-> >> family-info struct says and what the chip-specific ops struct supports.
-> >> 
-> >> I'll try to send a fix ASAP.
-> >
-> > I've seen your patches, but I don't understand the problem they fix.
-> > For switches like 6190 indeed this is a problem. It has max_stu = 63 but
-> > mv88e6190_ops has no stu_getnext or stu_loadpurge. That I understand.
-> >
-> > But Marek reported the problem on 6176. There, max_sid is 0, so
-> > mv88e6xxx_has_stu() should already return false. Where is the
-> > -EOPNOTSUPP returned from?
-> 
-> Somewhat surprisingly, it is from mv88e6xxx_broadcast_setup.
+Hi Edmond,
 
-Sorry for the delay, I didn't notice the email because I was busy
-gathering my jaw from the floor after relistening some of Marc Martel's
-Queen covers.
+Thank you for the patch! Perhaps something to improve:
 
-This one looks a lot more plausible, let me see if I get it right below.
+[auto build test WARNING on wireless-next/main]
+[also build test WARNING on kvalo-ath/ath-next next-20220318]
+[cannot apply to wireless/main kvalo-wireless-drivers/master v5.17-rc8]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> Ok, I'll go out on a limb and say that _now_ I know what the problem
-> is. If I uncomment .max_sid and .stu_{loadpurge,getnext} from my 6352
-> (which, like the 6176, is also of the Agate-family) I can reproduce the
-> same issue.
-> 
-> It seems like this family does not like to load VTU entries who's SID
-> points to an invalid STU entry. Since .max_sid == 0, we never run
-> stu_setup, which takes care of loading a valid STU entry for SID 0;
-> therefore when we read back MV88E6XXX_VID_BRIDGED in
-> mv88e6xxx_port_db_load_purge it is reported as invalid.
-> 
-> This still doesn't explain why we're able to load
-> MV88E6XXX_VID_STANDALONE though...
+url:    https://github.com/0day-ci/linux/commits/Edmond-Gagnon/wcn36xx-Implement-tx_rate-reporting/20220319-040030
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
+config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220319/202203190720.E8jZHrLo-lkp@intel.com/config)
+compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/ec06272b313bdabd805efd65a0a6c2a74b82803f
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Edmond-Gagnon/wcn36xx-Implement-tx_rate-reporting/20220319-040030
+        git checkout ec06272b313bdabd805efd65a0a6c2a74b82803f
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/wireless/ath/wcn36xx/
 
-Why doesn't it explain it? MV88E6XXX_VID_STANDALONE is 0, we have this
-code so it falls in the branch that doesn't call mv88e6xxx_vtu_get():
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-	if (vid == 0) {
-		fid = MV88E6XXX_FID_BRIDGED;
-	} else {
-		err = mv88e6xxx_vtu_get(chip, vid, &vlan);
-		if (err)
-			return err;
+All warnings (new ones prefixed by >>):
 
-		/* switchdev expects -EOPNOTSUPP to honor software VLANs */
-		if (!vlan.valid)
-			return -EOPNOTSUPP;
+>> drivers/net/wireless/ath/wcn36xx/main.c:1604:6: warning: no previous prototype for 'wcn36xx_get_stats_work' [-Wmissing-prototypes]
+    1604 | void wcn36xx_get_stats_work(struct work_struct *work)
+         |      ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/wireless/ath/wcn36xx/main.c: In function 'wcn36xx_get_stats_work':
+>> drivers/net/wireless/ath/wcn36xx/main.c:1608:6: warning: variable 'stats_status' set but not used [-Wunused-but-set-variable]
+    1608 |  int stats_status;
+         |      ^~~~~~~~~~~~
 
-		fid = vlan.fid;
-	}
 
-> Vladimir, any advise on how to proceed here? I took a very conservative
-> approach to filling in the STU ops, only enabling it on HW that I could
-> test. I could study some datasheets and make an educated guess about the
-> full range of chips that we could enable this on, and which version of
-> the ops to use. Does that sound reasonable?
+vim +/wcn36xx_get_stats_work +1604 drivers/net/wireless/ath/wcn36xx/main.c
 
-Before, MV88E6XXX_G1_VTU_OP_STU_LOAD_PURGE was done from 2 places:
+  1603	
+> 1604	void wcn36xx_get_stats_work(struct work_struct *work)
+  1605	{
+  1606		struct delayed_work *delayed_work = container_of(work, struct delayed_work, work);
+  1607		struct wcn36xx *wcn = container_of(delayed_work, struct wcn36xx, get_stats_work);
+> 1608		int stats_status;
+  1609	
+  1610		stats_status = wcn36xx_smd_get_stats(wcn, HAL_GLOBAL_CLASS_A_STATS_INFO);
+  1611	
+  1612		schedule_delayed_work(&wcn->get_stats_work, msecs_to_jiffies(WCN36XX_HAL_STATS_INTERVAL));
+  1613	}
+  1614	
 
-mv88e6352_g1_vtu_loadpurge()
-mv88e6085_ops, mv88e6097_ops, mv88e6123_ops, mv88e6141_ops, mv88e6161_ops,
-mv88e6165_ops, mv88e6171_ops, mv88e6172_ops, mv88e6175_ops, mv88e6176_ops,
-mv88e6240_ops, mv88e6341_ops, mv88e6350_ops, mv88e6351_ops, mv88e6352_ops
-
-mv88e6390_g1_vtu_loadpurge()
-mv88e6190_ops, mv88e6190x_ops, mv88e6191_ops, mv88e6290_ops, mv88e6390_ops,
-mv88e6390x_ops, mv88e6393x_ops
-
-After the change, MV88E6XXX_G1_VTU_OP_STU_LOAD_PURGE is done only from the ops
-that have stu_loadpurge:
-
-mv88e6352_g1_stu_loadpurge()
-mv88e6097_ops, mv88e6352_ops
-
-mv88e6390_g1_stu_loadpurge()
-mv88e6390_ops, mv88e6390x_ops, mv88e6393x_ops
-
-So if I understand correctly, we have this regression for all families that are
-in the first group but not in the second group. I.e. a lot of families.
-
-There's nothing wrong with being conservative, as long as you're a
-correct conservative. In this case, I believe that the switch families
-where you couldn't test MSTP should at least have a max_sid of 1, to
-allow SID 0 to be loaded. So you don't have to claim untested MSTP
-support. But then you may need to refine the guarding that allows for
-MSTP support, to check for > 1 instead of > 0.
+---
+0-DAY CI Kernel Test Service
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
