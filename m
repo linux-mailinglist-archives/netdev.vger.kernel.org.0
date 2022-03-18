@@ -2,77 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F2A4DD5AA
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 08:58:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 299324DD5E0
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 09:12:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233395AbiCRH7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 03:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49568 "EHLO
+        id S233521AbiCRIOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 04:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231319AbiCRH7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 03:59:33 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2D4174B82
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 00:58:14 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id bn33so10300704ljb.6
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 00:58:14 -0700 (PDT)
+        with ESMTP id S232272AbiCRIOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 04:14:04 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2127.outbound.protection.outlook.com [40.107.223.127])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C931E261DD8
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 01:12:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dCh/79p/DV/vjn48jAI2XAEZo77hhJBhfVjq+3K2PTpZj9ErPQ50nB38gUz+2eqqb6LbVDVHuowkgCLD4VQfDe0s2Wnn6Q02WHyX91lT6BqDhWJrIZ4Dhtcoe9u8QTa+YUcAg+zZCtpgclOKg78mjEY2BTXilZln9X20rghtywG+/GmMQyo6DFF94i5N8lBqOgYMhMwUyQJ7R5oZr28ezmj5P2/86jNJNZJ75rFdarXY1ZO3G3spA7gr5QJ0hU6nlj4U2Cwho5Vwil5DxYaF20/lGTjjDdHePnIkRVL8KGsLTQX0qx3OYMfqbWPQitZT9LxNZctD5dKBWkaiVNfchA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wzegdf8oK/Hlfhsn2YXghcSLRsyJFvWFDkC2UovI0CE=;
+ b=cCS29y2kWZdr19aDFyVVjyUraFa5Z4YMSH27nUWxjTPWdJJqukxKlWrAwYy4rxcL8c9nXXpv4THstH76wBtZpXxiNNjd4Ds13nS4yFs9OqmTX2ZKqdhSXuxcoURMadSDCIJXyPZUGv7v+IC1NzSdK21o/sR5K9cYjCwAmmFVHw9VSaOj+9Gxr8bRG5NDDorLRaiPL+lle4Ho4ivqMgT2ZxzOCe7GK4Shp11tjtg8zGY9P0Neo+TqV5PXTKvXXOcA9baV+5zfHYk//3x44mEh4io4mP7QMw/EIN6k8zuST9FGFZ08V0G4TqGbDgHV0RK70Va29b7MjiGtNWDx/fw0cw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=ff18nPqwD55LvDSkw2fNPrc8o/rSIvAVZw7h1TN+HHU=;
-        b=gyBgBz7h0WHK1YfY4pMNH4ty9H8IBO4WLbMXOov4No887x+rVw/viHGhX84e35Lw3D
-         Op0GPQGtjE+51/kOtje45o1tKY0c5Ue4YL2evkp3gBVoPA+vPHGOtCKWxWVVkg0aRuUO
-         4ENiYYSLo1wLseOdfIU46z4AX0FNXIRz5PHPihjhZFxLTWCzoQXTxCc+4hpPZx2/QZCt
-         qyTpriIS4eSUDd6Vzgcgd2qO7wd0Fx0cmV4WEk4I/6tCRFkhn1BM17s78HyV5QIEhFm0
-         Aa99Ir+aJMssCIe1QoQqomshNaKyesiBEI3WlevrbwOvqRhDB3HdzIFRjcjrMO33k90+
-         0rtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=ff18nPqwD55LvDSkw2fNPrc8o/rSIvAVZw7h1TN+HHU=;
-        b=7gDKP6hQTjvXSWYU8lPv5DzMX2uT1Qfi8VdIEB4OWwAy3mAyAQ/dTctScPeD1f/ofe
-         xQzmPRtaLsnslzgbLtGjBWlrgC6+BOcqDpNC+uwXgVR5x3YD1OCn+iPrVcvA2KF+tFmM
-         zxdIMQCPdxfNJFar8pUzUKIuTHqRtu986ht97MRLe+/6g/Gux1kwKW+fj0KPNuAomakt
-         BcPwn32AdUxwbEN83KYYEV05MRW4n2cHkAuNVUVU01PCd+qeEVNITojxsPPDugwJkzpv
-         QqOv3xm6ppVhXOWSpEo6EkA0Wp8Icx0RS1O3qoVewjIIMLX28Z9lFr/qMJTrasx7wgaU
-         cJVQ==
-X-Gm-Message-State: AOAM531E/yNtkJ+a+wE9cle1i8Ulw1YKER+7JG4KYY6HF4s89VtwD4ba
-        T3IrisIMOF+6rN+pVy9YJMLbmQ==
-X-Google-Smtp-Source: ABdhPJy/FXDe4vwDk88UN/SV3UP4Q/Sumnn2L8xkoh0KlXF0tfeqx93VoHTSGqrXj+LTuLcMTze8jg==
-X-Received: by 2002:a2e:9dcf:0:b0:247:f8eb:90d5 with SMTP id x15-20020a2e9dcf000000b00247f8eb90d5mr5293970ljj.23.1647590292795;
-        Fri, 18 Mar 2022 00:58:12 -0700 (PDT)
-Received: from wkz-x280 (a124.broadband3.quicknet.se. [46.17.184.124])
-        by smtp.gmail.com with ESMTPSA id p13-20020a2e804d000000b0024802bf2abasm810467ljg.116.2022.03.18.00.58.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 00:58:12 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Mattias Forsblad <mattias.forsblad+netdev@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next 0/3] bridge: dsa: switchdev: mv88e6xxx:
- Implement local_receive bridge flag
-In-Reply-To: <20220317140525.e2iqiy2hs3du763l@skbuf>
-References: <20220301123104.226731-1-mattias.forsblad+netdev@gmail.com>
- <2d38e998-396f-db39-7ccf-2a991d4e02cb@gmail.com>
- <87ilsxo052.fsf@waldekranz.com> <20220317140525.e2iqiy2hs3du763l@skbuf>
-Date:   Fri, 18 Mar 2022 08:58:11 +0100
-Message-ID: <87k0crk7zg.fsf@waldekranz.com>
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wzegdf8oK/Hlfhsn2YXghcSLRsyJFvWFDkC2UovI0CE=;
+ b=GYPGaVNwPRHKSP7bLVOINKS6ARUd+zIRH/6L4pgjOXOmZmKgocyRauZRhjC1OmAYJSb4nR7iulaILjf20CINXiUmlFHRdwld62sdKCmHoQ1R/6xS3JIOSIk5EVXdQ9Y41GBMHtapr/FI3w2N+koCDFxtwa6oEUqOWCPnfRMI41U=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MN2PR13MB3310.namprd13.prod.outlook.com (2603:10b6:208:159::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.7; Fri, 18 Mar
+ 2022 08:12:43 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::d27:c7d9:8880:a73e]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::d27:c7d9:8880:a73e%2]) with mapi id 15.20.5081.015; Fri, 18 Mar 2022
+ 08:12:43 +0000
+Date:   Fri, 18 Mar 2022 09:12:37 +0100
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
+        leonro@nvidia.com, saeedm@nvidia.com, idosch@idosch.org,
+        michael.chan@broadcom.com
+Subject: Re: [PATCH net-next 0/5] devlink: hold the instance lock in eswitch
+ callbacks
+Message-ID: <YjQ+9XuTGwf1EVT1@corigine.com>
+References: <20220317042023.1470039-1-kuba@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220317042023.1470039-1-kuba@kernel.org>
+X-ClientProxiedBy: AM0PR10CA0034.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::14) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3444dc54-4fb6-46eb-028a-08da08b713d0
+X-MS-TrafficTypeDiagnostic: MN2PR13MB3310:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR13MB33103578D0A6210A6782738DE8139@MN2PR13MB3310.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7aoNU4BM3OAjSzF+LuSJCcGD6pwSja6OBoROwjPboKPL0hh2TpbDdSnJUFlIKcroAAlIELIFre41yxjhpDB/24rWobTs4DtUyl7Z/1UgUYl2+s8ARxMF+9es69tBtMT+pChRn46Nh5pxnOjmYmDPuOrpApPC/h/2aOIi6k9muSPUCHL8xjX4PjUzLFDGtZi8Pq5KWmRHKS0Pyqkuk0BbPW8J8kIazS96nozFsDpUk9u2vGMyDAidBgbsXseyD0A6Ta8u1y48hOmMkaGaE/ZV5ZUp/sv80NDvgEf4JSJSP0ejcvKPcY14FrpS1EP8lXWQFlGcHLqbKkGBZLVQXwyCnNeIqKa4VTodf9nHVWFB0+dmz8CtscmYIvsERsosMOt30nqTP6qSEXtH2Zc4dWZnBOwdZHwIGWrJ1kDWllRXpmTijrrBoDMiwiUWET25fr6MeTpJYuqOBk9+9nhXP8VCUkT7esP/qVshQ1s+n5vIMBZqF/TQjpHiO/X6usKNwako2ssb8dVooByE23uTT9VrJLXmox3kFIC09PMs3T/xzbWTwoJ/DeO/eg4EMw/6bermroq8njir3dUCvlt7xZvNCzHBv1ETXx/PRCM2Wm6M5XpNzZ3S6L+NWwBIBcfKdIP83X91Nmm/cm9Kok9472AQARoKcaJAfnpOFvhHkqaaG1W6ApYGpnSc7yQJfwOcXThNsacW4XfhU4ise9TWLl6iNQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(136003)(366004)(396003)(39830400003)(346002)(376002)(8936002)(44832011)(5660300002)(6506007)(186003)(52116002)(6512007)(316002)(83380400001)(6666004)(36756003)(66476007)(66556008)(8676002)(2906002)(66946007)(4326008)(86362001)(2616005)(6916009)(508600001)(6486002)(38100700002)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cLX2T74zhCFhwsHXBlPHBsGSn0bizR0Z97mc7sK5Ji6A6wwBBFzyS7UWprth?=
+ =?us-ascii?Q?uY6a3QEhsZf/ITczfqwEZSJ8gSCW4jbw35RyFoVH6zCktF8vdEUwRh0r8ioG?=
+ =?us-ascii?Q?wRhMsGqz4w7SZ1D6v9JRrfI0LwMExwPgpJk5X8KKyRWs1ANNO+1E30aT4HFq?=
+ =?us-ascii?Q?JHYl62Gdu1TtPdAgnUMwdPljugiJQnIkIeJ9VsAGiqN4ruKEQPZXDcZKrJWR?=
+ =?us-ascii?Q?rBlZ9V7+C586q8+kTY9y5BWmPta1AuuZ8weDwfCB2lYUiKdnqLFdN8dL8GD7?=
+ =?us-ascii?Q?ezN/GFdUNnkdylnyRjr1BpfdDmFwf4U4UKq/VIweIOGaXWVNnD6viDAfWG3V?=
+ =?us-ascii?Q?pvtvfxeRvMg8eHGITWBza8mJUTZzZlizsYq6s6lYMKxhnv94VVaKOYLcuDfI?=
+ =?us-ascii?Q?wo3RlaAzjfrIcJ4ZwQH0im5SgjgHM+0lo0PR7c3jbXjfrHa1hc7pY4coIj7a?=
+ =?us-ascii?Q?daP33ZwYWdJQFl89PCZiMXcxDc5+rbj8+Ef50HtZTOYwwiHikYIms6H5ODZx?=
+ =?us-ascii?Q?BHP0InZQc1cOtVQG0gYq2lOI8D5764XNyJgDU5b7U4cC/zG0mLA+jQUHDVCe?=
+ =?us-ascii?Q?kGSPUet1xkYAJ4vzrHC0icTiBBu/dQESYE8pxi+hHUMk0kV495YijlUDZcwD?=
+ =?us-ascii?Q?Una6gHihCmLAmIgD56SNllxu29xcacWPPgeKHx6akE8+e82ajQu4MoJ4XkuN?=
+ =?us-ascii?Q?1sLngJ9Bh1Eko9jOnXKjEVJ9JbU3Ak6luQ/PqhfCwS4JODUYzZS8U253CU4S?=
+ =?us-ascii?Q?fHFNBCDQyM3dc1LPNqu4cwrNHlrv+JhZYs3xWNNCK72la1/E5zPZv0oWFa7C?=
+ =?us-ascii?Q?DBcXLqKHIqnJQMN9NDsSBOUKmAkmUEhcSTSnErE8qpmMBJRLFMwe/cqF1p7F?=
+ =?us-ascii?Q?2Uy/oXHhnOaqVylBIIYMs2ttOtBD4m5JnMEfJ7SZ77DFVktEaaIVdloInH6j?=
+ =?us-ascii?Q?dB8FUkCmauiYm3IvtGqDbZ/pnSLYAVxFlAH6SCffnasdl0e895t0nbOCwwNR?=
+ =?us-ascii?Q?RGceViD7ScVCFVK6joJ37yJOA8OsYthG1fizHq8fbjEdH/m//uHOJ84RPHtg?=
+ =?us-ascii?Q?efgBcjl7JB3eb+DAUAM4K92bzScnoH+1YuRMC+fBMz8lg+P86nk/x2QvvFRP?=
+ =?us-ascii?Q?oj7j9wkugH3LpoHI2IGq+cI0JvaRpoY5W+bWV3CnyNIoaQyfBY9KU505bsJM?=
+ =?us-ascii?Q?iQmPlGcSTwyr3wViQMOVUsPpDaGNA48fszTBZ+24907yvaMsQxziuTlaegnr?=
+ =?us-ascii?Q?yL5Qiz96dVlaRgZ0P0v5vjPsBiv9ZoI5VDvnKQWk5RxPgjodzq2i73TuTi4Z?=
+ =?us-ascii?Q?G1S/bbbrC/0mtnALBpvSXTF6HyTMMcUQObbRZX1h8AZQCpOEJkMwcpSrgbRd?=
+ =?us-ascii?Q?bY9+/xomHQwLiBmK1RsmJ634ZidVKvSXjw9LGGzoW1DRZjCwUE4+Yqx4BMuY?=
+ =?us-ascii?Q?kv2iTsg+CMHlT5WFLxPbja1vmz75VKl7xbwrg43xj+DOrNFKqDO8I4pJJdEn?=
+ =?us-ascii?Q?crrroON7IJY2D8Rg/hPWvGC9RfmhFh+Sc48yGCVutQVOhoRfoSU6gpfWwQ?=
+ =?us-ascii?Q?=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3444dc54-4fb6-46eb-028a-08da08b713d0
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 08:12:43.2032
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0AB1OV27dBpKUVaxd9mT5gxYj2J1giwhT8ZprH/NiuaBCLK8PYY9eIIe3bUZ43/vSNI4qxLuh5B+F9YQzJ0UnQBYQxE/WMcno3wiqpqi6Gw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3310
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,130 +114,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 16:05, Vladimir Oltean <olteanv@gmail.com> wrote:
-> Hello Tobias,
->
-> On Tue, Mar 01, 2022 at 10:04:09PM +0100, Tobias Waldekranz wrote:
->> On Tue, Mar 01, 2022 at 09:14, Florian Fainelli <f.fainelli@gmail.com> wrote:
->> > On 3/1/2022 4:31 AM, Mattias Forsblad wrote:
->> >> Greetings,
->> >> 
->> >> This series implements a new bridge flag 'local_receive' and HW
->> >> offloading for Marvell mv88e6xxx.
->> >> 
->> >> When using a non-VLAN filtering bridge we want to be able to limit
->> >> traffic to the CPU port to lessen the CPU load. This is specially
->> >> important when we have disabled learning on user ports.
->> >> 
->> >> A sample configuration could be something like this:
->> >> 
->> >>         br0
->> >>        /   \
->> >>     swp0   swp1
->> >> 
->> >> ip link add dev br0 type bridge stp_state 0 vlan_filtering 0
->> >> ip link set swp0 master br0
->> >> ip link set swp1 master br0
->> >> ip link set swp0 type bridge_slave learning off
->> >> ip link set swp1 type bridge_slave learning off
->> >> ip link set swp0 up
->> >> ip link set swp1 up
->> >> ip link set br0 type bridge local_receive 0
->> >> ip link set br0 up
->> >> 
->> >> The first part of the series implements the flag for the SW bridge
->> >> and the second part the DSA infrastructure. The last part implements
->> >> offloading of this flag to HW for mv88e6xxx, which uses the
->> >> port vlan table to restrict the ingress from user ports
->> >> to the CPU port when this flag is cleared.
->> >
->> > Why not use a bridge with VLAN filtering enabled? I cannot quite find it 
->> > right now, but Vladimir recently picked up what I had attempted before 
->> > which was to allow removing the CPU port (via the bridge master device) 
->> > from a specific group of VLANs to achieve that isolation.
->> >
->> 
->> Hi Florian,
->> 
->> Yes we are aware of this work, which is awesome by the way! For anyone
->> else who is interested, I believe you are referring to this series:
->> 
->> https://lore.kernel.org/netdev/20220215170218.2032432-1-vladimir.oltean@nxp.com/
->> 
->> There are cases though, where you want a TPMR-like setup (or "dumb hub"
->> mode, if you will) and ignore all tag information.
->> 
->> One application could be to use a pair of ports on a switch as an
->> ethernet extender/repeater for topologies that span large physical
->> distances. If this repeater is part of a redundant topology, you'd to
->> well to disable learning, in order to avoid dropping packets when the
->> surrounding active topology changes. This, in turn, will mean that all
->> flows will be classified as unknown unicast. For that reason it is very
->> important that the CPU be shielded.
->
-> So have you seriously considered making the bridge ports that operate in
-> 'dumb hub' mode have a pvid which isn't installed as a 'self' entry on
-> the bridge device?
+On Wed, Mar 16, 2022 at 09:20:18PM -0700, Jakub Kicinski wrote:
+> Series number 2 in the effort to hold the devlink instance lock
+> in call driver callbacks. We have the following drivers using
+> this API:
+> 
+>  - bnxt, nfp, netdevsim - their own locking is removed / simplified
+>    by this series; all of them needed a lock to protect from changes
+>    to the number of VFs while switching modes, now the VF config bus
+>    callback takes the devlink instance lock via devl_lock();
+>  - ice - appears not to allow changing modes while SR-IOV enabled,
+>    so nothing to do there;
+>  - liquidio - does not contain any locking;
+>  - octeontx2/af - is very special but at least doesn't have locking
+>    so doesn't get in the way either;
+>  - mlx5 has a wealth of locks - I chickened out and dropped the lock
+>    in the callbacks so that I can leave the driver be, for now.
+> 
+> The last one is obviously not ideal, but I would prefer to transition
+> the API already as it make take longer.
+> 
+> LMK if it's an abuse of power / I'm not thinking straight.
 
-Just so there's no confusion, you mean something like...
+Thanks Jakub,
 
-    ip link add dev br0 type bridge vlan_filtering 1 vlan_default_pvid 0
-
-    for p in swp0 swp1; do
-        ip link set dev $p master br0
-        bridge vlan add dev $p vid 1 pvid untagged
-    done
-
-... right?
-
-In that case, the repeater is no longer transparent with respect to
-tagged packets, which the application requires.
-
->> You might be tempted to solve this using flooding filters of the
->> switch's CPU port, but these go out the window if you have another
->> bridge configured, that requires that flooding of unknown traffic is
->> enabled.
->
-> Not if CPU flooding can be managed on a per-user-port basis.
-
-True, but we aren't lucky enough to have hardware that can do that :)
-
->> Another application is to create a similar setup, but with three ports,
->> and have the third one be used as a TAP.
->
-> Could you expand more on this use case?
-
-Its just the standard use-case for a TAP really. You have some link of
-interest that you want to snoop, but for some reason there is no way of
-getting a PCAP from the station on either side:
-
-   Link of interest
-          |
-.-------. v .-------.
-| Alice +---+  Bob  |
-'-------'   '-------'
-
-So you insert a hub in the middle, and listen on a third port:
-
-.-------.   .-----.   .-------.
-| Alice +---+ TAP +---+  Bob  |
-'-------'   '--+--'   '-------'
-               |
- PC running tcpdump/wireshark
-
-The nice thing about being able to set this up in Linux is that if your
-hardware comes with a mix of media types, you can dynamically create the
-TAP for the job at hand. E.g. if Alice and Bob are communicating over a
-fiber, but your PC only has a copper interface, you can bridge to fiber
-ports with one copper; if you need to monitor a copper link 5min later,
-you just swap out the fiber ports for two copper ports.
-
->> >> Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
->> >
->> > I don't believe this tag has much value since it was presumably carried 
->> > over from an internal review. Might be worth adding it publicly now, though.
->> 
->> I think Mattias meant to replicate this tag on each individual
->> patch. Aside from that though, are you saying that a tag is never valid
->> unless there is a public message on the list from the signee? Makes
->> sense I suppose. Anyway, I will send separate tags for this series.
+we have reviewed this from an NFP driver perspective and are happy
+with this change - it looks quite straightforward from that perspective.
