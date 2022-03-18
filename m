@@ -2,54 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 350DE4DD82A
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 11:39:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8404F4DD7E4
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 11:24:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235173AbiCRKjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 06:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
+        id S234957AbiCRK0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 06:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235094AbiCRKjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 06:39:06 -0400
-Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C082D9D62;
-        Fri, 18 Mar 2022 03:37:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=inria.fr; s=dc;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nFaergNcBPUJhO8DBhWFLEOX7hoSf2bn68A0m5x3R8s=;
-  b=JBHk4PExvNffj6VKnNBv2MivlRozRfYGkxUut8VYfpQGg/Hr82Epw2sE
-   nspUSq7YpyCUbzrB6VZkR54EGCURv6X0DcU6CKri8Ksh29jnB1wsnditG
-   DZY7WcAh3qKEuaSYoORS4kGd+TuJVaPQm+IJx4xkVodRFjlQPzoHyO0pG
-   A=;
-Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
-X-IronPort-AV: E=Sophos;i="5.90,192,1643670000"; 
-   d="scan'208";a="8935641"
-Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:37:36 +0100
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Shubham Bansal <illusionist.neo@gmail.com>
-Cc:     kernel-janitors@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: net: bpf: fix typos in comments
-Date:   Fri, 18 Mar 2022 11:37:04 +0100
-Message-Id: <20220318103729.157574-9-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S232767AbiCRKZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 06:25:59 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2ED521A8AE;
+        Fri, 18 Mar 2022 03:24:39 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KKg7w1JLnzfYqx;
+        Fri, 18 Mar 2022 18:23:08 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Mar 2022 18:24:37 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <ast@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <daniel@iogearbox.net>, <jakub@cloudflare.com>,
+        <lmb@cloudflare.com>, <davem@davemloft.net>, <kafai@fb.com>,
+        <dsahern@kernel.org>, <kuba@kernel.org>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Wang Yufen <wangyufen@huawei.com>
+Subject: [PATCH bpf-next] bpf, sockmap: Add sk_rmem_alloc check for tcp_bpf_ingress()
+Date:   Fri, 18 Mar 2022 18:42:22 +0800
+Message-ID: <20220318104222.1410625-1-wangyufen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,35 +49,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Various spelling mistakes in comments.
-Detected with the help of Coccinelle.
+We use sk_msg to redirect with sock hash, like this:
 
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+  skA   redirect    skB
+  Tx <----------->  Rx
 
+And construct a scenario where the packet sending speed is high, the
+packet receiving speed is slow, so the packets are stacked in the ingress
+queue on the receiving side. After a period of time, the memory is
+exhausted and the system ooms.
+
+To fix, we add sk_rmem_alloc while sk_msg queued in the ingress queue
+and subtract sk_rmem_alloc while sk_msg dequeued from the ingress queue
+and check sk_rmem_alloc at the beginning of bpf_tcp_ingress().
+
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
 ---
- arch/arm/net/bpf_jit_32.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/linux/skmsg.h | 9 ++++++---
+ net/core/skmsg.c      | 2 ++
+ net/ipv4/tcp_bpf.c    | 6 ++++++
+ 3 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-index 10ceebb7530b..9e457156ad4d 100644
---- a/arch/arm/net/bpf_jit_32.c
-+++ b/arch/arm/net/bpf_jit_32.c
-@@ -1864,7 +1864,7 @@ static int build_body(struct jit_ctx *ctx)
- 		if (ctx->target == NULL)
- 			ctx->offsets[i] = ctx->idx;
- 
--		/* If unsuccesfull, return with error code */
-+		/* If unsuccesful, return with error code */
- 		if (ret)
- 			return ret;
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index c5a2d6f50f25..d2cfd5fa2274 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -308,9 +308,10 @@ static inline void sk_psock_queue_msg(struct sk_psock *psock,
+ 				      struct sk_msg *msg)
+ {
+ 	spin_lock_bh(&psock->ingress_lock);
+-	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
++	if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+ 		list_add_tail(&msg->list, &psock->ingress_msg);
+-	else {
++		atomic_add(msg->sg.size, &psock->sk->sk_rmem_alloc);
++	} else {
+ 		sk_msg_free(psock->sk, msg);
+ 		kfree(msg);
  	}
-@@ -1973,7 +1973,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
- 	 * for jit, although it can decrease the size of the image.
- 	 *
- 	 * As each arm instruction is of length 32bit, we are translating
--	 * number of JITed intructions into the size required to store these
-+	 * number of JITed instructions into the size required to store these
- 	 * JITed code.
- 	 */
- 	image_size = sizeof(u32) * ctx.idx;
+@@ -323,8 +324,10 @@ static inline struct sk_msg *sk_psock_dequeue_msg(struct sk_psock *psock)
+ 
+ 	spin_lock_bh(&psock->ingress_lock);
+ 	msg = list_first_entry_or_null(&psock->ingress_msg, struct sk_msg, list);
+-	if (msg)
++	if (msg) {
+ 		list_del(&msg->list);
++		atomic_sub(msg->sg.size, &psock->sk->sk_rmem_alloc);
++	}
+ 	spin_unlock_bh(&psock->ingress_lock);
+ 	return msg;
+ }
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index cc381165ea08..b19a3c49564f 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -445,6 +445,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
+ 				if (!msg_rx->skb)
+ 					sk_mem_uncharge(sk, copy);
+ 				msg_rx->sg.size -= copy;
++				atomic_sub(copy, &sk->sk_rmem_alloc);
+ 
+ 				if (!sge->length) {
+ 					sk_msg_iter_var_next(i);
+@@ -754,6 +755,7 @@ static void __sk_psock_purge_ingress_msg(struct sk_psock *psock)
+ 
+ 	list_for_each_entry_safe(msg, tmp, &psock->ingress_msg, list) {
+ 		list_del(&msg->list);
++		atomic_sub(msg->sg.size, &psock->sk->sk_rmem_alloc);
+ 		sk_msg_free(psock->sk, msg);
+ 		kfree(msg);
+ 	}
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index 1cdcb4df0eb7..dd099875414c 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -24,6 +24,12 @@ static int bpf_tcp_ingress(struct sock *sk, struct sk_psock *psock,
+ 		return -ENOMEM;
+ 
+ 	lock_sock(sk);
++	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf) {
++		release_sock(sk);
++		kfree(tmp);
++		return -EAGAIN;
++	}
++
+ 	tmp->sg.start = msg->sg.start;
+ 	i = msg->sg.start;
+ 	do {
+-- 
+2.25.1
 
