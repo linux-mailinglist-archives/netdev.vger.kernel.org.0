@@ -2,192 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 932E54DDAA2
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 14:36:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C645C4DDAD1
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 14:47:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236423AbiCRNh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 09:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        id S236807AbiCRNsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 09:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236746AbiCRNhw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 09:37:52 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F9ABF039;
-        Fri, 18 Mar 2022 06:36:29 -0700 (PDT)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nVCmI-00006i-HE; Fri, 18 Mar 2022 14:36:26 +0100
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nVCmI-000ITL-5H; Fri, 18 Mar 2022 14:36:26 +0100
-Subject: Re: [net-next v10 1/2] net: sched: use queue_mapping to pick tx queue
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org
-References: <20220314141508.39952-1-xiangxia.m.yue@gmail.com>
- <20220314141508.39952-2-xiangxia.m.yue@gmail.com>
- <015e903a-f4b4-a905-1cd2-11d10aefec8a@iogearbox.net>
- <CAMDZJNUO9k8xmrJwrXnj+LVG=bEv5Zwe=YkjOqSBrDS348OQfA@mail.gmail.com>
- <7d4b0c51460dec351bbbaf9be85c4a25cb6cec4f.camel@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f61e4a34-e7e5-198b-dde6-816654775b21@iogearbox.net>
-Date:   Fri, 18 Mar 2022 14:36:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S236798AbiCRNsi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 09:48:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91DB716F07E
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 06:47:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647611238;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=v1FVL+8C/kZhCYO8NyEQ4P/du1gXNOLyvZqS2HEkBKM=;
+        b=hN22oC0clazFxuISOUGigXazls2B12ewmjmbVxe9E8jPe3Ii8cFbqAX6fq9y7LO8udnw7w
+        L9o7b3qrbxmwW2Od+dnJiS/VdQI9zn2nJn2nnt00rHlaxkyhi5dV78RZckNcsySID9ybKV
+        CwvOMLbzGvs+kiAG830wNtScCQE5ml8=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-608-8G653H8NOZev9jn0KfKchA-1; Fri, 18 Mar 2022 09:47:17 -0400
+X-MC-Unique: 8G653H8NOZev9jn0KfKchA-1
+Received: by mail-ed1-f71.google.com with SMTP id b9-20020aa7d489000000b0041669cd2cbfso4917928edr.16
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 06:47:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=v1FVL+8C/kZhCYO8NyEQ4P/du1gXNOLyvZqS2HEkBKM=;
+        b=wmxRJNronUN+km6yVg7DkXb9WuKqk0BuwH5KxfKGrTV+83EDN/OslfDMjECZplswFp
+         w+HZPYU7y39RZnaTEBSb944vms6wHIcbVeahxmjUBW+B4aU7lYWAqf3JLX5r1fyHWt/K
+         BIoOy446VDoSCit1aqqL0Tb65bvJh0arO2smzbmuHhRjPY7yzLBoxw8hdpV4PHuoBlU1
+         j64SsmGWFZ0tSVeIqh/3WCLSL8Mcb2DeUTQW396AglXKqInPJOVbGViJtxxar3wJzn1g
+         NaTd4z7Oy/ol4Gzte9hb4LeWLpS3Y3P1JRRqPWl9iJrOhKTkEv0Ch3IvIcIz+elkTNYT
+         YfZg==
+X-Gm-Message-State: AOAM5308NhxGuATJ1ZKjlkfJPW81JwTNVEVYRqgnqsxi9RTF5vUKy/aP
+        AFMnDzmQKWcPsJtYgZ/NNJOOd0dMreqHN37IZWo/4a488PMnYtkHDhn068r/YCClNFOE3scjrAI
+        e1Mb6DLTVHnjwaZuI
+X-Received: by 2002:a17:907:6d0d:b0:6db:f0f8:654d with SMTP id sa13-20020a1709076d0d00b006dbf0f8654dmr9099199ejc.304.1647611236260;
+        Fri, 18 Mar 2022 06:47:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz6adKbLNo2uWsLyWrAdFMZNjbMv1XFOqgEurEvhon+0gu7sFnF+HMU4f57GFHtY4dn4a/uig==
+X-Received: by 2002:a17:907:6d0d:b0:6db:f0f8:654d with SMTP id sa13-20020a1709076d0d00b006dbf0f8654dmr9099186ejc.304.1647611235932;
+        Fri, 18 Mar 2022 06:47:15 -0700 (PDT)
+Received: from [10.39.192.245] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
+        by smtp.gmail.com with ESMTPSA id bx5-20020a0564020b4500b00418fca53406sm2210192edb.27.2022.03.18.06.47.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 18 Mar 2022 06:47:15 -0700 (PDT)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     Aaron Conole <aconole@redhat.com>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org, pshelar@ovn.org,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Dumitru Ceara <dceara@redhat.com>,
+        Numan Siddique <nusiddiq@redhat.com>
+Subject: Re: [PATCH net v2] openvswitch: always update flow key after nat
+Date:   Fri, 18 Mar 2022 14:47:14 +0100
+X-Mailer: MailMate (1.14r5878)
+Message-ID: <B01967A4-F2EB-40C4-AB6E-66A5DC9B842A@redhat.com>
+In-Reply-To: <20220318124319.3056455-1-aconole@redhat.com>
+References: <20220318124319.3056455-1-aconole@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <7d4b0c51460dec351bbbaf9be85c4a25cb6cec4f.camel@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26485/Fri Mar 18 09:26:47 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/17/22 9:20 AM, Paolo Abeni wrote:
-> On Tue, 2022-03-15 at 20:48 +0800, Tonghao Zhang wrote:
->> On Tue, Mar 15, 2022 at 5:59 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>> On 3/14/22 3:15 PM, xiangxia.m.yue@gmail.com wrote:
->>> [...]
->>>>    include/linux/netdevice.h |  3 +++
->>>>    include/linux/rtnetlink.h |  1 +
->>>>    net/core/dev.c            | 31 +++++++++++++++++++++++++++++--
->>>>    net/sched/act_skbedit.c   |  6 +++++-
->>>>    4 files changed, 38 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->>>> index 0d994710b335..f33fb2d6712a 100644
->>>> --- a/include/linux/netdevice.h
->>>> +++ b/include/linux/netdevice.h
->>>> @@ -3065,6 +3065,9 @@ struct softnet_data {
->>>>        struct {
->>>>                u16 recursion;
->>>>                u8  more;
->>>> +#ifdef CONFIG_NET_EGRESS
->>>> +             u8  skip_txqueue;
->>>> +#endif
->>>>        } xmit;
->>>>    #ifdef CONFIG_RPS
->>>>        /* input_queue_head should be written by cpu owning this struct,
->>>> diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
->>>> index 7f970b16da3a..ae2c6a3cec5d 100644
->>>> --- a/include/linux/rtnetlink.h
->>>> +++ b/include/linux/rtnetlink.h
->>>> @@ -100,6 +100,7 @@ void net_dec_ingress_queue(void);
->>>>    #ifdef CONFIG_NET_EGRESS
->>>>    void net_inc_egress_queue(void);
->>>>    void net_dec_egress_queue(void);
->>>> +void netdev_xmit_skip_txqueue(bool skip);
->>>>    #endif
->>>>
->>>>    void rtnetlink_init(void);
->>>> diff --git a/net/core/dev.c b/net/core/dev.c
->>>> index 75bab5b0dbae..8e83b7099977 100644
->>>> --- a/net/core/dev.c
->>>> +++ b/net/core/dev.c
->>>> @@ -3908,6 +3908,25 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
->>>>
->>>>        return skb;
->>>>    }
->>>> +
->>>> +static struct netdev_queue *
->>>> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
->>>> +{
->>>> +     int qm = skb_get_queue_mapping(skb);
->>>> +
->>>> +     return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
->>>> +}
->>>> +
->>>> +static bool netdev_xmit_txqueue_skipped(void)
->>>> +{
->>>> +     return __this_cpu_read(softnet_data.xmit.skip_txqueue);
->>>> +}
->>>> +
->>>> +void netdev_xmit_skip_txqueue(bool skip)
->>>> +{
->>>> +     __this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
->>>>    #endif /* CONFIG_NET_EGRESS */
->>>>
->>>>    #ifdef CONFIG_XPS
->>>> @@ -4078,7 +4097,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
->>>>    static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->>>>    {
->>>>        struct net_device *dev = skb->dev;
->>>> -     struct netdev_queue *txq;
->>>> +     struct netdev_queue *txq = NULL;
->>>>        struct Qdisc *q;
->>>>        int rc = -ENOMEM;
->>>>        bool again = false;
->>>> @@ -4106,11 +4125,17 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->>>>                        if (!skb)
->>>>                                goto out;
->>>>                }
->>>> +
->>>> +             netdev_xmit_skip_txqueue(false);
->>>> +
->>>>                nf_skip_egress(skb, true);
->>>>                skb = sch_handle_egress(skb, &rc, dev);
->>>>                if (!skb)
->>>>                        goto out;
->>>>                nf_skip_egress(skb, false);
->>>> +
->>>> +             if (netdev_xmit_txqueue_skipped())
->>>> +                     txq = netdev_tx_queue_mapping(dev, skb);
->>>>        }
->>>>    #endif
->>>>        /* If device/qdisc don't need skb->dst, release it right now while
->>>> @@ -4121,7 +4146,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->>>>        else
->>>>                skb_dst_force(skb);
->>>>
->>>> -     txq = netdev_core_pick_tx(dev, skb, sb_dev);
->>>> +     if (likely(!txq))
->>>
->>> nit: Drop likely(). If the feature is used from sch_handle_egress(), then this would always be the case.
->> Hi Daniel
->> I think in most case, we don't use skbedit queue_mapping in the
->> sch_handle_egress() , so I add likely in fast path.
 
-Yeah, but then let branch predictor do its work ? We can still change and drop the
-likely() once we add support for BPF though..
 
->>>> +             txq = netdev_core_pick_tx(dev, skb, sb_dev);
->>>> +
->>>>        q = rcu_dereference_bh(txq->qdisc);
->>>
->>> How will the `netdev_xmit_skip_txqueue(true)` be usable from BPF side (see bpf_convert_ctx_access() ->
->>> queue_mapping)?
->> Good questions, In other patch, I introduce the
->> bpf_netdev_skip_txqueue, so we can use netdev_xmit_skip_txqueue in bpf
->> side
+On 18 Mar 2022, at 13:43, Aaron Conole wrote:
 
-Yeah, that bpf_netdev_skip_txqueue() won't fly. It's basically a helper doing quirk for
-an implementation detail (aka calling netdev_xmit_skip_txqueue()). Was hoping you have
-something better we could use along with the context rewrite of __sk_buff's queue_mapping,
-but worst case we need to rework a bit for BPF. :/
+> During NAT, a tuple collision may occur.  When this happens, openvswitc=
+h
+> will make a second pass through NAT which will perform additional packe=
+t
+> modification.  This will update the skb data, but not the flow key that=
 
-Thanks,
-Daniel
+> OVS uses.  This means that future flow lookups, and packet matches will=
+
+> have incorrect data.  This has been supported since
+> 5d50aa83e2c8 ("openvswitch: support asymmetric conntrack").
+>
+> That commit failed to properly update the sw_flow_key attributes, since=
+
+> it only called the ovs_ct_nat_update_key once, rather than each time
+> ovs_ct_nat_execute was called.  As these two operations are linked, the=
+
+> ovs_ct_nat_execute() function should always make sure that the
+> sw_flow_key is updated after a successful call through NAT infrastructu=
+re.
+>
+> Fixes: 5d50aa83e2c8 ("openvswitch: support asymmetric conntrack")
+> Cc: Dumitru Ceara <dceara@redhat.com>
+> Cc: Numan Siddique <nusiddiq@redhat.com>
+> Signed-off-by: Aaron Conole <aconole@redhat.com>
+
+You were right about the diff, it really looks messy and I had to apply i=
+t to review it :)
+
+The patch looks fine to me!!
+
+Acked-by: Eelco Chaudron <echaudro@redhat.com>
+
+> ---
+> v1->v2: removed forward decl., moved the ovs_nat_update_key function
+>         made sure it compiles with NF_NAT disabled and enabled
+>
+>  net/openvswitch/conntrack.c | 118 ++++++++++++++++++------------------=
+
+>  1 file changed, 59 insertions(+), 59 deletions(-)
+>
+> diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+> index c07afff57dd3..4a947c13c813 100644
+> --- a/net/openvswitch/conntrack.c
+> +++ b/net/openvswitch/conntrack.c
+> @@ -734,6 +734,57 @@ static bool skb_nfct_cached(struct net *net,
+>  }
+>
+>  #if IS_ENABLED(CONFIG_NF_NAT)
+> +static void ovs_nat_update_key(struct sw_flow_key *key,
+> +			       const struct sk_buff *skb,
+> +			       enum nf_nat_manip_type maniptype)
+> +{
+> +	if (maniptype =3D=3D NF_NAT_MANIP_SRC) {
+> +		__be16 src;
+> +
+> +		key->ct_state |=3D OVS_CS_F_SRC_NAT;
+> +		if (key->eth.type =3D=3D htons(ETH_P_IP))
+> +			key->ipv4.addr.src =3D ip_hdr(skb)->saddr;
+> +		else if (key->eth.type =3D=3D htons(ETH_P_IPV6))
+> +			memcpy(&key->ipv6.addr.src, &ipv6_hdr(skb)->saddr,
+> +			       sizeof(key->ipv6.addr.src));
+> +		else
+> +			return;
+> +
+> +		if (key->ip.proto =3D=3D IPPROTO_UDP)
+> +			src =3D udp_hdr(skb)->source;
+> +		else if (key->ip.proto =3D=3D IPPROTO_TCP)
+> +			src =3D tcp_hdr(skb)->source;
+> +		else if (key->ip.proto =3D=3D IPPROTO_SCTP)
+> +			src =3D sctp_hdr(skb)->source;
+> +		else
+> +			return;
+> +
+> +		key->tp.src =3D src;
+> +	} else {
+> +		__be16 dst;
+> +
+> +		key->ct_state |=3D OVS_CS_F_DST_NAT;
+> +		if (key->eth.type =3D=3D htons(ETH_P_IP))
+> +			key->ipv4.addr.dst =3D ip_hdr(skb)->daddr;
+> +		else if (key->eth.type =3D=3D htons(ETH_P_IPV6))
+> +			memcpy(&key->ipv6.addr.dst, &ipv6_hdr(skb)->daddr,
+> +			       sizeof(key->ipv6.addr.dst));
+> +		else
+> +			return;
+> +
+> +		if (key->ip.proto =3D=3D IPPROTO_UDP)
+> +			dst =3D udp_hdr(skb)->dest;
+> +		else if (key->ip.proto =3D=3D IPPROTO_TCP)
+> +			dst =3D tcp_hdr(skb)->dest;
+> +		else if (key->ip.proto =3D=3D IPPROTO_SCTP)
+> +			dst =3D sctp_hdr(skb)->dest;
+> +		else
+> +			return;
+> +
+> +		key->tp.dst =3D dst;
+> +	}
+> +}
+> +
+>  /* Modelled after nf_nat_ipv[46]_fn().
+>   * range is only used for new, uninitialized NAT state.
+>   * Returns either NF_ACCEPT or NF_DROP.
+> @@ -741,7 +792,7 @@ static bool skb_nfct_cached(struct net *net,
+>  static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,=
+
+>  			      enum ip_conntrack_info ctinfo,
+>  			      const struct nf_nat_range2 *range,
+> -			      enum nf_nat_manip_type maniptype)
+> +			      enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
+>  {
+>  	int hooknum, nh_off, err =3D NF_ACCEPT;
+>
+> @@ -813,58 +864,11 @@ static int ovs_ct_nat_execute(struct sk_buff *skb=
+, struct nf_conn *ct,
+>  push:
+>  	skb_push_rcsum(skb, nh_off);
+>
+> -	return err;
+> -}
+> -
+> -static void ovs_nat_update_key(struct sw_flow_key *key,
+> -			       const struct sk_buff *skb,
+> -			       enum nf_nat_manip_type maniptype)
+> -{
+> -	if (maniptype =3D=3D NF_NAT_MANIP_SRC) {
+> -		__be16 src;
+> -
+> -		key->ct_state |=3D OVS_CS_F_SRC_NAT;
+> -		if (key->eth.type =3D=3D htons(ETH_P_IP))
+> -			key->ipv4.addr.src =3D ip_hdr(skb)->saddr;
+> -		else if (key->eth.type =3D=3D htons(ETH_P_IPV6))
+> -			memcpy(&key->ipv6.addr.src, &ipv6_hdr(skb)->saddr,
+> -			       sizeof(key->ipv6.addr.src));
+> -		else
+> -			return;
+> -
+> -		if (key->ip.proto =3D=3D IPPROTO_UDP)
+> -			src =3D udp_hdr(skb)->source;
+> -		else if (key->ip.proto =3D=3D IPPROTO_TCP)
+> -			src =3D tcp_hdr(skb)->source;
+> -		else if (key->ip.proto =3D=3D IPPROTO_SCTP)
+> -			src =3D sctp_hdr(skb)->source;
+> -		else
+> -			return;
+> -
+> -		key->tp.src =3D src;
+> -	} else {
+> -		__be16 dst;
+> -
+> -		key->ct_state |=3D OVS_CS_F_DST_NAT;
+> -		if (key->eth.type =3D=3D htons(ETH_P_IP))
+> -			key->ipv4.addr.dst =3D ip_hdr(skb)->daddr;
+> -		else if (key->eth.type =3D=3D htons(ETH_P_IPV6))
+> -			memcpy(&key->ipv6.addr.dst, &ipv6_hdr(skb)->daddr,
+> -			       sizeof(key->ipv6.addr.dst));
+> -		else
+> -			return;
+> -
+> -		if (key->ip.proto =3D=3D IPPROTO_UDP)
+> -			dst =3D udp_hdr(skb)->dest;
+> -		else if (key->ip.proto =3D=3D IPPROTO_TCP)
+> -			dst =3D tcp_hdr(skb)->dest;
+> -		else if (key->ip.proto =3D=3D IPPROTO_SCTP)
+> -			dst =3D sctp_hdr(skb)->dest;
+> -		else
+> -			return;
+> +	/* Update the flow key if NAT successful. */
+> +	if (err =3D=3D NF_ACCEPT)
+> +		ovs_nat_update_key(key, skb, maniptype);
+>
+> -		key->tp.dst =3D dst;
+> -	}
+> +	return err;
+>  }
+>
+>  /* Returns NF_DROP if the packet should be dropped, NF_ACCEPT otherwis=
+e. */
+> @@ -906,7 +910,7 @@ static int ovs_ct_nat(struct net *net, struct sw_fl=
+ow_key *key,
+>  	} else {
+>  		return NF_ACCEPT; /* Connection is not NATed. */
+>  	}
+> -	err =3D ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype);=
+
+> +	err =3D ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype, =
+key);
+>
+>  	if (err =3D=3D NF_ACCEPT && ct->status & IPS_DST_NAT) {
+>  		if (ct->status & IPS_SRC_NAT) {
+> @@ -916,17 +920,13 @@ static int ovs_ct_nat(struct net *net, struct sw_=
+flow_key *key,
+>  				maniptype =3D NF_NAT_MANIP_SRC;
+>
+>  			err =3D ovs_ct_nat_execute(skb, ct, ctinfo, &info->range,
+> -						 maniptype);
+> +						 maniptype, key);
+>  		} else if (CTINFO2DIR(ctinfo) =3D=3D IP_CT_DIR_ORIGINAL) {
+>  			err =3D ovs_ct_nat_execute(skb, ct, ctinfo, NULL,
+> -						 NF_NAT_MANIP_SRC);
+> +						 NF_NAT_MANIP_SRC, key);
+>  		}
+>  	}
+>
+> -	/* Mark NAT done if successful and update the flow key. */
+> -	if (err =3D=3D NF_ACCEPT)
+> -		ovs_nat_update_key(key, skb, maniptype);
+> -
+>  	return err;
+>  }
+>  #else /* !CONFIG_NF_NAT */
+> -- =
+
+> 2.31.1
+
