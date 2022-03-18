@@ -2,91 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46C994DE1AF
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE7D4DE1BC
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:24:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234575AbiCRTV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 15:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52908 "EHLO
+        id S240357AbiCRTZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 15:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240331AbiCRTVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:21:55 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD592EDC25
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:20:36 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id p15so4862085lfk.8
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:20:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=Da58XaamdPOR/ut8eZdkl+mrEW3bShbo5Rc5hbiuMTM=;
-        b=w3A1gmFvMBRV3VcP/tlmmxK7SilLiBhMJY7WX6sR0dQPXbJyHi2G3x8KvjDqadbTeM
-         pDC4QBTprn67FUQAukRopeIB/t/3tOqqaD4o0O9jqZoIUQp27KTMVGZpB3yAXwsn5ngE
-         Bnv+gkpdhpG3aROoWmZVzvauuqQb0XIkc+X8d6zREBy65qbG4SekhSisr067zD3zzxje
-         k1FgYHpERi61ysgFAE/jF5nwIXaJ0pvF8Zvj7pOP/DpvxXkG/uqJCt0ATcD0vmO6h90w
-         eEkCq/H1n/YorE+CgGemeczBw6KMnDF5FlEgELxYdGIwSMDZ3HE6W9QCUdZiSfUnw0CH
-         C+KA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Da58XaamdPOR/ut8eZdkl+mrEW3bShbo5Rc5hbiuMTM=;
-        b=Xe1QGeLlHmNBefGinTWG3HYDnMcbA2paGUCSX4RoKsW58rNoE78PKn2VsvbWrrvjiD
-         NPigq3wYwJENDREvhpPWY+Mq2igAUWtIWdF0TWKbMhjuVN5qqtJeXxkFsEg60De/ifE6
-         hyQ9fOF7DGF7Rizir4H/KKBJ4qazHVd9aUXtrkRt8o8x3A03JlsJ+I9mguyiv2U1Cni2
-         qLXpLLVtoBDNvBzPuL0XWOVaCFxBisRXZwtaoqkUzAjS0J47ChShHuYkk4rf9U0hMGxR
-         oCJzHkzeCnJhsQN17f5ZjvMSpZBQc3mFJZOfmMO74HvjgZo7l3rQy7Rw2HyeztLf/PUy
-         10BA==
-X-Gm-Message-State: AOAM530IoQIn0T5lg6FmIA++5Hj3mvIYiIVXP5EmW1a02nHCwbwTmBbb
-        1Q757U6HD3mLXPl1T7LfHc1lAQR6CliY2skX
-X-Google-Smtp-Source: ABdhPJyFO7/fz3qPOxGG1FljVa+GCYdqUk/XsNQFolR0haSMWpOejHbzuD2hZpyE4qLFsulQq7XQFw==
-X-Received: by 2002:ac2:57d4:0:b0:448:2cba:6c86 with SMTP id k20-20020ac257d4000000b004482cba6c86mr6599009lfo.201.1647631234624;
-        Fri, 18 Mar 2022 12:20:34 -0700 (PDT)
-Received: from wkz-x280 (h-212-85-90-115.A259.priv.bahnhof.se. [212.85.90.115])
-        by smtp.gmail.com with ESMTPSA id bq8-20020a056512150800b00448ab58bd53sm971692lfb.40.2022.03.18.12.20.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 12:20:34 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: mv88e6xxx broken on 6176 with "Disentangle STU from VTU"
-In-Reply-To: <20220318182817.5ade8ecd@dellmb>
-References: <20220318182817.5ade8ecd@dellmb>
-Date:   Fri, 18 Mar 2022 20:20:33 +0100
-Message-ID: <87a6dnjce6.fsf@waldekranz.com>
+        with ESMTP id S240345AbiCRTZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:25:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A369130CAB1
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:23:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4953BB82504
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 19:23:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C266EC340E8;
+        Fri, 18 Mar 2022 19:23:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647631433;
+        bh=N74lFhHthFC7g02EJeLjpFIauXfbMG+dwI+uc21Td20=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bnSJSYIiJGr0SjpcZj188jJb28+SCXlzpAY0hcQaet+TChLnXivsWGgxDcBufs04Z
+         sUXSvIJGaCqaxAG3JuaS5qJLEJMQ7DPpczBQzqvFCcKRhLUmi3dAHL0MdomJOepd9O
+         GHuDYZPHddPmplJ84XEtcm7aulu/IoU8mqieLFOVMGFoEV4c1bK10b1D4H2h3n41KW
+         QePmSwsfkvCh4SwBvKA3emtbGyLjdObXwjjem/May4IwkxNUZDojkYN9hP5DDfHME5
+         9h9Gj7O3Ehec2FBp/jwr5veOHG5Y6n9aesYKI4YJmCxlljLVIvhdAJ4byXgYNCPh5s
+         kQ9NjKIwaBcFw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, leonro@nvidia.com,
+        saeedm@nvidia.com, idosch@idosch.org, michael.chan@broadcom.com,
+        simon.horman@corigine.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 0/5] devlink: hold the instance lock in eswitch callbacks
+Date:   Fri, 18 Mar 2022 12:23:39 -0700
+Message-Id: <20220318192344.1587891-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 18:28, Marek Beh=C3=BAn <kabel@kernel.org> wrote:
-> Hello Tobias,
->
-> mv88e6xxx fails to probe in net-next on Turris Omnia, bisect leads to
-> commit
->   49c98c1dc7d9 ("net: dsa: mv88e6xxx: Disentangle STU from VTU")
+Series number 2 in the effort to hold the devlink instance lock
+in call driver callbacks. We have the following drivers using
+this API:
 
-Oh wow, really sorry about that! I have it reproduced, and I understand
-the issue.
+ - bnxt, nfp, netdevsim - their own locking is removed / simplified
+   by this series; all of them needed a lock to protect from changes
+   to the number of VFs while switching modes, now the VF config bus
+   callback takes the devlink instance lock via devl_lock();
+ - ice - appears not to allow changing modes while SR-IOV enabled,
+   so nothing to do there;
+ - liquidio - does not contain any locking;
+ - octeontx2/af - is very special but at least doesn't have locking
+   so doesn't get in the way either;
+ - mlx5 has a wealth of locks - I chickened out and dropped the lock
+   in the callbacks so that I can leave the driver be, for now.
 
-> Trace:
->   mv88e6xxx_setup
->     mv88e6xxx_setup_port
->       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_STANDALONE) OK
->       mv88e6xxx_port_vlan_join(MV88E6XXX_VID_BRIDGED) -EOPNOTSUPP
->
+The last one is obviously not ideal, but I would prefer to transition
+the API already as it make take longer.
 
-Thanks, that make it easy to find. There is a mismatch between what the
-family-info struct says and what the chip-specific ops struct supports.
+v2: use a wrapper in mlx5 and extend the comment
 
-I'll try to send a fix ASAP.
+Jakub Kicinski (5):
+  bnxt: use the devlink instance lock to protect sriov
+  devlink: add explicitly locked flavor of the rate node APIs
+  netdevsim: replace port_list_lock with devlink instance lock
+  netdevsim: replace vfs_lock with devlink instance lock
+  devlink: hold the instance lock during eswitch_mode callbacks
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  1 -
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  6 --
+ .../net/ethernet/broadcom/bnxt/bnxt_sriov.c   |  4 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c | 22 ++---
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 54 ++++++++---
+ .../net/ethernet/netronome/nfp/nfp_devlink.c  |  7 +-
+ drivers/net/netdevsim/dev.c                   | 85 +++++++++---------
+ drivers/net/netdevsim/netdevsim.h             |  2 -
+ include/net/devlink.h                         |  4 +
+ net/core/devlink.c                            | 90 ++++++++++++-------
+ 10 files changed, 156 insertions(+), 119 deletions(-)
+
+-- 
+2.34.1
+
