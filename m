@@ -2,66 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24AA44DD508
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 08:04:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 643504DD4FF
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 08:03:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232910AbiCRHFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 03:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49746 "EHLO
+        id S232887AbiCRHE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 03:04:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231237AbiCRHFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 03:05:49 -0400
-X-Greylist: delayed 527 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 18 Mar 2022 00:04:28 PDT
-Received: from mxout012.mail.hostpoint.ch (mxout012.mail.hostpoint.ch [IPv6:2a00:d70:0:e::312])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77722261DF4;
-        Fri, 18 Mar 2022 00:04:25 -0700 (PDT)
-Received: from [10.0.2.46] (helo=asmtp013.mail.hostpoint.ch)
-        by mxout012.mail.hostpoint.ch with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <code@reto-schneider.ch>)
-        id 1nV6WI-0007d5-Fb;
-        Fri, 18 Mar 2022 07:55:30 +0100
-Received: from dynamic-145-014-211-090.glattnet.ch ([145.14.211.90] helo=[192.168.33.151])
-        by asmtp013.mail.hostpoint.ch with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.95 (FreeBSD))
-        (envelope-from <code@reto-schneider.ch>)
-        id 1nV6WI-0004PK-B1;
-        Fri, 18 Mar 2022 07:55:30 +0100
-X-Authenticated-Sender-Id: reto-schneider@reto-schneider.ch
-Message-ID: <71805121-883f-6b3f-f8dd-dffd93683dc9@reto-schneider.ch>
-Date:   Fri, 18 Mar 2022 07:55:29 +0100
+        with ESMTP id S232846AbiCRHE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 03:04:26 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD6A7261DEF
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 00:03:06 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id 6so4456896pgg.0
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 00:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EJwMJwv/LNdQj8IBL2zSNYRuWHBHs9x8bD4JQud15n8=;
+        b=hgmBBEFze9U4x2Jleiysufoa9jEu2iYKl4O8c5wJp6c06DMjEMk9Ke+0NFk6dGWIZY
+         BY/jsVvg7xXKsUjjgfrOIVa20FYG/zd5j/7/1MxZarq1KwFZvEY465nbNl7IixaEGh4/
+         QhJGLLl9xFVdDvDvMMf4b+PrE9SwKXldGumfTwDgAQ+yWMLLwV9798VDxVPKLGxTxe96
+         ESJ7LJs4Ro29vxA0j670t6IaLz6iQvMjzdmQpM/kUS52r2SCqGKp9EBV2/Udp0P/T920
+         oX+VsC72dlfpE2UVXX+O2eza0l1yiO9luvczx7WXw3/dtKRMmErYDZY+TG4aG21hqkV1
+         gACQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EJwMJwv/LNdQj8IBL2zSNYRuWHBHs9x8bD4JQud15n8=;
+        b=zixUbaafny6bNFn4mDMkSKVeKl3AT/4B1G1gt2gSgjDbyyYUw4LKp9SvjfNPifha3I
+         rYJuIK5YiGQnaWW0qYjaghQ6D0VO0YZZpB1A5icvsSsigHpvq2vaj0TEnt2GqSXPFRrZ
+         7JcFXVYy+DvUeZwn6EgGvrL7pyn/PDna5F4Zni3NRv1n8lnUWurrLGeWUIZffjAvbovy
+         H7LDwmWGwOKHyb99d3xuBHKfdVpWM0NdxKghDJi3LacpgusWhTTUb8HmQ3RazUcIYiby
+         FMWAYrViY5pB4ecQC4aKogsPro/AAw928tphqk4qMGiUFZeojD/8SZMSbq5BQrNzGZyl
+         dAGw==
+X-Gm-Message-State: AOAM533V2rXeYblCNPIXxqugHutoUr4u8I/8wq/r6c6UAGkkR621zU/f
+        lRaA88KDGiOzI8KMK2Oh5DmIMw==
+X-Google-Smtp-Source: ABdhPJzXuInIuxZ3FHUivaqC7RF5QXO1DCWaLtVncNFWNK1h+NDVw7dbJycCBtdz4eN5Ni4mZHFzug==
+X-Received: by 2002:a63:2042:0:b0:381:7f41:3bab with SMTP id r2-20020a632042000000b003817f413babmr6705201pgm.421.1647586986118;
+        Fri, 18 Mar 2022 00:03:06 -0700 (PDT)
+Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id 68-20020a621647000000b004fa763ef1easm130630pfw.125.2022.03.18.00.03.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Mar 2022 00:03:05 -0700 (PDT)
+From:   Andy Chiu <andy.chiu@sifive.com>
+To:     radhey.shyam.pandey@xilinx.com, robert.hancock@calian.com,
+        michal.simek@xilinx.com
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, linux@armlinux.org.uk, andrew@lunn.ch,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Andy Chiu <andy.chiu@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>
+Subject: [PATCH v3 1/2] dt-bindings: net: xilinx_axienet: add pcs-handle attribute
+Date:   Fri, 18 Mar 2022 15:00:38 +0800
+Message-Id: <20220318070039.108948-1-andy.chiu@sifive.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v2 0/2] rtl8xxxu: Fill up more TX information
-Content-Language: en-US
-To:     Chris Chiu <chris.chiu@canonical.com>, kvalo@kernel.org,
-        Jes.Sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220318024216.42204-1-chris.chiu@canonical.com>
-From:   Reto Schneider <code@reto-schneider.ch>
-In-Reply-To: <20220318024216.42204-1-chris.chiu@canonical.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+Document the new pcs-handle attribute to support connecting to an
+external PHY in SGMII or 1000Base-X modes through the internal PCS/PMA
+PHY.
 
-On 18.03.22 03:42, Chris Chiu wrote:
-> The antenna information is missing in rtl8xxxu and txrate is NULL
-> in 8188cu and 8192cu. Fill up the missing information for iw
-> commands.
+Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+---
+ Documentation/devicetree/bindings/net/xilinx_axienet.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-I tested older versions of this and it worked well. Will give this set a 
-try during next week.
+diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+index b8e4894bc634..a2fa3bef0901 100644
+--- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
++++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+@@ -68,6 +68,11 @@ Optional properties:
+ 		  required through the core's MDIO interface (i.e. always,
+ 		  unless the PHY is accessed through a different bus).
+ 
++ - pcs-handle: 	  Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
++		  modes, where "pcs-handle" should be preferably used to point
++		  to the PCS/PMA PHY, and "phy-handle" should point to an
++		  external PHY if exits.
++
+ Example:
+ 	axi_ethernet_eth: ethernet@40c00000 {
+ 		compatible = "xlnx,axi-ethernet-1.00.a";
+-- 
+2.34.1
 
-Kind regards,
-Reto
