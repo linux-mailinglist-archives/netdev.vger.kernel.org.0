@@ -2,44 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 233894DDFF0
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 18:28:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F244DE08E
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 18:53:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237520AbiCRRaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 13:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46494 "EHLO
+        id S235635AbiCRRye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 13:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239655AbiCRR35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 13:29:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D002DF3CA
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 10:28:24 -0700 (PDT)
+        with ESMTP id S232417AbiCRRye (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 13:54:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34D62B1BE;
+        Fri, 18 Mar 2022 10:53:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A17BCB824D0
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 17:28:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F830C340E8;
-        Fri, 18 Mar 2022 17:28:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D218B824F0;
+        Fri, 18 Mar 2022 17:53:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97FB1C340E8;
+        Fri, 18 Mar 2022 17:53:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647624502;
-        bh=iw0Ynd6lczs3AvpIwsc+U9eGoDxi/vOleHg49rg9JNg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=nA6pdD57q9ger+086mEyGL/P0gTAvdnHpKysQjNyOUGWNi7UtRzx2ahaL7VYUhR+P
-         p9FEisSyMrxTD20upIDp+g2XgiOMEzmdzGpkrkPiINZjMa81x9SePOHsSgF4xZXGn9
-         0wOrk8vY4rF8RBXw/0Z0wRJxrCjJsjBTUnwcD0xWr4l7riyNKtnUwv2uQiVMvGcRjc
-         viwMErL93XlOZDdI2pAnX5kX9OvTewaLkEtzlKTYl/ZQbK+LI6bpsyiJLyv635X31g
-         Nf4hSwwS176JwDErfpSCDS/1n17cvPOCDus5EN4Vf17pAUkurdVYn63d60KyTlhyYo
-         q6wrmas7gwxHg==
-Date:   Fri, 18 Mar 2022 18:28:17 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Tobias Waldekranz <tobias@waldekranz.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: mv88e6xxx broken on 6176 with "Disentangle STU from VTU"
-Message-ID: <20220318182817.5ade8ecd@dellmb>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1647625992;
+        bh=I2UsjvUo2CeZUeiqhFvaJS3x664V3c+cCz4CwC+YlE8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nXV9aU4i30VpemfnJBdp5nzU3C2FeJ7hE4PljYNf4aRDTREc+dwh/h3wFIwPuHl9V
+         h3dMZWHynmyyDaCzWnsSMAHLmb/I/TGQ7oSOBALVVnBkFes03q36ZElMZn+N28zKU+
+         RQpkTQUdualqzot7AXhNZQaUFhARWfsaeVf2W/usR1m1mr5d8sp/bdmJzsOLgddNOF
+         C3y+uw8gnKBDBL4sTVO8wOlissH6vP7X2/4/OlqRxIYYPVWa6XQNYMmNpD3Wq423Ds
+         7O7y6s5agnNALIZ8SotNGzRhwotFRBuGH2LqPVeOOuelPItPW1fXru9SR385n36uQM
+         aX5V/pSQOzmBw==
+Date:   Fri, 18 Mar 2022 10:53:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <edumazet@google.com>, <sakiwit@gmail.com>,
+        <sainath.grandhi@intel.com>, <maheshb@google.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 1/3] net: ipvlan: fix potential UAF problem
+ for phy_dev
+Message-ID: <20220318105311.21ca32bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <83116bde1ddf39420e24466684c9488bff46f43c.1647568181.git.william.xuanziyang@huawei.com>
+References: <cover.1647568181.git.william.xuanziyang@huawei.com>
+        <83116bde1ddf39420e24466684c9488bff46f43c.1647568181.git.william.xuanziyang@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,16 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Tobias,
+On Fri, 18 Mar 2022 09:57:47 +0800 Ziyang Xuan wrote:
+> Add the reference operation to phy_dev of ipvlan to avoid
+> the potential UAF problem under the following known scenario:
+> 
+> Someone module puts the NETDEV_UNREGISTER event handler to a
+> work, and phy_dev is accessed in the work handler. But when
+> the work is excuted, phy_dev has been destroyed because upper
+> ipvlan did not get reference to phy_dev correctly.
+> 
+> That likes as the scenario occurred by
+> commit 563bcbae3ba2 ("net: vlan: fix a UAF in vlan_dev_real_dev()").
 
-mv88e6xxx fails to probe in net-next on Turris Omnia, bisect leads to
-commit
-  49c98c1dc7d9 ("net: dsa: mv88e6xxx: Disentangle STU from VTU")
+There is no equivalent of vlan_dev_real_dev() for ipvlan, AFAICT.
+The definition of struct ipvl_dev is private to the driver. I don't 
+see how a UAF can happen here.
 
-Trace:
-  mv88e6xxx_setup
-    mv88e6xxx_setup_port
-      mv88e6xxx_port_vlan_join(MV88E6XXX_VID_STANDALONE) OK
-      mv88e6xxx_port_vlan_join(MV88E6XXX_VID_BRIDGED) -EOPNOTSUPP
+You should either clearly explain how the bug could happen or clearly
+state that there is no possibility of the bug for this driver, and the
+patch is just future proofing.
 
-Marek
+If the latter is the case we should drop the Fixes tag and prevent this
+patch from getting backported into stable.
+
+> Fixes: 2ad7bf363841 ("ipvlan: Initial check-in of the IPVLAN driver.")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
