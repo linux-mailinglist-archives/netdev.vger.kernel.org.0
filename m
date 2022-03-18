@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B5ED4DD6A6
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 09:57:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DDB94DD6AA
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 09:57:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234124AbiCRI6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 04:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35760 "EHLO
+        id S234076AbiCRI6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 04:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234158AbiCRI5y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 04:57:54 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303E61F3795;
-        Fri, 18 Mar 2022 01:56:35 -0700 (PDT)
+        with ESMTP id S234190AbiCRI6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 04:58:05 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1627E1F518A;
+        Fri, 18 Mar 2022 01:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647593795; x=1679129795;
+  t=1647593805; x=1679129805;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=IvrD65dHn0M4ZbtlfZSEbKYD1VLhkyet2NsncLvkrCM=;
-  b=Mpalqc8hduU54CblCi7V8eK/hci6W3I7+1JvoqASLQSqtLolTNLvqXQf
-   KMsJI70HVDkQOxt1TCPIEc24MnoseASa4R3tmLnwYnyisJrVtC81X1KFO
-   BjwffugtWCtdA7oa5QEFNYtA7FWFvCqA/5sglVwnk7rLfOMrvuWgjjnpQ
-   sqgnv5X9QPVa0DW/6zsZbw50b98HlpH1rT2KqrYDrbeEp1/Ed7U5ZL2bh
-   AXE++r/PYlG5QdyuCXloLe3joTnxzujtPzbGmBbKj7XjlaaXJecb+1MHi
-   ynOEhUXRK1N8uyWoXkSwlfBE8uxLyMH9Lab4i/LQ+I5VpFoAskjAJ7VBI
-   w==;
+  bh=yrbmAA5eOr2bDr3xh5A19ZPD0LkImm8zRnLwdZx5yiE=;
+  b=AJVRx18BhdI2VjcyojbLlsnRBHB0PHv3u7ZMywxqfc2iCeuqcQkVSsXP
+   xYhXjrCcckQnXFySGHIpUtzbLVxzYhS83awC5oFdXtBtv8xeC0Uiw2/VO
+   oL6vET9kZm6wolPZMcEwBCcMDZwX/zb+xA1qI865qwgFSeO3hAxPGPDa/
+   zE18CUPzfJ5mm91ohssppQIa4Zx2LqxO/kYVFEH0i/5Hji8TPmynWTrSd
+   q5DwM55Bh5XNh2mEUgT+yhLs1UJrRuWxrhY7K0B9rkNyrA4sK5iWBnc6a
+   V+NHWnPiUPoG37sS+R+vmcDVO43q0ErWXWOizYVJng0xTatpcIGWu2NXc
+   g==;
 X-IronPort-AV: E=Sophos;i="5.90,191,1643698800"; 
-   d="scan'208";a="149633495"
+   d="scan'208";a="166275150"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 01:56:35 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 01:56:40 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Mar 2022 01:56:34 -0700
+ 15.1.2375.17; Fri, 18 Mar 2022 01:56:39 -0700
 Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 01:56:29 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 01:56:34 -0700
 From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
         <robh+dt@kernel.org>
@@ -46,9 +46,9 @@ CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
         <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
         <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Subject: [PATCH v9 net-next 08/11] net: dsa: microchip: add support for ethtool port counters
-Date:   Fri, 18 Mar 2022 14:25:37 +0530
-Message-ID: <20220318085540.281721-9-prasanna.vengateshan@microchip.com>
+Subject: [PATCH v9 net-next 09/11] net: dsa: microchip: add support for port mirror operations
+Date:   Fri, 18 Mar 2022 14:25:38 +0530
+Message-ID: <20220318085540.281721-10-prasanna.vengateshan@microchip.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
 References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
@@ -65,207 +65,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added support for get_eth_**_stats() (phy/mac/ctrl) and
-get_stats64()
+Added support for port_mirror_add() and port_mirror_del operations
 
-Reused the KSZ common APIs for get_ethtool_stats() & get_sset_count()
-along with relevant lan937x hooks for KSZ common layer and added
-support for get_strings()
+Sniffing is limited to one port & alert the user if any new
+sniffing port is selected
 
 Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/dsa/microchip/lan937x_main.c | 164 +++++++++++++++++++++++
- 1 file changed, 164 insertions(+)
+ drivers/net/dsa/microchip/lan937x_main.c | 84 ++++++++++++++++++++++++
+ 1 file changed, 84 insertions(+)
 
 diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index 24971d9d087c..c54aba6a05b5 100644
+index c54aba6a05b5..5a57a2ce8992 100644
 --- a/drivers/net/dsa/microchip/lan937x_main.c
 +++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -45,6 +45,20 @@ static int lan937x_phy_write16(struct dsa_switch *ds, int addr, int reg,
- 	return lan937x_internal_phy_write(dev, addr, reg, val);
+@@ -98,6 +98,88 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
+ 	ksz_update_port_member(dev, port);
  }
  
-+static void lan937x_get_strings(struct dsa_switch *ds, int port, u32 stringset,
-+				u8 *buf)
++static int lan937x_port_mirror_add(struct dsa_switch *ds, int port,
++				   struct dsa_mall_mirror_tc_entry *mirror,
++				   bool ingress)
 +{
 +	struct ksz_device *dev = ds->priv;
-+	int i;
++	int ret, p;
++	u8 data;
 +
-+	if (stringset != ETH_SS_STATS)
-+		return;
++	/* Limit to one sniffer port
++	 * Check if any of the port is already set for sniffing
++	 * If yes, instruct the user to remove the previous entry & exit
++	 */
++	for (p = 0; p < dev->port_cnt; p++) {
++		/* Skip the current sniffing port */
++		if (p == mirror->to_local_port)
++			continue;
 +
-+	for (i = 0; i < dev->mib_cnt; i++)
-+		memcpy(buf + i * ETH_GSTRING_LEN, lan937x_mib_names[i].string,
-+		       ETH_GSTRING_LEN);
++		ret = lan937x_pread8(dev, p, P_MIRROR_CTRL, &data);
++		if (ret < 0)
++			return ret;
++
++		if (data & PORT_MIRROR_SNIFFER) {
++			dev_err(dev->dev,
++				"Delete existing rules towards %s & try\n",
++				dsa_to_port(ds, p)->name);
++			return -EBUSY;
++		}
++	}
++
++	/* Configure ingress/egress mirroring */
++	if (ingress)
++		ret = lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX,
++				       true);
++	else
++		ret = lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX,
++				       true);
++	if (ret < 0)
++		return ret;
++
++	/* Configure sniffer port as other ports do not have
++	 * PORT_MIRROR_SNIFFER is set
++	 */
++	ret = lan937x_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
++			       PORT_MIRROR_SNIFFER, true);
++	if (ret < 0)
++		return ret;
++
++	return lan937x_cfg(dev, S_MIRROR_CTRL, SW_MIRROR_RX_TX, false);
 +}
 +
- static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 				       u8 state)
++static void lan937x_port_mirror_del(struct dsa_switch *ds, int port,
++				    struct dsa_mall_mirror_tc_entry *mirror)
++{
++	struct ksz_device *dev = ds->priv;
++	bool in_use = false;
++	u8 data;
++	int p;
++
++	/* clear ingress/egress mirroring port */
++	if (mirror->ingress)
++		lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX,
++				 false);
++	else
++		lan937x_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_TX,
++				 false);
++
++	/* Check if any of the port is still referring to sniffer port */
++	for (p = 0; p < dev->port_cnt; p++) {
++		lan937x_pread8(dev, p, P_MIRROR_CTRL, &data);
++
++		if ((data & (PORT_MIRROR_RX | PORT_MIRROR_TX))) {
++			in_use = true;
++			break;
++		}
++	}
++
++	/* delete sniffing if there are no other mirroring rule exist */
++	if (!in_use)
++		lan937x_port_cfg(dev, mirror->to_local_port, P_MIRROR_CTRL,
++				 PORT_MIRROR_SNIFFER, false);
++}
++
+ static void lan937x_config_cpu_port(struct dsa_switch *ds)
  {
-@@ -334,12 +348,162 @@ static void lan937x_phylink_get_caps(struct dsa_switch *ds, int port,
- 	}
- }
- 
-+static void lan937x_get_eth_phy_stats(struct dsa_switch *ds, int port,
-+				      struct ethtool_eth_phy_stats *phy_stats)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port_mib *mib = &dev->ports[port].mib;
-+	u64 *cnt;
-+
-+	mutex_lock(&mib->cnt_mutex);
-+
-+	cnt = &mib->counters[lan937x_mib_rx_sym_err];
-+	lan937x_r_mib_pkt(dev, port, lan937x_mib_rx_sym_err, NULL, cnt);
-+
-+	phy_stats->SymbolErrorDuringCarrier = *cnt;
-+
-+	mutex_unlock(&mib->cnt_mutex);
-+}
-+
-+static void lan937x_get_eth_mac_stats(struct dsa_switch *ds, int port,
-+				      struct ethtool_eth_mac_stats *mac_stats)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port_mib *mib = &dev->ports[port].mib;
-+	u64 *ctr = mib->counters;
-+
-+	mutex_lock(&mib->cnt_mutex);
-+
-+	while (mib->cnt_ptr < dev->mib_cnt) {
-+		lan937x_r_mib_pkt(dev, port, mib->cnt_ptr,
-+				  NULL, &mib->counters[mib->cnt_ptr]);
-+		++mib->cnt_ptr;
-+	}
-+
-+	mac_stats->FramesTransmittedOK = ctr[lan937x_mib_tx_mcast] +
-+					 ctr[lan937x_mib_tx_bcast] +
-+					 ctr[lan937x_mib_tx_ucast] +
-+					 ctr[lan937x_mib_tx_pause];
-+
-+	mac_stats->SingleCollisionFrames = ctr[lan937x_mib_tx_single_col];
-+	mac_stats->MultipleCollisionFrames = ctr[lan937x_mib_tx_mult_col];
-+
-+	mac_stats->FramesReceivedOK = ctr[lan937x_mib_rx_mcast] +
-+				      ctr[lan937x_mib_rx_bcast] +
-+				      ctr[lan937x_mib_rx_ucast] +
-+				      ctr[lan937x_mib_rx_pause];
-+
-+	mac_stats->FrameCheckSequenceErrors = ctr[lan937x_mib_rx_crc_err];
-+	mac_stats->AlignmentErrors = ctr[lan937x_mib_rx_align_err];
-+	mac_stats->OctetsTransmittedOK = ctr[lan937x_mib_tx_total];
-+	mac_stats->FramesWithDeferredXmissions = ctr[lan937x_mib_tx_deferred];
-+	mac_stats->LateCollisions = ctr[lan937x_mib_tx_late_col];
-+	mac_stats->FramesAbortedDueToXSColls = ctr[lan937x_mib_tx_exc_col];
-+	mac_stats->FramesLostDueToIntMACXmitError = ctr[lan937x_mib_tx_discard];
-+
-+	mac_stats->OctetsReceivedOK = ctr[lan937x_mib_rx_total];
-+	mac_stats->FramesLostDueToIntMACRcvError = ctr[lan937x_mib_rx_discard];
-+	mac_stats->MulticastFramesXmittedOK = ctr[lan937x_mib_tx_mcast];
-+	mac_stats->BroadcastFramesXmittedOK = ctr[lan937x_mib_tx_bcast];
-+
-+	mac_stats->MulticastFramesReceivedOK = ctr[lan937x_mib_rx_mcast];
-+	mac_stats->BroadcastFramesReceivedOK = ctr[lan937x_mib_rx_bcast];
-+	mac_stats->InRangeLengthErrors = ctr[lan937x_mib_rx_fragments];
-+
-+	mib->cnt_ptr = 0;
-+	mutex_unlock(&mib->cnt_mutex);
-+}
-+
-+static void lan937x_get_eth_ctrl_stats(struct dsa_switch *ds, int port,
-+				       struct ethtool_eth_ctrl_stats *ctrl_sts)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port_mib *mib = &dev->ports[port].mib;
-+	u64 *cnt;
-+
-+	mutex_lock(&mib->cnt_mutex);
-+
-+	cnt = &mib->counters[lan937x_mib_rx_pause];
-+	lan937x_r_mib_pkt(dev, port, lan937x_mib_rx_pause, NULL, cnt);
-+	ctrl_sts->MACControlFramesReceived = *cnt;
-+
-+	cnt = &mib->counters[lan937x_mib_tx_pause];
-+	lan937x_r_mib_pkt(dev, port, lan937x_mib_tx_pause, NULL, cnt);
-+	ctrl_sts->MACControlFramesTransmitted = *cnt;
-+
-+	mutex_unlock(&mib->cnt_mutex);
-+}
-+
-+static void lan937x_get_stats64(struct dsa_switch *ds, int port,
-+				struct rtnl_link_stats64 *s)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	struct ksz_port_mib *mib = &dev->ports[port].mib;
-+	u64 *ctr = mib->counters;
-+
-+	mutex_lock(&mib->cnt_mutex);
-+
-+	while (mib->cnt_ptr < dev->mib_cnt) {
-+		lan937x_r_mib_pkt(dev, port, mib->cnt_ptr,
-+				  NULL, &mib->counters[mib->cnt_ptr]);
-+		++mib->cnt_ptr;
-+	}
-+
-+	s->rx_packets = ctr[lan937x_mib_rx_mcast] +
-+			ctr[lan937x_mib_rx_bcast] +
-+			ctr[lan937x_mib_rx_ucast] +
-+			ctr[lan937x_mib_rx_pause];
-+
-+	s->tx_packets = ctr[lan937x_mib_tx_mcast] +
-+			ctr[lan937x_mib_tx_bcast] +
-+			ctr[lan937x_mib_tx_ucast] +
-+			ctr[lan937x_mib_tx_pause];
-+
-+	s->rx_bytes = ctr[lan937x_mib_rx_total];
-+	s->tx_bytes = ctr[lan937x_mib_tx_total];
-+
-+	s->rx_errors = ctr[lan937x_mib_rx_fragments] +
-+		       ctr[lan937x_mib_rx_jabbers] +
-+		       ctr[lan937x_mib_rx_sym_err] +
-+		       ctr[lan937x_mib_rx_align_err] +
-+		       ctr[lan937x_mib_rx_crc_err];
-+
-+	s->tx_errors = ctr[lan937x_mib_tx_exc_col] +
-+		       ctr[lan937x_mib_tx_late_col];
-+
-+	s->rx_dropped = ctr[lan937x_mib_rx_discard];
-+	s->tx_dropped = ctr[lan937x_mib_tx_discard];
-+	s->multicast = ctr[lan937x_mib_rx_mcast];
-+
-+	s->collisions = ctr[lan937x_mib_tx_late_col] +
-+			ctr[lan937x_mib_tx_single_col] +
-+			ctr[lan937x_mib_tx_mult_col];
-+
-+	s->rx_length_errors = ctr[lan937x_mib_rx_fragments] +
-+			      ctr[lan937x_mib_rx_jabbers];
-+
-+	s->rx_crc_errors = ctr[lan937x_mib_rx_crc_err];
-+	s->rx_frame_errors = ctr[lan937x_mib_rx_align_err];
-+	s->tx_aborted_errors = ctr[lan937x_mib_tx_exc_col];
-+	s->tx_window_errors = ctr[lan937x_mib_tx_late_col];
-+
-+	mib->cnt_ptr = 0;
-+	mutex_unlock(&mib->cnt_mutex);
-+}
-+
- const struct dsa_switch_ops lan937x_switch_ops = {
- 	.get_tag_protocol = lan937x_get_tag_protocol,
- 	.setup = lan937x_setup,
- 	.phy_read = lan937x_phy_read16,
- 	.phy_write = lan937x_phy_write16,
- 	.port_enable = ksz_enable_port,
-+	.get_strings = lan937x_get_strings,
-+	.get_ethtool_stats = ksz_get_ethtool_stats,
-+	.get_sset_count = ksz_sset_count,
-+	.get_eth_ctrl_stats = lan937x_get_eth_ctrl_stats,
-+	.get_eth_mac_stats = lan937x_get_eth_mac_stats,
-+	.get_eth_phy_stats = lan937x_get_eth_phy_stats,
-+	.get_stats64 = lan937x_get_stats64,
- 	.port_bridge_join = ksz_port_bridge_join,
+ 	struct ksz_device *dev = ds->priv;
+@@ -508,6 +590,8 @@ const struct dsa_switch_ops lan937x_switch_ops = {
  	.port_bridge_leave = ksz_port_bridge_leave,
  	.port_stp_state_set = lan937x_port_stp_state_set,
+ 	.port_fast_age = ksz_port_fast_age,
++	.port_mirror_add = lan937x_port_mirror_add,
++	.port_mirror_del = lan937x_port_mirror_del,
+ 	.port_max_mtu = lan937x_get_max_mtu,
+ 	.port_change_mtu = lan937x_change_mtu,
+ 	.phylink_get_caps = lan937x_phylink_get_caps,
 -- 
 2.30.2
 
