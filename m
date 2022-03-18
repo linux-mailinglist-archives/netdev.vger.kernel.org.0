@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCC444DDD8F
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:04:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15FD94DDDA9
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 17:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236702AbiCRQFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 12:05:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60406 "EHLO
+        id S238555AbiCRQFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 12:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238428AbiCRQFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:05:15 -0400
+        with ESMTP id S238460AbiCRQFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 12:05:16 -0400
 Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C1A58E73;
-        Fri, 18 Mar 2022 09:03:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A31F6E343;
+        Fri, 18 Mar 2022 09:03:28 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7956D40028;
-        Fri, 18 Mar 2022 16:03:23 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id A212E40016;
+        Fri, 18 Mar 2022 16:03:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647619405;
+        t=1647619407;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=c/SCFKpq/JCyZCtCb1owNCXOwLEWKTbQIfZVT6MqRuA=;
-        b=bMFyM5jlOA5ipjBlaEWX+IcDaNXz7a5I2Dc0Y8/7iMf4gNQ1zSRl/0hCzS1sv++eg697Eo
-        uIWbT5gN5h7H5ymSEjwcJzsHjEYJIJGSkX3O3lka0M0InDGUC0I/6mhb28g2ZZ71oDy7Bs
-        zYAXSiT6potwN82eTj3yOORVyOxgExVE//RrLE0zBecddPoAu9E9MfZVrNLkBDscylMMTU
-        FYrpjHhtINvi5O+4szwfACgI9s95sVjaPA1uKUEkPktsp6p1jKmPLUt4iwHj5kPDapPrec
-        tKKaoA129MyhAqzlyr6eX89tGzThx+b5+HbBYQBaxoGKijpU1EnkDRbowjSlyg==
+        bh=URJAXhlDauk/l4yfi8v6pFwWxIgQSIBOv7Iyc/z2WsI=;
+        b=PuSLV2U/eML0/+TY8F0LZDcV2qRml+UAjglHHoVHJZ9/CE5MqUkS+pG5MuhK8lemQt+2yb
+        WesPVE74eKzy0VxrF+hDOyv08GJL0+7NJ9nsa8tmSEccbIUpVBBPeOX3juTOCCjBHJlc8A
+        d/r0FZfFrmktxQwkdud+hEFs2NJ5II2F54XpZFXxqrEwldrtd0bHCBClIEbjtx+hw1KMmF
+        q0cVg2BDcI+6YtbFlZ7oGaV3s1Atyk4pOVr89uAJhh826VxzY7gmPuoghJuhgM4R3wtb01
+        wULeM9wd4RgJ2TkR2OLzh197RsErSrDy1yfveTyq8Sw6tvx0t9Guxr4oyUg98g==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Daniel Scally <djrscally@gmail.com>,
@@ -50,9 +50,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         linux-i2c@vger.kernel.org, netdev@vger.kernel.org,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [PATCH 2/6] i2c: fwnode: add fwnode_find_i2c_adapter_by_node()
-Date:   Fri, 18 Mar 2022 17:00:55 +0100
-Message-Id: <20220318160059.328208-10-clement.leger@bootlin.com>
+Subject: [PATCH 3/6] i2c: of: use fwnode_get_i2c_adapter_by_node()
+Date:   Fri, 18 Mar 2022 17:00:56 +0100
+Message-Id: <20220318160059.328208-11-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220318160059.328208-1-clement.leger@bootlin.com>
 References: <20220318160059.328208-1-clement.leger@bootlin.com>
@@ -69,91 +69,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add fwnode_find_i2c_adapter_by_node() which allows to retrieve a i2c
-adapter using a fwnode. Since dev_fwnode() uses the fwnode provided by
-the of_node member of the device, this will also work for devices were
-the of_node has been set and not the fwnode field.
+Since the new fwnode function does the same check that was done by
+of_get_i2c_adapter_by_node(), call this one to avoid code duplication.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/i2c/Makefile          |  1 +
- drivers/i2c/i2c-core-fwnode.c | 41 +++++++++++++++++++++++++++++++++++
- include/linux/i2c.h           |  2 ++
- 3 files changed, 44 insertions(+)
- create mode 100644 drivers/i2c/i2c-core-fwnode.c
+ drivers/i2c/i2c-core-of.c | 30 ------------------------------
+ include/linux/i2c.h       |  5 ++++-
+ 2 files changed, 4 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/i2c/Makefile b/drivers/i2c/Makefile
-index c1d493dc9bac..c9c97675163e 100644
---- a/drivers/i2c/Makefile
-+++ b/drivers/i2c/Makefile
-@@ -6,6 +6,7 @@
- obj-$(CONFIG_I2C_BOARDINFO)	+= i2c-boardinfo.o
- obj-$(CONFIG_I2C)		+= i2c-core.o
- i2c-core-objs 			:= i2c-core-base.o i2c-core-smbus.o
-+i2c-core-objs			+= i2c-core-fwnode.o
- i2c-core-$(CONFIG_ACPI)		+= i2c-core-acpi.o
- i2c-core-$(CONFIG_I2C_SLAVE) 	+= i2c-core-slave.o
- i2c-core-$(CONFIG_OF) 		+= i2c-core-of.o
-diff --git a/drivers/i2c/i2c-core-fwnode.c b/drivers/i2c/i2c-core-fwnode.c
-new file mode 100644
-index 000000000000..2404c2477a80
---- /dev/null
-+++ b/drivers/i2c/i2c-core-fwnode.c
-@@ -0,0 +1,41 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Linux I2C core fwnode support code
-+ *
-+ * Copyright (C) 2022 Microchip
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/i2c.h>
-+
-+#include "i2c-core.h"
-+
-+static int fwnode_dev_or_parent_node_match(struct device *dev, const void *data)
-+{
-+	if (device_match_fwnode(dev, data))
-+		return 1;
-+
-+	/* For ACPI device node, we do not want to match the parent */
-+	if (!is_acpi_device_node(dev_fwnode(dev)) && dev->parent)
-+		return device_match_fwnode(dev->parent, data);
-+
-+	return 0;
-+}
-+
-+struct i2c_adapter *fwnode_find_i2c_adapter_by_node(struct fwnode_handle *node)
-+{
-+	struct device *dev;
-+	struct i2c_adapter *adapter;
-+
-+	dev = bus_find_device(&i2c_bus_type, NULL, node,
-+			      fwnode_dev_or_parent_node_match);
-+	if (!dev)
-+		return NULL;
-+
-+	adapter = i2c_verify_adapter(dev);
-+	if (!adapter)
-+		put_device(dev);
-+
-+	return adapter;
-+}
-+EXPORT_SYMBOL(fwnode_find_i2c_adapter_by_node);
+diff --git a/drivers/i2c/i2c-core-of.c b/drivers/i2c/i2c-core-of.c
+index 3ed74aa4b44b..be7d66aa0f49 100644
+--- a/drivers/i2c/i2c-core-of.c
++++ b/drivers/i2c/i2c-core-of.c
+@@ -113,17 +113,6 @@ void of_i2c_register_devices(struct i2c_adapter *adap)
+ 	of_node_put(bus);
+ }
+ 
+-static int of_dev_or_parent_node_match(struct device *dev, const void *data)
+-{
+-	if (dev->of_node == data)
+-		return 1;
+-
+-	if (dev->parent)
+-		return dev->parent->of_node == data;
+-
+-	return 0;
+-}
+-
+ /* must call put_device() when done with returned i2c_client device */
+ struct i2c_client *of_find_i2c_device_by_node(struct device_node *node)
+ {
+@@ -142,25 +131,6 @@ struct i2c_client *of_find_i2c_device_by_node(struct device_node *node)
+ }
+ EXPORT_SYMBOL(of_find_i2c_device_by_node);
+ 
+-/* must call put_device() when done with returned i2c_adapter device */
+-struct i2c_adapter *of_find_i2c_adapter_by_node(struct device_node *node)
+-{
+-	struct device *dev;
+-	struct i2c_adapter *adapter;
+-
+-	dev = bus_find_device(&i2c_bus_type, NULL, node,
+-			      of_dev_or_parent_node_match);
+-	if (!dev)
+-		return NULL;
+-
+-	adapter = i2c_verify_adapter(dev);
+-	if (!adapter)
+-		put_device(dev);
+-
+-	return adapter;
+-}
+-EXPORT_SYMBOL(of_find_i2c_adapter_by_node);
+-
+ /* must call i2c_put_adapter() when done with returned i2c_adapter device */
+ struct i2c_adapter *of_get_i2c_adapter_by_node(struct device_node *node)
+ {
 diff --git a/include/linux/i2c.h b/include/linux/i2c.h
-index 7d4f52ceb7b5..9b480a8b0a76 100644
+index 9b480a8b0a76..d1f384b805ad 100644
 --- a/include/linux/i2c.h
 +++ b/include/linux/i2c.h
-@@ -967,6 +967,8 @@ int i2c_handle_smbus_host_notify(struct i2c_adapter *adap, unsigned short addr);
- 
- #endif /* I2C */
- 
-+struct i2c_adapter *fwnode_find_i2c_adapter_by_node(struct fwnode_handle *node);
-+
- #if IS_ENABLED(CONFIG_OF)
- /* must call put_device() when done with returned i2c_client device */
+@@ -974,7 +974,10 @@ struct i2c_adapter *fwnode_find_i2c_adapter_by_node(struct fwnode_handle *node);
  struct i2c_client *of_find_i2c_device_by_node(struct device_node *node);
+ 
+ /* must call put_device() when done with returned i2c_adapter device */
+-struct i2c_adapter *of_find_i2c_adapter_by_node(struct device_node *node);
++static inline struct i2c_adapter *of_find_i2c_adapter_by_node(struct device_node *node)
++{
++	return fwnode_find_i2c_adapter_by_node(of_fwnode_handle(node));
++}
+ 
+ /* must call i2c_put_adapter() when done with returned i2c_adapter device */
+ struct i2c_adapter *of_get_i2c_adapter_by_node(struct device_node *node);
 -- 
 2.34.1
 
