@@ -2,225 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5AE4DD4B3
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 07:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB524DD4A9
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 07:18:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232741AbiCRGaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 02:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        id S232696AbiCRGSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 02:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232732AbiCRGaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 02:30:15 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A4DD3718
-        for <netdev@vger.kernel.org>; Thu, 17 Mar 2022 23:28:56 -0700 (PDT)
-Received: from kwepemi100008.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KKYvJ10wNzCqv6;
-        Fri, 18 Mar 2022 14:26:52 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100008.china.huawei.com (7.221.188.57) with Microsoft SMTP Server
+        with ESMTP id S231149AbiCRGSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 02:18:43 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A3522B3D4A;
+        Thu, 17 Mar 2022 23:17:25 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KKYhK2HN1zcbCv;
+        Fri, 18 Mar 2022 14:17:21 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 18 Mar 2022 14:28:54 +0800
-Received: from [127.0.0.1] (10.67.101.149) by kwepemm600017.china.huawei.com
- (7.193.23.234) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Mar
- 2022 14:28:54 +0800
-Subject: Re: [RFC net-next 1/2] net: ethtool: add ethtool ability to set/get
- fresh device features
-To:     Michal Kubecek <mkubecek@suse.cz>
-References: <20220315032108.57228-1-wangjie125@huawei.com>
- <20220315032108.57228-2-wangjie125@huawei.com>
- <20220315191823.h3edooqrfevkxfuz@lion.mk-sys.cz>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <huangguangbin2@huawei.com>, <lipeng321@huawei.com>,
-        <shenjian15@huawei.com>, <moyufeng@huawei.com>,
-        <linyunsheng@huawei.com>, <tanhuazhong@huawei.com>,
-        <salil.mehta@huawei.com>, <chenhao288@hisilicon.com>
-From:   "wangjie (L)" <wangjie125@huawei.com>
-Message-ID: <0897ab2c-4014-ea84-ea76-02533c347d27@huawei.com>
-Date:   Fri, 18 Mar 2022 14:28:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+ 15.1.2308.21; Fri, 18 Mar 2022 14:17:22 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <paul@paul-moore.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] netlabel: fix out-of-bounds memory accesses
+Date:   Fri, 18 Mar 2022 14:35:08 +0800
+Message-ID: <20220318063508.1348148-1-wangyufen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220315191823.h3edooqrfevkxfuz@lion.mk-sys.cz>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.101.149]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600017.china.huawei.com (7.193.23.234)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
 X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In calipso_map_cat_ntoh(), in the for loop, if the return value of
+netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when 
+netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
+of bitmap[byte_offset] occurs.
 
+The bug was found during fuzzing. The following is the fuzzing report
+ BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
+ Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
+ 
+ CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
+ Hardware name: linux,dummy-virt (DT)
+ Call trace:
+  dump_backtrace+0x21c/0x230
+  show_stack+0x1c/0x60
+  dump_stack_lvl+0x64/0x7c
+  print_address_description.constprop.0+0x70/0x2d0
+  __kasan_report+0x158/0x16c
+  kasan_report+0x74/0x120
+  __asan_load1+0x80/0xa0
+  netlbl_bitmap_walk+0x3c/0xd0
+  calipso_opt_getattr+0x1a8/0x230
+  calipso_sock_getattr+0x218/0x340
+  calipso_sock_getattr+0x44/0x60
+  netlbl_sock_getattr+0x44/0x80
+  selinux_netlbl_socket_setsockopt+0x138/0x170
+  selinux_socket_setsockopt+0x4c/0x60
+  security_socket_setsockopt+0x4c/0x90
+  __sys_setsockopt+0xbc/0x2b0
+  __arm64_sys_setsockopt+0x6c/0x84
+  invoke_syscall+0x64/0x190
+  el0_svc_common.constprop.0+0x88/0x200
+  do_el0_svc+0x88/0xa0
+  el0_svc+0x128/0x1b0
+  el0t_64_sync_handler+0x9c/0x120
+  el0t_64_sync+0x16c/0x170
 
-On 2022/3/16 3:18, Michal Kubecek wrote:
-> On Tue, Mar 15, 2022 at 11:21:07AM +0800, Jie Wang wrote:
->> As tx push is a standard feature for NICs, but netdev_feature which is
->> controlled by ethtool -K has reached the maximum specification.
->>
->> so this patch adds a pair of new ethtool messages：'ETHTOOL_GDEVFEAT' and
->> 'ETHTOOL_SDEVFEAT' to be used to set/get features contained entirely to
->> drivers. The message processing functions and function hooks in struct
->> ethtool_ops are also added.
->>
->> set-devfeatures/show-devfeatures option(s) are designed to provide set
->> and get function.
->> set cmd:
->> root@wj: ethtool --set-devfeatures eth4 tx-push [on | off]
->> get cmd:
->> root@wj: ethtool --show-devfeatures eth4
->>
->> Signed-off-by: Jie Wang <wangjie125@huawei.com>
->
-> The consensus is that no new commands should be added to the ioctl
-> interface. Please implement this via netlink.
->
-> Michal
->
-OK, thanks.
->> ---
->>  include/linux/ethtool.h      |  4 ++++
->>  include/uapi/linux/ethtool.h | 27 ++++++++++++++++++++++
->>  net/ethtool/ioctl.c          | 43 ++++++++++++++++++++++++++++++++++++
->>  3 files changed, 74 insertions(+)
->>
->> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
->> index 11efc45de66a..1a34bb074720 100644
->> --- a/include/linux/ethtool.h
->> +++ b/include/linux/ethtool.h
->> @@ -750,6 +750,10 @@ struct ethtool_ops {
->>  	int	(*set_module_power_mode)(struct net_device *dev,
->>  					 const struct ethtool_module_power_mode_params *params,
->>  					 struct netlink_ext_ack *extack);
->> +	int	(*get_devfeatures)(struct net_device *dev,
->> +				   struct ethtool_dev_features *dev_feat);
->> +	int	(*set_devfeatures)(struct net_device *dev,
->> +				   struct ethtool_dev_features *dev_feat);
->>  };
->>
->>  int ethtool_check_ops(const struct ethtool_ops *ops);
->> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
->> index 7bc4b8def12c..319d7b2c6acb 100644
->> --- a/include/uapi/linux/ethtool.h
->> +++ b/include/uapi/linux/ethtool.h
->> @@ -1490,6 +1490,31 @@ enum ethtool_fec_config_bits {
->>  #define ETHTOOL_FEC_BASER		(1 << ETHTOOL_FEC_BASER_BIT)
->>  #define ETHTOOL_FEC_LLRS		(1 << ETHTOOL_FEC_LLRS_BIT)
->>
->> +/**
->> + * struct ethtool_dev_features - device feature configurations
->> + * @cmd: Command number = %ETHTOOL_GDEVFEAT or %ETHTOOL_SDEVFEAT
->> + * @type: feature configuration type.
->> + * @data: feature configuration value.
->> + */
->> +struct ethtool_dev_features {
->> +	__u32 cmd;
->> +	__u32 type;
->> +	__u32 data;
->> +};
->> +
->> +/**
->> + * enum ethtool_dev_features_type - flags definition of ethtool_dev_features
->> + * @ETHTOOL_DEV_TX_PUSH: nic tx push mode set bit.
->> + */
->> +enum ethtool_dev_features_type {
->> +	ETHTOOL_DEV_TX_PUSH,
->> +	/*
->> +	 * Add your fresh feature type above and remember to update
->> +	 * feat_line[] in ethtool.c
->> +	 */
->> +	ETHTOOL_DEV_FEATURE_COUNT,
->> +};
->> +
->>  /* CMDs currently supported */
->>  #define ETHTOOL_GSET		0x00000001 /* DEPRECATED, Get settings.
->>  					    * Please use ETHTOOL_GLINKSETTINGS
->> @@ -1584,6 +1609,8 @@ enum ethtool_fec_config_bits {
->>  #define ETHTOOL_PHY_STUNABLE	0x0000004f /* Set PHY tunable configuration */
->>  #define ETHTOOL_GFECPARAM	0x00000050 /* Get FEC settings */
->>  #define ETHTOOL_SFECPARAM	0x00000051 /* Set FEC settings */
->> +#define ETHTOOL_GDEVFEAT	0x00000052 /* Get device features */
->> +#define ETHTOOL_SDEVFEAT	0x00000053 /* Set device features */
->>
->>  /* compatibility with older code */
->>  #define SPARC_ETH_GSET		ETHTOOL_GSET
->> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
->> index 326e14ee05db..efac23352eb9 100644
->> --- a/net/ethtool/ioctl.c
->> +++ b/net/ethtool/ioctl.c
->> @@ -2722,6 +2722,42 @@ static int ethtool_set_fecparam(struct net_device *dev, void __user *useraddr)
->>  	return dev->ethtool_ops->set_fecparam(dev, &fecparam);
->>  }
->>
->> +static int ethtool_get_devfeatures(struct net_device *dev,
->> +				   void __user *useraddr)
->> +{
->> +	struct ethtool_dev_features dev_feat;
->> +	int ret;
->> +
->> +	if (!dev->ethtool_ops->get_devfeatures)
->> +		return -EOPNOTSUPP;
->> +
->> +	if (copy_from_user(&dev_feat, useraddr, sizeof(dev_feat)))
->> +		return -EFAULT;
->> +
->> +	ret = dev->ethtool_ops->get_devfeatures(dev, &dev_feat);
->> +	if (ret)
->> +		return ret;
->> +
->> +	if (copy_to_user(useraddr, &dev_feat, sizeof(dev_feat)))
->> +		return -EFAULT;
->> +
->> +	return 0;
->> +}
->> +
->> +static int ethtool_set_devfeatures(struct net_device *dev,
->> +				   void __user *useraddr)
->> +{
->> +	struct ethtool_dev_features dev_feat;
->> +
->> +	if (!dev->ethtool_ops->set_devfeatures)
->> +		return -EOPNOTSUPP;
->> +
->> +	if (copy_from_user(&dev_feat, useraddr, sizeof(dev_feat)))
->> +		return -EFAULT;
->> +
->> +	return dev->ethtool_ops->set_devfeatures(dev, &dev_feat);
->> +}
->> +
->>  /* The main entry point in this file.  Called from net/core/dev_ioctl.c */
->>
->>  static int
->> @@ -2781,6 +2817,7 @@ __dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr,
->>  	case ETHTOOL_PHY_GTUNABLE:
->>  	case ETHTOOL_GLINKSETTINGS:
->>  	case ETHTOOL_GFECPARAM:
->> +	case ETHTOOL_GDEVFEAT:
->>  		break;
->>  	default:
->>  		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
->> @@ -3008,6 +3045,12 @@ __dev_ethtool(struct net *net, struct ifreq *ifr, void __user *useraddr,
->>  	case ETHTOOL_SFECPARAM:
->>  		rc = ethtool_set_fecparam(dev, useraddr);
->>  		break;
->> +	case ETHTOOL_GDEVFEAT:
->> +		rc = ethtool_get_devfeatures(dev, useraddr);
->> +		break;
->> +	case ETHTOOL_SDEVFEAT:
->> +		rc = ethtool_set_devfeatures(dev, useraddr);
->> +		break;
->>  	default:
->>  		rc = -EOPNOTSUPP;
->>  	}
->> --
->> 2.33.0
->>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+---
+ net/netlabel/netlabel_kapi.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
+index beb0e573266d..54c083003947 100644
+--- a/net/netlabel/netlabel_kapi.c
++++ b/net/netlabel/netlabel_kapi.c
+@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
+ 	unsigned char bitmask;
+ 	unsigned char byte;
+ 
++	if (offset >= bitmap_len)
++		return -1;
+ 	byte_offset = offset / 8;
+ 	byte = bitmap[byte_offset];
+ 	bit_spot = offset;
+-- 
+2.25.1
 
