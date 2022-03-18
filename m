@@ -2,162 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F55D4DD9E6
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 13:42:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 028B04DD9E8
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 13:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236386AbiCRMnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 08:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39102 "EHLO
+        id S236175AbiCRMoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 08:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236364AbiCRMno (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 08:43:44 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DEC42E35A6;
-        Fri, 18 Mar 2022 05:42:25 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 7CA1022239;
-        Fri, 18 Mar 2022 13:42:23 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647607344;
+        with ESMTP id S234989AbiCRMom (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 08:44:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 98A7781669
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 05:43:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647607402;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2gI1By7d7pZODcR9Jrg5KJt0BGb720XzrAnoqlGIfr4=;
-        b=QvJUD4udt719Hh1uXXCDZXR4omi2XirBDFQ9PiSYxnxL6ALD9y/ey8k1tkzwj/W0o2GB6d
-        Vp7YevDYqptBt/awTEiOdtosRJMbCW9XSbE84+4Ca7V8Rb177Upw7r6RP/um3ZEacNhcXo
-        uVWeJKqzLAtsTeimAWBctdJxfx231Uw=
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TK7mxEKgRZNWLvZlXF9vfxNBabyBYOfERDIL1PEFFRk=;
+        b=HWP0tCQRD0OamqFeG1YiwUmrKejIEUklyhWsNCTgfMQDLxwqvHW424DbPfaVHjZmrGOXPQ
+        2Bk4+MTKnNXu5OOumc7DthDBxYPVIA5kZjRM+8zOXQI1L0+ycNDpH1frpp2fIgqIwoArlJ
+        DQUjCKWEhmTOdLRb/8Ofts5yV0d4khM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-533-v4he9Kh0Omat7rcir5jpwg-1; Fri, 18 Mar 2022 08:43:21 -0400
+X-MC-Unique: v4he9Kh0Omat7rcir5jpwg-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AB9AF85A5BE;
+        Fri, 18 Mar 2022 12:43:20 +0000 (UTC)
+Received: from RHTPC1VM0NT.redhat.com (unknown [10.22.17.112])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4247140D1CB;
+        Fri, 18 Mar 2022 12:43:20 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dev@openvswitch.org, pshelar@ovn.org,
+        Ilya Maximets <i.maximets@ovn.org>,
+        Dumitru Ceara <dceara@redhat.com>,
+        Numan Siddique <nusiddiq@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>
+Subject: [PATCH net v2] openvswitch: always update flow key after nat
+Date:   Fri, 18 Mar 2022 08:43:19 -0400
+Message-Id: <20220318124319.3056455-1-aconole@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 18 Mar 2022 13:42:23 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        devicetree@vger.kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        robh+dt@kernel.org
-Subject: Re: [PATCH net-next 0/5] net: lan966x: Add support for FDMA
-In-Reply-To: <20220318121033.vklrsnxspg2f66dp@soft-dev3-1.localhost>
-References: <20220317185159.1661469-1-horatiu.vultur@microchip.com>
- <20220318110731.27794-1-michael@walle.cc>
- <20220318121033.vklrsnxspg2f66dp@soft-dev3-1.localhost>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <d05af3a88ef1bd846f0b9c6f548e2c45@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-03-18 13:10, schrieb Horatiu Vultur:
-> The 03/18/2022 12:07, Michael Walle wrote:
->> > Currently when injecting or extracting a frame from CPU, the frame
->> > is given to the HW each word at a time. There is another way to
->> > inject/extract frames from CPU using FDMA(Frame Direct Memory Access).
->> > In this way the entire frame is given to the HW. This improves both
->> > RX and TX bitrate.
->> 
->> I wanted to test this. ping and such works fine and I'm also
->> seeing fdma interrupts.
-> 
-> Thanks for testing this also on your board.
-> 
->> But as soon as I try iperf3 I get a skb_panic
->> (due to frame size?). Hope that splash below helps.
-> 
-> I have not seen this issue. But it looks like it is a problem that 
-> there
-> is no more space to add the FCS.
-> Can you tell me how you run iperf3 so I can also try it?
+During NAT, a tuple collision may occur.  When this happens, openvswitch
+will make a second pass through NAT which will perform additional packet
+modification.  This will update the skb data, but not the flow key that
+OVS uses.  This means that future flow lookups, and packet matches will
+have incorrect data.  This has been supported since
+5d50aa83e2c8 ("openvswitch: support asymmetric conntrack").
 
-oh, I forgot to include the commandline.
+That commit failed to properly update the sw_flow_key attributes, since
+it only called the ovs_ct_nat_update_key once, rather than each time
+ovs_ct_nat_execute was called.  As these two operations are linked, the
+ovs_ct_nat_execute() function should always make sure that the
+sw_flow_key is updated after a successful call through NAT infrastructure.
 
-# on the remote computer
-$ iperf3 --version
-iperf 3.6 (cJSON 1.5.2)
-Linux eddie01 4.19.0-18-686-pae #1 SMP Debian 4.19.208-1 (2021-09-29) 
-i686
-Optional features available: CPU affinity setting, IPv6 flow label, 
-SCTP, TCP congestion algorithm setting, sendfile / zerocopy, socket 
-pacing, authentication
-$ iperf3 -s
+Fixes: 5d50aa83e2c8 ("openvswitch: support asymmetric conntrack")
+Cc: Dumitru Ceara <dceara@redhat.com>
+Cc: Numan Siddique <nusiddiq@redhat.com>
+Signed-off-by: Aaron Conole <aconole@redhat.com>
+---
+v1->v2: removed forward decl., moved the ovs_nat_update_key function
+        made sure it compiles with NF_NAT disabled and enabled
 
-# on the board
-$ iperf3 --version
-iperf 3.10.1 (cJSON 1.7.13)
-Linux buildroot 5.17.0-rc8-next-20220316-00058-gc6cb0628f2a6-dirty #385 
-SMP Fri Mar 18 13:34:26 CET 2022 armv7l
-Optional features available: CPU affinity setting, IPv6 flow label, TCP 
-congestion algorithm setting, sendfile / zerocopy, socket pacing, bind 
-to device, support IPv4 don't fragment
-$ iperf3 -c eddie01
+ net/openvswitch/conntrack.c | 118 ++++++++++++++++++------------------
+ 1 file changed, 59 insertions(+), 59 deletions(-)
 
-> Also I have a small diff that might fix the issue:
-> ---
-> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c
-> @@ -534,6 +534,8 @@ int lan966x_fdma_xmit(struct sk_buff *skb, __be32
-> *ifh, struct net_device *dev)
->         struct lan966x_tx_dcb *next_dcb, *dcb;
->         struct lan966x_tx *tx = &lan966x->tx;
->         struct lan966x_db *next_db;
-> +       int needed_headroom;
-> +       int needed_tailroom;
->         dma_addr_t dma_addr;
->         int next_to_use;
->         int err;
-> @@ -554,10 +556,11 @@ int lan966x_fdma_xmit(struct sk_buff *skb,
-> __be32 *ifh, struct net_device *dev)
-> 
->         /* skb processing */
->         skb_tx_timestamp(skb);
+diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+index c07afff57dd3..4a947c13c813 100644
+--- a/net/openvswitch/conntrack.c
++++ b/net/openvswitch/conntrack.c
+@@ -734,6 +734,57 @@ static bool skb_nfct_cached(struct net *net,
+ }
+ 
+ #if IS_ENABLED(CONFIG_NF_NAT)
++static void ovs_nat_update_key(struct sw_flow_key *key,
++			       const struct sk_buff *skb,
++			       enum nf_nat_manip_type maniptype)
++{
++	if (maniptype == NF_NAT_MANIP_SRC) {
++		__be16 src;
++
++		key->ct_state |= OVS_CS_F_SRC_NAT;
++		if (key->eth.type == htons(ETH_P_IP))
++			key->ipv4.addr.src = ip_hdr(skb)->saddr;
++		else if (key->eth.type == htons(ETH_P_IPV6))
++			memcpy(&key->ipv6.addr.src, &ipv6_hdr(skb)->saddr,
++			       sizeof(key->ipv6.addr.src));
++		else
++			return;
++
++		if (key->ip.proto == IPPROTO_UDP)
++			src = udp_hdr(skb)->source;
++		else if (key->ip.proto == IPPROTO_TCP)
++			src = tcp_hdr(skb)->source;
++		else if (key->ip.proto == IPPROTO_SCTP)
++			src = sctp_hdr(skb)->source;
++		else
++			return;
++
++		key->tp.src = src;
++	} else {
++		__be16 dst;
++
++		key->ct_state |= OVS_CS_F_DST_NAT;
++		if (key->eth.type == htons(ETH_P_IP))
++			key->ipv4.addr.dst = ip_hdr(skb)->daddr;
++		else if (key->eth.type == htons(ETH_P_IPV6))
++			memcpy(&key->ipv6.addr.dst, &ipv6_hdr(skb)->daddr,
++			       sizeof(key->ipv6.addr.dst));
++		else
++			return;
++
++		if (key->ip.proto == IPPROTO_UDP)
++			dst = udp_hdr(skb)->dest;
++		else if (key->ip.proto == IPPROTO_TCP)
++			dst = tcp_hdr(skb)->dest;
++		else if (key->ip.proto == IPPROTO_SCTP)
++			dst = sctp_hdr(skb)->dest;
++		else
++			return;
++
++		key->tp.dst = dst;
++	}
++}
++
+ /* Modelled after nf_nat_ipv[46]_fn().
+  * range is only used for new, uninitialized NAT state.
+  * Returns either NF_ACCEPT or NF_DROP.
+@@ -741,7 +792,7 @@ static bool skb_nfct_cached(struct net *net,
+ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 			      enum ip_conntrack_info ctinfo,
+ 			      const struct nf_nat_range2 *range,
+-			      enum nf_nat_manip_type maniptype)
++			      enum nf_nat_manip_type maniptype, struct sw_flow_key *key)
+ {
+ 	int hooknum, nh_off, err = NF_ACCEPT;
+ 
+@@ -813,58 +864,11 @@ static int ovs_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ push:
+ 	skb_push_rcsum(skb, nh_off);
+ 
+-	return err;
+-}
+-
+-static void ovs_nat_update_key(struct sw_flow_key *key,
+-			       const struct sk_buff *skb,
+-			       enum nf_nat_manip_type maniptype)
+-{
+-	if (maniptype == NF_NAT_MANIP_SRC) {
+-		__be16 src;
+-
+-		key->ct_state |= OVS_CS_F_SRC_NAT;
+-		if (key->eth.type == htons(ETH_P_IP))
+-			key->ipv4.addr.src = ip_hdr(skb)->saddr;
+-		else if (key->eth.type == htons(ETH_P_IPV6))
+-			memcpy(&key->ipv6.addr.src, &ipv6_hdr(skb)->saddr,
+-			       sizeof(key->ipv6.addr.src));
+-		else
+-			return;
+-
+-		if (key->ip.proto == IPPROTO_UDP)
+-			src = udp_hdr(skb)->source;
+-		else if (key->ip.proto == IPPROTO_TCP)
+-			src = tcp_hdr(skb)->source;
+-		else if (key->ip.proto == IPPROTO_SCTP)
+-			src = sctp_hdr(skb)->source;
+-		else
+-			return;
+-
+-		key->tp.src = src;
+-	} else {
+-		__be16 dst;
+-
+-		key->ct_state |= OVS_CS_F_DST_NAT;
+-		if (key->eth.type == htons(ETH_P_IP))
+-			key->ipv4.addr.dst = ip_hdr(skb)->daddr;
+-		else if (key->eth.type == htons(ETH_P_IPV6))
+-			memcpy(&key->ipv6.addr.dst, &ipv6_hdr(skb)->daddr,
+-			       sizeof(key->ipv6.addr.dst));
+-		else
+-			return;
+-
+-		if (key->ip.proto == IPPROTO_UDP)
+-			dst = udp_hdr(skb)->dest;
+-		else if (key->ip.proto == IPPROTO_TCP)
+-			dst = tcp_hdr(skb)->dest;
+-		else if (key->ip.proto == IPPROTO_SCTP)
+-			dst = sctp_hdr(skb)->dest;
+-		else
+-			return;
++	/* Update the flow key if NAT successful. */
++	if (err == NF_ACCEPT)
++		ovs_nat_update_key(key, skb, maniptype);
+ 
+-		key->tp.dst = dst;
+-	}
++	return err;
+ }
+ 
+ /* Returns NF_DROP if the packet should be dropped, NF_ACCEPT otherwise. */
+@@ -906,7 +910,7 @@ static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
+ 	} else {
+ 		return NF_ACCEPT; /* Connection is not NATed. */
+ 	}
+-	err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype);
++	err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range, maniptype, key);
+ 
+ 	if (err == NF_ACCEPT && ct->status & IPS_DST_NAT) {
+ 		if (ct->status & IPS_SRC_NAT) {
+@@ -916,17 +920,13 @@ static int ovs_ct_nat(struct net *net, struct sw_flow_key *key,
+ 				maniptype = NF_NAT_MANIP_SRC;
+ 
+ 			err = ovs_ct_nat_execute(skb, ct, ctinfo, &info->range,
+-						 maniptype);
++						 maniptype, key);
+ 		} else if (CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
+ 			err = ovs_ct_nat_execute(skb, ct, ctinfo, NULL,
+-						 NF_NAT_MANIP_SRC);
++						 NF_NAT_MANIP_SRC, key);
+ 		}
+ 	}
+ 
+-	/* Mark NAT done if successful and update the flow key. */
+-	if (err == NF_ACCEPT)
+-		ovs_nat_update_key(key, skb, maniptype);
+-
+ 	return err;
+ }
+ #else /* !CONFIG_NF_NAT */
+-- 
+2.31.1
 
-btw. skb_tx_timestamp() should be as close to the handover
-of the frame to the hardware as possible, no?
-
-> -       if (skb_headroom(skb) < IFH_LEN * sizeof(u32)) {
-> -               err = pskb_expand_head(skb,
-> -                                      IFH_LEN * sizeof(u32) -
-> skb_headroom(skb),
-> -                                      0, GFP_ATOMIC);
-> +       needed_headroom = max_t(int, IFH_LEN * sizeof(u32) -
-> skb_headroom(skb), 0);
-> +       needed_tailroom = max_t(int, ETH_FCS_LEN - skb_tailroom(skb), 
-> 0);
-> +       if (needed_headroom || needed_tailroom) {
-> +               err = pskb_expand_head(skb, needed_headroom, 
-> needed_tailroom,
-> +                                      GFP_ATOMIC);
->                 if (unlikely(err)) {
->                         dev->stats.tx_dropped++;
->                         err = NETDEV_TX_OK;
-
-Indeed this will fix the issue:
-
-# iperf3 -c eddie01
-Connecting to host eddie01, port 5201
-[  5] local 10.0.1.143 port 55342 connected to 10.0.1.42 port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.01   sec  43.8 MBytes   364 Mbits/sec    0    245 KBytes
-[  5]   1.01-2.02   sec  43.8 MBytes   364 Mbits/sec    0    246 KBytes
-[  5]   2.02-3.03   sec  43.8 MBytes   364 Mbits/sec    0    259 KBytes
-
-# iperf3 -R -c eddie01
-Connecting to host eddie01, port 5201
-Reverse mode, remote host eddie01 is sending
-[  5] local 10.0.1.143 port 55346 connected to 10.0.1.42 port 5201
-[ ID] Interval           Transfer     Bitrate
-[  5]   0.00-1.00   sec  28.6 MBytes   240 Mbits/sec
-[  5]   1.00-2.00   sec  28.9 MBytes   242 Mbits/sec
-[  5]   2.00-3.00   sec  28.7 MBytes   241 Mbits/sec
-
--michael
