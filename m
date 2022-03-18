@@ -2,226 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 466B14DD9F2
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 13:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 071304DD9FE
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 13:53:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236312AbiCRMt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 08:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59250 "EHLO
+        id S236437AbiCRMyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 08:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbiCRMty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 08:49:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3F6A3BBF5
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 05:48:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647607710;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GCfAgyuZ0OX7JFjxXSEHqp0hOipNNfy67p5hbI/+wno=;
-        b=fS1Kr1ruNuN9u5KE/0mj941tR2/m3Pj70rSuOoKPEKIvvJX6nDpvB6I9lHq+2RH3anczYY
-        6gs8MIqiyA7FsHSnzcYoIdGR8rWY0/lYot5xxJl9h0Jy4a0MZCOzQppZg0/el6hudQxTC1
-        CBRsFF+l2DqHTF1xYLbdv2lGKkPSn5M=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-591-dDFo_dqgPC-yZ0eROhcYzA-1; Fri, 18 Mar 2022 08:48:29 -0400
-X-MC-Unique: dDFo_dqgPC-yZ0eROhcYzA-1
-Received: by mail-qv1-f72.google.com with SMTP id dj3-20020a056214090300b004354a9c60aaso6223895qvb.0
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 05:48:29 -0700 (PDT)
+        with ESMTP id S236443AbiCRMyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 08:54:53 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CAD3191F
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 05:53:34 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id r22so11190467ljd.4
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 05:53:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:organization:mime-version
+         :content-disposition;
+        bh=b76rCDnXLzMy8Mz6/t1JOjyUy2GNIxCMmQvWAHS6ovs=;
+        b=KyZiHS0dM5VeD0uDEf9L9nHebCp1uo2pRVUJ5gWY/MTKX9DyaduLwZoBWyZVcoFcgh
+         haO7ruifO62XT0o/OZWcPt+8ti1nwdrdqdxXOXrvA3YuM6f1G8ETpAdJy4xyEhoYIfTD
+         +pDbSpd7f6ZOebM4D/VrUrdzaskJmoNux5b6W2BkdPKfCjLMqWMFKTNMvWuPF2esxT9D
+         UOvb1sEhtvX7im3uFavXcsvMy1XlKhIasU3CeeBblYQF9ePk0iybH45+wYcxQ+Oj3yiv
+         hMIm9jx0aaM3NI0QJUIdprfhHOYonaHzqO/pXtVnfjEzId4P1kizuuMT2yLLwTn4Aj5h
+         aONw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=GCfAgyuZ0OX7JFjxXSEHqp0hOipNNfy67p5hbI/+wno=;
-        b=8NpPLqhGZfsef9ggWLgXuCpb+9ZE4W2+PpUn1x1stozd3vus56LNRyK1Poa3VBUTBI
-         V1ax0Za4XocPCxoGPYhMp7Kt9gS5J5pGjICTJsfNUWTyHZeqPH5HzRY+43cZweU9JSSj
-         F5tKUVO4Cu3mdl3D5FNQyroEOu92UDVGrCk9bTBwjUAtRisSyCn2XKymiJmzwEegP1p4
-         V1NwpyzJCOpG+AsCxDb06zQEYTgtkaPEomP95CgGJB7LXqX0oU9Zhn7F25s2gtAjJqSD
-         UtHNYqiDsk5o8ulzJ72KenuKw4JeIA10b5r4zm6cBDME0ba0vXopeLChHCNOfAbve55Y
-         ebMw==
-X-Gm-Message-State: AOAM533CsA8dWgiMdqATXzwz7rmzH3Mr6Icx4EfMx20pnHToO2BmAaME
-        Q6eIh/SVp3FGipDYxkpQ1q9B4bkNP8LIhMmswOtZpZUbnKLaRl62tLulrXm/EzdmN8vEuvh8YQp
-        OV4VWlarWgR5Hmfxi
-X-Received: by 2002:a05:6214:500f:b0:435:796b:7c62 with SMTP id jo15-20020a056214500f00b00435796b7c62mr7187494qvb.12.1647607709238;
-        Fri, 18 Mar 2022 05:48:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyKYwXyLw9uIPqPMHb6aUlpImB/feQ7v4skl2g4IqCachcxdpYv47oc4LFv0BlL2V0CdiIHGQ==
-X-Received: by 2002:a05:6214:500f:b0:435:796b:7c62 with SMTP id jo15-20020a056214500f00b00435796b7c62mr7187474qvb.12.1647607708950;
-        Fri, 18 Mar 2022 05:48:28 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id d6-20020ac85d86000000b002e1e20444b6sm5640226qtx.57.2022.03.18.05.48.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:organization
+         :mime-version:content-disposition;
+        bh=b76rCDnXLzMy8Mz6/t1JOjyUy2GNIxCMmQvWAHS6ovs=;
+        b=vxxPJ4HdhUnxWcvyg6SGMTVqdQ1UjNNQ5JoijCzBwe92w9Q67ptCfueqPvqQqb/pUR
+         PPmCb4CynvjQ8qGlFEuva71ahyzhq3DA8PIdnu4Ubdn3dn6o4AMaZbDUOVtUyJcb5MLJ
+         1tc29LKNgT4fBwxsBmABSI5g21rbvVJASSt6db3OuyBVv+QDSjTE6VSCBaMw5bm904Dx
+         qZrzHX7Nu0f9FVTEAC5+O+fFWsEgJkPAF4V7zGLvg5TU8XEZlV3oY5/6He0wxrfon+92
+         +9uuFbguXzG3Z9ZxhhV0gXKXwIGnbTB1KizyXig/jY8d/t+KU3DhWyKAtzZGB5nkifS/
+         cLUw==
+X-Gm-Message-State: AOAM532lMRgK5f9XjwTBDc2bv6G4l+hOaEP3ehDePBr9gWyL5wCKUjxf
+        eNXTStPbTMqiJdC0at1UjM4=
+X-Google-Smtp-Source: ABdhPJxHpsh5Ml2iEyRpgTvgqp38LMQSsMVNWsdaGJCvBMZyz69J/DemlkStb0boXc9MWcJ3lOLrRA==
+X-Received: by 2002:a2e:80ce:0:b0:249:5e85:2965 with SMTP id r14-20020a2e80ce000000b002495e852965mr5647043ljg.129.1647608012959;
+        Fri, 18 Mar 2022 05:53:32 -0700 (PDT)
+Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id q27-20020a05651232bb00b00448b43e2bc7sm837662lfe.64.2022.03.18.05.53.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 05:48:28 -0700 (PDT)
-Message-ID: <a24b13ea10ca898bb003300084039b459d553f6d.camel@redhat.com>
-Subject: Re: [PATCH v2] ipv6: acquire write lock for addr_list in
- dev_forward_change
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Niels Dossche <dossche.niels@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Fri, 18 Mar 2022 13:48:25 +0100
-In-Reply-To: <7bd311d0846269f331a1d401c493f5511491d0df.camel@redhat.com>
-References: <20220317155637.29733-1-dossche.niels@gmail.com>
-         <7bd311d0846269f331a1d401c493f5511491d0df.camel@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Fri, 18 Mar 2022 05:53:32 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 13:53:31 +0100
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: sparx5: Use vid 1 when bridge default vid 0 to
+ avoid collision
+Message-ID: <20220318125331.53mdxhtrrddsbvws@wse-c0155>
+Organization: Westermo Network Technologies AB
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-03-18 at 10:13 +0100, Paolo Abeni wrote:
-> On Thu, 2022-03-17 at 16:56 +0100, Niels Dossche wrote:
-> > No path towards dev_forward_change (common ancestor of paths is in
-> > addrconf_fixup_forwarding) acquires idev->lock for idev->addr_list.
-> > We need to hold the lock during the whole loop in dev_forward_change.
-> > __ipv6_dev_ac_{inc,dec} both acquire the write lock on idev->lock in
-> > their function body. Since addrconf_{join,leave}_anycast call to
-> > __ipv6_dev_ac_inc and __ipv6_dev_ac_dec respectively, we need to move
-> > the responsibility of locking upwards.
-> > 
-> > This patch moves the locking up. For __ipv6_dev_ac_dec, there is one
-> > place where the caller can directly acquire the idev->lock, that is in
-> > ipv6_dev_ac_dec. The other caller is addrconf_leave_anycast, which now
-> > needs to be called under idev->lock, and thus it becomes the
-> > responsibility of the callers of addrconf_leave_anycast to hold that
-> > lock. For __ipv6_dev_ac_inc, there are also 2 callers, one is
-> > ipv6_sock_ac_join, which can acquire the lock during the call to
-> > __ipv6_dev_ac_inc. The other caller is addrconf_join_anycast, which now
-> > needs to be called under idev->lock, and thus it becomes the
-> > responsibility of the callers of addrconf_join_anycast to hold that
-> > lock.
-> > 
-> > Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-> > ---
-> > 
-> > Changes in v2:
-> >  - Move the locking upwards
-> > 
-> >  net/ipv6/addrconf.c | 21 ++++++++++++++++-----
-> >  net/ipv6/anycast.c  | 37 ++++++++++++++++---------------------
-> >  2 files changed, 32 insertions(+), 26 deletions(-)
-> > 
-> > diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> > index f908e2fd30b2..69e9f81e2045 100644
-> > --- a/net/ipv6/addrconf.c
-> > +++ b/net/ipv6/addrconf.c
-> > @@ -818,6 +818,7 @@ static void dev_forward_change(struct inet6_dev *idev)
-> >  		}
-> >  	}
-> >  
-> > +	write_lock_bh(&idev->lock);
-> >  	list_for_each_entry(ifa, &idev->addr_list, if_list) {
-> >  		if (ifa->flags&IFA_F_TENTATIVE)
-> >  			continue;
-> > @@ -826,6 +827,7 @@ static void dev_forward_change(struct inet6_dev *idev)
-> >  		else
-> >  			addrconf_leave_anycast(ifa);
-> >  	}
-> > +	write_unlock_bh(&idev->lock);
-> >  	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
-> >  				     NETCONFA_FORWARDING,
-> >  				     dev->ifindex, &idev->cnf);
-> > @@ -2191,7 +2193,7 @@ void addrconf_leave_solict(struct inet6_dev *idev, const struct in6_addr *addr)
-> >  	__ipv6_dev_mc_dec(idev, &maddr);
-> >  }
-> >  
-> > -/* caller must hold RTNL */
-> > +/* caller must hold RTNL and write lock idev->lock */
-> >  static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
-> >  {
-> >  	struct in6_addr addr;
-> > @@ -2204,7 +2206,7 @@ static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
-> >  	__ipv6_dev_ac_inc(ifp->idev, &addr);
-> >  }
-> >  
-> > -/* caller must hold RTNL */
-> > +/* caller must hold RTNL and write lock idev->lock */
-> >  static void addrconf_leave_anycast(struct inet6_ifaddr *ifp)
-> >  {
-> >  	struct in6_addr addr;
-> > @@ -3857,8 +3859,11 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
-> >  			__ipv6_ifa_notify(RTM_DELADDR, ifa);
-> >  			inet6addr_notifier_call_chain(NETDEV_DOWN, ifa);
-> >  		} else {
-> > -			if (idev->cnf.forwarding)
-> > +			if (idev->cnf.forwarding) {
-> > +				write_lock_bh(&idev->lock);
-> >  				addrconf_leave_anycast(ifa);
-> > +				write_unlock_bh(&idev->lock);
-> > +			}
-> >  			addrconf_leave_solict(ifa->idev, &ifa->addr);
-> >  		}
-> >  
-> > @@ -6136,16 +6141,22 @@ static void __ipv6_ifa_notify(int event, struct inet6_ifaddr *ifp)
-> >  				&ifp->addr, ifp->idev->dev->name);
-> >  		}
-> >  
-> > -		if (ifp->idev->cnf.forwarding)
-> > +		if (ifp->idev->cnf.forwarding) {
-> > +			write_lock_bh(&ifp->idev->lock);
-> >  			addrconf_join_anycast(ifp);
-> > +			write_unlock_bh(&ifp->idev->lock);
-> > +		}
-> >  		if (!ipv6_addr_any(&ifp->peer_addr))
-> >  			addrconf_prefix_route(&ifp->peer_addr, 128,
-> >  					      ifp->rt_priority, ifp->idev->dev,
-> >  					      0, 0, GFP_ATOMIC);
-> >  		break;
-> >  	case RTM_DELADDR:
-> > -		if (ifp->idev->cnf.forwarding)
-> > +		if (ifp->idev->cnf.forwarding) {
-> > +			write_lock_bh(&ifp->idev->lock);
-> >  			addrconf_leave_anycast(ifp);
-> > +			write_unlock_bh(&ifp->idev->lock);
-> > +		}
-> >  		addrconf_leave_solict(ifp->idev, &ifp->addr);
-> >  		if (!ipv6_addr_any(&ifp->peer_addr)) {
-> >  			struct fib6_info *rt;
-> > diff --git a/net/ipv6/anycast.c b/net/ipv6/anycast.c
-> > index dacdea7fcb62..f3017ed6f005 100644
-> > --- a/net/ipv6/anycast.c
-> > +++ b/net/ipv6/anycast.c
-> > @@ -136,7 +136,9 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
-> >  			goto error;
-> >  	}
-> >  
-> > +	write_lock_bh(&idev->lock);
-> >  	err = __ipv6_dev_ac_inc(idev, addr);
-> > +	write_unlock_bh(&idev->lock);
-> 
-> I feat this is problematic, due this call chain:
-> 
->  __ipv6_dev_ac_inc() -> addrconf_join_solict() -> ipv6_dev_mc_inc ->
-> __ipv6_dev_mc_inc -> mutex_lock(&idev->mc_lock);
-> 
-> The latter call requires process context.
-> 
-> One alternarive (likely very hackish way) to solve this could be:
-> - adding another list entry  into struct inet6_dev, rtnl protected.
+Standalone ports use vid 0. Let the bridge use vid 1 when
+"vlan_default_pvid 0" is set to avoid collisions. Since no
+VLAN is created when default pvid is 0 this is set
+at "PORT_ATTR_SET" and handled in the Switchdev fdb handler.
 
-Typo above: the new field should be added to 'struct inet6_ifaddr'.
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+---
+ .../microchip/sparx5/sparx5_switchdev.c       | 26 ++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
 
-> - traverse addr_list under idev->lock and add each entry with
-> forwarding on to into a tmp list (e.g. tmp_join) using the field above;
-> add the entries with forwarding off into another tmp list (e.g.
-> tmp_leave), still using the same field.
-
-Again confusing text above, sorry. As the forwarding flag is per
-device, all the addr entries will land into the same tmp list.
-
-It's probably better if I sketch up some code...
-
-/P
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+index 2d5de1c06fab..8b69c72ff807 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+@@ -102,6 +102,11 @@ static int sparx5_port_attr_set(struct net_device *dev, const void *ctx,
+ 		sparx5_port_attr_ageing_set(port, attr->u.ageing_time);
+ 		break;
+ 	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
++		/* Used PVID 1 when default_pvid is 0, to avoid
++		 * collision with non-bridged ports.
++		 */
++		if (port->pvid == 0)
++			port->pvid = 1;
+ 		port->vlan_aware = attr->u.vlan_filtering;
+ 		sparx5_vlan_port_apply(port->sparx5, port);
+ 		break;
+@@ -137,6 +142,9 @@ static int sparx5_port_bridge_join(struct sparx5_port *port,
+ 	if (err)
+ 		goto err_switchdev_offload;
+ 
++	/* Remove standalone port entry */
++	sparx5_mact_forget(sparx5, ndev->dev_addr, 0);
++
+ 	/* Port enters in bridge mode therefor don't need to copy to CPU
+ 	 * frames for multicast in case the bridge is not requesting them
+ 	 */
+@@ -165,6 +173,9 @@ static void sparx5_port_bridge_leave(struct sparx5_port *port,
+ 	port->pvid = NULL_VID;
+ 	port->vid = NULL_VID;
+ 
++	/* Forward frames to CPU */
++	sparx5_mact_learn(sparx5, PGID_CPU, port->ndev->dev_addr, 0);
++
+ 	/* Port enters in host more therefore restore mc list */
+ 	__dev_mc_sync(port->ndev, sparx5_mc_sync, sparx5_mc_unsync);
+ }
+@@ -249,6 +260,7 @@ static void sparx5_switchdev_bridge_fdb_event_work(struct work_struct *work)
+ 	struct sparx5_port *port;
+ 	struct sparx5 *sparx5;
+ 	bool host_addr;
++	u16 vid;
+ 
+ 	rtnl_lock();
+ 	if (!sparx5_netdevice_check(dev)) {
+@@ -262,17 +274,25 @@ static void sparx5_switchdev_bridge_fdb_event_work(struct work_struct *work)
+ 
+ 	fdb_info = &switchdev_work->fdb_info;
+ 
++	/* Used PVID 1 when default_pvid is 0, to avoid
++	 * collision with non-bridged ports.
++	 */
++	if (fdb_info->vid == 0)
++		vid = 1;
++	else
++		vid = fdb_info->vid;
++
+ 	switch (switchdev_work->event) {
+ 	case SWITCHDEV_FDB_ADD_TO_DEVICE:
+ 		if (host_addr)
+ 			sparx5_add_mact_entry(sparx5, dev, PGID_CPU,
+-					      fdb_info->addr, fdb_info->vid);
++					      fdb_info->addr, vid);
+ 		else
+ 			sparx5_add_mact_entry(sparx5, port->ndev, port->portno,
+-					      fdb_info->addr, fdb_info->vid);
++					      fdb_info->addr, vid);
+ 		break;
+ 	case SWITCHDEV_FDB_DEL_TO_DEVICE:
+-		sparx5_del_mact_entry(sparx5, fdb_info->addr, fdb_info->vid);
++		sparx5_del_mact_entry(sparx5, fdb_info->addr, vid);
+ 		break;
+ 	}
+ 
+-- 
+2.30.2
 
