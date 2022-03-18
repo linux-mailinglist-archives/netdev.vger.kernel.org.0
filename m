@@ -2,54 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D9F04DD1F4
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 01:30:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44B484DD205
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 01:46:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbiCRAbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 17 Mar 2022 20:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
+        id S231241AbiCRArN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 17 Mar 2022 20:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230260AbiCRAba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 20:31:30 -0400
+        with ESMTP id S229482AbiCRArN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 17 Mar 2022 20:47:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7F41AA058;
-        Thu, 17 Mar 2022 17:30:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06552986E8;
+        Thu, 17 Mar 2022 17:45:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F8F0B820FD;
-        Fri, 18 Mar 2022 00:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 43F4AC340EE;
-        Fri, 18 Mar 2022 00:30:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 916B3B81F6A;
+        Fri, 18 Mar 2022 00:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ECEBC340E9;
+        Fri, 18 Mar 2022 00:45:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647563410;
-        bh=E2Vr9Rj9cTD0c26P/K+p388YiJfYXuN1UcSWwBEQLTY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AKRNIPZoVmzw1F18R1UfzZJEF0gzxTGZtdbppC1GYZP7cZLqpPu/NggNeT0GyNppT
-         eRlKc6q+i4yyat82Y1rvkrbHhtJd7wsDgnMQcH/cj5V7YJYzJF1MOpVMxaMLx7Zki/
-         apsJcWj8FXFDg+3nLvDZVfPAC+OudxeLGdIquBxtcQ6lB/rxbsgA9kK05SHe9Z2If3
-         DAHqMQqJC4B5EmIUQFXw3RPNf36AH12SbgMfxkWGUd6tsEepBuZeOaa3ET95mW6xx/
-         +5yu3UI5oDUxJ0iOtm/bsiZJ2zo/jDO7UmdNpPWZy6ZAg7EMkvJSd0W4JJYglzNx9N
-         FQZYHFBDM0yRA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1A513E6D3DD;
-        Fri, 18 Mar 2022 00:30:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1647564353;
+        bh=869vS8CNRy7w/fO0Z3K24Zwe/P2FIlJv9kmWIGddaJ0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cmr9ZqXCFS93xvfnp/inh6Nz+h9u2D+XvrlcMZOnuSc1PIQ7o0RPB2vZg+8NSTgmM
+         ZLYY1svNwPNBZCrXgNDVuQqVmFGP8oIfhtXXN45S8scBQTlfcTISSHPcRq76nLhb/x
+         AzvREflIpFQD2J2NcnScnyn0XWGkpmRZd/XQ7YKdNOK7ixyjzFU2Ca3rwrhYjvdM95
+         +MMjuj/2dStN4sYluSsNL2ye+ZAxP6gQKnmj4nKkVMQoqrf5soe46X7l5wiuIccrcA
+         IL0n31Gko0MEIUGPE15nG3mYp9F4kh7CigmkDwHAa7M3gR6b2+T0QL/A6FPdPS1Vwt
+         ksAwLY65cyT+Q==
+Date:   Thu, 17 Mar 2022 17:45:47 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>, pablo@netfilter.org,
+        laforge@gnumonks.org, davem@davemloft.net,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net-next] gtp: Remove a bogus tab
+Message-ID: <20220317174547.6193437e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <164756101290.14093.7117497281533622987.git-patchwork-notify@kernel.org>
+References: <20220317075642.GD25237@kili>
+        <164756101290.14093.7117497281533622987.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1 1/1] net: dsa: microchip: ksz8795: handle eee
- specif erratum
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164756341010.32270.6496971748158497644.git-patchwork-notify@kernel.org>
-Date:   Fri, 18 Mar 2022 00:30:10 +0000
-References: <20220316125529.1489045-1-o.rempel@pengutronix.de>
-In-Reply-To: <20220316125529.1489045-1-o.rempel@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,29 +56,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 16 Mar 2022 13:55:29 +0100 you wrote:
-> According to erratum described in DS80000687C[1]: "Module 2: Link drops with
-> some EEE link partners.", we need to "Disable the EEE next page
-> exchange in EEE Global Register 2"
+On Thu, 17 Mar 2022 23:50:12 +0000 patchwork-bot+netdevbpf@kernel.org
+wrote:
+> Hello:
 > 
-> 1 - https://ww1.microchip.com/downloads/en/DeviceDoc/KSZ87xx-Errata-DS80000687C.pdf
+> This patch was applied to netdev/net-next.git (master)
+> by Tony Nguyen <anthony.l.nguyen@intel.com>:
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> On Thu, 17 Mar 2022 10:56:42 +0300 you wrote:
+> > The "kfree_skb(skb_to_send);" is not supposed to be indented that far.
+> > 
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> >  drivers/net/gtp.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)  
 > 
-> [...]
+> Here is the summary with links:
+>   - [net-next] gtp: Remove a bogus tab
+>     https://git.kernel.org/netdev/net-next/c/02f393381d14
 
-Here is the summary with links:
-  - [net-next,v1,1/1] net: dsa: microchip: ksz8795: handle eee specif erratum
-    https://git.kernel.org/netdev/net-next/c/7b6e6235b664
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Not really, the patch that got applied was the version from Wojciech.
