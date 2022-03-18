@@ -2,141 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 299324DD5E0
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 09:12:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 659924DD690
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 09:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbiCRIOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 04:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44436 "EHLO
+        id S233940AbiCRI5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 04:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232272AbiCRIOE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 04:14:04 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2127.outbound.protection.outlook.com [40.107.223.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C931E261DD8
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 01:12:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dCh/79p/DV/vjn48jAI2XAEZo77hhJBhfVjq+3K2PTpZj9ErPQ50nB38gUz+2eqqb6LbVDVHuowkgCLD4VQfDe0s2Wnn6Q02WHyX91lT6BqDhWJrIZ4Dhtcoe9u8QTa+YUcAg+zZCtpgclOKg78mjEY2BTXilZln9X20rghtywG+/GmMQyo6DFF94i5N8lBqOgYMhMwUyQJ7R5oZr28ezmj5P2/86jNJNZJ75rFdarXY1ZO3G3spA7gr5QJ0hU6nlj4U2Cwho5Vwil5DxYaF20/lGTjjDdHePnIkRVL8KGsLTQX0qx3OYMfqbWPQitZT9LxNZctD5dKBWkaiVNfchA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wzegdf8oK/Hlfhsn2YXghcSLRsyJFvWFDkC2UovI0CE=;
- b=cCS29y2kWZdr19aDFyVVjyUraFa5Z4YMSH27nUWxjTPWdJJqukxKlWrAwYy4rxcL8c9nXXpv4THstH76wBtZpXxiNNjd4Ds13nS4yFs9OqmTX2ZKqdhSXuxcoURMadSDCIJXyPZUGv7v+IC1NzSdK21o/sR5K9cYjCwAmmFVHw9VSaOj+9Gxr8bRG5NDDorLRaiPL+lle4Ho4ivqMgT2ZxzOCe7GK4Shp11tjtg8zGY9P0Neo+TqV5PXTKvXXOcA9baV+5zfHYk//3x44mEh4io4mP7QMw/EIN6k8zuST9FGFZ08V0G4TqGbDgHV0RK70Va29b7MjiGtNWDx/fw0cw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wzegdf8oK/Hlfhsn2YXghcSLRsyJFvWFDkC2UovI0CE=;
- b=GYPGaVNwPRHKSP7bLVOINKS6ARUd+zIRH/6L4pgjOXOmZmKgocyRauZRhjC1OmAYJSb4nR7iulaILjf20CINXiUmlFHRdwld62sdKCmHoQ1R/6xS3JIOSIk5EVXdQ9Y41GBMHtapr/FI3w2N+koCDFxtwa6oEUqOWCPnfRMI41U=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB3310.namprd13.prod.outlook.com (2603:10b6:208:159::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.7; Fri, 18 Mar
- 2022 08:12:43 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::d27:c7d9:8880:a73e]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::d27:c7d9:8880:a73e%2]) with mapi id 15.20.5081.015; Fri, 18 Mar 2022
- 08:12:43 +0000
-Date:   Fri, 18 Mar 2022 09:12:37 +0100
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
-        leonro@nvidia.com, saeedm@nvidia.com, idosch@idosch.org,
-        michael.chan@broadcom.com
-Subject: Re: [PATCH net-next 0/5] devlink: hold the instance lock in eswitch
- callbacks
-Message-ID: <YjQ+9XuTGwf1EVT1@corigine.com>
-References: <20220317042023.1470039-1-kuba@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220317042023.1470039-1-kuba@kernel.org>
-X-ClientProxiedBy: AM0PR10CA0034.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::14) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S231803AbiCRI5M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 04:57:12 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967BD1F3795;
+        Fri, 18 Mar 2022 01:55:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1647593751; x=1679129751;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JHdelzuv/N9zmmLP1oDfQI0Kd5uN9EjGWCC5ooso51A=;
+  b=1FmhH0FArJ9k5RdcifXWa87W5UFdGsJi2/tfWLrNbn/KX4R741iYDGUn
+   SrGK53y5E9T7bCaWpMer+cyJOm5PBkgwZDBVNnWEvuyzVD6KSqEfs75c9
+   vABnUiu7G3zW8XIRMfFHDvJz+0yviMkLOjpoWDHh1DhfEEtT/sGAHczLO
+   qrLOOfpBNjJbdn22gA+4x7bji/tgrUjFnU7cMXRQ/zsEnyJsQM4X2k6yZ
+   G7Wbk5dKqB9a24Es5p6nvQiDjmW3KaYA9q89spCjm3Ya3jiyyVbsolxn/
+   1E8j3mADa98ZsHQcrbkN31vELlbPEI0Pyfw/w3245GtwX1Z2TZmdDO4Yz
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,191,1643698800"; 
+   d="scan'208";a="89373759"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 01:55:48 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 18 Mar 2022 01:55:48 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 01:55:43 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Subject: [PATCH v9 net-next 00/11] net: dsa: microchip: DSA driver support for LAN937x switch
+Date:   Fri, 18 Mar 2022 14:25:29 +0530
+Message-ID: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3444dc54-4fb6-46eb-028a-08da08b713d0
-X-MS-TrafficTypeDiagnostic: MN2PR13MB3310:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR13MB33103578D0A6210A6782738DE8139@MN2PR13MB3310.namprd13.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7aoNU4BM3OAjSzF+LuSJCcGD6pwSja6OBoROwjPboKPL0hh2TpbDdSnJUFlIKcroAAlIELIFre41yxjhpDB/24rWobTs4DtUyl7Z/1UgUYl2+s8ARxMF+9es69tBtMT+pChRn46Nh5pxnOjmYmDPuOrpApPC/h/2aOIi6k9muSPUCHL8xjX4PjUzLFDGtZi8Pq5KWmRHKS0Pyqkuk0BbPW8J8kIazS96nozFsDpUk9u2vGMyDAidBgbsXseyD0A6Ta8u1y48hOmMkaGaE/ZV5ZUp/sv80NDvgEf4JSJSP0ejcvKPcY14FrpS1EP8lXWQFlGcHLqbKkGBZLVQXwyCnNeIqKa4VTodf9nHVWFB0+dmz8CtscmYIvsERsosMOt30nqTP6qSEXtH2Zc4dWZnBOwdZHwIGWrJ1kDWllRXpmTijrrBoDMiwiUWET25fr6MeTpJYuqOBk9+9nhXP8VCUkT7esP/qVshQ1s+n5vIMBZqF/TQjpHiO/X6usKNwako2ssb8dVooByE23uTT9VrJLXmox3kFIC09PMs3T/xzbWTwoJ/DeO/eg4EMw/6bermroq8njir3dUCvlt7xZvNCzHBv1ETXx/PRCM2Wm6M5XpNzZ3S6L+NWwBIBcfKdIP83X91Nmm/cm9Kok9472AQARoKcaJAfnpOFvhHkqaaG1W6ApYGpnSc7yQJfwOcXThNsacW4XfhU4ise9TWLl6iNQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(136003)(366004)(396003)(39830400003)(346002)(376002)(8936002)(44832011)(5660300002)(6506007)(186003)(52116002)(6512007)(316002)(83380400001)(6666004)(36756003)(66476007)(66556008)(8676002)(2906002)(66946007)(4326008)(86362001)(2616005)(6916009)(508600001)(6486002)(38100700002)(67856001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cLX2T74zhCFhwsHXBlPHBsGSn0bizR0Z97mc7sK5Ji6A6wwBBFzyS7UWprth?=
- =?us-ascii?Q?uY6a3QEhsZf/ITczfqwEZSJ8gSCW4jbw35RyFoVH6zCktF8vdEUwRh0r8ioG?=
- =?us-ascii?Q?wRhMsGqz4w7SZ1D6v9JRrfI0LwMExwPgpJk5X8KKyRWs1ANNO+1E30aT4HFq?=
- =?us-ascii?Q?JHYl62Gdu1TtPdAgnUMwdPljugiJQnIkIeJ9VsAGiqN4ruKEQPZXDcZKrJWR?=
- =?us-ascii?Q?rBlZ9V7+C586q8+kTY9y5BWmPta1AuuZ8weDwfCB2lYUiKdnqLFdN8dL8GD7?=
- =?us-ascii?Q?ezN/GFdUNnkdylnyRjr1BpfdDmFwf4U4UKq/VIweIOGaXWVNnD6viDAfWG3V?=
- =?us-ascii?Q?pvtvfxeRvMg8eHGITWBza8mJUTZzZlizsYq6s6lYMKxhnv94VVaKOYLcuDfI?=
- =?us-ascii?Q?wo3RlaAzjfrIcJ4ZwQH0im5SgjgHM+0lo0PR7c3jbXjfrHa1hc7pY4coIj7a?=
- =?us-ascii?Q?daP33ZwYWdJQFl89PCZiMXcxDc5+rbj8+Ef50HtZTOYwwiHikYIms6H5ODZx?=
- =?us-ascii?Q?BHP0InZQc1cOtVQG0gYq2lOI8D5764XNyJgDU5b7U4cC/zG0mLA+jQUHDVCe?=
- =?us-ascii?Q?kGSPUet1xkYAJ4vzrHC0icTiBBu/dQESYE8pxi+hHUMk0kV495YijlUDZcwD?=
- =?us-ascii?Q?Una6gHihCmLAmIgD56SNllxu29xcacWPPgeKHx6akE8+e82ajQu4MoJ4XkuN?=
- =?us-ascii?Q?1sLngJ9Bh1Eko9jOnXKjEVJ9JbU3Ak6luQ/PqhfCwS4JODUYzZS8U253CU4S?=
- =?us-ascii?Q?fHFNBCDQyM3dc1LPNqu4cwrNHlrv+JhZYs3xWNNCK72la1/E5zPZv0oWFa7C?=
- =?us-ascii?Q?DBcXLqKHIqnJQMN9NDsSBOUKmAkmUEhcSTSnErE8qpmMBJRLFMwe/cqF1p7F?=
- =?us-ascii?Q?2Uy/oXHhnOaqVylBIIYMs2ttOtBD4m5JnMEfJ7SZ77DFVktEaaIVdloInH6j?=
- =?us-ascii?Q?dB8FUkCmauiYm3IvtGqDbZ/pnSLYAVxFlAH6SCffnasdl0e895t0nbOCwwNR?=
- =?us-ascii?Q?RGceViD7ScVCFVK6joJ37yJOA8OsYthG1fizHq8fbjEdH/m//uHOJ84RPHtg?=
- =?us-ascii?Q?efgBcjl7JB3eb+DAUAM4K92bzScnoH+1YuRMC+fBMz8lg+P86nk/x2QvvFRP?=
- =?us-ascii?Q?oj7j9wkugH3LpoHI2IGq+cI0JvaRpoY5W+bWV3CnyNIoaQyfBY9KU505bsJM?=
- =?us-ascii?Q?iQmPlGcSTwyr3wViQMOVUsPpDaGNA48fszTBZ+24907yvaMsQxziuTlaegnr?=
- =?us-ascii?Q?yL5Qiz96dVlaRgZ0P0v5vjPsBiv9ZoI5VDvnKQWk5RxPgjodzq2i73TuTi4Z?=
- =?us-ascii?Q?G1S/bbbrC/0mtnALBpvSXTF6HyTMMcUQObbRZX1h8AZQCpOEJkMwcpSrgbRd?=
- =?us-ascii?Q?bY9+/xomHQwLiBmK1RsmJ634ZidVKvSXjw9LGGzoW1DRZjCwUE4+Yqx4BMuY?=
- =?us-ascii?Q?kv2iTsg+CMHlT5WFLxPbja1vmz75VKl7xbwrg43xj+DOrNFKqDO8I4pJJdEn?=
- =?us-ascii?Q?crrroON7IJY2D8Rg/hPWvGC9RfmhFh+Sc48yGCVutQVOhoRfoSU6gpfWwQ?=
- =?us-ascii?Q?=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3444dc54-4fb6-46eb-028a-08da08b713d0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 08:12:43.2032
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0AB1OV27dBpKUVaxd9mT5gxYj2J1giwhT8ZprH/NiuaBCLK8PYY9eIIe3bUZ43/vSNI4qxLuh5B+F9YQzJ0UnQBYQxE/WMcno3wiqpqi6Gw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB3310
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
+        T_SPF_PERMERROR autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 09:20:18PM -0700, Jakub Kicinski wrote:
-> Series number 2 in the effort to hold the devlink instance lock
-> in call driver callbacks. We have the following drivers using
-> this API:
-> 
->  - bnxt, nfp, netdevsim - their own locking is removed / simplified
->    by this series; all of them needed a lock to protect from changes
->    to the number of VFs while switching modes, now the VF config bus
->    callback takes the devlink instance lock via devl_lock();
->  - ice - appears not to allow changing modes while SR-IOV enabled,
->    so nothing to do there;
->  - liquidio - does not contain any locking;
->  - octeontx2/af - is very special but at least doesn't have locking
->    so doesn't get in the way either;
->  - mlx5 has a wealth of locks - I chickened out and dropped the lock
->    in the callbacks so that I can leave the driver be, for now.
-> 
-> The last one is obviously not ideal, but I would prefer to transition
-> the API already as it make take longer.
-> 
-> LMK if it's an abuse of power / I'm not thinking straight.
+LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch  
+compliant with the IEEE 802.3bw-2015 specification. The device  
+provides 100 Mbit/s transmit and receive capability over a single 
+Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision 
+of KSZ series switch. This series of patches provide the DSA driver  
+support for Microchip LAN937X switch and it configures through  
+SPI interface. 
 
-Thanks Jakub,
+This driver shares some of the functions from KSZ common 
+layer. 
 
-we have reviewed this from an NFP driver perspective and are happy
-with this change - it looks quite straightforward from that perspective.
+The LAN937x switch series family consists of following SKUs: 
+
+LAN9370: 
+  - 4 T1 Phys 
+  - 1 RGMII port 
+
+LAN9371: 
+  - 3 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
+
+LAN9372: 
+  - 5 T1 Phys & 1 TX Phy 
+  - 2 RGMII ports 
+
+LAN9373: 
+  - 5 T1 Phys 
+  - 2 RGMII & 1 SGMII port 
+
+LAN9374: 
+  - 6 T1 Phys 
+  - 2 RGMII ports 
+
+More support will be added at a later stage.
+
+Changes in v9:
+- lan937x_main.c: of_node_put() correction in lan937x_parse_dt_rgmii_delay
+- lan937x_dev.c: removed the interface checks from lan937x_apply_rgmii_delay.
+- changes in ethernet-controller.yaml, dsa.yaml and microchip,lan937x.yaml.
+  subpatches (1/11) & (2/11) covered these changes and it is submitted as a RFC
+  patch to get the feedback.
+
+Changes in v8:
+- lan937x_dev.c: fixed lan937x_r_mib_pkt warning in the sub patches
+- lan937x_main.c: phylink_autoneg_inband() check removed in
+  lan937x_phylink_mac_link_up()
+- lan937x_main.c: made legacy_pre_march2020 = false as this is non-legacy driver
+  and indentation correction in lan937x_phylink_mac_link_up()
+- removed unnecessary parenthesis in lan937x_get_strings()
+
+Changes in v7:
+- microchip,lan937x.yaml: *-internal-delay-ps enum values & commit messages
+  corrections
+- lan937x_main.c: removed phylink_validate() and added phylink_get_caps()
+- lan937x_main.c: added support for ethtool standard stats   (get_eth_*_stats
+  and get_stats64)
+- lan937x_main.c: removed unnecessary PVID read from lan937x_port_vlan_del()
+- integrated the changes of ksz9477 multi bridging support to lan937x dev and
+  tested both multi bridging and STP
+- lan937x_port_vlan_del - dummy pvid read removed
+
+Changes in v6:
+- microchip_t1.c: There was new merge done in the net-next tree for microchip_1.c
+after the v5 submission. Hence rebased it for v6.
+
+Changes in v5:
+- microchip,lan937x.yaml: Added mdio properties detail
+- microchip,lan937x.yaml: *-internal-delay-ps added under port node
+- lan937x_dev.c: changed devm_mdiobus_alloc from of_mdiobus_register as suggested
+  by Vladimir
+- lan937x_dev.c: added dev_info for rgmii internal delay & error message to user
+  in case of out of range values
+- lan937x_dev.c: return -EOPNOTSUPP for C45 regnum values for lan937x_sw_mdio_read
+  & write operations
+- return from function with out storing in a variable
+- lan937x_main.c: Added vlan_enable info in vlan_filtering API
+- lan937x_main.c: lan937x_port_vlan_del: removed unintended PVID write
+
+Changes in v4:
+- tag_ksz.c: cpu_to_be16 to  put_unaligned_be16
+- correct spacing in comments
+- tag_ksz.c: NETIF_F_HW_CSUM fix is integrated 
+- lan937x_dev.c: mdio_np is removed from global and handled locally
+- lan937x_dev.c: unused functions removed lan937x_cfg32 & lan937x_port_cfg32
+- lan937x_dev.c: lan937x_is_internal_100BTX_phy_port function name changes
+- lan937x_dev.c: RGMII internal delay handling for MAC. Delay values are
+  retrieved from DTS and updated
+- lan937x_dev.c: corrected mutex operations for few dev variables
+- microchip,lan937x.yaml: introduced rx-internal-delay-ps & 
+  tx-internal-delay-ps for RGMII internal delay
+- lan937x_dev.c: Unnecessary mutex_lock has been removed
+- lan937x_main.c: PHY_INTERFACE_MODE_NA handling for lan937x_phylink_validate
+- lan937x_main.c: PORT_MIRROR_SNIFFER check in right place
+- lan937x_main.c: memset is used instead of writing 0's individually in 
+  lan937x_port_fdb_add function
+- lan937x_main.c: Removed \n from NL_SET_ERR_MSG_MOD calls
+
+Changes in v3: 
+- Removed settings of cnt_ptr to zero and the memset() 
+  added a cleanup patch which moves this into ksz_init_mib_timer().
+- Used ret everywhere instead of rc
+- microchip,lan937x.yaml: Remove mdio compatible
+- microchip_t1.c: Renaming standard phy registers
+- tag_ksz.c: LAN937X_TAIL_TAG_OVERRIDE renaming 
+  LAN937X_TAIL_TAG_BLOCKING_OVERRIDE
+- tag_ksz.c: Changed Ingress and Egress naming convention based on 
+  Host
+- tag_ksz.c: converted to skb_mac_header(skb) from 
+  (is_link_local_ether_addr(hdr->h_dest))
+- lan937x_dev.c: Removed BCAST Storm protection settings since we
+  have Tc commands for them
+- lan937x_dev.c: Flow control setting in lan937x_port_setup function
+- lan937x_dev.c: RGMII internal delay added only for cpu port, 
+- lan937x_dev.c: of_get_compatible_child(node, 
+  "microchip,lan937x-mdio") to of_get_child_by_name(node, "mdio");
+- lan937x_dev.c:lan937x_get_interface API: returned 
+  PHY_INTERFACE_MODE_INTERNAL instead of PHY_INTERFACE_MODE_NA
+- lan937x_main.c: Removed compat interface implementation in 
+  lan937x_config_cpu_port() API & dev_info corrected as well
+- lan937x_main.c: deleted ds->configure_vlan_while_not_filtering 
+  = true
+- lan937x_main.c: Added explanation for lan937x_setup lines
+- lan937x_main.c: FR_MAX_SIZE correction in lan937x_get_max_mtu API 
+- lan937x_main.c: removed lan937x_port_bridge_flags dummy functions
+- lan937x_spi.c - mdiobus_unregister to be added to spi_remove 
+  function
+- lan937x_main.c: phy link layer changes  
+- lan937x_main.c: port mirroring: sniff port selection limiting to
+  one port
+- lan937x_main.c: Changed to global vlan filtering
+- lan937x_main.c: vlan_table array to structure
+- lan937x_main.c -Use extack instead of reporting errors to Console
+- lan937x_main.c - Remove cpu_port addition in vlan_add api
+- lan937x_main.c - removed pvid resetting
+
+Changes in v2:
+- return check for register read/writes
+- dt compatible compatible check is added against chip id value 
+- lan937x_internal_t1_tx_phy_write() is renamed to 
+  lan937x_internal_phy_write()
+- lan937x_is_internal_tx_phy_port is renamed to 
+  lan937x_is_internal_100BTX_phy_port as it is 100Base-Tx phy
+- Return value for lan937x_internal_phy_write() is -EOPNOTSUPP 
+  in case of failures 
+- Return value for lan937x_internal_phy_read() is 0xffff 
+  for non existent phy 
+- cpu_port checking is removed from lan937x_port_stp_state_set()
+- lan937x_phy_link_validate: 100baseT_Full to 100baseT1_Full
+- T1 Phy driver is moved to drivers/net/phy/microchip_t1.c 
+- Tx phy driver support will be added later 
+- Legacy switch checkings in dts file are removed.
+- tag_ksz.c: Re-used ksz9477_rcv for lan937x_rcv 
+- tag_ksz.c: Xmit() & rcv() Comments are corrected w.r.to host
+- net/dsa/Kconfig: Family skew numbers altered in ascending order
+- microchip,lan937x.yaml: eth is replaced with ethernet
+- microchip,lan937x.yaml: spi1 is replaced with spi 
+- microchip,lan937x.yaml: cpu labelling is removed 
+- microchip,lan937x.yaml: port@x value will match the reg value now
+
+Prasanna Vengateshan (10):
+  dt-bindings: net: dsa: dt bindings for microchip lan937x
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+  net: phy: Add support for LAN937x T1 phy driver
+  net: dsa: tag_ksz: add tag handling for Microchip LAN937x
+  net: dsa: microchip: add DSA support for microchip lan937x
+  net: dsa: microchip: add support for phylink management
+  net: dsa: microchip: add support for ethtool port counters
+  net: dsa: microchip: add support for port mirror operations
+  net: dsa: microchip: add support for fdb and mdb management
+  net: dsa: microchip: add support for vlan operations
+
+Prasanna Vengateshan (11):
+  dt-bindings: net: make internal-delay-ps based on phy-mode
+  dt-bindings: net: add mdio property
+  dt-bindings: net: dsa: dt bindings for microchip lan937x
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+  net: dsa: tag_ksz: add tag handling for Microchip LAN937x
+  net: dsa: microchip: add DSA support for microchip lan937x
+  net: dsa: microchip: add support for phylink management
+  net: dsa: microchip: add support for ethtool port counters
+  net: dsa: microchip: add support for port mirror operations
+  net: dsa: microchip: add support for fdb and mdb management
+  net: dsa: microchip: add support for vlan operations
+
+ .../devicetree/bindings/net/dsa/dsa.yaml      |    4 +
+ .../bindings/net/dsa/microchip,lan937x.yaml   |  156 ++
+ .../bindings/net/ethernet-controller.yaml     |   37 +-
+ MAINTAINERS                                   |    1 +
+ drivers/net/dsa/microchip/Kconfig             |   12 +
+ drivers/net/dsa/microchip/Makefile            |    5 +
+ drivers/net/dsa/microchip/ksz8795.c           |    2 -
+ drivers/net/dsa/microchip/ksz9477.c           |    3 -
+ drivers/net/dsa/microchip/ksz_common.c        |    8 +-
+ drivers/net/dsa/microchip/ksz_common.h        |    5 +
+ drivers/net/dsa/microchip/lan937x_dev.c       |  742 ++++++++++
+ drivers/net/dsa/microchip/lan937x_dev.h       |  122 ++
+ drivers/net/dsa/microchip/lan937x_main.c      | 1312 +++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_reg.h       |  688 +++++++++
+ drivers/net/dsa/microchip/lan937x_spi.c       |  236 +++
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    4 +-
+ net/dsa/tag_ksz.c                             |   59 +
+ 18 files changed, 3378 insertions(+), 20 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_main.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_reg.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
+
+-- 
+2.30.2
+
