@@ -2,64 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A6F4DE478
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 00:24:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8BA64DE488
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 00:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241491AbiCRXZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 19:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55784 "EHLO
+        id S241532AbiCRXhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 19:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238224AbiCRXZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 19:25:15 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26807CB02;
-        Fri, 18 Mar 2022 16:23:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647645835; x=1679181835;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fw5CouShSdBsa1NlwiPhlJnkwyVroPMYx6gZHCqRoXI=;
-  b=LUvLdZiFu7dMq7u5NoweMbG95MC0BC6pDhG1FLVul5Dgrz2MIGnynOcr
-   i3QOB68vgwK37nH00hnpmUzm9sjttn1nIrb3SHWZWEXQCLOfB+Cn2dgCS
-   iKyLVSqDljkNrtxebN6O0UVcI5tAnL7RiqraG/+ItFgeiMJh95vZtNwsC
-   y23VrwrH7uR1b0bg1My5wk64aTiLvZG3PIkTe/2KU6Jhmmq9PueS82jpk
-   EddnkujWnvgOpyhgVv8A5vlfC2FMrjyQ3krTZ/ugVQ8kWEaSIlofjxpmb
-   0JMJa2KdbRjxfsc+VWCjqUXLXQMqEBsaVu9rkpn6eJVs1WEsWeAuhSa66
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="237188681"
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="237188681"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 16:23:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
-   d="scan'208";a="581952226"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 18 Mar 2022 16:23:52 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVLwl-000FHT-IT; Fri, 18 Mar 2022 23:23:51 +0000
-Date:   Sat, 19 Mar 2022 07:23:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Edmond Gagnon <egagnon@squareup.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, Edmond Gagnon <egagnon@squareup.com>,
-        Benjamin Li <benl@squareup.com>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] wcn36xx: Implement tx_rate reporting
-Message-ID: <202203190720.E8jZHrLo-lkp@intel.com>
-References: <20220318195804.4169686-3-egagnon@squareup.com>
+        with ESMTP id S241527AbiCRXhj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 19:37:39 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A4A30CA8A
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 16:36:20 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id k10-20020a5d91ca000000b006414a00b160so5945291ior.18
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 16:36:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=+MKfS9KaJOgzX6Bj06yPYh/Zoj+anW5sorP57L7zyBc=;
+        b=vqEyYzrb2hqnU6qLLKti7DWg/hn3GbHFSfcO6QhlyK2fu34yVJfJRwgEXXLJvODISN
+         yBTX0JX+Zud0pQms+d05OBRngByJTFnGuM0qyPGpbptMol2LTD5A3Qi7fwLGGgSJZqZq
+         YIvxNMA7LYlaUl2po4c8acwjJoQr8j9opU8QFMXH9UZHPbYppK9Iz5K+Gszy/S8WI9a1
+         9k8QMFLRahXn3/FsRPMMbNt2J8E2GneM0E7h5QPEUiGSu5QEBzgGskSHjTuR5mf1l9Jy
+         LU+ggKAY8cT+odP3CwTBObarsf3PFaV5Qz+0XHJa4Auh8tGFNqpRc7AD8N0F/TtuPobg
+         tzfw==
+X-Gm-Message-State: AOAM530+B9P9xz7j0Uhj+GCxcNQazM7DAPC28cEqYoIlM1laqGn61Ywq
+        n5WEi50JC0JRSOqz4VgEBE8bQEEsEgtMFBeugI3B7aO9Zklp
+X-Google-Smtp-Source: ABdhPJwIjc6onNrC4ts9Hddc3mAEKea9094pQn3yJ4PnLYSGmik1Ce91bqu9jDx6JIda8yf2a5naBYE2Xdy4XL0TfgmeDpJtZtA4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220318195804.4169686-3-egagnon@squareup.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Received: by 2002:a05:6638:264b:b0:31a:84d7:7281 with SMTP id
+ n11-20020a056638264b00b0031a84d77281mr1983827jat.288.1647646579008; Fri, 18
+ Mar 2022 16:36:19 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 16:36:19 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000eaff805da869d5b@google.com>
+Subject: [syzbot] net-next test error: WARNING in __napi_schedule
+From:   syzbot <syzbot+fb57d2a7c4678481a495@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        wireguard@lists.zx2c4.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,59 +54,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Edmond,
+Hello,
 
-Thank you for the patch! Perhaps something to improve:
+syzbot found the following issue on:
 
-[auto build test WARNING on wireless-next/main]
-[also build test WARNING on kvalo-ath/ath-next next-20220318]
-[cannot apply to wireless/main kvalo-wireless-drivers/master v5.17-rc8]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+HEAD commit:    e89600ebeeb1 af_vsock: SOCK_SEQPACKET broken buffer test
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=134d43d5700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ef691629edb94d6a
+dashboard link: https://syzkaller.appspot.com/bug?extid=fb57d2a7c4678481a495
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-url:    https://github.com/0day-ci/linux/commits/Edmond-Gagnon/wcn36xx-Implement-tx_rate-reporting/20220319-040030
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220319/202203190720.E8jZHrLo-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04) 9.4.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/ec06272b313bdabd805efd65a0a6c2a74b82803f
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Edmond-Gagnon/wcn36xx-Implement-tx_rate-reporting/20220319-040030
-        git checkout ec06272b313bdabd805efd65a0a6c2a74b82803f
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/wireless/ath/wcn36xx/
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+fb57d2a7c4678481a495@syzkaller.appspotmail.com
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1133 at net/core/dev.c:4268 ____napi_schedule net/core/dev.c:4268 [inline]
+WARNING: CPU: 0 PID: 1133 at net/core/dev.c:4268 __napi_schedule+0xe2/0x440 net/core/dev.c:5878
+Modules linked in:
+CPU: 0 PID: 1133 Comm: kworker/0:3 Not tainted 5.17.0-rc8-syzkaller-02525-ge89600ebeeb1 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: wg-crypt-wg0 wg_packet_decrypt_worker
+RIP: 0010:____napi_schedule net/core/dev.c:4268 [inline]
+RIP: 0010:__napi_schedule+0xe2/0x440 net/core/dev.c:5878
+Code: 74 4a e8 31 16 47 fa 31 ff 65 44 8b 25 47 c5 d0 78 41 81 e4 00 ff 0f 00 44 89 e6 e8 98 19 47 fa 45 85 e4 75 07 e8 0e 16 47 fa <0f> 0b e8 07 16 47 fa 65 44 8b 25 5f cf d0 78 31 ff 44 89 e6 e8 75
+RSP: 0018:ffffc900057d7c88 EFLAGS: 00010093
+RAX: 0000000000000000 RBX: ffff88801e680748 RCX: 0000000000000000
+RDX: ffff88801ccb0000 RSI: ffffffff8731aa92 RDI: 0000000000000003
+RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff8731aa88 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff8880b9c00000 R14: 000000000003adc0 R15: ffff88801e118ec0
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdaa5c65300 CR3: 0000000070af4000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ napi_schedule include/linux/netdevice.h:465 [inline]
+ wg_queue_enqueue_per_peer_rx drivers/net/wireguard/queueing.h:204 [inline]
+ wg_packet_decrypt_worker+0x408/0x5d0 drivers/net/wireguard/receive.c:510
+ process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+ worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
 
-All warnings (new ones prefixed by >>):
-
->> drivers/net/wireless/ath/wcn36xx/main.c:1604:6: warning: no previous prototype for 'wcn36xx_get_stats_work' [-Wmissing-prototypes]
-    1604 | void wcn36xx_get_stats_work(struct work_struct *work)
-         |      ^~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/wireless/ath/wcn36xx/main.c: In function 'wcn36xx_get_stats_work':
->> drivers/net/wireless/ath/wcn36xx/main.c:1608:6: warning: variable 'stats_status' set but not used [-Wunused-but-set-variable]
-    1608 |  int stats_status;
-         |      ^~~~~~~~~~~~
-
-
-vim +/wcn36xx_get_stats_work +1604 drivers/net/wireless/ath/wcn36xx/main.c
-
-  1603	
-> 1604	void wcn36xx_get_stats_work(struct work_struct *work)
-  1605	{
-  1606		struct delayed_work *delayed_work = container_of(work, struct delayed_work, work);
-  1607		struct wcn36xx *wcn = container_of(delayed_work, struct wcn36xx, get_stats_work);
-> 1608		int stats_status;
-  1609	
-  1610		stats_status = wcn36xx_smd_get_stats(wcn, HAL_GLOBAL_CLASS_A_STATS_INFO);
-  1611	
-  1612		schedule_delayed_work(&wcn->get_stats_work, msecs_to_jiffies(WCN36XX_HAL_STATS_INTERVAL));
-  1613	}
-  1614	
 
 ---
-0-DAY CI Kernel Test Service
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
