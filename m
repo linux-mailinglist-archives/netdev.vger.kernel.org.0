@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28E7D4DE2B8
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:45:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AFFD4DE2BD
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:45:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240767AbiCRUql (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 16:46:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
+        id S240781AbiCRUqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 16:46:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240758AbiCRUqk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 16:46:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A52C1B9FF1;
-        Fri, 18 Mar 2022 13:45:21 -0700 (PDT)
+        with ESMTP id S240780AbiCRUqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 16:46:49 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD3230CD83;
+        Fri, 18 Mar 2022 13:45:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647636322; x=1679172322;
+  t=1647636327; x=1679172327;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=WfI5G02fGHkS/S1ac3LCaw287JuZCekgMpLauxPRYAA=;
-  b=OWXcWUYAW788scdUb7nEl9dF+7BGubTDnaeRKlzHj5lQsWLAW14rsq+N
-   80lqQzEwiM7l5FCGIPJa4C8zi/r2ZiwOT5w2aM8/x9RK3Y5lhXYH6Zt4K
-   laiOo84SRXoY536gNmkCjM+CWEtmJ+b0bfidm85uEAm5QXvXGTDUZDQZh
-   2GGSdkYUF8l6OPboIxTl1D0AW2zEREaG8Olo9I+qy6tqaMtmPIlGv6Qy/
-   L4/vpPyaBFKK+ASdRoI/7CXaOIl0e2gPNdWOeATLv+DeEjlBq5zGF/aG1
-   zlYmL9dRxrILgfhVQKJIJXXg9PED5nFRTpU1tHDd0EVVzvoO+ZnClUR80
+  bh=UIA4OUtyevfFwbXDl9c8qyFkJLoal37oWQE39z9VEWc=;
+  b=cJtt1/DMIvNNIEDDnoEymJmyQitO+wVRUx4Jj9aUwI+TVzZepKTeTBs4
+   aqRbKNHl6cW36kJq1ZOR9GaoqSR5Y5xyjVMXji0j7zsuEBTgqWi3n00CO
+   G7gsf8MvOF/S3d5nkTSq+Re2IdX3Pur635G1tyaSEIBhWxkoosYsx4nJZ
+   d6aG0YpH9B7tKmBSCKfk90tSZxYdB+FHy6N48mjQ5pJjK5lymrbCKHGJT
+   U4n2RrsxJLBu1zCbFGfhWptZOB6vAs2VkzUuXgw2FGWd6Uo3dWjdu2kk3
+   T9Bl5PEWhNOVjk5TIlz5rI3ajUcLKtc/Sdt5DHusG+7liRaSGfV4bk/nP
    Q==;
 X-IronPort-AV: E=Sophos;i="5.90,192,1643698800"; 
-   d="scan'208";a="156976383"
+   d="scan'208";a="149692801"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 13:45:22 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Mar 2022 13:45:25 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
  chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 18 Mar 2022 13:45:20 -0700
+ 15.1.2375.17; Fri, 18 Mar 2022 13:45:22 -0700
 Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 13:45:19 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 18 Mar 2022 13:45:21 -0700
 From:   Horatiu Vultur <horatiu.vultur@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <michael@walle.cc>,
         <UNGLinuxDriver@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v2 1/4] net: lan966x: Add registers that are used for FDMA.
-Date:   Fri, 18 Mar 2022 21:47:47 +0100
-Message-ID: <20220318204750.1864134-2-horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v2 2/4] net: lan966x: Expose functions that are needed by FDMA
+Date:   Fri, 18 Mar 2022 21:47:48 +0100
+Message-ID: <20220318204750.1864134-3-horatiu.vultur@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220318204750.1864134-1-horatiu.vultur@microchip.com>
 References: <20220318204750.1864134-1-horatiu.vultur@microchip.com>
@@ -55,158 +55,91 @@ Content-Type: text/plain
 X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UPPERCASE_50_75 autolearn=ham autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the registers that are used to configure the FDMA.
+Expose the following functions 'lan966x_hw_offload',
+'lan966x_ifh_get_src_port' and 'lan966x_ifh_get_timestamp' in
+lan966x_main.h so they can be accessed by FDMA.
 
 Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- .../ethernet/microchip/lan966x/lan966x_main.c |   1 +
- .../ethernet/microchip/lan966x/lan966x_regs.h | 106 ++++++++++++++++++
- 2 files changed, 107 insertions(+)
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 10 +++-------
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.h |  8 ++++++++
+ 2 files changed, 11 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index e1bcb28039dc..4240db708886 100644
+index 4240db708886..2c82f847ae6d 100644
 --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
 +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -43,6 +43,7 @@ struct lan966x_main_io_resource {
+@@ -24,9 +24,6 @@
+ #define XTR_NOT_READY			0x07000080U
+ #define XTR_VALID_BYTES(x)		(4 - (((x) >> 24) & 3))
  
- static const struct lan966x_main_io_resource lan966x_main_iomap[] =  {
- 	{ TARGET_CPU,                   0xc0000, 0 }, /* 0xe00c0000 */
-+	{ TARGET_FDMA,                  0xc0400, 0 }, /* 0xe00c0400 */
- 	{ TARGET_ORG,                         0, 1 }, /* 0xe2000000 */
- 	{ TARGET_GCB,                    0x4000, 1 }, /* 0xe2004000 */
- 	{ TARGET_QS,                     0x8000, 1 }, /* 0xe2008000 */
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-index 0c0b3e173d53..2f59285bef29 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_regs.h
-@@ -17,6 +17,7 @@ enum lan966x_target {
- 	TARGET_CHIP_TOP = 5,
- 	TARGET_CPU = 6,
- 	TARGET_DEV = 13,
-+	TARGET_FDMA = 21,
- 	TARGET_GCB = 27,
- 	TARGET_ORG = 36,
- 	TARGET_PTP = 41,
-@@ -578,6 +579,111 @@ enum lan966x_target {
- #define DEV_PCS1G_STICKY_LINK_DOWN_STICKY_GET(x)\
- 	FIELD_GET(DEV_PCS1G_STICKY_LINK_DOWN_STICKY, x)
+-#define READL_SLEEP_US			10
+-#define READL_TIMEOUT_US		100000000
+-
+ #define IO_RANGES 2
  
-+/*      FDMA:FDMA:FDMA_CH_ACTIVATE */
-+#define FDMA_CH_ACTIVATE          __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 0, 0, 1, 4)
-+
-+#define FDMA_CH_ACTIVATE_CH_ACTIVATE             GENMASK(7, 0)
-+#define FDMA_CH_ACTIVATE_CH_ACTIVATE_SET(x)\
-+	FIELD_PREP(FDMA_CH_ACTIVATE_CH_ACTIVATE, x)
-+#define FDMA_CH_ACTIVATE_CH_ACTIVATE_GET(x)\
-+	FIELD_GET(FDMA_CH_ACTIVATE_CH_ACTIVATE, x)
-+
-+/*      FDMA:FDMA:FDMA_CH_RELOAD */
-+#define FDMA_CH_RELOAD            __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 4, 0, 1, 4)
-+
-+#define FDMA_CH_RELOAD_CH_RELOAD                 GENMASK(7, 0)
-+#define FDMA_CH_RELOAD_CH_RELOAD_SET(x)\
-+	FIELD_PREP(FDMA_CH_RELOAD_CH_RELOAD, x)
-+#define FDMA_CH_RELOAD_CH_RELOAD_GET(x)\
-+	FIELD_GET(FDMA_CH_RELOAD_CH_RELOAD, x)
-+
-+/*      FDMA:FDMA:FDMA_CH_DISABLE */
-+#define FDMA_CH_DISABLE           __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 8, 0, 1, 4)
-+
-+#define FDMA_CH_DISABLE_CH_DISABLE               GENMASK(7, 0)
-+#define FDMA_CH_DISABLE_CH_DISABLE_SET(x)\
-+	FIELD_PREP(FDMA_CH_DISABLE_CH_DISABLE, x)
-+#define FDMA_CH_DISABLE_CH_DISABLE_GET(x)\
-+	FIELD_GET(FDMA_CH_DISABLE_CH_DISABLE, x)
-+
-+/*      FDMA:FDMA:FDMA_CH_DB_DISCARD */
-+#define FDMA_CH_DB_DISCARD        __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 16, 0, 1, 4)
-+
-+#define FDMA_CH_DB_DISCARD_DB_DISCARD            GENMASK(7, 0)
-+#define FDMA_CH_DB_DISCARD_DB_DISCARD_SET(x)\
-+	FIELD_PREP(FDMA_CH_DB_DISCARD_DB_DISCARD, x)
-+#define FDMA_CH_DB_DISCARD_DB_DISCARD_GET(x)\
-+	FIELD_GET(FDMA_CH_DB_DISCARD_DB_DISCARD, x)
-+
-+/*      FDMA:FDMA:FDMA_DCB_LLP */
-+#define FDMA_DCB_LLP(r)           __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 52, r, 8, 4)
-+
-+/*      FDMA:FDMA:FDMA_DCB_LLP1 */
-+#define FDMA_DCB_LLP1(r)          __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 84, r, 8, 4)
-+
-+/*      FDMA:FDMA:FDMA_CH_ACTIVE */
-+#define FDMA_CH_ACTIVE            __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 180, 0, 1, 4)
-+
-+/*      FDMA:FDMA:FDMA_CH_CFG */
-+#define FDMA_CH_CFG(r)            __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 224, r, 8, 4)
-+
-+#define FDMA_CH_CFG_CH_INTR_DB_EOF_ONLY          BIT(4)
-+#define FDMA_CH_CFG_CH_INTR_DB_EOF_ONLY_SET(x)\
-+	FIELD_PREP(FDMA_CH_CFG_CH_INTR_DB_EOF_ONLY, x)
-+#define FDMA_CH_CFG_CH_INTR_DB_EOF_ONLY_GET(x)\
-+	FIELD_GET(FDMA_CH_CFG_CH_INTR_DB_EOF_ONLY, x)
-+
-+#define FDMA_CH_CFG_CH_INJ_PORT                  BIT(3)
-+#define FDMA_CH_CFG_CH_INJ_PORT_SET(x)\
-+	FIELD_PREP(FDMA_CH_CFG_CH_INJ_PORT, x)
-+#define FDMA_CH_CFG_CH_INJ_PORT_GET(x)\
-+	FIELD_GET(FDMA_CH_CFG_CH_INJ_PORT, x)
-+
-+#define FDMA_CH_CFG_CH_DCB_DB_CNT                GENMASK(2, 1)
-+#define FDMA_CH_CFG_CH_DCB_DB_CNT_SET(x)\
-+	FIELD_PREP(FDMA_CH_CFG_CH_DCB_DB_CNT, x)
-+#define FDMA_CH_CFG_CH_DCB_DB_CNT_GET(x)\
-+	FIELD_GET(FDMA_CH_CFG_CH_DCB_DB_CNT, x)
-+
-+#define FDMA_CH_CFG_CH_MEM                       BIT(0)
-+#define FDMA_CH_CFG_CH_MEM_SET(x)\
-+	FIELD_PREP(FDMA_CH_CFG_CH_MEM, x)
-+#define FDMA_CH_CFG_CH_MEM_GET(x)\
-+	FIELD_GET(FDMA_CH_CFG_CH_MEM, x)
-+
-+/*      FDMA:FDMA:FDMA_PORT_CTRL */
-+#define FDMA_PORT_CTRL(r)         __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 376, r, 2, 4)
-+
-+#define FDMA_PORT_CTRL_INJ_STOP                  BIT(4)
-+#define FDMA_PORT_CTRL_INJ_STOP_SET(x)\
-+	FIELD_PREP(FDMA_PORT_CTRL_INJ_STOP, x)
-+#define FDMA_PORT_CTRL_INJ_STOP_GET(x)\
-+	FIELD_GET(FDMA_PORT_CTRL_INJ_STOP, x)
-+
-+#define FDMA_PORT_CTRL_XTR_STOP                  BIT(2)
-+#define FDMA_PORT_CTRL_XTR_STOP_SET(x)\
-+	FIELD_PREP(FDMA_PORT_CTRL_XTR_STOP, x)
-+#define FDMA_PORT_CTRL_XTR_STOP_GET(x)\
-+	FIELD_GET(FDMA_PORT_CTRL_XTR_STOP, x)
-+
-+/*      FDMA:FDMA:FDMA_INTR_DB */
-+#define FDMA_INTR_DB              __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 392, 0, 1, 4)
-+
-+/*      FDMA:FDMA:FDMA_INTR_DB_ENA */
-+#define FDMA_INTR_DB_ENA          __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 396, 0, 1, 4)
-+
-+#define FDMA_INTR_DB_ENA_INTR_DB_ENA             GENMASK(7, 0)
-+#define FDMA_INTR_DB_ENA_INTR_DB_ENA_SET(x)\
-+	FIELD_PREP(FDMA_INTR_DB_ENA_INTR_DB_ENA, x)
-+#define FDMA_INTR_DB_ENA_INTR_DB_ENA_GET(x)\
-+	FIELD_GET(FDMA_INTR_DB_ENA_INTR_DB_ENA, x)
-+
-+/*      FDMA:FDMA:FDMA_INTR_ERR */
-+#define FDMA_INTR_ERR             __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 400, 0, 1, 4)
-+
-+/*      FDMA:FDMA:FDMA_ERRORS */
-+#define FDMA_ERRORS               __REG(TARGET_FDMA, 0, 1, 8, 0, 1, 428, 412, 0, 1, 4)
-+
- /*      PTP:PTP_CFG:PTP_DOM_CFG */
- #define PTP_DOM_CFG               __REG(TARGET_PTP, 0, 1, 512, 0, 1, 16, 12, 0, 1, 4)
+ static const struct of_device_id lan966x_match[] = {
+@@ -430,8 +427,7 @@ bool lan966x_netdevice_check(const struct net_device *dev)
+ 	return dev->netdev_ops == &lan966x_port_netdev_ops;
+ }
  
+-static bool lan966x_hw_offload(struct lan966x *lan966x, u32 port,
+-			       struct sk_buff *skb)
++bool lan966x_hw_offload(struct lan966x *lan966x, u32 port, struct sk_buff *skb)
+ {
+ 	u32 val;
+ 
+@@ -512,7 +508,7 @@ static int lan966x_rx_frame_word(struct lan966x *lan966x, u8 grp, u32 *rval)
+ 	}
+ }
+ 
+-static void lan966x_ifh_get_src_port(void *ifh, u64 *src_port)
++void lan966x_ifh_get_src_port(void *ifh, u64 *src_port)
+ {
+ 	packing(ifh, src_port, IFH_POS_SRCPORT + IFH_WID_SRCPORT - 1,
+ 		IFH_POS_SRCPORT, IFH_LEN * 4, UNPACK, 0);
+@@ -524,7 +520,7 @@ static void lan966x_ifh_get_len(void *ifh, u64 *len)
+ 		IFH_POS_LEN, IFH_LEN * 4, UNPACK, 0);
+ }
+ 
+-static void lan966x_ifh_get_timestamp(void *ifh, u64 *timestamp)
++void lan966x_ifh_get_timestamp(void *ifh, u64 *timestamp)
+ {
+ 	packing(ifh, timestamp, IFH_POS_TIMESTAMP + IFH_WID_TIMESTAMP - 1,
+ 		IFH_POS_TIMESTAMP, IFH_LEN * 4, UNPACK, 0);
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+index ae282da1da74..b692c612f235 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+@@ -17,6 +17,9 @@
+ #define TABLE_UPDATE_SLEEP_US		10
+ #define TABLE_UPDATE_TIMEOUT_US		100000
+ 
++#define READL_SLEEP_US			10
++#define READL_TIMEOUT_US		100000000
++
+ #define LAN966X_BUFFER_CELL_SZ		64
+ #define LAN966X_BUFFER_MEMORY		(160 * 1024)
+ #define LAN966X_BUFFER_MIN_SZ		60
+@@ -195,6 +198,11 @@ bool lan966x_netdevice_check(const struct net_device *dev);
+ void lan966x_register_notifier_blocks(void);
+ void lan966x_unregister_notifier_blocks(void);
+ 
++bool lan966x_hw_offload(struct lan966x *lan966x, u32 port, struct sk_buff *skb);
++
++void lan966x_ifh_get_src_port(void *ifh, u64 *src_port);
++void lan966x_ifh_get_timestamp(void *ifh, u64 *timestamp);
++
+ void lan966x_stats_get(struct net_device *dev,
+ 		       struct rtnl_link_stats64 *stats);
+ int lan966x_stats_init(struct lan966x *lan966x);
 -- 
 2.33.0
 
