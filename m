@@ -2,409 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BA9C4DE208
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:01:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 265944DE210
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240462AbiCRT7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 15:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
+        id S240517AbiCRUAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 16:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240453AbiCRT7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:59:46 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0133611BCEB
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:58:27 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso11269952pjb.0
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:58:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gSuKdEg2QyJhGVNfcWhCG5mMthIWcw84Xj0bFaKk1K0=;
-        b=KH+L/4Qk3634chHzxtOMoyIVddByO58d/7/A0h80FTeBAJbnhRMDCSfJQDAQOksHKH
-         G71wBBqCOXQbvr1X2waAHVAbCDsbsDmq6DW68A7Ugl4/fYy2feLWzKvhaYZFirckTU0N
-         k506hPyxR2vRJ3qC9bD037EShGWKMaq28uutM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gSuKdEg2QyJhGVNfcWhCG5mMthIWcw84Xj0bFaKk1K0=;
-        b=T35eqhatI7pAIOCkCiWOL4Mx1ECEcXb8QCDmNk6TAsgsgxibnniuv4iO0JXCZ3kBHO
-         mQj9oscqAA5lVVxsx6omu1NH+UxJJmeIeDQMf8W9a/LKLC6NzAorjjZ+c7HHbNAxj/Wn
-         ldMkerAtielf+twsB1vK7mfWH9x5KhQqbHvkLY1B4sBfi7DJkxt65vyPmz7kT3jcCcPz
-         vl/8CtuA2ybQcQ+bcu4NwLeIIZb2/PPsAG183q8ThAa1jqggYugGaEcLizIBzOqMQSn5
-         bQiRK95IRBbQFwSutPsWBNjX8b0AZL6Ume+EUY7CzDORi19hWPaU8QEHbcX3VPpbuI9O
-         pY9A==
-X-Gm-Message-State: AOAM533r21aND65M/HYtpHv8sS0wztBjnDvxYwV0T1kazW1yGrDiVWsC
-        lfQ1jX08zOVHv2Jbz2JUut4DYg==
-X-Google-Smtp-Source: ABdhPJwea3tAlNGcP1X1B2LxKQwZ1tQvI0A/AlcaAT7AatFu5CkVcZG6W72QhVrGH0kLQdw3EaktcQ==
-X-Received: by 2002:a17:902:f68b:b0:154:2265:b605 with SMTP id l11-20020a170902f68b00b001542265b605mr1195748plg.84.1647633506410;
-        Fri, 18 Mar 2022 12:58:26 -0700 (PDT)
-Received: from localhost ([135.84.132.160])
-        by smtp.gmail.com with UTF8SMTPSA id q2-20020a638c42000000b003817671cb29sm7788797pgn.41.2022.03.18.12.58.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Mar 2022 12:58:26 -0700 (PDT)
-From:   Edmond Gagnon <egagnon@squareup.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Edmond Gagnon <egagnon@squareup.com>,
-        Benjamin Li <benl@squareup.com>, Kalle Valo <kvalo@kernel.org>,
+        with ESMTP id S240482AbiCRT7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:59:55 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140059.outbound.protection.outlook.com [40.107.14.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F6418EEB1
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:58:33 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MzAt5gZbGuOZa/S56r2PqgOi4fSYKlblItgsrJE5U7RPH09O/rveZDXm/QdKDHqhANU6fAiZt5+B+xs8VjUDK3ce/yZZHC69lfA8Sy0TnON00lDJHlXCqKjMUt+gXvxK/awa+EJu25/5bYdNwT1rI2kPpRd46V+QfW+Yrv6D05HzmOQnA2ewDPtdhqeiiEuh2TGEFVKZuSIWFVc7YNtjgRW7BFH0WCHdVrO8MUrM8XCNgTUWhIETRZqtDa+1eR3FnTOvjb9ldrLOKoo5W+mPPa4Dy/zD72jgRDQsnof6yErwhODcqs9MQgRcm+KE3omlsTIxcRjIaapdkS8+XHjzWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=K7U1BioBZfkxIXsf+JQccbcI/IJ1PuT3B2wtZQF3eyo=;
+ b=MK9bo7z96gONaEreaZwfWlE6yrDHkaqPN687IoRiYvd6hAuDVFhBmLAccxx12c6FQtpGVHwpQPLej9SQcIHIBIlrnmJxFbkm4Czg1s2Cs57vSDSSA5rdt26yskpyiItjJvYpsieIiawD6uUrpOxt21SW54BLWZq1eOQh2L3iitO3WFmHa1S24yCfsyUKb03iCaJftrVJrVdrRP5wVkYmNaN3dfLxzzbk91/0vUoR4CHHVVAhvOFGHalFtcJq9LSFGVpwY+cfQByPnL/KXAYqj9FZjuIfI9CGNrBvpmRpErGJDWFIcIYWbJtDv+B9SeCcYwO8qmfY2wGGgNNTcf4nEw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K7U1BioBZfkxIXsf+JQccbcI/IJ1PuT3B2wtZQF3eyo=;
+ b=r8IZRXys99VXhUT1vnWwaaD1wXNdsSL/KiME2ArOt+rAQxv192AemoDhd3Qpw39E6PhZk4git3pHmxLL5UgNaNj3t/zk5VJhBW0am7GYS/tiAl35EmdQfKVL1BZ+/C2K6Sa5nHj3sP+HsDfw3pjywJL4qbNhVZoGbSe02NCvbVE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by PAXPR04MB8110.eurprd04.prod.outlook.com (2603:10a6:102:1bd::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.18; Fri, 18 Mar
+ 2022 19:58:31 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::de5:11ee:c7ea:1d37]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::de5:11ee:c7ea:1d37%7]) with mapi id 15.20.5081.018; Fri, 18 Mar 2022
+ 19:58:30 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] wcn36xx: Implement tx_rate reporting
-Date:   Fri, 18 Mar 2022 14:58:03 -0500
-Message-Id: <20220318195804.4169686-3-egagnon@squareup.com>
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Colin Foster <colin.foster@in-advantage.com>
+Subject: [PATCH net-next] net: dsa: felix: allow PHY_INTERFACE_MODE_INTERNAL on port 5
+Date:   Fri, 18 Mar 2022 21:58:12 +0200
+Message-Id: <20220318195812.276276-1-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220318195804.4169686-1-egagnon@squareup.com>
-References: <20220318195804.4169686-1-egagnon@squareup.com>
-MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: AM6PR02CA0010.eurprd02.prod.outlook.com
+ (2603:10a6:20b:6e::23) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f1ef9569-e5de-4640-491d-08da0919acd6
+X-MS-TrafficTypeDiagnostic: PAXPR04MB8110:EE_
+X-Microsoft-Antispam-PRVS: <PAXPR04MB8110EA762D56CBD6FD9D4CECE0139@PAXPR04MB8110.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HWPI6HNtr3dDInw7+UbHXHG6ay1e+YGspI9zjkPU+Y7vIzzZAc8kgN4ZFI/YSXBfeiI4A0SZ0yUshElw+iO3Xgqb8+ltNSZj4anPCw4l1dUlbklw1YHOLC0AoQCXMKoBGrAz7rexHQybdrU9BtkPkvqKX/IBV9YeFNYz0iu6F+q/BhUzZQsqSp/PBhQlvFZy3RvPFErDdYxVrxshRZ+iOnOyAj5vt822Ufx6UaitpXgtlevrr1QZtQG8Dpn9RP10SGN2V02i5zcNSWONiszZv4MnJpCVlOSDMi9OG+pW7kNlM8RI+N69o/j9GEaAXa4PvWbpj4FdINUw6jBYSYoqxJ5nyi2nhFDhFq6ZUMwqgCquvxUfl5f7+ZkrPyVNTue+MZwrDYT4qMziDGhCJpBw9MP5zrgDD8J8ax41Vvx/5l1SZ1auLlOliym5gx/030f0KpbHRFetTvo3c5E60YIEgNcxxsI2E7FaID9w0aTcHHmbQj3AG8mGbSYM+AAzdG6hNLo3gtwy1OUR27Ie1KGZcuuXcrCk9eGICnSN0buBayZl221m5ec4/m+DNFIjBIPdcMlkYUeJ/lsBDb804JdpewfYw75p06QIjRqp7qhNFz3cQZMHTGyIpWwm24bA9mIy5EC835kCk3aDG31289YvS/QXo5dD9hFwJ+TvJzGnUWPUPDYv1BqDl0zfaZSTtyjYNrMbYV9irri1XwLDJSvs3dedGF3lyxLGMrRbsonOrqkvleNDxsWHRqCPhuQHsJ0eIpr2YxeMH8VYc7Mxc2SKMkSvu9oavDxUlG4Yz9DAxog=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(38350700002)(2906002)(66946007)(86362001)(44832011)(316002)(54906003)(6916009)(8676002)(6486002)(508600001)(966005)(6666004)(52116002)(6506007)(6512007)(83380400001)(2616005)(1076003)(26005)(186003)(36756003)(8936002)(5660300002)(7416002)(4326008)(66476007)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qGFYvVCWr1zDl66zNyee687HTQs4EwzPAfiWdVvhAPYcG2theMoKwcFoqgw5?=
+ =?us-ascii?Q?U2m/qp9qR6nc22K99iLmoaI9pOIth7Y8eaeDVCc8lvWwnFdvDmp7PduWfo5e?=
+ =?us-ascii?Q?wFtfk5yWjV20I5bLorubJVROxMS96bHZUbNaGQB6bixETG6tRMXaSvOeDOXC?=
+ =?us-ascii?Q?GOTp5M0QYuKN0CM7eq1j9Io3o11x6JNw+vAJxzyF+SxUg5z0okJFbXrkIWdx?=
+ =?us-ascii?Q?gu74g9LhrBdV/vxMoTKTJ310//Ipfi4R651M6p+awAgJxNPYHhivtJ4coYVs?=
+ =?us-ascii?Q?6mB9yEDXLuF5cGe2zzS45hZZj4y5zzjnCtcUMVE8Kf3s5kbVLytkrImxWKO8?=
+ =?us-ascii?Q?2GNzGYu4tCRBriJlfjPS9UO5dMQ05wmW3adH5xud+DcVaW4TOGPxH8l9WiWu?=
+ =?us-ascii?Q?gDEJly+JxMW3alPSByzHi88Ebw6KtQwEqYUhtjB5+rC7LaRUtl9Ephidf3Wt?=
+ =?us-ascii?Q?HOmp1qvZv0S9ZChHoe01VK0g8/ALfMhiSoBqc8Ql1t3lYVAnxcO4Zo4p44/F?=
+ =?us-ascii?Q?Azj6dy8J3Uy/HTMNUOVJ3AjSvykkW20Ji2WA7oisYPYfa+MMUR8GHmi5TDJ6?=
+ =?us-ascii?Q?YDAD0I5+gb36h4VGaYBSpVtZr70whf0NctVUmYz7FFqMjQvg0JXN0lckO3pc?=
+ =?us-ascii?Q?cLLGuAQl5SrV7wHxnkLfMRWA23cRdkZsubs6Z2U4hmWrYM8IV+cWkTynnHPV?=
+ =?us-ascii?Q?KcPfA5MEKMEHEh3QwNrpwcO1p5EK+zr+uLnb8Ih3fOESP5m2ml7D3ju6j4t5?=
+ =?us-ascii?Q?/fmpZDE2ETCEblkEbaayz1YPh1mLzh1XTWh/vPUcYETQA4Fzwe9bggZRwbtQ?=
+ =?us-ascii?Q?nMYrqSZFuwOYjAPuzGFLpeYhua9uCom3dyFw2kFNMRuRo/8W9mKOXPfpTT6n?=
+ =?us-ascii?Q?HlmU4+oA8+OaPEJ+T5W+Bac4N3oimMPDOPxtEzzPj7pv0REcoLRoVALCehSS?=
+ =?us-ascii?Q?aNyocZuhChkxChAm6rPbtTm5IE4rTOwcSmNduE9SfTnln11JiYil9uHVP8zT?=
+ =?us-ascii?Q?SBtv18bR6yUL5DAT1iPp0+FNKMiunKVH47tfAPE1DuC7d496m8PQMxM0mifs?=
+ =?us-ascii?Q?mlq/rPNqu5Mr6rbtJyFUrSO8cRU5sLK7yU5AxPc/3D4+GnFQUXY4rHK3SYZT?=
+ =?us-ascii?Q?P8CC4vyWeS7l1OGrdB5bGSvvr86lQfV7sxwqe+6RO9/dPg+8afm4uwhyw52m?=
+ =?us-ascii?Q?um+DiGrroJv87buO7YepaMEY6q9QqO0dn4AeB5q2/3z+RKmEwdup8HUH8qPc?=
+ =?us-ascii?Q?Jl1KEOpg5DMCDdczbCmGy8Fg2DeqMqHQXsXK+ZDnfJjhktKI+2VpPU9TB+FX?=
+ =?us-ascii?Q?KHQzP3xyocxMCrPqmSDCSiSUO2shKwv2w4VjHISm7TftGgQv8Nfkgz/roP0b?=
+ =?us-ascii?Q?Vwpv6IIEHWkGYBOahyxy+W/wz4WGEgnLsiQpRJaiOujoSyXlYhp3EYy3O7wG?=
+ =?us-ascii?Q?Lc8ETl8YzI4YHqKHKgFKa/GsFIrVLSivvSZ21JpkalahPfsYIlPXYA=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f1ef9569-e5de-4640-491d-08da0919acd6
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 19:58:30.6778
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: d6hen96RsqDVA5Kr9Fl6tN8nXr9ZHTtOjCeGuSNHWgmxV3g/SU9zO98j7EK9Q9xuMQwZjX/xgElxdXvaTuJV+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8110
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the driver reports a tx_rate of 6.0 MBit/s no matter the true
-rate:
+The Felix switch has 6 ports, 2 of which are internal.
+Due to some misunderstanding, my initial suggestion for
+vsc9959_port_modes[]:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220129220221.2823127-10-colin.foster@in-advantage.com/#24718277
 
-root@linaro-developer:~# iw wlan0 link
-Connected to 6c:f3:7f:eb:9b:92 (on wlan0)
-        SSID: SQ-DEVICETEST
-        freq: 5200
-        RX: 4141 bytes (32 packets)
-        TX: 2082 bytes (15 packets)
-        signal: -77 dBm
-        rx bitrate: 135.0 MBit/s MCS 6 40MHz short GI
-        tx bitrate: 6.0 MBit/s
+got translated by Colin into a 5-port array, leading to an all-zero port
+mode mask for port 5.
 
-        bss flags:      short-slot-time
-        dtim period:    1
-        beacon int:     100
-
-This patch requests HAL_GLOBAL_CLASS_A_STATS_INFO via a hal_get_stats
-firmware message and reports it via ieee80211_tx_rate_update:
-
-root@linaro-developer:~# iw wlan0 link
-Connected to 6c:f3:7f:eb:98:21 (on wlan0)
-        SSID: SQ-DEVICETEST
-        freq: 2412
-        RX: 440785 bytes (573 packets)
-        TX: 60526 bytes (571 packets)
-        signal: -64 dBm
-        rx bitrate: 72.2 MBit/s MCS 7 short GI
-        tx bitrate: 52.0 MBit/s MCS 5
-
-        bss flags:      short-preamble short-slot-time
-        dtim period:    1
-        beacon int:     100
-
-Tested on MSM8939 with WCN3680B running CNSS-PR-2-0-1-2-c1-00083 with
-5.17, and verified by sniffing frames over the air with Wireshark to
-ensure the MCS indices match.
-
-Signed-off-by: Edmond Gagnon <egagnon@squareup.com>
-Reviewed-by: Benjamin Li <benl@squareup.com>
+Fixes: acf242fc739e ("net: dsa: felix: remove prevalidate_phy_mode interface")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/wireless/ath/wcn36xx/hal.h     |  7 ++-
- drivers/net/wireless/ath/wcn36xx/main.c    | 25 +++++++++
- drivers/net/wireless/ath/wcn36xx/smd.c     | 58 +++++++++++++++++++++
- drivers/net/wireless/ath/wcn36xx/smd.h     |  1 +
- drivers/net/wireless/ath/wcn36xx/txrx.c    | 59 ++++++++++++++++++++++
- drivers/net/wireless/ath/wcn36xx/txrx.h    |  2 +
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  4 ++
- 7 files changed, 155 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/hal.h b/drivers/net/wireless/ath/wcn36xx/hal.h
-index 2a1db9756fd5..46a49f0a51b3 100644
---- a/drivers/net/wireless/ath/wcn36xx/hal.h
-+++ b/drivers/net/wireless/ath/wcn36xx/hal.h
-@@ -2626,7 +2626,12 @@ enum tx_rate_info {
- 	HAL_TX_RATE_SGI = 0x8,
- 
- 	/* Rate with Long guard interval */
--	HAL_TX_RATE_LGI = 0x10
-+	HAL_TX_RATE_LGI = 0x10,
-+
-+	/* VHT rates */
-+	HAL_TX_RATE_VHT20  = 0x20,
-+	HAL_TX_RATE_VHT40  = 0x40,
-+	HAL_TX_RATE_VHT80  = 0x80,
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index ead3316742f6..62d52e0874e9 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -37,6 +37,7 @@ static const u32 vsc9959_port_modes[VSC9959_NUM_PORTS] = {
+ 	VSC9959_PORT_MODE_SERDES,
+ 	VSC9959_PORT_MODE_SERDES,
+ 	OCELOT_PORT_MODE_INTERNAL,
++	OCELOT_PORT_MODE_INTERNAL,
  };
  
- struct ani_global_class_a_stats_info {
-diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-index 70531f62777e..75453a3744a6 100644
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -25,6 +25,7 @@
- #include <linux/rpmsg.h>
- #include <linux/soc/qcom/smem_state.h>
- #include <linux/soc/qcom/wcnss_ctrl.h>
-+#include <linux/workqueue.h>
- #include <net/ipv6.h>
- #include "wcn36xx.h"
- #include "testmode.h"
-@@ -960,6 +961,10 @@ static void wcn36xx_bss_info_changed(struct ieee80211_hw *hw,
- 			if (vif->type == NL80211_IFTYPE_STATION)
- 				wcn36xx_smd_add_beacon_filter(wcn, vif);
- 			wcn36xx_enable_keep_alive_null_packet(wcn, vif);
-+
-+			wcn->get_stats_sta = sta;
-+			wcn->get_stats_vif = vif;
-+			schedule_delayed_work(&wcn->get_stats_work, msecs_to_jiffies(3000));
- 		} else {
- 			wcn36xx_dbg(WCN36XX_DBG_MAC,
- 				    "disassociated bss %pM vif %pM AID=%d\n",
-@@ -967,6 +972,9 @@ static void wcn36xx_bss_info_changed(struct ieee80211_hw *hw,
- 				    vif->addr,
- 				    bss_conf->aid);
- 			vif_priv->sta_assoc = false;
-+			cancel_delayed_work_sync(&wcn->get_stats_work);
-+			wcn->get_stats_vif = NULL;
-+			wcn->get_stats_sta = NULL;
- 			wcn36xx_smd_set_link_st(wcn,
- 						bss_conf->bssid,
- 						vif->addr,
-@@ -1598,6 +1606,17 @@ static int wcn36xx_platform_get_resources(struct wcn36xx *wcn,
- 	return ret;
- }
- 
-+void wcn36xx_get_stats_work(struct work_struct *work)
-+{
-+	struct delayed_work *delayed_work = container_of(work, struct delayed_work, work);
-+	struct wcn36xx *wcn = container_of(delayed_work, struct wcn36xx, get_stats_work);
-+	int stats_status;
-+
-+	stats_status = wcn36xx_smd_get_stats(wcn, HAL_GLOBAL_CLASS_A_STATS_INFO);
-+
-+	schedule_delayed_work(&wcn->get_stats_work, msecs_to_jiffies(WCN36XX_HAL_STATS_INTERVAL));
-+}
-+
- static int wcn36xx_probe(struct platform_device *pdev)
- {
- 	struct ieee80211_hw *hw;
-@@ -1640,6 +1659,8 @@ static int wcn36xx_probe(struct platform_device *pdev)
- 		goto out_wq;
- 	}
- 
-+	INIT_DELAYED_WORK(&wcn->get_stats_work, wcn36xx_get_stats_work);
-+
- 	ret = dma_set_mask_and_coherent(wcn->dev, DMA_BIT_MASK(32));
- 	if (ret < 0) {
- 		wcn36xx_err("failed to set DMA mask: %d\n", ret);
-@@ -1713,6 +1734,10 @@ static int wcn36xx_remove(struct platform_device *pdev)
- 	__skb_queue_purge(&wcn->amsdu);
- 
- 	mutex_destroy(&wcn->hal_mutex);
-+
-+	cancel_delayed_work_sync(&wcn->get_stats_work);
-+	wcn->get_stats_vif = NULL;
-+	wcn->get_stats_sta = NULL;
- 	ieee80211_free_hw(hw);
- 
- 	return 0;
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index caeb68901326..ecb083d5b43a 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2627,6 +2627,63 @@ int wcn36xx_smd_del_ba(struct wcn36xx *wcn, u16 tid, u8 direction, u8 sta_index)
- 	return ret;
- }
- 
-+int wcn36xx_smd_get_stats(struct wcn36xx *wcn, u32 stats_mask)
-+{
-+	struct wcn36xx_hal_stats_req_msg msg_body;
-+	struct wcn36xx_hal_stats_rsp_msg *rsp;
-+	void *rsp_body;
-+	int ret = 0;
-+
-+	if (stats_mask & ~HAL_GLOBAL_CLASS_A_STATS_INFO) {
-+		wcn36xx_err("stats_mask 0x%x contains unimplemented types\n",
-+			    stats_mask);
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&wcn->hal_mutex);
-+	INIT_HAL_MSG(msg_body, WCN36XX_HAL_GET_STATS_REQ);
-+
-+	msg_body.sta_id = get_sta_index(wcn->get_stats_vif,
-+					wcn36xx_sta_to_priv(wcn->get_stats_sta));
-+	msg_body.stats_mask = stats_mask;
-+
-+	PREPARE_HAL_BUF(wcn->hal_buf, msg_body);
-+
-+	ret = wcn36xx_smd_send_and_wait(wcn, msg_body.header.len);
-+	if (ret) {
-+		wcn36xx_err("sending hal_get_stats failed\n");
-+		goto out;
-+	}
-+
-+	ret = wcn36xx_smd_rsp_status_check(wcn->hal_buf, wcn->hal_rsp_len);
-+	if (ret) {
-+		wcn36xx_err("hal_get_stats response failed err=%d\n", ret);
-+		goto out;
-+	}
-+
-+	rsp = (struct wcn36xx_hal_stats_rsp_msg *)wcn->hal_buf;
-+	rsp_body = (wcn->hal_buf + sizeof(struct wcn36xx_hal_stats_rsp_msg));
-+
-+	if (rsp->stats_mask != stats_mask) {
-+		wcn36xx_err("stat_mask 0x%x differs from requested 0x%x\n",
-+			    rsp->stats_mask, stats_mask);
-+		goto out;
-+	}
-+
-+	if (rsp->stats_mask & HAL_GLOBAL_CLASS_A_STATS_INFO) {
-+		ret = wcn36xx_report_tx_rate(wcn, (struct ani_global_class_a_stats_info *)rsp_body);
-+		if (ret) {
-+			wcn36xx_err("failed to report TX rate\n");
-+			goto out;
-+		}
-+		rsp_body += sizeof(struct ani_global_class_a_stats_info);
-+	}
-+out:
-+	mutex_unlock(&wcn->hal_mutex);
-+
-+	return ret;
-+}
-+
- static int wcn36xx_smd_trigger_ba_rsp(void *buf, int len, struct add_ba_info *ba_info)
- {
- 	struct wcn36xx_hal_trigger_ba_rsp_candidate *candidate;
-@@ -3316,6 +3373,7 @@ int wcn36xx_smd_rsp_process(struct rpmsg_device *rpdev,
- 	case WCN36XX_HAL_ADD_BA_SESSION_RSP:
- 	case WCN36XX_HAL_ADD_BA_RSP:
- 	case WCN36XX_HAL_DEL_BA_RSP:
-+	case WCN36XX_HAL_GET_STATS_RSP:
- 	case WCN36XX_HAL_TRIGGER_BA_RSP:
- 	case WCN36XX_HAL_UPDATE_CFG_RSP:
- 	case WCN36XX_HAL_JOIN_RSP:
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.h b/drivers/net/wireless/ath/wcn36xx/smd.h
-index 957cfa87fbde..a30f28f4130d 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.h
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.h
-@@ -138,6 +138,7 @@ int wcn36xx_smd_add_ba_session(struct wcn36xx *wcn,
- int wcn36xx_smd_add_ba(struct wcn36xx *wcn, u8 session_id);
- int wcn36xx_smd_del_ba(struct wcn36xx *wcn, u16 tid, u8 direction, u8 sta_index);
- int wcn36xx_smd_trigger_ba(struct wcn36xx *wcn, u8 sta_index, u16 tid, u16 *ssn);
-+int wcn36xx_smd_get_stats(struct wcn36xx *wcn, u32 stats_mask);
- 
- int wcn36xx_smd_update_cfg(struct wcn36xx *wcn, u32 cfg_id, u32 value);
- 
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index df749b114568..ac55f8d62440 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -699,3 +699,62 @@ int wcn36xx_start_tx(struct wcn36xx *wcn,
- 
- 	return ret;
- }
-+
-+int wcn36xx_report_tx_rate(struct wcn36xx *wcn, struct ani_global_class_a_stats_info *stats)
-+{
-+	struct ieee80211_tx_info info;
-+	struct ieee80211_tx_rate *tx_rate;
-+
-+	memset(&info, 0, sizeof(struct ieee80211_tx_info));
-+	tx_rate = &info.status.rates[0];
-+
-+	tx_rate->idx = stats->mcs_index;
-+	tx_rate->count = 0;
-+	tx_rate->flags = 0;
-+
-+	if (stats->tx_rate_flags & HAL_TX_RATE_LEGACY) {
-+		// tx_rate is in units of 500kbps, while wcn36xx_rate_table's rates
-+		// are in units of 100kbps.
-+		unsigned int reported_rate = stats->tx_rate * 5;
-+		int i;
-+
-+		// Iterate over the legacy rates to convert bitrate to rate index.
-+		for (i = 0; i < ARRAY_SIZE(wcn36xx_rate_table); i++) {
-+			const struct wcn36xx_rate *rate = &wcn36xx_rate_table[i];
-+
-+			if (rate->encoding != RX_ENC_LEGACY) {
-+				wcn36xx_warn("legacy rate %u not present in rate table\n",
-+					     reported_rate);
-+				break;
-+			}
-+			if (rate->bitrate == reported_rate) {
-+				tx_rate->idx = rate->mcs_or_legacy_index;
-+				break;
-+			}
-+		}
-+	}
-+
-+	// HT?
-+	if (stats->tx_rate_flags & (HAL_TX_RATE_HT20 | HAL_TX_RATE_HT40))
-+		tx_rate->flags |= IEEE80211_TX_RC_MCS;
-+
-+	// VHT?
-+	if (stats->tx_rate_flags & (HAL_TX_RATE_VHT20 | HAL_TX_RATE_VHT40 | HAL_TX_RATE_VHT80))
-+		tx_rate->flags |= IEEE80211_TX_RC_VHT_MCS;
-+
-+	// SGI / LGI?
-+	if (stats->tx_rate_flags & HAL_TX_RATE_SGI)
-+		tx_rate->flags |= IEEE80211_TX_RC_SHORT_GI;
-+
-+	// 40MHz?
-+	if (stats->tx_rate_flags & (HAL_TX_RATE_HT40 | HAL_TX_RATE_VHT40))
-+		tx_rate->flags |= IEEE80211_TX_RC_40_MHZ_WIDTH;
-+
-+	// 80MHz?
-+	if (stats->tx_rate_flags & HAL_TX_RATE_VHT80)
-+		tx_rate->flags |= IEEE80211_TX_RC_80_MHZ_WIDTH;
-+
-+	ieee80211_tx_rate_update(wcn->hw, wcn->get_stats_sta, &info);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.h b/drivers/net/wireless/ath/wcn36xx/txrx.h
-index b54311ffde9c..28cf45ce6c89 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.h
-@@ -18,6 +18,7 @@
- #define _TXRX_H_
- 
- #include <linux/etherdevice.h>
-+#include <linux/string.h>
- #include "wcn36xx.h"
- 
- /* TODO describe all properties */
-@@ -164,5 +165,6 @@ int  wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb);
- int wcn36xx_start_tx(struct wcn36xx *wcn,
- 		     struct wcn36xx_sta *sta_priv,
- 		     struct sk_buff *skb);
-+int wcn36xx_report_tx_rate(struct wcn36xx *wcn, struct ani_global_class_a_stats_info *stats);
- 
- #endif	/* _TXRX_H_ */
-diff --git a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-index 80a4e7aea419..121195991ee2 100644
---- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-@@ -32,6 +32,7 @@
- 
- #define WLAN_NV_FILE               "wlan/prima/WCNSS_qcom_wlan_nv.bin"
- #define WCN36XX_AGGR_BUFFER_SIZE 64
-+#define WCN36XX_HAL_STATS_INTERVAL 3000
- 
- extern unsigned int wcn36xx_dbg_mask;
- 
-@@ -295,6 +296,9 @@ struct wcn36xx {
- 
- 	spinlock_t survey_lock;		/* protects chan_survey */
- 	struct wcn36xx_chan_survey	*chan_survey;
-+	struct delayed_work get_stats_work;
-+	struct ieee80211_sta *get_stats_sta;
-+	struct ieee80211_vif *get_stats_vif;
- };
- 
- static inline bool wcn36xx_is_fw_version(struct wcn36xx *wcn,
+ static const u32 vsc9959_ana_regmap[] = {
 -- 
 2.25.1
 
