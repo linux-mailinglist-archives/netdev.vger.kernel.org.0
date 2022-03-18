@@ -2,44 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A5224DE1BF
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D59C4DE1BB
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:24:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240354AbiCRTZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 15:25:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35394 "EHLO
+        id S240349AbiCRTZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 15:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240347AbiCRTZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:25:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8B130CAB5
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:23:56 -0700 (PDT)
+        with ESMTP id S240343AbiCRTZO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:25:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6249F30CAAE
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:23:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B35DB8253A
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 19:23:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B53C340ED;
-        Fri, 18 Mar 2022 19:23:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DAB3761BD1
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 19:23:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E432C340F4;
+        Fri, 18 Mar 2022 19:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647631433;
-        bh=b4PwTj3jVvKgY9YqrRvUrEuiDJDDz/2/wUoJaiwEND8=;
+        s=k20201202; t=1647631434;
+        bh=D4HuD25bD+Xe928gku5HlWmF13QrlfcdIB7nG5TaOK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jYSDLLo+TOSbHx0r15nVaRxyt1pmm3ypGviXbx7hEUgEUVYCq5y3JKz1xt/VwHjBE
-         9q8AmpGKUwDTukLp4n94/+777u4O64cAJ7y2twbP6HvUEXu7fbRJtacJYORlJGxlnp
-         wjG5qMNHLqUsrAPnIL0waU5FvPCm4pyj426Jo2XfVM/Tn8UqL4HJjTWTZEwBe3tvlH
-         A4X6eicxWz8hysjnhMuqebd7EPul3Eip2bF3Zs4B6l4MihuuNU4iQ2+8LNTtUfHuF2
-         KbEx+/1V9/SAqs1egHHIgkVwPdNJj/YoZl0iVGpdOzX9HlhBK9Mx+n11CK2vXjd5zw
-         7Q38jfpJZzOlQ==
+        b=c26OM9DBOq+/StbknWgF/M+Z7VHWbWz0cf3gpuO4VerblUHl87gUK25tfMMIpEsYf
+         vUpC59+V2ZokHpuvevXp1kBykCR5/mPgJViO5Q3i5kQpwmnXCR5073Y8VJ2DoDoqVv
+         8VF+S0BmzAddQ/lzc8bwSwxTy9rVgbEs9NFu/09FlElM3SpSliRo4ZCT9ndrsnGT6Z
+         BfOBcrO03JN8TNIGgpfirT8Ik9jOYSyybQnaLVFWB7w0jnMJJBxzmjaQKzMkK5NL3n
+         Q417qbgVrL1ZhEI6qkFhGotnCVg3K3dG4ADGvyEEnR+EA7WOEn2knZadLH3B8Wd5XL
+         hduoiXB9u8mMw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, jiri@resnulli.us, leonro@nvidia.com,
         saeedm@nvidia.com, idosch@idosch.org, michael.chan@broadcom.com,
-        simon.horman@corigine.com, Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next v2 2/5] devlink: add explicitly locked flavor of the rate node APIs
-Date:   Fri, 18 Mar 2022 12:23:41 -0700
-Message-Id: <20220318192344.1587891-3-kuba@kernel.org>
+        simon.horman@corigine.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 3/5] netdevsim: replace port_list_lock with devlink instance lock
+Date:   Fri, 18 Mar 2022 12:23:42 -0700
+Message-Id: <20220318192344.1587891-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220318192344.1587891-1-kuba@kernel.org>
 References: <20220318192344.1587891-1-kuba@kernel.org>
@@ -55,188 +54,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We'll need an explicitly locked rate node API for netdevsim
-to switch eswitch mode setting to locked.
+Take advantage of the devlink instance lock for protecting
+the port list. This will simplify locking even more once
+all devlink callbacks hold the instance lock.
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+We need to add locking in nsim_dev_port_add_all() which used
+to assume higher layer protection when accessing the list.
+
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/net/devlink.h |  4 ++
- net/core/devlink.c    | 86 ++++++++++++++++++++++++++++++-------------
- 2 files changed, 65 insertions(+), 25 deletions(-)
+ drivers/net/netdevsim/dev.c       | 40 +++++++++++++++----------------
+ drivers/net/netdevsim/netdevsim.h |  1 -
+ 2 files changed, 20 insertions(+), 21 deletions(-)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index fd89a17adea1..a30180c0988a 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1490,6 +1490,10 @@ int devl_port_register(struct devlink *devlink,
- 		       unsigned int port_index);
- void devl_port_unregister(struct devlink_port *devlink_port);
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index dbc8e88d2841..dd650d4301e5 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -576,11 +576,11 @@ static int nsim_esw_legacy_enable(struct nsim_dev *nsim_dev,
+ 	struct nsim_dev_port *nsim_dev_port, *tmp;
  
-+int devl_rate_leaf_create(struct devlink_port *port, void *priv);
-+void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
-+void devl_rate_nodes_destroy(struct devlink *devlink);
-+
- struct ib_device;
- 
- struct net *devlink_net(const struct devlink *devlink);
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index f2a277053ec6..5aac5370c136 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -2868,7 +2868,7 @@ static int devlink_rate_nodes_check(struct devlink *devlink, u16 mode,
- {
- 	struct devlink_rate *devlink_rate;
- 
--	/* Take the lock to sync with devlink_rate_nodes_destroy() */
-+	/* Take the lock to sync with destroy */
- 	mutex_lock(&devlink->lock);
- 	list_for_each_entry(devlink_rate, &devlink->rate_list, list)
- 		if (devlink_rate_is_node(devlink_rate)) {
-@@ -9548,30 +9548,26 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 contro
- EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
- 
- /**
-- * devlink_rate_leaf_create - create devlink rate leaf
-- *
-+ * devl_rate_leaf_create - create devlink rate leaf
-  * @devlink_port: devlink port object to create rate object on
-  * @priv: driver private data
-  *
-  * Create devlink rate object of type leaf on provided @devlink_port.
-- * Throws call trace if @devlink_port already has a devlink rate object.
-- *
-- * Context: Takes and release devlink->lock <mutex>.
-- *
-- * Return: -ENOMEM if failed to allocate rate object, 0 otherwise.
-  */
--int
--devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
-+int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
- {
- 	struct devlink *devlink = devlink_port->devlink;
- 	struct devlink_rate *devlink_rate;
- 
-+	devl_assert_locked(devlink_port->devlink);
-+
-+	if (WARN_ON(devlink_port->devlink_rate))
-+		return -EBUSY;
-+
- 	devlink_rate = kzalloc(sizeof(*devlink_rate), GFP_KERNEL);
- 	if (!devlink_rate)
- 		return -ENOMEM;
- 
--	mutex_lock(&devlink->lock);
--	WARN_ON(devlink_port->devlink_rate);
- 	devlink_rate->type = DEVLINK_RATE_TYPE_LEAF;
- 	devlink_rate->devlink = devlink;
- 	devlink_rate->devlink_port = devlink_port;
-@@ -9579,12 +9575,42 @@ devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
- 	list_add_tail(&devlink_rate->list, &devlink->rate_list);
- 	devlink_port->devlink_rate = devlink_rate;
- 	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_NEW);
--	mutex_unlock(&devlink->lock);
- 
+ 	devlink_rate_nodes_destroy(devlink);
+-	mutex_lock(&nsim_dev->port_list_lock);
++	devl_lock(devlink);
+ 	list_for_each_entry_safe(nsim_dev_port, tmp, &nsim_dev->port_list, list)
+ 		if (nsim_dev_port_is_vf(nsim_dev_port))
+ 			__nsim_dev_port_del(nsim_dev_port);
+-	mutex_unlock(&nsim_dev->port_list_lock);
++	devl_unlock(devlink);
+ 	nsim_dev->esw_mode = DEVLINK_ESWITCH_MODE_LEGACY;
  	return 0;
  }
-+EXPORT_SYMBOL_GPL(devl_rate_leaf_create);
-+
-+int
-+devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
-+{
-+	struct devlink *devlink = devlink_port->devlink;
-+	int ret;
-+
-+	mutex_lock(&devlink->lock);
-+	ret = devl_rate_leaf_create(devlink_port, priv);
-+	mutex_unlock(&devlink->lock);
-+
-+	return ret;
-+}
- EXPORT_SYMBOL_GPL(devlink_rate_leaf_create);
- 
-+void devl_rate_leaf_destroy(struct devlink_port *devlink_port)
-+{
-+	struct devlink_rate *devlink_rate = devlink_port->devlink_rate;
-+
-+	devl_assert_locked(devlink_port->devlink);
-+	if (!devlink_rate)
-+		return;
-+
-+	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_DEL);
-+	if (devlink_rate->parent)
-+		refcount_dec(&devlink_rate->parent->refcnt);
-+	list_del(&devlink_rate->list);
-+	devlink_port->devlink_rate = NULL;
-+	kfree(devlink_rate);
-+}
-+EXPORT_SYMBOL_GPL(devl_rate_leaf_destroy);
-+
- /**
-  * devlink_rate_leaf_destroy - destroy devlink rate leaf
-  *
-@@ -9601,32 +9627,25 @@ void devlink_rate_leaf_destroy(struct devlink_port *devlink_port)
- 		return;
- 
- 	mutex_lock(&devlink->lock);
--	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_DEL);
--	if (devlink_rate->parent)
--		refcount_dec(&devlink_rate->parent->refcnt);
--	list_del(&devlink_rate->list);
--	devlink_port->devlink_rate = NULL;
-+	devl_rate_leaf_destroy(devlink_port);
- 	mutex_unlock(&devlink->lock);
--	kfree(devlink_rate);
- }
- EXPORT_SYMBOL_GPL(devlink_rate_leaf_destroy);
- 
- /**
-- * devlink_rate_nodes_destroy - destroy all devlink rate nodes on device
-- *
-+ * devl_rate_nodes_destroy - destroy all devlink rate nodes on device
-  * @devlink: devlink instance
-  *
-  * Unset parent for all rate objects and destroy all rate nodes
-  * on specified device.
-- *
-- * Context: Takes and release devlink->lock <mutex>.
-  */
--void devlink_rate_nodes_destroy(struct devlink *devlink)
-+void devl_rate_nodes_destroy(struct devlink *devlink)
- {
- 	static struct devlink_rate *devlink_rate, *tmp;
- 	const struct devlink_ops *ops = devlink->ops;
- 
--	mutex_lock(&devlink->lock);
-+	devl_assert_locked(devlink);
-+
- 	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
- 		if (!devlink_rate->parent)
+@@ -835,14 +835,14 @@ static void nsim_dev_trap_report_work(struct work_struct *work)
+ 	/* For each running port and enabled packet trap, generate a UDP
+ 	 * packet with a random 5-tuple and report it.
+ 	 */
+-	mutex_lock(&nsim_dev->port_list_lock);
++	devl_lock(priv_to_devlink(nsim_dev));
+ 	list_for_each_entry(nsim_dev_port, &nsim_dev->port_list, list) {
+ 		if (!netif_running(nsim_dev_port->ns->netdev))
  			continue;
-@@ -9647,6 +9666,23 @@ void devlink_rate_nodes_destroy(struct devlink *devlink)
- 			kfree(devlink_rate);
- 		}
+ 
+ 		nsim_dev_trap_report(nsim_dev_port);
  	}
-+}
-+EXPORT_SYMBOL_GPL(devl_rate_nodes_destroy);
-+
-+/**
-+ * devlink_rate_nodes_destroy - destroy all devlink rate nodes on device
-+ *
-+ * @devlink: devlink instance
-+ *
-+ * Unset parent for all rate objects and destroy all rate nodes
-+ * on specified device.
-+ *
-+ * Context: Takes and release devlink->lock <mutex>.
-+ */
-+void devlink_rate_nodes_destroy(struct devlink *devlink)
-+{
-+	mutex_lock(&devlink->lock);
-+	devl_rate_nodes_destroy(devlink);
- 	mutex_unlock(&devlink->lock);
+-	mutex_unlock(&nsim_dev->port_list_lock);
++	devl_unlock(priv_to_devlink(nsim_dev));
+ 
+ 	schedule_delayed_work(&nsim_dev->trap_data->trap_report_dw,
+ 			      msecs_to_jiffies(NSIM_TRAP_REPORT_INTERVAL_MS));
+@@ -924,6 +924,7 @@ static void nsim_dev_traps_exit(struct devlink *devlink)
+ {
+ 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
+ 
++	/* caution, trap work takes devlink lock */
+ 	cancel_delayed_work_sync(&nsim_dev->trap_data->trap_report_dw);
+ 	devlink_traps_unregister(devlink, nsim_traps_arr,
+ 				 ARRAY_SIZE(nsim_traps_arr));
+@@ -1380,8 +1381,8 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
+ 	memcpy(attrs.switch_id.id, nsim_dev->switch_id.id, nsim_dev->switch_id.id_len);
+ 	attrs.switch_id.id_len = nsim_dev->switch_id.id_len;
+ 	devlink_port_attrs_set(devlink_port, &attrs);
+-	err = devlink_port_register(priv_to_devlink(nsim_dev), devlink_port,
+-				    nsim_dev_port->port_index);
++	err = devl_port_register(priv_to_devlink(nsim_dev), devlink_port,
++				 nsim_dev_port->port_index);
+ 	if (err)
+ 		goto err_port_free;
+ 
+@@ -1396,8 +1397,8 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
+ 	}
+ 
+ 	if (nsim_dev_port_is_vf(nsim_dev_port)) {
+-		err = devlink_rate_leaf_create(&nsim_dev_port->devlink_port,
+-					       nsim_dev_port);
++		err = devl_rate_leaf_create(&nsim_dev_port->devlink_port,
++					    nsim_dev_port);
+ 		if (err)
+ 			goto err_nsim_destroy;
+ 	}
+@@ -1412,7 +1413,7 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev, enum nsim_dev_port_typ
+ err_port_debugfs_exit:
+ 	nsim_dev_port_debugfs_exit(nsim_dev_port);
+ err_dl_port_unregister:
+-	devlink_port_unregister(devlink_port);
++	devl_port_unregister(devlink_port);
+ err_port_free:
+ 	kfree(nsim_dev_port);
+ 	return err;
+@@ -1424,11 +1425,11 @@ static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port)
+ 
+ 	list_del(&nsim_dev_port->list);
+ 	if (nsim_dev_port_is_vf(nsim_dev_port))
+-		devlink_rate_leaf_destroy(&nsim_dev_port->devlink_port);
++		devl_rate_leaf_destroy(&nsim_dev_port->devlink_port);
+ 	devlink_port_type_clear(devlink_port);
+ 	nsim_destroy(nsim_dev_port->ns);
+ 	nsim_dev_port_debugfs_exit(nsim_dev_port);
+-	devlink_port_unregister(devlink_port);
++	devl_port_unregister(devlink_port);
+ 	kfree(nsim_dev_port);
  }
- EXPORT_SYMBOL_GPL(devlink_rate_nodes_destroy);
+ 
+@@ -1436,11 +1437,11 @@ static void nsim_dev_port_del_all(struct nsim_dev *nsim_dev)
+ {
+ 	struct nsim_dev_port *nsim_dev_port, *tmp;
+ 
+-	mutex_lock(&nsim_dev->port_list_lock);
++	devl_lock(priv_to_devlink(nsim_dev));
+ 	list_for_each_entry_safe(nsim_dev_port, tmp,
+ 				 &nsim_dev->port_list, list)
+ 		__nsim_dev_port_del(nsim_dev_port);
+-	mutex_unlock(&nsim_dev->port_list_lock);
++	devl_unlock(priv_to_devlink(nsim_dev));
+ }
+ 
+ static int nsim_dev_port_add_all(struct nsim_dev *nsim_dev,
+@@ -1449,7 +1450,9 @@ static int nsim_dev_port_add_all(struct nsim_dev *nsim_dev,
+ 	int i, err;
+ 
+ 	for (i = 0; i < port_count; i++) {
++		devl_lock(priv_to_devlink(nsim_dev));
+ 		err = __nsim_dev_port_add(nsim_dev, NSIM_DEV_PORT_TYPE_PF, i);
++		devl_unlock(priv_to_devlink(nsim_dev));
+ 		if (err)
+ 			goto err_port_del_all;
+ 	}
+@@ -1470,7 +1473,6 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
+ 	devlink = priv_to_devlink(nsim_dev);
+ 	nsim_dev = devlink_priv(devlink);
+ 	INIT_LIST_HEAD(&nsim_dev->port_list);
+-	mutex_init(&nsim_dev->port_list_lock);
+ 	nsim_dev->fw_update_status = true;
+ 	nsim_dev->fw_update_overwrite_mask = 0;
+ 
+@@ -1544,7 +1546,6 @@ int nsim_drv_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 	get_random_bytes(nsim_dev->switch_id.id, nsim_dev->switch_id.id_len);
+ 	INIT_LIST_HEAD(&nsim_dev->port_list);
+ 	mutex_init(&nsim_dev->vfs_lock);
+-	mutex_init(&nsim_dev->port_list_lock);
+ 	nsim_dev->fw_update_status = true;
+ 	nsim_dev->fw_update_overwrite_mask = 0;
+ 	nsim_dev->max_macs = NSIM_DEV_MAX_MACS_DEFAULT;
+@@ -1666,7 +1667,6 @@ static void nsim_dev_reload_destroy(struct nsim_dev *nsim_dev)
+ 	nsim_fib_destroy(devlink, nsim_dev->fib_data);
+ 	nsim_dev_traps_exit(devlink);
+ 	nsim_dev_dummy_region_exit(nsim_dev);
+-	mutex_destroy(&nsim_dev->port_list_lock);
+ }
+ 
+ void nsim_drv_remove(struct nsim_bus_dev *nsim_bus_dev)
+@@ -1706,12 +1706,12 @@ int nsim_drv_port_add(struct nsim_bus_dev *nsim_bus_dev, enum nsim_dev_port_type
+ 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
+ 	int err;
+ 
+-	mutex_lock(&nsim_dev->port_list_lock);
++	devl_lock(priv_to_devlink(nsim_dev));
+ 	if (__nsim_dev_port_lookup(nsim_dev, type, port_index))
+ 		err = -EEXIST;
+ 	else
+ 		err = __nsim_dev_port_add(nsim_dev, type, port_index);
+-	mutex_unlock(&nsim_dev->port_list_lock);
++	devl_unlock(priv_to_devlink(nsim_dev));
+ 	return err;
+ }
+ 
+@@ -1722,13 +1722,13 @@ int nsim_drv_port_del(struct nsim_bus_dev *nsim_bus_dev, enum nsim_dev_port_type
+ 	struct nsim_dev_port *nsim_dev_port;
+ 	int err = 0;
+ 
+-	mutex_lock(&nsim_dev->port_list_lock);
++	devl_lock(priv_to_devlink(nsim_dev));
+ 	nsim_dev_port = __nsim_dev_port_lookup(nsim_dev, type, port_index);
+ 	if (!nsim_dev_port)
+ 		err = -ENOENT;
+ 	else
+ 		__nsim_dev_port_del(nsim_dev_port);
+-	mutex_unlock(&nsim_dev->port_list_lock);
++	devl_unlock(priv_to_devlink(nsim_dev));
+ 	return err;
+ }
+ 
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 128f229d9b4d..8dd6f975f32d 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -274,7 +274,6 @@ struct nsim_dev {
+ 	struct list_head bpf_bound_maps;
+ 	struct netdev_phys_item_id switch_id;
+ 	struct list_head port_list;
+-	struct mutex port_list_lock; /* protects port list */
+ 	bool fw_update_status;
+ 	u32 fw_update_overwrite_mask;
+ 	u32 max_macs;
 -- 
 2.34.1
 
