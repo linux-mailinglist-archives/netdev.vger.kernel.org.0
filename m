@@ -2,148 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E36264DE0CD
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 19:11:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F0C4DE101
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 19:25:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240049AbiCRSM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 14:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35518 "EHLO
+        id S240086AbiCRSZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 14:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233194AbiCRSM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 14:12:27 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B2F2EDC20;
-        Fri, 18 Mar 2022 11:11:06 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 33FEE60007;
-        Fri, 18 Mar 2022 18:11:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1647627065;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R8NHyHx7StIdeAb1cP4RooO3thVY1uHjoKLKhREJtM8=;
-        b=iefKOzdHaPlyoX9hmY6jLRpAbKefC85BiNHNYqoEzaEDTQHPi1K9AhDBx35RogsMBHXHos
-        mtWDhQsflFMsIwHjqciccOTi12JW2atbfrm+HEcXlW4zSAItUt8VoRJGud2nwekRi7nB8j
-        lzWZxFCeyBmmDiIr0ZxDVpZTQW8I8R+JSEnP61yRAFsCLH6LfC1+8L1jSih8ua0hmds9p1
-        GL7LEbUQDO4eI2a1pvBsGTweOSXhzJjEcNYauAxY+hvsgOvWA3WNbR2jL89TOLy8yW/UV2
-        v197PO2+YGL6tjfcT6yr3jCi4yK3MWpmpTTP3O5B1zkvKv8BSxSXsGVNw3kd9Q==
-Date:   Fri, 18 Mar 2022 19:11:01 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S238890AbiCRSZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 14:25:36 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE3CEDF2F;
+        Fri, 18 Mar 2022 11:24:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647627857; x=1679163857;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=wpIS4R443Nce+z/m4Mc2carJ5M+X4U+cG/spU7q0iJU=;
+  b=MBb9M1/vjaNnIKvN8fe/t0g9yLSMQIIQPN9P1ZDa04QpAGJGvLqt6Py1
+   cikhcOfVVFRghA2XRHU4B2rHS4Vl27I+LONmU/hWbE6rPNTfkeBZejJpw
+   wNFWsnvA0uQVcSeGNAD4qMdC3F/oR2IIl5G67CPhyJGqnu1l6SAINfFbl
+   c+JPjC7e/ENy2GJds6OYdGuWPn9NXInB9OWMhUwnfhQUb5LyAH7YzEk6y
+   z6OHoa66psdsHwIXZKuTdKybAoFGs6KzqSiWE6H135jaH6z+h70/PFkeO
+   67hCvIKfenfSIyYGWfzxUX9t+UzsIwHN8TiLnXvAPRaZ4dB8BcY0JUpvJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10290"; a="320404134"
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="320404134"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:12:14 -0700
+X-IronPort-AV: E=Sophos;i="5.90,192,1643702400"; 
+   d="scan'208";a="550837171"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:12:08 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nVH4S-002Ns0-Qz;
+        Fri, 18 Mar 2022 20:11:28 +0200
+Date:   Fri, 18 Mar 2022 20:11:28 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "'Rafael J . Wysocki '" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v2 13/14] net: mac802154: Introduce a tx queue
- flushing mechanism
-Message-ID: <20220318191101.4dbe5a02@xps13>
-In-Reply-To: <CAB_54W4A6-Jgpr2WX3y3OPo-3=BJJDz+M5XPfWwpgCx1sXWAGQ@mail.gmail.com>
-References: <20220207144804.708118-1-miquel.raynal@bootlin.com>
-        <20220207144804.708118-14-miquel.raynal@bootlin.com>
-        <CAB_54W5ao0b6QE7E_uXFeorbn6UjB6NV4emtibqswL4iXYEfng@mail.gmail.com>
-        <20220303191723.39b87766@xps13>
-        <20220304115432.7913f2ef@xps13>
-        <CAB_54W4A6-Jgpr2WX3y3OPo-3=BJJDz+M5XPfWwpgCx1sXWAGQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 4/6] i2c: mux: pinctrl: remove CONFIG_OF dependency and
+ use fwnode API
+Message-ID: <YjTLUL0umgw+ZVTU@smile.fi.intel.com>
+References: <20220318160059.328208-1-clement.leger@bootlin.com>
+ <20220318160059.328208-5-clement.leger@bootlin.com>
+ <YjSzPeWpcR/SSX1a@smile.fi.intel.com>
+ <20220318175630.0e235f41@fixe.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220318175630.0e235f41@fixe.home>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On Fri, Mar 18, 2022 at 05:56:30PM +0100, Clément Léger wrote:
+> Le Fri, 18 Mar 2022 18:28:45 +0200,
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> a écrit :
+> > On Fri, Mar 18, 2022 at 05:00:50PM +0100, Clément Léger wrote:
+> > > In order to use i2c muxes with software_node when added with a struct
+> > > mfd_cell, switch to fwnode API. The fwnode layer will allow to use this
+> > > with both device_node and software_node.  
+> > 
+> > > -	struct device_node *np = dev->of_node;
+> > > +	struct fwnode_handle *np = dev_fwnode(dev);  
+> > 
+> > np is now a misleading name. Use fwnode.
+> 
+> Ok I thought np was meaning "node pointer" and it looked like okay to
+> avoid avoid a diff that is too huge. But agreed, I'll rename that.
 
-alex.aring@gmail.com wrote on Sun, 13 Mar 2022 16:43:52 -0400:
+It's rather "in practice", np stands for "OF node pointer", while fwnode
+stands for "firmware node handle".
 
-> Hi,
->=20
-> On Fri, Mar 4, 2022 at 5:54 AM Miquel Raynal <miquel.raynal@bootlin.com> =
-wrote:
->=20
-> > I had a second look at it and it appears to me that the issue was
-> > already there and is structural. We just did not really cared about it
-> > because we didn't bother with synchronization issues.
-> > =20
->=20
-> I am not sure if I understand correctly. We stop the queue at some
-> specific moment and we need to make sure that xmit_do() is not called
-> or can't be called anymore.
->=20
-> I was thinking about:
->=20
-> void ieee802154_disable_queue(struct ieee802154_hw *hw)
-> {
->         struct ieee802154_local *local =3D hw_to_local(hw);
->         struct ieee802154_sub_if_data *sdata;
->=20
->         rcu_read_lock();
->         list_for_each_entry_rcu(sdata, &local->interfaces, list) {
->                 if (!sdata->dev)
->                         continue;
->=20
->                netif_tx_disable(sdata->dev);
->         }
->         rcu_read_unlock();
-> }
-> EXPORT_SYMBOL(ieee802154_stop_queue);
->=20
-> From my quick view is that "netif_tx_disable()" ensures by holding
-> locks and other things and doing netif_tx_stop_queue() it we can be
-> sure there will be no xmit_do() going on while it's called and
-> afterwards. It can be that there are still transmissions on the
-> transceiver that are on the way, but then your atomic counter and
-> wait_event() will come in place.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-I went for a deeper investigation to understand how the net core
-was calling our callbacks. And it appeared to go through
-dev_hard_start_xmit() and come from __dev_queue_xmit(). This means
-the ieee802154 callback could only be called once at a time
-because it is protected by the network device transmit lock
-(netif_tx_lock()). Which makes the logic safe and not racy as I
-initially thought. This was the missing peace in my mental model I
-believe.
 
-> We need to be sure there will be nothing queued anymore for
-> transmission what (in my opinion) tx_disable() does. from any context.
->
-> We might need to review some netif callbacks... I have in my mind for
-> example stop(), maybe netif_tx_stop_queue() is enough (because the
-> context is like netif_tx_disable(), helding similar locks, etc.) but
-> we might want to be sure that nothing is going on anymore by using
-> your wait_event() with counter.
-
-I don't see a real reason anymore to use the tx_disable() call. Is
-there any reason this could be needed that I don't have in mind? Right
-now the only thing that I see is that it could delay a little bit the
-moment where we actually stop the queue because we would be waiting for
-the lock to be released after the skb has been offloaded to hardware.
-Perhaps maybe we would let another frame to be transmitted before we
-actually get the lock.
-
-> Is there any problem which I don't see?
-
-One question however, as I understand, if userspace tries to send more
-packets, I believe the "if (!stopped)" condition will be false and the
-xmit call will simply be skipped, ending with a -ENETDOWN error [1]. Is
-it what we want? I initially thought we could actually queue patches and
-wait for the queue to be re-enabled again, but it does not look easy.
-
-[1] https://elixir.bootlin.com/linux/latest/source/net/core/dev.c#L4249
-
-Thanks,
-Miqu=C3=A8l
