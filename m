@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 980C74DD7D4
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 11:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 350DE4DD82A
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 11:39:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234937AbiCRKTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 06:19:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53922 "EHLO
+        id S235173AbiCRKjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 06:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234924AbiCRKTp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 06:19:45 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796001FB518;
-        Fri, 18 Mar 2022 03:18:22 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KKg0f6BlmzfYnH;
-        Fri, 18 Mar 2022 18:16:50 +0800 (CST)
-Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
- (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Mar
- 2022 18:18:19 +0800
-From:   Xu Kuohai <xukuohai@huawei.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        with ESMTP id S235094AbiCRKjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 06:39:06 -0400
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C082D9D62;
+        Fri, 18 Mar 2022 03:37:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nFaergNcBPUJhO8DBhWFLEOX7hoSf2bn68A0m5x3R8s=;
+  b=JBHk4PExvNffj6VKnNBv2MivlRozRfYGkxUut8VYfpQGg/Hr82Epw2sE
+   nspUSq7YpyCUbzrB6VZkR54EGCURv6X0DcU6CKri8Ksh29jnB1wsnditG
+   DZY7WcAh3qKEuaSYoORS4kGd+TuJVaPQm+IJx4xkVodRFjlQPzoHyO0pG
+   A=;
+Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.90,192,1643670000"; 
+   d="scan'208";a="8935641"
+Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2022 11:37:36 +0100
+From:   Julia Lawall <Julia.Lawall@inria.fr>
+To:     Shubham Bansal <illusionist.neo@gmail.com>
+Cc:     kernel-janitors@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
         Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: [PATCH bpf-next] bpf, arm64: sign return address for jited code
-Date:   Fri, 18 Mar 2022 06:29:36 -0400
-Message-ID: <20220318102936.838459-1-xukuohai@huawei.com>
-X-Mailer: git-send-email 2.30.2
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ARM: net: bpf: fix typos in comments
+Date:   Fri, 18 Mar 2022 11:37:04 +0100
+Message-Id: <20220318103729.157574-9-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.197]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,72 +57,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sign return address for jited code when the kernel is built with pointer
-authentication enabled.
+Various spelling mistakes in comments.
+Detected with the help of Coccinelle.
 
-1. Sign lr with paciasp instruction before lr is pushed to stack. Since
-   paciasp acts like landing pads for function entry, no need to insert
-   bti instruction before paciasp.
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
-2. Authenticate lr with autiasp instruction after lr is poped from stack.
-
-Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
 ---
- arch/arm64/net/bpf_jit.h      |  3 +++
- arch/arm64/net/bpf_jit_comp.c | 11 +++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ arch/arm/net/bpf_jit_32.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
-index dd59b5ad8fe4..679c80aa1f2e 100644
---- a/arch/arm64/net/bpf_jit.h
-+++ b/arch/arm64/net/bpf_jit.h
-@@ -249,6 +249,9 @@
- /* HINTs */
- #define A64_HINT(x) aarch64_insn_gen_hint(x)
+diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+index 10ceebb7530b..9e457156ad4d 100644
+--- a/arch/arm/net/bpf_jit_32.c
++++ b/arch/arm/net/bpf_jit_32.c
+@@ -1864,7 +1864,7 @@ static int build_body(struct jit_ctx *ctx)
+ 		if (ctx->target == NULL)
+ 			ctx->offsets[i] = ctx->idx;
  
-+#define A64_PACIASP A64_HINT(AARCH64_INSN_HINT_PACIASP)
-+#define A64_AUTIASP A64_HINT(AARCH64_INSN_HINT_AUTIASP)
-+
- /* BTI */
- #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
- #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
-diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
-index e850c69e128c..5dcf45e5944e 100644
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -192,7 +192,7 @@ static bool is_addsub_imm(u32 imm)
- }
- 
- /* Tail call offset to jump into */
--#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
-+#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
- #define PROLOGUE_OFFSET 8
- #else
- #define PROLOGUE_OFFSET 7
-@@ -233,8 +233,11 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+-		/* If unsuccesfull, return with error code */
++		/* If unsuccesful, return with error code */
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -1973,7 +1973,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	 * for jit, although it can decrease the size of the image.
  	 *
+ 	 * As each arm instruction is of length 32bit, we are translating
+-	 * number of JITed intructions into the size required to store these
++	 * number of JITed instructions into the size required to store these
+ 	 * JITed code.
  	 */
- 
-+	/* Sign lr */
-+	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
-+		emit(A64_PACIASP, ctx);
- 	/* BTI landing pad */
--	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
-+	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
- 		emit(A64_BTI_C, ctx);
- 
- 	/* Save FP and LR registers to stay align with ARM64 AAPCS */
-@@ -529,6 +532,10 @@ static void build_epilogue(struct jit_ctx *ctx)
- 	/* Set return value */
- 	emit(A64_MOV(1, A64_R(0), r0), ctx);
- 
-+	/* Authenticate lr */
-+	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
-+		emit(A64_AUTIASP, ctx);
-+
- 	emit(A64_RET(A64_LR), ctx);
- }
- 
--- 
-2.30.2
+ 	image_size = sizeof(u32) * ctx.idx;
 
