@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74B4E4DE2F2
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B4A94DE2EC
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:53:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240898AbiCRUyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 16:54:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44692 "EHLO
+        id S240886AbiCRUy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 16:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240864AbiCRUyf (ORCPT
+        with ESMTP id S240869AbiCRUyf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 16:54:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A0ADF35
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DDCDF38
         for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 13:53:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E843060C96
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 20:53:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0C7DC340EF;
-        Fri, 18 Mar 2022 20:53:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60E9660C88
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 20:53:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8565EC340ED;
+        Fri, 18 Mar 2022 20:53:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647636795;
-        bh=nYtNf99CA7LgQGDafp7syF0XytkZyX/9FJN8VJu90Q4=;
+        bh=+bp7dYWw2dsAo1ajifcnewXIUmMjfZmoadWyoh82uIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qxWcd9x8gBUFO9+3vy7GqThUhFbG4PMWCU6ZpMRrOp7RtWVMPlGLdJfjMzGNyWhuM
-         e0/rnoagink6gPattCicftrpDVg5DywtEl+OG7li3w9VI/RpMUgJ5si9aXmnqf1cGx
-         jaaRwSr6cqNFk4nAe+k+5v68jBtnkhcn08IX4vFFF+hS+uAztHNk95YC6aHlNkuMQY
-         2/XBYFK5kvo+2qO1TPf+NRZx8EfPLOxfRevjgYBG7BKWDWhkB/ERWcw4QsrANU7WrX
-         qfj4GpMkaVbcIL73UOAM700VZSmbRXwkYZAHDEaKR3oktkTujBgGTocTDARu0dyAWU
-         8RvCN50m0wwJQ==
+        b=NpxAYh2AkrgVrZzKUp2HRTzvzektQTnrq5pxqZT6zOCbonIk5X2w5NNHDHm7GhRua
+         ysrd+IImdm8OPhbPQvnqoD8CxEcrYed0q2QGgCypwqAjcUtJV0OO2pcXi0cZ9GM+y8
+         sV7yoCuFDHGWU6EQw1ZIxMmjlVRlbxCRk7Vv35k3tzIpIRLL3203FaPCb7GW9HzPmq
+         3Cv44/H0WLKeCV8ayRQTpuM82YBiRc5Mx4/EZqK5rs1xJ0ZO+KptdgiILXCmUfKxu4
+         KR0SjVsBRkqF1cmY48EozHjY6sx0C4ozX0wBLudGac25C/ppj35ysBWSOKYVC+YKoD
+         UGVazBvORYXUg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 11/15] net/mlx5e: Support multi buffer XDP_TX
-Date:   Fri, 18 Mar 2022 13:52:44 -0700
-Message-Id: <20220318205248.33367-12-saeed@kernel.org>
+Subject: [net-next 12/15] net/mlx5e: Permit XDP with non-linear legacy RQ
+Date:   Fri, 18 Mar 2022 13:52:45 -0700
+Message-Id: <20220318205248.33367-13-saeed@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220318205248.33367-1-saeed@kernel.org>
 References: <20220318205248.33367-1-saeed@kernel.org>
@@ -56,92 +56,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-This commit enables passing multi buffer XDP frames to the TX handlers
-on XDP_TX. Fragments are DMA synchronized to the device and queued to
-the xdpi_fifo for a subsequent unmapping.
+Now that legacy RQ implements XDP in the non-linear mode, stop blocking
+this configuration. Allow non-linear mode only for programs aware of
+multi buffer.
+
+XDP performance with linear mode RQ hasn't changed.
+
+Baseline (MTU 1500, TX MPWQE, legacy RQ, single core):
+ 60-byte packets, XDP_DROP: 11.25 Mpps
+ 60-byte packets, XDP_TX: 9.0 Mpps
+ 60-byte packets, XDP_PASS: 668 kpps
+
+Multi buffer (MTU 9000, TX MPWQE, legacy RQ, single core):
+ 60-byte packets, XDP_DROP: 10.1 Mpps
+ 60-byte packets, XDP_TX: 6.6 Mpps
+ 60-byte packets, XDP_PASS: 658 kpps
+ 8900-byte packets, XDP_DROP: 769 kpps (100% of sent packets)
+ 8900-byte packets, XDP_TX: 674 kpps (100% of sent packets)
+ 8900-byte packets, XDP_PASS: 637 kpps
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/xdp.c  | 39 +++++++++++++++----
- 1 file changed, 31 insertions(+), 8 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 39 +++++++++++++------
+ 1 file changed, 27 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-index 368e54949614..f35b62ce4c07 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -59,20 +59,17 @@ static inline bool
- mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 		    struct page *page, struct xdp_buff *xdp)
- {
-+	struct skb_shared_info *sinfo = NULL;
- 	struct mlx5e_xmit_data xdptxd;
- 	struct mlx5e_xdp_info xdpi;
- 	struct xdp_frame *xdpf;
- 	dma_addr_t dma_addr;
-+	int i;
- 
- 	xdpf = xdp_convert_buff_to_frame(xdp);
- 	if (unlikely(!xdpf))
- 		return false;
- 
--	if (unlikely(xdp_frame_has_frags(xdpf))) {
--		xdp_return_frame(xdpf);
--		return false;
--	}
--
- 	xdptxd.data = xdpf->data;
- 	xdptxd.len  = xdpf->len;
- 
-@@ -117,19 +114,45 @@ mlx5e_xmit_xdp_buff(struct mlx5e_xdpsq *sq, struct mlx5e_rq *rq,
- 	 */
- 
- 	xdpi.mode = MLX5E_XDP_XMIT_MODE_PAGE;
-+	xdpi.page.rq = rq;
- 
- 	dma_addr = page_pool_get_dma_addr(page) + (xdpf->data - (void *)xdpf);
- 	dma_sync_single_for_device(sq->pdev, dma_addr, xdptxd.len, DMA_TO_DEVICE);
- 
-+	if (unlikely(xdp_frame_has_frags(xdpf))) {
-+		sinfo = xdp_get_shared_info_from_frame(xdpf);
-+
-+		for (i = 0; i < sinfo->nr_frags; i++) {
-+			skb_frag_t *frag = &sinfo->frags[i];
-+			dma_addr_t addr;
-+			u32 len;
-+
-+			addr = page_pool_get_dma_addr(skb_frag_page(frag)) +
-+				skb_frag_off(frag);
-+			len = skb_frag_size(frag);
-+			dma_sync_single_for_device(sq->pdev, addr, len,
-+						   DMA_TO_DEVICE);
-+		}
-+	}
-+
- 	xdptxd.dma_addr = dma_addr;
--	xdpi.page.rq = rq;
--	xdpi.page.page = page;
- 
- 	if (unlikely(!INDIRECT_CALL_2(sq->xmit_xdp_frame, mlx5e_xmit_xdp_frame_mpwqe,
--				      mlx5e_xmit_xdp_frame, sq, &xdptxd, NULL, 0)))
-+				      mlx5e_xmit_xdp_frame, sq, &xdptxd, sinfo, 0)))
- 		return false;
- 
-+	xdpi.page.page = page;
- 	mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo, &xdpi);
-+
-+	if (unlikely(xdp_frame_has_frags(xdpf))) {
-+		for (i = 0; i < sinfo->nr_frags; i++) {
-+			skb_frag_t *frag = &sinfo->frags[i];
-+
-+			xdpi.page.page = skb_frag_page(frag);
-+			mlx5e_xdpi_fifo_push(&sq->db.xdpi_fifo, &xdpi);
-+		}
-+	}
-+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 95cec2848685..3256d2c375c3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3953,6 +3953,31 @@ static bool mlx5e_xsk_validate_mtu(struct net_device *netdev,
  	return true;
  }
  
++static bool mlx5e_params_validate_xdp(struct net_device *netdev, struct mlx5e_params *params)
++{
++	bool is_linear;
++
++	/* No XSK params: AF_XDP can't be enabled yet at the point of setting
++	 * the XDP program.
++	 */
++	is_linear = mlx5e_rx_is_linear_skb(params, NULL);
++
++	if (!is_linear && params->rq_wq_type != MLX5_WQ_TYPE_CYCLIC) {
++		netdev_warn(netdev, "XDP is not allowed with striding RQ and MTU(%d) > %d\n",
++			    params->sw_mtu,
++			    mlx5e_xdp_max_mtu(params, NULL));
++		return false;
++	}
++	if (!is_linear && !params->xdp_prog->aux->xdp_has_frags) {
++		netdev_warn(netdev, "MTU(%d) > %d, too big for an XDP program not aware of multi buffer\n",
++			    params->sw_mtu,
++			    mlx5e_xdp_max_mtu(params, NULL));
++		return false;
++	}
++
++	return true;
++}
++
+ int mlx5e_change_mtu(struct net_device *netdev, int new_mtu,
+ 		     mlx5e_fp_preactivate preactivate)
+ {
+@@ -3972,10 +3997,7 @@ int mlx5e_change_mtu(struct net_device *netdev, int new_mtu,
+ 	if (err)
+ 		goto out;
+ 
+-	if (params->xdp_prog &&
+-	    !mlx5e_rx_is_linear_skb(&new_params, NULL)) {
+-		netdev_err(netdev, "MTU(%d) > %d is not allowed while XDP enabled\n",
+-			   new_mtu, mlx5e_xdp_max_mtu(params, NULL));
++	if (new_params.xdp_prog && !mlx5e_params_validate_xdp(netdev, &new_params)) {
+ 		err = -EINVAL;
+ 		goto out;
+ 	}
+@@ -4458,15 +4480,8 @@ static int mlx5e_xdp_allowed(struct mlx5e_priv *priv, struct bpf_prog *prog)
+ 	new_params = priv->channels.params;
+ 	new_params.xdp_prog = prog;
+ 
+-	/* No XSK params: AF_XDP can't be enabled yet at the point of setting
+-	 * the XDP program.
+-	 */
+-	if (!mlx5e_rx_is_linear_skb(&new_params, NULL)) {
+-		netdev_warn(netdev, "XDP is not allowed with MTU(%d) > %d\n",
+-			    new_params.sw_mtu,
+-			    mlx5e_xdp_max_mtu(&new_params, NULL));
++	if (!mlx5e_params_validate_xdp(netdev, &new_params))
+ 		return -EINVAL;
+-	}
+ 
+ 	return 0;
+ }
 -- 
 2.35.1
 
