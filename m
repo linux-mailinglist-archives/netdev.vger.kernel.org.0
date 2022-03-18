@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D7E4DE1B9
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:24:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A5224DE1BF
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 20:24:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240352AbiCRTZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 15:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
+        id S240354AbiCRTZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 15:25:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239449AbiCRTZN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:25:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7881E304AC5
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:23:54 -0700 (PDT)
+        with ESMTP id S240347AbiCRTZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 15:25:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A8B130CAB5
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 12:23:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12F3861BC4
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 19:23:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 338F1C340EF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B35DB8253A
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 19:23:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B53C340ED;
         Fri, 18 Mar 2022 19:23:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1647631433;
-        bh=BWqjM7C7AFVeo492ME0gLDp/GiAhLNn6+5fp8vEIpO8=;
+        bh=b4PwTj3jVvKgY9YqrRvUrEuiDJDDz/2/wUoJaiwEND8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oyA75MIsMgiAET//h2cUpS/q/PQV4k+3rCEvSZstxaS23lawfT7L2cIIJG28QfcmL
-         LpdCBDVloIKcuy/ZgloD703v7dEAKbxw6OqFPopcV2M2fGA5TYJzTGUPVhDXAdz476
-         fuiKEWYoORWFKpkKj1iTSuQ6qB9N6Acq/MJOEbrTV747wI5YO8diV6hI9pmjaB9K0i
-         srYBtysKS/wGTOYqpXu0CgGUuNPqP4VUpY/MYB0+TXXYS46dCblAa6pzKWufZyBboA
-         hoQG77xcdbEzvL3ecGzUP8GORwb4m1CE+BB0p8tZx5Js/ql96dzDAEugroQZ+E+Ez6
-         5Jg5MM/qKnyjA==
+        b=jYSDLLo+TOSbHx0r15nVaRxyt1pmm3ypGviXbx7hEUgEUVYCq5y3JKz1xt/VwHjBE
+         9q8AmpGKUwDTukLp4n94/+777u4O64cAJ7y2twbP6HvUEXu7fbRJtacJYORlJGxlnp
+         wjG5qMNHLqUsrAPnIL0waU5FvPCm4pyj426Jo2XfVM/Tn8UqL4HJjTWTZEwBe3tvlH
+         A4X6eicxWz8hysjnhMuqebd7EPul3Eip2bF3Zs4B6l4MihuuNU4iQ2+8LNTtUfHuF2
+         KbEx+/1V9/SAqs1egHHIgkVwPdNJj/YoZl0iVGpdOzX9HlhBK9Mx+n11CK2vXjd5zw
+         7Q38jfpJZzOlQ==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, jiri@resnulli.us, leonro@nvidia.com,
         saeedm@nvidia.com, idosch@idosch.org, michael.chan@broadcom.com,
-        simon.horman@corigine.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 1/5] bnxt: use the devlink instance lock to protect sriov
-Date:   Fri, 18 Mar 2022 12:23:40 -0700
-Message-Id: <20220318192344.1587891-2-kuba@kernel.org>
+        simon.horman@corigine.com, Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net-next v2 2/5] devlink: add explicitly locked flavor of the rate node APIs
+Date:   Fri, 18 Mar 2022 12:23:41 -0700
+Message-Id: <20220318192344.1587891-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220318192344.1587891-1-kuba@kernel.org>
 References: <20220318192344.1587891-1-kuba@kernel.org>
@@ -54,91 +55,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In prep for .eswitch_mode_set being called with the devlink instance
-lock held use that lock explicitly instead of creating a local mutex
-just for the sriov reconfig.
+We'll need an explicitly locked rate node API for netdevsim
+to switch eswitch mode setting to locked.
 
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c       | 1 -
- drivers/net/ethernet/broadcom/bnxt/bnxt.h       | 6 ------
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 4 ++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c   | 4 ++--
- 4 files changed, 4 insertions(+), 11 deletions(-)
+ include/net/devlink.h |  4 ++
+ net/core/devlink.c    | 86 ++++++++++++++++++++++++++++++-------------
+ 2 files changed, 65 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 92a1a43b3bee..1c28495875cf 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -13470,7 +13470,6 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index fd89a17adea1..a30180c0988a 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1490,6 +1490,10 @@ int devl_port_register(struct devlink *devlink,
+ 		       unsigned int port_index);
+ void devl_port_unregister(struct devlink_port *devlink_port);
  
- #ifdef CONFIG_BNXT_SRIOV
- 	init_waitqueue_head(&bp->sriov_cfg_wait);
--	mutex_init(&bp->sriov_lock);
- #endif
- 	if (BNXT_SUPPORTS_TPA(bp)) {
- 		bp->gro_func = bnxt_gro_func_5730x;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 447a9406b8a2..61aa3e8c5952 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2072,12 +2072,6 @@ struct bnxt {
- 	wait_queue_head_t	sriov_cfg_wait;
- 	bool			sriov_cfg;
- #define BNXT_SRIOV_CFG_WAIT_TMO	msecs_to_jiffies(10000)
--
--	/* lock to protect VF-rep creation/cleanup via
--	 * multiple paths such as ->sriov_configure() and
--	 * devlink ->eswitch_mode_set()
--	 */
--	struct mutex		sriov_lock;
- #endif
++int devl_rate_leaf_create(struct devlink_port *port, void *priv);
++void devl_rate_leaf_destroy(struct devlink_port *devlink_port);
++void devl_rate_nodes_destroy(struct devlink *devlink);
++
+ struct ib_device;
  
- #if BITS_PER_LONG == 32
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index 1d177fed44a6..ddf2f3963abe 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -846,7 +846,7 @@ void bnxt_sriov_disable(struct bnxt *bp)
+ struct net *devlink_net(const struct devlink *devlink);
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index f2a277053ec6..5aac5370c136 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2868,7 +2868,7 @@ static int devlink_rate_nodes_check(struct devlink *devlink, u16 mode,
+ {
+ 	struct devlink_rate *devlink_rate;
+ 
+-	/* Take the lock to sync with devlink_rate_nodes_destroy() */
++	/* Take the lock to sync with destroy */
+ 	mutex_lock(&devlink->lock);
+ 	list_for_each_entry(devlink_rate, &devlink->rate_list, list)
+ 		if (devlink_rate_is_node(devlink_rate)) {
+@@ -9548,30 +9548,26 @@ void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 contro
+ EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
+ 
+ /**
+- * devlink_rate_leaf_create - create devlink rate leaf
+- *
++ * devl_rate_leaf_create - create devlink rate leaf
+  * @devlink_port: devlink port object to create rate object on
+  * @priv: driver private data
+  *
+  * Create devlink rate object of type leaf on provided @devlink_port.
+- * Throws call trace if @devlink_port already has a devlink rate object.
+- *
+- * Context: Takes and release devlink->lock <mutex>.
+- *
+- * Return: -ENOMEM if failed to allocate rate object, 0 otherwise.
+  */
+-int
+-devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
++int devl_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
+ {
+ 	struct devlink *devlink = devlink_port->devlink;
+ 	struct devlink_rate *devlink_rate;
+ 
++	devl_assert_locked(devlink_port->devlink);
++
++	if (WARN_ON(devlink_port->devlink_rate))
++		return -EBUSY;
++
+ 	devlink_rate = kzalloc(sizeof(*devlink_rate), GFP_KERNEL);
+ 	if (!devlink_rate)
+ 		return -ENOMEM;
+ 
+-	mutex_lock(&devlink->lock);
+-	WARN_ON(devlink_port->devlink_rate);
+ 	devlink_rate->type = DEVLINK_RATE_TYPE_LEAF;
+ 	devlink_rate->devlink = devlink;
+ 	devlink_rate->devlink_port = devlink_port;
+@@ -9579,12 +9575,42 @@ devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
+ 	list_add_tail(&devlink_rate->list, &devlink->rate_list);
+ 	devlink_port->devlink_rate = devlink_rate;
+ 	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_NEW);
+-	mutex_unlock(&devlink->lock);
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(devl_rate_leaf_create);
++
++int
++devlink_rate_leaf_create(struct devlink_port *devlink_port, void *priv)
++{
++	struct devlink *devlink = devlink_port->devlink;
++	int ret;
++
++	mutex_lock(&devlink->lock);
++	ret = devl_rate_leaf_create(devlink_port, priv);
++	mutex_unlock(&devlink->lock);
++
++	return ret;
++}
+ EXPORT_SYMBOL_GPL(devlink_rate_leaf_create);
+ 
++void devl_rate_leaf_destroy(struct devlink_port *devlink_port)
++{
++	struct devlink_rate *devlink_rate = devlink_port->devlink_rate;
++
++	devl_assert_locked(devlink_port->devlink);
++	if (!devlink_rate)
++		return;
++
++	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_DEL);
++	if (devlink_rate->parent)
++		refcount_dec(&devlink_rate->parent->refcnt);
++	list_del(&devlink_rate->list);
++	devlink_port->devlink_rate = NULL;
++	kfree(devlink_rate);
++}
++EXPORT_SYMBOL_GPL(devl_rate_leaf_destroy);
++
+ /**
+  * devlink_rate_leaf_destroy - destroy devlink rate leaf
+  *
+@@ -9601,32 +9627,25 @@ void devlink_rate_leaf_destroy(struct devlink_port *devlink_port)
  		return;
  
- 	/* synchronize VF and VF-rep create and destroy */
--	mutex_lock(&bp->sriov_lock);
-+	devl_lock(bp->dl);
- 	bnxt_vf_reps_destroy(bp);
- 
- 	if (pci_vfs_assigned(bp->pdev)) {
-@@ -859,7 +859,7 @@ void bnxt_sriov_disable(struct bnxt *bp)
- 		/* Free the HW resources reserved for various VF's */
- 		bnxt_hwrm_func_vf_resource_free(bp, num_vfs);
- 	}
--	mutex_unlock(&bp->sriov_lock);
-+	devl_unlock(bp->dl);
- 
- 	bnxt_free_vf_resources(bp);
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-index 8eb28e088582..b2a9528b456b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.c
-@@ -561,7 +561,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 	struct bnxt *bp = bnxt_get_bp_from_dl(devlink);
- 	int rc = 0;
- 
--	mutex_lock(&bp->sriov_lock);
-+	devl_lock(devlink);
- 	if (bp->eswitch_mode == mode) {
- 		netdev_info(bp->dev, "already in %s eswitch mode\n",
- 			    mode == DEVLINK_ESWITCH_MODE_LEGACY ?
-@@ -595,7 +595,7 @@ int bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,
- 		goto done;
- 	}
- done:
--	mutex_unlock(&bp->sriov_lock);
-+	devl_unlock(devlink);
- 	return rc;
+ 	mutex_lock(&devlink->lock);
+-	devlink_rate_notify(devlink_rate, DEVLINK_CMD_RATE_DEL);
+-	if (devlink_rate->parent)
+-		refcount_dec(&devlink_rate->parent->refcnt);
+-	list_del(&devlink_rate->list);
+-	devlink_port->devlink_rate = NULL;
++	devl_rate_leaf_destroy(devlink_port);
+ 	mutex_unlock(&devlink->lock);
+-	kfree(devlink_rate);
  }
+ EXPORT_SYMBOL_GPL(devlink_rate_leaf_destroy);
  
+ /**
+- * devlink_rate_nodes_destroy - destroy all devlink rate nodes on device
+- *
++ * devl_rate_nodes_destroy - destroy all devlink rate nodes on device
+  * @devlink: devlink instance
+  *
+  * Unset parent for all rate objects and destroy all rate nodes
+  * on specified device.
+- *
+- * Context: Takes and release devlink->lock <mutex>.
+  */
+-void devlink_rate_nodes_destroy(struct devlink *devlink)
++void devl_rate_nodes_destroy(struct devlink *devlink)
+ {
+ 	static struct devlink_rate *devlink_rate, *tmp;
+ 	const struct devlink_ops *ops = devlink->ops;
+ 
+-	mutex_lock(&devlink->lock);
++	devl_assert_locked(devlink);
++
+ 	list_for_each_entry(devlink_rate, &devlink->rate_list, list) {
+ 		if (!devlink_rate->parent)
+ 			continue;
+@@ -9647,6 +9666,23 @@ void devlink_rate_nodes_destroy(struct devlink *devlink)
+ 			kfree(devlink_rate);
+ 		}
+ 	}
++}
++EXPORT_SYMBOL_GPL(devl_rate_nodes_destroy);
++
++/**
++ * devlink_rate_nodes_destroy - destroy all devlink rate nodes on device
++ *
++ * @devlink: devlink instance
++ *
++ * Unset parent for all rate objects and destroy all rate nodes
++ * on specified device.
++ *
++ * Context: Takes and release devlink->lock <mutex>.
++ */
++void devlink_rate_nodes_destroy(struct devlink *devlink)
++{
++	mutex_lock(&devlink->lock);
++	devl_rate_nodes_destroy(devlink);
+ 	mutex_unlock(&devlink->lock);
+ }
+ EXPORT_SYMBOL_GPL(devlink_rate_nodes_destroy);
 -- 
 2.34.1
 
