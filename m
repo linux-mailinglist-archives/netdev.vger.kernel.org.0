@@ -2,114 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 481274DD3D8
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 05:11:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8DDE4DD411
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 06:06:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232341AbiCRELz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 00:11:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
+        id S232445AbiCRFHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 01:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229503AbiCRELw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 00:11:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6131F9743;
-        Thu, 17 Mar 2022 21:10:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5050EB820F3;
-        Fri, 18 Mar 2022 04:10:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD9ECC340E8;
-        Fri, 18 Mar 2022 04:10:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647576631;
-        bh=6oioHeCh/ZpCHdWoOxstjZkQ5zS1I/5xfc1rk5jnyjQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=A7MAiN+swECTPWooBZgXSnXEj9LgOeeyMjiiyshSLN3ra154ogRWauDPPB55Sjsa+
-         XxxTYJiCPxW8Y/zGjJnHRVw13+DVWMmSWgPC8jH2+1GSYcQu4WyhRpRi99hBKsNBZ1
-         PhskHnjQQjU3AnDVS1v0jOuBZPs3jU3uIjZzhJycetKjg19Byc/BZg7UJIlcEPxdfY
-         ngoho+KjIvA6Hgt34AXS37dQnuUhiYbwoR7wtpVqcBvVXDlfhOWQCQhCZbpT97sk4h
-         FE1wUr6cnzoSGILxKpO8o4ptyZrXpRswRJexFU/aXZlUf+Wm2072teDIf5jlEOx5gP
-         MR9y95AGKzESg==
-Message-ID: <a4032cff-0d48-2690-3c1f-a2ec6c54ffb4@kernel.org>
-Date:   Thu, 17 Mar 2022 22:10:28 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.2
-Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
- to icmp protocol
+        with ESMTP id S232419AbiCRFHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 01:07:12 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7616B2B448E;
+        Thu, 17 Mar 2022 22:05:48 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 7C7075FD0A;
+        Fri, 18 Mar 2022 08:05:45 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1647579945;
+        bh=ypzBk57mUg4ndyuovUUf+dGMir3EpF/+c3SKTe+7je4=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=HmxVNsHGR65Yzy9vwCzXuPLnw2oINEHx21F/PsB6+2w5c7cplc9tDY6bRn+ytNDMz
+         QVPlp4XtqVr93Sobhmq0uFNV8/X4csdOzgC3KzOVB0tFmQvQwLmKTWWZgS7AvGJWZs
+         fGfDsdDVTHGkpAbT+xmG1W94oDIOtXfLdmdefa5DTj6ViBteAfBx8eeflvI9ShIyXv
+         mbOvIcafQskthbN9dsrGsF5EMvxsPPYsp/Vv5EzuY8pTxsB4Phs4DkFGGlMeNSgVCs
+         /uAWI6szdDq6Yubmai7dMYrggEE8iMCCO8w/dQBdVp/NQcqtZIp0G2OCHfNwkiGeTX
+         a5OATyDO+P4FA==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Fri, 18 Mar 2022 08:05:43 +0300 (MSK)
+From:   Krasnov Arseniy Vladimirovich <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+CC:     Krasnov Arseniy <oxffffaa@gmail.com>,
+        Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v4 0/2] af_vsock: add two new tests for
+ SOCK_SEQPACKET
+Thread-Topic: [PATCH net-next v4 0/2] af_vsock: add two new tests for
+ SOCK_SEQPACKET
+Thread-Index: AQHYOdkn7YTNsId4DUmR+TugFQYSWKzEZZCA
+Date:   Fri, 18 Mar 2022 05:05:26 +0000
+Message-ID: <bd2c956c-6cad-0873-d304-e441bfb0036f@sberdevices.ru>
+References: <97d6d8c6-f7b2-1b03-a3d9-f312c33134ec@sberdevices.ru>
+In-Reply-To: <97d6d8c6-f7b2-1b03-a3d9-f312c33134ec@sberdevices.ru>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Hao Peng <flyingpeng@tencent.com>,
-        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Biao Jiang <benbjiang@tencent.com>
-References: <20220316063148.700769-1-imagedong@tencent.com>
- <20220316063148.700769-4-imagedong@tencent.com>
- <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org>
- <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <f787c35b-0984-ecaf-ad97-c7580fcdbbad@kernel.org>
- <CADxym3YM9FMFrTirxWQF7aDOpoEGq5bC4-xm2p0mF8shP+Q0Hw@mail.gmail.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <CADxym3YM9FMFrTirxWQF7aDOpoEGq5bC4-xm2p0mF8shP+Q0Hw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0918E87B6C8B07468E1473095A2EB444@sberdevices.ru>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/03/18 00:40:00 #18999185
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/17/22 7:37 PM, Menglong Dong wrote:
-> On Thu, Mar 17, 2022 at 10:48 PM David Ahern <dsahern@kernel.org> wrote:
->>
->> On 3/16/22 10:05 PM, Jakub Kicinski wrote:
->>> On Wed, 16 Mar 2022 21:35:47 -0600 David Ahern wrote:
->>>> On 3/16/22 9:18 PM, Jakub Kicinski wrote:
->>>>>
->>>>> I guess this set raises the follow up question to Dave if adding
->>>>> drop reasons to places with MIB exception stats means improving
->>>>> the granularity or one MIB stat == one reason?
->>>>
->>>> There are a few examples where multiple MIB stats are bumped on a drop,
->>>> but the reason code should always be set based on first failure. Did you
->>>> mean something else with your question?
->>>
->>> I meant whether we want to differentiate between TYPE, and BROADCAST or
->>> whatever other possible invalid protocol cases we can get here or just
->>> dump them all into a single protocol error code.
->>
->> I think a single one is a good starting point.
-> 
-> Ok, I'll try my best to make a V4 base this way...Is there any inspiration?
-> 
-> Such as we make SKB_DROP_REASON_PTYPE_ABSENT to
-> SKB_DROP_REASON_L2_PROTO, which means the L2 protocol is not
-> supported or invalied.
-
-not following. PTYPE is a Linux name. That means nothing to a user.
-
-I am not sure where you want to use L2_PROTO.
-
-> 
-> And use SKB_DROP_REASON_L4_PROTO for the L4 protocol problem,
-> such as GRE version not supported, ICMP type not supported, etc.
-> 
-> Sounds nice, isn't it?
-
+T24gMTcuMDMuMjAyMiAxMToyOSwgS3Jhc25vdiBBcnNlbml5IFZsYWRpbWlyb3ZpY2ggd3JvdGU6
+DQoNCkdyZWF0ISBUaGFuayBZb3UgZm9yIHJldmlld2luZyB0aGlzIHBhdGNoc2V0IQ0KDQo+IFRo
+aXMgYWRkcyB0d28gdGVzdHM6IGZvciByZWNlaXZlIHRpbWVvdXQgYW5kIHJlYWRpbmcgdG8gaW52
+YWxpZA0KPiBidWZmZXIgcHJvdmlkZWQgYnkgdXNlci4gSSBmb3Jnb3QgdG8gcHV0IGJvdGggcGF0
+Y2hlcyB0byBtYWluDQo+IHBhdGNoc2V0Lg0KPiANCj4gQXJzZW5peSBLcmFzbm92KDIpOg0KPiAN
+Cj4gYWZfdnNvY2s6IFNPQ0tfU0VRUEFDS0VUIHJlY2VpdmUgdGltZW91dCB0ZXN0DQo+IGFmX3Zz
+b2NrOiBTT0NLX1NFUVBBQ0tFVCBicm9rZW4gYnVmZmVyIHRlc3QNCj4gDQo+IHRvb2xzL3Rlc3Rp
+bmcvdnNvY2svdnNvY2tfdGVzdC5jIHwgMjE1ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKw0KPiAxIGZpbGUgY2hhbmdlZCwgMjE1IGluc2VydGlvbnMoKykNCj4gDQo+IHYx
+IC0+IHYyOg0KPiAgc2VlIGV2ZXJ5IHBhdGNoIGFmdGVyICctLS0nIGxpbmUuDQo+IA0KPiB2MiAt
+PiB2MzoNCj4gIHNlZSBldmVyeSBwYXRjaCBhZnRlciAnLS0tJyBsaW5lLg0KPiANCj4gdjMgLT4g
+djQ6DQo+ICBzZWUgZXZlcnkgcGF0Y2ggYWZ0ZXIgJy0tLScgbGluZS4NCj4gDQoNCg==
