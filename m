@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6E94DD7C3
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 11:13:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E30C64DD7C5
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 11:14:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234886AbiCRKPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 06:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
+        id S234918AbiCRKPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 06:15:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234895AbiCRKPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 06:15:04 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2099.outbound.protection.outlook.com [40.107.92.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 994CD103B8C
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 03:13:44 -0700 (PDT)
+        with ESMTP id S234912AbiCRKPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 06:15:07 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2122.outbound.protection.outlook.com [40.107.244.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655D3103BA1
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 03:13:47 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FL2g04l4jXUlAj2Lei5nA650kP6Fj+4vpsiDHWPxchZoMmOwQZQSn2qU4Rv0aSJ4yNVVpa0YVw9UhS10pqSii3JIvwtqEHlz6xl4Tja9s+xHfmamwbuLA2oq8DJPjkkIqePc3kw1T4LbS0faVPJrgMtdtx+6PzAc0TxgEI/PSDtaxuwwT4V33vFJo4tE8Ln7uTsDsIiqdf4qYuCXy1L3CCwwbcbWDLLn9/yjsiRLdLvspU2xURO3bkITO1uTMdZ582ZkJ4T610D0mWAC+MR1eSy9iaMf8X/Tl8xz1c7Ik40Dfd8QXsY5Ehi811FKCPdwbfTq6ySM0lIfUyS2YtzJIQ==
+ b=OtJ6mdCuwdlBLmJH/iqHkrdC62yLZKEb8yCnNHlCLfhdmcXYpmc6uydkVwzJCxMEVkFZhWBMen6ZsrBqu/jybxgWtCo2v/iQkb0+oFmXb2Z2KKP0SY/BlyDFVBm8GqJ2d/+UpetcdolU1KQgmrAuqYwR51ZRdQfu5HxWXHHoAx9i+Yu/VM6PSjRCvp/wWoaTLWyRW9S0/q5l+r6VmvtCCh5c69hsn5c5mi31IOGEKPr3KVcxV9Lfh3DdmckXD/cIFuoHE+k9UBrkpOBYhJTf2B+KpioLwiPj1mJEDRqQdQpWY16lqOWLcuzC1VAc6cW3hSjm+sbnfP/B0LrWcVTaXg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D76txMFUiBYznc6iHkRmbExZvdb47cjqHG3KPOXcD8w=;
- b=VBxb2qFGcKDCjH1SxgAB1mFQIOSmBQ8XE1WfL45UdYc7dpCWc+j+XJ/4DGWcHcUsUgPaBjqwSPPu3JhbPIQe41SBvN3F7dJ4V3/p4QMDw8xMwjfkVOYGhsXNsDkint4Nfx3YiEkk+qckWRaBjzQZmGFhhWfmR7N4KCg2UENxhBJkOWGA9QFyQu1x9XBTgVhpo64kgLFr5EnbYlaKIRjC5H7eLRuyQDC8Ra/J0zeErTd+wquEhWk7zTw7rcvfVwJI5W0e/6BHP8fCyKoZhCyYJtbgytqjmaUdubA02y1DOnbyJjnoIxzOm88QQO0hjCuQf7LB6Ee+9/Mt7b9ZDVjcmw==
+ bh=jJypa0WDicXTBdmLVogDUROeRRVF2MGqLM9Cycpjr6o=;
+ b=faDkwWaBiMItVvZyeYU7t3Tsy5WRGIfXjkB6dh7WToXDKd9NGvo6rzTIGpDDZ8smbnbdF8ZVl5OnAMiwr0HOnk6IXD+cd7lVf5ewAovWIDvk7UUxSsFXMlZ0YOp+ngSx00VMc9sa2KTZpuhUaTz1P7QwaqGUnin6faWYTZMch/ZJ7Zh+2m8UCjDSVic5j4Ord96Gpg9YEYaTuxfzyLqc6daUbfhAnYyEIFkt3pCLUaJKtF0mGEKe9Z8jpyPvjr7hxQy+mtw9so2Ai88FX3f/9GEN+m9FRoy5hTAnbjrTn7WtNEBklJJl4ndRf8RfBKMSQu8tvSUp3ayQP0IK9iDvTw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D76txMFUiBYznc6iHkRmbExZvdb47cjqHG3KPOXcD8w=;
- b=jhOkLa0/nmMc5Y5zahBeLN1oaBNpDy/4OaRb6Ra4r6Sz/sMqgQxemb5DFKc1+rcfg7aryJnfstUNLICB2XXMAB8YoWcJqSEdCq7zSjaqh+OIrYnVjeclFBqaAMb/8ho3fx1muagnYCrrepScF5JHo+YGAjmFVEkMHJ9+CtOx+Tw=
+ bh=jJypa0WDicXTBdmLVogDUROeRRVF2MGqLM9Cycpjr6o=;
+ b=uJ9SY1HRSgpkBLyL5ODXx6z2B/SgAAnDvYkNDWhEtxQ0qQghT0Y9yo7KX328rXkY/Jdiic0IWPhkNdcFvkOrZ+5fFI8FU+loae0REEiUr905xTDiCpvvsi19BolxRWqMO0UZINw6Q3pAQA4cMJxjSjh/nze8orGhANBsmLQV3S0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by DM5PR1301MB2090.namprd13.prod.outlook.com (2603:10b6:4:33::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.7; Fri, 18 Mar
- 2022 10:13:39 +0000
+ 2022 10:13:40 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::d27:c7d9:8880:a73e%2]) with mapi id 15.20.5081.015; Fri, 18 Mar 2022
- 10:13:39 +0000
+ 10:13:40 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH net-next 05/10] nfp: move tx_ring->qcidx into cold data
-Date:   Fri, 18 Mar 2022 11:12:57 +0100
-Message-Id: <20220318101302.113419-6-simon.horman@corigine.com>
+Subject: [PATCH net-next 06/10] nfp: use TX ring pointer write back
+Date:   Fri, 18 Mar 2022 11:12:58 +0100
+Message-Id: <20220318101302.113419-7-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220318101302.113419-1-simon.horman@corigine.com>
 References: <20220318101302.113419-1-simon.horman@corigine.com>
@@ -57,52 +57,52 @@ X-ClientProxiedBy: AM0PR02CA0114.eurprd02.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a47ca55d-c711-4e79-e8dc-08da08c7f890
+X-MS-Office365-Filtering-Correlation-Id: 2c977dcf-ac53-44a0-3ae2-08da08c7f94d
 X-MS-TrafficTypeDiagnostic: DM5PR1301MB2090:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1301MB2090C08CB170B0546CFB0EF1E8139@DM5PR1301MB2090.namprd13.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR1301MB2090CFECD94BB2415472B8CAE8139@DM5PR1301MB2090.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sSOFhUWdimlZ70i0LHTlDHtdD2dlInDRIAKBe4Y9jnHig7aQ8Uly2CD+Qav/AQV69CcMvRZ7ZLZFl8v//Ruybzbs4nPVwc3FDiWvP/GkEzbD8jgaNNmAFgf8CRvSsJ+5UaYipp5VzxwmPGOBvbn4P12t28cIZVoiJy9IS+RmEnNX7VwNa3nXoEl9mZyUDrIBjxzr4C6uxT8hgrX/uR2m/dWfgcd5Odms3kgpY+QWq1LxDirnqZEr+Ojyxu/XqVGm/O7FT1OXBxK+9H0QVyPEXp0QyBJ/LH5gN9gkGMkvxeu1iNpSLIEmzb6uzzeyvNO65kUI7kyT96Ok+HSeMw+x4QcBzj+PTewF3OVegwfvPXJ6jjZH3pHuzYY0G5CWa+N0/zB7urUJQMigQbi/L1oNSNNzf4BF381b/aU4RtYRNRDafXoQfC/waIZGNuKf7uYSjLYF6MgOiLst149aypNfX7Ch+J4oD/McDX6//qn7tscl8WgSkTvfBirnGNK7QptmdwhEgW7Enn1rPqa9aW5SgoumdOz7gz0RN3X5fTtRBB3yuZIT/u2/equB5ptKTV/bZMM2oufpmQv3gZCLOkQcwgwOKSbm9QSzMFfTj6JMCLwfIrb3gB87SOo8JOhn8TomS8Dg7vUrqd+cdN+eNfJi+A==
+X-Microsoft-Antispam-Message-Info: XSgQo5MtQ/38lmR5/KkX3laASfm50fZoDdAWl8J2/Hz7Ti02Jm0YXiEp5WJYXilAErnFCps5G75jrB9I/HQ5HC9puqxUWNnma1NhH04wIXbOaX7lf6xTzDxYEAiKzIHFxGsq21zkZPIw9k0Rc5YTT1Jf+pSSJt+V7FEZR5CMQPKnkCOKQVTlVWiIP2FkmOC3XvJA1XdPcaZKgEY188vI/UBA72yjkfhyp5rER5cI5x/INAp/5QGUny5Wagkt3//afcOcLxL/xiWY9+bgMQgFoHqWkWtmQhL29IBj+PIcRPrjTHZLzRY24r3c80qCBbgeGveVktaT1vCC6gEoIEXEElWQco+AA9wBQtxDlmJCW6L1etWTdLc7Oo/VPi255rpaZ5VEnhSVeYMH+CD/v/n3t/TD0M3FJ2Io5/kLn1UDOAxVno4f5eS9FUyVarx6XyW5RToKNuU3JDqKeRHUHUWD9D+Ptg2bHGQ7dUTTySsnp5Kt6g5VsWDXBXgBvZXKrFtfMP8JbW3mD8UD19+nUr3lvtuoi6pA7dAFD34Oe6BLD/jzdpxPV1xe1TdtuZc+YE12QW24Nvseq6uQ6op9ByD9mmqB9v4BhE3ixw/RL9pHdaiOOB6w/y8IZUKCB5tr8nhXmL0VLTSa2TiJLoSdEPjxXg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(376002)(396003)(136003)(366004)(39830400003)(346002)(2616005)(107886003)(2906002)(186003)(1076003)(8676002)(86362001)(6512007)(36756003)(6506007)(52116002)(508600001)(83380400001)(5660300002)(66946007)(66556008)(66476007)(44832011)(4326008)(6486002)(38100700002)(316002)(6666004)(110136005)(8936002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7fpyZOdCfYgyFAcVYOr1PyduxfEchjPQO0YRgnco7GuPIfwRcPMB6DsODjid?=
- =?us-ascii?Q?PtJJpUukFO7lpkFZogGKQlj/BAE4HtVAaWArSPuHpESFzlOAJSHME/rxF3me?=
- =?us-ascii?Q?Hb9qKw/estDy9wO6DOzINTPf0txqibDljn/2eY55s2VDruu86S70rEfCtj21?=
- =?us-ascii?Q?X9Ph02SI7wvr9WI2ogcpM87eWkJF+v1GOIuOCOqqOmwv6RWP+9laVAMaNdVZ?=
- =?us-ascii?Q?TmKb/1icWQXGwlIQ1gc3PlLwCN9FCxDCcW/xqrwCnIqmS8jTNPdZmBYadUN+?=
- =?us-ascii?Q?xnTRK56CbasgV6rUFEVhJAlNNQh+LSjdmrtsKwiZM3PK1zv1QUUDjTVvkMWH?=
- =?us-ascii?Q?zHkRu6112ywWetVd4xJAPrxqFQffDj7NkUZAcnfUc+EbwOOGDhQFALVMvGEt?=
- =?us-ascii?Q?8+t9CM0OMxtSzJHW05k2HRaiE/1nxGARTTiVxAaK82NaKRj6RhM/4YB00aao?=
- =?us-ascii?Q?/v6mKKfXq8v/dILDv+1OTZn3Z0syKZ/6PW+Hd/wBObT85Vj15EAWWoupooGo?=
- =?us-ascii?Q?h5yt4CyyPprEhesmqDvkwtFew35+AGIZtazIgApITdIqsEtq8C/jKob2OWx7?=
- =?us-ascii?Q?4GO/ewIbgWR0sP4pNA3yDpppYDfHTTYXezrseRJUmm5qPL4LWD5aGMt3UhD2?=
- =?us-ascii?Q?HOyK4bv+urLMcppjS+wbgm0kp8F0Ne3n/OxHx8cD5eI++TLasZN0ehxqCS8K?=
- =?us-ascii?Q?QmTXZ63S6kmdJbj1QpvnfONfheQPZG5L1D/wxI19q5uGbqXvNdIDKKIQaalP?=
- =?us-ascii?Q?CNo9WcVPV6prOXbz4CCDhJm8ed1Xl450v8a2kih+5PdcDxg8rJJ4QfCHOth5?=
- =?us-ascii?Q?dxKoslQ9/z2SEnTzXebdjyLo84TujpO9wHTWcW+Fu3mlSLxPeggktgxyLLfX?=
- =?us-ascii?Q?qPuS9JS1GI382u2ycGVXj0ihw7VPYvn+QzC9+Z7KVucAPPcPVn8Fi9q3XDXi?=
- =?us-ascii?Q?FLPmyzCVoVa1Jr+9p2xII6Lvu4foYHmxJDFv6pToWCx+HkjQxNJKG7HhxkJQ?=
- =?us-ascii?Q?38XGvPlMPY4zzzIRCGRT1Xf6V7nln170KPa2EDKTCtAqkhdQqDxX8zk3mdDv?=
- =?us-ascii?Q?8Pud1yTNRI4aeFK2a749DLihdnLZ+YxNQFoqzudRW9/WYImGF90zpPa+VxO0?=
- =?us-ascii?Q?y3OFr0IhBy14SOyFRpNfw4fXq0kGoAWpgyQPgdeSrLY9HTQfUVh0Aw/ROTh4?=
- =?us-ascii?Q?aHreeWm2KwzOFRXiGpVb+KC5QO6VWm4wLH6pkr51VBwfCwb1tFKD087bp+p1?=
- =?us-ascii?Q?eQb7DSN9hTnOr66UfsE88wziVLgmq+lH52q+3kO6aD91vnUj94nFF9RhiHRB?=
- =?us-ascii?Q?mjf1eWyYy0pG4PGhUlkzAsG7L0I0AsqGwJLIfO9/Xn37EO1IT87TVTufvGxQ?=
- =?us-ascii?Q?1zEJ8eQidMcSzfr2CV10DcmJsmGnGoGyAP/lbVUZ0gSahlBLbwosTEqDIA6K?=
- =?us-ascii?Q?XcDCD53dx+GsXFRFxPSjAcj48ZHxBjH6zHCHHjE21taDo/xeeoUFApzc0zVY?=
- =?us-ascii?Q?Y08El4Bb+zQWLsVheio09xJhIGGOrPoTkuzQfwmYzhsBAy6iCjO5M18GqA?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TxaRjBQ+wO672GarOu5ojszKrC1OJBji+Lnax0ZgJYmTMw+LvbGemZcqZl6R?=
+ =?us-ascii?Q?yxpzfZpxi7b0HIE7WsMo1Ox73F/+XfCB1lPGWkuMzsM8zMX2dnsGKxW54LC2?=
+ =?us-ascii?Q?V0TVB//D6LSpncreRA99oLpxs1QQbMsULAFD2szt2zFOILNZeechS1Wuwq28?=
+ =?us-ascii?Q?9x5CrPSVKHH3ZWuI2YFPW2oHiNTDXPimw4BuGtZf6eh0MO1AEwEVKJOvv3xe?=
+ =?us-ascii?Q?g6kJo6h4aWMSFc3VqC7UqHlcmETK/mS5rCzO4112meTPVVIRI43zGzz0jrbg?=
+ =?us-ascii?Q?hKSHwIle/6i+ewVjCkFxUItntBLYAwiRL2nRfsobOwuJEPfQMfBJI0jIhyoj?=
+ =?us-ascii?Q?yZc6uMJfuSIOlLxqBo83/DT1PJCCLqYzUntDy6d7Y60oB7BDcQSOYUiyCPRb?=
+ =?us-ascii?Q?kC0x/bm+TWfbAwlCYRtFV05danyptQOVHf9Cp0jhA7gzITj/B6inyGiRkN7G?=
+ =?us-ascii?Q?HeZRHIKEXxbDije5aje45y6fO05b1DN6uLoEfBtNccCsBCxsxTPxV5grLgP3?=
+ =?us-ascii?Q?oWoZL9Oi2KgUh8ikKKaUvDcBw8b0u/EuGWUm76T6ryEnZnAiRWfNGbFgxXrk?=
+ =?us-ascii?Q?ITX/97pz5nqXMfHr5wr/KQAK8aX7TVSB409w2bBXLh0/kbHehMHxOO/Ag2fv?=
+ =?us-ascii?Q?ujfhDiEZBc06opl7I+73sEsG8H0p2wTf+y6OxZ194xn19ANlN50+GcEToYZN?=
+ =?us-ascii?Q?+zVZV5nvusDNF4IFBS+vpdc7vzg5K/CmRDveb7nJq0qawApqFSWAg18qC+bn?=
+ =?us-ascii?Q?/ocsJ+Qufx44FR4Mnaqe0p0ialwKGDXiWuXN/jWeXP5PUsECsqhiBepYWOyk?=
+ =?us-ascii?Q?wivIYYu/G23fkljZ/y1OHaD8V2uKmu77NU1HRXw2xfKyBAfk0X1zVvsESC8d?=
+ =?us-ascii?Q?FyE+wp83Sksd+ATRKhiHtg9erfo8+pLEyEyPosC8GZUZE9fZBt/p55XohdB7?=
+ =?us-ascii?Q?zVWxOqwupx0iVTIxSrHOU+Ayu0xgPvPVX4IkQ4jdRLtvxtBpMtRzcXNg1BE0?=
+ =?us-ascii?Q?VF2x9SznH3JLvk9BZyFp3Cg17uWNgPeomVFsI0dFZtsZsiBozLavuDc5EFqS?=
+ =?us-ascii?Q?4ue4UCGz97D3NzLugfKl/bPVOdLGNI9OINz2TfjNdQajaLla629Osv3VVRXY?=
+ =?us-ascii?Q?1oHgBMu8JDnB8qmEy94Az7WTpkUNOcPtNWG30KL0mamd28/evisApcgriBEj?=
+ =?us-ascii?Q?fwduOMZ4pZ93yI2Fv6Drk9TCOlVKG2zvKm5Nu0T6KiJTAazey1nyPlklpGYs?=
+ =?us-ascii?Q?vXJ0zObkTRL6X4o2EetzQYp34tmb5BS8TipS+HGgHnC8Mse54CJZbT/9Ey7d?=
+ =?us-ascii?Q?+YSBuAmcsOk4aFl79ATZ6B5bWIfbRRtlPYReTZdu1vWaJlUzBq8KWfwyT7Xd?=
+ =?us-ascii?Q?I2nxUK/F18mbzNceZ4UeMjJkeCGOtrEEs/Mf3IuYCKnnBU5zvW7AtCRtc1SI?=
+ =?us-ascii?Q?c3kkqAQHa65ifmnYsrBhXTWjeSIn0tN+B2elDDziyhmEX5q4FqCXxa3I4DE9?=
+ =?us-ascii?Q?WfCyWbcUY068Xa2M4Je8LqVHDRfbGTNSwvwcz3x+WfMCP5n/f4gVj8Bo6A?=
  =?us-ascii?Q?=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a47ca55d-c711-4e79-e8dc-08da08c7f890
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c977dcf-ac53-44a0-3ae2-08da08c7f94d
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 10:13:38.9200
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 10:13:40.3104
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aPr5DX68txO7RXNhD6I+0mb+EUaQya+yROIXyReASxZzGC8XAvQhs72HuvaeGQed/CdsioHUz06Rjd6uuRArX4tQwuITEOPu/qkBdgLklJg=
+X-MS-Exchange-CrossTenant-UserPrincipalName: D54JW14F8N+qfbEFV8wxD2KSTxZOSDVIaE6kAd8HdpUjavxMg/rHalyaCmEegWTEAF8+Q8PmCTd5m+fPbL5XKYB7AUwqJPGBoYgn6kv2Klg=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1301MB2090
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -115,54 +115,264 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-QCidx is not used on fast path, move it to the lower cacheline.
+Newer versions of the PCIe microcode support writing back the
+position of the TX pointer back into host memory.  This speeds
+up TX completions, because we avoid a read from device memory
+(replacing PCIe read with DMA coherent read).
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Fei Qin <fei.qin@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfp_net.h | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfd3/dp.c  |  5 ++--
+ drivers/net/ethernet/netronome/nfp/nfp_net.h  |  7 +++++
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  9 +++++-
+ .../ethernet/netronome/nfp/nfp_net_debugfs.c  |  5 +++-
+ .../net/ethernet/netronome/nfp/nfp_net_dp.c   | 29 +++++++++++++++++--
+ .../net/ethernet/netronome/nfp/nfp_net_dp.h   |  8 +++++
+ 6 files changed, 56 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/dp.c b/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
+index 619f4d09e4e0..7db56abaa582 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
++++ b/drivers/net/ethernet/netronome/nfp/nfd3/dp.c
+@@ -392,7 +392,7 @@ void nfp_nfd3_tx_complete(struct nfp_net_tx_ring *tx_ring, int budget)
+ 		return;
+ 
+ 	/* Work out how many descriptors have been transmitted */
+-	qcp_rd_p = nfp_qcp_rd_ptr_read(tx_ring->qcp_q);
++	qcp_rd_p = nfp_net_read_tx_cmpl(tx_ring, dp);
+ 
+ 	if (qcp_rd_p == tx_ring->qcp_rd_p)
+ 		return;
+@@ -467,13 +467,14 @@ void nfp_nfd3_tx_complete(struct nfp_net_tx_ring *tx_ring, int budget)
+ static bool nfp_nfd3_xdp_complete(struct nfp_net_tx_ring *tx_ring)
+ {
+ 	struct nfp_net_r_vector *r_vec = tx_ring->r_vec;
++	struct nfp_net_dp *dp = &r_vec->nfp_net->dp;
+ 	u32 done_pkts = 0, done_bytes = 0;
+ 	bool done_all;
+ 	int idx, todo;
+ 	u32 qcp_rd_p;
+ 
+ 	/* Work out how many descriptors have been transmitted */
+-	qcp_rd_p = nfp_qcp_rd_ptr_read(tx_ring->qcp_q);
++	qcp_rd_p = nfp_net_read_tx_cmpl(tx_ring, dp);
+ 
+ 	if (qcp_rd_p == tx_ring->qcp_rd_p)
+ 		return true;
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-index d4b82c893c2a..4e288b8f3510 100644
+index 4e288b8f3510..3c386972f69a 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
-@@ -125,7 +125,6 @@ struct nfp_nfd3_tx_buf;
-  * struct nfp_net_tx_ring - TX ring structure
+@@ -126,6 +126,7 @@ struct nfp_nfd3_tx_buf;
   * @r_vec:      Back pointer to ring vector structure
   * @idx:        Ring index from Linux's perspective
-- * @qcidx:      Queue Controller Peripheral (QCP) queue index for the TX queue
   * @qcp_q:      Pointer to base of the QCP TX queue
++ * @txrwb:	TX pointer write back area
   * @cnt:        Size of the queue in number of descriptors
   * @wr_p:       TX ring write pointer (free running)
-@@ -135,6 +134,8 @@ struct nfp_nfd3_tx_buf;
-  *		(used for .xmit_more delayed kick)
-  * @txbufs:     Array of transmitted TX buffers, to free on transmit
-  * @txds:       Virtual address of TX ring in host memory
-+ *
-+ * @qcidx:      Queue Controller Peripheral (QCP) queue index for the TX queue
-  * @dma:        DMA address of the TX ring
-  * @size:       Size, in bytes, of the TX ring (needed to free)
-  * @is_xdp:	Is this a XDP TX ring?
-@@ -143,7 +144,6 @@ struct nfp_net_tx_ring {
- 	struct nfp_net_r_vector *r_vec;
+  * @rd_p:       TX ring read pointer (free running)
+@@ -145,6 +146,7 @@ struct nfp_net_tx_ring {
  
  	u32 idx;
--	int qcidx;
  	u8 __iomem *qcp_q;
++	u64 *txrwb;
  
  	u32 cnt;
-@@ -156,6 +156,9 @@ struct nfp_net_tx_ring {
- 	struct nfp_nfd3_tx_buf *txbufs;
- 	struct nfp_nfd3_tx_desc *txds;
+ 	u32 wr_p;
+@@ -444,6 +446,8 @@ struct nfp_stat_pair {
+  * @ctrl_bar:		Pointer to mapped control BAR
+  *
+  * @ops:		Callbacks and parameters for this vNIC's NFD version
++ * @txrwb:		TX pointer write back area (indexed by queue id)
++ * @txrwb_dma:		TX pointer write back area DMA address
+  * @txd_cnt:		Size of the TX ring in number of min size packets
+  * @rxd_cnt:		Size of the RX ring in number of min size packets
+  * @num_r_vecs:		Number of used ring vectors
+@@ -480,6 +484,9 @@ struct nfp_net_dp {
  
-+	/* Cold data follows */
-+	int qcidx;
+ 	const struct nfp_dp_ops *ops;
+ 
++	u64 *txrwb;
++	dma_addr_t txrwb_dma;
 +
- 	dma_addr_t dma;
- 	size_t size;
- 	bool is_xdp;
+ 	unsigned int txd_cnt;
+ 	unsigned int rxd_cnt;
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index dd234f5228f1..5cac5563028c 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -1427,6 +1427,8 @@ struct nfp_net_dp *nfp_net_clone_dp(struct nfp_net *nn)
+ 	new->rx_rings = NULL;
+ 	new->num_r_vecs = 0;
+ 	new->num_stack_tx_rings = 0;
++	new->txrwb = NULL;
++	new->txrwb_dma = 0;
+ 
+ 	return new;
+ }
+@@ -1963,7 +1965,7 @@ void nfp_net_info(struct nfp_net *nn)
+ 		nn->fw_ver.resv, nn->fw_ver.class,
+ 		nn->fw_ver.major, nn->fw_ver.minor,
+ 		nn->max_mtu);
+-	nn_info(nn, "CAP: %#x %s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n",
++	nn_info(nn, "CAP: %#x %s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n",
+ 		nn->cap,
+ 		nn->cap & NFP_NET_CFG_CTRL_PROMISC  ? "PROMISC "  : "",
+ 		nn->cap & NFP_NET_CFG_CTRL_L2BC     ? "L2BCFILT " : "",
+@@ -1981,6 +1983,7 @@ void nfp_net_info(struct nfp_net *nn)
+ 		nn->cap & NFP_NET_CFG_CTRL_CTAG_FILTER ? "CTAG_FILTER " : "",
+ 		nn->cap & NFP_NET_CFG_CTRL_MSIXAUTO ? "AUTOMASK " : "",
+ 		nn->cap & NFP_NET_CFG_CTRL_IRQMOD   ? "IRQMOD "   : "",
++		nn->cap & NFP_NET_CFG_CTRL_TXRWB    ? "TXRWB "    : "",
+ 		nn->cap & NFP_NET_CFG_CTRL_VXLAN    ? "VXLAN "    : "",
+ 		nn->cap & NFP_NET_CFG_CTRL_NVGRE    ? "NVGRE "	  : "",
+ 		nn->cap & NFP_NET_CFG_CTRL_CSUM_COMPLETE ?
+@@ -2352,6 +2355,10 @@ int nfp_net_init(struct nfp_net *nn)
+ 		nn->dp.ctrl |= NFP_NET_CFG_CTRL_IRQMOD;
+ 	}
+ 
++	/* Enable TX pointer writeback, if supported */
++	if (nn->cap & NFP_NET_CFG_CTRL_TXRWB)
++		nn->dp.ctrl |= NFP_NET_CFG_CTRL_TXRWB;
++
+ 	/* Stash the re-configuration queue away.  First odd queue in TX Bar */
+ 	nn->qcp_cfg = nn->tx_bar + NFP_QCP_QUEUE_ADDR_SZ;
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c b/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c
+index 791203d07ac7..d8b735ccf899 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c
+@@ -99,11 +99,14 @@ static int nfp_tx_q_show(struct seq_file *file, void *data)
+ 	d_rd_p = nfp_qcp_rd_ptr_read(tx_ring->qcp_q);
+ 	d_wr_p = nfp_qcp_wr_ptr_read(tx_ring->qcp_q);
+ 
+-	seq_printf(file, "TX[%02d,%02d%s]: cnt=%u dma=%pad host=%p   H_RD=%u H_WR=%u D_RD=%u D_WR=%u\n",
++	seq_printf(file, "TX[%02d,%02d%s]: cnt=%u dma=%pad host=%p   H_RD=%u H_WR=%u D_RD=%u D_WR=%u",
+ 		   tx_ring->idx, tx_ring->qcidx,
+ 		   tx_ring == r_vec->tx_ring ? "" : "xdp",
+ 		   tx_ring->cnt, &tx_ring->dma, tx_ring->txds,
+ 		   tx_ring->rd_p, tx_ring->wr_p, d_rd_p, d_wr_p);
++	if (tx_ring->txrwb)
++		seq_printf(file, " TXRWB=%llu", *tx_ring->txrwb);
++	seq_putc(file, '\n');
+ 
+ 	nfp_net_debugfs_print_tx_descs(file, &nn->dp, r_vec, tx_ring,
+ 				       d_rd_p, d_wr_p);
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_dp.c b/drivers/net/ethernet/netronome/nfp/nfp_net_dp.c
+index 431bd2c13221..34dd94811df3 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_dp.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_dp.c
+@@ -44,12 +44,13 @@ void *nfp_net_rx_alloc_one(struct nfp_net_dp *dp, dma_addr_t *dma_addr)
+ /**
+  * nfp_net_tx_ring_init() - Fill in the boilerplate for a TX ring
+  * @tx_ring:  TX ring structure
++ * @dp:	      NFP Net data path struct
+  * @r_vec:    IRQ vector servicing this ring
+  * @idx:      Ring index
+  * @is_xdp:   Is this an XDP TX ring?
+  */
+ static void
+-nfp_net_tx_ring_init(struct nfp_net_tx_ring *tx_ring,
++nfp_net_tx_ring_init(struct nfp_net_tx_ring *tx_ring, struct nfp_net_dp *dp,
+ 		     struct nfp_net_r_vector *r_vec, unsigned int idx,
+ 		     bool is_xdp)
+ {
+@@ -61,6 +62,7 @@ nfp_net_tx_ring_init(struct nfp_net_tx_ring *tx_ring,
+ 	u64_stats_init(&tx_ring->r_vec->tx_sync);
+ 
+ 	tx_ring->qcidx = tx_ring->idx * nn->stride_tx;
++	tx_ring->txrwb = dp->txrwb ? &dp->txrwb[idx] : NULL;
+ 	tx_ring->qcp_q = nn->tx_bar + NFP_QCP_QUEUE_OFF(tx_ring->qcidx);
+ }
+ 
+@@ -187,14 +189,22 @@ int nfp_net_tx_rings_prepare(struct nfp_net *nn, struct nfp_net_dp *dp)
+ 	if (!dp->tx_rings)
+ 		return -ENOMEM;
+ 
++	if (dp->ctrl & NFP_NET_CFG_CTRL_TXRWB) {
++		dp->txrwb = dma_alloc_coherent(dp->dev,
++					       dp->num_tx_rings * sizeof(u64),
++					       &dp->txrwb_dma, GFP_KERNEL);
++		if (!dp->txrwb)
++			goto err_free_rings;
++	}
++
+ 	for (r = 0; r < dp->num_tx_rings; r++) {
+ 		int bias = 0;
+ 
+ 		if (r >= dp->num_stack_tx_rings)
+ 			bias = dp->num_stack_tx_rings;
+ 
+-		nfp_net_tx_ring_init(&dp->tx_rings[r], &nn->r_vecs[r - bias],
+-				     r, bias);
++		nfp_net_tx_ring_init(&dp->tx_rings[r], dp,
++				     &nn->r_vecs[r - bias], r, bias);
+ 
+ 		if (nfp_net_tx_ring_alloc(dp, &dp->tx_rings[r]))
+ 			goto err_free_prev;
+@@ -211,6 +221,10 @@ int nfp_net_tx_rings_prepare(struct nfp_net *nn, struct nfp_net_dp *dp)
+ err_free_ring:
+ 		nfp_net_tx_ring_free(dp, &dp->tx_rings[r]);
+ 	}
++	if (dp->txrwb)
++		dma_free_coherent(dp->dev, dp->num_tx_rings * sizeof(u64),
++				  dp->txrwb, dp->txrwb_dma);
++err_free_rings:
+ 	kfree(dp->tx_rings);
+ 	return -ENOMEM;
+ }
+@@ -224,6 +238,9 @@ void nfp_net_tx_rings_free(struct nfp_net_dp *dp)
+ 		nfp_net_tx_ring_free(dp, &dp->tx_rings[r]);
+ 	}
+ 
++	if (dp->txrwb)
++		dma_free_coherent(dp->dev, dp->num_tx_rings * sizeof(u64),
++				  dp->txrwb, dp->txrwb_dma);
+ 	kfree(dp->tx_rings);
+ }
+ 
+@@ -377,6 +394,11 @@ nfp_net_tx_ring_hw_cfg_write(struct nfp_net *nn,
+ 			     struct nfp_net_tx_ring *tx_ring, unsigned int idx)
+ {
+ 	nn_writeq(nn, NFP_NET_CFG_TXR_ADDR(idx), tx_ring->dma);
++	if (tx_ring->txrwb) {
++		*tx_ring->txrwb = 0;
++		nn_writeq(nn, NFP_NET_CFG_TXR_WB_ADDR(idx),
++			  nn->dp.txrwb_dma + idx * sizeof(u64));
++	}
+ 	nn_writeb(nn, NFP_NET_CFG_TXR_SZ(idx), ilog2(tx_ring->cnt));
+ 	nn_writeb(nn, NFP_NET_CFG_TXR_VEC(idx), tx_ring->r_vec->irq_entry);
+ }
+@@ -388,6 +410,7 @@ void nfp_net_vec_clear_ring_data(struct nfp_net *nn, unsigned int idx)
+ 	nn_writeb(nn, NFP_NET_CFG_RXR_VEC(idx), 0);
+ 
+ 	nn_writeq(nn, NFP_NET_CFG_TXR_ADDR(idx), 0);
++	nn_writeq(nn, NFP_NET_CFG_TXR_WB_ADDR(idx), 0);
+ 	nn_writeb(nn, NFP_NET_CFG_TXR_SZ(idx), 0);
+ 	nn_writeb(nn, NFP_NET_CFG_TXR_VEC(idx), 0);
+ }
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h b/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h
+index 81be8d17fa93..99579722aacf 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h
+@@ -60,6 +60,14 @@ static inline void nfp_net_tx_xmit_more_flush(struct nfp_net_tx_ring *tx_ring)
+ 	tx_ring->wr_ptr_add = 0;
+ }
+ 
++static inline u32
++nfp_net_read_tx_cmpl(struct nfp_net_tx_ring *tx_ring, struct nfp_net_dp *dp)
++{
++	if (tx_ring->txrwb)
++		return *tx_ring->txrwb;
++	return nfp_qcp_rd_ptr_read(tx_ring->qcp_q);
++}
++
+ static inline void nfp_net_free_frag(void *frag, bool xdp)
+ {
+ 	if (!xdp)
 -- 
 2.30.2
 
