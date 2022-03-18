@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C91914DE232
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:13:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1AC04DE22C
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 21:13:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240533AbiCRUPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 16:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
+        id S240515AbiCRUO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 16:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239791AbiCRUO5 (ORCPT
+        with ESMTP id S235797AbiCRUO5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 16:14:57 -0400
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A20196121;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BF218A7A9;
         Fri, 18 Mar 2022 13:13:37 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 13D44223EA;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D61AA223EF;
         Fri, 18 Mar 2022 21:13:35 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647634415;
+        t=1647634416;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qWHNfVem7DZQ9oD5nMVySWgz28W4v66+TQrxd7Lt7Z8=;
-        b=JuFSQTwDVWbz7sIcbfUAdfS2Km6tULGL5wmzoGO87bt1s0fM3zkczwM/zMOxX32cL6mg43
-        H3G0xhgaEbp5Jvgc9723wR0RI3sUPZt71eIB32Zb1aG8GlKJABbQgR8y87VG5e6FH8VWvV
-        X9XoXqDBCPXRz3mUriPgAs3juX56K2k=
+        bh=8eeLDjh6XapUMf/oGuY0biPxASPRa2wiMP2QiDHhD0Y=;
+        b=ju1TVEchIP157lqBA6dKazAzpJnVAQhCe/+uNB34ljJO3oGHPkyg7xtyX/yyYBKuu6h0zT
+        P/vVglkrxbkPmBk6gphjR1Tb91YqeiA1YPhr0hxufciym2wqJQmhAbpnXkyUGko85z2cWX
+        llnDWpF7LCkqv5fM+EsiQaEyFQj7zVw=
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -42,9 +42,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Horatiu Vultur <horatiu.vultur@microchip.com>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next v3 1/3] dt-bindings: net: mscc-miim: add lan966x compatible
-Date:   Fri, 18 Mar 2022 21:13:22 +0100
-Message-Id: <20220318201324.1647416-2-michael@walle.cc>
+Subject: [PATCH net-next v3 2/3] net: mdio: mscc-miim: replace magic numbers for the bus reset
+Date:   Fri, 18 Mar 2022 21:13:23 +0100
+Message-Id: <20220318201324.1647416-3-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220318201324.1647416-1-michael@walle.cc>
 References: <20220318201324.1647416-1-michael@walle.cc>
@@ -60,30 +60,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MDIO controller has support to release the internal PHYs from reset
-by specifying a second memory resource. This is different between the
-currently supported SparX-5 and the LAN966x. Add a new compatible to
-distinguish between these two.
+Replace the magic numbers by macros which are already defined. It seems
+the original commit missed to use them.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 ---
- Documentation/devicetree/bindings/net/mscc-miim.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/mdio/mdio-mscc-miim.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt b/Documentation/devicetree/bindings/net/mscc-miim.txt
-index 7104679cf59d..70e0cb1ee485 100644
---- a/Documentation/devicetree/bindings/net/mscc-miim.txt
-+++ b/Documentation/devicetree/bindings/net/mscc-miim.txt
-@@ -2,7 +2,7 @@ Microsemi MII Management Controller (MIIM) / MDIO
- =================================================
+diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
+index 64fb76c1e395..2f77bf75288d 100644
+--- a/drivers/net/mdio/mdio-mscc-miim.c
++++ b/drivers/net/mdio/mdio-mscc-miim.c
+@@ -158,18 +158,18 @@ static int mscc_miim_reset(struct mii_bus *bus)
+ {
+ 	struct mscc_miim_dev *miim = bus->priv;
+ 	int offset = miim->phy_reset_offset;
++	int reset_bits = PHY_CFG_PHY_ENA | PHY_CFG_PHY_COMMON_RESET |
++			 PHY_CFG_PHY_RESET;
+ 	int ret;
  
- Properties:
--- compatible: must be "mscc,ocelot-miim"
-+- compatible: must be "mscc,ocelot-miim" or "microchip,lan966x-miim"
- - reg: The base address of the MDIO bus controller register bank. Optionally, a
-   second register bank can be defined if there is an associated reset register
-   for internal PHYs
+ 	if (miim->phy_regs) {
+-		ret = regmap_write(miim->phy_regs,
+-				   MSCC_PHY_REG_PHY_CFG + offset, 0);
++		ret = regmap_write(miim->phy_regs, offset, 0);
+ 		if (ret < 0) {
+ 			WARN_ONCE(1, "mscc reset set error %d\n", ret);
+ 			return ret;
+ 		}
+ 
+-		ret = regmap_write(miim->phy_regs,
+-				   MSCC_PHY_REG_PHY_CFG + offset, 0x1ff);
++		ret = regmap_write(miim->phy_regs, offset, reset_bits);
+ 		if (ret < 0) {
+ 			WARN_ONCE(1, "mscc reset clear error %d\n", ret);
+ 			return ret;
+@@ -272,7 +272,7 @@ static int mscc_miim_probe(struct platform_device *pdev)
+ 
+ 	miim = bus->priv;
+ 	miim->phy_regs = phy_regmap;
+-	miim->phy_reset_offset = 0;
++	miim->phy_reset_offset = MSCC_PHY_REG_PHY_CFG;
+ 
+ 	ret = of_mdiobus_register(bus, pdev->dev.of_node);
+ 	if (ret < 0) {
 -- 
 2.30.2
 
