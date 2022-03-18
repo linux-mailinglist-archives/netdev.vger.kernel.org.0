@@ -2,226 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC084DD6EB
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 10:14:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2616F4DD704
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 10:22:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234296AbiCRJPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 05:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45820 "EHLO
+        id S234399AbiCRJYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 05:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232642AbiCRJPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 05:15:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84DDE21D7F4
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 02:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647594838;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KK160EEoTsFfS7V5AeQrR++IW/udyj73R6o4tOqEZyM=;
-        b=RiWGdPrb3AngILCxKhpDs7dQuO9Umiz3fLxyoW+ZHSZNvoyZQIDXX+Ayyq7fzASTP+KWOz
-        0YWMP+09XQlz3yTAMadxMswCPq7jLGAIIMCHlaTrREnMHqJBqOvA49h9IXWhvs0b2IyOTm
-        6a3Musg/OMW0EOUMSExkSIfMoOVz94I=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-225-XVMxqPVLP0OhTDSawbk8Qg-1; Fri, 18 Mar 2022 05:13:55 -0400
-X-MC-Unique: XVMxqPVLP0OhTDSawbk8Qg-1
-Received: by mail-wm1-f71.google.com with SMTP id i65-20020a1c3b44000000b00385c3f3defaso1197551wma.3
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 02:13:55 -0700 (PDT)
+        with ESMTP id S234377AbiCRJYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 05:24:09 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61B72C57B2;
+        Fri, 18 Mar 2022 02:22:50 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id a17so8487631edm.9;
+        Fri, 18 Mar 2022 02:22:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=W2BhzbMIByCZCKGXGolyoW4FwzuuDiEDyr4ehhR2zyc=;
+        b=HgFmGCQP2uTDIsl/xFIfE3vd5PETPCWDs5LQ3H64TKvccSJQeJoaCj43JkWIJF3DJW
+         1rtlolw3oz5oaytS7J/v9VJuEk4wbKgxq4hBMKl3j8ZGeZ/JnsYjK+8M/mFh7jNCbm/t
+         wiJFEyIXgCCsb519wE3RHEb331heGql31QY6EhR5yLjq597xCAkV30bHCkc/qyH0Htrx
+         wdtxcxRvPrksfCGxgih6UZTuZEuApZq8uVpomJD1XPbWjPvbrpE+c9Rbmb+OYQwC5L9U
+         Th1KwQRPna9N3GM/mXUgWDJmIwUSh3c4zNCrLpOkrFBa+rEaVVE98xKcSCKHivQVvtE/
+         a2Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=KK160EEoTsFfS7V5AeQrR++IW/udyj73R6o4tOqEZyM=;
-        b=TKqeHWFwSfRLlybee4izeJCuiwRiIIq60xSVWYFTcPQIXNpDYizDBe4A9PV5bB4VDK
-         VBYInSGMW4siM+zvTO99wmWDVZ52W6ZB8HO3hPO4+pguek5cdt7PSRCZWwJSMzxGIUsO
-         TdCuWq4G5NfcDAx5qWYuF8y4ufgN6OO9sucR15C1JxKOV+eO8u8iIbo/m3OCRO5ilRiw
-         fNfMOON+BPgmhBKL7IldEjjmdBJdWnAZghfUAsZGPRX09zLK2zhvy0FLjmyBvKusC02n
-         3zK7B9Zb4CmnVnWuDDnez/XjNVUhnrjCG/hFnROaEwjTk8fNMbMlWBrZlyTLmGFSA3fd
-         UMfg==
-X-Gm-Message-State: AOAM5300kw7Sj3pgHjhpMs6SXGSyaeGSvhso5pYn//dtNVDVGLDHmmIT
-        znG2NyXDuTvu1wpJdTk8J0UmFUJ2w5jKX7wJ7vRKasOce/BHsWgOc1Na26R9ape0nlCoEULUiuo
-        RFIysFmnKhLZronxs
-X-Received: by 2002:a05:600c:4e8b:b0:38c:73d4:adb5 with SMTP id f11-20020a05600c4e8b00b0038c73d4adb5mr7552902wmq.34.1647594834329;
-        Fri, 18 Mar 2022 02:13:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJykfgdrHojOSxCBWaxYqwxpWqv2p8F0Aps4te3yuTGRPv1/Vonz6Lqwp5jkrH5ngcW7FwcJ8A==
-X-Received: by 2002:a05:600c:4e8b:b0:38c:73d4:adb5 with SMTP id f11-20020a05600c4e8b00b0038c73d4adb5mr7552884wmq.34.1647594834046;
-        Fri, 18 Mar 2022 02:13:54 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id r65-20020a1c4444000000b0038c48dd23b9sm8829895wma.5.2022.03.18.02.13.53
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=W2BhzbMIByCZCKGXGolyoW4FwzuuDiEDyr4ehhR2zyc=;
+        b=d7JT2aB7jcIWvU4+0E/g/N9ynNrvdcuOxMFKPah4+8YfjUVfz0MZMXGRLvxdZELFPT
+         jyTJ92gIdhDytogPc1unpfiysuFz3QKdR67IhWCCybhgXlhfnb7g6u3o5xh6vWIGM6YY
+         SQqKitAEPZXNNMzhi/fUVyYygBijFe/NKHpWGDrsuJvLwSWuOaJjbj6UHthsLK0SHfYD
+         v1HuS8h/rMCbk5QsdK+gJ1BqamePXk34jFx38spT+LfvBAAithISBo9VbjMogkkqX6FE
+         33cGqbRMvDo9RRlq0RqAOlQkMUj9vsKS1lBZBqd/NM93F5ZF4FzB8mIpLQHG2MqFsLGY
+         CgaQ==
+X-Gm-Message-State: AOAM531/PRf1EklM01eai1KTqYzqGS3B3+3evD1Qb+PMdohbNScSvT7S
+        RarFnyrLmkE+Op9JtBsbsxjgkQz4p8KW1A==
+X-Google-Smtp-Source: ABdhPJxy4bt20DgxAxj4YsKg7TlYGZk8fXVnHcX4FUnQ8m6rjF8wTHhqAqGKwF19CkbU/q18ww4waw==
+X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id i23-20020a05640200d700b004130673ba2fmr8456637edu.29.1647595369200;
+        Fri, 18 Mar 2022 02:22:49 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id bn14-20020a170906c0ce00b006c5ef0494besm3430520ejb.86.2022.03.18.02.22.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 02:13:53 -0700 (PDT)
-Message-ID: <7bd311d0846269f331a1d401c493f5511491d0df.camel@redhat.com>
-Subject: Re: [PATCH v2] ipv6: acquire write lock for addr_list in
- dev_forward_change
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Niels Dossche <dossche.niels@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Fri, 18 Mar 2022 10:13:52 +0100
-In-Reply-To: <20220317155637.29733-1-dossche.niels@gmail.com>
-References: <20220317155637.29733-1-dossche.niels@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Fri, 18 Mar 2022 02:22:48 -0700 (PDT)
+Date:   Fri, 18 Mar 2022 10:22:46 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Nick Alcock <nick.alcock@oracle.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Subject: Re: [PATCHv3 bpf-next 09/13] libbpf: Add
+ bpf_program__attach_kprobe_multi_opts function
+Message-ID: <YjRPZj6Z8vuLeEZo@krava>
+References: <20220316122419.933957-1-jolsa@kernel.org>
+ <20220316122419.933957-10-jolsa@kernel.org>
+ <CAADnVQ+tNLEtbPY+=sZSoBicdSTx1YLgZJwnNuhnBkUcr5xozQ@mail.gmail.com>
+ <CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-03-17 at 16:56 +0100, Niels Dossche wrote:
-> No path towards dev_forward_change (common ancestor of paths is in
-> addrconf_fixup_forwarding) acquires idev->lock for idev->addr_list.
-> We need to hold the lock during the whole loop in dev_forward_change.
-> __ipv6_dev_ac_{inc,dec} both acquire the write lock on idev->lock in
-> their function body. Since addrconf_{join,leave}_anycast call to
-> __ipv6_dev_ac_inc and __ipv6_dev_ac_dec respectively, we need to move
-> the responsibility of locking upwards.
+On Thu, Mar 17, 2022 at 10:14:28PM -0700, Andrii Nakryiko wrote:
+
+SNIP
+
+> > But the above needs more work.
+> > Currently test_progs -t kprobe_multi
+> > takes 4 seconds on lockdep+debug kernel.
+> > Mainly because of the above loop.
+> >
+> >     18.05%  test_progs       [kernel.kallsyms]   [k]
+> > kallsyms_expand_symbol.constprop.4
+> >     12.53%  test_progs       libc-2.28.so        [.] _IO_vfscanf
+> >      6.31%  test_progs       [kernel.kallsyms]   [k] number
+> >      4.66%  test_progs       [kernel.kallsyms]   [k] format_decode
+> >      4.65%  test_progs       [kernel.kallsyms]   [k] string_nocheck
+> >
+> > Single test_skel_api() subtest takes almost a second.
+> >
+> > A cache inside libbpf probably won't help.
+> > Maybe introduce a bpf iterator for kallsyms?
 > 
-> This patch moves the locking up. For __ipv6_dev_ac_dec, there is one
-> place where the caller can directly acquire the idev->lock, that is in
-> ipv6_dev_ac_dec. The other caller is addrconf_leave_anycast, which now
-> needs to be called under idev->lock, and thus it becomes the
-> responsibility of the callers of addrconf_leave_anycast to hold that
-> lock. For __ipv6_dev_ac_inc, there are also 2 callers, one is
-> ipv6_sock_ac_join, which can acquire the lock during the call to
-> __ipv6_dev_ac_inc. The other caller is addrconf_join_anycast, which now
-> needs to be called under idev->lock, and thus it becomes the
-> responsibility of the callers of addrconf_join_anycast to hold that
-> lock.
+> BPF iterator for kallsyms is a great idea! So many benefits:
+
+>   - it should be significantly more efficient *and* simpler than
+> parsing /proc/kallsyms;
+>   - there were some upstream patches recording ksym length (i.e.,
+> function size), don't remember if that ever landed or not, but besides
+> that the other complication of even exposing that to user space were
+> concerns about /proc/kallsyms format being an ABI. With the BPF
+> iterator we can easily provide that symbol size without any breakage.
+> This would be great!
+
+yes, great idea.. I was cc-ed on patches adding extra stuff to kallsyms:
+  https://lore.kernel.org/lkml/20220208184309.148192-7-nick.alcock@oracle.com/
+
+this could be way out ;-) cc-ing Nick
+
+>   - we can allow parameterizing iterator with options like: skip or
+> include module symbols, specify a set of types of symbols (function,
+> variable, etc), etc. This would speed everything up in common cases by
+> not even decompressing irrelevant names.
 > 
-> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-> ---
+> In short, kallsyms iterator would be an immensely useful for any sort
+> of tracing tool that deals with kernel stack traces or kallsyms in
+> general.
+
+I wonder we could make some use of it in perf as well, there's some
+guessing wrt symbol sizes when we parse kallsyms, so we could get
+rid of it.. I will work on that and try to add this
+
 > 
-> Changes in v2:
->  - Move the locking upwards
+> But in this particular case, kprobe_multi_resolve_syms()
+> implementation is extremely suboptimal. I didn't realize during review
+> that kallsyms_lookup_name() is a linear scan... If that's not going to
+> be changed to O(log(N)) some time soon, we need to reimplement
+> kprobe_multi_resolve_syms(), probably.
 > 
->  net/ipv6/addrconf.c | 21 ++++++++++++++++-----
->  net/ipv6/anycast.c  | 37 ++++++++++++++++---------------------
->  2 files changed, 32 insertions(+), 26 deletions(-)
+> One way would be to sort user strings lexicographically and then do a
+> linear scan over all kallsyms, for each symbol perform binary search
+> over a sorted array of user strings. Stop once all the positions were
+> "filled in" (we'd need to keep a bitmap or bool[], probably). This way
+> it's going to be O(MlogN) instead of O(MN) as it is right now.
+
+ok, I did something similar in multi-trampoline patchset that you
+suggested, I think that will work here as well
+
 > 
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index f908e2fd30b2..69e9f81e2045 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -818,6 +818,7 @@ static void dev_forward_change(struct inet6_dev *idev)
->  		}
->  	}
->  
-> +	write_lock_bh(&idev->lock);
->  	list_for_each_entry(ifa, &idev->addr_list, if_list) {
->  		if (ifa->flags&IFA_F_TENTATIVE)
->  			continue;
-> @@ -826,6 +827,7 @@ static void dev_forward_change(struct inet6_dev *idev)
->  		else
->  			addrconf_leave_anycast(ifa);
->  	}
-> +	write_unlock_bh(&idev->lock);
->  	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
->  				     NETCONFA_FORWARDING,
->  				     dev->ifindex, &idev->cnf);
-> @@ -2191,7 +2193,7 @@ void addrconf_leave_solict(struct inet6_dev *idev, const struct in6_addr *addr)
->  	__ipv6_dev_mc_dec(idev, &maddr);
->  }
->  
-> -/* caller must hold RTNL */
-> +/* caller must hold RTNL and write lock idev->lock */
->  static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
->  {
->  	struct in6_addr addr;
-> @@ -2204,7 +2206,7 @@ static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
->  	__ipv6_dev_ac_inc(ifp->idev, &addr);
->  }
->  
-> -/* caller must hold RTNL */
-> +/* caller must hold RTNL and write lock idev->lock */
->  static void addrconf_leave_anycast(struct inet6_ifaddr *ifp)
->  {
->  	struct in6_addr addr;
-> @@ -3857,8 +3859,11 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
->  			__ipv6_ifa_notify(RTM_DELADDR, ifa);
->  			inet6addr_notifier_call_chain(NETDEV_DOWN, ifa);
->  		} else {
-> -			if (idev->cnf.forwarding)
-> +			if (idev->cnf.forwarding) {
-> +				write_lock_bh(&idev->lock);
->  				addrconf_leave_anycast(ifa);
-> +				write_unlock_bh(&idev->lock);
-> +			}
->  			addrconf_leave_solict(ifa->idev, &ifa->addr);
->  		}
->  
-> @@ -6136,16 +6141,22 @@ static void __ipv6_ifa_notify(int event, struct inet6_ifaddr *ifp)
->  				&ifp->addr, ifp->idev->dev->name);
->  		}
->  
-> -		if (ifp->idev->cnf.forwarding)
-> +		if (ifp->idev->cnf.forwarding) {
-> +			write_lock_bh(&ifp->idev->lock);
->  			addrconf_join_anycast(ifp);
-> +			write_unlock_bh(&ifp->idev->lock);
-> +		}
->  		if (!ipv6_addr_any(&ifp->peer_addr))
->  			addrconf_prefix_route(&ifp->peer_addr, 128,
->  					      ifp->rt_priority, ifp->idev->dev,
->  					      0, 0, GFP_ATOMIC);
->  		break;
->  	case RTM_DELADDR:
-> -		if (ifp->idev->cnf.forwarding)
-> +		if (ifp->idev->cnf.forwarding) {
-> +			write_lock_bh(&ifp->idev->lock);
->  			addrconf_leave_anycast(ifp);
-> +			write_unlock_bh(&ifp->idev->lock);
-> +		}
->  		addrconf_leave_solict(ifp->idev, &ifp->addr);
->  		if (!ipv6_addr_any(&ifp->peer_addr)) {
->  			struct fib6_info *rt;
-> diff --git a/net/ipv6/anycast.c b/net/ipv6/anycast.c
-> index dacdea7fcb62..f3017ed6f005 100644
-> --- a/net/ipv6/anycast.c
-> +++ b/net/ipv6/anycast.c
-> @@ -136,7 +136,9 @@ int ipv6_sock_ac_join(struct sock *sk, int ifindex, const struct in6_addr *addr)
->  			goto error;
->  	}
->  
-> +	write_lock_bh(&idev->lock);
->  	err = __ipv6_dev_ac_inc(idev, addr);
-> +	write_unlock_bh(&idev->lock);
+> BTW, Jiri, libbpf.map is supposed to have an alphabetically ordered
+> list of functions, it would be good to move
+> bpf_program__attach_kprobe_multi_opts a bit higher before libbpf_*
+> functions.
 
-I feat this is problematic, due this call chain:
+ah right, sry.. I'll send fix with follow up changes
 
- __ipv6_dev_ac_inc() -> addrconf_join_solict() -> ipv6_dev_mc_inc ->
-__ipv6_dev_mc_inc -> mutex_lock(&idev->mc_lock);
-
-The latter call requires process context.
-
-One alternarive (likely very hackish way) to solve this could be:
-- adding another list entry  into struct inet6_dev, rtnl protected.
-- traverse addr_list under idev->lock and add each entry with
-forwarding on to into a tmp list (e.g. tmp_join) using the field above;
-add the entries with forwarding off into another tmp list (e.g.
-tmp_leave), still using the same field.
-- traverse the tmp_join list under rtnl lock only and do the
-addrconf_join_anycast
-- traverse the tmp_leave list under rtnl lock only and do
-addrconf_leave_anycast
-
-Side note: I'm wondering if we should complete the RCU conversion (e.g.
-moving tempaddr_list to RCU and changing idev->lock). The current mixed
-schema looks a bit confusing to me.
-
-Cheers,
-
-Paolo
-
+thanks,
+jirka
