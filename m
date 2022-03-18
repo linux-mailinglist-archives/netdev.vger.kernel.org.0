@@ -2,163 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2616F4DD704
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 10:22:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26BFF4DD71F
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 10:32:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234399AbiCRJYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 05:24:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        id S234499AbiCRJdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 05:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234377AbiCRJYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 05:24:09 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61B72C57B2;
-        Fri, 18 Mar 2022 02:22:50 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id a17so8487631edm.9;
-        Fri, 18 Mar 2022 02:22:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=W2BhzbMIByCZCKGXGolyoW4FwzuuDiEDyr4ehhR2zyc=;
-        b=HgFmGCQP2uTDIsl/xFIfE3vd5PETPCWDs5LQ3H64TKvccSJQeJoaCj43JkWIJF3DJW
-         1rtlolw3oz5oaytS7J/v9VJuEk4wbKgxq4hBMKl3j8ZGeZ/JnsYjK+8M/mFh7jNCbm/t
-         wiJFEyIXgCCsb519wE3RHEb331heGql31QY6EhR5yLjq597xCAkV30bHCkc/qyH0Htrx
-         wdtxcxRvPrksfCGxgih6UZTuZEuApZq8uVpomJD1XPbWjPvbrpE+c9Rbmb+OYQwC5L9U
-         Th1KwQRPna9N3GM/mXUgWDJmIwUSh3c4zNCrLpOkrFBa+rEaVVE98xKcSCKHivQVvtE/
-         a2Lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W2BhzbMIByCZCKGXGolyoW4FwzuuDiEDyr4ehhR2zyc=;
-        b=d7JT2aB7jcIWvU4+0E/g/N9ynNrvdcuOxMFKPah4+8YfjUVfz0MZMXGRLvxdZELFPT
-         jyTJ92gIdhDytogPc1unpfiysuFz3QKdR67IhWCCybhgXlhfnb7g6u3o5xh6vWIGM6YY
-         SQqKitAEPZXNNMzhi/fUVyYygBijFe/NKHpWGDrsuJvLwSWuOaJjbj6UHthsLK0SHfYD
-         v1HuS8h/rMCbk5QsdK+gJ1BqamePXk34jFx38spT+LfvBAAithISBo9VbjMogkkqX6FE
-         33cGqbRMvDo9RRlq0RqAOlQkMUj9vsKS1lBZBqd/NM93F5ZF4FzB8mIpLQHG2MqFsLGY
-         CgaQ==
-X-Gm-Message-State: AOAM531/PRf1EklM01eai1KTqYzqGS3B3+3evD1Qb+PMdohbNScSvT7S
-        RarFnyrLmkE+Op9JtBsbsxjgkQz4p8KW1A==
-X-Google-Smtp-Source: ABdhPJxy4bt20DgxAxj4YsKg7TlYGZk8fXVnHcX4FUnQ8m6rjF8wTHhqAqGKwF19CkbU/q18ww4waw==
-X-Received: by 2002:a05:6402:d7:b0:413:673:ba2f with SMTP id i23-20020a05640200d700b004130673ba2fmr8456637edu.29.1647595369200;
-        Fri, 18 Mar 2022 02:22:49 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id bn14-20020a170906c0ce00b006c5ef0494besm3430520ejb.86.2022.03.18.02.22.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Mar 2022 02:22:48 -0700 (PDT)
-Date:   Fri, 18 Mar 2022 10:22:46 +0100
-From:   Jiri Olsa <olsajiri@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Nick Alcock <nick.alcock@oracle.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Subject: Re: [PATCHv3 bpf-next 09/13] libbpf: Add
- bpf_program__attach_kprobe_multi_opts function
-Message-ID: <YjRPZj6Z8vuLeEZo@krava>
-References: <20220316122419.933957-1-jolsa@kernel.org>
- <20220316122419.933957-10-jolsa@kernel.org>
- <CAADnVQ+tNLEtbPY+=sZSoBicdSTx1YLgZJwnNuhnBkUcr5xozQ@mail.gmail.com>
- <CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com>
+        with ESMTP id S234494AbiCRJdw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 05:33:52 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2111.outbound.protection.outlook.com [40.107.255.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A9F2E711A;
+        Fri, 18 Mar 2022 02:32:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SasJ1egRy/xkYptQxi9qKzmy34ipYHkTE0wfqe5V5g2voumx6pgl32izEzacFnKweus4ZU8WlkHq2ZxSSFYgAx6ScNt3uwCpfVu/D2K/rIJ6PbLmxfzVtyESd+NIXpstM/uMqdQjU0UYky83imd4RZIPSwX8kypSfHIDQkjWpuHe18lauepFxp7Ggrvnz1FyBZ6hVX4cYD5w9xUviaiByIqQvbb2mh/gkH+926oKU345uPEPVujEPxsw/BGe2MuLiSdQ4CESJYnjIhW+hj9+vKW1DHm5TMNbVPiMtsdBFGWOgGSsMNXG7xHCTGvvZubjn0hNJrzGvTI3SRv0/iVJFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZJ8JUXRC9splI7l+/I8k91c1zBltbWQpfTxc6o5vR8Y=;
+ b=hrZaED3qH02egVO13W5FXFMsgR1Sbu0eG19fP/iGgv6zU6dkDQq3vWLsjztfLhQzp8SXm5fghcoVE0kzK3EEN+pRFH01tZLMOBgXdxBc4lHB70U5VmvGwo+7/W52x/gzqZzlLO3gRqiDCi3PygQvInW3Hls3kMhdv3o02BNuP8OSqc2RFzXYYNdSEGHw/0AtoBdVJ1NFgzRf3WCPUfAMcIjUaCPGXrugmVl6FAOXaBhwEFly3DKk7p7pSGGso48znzGIWbaElzBuHevDnVFDvg6Q50CaNkbIzEEKmnh7JRhXEdlIQxXXMmIvdF9yg5Jm6HSOdI3h3R76BjMSsn8xrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZJ8JUXRC9splI7l+/I8k91c1zBltbWQpfTxc6o5vR8Y=;
+ b=GCHrOykGJ+3dfm6kjQ6hYn1gTtBBzVLkmQq/KVChWr0WjwLrAeDcHfXG0exhAnvc0NkOmQiOdMcqyJaSJC+PzinSqbkEibDYnrfrCAtzjsioNKS1/foA0WXchmae7PgkKl3HO6qr6MGcqOnLnd/9K8oVaK5CyTjNCoDCtuqAEh0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
+ KL1PR0601MB4514.apcprd06.prod.outlook.com (2603:1096:820:72::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.14; Fri, 18 Mar
+ 2022 09:32:26 +0000
+Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::9d3f:ff3b:1948:d732]) by SG2PR06MB3367.apcprd06.prod.outlook.com
+ ([fe80::9d3f:ff3b:1948:d732%4]) with mapi id 15.20.5081.017; Fri, 18 Mar 2022
+ 09:32:26 +0000
+From:   Wan Jiabing <wanjiabing@vivo.com>
+To:     Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Wan Jiabing <wanjiabing@vivo.com>
+Subject: [PATCH] qed: remove unnecessary memset in qed_init_fw_funcs
+Date:   Fri, 18 Mar 2022 17:31:53 +0800
+Message-Id: <20220318093153.521634-1-wanjiabing@vivo.com>
+X-Mailer: git-send-email 2.35.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HKAPR04CA0011.apcprd04.prod.outlook.com
+ (2603:1096:203:d0::21) To SG2PR06MB3367.apcprd06.prod.outlook.com
+ (2603:1096:4:78::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e9d3162a-fd7c-4f98-2c39-08da08c236d6
+X-MS-TrafficTypeDiagnostic: KL1PR0601MB4514:EE_
+X-Microsoft-Antispam-PRVS: <KL1PR0601MB4514722A541A7DF37E17E68EAB139@KL1PR0601MB4514.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ba6KMHix/Hb+4ODpDe5w0kIQCTqE2AQE8C8NhgCdLgwxBdlcB9Uu4QVw30rv6bSAlLbOaLb8O+71yojbugjtdTpBhoZAeFT/VCMGd8+OaGdDGC2ks5vnlpns2OwGTuIQVipu5Jd5Ta1GaD3hx0+/lzZ1Hguz+ga8T0UiaYeo5evIU/InC0ajcAJQmNJgnICNrOVPuI7t6D8GTa3RX8pKm6qz7bvIkTMABSYrM9KUUpfiiu9u+mfmthRlmKsJAg/v/vuLnLQgtkCnNHr5iWYcXrTfE0E9R3pFM1iATpydTXBTrQYiBxeTec19rZtnsQaydcERROeCKnvfJGYpbFuYaVX2MFvDGjh8itlKEgaz+a9imAPsKGH/GXf0X1ONNmYu0XcI7lV0eP2oLqK+C+3mqJDJWlE3O97eAqTtfn7h2MOQ7qA/g6HQIQVpaftjnCDGostmJJh4avAlP171FxBLSMENOxPwZs97CdHlQwmUixLYaTFgCgm8O1ieXIWCE+LoEz8f92lNtMc44SiezCk+ENWwBhzZGiu7A60UXp9eq6N7iG6oW9isiYhgqH0boU+2McNqM3SZo5XecVmsYvCDsbzTf+ilZ9TPjhZKvytpelQ76Z+NrumITLSrzqilmOxUTO8PsOj/qk25JKEHD1rsA+3PooPzf6Wk8oAs2IgWwBsu0j0m/ufq0f99b9ZvBG8BOrBX3Aed1fUjy1pnR+yoQA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(6512007)(6666004)(8936002)(4744005)(6486002)(316002)(5660300002)(110136005)(38350700002)(38100700002)(86362001)(2906002)(186003)(1076003)(2616005)(26005)(36756003)(52116002)(107886003)(66946007)(66556008)(66476007)(4326008)(8676002)(508600001)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XeLIC9M/d9vQ/mmJFY17775mlOrFD10APym1bQkp+3cgs17YeZFOPQBI8Jjv?=
+ =?us-ascii?Q?8FQw3gMXtkaIk5SD74pKp9mNXsfb/x4osyxX2aOruhwaouwJF8GMzWU90OIp?=
+ =?us-ascii?Q?/oLJi55OKD5SWPQPgb+gD83IZY1NEJ5glAGc78SfmskMqUMsRtDMrRBe1lvo?=
+ =?us-ascii?Q?15BhJMOyLHd284lP3gxYd5Fva3+zY3B22Ale+toUeSqbqjA5EHRLSNiNX+nL?=
+ =?us-ascii?Q?0ORp2Dfriy54wVmDx24BE583k7nEu1rZ0aZBxajFHBSRasysRtxs8OjH7OUL?=
+ =?us-ascii?Q?UjAx6wGStFQH2PCNFHFbwlBRLVVfdKmqNhC+Nzt1/C+buZz8keBl0uvxHmIA?=
+ =?us-ascii?Q?7W5juzKdKL2c91rUG5A+UP9B7OlwVGxkGA5b3ec3UKfOb8rga/BGKSUZBKLM?=
+ =?us-ascii?Q?iWf01SjNFpxmKjkgMcieZB5fO0fktvPcxvz7kKMf+xJFyiEpp9e0p5kQe3hd?=
+ =?us-ascii?Q?bTUcaivHkoNJRoJbMyAKtpu7cdY+NHQjKwtWvDEQums7gtUM/Pd9qRMqLrqT?=
+ =?us-ascii?Q?Y2pJIkB48qQ6ppnG0c7KivbSddegrJfWcZs8AcTZ9B3DrShSBRwuZMMpRBRT?=
+ =?us-ascii?Q?n4aKBaI/lfUVj4FAdXNMlL+FoLsyHhcaU69tcJxpEKfqfv5/mortnEQeD4+f?=
+ =?us-ascii?Q?0+6+41fqQjOmYTlBbIFKCJLoBFoXlDT/jMGBD/lxQt8S4D5+s7b1H3kzUymU?=
+ =?us-ascii?Q?hytv9iuz6Lnix0ClBiMn+sSPQjYHw+4WWhEvXn4kqaaDBl80Fd0tqxLZ5LMb?=
+ =?us-ascii?Q?NJoaqwfWB1oZliV1/VAXUW3jqns98BaotydZV/j5/aCFvk/KJtvMNKy1g7a9?=
+ =?us-ascii?Q?R2LxSNvZ+p/KRh3uUvN4iyTHEv8gr9UDEobz0xIpvL9ZVp8+gPDeNGwJk5jM?=
+ =?us-ascii?Q?OGGp2nr3LVEMDcAWo5/qjJbpkneKHM/llciHuSf+LXvVNVPjUhHmEnuh/dQH?=
+ =?us-ascii?Q?MnCPzhYpAt7AvZVGnVnLD4eJ/mmpRxdYRbre3gv1bR8d7f/DWkd4ANhF/nTB?=
+ =?us-ascii?Q?rO186EcHMJ/XvX/ueR6L21nXsDNwuED5vKxHr2RD44VyxkhuTol9X949tNbe?=
+ =?us-ascii?Q?hFq+p9jJzJWDXBtS8DN+3XKWvaa5VOIwNwBT93zzClh4/YXASPULyTX5oKPZ?=
+ =?us-ascii?Q?n5a/0bY9d7pmGgOh52ySColLg4+r/a5LJT5Y4Pd1Xsj91hWeccY7jt8xroeV?=
+ =?us-ascii?Q?ymQpPNKyK3wXnHaQ+CDOs7FGPDm5vapAQZDf0gI6k/JRUHksbBHMX3xB5h0K?=
+ =?us-ascii?Q?e4Sv3BLprdnihZWEtbWv4qXBMga5iF78Y/eVyA/N001iit8CSi2MuQgM4rQX?=
+ =?us-ascii?Q?UDQkQDKY6tKP3Rql8YkJIK6XytCevF5YVChuZwaWu3ublr/XTG7DEOVF2hNl?=
+ =?us-ascii?Q?Dxpxw85CwWmtfCbi2s4Kez5cV0WORkDbzPj+sODg1rXs6h3t4oLRbzJQdrF3?=
+ =?us-ascii?Q?2U/WwTnDt8oUH5U2xwRkHE3rCsshtGWp?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e9d3162a-fd7c-4f98-2c39-08da08c236d6
+X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2022 09:32:26.5529
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lEUmcQguyZIYOHTU2Xyw2nE5737OB8tmbvrwW7ofKK3hanFzZ/nHF5ICEJe0nn3tyur+0NQxVWSKEDskUZJpeA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0601MB4514
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 10:14:28PM -0700, Andrii Nakryiko wrote:
+allocated_mem is allocated by kcalloc(). The memory is set to zero.
+It is unnecessary to call memset again.
 
-SNIP
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-> > But the above needs more work.
-> > Currently test_progs -t kprobe_multi
-> > takes 4 seconds on lockdep+debug kernel.
-> > Mainly because of the above loop.
-> >
-> >     18.05%  test_progs       [kernel.kallsyms]   [k]
-> > kallsyms_expand_symbol.constprop.4
-> >     12.53%  test_progs       libc-2.28.so        [.] _IO_vfscanf
-> >      6.31%  test_progs       [kernel.kallsyms]   [k] number
-> >      4.66%  test_progs       [kernel.kallsyms]   [k] format_decode
-> >      4.65%  test_progs       [kernel.kallsyms]   [k] string_nocheck
-> >
-> > Single test_skel_api() subtest takes almost a second.
-> >
-> > A cache inside libbpf probably won't help.
-> > Maybe introduce a bpf iterator for kallsyms?
-> 
-> BPF iterator for kallsyms is a great idea! So many benefits:
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c b/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
+index 0ce37f2460a4..407029a36fa1 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c
+@@ -1835,8 +1835,6 @@ struct phys_mem_desc *qed_fw_overlay_mem_alloc(struct qed_hwfn *p_hwfn,
+ 	if (!allocated_mem)
+ 		return NULL;
+ 
+-	memset(allocated_mem, 0, NUM_STORMS * sizeof(struct phys_mem_desc));
+-
+ 	/* For each Storm, set physical address in RAM */
+ 	while (buf_offset < buf_size) {
+ 		struct phys_mem_desc *storm_mem_desc;
+-- 
+2.35.1
 
->   - it should be significantly more efficient *and* simpler than
-> parsing /proc/kallsyms;
->   - there were some upstream patches recording ksym length (i.e.,
-> function size), don't remember if that ever landed or not, but besides
-> that the other complication of even exposing that to user space were
-> concerns about /proc/kallsyms format being an ABI. With the BPF
-> iterator we can easily provide that symbol size without any breakage.
-> This would be great!
-
-yes, great idea.. I was cc-ed on patches adding extra stuff to kallsyms:
-  https://lore.kernel.org/lkml/20220208184309.148192-7-nick.alcock@oracle.com/
-
-this could be way out ;-) cc-ing Nick
-
->   - we can allow parameterizing iterator with options like: skip or
-> include module symbols, specify a set of types of symbols (function,
-> variable, etc), etc. This would speed everything up in common cases by
-> not even decompressing irrelevant names.
-> 
-> In short, kallsyms iterator would be an immensely useful for any sort
-> of tracing tool that deals with kernel stack traces or kallsyms in
-> general.
-
-I wonder we could make some use of it in perf as well, there's some
-guessing wrt symbol sizes when we parse kallsyms, so we could get
-rid of it.. I will work on that and try to add this
-
-> 
-> But in this particular case, kprobe_multi_resolve_syms()
-> implementation is extremely suboptimal. I didn't realize during review
-> that kallsyms_lookup_name() is a linear scan... If that's not going to
-> be changed to O(log(N)) some time soon, we need to reimplement
-> kprobe_multi_resolve_syms(), probably.
-> 
-> One way would be to sort user strings lexicographically and then do a
-> linear scan over all kallsyms, for each symbol perform binary search
-> over a sorted array of user strings. Stop once all the positions were
-> "filled in" (we'd need to keep a bitmap or bool[], probably). This way
-> it's going to be O(MlogN) instead of O(MN) as it is right now.
-
-ok, I did something similar in multi-trampoline patchset that you
-suggested, I think that will work here as well
-
-> 
-> BTW, Jiri, libbpf.map is supposed to have an alphabetically ordered
-> list of functions, it would be good to move
-> bpf_program__attach_kprobe_multi_opts a bit higher before libbpf_*
-> functions.
-
-ah right, sry.. I'll send fix with follow up changes
-
-thanks,
-jirka
