@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C3E14DD758
-	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 10:49:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C7DB4DD75B
+	for <lists+netdev@lfdr.de>; Fri, 18 Mar 2022 10:50:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234505AbiCRJug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 05:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        id S233431AbiCRJve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 05:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232119AbiCRJuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 05:50:35 -0400
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 177FD177D2E;
-        Fri, 18 Mar 2022 02:49:15 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:38468.776672580
+        with ESMTP id S234552AbiCRJvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 05:51:33 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A4F11788C6;
+        Fri, 18 Mar 2022 02:50:14 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.218:60254.308099466
 HMM_ATTACHE_NUM: 0000
 HMM_SOURCE_TYPE: SMTP
-Received: from clientip-10.133.11.244 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 40DB32800A8;
-        Fri, 18 Mar 2022 17:49:03 +0800 (CST)
+Received: from clientip-10.133.11.244 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 9A0EE2800A3;
+        Fri, 18 Mar 2022 17:50:06 +0800 (CST)
 X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 42a0ecba21a24553b403112a5536334d for jiri@resnulli.us;
-        Fri, 18 Mar 2022 17:49:07 CST
-X-Transaction-ID: 42a0ecba21a24553b403112a5536334d
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 45b732299e52413c94b77503edb2fa0c for dsahern@kernel.org;
+        Fri, 18 Mar 2022 17:50:13 CST
+X-Transaction-ID: 45b732299e52413c94b77503edb2fa0c
 X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
+X-Receive-IP: 172.18.0.218
 X-MEDUSA-Status: 0
 Sender: sunshouxin@chinatelecom.cn
-Message-ID: <1f7b15a6-861f-9762-a159-73d16c95eebc@chinatelecom.cn>
-Date:   Fri, 18 Mar 2022 17:49:02 +0800
+Message-ID: <eed6ba63-9e49-5351-215c-a70573e4c79a@chinatelecom.cn>
+Date:   Fri, 18 Mar 2022 17:50:06 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
 Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb
  mode
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, oliver@neukum.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
+To:     David Ahern <dsahern@kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, yoshfuji@linux-ipv6.org, oliver@neukum.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
 References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
- <YjLtLdH9gmg7yaNl@nanopsycho>
+ <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
 From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
-In-Reply-To: <YjLtLdH9gmg7yaNl@nanopsycho>
+In-Reply-To: <eff0021c-5a9b-5c44-3fb7-24387cf13e16@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
@@ -57,35 +57,48 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2022/3/17 16:11, Jiri Pirko 写道:
-> Thu, Mar 17, 2022 at 07:15:21AM CET, sunshouxin@chinatelecom.cn wrote:
+在 2022/3/18 2:49, David Ahern 写道:
+> On 3/17/22 12:15 AM, Sun Shouxin wrote:
 >> This patch is implementing IPV6 RLB for balance-alb mode.
 >>
 >> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
 >> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>> ---
+>> changelog:
+>> v1-->v2:
+>> -Remove ndisc_bond_send_na and refactor ndisc_send_na.
+>> -In rlb_nd_xmit, if the lladdr is not local, return curr_active_slave.
+>> -Don't send neighbor advertisement message when receiving
+>>   neighbor advertisement message in rlb6_update_entry_from_na.
+>>
+>> v2-->v3:
+>> -Don't export ndisc_send_na.
+>> -Use ipv6_stub->ndisc_send_na to replace ndisc_send_na
+>>   in rlb6_update_client.
+>>
+>> v3-->v4:
+>> -Submit all code at a whole patch.
+> you misunderstood Jakub's comment. The code should evolve with small,
+> focused patches and each patch needs to compile and function correctly
+> (ie., no breakage).
 >
-> Could you please reply to my question I asked for v1:
-> Out of curiosity, what is exactly your usecase? I'm asking because
-> I don't see any good reason to use RLB/ALB modes. I have to be missing
-> something.
+> You need to respond to Jiri's question about why this feature is needed.
+> After that:
 >
-> This is adding a lot of code in bonding that needs to be maintained.
-> However, if there is no particular need to add it, why would we?
+> 1. patch 1 adds void *data to ndisc_send_na stub function and
+> ndisc_send_na direct function. Update all places that use both
+> ndisc_send_na to pass NULL as the data parameter.
 >
-> Could you please spell out why exactly do you need this? I'm pretty sure
-> that in the end well find out, that you really don't need this at all.
+> 2. patch 2 refactors ndisc_send_na to handle the new data argument
 >
-> Thanks!
+> 3. patch 3 exports any IPv6 functions. explain why each needs to be
+> exported.
+>
+> 4. patch 4 .... bonding changes. (bonding folks can respond on how to
+> introduce that change).
 
 
-This patch is certainly aim fix one real issue in ou lab.
-For historical inheritance, the bond6 with ipv4 is widely used in our lab.
-We started to support ipv6 for all service last year, networking 
-operation and maintenance team
-think it does work with ipv6 ALB capacity take it for granted due to 
-bond6's specification
-but it doesn't work in the end. as you know, it is impossible to change 
-link neworking to LACP
-because of huge cost and effective to online server.
+Thanks your warmly instruction for newbee, I'll resend soon.
+Thanks again.
 
 
