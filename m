@@ -2,77 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91FED4DEA4A
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 20:05:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 381564DEAA0
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 21:25:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243507AbiCSTG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 15:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
+        id S244132AbiCSU1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 16:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235662AbiCSTG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 15:06:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F64FD0D
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 12:05:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A0AB60BBC
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 19:05:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D74BC340EC;
-        Sat, 19 Mar 2022 19:05:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647716735;
-        bh=GjreBnVoIK5q17niaWxbWGQr3pJmqEAtWIC9uzMdSUM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mMdjsRNR61reG/AWstpwySFqTNytFBWKcoi+a2o/88lgRHdVSCQKChRmyS1W8caW7
-         KTqsSqfqdYc3RAhz3hxJlMzE0jgGea6EOzKxyhGTZkr5N+U0Dmbo2+VmNpdmoSpyji
-         lAs6GSlqo9wa2+0g+Wo+H+KwtyvzSBiKkzIWF/XRsfNNQRSIarP0WCP6W905nkgk3d
-         lFvJmZfSttG+GNM8j4TytYblYS3bznRxY5OEWtYaX5bhv4510VfOtmCfyQL/4ybk3t
-         6qBGq19G1AtMJmJ7y8n+ifV9LViIAHvXpEH6/H9BalvXQJjvQTKcSyIpMFWBqtuQ/v
-         tWFbcegz1fxqw==
-Date:   Sat, 19 Mar 2022 12:05:34 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>
-Subject: Re: pull request (net): ipsec 2022-03-16
-Message-ID: <20220319120534.3de1cfac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220319074911.GB4161825@gauss3.secunet.de>
-References: <20220316121142.3142336-1-steffen.klassert@secunet.com>
-        <20220316114438.11955749@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20220319074911.GB4161825@gauss3.secunet.de>
+        with ESMTP id S244130AbiCSU1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 16:27:11 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0B835DFE;
+        Sat, 19 Mar 2022 13:25:49 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id m12so13846997edc.12;
+        Sat, 19 Mar 2022 13:25:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UOoYNkWbn3lmrKEsG1YOHnatThAIgskfCdr/GMzc900=;
+        b=FMHp5b8Oreenx13Q81cuS53VAtjTKHzEOymx+hJeJ58vvMQW7Tzk/rbarGHHFANROV
+         JEah+MBLJs9WIBok57cgluQ2hZ5Wae16wCUlihEYanNw96OZksh9xJxNfr86IPwPAzyc
+         m4AczSJoEbiYsvGvgOWCf1YFCM6LancgKC72Ml5HlAmzBUatdOdtOSv61+tNSgLWbMbh
+         0hR//Yr6zP5p3d3ukoNa8TL6QJgHojMJQ2K8BOdLp+c0pq/nmodWvjAMEMapM65ztzqT
+         2NvPSNlkI9l73SxQ9FJ4DteCc9ftS4c2Sfh1a+GIm01q+F8lFogP1BvIZUPIsZBhv2Yo
+         Z0rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UOoYNkWbn3lmrKEsG1YOHnatThAIgskfCdr/GMzc900=;
+        b=UIEC2epbpHk/WE39sSGAwhhPXKxVTGJZ2VHgS4ajz7LQEmxndgYbtMZvQ7IDC2qpJ/
+         6CL+Ya19DljD8iSJwVuAcoXQKbGiA6mFWaJMJmSUXBygyJhC4SAxF7S4nVAXvDd6fr5M
+         7Ck5VBQ+nMvhMYjhdyX+3w+o1Wr3ilepgsjGbK9ZpNhGEpflJGteC+7xQVa9gKNfC4DQ
+         2YiYQ/myuvEyKRZMUSSMFjVz+61SMyka/ZrfFET5nNaKlZf4PImamIC8Gj/fTjwbqWBJ
+         UI6QRwY/Qum6x0TfsCrPqXb03pvPub/DFBxknsyTEmzklDJY9snnWNRdoDTP1xiwC2I5
+         IEeA==
+X-Gm-Message-State: AOAM530AZuH4YJtGupvzcZzlutItApnaIdQ3wQ9B+sEGvCy0jnwmJJ75
+        dkpmXxaLXFiaqKbIeDSWH98=
+X-Google-Smtp-Source: ABdhPJzRWWxkZjo8KpR/DyRgICpiuH6OzWnV5AJcws63ScJIbsO4Zcilfric4wFhqebc4++F7D2ImA==
+X-Received: by 2002:a05:6402:3590:b0:415:c162:f3d6 with SMTP id y16-20020a056402359000b00415c162f3d6mr16023255edc.124.1647721547808;
+        Sat, 19 Mar 2022 13:25:47 -0700 (PDT)
+Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
+        by smtp.googlemail.com with ESMTPSA id d23-20020aa7d5d7000000b00418f7b2f1dbsm4471945eds.71.2022.03.19.13.25.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 13:25:47 -0700 (PDT)
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
+        linux-kernel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: [PATCH] netfilter: nf_tables: replace unnecessary use of list_for_each_entry_continue()
+Date:   Sat, 19 Mar 2022 21:25:26 +0100
+Message-Id: <20220319202526.2527974-1-jakobkoschel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 19 Mar 2022 08:49:11 +0100 Steffen Klassert wrote:
-> On Wed, Mar 16, 2022 at 11:44:38AM -0700, Jakub Kicinski wrote:
-> > One minor improvement to appease patchwork would be to add / keep the
-> > [PATCH 0/n] prefix on the PR / cover letter when posting the patches
-> > under it.  
-> 
-> I did that in the ipsec-next pull request, let me know if this is
-> OK as I did it.
+Since there is no way for the previous list_for_each_entry() to exit
+early, this call to list_for_each_entry_continue() is always guaranteed
+to start with the first element of the list and can therefore be
+replaced with a call to list_for_each_entry().
 
-Yes, that one worked out perfectly. Thanks!
+In preparation to limit the scope of the list iterator to the list
+traversal loop, the list iterator variable 'rule' should not be used
+past the loop.
 
-> > It seems that patchwork is hopeless in delineating the
-> > patches and the PR if that's not there. For whatever reason it grouped
-> > the PR and patch 2 as a series and patch 1 was left separate :S  
-> 
-> I guess this is why I get always two mails from patchwork-bot for
-> each pull request. I already wondered why that happens :)
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
+ net/netfilter/nf_tables_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-To be honest the pr handling in the patchwork-bot is not 100% accurate,
-I wish it was responding to the pr / cover letter.  We'll get there :)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index d71a33ae39b3..bdd80136ef1d 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -8299,7 +8299,7 @@ static int nf_tables_commit_chain_prepare(struct net *net, struct nft_chain *cha
+ 	data_boundary = data + data_size;
+ 	size = 0;
+ 
+-	list_for_each_entry_continue(rule, &chain->rules, list) {
++	list_for_each_entry(rule, &chain->rules, list) {
+ 		if (!nft_is_active_next(net, rule))
+ 			continue;
+ 
+
+base-commit: 34e047aa16c0123bbae8e2f6df33e5ecc1f56601
+-- 
+2.25.1
+
