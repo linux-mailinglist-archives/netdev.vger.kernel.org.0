@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0D554DE9A1
+	by mail.lfdr.de (Postfix) with ESMTP id 859454DE9A0
 	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 18:31:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243709AbiCSRc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 13:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
+        id S243708AbiCSRc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 13:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243632AbiCSRcM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 13:32:12 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9D445789;
-        Sat, 19 Mar 2022 10:30:49 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id z3so9462505plg.8;
-        Sat, 19 Mar 2022 10:30:49 -0700 (PDT)
+        with ESMTP id S243386AbiCSRcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 13:32:20 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D594578A;
+        Sat, 19 Mar 2022 10:30:50 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id mm17-20020a17090b359100b001c6da62a559so1303235pjb.3;
+        Sat, 19 Mar 2022 10:30:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fbHuw2wN1RGMdDQanAXcScwfI02r7zqf8nuc7Y7i6So=;
-        b=EftifGYUFgc8p+r1eKYESSfOtKu9MWFg12bUtv26Rl9uF8geVk4/r0RujVw831C6Lr
-         T67W6T2AueI9nWi7cQR7+n+uc21vhyz/KzxW3obbga4ubV8ZHtNCvwkJGAKLOPgGPSIk
-         721tpCeodYzGhqsZqTUNTRUprE5xNnkes80HIOv2xps7OOSbI4Lp98xb3bUz+SxWyy92
-         XNIySUhtFQKYVe9ZqsF9YqZ/ri7ZiNx8cT+U6sIVIkPOO1xM20Jh5k9ZoQMAg7+S7/uQ
-         WqQnWm1PEr6vu2BoH16fWCxx2Vvfw4H+Bd4T5qAkZRbbgyAi95RPz7rgZokXSTrDnvfG
-         V2Dw==
+        bh=cDbZmnyIct7dh5oDHwzWtZU+1KNpHzcJsMgS0/FqC04=;
+        b=qSUGKlq9jr+L42BLcgqJwPR3lzz7NGXgeJc3Ei2E1+bUYjo0YyU+vCBYGWCPEhjQZC
+         VvMCBJMqT/taNLtjl93gvIrB1/F7XpPn2Zb1inz+Lm+jQXUHszDGKJHFo4CfzE/i+22I
+         cEXJVHx9YcusE6ibDBjce99Df8IAw19ABmTNMKjX0u3iNaDmjW2WdWmVAxYx9nY42pZZ
+         jHVT3wqvwOn/+fdvWV1z+drzYTj/5QmjJbwIBVjymZA8B/iz7Z2TW8NpHoP8ZKsmq7D1
+         s80vFs2WJQB8qg/6iNqif2OKYOm1tBmGisy7CEaXUnqQFK8DDSiBo/UKnLRzvVdV9uzz
+         EPJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fbHuw2wN1RGMdDQanAXcScwfI02r7zqf8nuc7Y7i6So=;
-        b=FfMgD7Y2QRcpoAOOJPFsnrXCpG+kOCPqnTfYg3ywLd4w0doJkE20pVBm/7y8Z1+qv9
-         khp1JskFdQolG8IDu/Mfv3RTf6BZWNhg4NZ8ED1uvjtGZQ4tHMS5XuZYYksn/734rFBs
-         Wpch0Rf0yy1PtfnjqQfZJcxVU0lMS9QjXCXS1IKuTXERjEVYr4PW54ZTh8elAXuRNiS/
-         6I7prBoOs8NgEYSVpbwt1Brp53Bj6rTfJWZE1tO9LYiJmlTAQjKv4TkJ1OCbYDjeLmYY
-         h2XPH3+4cVF7ZMclhwbnx3SeYRbKjQ+66ppbqh6XTmbsiSI1T+AKtKqe4ve6k5axVneG
-         RBzg==
-X-Gm-Message-State: AOAM5317qW4LAEB1d+Atg9Nj1o/ylXm6T4D+UB6BKXtqmDHWr3EB4+e3
-        PG+ODC85qUhddwaKj/RKk3V3cG2YornQN7z752Y=
-X-Google-Smtp-Source: ABdhPJwJva28WJ7jWfa33Znt81ZHpX/1QIXtCHZnxe+533hjN5affi9hym5cjzvBQn/oJ+7rhn5haA==
-X-Received: by 2002:a17:90a:1f4d:b0:1bb:a657:ace5 with SMTP id y13-20020a17090a1f4d00b001bba657ace5mr27796079pjy.39.1647711048648;
-        Sat, 19 Mar 2022 10:30:48 -0700 (PDT)
+        bh=cDbZmnyIct7dh5oDHwzWtZU+1KNpHzcJsMgS0/FqC04=;
+        b=hxGOmfQpwgkSJ83rsr10ijvu+BqRc/cuLjRzFyPCr96iER4Hux4nWbUF4DY65rNMxZ
+         IM5W9fypPVV7a0uQTTny8ZpxPDfuTi9N8hYwVo5MEby+b0cObuUfsFVvaU1aAUClxrFS
+         xhwMqx4wWQAGW2iLSOcO7wiCx8Zg0ZdhG4aMo5aNtUJwGokEQUGOfLepHWQneTdK8Kc1
+         QcnMcyA7gY3RwXbHjLLum+rFzYkPeS6Hn31pCeTRu7DYgn7Pt0ca1YHKcaVir1iifayt
+         6FOkW4r7J+s7JvwGPQj1fcsyy6wZ+vyKompXUWhvMrGk8mstHHsCM9+ypVOdOlbdxHOi
+         e5LQ==
+X-Gm-Message-State: AOAM532i/yRK2W61/81o3i2NiVaeqgqZ3aIHyG507ZS/32U6WHGt1pyA
+        gmOXopbkNXgqUHWjzLERQwU=
+X-Google-Smtp-Source: ABdhPJzfqmK2Zh6x7voOpbJTgq3UTIo40u8y9v1MPFqLp/68HUc5AdKYX5mafm02kCF7iYc3MKftCg==
+X-Received: by 2002:a17:90b:3b43:b0:1c6:f878:ea52 with SMTP id ot3-20020a17090b3b4300b001c6f878ea52mr459431pjb.68.1647711049850;
+        Sat, 19 Mar 2022 10:30:49 -0700 (PDT)
 Received: from vultr.guest ([2001:19f0:6001:4ab8:5400:3ff:fee9:a154])
-        by smtp.gmail.com with ESMTPSA id k21-20020aa788d5000000b004f71bff2893sm12722136pff.67.2022.03.19.10.30.47
+        by smtp.gmail.com with ESMTPSA id k21-20020aa788d5000000b004f71bff2893sm12722136pff.67.2022.03.19.10.30.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 10:30:48 -0700 (PDT)
+        Sat, 19 Mar 2022 10:30:49 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     roman.gushchin@linux.dev, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, shuah@kernel.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH 07/14] bpf: Allow no charge in map specific allocation
-Date:   Sat, 19 Mar 2022 17:30:29 +0000
-Message-Id: <20220319173036.23352-8-laoar.shao@gmail.com>
+Subject: [PATCH 08/14] bpf: Aggregate flags for BPF_PROG_LOAD command
+Date:   Sat, 19 Mar 2022 17:30:30 +0000
+Message-Id: <20220319173036.23352-9-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220319173036.23352-1-laoar.shao@gmail.com>
 References: <20220319173036.23352-1-laoar.shao@gmail.com>
@@ -71,150 +71,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some maps have their own ->map_alloc, in which the no charge should also
-be allowed.
+It will be easy to read if we aggregate the flags for BPF_PROG_LOAD into
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- kernel/bpf/arraymap.c          | 2 +-
- kernel/bpf/bpf_local_storage.c | 5 +++--
- kernel/bpf/cpumap.c            | 2 +-
- kernel/bpf/devmap.c            | 2 +-
- kernel/bpf/hashtab.c           | 2 +-
- kernel/bpf/local_storage.c     | 2 +-
- kernel/bpf/lpm_trie.c          | 2 +-
- kernel/bpf/ringbuf.c           | 6 +++---
- 8 files changed, 12 insertions(+), 11 deletions(-)
+ include/uapi/linux/bpf.h       | 15 +++++++++------
+ tools/include/uapi/linux/bpf.h | 15 +++++++++------
+ 2 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index e26aef906392..9df425ad769c 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -1062,7 +1062,7 @@ static struct bpf_map *prog_array_map_alloc(union bpf_attr *attr)
- 	struct bpf_array_aux *aux;
- 	struct bpf_map *map;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index e2dba6cdd88d..93ee04fb8c62 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1065,12 +1065,14 @@ enum bpf_link_type {
+ #define BPF_F_ALLOW_MULTI	(1U << 1)
+ #define BPF_F_REPLACE		(1U << 2)
  
--	aux = kzalloc(sizeof(*aux), GFP_KERNEL_ACCOUNT);
-+	aux = kzalloc(sizeof(*aux), map_flags_no_charge(GFP_KERNEL, attr));
- 	if (!aux)
- 		return ERR_PTR(-ENOMEM);
++/* flags for BPF_PROG_LOAD command */
++enum {
+ /* If BPF_F_STRICT_ALIGNMENT is used in BPF_PROG_LOAD command, the
+  * verifier will perform strict alignment checking as if the kernel
+  * has been built with CONFIG_EFFICIENT_UNALIGNED_ACCESS not set,
+  * and NET_IP_ALIGN defined to 2.
+  */
+-#define BPF_F_STRICT_ALIGNMENT	(1U << 0)
++	BPF_F_STRICT_ALIGNMENT	= (1U << 0),
  
-diff --git a/kernel/bpf/bpf_local_storage.c b/kernel/bpf/bpf_local_storage.c
-index a92d3032fcde..b626546d384d 100644
---- a/kernel/bpf/bpf_local_storage.c
-+++ b/kernel/bpf/bpf_local_storage.c
-@@ -582,11 +582,12 @@ int bpf_local_storage_map_alloc_check(union bpf_attr *attr)
+ /* If BPF_F_ANY_ALIGNMENT is used in BPF_PROF_LOAD command, the
+  * verifier will allow any alignment whatsoever.  On platforms
+@@ -1084,7 +1086,7 @@ enum bpf_link_type {
+  * of an unaligned access the alignment check would trigger before
+  * the one we are interested in.
+  */
+-#define BPF_F_ANY_ALIGNMENT	(1U << 1)
++	BPF_F_ANY_ALIGNMENT		= (1U << 1),
  
- struct bpf_local_storage_map *bpf_local_storage_map_alloc(union bpf_attr *attr)
- {
-+	gfp_t gfp_flags = map_flags_no_charge(GFP_USER | __GFP_NOWARN, attr);
- 	struct bpf_local_storage_map *smap;
- 	unsigned int i;
- 	u32 nbuckets;
+ /* BPF_F_TEST_RND_HI32 is used in BPF_PROG_LOAD command for testing purpose.
+  * Verifier does sub-register def/use analysis and identifies instructions whose
+@@ -1102,10 +1104,10 @@ enum bpf_link_type {
+  * Then, if verifier is not doing correct analysis, such randomization will
+  * regress tests to expose bugs.
+  */
+-#define BPF_F_TEST_RND_HI32	(1U << 2)
++	BPF_F_TEST_RND_HI32		= (1U << 2),
  
--	smap = kzalloc(sizeof(*smap), GFP_USER | __GFP_NOWARN | __GFP_ACCOUNT);
-+	smap = kzalloc(sizeof(*smap), gfp_flags);
- 	if (!smap)
- 		return ERR_PTR(-ENOMEM);
- 	bpf_map_init_from_attr(&smap->map, attr);
-@@ -597,7 +598,7 @@ struct bpf_local_storage_map *bpf_local_storage_map_alloc(union bpf_attr *attr)
- 	smap->bucket_log = ilog2(nbuckets);
+ /* The verifier internal test flag. Behavior is undefined */
+-#define BPF_F_TEST_STATE_FREQ	(1U << 3)
++	BPF_F_TEST_STATE_FREQ	= (1U << 3),
  
- 	smap->buckets = kvcalloc(sizeof(*smap->buckets), nbuckets,
--				 GFP_USER | __GFP_NOWARN | __GFP_ACCOUNT);
-+				 map_flags_no_charge(GFP_USER | __GFP_NOWARN, attr));
- 	if (!smap->buckets) {
- 		kfree(smap);
- 		return ERR_PTR(-ENOMEM);
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 5a5b40e986ff..fd3b3f05e76a 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -99,7 +99,7 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
- 	    attr->map_flags & ~CPU_MAP_CREATE_FLAG_MASK)
- 		return ERR_PTR(-EINVAL);
+ /* If BPF_F_SLEEPABLE is used in BPF_PROG_LOAD command, the verifier will
+  * restrict map and helper usage for such programs. Sleepable BPF programs can
+@@ -1113,12 +1115,13 @@ enum bpf_link_type {
+  * Such programs are allowed to use helpers that may sleep like
+  * bpf_copy_from_user().
+  */
+-#define BPF_F_SLEEPABLE		(1U << 4)
++	BPF_F_SLEEPABLE			= (1U << 4),
  
--	cmap = kzalloc(sizeof(*cmap), GFP_USER | __GFP_ACCOUNT);
-+	cmap = kzalloc(sizeof(*cmap), map_flags_no_charge(GFP_USER, attr));
- 	if (!cmap)
- 		return ERR_PTR(-ENOMEM);
+ /* If BPF_F_XDP_HAS_FRAGS is used in BPF_PROG_LOAD command, the loaded program
+  * fully support xdp frags.
+  */
+-#define BPF_F_XDP_HAS_FRAGS	(1U << 5)
++	BPF_F_XDP_HAS_FRAGS		= (1U << 5),
++};
  
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 2857176c82bb..6aaa2e3ce795 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -160,7 +160,7 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
- 	if (!capable(CAP_NET_ADMIN))
- 		return ERR_PTR(-EPERM);
+ /* link_create.kprobe_multi.flags used in LINK_CREATE command for
+  * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index e2dba6cdd88d..71a4d8fdc880 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -1065,12 +1065,14 @@ enum bpf_link_type {
+ #define BPF_F_ALLOW_MULTI	(1U << 1)
+ #define BPF_F_REPLACE		(1U << 2)
  
--	dtab = kzalloc(sizeof(*dtab), GFP_USER | __GFP_ACCOUNT);
-+	dtab = kzalloc(sizeof(*dtab), map_flags_no_charge(GFP_USER, attr));
- 	if (!dtab)
- 		return ERR_PTR(-ENOMEM);
++/* flags for BPF_PROG_LOAD */
++enum {
+ /* If BPF_F_STRICT_ALIGNMENT is used in BPF_PROG_LOAD command, the
+  * verifier will perform strict alignment checking as if the kernel
+  * has been built with CONFIG_EFFICIENT_UNALIGNED_ACCESS not set,
+  * and NET_IP_ALIGN defined to 2.
+  */
+-#define BPF_F_STRICT_ALIGNMENT	(1U << 0)
++	BPF_F_STRICT_ALIGNMENT	= (1U << 0),
  
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 2c84045ff8e1..74696d8196a5 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -474,7 +474,7 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
- 	struct bpf_htab *htab;
- 	int err, i;
+ /* If BPF_F_ANY_ALIGNMENT is used in BPF_PROF_LOAD command, the
+  * verifier will allow any alignment whatsoever.  On platforms
+@@ -1084,7 +1086,7 @@ enum bpf_link_type {
+  * of an unaligned access the alignment check would trigger before
+  * the one we are interested in.
+  */
+-#define BPF_F_ANY_ALIGNMENT	(1U << 1)
++	BPF_F_ANY_ALIGNMENT		= (1U << 1),
  
--	htab = kzalloc(sizeof(*htab), GFP_USER | __GFP_ACCOUNT);
-+	htab = kzalloc(sizeof(*htab), map_flags_no_charge(GFP_USER, attr));
- 	if (!htab)
- 		return ERR_PTR(-ENOMEM);
+ /* BPF_F_TEST_RND_HI32 is used in BPF_PROG_LOAD command for testing purpose.
+  * Verifier does sub-register def/use analysis and identifies instructions whose
+@@ -1102,10 +1104,10 @@ enum bpf_link_type {
+  * Then, if verifier is not doing correct analysis, such randomization will
+  * regress tests to expose bugs.
+  */
+-#define BPF_F_TEST_RND_HI32	(1U << 2)
++	BPF_F_TEST_RND_HI32		= (1U << 2),
  
-diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
-index 865766c240d6..741ab7cf3626 100644
---- a/kernel/bpf/local_storage.c
-+++ b/kernel/bpf/local_storage.c
-@@ -313,7 +313,7 @@ static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
- 		return ERR_PTR(-EINVAL);
+ /* The verifier internal test flag. Behavior is undefined */
+-#define BPF_F_TEST_STATE_FREQ	(1U << 3)
++	BPF_F_TEST_STATE_FREQ	= (1U << 3),
  
- 	map = kmalloc_node(sizeof(struct bpf_cgroup_storage_map),
--			   __GFP_ZERO | GFP_USER | __GFP_ACCOUNT, numa_node);
-+			   map_flags_no_charge(__GFP_ZERO | GFP_USER, attr), numa_node);
- 	if (!map)
- 		return ERR_PTR(-ENOMEM);
+ /* If BPF_F_SLEEPABLE is used in BPF_PROG_LOAD command, the verifier will
+  * restrict map and helper usage for such programs. Sleepable BPF programs can
+@@ -1113,12 +1115,13 @@ enum bpf_link_type {
+  * Such programs are allowed to use helpers that may sleep like
+  * bpf_copy_from_user().
+  */
+-#define BPF_F_SLEEPABLE		(1U << 4)
++	BPF_F_SLEEPABLE			= (1U << 4),
  
-diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-index f42edf613624..9673f8e98c58 100644
---- a/kernel/bpf/lpm_trie.c
-+++ b/kernel/bpf/lpm_trie.c
-@@ -557,7 +557,7 @@ static struct bpf_map *trie_alloc(union bpf_attr *attr)
- 	    attr->value_size > LPM_VAL_SIZE_MAX)
- 		return ERR_PTR(-EINVAL);
+ /* If BPF_F_XDP_HAS_FRAGS is used in BPF_PROG_LOAD command, the loaded program
+  * fully support xdp frags.
+  */
+-#define BPF_F_XDP_HAS_FRAGS	(1U << 5)
++	BPF_F_XDP_HAS_FRAGS		= (1U << 5),
++};
  
--	trie = kzalloc(sizeof(*trie), GFP_USER | __GFP_NOWARN | __GFP_ACCOUNT);
-+	trie = kzalloc(sizeof(*trie), map_flags_no_charge(GFP_USER | __GFP_NOWARN, attr));
- 	if (!trie)
- 		return ERR_PTR(-ENOMEM);
- 
-diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-index a3b4d2a0a2c7..3db07cd0ab60 100644
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -60,8 +60,8 @@ struct bpf_ringbuf_hdr {
- 
- static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, union bpf_attr *attr)
- {
--	const gfp_t flags = GFP_KERNEL_ACCOUNT | __GFP_RETRY_MAYFAIL |
--			    __GFP_NOWARN | __GFP_ZERO;
-+	const gfp_t flags = map_flags_no_charge(__GFP_RETRY_MAYFAIL |
-+			__GFP_NOWARN | __GFP_ZERO, attr);
- 	int nr_meta_pages = RINGBUF_PGOFF + RINGBUF_POS_PAGES;
- 	int nr_data_pages = data_sz >> PAGE_SHIFT;
- 	int nr_pages = nr_meta_pages + nr_data_pages;
-@@ -164,7 +164,7 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
- 		return ERR_PTR(-E2BIG);
- #endif
- 
--	rb_map = kzalloc(sizeof(*rb_map), GFP_USER | __GFP_ACCOUNT);
-+	rb_map = kzalloc(sizeof(*rb_map), map_flags_no_charge(GFP_USER, attr));
- 	if (!rb_map)
- 		return ERR_PTR(-ENOMEM);
- 
+ /* link_create.kprobe_multi.flags used in LINK_CREATE command for
+  * BPF_TRACE_KPROBE_MULTI attach type to create return probe.
 -- 
 2.17.1
 
