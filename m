@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C5204DE821
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 14:18:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B594DE82F
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 14:41:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236979AbiCSNT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 09:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48354 "EHLO
+        id S243063AbiCSNmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 09:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234764AbiCSNT0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 09:19:26 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9827E19C03
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 06:18:02 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id a8so21769523ejc.8
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 06:18:02 -0700 (PDT)
+        with ESMTP id S234728AbiCSNmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 09:42:22 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A532B4A7E;
+        Sat, 19 Mar 2022 06:41:01 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id r23so13267289edb.0;
+        Sat, 19 Mar 2022 06:41:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=f1sMBRmqwZwAU9GnhU6NOfTHyQQaYPhyhrORRiZwNRY=;
-        b=CbxbP8l/PwRpVE0ZwJ0HpgBeuKziFZuicNwyBDrjXlnx/nkaqmsUDXXiixiILsmXZJ
-         ZQkb138kxRYayFyrm0BHt8N8pE4XfEVTvkSgrcyHInme5yPBVkHfXpXt5bGBZ9IbKZy2
-         P6iLzB522XWrbDUlnYAMWtP7cbE3C2BRUHoHcMVYPcp4uw5ZHva2KAspyuigC36jI46e
-         V9DsKe6R2/xfX/1M1sFGpD5UkBz/YVfme8BJaoqUYyFi4ymx2Q+P9ZVu59UGXLYx+zAW
-         4UYH3RgZRnCK0xAGJDlN/hdCCr3u9iJi/jxrvqWm7IKOTNEg5sdbfSvRQb1NNDKZ+8xa
-         JyOw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E6YbzIjkOdXeD1dLlMPzr5/Z/QQCz1/q8dIJfg7C4JU=;
+        b=Atx78Yh+fx8APppD5Dy3Dgv5zsYGART4jqoXDMTp1LZHpXyPQx2+SBFKyfLDTfXgZq
+         CMy6YusbPe4voWDsseFcLOSN/VaQiQ8Nd4yoHTdYuYfH32s6cLezb0JonzO9eDDOe00O
+         qSnuEhmVx5Uok0S6QyjQUX2rYn0aaGhWIls9l8hgQjYkn5hLvkMPCpxChzNCU7tMByU/
+         xeR/GUZEX93eQxx45fgWXQEPHam56ZHn11AclzCrFFwCcIEbe0sK/V+klWyP5nNVCmi8
+         CUT5nD/+41Q945edxgl9/n16kyEkaVIWLCA3F9v1N7X7wne7OAFRO0ZCA+PdIu2oRJVJ
+         tVLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=f1sMBRmqwZwAU9GnhU6NOfTHyQQaYPhyhrORRiZwNRY=;
-        b=rblh5hNDKnEBW+QDjJ9p5S7ytb5Nk5mWa8vEnrSmxoSQr3qQgH588Tr/q6Rjuj4Jl1
-         nAd5hcn2NHecRazjiU27N/kMjsdLUMNYeTmaiSQIPkstbryrPfO1MUvf1LJPSXQA4CMB
-         zjtRvsmDrnoYVQJ7meUwMs4/WqoyyRXYhifGr4ZSPZBjb3l5xXBD9S4/UL9rEkCrHl/B
-         QU7KMJrCpmFQYkw6Ahl7hJ+uSBP6vV+9/KEx1lk7lqUkLZTcruEC6NA3YXYtXwe70VYt
-         xZAPsdR4O3e5stZApacXTKOjHez2doSatcOK1xHc2O22W4rPNblv3eeMp2EbB747MfXS
-         KLgw==
-X-Gm-Message-State: AOAM530VtOgtdDC5gBTcdQ5az6vKgqKJDFCSYd5x/nHv++Ant+idzyNS
-        kK+4sV+JCZB4X0dLj2sK9GM=
-X-Google-Smtp-Source: ABdhPJxc5xCI0UTUgnKZg69WaokAvIi0orgJ9uWquP1U2szV8cv61f0Y87fquXU6bkib5WUNs9Wp9A==
-X-Received: by 2002:a17:906:99c9:b0:6db:dd00:c35e with SMTP id s9-20020a17090699c900b006dbdd00c35emr12722299ejn.577.1647695880560;
-        Sat, 19 Mar 2022 06:18:00 -0700 (PDT)
-Received: from [192.168.0.59] (178-117-137-225.access.telenet.be. [178.117.137.225])
-        by smtp.gmail.com with ESMTPSA id m19-20020a1709062ad300b006d1289becc7sm4753502eje.167.2022.03.19.06.17.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 19 Mar 2022 06:18:00 -0700 (PDT)
-Message-ID: <8b90b4a6-a906-0f46-bb87-0ec51c9c89fe@gmail.com>
-Date:   Sat, 19 Mar 2022 14:17:58 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E6YbzIjkOdXeD1dLlMPzr5/Z/QQCz1/q8dIJfg7C4JU=;
+        b=nqmJCZMtKHdneVKWMNh1/V/FtbaPxOKs+dd8NxTiuuu734t3QNzIWfVyt+/tlWEGWB
+         B5YA7s1iQr88CavFtOOWWboZKmHhEmpTXygdcmcjA8piqrM7/aPS2HtyjjzM62EYhxSb
+         o4hj+SZWXEAi6KqoR1XW+TsdrPUkYDB4R+n1UQ+Tu3E7Wnlr0kJgoA7AAjSZZ/l8beJC
+         UOB23Anb8tggOrqIz23qW/SpqTiPFupk7kAk0TcnImIKerY8ksp94xJlzPFb9vxNMl+d
+         FHngOeGxKTSzQJrmBd7jTPPaQWbM0fVE+hCpRdujCsypOw/e8aJAzytk2G1sjEEof71W
+         bfNg==
+X-Gm-Message-State: AOAM533MAKCJIi9HlomhYxD6y8OCdXwhHBwzN1Jt+6BSRpRgmzs+g4JK
+        sicN4j6kg6t50jkkDpoHKieYpT5ajEUHo2pRNrY=
+X-Google-Smtp-Source: ABdhPJwGSijWEWwID4d1uhRmDL4PIef6uA+5F0E2SFi0ufpfoVMilUni1w+bjRytvK3w4iS5ZCX3HcxClHggN3owBCQ=
+X-Received: by 2002:aa7:d74d:0:b0:418:e883:b4e1 with SMTP id
+ a13-20020aa7d74d000000b00418e883b4e1mr14371287eds.56.1647697259399; Sat, 19
+ Mar 2022 06:40:59 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v2] ipv6: acquire write lock for addr_list in
- dev_forward_change
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220317155637.29733-1-dossche.niels@gmail.com>
- <7bd311d0846269f331a1d401c493f5511491d0df.camel@redhat.com>
- <a24b13ea10ca898bb003300084039b459d553f6d.camel@redhat.com>
- <13558e3e0ed23097f04bb90b43c261062dca9107.camel@redhat.com>
- <f8b7e306-916d-a3e7-5755-b71d6b118489@gmail.com>
- <0cf800e8bb28116fce7466cacbabde395abfac4f.camel@redhat.com>
-From:   Niels Dossche <dossche.niels@gmail.com>
-In-Reply-To: <0cf800e8bb28116fce7466cacbabde395abfac4f.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220314141508.39952-1-xiangxia.m.yue@gmail.com>
+ <20220314141508.39952-2-xiangxia.m.yue@gmail.com> <015e903a-f4b4-a905-1cd2-11d10aefec8a@iogearbox.net>
+ <CAMDZJNUO9k8xmrJwrXnj+LVG=bEv5Zwe=YkjOqSBrDS348OQfA@mail.gmail.com>
+ <7d4b0c51460dec351bbbaf9be85c4a25cb6cec4f.camel@redhat.com> <f61e4a34-e7e5-198b-dde6-816654775b21@iogearbox.net>
+In-Reply-To: <f61e4a34-e7e5-198b-dde6-816654775b21@iogearbox.net>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Sat, 19 Mar 2022 21:40:23 +0800
+Message-ID: <CAMDZJNWaREaM7=CZY=HCvxY0T1uHDsDH3QBwdbstSrNPXrbcdA@mail.gmail.com>
+Subject: Re: [net-next v10 1/2] net: sched: use queue_mapping to pick tx queue
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kevin Hao <haokexin@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -81,262 +79,160 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/18/22 17:50, Paolo Abeni wrote:
-> On Fri, 2022-03-18 at 16:45 +0100, Niels Dossche wrote:
->> On 18/03/2022 16:42, Paolo Abeni wrote:
->>> On Fri, 2022-03-18 at 13:48 +0100, Paolo Abeni wrote:
->>>> On Fri, 2022-03-18 at 10:13 +0100, Paolo Abeni wrote:
->>>>> On Thu, 2022-03-17 at 16:56 +0100, Niels Dossche wrote:
->>>>>> No path towards dev_forward_change (common ancestor of paths
->>>>>> is in
->>>>>> addrconf_fixup_forwarding) acquires idev->lock for idev-
->>>>>>> addr_list.
->>>>>> We need to hold the lock during the whole loop in
->>>>>> dev_forward_change.
->>>>>> __ipv6_dev_ac_{inc,dec} both acquire the write lock on idev-
->>>>>>> lock in
->>>>>> their function body. Since addrconf_{join,leave}_anycast call
->>>>>> to
->>>>>> __ipv6_dev_ac_inc and __ipv6_dev_ac_dec respectively, we need
->>>>>> to move
->>>>>> the responsibility of locking upwards.
->>>>>>
->>>>>> This patch moves the locking up. For __ipv6_dev_ac_dec, there
->>>>>> is one
->>>>>> place where the caller can directly acquire the idev->lock,
->>>>>> that is in
->>>>>> ipv6_dev_ac_dec. The other caller is addrconf_leave_anycast,
->>>>>> which now
->>>>>> needs to be called under idev->lock, and thus it becomes the
->>>>>> responsibility of the callers of addrconf_leave_anycast to
->>>>>> hold that
->>>>>> lock. For __ipv6_dev_ac_inc, there are also 2 callers, one is
->>>>>> ipv6_sock_ac_join, which can acquire the lock during the call
->>>>>> to
->>>>>> __ipv6_dev_ac_inc. The other caller is addrconf_join_anycast,
->>>>>> which now
->>>>>> needs to be called under idev->lock, and thus it becomes the
->>>>>> responsibility of the callers of addrconf_join_anycast to
->>>>>> hold that
->>>>>> lock.
->>>>>>
->>>>>> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
->>>>>> ---
->>>>>>
->>>>>> Changes in v2:
->>>>>>  - Move the locking upwards
->>>>>>
->>>>>>  net/ipv6/addrconf.c | 21 ++++++++++++++++-----
->>>>>>  net/ipv6/anycast.c  | 37 ++++++++++++++++-------------------
->>>>>> --
->>>>>>  2 files changed, 32 insertions(+), 26 deletions(-)
->>>>>>
->>>>>> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
->>>>>> index f908e2fd30b2..69e9f81e2045 100644
->>>>>> --- a/net/ipv6/addrconf.c
->>>>>> +++ b/net/ipv6/addrconf.c
->>>>>> @@ -818,6 +818,7 @@ static void dev_forward_change(struct
->>>>>> inet6_dev *idev)
->>>>>>  		}
->>>>>>  	}
->>>>>>  
->>>>>> +	write_lock_bh(&idev->lock);
->>>>>>  	list_for_each_entry(ifa, &idev->addr_list, if_list)
->>>>>> {
->>>>>>  		if (ifa->flags&IFA_F_TENTATIVE)
->>>>>>  			continue;
->>>>>> @@ -826,6 +827,7 @@ static void dev_forward_change(struct
->>>>>> inet6_dev *idev)
->>>>>>  		else
->>>>>>  			addrconf_leave_anycast(ifa);
->>>>>>  	}
->>>>>> +	write_unlock_bh(&idev->lock);
->>>>>>  	inet6_netconf_notify_devconf(dev_net(dev),
->>>>>> RTM_NEWNETCONF,
->>>>>>  				     NETCONFA_FORWARDING,
->>>>>>  				     dev->ifindex, &idev-
->>>>>>> cnf);
->>>>>> @@ -2191,7 +2193,7 @@ void addrconf_leave_solict(struct
->>>>>> inet6_dev *idev, const struct in6_addr *addr)
->>>>>>  	__ipv6_dev_mc_dec(idev, &maddr);
->>>>>>  }
->>>>>>  
->>>>>> -/* caller must hold RTNL */
->>>>>> +/* caller must hold RTNL and write lock idev->lock */
->>>>>>  static void addrconf_join_anycast(struct inet6_ifaddr *ifp)
->>>>>>  {
->>>>>>  	struct in6_addr addr;
->>>>>> @@ -2204,7 +2206,7 @@ static void
->>>>>> addrconf_join_anycast(struct inet6_ifaddr *ifp)
->>>>>>  	__ipv6_dev_ac_inc(ifp->idev, &addr);
->>>>>>  }
->>>>>>  
->>>>>> -/* caller must hold RTNL */
->>>>>> +/* caller must hold RTNL and write lock idev->lock */
->>>>>>  static void addrconf_leave_anycast(struct inet6_ifaddr *ifp)
->>>>>>  {
->>>>>>  	struct in6_addr addr;
->>>>>> @@ -3857,8 +3859,11 @@ static int addrconf_ifdown(struct
->>>>>> net_device *dev, bool unregister)
->>>>>>  			__ipv6_ifa_notify(RTM_DELADDR, ifa);
->>>>>> 			inet6addr_notifier_call_chain(NETDEV_DOWN, ifa);
->>>>>>  		} else {
->>>>>> -			if (idev->cnf.forwarding)
->>>>>> +			if (idev->cnf.forwarding) {
->>>>>> +				write_lock_bh(&idev->lock);
->>>>>>  				addrconf_leave_anycast(ifa);
->>>>>> +				write_unlock_bh(&idev-
->>>>>>> lock);
->>>>>> +			}
->>>>>>  			addrconf_leave_solict(ifa->idev,
->>>>>> &ifa->addr);
->>>>>>  		}
->>>>>>  
->>>>>> @@ -6136,16 +6141,22 @@ static void __ipv6_ifa_notify(int
->>>>>> event, struct inet6_ifaddr *ifp)
->>>>>>  				&ifp->addr, ifp->idev->dev-
->>>>>>> name);
->>>>>>  		}
->>>>>>  
->>>>>> -		if (ifp->idev->cnf.forwarding)
->>>>>> +		if (ifp->idev->cnf.forwarding) {
->>>>>> +			write_lock_bh(&ifp->idev->lock);
->>>>>>  			addrconf_join_anycast(ifp);
->>>>>> +			write_unlock_bh(&ifp->idev->lock);
->>>>>> +		}
->>>>>>  		if (!ipv6_addr_any(&ifp->peer_addr))
->>>>>>  			addrconf_prefix_route(&ifp-
->>>>>>> peer_addr, 128,
->>>>>>  					      ifp-
->>>>>>> rt_priority, ifp->idev->dev,
->>>>>>  					      0, 0,
->>>>>> GFP_ATOMIC);
->>>>>>  		break;
->>>>>>  	case RTM_DELADDR:
->>>>>> -		if (ifp->idev->cnf.forwarding)
->>>>>> +		if (ifp->idev->cnf.forwarding) {
->>>>>> +			write_lock_bh(&ifp->idev->lock);
->>>>>>  			addrconf_leave_anycast(ifp);
->>>>>> +			write_unlock_bh(&ifp->idev->lock);
->>>>>> +		}
->>>>>>  		addrconf_leave_solict(ifp->idev, &ifp-
->>>>>>> addr);
->>>>>>  		if (!ipv6_addr_any(&ifp->peer_addr)) {
->>>>>>  			struct fib6_info *rt;
->>>>>> diff --git a/net/ipv6/anycast.c b/net/ipv6/anycast.c
->>>>>> index dacdea7fcb62..f3017ed6f005 100644
->>>>>> --- a/net/ipv6/anycast.c
->>>>>> +++ b/net/ipv6/anycast.c
->>>>>> @@ -136,7 +136,9 @@ int ipv6_sock_ac_join(struct sock *sk,
->>>>>> int ifindex, const struct in6_addr *addr)
->>>>>>  			goto error;
->>>>>>  	}
->>>>>>  
->>>>>> +	write_lock_bh(&idev->lock);
->>>>>>  	err = __ipv6_dev_ac_inc(idev, addr);
->>>>>> +	write_unlock_bh(&idev->lock);
->>>>>
->>>>> I feat this is problematic, due this call chain:
->>>>>
->>>>>  __ipv6_dev_ac_inc() -> addrconf_join_solict() ->
->>>>> ipv6_dev_mc_inc ->
->>>>> __ipv6_dev_mc_inc -> mutex_lock(&idev->mc_lock);
->>>>>
->>>>> The latter call requires process context.
->>>>>
->>>>> One alternarive (likely very hackish way) to solve this could
->>>>> be:
->>>>> - adding another list entry  into struct inet6_dev, rtnl
->>>>> protected.
->>>>
->>>> Typo above: the new field should be added to 'struct
->>>> inet6_ifaddr'.
->>>>
->>>>> - traverse addr_list under idev->lock and add each entry with
->>>>> forwarding on to into a tmp list (e.g. tmp_join) using the
->>>>> field above;
->>>>> add the entries with forwarding off into another tmp list (e.g.
->>>>> tmp_leave), still using the same field.
->>>>
->>>> Again confusing text above, sorry. As the forwarding flag is per
->>>> device, all the addr entries will land into the same tmp list.
->>>>
->>>> It's probably better if I sketch up some code...
->>>
->>> For the records, I mean something alongside the following -
->>> completely
->>> not tested:
->>> ---
->>> diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
->>> index 4cfdef6ca4f6..2df3c98b9e55 100644
->>> --- a/include/net/if_inet6.h
->>> +++ b/include/net/if_inet6.h
->>> @@ -64,6 +64,7 @@ struct inet6_ifaddr {
->>>  
->>>  	struct hlist_node	addr_lst;
->>>  	struct list_head	if_list;
->>> +	struct list_head	if_list_aux;
->>>  
->>>  	struct list_head	tmp_list;
->>>  	struct inet6_ifaddr	*ifpub;
->>> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
->>> index b22504176588..27d1081b693e 100644
->>> --- a/net/ipv6/addrconf.c
->>> +++ b/net/ipv6/addrconf.c
->>> @@ -797,6 +797,7 @@ static void dev_forward_change(struct inet6_dev
->>> *idev)
->>>  {
->>>  	struct net_device *dev;
->>>  	struct inet6_ifaddr *ifa;
->>> +	LIST_HEAD(tmp);
->>>  
->>>  	if (!idev)
->>>  		return;
->>> @@ -815,9 +816,17 @@ static void dev_forward_change(struct
->>> inet6_dev *idev)
->>>  		}
->>>  	}
->>>  
->>> +	rcu_read_lock();
->>>  	list_for_each_entry(ifa, &idev->addr_list, if_list) {
->>>  		if (ifa->flags&IFA_F_TENTATIVE)
->>>  			continue;
->>> +		list_add_tail(&ifa->if_list_aux, &tmp);
->>> +	}
->>> +	rcu_read_unlock();
->>> +
->>> +	while (!list_empty(&tmp)) {
->>> +		ifa = list_first_entry(&tmp, struct inet6_ifaddr,
->>> if_list_aux);
->>> +		list_del(&ifa->if_list_aux);
->>>  		if (idev->cnf.forwarding)
->>>  			addrconf_join_anycast(ifa);
->>>  		else
->>>
->>
->> I see, nice small change.
->> Only thing I notice is that list_for_each_entry_rcu should be used
->> instead of list_for_each_entry inside the rcu lock, right?
-> 
-> Yes you are right. Or you can replace rcu_read_lock() with
-> write_lock_bh(&idev->lock).
-> 
-> Probably we need some commend nearby if_list_aux definition alike "used
-> to safely traverse the idev address list in process context, see
-> dev_forward_change"
-> 
-> Cheers,
-> 
-> Paolo
-> 
->  
-> 
+On Fri, Mar 18, 2022 at 9:36 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 3/17/22 9:20 AM, Paolo Abeni wrote:
+> > On Tue, 2022-03-15 at 20:48 +0800, Tonghao Zhang wrote:
+> >> On Tue, Mar 15, 2022 at 5:59 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >>> On 3/14/22 3:15 PM, xiangxia.m.yue@gmail.com wrote:
+> >>> [...]
+> >>>>    include/linux/netdevice.h |  3 +++
+> >>>>    include/linux/rtnetlink.h |  1 +
+> >>>>    net/core/dev.c            | 31 +++++++++++++++++++++++++++++--
+> >>>>    net/sched/act_skbedit.c   |  6 +++++-
+> >>>>    4 files changed, 38 insertions(+), 3 deletions(-)
+> >>>>
+> >>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> >>>> index 0d994710b335..f33fb2d6712a 100644
+> >>>> --- a/include/linux/netdevice.h
+> >>>> +++ b/include/linux/netdevice.h
+> >>>> @@ -3065,6 +3065,9 @@ struct softnet_data {
+> >>>>        struct {
+> >>>>                u16 recursion;
+> >>>>                u8  more;
+> >>>> +#ifdef CONFIG_NET_EGRESS
+> >>>> +             u8  skip_txqueue;
+> >>>> +#endif
+> >>>>        } xmit;
+> >>>>    #ifdef CONFIG_RPS
+> >>>>        /* input_queue_head should be written by cpu owning this struct,
+> >>>> diff --git a/include/linux/rtnetlink.h b/include/linux/rtnetlink.h
+> >>>> index 7f970b16da3a..ae2c6a3cec5d 100644
+> >>>> --- a/include/linux/rtnetlink.h
+> >>>> +++ b/include/linux/rtnetlink.h
+> >>>> @@ -100,6 +100,7 @@ void net_dec_ingress_queue(void);
+> >>>>    #ifdef CONFIG_NET_EGRESS
+> >>>>    void net_inc_egress_queue(void);
+> >>>>    void net_dec_egress_queue(void);
+> >>>> +void netdev_xmit_skip_txqueue(bool skip);
+> >>>>    #endif
+> >>>>
+> >>>>    void rtnetlink_init(void);
+> >>>> diff --git a/net/core/dev.c b/net/core/dev.c
+> >>>> index 75bab5b0dbae..8e83b7099977 100644
+> >>>> --- a/net/core/dev.c
+> >>>> +++ b/net/core/dev.c
+> >>>> @@ -3908,6 +3908,25 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+> >>>>
+> >>>>        return skb;
+> >>>>    }
+> >>>> +
+> >>>> +static struct netdev_queue *
+> >>>> +netdev_tx_queue_mapping(struct net_device *dev, struct sk_buff *skb)
+> >>>> +{
+> >>>> +     int qm = skb_get_queue_mapping(skb);
+> >>>> +
+> >>>> +     return netdev_get_tx_queue(dev, netdev_cap_txqueue(dev, qm));
+> >>>> +}
+> >>>> +
+> >>>> +static bool netdev_xmit_txqueue_skipped(void)
+> >>>> +{
+> >>>> +     return __this_cpu_read(softnet_data.xmit.skip_txqueue);
+> >>>> +}
+> >>>> +
+> >>>> +void netdev_xmit_skip_txqueue(bool skip)
+> >>>> +{
+> >>>> +     __this_cpu_write(softnet_data.xmit.skip_txqueue, skip);
+> >>>> +}
+> >>>> +EXPORT_SYMBOL_GPL(netdev_xmit_skip_txqueue);
+> >>>>    #endif /* CONFIG_NET_EGRESS */
+> >>>>
+> >>>>    #ifdef CONFIG_XPS
+> >>>> @@ -4078,7 +4097,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+> >>>>    static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >>>>    {
+> >>>>        struct net_device *dev = skb->dev;
+> >>>> -     struct netdev_queue *txq;
+> >>>> +     struct netdev_queue *txq = NULL;
+> >>>>        struct Qdisc *q;
+> >>>>        int rc = -ENOMEM;
+> >>>>        bool again = false;
+> >>>> @@ -4106,11 +4125,17 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >>>>                        if (!skb)
+> >>>>                                goto out;
+> >>>>                }
+> >>>> +
+> >>>> +             netdev_xmit_skip_txqueue(false);
+> >>>> +
+> >>>>                nf_skip_egress(skb, true);
+> >>>>                skb = sch_handle_egress(skb, &rc, dev);
+> >>>>                if (!skb)
+> >>>>                        goto out;
+> >>>>                nf_skip_egress(skb, false);
+> >>>> +
+> >>>> +             if (netdev_xmit_txqueue_skipped())
+> >>>> +                     txq = netdev_tx_queue_mapping(dev, skb);
+> >>>>        }
+> >>>>    #endif
+> >>>>        /* If device/qdisc don't need skb->dst, release it right now while
+> >>>> @@ -4121,7 +4146,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >>>>        else
+> >>>>                skb_dst_force(skb);
+> >>>>
+> >>>> -     txq = netdev_core_pick_tx(dev, skb, sb_dev);
+> >>>> +     if (likely(!txq))
+> >>>
+> >>> nit: Drop likely(). If the feature is used from sch_handle_egress(), then this would always be the case.
+> >> Hi Daniel
+> >> I think in most case, we don't use skbedit queue_mapping in the
+> >> sch_handle_egress() , so I add likely in fast path.
+>
+> Yeah, but then let branch predictor do its work ? We can still change and drop the
+> likely() once we add support for BPF though..
+Hi
+if you are ok that introducing the bpf helper shown below, I will drop
+likely() in next patch.
+>
+> >>>> +             txq = netdev_core_pick_tx(dev, skb, sb_dev);
+> >>>> +
+> >>>>        q = rcu_dereference_bh(txq->qdisc);
+> >>>
+> >>> How will the `netdev_xmit_skip_txqueue(true)` be usable from BPF side (see bpf_convert_ctx_access() ->
+> >>> queue_mapping)?
+> >> Good questions, In other patch, I introduce the
+> >> bpf_netdev_skip_txqueue, so we can use netdev_xmit_skip_txqueue in bpf
+> >> side
+>
+> Yeah, that bpf_netdev_skip_txqueue() won't fly. It's basically a helper doing quirk for
+> an implementation detail (aka calling netdev_xmit_skip_txqueue()). Was hoping you have
+> something better we could use along with the context rewrite of __sk_buff's queue_mapping,
+Hi Daniel
+I review the bpf codes, we introduce a lot helper to change the skb field:
+skb_change_proto
+skb_change_type
+skb_change_tail
+skb_pull_data
+skb_change_head
+skb_ecn_set_ce
+skb_cgroup_classid
+skb_vlan_push
+skb_set_tunnel_key
 
-Hi,
-I have an additional question about the locks on the addr_list actually.
-In addrconf_ifdown, there's a loop on addr_list within a write lock in idev->lock
-> list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list)
-The loop body unlocks the idev->lock and reacquires it later. I assume because of the lock dependency on ifa->lock and the calls that acquire the mc_lock? Shouldn't that list iteration also be protected during the whole iteration?
+did you mean that, we introduce bpf_skb_set_queue_mapping  is better
+than bpf_netdev_skip_txqueue.
+for example:
+BPF_CALL_2(bpf_skb_set_queue_mapping, struct sk_buff *, skb, u32, txq)
+{
+        skb->queue_mapping = txq;
+        netdev_xmit_skip_txqueue(true);
+        return 0;
+};
 
-Thanks
-Niels
+> but worst case we need to rework a bit for BPF. :/
+> Thanks,
+> Daniel
+
+
+
+-- 
+Best regards, Tonghao
