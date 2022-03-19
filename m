@@ -2,57 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 885BE4DE7A7
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 12:41:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 589034DE7C5
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 13:11:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242826AbiCSLmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 07:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
+        id S239774AbiCSMCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 08:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237574AbiCSLmn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 07:42:43 -0400
-X-Greylist: delayed 175 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 19 Mar 2022 04:41:22 PDT
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8466F1E97;
-        Sat, 19 Mar 2022 04:41:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647689900;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=LUPpJL4caDcGsF8P6jMOa7sqd6B01qkMcy8m39HchoM=;
-    b=R3+VUoApr3oMqq0AxbpYRFI7eO1jxfQwWeLuM+IDpdSb6h+mYkKdjAmRd/6r6d+Y2o
-    F/Pvrw7SYMRxabzCeW1DL+tRAVO3UO71wbOEzIbghQF3hlgSajNM9k2pg0zOLbVXslEb
-    itnMzqI4RZchzddHtYlb2Gk/uPYJsqJt5lxqwSkcz70TP+avZS+GViHr4I6dzalIky+S
-    tEjBPxNUJB6VbLJdZ3tGcO5X3LKlmGqOWMElYcNzFNIBAXg8A3B6qzoUlzgQKjpNQxpT
-    brDdy/k6DwM2vtaQbDujf/4lQ38QSheu3cJSfJpXtv1cXPDrRbYTfjYWJZFeXzkdtQZy
-    +N+Q==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLUrK85/aY="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.41.1 AUTH)
-    with ESMTPSA id 0aea5dy2JBcJDO7
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Sat, 19 Mar 2022 12:38:19 +0100 (CET)
-Date:   Sat, 19 Mar 2022 12:38:13 +0100
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH -next] net: wwan: qcom_bam_dmux: fix wrong pointer passed
- to IS_ERR()
-Message-ID: <YjXApWvAnGUeTpPt@gerhold.net>
-References: <20220319032450.3288224-1-yangyingliang@huawei.com>
+        with ESMTP id S231180AbiCSMCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 08:02:30 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BE727B60D
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 05:01:08 -0700 (PDT)
+Date:   Sat, 19 Mar 2022 13:01:04 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1647691266;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=89agWUDxMyONMhvbmRB+67ox1kUx/bLkXLhrOsubcxk=;
+        b=Ye81CPBnQOKxDYNkTadSa1cq+6YRgkbKsXS8v/Btmduy4EYxUGpLULClH27TrSCLNJFGte
+        63rU3MeHiV0GWQ1gCdaI/Pewt19G6QqlcS3DhWDqC3w6uvl2bzVCEw7vJMORdlLXKgMhiB
+        kSW+T1NQA5n2zE+u/gRP6YiXUpxSsk4UdrQng3MPh21irZwX3OfNQrqzXhHcdrpwZqpO+G
+        gPcmMCOe2GmF2c+dhrfYwybLZxkWYlL4AfOFujoHZ+8ckrM2FPDipDFP5ChhICABk3H+1I
+        /QhftKHgImAHP90xm5sL/6ZA/bYy96fnhDfZuX+hFuhYxvLx9uaEeovA2p/SNw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1647691266;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=89agWUDxMyONMhvbmRB+67ox1kUx/bLkXLhrOsubcxk=;
+        b=HBvNqIIqd1zYhCLpxj4470xq/EMHVx7lDtey29N64WXJRicPxY/nqk8IW+dWh9PtO1iRzy
+        4W792F8Rt4bHLTCg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev@vger.kernel.org, wireguard@lists.zx2c4.com, kuba@kernel.org,
+        Saeed Mahameed <saeed@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] net: remove lockdep asserts from ____napi_schedule()
+Message-ID: <YjXGALddYuJeRlDk@linutronix.de>
+References: <20220319004738.1068685-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220319032450.3288224-1-yangyingliang@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+In-Reply-To: <20220319004738.1068685-1-Jason@zx2c4.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,36 +58,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 11:24:50AM +0800, Yang Yingliang wrote:
-> It should check dmux->tx after calling dma_request_chan().
-> 
-> Fixes: 21a0ffd9b38c ("net: wwan: Add Qualcomm BAM-DMUX WWAN network driver")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+On 2022-03-18 18:47:38 [-0600], Jason A. Donenfeld wrote:
+> This reverts commit fbd9a2ceba5c ("net: Add lockdep asserts to
+> ____napi_schedule()."). While good in theory, in practice it causes
+> issues with various drivers, and so it can be revisited earlier in the
+> cycle where those drivers can be adjusted if needed.
 
-Good catch, thanks!
+Do you plan to address to address the wireguard warning?
 
-Reviewed-by: Stephan Gerhold <stephan@gerhold.net>
-
-I'm a bit confused by the -next suffix in the subject though,
-this should probably go into "net" (not "net-next") since it is a fix.
-
-> ---
->  drivers/net/wwan/qcom_bam_dmux.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wwan/qcom_bam_dmux.c b/drivers/net/wwan/qcom_bam_dmux.c
-> index 5dfa2eba6014..17d46f4d2913 100644
-> --- a/drivers/net/wwan/qcom_bam_dmux.c
-> +++ b/drivers/net/wwan/qcom_bam_dmux.c
-> @@ -755,7 +755,7 @@ static int __maybe_unused bam_dmux_runtime_resume(struct device *dev)
->  		return 0;
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4277,9 +4277,6 @@ static inline void ____napi_schedule(struct softnet_data *sd,
+>  {
+>  	struct task_struct *thread;
 >  
->  	dmux->tx = dma_request_chan(dev, "tx");
-> -	if (IS_ERR(dmux->rx)) {
-> +	if (IS_ERR(dmux->tx)) {
->  		dev_err(dev, "Failed to request TX DMA channel: %pe\n", dmux->tx);
->  		dmux->tx = NULL;
->  		bam_dmux_runtime_suspend(dev);
-> -- 
-> 2.25.1
-> 
+> -	lockdep_assert_softirq_will_run();
+> -	lockdep_assert_irqs_disabled();
+
+Could you please keep that lockdep_assert_irqs_disabled()? That is
+needed regardless of the upper one.
+
+Sebastian
