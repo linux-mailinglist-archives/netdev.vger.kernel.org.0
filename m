@@ -2,93 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 245474DE6D8
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 08:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 011C24DE6F2
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 09:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236790AbiCSHuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 03:50:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58800 "EHLO
+        id S242465AbiCSIRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 04:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236778AbiCSHug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 03:50:36 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF93C15DA86
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 00:49:14 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 5642C205FD;
-        Sat, 19 Mar 2022 08:49:13 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ksct3NsoFQ-c; Sat, 19 Mar 2022 08:49:12 +0100 (CET)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id D89C8205FC;
-        Sat, 19 Mar 2022 08:49:12 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id CF90880004A;
-        Sat, 19 Mar 2022 08:49:12 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 19 Mar 2022 08:49:12 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Sat, 19 Mar
- 2022 08:49:12 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id E35FE3182EB2; Sat, 19 Mar 2022 08:49:11 +0100 (CET)
-Date:   Sat, 19 Mar 2022 08:49:11 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>
-Subject: Re: pull request (net): ipsec 2022-03-16
-Message-ID: <20220319074911.GB4161825@gauss3.secunet.de>
-References: <20220316121142.3142336-1-steffen.klassert@secunet.com>
- <20220316114438.11955749@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S238027AbiCSIRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 04:17:46 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9BEF231936
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 01:16:25 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id e11-20020a5d8e0b000000b006412cf3f627so6596725iod.17
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 01:16:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=WUWCxbYXpv8z4jcgvVVgbLnra2IcxUsgwjwIFM6opyw=;
+        b=W/zNLnnujNi8mD1qvnJWRy6JXPybmBfAquVMMjeNiEC1px3NG+eAP8XPcV7RjKwlxu
+         Nc0qVQKmCe5VfWPAdOdQDfAp8MoHUn5F3BYwdfo2rue2IukL818IQeaUKgnhy+HY7aWv
+         ELLCnw5aBXJgLk3FsDK6p6BzECHS9qzBPha9PBI0r1OGuUSKWJxRmwfGLYSjYZAbxkH4
+         re4Zj530KW4+OlzNptvd23dEMlZBXxvd+y/ul+RqT9M0P+q2PeMOrWWFbZub0sZLglpO
+         uORL6QAZUxAB4nEL5zjG9AkSuwVu1XtmS4EclAXNibXrbw5rOSuZkpWS1eraJ+EUglmu
+         kX+Q==
+X-Gm-Message-State: AOAM5300JuiYy5R777BrcEM1w3bv+vwEI0vSN9k2tp5I4NSpFqc+DQHF
+        J9dpkwFGfQ7OTi14eKY49hqkjN0vVyhEyTBFy1ujSvZZn7U9
+X-Google-Smtp-Source: ABdhPJyPEwIAqyIUFL+CxixBlWaTZmYK6PeM/UNgXrwWC4dbze6a16I/59eg/9wLMvT9QQR9oi7rektbQwH1FARKkQaauaXpb5uG
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220316114438.11955749@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Received: by 2002:a05:6638:d56:b0:319:f6bb:25e1 with SMTP id
+ d22-20020a0566380d5600b00319f6bb25e1mr6281612jak.242.1647677784786; Sat, 19
+ Mar 2022 01:16:24 -0700 (PDT)
+Date:   Sat, 19 Mar 2022 01:16:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000110dee05da8de18a@google.com>
+Subject: [syzbot] linux-next test error: WARNING in __napi_schedule
+From:   syzbot <syzbot+6f21ac9e27fca7e97623@syzkaller.appspotmail.com>
+To:     Jason@zx2c4.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com, wireguard@lists.zx2c4.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 16, 2022 at 11:44:38AM -0700, Jakub Kicinski wrote:
-> On Wed, 16 Mar 2022 13:11:40 +0100 Steffen Klassert wrote:
-> > Two last fixes for this release cycle:
-> > 
-> > 1) Fix a kernel-info-leak in pfkey.
-> >    From Haimin Zhang.
-> > 
-> > 2) Fix an incorrect check of the return value of ipv6_skip_exthdr.
-> >    From Sabrina Dubroca.
-> 
-> Excellent, thank you!
-> 
-> > Please pull or let me know if there are problems.
-> 
-> One minor improvement to appease patchwork would be to add / keep the
-> [PATCH 0/n] prefix on the PR / cover letter when posting the patches
-> under it.
+Hello,
 
-I did that in the ipsec-next pull request, let me know if this is
-OK as I did it.
+syzbot found the following issue on:
 
-> It seems that patchwork is hopeless in delineating the
-> patches and the PR if that's not there. For whatever reason it grouped
-> the PR and patch 2 as a series and patch 1 was left separate :S
+HEAD commit:    6d72dda014a4 Add linux-next specific files for 20220318
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=124f5589700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5907d82c35688f04
+dashboard link: https://syzkaller.appspot.com/bug?extid=6f21ac9e27fca7e97623
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-I guess this is why I get always two mails from patchwork-bot for
-each pull request. I already wondered why that happens :)
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6f21ac9e27fca7e97623@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3612 at net/core/dev.c:4268 ____napi_schedule net/core/dev.c:4268 [inline]
+WARNING: CPU: 0 PID: 3612 at net/core/dev.c:4268 __napi_schedule+0xe2/0x440 net/core/dev.c:5878
+Modules linked in:
+CPU: 0 PID: 3612 Comm: kworker/0:5 Not tainted 5.17.0-rc8-next-20220318-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: wg-crypt-wg0 wg_packet_decrypt_worker
+RIP: 0010:____napi_schedule net/core/dev.c:4268 [inline]
+RIP: 0010:__napi_schedule+0xe2/0x440 net/core/dev.c:5878
+Code: 74 4a e8 11 61 3c fa 31 ff 65 44 8b 25 d7 27 c6 78 41 81 e4 00 ff 0f 00 44 89 e6 e8 18 63 3c fa 45 85 e4 75 07 e8 ee 60 3c fa <0f> 0b e8 e7 60 3c fa 65 44 8b 25 f7 31 c6 78 31 ff 44 89 e6 e8 f5
+RSP: 0018:ffffc9000408fc78 EFLAGS: 00010093
+RAX: 0000000000000000 RBX: ffff88807fa90748 RCX: 0000000000000000
+RDX: ffff888019800000 RSI: ffffffff873c4802 RDI: 0000000000000003
+RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff873c47f8 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff8880b9c00000 R14: 000000000003b100 R15: ffff88801cf90ec0
+FS:  0000000000000000(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f998512c300 CR3: 00000000707f2000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ napi_schedule include/linux/netdevice.h:465 [inline]
+ wg_queue_enqueue_per_peer_rx drivers/net/wireguard/queueing.h:204 [inline]
+ wg_packet_decrypt_worker+0x408/0x5d0 drivers/net/wireguard/receive.c:510
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
