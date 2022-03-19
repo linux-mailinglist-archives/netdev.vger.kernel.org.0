@@ -2,74 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BADD4DE4D2
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 01:17:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D424DE4D5
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 01:22:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241648AbiCSATE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 20:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
+        id S238643AbiCSAX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 20:23:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233178AbiCSATD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 20:19:03 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2825C44A02
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 17:17:44 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id p9so13659357wra.12
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 17:17:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:from:mime-version:content-transfer-encoding
-         :content-description:subject:to:date:reply-to;
-        bh=nHz08v+KGykef/EY5wszhlvcWuKfz0UE0QFNYs1Ac5U=;
-        b=Q6toToJqBK28YpZq1MyyDCF2CAyUrZqAFk2dXF1IPwqNs8pWoVRVuhaottgONGVYAA
-         jr5+Qq9x3cel8BYWR9G6eB/+NJXqAZpuSBoIHEAcKwZeiS9C3tDbMYTEIkNi2Fe4jBgL
-         0YbW0YQy40xaWUrEtQHZTuzc6rm95ZVsZfLHMbKMJJjWe3bwx0RIoYkELxr5T7CuXINc
-         Eji7meqZkLLDmiS77pMLbT8OrJRrX1VGP8+b/TnS6fwUHdisrJeAMF727pDXoqWFjmCZ
-         s3cAyozFVy4WVFvrcaJiR9aiPX3Mvoow2vScRaTqOKmCvEoZqpoKRoI9NHJbuvdil1SF
-         ijpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:from:mime-version
-         :content-transfer-encoding:content-description:subject:to:date
-         :reply-to;
-        bh=nHz08v+KGykef/EY5wszhlvcWuKfz0UE0QFNYs1Ac5U=;
-        b=GvWqJiXJ43lN28Voouo7s0ee+UTc6+m3/pqa1spSUIq8Kh3y/Y8NtTUJB2DrDBuwiw
-         bxRHIUyAKzywl7Y45D2/3Wm/XEJ0U84v1x21keTiwIi5/znK1RWN/WmGYZ9Hg4QbTQ8k
-         +2WZzHx0uuDXn8T21q9fLRUYr5xPDfzQmi/p6u/WaOWONoufJIX0OaAPsuOc5WReynD6
-         +C1DKocHg6/GgIWYfSWgOz3ZF7fXZFquTL5cgohd5VneSD6m0ZsTLy22Etdd9V8kYxGt
-         4TzPFLTCPlGHZeaTGOnRHwTpfG9yFKsMsPAb95ou7zQQn0nvG2khxEHjB/ql1JaP/mgf
-         gFtg==
-X-Gm-Message-State: AOAM531dFY4fsbTLTU8t5dbm33ZvINF2RY3R8FoHafSo/oYdTKmRmL4x
-        5metE37IGWh/2x0v6TFIg74=
-X-Google-Smtp-Source: ABdhPJz0FP4a0DViVJh9IELMYZ+Ap2oCRsCx9vCUKUhEcp66SdoVpInpYCmw1o6Fs0PLSF9H5CF8pQ==
-X-Received: by 2002:adf:d1c4:0:b0:203:6d79:f15 with SMTP id b4-20020adfd1c4000000b002036d790f15mr9446268wrd.489.1647649062804;
-        Fri, 18 Mar 2022 17:17:42 -0700 (PDT)
-Received: from [192.168.0.108] ([196.170.18.253])
-        by smtp.gmail.com with ESMTPSA id h18-20020a05600c351200b0038c6d38b42fsm9080216wmq.36.2022.03.18.17.17.37
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Fri, 18 Mar 2022 17:17:42 -0700 (PDT)
-Message-ID: <62352126.1c69fb81.f13d3.4d49@mx.google.com>
-From:   "Vanina C." <curtisvani0090@gmail.com>
-X-Google-Original-From: Vanina C.
-Content-Type: text/plain; charset="iso-8859-1"
+        with ESMTP id S233463AbiCSAX6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 20:23:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8252310611D;
+        Fri, 18 Mar 2022 17:22:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 120396170A;
+        Sat, 19 Mar 2022 00:22:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E504C340E8;
+        Sat, 19 Mar 2022 00:22:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647649348;
+        bh=h91cBqgzNfgdm1S+DRILunx1ofNBbhjUuiyUdb5fkrc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=byr3miQU8j2L353iv9IjKp4sdO2fkgscFhngc0+Ddm9Val5rB5CZk/S93dXaSb/eC
+         TEPnpAjpSbih/4fMNBfVw02h2w+imikMADxsN+PqGfLBPdaeegCZ9oKrVFA6CFY/Rw
+         uTvNvil2ltkDWY41Kz0tejqGA1Dx72QAvWRUQSnKORVguxo7w3Cd6rDY/92jjmix/g
+         XBEFT6rrZ2LEXPkP77KsW/zt3bkJZmshP7eY/DJx0onaUZM5GdxDj4GKbV6q31FUQ7
+         zUZSKidpa/+bz1PZQX8fe37rG110UNUEm6jw1Pr+I3Qfua5AFJMOpQfm67MFlj/Iof
+         4eNgaAUbPkBcg==
+Date:   Fri, 18 Mar 2022 17:22:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Peter Robinson <pbrobinson@gmail.com>,
+        Jeremy Linton <jeremy.linton@arm.com>, netdev@vger.kernel.org,
+        opendmb@gmail.com, davem@davemloft.net,
+        bcm-kernel-feedback-list@broadcom.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: bcmgenet: Use stronger register read/writes to
+ assure ordering
+Message-ID: <20220318172221.68ecb86a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <082a7743-2eb8-c067-e41d-2a3acca5c056@gmail.com>
+References: <20220310045358.224350-1-jeremy.linton@arm.com>
+        <f831a4c6-58c9-20bd-94e8-e221369609e8@gmail.com>
+        <de28c0ec-56a7-bfff-0c41-72aeef097ee3@arm.com>
+        <2167202d-327c-f87d-bded-702b39ae49e1@gmail.com>
+        <CALeDE9MerhZWwJrkg+2OEaQ=_9C6PHYv7kQ_XEQ6Kp7aV2R31A@mail.gmail.com>
+        <472540d2-3a61-beca-70df-d5f152e1cfd1@gmail.com>
+        <20220318122017.24341eb1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <082a7743-2eb8-c067-e41d-2a3acca5c056@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: Regards to you
-To:     Recipients <Vanina@vger.kernel.org>
-Date:   Sat, 19 Mar 2022 00:17:32 +0000
-Reply-To: curtisvani9008@gmail.com
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_40,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,TO_MALFORMED,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings, I'm Vanina C. how are you my dear, Kindly respond to me, it's my=
- pleasure to meet you, hope we can establish a relationship from here.
+On Fri, 18 Mar 2022 14:26:36 -0700 Florian Fainelli wrote:
+> Maybe I should have refrained from making that comment after all :)
+> Having the Fixes: tag dramatically helps with getting this patch applied
+> all the way to the relevant stable trees and surely correctness over
+> speed should prevail. If we want to restore the performance loss (with
+> the onus on Doug and I to prove that there is a performance drop), then
+> we could send a fix with the appropriate localized barrier followed by a
+> revert of Jeremy's patch. And if we cared about getting those two
+> patches applied to stable, we would tag them with the appropriate Fixes tag.
+> 
+> It looks like there are a few 'net' changes that showed up, are you
+> going to send a pull request to Linus before 5.17 final is cut?
+
+Not unless there's -rc9. We'll just merge net into net-next before
+submitting net-next, most likely.
