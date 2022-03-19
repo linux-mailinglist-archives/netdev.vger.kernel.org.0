@@ -2,109 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D368E4DE920
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 16:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7834DE986
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 18:30:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243542AbiCSPz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 11:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43128 "EHLO
+        id S242911AbiCSRcD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 13:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243538AbiCSPz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 11:55:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE45619C588
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 08:54:07 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nVbOY-0002zn-69; Sat, 19 Mar 2022 16:53:34 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-5e0d-31a6-08b1-9333.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5e0d:31a6:8b1:9333])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B3DDF4F317;
-        Sat, 19 Mar 2022 15:53:30 +0000 (UTC)
-Date:   Sat, 19 Mar 2022 16:53:30 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     trix@redhat.com
-Cc:     mani@kernel.org, thomas.kopp@microchip.com, wg@grandegger.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        nathan@kernel.org, ndesaulniers@google.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH] can: mcp251xfd: return errors from
- mcp251xfd_register_get_dev_id
-Message-ID: <20220319155330.d62uvu47pujhjocy@pengutronix.de>
-References: <20220319153128.2164120-1-trix@redhat.com>
+        with ESMTP id S231164AbiCSRcD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 13:32:03 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC9C45505;
+        Sat, 19 Mar 2022 10:30:40 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id n7-20020a17090aab8700b001c6aa871860so4921643pjq.2;
+        Sat, 19 Mar 2022 10:30:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gkky0ysAeDzdOeO3GqqHPK43boR/dATbOBWfwwR2rWY=;
+        b=Yhfm7Oi6M91zdpAcdJ8Eq8EngtuD9X41Br2UE09MplRd9YCutcxFBtHj7IG2qUlqph
+         NRo1/nZqT4g46zZUs5RsVDKTOSIskmMKXSCdCbSiiYfOTfr45yIIJqaNZzg0xV4ekovg
+         gF3PqvIgRcDkampqEd5v8hxml0oEnHNBekN7uEgxeln7R0xa58HeVxoEoKyew1Hj7Ykx
+         4nhAPcNrzr6YQFdOoFlhYZTwjLmg5W5VhylSjTcXKrerVF/7yW/EPIqAg4W691YA6/pN
+         3wZr9r8OXD4yPM4X6+j4j6FpaAuTb2WlRkEtQB90TcpJorijurpp8SMtD3rDlCBcHh0w
+         qPCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gkky0ysAeDzdOeO3GqqHPK43boR/dATbOBWfwwR2rWY=;
+        b=XvE6nT30y1Ja7uGjmsQbeMGuZJ0XxJndc2q15PV17hcl/QO94JbvVCHvnQmJfZVWRR
+         IEvRFd5NH2sFHu2sgVklw9CG85DVQeDIeJX/882NOFvV03sr2sWGeN7hhW+P7OCh4WjN
+         KZ71MXYrWIz4RFaYJpbYjG55aY6l6cqO04OK0nlRCtd3URn2Buvmz8GDFM5cU81jC2SY
+         qV6MGKeFTmqH5H6TWY5BLenh1MtHaZKRzl7HksyeW0l6e1HWqna7R39sqGzb1uihIabw
+         TNzhbLnLi9z7mWC0Rby1zc4gURuR+UatYmMmZ+HSRMDjWpSnRbut0+uETNfJnAPzYXys
+         18EA==
+X-Gm-Message-State: AOAM533zo8kvoeed9juqSNp6s/2tmMUd8/c/RZ3cHXAz20F2K32PYi8V
+        QuE5E1IEsDoGv0rUS8vnGfI=
+X-Google-Smtp-Source: ABdhPJzPD40IHPfGNI4nK0Kxx/ACz+56A8fvNSZftre0O4FCiw5Zc/71Swb8opmJ6GfCIXIauJ3B2w==
+X-Received: by 2002:a17:902:8ec9:b0:14f:11f7:db77 with SMTP id x9-20020a1709028ec900b0014f11f7db77mr5126357plo.136.1647711040168;
+        Sat, 19 Mar 2022 10:30:40 -0700 (PDT)
+Received: from vultr.guest ([2001:19f0:6001:4ab8:5400:3ff:fee9:a154])
+        by smtp.gmail.com with ESMTPSA id k21-20020aa788d5000000b004f71bff2893sm12722136pff.67.2022.03.19.10.30.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 10:30:39 -0700 (PDT)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     roman.gushchin@linux.dev, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, shuah@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH 00/14] bpf: Allow not to charge bpf memory 
+Date:   Sat, 19 Mar 2022 17:30:22 +0000
+Message-Id: <20220319173036.23352-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ynf2esusfukglzhk"
-Content-Disposition: inline
-In-Reply-To: <20220319153128.2164120-1-trix@redhat.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+After switching to memcg-based bpf memory accounting, the bpf memory is
+charged to the loader's memcg by defaut, that causes unexpected issues for
+us. For instance, the container of the loader-which loads the bpf programs
+and pins them on bpffs-may restart after pinning the progs and maps. After
+the restart, the pinned progs and maps won't belong to the new container
+any more, while they actually belong to an offline memcg left by the
+previous generation. That inconsistent behavior will make trouble for the
+memory resource management for this container. 
 
---ynf2esusfukglzhk
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The reason why these progs and maps have to be persistent across multiple
+generations is that these progs and maps are also used by other processes
+which are not in this container. IOW, they can't be removed when this
+container is restarted. Take a specific example, bpf program for clsact
+qdisc is loaded by a agent running in a container, which not only loads
+bpf program but also processes the data generated by this program and do
+some other maintainace things.
 
-On 19.03.2022 08:31:28, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
->=20
-> Clang static analysis reports this issue
-> mcp251xfd-core.c:1813:7: warning: The left operand
->   of '&' is a garbage value
->   FIELD_GET(MCP251XFD_REG_DEVID_ID_MASK, dev_id),
->   ^                                      ~~~~~~
->=20
-> dev_id is set in a successful call to
-> mcp251xfd_register_get_dev_id().  Though the status
-> of calls made by mcp251xfd_register_get_dev_id()
-> are checked and handled, their status' are not
-> returned.  So return err.
->=20
-> Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD =
-SPI CAN")
-> Signed-off-by: Tom Rix <trix@redhat.com>
+In order to keep the charging behavior consistent, we used to consider a
+way to recharge these pinned maps and progs again after the container is
+restarted, but after the discussion[1] with Roman, we decided to go
+another direction that don't charge them to the container in the first
+place. TL;DR about the mentioned disccussion: recharging is not a generic
+solution and it may take too much risk.
 
-Thanks for your patch, applied to linux-can/testing.
+This patchset is the solution of no charge. Two flags are introduced in
+union bpf_attr, one for bpf map and another for bpf prog. The user who
+doesn't want to charge to current memcg can use these two flags. These two
+flags are only permitted for sys admin as these memory will be accounted to
+the root memcg only.
 
-regards,
-Marc
+Patches #1~#8 are for bpf map. Patches #9~#12 are for bpf prog. Patch #13
+and #14 are for selftests and also the examples of how to use them.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+[1]. https://lwn.net/Articles/887180/ 
 
---ynf2esusfukglzhk
-Content-Type: application/pgp-signature; name="signature.asc"
+Yafang Shao (14):
+  bpf: Introduce no charge flag for bpf map
+  bpf: Only sys admin can set no charge flag
+  bpf: Enable no charge in map _CREATE_FLAG_MASK
+  bpf: Introduce new parameter bpf_attr in bpf_map_area_alloc
+  bpf: Allow no charge in bpf_map_area_alloc
+  bpf: Allow no charge for allocation not at map creation time
+  bpf: Allow no charge in map specific allocation
+  bpf: Aggregate flags for BPF_PROG_LOAD command
+  bpf: Add no charge flag for bpf prog
+  bpf: Only sys admin can set no charge flag for bpf prog
+  bpf: Set __GFP_ACCOUNT at the callsite of bpf_prog_alloc
+  bpf: Allow no charge for bpf prog
+  bpf: selftests: Add test case for BPF_F_NO_CHARTE
+  bpf: selftests: Add test case for BPF_F_PROG_NO_CHARGE
 
------BEGIN PGP SIGNATURE-----
+ include/linux/bpf.h                           | 27 ++++++-
+ include/uapi/linux/bpf.h                      | 21 +++--
+ kernel/bpf/arraymap.c                         |  9 +--
+ kernel/bpf/bloom_filter.c                     |  7 +-
+ kernel/bpf/bpf_local_storage.c                |  8 +-
+ kernel/bpf/bpf_struct_ops.c                   | 13 +--
+ kernel/bpf/core.c                             | 20 +++--
+ kernel/bpf/cpumap.c                           | 10 ++-
+ kernel/bpf/devmap.c                           | 14 ++--
+ kernel/bpf/hashtab.c                          | 14 ++--
+ kernel/bpf/local_storage.c                    |  4 +-
+ kernel/bpf/lpm_trie.c                         |  4 +-
+ kernel/bpf/queue_stack_maps.c                 |  5 +-
+ kernel/bpf/reuseport_array.c                  |  3 +-
+ kernel/bpf/ringbuf.c                          | 19 ++---
+ kernel/bpf/stackmap.c                         | 13 +--
+ kernel/bpf/syscall.c                          | 40 +++++++---
+ kernel/bpf/verifier.c                         |  2 +-
+ net/core/filter.c                             |  6 +-
+ net/core/sock_map.c                           |  8 +-
+ net/xdp/xskmap.c                              |  9 ++-
+ tools/include/uapi/linux/bpf.h                | 21 +++--
+ .../selftests/bpf/map_tests/no_charg.c        | 79 +++++++++++++++++++
+ .../selftests/bpf/prog_tests/no_charge.c      | 49 ++++++++++++
+ 24 files changed, 297 insertions(+), 108 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/map_tests/no_charg.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/no_charge.c
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmI1/HcACgkQrX5LkNig
-012uEAgAhmQLM9+G2jVF/9a2t7pFA4UKyqfdbBR+4jLttIfKO6FZKMcPubSTDsw9
-QxnM2nOYAufwvSmhgoNuo2/pFWV0JCrzb1DwvbeHUI4rm8JWGNIKT8IWPwznNmIi
-4pHg5No4rSU4b/eUeyesiSpuqxRgUXCaZ/ReYMRUpOtc/f6vATqdTWZ1SPEq+9Cl
-kBQ4BBSSLCLzFWkr01SZfUGWM3AazzUM23EPh8bx2KJ2jaki2sZxkXQAc13OSRBW
-+DaRZu4Rk/DTaPXqmBGTD+5dX13d5CF/7p4l0ERJZSPJKZdZWDA3Imcn+ynGRuCJ
-zbQplLUyon4OuqH+/U5tYREWRtEdMA==
-=ySfD
------END PGP SIGNATURE-----
+-- 
+2.17.1
 
---ynf2esusfukglzhk--
