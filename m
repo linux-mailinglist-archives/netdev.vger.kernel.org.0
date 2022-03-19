@@ -2,66 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A2F44DE4E8
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 01:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 954284DE4EB
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 01:48:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241654AbiCSAm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 18 Mar 2022 20:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37988 "EHLO
+        id S241210AbiCSAtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 18 Mar 2022 20:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241685AbiCSAmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 20:42:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2F3E65
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 17:41:35 -0700 (PDT)
+        with ESMTP id S238614AbiCSAtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 18 Mar 2022 20:49:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2072E8415
+        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 17:47:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8016A6172C
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 00:41:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C62C340ED
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 00:41:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0CC7B825E7
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 00:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51B6FC340E8;
+        Sat, 19 Mar 2022 00:47:49 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="GhR80dX2"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Pl/X7qFb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1647650492;
+        t=1647650867;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Iz/+lVd7B6MN/sKdXi5x/QmNGmp0dw8CWNiptRpLlw=;
-        b=GhR80dX2kQ7tWwMik4lnhcpYjsmGJAa0Y5yq1K0CAc4cJWvxd3If/9QkSSh0SDXqc7lDHq
-        1DXw7Qs5YrZbu4hQyPeJdB57llCVKmCiXaBToLitfE7C1YIsVQR9tBuTDhMgCQGIhlpnSs
-        ENEALENltgL4PjupPMeSFtK07oGwNxQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0b379038 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Sat, 19 Mar 2022 00:41:31 +0000 (UTC)
-Received: by mail-yb1-f177.google.com with SMTP id v130so18576269ybe.13
-        for <netdev@vger.kernel.org>; Fri, 18 Mar 2022 17:41:31 -0700 (PDT)
-X-Gm-Message-State: AOAM532eEfW4MTbZL5Xlp7qnuOmhDWtfWTFfVzq8r1wC/uXTxvseGdTj
-        SPs7m5nGamCp9hM4Z7uPuERH/ro1w2FKhW5GdaY=
-X-Google-Smtp-Source: ABdhPJwlMxtkXMyzKgI8ASFXGIHbmrrI0bot8AItLTOmVttRa4rfsRsh33QowAYGdnAU/sdIdoL+/Ipqr4ICAtMdSaw=
-X-Received: by 2002:a25:b854:0:b0:633:8a00:707a with SMTP id
- b20-20020a25b854000000b006338a00707amr13055391ybm.637.1647650490615; Fri, 18
- Mar 2022 17:41:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <YitkzkjU5zng7jAM@linutronix.de> <YjPlAyly8FQhPJjT@zx2c4.com>
- <YjRlkBYBGEolfzd9@linutronix.de> <CAHmME9oHFzL6CYVh8nLGkNKOkMeWi2gmxs_f7S8PATWwc6uQsw@mail.gmail.com>
- <20220318115920.71470819@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220318115920.71470819@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=V4QfcpmMfKhbZqAZheZzQjZAaNrrDgRvupNqVg+Dm9M=;
+        b=Pl/X7qFbbxwPisO6SyUf+jefdvDcX1DrwWHRYXnWjmMB0qnsoAteqOeD8FIL2wpXMTI6QM
+        U/CgtR3aeRTEzMoY/rvBml6A87nQzwNdYKlamhaeKhjIETyXYqR3ahwH+ZcHu3gFEMkGcw
+        JIjJIuIcevHKelAb26CGAvpT2y1xR+w=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 252b7d66 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sat, 19 Mar 2022 00:47:46 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 18 Mar 2022 18:41:18 -0600
-X-Gmail-Original-Message-ID: <CAHmME9q4dKNtArpbsUbFv_Hg4BGEJ58GfRFMujQV5cZf36qFvw@mail.gmail.com>
-Message-ID: <CAHmME9q4dKNtArpbsUbFv_Hg4BGEJ58GfRFMujQV5cZf36qFvw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: Add lockdep asserts to ____napi_schedule().
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     netdev@vger.kernel.org, wireguard@lists.zx2c4.com, kuba@kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Saeed Mahameed <saeed@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH] net: remove lockdep asserts from ____napi_schedule()
+Date:   Fri, 18 Mar 2022 18:47:38 -0600
+Message-Id: <20220319004738.1068685-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,24 +57,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Jakub,
+This reverts commit fbd9a2ceba5c ("net: Add lockdep asserts to
+____napi_schedule()."). While good in theory, in practice it causes
+issues with various drivers, and so it can be revisited earlier in the
+cycle where those drivers can be adjusted if needed.
 
-On Fri, Mar 18, 2022 at 12:59 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 18 Mar 2022 12:19:45 -0600 Jason A. Donenfeld wrote:
-> > > In your case it is "okay" since that ptr_ring_consume_bh() will do BH
-> > > disable/enable which forces the softirq to run. It is not obvious.
-> >
-> > In that case, isn't the lockdep assertion you added wrong and should
-> > be reverted? If correct code is hitting it, something seems wrong...
->
-> FWIW I'd lean towards revert as well, I can't think of a simple
-> fix that won't require work arounds in callers.
+Link: https://lore.kernel.org/netdev/20220317192145.g23wprums5iunx6c@sx1/
+Link: https://lore.kernel.org/netdev/CAHmME9oHFzL6CYVh8nLGkNKOkMeWi2gmxs_f7S8PATWwc6uQsw@mail.gmail.com/
+Link: https://lore.kernel.org/wireguard/0000000000000eaff805da869d5b@google.com/
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Saeed Mahameed <saeed@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ include/linux/lockdep.h | 7 -------
+ net/core/dev.c          | 5 +----
+ 2 files changed, 1 insertion(+), 11 deletions(-)
 
-I just got an email from syzbot about this too:
-https://lore.kernel.org/wireguard/0000000000000eaff805da869d5b@google.com/
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index 0cc65d216701..467b94257105 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -329,12 +329,6 @@ extern void lock_unpin_lock(struct lockdep_map *lock, struct pin_cookie);
+ 
+ #define lockdep_assert_none_held_once()		\
+ 	lockdep_assert_once(!current->lockdep_depth)
+-/*
+- * Ensure that softirq is handled within the callchain and not delayed and
+- * handled by chance.
+- */
+-#define lockdep_assert_softirq_will_run()	\
+-	lockdep_assert_once(hardirq_count() | softirq_count())
+ 
+ #define lockdep_recursing(tsk)	((tsk)->lockdep_recursion)
+ 
+@@ -420,7 +414,6 @@ extern int lockdep_is_held(const void *);
+ #define lockdep_assert_held_read(l)		do { (void)(l); } while (0)
+ #define lockdep_assert_held_once(l)		do { (void)(l); } while (0)
+ #define lockdep_assert_none_held_once()	do { } while (0)
+-#define lockdep_assert_softirq_will_run()	do { } while (0)
+ 
+ #define lockdep_recursing(tsk)			(0)
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8e0cc5f2020d..6cad39b73a8e 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4277,9 +4277,6 @@ static inline void ____napi_schedule(struct softnet_data *sd,
+ {
+ 	struct task_struct *thread;
+ 
+-	lockdep_assert_softirq_will_run();
+-	lockdep_assert_irqs_disabled();
+-
+ 	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
+ 		/* Paired with smp_mb__before_atomic() in
+ 		 * napi_enable()/dev_set_threaded().
+@@ -4887,7 +4884,7 @@ int __netif_rx(struct sk_buff *skb)
+ {
+ 	int ret;
+ 
+-	lockdep_assert_softirq_will_run();
++	lockdep_assert_once(hardirq_count() | softirq_count());
+ 
+ 	trace_netif_rx_entry(skb);
+ 	ret = netif_rx_internal(skb);
+-- 
+2.35.1
 
-And no word from Sebastian, and now it's the weekend, so I suspect
-you're probably right. I'll send in a revert.
-
-Jason
