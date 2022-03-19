@@ -2,114 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF8164DE90C
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 16:31:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC4684DE90F
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 16:31:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243483AbiCSPc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 11:32:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55894 "EHLO
+        id S243494AbiCSPdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 11:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243477AbiCSPc6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 11:32:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9401C258477
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 08:31:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647703896;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RDYbzlAeYYOLKs0jJASD2ePoaygRETdsPOHhL2YcgAw=;
-        b=Wv/7y0Atoy9y5Nh2ECQJzKYas2/V27pmOd8H/s0FPY6iE8faoQjCmoqgOCe0Zn9lRIGhda
-        JimTwYoi9OFb5vexub+eb5GTFFwP9neo//oSatItlzmI4s6py3zht7n8KJPuCbIkQqfnkp
-        Boxf/Lv8L+SUJUecCK98jWDw41r+e3c=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-_ISa7jagM9ynrJFeg7703Q-1; Sat, 19 Mar 2022 11:31:35 -0400
-X-MC-Unique: _ISa7jagM9ynrJFeg7703Q-1
-Received: by mail-qv1-f72.google.com with SMTP id t16-20020ad44850000000b00440e0f2a561so6547447qvy.11
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 08:31:34 -0700 (PDT)
+        with ESMTP id S243492AbiCSPdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 11:33:04 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13B52571BE;
+        Sat, 19 Mar 2022 08:31:42 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bi12so22227673ejb.3;
+        Sat, 19 Mar 2022 08:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fnKN6n4NiW6NRvmL/chWan4dYjQ9Cywizwet4+MazNI=;
+        b=ZkyXacelojXl/U6Yy6q1CLI+wwnf3BFWG0oUYNlmlb7wmlJSAs7llguZ1KYdnO8wbU
+         IcRO3n8UVr5Fw07JCqsRXv/bc9817NqNOppfW5hGANJTTtgXHm21ocF1LErAHtrNmOLo
+         i6BPGwVa/WvIJGXdIqI0dhqjIiBwztKv5d8JgfBox6gNV9TCANLom6JxbzFbfmSYJhvS
+         JtGOepoA8V9peMRzicMac6mc74TgDja2OFZbkdBjdZDg9YLAx6C3ABzSK3WgAMaJjeeV
+         wxSfsjbvXwe7GXDKhlDQ3q8FHZ/tXQzhNG4puSGXxJrNyAZHELSUKk7/s7D2EAh4jYxb
+         UgJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RDYbzlAeYYOLKs0jJASD2ePoaygRETdsPOHhL2YcgAw=;
-        b=UeSKmiUCi67LVworsLukDfU00idpIAnF+VdFMdQpS/US6u8uyMbqq1jiWDnuw1sSLe
-         gHVA4Ljcj5JxEX3iC4ViLOzxHAKEQfdgOKEe783KXYwkhfKPto9mN/NT2okHdXnpLs3f
-         6e3bHuKBmd+bFv3v+ujcESBmpO5UW/pK65PuY6zBg9WYChFpeVqiR22TergtVaTEVncY
-         eAyGikPvGVJ5xIkLKG9mH7Kp99FjoyxLWjJT99AJuCjfCjpe5EuAE0HTfBjDnGe8A5tI
-         Ap+ZTsBLIWrVGSbGAKJHwVADywglhPmX2ZFH+fMRnqeRVPmXIBuAQjePZCp0deXYLJVq
-         kV6g==
-X-Gm-Message-State: AOAM533af+9VI3/49N0/74NnYaoyvtX7aO+3AxhP8+K941aPEhTxDq0a
-        lIWkcyLWyWfbsEOjl9YPqzBEFVNcqyXR951e4jnOi3YcZTJwo5sMpGA8VSL28N+TlyhkA1zpb4m
-        AyrSOjNLkUV5vzZ01
-X-Received: by 2002:a05:620a:430b:b0:67e:85d1:f53f with SMTP id u11-20020a05620a430b00b0067e85d1f53fmr376982qko.43.1647703894468;
-        Sat, 19 Mar 2022 08:31:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJylEZz+szJS3qXk/iEXTdbF/WnpVfwDLcvLyw6fK6qEuP1X7aGSWen2MjQL9ePfNbUbvv7PgQ==
-X-Received: by 2002:a05:620a:430b:b0:67e:85d1:f53f with SMTP id u11-20020a05620a430b00b0067e85d1f53fmr376962qko.43.1647703894215;
-        Sat, 19 Mar 2022 08:31:34 -0700 (PDT)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id b2-20020ac87fc2000000b002e1b9ddb629sm7850596qtk.47.2022.03.19.08.31.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 08:31:33 -0700 (PDT)
-From:   trix@redhat.com
-To:     mkl@pengutronix.de, mani@kernel.org, thomas.kopp@microchip.com,
-        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] can: mcp251xfd: return errors from mcp251xfd_register_get_dev_id
-Date:   Sat, 19 Mar 2022 08:31:28 -0700
-Message-Id: <20220319153128.2164120-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fnKN6n4NiW6NRvmL/chWan4dYjQ9Cywizwet4+MazNI=;
+        b=6zZUHLTWxucYxmI7KaC8FU8i0fyq1J760EXJwRA07Cipx7p5KRz3o66KrSMiDgZbAG
+         nmqum7+m2yUz+SUwJRzQuMtP7YR0FhAqruaO5c3Zj6A2T1BcrKFmiwk+M82CNSHGeWVl
+         ODg5ambvhQjda98rmhDkWzHRT1JWLLWAHmb+hQTj5SXECUtUIclrnG1dLBRgJEYwaG33
+         /YsBHfustUA/nfAyBaGf6qTVOCp+PqlpDUtHph2y4kj0XokElWBJxe5HDRUWsD4Fz/Wu
+         /lKwWCi7l1YVUIR0xvQ/y8MPKJZUFJczn0spZOfewfKsnSmq+aD07CzMscdWlT8+zxTa
+         Kkfw==
+X-Gm-Message-State: AOAM5338gMML90zP68xu09IH6KZg5GAqSZet+AgIWqc7gmWef2sjBbrf
+        bdF9XaBNbCL7b0OaYLboXar3Xv8Ny1iZ5LwfK3Q=
+X-Google-Smtp-Source: ABdhPJzQJzvenTokvq0oHajZ9jvqPHzswvfEwpj+/R3c4hYr7mdFo86DeDpwZmp4N6Q+lpd5ha36dPLFIk0jTw0DpSg=
+X-Received: by 2002:a17:906:f857:b0:6df:ae2d:73a0 with SMTP id
+ ks23-20020a170906f85700b006dfae2d73a0mr9031382ejb.614.1647703901270; Sat, 19
+ Mar 2022 08:31:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220319110422.8261-1-zhouzhouyi@gmail.com> <CANn89iK46rw910CUJV3Kgf=M=HA32_ctd0xragwcRnHCV_VhmQ@mail.gmail.com>
+ <CAABZP2yK2vCJcReJ_VvcqbkuEekvBpBJCyZ2geG=f83fv_RC=Q@mail.gmail.com> <CADVnQy=shHKbvf4OZjX5-3CnFPOm3zyexbaH9XTLZBMk6pxeew@mail.gmail.com>
+In-Reply-To: <CADVnQy=shHKbvf4OZjX5-3CnFPOm3zyexbaH9XTLZBMk6pxeew@mail.gmail.com>
+From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
+Date:   Sat, 19 Mar 2022 23:31:30 +0800
+Message-ID: <CAABZP2we5YyL=Z0rk7vVry76OjgQ+YaMu1y8xCU6Cf7VnJ9JCg@mail.gmail.com>
+Subject: Re: [PATCH v2] net:ipv4: send an ack when seg.ack > snd.nxt
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        David Miller <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Wei Xu <xuweihf@ustc.edu.cn>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Thank Neil and Eric for your valuable advice!
 
-Clang static analysis reports this issue
-mcp251xfd-core.c:1813:7: warning: The left operand
-  of '&' is a garbage value
-  FIELD_GET(MCP251XFD_REG_DEVID_ID_MASK, dev_id),
-  ^                                      ~~~~~~
-
-dev_id is set in a successful call to
-mcp251xfd_register_get_dev_id().  Though the status
-of calls made by mcp251xfd_register_get_dev_id()
-are checked and handled, their status' are not
-returned.  So return err.
-
-Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index 325024be7b045..f9dd8fdba12bc 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -1786,7 +1786,7 @@ mcp251xfd_register_get_dev_id(const struct mcp251xfd_priv *priv, u32 *dev_id,
-  out_kfree_buf_rx:
- 	kfree(buf_rx);
- 
--	return 0;
-+	return err;
- }
- 
- #define MCP251XFD_QUIRK_ACTIVE(quirk) \
--- 
-2.26.3
-
+I will do the test and analysis. Please forgive my hasty reply because
+it will take me some time to fully understand the email.  Also please
+give me about a month to accomplish the test and analysis.
+On Sat, Mar 19, 2022 at 9:57 PM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Sat, Mar 19, 2022 at 7:34 AM Zhouyi Zhou <zhouzhouyi@gmail.com> wrote:
+> >
+> > Thanks for reviewing my patch
+> >
+> > On Sat, Mar 19, 2022 at 7:14 PM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Sat, Mar 19, 2022 at 4:04 AM <zhouzhouyi@gmail.com> wrote:
+> > > >
+> > > > From: Zhouyi Zhou <zhouzhouyi@gmail.com>
+> > > >
+> > > > In RFC 793, page 72: "If the ACK acks something not yet sent
+> > > > (SEG.ACK > SND.NXT) then send an ACK, drop the segment,
+> > > > and return."
+> > > >
+> > > > Fix Linux's behavior according to RFC 793.
+> > > >
+> > > > Reported-by: Wei Xu <xuweihf@ustc.edu.cn>
+> > > > Signed-off-by: Wei Xu <xuweihf@ustc.edu.cn>
+> > > > Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+> > > > ---
+> > > > Thank Florian Westphal for pointing out
+> > > > the potential duplicated ack bug in patch version 1.
+> > >
+> > > I am travelling this week, but I think your patch is not necessary and
+> > > might actually be bad.
+> > >
+> > > Please provide more details of why nobody complained of this until today.
+> > >
+> > > Also I doubt you actually fully tested this patch, sending a V2 30
+> > > minutes after V1.
+> > >
+> > > If yes, please provide a packetdrill test.
+> > I am a beginner to TCP, although I have submitted once a patch to
+> > netdev in 2013 (aaa0c23cb90141309f5076ba5e3bfbd39544b985), this is
+> > first time I learned packetdrill test.
+> > I think I should do the packetdrill test in the coming days, and
+> > provide more details of how this (RFC793 related) can happen.
+>
+> In addition to a packetdrill test and a more detailed analysis of how
+> this can happen, and the implications, I think there are at least a
+> few other issues that need to be considered:
+>
+> (1) AFAICT, adding an unconditional ACK if (after(ack, tp->snd_nxt))
+> seems to open the potential for attackers to cause DoS attacks with
+> something like the following:
+>
+>  (a) attacker injects one data packet in the A->B direction and one
+> data packet in the B->A direction
+>
+>  (b) endpoint A sends an ACK for the forged data sent to it, which
+> will have an ACK beyond B's snd_nxt
+>
+>  (c) endpoint B sends an ACK for the forged data sent to it, which
+> will have an ACK beyond A's snd_nxt
+>
+>  (d) endpoint B receives the ACK sent by A, causing B to send another
+> ACK beyond A's snd_nxt
+>
+>  (e) endpoint A receives the ACK sent by B, causing A to send another
+> ACK beyond B's snd_nxt
+>
+>  (f) repeat (d) and (e) ad infinitum
+I will make a full understanding of the above scenery in the coming days.
+>
+> So AFAICT an attacker could send two data packets with 1 byte of data
+> and cause the two endpoints to use up an unbounded amount of CPU and
+> bandwidth sending ACKs in an "infinite loop".
+>
+> To avoid this "infinite loop" of packets, if we really need to add an
+> ACK in this case then the code should use the tcp_oow_rate_limited()
+> helper to ensure that such ACKs are rate-limited. For more context on
+> tcp_oow_rate_limited(), see:
+>
+> f06535c599354 Merge branch 'tcp_ack_loops'
+> 4fb17a6091674 tcp: mitigate ACK loops for connections as tcp_timewait_sock
+> f2b2c582e8242 tcp: mitigate ACK loops for connections as tcp_sock
+> a9b2c06dbef48 tcp: mitigate ACK loops for connections as tcp_request_sock
+> 032ee4236954e tcp: helpers to mitigate ACK loops by rate-limiting
+> out-of-window dupacks
+>
+> Note that f06535c599354 in particular mentions the case discussed in this patch:
+>
+>     (2) RFC 793 (section 3.9, page 72) says: "If the ACK acknowledges
+>         something not yet sent (SEG.ACK > SND.NXT) then send an ACK".
+>
+> (2) Please consider the potential that adding a new ACK in this
+> scenario may introduce new, unanticipated side channels. For more on
+> side channels, see:
+>
+>   https://lwn.net/Articles/696868/
+>   The TCP "challenge ACK" side channel
+I will read the article in the days following.
+>
+>   Principled Unearthing of TCP Side Channel Vulnerabilities
+>   https://dl.acm.org/doi/10.1145/3319535.3354250
+I will read the paper too.
+>
+> best regards,
+> neal
+Best Regards
+Zhouyi
