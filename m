@@ -2,118 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F6CE4DEA26
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 19:34:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D39AE4DEA28
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 19:34:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243914AbiCSSfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 14:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46124 "EHLO
+        id S243928AbiCSSgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 14:36:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243919AbiCSSfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 14:35:23 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC22A2986E4
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 11:34:01 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id 25so15107456ljv.10
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 11:34:01 -0700 (PDT)
+        with ESMTP id S233083AbiCSSf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 14:35:56 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C16F2986DE
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 11:34:33 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id 2so3910430vse.4
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 11:34:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HJf9hjmlU8ooiir4NWlBaONurfCvBP7drmCxAIcE+pM=;
-        b=VLqU3oFb2kAvIf18xDmAfaYRL66Xl/BNJCKWKUmIpbbLFfs7X0XbDfqXKYZGgdBGq1
-         YNyagsngccVrEPRWm0w2l6TUhF4Wpqn5osbedBU99T6eSOPQHsZkhRxbdqsMwaxF1c3n
-         Il4K7gAKMKSLhEiRr8fQnYguRGmIgU9QVKGVc=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fTWEetd1JVa8VqWcw/AyvWe9rS0lTmZuwgDubbkJEkA=;
+        b=GZR4batc/MJjNHz5OuFXi+8qbM6fIbwANHOxdcQ4X/ML7G81rTnLQrB+79MNoAVdWv
+         xDyfOTKC4Xe906ikonoeI3j5oulD18ZH4HUAQjfqf40qBLVDjnBFz0rkCaCmuDwsmI1X
+         ZPcYCumEyIP4UnV2saBgBDzbuEzToqu8HW0+QPpNJ4a1p5p3OuNRPF21xrcfmdSjM/5G
+         oWd9wk1XYs3in4Y9yB21hjfg2iQVqcSbsst4Uhsy+lAWnv5ZIDlS7eWhKapdqBc5oYZo
+         KKjGySgeueuaIg+oD5jG21xPkbOw0Kz2GxT4F3Vi65Vg3zWeZYT487XB0JVnQSVEmHQO
+         CQhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HJf9hjmlU8ooiir4NWlBaONurfCvBP7drmCxAIcE+pM=;
-        b=AjR/9cHP26kUR2apqPtGOUMvHbu9t6RVbDDqg92rcL4B+HbXn72HJBrS8p8YHHSTOx
-         6CEuxFBt4PGDnsSkffyyfDzHD5HnLyn/PPETAN8Xx+gp4YJVcP0BPvrAwETmp50cvIRb
-         B+B3EPqQmP+EKQraNbNszHFIfn9O2IqnmyLu19YyvHucffDqr/MjDJgPDekSZN+W/w83
-         4Xy1nSgGWGX7lqqy4rQAy9DNBUSeT6TLK3Dg8jZI03ilvR9l+dMk6IJX8M7T5Ip+ylxw
-         /SRHvz+dUR5+3w1deYKIRDMPvXtjCpohb/Fyo0056vDfbgowPVL7HHToRygVNFQibk/i
-         QXSQ==
-X-Gm-Message-State: AOAM531BudxqPaXKkhKR/rrF7nUO6KlWFeBgF5KQu02VZA+HhDZSl61K
-        DXVmU+jLqzibzIU/xIP0GgVKpA==
-X-Google-Smtp-Source: ABdhPJwdknscv6JyO7SeEx1hBY9N4iMvMM/MkGLNDngTm3RU8c3ZnAJludotXKO926Rc3568NUTX3A==
-X-Received: by 2002:a2e:9e4b:0:b0:247:e9f3:2eda with SMTP id g11-20020a2e9e4b000000b00247e9f32edamr10021412ljk.378.1647714840178;
-        Sat, 19 Mar 2022 11:34:00 -0700 (PDT)
-Received: from cloudflare.com ([2a01:110f:4809:d800::f9c])
-        by smtp.gmail.com with ESMTPSA id k7-20020ac257c7000000b0044854f11248sm1347688lfo.55.2022.03.19.11.33.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 11:33:59 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com, Martin KaFai Lau <kafai@fb.com>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH bpf-next v2 3/3] selftests/bpf: Fix test for 4-byte load from remote_port on big-endian
-Date:   Sat, 19 Mar 2022 19:33:56 +0100
-Message-Id: <20220319183356.233666-4-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220319183356.233666-1-jakub@cloudflare.com>
-References: <20220319183356.233666-1-jakub@cloudflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fTWEetd1JVa8VqWcw/AyvWe9rS0lTmZuwgDubbkJEkA=;
+        b=wlyEUvGpVinT0ybepmIN9qH6XIyC2qjRoSuDvx+2kOkW9E2rZBT1bgZAzNVGs041y0
+         mBz6XXdkmP3q9wE3Aig7OuvIIGg0xzKiXwn5xYSUkRbAlGx31t2rlJQjomoifC64SjOD
+         7HzvQ8P+Qt+t+cPBfzeFcqRkeYbCdacFxPP/ChhBGXGdvLMkOytsK+hdr7IS6+5ggToW
+         JXEGTfojCh7vpigAG66JRCrarJSy+R+KATOcHgeYLkmvyzJJtx6Yw/WbF7NAY0siqbdh
+         q7+f5P5A98WdNZCGMAV31QFalsxP1IJ5Gi36T+J3tE+o6TRTA8GXAP58RwEs5ojnLAEy
+         moAA==
+X-Gm-Message-State: AOAM533piKqd85jhtmRLRAdbfBuQgwRu7/Ar9CAsY1Ahnxm2Kzjcx2Ji
+        lzgaHv1UwkwZ136rmnTW4PfVKn1RewtaTHwYTng=
+X-Google-Smtp-Source: ABdhPJzjAkR5Bm/TJWUZORsvWr3R9k0+F0OzPN4X+IOlMsJ2m3YcNjiXeONYbT1ShdT5D61tWjR5zeQP+1dwT3c0rNQ=
+X-Received: by 2002:a05:6102:1489:b0:31b:3dc6:10fd with SMTP id
+ d9-20020a056102148900b0031b3dc610fdmr4832335vsv.50.1647714872764; Sat, 19 Mar
+ 2022 11:34:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <1eb3d9e6-2adf-7f6c-4745-481451813522@linux.intel.com>
+In-Reply-To: <1eb3d9e6-2adf-7f6c-4745-481451813522@linux.intel.com>
+From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Date:   Sat, 19 Mar 2022 21:34:23 +0300
+Message-ID: <CAHNKnsQMFDdRzjAGW8+KHJrJUnganM0gi8AWmBnF1h_M2RSLeg@mail.gmail.com>
+Subject: Re: net: wwan: ethernet interface support
+To:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
+Cc:     Loic Poulain <loic.poulain@linaro.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The context access converter rewrites the 4-byte load from
-bpf_sk_lookup->remote_port to a 2-byte load from bpf_sk_lookup_kern
-structure.
+Hello,
 
-It means that we cannot treat the destination register contents as a 32-bit
-value, or the code will not be portable across big- and little-endian
-architectures.
+On Sat, Mar 19, 2022 at 6:21 PM Kumar, M Chetan
+<m.chetan.kumar@linux.intel.com> wrote:
+> Release16 5G WWAN Device need to support Ethernet interface for TSN requirement.
+> So far WWAN interface are of IP type. Is there any plan to scale it to support
+> ethernet interface type ?
 
-This is exactly the same case as with 4-byte loads from bpf_sock->dst_port
-so follow the approach outlined in [1] and treat the register contents as a
-16-bit value in the test.
+What did you mean when you talked about supporting interfaces of Ethernet type?
 
-[1]: https://lore.kernel.org/bpf/20220317113920.1068535-5-jakub@cloudflare.com/
+The WWAN subsystem provides an interface for users to request the
+creation of a network interface from a modem driver. At the moment,
+all modem drivers that support the WWAN subsystem integration create
+network interfaces of the ARPHRD_NONE or ARPHRD_RAWIP type. But it is
+up to the driver what type of interface it will create. At any time,
+the driver can decide to create an ARPHRD_ETHER network interface, and
+it will be Ok.
 
-Fixes: 2ed0dc5937d3 ("selftests/bpf: Cover 4-byte load from remote_port in bpf_sk_lookup")
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- tools/testing/selftests/bpf/progs/test_sk_lookup.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+> Any thought process on TSN requirement support.
 
-diff --git a/tools/testing/selftests/bpf/progs/test_sk_lookup.c b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-index 38b7a1fe67b6..6058dcb11b36 100644
---- a/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-+++ b/tools/testing/selftests/bpf/progs/test_sk_lookup.c
-@@ -418,9 +418,15 @@ int ctx_narrow_access(struct bpf_sk_lookup *ctx)
- 	if (LSW(ctx->remote_port, 0) != SRC_PORT)
- 		return SK_DROP;
- 
--	/* Load from remote_port field with zero padding (backward compatibility) */
-+	/*
-+	 * NOTE: 4-byte load from bpf_sk_lookup at remote_port offset
-+	 * is quirky. It gets rewritten by the access converter to a
-+	 * 2-byte load for backward compatibility. Treating the load
-+	 * result as a be16 value makes the code portable across
-+	 * little- and big-endian platforms.
-+	 */
- 	val_u32 = *(__u32 *)&ctx->remote_port;
--	if (val_u32 != bpf_htonl(bpf_ntohs(SRC_PORT) << 16))
-+	if (val_u32 != SRC_PORT)
- 		return SK_DROP;
- 
- 	/* Narrow loads from local_port field. Expect DST_PORT. */
+Could you please elaborate what specific protocol or feature should be
+implemented for it?
+
 -- 
-2.35.1
-
+Sergey
