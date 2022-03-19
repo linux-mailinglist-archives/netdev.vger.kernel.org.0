@@ -2,169 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E1234DE83A
-	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 14:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B624DE83E
+	for <lists+netdev@lfdr.de>; Sat, 19 Mar 2022 15:05:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243093AbiCSN7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 19 Mar 2022 09:59:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
+        id S242049AbiCSOGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 19 Mar 2022 10:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241986AbiCSN7G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 09:59:06 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1D840E74
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 06:57:45 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id k125so8782126qkf.0
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 06:57:45 -0700 (PDT)
+        with ESMTP id S229470AbiCSOGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 19 Mar 2022 10:06:20 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA6C1B757C
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 07:04:59 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id u22so499644pfg.6
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 07:04:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Rac/T1uCgRkKdVo18Y1asxDHBvA6nYHko+ROAHe2fSM=;
-        b=U7q84Tbf4G3V8V++ECB85fFy8IR3FJ/HYRcJOeRqDuJWWAs+O60IvqQnZ006w6S7W2
-         pssocQszERkhx3B8tEh/j1alr9DydBSqcZKoNH0zHralT6o+oCtBo1Ms4hA0uPIhAmtW
-         OZNtlXP/JUP4r/S0MvBzyfNH/98lokgy3JQ6I1Nmd2I+i7C0yYGo5LBuAPpWW13ezmND
-         eFNthG6p0Ws9ZGCFXXnelH+x2RHiz38wkv1fUtTgUxe5QE/zam3nTxHeh25ZQ2Feertk
-         sGG5TQqdp3y8eT9wEWK/pkAd39JBRuHaDk4/AYz0khCBbLSV3PFtQJynL2JAi0GrefnE
-         cInQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=1p1XE8cUpkaNhF0xRALTjdI+9XRtp53pLt2eWerOanQ=;
+        b=Vu7Y1pfgB0fNy3oDcPCfNhXT7Y1FGkmqg+ViXbKGCRASpyBgjinLApd0FQPOCCXTVA
+         wrQzcqyCxXW/UT61WDb4TZgmgTLqC1fghxIWMQxrlQe1wL8aU1sh5oJRxU6KdgVvm+kq
+         VnIakAlf9NPufeu/n6WeyrUZUtSUd5QyCQyV7CCPTOzqV+SrPcs2uhdNVoNv3+KmlnIN
+         9pApWRhpTa/G4bkyIgll9WKDmLFCFnDQ8TnL7jrpdSHMgZeQgGyU92TpeAolG+KJY/p/
+         orn3W2TJ8Y7+bf9pNTSTTAQKKjG8BGdjR1kY9VZTT7eem/7da/NgJn4+uflOPk1Z/9CC
+         yGQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rac/T1uCgRkKdVo18Y1asxDHBvA6nYHko+ROAHe2fSM=;
-        b=tXZi6oRS+EZZF2b6rSXRVuBe6RugvITZ+b6SrnuljX2YCbSel16kePpPWMcWbiIaeG
-         U67uBo/RRXZZHOgL094Yanhy5W7PClQHckH+UGd7wz10lzghez7i4av/5JsxIkOvhtRd
-         MTQUgAyUOt6XOyzpxcKZ8aeBEhli9V3LmS25Xz/HGsn1/mh/96uProprF2/oEH8JKsaD
-         mDjYJkf8QmdYR0SZKytzyHM/3PXg06GQ51LjZ+XpN/4Gz4j7NtRtT3nI8pY0dsLD27zP
-         7as2Y17fnf07pRCGM5Ka4sIamqg75ovSgnpcdrfw2VBQsUZo7uoZga87Fpp2q27oH4Gb
-         Qd0A==
-X-Gm-Message-State: AOAM530jg8t51zDS52o7npqDMFPDLV5OmuaJGFMt9nAb5bmVzpJUk5gv
-        S8Q5iMhQw+6TcvGNcOyAfZeJuMS2U+gLu7cxmFIkpQ==
-X-Google-Smtp-Source: ABdhPJwbCAq+lROdobsvSfxS5ilKi5RtnW3rDdKcN5MoX0ol9W11mVMTJX6h9MiMLfOc6jKANvyIVTY4A3Xe3k5UOxs=
-X-Received: by 2002:a05:620a:288a:b0:67b:3250:ada2 with SMTP id
- j10-20020a05620a288a00b0067b3250ada2mr8367002qkp.358.1647698264502; Sat, 19
- Mar 2022 06:57:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220319110422.8261-1-zhouzhouyi@gmail.com> <CANn89iK46rw910CUJV3Kgf=M=HA32_ctd0xragwcRnHCV_VhmQ@mail.gmail.com>
- <CAABZP2yK2vCJcReJ_VvcqbkuEekvBpBJCyZ2geG=f83fv_RC=Q@mail.gmail.com>
-In-Reply-To: <CAABZP2yK2vCJcReJ_VvcqbkuEekvBpBJCyZ2geG=f83fv_RC=Q@mail.gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Sat, 19 Mar 2022 09:57:28 -0400
-Message-ID: <CADVnQy=shHKbvf4OZjX5-3CnFPOm3zyexbaH9XTLZBMk6pxeew@mail.gmail.com>
-Subject: Re: [PATCH v2] net:ipv4: send an ack when seg.ack > snd.nxt
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Florian Westphal <fw@strlen.de>,
-        David Miller <davem@davemloft.net>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Wei Xu <xuweihf@ustc.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1p1XE8cUpkaNhF0xRALTjdI+9XRtp53pLt2eWerOanQ=;
+        b=gz2pHUF1h1je2NkMFi7NyUQZUgo8/aDeSFQkGqL77SBPeoivAsjAVYq2AflCBCEI46
+         Ee+krXMdg6G17tvC1I0CoC/72+dy5N1DKbCOH5YCGKZc9e4K0tQCx/4otauT/F4qe/Bs
+         1Oiw3AH2ie3g50yiQ5nZ8QsgDFME+97jd09Ed5d/c/FhSsw2nOpZQaF4+WMFKaPpkC28
+         3OpPltz9wITJicatHXjmqEWVejtp+umai/skdKmzBgeRIwWxwzJ2MerQJrmabW0H6jKi
+         W95mLQ1hK8plIlVZkUyHVhFCtEof4UblEmZFzIwxU8fpuJr+6FyIk2DqVxBMkUabvxCZ
+         X9Ug==
+X-Gm-Message-State: AOAM531Mr3OiqNy+YNtetKQhIAmL1BdR/bCibcvZMWqr35dB8/dB3dWm
+        ljgF+/9GqbqtTf4Dt9qab9I=
+X-Google-Smtp-Source: ABdhPJw9BwxHvjV2Uwdqv6bU+bQpg/6zmGio+IP5wbfq4JqFRyqdKIijR0x0fWJjgGVYzgdbb53Jvw==
+X-Received: by 2002:a63:4e0d:0:b0:381:4606:ec9e with SMTP id c13-20020a634e0d000000b003814606ec9emr11592808pgb.345.1647698698507;
+        Sat, 19 Mar 2022 07:04:58 -0700 (PDT)
+Received: from localhost.localdomain ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id e11-20020a63e00b000000b0037341d979b8sm10168438pgh.94.2022.03.19.07.04.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 07:04:57 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        irusskikh@marvell.com, epomozov@marvell.com, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net-next v2 0/3] net: atlantic: Add XDP support
+Date:   Sat, 19 Mar 2022 14:04:40 +0000
+Message-Id: <20220319140443.6645-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 19, 2022 at 7:34 AM Zhouyi Zhou <zhouzhouyi@gmail.com> wrote:
->
-> Thanks for reviewing my patch
->
-> On Sat, Mar 19, 2022 at 7:14 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Sat, Mar 19, 2022 at 4:04 AM <zhouzhouyi@gmail.com> wrote:
-> > >
-> > > From: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > >
-> > > In RFC 793, page 72: "If the ACK acks something not yet sent
-> > > (SEG.ACK > SND.NXT) then send an ACK, drop the segment,
-> > > and return."
-> > >
-> > > Fix Linux's behavior according to RFC 793.
-> > >
-> > > Reported-by: Wei Xu <xuweihf@ustc.edu.cn>
-> > > Signed-off-by: Wei Xu <xuweihf@ustc.edu.cn>
-> > > Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> > > ---
-> > > Thank Florian Westphal for pointing out
-> > > the potential duplicated ack bug in patch version 1.
-> >
-> > I am travelling this week, but I think your patch is not necessary and
-> > might actually be bad.
-> >
-> > Please provide more details of why nobody complained of this until today.
-> >
-> > Also I doubt you actually fully tested this patch, sending a V2 30
-> > minutes after V1.
-> >
-> > If yes, please provide a packetdrill test.
-> I am a beginner to TCP, although I have submitted once a patch to
-> netdev in 2013 (aaa0c23cb90141309f5076ba5e3bfbd39544b985), this is
-> first time I learned packetdrill test.
-> I think I should do the packetdrill test in the coming days, and
-> provide more details of how this (RFC793 related) can happen.
+This patchset is to make atlantic to support multi-buffer XDP.
 
-In addition to a packetdrill test and a more detailed analysis of how
-this can happen, and the implications, I think there are at least a
-few other issues that need to be considered:
+The first patch implement control plane of xdp.
+The aq_xdp(), callback of .xdp_bpf is added.
 
-(1) AFAICT, adding an unconditional ACK if (after(ack, tp->snd_nxt))
-seems to open the potential for attackers to cause DoS attacks with
-something like the following:
+The second patch implements data plane of xdp.
+XDP_TX, XDP_DROP, and XDP_PASS is supported.
+__aq_ring_xdp_clean() is added to receive and execute xdp program.
+aq_nic_xmit_xdpf() is added to send packet by XDP.
 
- (a) attacker injects one data packet in the A->B direction and one
-data packet in the B->A direction
+The third patch implements callback of .ndo_xdp_xmit.
+aq_xdp_xmit() is added to send redirected packets and it internally
+calls aq_nic_xmit_xdpf().
 
- (b) endpoint A sends an ACK for the forged data sent to it, which
-will have an ACK beyond B's snd_nxt
+Memory model is MEM_TYPE_PAGE_ORDER0 so it doesn't reuse rx page when
+XDP_TX, XDP_PASS, XDP_REDIRECT.
 
- (c) endpoint B sends an ACK for the forged data sent to it, which
-will have an ACK beyond A's snd_nxt
+Default the maximum rx frame size is 2K.
+If xdp is attached, size is changed to about 3K.
+It can be reused when XDP_DROP, XDP_ABORTED.
 
- (d) endpoint B receives the ACK sent by A, causing B to send another
-ACK beyond A's snd_nxt
+Atlantic driver has AQ_CFG_RX_PAGEORDER option and it will be always 0
+if xdp is attached.
 
- (e) endpoint A receives the ACK sent by B, causing A to send another
-ACK beyond B's snd_nxt
+AQC chip supports 32 multi-queues and 8 vectors(irq).
+There are two options.
+1. under 8 cores and maximum 4 tx queues per core.
+2. under 4 cores and maximum 8 tx queues per core.
 
- (f) repeat (d) and (e) ad infinitum
+Like other drivers, these tx queues can be used only for XDP_TX,
+XDP_REDIRECT queue. If so, no tx_lock is needed.
+But this patchset doesn't use this strategy because getting hardware tx
+queue index cost is too high.
+So, tx_lock is used in the aq_nic_xmit_xdpf().
 
-So AFAICT an attacker could send two data packets with 1 byte of data
-and cause the two endpoints to use up an unbounded amount of CPU and
-bandwidth sending ACKs in an "infinite loop".
+single-core, single queue, 40% cpu utilization.
 
-To avoid this "infinite loop" of packets, if we really need to add an
-ACK in this case then the code should use the tcp_oow_rate_limited()
-helper to ensure that such ACKs are rate-limited. For more context on
-tcp_oow_rate_limited(), see:
+  30.75%  bpf_prog_xxx_xdp_prog_tx  [k] bpf_prog_xxx_xdp_prog_tx
+  10.35%  [kernel]                  [k] aq_hw_read_reg <---------- here
+   4.38%  [kernel]                  [k] get_page_from_freelist
 
-f06535c599354 Merge branch 'tcp_ack_loops'
-4fb17a6091674 tcp: mitigate ACK loops for connections as tcp_timewait_sock
-f2b2c582e8242 tcp: mitigate ACK loops for connections as tcp_sock
-a9b2c06dbef48 tcp: mitigate ACK loops for connections as tcp_request_sock
-032ee4236954e tcp: helpers to mitigate ACK loops by rate-limiting
-out-of-window dupacks
+single-core, 8 queues, 100% cpu utilization, half PPS.
 
-Note that f06535c599354 in particular mentions the case discussed in this patch:
+  45.56%  [kernel]                  [k] aq_hw_read_reg <---------- here
+  17.58%  bpf_prog_xxx_xdp_prog_tx  [k] bpf_prog_xxx_xdp_prog_tx
+   4.72%  [kernel]                  [k] hw_atl_b0_hw_ring_rx_receive
 
-    (2) RFC 793 (section 3.9, page 72) says: "If the ACK acknowledges
-        something not yet sent (SEG.ACK > SND.NXT) then send an ACK".
+Performance result(64 Byte)
+1. XDP_TX
+  a. xdp_geieric, single core
+    - 2.5Mpps, 100% cpu
+  b. xdp_driver, single core
+    - 4.5Mpps, 40% cpu
+  c. xdp_generic, 8 core(hyper thread)
+    - 6.3Mpps, 5~10% cpu
+  d. xdp_driver, 8 core(hyper thread)
+    - 6.3Mpps, 5% cpu
 
-(2) Please consider the potential that adding a new ACK in this
-scenario may introduce new, unanticipated side channels. For more on
-side channels, see:
+2. XDP_REDIRECT
+  a. xdp_generic, single core
+    - 2.3Mpps
+  b. xdp_driver, single core
+    - 4.5Mpps
 
-  https://lwn.net/Articles/696868/
-  The TCP "challenge ACK" side channel
+V2:
+ - Do not use inline in C file
 
-  Principled Unearthing of TCP Side Channel Vulnerabilities
-  https://dl.acm.org/doi/10.1145/3319535.3354250
+Taehee Yoo (3):
+  net: atlantic: Implement xdp control plane
+  net: atlantic: Implement xdp data plane
+  net: atlantic: Implement .ndo_xdp_xmit handler
 
-best regards,
-neal
+ .../net/ethernet/aquantia/atlantic/aq_cfg.h   |   1 +
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |   8 +
+ .../net/ethernet/aquantia/atlantic/aq_main.c  |  59 +++
+ .../net/ethernet/aquantia/atlantic/aq_main.h  |   2 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 126 ++++--
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |   7 +-
+ .../net/ethernet/aquantia/atlantic/aq_ptp.c   |   2 +-
+ .../net/ethernet/aquantia/atlantic/aq_ring.c  | 409 ++++++++++++++++--
+ .../net/ethernet/aquantia/atlantic/aq_ring.h  |  17 +
+ .../net/ethernet/aquantia/atlantic/aq_vec.c   |  23 +-
+ .../net/ethernet/aquantia/atlantic/aq_vec.h   |   6 +
+ .../aquantia/atlantic/hw_atl/hw_atl_a0.c      |   6 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  10 +-
+ 13 files changed, 595 insertions(+), 81 deletions(-)
+
+-- 
+2.17.1
+
