@@ -2,433 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7E4B4E1A53
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 07:08:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5F14E1A96
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 07:58:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244769AbiCTGJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 02:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39008 "EHLO
+        id S244885AbiCTG7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 02:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244770AbiCTGJm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 02:09:42 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB86260E4;
-        Sat, 19 Mar 2022 23:08:19 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id c2so8084646pga.10;
-        Sat, 19 Mar 2022 23:08:19 -0700 (PDT)
+        with ESMTP id S233808AbiCTG7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 02:59:40 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7690422525
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:17 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id w21so4442441pgm.7
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B/DE4olHzqEmItKB/QKgw7+ZrZ3h5mTpyjerJIyekdg=;
-        b=S8DXix/01L9Oktrx4DREL8vKCifMp+5NYeTIdMdZNEgeCTHK9xzTSIxLGEaeldn8DH
-         Z4wfHTZwBSCcWWUoYDsPO3hBKcHuOQ0j9lR0OAEJ37RLNhZr6zMYl3RWBGn8tsNRlYQq
-         yXsIdsnOnMW/hz9okOK4OygXnbXdK2ZUliUNVAz/rtY4txGkLZHGOViXPQ3bYnngBqDO
-         t98pWLuMb+w+8KLLvd7BjyAb9Y2iNoJUNcNKc3wmOHspGIQtL/V+D61o+1u8lN2epl4q
-         KfJ0NNWtvi5YdFsUDjHblUjSoKFbM3O2n2+Apc964lgO5C+FJ5pQK5rgJ8MGYQkEz+cJ
-         dimw==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=aR9m0TCaaJLUTeYB1qx/UQM1ukC6a8LuQEdxYun8CGk=;
+        b=DCIdAFMxROQ3CgCsRCj4BYoUEMXDnhb2u7ZsP5mxAlIfnTQ4aIhKRjlLcjh9X0MOog
+         SK2eVKIk2GCnoBqfnAMaQ8/zRnp26WiFbM1TbuosLWHiGHJpk21XpTLuTsQijrtiT8UK
+         lYFgKon3Y3KAHMBCWF0cyjddomIhpgzwv/Rd4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B/DE4olHzqEmItKB/QKgw7+ZrZ3h5mTpyjerJIyekdg=;
-        b=OcTJREjaDTAwkvI/QS7fYK0UvZgnCmz4JEYT5kVnYK29KiNI1ss6wUJPgN/7K+HtFQ
-         YPrV0bOi2ZL09QdPdMS+Gds7/QPxnIEGaVTQRas7cjHpf+H9kyLBnGUaqozLpZ8yo9hc
-         Wzxfvs+8YQAmuuw68aj6Cj/dSGIF9l6dogcVByCwU6Sej6s/LnI2bFVXoePZvzMCz7MZ
-         bTXOtMuFMEeQZPCLSioisbR9kEJEnEmEvLTVEsvFy22EOtNfHdXnVsYo8hHTnSqBU9b6
-         repVRra9WQiNFh0gBZvZaoRyjJJRJAAOvE12PxbixkDf6RTbAXDcdzfwgYDZ8LDlIOig
-         fWcA==
-X-Gm-Message-State: AOAM531rDTBhEQz7izkK5C1jEudi0stgMMq87ckv8MeuZlsY7IN+KbrT
-        ECZu8vBDrC0CR4ZmiYb/AbY=
-X-Google-Smtp-Source: ABdhPJykSR3BASzg2eUq2fCI5vHP/zjfuZ/qbRDlDRWL9RqSz2J4u/R0MSSpf2E93W7qHfcNxVav7A==
-X-Received: by 2002:a05:6a00:234f:b0:4f6:f0c0:ec68 with SMTP id j15-20020a056a00234f00b004f6f0c0ec68mr18285801pfj.14.1647756499148;
-        Sat, 19 Mar 2022 23:08:19 -0700 (PDT)
-Received: from vultr.guest ([2001:19f0:6001:3dea:5400:3ff:fee9:c745])
-        by smtp.gmail.com with ESMTPSA id y21-20020a056a00191500b004f78813b2d6sm15541662pfi.178.2022.03.19.23.08.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 23:08:18 -0700 (PDT)
-From:   Yafang Shao <laoar.shao@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Yafang Shao <laoar.shao@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Subject: [PATCH] bpf: selftests: cleanup RLIMIT_MEMLOCK
-Date:   Sun, 20 Mar 2022 06:08:15 +0000
-Message-Id: <20220320060815.7716-2-laoar.shao@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220320060815.7716-1-laoar.shao@gmail.com>
-References: <20220320060815.7716-1-laoar.shao@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=aR9m0TCaaJLUTeYB1qx/UQM1ukC6a8LuQEdxYun8CGk=;
+        b=uB1dWLR0GWz7+2HNJnTpBSO+aziLe55FLK+aAxq0PTPcy57eITxgsGaOhw9vYVbW8x
+         n7+u+swW2msKXK7vEQzhsJJV0Ox6O8p3eX/pZEMh2+raWrmQiAxvOa+srILuAl7sAI/v
+         +s6Mg8kFL9N3MaoUnxH2KFlGnC6SbbCZAmik4SQIJz/08Pf7qihbTyYbHR3U8sG6jUUp
+         9PNvHwmDuoqMrCviJzTPeJdtN7KAnaUczWjeGz9NOh4eGaS3goLfRtaFziEskrTX38Jb
+         xxQfCRuHaV7w9xEjHhADAkNPC3Q0Km1z/g6o/Py/lvko826J9UUFCjv6XeNSo8HqVabN
+         hsWA==
+X-Gm-Message-State: AOAM532nBy4xtK71l9biMC8ElcDyiDjDYCFJAYWBoLYcB7tuFlWtvDL0
+        ud48UywKMrqenxD+/IGeHCV47OOSLPgI1Q==
+X-Google-Smtp-Source: ABdhPJyKvtO7VmGJMNyYRqFld2ZltjlyAkDe26Lmq1gYE0vzexafjv2yfGrQuXQNQ8TZfesMVTjyEg==
+X-Received: by 2002:a05:6a00:230d:b0:4f6:ec4f:35ff with SMTP id h13-20020a056a00230d00b004f6ec4f35ffmr17950964pfh.53.1647759496591;
+        Sat, 19 Mar 2022 23:58:16 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id q4-20020a056a00150400b004f78d4821a0sm15359334pfu.204.2022.03.19.23.58.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 19 Mar 2022 23:58:16 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net-next 00/11] bnxt: Support XDP multi buffer
+Date:   Sun, 20 Mar 2022 02:57:42 -0400
+Message-Id: <1647759473-2414-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="00000000000082069605daa0e7f8"
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since we have alread switched to memcg-based memory accouting and control,
-we don't need RLIMIT_MEMLOCK any more.
+--00000000000082069605daa0e7f8
 
-Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Cc: Roman Gushchin <roman.gushchin@linux.dev>
+This series adds XDP multi buffer support, allowing MTU to go beyond
+the page size limit.
 
----
-RLIMIT_MEMLOCK is still used in bpftool and libbpf, but it may be useful
-for backward compatibility, so I don't cleanup them.
+Dave, please don't apply these patches too quickly so that others can
+review them first.  Thanks.
 
----
- tools/testing/selftests/bpf/bpf_rlimit.h      | 28 -------------------
- .../selftests/bpf/flow_dissector_load.c       |  1 -
- .../selftests/bpf/get_cgroup_id_user.c        |  1 -
- .../selftests/bpf/map_tests/sk_storage_map.c  | 15 ----------
- .../selftests/bpf/test_cgroup_storage.c       |  1 -
- tools/testing/selftests/bpf/test_dev_cgroup.c |  1 -
- tools/testing/selftests/bpf/test_lpm_map.c    |  1 -
- tools/testing/selftests/bpf/test_lru_map.c    |  1 -
- .../selftests/bpf/test_skb_cgroup_id_user.c   |  1 -
- tools/testing/selftests/bpf/test_sock.c       |  1 -
- tools/testing/selftests/bpf/test_sock_addr.c  |  1 -
- tools/testing/selftests/bpf/test_sockmap.c    |  1 -
- tools/testing/selftests/bpf/test_sysctl.c     |  1 -
- tools/testing/selftests/bpf/test_tag.c        |  1 -
- .../bpf/test_tcp_check_syncookie_user.c       |  1 -
- .../selftests/bpf/test_tcpnotify_user.c       |  1 -
- .../testing/selftests/bpf/test_verifier_log.c |  2 --
- tools/testing/selftests/bpf/xdping.c          |  7 -----
- tools/testing/selftests/bpf/xdpxceiver.c      |  5 ----
- 19 files changed, 71 deletions(-)
- delete mode 100644 tools/testing/selftests/bpf/bpf_rlimit.h
+Andy Gospodarek (11):
+  bnxt: refactor bnxt_rx_xdp to separate xdp_init_buff/xdp_prepare_buff
+  bnxt: add flag to denote that an xdp program is currently attached
+  bnxt: refactor bnxt_rx_pages operate on skb_shared_info
+  bnxt: rename bnxt_rx_pages to bnxt_rx_agg_pages_skb
+  bnxt: adding bnxt_rx_agg_pages_xdp for aggregated xdp
+  bnxt: set xdp_buff pfmemalloc flag if needed
+  bnxt: change receive ring space parameters
+  bnxt: add page_pool support for aggregation ring when using xdp
+  bnxt: adding bnxt_xdp_build_skb to build skb from multibuffer xdp_buff
+  bnxt: support transmit and free of aggregation buffers
+  bnxt: XDP multibuffer enablement
 
-diff --git a/tools/testing/selftests/bpf/bpf_rlimit.h b/tools/testing/selftests/bpf/bpf_rlimit.h
-deleted file mode 100644
-index 9dac9b30f8ef..000000000000
---- a/tools/testing/selftests/bpf/bpf_rlimit.h
-+++ /dev/null
-@@ -1,28 +0,0 @@
--#include <sys/resource.h>
--#include <stdio.h>
--
--static  __attribute__((constructor)) void bpf_rlimit_ctor(void)
--{
--	struct rlimit rlim_old, rlim_new = {
--		.rlim_cur	= RLIM_INFINITY,
--		.rlim_max	= RLIM_INFINITY,
--	};
--
--	getrlimit(RLIMIT_MEMLOCK, &rlim_old);
--	/* For the sake of running the test cases, we temporarily
--	 * set rlimit to infinity in order for kernel to focus on
--	 * errors from actual test cases and not getting noise
--	 * from hitting memlock limits. The limit is on per-process
--	 * basis and not a global one, hence destructor not really
--	 * needed here.
--	 */
--	if (setrlimit(RLIMIT_MEMLOCK, &rlim_new) < 0) {
--		perror("Unable to lift memlock rlimit");
--		/* Trying out lower limit, but expect potential test
--		 * case failures from this!
--		 */
--		rlim_new.rlim_cur = rlim_old.rlim_cur + (1UL << 20);
--		rlim_new.rlim_max = rlim_old.rlim_max + (1UL << 20);
--		setrlimit(RLIMIT_MEMLOCK, &rlim_new);
--	}
--}
-diff --git a/tools/testing/selftests/bpf/flow_dissector_load.c b/tools/testing/selftests/bpf/flow_dissector_load.c
-index 87fd1aa323a9..e9df470e3253 100644
---- a/tools/testing/selftests/bpf/flow_dissector_load.c
-+++ b/tools/testing/selftests/bpf/flow_dissector_load.c
-@@ -11,7 +11,6 @@
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
- 
--#include "bpf_rlimit.h"
- #include "flow_dissector_load.h"
- 
- const char *cfg_pin_path = "/sys/fs/bpf/flow_dissector";
-diff --git a/tools/testing/selftests/bpf/get_cgroup_id_user.c b/tools/testing/selftests/bpf/get_cgroup_id_user.c
-index 3a7b82bd9e94..2c027c7ef49d 100644
---- a/tools/testing/selftests/bpf/get_cgroup_id_user.c
-+++ b/tools/testing/selftests/bpf/get_cgroup_id_user.c
-@@ -20,7 +20,6 @@
- 
- #include "cgroup_helpers.h"
- #include "testing_helpers.h"
--#include "bpf_rlimit.h"
- 
- #define CHECK(condition, tag, format...) ({		\
- 	int __ret = !!(condition);			\
-diff --git a/tools/testing/selftests/bpf/map_tests/sk_storage_map.c b/tools/testing/selftests/bpf/map_tests/sk_storage_map.c
-index 099eb4dfd4f7..864422241960 100644
---- a/tools/testing/selftests/bpf/map_tests/sk_storage_map.c
-+++ b/tools/testing/selftests/bpf/map_tests/sk_storage_map.c
-@@ -3,7 +3,6 @@
- #include <linux/compiler.h>
- #include <linux/err.h>
- 
--#include <sys/resource.h>
- #include <sys/socket.h>
- #include <sys/types.h>
- #include <linux/btf.h>
-@@ -395,11 +394,8 @@ static void stop_handler(int signum)
- 
- static void test_sk_storage_map_stress_free(void)
- {
--	struct rlimit rlim_old, rlim_new = {};
- 	int err;
- 
--	getrlimit(RLIMIT_NOFILE, &rlim_old);
--
- 	signal(SIGTERM, stop_handler);
- 	signal(SIGINT, stop_handler);
- 	if (runtime_s > 0) {
-@@ -407,14 +403,6 @@ static void test_sk_storage_map_stress_free(void)
- 		alarm(runtime_s);
- 	}
- 
--	if (rlim_old.rlim_cur < nr_sk_threads * nr_sk_per_thread) {
--		rlim_new.rlim_cur = nr_sk_threads * nr_sk_per_thread + 128;
--		rlim_new.rlim_max = rlim_new.rlim_cur + 128;
--		err = setrlimit(RLIMIT_NOFILE, &rlim_new);
--		CHECK(err, "setrlimit(RLIMIT_NOFILE)", "rlim_new:%lu errno:%d",
--		      rlim_new.rlim_cur, errno);
--	}
--
- 	err = do_sk_storage_map_stress_free();
- 
- 	signal(SIGTERM, SIG_DFL);
-@@ -424,9 +412,6 @@ static void test_sk_storage_map_stress_free(void)
- 		alarm(0);
- 	}
- 
--	if (rlim_new.rlim_cur)
--		setrlimit(RLIMIT_NOFILE, &rlim_old);
--
- 	CHECK(err, "test_sk_storage_map_stress_free", "err:%d\n", err);
- }
- 
-diff --git a/tools/testing/selftests/bpf/test_cgroup_storage.c b/tools/testing/selftests/bpf/test_cgroup_storage.c
-index d6a1be4d8020..d8bea0439ec9 100644
---- a/tools/testing/selftests/bpf/test_cgroup_storage.c
-+++ b/tools/testing/selftests/bpf/test_cgroup_storage.c
-@@ -6,7 +6,6 @@
- #include <stdlib.h>
- #include <sys/sysinfo.h>
- 
--#include "bpf_rlimit.h"
- #include "cgroup_helpers.h"
- #include "testing_helpers.h"
- 
-diff --git a/tools/testing/selftests/bpf/test_dev_cgroup.c b/tools/testing/selftests/bpf/test_dev_cgroup.c
-index c299d3452695..5ac8279f3f93 100644
---- a/tools/testing/selftests/bpf/test_dev_cgroup.c
-+++ b/tools/testing/selftests/bpf/test_dev_cgroup.c
-@@ -15,7 +15,6 @@
- 
- #include "cgroup_helpers.h"
- #include "testing_helpers.h"
--#include "bpf_rlimit.h"
- 
- #define DEV_CGROUP_PROG "./dev_cgroup.o"
- 
-diff --git a/tools/testing/selftests/bpf/test_lpm_map.c b/tools/testing/selftests/bpf/test_lpm_map.c
-index baa3e3ecae82..790ff32c735a 100644
---- a/tools/testing/selftests/bpf/test_lpm_map.c
-+++ b/tools/testing/selftests/bpf/test_lpm_map.c
-@@ -26,7 +26,6 @@
- #include <bpf/bpf.h>
- 
- #include "bpf_util.h"
--#include "bpf_rlimit.h"
- 
- struct tlpm_node {
- 	struct tlpm_node *next;
-diff --git a/tools/testing/selftests/bpf/test_lru_map.c b/tools/testing/selftests/bpf/test_lru_map.c
-index 563bbe18c172..41cea43cd6d5 100644
---- a/tools/testing/selftests/bpf/test_lru_map.c
-+++ b/tools/testing/selftests/bpf/test_lru_map.c
-@@ -18,7 +18,6 @@
- #include <bpf/libbpf.h>
- 
- #include "bpf_util.h"
--#include "bpf_rlimit.h"
- #include "../../../include/linux/filter.h"
- 
- #define LOCAL_FREE_TARGET	(128)
-diff --git a/tools/testing/selftests/bpf/test_skb_cgroup_id_user.c b/tools/testing/selftests/bpf/test_skb_cgroup_id_user.c
-index 4a64306728ab..de7b230023a2 100644
---- a/tools/testing/selftests/bpf/test_skb_cgroup_id_user.c
-+++ b/tools/testing/selftests/bpf/test_skb_cgroup_id_user.c
-@@ -15,7 +15,6 @@
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
- 
--#include "bpf_rlimit.h"
- #include "cgroup_helpers.h"
- 
- #define CGROUP_PATH		"/skb_cgroup_test"
-diff --git a/tools/testing/selftests/bpf/test_sock.c b/tools/testing/selftests/bpf/test_sock.c
-index fe10f8134278..c83e1872d2a6 100644
---- a/tools/testing/selftests/bpf/test_sock.c
-+++ b/tools/testing/selftests/bpf/test_sock.c
-@@ -14,7 +14,6 @@
- 
- #include "cgroup_helpers.h"
- #include <bpf/bpf_endian.h>
--#include "bpf_rlimit.h"
- #include "bpf_util.h"
- 
- #define CG_PATH		"/foo"
-diff --git a/tools/testing/selftests/bpf/test_sock_addr.c b/tools/testing/selftests/bpf/test_sock_addr.c
-index f3d5d7ac6505..fd047567ee63 100644
---- a/tools/testing/selftests/bpf/test_sock_addr.c
-+++ b/tools/testing/selftests/bpf/test_sock_addr.c
-@@ -19,7 +19,6 @@
- #include <bpf/libbpf.h>
- 
- #include "cgroup_helpers.h"
--#include "bpf_rlimit.h"
- #include "bpf_util.h"
- 
- #ifndef ENOTSUPP
-diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-index dfb4f5c0fcb9..3eeebe915903 100644
---- a/tools/testing/selftests/bpf/test_sockmap.c
-+++ b/tools/testing/selftests/bpf/test_sockmap.c
-@@ -37,7 +37,6 @@
- #include <bpf/libbpf.h>
- 
- #include "bpf_util.h"
--#include "bpf_rlimit.h"
- #include "cgroup_helpers.h"
- 
- int running;
-diff --git a/tools/testing/selftests/bpf/test_sysctl.c b/tools/testing/selftests/bpf/test_sysctl.c
-index 4f6cf833b522..dd6fd170b11a 100644
---- a/tools/testing/selftests/bpf/test_sysctl.c
-+++ b/tools/testing/selftests/bpf/test_sysctl.c
-@@ -14,7 +14,6 @@
- #include <bpf/libbpf.h>
- 
- #include <bpf/bpf_endian.h>
--#include "bpf_rlimit.h"
- #include "bpf_util.h"
- #include "cgroup_helpers.h"
- #include "testing_helpers.h"
-diff --git a/tools/testing/selftests/bpf/test_tag.c b/tools/testing/selftests/bpf/test_tag.c
-index 0851c42ee31c..4f745de802cf 100644
---- a/tools/testing/selftests/bpf/test_tag.c
-+++ b/tools/testing/selftests/bpf/test_tag.c
-@@ -20,7 +20,6 @@
- #include <bpf/bpf.h>
- 
- #include "../../../include/linux/filter.h"
--#include "bpf_rlimit.h"
- #include "testing_helpers.h"
- 
- static struct bpf_insn prog[BPF_MAXINSNS];
-diff --git a/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c b/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c
-index b9e991d43155..894eb0710d6f 100644
---- a/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c
-+++ b/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c
-@@ -15,7 +15,6 @@
- #include <bpf/bpf.h>
- #include <bpf/libbpf.h>
- 
--#include "bpf_rlimit.h"
- #include "cgroup_helpers.h"
- 
- static int start_server(const struct sockaddr *addr, socklen_t len)
-diff --git a/tools/testing/selftests/bpf/test_tcpnotify_user.c b/tools/testing/selftests/bpf/test_tcpnotify_user.c
-index 4c5114765b23..8284db8b0f13 100644
---- a/tools/testing/selftests/bpf/test_tcpnotify_user.c
-+++ b/tools/testing/selftests/bpf/test_tcpnotify_user.c
-@@ -19,7 +19,6 @@
- #include <linux/perf_event.h>
- #include <linux/err.h>
- 
--#include "bpf_rlimit.h"
- #include "bpf_util.h"
- #include "cgroup_helpers.h"
- 
-diff --git a/tools/testing/selftests/bpf/test_verifier_log.c b/tools/testing/selftests/bpf/test_verifier_log.c
-index 8d6918c3b4a2..4bca0a7344cc 100644
---- a/tools/testing/selftests/bpf/test_verifier_log.c
-+++ b/tools/testing/selftests/bpf/test_verifier_log.c
-@@ -11,8 +11,6 @@
- 
- #include <bpf/bpf.h>
- 
--#include "bpf_rlimit.h"
--
- #define LOG_SIZE (1 << 20)
- 
- #define err(str...)	printf("ERROR: " str)
-diff --git a/tools/testing/selftests/bpf/xdping.c b/tools/testing/selftests/bpf/xdping.c
-index c567856fd1bc..bc5eadf2d0f8 100644
---- a/tools/testing/selftests/bpf/xdping.c
-+++ b/tools/testing/selftests/bpf/xdping.c
-@@ -12,7 +12,6 @@
- #include <string.h>
- #include <unistd.h>
- #include <libgen.h>
--#include <sys/resource.h>
- #include <net/if.h>
- #include <sys/types.h>
- #include <sys/socket.h>
-@@ -89,7 +88,6 @@ int main(int argc, char **argv)
- {
- 	__u32 mode_flags = XDP_FLAGS_DRV_MODE | XDP_FLAGS_SKB_MODE;
- 	struct addrinfo *a, hints = { .ai_family = AF_INET };
--	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
- 	__u16 count = XDPING_DEFAULT_COUNT;
- 	struct pinginfo pinginfo = { 0 };
- 	const char *optstr = "c:I:NsS";
-@@ -167,11 +165,6 @@ int main(int argc, char **argv)
- 		freeaddrinfo(a);
- 	}
- 
--	if (setrlimit(RLIMIT_MEMLOCK, &r)) {
--		perror("setrlimit(RLIMIT_MEMLOCK)");
--		return 1;
--	}
--
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 
- 	if (bpf_prog_test_load(filename, BPF_PROG_TYPE_XDP, &obj, &prog_fd)) {
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 5f8296d29e77..5fbaebe89e14 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -90,7 +90,6 @@
- #include <string.h>
- #include <stddef.h>
- #include <sys/mman.h>
--#include <sys/resource.h>
- #include <sys/types.h>
- #include <sys/queue.h>
- #include <time.h>
-@@ -1448,15 +1447,11 @@ static void ifobject_delete(struct ifobject *ifobj)
- 
- int main(int argc, char **argv)
- {
--	struct rlimit _rlim = { RLIM_INFINITY, RLIM_INFINITY };
- 	struct pkt_stream *pkt_stream_default;
- 	struct ifobject *ifobj_tx, *ifobj_rx;
- 	struct test_spec test;
- 	u32 i, j;
- 
--	if (setrlimit(RLIMIT_MEMLOCK, &_rlim))
--		exit_with_error(errno);
--
- 	ifobj_tx = ifobject_create();
- 	if (!ifobj_tx)
- 		exit_with_error(ENOMEM);
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 304 +++++++++++++-----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   8 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 205 ++++++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h |  15 +-
+ 5 files changed, 421 insertions(+), 113 deletions(-)
+
 -- 
-2.17.1
+2.18.1
 
+
+--00000000000082069605daa0e7f8
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUwwggQ0oAMCAQICDBB5T5jqFt6c/NEwmzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDE0MTRaFw0yMjA5MjIxNDQzNDhaMIGO
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDE1pY2hhZWwgQ2hhbjEoMCYGCSqGSIb3DQEJ
+ARYZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBANtwBQrLJBrTcbQ1kmjdo+NJT2hFaBFsw1IOi34uVzWz21AZUqQkNVktkT740rYuB1m1No7W
+EBvfLuKxbgQO2pHk9mTUiTHsrX2CHIw835Du8Co2jEuIqAsocz53NwYmk4Sj0/HqAfxgtHEleK2l
+CR56TX8FjvCKYDsIsXIjMzm3M7apx8CQWT6DxwfrDBu607V6LkfuHp2/BZM2GvIiWqy2soKnUqjx
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIKjDApBiz3kD7OePvp+4Vo24qbT9CZ2u
+0IJ8btoQWFP8MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMy
+MDA2NTgxN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQBEITNpNn332IaYwYJR7hHoZM69Uoxo8juo4wr4hwW48pcFLDFq
+PJnOu5v06BqLRhn4+aZmUyNXy5583vUrQH0MqjeNGPq0n/9wBAscgb9ZkV9KkEZbUUMKlqToWuLX
+VnW2gOFrk4iMm5d56a1oaQrjHl1MwhoXW9Cv5UqchBa3LyKwAOltOK3IaznTESMTyszFRWjScLW5
+fXFKprlb2GQ67EvSLDGMUZFngiX290SXFtax2/ejLRxPq+WF1YEW6vSG3J4BQPiThI+hco7kOZFe
+cveSsLCAnupegG2jhZYtvJV3Dy+XPZXAQg8lmFUeDJ9RI4lG+Xyyv8tptG5izJvi
+--00000000000082069605daa0e7f8--
