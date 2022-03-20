@@ -2,42 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFB834E1CED
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 17:48:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 509AC4E1CF9
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 17:58:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245541AbiCTQuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 12:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39564 "EHLO
+        id S237719AbiCTQ7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 12:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232215AbiCTQuM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 12:50:12 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F8F34653;
-        Sun, 20 Mar 2022 09:48:47 -0700 (PDT)
-Received: from [2a04:4540:1401:6400:f8bb:a742:66a1:bedc]
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <john@phrozen.org>)
-        id 1nVyjI-00089K-4Z; Sun, 20 Mar 2022 17:48:32 +0100
-Message-ID: <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
-Date:   Sun, 20 Mar 2022 17:48:31 +0100
+        with ESMTP id S232215AbiCTQ7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 12:59:36 -0400
+Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC1140E4D;
+        Sun, 20 Mar 2022 09:58:11 -0700 (PDT)
+Content-Type: text/plain; charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1647795489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8yxvIMUdY2qwFmHKgzJa1uSWi7H1KqmGW2atkpT4NJs=;
+        b=RYI9ql1aSTaB2enHciW3zESm+zC0c1hEXzC2ztwchF4oIfpluW02asoES568D3e2xYNi8L
+        SasrsMyntWyhcQcI3Sv6EQZ1pGQO3eSSc7KR5F4OYdGC0snA2DtrjoOUgeLW9z9GuSWrW+
+        gKzCpj10B6IK6LR9jxVM/wRH+rUiGcU=
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH] ath9k: initialize arrays at compile time
-Content-Language: en-GB
-To:     trix@redhat.com, toke@toke.dk, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220320152028.2263518-1-trix@redhat.com>
-From:   John Crispin <john@phrozen.org>
-In-Reply-To: <20220320152028.2263518-1-trix@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH] bpf: selftests: cleanup RLIMIT_MEMLOCK
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+In-Reply-To: <20220320060815.7716-2-laoar.shao@gmail.com>
+Date:   Sun, 20 Mar 2022 09:58:06 -0700
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-Id: <0D674EA5-3626-4885-9ADC-5B7847CC967D@linux.dev>
+References: <20220320060815.7716-2-laoar.shao@gmail.com>
+To:     Yafang Shao <laoar.shao@gmail.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -45,13 +52,23 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+> On Mar 19, 2022, at 11:08 PM, Yafang Shao <laoar.shao@gmail.com> wrote:
+>=20
+> =EF=BB=BFSince we have alread switched to memcg-based memory accouting and=
+ control,
+> we don't need RLIMIT_MEMLOCK any more.
+>=20
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> Cc: Roman Gushchin <roman.gushchin@linux.dev>
+>=20
+> ---
+> RLIMIT_MEMLOCK is still used in bpftool and libbpf, but it may be useful
+> for backward compatibility, so I don't cleanup them.
 
-On 20.03.22 16:20, trix@redhat.com wrote:
-> array[size] = { 0 };
+Hi Yafang!
 
-should this not be array[size] = { }; ?!
+As I remember, we haven=E2=80=99t cleaned selftests up with the same logic: i=
+t=E2=80=99s nice to be able to run the same version of tests on older kernel=
+s.
 
-If I recall correctly { 0 } will only set the first element of the 
-struct/array to 0 and leave random data in all others elements
-
-	John
+Thanks!=
