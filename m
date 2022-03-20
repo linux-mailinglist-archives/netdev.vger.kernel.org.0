@@ -2,138 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C56CB4E1B19
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 11:48:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6236C4E1B64
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 13:04:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244096AbiCTKtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 06:49:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
+        id S244995AbiCTMFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 08:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241502AbiCTKtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 06:49:32 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D462CD3
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 03:48:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647773286; x=1679309286;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=GEh4lqkvNvHxXEzdBkA6/xpiAYOeW7RsnYoRHrITa7c=;
-  b=MxTs5F753RDi0twLY/TR7/SMzi2VD0Tf5eT8c0D+EOSW/PpJQNisb3RP
-   zN6QhrfHdY82/27CltWCm05SxZXwYbMBnKKEC7+/f9X5oykKr6bMwc+P0
-   pjy7HITvMGXuAWwQq8CYe6TbhEwlkeinWo6+bWl3xdIq529QaHcTjL/Zu
-   Z7GU+aPn4n5urW9LbJ5sZ0UahgIWMfHIrMEc+8iqfzDQc+bpXKoQD8PGP
-   CioAyqM5Etaz/cE6+1MHoY1gU38HntYsRqd/RIfrC5XSWpYvwJjru76Rp
-   7DdPPvDaVy2U2imjCpC7m7QXaTpUixE97f96//YB9sSg21aFUVol0kM7X
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10291"; a="254948632"
-X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
-   d="scan'208";a="254948632"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2022 03:48:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,195,1643702400"; 
-   d="scan'208";a="648227243"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 20 Mar 2022 03:48:03 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nVt6Q-000Gpd-Rt; Sun, 20 Mar 2022 10:48:02 +0000
-Date:   Sun, 20 Mar 2022 18:47:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: Re: [PATCH net-next 10/11] bnxt: support transmit and free of
- aggregation buffers
-Message-ID: <202203201851.iT6RBOWK-lkp@intel.com>
-References: <1647759473-2414-11-git-send-email-michael.chan@broadcom.com>
+        with ESMTP id S242916AbiCTMFh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 08:05:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E04AF37004
+        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 05:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647777854;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9OfrrvJ+JSNxjBs8qAJPKPxz/pmLtZ2ITjpHEArPw5E=;
+        b=RNM2hDPx/BuydcEGMaDPuIaI2BD33giuOYfEV6AIYnkPJcwIUzDFtdoLqcM196GMiiYXie
+        fsR6ecLotW6stPnE40yLWRCsxB7cM4329NQ3ELfBZ8aegmWwpK/MHPjtLxIoZyzQfrKLEv
+        OVS4dIDn/qxWT1EUxoErDFf8VqEPKc0=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-27-lhHLrV-QObaih2YbLaFhaQ-1; Sun, 20 Mar 2022 08:04:12 -0400
+X-MC-Unique: lhHLrV-QObaih2YbLaFhaQ-1
+Received: by mail-ej1-f69.google.com with SMTP id jl19-20020a17090775d300b006dff5abe965so577077ejc.18
+        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 05:04:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9OfrrvJ+JSNxjBs8qAJPKPxz/pmLtZ2ITjpHEArPw5E=;
+        b=4a5K/WXQ3/9az/detszLqDAOqnxt5p8PJsSlZjFjOQShz7vM/dQbSYoK7zKcD8137L
+         JxcpNtJ2tNg/z0ucEGBa/stGNXItKCxR2SlfJJidGhwIcdhoiRERQtye1sANutB4+5YO
+         yNvVb1Qu6eBgzc6sDtm/XgWy0e/O8B9jwzCePQD2Nif5/JB4iowIHXBvz5U10KKdQNwg
+         7ljTRDiKHoRPvgIrDwhyNIirD3vtIjVV0KXxeic+5IWdKcNqL6dej5Zl4i8ZfPhKrI/0
+         N45tPiBw9t3qPlwx2UYtirE8hSF8DRmX+mW2vma0uJFQdlrEQDED3V4fEhL8n2CowEN/
+         RY1A==
+X-Gm-Message-State: AOAM5305/kFr4GQbdCCBqQkf0GHYkNitwneEqlS/KpxnkOOexbCImhNk
+        kivOjFJ8oVxCFcNi8JYSVK3jUjpLw1dcq/9rrRryXEsjKhpeycyiiexwPYfW0sE0fb2mtcdcBXD
+        Tgk2BBJZ9Qaq4qMjk
+X-Received: by 2002:a17:907:7e88:b0:6db:ad88:2294 with SMTP id qb8-20020a1709077e8800b006dbad882294mr16017817ejc.371.1647777851502;
+        Sun, 20 Mar 2022 05:04:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJybuaY3RTwLFhNmn8ph3qfEMlXOeFvtOmTr+FUYne4h/XgSMGx9RwM3ZmeWDHdWHYLvNIiqSA==
+X-Received: by 2002:a17:907:7e88:b0:6db:ad88:2294 with SMTP id qb8-20020a1709077e8800b006dbad882294mr16017754ejc.371.1647777851178;
+        Sun, 20 Mar 2022 05:04:11 -0700 (PDT)
+Received: from redhat.com ([2.55.132.0])
+        by smtp.gmail.com with ESMTPSA id hb6-20020a170907160600b006dff6a979fdsm856220ejc.51.2022.03.20.05.04.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Mar 2022 05:04:10 -0700 (PDT)
+Date:   Sun, 20 Mar 2022 08:04:00 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Amit Shah <amit@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eli Cohen <eli@mellanox.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Felipe Balbi <felipe.balbi@linux.intel.com>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Igor Kotrasinski <i.kotrasinsk@samsung.com>,
+        Valentina Manea <valentina.manea.m@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Jussi Kivilinna <jussi.kivilinna@mbnet.fi>,
+        Joachim Fritschi <jfritschi@freenet.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Karol Herbst <karolherbst@gmail.com>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-usb@vger.kernel.org, nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org, x86@kernel.org
+Subject: Re: [PATCH 1/9] virtio_blk: eliminate anonymous module_init &
+ module_exit
+Message-ID: <20220320080242-mutt-send-email-mst@kernel.org>
+References: <20220316192010.19001-1-rdunlap@infradead.org>
+ <20220316192010.19001-2-rdunlap@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1647759473-2414-11-git-send-email-michael.chan@broadcom.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-8.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220316192010.19001-2-rdunlap@infradead.org>
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michael,
-
-I love your patch! Perhaps something to improve:
-
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/0day-ci/linux/commits/Michael-Chan/bnxt-Support-XDP-multi-buffer/20220320-150017
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 092d992b76ed9d06389af0bc5efd5279d7b1ed9f
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220320/202203201851.iT6RBOWK-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 85e9b2687a13d1908aa86d1b89c5ce398a06cd39)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/01029de5d079c1271b0cdd6f64a6ee7132b1872f
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Michael-Chan/bnxt-Support-XDP-multi-buffer/20220320-150017
-        git checkout 01029de5d079c1271b0cdd6f64a6ee7132b1872f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/broadcom/bnxt/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c:203:6: warning: variable 'shinfo' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (xdp)
-               ^~~
-   drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c:206:18: note: uninitialized use occurs here
-           for (i = 0; i < shinfo->nr_frags; i++) {
-                           ^~~~~~
-   drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c:203:2: note: remove the 'if' if its condition is always true
-           if (xdp)
-           ^~~~~~~~
-   drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c:200:32: note: initialize the variable 'shinfo' to silence this warning
-           struct skb_shared_info *shinfo;
-                                         ^
-                                          = NULL
-   drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c:291:36: warning: variable 'mapping' is uninitialized when used here [-Wuninitialized]
-                   dma_unmap_page_attrs(&pdev->dev, mapping,
-                                                    ^~~~~~~
-   drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c:225:20: note: initialize the variable 'mapping' to silence this warning
-           dma_addr_t mapping;
-                             ^
-                              = 0
-   2 warnings generated.
+On Wed, Mar 16, 2022 at 12:20:02PM -0700, Randy Dunlap wrote:
+> Eliminate anonymous module_init() and module_exit(), which can lead to
+> confusion or ambiguity when reading System.map, crashes/oops/bugs,
+> or an initcall_debug log.
+> 
+> Give each of these init and exit functions unique driver-specific
+> names to eliminate the anonymous names.
+> 
+> Example 1: (System.map)
+>  ffffffff832fc78c t init
+>  ffffffff832fc79e t init
+>  ffffffff832fc8f8 t init
+> 
+> Example 2: (initcall_debug log)
+>  calling  init+0x0/0x12 @ 1
+>  initcall init+0x0/0x12 returned 0 after 15 usecs
+>  calling  init+0x0/0x60 @ 1
+>  initcall init+0x0/0x60 returned 0 after 2 usecs
+>  calling  init+0x0/0x9a @ 1
+>  initcall init+0x0/0x9a returned 0 after 74 usecs
+> 
+> Fixes: e467cde23818 ("Block driver using virtio.")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: "Michael S. Tsirkin" <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: Paolo Bonzini <pbonzini@redhat.com>
+> Cc: Stefan Hajnoczi <stefanha@redhat.com>
+> Cc: virtualization@lists.linux-foundation.org
+> Cc: Jens Axboe <axboe@kernel.dk>
+> Cc: linux-block@vger.kernel.org
 
 
-vim +203 drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+If this is done tree-wide, it's ok to do it for virtio too.
 
-   196	
-   197	void bnxt_xdp_buff_frags_free(struct bnxt_rx_ring_info *rxr,
-   198				      struct xdp_buff *xdp)
-   199	{
-   200		struct skb_shared_info *shinfo;
-   201		int i;
-   202	
- > 203		if (xdp)
-   204			shinfo = xdp_get_shared_info_from_buff(xdp);
-   205	
-   206		for (i = 0; i < shinfo->nr_frags; i++) {
-   207			struct page *page = skb_frag_page(&shinfo->frags[i]);
-   208	
-   209			page_pool_recycle_direct(rxr->page_pool, page);
-   210		}
-   211		shinfo->nr_frags = 0;
-   212	}
-   213	
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+No real opinion on whether it's a good idea.
+
+> ---
+>  drivers/block/virtio_blk.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> --- lnx-517-rc8.orig/drivers/block/virtio_blk.c
+> +++ lnx-517-rc8/drivers/block/virtio_blk.c
+> @@ -1058,7 +1058,7 @@ static struct virtio_driver virtio_blk =
+>  #endif
+>  };
+>  
+> -static int __init init(void)
+> +static int __init virtio_blk_init(void)
+>  {
+>  	int error;
+>  
+> @@ -1084,14 +1084,14 @@ out_destroy_workqueue:
+>  	return error;
+>  }
+>  
+> -static void __exit fini(void)
+> +static void __exit virtio_blk_fini(void)
+>  {
+>  	unregister_virtio_driver(&virtio_blk);
+>  	unregister_blkdev(major, "virtblk");
+>  	destroy_workqueue(virtblk_wq);
+>  }
+> -module_init(init);
+> -module_exit(fini);
+> +module_init(virtio_blk_init);
+> +module_exit(virtio_blk_fini);
+>  
+>  MODULE_DEVICE_TABLE(virtio, id_table);
+>  MODULE_DESCRIPTION("Virtio block driver");
+
