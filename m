@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E16934E1D16
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 18:20:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 898304E1D38
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 18:40:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245699AbiCTRV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 13:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
+        id S245741AbiCTRl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 13:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245698AbiCTRV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 13:21:28 -0400
-X-Greylist: delayed 173 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Mar 2022 10:20:05 PDT
-Received: from mail.as201155.net (mail.as201155.net [185.84.6.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798D3E6160
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 10:20:05 -0700 (PDT)
-Received: from smtps.newmedia-net.de ([2a05:a1c0:0:de::167]:44818 helo=webmail.newmedia-net.de)
-        by mail.as201155.net with esmtps  (TLS1) tls TLS_DHE_RSA_WITH_AES_256_CBC_SHA
-        (Exim 4.94.2)
-        (envelope-from <s.gottschall@newmedia-net.de>)
-        id 1nVzAs-0002wx-2w; Sun, 20 Mar 2022 18:17:02 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=newmedia-net.de; s=mikd;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID; bh=R3xvPyH2LO2SeAjGMqviHKQ0YssFVFGDLalsy+a32Pc=;
-        b=kDB5vFIRFcO7i37wsDvKCkiJyqObUP5nPcTw0GVON66/JXSOUrL0ehd80CczxceYFi3y7rSMxitanR3VrD21zhptzBwaxfUHv1L5GuAHAZFEA8UhiRP/2C/WxzICmHQB9hiXnlAq2A/96bMs2T5kz4ZtiNGebiotv6dOy+J++Ag=;
-Message-ID: <233074c3-03dc-cf8b-a597-da0fb5d98be0@newmedia-net.de>
-Date:   Sun, 20 Mar 2022 18:17:01 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:99.0) Gecko/20100101
- Thunderbird/99.0
-Subject: Re: [PATCH] ath9k: initialize arrays at compile time
-To:     John Crispin <john@phrozen.org>, trix@redhat.com, toke@toke.dk,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        with ESMTP id S229713AbiCTRl6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 13:41:58 -0400
+X-Greylist: delayed 506 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 20 Mar 2022 10:40:35 PDT
+Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B879192373;
+        Sun, 20 Mar 2022 10:40:34 -0700 (PDT)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4KM4Yx48lbz1qy4d;
+        Sun, 20 Mar 2022 18:32:05 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4KM4Yw6JJxz1qqkC;
+        Sun, 20 Mar 2022 18:32:04 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id AZNAXHq-zqdT; Sun, 20 Mar 2022 18:32:03 +0100 (CET)
+X-Auth-Info: PRG5CVsyc2awA5undKWlsYbTr46vvzvy3CjZzJKLMMmL+/aS5lMla6dWJ55goAm+
+Received: from igel.home (ppp-46-244-164-143.dynamic.mnet-online.de [46.244.164.143])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sun, 20 Mar 2022 18:32:03 +0100 (CET)
+Received: by igel.home (Postfix, from userid 1000)
+        id 68B1B2C3A4A; Sun, 20 Mar 2022 18:32:03 +0100 (CET)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     John Crispin <john@phrozen.org>
+Cc:     trix@redhat.com, toke@toke.dk, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath9k: initialize arrays at compile time
 References: <20220320152028.2263518-1-trix@redhat.com>
- <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
-From:   Sebastian Gottschall <s.gottschall@newmedia-net.de>
-In-Reply-To: <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
+X-Yow:  I'm using my X-RAY VISION to obtain a rare glimpse of the
+ INNER WORKINGS of this POTATO!!
+Date:   Sun, 20 Mar 2022 18:32:03 +0100
+In-Reply-To: <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org> (John
+        Crispin's message of "Sun, 20 Mar 2022 17:48:31 +0100")
+Message-ID: <87a6dko7ho.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.92 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-X-Received:  from [81.201.155.134] (helo=[172.21.254.4])
-        by webmail.newmedia-net.de with esmtpsa (TLSv1:AES128-SHA:128)
-        (Exim 4.72)
-        (envelope-from <s.gottschall@newmedia-net.de>)
-        id 1nVzAs-0005Nq-NN; Sun, 20 Mar 2022 18:17:02 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 20.03.2022 um 17:48 schrieb John Crispin:
->
->
-> On 20.03.22 16:20, trix@redhat.com wrote:
->> array[size] = { 0 };
->
-> should this not be array[size] = { }; ?!
->
-> If I recall correctly { 0 } will only set the first element of the 
+On Mär 20 2022, John Crispin wrote:
+
+> If I recall correctly { 0 } will only set the first element of the
 > struct/array to 0 and leave random data in all others elements
->
->     John
 
-You are right, john
+An initializer always initializes the _whole_ object.
 
-Sebastian
+The subject is also wrong, all initializers are executed at run time
+(automatic variables cannot be initialized at compile time).
 
+-- 
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
