@@ -2,121 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4E34E1D49
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 19:03:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DA544E1D60
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 19:15:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245742AbiCTSEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 14:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
+        id S1343502AbiCTSQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 14:16:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245743AbiCTSEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 14:04:38 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4769E3A73F
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 11:03:14 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso7296112wmz.4
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 11:03:14 -0700 (PDT)
+        with ESMTP id S1343503AbiCTSQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 14:16:27 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8185E52B00
+        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 11:15:03 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id bt26so21527149lfb.3
+        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 11:15:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=Wur3Gr2lZCA8WSdLdjbJrUbR8JebUaR8BljbfzA1wHE=;
-        b=Ggv9TffUnipbh1pKUc1k8M7NX5m0uX/GmuHOCDbRrQ3QE5BNe3mNiv4wSWrBiZlhQ+
-         9rlVECFOklXwSB2tMOo4Yio67kyHT7EzRW+k8ESZRCFuN5Nx2qvMnxavIvaok0xbzfNb
-         R57A2QGk01k0exi993vSHbj15PNmvvm3gUgcUW5xwUyIkMshF2KuZemP+UWh7t1KptMh
-         NT9x/BcuQpjjpubJtBsZbEOsCrUpcgIgv6IouUQxlHS+uHV4F8UvOJ+5TjoUGJYLKkoN
-         OswuTFxwPh7uHi6iy23mhAowAavWH4U8GDCJH5ILXRR8q1xZGXmSw+D07M5q+L9YPBsx
-         G9+A==
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=W6VyZQglGaRzyaUYQqRO466kEW6svyGhGiiOiHCSS+s=;
+        b=ec/VIifhkLLePLUfS0lxZnt7L1Vho/kHdSrSztaYLuYO+S1voxi/watj9VF/koUzFn
+         GDIWf+xhj6sXKVmPDhkLzWUjpVWoN7h79cR4A/AfQ1aTcwawHGmQ7lX6geibWNJ/wPrG
+         /TPVgSZpZnb+orFftSnwfEkkDcwUXbLiMN3//PjyU3kwW95fYfOxYBxAIFnfXO5ltrQ4
+         iQ1kbP/IPrQNwZpWQBeR+BapAjyDiRpxiR5tov2XL4eBeWNWj7R8et+oadMu0RTcUQe7
+         rrYzacy9zdAkNrxTtwZDcyzkRlaOLzHcazyZorpvrw7wXYIzE8UTXglzeurG/YcIQcXI
+         vXlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=Wur3Gr2lZCA8WSdLdjbJrUbR8JebUaR8BljbfzA1wHE=;
-        b=P+QjHV1Zeod4Jp4P9PZnlnxP3TfjT6ZY7y5YMqWsOq+JRnfX4RDXan4CmGZnYg06GW
-         /2DKQHveOj9XTFRvuSZwNErGzlwtMIdgMGD8bdAyw2vXKIBAzXPbhQq1/X7/3lOedH9l
-         QMBPpqmkXqCtUb0qQiOAjl8HbMXq9t/SRb/fKsUWYXVlP5Zcldf3N32INPEOIWjwHd9J
-         5tCBkOTxJYZK47x+epG+zKsMQav1/zfP8H42za9g4fYHEy2JJ7wYL4ZoLN8muhaqX8kO
-         3iXnwMKfP8y5LFj+kii24I0dk0/J5HFhKrTspTYJmzRYNRJYCkC7UfRWZYaM7hfmLTUj
-         ezCA==
-X-Gm-Message-State: AOAM533vBIX9QWHTKB7C7FgAujqTllZ3PMP6G09VcMayOsqSapAcCoZH
-        BRIylbDERPFLtfCNgZ+q3XAz4A==
-X-Google-Smtp-Source: ABdhPJxvHYeRUXTjFPf76c0NGheufnBvl4MJZkjFWLVW09XU/Gu4wlmGmU4t/Lys/fhzY+bO1UDWcA==
-X-Received: by 2002:a05:600c:3506:b0:389:d567:e9fa with SMTP id h6-20020a05600c350600b00389d567e9famr16229794wmq.74.1647799392724;
-        Sun, 20 Mar 2022 11:03:12 -0700 (PDT)
-Received: from [192.168.0.69] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id p125-20020a1c2983000000b00389cc36a3bfsm15630498wmp.6.2022.03.20.11.03.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Mar 2022 11:03:12 -0700 (PDT)
-Message-ID: <cda7eaa6-fb99-0d32-24fb-758b9363ee6d@linaro.org>
-Date:   Sun, 20 Mar 2022 18:03:10 +0000
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=W6VyZQglGaRzyaUYQqRO466kEW6svyGhGiiOiHCSS+s=;
+        b=yFfGsmfcEKehDqi3Vf+y3YQyjL3g9UZn1qIFgzfaabFtCGZFMT2yFwcFLJcA+Z3R1g
+         R4wd9zkU6d/fbpcKTmlrkjt3dpmBr+L1MvYLBrnS55mmBMadlxUAKCJL4hOwRrX3X/91
+         mTmernQGYFqCbmvrio3sOggaDwUzMOkVIsNucVXiVDq7EW7kolMO8kJnQjM+IYZ3iMXj
+         wosXaZEt5BCUGGLJ9bK9dmmrdpDJ6YBpZHTzArr3wBL9BJGUWaXqT91ao7YAkaOL7BNM
+         nvsPhcNJdph/AO66uAfCvdd/TYAuqQKlle6y4mtw3oxf5tz//5RsBbopS/dZOjqeD5w3
+         5vxA==
+X-Gm-Message-State: AOAM530jH61AVjDOVXi+Z2J/JkN0WMqNFlofE3o2X8QXX4ItmAQ7wIML
+        Z6a76R0nMkXLykNWCtS+1DEpQ6vb4AdvyKVi+8w=
+X-Google-Smtp-Source: ABdhPJxRHaEpUDknE0brnFZg7I5p4UJHQBH6nDLV/ZHGMwc4KqIFu1Ic82ngLsGVsSu+1I6ARVST+HknHXLBu53OLRA=
+X-Received: by 2002:a05:6512:3cc:b0:444:23b0:f34b with SMTP id
+ w12-20020a05651203cc00b0044423b0f34bmr11932885lfp.624.1647800101606; Sun, 20
+ Mar 2022 11:15:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2 2/2] wcn36xx: Implement tx_rate reporting
-Content-Language: en-US
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-To:     Edmond Gagnon <egagnon@squareup.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Benjamin Li <benl@squareup.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220318195804.4169686-1-egagnon@squareup.com>
- <20220318195804.4169686-3-egagnon@squareup.com>
- <c8f31312-5356-704e-1f55-89c9f5888238@linaro.org>
-In-Reply-To: <c8f31312-5356-704e-1f55-89c9f5888238@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Sender: dialloodama@gmail.com
+Received: by 2002:a05:6512:3619:0:0:0:0 with HTTP; Sun, 20 Mar 2022 11:15:00
+ -0700 (PDT)
+From:   "Mrs.Yunnan Ging" <yunnan1222ging@gmail.com>
+Date:   Sun, 20 Mar 2022 19:15:00 +0100
+X-Google-Sender-Auth: DlVeSHTOOFIS54ZmrmTRK3baKS8
+Message-ID: <CAMkG3NEqqp+xnTgOb6dGD4RajyQS0HdoDGNwrV8shOC-w9vY8A@mail.gmail.com>
+Subject: Hello,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_SCAM,
+        LOTS_OF_MONEY,MILLION_USD,MONEY_FRAUD_5,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:136 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5002]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [yunnan1222ging[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 MILLION_USD BODY: Talks about millions of dollars
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 HK_SCAM No description available.
+        *  3.8 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+        *  3.2 MONEY_FRAUD_5 Lots of money and many fraud phrases
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/03/2022 13:21, Bryan O'Donoghue wrote:
-> On 18/03/2022 19:58, Edmond Gagnon wrote:
->> +    INIT_DELAYED_WORK(&wcn->get_stats_work, wcn36xx_get_stats_work);
-> 
-> Instead of forking a worker and polling we could add the relevant SMD 
-> command to
-> 
-> static int wcn36xx_smd_tx_compl_ind(struct wcn36xx *wcn, void *buf, 
-> size_t len)
-> {
->      wcn36xx_smd_get_stats(wcn, 0xSomeMask);
-> }
-> 
-> That way we only ever ask for and report a new TX data rate when we know 
-> a TX event - and hence a potential TX data-rate update - has taken place.
-> 
-> ---
-> bod
-> 
+        I am Mrs Yu. Ging Yunnan, and i have Covid-19 and the doctor
+said I will not survive it because all vaccines has been given to me
+but to no avail, am a Chinese woman but I base here in France because
+am married here and I have no child for my late husband and now am a
+widow.
+        My reason of communicating you is that i have $9.2million USD
+which was deposited in BNP Paribas Bank here in France by my late
+husband which am the next of kin to and I want you to stand as the
+beneficiary for the claim now that am about to end my race according
+to my doctor. I will want you to use the fund to build an orphanage
+home in my name there in your country, please kindly reply to this
+message urgently if willing to handle this project. God bless you and
+i wait your swift response asap.
 
-Thinking a bit more
+                              Yours fairly friend,
 
-- Do the SMD get_stats in the tx completion
-   This might be a problem initiating another SMD transaction inside
-   of an SMD callback. But is the most straight forward way to
-   get the data while avoiding alot of needless polling.
-
-- Schedule your worker from the TX completion
-   Again you should only care about gathering the data when you know
-   something has happened which necessitates gathering that data
-   like TX completion
-
-- Schedule your worker from the RX indication routine
-   Seems not as logical as the first two but it might be easier
-   to schedule the worker in the RX data handler
-
-Either way, I do think you should only gather this data on an event, not 
-as a continuous poll.
-
----
-bod
+                           Mrs Yu. Ging Yunnan.
