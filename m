@@ -2,102 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0B1F4E1D72
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 19:47:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B96EB4E1D8D
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 20:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343535AbiCTSsP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 20 Mar 2022 14:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54074 "EHLO
+        id S1343578AbiCTTQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 15:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233851AbiCTSsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 14:48:14 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8D67180041
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 11:46:50 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-211-OvTu6yGEPO-aZeWLosJXtg-1; Sun, 20 Mar 2022 18:46:46 +0000
-X-MC-Unique: OvTu6yGEPO-aZeWLosJXtg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Sun, 20 Mar 2022 18:46:46 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Sun, 20 Mar 2022 18:46:46 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'trix@redhat.com'" <trix@redhat.com>,
-        "toke@toke.dk" <toke@toke.dk>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] ath9k: initialize arrays at compile time
-Thread-Topic: [PATCH] ath9k: initialize arrays at compile time
-Thread-Index: AQHYPG4UGesvc0U9PEWregiQnXO486zIm6Kg
-Date:   Sun, 20 Mar 2022 18:46:46 +0000
-Message-ID: <d06ce4fa239645cc9de48c1062f58f14@AcuMS.aculab.com>
-References: <20220320152028.2263518-1-trix@redhat.com>
-In-Reply-To: <20220320152028.2263518-1-trix@redhat.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S233934AbiCTTQy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 15:16:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378D2D3AF3;
+        Sun, 20 Mar 2022 12:15:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA9176121F;
+        Sun, 20 Mar 2022 19:15:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B809C340EE;
+        Sun, 20 Mar 2022 19:15:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647803730;
+        bh=5yU1VY41IGpB26hHV6JgEd0Xh2QyTxC+F9+H8KW7OsY=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=u6DkRcZ8fJI95fjed2Wb/xkpzXzZXcJ6T3ppsjhbWJDs/X0De6DQQV0uBOX70SJ0b
+         dyoqIOrG4iWEmaAWpKtc074CZ9O75ITf6vKKl8xXsQvnS25JBT1yZu/aWUDETL0WZc
+         XI3PM30mymypLSbkJk01Trr0zgX3Gx9UVHj9N8zz1fcw/DP+KEoIdq/L6bOgqQlTo1
+         qQ9JKFz3HR7YVj1YF8X0j6OUy6qHNCF+cBLr5Gfa8j2O+gmaw5Mdr1gAeCBu46xJ2P
+         Lj6GhXUkh3W7AT/ZWYXQs6IbQcQ8SWslHxcwvXOhTOebOkj2z7HHlTLozoNS2CRvgb
+         +qJt+V9uiNOLg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Cc:     Edmond Gagnon <egagnon@squareup.com>,
+        Benjamin Li <benl@squareup.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] wcn36xx: Implement tx_rate reporting
+In-Reply-To: <cda7eaa6-fb99-0d32-24fb-758b9363ee6d@linaro.org> (Bryan
+        O'Donoghue's message of "Sun, 20 Mar 2022 18:03:10 +0000")
+References: <20220318195804.4169686-1-egagnon@squareup.com>
+        <20220318195804.4169686-3-egagnon@squareup.com>
+        <c8f31312-5356-704e-1f55-89c9f5888238@linaro.org>
+        <cda7eaa6-fb99-0d32-24fb-758b9363ee6d@linaro.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Date:   Sun, 20 Mar 2022 21:15:25 +0200
+Message-ID: <87pmmgo2pe.fsf@kernel.org>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-8.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: trix@redhat.com <trix@redhat.com>
-> Sent: 20 March 2022 15:20
-> 
-> Early clearing of arrays with
-> memset(array, 0, size);
-> is equivilent to initializing the array in its decl with
-> array[size] = { 0 };
-> 
-> Since compile time is preferred over runtime,
-> convert the memsets to initializations.
-...
-> diff --git a/drivers/net/wireless/ath/ath9k/ar9003_calib.c
-> b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
-> index dc24da1ff00b1..39fcc158cb159 100644
-> --- a/drivers/net/wireless/ath/ath9k/ar9003_calib.c
-> +++ b/drivers/net/wireless/ath/ath9k/ar9003_calib.c
-> @@ -891,10 +891,9 @@ static void ar9003_hw_tx_iq_cal_outlier_detection(struct ath_hw *ah,
->  {
->  	int i, im, nmeasurement;
->  	int magnitude, phase;
-> -	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS];
-> +	u32 tx_corr_coeff[MAX_MEASUREMENT][AR9300_MAX_CHAINS] = { 0 };
+Bryan O'Donoghue <bryan.odonoghue@linaro.org> writes:
 
-For a two dimensional array that needs to be {{0}} (or {}).
-And, since there is only one definitions of 'coeff' it can
-be static!
-(Currently on 96 bytes - si not a real problem on-stack.)
+> On 20/03/2022 13:21, Bryan O'Donoghue wrote:
+>> On 18/03/2022 19:58, Edmond Gagnon wrote:
+>>> +=C2=A0=C2=A0=C2=A0 INIT_DELAYED_WORK(&wcn->get_stats_work, wcn36xx_get=
+_stats_work);
+>>
+>> Instead of forking a worker and polling we could add the relevant
+>> SMD command to
+>>
+>> static int wcn36xx_smd_tx_compl_ind(struct wcn36xx *wcn, void *buf,
+>> size_t len)
+>> {
+>>  =C2=A0=C2=A0=C2=A0 wcn36xx_smd_get_stats(wcn, 0xSomeMask);
+>> }
+>>
+>> That way we only ever ask for and report a new TX data rate when we
+>> know a TX event - and hence a potential TX data-rate update - has
+>> taken place.
+>>
+>> ---
+>> bod
+>>
+>
+> Thinking a bit more
+>
+> - Do the SMD get_stats in the tx completion
+>   This might be a problem initiating another SMD transaction inside
+>   of an SMD callback. But is the most straight forward way to
+>   get the data while avoiding alot of needless polling.
+>
+> - Schedule your worker from the TX completion
+>   Again you should only care about gathering the data when you know
+>   something has happened which necessitates gathering that data
+>   like TX completion
+>
+> - Schedule your worker from the RX indication routine
+>   Seems not as logical as the first two but it might be easier
+>   to schedule the worker in the RX data handler
+>
+> Either way, I do think you should only gather this data on an event,
+> not as a continuous poll.
 
-Although I just failed to find the lock that stops
-concurrent execution on multiple cpu.
+I agree, a continuous poll is not a good idea as it affects power
+consumption. What about struct ieee80211_ops::sta_statistics? AFAIK
+that's called only when user space is requestings stats so the overhead
+should be minimal.
 
-	David
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
