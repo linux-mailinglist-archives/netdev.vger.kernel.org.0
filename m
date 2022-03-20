@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A484E1A99
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 07:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7466F4E1A9B
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 07:58:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244911AbiCTHAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 03:00:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44370 "EHLO
+        id S244910AbiCTHAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 03:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244920AbiCTG7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 02:59:50 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997DE22535
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:27 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id u22so1601715pfg.6
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:27 -0700 (PDT)
+        with ESMTP id S244908AbiCTG7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 02:59:52 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFCC255BB
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:28 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso13925878pjb.0
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zqiPTvmbsVxT6+41pjTxGk6d8llT9T4Vg0oiJaYtXeg=;
-        b=C1/L30Mwo+qHYU8apnG1Bxu30Byt8gOPjlsIXuGW4eLVpPYEdiO6ZW24t0WDcfgJFX
-         Mu6KAGylFIZq1yuARe6O/dmhdt00L02lJSSGWMWVxpnLwL3V2zsbSNKiVMt9m+HUWsBG
-         RcaAyE+7LegoKYjlm7kZ6bBM7sK3mUGZDSa8U=
+        bh=BaUqC6OTB+SpconxCyyy/GT26bCEUKPBp4vn+4MPjrE=;
+        b=GOQeO852nghP8PkAIdd04oRIDTkUKl7ZLRIh5WIOfOwGQXGNzpraVLUuIr5r+orR6D
+         BmTo8i4aPCLzCCLV0GswJQVa+NFwuR3gCV/D/pDpZiwtuk4+apvJrCKVJrxXHMEWk1Km
+         f6IBoiHl3NmWruwrpZe0G1SWve1VFp5zKz8lw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=zqiPTvmbsVxT6+41pjTxGk6d8llT9T4Vg0oiJaYtXeg=;
-        b=JrgUy65eNyYn/vLNYbTxuyQfzhqBLkcdhQii9SeXlMHivwOxHR7XnzE/ka+1UTwMNA
-         w6NHLzvQKqXalkRR0uNnC5yEsXRUKXMMP5BjLa6Suy0axYBF06M+sPXD6oJTg6qoqdPf
-         unjbsRit+Y/A8M+bRJHvy+Kthadj7L9LB3xX3vBiSrd/pLZ7qqWyvG61js6PpQwO6vz+
-         oIeGlVydPraEOnf4LpekKzuPeh4m64RSeVKpfh78ak0FqB1S6cl4r3JHYbwQRPV9ALmb
-         70stKNXKj9xXsSaaMtMigQsD1VhnC7JYp1H1A0hU9OwMQiU/UAJGxYcb7pQ1lzIO8smY
-         sLQQ==
-X-Gm-Message-State: AOAM530gJumlprnw0f/YtzO7n7PJmMKcxmhZBzNPjedIbHiGAhS7rsJx
-        lBkGwGnPsiUYecM0Kow65JohTg==
-X-Google-Smtp-Source: ABdhPJyeRv+srOQvuL+DLlsa3aY3VuW5GYqmOs3+LzfCGEdYHxO/vqzVCddB7mZGVhhtSdkpkaH6Qw==
-X-Received: by 2002:a05:6a00:8cc:b0:4bc:3def:b616 with SMTP id s12-20020a056a0008cc00b004bc3defb616mr18276879pfu.18.1647759506940;
-        Sat, 19 Mar 2022 23:58:26 -0700 (PDT)
+        bh=BaUqC6OTB+SpconxCyyy/GT26bCEUKPBp4vn+4MPjrE=;
+        b=ihF9IF8yvMMv5Gt0QPaEqYuGiGKYzIHVuDqSaOxoozBi0emSSs7lAcpRNIFU9rljg1
+         EiN/6MHJhPvv1uYIBQXsCz6fGIIAJylAiYQAIoRgwv5cbqpF5tf+5ENcBXFiwF250yyX
+         mZMUocIwDXMCrYxRbulOlJJ+dnAbmbBdQ/xfc6o4K2Yt8DGq+FH3QrGe1UEoByMfEsaJ
+         d3VO8710LdKk9vB+bi2Q+Ju1FOs1Ljmp8je8c5+b7WHbQlZykYJC4SbzR3huSYbpJ7YO
+         7SqSdzsfw9Vr+qLqnlg17BZGwZk5FKA81VgWVSAFlTMsfvGKw+vdCh046E4C8JKVIZvG
+         prZQ==
+X-Gm-Message-State: AOAM530EpYCn/mgOl/PuJk/cAseu+Obt8AJLUnTTq1v8NAqEi+xSExkD
+        CKv+GQ33yM1e9djmZQO0GSDr6g==
+X-Google-Smtp-Source: ABdhPJyt4UIQaKBoNzCqeZ8E7+szUXtGofyrcFVr1oD99jrq/6DXyv2e5KlRKXF44QKi5roRgR92IA==
+X-Received: by 2002:a17:902:868d:b0:154:4d09:5827 with SMTP id g13-20020a170902868d00b001544d095827mr1121825plo.21.1647759508243;
+        Sat, 19 Mar 2022 23:58:28 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q4-20020a056a00150400b004f78d4821a0sm15359334pfu.204.2022.03.19.23.58.25
+        by smtp.gmail.com with ESMTPSA id q4-20020a056a00150400b004f78d4821a0sm15359334pfu.204.2022.03.19.23.58.27
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 19 Mar 2022 23:58:26 -0700 (PDT)
+        Sat, 19 Mar 2022 23:58:27 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 09/11] bnxt: adding bnxt_xdp_build_skb to build skb from multibuffer xdp_buff
-Date:   Sun, 20 Mar 2022 02:57:51 -0400
-Message-Id: <1647759473-2414-10-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 10/11] bnxt: support transmit and free of aggregation buffers
+Date:   Sun, 20 Mar 2022 02:57:52 -0400
+Message-Id: <1647759473-2414-11-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1647759473-2414-1-git-send-email-michael.chan@broadcom.com>
 References: <1647759473-2414-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001cf7c105daa0e83f"
+        boundary="0000000000003168cc05daa0e8af"
 X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,202 +65,358 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000001cf7c105daa0e83f
+--0000000000003168cc05daa0e8af
 
 From: Andy Gospodarek <gospo@broadcom.com>
 
-Since we have an xdp_buff with frags there needs to be a way to
-convert that into a valid sk_buff in the event that XDP_PASS is
-the resulting operation.  This adds a new rx_skb_func when the
-netdev has an MTU that prevents the packets from sitting in a
-single page.
-
-This also make sure that GRO/LRO stay disabled even when using
-the aggregation ring for large buffers.
+This patch adds the following features:
+- Support for XDP_TX and XDP_DROP action when using xdp_buff
+  with frags
+- Support for freeing all frags attached to an xdp_buff
+- Cleanup of TX ring buffers after transmits complete
+- Slight change in definition of bnxt_sw_tx_bd since nr_frags
+  and RX producer may both need to be used
 
 Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 63 ++++++++++++++++---
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 39 ++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h |  3 +
- 3 files changed, 98 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  18 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   7 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 117 ++++++++++++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h |   5 +-
+ 5 files changed, 126 insertions(+), 23 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 980c176d7c88..b92f5ef31132 100644
+index b92f5ef31132..84c89ee7dc2f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -971,6 +971,37 @@ static void bnxt_reuse_rx_agg_bufs(struct bnxt_cp_ring_info *cpr, u16 idx,
- 	rxr->rx_sw_agg_prod = sw_prod;
- }
- 
-+static struct sk_buff *bnxt_rx_multi_page_skb(struct bnxt *bp,
-+					      struct bnxt_rx_ring_info *rxr,
-+					      u16 cons, void *data, u8 *data_ptr,
-+					      dma_addr_t dma_addr,
-+					      unsigned int offset_and_len)
-+{
-+	unsigned int len = offset_and_len & 0xffff;
-+	struct page *page = data;
-+	u16 prod = rxr->rx_prod;
-+	struct sk_buff *skb;
-+	int err;
-+
-+	err = bnxt_alloc_rx_data(bp, rxr, prod, GFP_ATOMIC);
-+	if (unlikely(err)) {
-+		bnxt_reuse_rx_data(rxr, cons, data);
-+		return NULL;
-+	}
-+	dma_addr -= bp->rx_dma_offset;
-+	dma_unmap_page_attrs(&bp->pdev->dev, dma_addr, PAGE_SIZE, bp->rx_dir,
-+			     DMA_ATTR_WEAK_ORDERING);
-+	skb = build_skb(page_address(page), PAGE_SIZE - bp->rx_dma_offset);
-+	if (!skb) {
-+		__free_page(page);
-+		return NULL;
-+	}
-+	skb_mark_for_recycle(skb);
-+	skb_reserve(skb, bp->rx_dma_offset);
-+	__skb_put(skb, len);
-+	return skb;
-+}
-+
- static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
- 					struct bnxt_rx_ring_info *rxr,
- 					u16 cons, void *data, u8 *data_ptr,
-@@ -993,7 +1024,6 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
- 	dma_addr -= bp->rx_dma_offset;
- 	dma_unmap_page_attrs(&bp->pdev->dev, dma_addr, PAGE_SIZE, bp->rx_dir,
- 			     DMA_ATTR_WEAK_ORDERING);
--	page_pool_release_page(rxr->page_pool, page);
- 
- 	if (unlikely(!payload))
- 		payload = eth_get_headlen(bp->dev, data_ptr, len);
-@@ -1004,6 +1034,7 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
- 		return NULL;
- 	}
- 
-+	skb_mark_for_recycle(skb);
- 	off = (void *)data_ptr - page_address(page);
- 	skb_add_rx_frag(skb, 0, page, off, len, PAGE_SIZE);
- 	memcpy(skb->data - NET_IP_ALIGN, data_ptr - NET_IP_ALIGN,
-@@ -1949,6 +1980,14 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+@@ -1949,9 +1949,13 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 		skb = bnxt_copy_skb(bnapi, data_ptr, len, dma_addr);
+ 		bnxt_reuse_rx_data(rxr, cons, data);
+ 		if (!skb) {
+-			if (agg_bufs)
+-				bnxt_reuse_rx_agg_bufs(cpr, cp_cons, 0,
+-						       agg_bufs, false);
++			if (agg_bufs) {
++				if (!xdp_active)
++					bnxt_reuse_rx_agg_bufs(cpr, cp_cons, 0,
++							       agg_bufs, false);
++				else
++					bnxt_xdp_buff_frags_free(rxr, &xdp);
++			}
+ 			cpr->sw_stats.rx.rx_oom_discards += 1;
+ 			rc = -ENOMEM;
+ 			goto next_rx;
+@@ -1984,6 +1988,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 			skb = bnxt_xdp_build_skb(bp, skb, rxr->page_pool, &xdp, rxcmp1);
+ 			if (!skb) {
+ 				/* we should be able to free the old skb here */
++				bnxt_xdp_buff_frags_free(rxr, &xdp);
+ 				cpr->sw_stats.rx.rx_oom_discards += 1;
  				rc = -ENOMEM;
  				goto next_rx;
- 			}
-+		} else {
-+			skb = bnxt_xdp_build_skb(bp, skb, rxr->page_pool, &xdp, rxcmp1);
-+			if (!skb) {
-+				/* we should be able to free the old skb here */
-+				cpr->sw_stats.rx.rx_oom_discards += 1;
-+				rc = -ENOMEM;
-+				goto next_rx;
-+			}
- 		}
+@@ -2603,10 +2608,13 @@ static void __bnxt_poll_work_done(struct bnxt *bp, struct bnxt_napi *bnapi)
+ 	if ((bnapi->events & BNXT_RX_EVENT) && !(bnapi->in_reset)) {
+ 		struct bnxt_rx_ring_info *rxr = bnapi->rx_ring;
+ 
+-		if (bnapi->events & BNXT_AGG_EVENT)
+-			bnxt_db_write(bp, &rxr->rx_agg_db, rxr->rx_agg_prod);
+ 		bnxt_db_write(bp, &rxr->rx_db, rxr->rx_prod);
  	}
- 
-@@ -3965,14 +4004,21 @@ void bnxt_set_ring_params(struct bnxt *bp)
- int bnxt_set_rx_skb_mode(struct bnxt *bp, bool page_mode)
- {
- 	if (page_mode) {
--		if (bp->dev->mtu > BNXT_MAX_PAGE_MODE_MTU)
--			return -EOPNOTSUPP;
--		bp->dev->max_mtu =
--			min_t(u16, bp->max_mtu, BNXT_MAX_PAGE_MODE_MTU);
- 		bp->flags &= ~BNXT_FLAG_AGG_RINGS;
--		bp->flags |= BNXT_FLAG_NO_AGG_RINGS | BNXT_FLAG_RX_PAGE_MODE;
-+		bp->flags |= BNXT_FLAG_RX_PAGE_MODE;
++	if (bnapi->events & BNXT_AGG_EVENT) {
++		struct bnxt_rx_ring_info *rxr = bnapi->rx_ring;
 +
-+		if (bp->dev->mtu > BNXT_MAX_PAGE_MODE_MTU) {
-+			bp->flags |= BNXT_FLAG_JUMBO;
-+			bp->rx_skb_func = bnxt_rx_multi_page_skb;
-+			bp->dev->max_mtu =
-+				min_t(u16, bp->max_mtu, BNXT_MAX_MTU);
-+		} else {
-+			bp->flags |= BNXT_FLAG_NO_AGG_RINGS;
-+			bp->rx_skb_func = bnxt_rx_page_skb;
-+			bp->dev->max_mtu =
-+				min_t(u16, bp->max_mtu, BNXT_MAX_PAGE_MODE_MTU);
-+		}
- 		bp->rx_dir = DMA_BIDIRECTIONAL;
--		bp->rx_skb_func = bnxt_rx_page_skb;
- 		/* Disable LRO or GRO_HW */
- 		netdev_update_features(bp->dev);
- 	} else {
-@@ -11116,6 +11162,9 @@ static netdev_features_t bnxt_fix_features(struct net_device *dev,
- 	if (bp->flags & BNXT_FLAG_NO_AGG_RINGS)
- 		features &= ~(NETIF_F_LRO | NETIF_F_GRO_HW);
++		bnxt_db_write(bp, &rxr->rx_agg_db, rxr->rx_agg_prod);
++	}
+ 	bnapi->events = 0;
+ }
  
-+	if (!(bp->flags & BNXT_FLAG_TPA))
-+		features &= ~(NETIF_F_LRO | NETIF_F_GRO_HW);
-+
- 	if (!(features & NETIF_F_GRO))
- 		features &= ~NETIF_F_GRO_HW;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 9e2dabb58519..801aa40f602f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -698,13 +698,12 @@ struct bnxt_sw_tx_bd {
+ 	};
+ 	DEFINE_DMA_UNMAP_ADDR(mapping);
+ 	DEFINE_DMA_UNMAP_LEN(len);
++	struct page		*page;
+ 	u8			is_gso;
+ 	u8			is_push;
+ 	u8			action;
+-	union {
+-		unsigned short		nr_frags;
+-		u16			rx_prod;
+-	};
++	unsigned short		nr_frags;
++	u16			rx_prod;
+ };
  
+ struct bnxt_sw_rx_bd {
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 22e965e18fbc..b3a48d6675fe 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3491,7 +3491,7 @@ static int bnxt_run_loopback(struct bnxt *bp)
+ 		dev_kfree_skb(skb);
+ 		return -EIO;
+ 	}
+-	bnxt_xmit_bd(bp, txr, map, pkt_size);
++	bnxt_xmit_bd(bp, txr, map, pkt_size, NULL);
+ 
+ 	/* Sync BD data before updating doorbell */
+ 	wmb();
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index 5073f97722f1..3bcdbdd10bfc 100644
+index 3bcdbdd10bfc..42f39e89f6fb 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -349,3 +349,42 @@ int bnxt_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- 	}
- 	return rc;
- }
+@@ -22,36 +22,91 @@
+ 
+ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
+ 				   struct bnxt_tx_ring_info *txr,
+-				   dma_addr_t mapping, u32 len)
++				   dma_addr_t mapping, u32 len,
++				   struct xdp_buff *xdp)
+ {
+-	struct bnxt_sw_tx_bd *tx_buf;
++	struct skb_shared_info *sinfo;
++	struct bnxt_sw_tx_bd *tx_buf, *first_buf;
+ 	struct tx_bd *txbd;
++	int num_frags = 0;
+ 	u32 flags;
+ 	u16 prod;
++	int i;
 +
-+struct sk_buff *
-+bnxt_xdp_build_skb(struct bnxt *bp, struct sk_buff *skb, struct page_pool *pool,
-+		   struct xdp_buff *xdp, struct rx_cmp_ext *rxcmp1)
-+{
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-+	u8 num_frags, i;
-+
-+	if (unlikely(xdp_buff_has_frags(xdp)))
++	if (xdp && xdp_buff_has_frags(xdp)) {
++		sinfo = xdp_get_shared_info_from_buff(xdp);
 +		num_frags = sinfo->nr_frags;
++	}
+ 
++	/* fill up the first buffer */
+ 	prod = txr->tx_prod;
+ 	tx_buf = &txr->tx_buf_ring[prod];
++	first_buf = tx_buf;
++	tx_buf->nr_frags = num_frags;
++	if (xdp)
++		tx_buf->page = virt_to_head_page(xdp->data);
+ 
+ 	txbd = &txr->tx_desc_ring[TX_RING(prod)][TX_IDX(prod)];
+-	flags = (len << TX_BD_LEN_SHIFT) | (1 << TX_BD_FLAGS_BD_CNT_SHIFT) |
+-		TX_BD_FLAGS_PACKET_END | bnxt_lhint_arr[len >> 9];
++	flags = ((len) << TX_BD_LEN_SHIFT) | ((num_frags + 1) << TX_BD_FLAGS_BD_CNT_SHIFT);
+ 	txbd->tx_bd_len_flags_type = cpu_to_le32(flags);
+ 	txbd->tx_bd_opaque = prod;
+ 	txbd->tx_bd_haddr = cpu_to_le64(mapping);
+ 
++	/* now let us fill up the frags into the next buffers */
++	for (i = 0; i < num_frags ; i++) {
++		skb_frag_t *frag = &sinfo->frags[i];
++		struct bnxt_sw_tx_bd *frag_tx_buf;
++		struct pci_dev *pdev = bp->pdev;
++		dma_addr_t frag_mapping;
++		int frag_len;
 +
-+	if (!skb)
-+		return NULL;
++		prod = NEXT_TX(prod);
++		txr->tx_prod = prod;
 +
-+	skb_checksum_none_assert(skb);
-+	if (RX_CMP_L4_CS_OK(rxcmp1)) {
-+		if (bp->dev->features & NETIF_F_RXCSUM) {
-+			skb->ip_summed = CHECKSUM_UNNECESSARY;
-+			skb->csum_level = RX_CMP_ENCAP(rxcmp1);
-+		}
++		/* first fill up the first buffer */
++		frag_tx_buf = &txr->tx_buf_ring[prod];
++		frag_tx_buf->page = skb_frag_page(frag);
++
++		txbd = &txr->tx_desc_ring[TX_RING(prod)][TX_IDX(prod)];
++
++		frag_len = skb_frag_size(frag);
++		frag_mapping = skb_frag_dma_map(&pdev->dev, frag, 0,
++						frag_len, DMA_TO_DEVICE);
++
++		if (unlikely(dma_mapping_error(&pdev->dev, frag_mapping)))
++			return NULL;
++
++		dma_unmap_addr_set(frag_tx_buf, mapping, frag_mapping);
++
++		flags = frag_len << TX_BD_LEN_SHIFT;
++		txbd->tx_bd_len_flags_type = cpu_to_le32(flags);
++		txbd->tx_bd_opaque = prod;
++		txbd->tx_bd_haddr = cpu_to_le64(frag_mapping);
++
++		len = frag_len;
 +	}
 +
-+	if (unlikely(xdp_buff_has_frags(xdp))) {
-+		xdp_update_skb_shared_info(skb, sinfo->nr_frags,
-+					   sinfo->xdp_frags_size,
-+					   PAGE_SIZE * sinfo->nr_frags,
-+					   xdp_buff_is_frag_pfmemalloc(xdp));
-+	}
-+	/* debug frags and number of frags */
-+	for (i = 0; i < num_frags; i++) {
-+		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
++	flags &= ~TX_BD_LEN;
++	txbd->tx_bd_len_flags_type = cpu_to_le32(((len) << TX_BD_LEN_SHIFT) | flags |
++			TX_BD_FLAGS_PACKET_END);
++	/* Sync TX BD */
++	wmb();
+ 	prod = NEXT_TX(prod);
+ 	txr->tx_prod = prod;
+-	return tx_buf;
 +
-+		skb_frag_set_page(skb, i, skb_frag_page(&sinfo->frags[i]));
-+		skb_frag_size_set(frag, skb_frag_size(&sinfo->frags[i]));
-+		skb_frag_off_set(frag, skb_frag_off(&sinfo->frags[i]));
-+		page_pool_release_page(pool, skb_frag_page(frag));
++	return first_buf;
+ }
+ 
+ static void __bnxt_xmit_xdp(struct bnxt *bp, struct bnxt_tx_ring_info *txr,
+-			    dma_addr_t mapping, u32 len, u16 rx_prod)
++			    dma_addr_t mapping, u32 len, u16 rx_prod,
++			    struct xdp_buff *xdp)
+ {
+ 	struct bnxt_sw_tx_bd *tx_buf;
+ 
+-	tx_buf = bnxt_xmit_bd(bp, txr, mapping, len);
++	tx_buf = bnxt_xmit_bd(bp, txr, mapping, len, xdp);
+ 	tx_buf->rx_prod = rx_prod;
+ 	tx_buf->action = XDP_TX;
++
+ }
+ 
+ static void __bnxt_xmit_xdp_redirect(struct bnxt *bp,
+@@ -61,7 +116,7 @@ static void __bnxt_xmit_xdp_redirect(struct bnxt *bp,
+ {
+ 	struct bnxt_sw_tx_bd *tx_buf;
+ 
+-	tx_buf = bnxt_xmit_bd(bp, txr, mapping, len);
++	tx_buf = bnxt_xmit_bd(bp, txr, mapping, len, NULL);
+ 	tx_buf->action = XDP_REDIRECT;
+ 	tx_buf->xdpf = xdpf;
+ 	dma_unmap_addr_set(tx_buf, mapping, mapping);
+@@ -76,7 +131,7 @@ void bnxt_tx_int_xdp(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+ 	struct bnxt_sw_tx_bd *tx_buf;
+ 	u16 tx_cons = txr->tx_cons;
+ 	u16 last_tx_cons = tx_cons;
+-	int i;
++	int i, j, frags;
+ 
+ 	for (i = 0; i < nr_pkts; i++) {
+ 		tx_buf = &txr->tx_buf_ring[tx_cons];
+@@ -94,6 +149,13 @@ void bnxt_tx_int_xdp(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+ 		} else if (tx_buf->action == XDP_TX) {
+ 			rx_doorbell_needed = true;
+ 			last_tx_cons = tx_cons;
++
++			frags = tx_buf->nr_frags;
++			for (j = 0; j < frags; j++) {
++				tx_cons = NEXT_TX(tx_cons);
++				tx_buf = &txr->tx_buf_ring[tx_cons];
++				page_pool_recycle_direct(rxr->page_pool, tx_buf->page);
++			}
+ 		}
+ 		tx_cons = NEXT_TX(tx_cons);
+ 	}
+@@ -101,6 +163,7 @@ void bnxt_tx_int_xdp(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts)
+ 	if (rx_doorbell_needed) {
+ 		tx_buf = &txr->tx_buf_ring[last_tx_cons];
+ 		bnxt_db_write(bp, &rxr->rx_db, tx_buf->rx_prod);
++
+ 	}
+ }
+ 
+@@ -131,6 +194,23 @@ void bnxt_xdp_buff_init(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
+ 	xdp_prepare_buff(xdp, *data_ptr - offset, offset, *len, false);
+ }
+ 
++void bnxt_xdp_buff_frags_free(struct bnxt_rx_ring_info *rxr,
++			      struct xdp_buff *xdp)
++{
++	struct skb_shared_info *shinfo;
++	int i;
++
++	if (xdp)
++		shinfo = xdp_get_shared_info_from_buff(xdp);
++
++	for (i = 0; i < shinfo->nr_frags; i++) {
++		struct page *page = skb_frag_page(&shinfo->frags[i]);
++
++		page_pool_recycle_direct(rxr->page_pool, page);
 +	}
-+	return skb;
++	shinfo->nr_frags = 0;
 +}
++
+ /* returns the following:
+  * true    - packet consumed by XDP and new buffer is allocated.
+  * false   - packet should be passed to the stack.
+@@ -143,6 +223,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 	struct bnxt_sw_rx_bd *rx_buf;
+ 	struct pci_dev *pdev;
+ 	dma_addr_t mapping;
++	u32 tx_needed = 1;
+ 	void *orig_data;
+ 	u32 tx_avail;
+ 	u32 offset;
+@@ -178,18 +259,28 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 	case XDP_TX:
+ 		rx_buf = &rxr->rx_buf_ring[cons];
+ 		mapping = rx_buf->mapping - bp->rx_dma_offset;
++		*event = 0;
+ 
+-		if (tx_avail < 1) {
++		if (unlikely(xdp_buff_has_frags(&xdp))) {
++			struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(&xdp);
++
++			tx_needed += sinfo->nr_frags;
++			*event = BNXT_AGG_EVENT;
++		}
++
++		if (tx_avail < tx_needed) {
+ 			trace_xdp_exception(bp->dev, xdp_prog, act);
++			bnxt_xdp_buff_frags_free(rxr, &xdp);
+ 			bnxt_reuse_rx_data(rxr, cons, page);
+ 			return true;
+ 		}
+ 
+-		*event = BNXT_TX_EVENT;
+ 		dma_sync_single_for_device(&pdev->dev, mapping + offset, *len,
+ 					   bp->rx_dir);
++
++		*event |= BNXT_TX_EVENT;
+ 		__bnxt_xmit_xdp(bp, txr, mapping + offset, *len,
+-				NEXT_RX(rxr->rx_prod));
++				NEXT_RX(rxr->rx_prod), &xdp);
+ 		bnxt_reuse_rx_data(rxr, cons, page);
+ 		return true;
+ 	case XDP_REDIRECT:
+@@ -204,6 +295,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 		/* if we are unable to allocate a new buffer, abort and reuse */
+ 		if (bnxt_alloc_rx_data(bp, rxr, rxr->rx_prod, GFP_ATOMIC)) {
+ 			trace_xdp_exception(bp->dev, xdp_prog, act);
++			bnxt_xdp_buff_frags_free(rxr, &xdp);
+ 			bnxt_reuse_rx_data(rxr, cons, page);
+ 			return true;
+ 		}
+@@ -223,6 +315,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 		trace_xdp_exception(bp->dev, xdp_prog, act);
+ 		fallthrough;
+ 	case XDP_DROP:
++		bnxt_xdp_buff_frags_free(rxr, &xdp);
+ 		bnxt_reuse_rx_data(rxr, cons, page);
+ 		break;
+ 	}
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-index 39690bdb5526..45134d299931 100644
+index 45134d299931..8ac15184bcc8 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
-@@ -26,4 +26,7 @@ bool bnxt_xdp_attached(struct bnxt *bp, struct bnxt_rx_ring_info *rxr);
+@@ -12,7 +12,8 @@
+ 
+ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
+ 				   struct bnxt_tx_ring_info *txr,
+-				   dma_addr_t mapping, u32 len);
++				   dma_addr_t mapping, u32 len,
++				   struct xdp_buff *xdp);
+ void bnxt_tx_int_xdp(struct bnxt *bp, struct bnxt_napi *bnapi, int nr_pkts);
+ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 		 struct xdp_buff xdp, struct page *page, unsigned int *len,
+@@ -26,6 +27,8 @@ bool bnxt_xdp_attached(struct bnxt *bp, struct bnxt_rx_ring_info *rxr);
  void bnxt_xdp_buff_init(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
  			u16 cons, u8 **data_ptr, unsigned int *len,
  			struct xdp_buff *xdp);
-+struct sk_buff *bnxt_xdp_build_skb(struct bnxt *bp, struct sk_buff *skb,
-+				   struct page_pool *pool, struct xdp_buff *xdp,
-+				   struct rx_cmp_ext *rxcmp1);
- #endif
++void bnxt_xdp_buff_frags_free(struct bnxt_rx_ring_info *rxr,
++			      struct xdp_buff *xdp);
+ struct sk_buff *bnxt_xdp_build_skb(struct bnxt *bp, struct sk_buff *skb,
+ 				   struct page_pool *pool, struct xdp_buff *xdp,
+ 				   struct rx_cmp_ext *rxcmp1);
 -- 
 2.18.1
 
 
---0000000000001cf7c105daa0e83f
+--0000000000003168cc05daa0e8af
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -331,13 +487,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJyioaURZcLnbEQcgfL76ywMA8CQdGq1
-LmL5E12ogfyLMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMy
-MDA2NTgyN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIA3BLvfcl5WDUaas7OSyGTw7SuMx5Yd1
+quF4Eu/YuUxvMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMy
+MDA2NTgyOFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCVGRh6xIrYT4JAcSM21vLCvYFt3GZwMKgT9skS/IZxLrBvLBZi
-OouC+Ccwa1JzeKM3P3waKaoBNexbjuyNnCNikEwIeVPXcGGolDNjvcDc/rDa9b3BZHBA6162b/D9
-qM8/wYvD+Ol6SUDMcLwCoVOgw1oRy6uzCmeN3Tm1unRjmY02zp5wHwSUYONx3F+VJKnlFpowWRuf
-ijpENnlKE0msJsp/r2PsTorpFS3THk3mY0jNh+lR1FeC5cb9KxLqb/M0lg4Zg72eiQpJ8XDyIbQx
-GRFE+6DUUPZ4Z4ZYrONg9JlSHbWyxz41bpylhXEV2LpcMeTmiWet4MoLGr4xAkj2
---0000000000001cf7c105daa0e83f--
+ATANBgkqhkiG9w0BAQEFAASCAQBebGy7VcGurhYg3igdL3Kdp3VSl59DqEDjjt86f07+eSvLIJyL
+Wt1PDMDTapglntCXpIB5Bo4oUju66rKKzrbULiJZOo1Xf87ZDOkqd0coA5hBWTIFm2QE05vqR9Lj
+R6XAFr8UK1ZAIuz5FRiY5GgnPER4z1s8weYk/T2C+Cp32URDV+R0Li/7FmUoXYHyG2bk6NA1QSod
+DTVCcN6rOQXxef9kIVhsDZmcI539u471AGC9GyBCuiEVdrjPl6jzznRqzBGNCfq5jpWMkLOuYvFq
+nLdZTtwNzef3sfF7j8B6qwOuKzONIu+JfgnWaIjNC7VZUL3jrJenv6y9EfpK6g3O
+--0000000000003168cc05daa0e8af--
