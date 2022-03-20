@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D97854E1A91
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 07:58:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA9DB4E1A97
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 07:58:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244926AbiCTG74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 02:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
+        id S244890AbiCTHAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 03:00:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244887AbiCTG7n (ORCPT
+        with ESMTP id S244889AbiCTG7n (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 02:59:43 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C94024BE7
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:19 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id o13so8133559pgc.12
-        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:19 -0700 (PDT)
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6F2255BB
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:21 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id n7-20020a17090aab8700b001c6aa871860so5774285pjq.2
+        for <netdev@vger.kernel.org>; Sat, 19 Mar 2022 23:58:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=QfOAOiOnVs957+aUZFRd/6QEHTNfImEW+dkkOFa4R18=;
-        b=B0WtcS9d/3P6XzfhPe8Aabq40jyxtUmkXq7rxwH8fqqYBnmjPJ5Y0LW7HLWzHLtjrG
-         0AMBnOA8myXTj8PHsEULc5aThmj1VAUDJWqNxoJW8d29E2prJ0fBITHdyh0Na6Np4LRF
-         oh6QmOFPH/omsnLGXs6PCDQKq4DMLtm0WcOls=
+        bh=TX7HR277sdU5pieMFKc/Owdhxaq0BrhWwpUtqMCVjDQ=;
+        b=d2WjAksHWIbS/TX5dv9s8Qu/0cHsbSmOxOBwQpB4Zwe3hFAMzMzYolmZRNQsD4UTID
+         DuZJIckE5TUh8YQgxlQbUw3QNi9O9CBC4rIfDJZ0EBNoAFiW2ylvzehtKHIYXayj6cfk
+         M+npzPykrL90pkEC0dwWcco7E4od5Z2zWVMeU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=QfOAOiOnVs957+aUZFRd/6QEHTNfImEW+dkkOFa4R18=;
-        b=4NnLeVl863NZgJCFDPpSt54uBG9t1Ksah95siagr8DOJ9eQsLKzeSp6VQNOmgGfcO7
-         CmgbnGlFWvRzxDr+4SKJ4xkT8Zy5HuXhi/2AGi9TKJi8JFvg3rvtY/CzbAxsseh+B8AH
-         IXGlUcqyN4Xtbti/58a7n/PCA1SZ1iHCr7LmrEXgMx8Wj7yENROw6RbAL4xNmJrREGdh
-         NO0dbRhdv49owccN/lo8Xz5dMHzIzEWRHtf+JKPQRHYoY444fOMEN1QJbQ7dPUAPx06G
-         H9ltqyBOkVkX7eZ2vh0F2iU1mRGmy0WRzTazoM/o/w6zQ7lTljxUTDRW+/1z0TSBCtAY
-         WOKA==
-X-Gm-Message-State: AOAM533/u3f5CnvWpCdPAc4KUQmXdnIFPevGZ5t1z68DnSYkk0VL0LSF
-        XUqfktxHveaV07vdTygH2Spa9Q==
-X-Google-Smtp-Source: ABdhPJxyHXeJpDxLFkgsc5KmFrDirz/85D5g6STJhNxv7hVVg08YgXe/e5rzxK7k/7sff/JdZKrNpw==
-X-Received: by 2002:a05:6a00:a1d:b0:4f6:5051:6183 with SMTP id p29-20020a056a000a1d00b004f650516183mr18100773pfh.42.1647759498877;
-        Sat, 19 Mar 2022 23:58:18 -0700 (PDT)
+        bh=TX7HR277sdU5pieMFKc/Owdhxaq0BrhWwpUtqMCVjDQ=;
+        b=ykm+2cV+rmNPV3/+wqTbSpZ2gneR5wZAgfdptPeoLe8VIIfFs5c+ILB7m6qVFA6CwF
+         +Zudv3YYU2fiysPSigl7cfL7omXr/JLIxNmPrXqgMqnLqdj+V88P4DvqiSLL7YaqqRq+
+         6f++hZcH1AScbQgt56PaKtyiECOlYd8b8+n3YFXo7JTgZ1KKX52gnvC/MSUe+EnVlzQ8
+         BeKJnwOxF7ERhgW4qL01H8xEBCOXcz6xvnz5L+1pM8UzOKnTh6xfw8HbiXWkT6GPbJkI
+         Bf9QVYQgqb2B6csBhOt6K/Z0KWiwBZdJRVhbfeU6lxagtz6HAfwVS4gwhwEGx9ToRTSJ
+         u6Ow==
+X-Gm-Message-State: AOAM530IpdxUgae3z7RO5xMKPesjLAWUm97TmF+zz3+fi00w2O4hU3f/
+        UmX0Ekxb0sRw87FML4XVxN3yTg==
+X-Google-Smtp-Source: ABdhPJyaASegap9jIYhduge5BjqKICsWAOy8fBYSCbGijRO4WVm8zeDwi95Vj4GbvAQI90PwHoVVWA==
+X-Received: by 2002:a17:902:f686:b0:151:d866:f657 with SMTP id l6-20020a170902f68600b00151d866f657mr7284115plg.112.1647759500022;
+        Sat, 19 Mar 2022 23:58:20 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q4-20020a056a00150400b004f78d4821a0sm15359334pfu.204.2022.03.19.23.58.18
+        by smtp.gmail.com with ESMTPSA id q4-20020a056a00150400b004f78d4821a0sm15359334pfu.204.2022.03.19.23.58.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 19 Mar 2022 23:58:18 -0700 (PDT)
+        Sat, 19 Mar 2022 23:58:19 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 02/11] bnxt: add flag to denote that an xdp program is currently attached
-Date:   Sun, 20 Mar 2022 02:57:44 -0400
-Message-Id: <1647759473-2414-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 03/11] bnxt: refactor bnxt_rx_pages operate on skb_shared_info
+Date:   Sun, 20 Mar 2022 02:57:45 -0400
+Message-Id: <1647759473-2414-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1647759473-2414-1-git-send-email-michael.chan@broadcom.com>
 References: <1647759473-2414-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a2387705daa0e72f"
+        boundary="000000000000b951bc05daa0e72d"
 X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -65,54 +65,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a2387705daa0e72f
+--000000000000b951bc05daa0e72d
 
 From: Andy Gospodarek <gospo@broadcom.com>
 
-This will be used to determine if bnxt_rx_xdp should be called
-rather than calling it every time.
+Rather than operating on an sk_buff, add frags from the aggregation
+ring into the frags of an skb_shared_info.  This will allow the
+caller to use either an sk_buff or xdp_buff.
 
 Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 50 +++++++++++++++--------
+ 1 file changed, 33 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 21d5c76b1e70..b7d7ee775fdc 100644
+index b7d7ee775fdc..ba01a353bb3f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -1729,6 +1729,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
- 	struct bnxt_sw_rx_bd *rx_buf;
- 	unsigned int len;
- 	u8 *data_ptr, agg_bufs, cmp_type;
-+	bool xdp_active = false;
- 	dma_addr_t dma_addr;
- 	struct sk_buff *skb;
- 	struct xdp_buff xdp;
-@@ -1842,11 +1843,17 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+@@ -1038,22 +1038,23 @@ static struct sk_buff *bnxt_rx_skb(struct bnxt *bp,
+ 	return skb;
+ }
  
- 	if (bnxt_xdp_attached(bp, rxr)) {
- 		bnxt_xdp_buff_init(bp, rxr, cons, &data_ptr, &len, &xdp);
-+		xdp_active = true;
+-static struct sk_buff *bnxt_rx_pages(struct bnxt *bp,
+-				     struct bnxt_cp_ring_info *cpr,
+-				     struct sk_buff *skb, u16 idx,
+-				     u32 agg_bufs, bool tpa)
++static u32 __bnxt_rx_pages(struct bnxt *bp,
++			   struct bnxt_cp_ring_info *cpr,
++			   struct skb_shared_info *shinfo,
++			   u16 idx, u32 agg_bufs, bool tpa)
+ {
+ 	struct bnxt_napi *bnapi = cpr->bnapi;
+ 	struct pci_dev *pdev = bp->pdev;
+ 	struct bnxt_rx_ring_info *rxr = bnapi->rx_ring;
+ 	u16 prod = rxr->rx_agg_prod;
++	u32 i, total_frag_len = 0;
+ 	bool p5_tpa = false;
+-	u32 i;
+ 
+ 	if ((bp->flags & BNXT_FLAG_CHIP_P5) && tpa)
+ 		p5_tpa = true;
+ 
+ 	for (i = 0; i < agg_bufs; i++) {
++		skb_frag_t *frag = &shinfo->frags[i];
+ 		u16 cons, frag_len;
+ 		struct rx_agg_cmp *agg;
+ 		struct bnxt_sw_rx_agg_bd *cons_rx_buf;
+@@ -1069,8 +1070,10 @@ static struct sk_buff *bnxt_rx_pages(struct bnxt *bp,
+ 			    RX_AGG_CMP_LEN) >> RX_AGG_CMP_LEN_SHIFT;
+ 
+ 		cons_rx_buf = &rxr->rx_agg_ring[cons];
+-		skb_fill_page_desc(skb, i, cons_rx_buf->page,
+-				   cons_rx_buf->offset, frag_len);
++		skb_frag_off_set(frag, cons_rx_buf->offset);
++		skb_frag_size_set(frag, frag_len);
++		__skb_frag_set_page(frag, cons_rx_buf->page);
++		shinfo->nr_frags = i + 1;
+ 		__clear_bit(cons, rxr->rx_agg_bmap);
+ 
+ 		/* It is possible for bnxt_alloc_rx_page() to allocate
+@@ -1082,15 +1085,10 @@ static struct sk_buff *bnxt_rx_pages(struct bnxt *bp,
+ 		cons_rx_buf->page = NULL;
+ 
+ 		if (bnxt_alloc_rx_page(bp, rxr, prod, GFP_ATOMIC) != 0) {
+-			struct skb_shared_info *shinfo;
+ 			unsigned int nr_frags;
+ 
+-			shinfo = skb_shinfo(skb);
+ 			nr_frags = --shinfo->nr_frags;
+ 			__skb_frag_set_page(&shinfo->frags[nr_frags], NULL);
+-
+-			dev_kfree_skb(skb);
+-
+ 			cons_rx_buf->page = page;
+ 
+ 			/* Update prod since possibly some pages have been
+@@ -1098,20 +1096,38 @@ static struct sk_buff *bnxt_rx_pages(struct bnxt *bp,
+ 			 */
+ 			rxr->rx_agg_prod = prod;
+ 			bnxt_reuse_rx_agg_bufs(cpr, idx, i, agg_bufs - i, tpa);
+-			return NULL;
++			return 0;
+ 		}
+ 
+ 		dma_unmap_page_attrs(&pdev->dev, mapping, BNXT_RX_PAGE_SIZE,
+ 				     DMA_FROM_DEVICE,
+ 				     DMA_ATTR_WEAK_ORDERING);
+ 
+-		skb->data_len += frag_len;
+-		skb->len += frag_len;
+-		skb->truesize += PAGE_SIZE;
+-
++		total_frag_len += frag_len;
+ 		prod = NEXT_RX_AGG(prod);
+ 	}
+ 	rxr->rx_agg_prod = prod;
++	return total_frag_len;
++}
++
++static struct sk_buff *bnxt_rx_pages(struct bnxt *bp,
++				     struct bnxt_cp_ring_info *cpr,
++				     struct sk_buff *skb, u16 idx,
++				     u32 agg_bufs, bool tpa)
++{
++	struct skb_shared_info *shinfo = skb_shinfo(skb);
++	u32 total_frag_len = 0;
++
++	total_frag_len = __bnxt_rx_pages(bp, cpr, shinfo, idx, agg_bufs, tpa);
++
++	if (!total_frag_len) {
++		dev_kfree_skb(skb);
++		return NULL;
 +	}
 +
-+	/* skip running XDP prog if there are aggregation bufs */
-+	if (!agg_bufs && xdp_active) {
- 		if (bnxt_rx_xdp(bp, rxr, cons, xdp, data, &len, event)) {
- 			rc = 1;
- 			goto next_rx;
- 		}
- 	}
-+
- 	if (len <= bp->rx_copy_thresh) {
- 		skb = bnxt_copy_skb(bnapi, data_ptr, len, dma_addr);
- 		bnxt_reuse_rx_data(rxr, cons, data);
++	skb->data_len += total_frag_len;
++	skb->len += total_frag_len;
++	skb->truesize += PAGE_SIZE * agg_bufs;
+ 	return skb;
+ }
+ 
 -- 
 2.18.1
 
 
---000000000000a2387705daa0e72f
+--000000000000b951bc05daa0e72d
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -183,13 +260,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIi5/QEaJiuNmaInKQ3FStCAxmuYEBdg
-PpUDCOzFS9Y1MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMy
-MDA2NTgxOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIMttNjKgde+aMZYlrcoGSoBMoowJSOIM
+wFMx8ZdnizcTMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDMy
+MDA2NTgyMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQBkffo90qrmbOayxbu4xBVGGxF037L4x/Zp1AAmConMNn1u0pur
-IYQiWnVp0QpnbfoNIomvkjCNJ5DQvTLJxppfflA+VMx3hW2aGSP1WK1+w7ZKPRVjE63JesGR3guY
-JDuTqo0Ffbi4btc+ll+c9aYKDwXlGqB/yPuRtn7GsL2o1OYznJzrHiw8opOW7DrQ7XIDBAXGCeGN
-d7hBHLgQdUZ2Gk1hr89osotquSopl16JWxFzMx8Z7oL8d2IXUqhV5c7ba3O0CuZKWSuNI2Vd+S6D
-ywx8E48odY+vfkyi+7mexxezeL3TpaJSDHECOfwp8mbaKORD6MQQ5ybpVn71aNGm
---000000000000a2387705daa0e72f--
+ATANBgkqhkiG9w0BAQEFAASCAQAYS/Xlm3ofLyOymgLWkqzfJV6tz1lR1wzxFdiWWuHWaeV6SAXK
+DEe+qJleGsftBMXnuQkzJ9JwQoGWGSLtS9KN6gBaqwXwUzKiYnDAeFGmwC8A44hgIoWUjUfD7xZt
+Fr9YbfcCUSh5T0oMP87yBmr/M4cOwzoId6iQaZv+Ql8JbbwNJBI5smYohgmAO3qIf1+G+Vd5WkRf
+qdRVc1d3iX+YSN3zrGXuKJgM1nNy1rnH5ZzMYm7cFDh+G/yPUSOJ17H4pTETZ20j3hfJqkyPXA9Y
+l7gUIBgklJ8JGdeFhQQfsYIIsJFDr3dvOSaWVbreRzAYzCsvu6h7pFRmbsk+VfhH
+--000000000000b951bc05daa0e72d--
