@@ -2,58 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 231C14E19AF
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 05:45:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 291654E1A50
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 07:08:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244721AbiCTEq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 00:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51556 "EHLO
+        id S244774AbiCTGJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 02:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244713AbiCTEq0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 00:46:26 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19EA135A80;
-        Sat, 19 Mar 2022 21:45:04 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id o8so8028180pgf.9;
-        Sat, 19 Mar 2022 21:45:04 -0700 (PDT)
+        with ESMTP id S244768AbiCTGJl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 02:09:41 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DB32DE9;
+        Sat, 19 Mar 2022 23:08:18 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id n18so10196254plg.5;
+        Sat, 19 Mar 2022 23:08:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=s770C6klEms02pbWlMqZ7qzWEPI+Uww/MfxHY8uG4vE=;
-        b=k9YKR5Tf7qVAuC1cUWm77yUBOwwc0CbCrfIyggXfvSpC/32ovsPXOy0OJV/8XglEv0
-         lHNZbVWeVgLB6M/PfMdgSkGgjDUn0V2IEz+4KSh8heWJEOdcAU+tR2R52BF/htpDFV01
-         jUlul/JVNkE57GLLE78mbT0ZED/ARHEplwRYOHkBux0vrdFOspWowqjDywZrRs5KroCP
-         OYdC5q8PXyzaRQBNOnbGdA5VRbYgVLX1leyl/7XGeRDc44JOlz4o0kPaaeACW4jIk5TJ
-         /VfQZOaD7FBkyiDgQg+oOfRB7b2ObkXE7bL48UbNnMDyc332bodgcRARZvt2iiC2F8ZW
-         eEIQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W9+v4Drfx/EPiN0Sy9NIt9/vAIWyM2Vs6+JIbxhXlp0=;
+        b=SjtFIr7RO1nYKdaMEnJKtORiVZ1P3rlLlfYBYs7TiudyGp/JTTrrl6i4K5mVlDYSl8
+         o4Tr3NGKDnDU1Pt6DyosxGeHyPXVEiNRyd5C9ryGTjs//FtJZBvEU/YEjKiVHwtTp9EP
+         nKxRJTL52CXey+4S1I2AiTpcmu45+tspCU9nXBv4zrAncUWdiloLYuXfjJIKoaiWCN/1
+         xp9QXZW62ESkzQuO5k0jbgGX55ehdMxTE7w7E3h5cJ42UZbLyitHioHu2vatj2E8dWDB
+         CGfH33SESJMBb+o75v8ybw99IelAdWSzBoDV6cTMzv6hDGb6Xx2vaczvLLFANhkVoqGe
+         7x0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=s770C6klEms02pbWlMqZ7qzWEPI+Uww/MfxHY8uG4vE=;
-        b=oa+jdSNSO1dKFoexSdFRhRw/MfLZiJ5jacAERZEXv+8r5yHHdF6Eq1V2fWzD+1M6Qe
-         XA/XQf/8uNTzgBTG61i0FM7PpRpVh6fiauEPke9CVsL6t3DHwRW8PUllQKCOa8mjpi8z
-         qlppUhb7ESrwU2blhl4H7aMQnrF8Y51YiWrauU6QYXsqrFfBo/mVGUhokzyB54Q+awjL
-         K78Nt2a7/EPZoSo/OWxkI6ybprsXj7dMk8YXZ04od2lbxWr3pNFC8xr+sJaBMVMNBTUb
-         srn+NQWpMVQAySClJpBGKX+bRm82PKESiCxz3AjMMqIyL1Cs/ObV/vDWlffYXYjLilGZ
-         4qDg==
-X-Gm-Message-State: AOAM530e9BpGEMnTw+t/LxCH65+gCx8D2w4cQvXWVi7/DWVTnRzvm8zI
-        PcaxQw50bbYY3Hkj9NjQNyM=
-X-Google-Smtp-Source: ABdhPJyZWbaHloV4cvyTYd9gMf3UeNVpHyzScqPG05ZRjHgvljJYu1oRJQy/4CJPo8RCghCt/zikJw==
-X-Received: by 2002:a63:5409:0:b0:382:7e1:db0c with SMTP id i9-20020a635409000000b0038207e1db0cmr12121080pgb.204.1647751503605;
-        Sat, 19 Mar 2022 21:45:03 -0700 (PDT)
-Received: from localhost.localdomain ([36.24.165.243])
-        by smtp.googlemail.com with ESMTPSA id na8-20020a17090b4c0800b001bf191ee347sm17160560pjb.27.2022.03.19.21.45.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W9+v4Drfx/EPiN0Sy9NIt9/vAIWyM2Vs6+JIbxhXlp0=;
+        b=BnftJKoJOlyHpCZnX5BAOUxQrg/nnvvQ8Y3LaqDUFSctnlJTSXlKnAgw6iQAF7xCZf
+         1dlfjJNN8V1bnUuIexm4aquyd0qfTjzNWUYd7rYVE+w5GWTp+7esxFBE8QmDLu64Z46p
+         1Slt36JGZ9oerVSWFIRTe0mTD7leeXRbEU+Kg56w9A4eXO/uanD+f6KIYrdmHLM41A0o
+         g2Q3iFVAiK+725zPiXWm5sn99hofyXUJC+jKJnaOjCPX1PSCy1U8egddRjKKmb1WvUDs
+         DnTe6SkLrtXCAJfn9ezpktXEu7w4Q8nfdPHwQLDOu3CrwDW6p8oynMKyWaUYw/yKcNMq
+         R5+g==
+X-Gm-Message-State: AOAM532PXDK9as90p7jr0DHD2Su0lIQqAA3QsMkfPRLMxhz809S3FMu/
+        LcnOdpxh5ss/rMX/Lu8WBnpz71Bk0ywUZkmp
+X-Google-Smtp-Source: ABdhPJwn8V5+HxgvfApCV4NJnExiQ9oW9LHNmOIb5IQuD0lJyFgKI8SpeeLKaZSHtkW8DVdjmAVtAA==
+X-Received: by 2002:a17:902:7109:b0:153:2ed8:b140 with SMTP id a9-20020a170902710900b001532ed8b140mr7238430pll.52.1647756497843;
+        Sat, 19 Mar 2022 23:08:17 -0700 (PDT)
+Received: from vultr.guest ([2001:19f0:6001:3dea:5400:3ff:fee9:c745])
+        by smtp.gmail.com with ESMTPSA id y21-20020a056a00191500b004f78813b2d6sm15541662pfi.178.2022.03.19.23.08.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 19 Mar 2022 21:45:03 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     christopher.lee@cspi.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jakobkoschel@gmail.com, Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Subject: [PATCH v2] myri10ge: remove an unneeded NULL check
-Date:   Sun, 20 Mar 2022 12:44:57 +0800
-Message-Id: <20220320044457.13734-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Sat, 19 Mar 2022 23:08:17 -0700 (PDT)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Joanne Koong <joannekoong@fb.com>
+Subject: [PATCH] bpf: bpftool: fix print error when show bpf map
+Date:   Sun, 20 Mar 2022 06:08:14 +0000
+Message-Id: <20220320060815.7716-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -64,44 +70,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The define of skb_list_walk_safe(first, skb, next_skb) is:
-  for ((skb) = (first), (next_skb) = (skb) ? (skb)->next : NULL; (skb);  \
-     (skb) = (next_skb), (next_skb) = (skb) ? (skb)->next : NULL)
+If there is no btf_id or frozen, it will not show the pids,
+but the pids doesn't depends on any one of them.
 
-Thus, if the 'segs' passed as 'first' into the skb_list_walk_safe is NULL,
-the loop will exit immediately. In other words, it can be sure the 'segs'
-is non-NULL when we run inside the loop. So just remove the unnecessary
-NULL check. Also remove the unneeded assignmnets.
+Below is the result after this change,
+$ ./bpftool map show
+2: lpm_trie  flags 0x1
+	key 8B  value 8B  max_entries 1  memlock 4096B
+	pids systemd(1)
+3: lpm_trie  flags 0x1
+	key 20B  value 8B  max_entries 1  memlock 4096B
+	pids systemd(1)
 
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+While before this change, the 'pids systemd(1)' can't be displayed.
+
+Fixes: 9330986c0300 ("bpf: Add bloom filter map implementation")
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Cc: Joanne Koong <joannekoong@fb.com>
 ---
-changes since v1:
- - remove the unneeded assignmnets.
+ tools/bpf/bpftool/map.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-v1: https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
----
- drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-index 50ac3ee2577a..071657e3dba8 100644
---- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-+++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
-@@ -2903,12 +2903,8 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
- 		status = myri10ge_xmit(curr, dev);
- 		if (status != 0) {
- 			dev_kfree_skb_any(curr);
--			if (segs != NULL) {
--				curr = segs;
--				segs = next;
--				curr->next = NULL;
--				dev_kfree_skb_any(segs);
--			}
-+			segs->next = NULL;
-+			dev_kfree_skb_any(next);
- 			goto drop;
- 		}
+diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+index f91d9bf9054e..c26378f20831 100644
+--- a/tools/bpf/bpftool/map.c
++++ b/tools/bpf/bpftool/map.c
+@@ -620,17 +620,14 @@ static int show_map_close_plain(int fd, struct bpf_map_info *info)
+ 					    u32_as_hash_field(info->id))
+ 			printf("\n\tpinned %s", (char *)entry->value);
  	}
+-	printf("\n");
+ 
+ 	if (frozen_str) {
+ 		frozen = atoi(frozen_str);
+ 		free(frozen_str);
+ 	}
+ 
+-	if (!info->btf_id && !frozen)
+-		return 0;
+-
+-	printf("\t");
++	if (info->btf_id || frozen)
++		printf("\n\t");
+ 
+ 	if (info->btf_id)
+ 		printf("btf_id %d", info->btf_id);
 -- 
 2.17.1
 
