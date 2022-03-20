@@ -2,85 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5DC94E1E49
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 00:40:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D22E84E1E55
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 00:56:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343804AbiCTXlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 19:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60540 "EHLO
+        id S1343842AbiCTX5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 19:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243703AbiCTXlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 19:41:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9030C12AD7
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 16:40:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBF5961277
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 23:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5612AC340F0;
-        Sun, 20 Mar 2022 23:40:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647819610;
-        bh=vZiiA+8ubsF39Io/mWZI7vjibw4gCVG86bX8eet12+k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DIBKiu3sUFXo6nufuiUICrejQ2NzFESQnYSjlPDWFJ5MMSqJWRmBR1YBxHxj1kytC
-         53Lhc6lvg3rPaqP74XY3wpdaxn5eDE9Xtzk80IB4eI0lddi9urgWquYJFAhLb5DmzZ
-         jcpEeTuh4aa72FIVspBTSMqTp9W8EAjtxx5vhhrOD/I1xXZPPb4M6jhZ2UAxCmel2Q
-         W/6a756lRuoD9ZtN3IDE0JsCZjdKOGJdVb+x+0R8iMSW7lk5Sxudc8n3PKyVx1Kvjj
-         rm+Pr70zHEilUgu2SRv9OilnK+PtyW8jB1eC7ykdtC+2dwh/d2G+MMzVtT5XdwJPY7
-         xkpB3v2zLwwHw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35565EAC09C;
-        Sun, 20 Mar 2022 23:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S238451AbiCTX5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 19:57:37 -0400
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A0D17F3CA
+        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 16:56:12 -0700 (PDT)
+Received: by mail-oo1-xc33.google.com with SMTP id v19-20020a056820101300b0032488bb70f5so3239373oor.5
+        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 16:56:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5f4rsnnVV5V9cxNeclLxIudo/rCO8obouFsnQkZhptE=;
+        b=joEW3+NcWWxtZcT2+JcufUCAcpCO/bWZrBW59qHRf7KiZrum5+eDXJV611g4ZGmHhm
+         tP6ducu/Pr0J/to4ZfeL3Xe/KXh97K/vzAuB72pf7Xcwn9zPR2AwGVL7sEl4wKnHAhBd
+         Kxn2M6GcqmJPSRSXABBMUpgpQL2SqYHh8x4tsj1cpHJh0gkqUNvGIuVd46WjEIq2ExC5
+         SDvXjYuTgM3+GwDx1yyj1tUXdOEQL+opttJwwpJe/eLtXFJZr+In1+2GFWr3e8isbvOX
+         c4n8B2f1Iplit+ddxnDGTlIivlys6KWJIUdaWrCSK0cEfi89ExL8XZo/oo3f1chOMUFj
+         IzSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5f4rsnnVV5V9cxNeclLxIudo/rCO8obouFsnQkZhptE=;
+        b=G9k5fB2jAmTYfRuGsGptrs55E1gjhtZGlV3dyrSMEXdPdkxzgwA81e/Ib/LEVa0txA
+         SHDu7UZhyNgdYvyRnHdCbxLp+a4Xu5KtqzYiwrvzHdbwqbdkShF7jt97GNERVlRSZm/J
+         BnydPbukJkCqtowBlDhZJn/JcJ5+tKrBoqE5mUHJwSbVZL/sl+VcfQOZnSeciZDmflEm
+         KgeXDO3Z2KeHt+t1IETTiTeMNcnhO/pzYAqRojqRFt0H9Kf3/r2MUfbtkZf7NbX0JDI2
+         tyvV+ucx3uuQgLOKGb1celxIqaqccWPWiF4Nl4PxLRXx/d0P0v0AU9lDNUMRfFUyj2VD
+         /ogA==
+X-Gm-Message-State: AOAM530Ng54/V7M0Bm6g2NRW7MkW0hcJW8t0terduRiMJrQ5Wo+XQihS
+        s2F+1YQ7T77xbic999BVTuo=
+X-Google-Smtp-Source: ABdhPJzyrNJMnAihoMZtz6EucOSJ76475iEmoXTGgH5cmvtXqkJhrtvKRPSOPc1J3r9jneezyh09Bw==
+X-Received: by 2002:a05:6870:7097:b0:dd:f298:8ba7 with SMTP id v23-20020a056870709700b000ddf2988ba7mr3010485oae.279.1647820572163;
+        Sun, 20 Mar 2022 16:56:12 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.58])
+        by smtp.googlemail.com with ESMTPSA id p14-20020a9d744e000000b005b235f5cf92sm6893135otk.65.2022.03.20.16.56.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 20 Mar 2022 16:56:11 -0700 (PDT)
+Message-ID: <f416bcfc-9463-b848-74a4-59e688a355ca@gmail.com>
+Date:   Sun, 20 Mar 2022 17:56:10 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2-next 0/2] bridge: support for per-port mcast_router
- options
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164781961021.5687.13605478498204363634.git-patchwork-notify@kernel.org>
-Date:   Sun, 20 Mar 2022 23:40:10 +0000
-References: <20220316090257.3531111-1-troglobit@gmail.com>
-In-Reply-To: <20220316090257.3531111-1-troglobit@gmail.com>
-To:     Joachim Wiberg <troglobit@gmail.com>
-Cc:     netdev@vger.kernel.org, dsahern@kernel.org,
-        stephen@networkplumber.org, razor@blackwall.org
-X-Spam-Status: No, score=-8.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH iproute2-next] ip/geneve: add support for
+ IFLA_GENEVE_INNER_PROTO_INHERIT
+Content-Language: en-US
+To:     Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, roopa@nvidia.com
+References: <20220319085740.1833561-1-eyal.birger@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220319085740.1833561-1-eyal.birger@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 3/19/22 2:57 AM, Eyal Birger wrote:
+> @@ -182,6 +184,10 @@ static int geneve_parse_opt(struct link_util *lu, int argc, char **argv,
+>  			check_duparg(&attrs, IFLA_GENEVE_UDP_ZERO_CSUM6_RX,
+>  				     *argv, *argv);
+>  			udp6zerocsumrx = 0;
+> +		} else if (!matches(*argv, "innerprotoinherit")) {
 
-This series was applied to iproute2/iproute2-next.git (main)
-by David Ahern <dsahern@kernel.org>:
-
-On Wed, 16 Mar 2022 10:02:55 +0100 you wrote:
-> Hi,
-> 
-> this patch set adds per bridge port mcast_router option.  I.e., the
-> ability to control how IGMP/MLD snooping learns of external routers
-> where both known and unknown multicast should be flooded.  Similar
-> functionality per-port and per-vlan setting already exist.
-> 
-> [...]
-
-Here is the summary with links:
-  - [iproute2-next,1/2] bridge: support for controlling mcast_router per port
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=9e82e828764a
-  - [iproute2-next,2/2] man: bridge: document per-port mcast_router settings
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=e48808692b6d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+changed matches to strcmp (not taking any more usage of matches) and
+applied to iproute2-next.
 
