@@ -2,169 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF6284E1AB3
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 08:52:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEAE24E1AB7
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 08:53:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237855AbiCTHyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 03:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
+        id S242585AbiCTHy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 03:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231180AbiCTHyE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 03:54:04 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7929B1F0453;
-        Sun, 20 Mar 2022 00:52:40 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id E8DB85C0116;
-        Sun, 20 Mar 2022 03:52:37 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Sun, 20 Mar 2022 03:52:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=5S1Qz9qa8y5v6pn+6
-        hPiVyR9fbOW9nCX+ik34wPrsIw=; b=GR4U9PbXRmwKlG+92UM35IdYDLE1UnrK7
-        Ld0eXeTAX/uq+p5Fc/9ZoksjqPgGZiSpV6ROvs5hTVAqwg7Tr2+I9ClVUMIf1gw6
-        Nd4Q5VhefO0IaNXa2OzHrlr4va1hUuM+J6dmJMWx1rQk1pNLLoUPar4yqWHhGchI
-        tDdBttofIPw+uIPGAhN4loJ50CoPyybCcFjoZ5qHUL9iFqXOQ643z7LP889vGkPq
-        v+3Pmq2E7OXWZv0cSKl/f8Ffr1jVvO3a7Y/rbIHN0fDTkP7v58BS07KKMCkskUG7
-        rTPrp+jinp67KmciT0vJHFrcQsbAicJn7KXknDl2WEjI12WPUEW+Q==
-X-ME-Sender: <xms:Rd02YlAJD1ycEJbkLRMM0KRY1lDvwGfvGBClIeKGAwuYgY-HM9HNnQ>
-    <xme:Rd02YjjzevJC-HgUmG0HrhVAfVILN18yq7Bv5tw05ggk4d7STE8NnJpO4lvR_lBim
-    6Hj4eVHk4KKHzk>
-X-ME-Received: <xmr:Rd02Ygk33nNO4FUMv2-vySsaqev1qpuzZW2Jcu9_5dkPG_NIAUjrvAqpmRucXTs56jsnzw_cEy4BVHAsY8Zm4h4Tjbw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudegtddgtdelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:Rd02YvzwPsopQaTOv0s9xyRhEaTH9tDkKCEJi5ru5QmnSzqjeBupcw>
-    <xmx:Rd02YqTH4pWwiDel8_YY2xrIDSeh4juCtvRvBHVZb5Tj7qDdvxXDeA>
-    <xmx:Rd02Yib1AlUzy3TCPVkOFvuapZ5IVI5hvwqvgtuVH6Nzs_K2gOkNig>
-    <xmx:Rd02YvhB7qS8uctbcKFyh_JQZBVebQgpvrp2AY-Z7P6OicfFSEMiYQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 20 Mar 2022 03:52:36 -0400 (EDT)
-Date:   Sun, 20 Mar 2022 09:52:33 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
+        with ESMTP id S241285AbiCTHyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 03:54:53 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99BA538795;
+        Sun, 20 Mar 2022 00:53:30 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id p8so13018611pfh.8;
+        Sun, 20 Mar 2022 00:53:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YdfDvLiYSkwoveTevrFyxDKIAlT96ozvId3O7lsxmG0=;
+        b=fnIJAOczZfkcMTWxm71ikrU6gEZlqXkgoBp02rK9vmFvGqokGO6q7F4OOi9OF1tIOB
+         YVXJj0ICg/MJxS365Px2eOqE0pGKiu8LWvFL+JZeozosE8v5+rc8u8/edZPB/yq+T5zc
+         00/E4kRq8N5RKxHfNuI5IVxviXDdK8durx0YX21qoNOELe5fgwOUxZyBvXZm+5l6hRk3
+         9WwuwwXWXVaqSawbzyHKfiUpClVopJNdmABS9eabkLvZCH2SYizwGtNb/AnNGT+jkeui
+         Z2zP47M3DXSYgzIbsLktAR92RkrFDuaje4FvV5j3pRU0TQ8T1WDOYvqAwHkGpWfIxLqx
+         nLeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YdfDvLiYSkwoveTevrFyxDKIAlT96ozvId3O7lsxmG0=;
+        b=UcAmuHFKefDFnyBG/kZHpyp+NUfS86BXUkzAzRtHkKosdaRcoQstjY9DT64cudqgXx
+         SXMep9UqspRROxonRLuCUjbp2t4EM0ND7t2/XZBFoD+a7S1cob82mrH/RDuo4NMY6X78
+         T/1b2xAKXxFrzcTVG7YXP8ZuzyMo+4WXKguctukTUik1C84onv+CSyPqWJV4yQctmdSs
+         dXgCiT0b8UwFHJFI5rgYXt/KwUV+sTyP0dnimD5DR2PSyb317Ofv7G7Cu5FYXFNhn5Up
+         5GZY82CWF9EtbLWNjkWyf4DFmJa8AnohUO/TKlkgCEbYB1u8timEmMlEfZir/ubRvHwY
+         wy3Q==
+X-Gm-Message-State: AOAM533YmDC+sW5OYsyv5IYzsN7rra1L4kFAf3BMEeE/4/bQzrWqQPlq
+        2OyCe2OXH3PkMVjqsMWDY8Y=
+X-Google-Smtp-Source: ABdhPJxiDmjx7mx8m64J0PZxBOiWCifW7YmdHFPCmKLgxX7B4hFnkhIuncFr2s0uHcqIOMhdMIY3GQ==
+X-Received: by 2002:aa7:8c45:0:b0:4f6:bf82:7aba with SMTP id e5-20020aa78c45000000b004f6bf827abamr18350033pfd.20.1647762809470;
+        Sun, 20 Mar 2022 00:53:29 -0700 (PDT)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id c5-20020a056a00248500b004f6b5ddcc65sm15162247pfv.199.2022.03.20.00.53.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 20 Mar 2022 00:53:28 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 4/4] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-Message-ID: <YjbdQUVYkhkbdp3L@shredder>
-References: <20220317093902.1305816-1-schultz.hans+netdev@gmail.com>
- <20220317093902.1305816-5-schultz.hans+netdev@gmail.com>
- <YjNMS6aFG+93ejj5@shredder>
- <86mthnw9gr.fsf@gmail.com>
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] bpf: Simplify check in btf_parse_hdr()
+Date:   Sun, 20 Mar 2022 15:52:40 +0800
+Message-Id: <20220320075240.1001728-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86mthnw9gr.fsf@gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 04:45:24PM +0100, Hans Schultz wrote:
-> On tor, mar 17, 2022 at 16:57, Ido Schimmel <idosch@idosch.org> wrote:
-> > On Thu, Mar 17, 2022 at 10:39:02AM +0100, Hans Schultz wrote:
-> >> Verify that the MAC-Auth mechanism works by adding a FDB entry with the
-> >> locked flag set. denying access until the FDB entry is replaced with a
-> >> FDB entry without the locked flag set.
-> >> 
-> >> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
-> >> ---
-> >>  .../net/forwarding/bridge_locked_port.sh      | 29 ++++++++++++++++++-
-> >>  1 file changed, 28 insertions(+), 1 deletion(-)
-> >> 
-> >> diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-> >> index 6e98efa6d371..2f9519e814b6 100755
-> >> --- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-> >> +++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-> >> @@ -1,7 +1,7 @@
-> >>  #!/bin/bash
-> >>  # SPDX-License-Identifier: GPL-2.0
-> >>  
-> >> -ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-> >> +ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan locked_port_mab"
-> >>  NUM_NETIFS=4
-> >>  CHECK_TC="no"
-> >>  source lib.sh
-> >> @@ -170,6 +170,33 @@ locked_port_ipv6()
-> >>  	log_test "Locked port ipv6"
-> >>  }
-> >>  
-> >> +locked_port_mab()
-> >> +{
-> >> +	RET=0
-> >> +	check_locked_port_support || return 0
-> >> +
-> >> +	ping_do $h1 192.0.2.2
-> >> +	check_err $? "MAB: Ping did not work before locking port"
-> >> +
-> >> +	bridge link set dev $swp1 locked on
-> >> +	bridge link set dev $swp1 learning on
-> >> +
-> >> +	ping_do $h1 192.0.2.2
-> >> +	check_fail $? "MAB: Ping worked on port just locked"
-> >> +
-> >> +	if ! bridge fdb show | grep `mac_get $h1` | grep -q "locked"; then
-> >> +		RET=1
-> >> +		retmsg="MAB: No locked fdb entry after ping on locked port"
-> >> +	fi
-> >
-> > bridge fdb show | grep `mac_get $h1 | grep -q "locked"
-> > check_err $? "MAB: No locked fdb entry after ping on locked port"
-> >
-> >> +
-> >> +	bridge fdb del `mac_get $h1` dev $swp1 master
-> >> +	bridge fdb add `mac_get $h1` dev $swp1 master static
-> >
-> > bridge fdb replace `mac_get $h1` dev $swp1 master static
-> >
-> Unfortunately for some reason 'replace' does not work in several of the
-> tests, while when replaced with 'del+add', they work.
+Replace offsetof(hdr_len) + sizeof(hdr_len) with offsetofend(hdr_len) to
+simplify the check for correctness of btf_data_size in btf_parse_hdr()
 
-Is it because the 'locked' flag is not removed following the replace? At
-least I don't see where it's handled in fdb_add_entry(). If so, please
-fix it and use "bridge fdb replace" in the test.
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ kernel/bpf/btf.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> 
-> >> +
-> >> +	ping_do $h1 192.0.2.2
-> >> +	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
-> >> +
-> >> +	log_test "Locked port MAB"
-> >
-> > Clean up after the test to revert to initial state:
-> >
-> > bridge fdb del `mac_get $h1` dev $swp1 master
-> > bridge link set dev $swp1 locked off
-> >
-> >
-> >> +}
-> >>  trap cleanup EXIT
-> >>  
-> >>  setup_prepare
-> >> -- 
-> >> 2.30.2
-> >> 
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 6d9e711cb5d4..97fd853db16b 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -4480,8 +4480,7 @@ static int btf_parse_hdr(struct btf_verifier_env *env)
+ 	btf = env->btf;
+ 	btf_data_size = btf->data_size;
+ 
+-	if (btf_data_size <
+-	    offsetof(struct btf_header, hdr_len) + sizeof(hdr->hdr_len)) {
++	if (btf_data_size < offsetofend(struct btf_header, hdr_len)) {
+ 		btf_verifier_log(env, "hdr_len not found");
+ 		return -EINVAL;
+ 	}
+-- 
+2.35.1
+
