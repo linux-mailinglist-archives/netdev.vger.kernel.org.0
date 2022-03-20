@@ -2,97 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B1774E1BD8
-	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 14:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB31A4E1BE3
+	for <lists+netdev@lfdr.de>; Sun, 20 Mar 2022 14:28:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245148AbiCTNXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 09:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
+        id S245163AbiCTN3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 09:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239999AbiCTNXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 09:23:22 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC143D1CE
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 06:21:58 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id r190-20020a1c2bc7000000b0038a1013241dso7100358wmr.1
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 06:21:58 -0700 (PDT)
+        with ESMTP id S232852AbiCTN33 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 09:29:29 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2723616E;
+        Sun, 20 Mar 2022 06:28:05 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id bg10so25215272ejb.4;
+        Sun, 20 Mar 2022 06:28:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=CiwhGRNrXz4QNizMa/oAhqtF2xiNgjqkYli9zHg8NMo=;
-        b=ooINi4qmadEwMMSSbUh9xuE2GUMZdFzpXR1++zh7EgKuDr1/NmJNrR7aEgX9YEYnqR
-         j/C7WHJwAEaroHujPrPBwHaVKiGIbu1nwhw6Bvq+dEbjefo+cmS41dhKhkQ7W2enDIcn
-         FwsFB9BzT3mLwMM+/x6ZL3laea9/DI7YnSRRxUERp8zMouKs6KjyFAF0jRCtuQjp1GFb
-         NzO6gACyZQm+mAnPo/n3gilRevnFb/8ycSHL5qutcWmYhYgL/Hn1gcm7GD7dGf2KMLkg
-         14giC/KDFp/is73wLuzsjr6B2mi5ks2+ehWaq7GJRiCaKi+k83jrzVLsf4GEDI/JshXs
-         kKcA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uiBW7PV/e0GMuTNf+xkw95IZotR/0iKHdVHb0o8XkmA=;
+        b=kKVxjroK3JDqnoUjmvhKFWRth7Fh8vLmM1kvG9dkEKBWJuaBEvSefvupl7IzEpG+BO
+         +e9gLlbNmAk/FtnbcEC70KxQvgTi5MUcf0QbsJXW8e85mgjpIVu9GJ8LQBDmSi5jn4Bp
+         OU7xuEqMNhQT7kbmlWdnDPlNaXuUFm44JZ64zd0fPPoLpQ4VNqXvCo1Doaq7kkUqCaEr
+         lNJrRULOPgI7Q3NJ7NrSgg7MzO1lnzV01e5v8A2+HC5N+dWYWFiyBQKiOyVzYZr4fHSv
+         xi9zc7fM796zTPsfd2G7loXUGPr0kgU2TMBpkeRIK+l/uwrzOSK5op5CmOm3p+v0veBA
+         ca0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=CiwhGRNrXz4QNizMa/oAhqtF2xiNgjqkYli9zHg8NMo=;
-        b=gtldYnZ1s8Ztq1HEI1LJMEuLn3+DB+jSD0NAKsZAWkbHL9cfPyQI69e01a2ogxtyKy
-         o3Cjj0UzpDoy3kunQ9aj8Km1n3mx8bAO7U3ii+k2bsdLoTDPgcS4/lLKNa9/y5cs+r+q
-         rOrOi+6h4YZY9WVYSVPfX+n3y673UZJATKzBB1ld/oRv/+ZJKohdecsjSn55Tl2r+2Cl
-         N8LkrLLoiLvSkmev05M1TYtjbz9KaXWBjrkn2v17We70CDUKW0NCARNqgNz/kfxxyRbW
-         FmJrgkWMdy+wIvcGD1MtjFs+igYewuxt/7hab1ECDtIhRe0r2BYpF+YtMNmRIuCDw/8I
-         OpJQ==
-X-Gm-Message-State: AOAM5317mOt5rYWbflQgGty6eSrDio2jY71SeyHWXUKD88mXOvGEZaft
-        hE32Te01lZhV5VU98hekOgqL2Q==
-X-Google-Smtp-Source: ABdhPJwpvkdAY6cBXr3dOsU2mQlSFPo8+WDyEP4JRfxs73L2obnJJNJLtCZo6KY0b0mYyHj82adJdg==
-X-Received: by 2002:a7b:c2aa:0:b0:389:891f:1fd1 with SMTP id c10-20020a7bc2aa000000b00389891f1fd1mr23391259wmk.138.1647782517417;
-        Sun, 20 Mar 2022 06:21:57 -0700 (PDT)
-Received: from [192.168.0.69] (188-141-3-169.dynamic.upc.ie. [188.141.3.169])
-        by smtp.gmail.com with ESMTPSA id l9-20020a5d6d89000000b00203d62072c4sm11795831wrs.43.2022.03.20.06.21.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Mar 2022 06:21:56 -0700 (PDT)
-Message-ID: <c8f31312-5356-704e-1f55-89c9f5888238@linaro.org>
-Date:   Sun, 20 Mar 2022 13:21:55 +0000
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uiBW7PV/e0GMuTNf+xkw95IZotR/0iKHdVHb0o8XkmA=;
+        b=CuX1BankhI14M2KQWAaozlBxMMOuP9KVsN676zhwvZe5YEM9sevkzg0QUFg5YUBd1M
+         R3rOQYUGqmjkz4vfvbLOB1oNtYebq7BZNaOfgOPgeO7eLiVtytN8UeZW8c8mWzwgmwBd
+         elchat35eJ6eWiRDNREY2ks6rU5GUdIgxX4UJZeVqTX7Owan2h/bfn43y629gK0sIuCk
+         gcL+kF7r3xIDQnxdlnX75LwsDZlI/yZwzSxFBBTtNTFenPirGDU2BSvwotBzVnc4y41C
+         5q5XC+5oJsdjYVoxwOvrOXqv6ywxxDFun4PvLnzHOsQuNBQcN98/Cl6PFfvC97MfP8Aa
+         8RuQ==
+X-Gm-Message-State: AOAM5317s8B/LpHhJA6Y+YfOap0q6hy7tTqSBYENUCKQ2Zqd/Aq8EDcF
+        dr+cH5zkOQxATqjWMWKXxCAgwoPzskhYRfRx3H8=
+X-Google-Smtp-Source: ABdhPJzRx2NHqcntJ0YMCadTXJqTHTeHPyzN3XiUyK8h2Iws9qkBf49h+jncHtTvXrlKOi07jdqydYsgFR/dnVijaPk=
+X-Received: by 2002:a17:907:3f8f:b0:6df:c340:f91 with SMTP id
+ hr15-20020a1709073f8f00b006dfc3400f91mr9150629ejc.765.1647782884230; Sun, 20
+ Mar 2022 06:28:04 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2 2/2] wcn36xx: Implement tx_rate reporting
-Content-Language: en-US
-To:     Edmond Gagnon <egagnon@squareup.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Benjamin Li <benl@squareup.com>, Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220318195804.4169686-1-egagnon@squareup.com>
- <20220318195804.4169686-3-egagnon@squareup.com>
-From:   Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-In-Reply-To: <20220318195804.4169686-3-egagnon@squareup.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220316063148.700769-1-imagedong@tencent.com>
+ <20220316063148.700769-4-imagedong@tencent.com> <20220316201853.0734280f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <4315b50e-9077-cc4b-010b-b38a2fbb7168@kernel.org> <20220316210534.06b6cfe0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <f787c35b-0984-ecaf-ad97-c7580fcdbbad@kernel.org> <CADxym3YM9FMFrTirxWQF7aDOpoEGq5bC4-xm2p0mF8shP+Q0Hw@mail.gmail.com>
+ <a4032cff-0d48-2690-3c1f-a2ec6c54ffb4@kernel.org> <CADxym3bGVebdCTCXxg3xEcPwdfSQADLyPbLTJnPnwn+phqGp3A@mail.gmail.com>
+ <98450e8a-b3e1-22d7-86fb-3c8456a36018@kernel.org>
+In-Reply-To: <98450e8a-b3e1-22d7-86fb-3c8456a36018@kernel.org>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Sun, 20 Mar 2022 21:27:52 +0800
+Message-ID: <CADxym3b3T0V0zHkN36vusvSNL=Tk+b_Ahy9Tj8=kKm_gmuRS3A@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 3/3] net: icmp: add reasons of the skb drops
+ to icmp protocol
+To:     David Ahern <dsahern@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Biao Jiang <benbjiang@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/03/2022 19:58, Edmond Gagnon wrote:
-> +	INIT_DELAYED_WORK(&wcn->get_stats_work, wcn36xx_get_stats_work);
+On Sat, Mar 19, 2022 at 6:33 AM David Ahern <dsahern@kernel.org> wrote:
+>
+> On 3/18/22 1:26 AM, Menglong Dong wrote:
+> > Yeah, PTYPE seems not suitable. I mean that replace SKB_DROP_REASON_PTYPE_ABSENT
+> > that is used in __netif_receive_skb_core() with L3_PROTO, which means no L3
+> > protocol handler (or other device handler) is not found for the
+> > packet. This seems more
+> > friendly and not code based.
+> >
+> >>> And use SKB_DROP_REASON_L4_PROTO for the L4 protocol problem,
+> >>> such as GRE version not supported, ICMP type not supported, etc.
+> > Is this L4_PROTO followed by anyone?
+>
+> how about just a generic
+>         SKB_DROP_REASON_UNHANDLED_PROTO  /* protocol not implemented
+>                                           * or not supported
+>                                           */
+>
+> in place of current PTYPE_ABSENT (so a rename to remove a Linux code
+> reference), and then use it for no L3 protocol handler, no L4 protocol
+> handler, version extensions etc. The instruction pointer to symbol gives
+> the context of the unsupported protocol.
 
-Instead of forking a worker and polling we could add the relevant SMD 
-command to
+Yeah, I think it's a good idea :)
 
-static int wcn36xx_smd_tx_compl_ind(struct wcn36xx *wcn, void *buf, 
-size_t len)
-{
-     wcn36xx_smd_get_stats(wcn, 0xSomeMask);
-}
-
-That way we only ever ask for and report a new TX data rate when we know 
-a TX event - and hence a potential TX data-rate update - has taken place.
-
----
-bod
-
+Thanks!
+Menglong Dong
