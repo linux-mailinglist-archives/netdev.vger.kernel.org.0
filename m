@@ -2,70 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D22E84E1E55
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 00:56:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89C4A4E1E72
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 01:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343842AbiCTX5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 19:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        id S1343884AbiCUAZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 20:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238451AbiCTX5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 19:57:37 -0400
-Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A0D17F3CA
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 16:56:12 -0700 (PDT)
-Received: by mail-oo1-xc33.google.com with SMTP id v19-20020a056820101300b0032488bb70f5so3239373oor.5
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 16:56:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=5f4rsnnVV5V9cxNeclLxIudo/rCO8obouFsnQkZhptE=;
-        b=joEW3+NcWWxtZcT2+JcufUCAcpCO/bWZrBW59qHRf7KiZrum5+eDXJV611g4ZGmHhm
-         tP6ducu/Pr0J/to4ZfeL3Xe/KXh97K/vzAuB72pf7Xcwn9zPR2AwGVL7sEl4wKnHAhBd
-         Kxn2M6GcqmJPSRSXABBMUpgpQL2SqYHh8x4tsj1cpHJh0gkqUNvGIuVd46WjEIq2ExC5
-         SDvXjYuTgM3+GwDx1yyj1tUXdOEQL+opttJwwpJe/eLtXFJZr+In1+2GFWr3e8isbvOX
-         c4n8B2f1Iplit+ddxnDGTlIivlys6KWJIUdaWrCSK0cEfi89ExL8XZo/oo3f1chOMUFj
-         IzSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5f4rsnnVV5V9cxNeclLxIudo/rCO8obouFsnQkZhptE=;
-        b=G9k5fB2jAmTYfRuGsGptrs55E1gjhtZGlV3dyrSMEXdPdkxzgwA81e/Ib/LEVa0txA
-         SHDu7UZhyNgdYvyRnHdCbxLp+a4Xu5KtqzYiwrvzHdbwqbdkShF7jt97GNERVlRSZm/J
-         BnydPbukJkCqtowBlDhZJn/JcJ5+tKrBoqE5mUHJwSbVZL/sl+VcfQOZnSeciZDmflEm
-         KgeXDO3Z2KeHt+t1IETTiTeMNcnhO/pzYAqRojqRFt0H9Kf3/r2MUfbtkZf7NbX0JDI2
-         tyvV+ucx3uuQgLOKGb1celxIqaqccWPWiF4Nl4PxLRXx/d0P0v0AU9lDNUMRfFUyj2VD
-         /ogA==
-X-Gm-Message-State: AOAM530Ng54/V7M0Bm6g2NRW7MkW0hcJW8t0terduRiMJrQ5Wo+XQihS
-        s2F+1YQ7T77xbic999BVTuo=
-X-Google-Smtp-Source: ABdhPJzyrNJMnAihoMZtz6EucOSJ76475iEmoXTGgH5cmvtXqkJhrtvKRPSOPc1J3r9jneezyh09Bw==
-X-Received: by 2002:a05:6870:7097:b0:dd:f298:8ba7 with SMTP id v23-20020a056870709700b000ddf2988ba7mr3010485oae.279.1647820572163;
-        Sun, 20 Mar 2022 16:56:12 -0700 (PDT)
-Received: from [172.16.0.2] ([8.48.134.58])
-        by smtp.googlemail.com with ESMTPSA id p14-20020a9d744e000000b005b235f5cf92sm6893135otk.65.2022.03.20.16.56.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Mar 2022 16:56:11 -0700 (PDT)
-Message-ID: <f416bcfc-9463-b848-74a4-59e688a355ca@gmail.com>
-Date:   Sun, 20 Mar 2022 17:56:10 -0600
+        with ESMTP id S234559AbiCUAZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 20:25:02 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17215F4A;
+        Sun, 20 Mar 2022 17:23:35 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KMFhd2nhGz4xXV;
+        Mon, 21 Mar 2022 11:23:28 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647822210;
+        bh=RuuiFlNkjNtu9E3EPgnh5FZnovH/65omnlAq2qT/hAE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=uRX2XAZr56jSMQwQtqZoDTLdNe7rJglq7RhdzcXUsgZ38Sg4t7ON7KltHsCYHnTeC
+         ipOXdBPb+kknLE7W+3W4juszfdxSNfZX3voLaTGKe1sEjxh0FL6ufC2Gh7nzdqODWB
+         UW27cjBXbQVXpPvmPC9+uBNFKN3zEMQ6SXodEDTD71Go/jDHlRTGjwY86rlGkGMmpc
+         tCMQsbD9bKCCg31YFnao+ko5b9QT+GVsLX8iCzOQFQbq9ktsYN6kmGaQacgZIf33cb
+         R3ff1Ota8L9DeG1a+1YnAoseBHRZrHoAClVyrF7+5fmf06x01+QkOuYDuyoPn6QcP4
+         0DUUTDxFxsLZg==
+Date:   Mon, 21 Mar 2022 11:23:28 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: linux-next: manual merge of the bpf-next tree with the arm tree
+Message-ID: <20220321112328.1dce5df9@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH iproute2-next] ip/geneve: add support for
- IFLA_GENEVE_INNER_PROTO_INHERIT
-Content-Language: en-US
-To:     Eyal Birger <eyal.birger@gmail.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, roopa@nvidia.com
-References: <20220319085740.1833561-1-eyal.birger@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220319085740.1833561-1-eyal.birger@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: multipart/signed; boundary="Sig_/SVLHDKxF8CNBt6gcxfeOYSK";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,13 +56,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/19/22 2:57 AM, Eyal Birger wrote:
-> @@ -182,6 +184,10 @@ static int geneve_parse_opt(struct link_util *lu, int argc, char **argv,
->  			check_duparg(&attrs, IFLA_GENEVE_UDP_ZERO_CSUM6_RX,
->  				     *argv, *argv);
->  			udp6zerocsumrx = 0;
-> +		} else if (!matches(*argv, "innerprotoinherit")) {
+--Sig_/SVLHDKxF8CNBt6gcxfeOYSK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-changed matches to strcmp (not taking any more usage of matches) and
-applied to iproute2-next.
+Hi all,
 
+Today's linux-next merge of the bpf-next tree got a conflict in:
+
+  arch/arm/include/asm/stacktrace.h
+
+between commit:
+
+  538b9265c063 ("ARM: unwind: track location of LR value in stack frame")
+
+from the arm tree and commit:
+
+  515a49173b80 ("ARM: rethook: Add rethook arm implementation")
+
+from the bpf-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc arch/arm/include/asm/stacktrace.h
+index 3e78f921b8b2,babed1707ca8..000000000000
+--- a/arch/arm/include/asm/stacktrace.h
++++ b/arch/arm/include/asm/stacktrace.h
+@@@ -14,10 -14,7 +14,10 @@@ struct stackframe=20
+  	unsigned long sp;
+  	unsigned long lr;
+  	unsigned long pc;
+ +
+ +	/* address of the LR value on the stack */
+ +	unsigned long *lr_addr;
+- #ifdef CONFIG_KRETPROBES
++ #if defined(CONFIG_KRETPROBES) || defined(CONFIG_RETHOOK)
+  	struct llist_node *kr_cur;
+  	struct task_struct *tsk;
+  #endif
+
+--Sig_/SVLHDKxF8CNBt6gcxfeOYSK
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI3xYAACgkQAVBC80lX
+0Gyy6QgAm6aIs5yr6ctuyzmpFOISt2CgsbDsvX1tdN5PhCRrRAUTKA4KMzEuYiMk
+f3aQOSKnS4X/KmzDNyuVeODsHABxsGkFy8fOEnCTYDGThjvO19cJSxWUrcSVwXtM
+TZoNU7I8XBo6GSRKy4HVb1NGXdZPJ7DggpuRrSxdr5JLBuhiJIOQbMPElNTnYb9g
+B3qHsWEWDF7bjAM4iQlmtvCgCfR+JEctKQg76snBRkeQZw8x+/oQn/BNCI0Pqanz
+13jGjaj26U/V1PL/vImnyLZuXDJ21ka+tx/a5OeBDGEKRbaSnF948nKiLE7uXqsz
+dfdIA4iPDTtuxS4PPaWgnLQbeRPQ7A==
+=dM5E
+-----END PGP SIGNATURE-----
+
+--Sig_/SVLHDKxF8CNBt6gcxfeOYSK--
