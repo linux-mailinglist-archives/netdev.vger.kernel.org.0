@@ -2,28 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB5A14E266C
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:32:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF0B4E267B
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:32:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344882AbiCUMcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 08:32:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53518 "EHLO
+        id S1347376AbiCUMc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 08:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239071AbiCUMcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:32:21 -0400
+        with ESMTP id S242294AbiCUMcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:32:23 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D456984EE2;
-        Mon, 21 Mar 2022 05:30:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D340B83037;
+        Mon, 21 Mar 2022 05:30:57 -0700 (PDT)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 21F896019B;
-        Mon, 21 Mar 2022 13:28:14 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 12C6862FFA;
+        Mon, 21 Mar 2022 13:28:15 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 00/19] Netfilter updates for net-next
-Date:   Mon, 21 Mar 2022 13:30:33 +0100
-Message-Id: <20220321123052.70553-1-pablo@netfilter.org>
+Subject: [PATCH net-next 01/19] netfilter: conntrack: revisit gc autotuning
+Date:   Mon, 21 Mar 2022 13:30:34 +0100
+Message-Id: <20220321123052.70553-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220321123052.70553-1-pablo@netfilter.org>
+References: <20220321123052.70553-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -35,141 +37,203 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Florian Westphal <fw@strlen.de>
 
-The following patchset contains Netfilter updates for net-next.
-This patchset contains updates for the nf_tables register tracking
-infrastructure, disable bogus warning when attaching ct helpers,
-one namespace pollution fix and few cleanups for the flowtable.
+as of commit 4608fdfc07e1
+("netfilter: conntrack: collect all entries in one cycle")
+conntrack gc was changed to run every 2 minutes.
 
-1) Revisit conntrack gc routine to reduce chances of overruning
-   the netlink buffer from the event path. From Florian Westphal.
+On systems where conntrack hash table is set to large value, most evictions
+happen from gc worker rather than the packet path due to hash table
+distribution.
 
-2) Disable warning on explicit ct helper assignment, from Phil Sutter.
+This causes netlink event overflows when events are collected.
 
-3) Read-only expressions do not update registers, mark them as
-   NFT_REDUCE_READONLY. Add helper functions to update the register
-   tracking information. This patch re-enables the register tracking
-   infrastructure.
+This change collects average expiry of scanned entries and
+reschedules to the average remaining value, within 1 to 60 second interval.
 
-4) Cancel register tracking in case an expression fully/partially
-   clobbers existing data.
+To avoid event overflows, reschedule after each bucket and add a
+limit for both run time and number of evictions per run.
 
-5) Add register tracking support for remaining expressions: ct,
-   lookup, meta, numgen, osf, hash, immediate, socket, xfrm, tunnel,
-   fib, exthdr.
+If more entries have to be evicted, reschedule and restart 1 jiffy
+into the future.
 
-6) Rename init and exit functions for the conntrack h323 helper,
-   from Randy Dunlap.
+Reported-by: Karel Rericha <karel@maxtel.cz>
+Cc: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Cc: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/nf_conntrack_core.c | 85 ++++++++++++++++++++++++-------
+ 1 file changed, 68 insertions(+), 17 deletions(-)
 
-7) Remove redundant field in struct flow_offload_work.
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index d1a58ed357a4..0164e5f522e8 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -66,6 +66,8 @@ EXPORT_SYMBOL_GPL(nf_conntrack_hash);
+ struct conntrack_gc_work {
+ 	struct delayed_work	dwork;
+ 	u32			next_bucket;
++	u32			avg_timeout;
++	u32			start_time;
+ 	bool			exiting;
+ 	bool			early_drop;
+ };
+@@ -77,8 +79,19 @@ static __read_mostly bool nf_conntrack_locks_all;
+ /* serialize hash resizes and nf_ct_iterate_cleanup */
+ static DEFINE_MUTEX(nf_conntrack_mutex);
+ 
+-#define GC_SCAN_INTERVAL	(120u * HZ)
++#define GC_SCAN_INTERVAL_MAX	(60ul * HZ)
++#define GC_SCAN_INTERVAL_MIN	(1ul * HZ)
++
++/* clamp timeouts to this value (TCP unacked) */
++#define GC_SCAN_INTERVAL_CLAMP	(300ul * HZ)
++
++/* large initial bias so that we don't scan often just because we have
++ * three entries with a 1s timeout.
++ */
++#define GC_SCAN_INTERVAL_INIT	INT_MAX
++
+ #define GC_SCAN_MAX_DURATION	msecs_to_jiffies(10)
++#define GC_SCAN_EXPIRED_MAX	(64000u / HZ)
+ 
+ #define MIN_CHAINLEN	8u
+ #define MAX_CHAINLEN	(32u - MIN_CHAINLEN)
+@@ -1420,16 +1433,28 @@ static bool gc_worker_can_early_drop(const struct nf_conn *ct)
+ 
+ static void gc_worker(struct work_struct *work)
+ {
+-	unsigned long end_time = jiffies + GC_SCAN_MAX_DURATION;
+ 	unsigned int i, hashsz, nf_conntrack_max95 = 0;
+-	unsigned long next_run = GC_SCAN_INTERVAL;
++	u32 end_time, start_time = nfct_time_stamp;
+ 	struct conntrack_gc_work *gc_work;
++	unsigned int expired_count = 0;
++	unsigned long next_run;
++	s32 delta_time;
++
+ 	gc_work = container_of(work, struct conntrack_gc_work, dwork.work);
+ 
+ 	i = gc_work->next_bucket;
+ 	if (gc_work->early_drop)
+ 		nf_conntrack_max95 = nf_conntrack_max / 100u * 95u;
+ 
++	if (i == 0) {
++		gc_work->avg_timeout = GC_SCAN_INTERVAL_INIT;
++		gc_work->start_time = start_time;
++	}
++
++	next_run = gc_work->avg_timeout;
++
++	end_time = start_time + GC_SCAN_MAX_DURATION;
++
+ 	do {
+ 		struct nf_conntrack_tuple_hash *h;
+ 		struct hlist_nulls_head *ct_hash;
+@@ -1446,6 +1471,7 @@ static void gc_worker(struct work_struct *work)
+ 
+ 		hlist_nulls_for_each_entry_rcu(h, n, &ct_hash[i], hnnode) {
+ 			struct nf_conntrack_net *cnet;
++			unsigned long expires;
+ 			struct net *net;
+ 
+ 			tmp = nf_ct_tuplehash_to_ctrack(h);
+@@ -1455,11 +1481,29 @@ static void gc_worker(struct work_struct *work)
+ 				continue;
+ 			}
+ 
++			if (expired_count > GC_SCAN_EXPIRED_MAX) {
++				rcu_read_unlock();
++
++				gc_work->next_bucket = i;
++				gc_work->avg_timeout = next_run;
++
++				delta_time = nfct_time_stamp - gc_work->start_time;
++
++				/* re-sched immediately if total cycle time is exceeded */
++				next_run = delta_time < (s32)GC_SCAN_INTERVAL_MAX;
++				goto early_exit;
++			}
++
+ 			if (nf_ct_is_expired(tmp)) {
+ 				nf_ct_gc_expired(tmp);
++				expired_count++;
+ 				continue;
+ 			}
+ 
++			expires = clamp(nf_ct_expires(tmp), GC_SCAN_INTERVAL_MIN, GC_SCAN_INTERVAL_CLAMP);
++			next_run += expires;
++			next_run /= 2u;
++
+ 			if (nf_conntrack_max95 == 0 || gc_worker_skip_ct(tmp))
+ 				continue;
+ 
+@@ -1477,8 +1521,10 @@ static void gc_worker(struct work_struct *work)
+ 				continue;
+ 			}
+ 
+-			if (gc_worker_can_early_drop(tmp))
++			if (gc_worker_can_early_drop(tmp)) {
+ 				nf_ct_kill(tmp);
++				expired_count++;
++			}
+ 
+ 			nf_ct_put(tmp);
+ 		}
+@@ -1491,33 +1537,38 @@ static void gc_worker(struct work_struct *work)
+ 		cond_resched();
+ 		i++;
+ 
+-		if (time_after(jiffies, end_time) && i < hashsz) {
++		delta_time = nfct_time_stamp - end_time;
++		if (delta_time > 0 && i < hashsz) {
++			gc_work->avg_timeout = next_run;
+ 			gc_work->next_bucket = i;
+ 			next_run = 0;
+-			break;
++			goto early_exit;
+ 		}
+ 	} while (i < hashsz);
+ 
++	gc_work->next_bucket = 0;
++
++	next_run = clamp(next_run, GC_SCAN_INTERVAL_MIN, GC_SCAN_INTERVAL_MAX);
++
++	delta_time = max_t(s32, nfct_time_stamp - gc_work->start_time, 1);
++	if (next_run > (unsigned long)delta_time)
++		next_run -= delta_time;
++	else
++		next_run = 1;
++
++early_exit:
+ 	if (gc_work->exiting)
+ 		return;
+ 
+-	/*
+-	 * Eviction will normally happen from the packet path, and not
+-	 * from this gc worker.
+-	 *
+-	 * This worker is only here to reap expired entries when system went
+-	 * idle after a busy period.
+-	 */
+-	if (next_run) {
++	if (next_run)
+ 		gc_work->early_drop = false;
+-		gc_work->next_bucket = 0;
+-	}
++
+ 	queue_delayed_work(system_power_efficient_wq, &gc_work->dwork, next_run);
+ }
+ 
+ static void conntrack_gc_work_init(struct conntrack_gc_work *gc_work)
+ {
+-	INIT_DEFERRABLE_WORK(&gc_work->dwork, gc_worker);
++	INIT_DELAYED_WORK(&gc_work->dwork, gc_worker);
+ 	gc_work->exiting = false;
+ }
+ 
+-- 
+2.30.2
 
-8) Update nf_flow_table_iterate() to pass flowtable to callback.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 092d992b76ed9d06389af0bc5efd5279d7b1ed9f:
-
-  Merge tag 'mlx5-updates-2022-03-18' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2022-03-19 14:50:19 +0000)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git HEAD
-
-for you to fetch changes up to 217cff36e885627c41a14e803fc44f9cbc945767:
-
-  netfilter: flowtable: pass flowtable to nf_flow_table_iterate() (2022-03-20 00:29:48 +0100)
-
-----------------------------------------------------------------
-Florian Westphal (5):
-      netfilter: conntrack: revisit gc autotuning
-      netfilter: nft_lookup: only cancel tracking for clobbered dregs
-      netfilter: nft_meta: extend reduce support to bridge family
-      netfilter: nft_fib: add reduce support
-      netfilter: nft_exthdr: add reduce support
-
-Pablo Neira Ayuso (12):
-      netfilter: nf_tables: do not reduce read-only expressions
-      netfilter: nf_tables: cancel tracking for clobbered destination registers
-      netfilter: nft_ct: track register operations
-      netfilter: nft_numgen: cancel register tracking
-      netfilter: nft_osf: track register operations
-      netfilter: nft_hash: track register operations
-      netfilter: nft_immediate: cancel register tracking for data destination register
-      netfilter: nft_socket: track register operations
-      netfilter: nft_xfrm: track register operations
-      netfilter: nft_tunnel: track register operations
-      netfilter: flowtable: remove redundant field in flow_offload_work struct
-      netfilter: flowtable: pass flowtable to nf_flow_table_iterate()
-
-Phil Sutter (1):
-      netfilter: conntrack: Add and use nf_ct_set_auto_assign_helper_warned()
-
-Randy Dunlap (1):
-      netfilter: nf_nat_h323: eliminate anonymous module_init & module_exit
-
- include/net/netfilter/nf_conntrack_helper.h |  1 +
- include/net/netfilter/nf_tables.h           | 22 ++++++++
- include/net/netfilter/nft_fib.h             |  3 +
- include/net/netfilter/nft_meta.h            |  3 +
- net/bridge/netfilter/nft_meta_bridge.c      |  5 +-
- net/bridge/netfilter/nft_reject_bridge.c    |  1 +
- net/ipv4/netfilter/nf_nat_h323.c            |  8 +--
- net/ipv4/netfilter/nft_dup_ipv4.c           |  1 +
- net/ipv4/netfilter/nft_fib_ipv4.c           |  2 +
- net/ipv4/netfilter/nft_reject_ipv4.c        |  1 +
- net/ipv6/netfilter/nft_dup_ipv6.c           |  1 +
- net/ipv6/netfilter/nft_fib_ipv6.c           |  2 +
- net/ipv6/netfilter/nft_reject_ipv6.c        |  1 +
- net/netfilter/nf_conntrack_core.c           | 85 +++++++++++++++++++++++------
- net/netfilter/nf_conntrack_helper.c         |  6 ++
- net/netfilter/nf_flow_table_core.c          | 20 +++----
- net/netfilter/nf_flow_table_offload.c       | 11 ++--
- net/netfilter/nf_tables_api.c               | 63 ++++++++++++++++++++-
- net/netfilter/nft_bitwise.c                 | 24 +++++---
- net/netfilter/nft_byteorder.c               |  3 +-
- net/netfilter/nft_cmp.c                     |  3 +
- net/netfilter/nft_compat.c                  |  1 +
- net/netfilter/nft_connlimit.c               |  1 +
- net/netfilter/nft_counter.c                 |  1 +
- net/netfilter/nft_ct.c                      | 51 +++++++++++++++++
- net/netfilter/nft_dup_netdev.c              |  1 +
- net/netfilter/nft_dynset.c                  |  1 +
- net/netfilter/nft_exthdr.c                  | 33 +++++++++++
- net/netfilter/nft_fib.c                     | 42 ++++++++++++++
- net/netfilter/nft_fib_inet.c                |  1 +
- net/netfilter/nft_fib_netdev.c              |  1 +
- net/netfilter/nft_flow_offload.c            |  1 +
- net/netfilter/nft_fwd_netdev.c              |  2 +
- net/netfilter/nft_hash.c                    | 36 ++++++++++++
- net/netfilter/nft_immediate.c               | 12 ++++
- net/netfilter/nft_last.c                    |  1 +
- net/netfilter/nft_limit.c                   |  2 +
- net/netfilter/nft_log.c                     |  1 +
- net/netfilter/nft_lookup.c                  | 12 ++++
- net/netfilter/nft_masq.c                    |  3 +
- net/netfilter/nft_meta.c                    | 19 +++----
- net/netfilter/nft_nat.c                     |  2 +
- net/netfilter/nft_numgen.c                  | 22 ++++++++
- net/netfilter/nft_objref.c                  |  2 +
- net/netfilter/nft_osf.c                     | 25 +++++++++
- net/netfilter/nft_payload.c                 | 12 ++--
- net/netfilter/nft_queue.c                   |  2 +
- net/netfilter/nft_quota.c                   |  1 +
- net/netfilter/nft_range.c                   |  1 +
- net/netfilter/nft_redir.c                   |  3 +
- net/netfilter/nft_reject_inet.c             |  1 +
- net/netfilter/nft_reject_netdev.c           |  1 +
- net/netfilter/nft_rt.c                      |  1 +
- net/netfilter/nft_socket.c                  | 28 ++++++++++
- net/netfilter/nft_synproxy.c                |  1 +
- net/netfilter/nft_tproxy.c                  |  1 +
- net/netfilter/nft_tunnel.c                  | 28 ++++++++++
- net/netfilter/nft_xfrm.c                    | 28 ++++++++++
- 58 files changed, 580 insertions(+), 67 deletions(-)
