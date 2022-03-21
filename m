@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 242934E208A
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 07:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE674E20AC
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 07:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242717AbiCUGSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 02:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54280 "EHLO
+        id S1344635AbiCUGop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 02:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238570AbiCUGSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 02:18:49 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628808A331
-        for <netdev@vger.kernel.org>; Sun, 20 Mar 2022 23:17:24 -0700 (PDT)
-Received: from kwepemi100010.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KMPWB2ZtmzfZG3;
-        Mon, 21 Mar 2022 14:15:50 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi100010.china.huawei.com (7.221.188.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 21 Mar 2022 14:17:22 +0800
-Received: from [127.0.0.1] (10.67.101.149) by kwepemm600017.china.huawei.com
- (7.193.23.234) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 21 Mar
- 2022 14:17:17 +0800
-Subject: Re: [RFC net-next 1/2] net: ethtool: add ethtool ability to set/get
- fresh device features
-To:     Jakub Kicinski <kuba@kernel.org>, Michal Kubecek <mkubecek@suse.cz>
-References: <20220315032108.57228-1-wangjie125@huawei.com>
- <20220315032108.57228-2-wangjie125@huawei.com>
- <20220315121529.45f0a9d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20220315195606.ggc3eea6itdiu6y7@lion.mk-sys.cz>
- <20220315184526.3e15e3ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <huangguangbin2@huawei.com>, <lipeng321@huawei.com>,
-        <shenjian15@huawei.com>, <moyufeng@huawei.com>,
-        <linyunsheng@huawei.com>, <tanhuazhong@huawei.com>,
-        <salil.mehta@huawei.com>, <chenhao288@hisilicon.com>
-From:   "wangjie (L)" <wangjie125@huawei.com>
-Message-ID: <d7fce582-4eb7-9b66-8a19-dd7633154a72@huawei.com>
-Date:   Mon, 21 Mar 2022 14:17:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        with ESMTP id S1344625AbiCUGoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 02:44:38 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EAA13DE9;
+        Sun, 20 Mar 2022 23:43:12 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KMQ6c2Vkpz4xRB;
+        Mon, 21 Mar 2022 17:43:04 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647844987;
+        bh=cz6ekqfIqPBFlhDzuYDWDUWzUPqnlYRI1w9LAehsuAE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=mFOxCJvnp2pYkscfBSN2sxCg84CmEYDSoPeDggoxT7Pp4EfxB1xjWbosMpKjj+ASJ
+         7/3rydam24YBQpv5U7Lv58GFYFxNYYp/349uv8WRU3f4Dg1B5PWV+nMNmIhn3fsJt2
+         IyiSQWi5D0WFgTMONKAUIMSfn39RSqHOaLN0JNU+G5NlM1AW7zFHOTHEcZ6r/KI0Al
+         9bTYGDHAIiZbH2iCzZC/5mrRRjet3PLUtU8vzIJOQqG0m5WGx+fe+HQpIzHAgjfAZ8
+         5mTpUMLtHayPv1rqo5I1OmTJ9egP5hO+6aAbsKwLygHeOoCeYdQ9hu50L/R0Hby01b
+         kn9EUMlqrXX0w==
+Date:   Mon, 21 Mar 2022 17:43:01 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Ayaan Zaidi <zaidi.ayaan@gmail.com>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Finn Behrens <me@kloenk.de>, Gary Guo <gary@garyguo.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Milan Landaverde <milan@mdaverde.com>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Subject: linux-next: manual merge of the rust tree with the bpf-next tree
+Message-ID: <20220321174301.3a1b3943@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220315184526.3e15e3ee@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.101.149]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/=q_KJTYcwUDjXRGJHMvX+7q";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--Sig_/=q_KJTYcwUDjXRGJHMvX+7q
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 2022/3/16 9:45, Jakub Kicinski wrote:
-> On Tue, 15 Mar 2022 20:56:06 +0100 Michal Kubecek wrote:
->> On Tue, Mar 15, 2022 at 12:15:29PM -0700, Jakub Kicinski wrote:
->>> On Tue, 15 Mar 2022 11:21:07 +0800 Jie Wang wrote:
->>>> As tx push is a standard feature for NICs, but netdev_feature which is
->>>> controlled by ethtool -K has reached the maximum specification.
->>>>
->>>> so this patch adds a pair of new ethtool messages：'ETHTOOL_GDEVFEAT' and
->>>> 'ETHTOOL_SDEVFEAT' to be used to set/get features contained entirely to
->>>> drivers. The message processing functions and function hooks in struct
->>>> ethtool_ops are also added.
->>>>
->>>> set-devfeatures/show-devfeatures option(s) are designed to provide set
->>>> and get function.
->>>> set cmd:
->>>> root@wj: ethtool --set-devfeatures eth4 tx-push [on | off]
->>>> get cmd:
->>>> root@wj: ethtool --show-devfeatures eth4
->>>
->>> I'd be curious to hear more opinions on whether we want to create a new
->>> command or use another method for setting this bit, and on the concept
->>> of "devfeatures" in general.
->>
->> IMHO it depends a lot on what exactly "belong entirely to the driver"
->> means. If it means driver specific features, using a private flag would
->> seem more appropriate for this particular feature and then we can
->> discuss if we want some generalization of private flags for other types
->> of driver/device specific parameters (integers etc.). Personally, I'm
->> afraid that it would encourage driver developers to go this easier way
->> instead of trying to come with universal and future proof interfaces.
->
-> The "belong entirely to the driver" meant that the stack does not need
-> to be aware of it. That's the justification for not putting it in
-> netdev features, which the stack also peeks at, at times.
->
->> If this is supposed to gather universal features supported by multiple
->> drivers and devices, I suggest grouping it with existing parameters
->> handled as tunables in ioctl API. Or perhaps we could keep using the
->> name "tunables" and just handle them like any other command parameters
->> encoded as netlink attributes in the API.
->
-> Let's throw tunables into the hell fire where they belong, lest they
-> spawn a monster in the image of devlink params.
->
-> How about we put it in SET_RINGS? It's a ring param after all
-> (the feature controls use of a fast path descriptor push which
-> skips the usual in-memory ring).
->
-I think SET_RINGS is OK for tx push, but next new device feature would
-still have this problem. As far as I know, features such as promisc,
-tx push are driver features. So should I still work on the new devfeature
-command netlink version for these standard driver features?
+Today's linux-next merge of the rust tree got a conflict in:
 
-It would be nice to have clear rules about which command does new feature
-need to be added to.
-> .
->
+  samples/Makefile
 
+between commit:
+
+  6ee64cc3020b ("fprobe: Add sample program for fprobe")
+
+from the bpf-next tree and commit:
+
+  44d687f85cc3 ("samples: add Rust examples")
+
+from the rust tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc samples/Makefile
+index 701e912ab5af,fc5e9760ea32..000000000000
+--- a/samples/Makefile
++++ b/samples/Makefile
+@@@ -34,4 -33,4 +34,5 @@@ subdir-$(CONFIG_SAMPLE_WATCHDOG)	+=3D wat
+  subdir-$(CONFIG_SAMPLE_WATCH_QUEUE)	+=3D watch_queue
+  obj-$(CONFIG_DEBUG_KMEMLEAK_TEST)	+=3D kmemleak/
+  obj-$(CONFIG_SAMPLE_CORESIGHT_SYSCFG)	+=3D coresight/
+ +obj-$(CONFIG_SAMPLE_FPROBE)		+=3D fprobe/
++ obj-$(CONFIG_SAMPLES_RUST)		+=3D rust/
+
+--Sig_/=q_KJTYcwUDjXRGJHMvX+7q
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI4HnUACgkQAVBC80lX
+0Gx+TAf/ZUzpK+OgNBF8vnv5tJEOS9KA2q9qTLkp/oAxS+GoPBwlE29XtqcNsM3C
+0jvHhQRHhQX2EHwYicsStxfoCy8DA5PL5ECmSCGv66Kc2Hen7hbkEr+MoS5ARaCQ
+DLDz/mE31dw2MqGaGWPQXfmCJCd4V0dMRVqa4ZUs+J5YhUFC3SPH9lY6C179ET7G
+LXWowatY5BhHPQ3fIO7jCrumVhYkSLd0BkejTwfDat61rUQCygICgfv8WJBLmiak
+Wpwy13DKjEJlAHfsamtE8eKramai//72OrWbkBivU3wRZ49XsBayTSF7iS2kv+lD
+taRDgLA3mI8EFJeOQO0oT+9vFxobNQ==
+=7Vas
+-----END PGP SIGNATURE-----
+
+--Sig_/=q_KJTYcwUDjXRGJHMvX+7q--
