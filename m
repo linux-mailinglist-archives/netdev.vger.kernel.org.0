@@ -2,102 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A0344E23D4
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 10:59:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53E904E2406
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 11:09:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346186AbiCUKAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 06:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49028 "EHLO
+        id S1346221AbiCUKKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 06:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346119AbiCUKAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 06:00:12 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23712387A5;
-        Mon, 21 Mar 2022 02:58:40 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 22L9jw6V079101;
-        Mon, 21 Mar 2022 17:45:58 +0800 (GMT-8)
-        (envelope-from dylan_hung@aspeedtech.com)
-Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Mar
- 2022 17:56:24 +0800
-From:   Dylan Hung <dylan_hung@aspeedtech.com>
-To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>, <stable@vger.kernel.org>
-Subject: [PATCH v2 3/3] ARM: dts: aspeed: add reset properties into MDIO nodes
-Date:   Mon, 21 Mar 2022 17:56:48 +0800
-Message-ID: <20220321095648.4760-4-dylan_hung@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
-References: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
+        with ESMTP id S1346217AbiCUKKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 06:10:38 -0400
+X-Greylist: delayed 404 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Mar 2022 03:09:11 PDT
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9FAC12756
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 03:09:11 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 214D43000243F;
+        Mon, 21 Mar 2022 11:02:26 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 0E3C42E6C7F; Mon, 21 Mar 2022 11:02:26 +0100 (CET)
+Date:   Mon, 21 Mar 2022 11:02:26 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Oliver Neukum <oneukum@suse.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: ordering of call to unbind() in usbnet_disconnect
+Message-ID: <20220321100226.GA19177@wunner.de>
+References: <62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com>
+ <20220310113820.GG15680@pengutronix.de>
+ <20220314184234.GA556@wunner.de>
+ <Yi+UHF37rb0URSwb@lunn.ch>
+ <20220315054403.GA14588@pengutronix.de>
+ <20220315083234.GA27883@wunner.de>
+ <20220315113841.GA22337@pengutronix.de>
+ <YjCUgCNHw6BUqJxr@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.216]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 22L9jw6V079101
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjCUgCNHw6BUqJxr@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add reset control properties into MDIO nodes.  The 4 MDIO controllers in
-AST2600 SOC share one reset control bit SCU50[3].
+On Tue, Mar 15, 2022 at 02:28:32PM +0100, Andrew Lunn wrote:
+> > > > It was linked to unregistered/freed netdev. This is why my patch
+> > > > changing the order to call phy_disconnect() first and then
+> > > > unregister_netdev().
+> > > 
+> > > Unregistered yes, but freed no.  Here's the order before 2c9d6c2b871d:
+> > > 
+> > >   usbnet_disconnect()
+> > >     unregister_netdev()
+> > >     ax88772_unbind()
+> > >       phy_disconnect()
+> > >     free_netdev()
+> > > 
+> > > Is it illegal to disconnect a PHY from an unregistered, but not yet freed
+> > > net_device?
+> 
+> There are drivers which unregistering and then calling
+> phy_disconnect. In general that should be a valid pattern. But more
+> MAC drivers actually connect the PHY on open and disconnect it on
+> close. So it is less well used.
 
-Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-Cc: stable@vger.kernel.org
----
- arch/arm/boot/dts/aspeed-g6.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+It turns out that unregistering a net_device and then calling
+phy_disconnect() may indeed crash and is thus not permitted
+right now:
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..ab20ea8d829d 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -181,6 +181,7 @@ mdio0: mdio@1e650000 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio1_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio1: mdio@1e650008 {
-@@ -191,6 +192,7 @@ mdio1: mdio@1e650008 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio2_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio2: mdio@1e650010 {
-@@ -201,6 +203,7 @@ mdio2: mdio@1e650010 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio3_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio3: mdio@1e650018 {
-@@ -211,6 +214,7 @@ mdio3: mdio@1e650018 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio4_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mac0: ftgmac@1e660000 {
--- 
-2.25.1
+Oleksij added the following code comment with commit e532a096be0e
+("net: usb: asix: ax88772: add phylib support"):
 
+  /* On unplugged USB, we will get MDIO communication errors and the
+   * PHY will be set in to PHY_HALTED state.
+
+So the USB adapter gets unplugged, access to MII registers fails with
+-ENODEV, phy_error() is called, phy_state_machine() transitions to
+PHY_HALTED and performs the following call:
+
+  phy_state_machine()
+    phy_link_down()
+      phy_link_change()
+        netif_carrier_off()
+          linkwatch_fire_event()
+
+Asynchronously, usbnet_disconnect() calls phy_detach() and then
+free_netdev().
+
+A bit later, linkwatch_event() runs and tries to access the freed
+net_device, leading to the crash that Oleksij posted upthread.
+
+The fact that linkwatch_fire_event() increments the refcount doesn't
+help because unregister_netdevice() has already run (it waits for
+the refcount to drop to 1).
+
+My suggestion would be to amend unregister_netdevice() to set
+dev->phydev->attached_dev = NULL.  It may also be a good idea
+to WARN_ON() in free_netdev() if the refcount is not 1.
+
+Andrew, please clarify whether you really think that the
+"unregister netdev, then detach phy" order should be supported.
+If you do think that it should be supported, we'll have to litter
+phylib with NULL pointer checks for attached_dev.  If you don't
+want that, we should at least document that it's an illegal pattern.
+
+Even if you decide that we should rather declare this pattern
+illegal rather than littering phylib with NULL pointer checks,
+I strongly recommend that at least unregister_netdevice() sets
+dev->phydev->attached_dev = NULL.  That will cause oopses which
+are easier to debug than complex races like the one witnessed
+by Oleksij.
+
+Side note:  Since e532a096be0e, ax88772_stop() directly accesses
+phydev->state.  I wonder whether that's legal.  I'm under the
+impression that the state is internal to phylib.
+
+Another side note:  The commit message of 2c9d6c2b871d is poor.
+It should have contained a stack trace and a clear explanation.
+It took me days of staring at code to reverse-engineer what
+went wrong here.
+
+Thanks,
+
+Lukas
