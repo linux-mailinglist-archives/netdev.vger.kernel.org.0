@@ -2,55 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C51504E24CF
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 12:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F2F34E24DF
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 12:01:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346556AbiCULBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 07:01:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        id S1346594AbiCULDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 07:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346553AbiCULBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 07:01:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB60589321;
-        Mon, 21 Mar 2022 04:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3280FB8124B;
-        Mon, 21 Mar 2022 11:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DAE19C340F3;
-        Mon, 21 Mar 2022 11:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647860410;
-        bh=n6qC4hmVpj4wVG8saQK+2Vx0mlcjl2MotPLnb9j2Ah4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e9jjBk/m4GcECe2Y/ELBhccRNWRsggoHb9n/NvAs8SdSKbjwLgU4xAtBnWR7jb2Z5
-         ZsJin8g4vLzmxXAFKL1/ugRQdXiOauwKfjhdGjx/+n8P/jGcsXYpaJVdwc70GGhyXp
-         8nQ8U7w3EhsIqdaeyHA83+eAxi2qUHsGCA2O1MOPtrErBFDNs3B1F0CauGH1eLm4x4
-         PC8tPELsAwIulIaqylAHHvSsh//ZVf9He70DXExzhoXGV6SJcjjBnr8RRE8zaIDreG
-         1tkMlK20Oz4pFYkS0bN+VSHrQH+sNYpVscu6mTe44NR/qvlmry0bbfTq3qHf9rapDH
-         F02hvaR8vsjBA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C01BCEAC081;
-        Mon, 21 Mar 2022 11:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1346579AbiCULDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 07:03:10 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE2314F135;
+        Mon, 21 Mar 2022 04:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647860501; x=1679396501;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NmyGAg3H5qIjkqj2AgtDJJmkpqDu2Ml32OAol27OBlQ=;
+  b=k3e92X1Q1twaVlP3jgWw2JL8ohG1zJYgRU1WgSN3ME3hYj0jX4LLRLJB
+   wQRjananrWQd56+UM4QegQ5Ww+weCjLgILNQ6QRksV7xNUXYxI9xbagNw
+   mLh4MQZsuqR8OWu7lFd1M0LdLUddkE6gfUuFxbzhTvutReKdnIdmGh0m3
+   GpYOtgRQykv/VZQusS6YwC2zm1xCb8liH2qhPN/mlFLM9M7y+NHjpJJ7K
+   Ou3PkLcN6GpGiZdcdInwltRHzDzFTdsAJ8CufCNeFJtb/L631gkPJuT+9
+   HebRAppzd6aM1ARVRvb7BM9nwcylun0WkYU7EbeFgge5S/2MZyDoFoR90
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="237467084"
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="237467084"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 04:01:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,198,1643702400"; 
+   d="scan'208";a="543173127"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga007.jf.intel.com with ESMTP; 21 Mar 2022 04:01:18 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22LB1HaB031880;
+        Mon, 21 Mar 2022 11:01:17 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Wojciech Drewek <wojciech.drewek@intel.com>,
+        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 net-next 0/5] ice: switch: debloat packet templates code
+Date:   Mon, 21 Mar 2022 11:59:49 +0100
+Message-Id: <20220321105954.843154-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH V5 0/2] Fix refcount leak and NPD bugs in ax25
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164786041078.7161.8989814381753324978.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 11:00:10 +0000
-References: <cover.1647563511.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1647563511.git.duoming@zju.edu.cn>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        ralf@linux-mips.org, jreuter@yaina.de, eric.dumazet@gmail.com,
-        dan.carpenter@oracle.com
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,32 +68,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This hunts down several places around packet templates/dummies for
+switch rules which are either repetitive, fragile or just not
+really readable code.
+It's a common need to add new packet templates and to review such
+changes as well, try to simplify both with the help of a pair
+macros and aliases.
+ice_find_dummy_packet() became very complex at this point with tons
+of nested if-elses. It clearly showed this approach does not scale,
+so convert its logics to the simple mask-match + static const array.
 
-This series was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+bloat-o-meter is happy about that (built w/ LLVM 13):
 
-On Fri, 18 Mar 2022 08:54:03 +0800 you wrote:
-> The first patch fixes refcount leak in ax25 that could cause
-> ax25-ex-connected-session-now-listening-state-bug.
-> 
-> The second patch fixes NPD bugs in ax25 timers.
-> 
-> Duoming Zhou (2):
->   ax25: Fix refcount leaks caused by ax25_cb_del()
->   ax25: Fix NULL pointer dereferences in ax25 timers
-> 
-> [...]
+add/remove: 0/1 grow/shrink: 1/1 up/down: 2/-1058 (-1056)
+Function                                     old     new   delta
+ice_fill_adv_dummy_packet                    289     291      +2
+ice_adv_add_update_vsi_list                  201       -    -201
+ice_add_adv_rule                            2950    2093    -857
+Total: Before=414512, After=413456, chg -0.25%
+add/remove: 53/52 grow/shrink: 0/0 up/down: 4660/-3988 (672)
+RO Data                                      old     new   delta
+ice_dummy_pkt_profiles                         -     672    +672
+Total: Before=37895, After=38567, chg +1.77%
 
-Here is the summary with links:
-  - [V5,1/2] ax25: Fix refcount leaks caused by ax25_cb_del()
-    https://git.kernel.org/netdev/net/c/9fd75b66b8f6
-  - [V6,2/2] ax25: Fix NULL pointer dereferences in ax25 timers
-    https://git.kernel.org/netdev/net/c/fc6d01ff9ef0
+Diffstat also looks nice, and adding new packet templates now takes
+less lines.
 
-You are awesome, thank you!
+We'll probably come out with dynamic template crafting in a while,
+but for now let's improve what we have currently.
+
+From v3[0]:
+ - change u64:48 + u64:16 -> u32 + u16 to fix issues on 32-bit
+   platforms (and make object code a bit simpler);
+ - mention ice_find_dummy_packet() conversion in the cover letter.
+
+From v2[1]:
+ - rebase on top of the GTP changes;
+ - new: convert template search code to a rodata array (-1000 bytes
+   from .text, -400 bytes from ice.ko);
+ - collect Reviewed-by and Tested-by (Marcin, Michal).
+
+From v1[2]:
+ - rebase on top of the latest next-queue (to fix #3 not applying);
+ - adjust the kdoc accordingly to the function proto changes in #3;
+ - no functional changes.
+
+[0] https://lore.kernel.org/netdev/20220318161713.680436-1-alexandr.lobakin@intel.com
+[1] https://lore.kernel.org/netdev/20220127154009.623304-1-alexandr.lobakin@intel.com
+[2] https://lore.kernel.org/netdev/20220124173116.739083-1-alexandr.lobakin@intel.com
+
+Alexander Lobakin (5):
+  ice: switch: add and use u16[] aliases to ice_adv_lkup_elem::{h,m}_u
+  ice: switch: unobscurify bitops loop in ice_fill_adv_dummy_packet()
+  ice: switch: use a struct to pass packet template params
+  ice: switch: use convenience macros to declare dummy pkt templates
+  ice: switch: convert packet template match code to rodata
+
+ drivers/net/ethernet/intel/ice/ice_switch.c | 489 ++++++++------------
+ drivers/net/ethernet/intel/ice/ice_switch.h |  12 +-
+ 2 files changed, 211 insertions(+), 290 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.35.1
 
