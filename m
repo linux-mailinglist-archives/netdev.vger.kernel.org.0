@@ -2,119 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE834E341E
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 00:22:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A50304E3448
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 00:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232504AbiCUXU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 19:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59062 "EHLO
+        id S233105AbiCUX3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 19:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232598AbiCUXUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 19:20:44 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DEB3620E2;
-        Mon, 21 Mar 2022 16:11:30 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id p5so10654053pfo.5;
-        Mon, 21 Mar 2022 16:11:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZewwJE5XfIuup8vPS+K4oqWDNd0mldqHSrelxp9/gx4=;
-        b=Xceux2tV0MfkN84VgB0qF1jKRpocH8y+vit0oOlRe33Jbi+HIQ7K3GmPrR7s/xmK2V
-         hQ/XIjIYYykhF5aLyqm0qIIE58d4k0W10CbVkcPbIHedCLXcsE5G4qq1O9AcZ4oWHd9E
-         Jul2ckEYElDhkZ+H95GPJ79kGc1+G4wTVamSJdCW9claiodoAw8gxTdfDv8MUY+/ViYo
-         5bQdrVDdOQA+BYm51yEXwl8ryD0O42U4CNlvH3yiAfibYpCSxG5QDKrqWgxkmXtXguM0
-         zbXHkXx4GlqVFvQ8f9G0OF9eEh7F9Zfn6YJAFlJId59kFT1dQCrHBFl9QfC4TgPJixbs
-         JZng==
+        with ESMTP id S232789AbiCUX3V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 19:29:21 -0400
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6C134ABAE;
+        Mon, 21 Mar 2022 16:27:06 -0700 (PDT)
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-dacc470e03so309173fac.5;
+        Mon, 21 Mar 2022 16:27:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZewwJE5XfIuup8vPS+K4oqWDNd0mldqHSrelxp9/gx4=;
-        b=z8Qy9z3AY230SrDxskJTROxePPW1ETXj13OiIt0QzdzO6xla0Ns/iUVxbk9T6U6H6v
-         0Hsc/sNEsMJBe3qpwCFPIYnSWpA1ZwT6Qct4tVuLEKS6RPVKy5E64vYt3VRItiCG26Bt
-         9K0SU9Gixq/+Q0vhLny2B3gTUzr3gTZKMRnBESLKunPzkK624XIhPctuPajrDaz72V9o
-         72nIq3H8cSkU/lV6o3k/Vi9/eHQ3QHBSe0BvuFzC1/4Le4BesKN6Nq5ru/DtPLvipNie
-         vJiKjeDVdTOWrsPZYZS8fLSq3SN7Qb8T2AQDE+5/4Dp/2f/Av9f0stOzr01xQwOVQc57
-         +Slg==
-X-Gm-Message-State: AOAM530eCefFuNvW0OLEdM/vNin+viznUdXEpvbMFp3MezUp9rLuZ1tD
-        3IPtuYYQJGuzjXUkndam0FjdH620E9TXN4Qy9RI=
-X-Google-Smtp-Source: ABdhPJyOwkUCfaJbCb2f/rGtBuwRCI5/X4xzDNoML42aYW8uAv84DeSqGV479u36yBAqmJ7AMz6GYeKHBP54n3+9l2w=
-X-Received: by 2002:a62:bd0e:0:b0:4f6:e07f:d4ee with SMTP id
- a14-20020a62bd0e000000b004f6e07fd4eemr26529286pff.46.1647904290106; Mon, 21
- Mar 2022 16:11:30 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IfOgSlFcJksxU8PubWCVTs9HLG1nJKsuup/4fqR0uJQ=;
+        b=b5CcZLfMy+WlkqfABo9P2qTl6Mpt+tInviQxcVrQeHy9n8S9fYcEiVNzoRToKe+z7Q
+         aecEX2Pzzj7NubXuJa66ScWGh36J1Sf23OgBqIY9VgxTc7l7Wq6D0sPXWU+bAMWSd/7d
+         iLjyQOEGwVQSAUVZuBgGeAVevdK6ngEAKG7xs6fhT2jZ45E2ES2UFIraxkXIEZnwlEUJ
+         YE2/pCDMB4jb1OOTvX4Vzns11fUsmgWy7h0cxjVSJhF6zuPZ7pH3FaAmh46wevZSbfeG
+         QcFoNoNQEDk5vd+2X2FpcJwzuA7S0I4z0ChRgbuICK5PNjmC4V1/5n2l8F52s9HZTRJP
+         FmkA==
+X-Gm-Message-State: AOAM532WAiM/L7lw4/HrovploOR/lsJ9zMjFL72MxD0gWbvwCQ/Tb5ga
+        i9zkeKugqnDTVBkjLj0EjmUosmwZkg==
+X-Google-Smtp-Source: ABdhPJz5OurPXvO7jXlEUFzCMo8qHZUjHjGnUDgcet5Ci8hwHCOZunqcr4d4NKdhpDTI91pDLbBywA==
+X-Received: by 2002:a05:6870:b390:b0:da:cf0c:17ae with SMTP id w16-20020a056870b39000b000dacf0c17aemr575810oap.94.1647905225351;
+        Mon, 21 Mar 2022 16:27:05 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j145-20020acaeb97000000b002d9f37166c1sm7943323oih.17.2022.03.21.16.27.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 16:27:04 -0700 (PDT)
+Received: (nullmailer pid 741695 invoked by uid 1000);
+        Mon, 21 Mar 2022 23:27:03 -0000
+Date:   Mon, 21 Mar 2022 18:27:03 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
+        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v9 net-next 02/11] dt-bindings: net: add mdio property
+Message-ID: <YjkJxykT2dQxe3d/@robh.at.kernel.org>
+References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
+ <20220318085540.281721-3-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-References: <20220321224608.55798-1-alexei.starovoitov@gmail.com> <CAHk-=wheGrBxOfMpWhQg1iswCKYig8vADnFVsA4oFWTY9NU5jA@mail.gmail.com>
-In-Reply-To: <CAHk-=wheGrBxOfMpWhQg1iswCKYig8vADnFVsA4oFWTY9NU5jA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 21 Mar 2022 16:11:19 -0700
-Message-ID: <CAADnVQK=JsytH_OtT6Q6fnijkTyv7NANV2902woQ6XT-fwWXQA@mail.gmail.com>
-Subject: Re: pull-request: bpf-next 2022-03-21
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220318085540.281721-3-prasanna.vengateshan@microchip.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 4:02 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> On Mon, Mar 21, 2022 at 3:46 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > The following pull-request contains BPF updates for your *net-next* tree.
->
-> No
->
-> This is the tree that contains bad architecture code that was NAK'ed
-> by both x86 and arm64 people respectively.
+On Fri, Mar 18, 2022 at 02:25:31PM +0530, Prasanna Vengateshan wrote:
+> mdio bus is applicable to any switch hence it is added as per the below request,
+> https://lore.kernel.org/netdev/1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com/
 
-I missed the nacks.
+Quoting that thread:
 
-Did you look at the code?
-In particular:
-https://lore.kernel.org/bpf/164735286243.1084943.7477055110527046644.stgit@devnote2/
+> Yes indeed, since this is a common property of all DSA switches, it can
+> be defined or not depending on whether the switch does have an internal
+> MDIO bus controller or not.
 
-it's a copy paste of arch/x86/kernel/kprobes/core.c
+Whether or not a switch has an MDIO controller or not is a property of 
+that switch and therefore 'mdio' needs to be documented in those switch 
+bindings.
 
-How is it "bad architecture code" ?
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> ---
+>  Documentation/devicetree/bindings/net/dsa/dsa.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> index b9d48e357e77..0f8426e219eb 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
+> @@ -31,6 +31,10 @@ properties:
+>        switch 1. <1 0> is cluster 1, switch 0. A switch not part of any cluster
+>        (single device hanging off a CPU port) must not specify this property
+>      $ref: /schemas/types.yaml#/definitions/uint32-array
+> +  
+> +  mdio:
+> +    $ref: /schemas/net/mdio.yaml#
+> +    unevaluatedProperties: false
 
-> In particular, I think it's this part:
->
-> > Masami Hiramatsu (11):
-> >       fprobe: Add ftrace based probe APIs
-> >       rethook: Add a generic return hook
-> >       rethook: x86: Add rethook x86 implementation
-> >       arm64: rethook: Add arm64 rethook implementation
-> >       powerpc: Add rethook support
-> >       ARM: rethook: Add rethook arm implementation
-> >       fprobe: Add exit_handler support
-> >       fprobe: Add sample program for fprobe
-> >       fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
-> >       docs: fprobe: Add fprobe description to ftrace-use.rst
-> >       fprobe: Add a selftest for fprobe
->
-> That was added very late to the linux-next tree, and that causes build
-> warnings because of interactions with other changes.
+From a schema standpoint, this bans every switch from adding additional 
+properties under an mdio node. Not likely what you want.
 
-To be fair Masami's set got to v12 revision and was ready
-before Peter's endbr set.
-If I didn't miss any email the only known issue
-is missing endbr annotation.
+Rob
