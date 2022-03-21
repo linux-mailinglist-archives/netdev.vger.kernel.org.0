@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA0834E332E
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C06894E339B
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbiCUWzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 18:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
+        id S231598AbiCUW5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 18:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230442AbiCUWzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:55:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D7B3B2A13;
-        Mon, 21 Mar 2022 15:37:43 -0700 (PDT)
+        with ESMTP id S231410AbiCUW5a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:57:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29443B6DAD;
+        Mon, 21 Mar 2022 15:37:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 86F6F614DA;
-        Mon, 21 Mar 2022 21:53:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A89BC36AE2;
-        Mon, 21 Mar 2022 21:53:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98C7261556;
+        Mon, 21 Mar 2022 21:53:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B177C340E8;
+        Mon, 21 Mar 2022 21:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899616;
-        bh=YLmooO946Cca6uj/YDde+U3cbgPSBr46KwCxxgxlt1k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=c3B2hPssHek1fh2NSr1BvK1Sb0ADj7S07H7KXoUM4wtbEplaRlH2LagAJBn7u4fsO
-         GsdhfKuD43CUpgpHcAOKqVOTqaXmd4J/K+r2338jjOxq+AnTf4Vr5EL9gUz1ctTn8V
-         35vhDgm814OpGbFosI/LC3gKeunz8dXjSG1qw/3H7CSGUTzE0ARJ2CSpdJ7B5EZjwo
-         WiMlumCYjJ8aTBqJZnXDdevwt9KgOHE5FKWfZGFn01tGBQoPLukpIuQviKbOKmjqCz
-         lPE9LBYlNWcrfkYx4JfbksEL88AfrYYz7lhnOT0xZdOwvAOSI0jqKooFx0NkBxHYsP
-         dSH3p/dRGKuzQ==
+        s=k20201202; t=1647899623;
+        bh=V71uAhPOIm1dgSRYeDXlMVloISpJ0FIXrczDGgzcvWI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eXVgpOjSdk81uyB2wY0Jx5kJfYa4sJtEqXDQnsnYKgm3xG9nU6qwqM0YzKTfGyyoP
+         /7mOMJkbAog0IdnHsPVSQPaIbNbEzqYa1irjJBXDCVUl6wR7itdc6eoW9iEIJsHatW
+         YArUOdK+hlZtAkOkod71qt7wwY1zXbDKqhSYVfOGvGIyufG+m3tk98/0VwjrT70wnX
+         y9c6pGpBmNmRG1CmGQs3hda92floqB51AzWUakLxjp4wlVhcLYNNFLb3wbu61cMqVf
+         Q+ZP4CAYW6VWou8bAO7EOfxpEVOM7tldjGzLXcIZouTG6wxZ3mmDZDjOD4yG+sW5+D
+         PAkDTnHq1r1tA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haimin Zhang <tcs_kernel@tencent.com>,
-        TCS Robot <tcs_robot@tencent.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 1/2] af_key: add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-Date:   Mon, 21 Mar 2022 17:53:22 -0400
-Message-Id: <20220321215323.490478-1-sashal@kernel.org>
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 2/2] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Mon, 21 Mar 2022 17:53:38 -0400
+Message-Id: <20220321215338.490562-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220321215338.490562-1-sashal@kernel.org>
+References: <20220321215338.490562-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,40 +60,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-[ Upstream commit 9a564bccb78a76740ea9d75a259942df8143d02c ]
+[ Upstream commit 5e34af4142ffe68f01c8a9acae83300f8911e20c ]
 
-Add __GFP_ZERO flag for compose_sadb_supported in function pfkey_register
-to initialize the buffer of supp_skb to fix a kernel-info-leak issue.
-1) Function pfkey_register calls compose_sadb_supported to request
-a sk_buff. 2) compose_sadb_supported calls alloc_sbk to allocate
-a sk_buff, but it doesn't zero it. 3) If auth_len is greater 0, then
-compose_sadb_supported treats the memory as a struct sadb_supported and
-begins to initialize. But it just initializes the field sadb_supported_len
-and field sadb_supported_exttype without field sadb_supported_reserved.
+Syzbot found a kernel bug in the ipv6 stack:
+LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
+The reproducer triggers it by sending a crafted message via sendmmsg()
+call, which triggers skb_over_panic, and crashes the kernel:
 
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
+head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
+dev:<NULL>
+
+Update the check that prevents an invalid packet with MTU equal
+to the fregment header size to eat up all the space for payload.
+
+The reproducer can be found here:
+LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
+
+Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/ip6_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index c7d5a6015389..8ce513e08fd7 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1709,7 +1709,7 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index c474e4b4c4bb..fbad7828568f 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1321,8 +1321,8 @@ static int __ip6_append_data(struct sock *sk,
+ 		      sizeof(struct frag_hdr) : 0) +
+ 		     rt->rt6i_nfheader_len;
  
- 	xfrm_probe_algs();
+-	if (mtu < fragheaderlen ||
+-	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
++	if (mtu <= fragheaderlen ||
++	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
+ 		goto emsgsize;
  
--	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL);
-+	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
- 	if (!supp_skb) {
- 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
- 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
+ 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
 -- 
 2.34.1
 
