@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7C54E2772
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 14:25:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A4464E2774
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 14:25:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347813AbiCUN0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 09:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        id S1347814AbiCUN1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 09:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236439AbiCUN0a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 09:26:30 -0400
+        with ESMTP id S1343526AbiCUN1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 09:27:13 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403F3546AC
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 06:25:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F14BE54FAC
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 06:25:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647869102; x=1679405102;
+  t=1647869149; x=1679405149;
   h=message-id:subject:from:to:cc:date:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nfiPO0ZVUD1R2nVf3Q/DO81jYICI3tRkrwLe1wt3Yu0=;
-  b=G3YASPIjKLMl+Twi3LiK6Vs6L02Q3dMXVUj/eOPi43VfDaJfnulqM/qN
-   H7uD+gLKKw8nML1vv6DFXbqT3+9cZDcmPbyH4pqqGiuiOXPjfhZirn9rq
-   k6E3RPGtVE6N6+YsNIxtAj39EjwNdHnVbBxBCwGYGB7d5RBIJHHR+CdMP
-   mXaqjxwHhP3Oj6W8u4R/TK+sUTss1OeuisBacTZx/nskac7OxOhIe2wRZ
-   EjSX71u419IGpDUs0NWXoj647zdbSXVPJl4F1hk8hxih7rHwP7yy4Knkh
-   ES8pLTHAndV3cpL8Jyq74JRvRTVSllvZZVoPBIArxizdBYcLZilhQRZQ/
-   w==;
+  bh=QnznQV6HTN3cTghGFc7SIme8FZMuhjq1RqKdNx8X++4=;
+  b=pkjR7jtpsk6JoKKhRqF1r+wagadD7YdTcQ+d+Lw+udIN6AlsjiF04n7H
+   gRpbCZJh03UV0GxJjrZv8L/usAKMHxDiP+VpMD7A/p02ZOQz5frWmOZRa
+   7vKoCuxIOs8JOLqHM4EOqBlRPYqCDw+vqf63USmqZVBxU2t3cppBEDmZ3
+   QOQCPTtIU1sS5zuTsRVoqzbiR/gNzSfdRHti3su6zGICE1WgnTpzOby5n
+   8RyNUWRCqaZEuz/g/wKjVlC32cgmheByTfq/Gec1jYD6Yl0C9pDLgptrI
+   1urCpK4C2Ba/oR+ciEIflAiDwFre/WDZcy1BqAm9svpASRAzQiix47OLF
+   g==;
 X-IronPort-AV: E=Sophos;i="5.90,198,1643698800"; 
-   d="scan'208";a="89597950"
+   d="scan'208";a="149857597"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2022 06:25:01 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2022 06:25:48 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 21 Mar 2022 06:25:01 -0700
+ 15.1.2375.17; Mon, 21 Mar 2022 06:25:46 -0700
 Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 21 Mar 2022 06:24:59 -0700
-Message-ID: <8fc16e374a9e5b0f6ba370b5f54304597b057f7d.camel@microchip.com>
-Subject: Re: [PATCH net-next 1/2] net: sparx5: Add arbiter for managing PGID
- table
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 21 Mar 2022 06:25:45 -0700
+Message-ID: <23c07e81392bd5ae8f44a5270f91c6ca696baa31.camel@microchip.com>
+Subject: Re: [PATCH net-next 2/2] net: sparx5: Add mdb handlers
 From:   Steen Hegelund <steen.hegelund@microchip.com>
 To:     Casper Andersson <casper.casan@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
 CC:     <UNGLinuxDriver@microchip.com>
-Date:   Mon, 21 Mar 2022 14:23:38 +0100
-In-Reply-To: <20220321101446.2372093-2-casper.casan@gmail.com>
+Date:   Mon, 21 Mar 2022 14:24:24 +0100
+In-Reply-To: <20220321101446.2372093-3-casper.casan@gmail.com>
 References: <20220321101446.2372093-1-casper.casan@gmail.com>
-         <20220321101446.2372093-2-casper.casan@gmail.com>
+         <20220321101446.2372093-3-casper.casan@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
@@ -65,186 +64,247 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Casper,
-
 On Mon, 2022-03-21 at 11:14 +0100, Casper Andersson wrote:
 > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> The PGID (Port Group ID) table holds port masks
-> for different purposes. The first 72 are reserved
-> for port destination masks, flood masks, and CPU
-> forwarding. The rest are shared between multicast,
-> link aggregation, and virtualization profiles. The
-> GLAG area is reserved to not be used by anything
-> else, since it is a subset of the MCAST area.
-> 
-> The arbiter keeps track of which entries are in
-> use. You can ask for a free ID or give back one
-> you are done using.
+> Adds mdb handlers. Uses the PGID arbiter to
+> find a free entry in the PGID table for the
+> multicast group port mask.
 > 
 > Signed-off-by: Casper Andersson <casper.casan@gmail.com>
 > ---
->  .../net/ethernet/microchip/sparx5/Makefile    |  2 +-
->  .../ethernet/microchip/sparx5/sparx5_main.c   |  3 +
->  .../ethernet/microchip/sparx5/sparx5_main.h   | 21 +++++++
->  .../ethernet/microchip/sparx5/sparx5_pgid.c   | 60 +++++++++++++++++++
->  4 files changed, 85 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
+>  .../microchip/sparx5/sparx5_mactable.c        |  33 ++++--
+>  .../ethernet/microchip/sparx5/sparx5_main.h   |   2 +
+>  .../microchip/sparx5/sparx5_switchdev.c       | 111 ++++++++++++++++++
+>  3 files changed, 136 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/microchip/sparx5/Makefile
-> b/drivers/net/ethernet/microchip/sparx5/Makefile
-> index e9dd348a6ebb..4402c3ed1dc5 100644
-> --- a/drivers/net/ethernet/microchip/sparx5/Makefile
-> +++ b/drivers/net/ethernet/microchip/sparx5/Makefile
-> @@ -8,4 +8,4 @@ obj-$(CONFIG_SPARX5_SWITCH) += sparx5-switch.o
->  sparx5-switch-objs  := sparx5_main.o sparx5_packet.o \
->   sparx5_netdev.o sparx5_phylink.o sparx5_port.o sparx5_mactable.o sparx5_vlan.o \
->   sparx5_switchdev.o sparx5_calendar.o sparx5_ethtool.o sparx5_fdma.o \
-> - sparx5_ptp.o
-> + sparx5_ptp.o sparx5_pgid.o
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> index 5f7c7030ce03..01be7bd84181 100644
-> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.c
-> @@ -626,6 +626,9 @@ static int sparx5_start(struct sparx5 *sparx5)
->         /* Init MAC table, ageing */
->         sparx5_mact_init(sparx5);
+> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+> b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+> index 82b1b3c9a065..35abb3d0ce19 100644
+> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+> @@ -186,11 +186,11 @@ bool sparx5_mact_getnext(struct sparx5 *sparx5,
+>         return ret == 0;
+>  }
 > 
-> +       /* Init PGID table arbitrator */
-> +       sparx5_pgid_init(sparx5);
+> -static int sparx5_mact_lookup(struct sparx5 *sparx5,
+> -                             const unsigned char mac[ETH_ALEN],
+> -                             u16 vid)
+> +bool sparx5_mact_find(struct sparx5 *sparx5,
+> +                     const unsigned char mac[ETH_ALEN], u16 vid, u32 *pcfg2)
+>  {
+>         int ret;
+> +       u32 cfg2;
+> 
+>         mutex_lock(&sparx5->lock);
+> 
+> @@ -202,16 +202,29 @@ static int sparx5_mact_lookup(struct sparx5 *sparx5,
+>                 sparx5, LRN_COMMON_ACCESS_CTRL);
+> 
+>         ret = sparx5_mact_wait_for_completion(sparx5);
+> -       if (ret)
+> -               goto out;
+> -
+> -       ret = LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_VLD_GET
+> -               (spx5_rd(sparx5, LRN_MAC_ACCESS_CFG_2));
+> +       if (ret == 0) {
+> +               cfg2 = spx5_rd(sparx5, LRN_MAC_ACCESS_CFG_2);
+> +               if (LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_VLD_GET(cfg2))
+> +                       *pcfg2 = cfg2;
+> +               else
+> +                       ret = -ENOENT;
+> +       }
+> 
+> -out:
+>         mutex_unlock(&sparx5->lock);
+> 
+> -       return ret;
+> +       return ret == 0;
+> +}
 > +
->         /* Setup VLANs */
->         sparx5_vlan_init(sparx5);
+> +static int sparx5_mact_lookup(struct sparx5 *sparx5,
+> +                             const unsigned char mac[ETH_ALEN],
+> +                             u16 vid)
+> +{
+> +       u32 pcfg2;
+> +
+> +       if (sparx5_mact_find(sparx5, mac, vid, &pcfg2))
+> +               return 1;
+> +
+> +       return 0;
+>  }
+
+I suggest to drop this and only use your new function (or at least let it return a real error code
+like -ENOENT in case of an error).
+
 > 
+>  int sparx5_mact_forget(struct sparx5 *sparx5,
 > diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
 > b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-> index df68a0891029..e97fa091c740 100644
+> index e97fa091c740..7a04b8f2a546 100644
 > --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
 > +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-> @@ -66,6 +66,12 @@ enum sparx5_vlan_port_type {
->  #define PGID_BCAST            (PGID_BASE + 6)
->  #define PGID_CPU              (PGID_BASE + 7)
+> @@ -310,6 +310,8 @@ int sparx5_mact_learn(struct sparx5 *sparx5, int port,
+>                       const unsigned char mac[ETH_ALEN], u16 vid);
+>  bool sparx5_mact_getnext(struct sparx5 *sparx5,
+>                          unsigned char mac[ETH_ALEN], u16 *vid, u32 *pcfg2);
+> +bool sparx5_mact_find(struct sparx5 *sparx5,
+> +                     const unsigned char mac[ETH_ALEN], u16 vid, u32 *pcfg2);
+>  int sparx5_mact_forget(struct sparx5 *sparx5,
+>                        const unsigned char mac[ETH_ALEN], u16 vid);
+>  int sparx5_add_mact_entry(struct sparx5 *sparx5,
+> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+> b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+> index 2d5de1c06fab..9e1ea35d0c40 100644
+> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+> @@ -366,6 +366,109 @@ static int sparx5_handle_port_vlan_add(struct net_device *dev,
+>                                   v->flags & BRIDGE_VLAN_INFO_UNTAGGED);
+>  }
 > 
-> +#define PGID_TABLE_SIZE               3290
+> +static int sparx5_handle_port_mdb_add(struct net_device *dev,
+> +                                     struct notifier_block *nb,
+> +                                     const struct switchdev_obj_port_mdb *v)
+> +{
+> +       struct sparx5_port *port = netdev_priv(dev);
+> +       struct sparx5 *spx5 = port->sparx5;
+> +       u16 pgid_idx, vid;
+> +       u32 mact_entry;
+> +       int res, err;
 > +
-> +#define PGID_MCAST_START 65
+> +       /* When VLAN unaware the vlan value is not parsed and we receive vid 0.
+> +        * Fall back to bridge vid 1.
+> +        */
+> +       if (!br_vlan_enabled(spx5->hw_bridge_dev))
+> +               vid = 1;
+> +       else
+> +               vid = v->vid;
+> +
+> +       res = sparx5_mact_find(spx5, v->addr, vid, &mact_entry);
+> +
+> +       if (res) {
+> +               pgid_idx = LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_GET(mact_entry);
+> +
+> +               /* MC_IDX has an offset of 65 in the PGID table. */
+> +               pgid_idx += PGID_MCAST_START;
 
-This overlaps with PGID_UC_FLOOD above.  You should drop this.
-Please see this description:
+This will overlap some of the first ports with the flood masks according to:
 
 https://microchip-ung.github.io/sparx-5_reginfo/reginfo_sparx-5.html?select=ana_ac,pgid
 
-> 
-> +#define PGID_GLAG_START 833
-> +#define PGID_GLAG_END 1088
+You should use the custom area (PGID_BASE + 8 and onwards) for this new feature.
 
-You do not appear to put the GLAG feature into use so you should remove these for now.
-
-> +
->  #define IFH_LEN                9 /* 36 bytes */
->  #define NULL_VID               0
->  #define SPX5_MACT_PULL_DELAY   (2 * HZ)
-> @@ -271,6 +277,8 @@ struct sparx5 {
->         struct mutex ptp_lock; /* lock for ptp interface state */
->         u16 ptp_skbs;
->         int ptp_irq;
-> +       /* PGID allocation map */
-> +       u8 pgid_map[PGID_TABLE_SIZE];
->  };
-> 
->  /* sparx5_switchdev.c */
-> @@ -359,6 +367,19 @@ void sparx5_ptp_txtstamp_release(struct sparx5_port *port,
->                                  struct sk_buff *skb);
->  irqreturn_t sparx5_ptp_irq_handler(int irq, void *args);
-> 
-> +/* sparx5_pgid.c */
-> +enum sparx5_pgid_type {
-> +       SPX5_PGID_FREE,
-> +       SPX5_PGID_RESERVED,
-> +       SPX5_PGID_MULTICAST,
-> +       SPX5_PGID_GLAG
-> +};
-> +
-> +void sparx5_pgid_init(struct sparx5 *spx5);
-> +int sparx5_pgid_alloc_glag(struct sparx5 *spx5, u16 *idx);
-> +int sparx5_pgid_alloc_mcast(struct sparx5 *spx5, u16 *idx);
-> +int sparx5_pgid_free(struct sparx5 *spx5, u16 idx);
-> +
->  /* Clock period in picoseconds */
->  static inline u32 sparx5_clk_period(enum sparx5_core_clockfreq cclock)
->  {
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
-> b/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
-> new file mode 100644
-> index 000000000000..90366fcb9958
-> --- /dev/null
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
-> @@ -0,0 +1,60 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +#include "sparx5_main.h"
-> +
-> +void sparx5_pgid_init(struct sparx5 *spx5)
-> +{
-> +       int i;
-> +
-> +       for (i = 0; i < PGID_TABLE_SIZE; i++)
-> +               spx5->pgid_map[i] = SPX5_PGID_FREE;
-> +
-> +       /* Reserved for unicast, flood control, broadcast, and CPU.
-> +        * These cannot be freed.
-> +        */
-> +       for (i = 0; i <= PGID_CPU; i++)
-> +               spx5->pgid_map[i] = SPX5_PGID_RESERVED;
-> +}
-> +
-> +int sparx5_pgid_alloc_glag(struct sparx5 *spx5, u16 *idx)
-> +{
-> +       int i;
-> +
-> +       for (i = PGID_GLAG_START; i <= PGID_GLAG_END; i++)
-> +               if (spx5->pgid_map[i] == SPX5_PGID_FREE) {
-> +                       spx5->pgid_map[i] = SPX5_PGID_GLAG;
-> +                       *idx = i;
-> +                       return 0;
+> +               sparx5_pgid_update_mask(port, pgid_idx, true);
+> +       } else {
+> +               err = sparx5_pgid_alloc_mcast(spx5, &pgid_idx);
+> +               if (err) {
+> +                       netdev_warn(dev, "multicast pgid table full\n");
+> +                       return err;
 > +               }
-> +
-> +       return -EBUSY;
-> +}
-
-You do not appear to put the GLAG feature into use so you should remove this function for now.
-
-> +
-> +int sparx5_pgid_alloc_mcast(struct sparx5 *spx5, u16 *idx)
-> +{
-> +       int i;
-> +
-> +       for (i = PGID_MCAST_START; i < PGID_TABLE_SIZE; i++) {
-> +               if (i == PGID_GLAG_START)
-> +                       i = PGID_GLAG_END + 1;
-> +
-> +               if (spx5->pgid_map[i] == SPX5_PGID_FREE) {
-> +                       spx5->pgid_map[i] = SPX5_PGID_MULTICAST;
-> +                       *idx = i;
-> +                       return 0;
+> +               sparx5_pgid_update_mask(port, pgid_idx, true);
+> +               err = sparx5_mact_learn(spx5, pgid_idx, v->addr, vid);
+> +               if (err) {
+> +                       netdev_warn(dev, "could not learn mac address %pM\n", v->addr);
+> +                       sparx5_pgid_update_mask(port, pgid_idx, false);
+> +                       return err;
 > +               }
 > +       }
 > +
-> +       return -EBUSY;
-> +}
-> +
-> +int sparx5_pgid_free(struct sparx5 *spx5, u16 idx)
-> +{
-> +       if (idx <= PGID_CPU || idx >= PGID_TABLE_SIZE)
-> +               return -EINVAL;
-> +
-> +       if (spx5->pgid_map[idx] == SPX5_PGID_FREE)
-> +               return -EINVAL;
-> +
-> +       spx5->pgid_map[idx] = SPX5_PGID_FREE;
 > +       return 0;
 > +}
+> +
+> +static int sparx5_mdb_del_entry(struct net_device *dev,
+> +                               struct sparx5 *spx5,
+> +                               const unsigned char mac[ETH_ALEN],
+> +                               const u16 vid,
+> +                               u16 pgid_idx)
+> +{
+> +       int err;
+> +
+> +       err = sparx5_mact_forget(spx5, mac, vid);
+> +       if (err) {
+> +               netdev_warn(dev, "could not forget mac address %pM", mac);
+> +               return err;
+> +       }
+> +       err = sparx5_pgid_free(spx5, pgid_idx);
+> +       if (err) {
+> +               netdev_err(dev, "attempted to free already freed pgid\n");
+> +               return err;
+> +       }
+> +       return 0;
+> +}
+> +
+> +static int sparx5_handle_port_mdb_del(struct net_device *dev,
+> +                                     struct notifier_block *nb,
+> +                                     const struct switchdev_obj_port_mdb *v)
+> +{
+> +       struct sparx5_port *port = netdev_priv(dev);
+> +       struct sparx5 *spx5 = port->sparx5;
+> +       u16 pgid_idx, vid;
+> +       u32 mact_entry, res, pgid_entry[3];
+> +       int err;
+> +
+> +       if (!br_vlan_enabled(spx5->hw_bridge_dev))
+> +               vid = 1;
+> +       else
+> +               vid = v->vid;
+> +
+> +       res = sparx5_mact_find(spx5, v->addr, vid, &mact_entry);
+> +
+> +       if (res) {
+> +               pgid_idx = LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_GET(mact_entry);
+> +
+> +               /* MC_IDX has an offset of 65 in the PGID table. */
+> +               pgid_idx += PGID_MCAST_START;
+> +               sparx5_pgid_update_mask(port, pgid_idx, false);
+> +
+> +               pgid_entry[0] = spx5_rd(spx5, ANA_AC_PGID_CFG(pgid_idx));
+> +               pgid_entry[1] = spx5_rd(spx5, ANA_AC_PGID_CFG1(pgid_idx));
+> +               pgid_entry[2] = spx5_rd(spx5, ANA_AC_PGID_CFG2(pgid_idx));
+> +               if (pgid_entry[0] == 0 && pgid_entry[1] == 0 && pgid_entry[2] == 0) {
+
+Looks like you could use a function that gets the pgid port mask (the inverse of the
+sparx5_pgid_update_mask() function)
+
+
+> +                       /* No ports are in MC group. Remove entry */
+> +                       err = sparx5_mdb_del_entry(dev, spx5, v->addr, vid, pgid_idx);
+> +                       if (err)
+> +                               return err;
+> +               }
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+>  static int sparx5_handle_port_obj_add(struct net_device *dev,
+>                                       struct notifier_block *nb,
+>                                       struct switchdev_notifier_port_obj_info *info)
+> @@ -378,6 +481,10 @@ static int sparx5_handle_port_obj_add(struct net_device *dev,
+>                 err = sparx5_handle_port_vlan_add(dev, nb,
+>                                                   SWITCHDEV_OBJ_PORT_VLAN(obj));
+>                 break;
+> +       case SWITCHDEV_OBJ_ID_PORT_MDB:
+> +               err = sparx5_handle_port_mdb_add(dev, nb,
+> +                                                SWITCHDEV_OBJ_PORT_MDB(obj));
+> +               break;
+>         default:
+>                 err = -EOPNOTSUPP;
+>                 break;
+> @@ -426,6 +533,10 @@ static int sparx5_handle_port_obj_del(struct net_device *dev,
+>                 err = sparx5_handle_port_vlan_del(dev, nb,
+>                                                   SWITCHDEV_OBJ_PORT_VLAN(obj)->vid);
+>                 break;
+> +       case SWITCHDEV_OBJ_ID_PORT_MDB:
+> +               err = sparx5_handle_port_mdb_del(dev, nb,
+> +                                                SWITCHDEV_OBJ_PORT_MDB(obj));
+> +               break;
+>         default:
+>                 err = -EOPNOTSUPP;
+>                 break;
 > --
 > 2.30.2
 > 
 
+Best Regards
+Steen
