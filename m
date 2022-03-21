@@ -2,125 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9944E233E
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 10:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 058414E23A5
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 10:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243528AbiCUJYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 05:24:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33154 "EHLO
+        id S1346037AbiCUJyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 05:54:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238061AbiCUJYE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 05:24:04 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059801427EF
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 02:22:40 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 10:22:37 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1647854558;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=/QWaEayZvArwN7LukNZ3sAsEuQ/wTRAvldgHd0dyeCs=;
-        b=BZJfHHClEhH87dWEjJ/ZpN4RbylwnMRvr0eMcybIeXMoXgQmaWTXlU/McF5X/S8PJ8v0R5
-        smwwp1UIlMCa0c09yQL/QZ+TKDxE79PJcXtIn5uXLpW//ASCokESDTPEi/hCciH5mNu8Qd
-        jik7juazTNvuo9EhschGP7mRLZmHGRd3sXeof7KGzJbp74biYdbz4ltOMOYQLsozEMLJXZ
-        +kepxIbHRmQRfkTOyE8BDJKoG8uEhNFsg8yAE2son/l+TN6rOL5r62Op1xGs3wy6JmunsB
-        eZnclCD+QkRdf+ppQeIWK0MoXvkJjOaEZuW6F94gmKiJ2EFodg16l8X3Q1sfcA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1647854558;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=/QWaEayZvArwN7LukNZ3sAsEuQ/wTRAvldgHd0dyeCs=;
-        b=EC1lLIN5hLMp1jbGoU3/KKZiqQMF6E5+c4QA2Gc+lWeXtnD2kV7P9r0G2EFIU9KhyjXyFj
-        H2Xo+BG+LGzdlPBg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH net-next] net: Revert the softirq will run annotation in
- ____napi_schedule().
-Message-ID: <YjhD3ZKWysyw8rc6@linutronix.de>
+        with ESMTP id S1346033AbiCUJyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 05:54:04 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965189F6C2
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 02:52:38 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id w4so17111503edc.7
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 02:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DC935hNdJZg7Mae6w6qpYtJ84MUCDnWV3o5C6lnKsKI=;
+        b=VKyHserT+1U5tbxrdYbVF91hsVxJ2hcKxQjgOuBFswAj4w2IqsOaPRHzx4s3b1btex
+         EGVyzOLTZ2+73xVhEf2smpJThhxQ1VQC7AV3r40AxaoqeECwy27Q7AoPOH0ps/+YmPZw
+         OEgLhcX+A5N/FTxvXAJZ+PkrQmTHyUz/kOmqiodd0pJt7GX/e4YXOKyqP6EcUzVjzxjI
+         OqrO0fbIvoFYIeUFaU77HeLqKJCbB1O8dm0dQ+L2fpFySif4/P05Y7Jd2qZY1ddIpIbT
+         uMz9hxV3dobTsA4GjNoyPM7yk8A07f8EXuI6OBH6/J7csgMvWqDNlrpOnO907Zvtq4Gt
+         N25w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DC935hNdJZg7Mae6w6qpYtJ84MUCDnWV3o5C6lnKsKI=;
+        b=D6UwgGb7/Aabk1xSnhRQIqaxxBMGL982Ve6K99YbrFk+/fSisyxG/yOnX6YjcgFeuV
+         g6GtflTBEsidyItADkjFYgQ6VQ7vjCiKygGxQ6rwIoq/CBZO4+XiEuWSVqCvAJTyB6zd
+         dspjvF4+TjaTJTlo3EvKcd3K+5sH81pbMeawxZTisRJCf8iR5Ha0xI8m9U7cl0ttdyTx
+         ryeTl27miyFYNHFbFu75H+3XOOMQFonxavhqTWRj/Z++855rJzSEwCz7BzZTHJzqC6lj
+         aTs88pl4WvgJPeIHc2eg53xBBVyo6ZnMHhHBTwjSukkKyXfgEBNGsjTYdoBTzXxsomzh
+         S5og==
+X-Gm-Message-State: AOAM530JmETOsRsMCe9GilG4tQW1vy4Z3eYacEFk+EefskHU60NgQVME
+        6JFN9egcQIdVGIohLimNkcfX8A==
+X-Google-Smtp-Source: ABdhPJxdG8gdI5IGVfAj95JNfdvqLcTgbfgdPg+reZ6PAGfsub7qZLBjDJhrtj/V6hOeYFTJYxOIDA==
+X-Received: by 2002:aa7:d553:0:b0:416:4dfc:126d with SMTP id u19-20020aa7d553000000b004164dfc126dmr21526998edr.213.1647856357101;
+        Mon, 21 Mar 2022 02:52:37 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id f5-20020a1709067f8500b006da68bfdfc7sm6657289ejr.12.2022.03.21.02.52.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 02:52:36 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 10:52:35 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     =?utf-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
+Cc:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, oliver@neukum.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
+Subject: Re: [PATCH v4] net:bonding:Add support for IPV6 RLB to balance-alb
+ mode
+Message-ID: <YjhK43MgpFkLFDhS@nanopsycho>
+References: <20220317061521.23985-1-sunshouxin@chinatelecom.cn>
+ <YjLtLdH9gmg7yaNl@nanopsycho>
+ <1f7b15a6-861f-9762-a159-73d16c95eebc@chinatelecom.cn>
+ <YjRuXPJzp2fKvMst@nanopsycho>
+ <e24c1190-ba41-6ba5-0aca-463cac2a2b2f@chinatelecom.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e24c1190-ba41-6ba5-0aca-463cac2a2b2f@chinatelecom.cn>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The lockdep annotation lockdep_assert_softirq_will_run() expects that
-either hard or soft interrupts are disabled because both guaranty that
-the "raised" soft-interrupts will be processed once the context is left.
+Mon, Mar 21, 2022 at 02:17:34AM CET, sunshouxin@chinatelecom.cn wrote:
+>
+>在 2022/3/18 19:34, Jiri Pirko 写道:
+>> Fri, Mar 18, 2022 at 10:49:02AM CET, sunshouxin@chinatelecom.cn wrote:
+>> > 在 2022/3/17 16:11, Jiri Pirko 写道:
+>> > > Thu, Mar 17, 2022 at 07:15:21AM CET, sunshouxin@chinatelecom.cn wrote:
+>> > > > This patch is implementing IPV6 RLB for balance-alb mode.
+>> > > > 
+>> > > > Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>> > > > Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>> > > Could you please reply to my question I asked for v1:
+>> > > Out of curiosity, what is exactly your usecase? I'm asking because
+>> > > I don't see any good reason to use RLB/ALB modes. I have to be missing
+>> > > something.
+>> > > 
+>> > > This is adding a lot of code in bonding that needs to be maintained.
+>> > > However, if there is no particular need to add it, why would we?
+>> > > 
+>> > > Could you please spell out why exactly do you need this? I'm pretty sure
+>> > > that in the end well find out, that you really don't need this at all.
+>> > > 
+>> > > Thanks!
+>> > 
+>> > This patch is certainly aim fix one real issue in ou lab.
+>> > For historical inheritance, the bond6 with ipv4 is widely used in our lab.
+>> > We started to support ipv6 for all service last year, networking operation
+>> > and maintenance team
+>> > think it does work with ipv6 ALB capacity take it for granted due to bond6's
+>> > specification
+>> > but it doesn't work in the end. as you know, it is impossible to change link
+>> > neworking to LACP
+>> > because of huge cost and effective to online server.
+>> I don't follow. Why exactly can't you use LACP? Every switch supports
+>> it.
+>
+>
+>Hi jiri
+>
+>
+>Changing to Lacp means risk  to our online service requring high available.
+>
+>Also,we have multiple DCs installed bond6,it is huge cost to change it.
 
-This triggers in flush_smp_call_function_from_idle() but it this case it
-explicitly calls do_softirq() in case of pending softirqs.
-
-Revert the "softirq will run" annotation in ____napi_schedule() and move
-the check back to __netif_rx() as it was. Keep the IRQ-off assert in
-____napi_schedule() because this is always required.
-
-Fixes: fbd9a2ceba5c7 ("net: Add lockdep asserts to ____napi_schedule().")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- include/linux/lockdep.h | 7 -------
- net/core/dev.c          | 3 +--
- 2 files changed, 1 insertion(+), 9 deletions(-)
-
-diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
-index 0cc65d2167015..467b94257105e 100644
---- a/include/linux/lockdep.h
-+++ b/include/linux/lockdep.h
-@@ -329,12 +329,6 @@ extern void lock_unpin_lock(struct lockdep_map *lock, struct pin_cookie);
- 
- #define lockdep_assert_none_held_once()		\
- 	lockdep_assert_once(!current->lockdep_depth)
--/*
-- * Ensure that softirq is handled within the callchain and not delayed and
-- * handled by chance.
-- */
--#define lockdep_assert_softirq_will_run()	\
--	lockdep_assert_once(hardirq_count() | softirq_count())
- 
- #define lockdep_recursing(tsk)	((tsk)->lockdep_recursion)
- 
-@@ -420,7 +414,6 @@ extern int lockdep_is_held(const void *);
- #define lockdep_assert_held_read(l)		do { (void)(l); } while (0)
- #define lockdep_assert_held_once(l)		do { (void)(l); } while (0)
- #define lockdep_assert_none_held_once()	do { } while (0)
--#define lockdep_assert_softirq_will_run()	do { } while (0)
- 
- #define lockdep_recursing(tsk)			(0)
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8e0cc5f2020d3..8a5109479dbe2 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4277,7 +4277,6 @@ static inline void ____napi_schedule(struct softnet_data *sd,
- {
- 	struct task_struct *thread;
- 
--	lockdep_assert_softirq_will_run();
- 	lockdep_assert_irqs_disabled();
- 
- 	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
-@@ -4887,7 +4886,7 @@ int __netif_rx(struct sk_buff *skb)
- {
- 	int ret;
- 
--	lockdep_assert_softirq_will_run();
-+	lockdep_assert_once(hardirq_count() | softirq_count());
- 
- 	trace_netif_rx_entry(skb);
- 	ret = netif_rx_internal(skb);
--- 
-2.35.1
-
+So? This is 0 argument in this discussion. I believe that adding this
+amount of code to bonding for use case that could be simply replaced by
+LACP is wrong and we should not do that. The oridingal ALB/RLB
+implementation was done when LACP was not that widely used. But now it
+is 2022 - different story.
