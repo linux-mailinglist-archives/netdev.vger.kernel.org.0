@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 505964E2489
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 11:42:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC534E248D
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 11:43:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346443AbiCUKoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 06:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
+        id S1346444AbiCUKoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 06:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346439AbiCUKoO (ORCPT
+        with ESMTP id S1346441AbiCUKoO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 06:44:14 -0400
 Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2132.outbound.protection.outlook.com [40.107.243.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C296C14966E
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 03:42:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7207A14A900
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 03:42:42 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SBss1r/x81XkVlu0/MIVrjqQ1rZuB8bJbfutpAqkWLzoAiN1Y7d2pFcZkkrLy5oOtTY3KcXceE1bOMnuyU5ix9iNUUOOMhP7N1A4Lf96DEtKZsyfBYnBZYuvqCjXQsSXsuC8CKtAdoghqtDoAYMIOzaB5P5CNjLwRTomc5rn3jiLboEaV0mDRTG0o/WyPC7CHL5ns9wD5oaLW+ArCjDdwQIwu8S06TwM3d+tuvZzGBafqepLiJpPuLzDYE6DFS/0CC8ANAOQczn17Ka0ch/SWTkumZSSkrJAJMfDAo8cysKApAshXWZk/m2Q9mW4817Mg9tuaHusade65XQIQJTX+g==
+ b=kcTTKh4l/1BC9b8XRr9x3YfUc4cJekuPvICcgPJbpdFsF0Ia4REe2cxjkZDnwg4zIqtn7Sk6WdNOZfHYjlE+Gzz7tS38p5sT28ub7qKBaAO4cf0J7qUeu79kUPpMwIZw4m04OJiAcA55pLkht54XaBavK7hKY77XlFrHReNyTm3iWL2W3kNXwieh3XcLc6yiaE+d8RCrhJlCUwvrYCwL17Pmp8/n5zXgOrLcl5W/WMBUzrQDT4w7Vb/rg3kMBbj2hK7TzgE+OqJASY0iwFxuHgQeuWIXXYeX26kJzv+GGnH3CfSRvTkqQGSK2qnDkiSZaA5sz1zVdI+jWmVKh/xj1g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FZriSPFFVghuObPtOO1ichRMXSWu/dQVevKAhkZ0ASs=;
- b=HV1SQAHYA+ki0jAd38QKMqzLq08TyG5Q1RWi8WvRm87hr9dTj4C/XhelTtPT2QhjxYSKWe0r4h1wm3uDeGFqUC64CgJZJC2tviycAgsw7aYgrZAH7uf1MrvW1ApbkTXcznenBLnL+8+4Rfn2aTCXrEzfu9hcrY22H8EciIZzEEa5a1OfFxyM5t8U9hktSsHAWt8DtuJa43lX4PR+BSO11O9ZVLNiVhetqRk/KfSptcS8HYZV84k+2XSDOtniN9kJ6vqR9bT9nSYUAW+eixP/OeZemWTTNSe4XXQY2glQZ4q5Cbyo1Cvxt9XDeo6P1M2el+/hnC+9WYc5zyDHhSgF3w==
+ bh=3+ESlUUxlHG0lg+nzcCtNuhuEB4rq/Xgfl8TDsmkiL8=;
+ b=FHTLB2vyicLCiZIwfSh0YIbwGQ32yg9+thEeYKNmhsFOYZpzxbFyrjvRSBxFJHwEPHDhQO86T0kk1jZud3YFiC97VTwoQ5Bo4Br9D5K28W56LQ/QQ+L4olZqdR2R811RvT2Rp66aTdkr/Xz35nv/eomSLDXArwrFyj4EM2V92NQfXsUKxCLCI85YBFprkdDyphTq89RR2axPCaN6b05d1ys2JMreSYzqTwYfxkQbI3JBioZJ0uZEu3mNA0PQprC/1R39KjE68MZJ74oUdqo2QlFI5M+HPMUCrMGYAInLkjPVYjrVDyNhZh3AfqlFxcYRSyByo0MLPYn/64uInkbdRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FZriSPFFVghuObPtOO1ichRMXSWu/dQVevKAhkZ0ASs=;
- b=koBvVi1KBEbQadDlELtwx8N7PxQy/jYrCnrXcPEeYUxeYoVLrwHw5kf/Ej4oMmK1XSv0XiFzGtTnuCFWQTP+khYzOzS51wjX7uiEFAPrTIc/EwaMu/1creiBeVSHqHIpUAId8KzFJVWp+VD/t9LEdKVg7+apRh7PfAH4ew9H0j0=
+ bh=3+ESlUUxlHG0lg+nzcCtNuhuEB4rq/Xgfl8TDsmkiL8=;
+ b=PEby+dezxg54EzVXGIrryzPF/a6Ok8HPZ1rbbDboep5SuLG6WAgfu1HP4kk2CI/iysYy8VOiSq5WhRVmK+wdbbtWG/lVxwIUz1vluMBiM1irBuSnRtotn/ew2fDd+vOqJOVknzbIWSFbied8YUxDOnEgM2WPnMvFyyCrbZOIhc8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by CY4PR13MB1512.namprd13.prod.outlook.com (2603:10b6:903:12f::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.15; Mon, 21 Mar
- 2022 10:42:35 +0000
+ 2022 10:42:37 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::7077:d057:db6b:3113]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::7077:d057:db6b:3113%4]) with mapi id 15.20.5102.015; Mon, 21 Mar 2022
- 10:42:35 +0000
+ 10:42:37 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Yinjun Zhang <yinjun.zhang@corigine.com>, netdev@vger.kernel.org,
         oss-drivers@corigine.com
-Subject: [PATCH net-next v2 07/10] nfp: add per-data path feature mask
-Date:   Mon, 21 Mar 2022 11:42:06 +0100
-Message-Id: <20220321104209.273535-8-simon.horman@corigine.com>
+Subject: [PATCH net-next v2 08/10] nfp: choose data path based on version
+Date:   Mon, 21 Mar 2022 11:42:07 +0100
+Message-Id: <20220321104209.273535-9-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220321104209.273535-1-simon.horman@corigine.com>
 References: <20220321104209.273535-1-simon.horman@corigine.com>
@@ -58,52 +58,52 @@ X-ClientProxiedBy: AM0PR02CA0001.eurprd02.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fe9334c6-f9eb-4432-fefa-08da0b27830f
+X-MS-Office365-Filtering-Correlation-Id: 52399ce6-b458-4d31-ff4f-08da0b2783dc
 X-MS-TrafficTypeDiagnostic: CY4PR13MB1512:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR13MB151245EB94D50319547700F0E8169@CY4PR13MB1512.namprd13.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <CY4PR13MB15125D7523561B383B3EA077E8169@CY4PR13MB1512.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iswJy6JCiIdu/vW2fQFuThbRGyR5XCuCBbVzes9/dDRcSlp9qfoSvuHVQzy7R3ckEpj0gyWjL9+fRhQIjcMg9MyTFHriUoz6kheLruh4whH/FgZxN5yZ0trzQdNB7I4lH5mmyYrsniMb3IC2cTgv0zjDphOg+x0nqALTe2Kt2enqibBIk6pfGJPrTqFUDJNIgmDcv2zJsvg3XXkavbFlBqBfZ/uiw7kNCAeOZYszKxntXAU0d9fN0TpqhTIsOWp/IV1aMJVIqrXaO2vVe9cC+7I8ZmoxM4TEJvWwezSKyllvLB/FXfhkqBlJICWZjJkafdE/ESJioLg7wLwGEhN/ItwaF1Vih7U7SQGe6hjl7AVRZJX7YV3w6cYCSZFv1MJKJOVEJrbc1wXLl0kPX7c/ELtK6MYyc1rkpBHNX6U3J93fDcBRT6OX1ZhFomI/mlAawwaYGTpqgoFHLoxUeIdFIKf4IjTUJyGUpLeXNQ4R8BLIunNa5O9HD/fZp2IO9+xSZJyKIip+GDTpthhTEyqdcscwGI5WEoKK7voPAGmMIIjeZ0DGbF4nItBOnRCIsHPVI13pS0iCBiyBboSMVAbI+BHzi90EWuLmoDcvDEa+smxZCvQmw/pjLq5zlZLXL1zeYsflKug+DxUpKEeKnlPW7Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(136003)(396003)(376002)(366004)(346002)(8936002)(186003)(1076003)(6512007)(110136005)(6506007)(2906002)(8676002)(5660300002)(86362001)(52116002)(107886003)(6666004)(6486002)(44832011)(66946007)(4326008)(38100700002)(66556008)(2616005)(66476007)(316002)(508600001)(36756003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: bNjMEpurBpB4IrqiJPi3pyeNYPGBjRq3vI571K0xabz/LFzEDLgv0SCWP0uh1BohiTxconiB/K7MyResNZZJ2swzF+Tes8XSp+oS6OMPiBHgDYPuVvHkoCqhfvbCBDmkblzUloXyHs+y33MD3HpHcGABbNgA645xF9QlAH5Gg/ICJFqV+80jxDIaEJr51bHgxHfTvgGYNH6u5BneSZzaBm43poa3AsbHJC8JqhhqvAzGIpydLrQmgCgM+N5Q6rkPbVkupuB2ax9g+Xac8w3bAAFcgLn+Luea/828uS4MgCs3c2zzKt6Ep96ylVTi35JKgoER4fl0m/MxRRf384o8mUl+cz2MMRc+UTyjI2My3KaBS8KTqTdzL6EsP+gwggDjMLPrX0nFIvtA6pGP3uzAeXo256lZXJw9+TPs8YUvn8v+wT01i6wlXmZgO6dlIylduX4cwMlLChELELyb6eMzp6gsVU5h1JLutsZ0wOigsJe50uUa9mgHVShNRbpH/+GGsecqVLsDo7EfNJa1IsQsWJzqI04HkI8yQmyk46QqHmZ9gXvUdbc1jYWF9ZzWsOwz/y11MSVoRsJO5a0MnZMCCBNf8sHV05fzfVPkQmnzdv1STnhUWEmWtkYe1qat/kRmZTwOyoNxrzbA4Yvl3Pc4xg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(136003)(396003)(376002)(366004)(346002)(8936002)(186003)(1076003)(6512007)(110136005)(6506007)(2906002)(8676002)(5660300002)(86362001)(52116002)(107886003)(6666004)(6486002)(44832011)(66946007)(4326008)(38100700002)(66556008)(2616005)(66476007)(316002)(83380400001)(508600001)(36756003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8t0gEDEUse/6e6PFj/yWy2ay5+PYdj3g4gSrMUMEu8A2kdphHGTyngZqaj6A?=
- =?us-ascii?Q?DhzXZZvKsxVWKBZsiBBQ5GwpdME25EUd3/j7OnPZIOVJQzZHuf88Jkl5gH3j?=
- =?us-ascii?Q?XcjgjiVSuPrEyOIzjf4hodSLm4uSHOBuMeK01tN58wYOrrtT9gHrQKQefamy?=
- =?us-ascii?Q?luZOSzzCnvCaWcbxNtEvtGZT9VWJRnPnb6ED2ipf23k/gal4Njq9PjLo2PFX?=
- =?us-ascii?Q?8C3mwDV1QHp3kOiny13lTQQHnuOIgf9UGeKBohyxWQZTYg3lW+g9oB5agYBv?=
- =?us-ascii?Q?a2OZTGDhdeMXbJlXDxGr/yLTUcRNy9ta2TwmcP3lWSIbF3ngnlTREdt3oW5w?=
- =?us-ascii?Q?/4h7J39ZhHkEHSOpYc0Z7sn28CCOAugO1EsuEaJmVauhL9ZUpbVHp6ppHA6T?=
- =?us-ascii?Q?RfXUhvdz5VMUwau8t1oAk/NAeMhdHrTBStKO1SHoI8OJ2Ip0M3FKReB1l/X0?=
- =?us-ascii?Q?/5SQOpavouFIInMAkXYghedaqbuOMqIibcXXlMldLEoZr0pc4M+o9FGJE+ts?=
- =?us-ascii?Q?fDmB8kRlJD8MfP19MYOWtolWeo0rNEL9MalgNYsABmPRy05JrRPocr6IgFOr?=
- =?us-ascii?Q?5uDK8tlFFyYncQo8qoDWYmj4jOwnfN514eeaKhpOquaYhlSvbIkWkMDsOiZK?=
- =?us-ascii?Q?3E+BvcrAgg8vfB7dQsP92p1ncqoxM+75sY/a7VQu7hSopEmhTf1+vWBmpz85?=
- =?us-ascii?Q?2+KhzMpRCrqKKdaV3vDx8DDtE5U5NuM7oh+/aAXTwmKq38cBXm14FYbYidaC?=
- =?us-ascii?Q?KbO9+RmGSZEiTBZNA/IyzWxuzWSQYjiRclBGHMrWLC+Gtbu3n6JwLE3A0nhn?=
- =?us-ascii?Q?lP3Rg3HDVTLfhVMwivdQba1/w/6xk3d9g8lDRt94vEFOMDNohe64vGHWeWDO?=
- =?us-ascii?Q?4r8GOi6FZ2rOo71nNUBDqqFiJYJsPF30OyTqj+whWKu733D5jO0kc985h33W?=
- =?us-ascii?Q?Elv4KZ2o5gVluD/s/IbReQZVmfj0EDRQsKB5epX0lUGkistisZbY6rfi4qFa?=
- =?us-ascii?Q?J6FsYLpNdKirbrw94uV6rYLca5ysC4i05SN0/OF5HNFTKXIZCIz+AqRf8cgQ?=
- =?us-ascii?Q?m+YaSrTFHgS9nqbht5RiOxm4d8IWwh8JQKiyPs+DdapXZzFoYsjLYuX3qJ/E?=
- =?us-ascii?Q?W5M54x1ppcFOdR9bNLya41NnnqueBNV36FF3t7Pz3EGtkkDZqSINadbvmqYa?=
- =?us-ascii?Q?7DfKhLVZiKaFgYIzj81ZuC3YIf1166613IIOtXAiMuOCfMmFspHv9GgBcbRd?=
- =?us-ascii?Q?b9ZP3UH5LxPCeMr6G69H06dTf/aCi/IKNu4KV0BcTcUEc+yT8GkW9zUVZCJw?=
- =?us-ascii?Q?gbYK9zXM/g+WW03cjufirqdT+J1Cm36iqDqM9PIiZ7vN00jghW35vVv+SZ/T?=
- =?us-ascii?Q?C3YRT9o1/RyrRBm/F8m77FUFvr3u2nqUsvU8NiDo05deWbINywj0lhzui0FC?=
- =?us-ascii?Q?9fOqMsrvUKs0XhaDKzfl/Dpb/buVk00yb69oIDVF1gF85OKeV74nVHnDcMbV?=
- =?us-ascii?Q?QD6TvQVC/HydhsSHdBgIr7sYkWAFzZTpDj7I6KTjGPHK+2e+t352HSCd/g?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ofDeTycd3GgYnHAaMED5uZWp1OwdVxnXdITio/aaLyYRI8bOMcYb8oScx3Yd?=
+ =?us-ascii?Q?5Y6IHnAQeyGr642CCptYHO8/v+KAj8p//iM9qA546YOFKVl0IUJnPXrfgak1?=
+ =?us-ascii?Q?2fJvq5vGFNTXZeCAeRoAnyUoP4xm+iuO7lHDWzDXTw76wNPpTnZTq5MWxEeq?=
+ =?us-ascii?Q?vcIQotM6Q3DfMSNvESqHjr8cxFYi2M5VB7agyJDu+TtYdf2YcTFr9VdlkRL5?=
+ =?us-ascii?Q?boGBJk6wjOsnRaQIjB3XQprJHTKph9WChqEPJT91R4/CRZwQAxSGkZsypHsd?=
+ =?us-ascii?Q?QmUCkn4m+rPhlnkKOKJGV4SNap+p7pvH7nXCXTxLwXazgpKV/gH8UjzRPN1B?=
+ =?us-ascii?Q?XtIOolkFBilVFeAuBkpfHHTFP50mbGt0cQWJ+Ku4bAVomv9XSfNIU8TWTcVy?=
+ =?us-ascii?Q?1GpZddkcW8sNXrGRH1TdSti247VBhAPYTAyu0Mxg5L3bXLufVCiCgpVygLHZ?=
+ =?us-ascii?Q?kIrZFxaXyk+MMAfS5wBWeDwuwBIxlQi1No08aTAFKrtA4ABgZlV+Ti66hB35?=
+ =?us-ascii?Q?a55DKERGj2seGQ46EpIZTi35ZOceRs0ykYK3zYhV+Vlfe9axX8s9qRgGY355?=
+ =?us-ascii?Q?mLvyRqw2z90FXkAlABrMPynTXMVkXVo6Tf3RumSY1fKNqr5ZI+aJbx9j9sfE?=
+ =?us-ascii?Q?OYrxgAr4aKhlcFcD/ROv22TX+vn2m/lI5fJkAjzqs+f/PLT2JHTFUOfIu5HU?=
+ =?us-ascii?Q?IM0gPrsaT4RpNAR4lBZ2+8pF0jc1ITNdxbcL9N88WvMKx7qEgkidUB1dXczS?=
+ =?us-ascii?Q?VjQnZmTL5YxJK9YA7vs1IiP5Z53OR8gvpDGmNfAgY3BbNnKo8kskZZBzT9it?=
+ =?us-ascii?Q?VvN3LRmuaHRgeVW1ICCSwXbpQJuiDK0wNpP2tgAm5/LsLISsCnc4ROJixL2J?=
+ =?us-ascii?Q?RzdDgpIKRKVwOBr3VkRdHKfwuXCo2tgb3lvG1qB4iPe4fo3Yo1MDJd1JFKRV?=
+ =?us-ascii?Q?FbXzoBipBCRQMAMG+oToqaLBgNs8+XXeI9M9BvbsZl3G04AqWjVYOAxruhu/?=
+ =?us-ascii?Q?Bc2C7tJMSjLrJlyXJuZST1KIpBsm3s4vky3Mp5nElaTdyWNnxJ5LjRC0XY8K?=
+ =?us-ascii?Q?RLBKV1Ko5C9GQCxHtbDisnZU2V3ASguz8qmCNVnpDJehIymHvvrECOZqyr8W?=
+ =?us-ascii?Q?cqdEBf9v/jN20zhgkMaNImFZ/k8FeG2Rn8PgYY6SydgkeVQYPEeB/h7yzI6o?=
+ =?us-ascii?Q?+q+mHv4yVWaro9M9AsZemQzwa9SsiX0hrIbYDCnJTvq1+7++J9B8H1CG9q09?=
+ =?us-ascii?Q?K88h4PoUbC9rbkCQ9quf7MfKHnavodY9hAmbcyb+mTPdXML/wJ1d/0qe6qAd?=
+ =?us-ascii?Q?bPvse0lQR8JixCaYC2MN+Q89X13ZIPklAFuEYBmkegIJQMMXKZh2usqY7lZC?=
+ =?us-ascii?Q?K4L1g+tUlgeSOTnV1ul01HqX8vhsvEFjgJZ8QqlqMbX6DWBwNhk4pj55JWaw?=
+ =?us-ascii?Q?jGrTIpE5qWEnV9SMAOSNuerg5z08SArjO/3xxyKiZo4mXQSZ6nMxhmuaQQWX?=
+ =?us-ascii?Q?bLxYF8pla9Oxtx+wZTEDEHuf4jD3lfWdcd3g0pXhhOXOKyj/0ONriD9KmQ?=
  =?us-ascii?Q?=3D=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe9334c6-f9eb-4432-fefa-08da0b27830f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 52399ce6-b458-4d31-ff4f-08da0b2783dc
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 10:42:35.7777
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 10:42:37.1212
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iq2L3K50VKFSFO56eJFgZXL6jq3pQnkUJ+Ia4sBJemNtIVuP7kh9sSpYrqbEJDfcO15noI6LoBVJy3tILmjbOD7k8E7hViK0ZyXZgQWzJSk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: r/jY3IpGbCCL+MeAk2PLkgZ2q6wQPgq/L0bYFSaejfJc9vxQxPI2Fqulg6HGf6ibjA8/zGuiGHVg6qnhFUPwkdhYInrgAklwZQ17iGgUjqs=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR13MB1512
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -116,82 +116,218 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-Make sure that features supported only by some of the data paths
-are not enabled for all.  Add a mask of supported features into
-the data path op structure.
+Prepare for choosing data path based on the firmware version field.
+Exploit one bit from the reserved byte in the firmware version field
+as the data path type.  We need the firmware version right after
+vNIC is allocated, so it has to be read inside nfp_net_alloc(),
+callers don't have to set it afterwards.
+
+Following patches will bring the implementation of the second data
+path.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Fei Qin <fei.qin@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- drivers/net/ethernet/netronome/nfp/nfd3/rings.c   | 15 +++++++++++++++
- .../net/ethernet/netronome/nfp/nfp_net_common.c   |  3 +++
- drivers/net/ethernet/netronome/nfp/nfp_net_dp.h   |  2 ++
- 3 files changed, 20 insertions(+)
+ drivers/net/ethernet/netronome/nfp/nfp_net.h  | 14 +++++++-----
+ .../ethernet/netronome/nfp/nfp_net_common.c   | 22 +++++++++++++++----
+ .../net/ethernet/netronome/nfp/nfp_net_ctrl.h |  4 +++-
+ .../ethernet/netronome/nfp/nfp_net_ethtool.c  |  2 +-
+ .../net/ethernet/netronome/nfp/nfp_net_main.c |  9 ++++----
+ .../ethernet/netronome/nfp/nfp_netvf_main.c   |  9 ++++----
+ 6 files changed, 41 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfd3/rings.c b/drivers/net/ethernet/netronome/nfp/nfd3/rings.c
-index 3ebbedd8ba64..47604d5e25eb 100644
---- a/drivers/net/ethernet/netronome/nfp/nfd3/rings.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfd3/rings.c
-@@ -242,9 +242,24 @@ nfp_nfd3_print_tx_descs(struct seq_file *file,
- 	}
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net.h b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+index 3c386972f69a..e7646377de37 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net.h
+@@ -411,13 +411,17 @@ struct nfp_net_fw_version {
+ 	u8 minor;
+ 	u8 major;
+ 	u8 class;
+-	u8 resv;
++
++	/* This byte can be exploited for more use, currently,
++	 * BIT0: dp type, BIT[7:1]: reserved
++	 */
++	u8 extend;
+ } __packed;
+ 
+ static inline bool nfp_net_fw_ver_eq(struct nfp_net_fw_version *fw_ver,
+-				     u8 resv, u8 class, u8 major, u8 minor)
++				     u8 extend, u8 class, u8 major, u8 minor)
+ {
+-	return fw_ver->resv == resv &&
++	return fw_ver->extend == extend &&
+ 	       fw_ver->class == class &&
+ 	       fw_ver->major == major &&
+ 	       fw_ver->minor == minor;
+@@ -855,11 +859,11 @@ static inline void nn_ctrl_bar_unlock(struct nfp_net *nn)
+ /* Globals */
+ extern const char nfp_driver_version[];
+ 
+-extern const struct net_device_ops nfp_net_netdev_ops;
++extern const struct net_device_ops nfp_nfd3_netdev_ops;
+ 
+ static inline bool nfp_netdev_is_nfp_net(struct net_device *netdev)
+ {
+-	return netdev->netdev_ops == &nfp_net_netdev_ops;
++	return netdev->netdev_ops == &nfp_nfd3_netdev_ops;
  }
  
-+#define NFP_NFD3_CFG_CTRL_SUPPORTED					\
-+	(NFP_NET_CFG_CTRL_ENABLE | NFP_NET_CFG_CTRL_PROMISC |		\
-+	 NFP_NET_CFG_CTRL_L2BC | NFP_NET_CFG_CTRL_L2MC |		\
-+	 NFP_NET_CFG_CTRL_RXCSUM | NFP_NET_CFG_CTRL_TXCSUM |		\
-+	 NFP_NET_CFG_CTRL_RXVLAN | NFP_NET_CFG_CTRL_TXVLAN |		\
-+	 NFP_NET_CFG_CTRL_GATHER | NFP_NET_CFG_CTRL_LSO |		\
-+	 NFP_NET_CFG_CTRL_CTAG_FILTER | NFP_NET_CFG_CTRL_CMSG_DATA |	\
-+	 NFP_NET_CFG_CTRL_RINGCFG | NFP_NET_CFG_CTRL_RSS |		\
-+	 NFP_NET_CFG_CTRL_IRQMOD | NFP_NET_CFG_CTRL_TXRWB |		\
-+	 NFP_NET_CFG_CTRL_VXLAN | NFP_NET_CFG_CTRL_NVGRE |		\
-+	 NFP_NET_CFG_CTRL_BPF | NFP_NET_CFG_CTRL_LSO2 |			\
-+	 NFP_NET_CFG_CTRL_RSS2 | NFP_NET_CFG_CTRL_CSUM_COMPLETE |	\
-+	 NFP_NET_CFG_CTRL_LIVE_ADDR)
-+
- const struct nfp_dp_ops nfp_nfd3_ops = {
- 	.version		= NFP_NFD_VER_NFD3,
- 	.tx_min_desc_per_pkt	= 1,
-+	.cap_mask		= NFP_NFD3_CFG_CTRL_SUPPORTED,
- 	.poll			= nfp_nfd3_poll,
- 	.xsk_poll		= nfp_nfd3_xsk_poll,
- 	.ctrl_poll		= nfp_nfd3_ctrl_poll,
+ static inline int nfp_net_coalesce_para_check(u32 usecs, u32 pkts)
 diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index 5cac5563028c..331253149f50 100644
+index 331253149f50..0aa91065a7cb 100644
 --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
 +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -2303,6 +2303,9 @@ static int nfp_net_read_caps(struct nfp_net *nn)
- 		nn->dp.rx_offset = NFP_NET_RX_OFFSET;
+@@ -1892,7 +1892,7 @@ static int nfp_net_set_mac_address(struct net_device *netdev, void *addr)
+ 	return 0;
+ }
+ 
+-const struct net_device_ops nfp_net_netdev_ops = {
++const struct net_device_ops nfp_nfd3_netdev_ops = {
+ 	.ndo_init		= nfp_app_ndo_init,
+ 	.ndo_uninit		= nfp_app_ndo_uninit,
+ 	.ndo_open		= nfp_net_netdev_open,
+@@ -1962,7 +1962,7 @@ void nfp_net_info(struct nfp_net *nn)
+ 		nn->dp.num_tx_rings, nn->max_tx_rings,
+ 		nn->dp.num_rx_rings, nn->max_rx_rings);
+ 	nn_info(nn, "VER: %d.%d.%d.%d, Maximum supported MTU: %d\n",
+-		nn->fw_ver.resv, nn->fw_ver.class,
++		nn->fw_ver.extend, nn->fw_ver.class,
+ 		nn->fw_ver.major, nn->fw_ver.minor,
+ 		nn->max_mtu);
+ 	nn_info(nn, "CAP: %#x %s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n",
+@@ -2036,7 +2036,16 @@ nfp_net_alloc(struct pci_dev *pdev, const struct nfp_dev_info *dev_info,
+ 	nn->dp.ctrl_bar = ctrl_bar;
+ 	nn->dev_info = dev_info;
+ 	nn->pdev = pdev;
+-	nn->dp.ops = &nfp_nfd3_ops;
++	nfp_net_get_fw_version(&nn->fw_ver, ctrl_bar);
++
++	switch (FIELD_GET(NFP_NET_CFG_VERSION_DP_MASK, nn->fw_ver.extend)) {
++	case NFP_NET_CFG_VERSION_DP_NFD3:
++		nn->dp.ops = &nfp_nfd3_ops;
++		break;
++	default:
++		err = -EINVAL;
++		goto err_free_nn;
++	}
+ 
+ 	nn->max_tx_rings = max_tx_rings;
+ 	nn->max_rx_rings = max_rx_rings;
+@@ -2255,7 +2264,12 @@ static void nfp_net_netdev_init(struct nfp_net *nn)
+ 	nn->dp.ctrl &= ~NFP_NET_CFG_CTRL_LSO_ANY;
+ 
+ 	/* Finalise the netdev setup */
+-	netdev->netdev_ops = &nfp_net_netdev_ops;
++	switch (nn->dp.ops->version) {
++	case NFP_NFD_VER_NFD3:
++		netdev->netdev_ops = &nfp_nfd3_netdev_ops;
++		break;
++	}
++
+ 	netdev->watchdog_timeo = msecs_to_jiffies(5 * 1000);
+ 
+ 	/* MTU range: 68 - hw-specific max */
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h b/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
+index 33fd32478905..7f04a5275a2d 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ctrl.h
+@@ -149,7 +149,9 @@
+  * - define more STS bits
+  */
+ #define NFP_NET_CFG_VERSION		0x0030
+-#define   NFP_NET_CFG_VERSION_RESERVED_MASK	(0xff << 24)
++#define   NFP_NET_CFG_VERSION_RESERVED_MASK	(0xfe << 24)
++#define   NFP_NET_CFG_VERSION_DP_NFD3		0
++#define   NFP_NET_CFG_VERSION_DP_MASK		1
+ #define   NFP_NET_CFG_VERSION_CLASS_MASK  (0xff << 16)
+ #define   NFP_NET_CFG_VERSION_CLASS(x)	  (((x) & 0xff) << 16)
+ #define   NFP_NET_CFG_VERSION_CLASS_GENERIC	0
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+index 7d7150600485..61c8b450aafb 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -219,7 +219,7 @@ nfp_net_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
+ 	struct nfp_net *nn = netdev_priv(netdev);
+ 
+ 	snprintf(vnic_version, sizeof(vnic_version), "%d.%d.%d.%d",
+-		 nn->fw_ver.resv, nn->fw_ver.class,
++		 nn->fw_ver.extend, nn->fw_ver.class,
+ 		 nn->fw_ver.major, nn->fw_ver.minor);
+ 	strlcpy(drvinfo->bus_info, pci_name(nn->pdev),
+ 		sizeof(drvinfo->bus_info));
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+index 09a0a2076c6e..ca4e05650fe6 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_main.c
+@@ -123,7 +123,6 @@ nfp_net_pf_alloc_vnic(struct nfp_pf *pf, bool needs_netdev,
+ 		return nn;
+ 
+ 	nn->app = pf->app;
+-	nfp_net_get_fw_version(&nn->fw_ver, ctrl_bar);
+ 	nn->tx_bar = qc_bar + tx_base * NFP_QCP_QUEUE_ADDR_SZ;
+ 	nn->rx_bar = qc_bar + rx_base * NFP_QCP_QUEUE_ADDR_SZ;
+ 	nn->dp.is_vf = 0;
+@@ -679,9 +678,11 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
  	}
  
-+	/* Mask out NFD-version-specific features */
-+	nn->cap &= nn->dp.ops->cap_mask;
-+
- 	/* For control vNICs mask out the capabilities app doesn't want. */
- 	if (!nn->dp.netdev)
- 		nn->cap &= nn->app->type->ctrl_cap_mask;
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h b/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h
-index 99579722aacf..237ca1d9c886 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_dp.h
-@@ -115,6 +115,7 @@ enum nfp_nfd_version {
-  * struct nfp_dp_ops - Hooks to wrap different implementation of different dp
-  * @version:			Indicate dp type
-  * @tx_min_desc_per_pkt:	Minimal TX descs needed for each packet
-+ * @cap_mask:			Mask of supported features
-  * @poll:			Napi poll for normal rx/tx
-  * @xsk_poll:			Napi poll when xsk is enabled
-  * @ctrl_poll:			Tasklet poll for ctrl rx/tx
-@@ -131,6 +132,7 @@ enum nfp_nfd_version {
- struct nfp_dp_ops {
- 	enum nfp_nfd_version version;
- 	unsigned int tx_min_desc_per_pkt;
-+	u32 cap_mask;
+ 	nfp_net_get_fw_version(&fw_ver, ctrl_bar);
+-	if (fw_ver.resv || fw_ver.class != NFP_NET_CFG_VERSION_CLASS_GENERIC) {
++	if (fw_ver.extend & NFP_NET_CFG_VERSION_RESERVED_MASK ||
++	    fw_ver.class != NFP_NET_CFG_VERSION_CLASS_GENERIC) {
+ 		nfp_err(pf->cpp, "Unknown Firmware ABI %d.%d.%d.%d\n",
+-			fw_ver.resv, fw_ver.class, fw_ver.major, fw_ver.minor);
++			fw_ver.extend, fw_ver.class,
++			fw_ver.major, fw_ver.minor);
+ 		err = -EINVAL;
+ 		goto err_unmap;
+ 	}
+@@ -697,7 +698,7 @@ int nfp_net_pci_probe(struct nfp_pf *pf)
+ 			break;
+ 		default:
+ 			nfp_err(pf->cpp, "Unsupported Firmware ABI %d.%d.%d.%d\n",
+-				fw_ver.resv, fw_ver.class,
++				fw_ver.extend, fw_ver.class,
+ 				fw_ver.major, fw_ver.minor);
+ 			err = -EINVAL;
+ 			goto err_unmap;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c b/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
+index 9ef226c6706e..a51eb26dd977 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_netvf_main.c
+@@ -122,9 +122,11 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
+ 	}
  
- 	int (*poll)(struct napi_struct *napi, int budget);
- 	int (*xsk_poll)(struct napi_struct *napi, int budget);
+ 	nfp_net_get_fw_version(&fw_ver, ctrl_bar);
+-	if (fw_ver.resv || fw_ver.class != NFP_NET_CFG_VERSION_CLASS_GENERIC) {
++	if (fw_ver.extend & NFP_NET_CFG_VERSION_RESERVED_MASK ||
++	    fw_ver.class != NFP_NET_CFG_VERSION_CLASS_GENERIC) {
+ 		dev_err(&pdev->dev, "Unknown Firmware ABI %d.%d.%d.%d\n",
+-			fw_ver.resv, fw_ver.class, fw_ver.major, fw_ver.minor);
++			fw_ver.extend, fw_ver.class,
++			fw_ver.major, fw_ver.minor);
+ 		err = -EINVAL;
+ 		goto err_ctrl_unmap;
+ 	}
+@@ -144,7 +146,7 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
+ 			break;
+ 		default:
+ 			dev_err(&pdev->dev, "Unsupported Firmware ABI %d.%d.%d.%d\n",
+-				fw_ver.resv, fw_ver.class,
++				fw_ver.extend, fw_ver.class,
+ 				fw_ver.major, fw_ver.minor);
+ 			err = -EINVAL;
+ 			goto err_ctrl_unmap;
+@@ -186,7 +188,6 @@ static int nfp_netvf_pci_probe(struct pci_dev *pdev,
+ 	}
+ 	vf->nn = nn;
+ 
+-	nn->fw_ver = fw_ver;
+ 	nn->dp.is_vf = 1;
+ 	nn->stride_tx = stride;
+ 	nn->stride_rx = stride;
 -- 
 2.30.2
 
