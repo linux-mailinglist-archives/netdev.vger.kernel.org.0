@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A00F84E30C7
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 20:28:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE574E30CD
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 20:32:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352693AbiCUT3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 15:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
+        id S1352680AbiCUTeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 15:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352683AbiCUT3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 15:29:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AC9B44;
-        Mon, 21 Mar 2022 12:28:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 964B1B819C2;
-        Mon, 21 Mar 2022 19:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03F53C340E8;
-        Mon, 21 Mar 2022 19:28:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647890890;
-        bh=2DJ2Ykmemas9uAd8SgNaZWXrO/X4eO+ejMl3uWdMH7M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fwnb1bdv9WmgMmHlUZAq7N+pYfeOf8Vf1ZMuH9E+LkaMXbYXekCBVrWevSq+mGE6Z
-         aPmXdfDFeyCDlpB4iMpFIkjIlg7RgLouMpEjTMVMAH8R3HgoWss6/CXRApfZsASQ//
-         gkfsDDyCxgLmMik4ljcMDYT8T/SDG55wjdOZDP5Wku6fxBXHmj40p/HdmEqSv/8B53
-         /323YNGreXoK17wUsFqE9HkpVFLp7QK3NKzvKrIFa2iK5fpbyb00ASrMkF4e1rlC5G
-         rm8aUmZqys2mUXJVwtGMnxC/G52rndWfV6TuC/wtEmh0MkwxEgXfPx9EgyjfRHfChL
-         a3uzxx/FxH1tQ==
-Date:   Mon, 21 Mar 2022 12:28:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Veerasenareddy Burru <vburru@marvell.com>
-Cc:     <davem@davemloft.net>, <corbet@lwn.net>, <netdev@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Abhijit Ayarekar <aayarekar@marvell.com>,
-        Satananda Burla <sburla@marvell.com>
-Subject: Re: [net-next PATCH v4 1/7] octeon_ep: Add driver framework and
- device initialization
-Message-ID: <20220321122808.427d7872@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220321055337.4488-2-vburru@marvell.com>
-References: <20220321055337.4488-1-vburru@marvell.com>
-        <20220321055337.4488-2-vburru@marvell.com>
+        with ESMTP id S237280AbiCUTeM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 15:34:12 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C45650B23
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 12:32:46 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2e5757b57caso167535907b3.4
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 12:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z6gMtfx8QVgEf3arccAWPZViU9VmcvODeyxve9LdyUA=;
+        b=WmHRokCoCb+rctM3XxDvSIk94+eN6v2iKmaXMTXbPFOstlyKQF9o24KKFV3oMFVAh1
+         BxeP6TGTfK48evxxQjGLZjlQQKzNccfg/rLkzErdyWgmWUU8E7kYDayNohw1GvKIisCm
+         /eY8Ic5H9oEx6hWi2ywstiMHi0COieLNTlvN5sbuOmEpXpshhlgZsqsWfn5ZtCUBxFS/
+         ytSftonFFmbDnxiaJzuecE0ICVIvoJNvBsRsJOJFXD8YJgV6MTQXHKElCGlRNRcbtmE6
+         yKZI/Y16d0sfrQ6Skix2R0td2jaEY4Yfxi4yehidsEl0p3zErZw/b24cDehe8QuIAnGf
+         lPWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z6gMtfx8QVgEf3arccAWPZViU9VmcvODeyxve9LdyUA=;
+        b=wqY2VSv++T11TXkDWj3DJPIWVYU3lMMirLm7QZ6jlzro0E9EIdQ1aq8pdzq2q5smGG
+         Lj2hFnIIa2iLWpW6trZKgHn/6W3095v92Vbm/TD/Cgd770eFkjg1Z5uZzu1GFu7ETDd2
+         Tp1hzz3MRh/tn/RWPNn8XSBfHPX8D/okWQskJv4ANjf18Qq5pceUFwjxMCsPM5XoBxg+
+         A9pbZuBqPoVoTfI9gajVq0FQ2jfU40o8xbjhV9UxLp25jOeKYopVz+8UP4IjG9XfgIrf
+         12dxG3mcJuLpe6ue2XCI8d04y1zFHs8QTFjaFyE6WHAGbiSngd3ugL50B9EGNg1C7vYi
+         xaZw==
+X-Gm-Message-State: AOAM532gyM+waFGY6VEF51rLN+WvHhpOCVSjUB0/b+vLG9jEE/zydSRg
+        qbC7yiUN8+6XmkU4OnDsZGWn93PjPsuaUGUHl9b4/Q==
+X-Google-Smtp-Source: ABdhPJxeGEDcmrRR+dRFP5m9YWz8ZT3QKiXl7NqEnYICEksAXjDyR2BE6h2bPO/ZuIPbDJOrtH1Du/IXcgRDZiWaI2E=
+X-Received: by 2002:a81:a743:0:b0:2dc:6eab:469a with SMTP id
+ e64-20020a81a743000000b002dc6eab469amr25885613ywh.332.1647891165266; Mon, 21
+ Mar 2022 12:32:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220321165957.1769954-1-kuba@kernel.org>
+In-Reply-To: <20220321165957.1769954-1-kuba@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 21 Mar 2022 12:32:34 -0700
+Message-ID: <CANn89i+2WXu2dFf6sg-G1NbBnoEmQuFmek3RxjW5HL6t93zG4g@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: ensure PMTU updates are processed during fastopen
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Yuchung Cheng <ycheng@google.com>,
+        Wei Wang <weiwan@google.com>, netdev <netdev@vger.kernel.org>,
+        Neil Spring <ntspring@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 20 Mar 2022 22:53:31 -0700 Veerasenareddy Burru wrote:
-> Add driver framework and device setup and initialization for Octeon
-> PCI Endpoint NIC.
-> 
-> Add implementation to load module, initilaize, register network device,
-> cleanup and unload module.
-> 
-> Signed-off-by: Veerasenareddy Burru <vburru@marvell.com>
-> Signed-off-by: Abhijit Ayarekar <aayarekar@marvell.com>
-> Signed-off-by: Satananda Burla <sburla@marvell.com>
+On Mon, Mar 21, 2022 at 10:00 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
+> rise it to the local MSS. tp->mss_cache is not updated, however:
+>
+> tcp_v6_connect():
+>   tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
+>   tcp_connect():
+>      tcp_connect_init():
+>        tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
+>      tcp_send_syn_data():
+>        tp->rx_opt.mss_clamp = tp->advmss
+>
+> After recent fixes to ICMPv6 PTB handling we started dropping
+> PMTU updates higher than tp->mss_cache. Because of the stale
+> tp->mss_cache value PMTU updates during TFO are always dropped.
+>
+> Thanks to Wei for helping zero in on the problem and the fix!
+>
+> Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
+> Reported-by: Andre Nash <alnash@fb.com>
+> Reported-by: Neil Spring <ntspring@fb.com>
+> Reviewed-by: Wei Wang <weiwan@google.com>
+> Acked-by: Yuchung Cheng <ycheng@google.com>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
 
-Clang says:
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c:51:19: warning: unused function 'octep_ctrl_mbox_circq_inc' [-Wunused-function]
-static inline u32 octep_ctrl_mbox_circq_inc(u32 index, u32 mask)
-                  ^
-drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c:56:19: warning: unused function 'octep_ctrl_mbox_circq_space' [-Wunused-function]
-static inline u32 octep_ctrl_mbox_circq_space(u32 pi, u32 ci, u32 mask)
-                  ^
-drivers/net/ethernet/marvell/octeon_ep/octep_ctrl_mbox.c:61:19: warning: unused function 'octep_ctrl_mbox_circq_depth' [-Wunused-function]
-static inline u32 octep_ctrl_mbox_circq_depth(u32 pi, u32 ci, u32 mask)
-                  ^
+Do you have a packetdrill test by any chance ?
 
-Please don't use static inlines in C files, static is enough for 
-the compiler to do a reasonable job.
-
-Please fix and repost in 2 weeks we're currently in the merge window
-so networking trees are not accepting new drivers.
-
-Thanks.
+Thanks!
