@@ -2,126 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F5EE4E3364
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DAF04E334A
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:56:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiCUWzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 18:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
+        id S231406AbiCUW47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 18:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiCUWzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:55:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 131393B2A11
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 15:37:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BD73B81A7F
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 22:10:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1EDBC36AE2
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 22:10:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647900649;
-        bh=DnfAXbt0SlzWASTRDry65qPiIq3oHDgadE+0NusO/+w=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=M6C/qrZ2Lioqa8G8jtqexVNqDHhRY67uLwRPEwUJ/2FSQiFlLnzyuI108VFl/oRRX
-         Bs9Jpy1HwYWuuAcbn/ovMB7jx8cP+cXX1e+Y8V08teLF9yWgE0PFSGbivIhurqIAM0
-         0FSSu0iWdiw2Nm12fkMJapS4szZKYCcKbsRSAsDLeUCXZ7OQ4UDXzPs0RncIU26wxe
-         rN+CS19sJaJQlh6so+TmJNfPf2PEBKPI0BUhqd2AdA5bgnuXiRQp+BiR5y/A2Bghn7
-         cIj0U8liwAVxsGWqtkRIL/sxvtrWPwpPMFvqjdxZ+/Rp89UzajiomSZ/k6NdwRMYXq
-         UWQDfbqTlXS+g==
-Received: by mail-wr1-f42.google.com with SMTP id r10so22588928wrp.3
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 15:10:49 -0700 (PDT)
-X-Gm-Message-State: AOAM533ryUejgj698fheq1wGSiWmMWU3HWV01KZyPQ7GRZBfdmQ2M0Ui
-        LAvrFLxxHbGJ8nEPNJ8l8PMkPYWY/7++LcFJH1w=
-X-Google-Smtp-Source: ABdhPJyePEb/hNjvVS02P/6Vl2v+F9/KYfdnlS0Ha+eR55JQjCIAohdaiyxGbL0Nvx5JhCbbTErpbn00PiIYqpRjXoA=
-X-Received: by 2002:a5d:6d0f:0:b0:203:9157:1c48 with SMTP id
- e15-20020a5d6d0f000000b0020391571c48mr19539385wrq.192.1647900648196; Mon, 21
- Mar 2022 15:10:48 -0700 (PDT)
+        with ESMTP id S231455AbiCUW4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:56:00 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD7044B80E;
+        Mon, 21 Mar 2022 15:34:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=XZ3oFyOSp0Vku3EvXsBQyxrGvvfq0+pDjNDfzwtDRnI=; b=lgATyuc8BDzyagsTk6S7pPJHcK
+        cAHP+N8Q5SqHFIS7Cg8rgYZK/HWBCCIB75xt36TSH0HEmeLYfac5IzauQiV3cmYUTCT0r1yY3+wne
+        bXIpPxwzFnzGIKuhiV6u84+HLGVmP7X2AQ8yuxyxomfReOQJDlh21GEoNw1FniHe+ib8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nWQbb-00C1yF-20; Mon, 21 Mar 2022 23:34:27 +0100
+Date:   Mon, 21 Mar 2022 23:34:27 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Clause 45 and Clause 22 PHYs on one MDIO bus
+Message-ID: <Yjj9c/b8J50WiECf@lunn.ch>
+References: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
+ <cdb3d3f6ad35d4e26fd8abb23b2e96a3@walle.cc>
+ <YjjhxbZgKHykJ+35@lunn.ch>
+ <4d728d267e45fe591c933c86cdfff333@walle.cc>
 MIME-Version: 1.0
-References: <20220321144013.440d7fc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220321144013.440d7fc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 21 Mar 2022 23:10:32 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a12=qpMHn5daK3-E6PjWuSOYOyWp2u2XU0kfzZ8=EoRdA@mail.gmail.com>
-Message-ID: <CAK8P3a12=qpMHn5daK3-E6PjWuSOYOyWp2u2XU0kfzZ8=EoRdA@mail.gmail.com>
-Subject: Re: Is drivers/net/wan/lmc dead?
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>,
-        Andrew Stanley-Jones <asj@cban.com>,
-        Rob Braun <bbraun@vix.com>, Michael Graff <explorer@vix.com>,
-        Matt Thomas <matt@3am-software.com>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4d728d267e45fe591c933c86cdfff333@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 10:40 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Hi!
->
-> The driver for LAN Media WAN interfaces spews build warnings on
-> microblaze.
->
-> CCing usual suspects and people mentioned as authors in the source code.
->
-> As far as I can tell it has no maintainer.
->
-> It has also received not received a single functional change that'd
-> indicate someone owns this HW since the beginning of the git era.
->
-> Can we remove this driver or should we invest effort into fixing it?
+On Mon, Mar 21, 2022 at 10:41:56PM +0100, Michael Walle wrote:
+> Am 2022-03-21 21:36, schrieb Andrew Lunn:
+> > > Actually, it looks like mdiobus_c45_read() is really c45 only and only
+> > > used for PHYs which just support c45 and not c45-over-c22 (?). I was
+> > > mistaken by the heavy use of the function in phy_device.c. All the
+> > > methods in phy-c45.c use phy_*_mmd() functions. Thus it might only be
+> > > the mxl-gpy doing something fishy in its probe function.
+> > 
+> > Yes, there is something odd here. You should search back on the
+> > mailing list.
+> > 
+> > If i remember correctly, it is something like it responds to both c22
+> > and c45. If it is found via c22, phylib does not set phydev->is_c45,
+> > and everything ends up going indirect. So the probe additionally tries
+> > to find it via c45? Or something like that.
+> 
+> Yeah, found it: https://lore.kernel.org/netdev/YLaG9cdn6ewdffjV@lunn.ch/
+> 
+> But that means that if the controller is not c45 capable, it will always
+> fail to probe, no?
 
-I have not seen the exact error, but I suspect the problem is that
-microblaze selects CONFIG_VIRT_TO_BUS without actually
-providing those interfaces. The easy workaround would be to
-have microblaze not select that symbol.
+The problem is around here:
 
-Drivers using virt_to_bus() are inherently nonportable because
-they don't work on architectures that use an IOMMU or swiotlb,
-or that require cache maintenance for DMA operations.
+https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy-c45.c#L455
 
-$ git grep -wl virt_to_bus drivers/
-drivers/atm/ambassador.c
-drivers/atm/firestream.c
-drivers/atm/horizon.c
-drivers/atm/zatm.c
-drivers/block/swim3.c
-drivers/gpu/drm/mga/mga_dma.c
-drivers/net/appletalk/ltpc.c
-drivers/net/ethernet/amd/au1000_eth.c
-drivers/net/ethernet/amd/ni65.c
-drivers/net/ethernet/apple/bmac.c
-drivers/net/ethernet/apple/mace.c
-drivers/net/ethernet/dec/tulip/de4x5.c
-drivers/net/ethernet/i825xx/82596.c
-drivers/net/ethernet/i825xx/lasi_82596.c
-drivers/net/ethernet/i825xx/lib82596.c
-drivers/net/hamradio/dmascc.c
-drivers/net/wan/cosa.c
-drivers/net/wan/lmc/lmc_main.c
-drivers/net/wan/z85230.c
-drivers/scsi/3w-xxxx.c
-drivers/scsi/a2091.c
-drivers/scsi/a3000.c
-drivers/scsi/dpt_i2o.c
-drivers/scsi/gvp11.c
-drivers/scsi/mvme147.c
-drivers/scsi/qla1280.c
-drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-drivers/vme/bridges/vme_ca91cx42.c
+phydev->c45_ids.mmds_present needs to be set. Which happens as part of
+get_phy_c45_ids(). What probably needs to happen is the
+mdiobus_c45_read() in that function need to change to phy_read_mmd()
+so that it can use C45 over C22. The devil in the details is making
+sure it does actually do C45 if C45 is available, otherwise we could
+break devices on a C45 only bus, of which there is a few.
 
-Among the drivers/net/wan/ drivers, I think lmc is actually
-one of the newer pieces of hardware, most of the other ones
-appear to even predate PCI.
+> I'll have to give it a try. First I was thinking that we wouldn't need
+> it because a broken PHY driver could just set a quirk "broken_c45_access"
+> or similar. But that would mean it has to be probed before any c45 PHY.
+> Dunno if that will be true for the future. And it sounds rather fragile.
+> So yes, a dt property might be a better option.
 
-        Arnd
+This is unfortunately not a PHY property, but a bus property. This bus
+has a FUBAR PHY on it, which limits the protocols that can be used on
+this bus. And there is no clear relationship between PHYs, you cannot
+easily say which PHYs share the same bus. So even if the lan8814 was
+to indicate it is FUBAR, you have no idea which other PHYs are
+affected.
+
+A DT property is more generic, and if done correct, could actually ban
+C22 or it could ban C45.
+
+    Andrew
