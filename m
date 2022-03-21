@@ -2,54 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 154084E2C08
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:22:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE314E2C2E
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:27:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350126AbiCUPWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 11:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
+        id S1350177AbiCUP2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 11:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346488AbiCUPWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:22:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A6D25280;
-        Mon, 21 Mar 2022 08:20:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CDA860F8B;
-        Mon, 21 Mar 2022 15:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E53E6C340F3;
-        Mon, 21 Mar 2022 15:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647876010;
-        bh=2CAHA9p/lUe4Hg4xsMq7t8E74hPfxVHUgBidSh6Ufz8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TYayVpUW+sIGuhmnqmbfNOPtkjUCpzJTiMemmdPkJtQZJQeZ7SMs4/VxgBR+/jMtv
-         Y4ttKo298r/gdmFs6n5XmoSLJhMa8qNUBHxiygTkCgo5qE9WiU46Ddm68POcWQlDn8
-         7xhiif/PkQldYDjLGMJIvXtQE6LKjng9HADujbLjfCRiSjPTDI9EpMb7VI6wNAwh42
-         9tgHQBfk7pECdST/i+6H6vUJIqevFv+rTFMeYXEDlZUOTdNHt3RdfYjJrlS6D9wphw
-         l2hci6qrVTfonZnD937rq2BBXQXmxR5oITV1S63NiuP+BRISVz1qFv2OmzOpsNcZTo
-         Q1LFEfMj+lndQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C7862F03845;
-        Mon, 21 Mar 2022 15:20:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S241364AbiCUP2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:28:38 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1A0160FDC
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 08:27:13 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 6so10547854pgg.0
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 08:27:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pYfXEHfZl09/d0W/8k6bn6GHeCrNBUTTAtovTezahB8=;
+        b=SsAGVFcNjJmV8fMQbUyG7TiYJXK2+32iN/1XMrye7xFZFnwPrpwxT6DyJ3Y/rRRDr7
+         5uCZqKj+BhyDIO26VKMm/iKlT2Evf0yTKoOj5CPhLL5k2VOxlx42W/oPVzytc48Or8Qj
+         MvDiR7ItkG9up8TfH/vHxgn5tS4tmsgk8MgrphVO1MVe5YUTOjKbEkpmvIhNUp67OlsI
+         y3j5DkywFu6uUP2ZkhqcNAPDdk7/fphPgaY0FN2ieWv6mCE1dsvC5b/8d1CfP70J/v1/
+         fjI1vaH5C1cjLBtfzgRajpdkJOhiwgVZrMCmLoiKIe7z/34AeW7zxouMEyc8NfIiqU1S
+         5cDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pYfXEHfZl09/d0W/8k6bn6GHeCrNBUTTAtovTezahB8=;
+        b=O2S8co1bPX4ubU8DkfunxkOYoJMTW6XecRs/lM4MNnd01e4QcLJUoS8g5i/MR+aCq8
+         Mx67LBjlSqG5l4UqUDGVbvgjyAoklQ+URCajJc9Ox6ol5L9JJbdhwO9IVbfxBCZE+nCc
+         YFcKF6qkeGV6TIE3qOVlCfHbOjQMZi4osax5RFNdQ7GlzUES67q1mZzH3lQeVYpoA3a8
+         PM/CA6TiHZeOyoT/+I9X9SjwxQpd7xb4lIdoDCyNcEnD3IolJrnA2Ep9kHmmKxpNAsOY
+         EiJesUIX2nNhbsOmV0ZWjBItgqKJNYTFLvr3LZx5yNJeaDUqQV4pf/n4KVEGrecDVtjF
+         YYtQ==
+X-Gm-Message-State: AOAM533QSDBpiWKBPl5Prix2TOesqVFBqZX9wkcnMa2lDWew9KatbmkC
+        VPWJLDGeWZsd+urkghRLoYtnww==
+X-Google-Smtp-Source: ABdhPJwh1907hH4HbirjpJw7g0In/BLkgy+uXWdIJGQYLEHnZlrq68MS04W6NEiEWxXi8lNC6Bhkzg==
+X-Received: by 2002:a05:6a00:1152:b0:4be:ab79:fcfa with SMTP id b18-20020a056a00115200b004beab79fcfamr24585061pfm.3.1647876432798;
+        Mon, 21 Mar 2022 08:27:12 -0700 (PDT)
+Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id i15-20020a63b30f000000b003803aee35a2sm15342644pgf.31.2022.03.21.08.27.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 08:27:12 -0700 (PDT)
+From:   Andy Chiu <andy.chiu@sifive.com>
+To:     radhey.shyam.pandey@xilinx.com, robert.hancock@calian.com,
+        michal.simek@xilinx.com
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, linux@armlinux.org.uk, andrew@lunn.ch,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Andy Chiu <andy.chiu@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>
+Subject: [PATCH v4 1/4] net: axienet: setup mdio unconditionally
+Date:   Mon, 21 Mar 2022 23:25:12 +0800
+Message-Id: <20220321152515.287119-1-andy.chiu@sifive.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bpf: bpftool: fix print error when show bpf map
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164787600981.20941.8225798299544558290.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 15:20:09 +0000
-References: <20220320060815.7716-1-laoar.shao@gmail.com>
-In-Reply-To: <20220320060815.7716-1-laoar.shao@gmail.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, joannekoong@fb.com
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -58,33 +71,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The call to axienet_mdio_setup should not depend on whether "phy-node"
+pressents on the DT. Besides, since `lp->phy_node` is used if PHY is in
+SGMII or 100Base-X modes, move it into the if statement. And the next patch
+will remove `lp->phy_node` from driver's private structure and do an
+of_node_put on it right away after use since it is not used elsewhere.
 
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
+Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+---
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-On Sun, 20 Mar 2022 06:08:14 +0000 you wrote:
-> If there is no btf_id or frozen, it will not show the pids,
-> but the pids doesn't depends on any one of them.
-> 
-> Below is the result after this change,
-> $ ./bpftool map show
-> 2: lpm_trie  flags 0x1
-> 	key 8B  value 8B  max_entries 1  memlock 4096B
-> 	pids systemd(1)
-> 3: lpm_trie  flags 0x1
-> 	key 20B  value 8B  max_entries 1  memlock 4096B
-> 	pids systemd(1)
-> 
-> [...]
-
-Here is the summary with links:
-  - bpf: bpftool: fix print error when show bpf map
-    https://git.kernel.org/bpf/bpf-next/c/1824d8ea75f2
-
-You are awesome, thank you!
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 6fd5157f0a6d..5d41b8de840a 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2064,15 +2064,14 @@ static int axienet_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto cleanup_clk;
+ 
+-	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+-	if (lp->phy_node) {
+-		ret = axienet_mdio_setup(lp);
+-		if (ret)
+-			dev_warn(&pdev->dev,
+-				 "error registering MDIO bus: %d\n", ret);
+-	}
++	ret = axienet_mdio_setup(lp);
++	if (ret)
++		dev_warn(&pdev->dev,
++			 "error registering MDIO bus: %d\n", ret);
++
+ 	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
+ 	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
++		lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 		if (!lp->phy_node) {
+ 			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
+ 			ret = -EINVAL;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
