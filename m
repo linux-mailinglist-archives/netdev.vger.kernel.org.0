@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C0FC4E266D
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:32:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A55A74E268F
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:32:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345771AbiCUMck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 08:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        id S1347431AbiCUMcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 08:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347401AbiCUMcd (ORCPT
+        with ESMTP id S1347403AbiCUMcd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:32:33 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B166885959;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B17B585978;
         Mon, 21 Mar 2022 05:31:06 -0700 (PDT)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id CC58463045;
-        Mon, 21 Mar 2022 13:28:23 +0100 (CET)
+        by mail.netfilter.org (Postfix) with ESMTPSA id 5D42263049;
+        Mon, 21 Mar 2022 13:28:24 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 16/19] netfilter: nft_exthdr: add reduce support
-Date:   Mon, 21 Mar 2022 13:30:49 +0100
-Message-Id: <20220321123052.70553-17-pablo@netfilter.org>
+Subject: [PATCH net-next 17/19] netfilter: nf_nat_h323: eliminate anonymous module_init & module_exit
+Date:   Mon, 21 Mar 2022 13:30:50 +0100
+Message-Id: <20220321123052.70553-18-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220321123052.70553-1-pablo@netfilter.org>
 References: <20220321123052.70553-1-pablo@netfilter.org>
@@ -37,102 +37,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-Check if we can elide the load. Cancel if the new candidate
-isn't identical to previous store.
+Eliminate anonymous module_init() and module_exit(), which can lead to
+confusion or ambiguity when reading System.map, crashes/oops/bugs,
+or an initcall_debug log.
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Give each of these init and exit functions unique driver-specific
+names to eliminate the anonymous names.
+
+Example 1: (System.map)
+ ffffffff832fc78c t init
+ ffffffff832fc79e t init
+ ffffffff832fc8f8 t init
+
+Example 2: (initcall_debug log)
+ calling  init+0x0/0x12 @ 1
+ initcall init+0x0/0x12 returned 0 after 15 usecs
+ calling  init+0x0/0x60 @ 1
+ initcall init+0x0/0x60 returned 0 after 2 usecs
+ calling  init+0x0/0x9a @ 1
+ initcall init+0x0/0x9a returned 0 after 74 usecs
+
+Fixes: f587de0e2feb ("[NETFILTER]: nf_conntrack/nf_nat: add H.323 helper port")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nft_exthdr.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ net/ipv4/netfilter/nf_nat_h323.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nft_exthdr.c b/net/netfilter/nft_exthdr.c
-index d2b9378164bb..22c3e05b52db 100644
---- a/net/netfilter/nft_exthdr.c
-+++ b/net/netfilter/nft_exthdr.c
-@@ -603,12 +603,40 @@ static int nft_exthdr_dump_strip(struct sk_buff *skb, const struct nft_expr *exp
- 	return nft_exthdr_dump_common(skb, priv);
+diff --git a/net/ipv4/netfilter/nf_nat_h323.c b/net/ipv4/netfilter/nf_nat_h323.c
+index 3e2685c120c7..76a411ae9fe6 100644
+--- a/net/ipv4/netfilter/nf_nat_h323.c
++++ b/net/ipv4/netfilter/nf_nat_h323.c
+@@ -580,7 +580,7 @@ static struct nf_ct_helper_expectfn callforwarding_nat = {
+ };
+ 
+ /****************************************************************************/
+-static int __init init(void)
++static int __init nf_nat_h323_init(void)
+ {
+ 	BUG_ON(set_h245_addr_hook != NULL);
+ 	BUG_ON(set_h225_addr_hook != NULL);
+@@ -607,7 +607,7 @@ static int __init init(void)
  }
  
-+static bool nft_exthdr_reduce(struct nft_regs_track *track,
-+			       const struct nft_expr *expr)
-+{
-+	const struct nft_exthdr *priv = nft_expr_priv(expr);
-+	const struct nft_exthdr *exthdr;
-+
-+	if (!nft_reg_track_cmp(track, expr, priv->dreg)) {
-+		nft_reg_track_update(track, expr, priv->dreg, priv->len);
-+		return false;
-+	}
-+
-+	exthdr = nft_expr_priv(track->regs[priv->dreg].selector);
-+	if (priv->type != exthdr->type ||
-+	    priv->op != exthdr->op ||
-+	    priv->flags != exthdr->flags ||
-+	    priv->offset != exthdr->offset ||
-+	    priv->len != exthdr->len) {
-+		nft_reg_track_update(track, expr, priv->dreg, priv->len);
-+		return false;
-+	}
-+
-+	if (!track->regs[priv->dreg].bitwise)
-+		return true;
-+
-+	return nft_expr_reduce_bitwise(track, expr);
-+}
-+
- static const struct nft_expr_ops nft_exthdr_ipv6_ops = {
- 	.type		= &nft_exthdr_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_exthdr)),
- 	.eval		= nft_exthdr_ipv6_eval,
- 	.init		= nft_exthdr_init,
- 	.dump		= nft_exthdr_dump,
-+	.reduce		= nft_exthdr_reduce,
- };
+ /****************************************************************************/
+-static void __exit fini(void)
++static void __exit nf_nat_h323_fini(void)
+ {
+ 	RCU_INIT_POINTER(set_h245_addr_hook, NULL);
+ 	RCU_INIT_POINTER(set_h225_addr_hook, NULL);
+@@ -624,8 +624,8 @@ static void __exit fini(void)
+ }
  
- static const struct nft_expr_ops nft_exthdr_ipv4_ops = {
-@@ -617,6 +645,7 @@ static const struct nft_expr_ops nft_exthdr_ipv4_ops = {
- 	.eval		= nft_exthdr_ipv4_eval,
- 	.init		= nft_exthdr_ipv4_init,
- 	.dump		= nft_exthdr_dump,
-+	.reduce		= nft_exthdr_reduce,
- };
+ /****************************************************************************/
+-module_init(init);
+-module_exit(fini);
++module_init(nf_nat_h323_init);
++module_exit(nf_nat_h323_fini);
  
- static const struct nft_expr_ops nft_exthdr_tcp_ops = {
-@@ -625,6 +654,7 @@ static const struct nft_expr_ops nft_exthdr_tcp_ops = {
- 	.eval		= nft_exthdr_tcp_eval,
- 	.init		= nft_exthdr_init,
- 	.dump		= nft_exthdr_dump,
-+	.reduce		= nft_exthdr_reduce,
- };
- 
- static const struct nft_expr_ops nft_exthdr_tcp_set_ops = {
-@@ -633,6 +663,7 @@ static const struct nft_expr_ops nft_exthdr_tcp_set_ops = {
- 	.eval		= nft_exthdr_tcp_set_eval,
- 	.init		= nft_exthdr_tcp_set_init,
- 	.dump		= nft_exthdr_dump_set,
-+	.reduce		= NFT_REDUCE_READONLY,
- };
- 
- static const struct nft_expr_ops nft_exthdr_tcp_strip_ops = {
-@@ -641,6 +672,7 @@ static const struct nft_expr_ops nft_exthdr_tcp_strip_ops = {
- 	.eval		= nft_exthdr_tcp_strip_eval,
- 	.init		= nft_exthdr_tcp_strip_init,
- 	.dump		= nft_exthdr_dump_strip,
-+	.reduce		= NFT_REDUCE_READONLY,
- };
- 
- static const struct nft_expr_ops nft_exthdr_sctp_ops = {
-@@ -649,6 +681,7 @@ static const struct nft_expr_ops nft_exthdr_sctp_ops = {
- 	.eval		= nft_exthdr_sctp_eval,
- 	.init		= nft_exthdr_init,
- 	.dump		= nft_exthdr_dump,
-+	.reduce		= nft_exthdr_reduce,
- };
- 
- static const struct nft_expr_ops *
+ MODULE_AUTHOR("Jing Min Zhao <zhaojingmin@users.sourceforge.net>");
+ MODULE_DESCRIPTION("H.323 NAT helper");
 -- 
 2.30.2
 
