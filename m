@@ -2,106 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0711D4E2E1D
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:32:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 907714E2E2D
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:37:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351295AbiCUQd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 12:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
+        id S1351266AbiCUQiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 12:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351279AbiCUQdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:33:46 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FE41877E1
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:32:17 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id r22so10911561ejs.11
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:32:17 -0700 (PDT)
+        with ESMTP id S1351367AbiCUQiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:38:07 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04C15E178
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:36:41 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id s8so15870379pfk.12
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:36:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=RpaJWnAf2rDUakFbrGje6X31hkHThFND4YL7s3N2H5Q=;
-        b=RcaksR3otle+Gsg9Y4CUR8nW8LGymVRd7KbTwzCjs7zAxopSDIGWnPxjQEJ0ghRWU0
-         NVHTgGp9UXDL2zmuJMS+JF+h8EE5j0rxvCJN4kljOKbtcuOlwT1CtCne9du9IN7YH0ec
-         Twy7Q552Kz4k0hzQIOt0p9xMOG4bwlbLZhWbq7VMZrnR14s1S78SIzgOYJcYGAL620hW
-         T/w1MSBALLICG4CUni0Med+UahdLlwjCzW6lVdZzUMwwCT12D0nPvKnWYCdhzbUBkCth
-         tOEftQ8VrsI8Fu09gm2yZXabjY2jWPXgcD4ZfQMqun86ajCU0DXLJLiIrvHhC3qljD7L
-         /KbA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=1E++cROcggRL7wOwZoxtNN9D4sOVj12YdZTCyLaYMP8=;
+        b=ZAgNFlyAmoNHsCfDq4vqf5Xria8P7ahZywRWsAXdMY7dK3CFKSTtYQRkyh3wr+Q1uH
+         6Tmg7bHajE3WE33NjFpbfIKoUqLYvJ7x+AyDCYIBIRIj/OnTWyKGNzgplDrh/FwHdjUW
+         ZIcHXnTIn2y4Cjb24fmKFOewkVi1VlurpF6lijnTbZhdg/fupewbjXg6kdRNWIP43zmu
+         dVcCcjWJWwzk/Tdhe7ZCwZEeGXMVnQPPBpWSG8g0sc0900cUJFWhMLSulLajXjEKmGUO
+         KXMnuu65wc/phKHfKqTDj3wSzkeb5Cd4NqvfJCwAWL5l7GAYnJf18Z+vOhnM57vBVUPs
+         B58A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=RpaJWnAf2rDUakFbrGje6X31hkHThFND4YL7s3N2H5Q=;
-        b=kes1oCr76rOVMvCLfaKv7cVyuH7/G12nZp3noWUn2fHTWp/EFH+CtkG/qzzmryAqf5
-         Nj8Nqbd9Cg7asq/sOeRAedoMaYQ2qSOvFcg+vfATBzQJVkbDY66WmcF0QL2lP+wOy5Ye
-         XXBxzX57OBPrOWwttuAmMT0TV8E+41HO5MKSgtUuVNwvROuuuFEv759g9+C6g6Ljq5LK
-         xbtCtx1dCTgMcYh6+OcrrlVUM+qQMGg095aDUt3abDMJXySR3LEii0fngTcUXYWTF3Mc
-         IIaBVHmtSj+tUuU4cU3zECyyWXa6wg+Mgn2Y/atz00b24B6YKXzzMXNIwGRfPOCkyotb
-         oqaA==
-X-Gm-Message-State: AOAM5331AGpJ//QDu9+xTwaSRj5ni+1OmuW2Bae+k/wZKiO95MamI6Dq
-        qWWqj2+auos1fxlWbe8aky0=
-X-Google-Smtp-Source: ABdhPJy7JcJeCQy0OXCsbl9MRsmzEYrQCs/L1pIPU0FyORmeUVS51hykRlCMBeJB63Yj/ScbomRDKg==
-X-Received: by 2002:a17:907:3f12:b0:6df:e7c1:9afb with SMTP id hq18-20020a1709073f1200b006dfe7c19afbmr9784062ejc.84.1647880335533;
-        Mon, 21 Mar 2022 09:32:15 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id v2-20020a509d02000000b00412d53177a6sm8179653ede.20.2022.03.21.09.32.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 09:32:15 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 18:32:13 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Alexander Duyck <alexanderduyck@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Possible to use both dev_mc_sync and __dev_mc_sync?
-Message-ID: <20220321163213.lrn5sk7m6grighbl@skbuf>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1E++cROcggRL7wOwZoxtNN9D4sOVj12YdZTCyLaYMP8=;
+        b=zPOvaILNFzkh6/pa1W9Q6oWofRgHQw+/6voXMTfinz4ntujhAUUhZKLq8bzSXL/o+G
+         HCXJdvxyorselPd7bedxA7MngjSkHIOHnr7KQMjjWNBeG5vmMoBnJCGLn87Z+rfZXSPq
+         Zs1QvYVOym8kPtatyIZ2Vf+qPYqLFB+Io8LuW0IzscdQIzo8Ce19VEmKhQ83u3lSxakq
+         eMXwAD2Gf1Wrb5i4xg5z2DsxG0xZV4h7MpSj20ih8VM80oH4vnaosu+gzcWWKQo+fD3N
+         B13LGbH7vm1josFu9ypsZYXmsjgCiUmZa6YxsG9C+O090qMk4IK0Mu9tDSSglyvy6JNe
+         MOsw==
+X-Gm-Message-State: AOAM5327lanBOp6w/d8cNqTIBGfdpTcPKy//vzu1hJ4j2FDp7CAnPibh
+        or5bKQv8cX2D3GpYuJkNn7DSHOtvWR+ghg==
+X-Google-Smtp-Source: ABdhPJzExSEcDNNFGqn4vmtdhj6m3pSEUSVqTeJHoWEBXhF9N0L1VOgyrJoqDh0GPpMFpS3eRV4aag==
+X-Received: by 2002:a05:6a00:c93:b0:4f7:c76:921f with SMTP id a19-20020a056a000c9300b004f70c76921fmr24353859pfv.73.1647880601065;
+        Mon, 21 Mar 2022 09:36:41 -0700 (PDT)
+Received: from [192.168.0.4] ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id lk7-20020a17090b33c700b001c686a5fc9bsm10938pjb.33.2022.03.21.09.36.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 09:36:40 -0700 (PDT)
+Message-ID: <bce06d99-28a3-8e13-2cc2-ddc15f375f3e@gmail.com>
+Date:   Tue, 22 Mar 2022 01:36:37 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v2 2/3] net: atlantic: Implement xdp data plane
+Content-Language: en-US
+To:     Igor Russkikh <irusskikh@marvell.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+References: <20220319140443.6645-1-ap420073@gmail.com>
+ <20220319140443.6645-3-ap420073@gmail.com>
+ <5067f1b9-2257-226c-4f58-4079d407a161@marvell.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+In-Reply-To: <5067f1b9-2257-226c-4f58-4079d407a161@marvell.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 3/21/22 23:18, Igor Russkikh wrote:
+ > Hi Taehee,
+ >
 
-Despite the similar names, the 2 functions above serve quite different
-purposes, and as it happens, DSA needs to use both of them, each for its
-own purpose.
+Hi Igor,
 
-static void dsa_slave_set_rx_mode(struct net_device *dev)
-{
-	struct net_device *master = dsa_slave_to_master(dev);
-	struct dsa_port *dp = dsa_slave_to_port(dev);
-	struct dsa_switch *ds = dp->ds;
+Thank you so much for your review!
 
-	dev_mc_sync(master, dev); // DSA is a stacked device
-	dev_uc_sync(master, dev);
-	if (dsa_switch_supports_mc_filtering(ds))
-		__dev_mc_sync(dev, dsa_slave_sync_mc, dsa_slave_unsync_mc); // DSA is also a hardware device
-	if (dsa_switch_supports_uc_filtering(ds))
-		__dev_uc_sync(dev, dsa_slave_sync_uc, dsa_slave_unsync_uc);
-}
+ > Thanks for taking care of that!
+ > Just for your information - I've started xdp draft sometime ago,
+ > but never had a time to complete it.
+ > If interested, you can check it here:
+ > 
+https://github.com/Aquantia/AQtion/commit/165cc46cb3fa68eca3110d846db1744a0feee916
+ >
 
-What I'm noticing is that some addresses, for example 33:33:00:00:00:01
-(added by addrconf.c as in6addr_linklocal_allnodes) are synced to the
-master via dev_mc_sync(), but not to hardware by __dev_mc_sync().
+Thanks a lot for this information :)
 
-Superficially, this is because dev_mc_sync() -> __hw_addr_sync_one()
-will increase ha->sync_cnt to a non-zero value. Then, when __dev_mc_sync()
--> __hw_addr_sync_dev() checks ha->sync_cnt, it sees that it has been
-"already synced" (not really), so it doesn't call the "sync" method
-(dsa_slave_sync_mc) for this ha.
+ > Couple of comments on your implementation follows.
+ >
+ > On 3/19/2022 3:04 PM, Taehee Yoo wrote:
+ >> It supports XDP_PASS, XDP_DROP and multi buffer.
+ >>
+ >>  From now on aq_nic_map_skb() supports xdp_frame to send packet.
+ >> So, TX path of both skb and xdp_frame can use aq_nic_map_skb().
+ >> aq_nic_xmit() is used to send packet with skb and internally it
+ >> calls aq_nic_map_skb(). aq_nic_xmit_xdpf() is used to send packet with
+ >> xdp_frame and internally it calls aq_nic_map_skb().
+ >
+ >>   unsigned int aq_nic_map_skb(struct aq_nic_s *self, struct sk_buff 
+*skb,
+ >> -			    struct aq_ring_s *ring)
+ >> +			    struct xdp_frame *xdpf, struct aq_ring_s
+ >> *ring)
+ >>   {
+ >
+ > Its not a huge problem, but here you are using one function 
+(aq_nic_map_skb) with two
+ > completely separate paths: either skb != NULL or xdpf != NULL.
+ > This makes the function abit cumbersome and error prone.
+ >
+ >> +	if (xdpf) {
+ >> +		sinfo = xdp_get_shared_info_from_frame(xdpf);
+ >> +		total_len = xdpf->len;
+ >> +		dx_buff->len = total_len;
+ >> +		data_ptr = xdpf->data;
+ >> +		if (xdp_frame_has_frags(xdpf)) {
+ >> +			nr_frags = sinfo->nr_frags;
+ >> +			total_len += sinfo->xdp_frags_size;
+ >> +		}
+ >> +		goto start_xdp;
+ >
+ > May be instead of doing this jump - just introduce a separate function
+ > like `aq_map_xdp` specially for xdp case.
+ >
 
-However I don't understand the deep reasons and I am confused by the
-members of struct netdev_hw_addr (synced vs sync_cnt vs refcount).
-I can't tell if this was supposed to work, given that "sync address to
-another device" is conceptually a different kind of sync than "sync
-address to hardware", so I'm a bit surprised that they share the same
-variables.
+I agree with it, I will separate it.
 
-Any ideas?
+ >> +int aq_ring_rx_clean(struct aq_ring_s *self,
+ >> +		     struct napi_struct *napi,
+ >> +		     int *work_done,
+ >> +		     int budget)
+ >> +{
+ >> +	if (static_branch_unlikely(&aq_xdp_locking_key))
+ >> +		return __aq_ring_xdp_clean(self, napi, work_done, budget);
+ >> +	else
+ >> +		return __aq_ring_rx_clean(self, napi, work_done, budget);
+ >> +}
+ >
+ > Is that really required to split into `xdp_clean` and `rx_clean` ?
+ > They are very similar, may be try to unify?
+ >
+
+Yes, these two functions are similar.
+But there is 2 reason.
+1. flip strategy issue.
+In order to use flip strategy, page reference count is 
+used(page_ref_{inc | dec}).
+The flip strategy can not be used when rx frame size is over 2K but 3K 
+rx frame size is used if XDP is enabled.
+So, if XDP is enabled, the flip strategy is always impossible therefore 
+page_ref_inc() is unnecessary and expensive.
+__aq_ring_xdp_clean() doesn't call page_ref_inc().
+
+2. page_offset and page_order issue
+When xdp is enabled, 0-order must be used and over 256 page_offset 
+should be used.
+But xdp is not enabled, multi-order can be used and 0 page_offset is used.
+Because of different required values, I made separated functions.
+Unifying them is I think possible, but logic would be more complex.
+
+ > Regards,
+ >    Igor
+
+Thank you so much!
+
+Taehee
