@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CEA54E2CC7
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:47:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 160884E2CDA
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350539AbiCUPtE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Mar 2022 11:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
+        id S1347860AbiCUPwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 11:52:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349115AbiCUPtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:49:03 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63829606C0
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 08:47:37 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-246-Ub5TnyEPOam9cnZmzS-F3A-2; Mon, 21 Mar 2022 15:47:34 +0000
-X-MC-Unique: Ub5TnyEPOam9cnZmzS-F3A-2
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Mon, 21 Mar 2022 15:47:28 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Mon, 21 Mar 2022 15:47:28 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Alexander Lobakin' <alexandr.lobakin@intel.com>,
-        Wan Jiabing <wanjiabing@vivo.com>
-CC:     Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH] ice: use min() to make code cleaner in
- ice_gnss
-Thread-Topic: [Intel-wired-lan] [PATCH] ice: use min() to make code cleaner in
- ice_gnss
-Thread-Index: AQHYPRqWSkYKaVGfxkysTLMqXUCuZazJ+yGQ
-Date:   Mon, 21 Mar 2022 15:47:28 +0000
-Message-ID: <ff90ebe7eed741829dc03b2bf92a41f7@AcuMS.aculab.com>
-References: <20220318094629.526321-1-wanjiabing@vivo.com>
- <8822dfa2-bdb8-fceb-e920-94afb50881e8@intel.com>
- <20220321115412.844440-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20220321115412.844440-1-alexandr.lobakin@intel.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S238686AbiCUPwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:52:36 -0400
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621D01557FF;
+        Mon, 21 Mar 2022 08:51:11 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id r10so21329536wrp.3;
+        Mon, 21 Mar 2022 08:51:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hefucE+Jiu9ept//sebHy0SZe1pf91jzk4A2hhyEoXU=;
+        b=j5xnLu4HfbvAZePTS+Q8j2bHhaftEKa8xdA01aScy2pzazE+gAPbz6pO0JtVC5Zq1e
+         N4Hs5AMCIGYtqhsYv265rz8TBpwSwGIZO5MbPglxS2WeF3YEf0AnF1pCuxJS/u+ZqEHR
+         gdCUPnJ0eh9RCPPfTmo8E4TytT6+2PEzWmsFJdeW0SP50r3z0UasQi3T67cQMp74rRVG
+         x2K96uw9LKOXXaGz6IV6UkYvLjh2TVIHUP5+FqlHocQ8HpLclT0d2xsEGpqcCadpkMkY
+         0Foy0FbPKnc8T/xmVr+BVtg35FHtJIbqhcEVhK0LwGu9vaIwD27HsQSlCZvHuGdG71b2
+         RCHw==
+X-Gm-Message-State: AOAM533PXJwUG47JMtrettbyIIlzp6DGwHWUjLDGqw1nqy5VsYPWvom4
+        h7ajqYl5MegyVFIq4c+cuD4=
+X-Google-Smtp-Source: ABdhPJwvW8A/Q2Qjh46eoL/oVh5ZiV0UasSIAFG93IFQXPqcKZSoCt5kt1x/8yu76BU3wmUskwpDfw==
+X-Received: by 2002:a5d:6acd:0:b0:1ef:78e9:193a with SMTP id u13-20020a5d6acd000000b001ef78e9193amr18601351wrw.281.1647877869926;
+        Mon, 21 Mar 2022 08:51:09 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id u7-20020a5d6da7000000b00203d9d1875bsm15376362wrs.73.2022.03.21.08.51.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Mar 2022 08:51:09 -0700 (PDT)
+Message-ID: <3aae94bd-d39d-ddfc-2b06-356173f6b1f8@kernel.org>
+Date:   Mon, 21 Mar 2022 16:51:07 +0100
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 1/3] dt-bindings: net: add reset property for aspeed,
+ ast2600-mdio binding
 Content-Language: en-US
+To:     Dylan Hung <dylan_hung@aspeedtech.com>, robh+dt@kernel.org,
+        joel@jms.id.au, andrew@aj.id.au, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, p.zabel@pengutronix.de,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     BMC-SW@aspeedtech.com, stable@vger.kernel.org
+References: <20220321095648.4760-1-dylan_hung@aspeedtech.com>
+ <20220321095648.4760-2-dylan_hung@aspeedtech.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220321095648.4760-2-dylan_hung@aspeedtech.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,19 +70,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Use `min_t(typeof(bytes_left), ICE_MAX_I2C_DATA_SIZE)` to avoid
-> this. Plain definitions are usually treated as `unsigned long`
-> unless there's a suffix (u, ull etc.).
+On 21/03/2022 10:56, Dylan Hung wrote:
+> The AST2600 MDIO bus controller has a reset control bit and must be
+> deasserted before the manipulating the MDIO controller.
+> 
+> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> Cc: stable@vger.kernel.org
 
-I suspect they are 'int'.
-And the compiler will convert to 'unsigned int' in any
-arithmetic.
-And the 'signed v unsigned' compare warning is supressed
-to integer constants.
+No bugs fixes, no cc-stable. Especially that you break existing devices...
 
-	David
+> ---
+>  .../devicetree/bindings/net/aspeed,ast2600-mdio.yaml          | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
+> index 1c88820cbcdf..8ba108e25d94 100644
+> --- a/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
+> +++ b/Documentation/devicetree/bindings/net/aspeed,ast2600-mdio.yaml
+> @@ -23,12 +23,15 @@ properties:
+>    reg:
+>      maxItems: 1
+>      description: The register range of the MDIO controller instance
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Missing empty line.
 
+> +  resets:
+> +    maxItems: 1
+>  
+>  required:
+>    - compatible
+>    - reg
+>    - "#address-cells"
+>    - "#size-cells"
+> +  - resets
+
+You break the ABI. This isusually not accepted in a regular kernel and
+even totally not accepted accepted for stable kernel.
+
+>  
+>  unevaluatedProperties: false
+>  
+> @@ -39,6 +42,7 @@ examples:
+>              reg = <0x1e650000 0x8>;
+>              #address-cells = <1>;
+>              #size-cells = <0>;
+> +            resets = <&syscon 35>;
+>  
+>              ethphy0: ethernet-phy@0 {
+>                      compatible = "ethernet-phy-ieee802.3-c22";
+
+
+Best regards,
+Krzysztof
