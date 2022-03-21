@@ -2,110 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 811DA4E31AC
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 21:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3A814E31BE
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 21:28:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353289AbiCUUYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 16:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S1343615AbiCUU37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 16:29:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353114AbiCUUYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 16:24:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4558C2A736;
-        Mon, 21 Mar 2022 13:23:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647894194; x=1679430194;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2XKSa393AJ/u/J5kUeoinz3LLqVWqafJGXbziCYPgUk=;
-  b=BBKYcwjsETXEsv0qSZWDe6YRk8wFOU9P1kxq5IRDug/vPew8MaDyERcq
-   B+eTUO8zat1m/QPsvxLF87J5hjb41VBxrEtvVwuqtq5yU7nyOjULnZLEs
-   Wbh0A7YCVAcC0TBNAUHAGyHn6N86VnD3uTgfCkQq18wQv/YvThZRiXevH
-   2rUT7r+fpzZe/M9vGNDv627Jku9fO3Dz9jIOayXM7nM4U5tjUSjBcJaEt
-   KkzaaPthFRWKyENDevzC7Bs6QKrj4Y4B2MMZpSjsdM07A3Uj21ZIPCO2V
-   gEWklXpsqR1aAeTD6tydFG/wvLCwfbRu2woTFVRpF6Dt8byHaizsWCz4p
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,199,1643698800"; 
-   d="scan'208";a="152737954"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2022 13:23:13 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 21 Mar 2022 13:23:13 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 21 Mar 2022 13:23:02 -0700
-Message-ID: <661489ea4ba5646d695d55242808f1fb4ae35cfb.camel@microchip.com>
-Subject: Re: [PATCH v9 net-next 09/11] net: dsa: microchip: add support for
- port mirror operations
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Tue, 22 Mar 2022 01:52:59 +0530
-In-Reply-To: <20220318110033.nuwvrok6ywsagxwf@skbuf>
-References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
-         <20220318085540.281721-10-prasanna.vengateshan@microchip.com>
-         <20220318110033.nuwvrok6ywsagxwf@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
+        with ESMTP id S232223AbiCUU36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 16:29:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E133433A2C
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 13:28:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8711E611A1
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 20:28:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7461EC340E8;
+        Mon, 21 Mar 2022 20:28:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647894511;
+        bh=9j4X2Ou2UhTylkzJ0zMR4erYwjNFbL2hKER7VqwOqyw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=exOzOhYEr2iAWMvz0tj7Qi/0pCrCmGmO+MnFYVPAehC2pReiMCRLFQupKVdWj12E2
+         H2wOCGGiX4DsKAXUKU5rNdud1/E0XcGpDO+0YWVGToEb7oGp9Kg6ju3HFIiQPhvN2G
+         sHHP0wEpBkPvug6R+A7uHoTiuEyf0ktD3wBeVp1k1xY4F86MPsZOb8x801PNRJq7qe
+         anJvH73WwzpukYeg7LnKOkpStOOa0hz+jwS5N3lqkeluPBIQLI1hqmm2lYXJDrHvkf
+         bnw8cDL48/irQNNj6Fkf9qBDvlQf0mknYgNVxaIKq85xIE+EV4spqf8hS5urZYWl8h
+         jhiroU7XlheFA==
+Date:   Mon, 21 Mar 2022 13:28:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [RFC PATCH net-next] net: create a NETDEV_ETH_IOCTL notifier
+ for DSA to reject PTP on DSA master
+Message-ID: <20220321132829.71fe30d5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220317225035.3475538-1-vladimir.oltean@nxp.com>
+References: <20220317225035.3475538-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-03-18 at 13:00 +0200, Vladimir Oltean wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
+On Fri, 18 Mar 2022 00:50:35 +0200 Vladimir Oltean wrote:
+> The fact that PTP 2-step TX timestamping is deeply broken on DSA
+> switches if the master also timestamps the same packets is well
+> documented by commit f685e609a301 ("net: dsa: Deny PTP on master if
+> switch supports it"). We attempt to help the users avoid shooting
+> themselves in the foot by making DSA reject the timestamping ioctls on
+> an interface that is a DSA master, and the switch tree beneath it
+> contains switches which are aware of PTP.
 > 
-> On Fri, Mar 18, 2022 at 02:25:38PM +0530, Prasanna Vengateshan wrote:
-> > Added support for port_mirror_add() and port_mirror_del operations
-> > 
-> > Sniffing is limited to one port & alert the user if any new
-> > sniffing port is selected
-> > 
-> > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> > Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> > ---
-> >  drivers/net/dsa/microchip/lan937x_main.c | 84 ++++++++++++++++++++++++
-> >  1 file changed, 84 insertions(+)
-> > 
-> > diff --git a/drivers/net/dsa/microchip/lan937x_main.c
-> > b/drivers/net/dsa/microchip/lan937x_main.c
-> > index c54aba6a05b5..5a57a2ce8992 100644
-> > --- a/drivers/net/dsa/microchip/lan937x_main.c
-> > +++ b/drivers/net/dsa/microchip/lan937x_main.c
-> > @@ -98,6 +98,88 @@ static void lan937x_port_stp_state_set(struct dsa_switch
-> > *ds, int port,
-> >       ksz_update_port_member(dev, port);
-> >  }
-> > 
-> > +static int lan937x_port_mirror_add(struct dsa_switch *ds, int port,
-> > +                                struct dsa_mall_mirror_tc_entry *mirror,
-> > +                                bool ingress)
-> 
-> This function gained a new extack argument yesterday => your patch
-> doesn't compile. Maybe you could even use the extack to propagate the
-> "existing sniffer port" error.
-> 
-> 
+> The only problem is that there isn't an established way of intercepting
+> ndo_eth_ioctl calls, so DSA creates avoidable burden upon the network
+> stack by creating a struct dsa_netdevice_ops with overlaid function
+> pointers that are manually checked from the relevant call sites. There
+> used to be 2 such dsa_netdevice_ops, but now, ndo_eth_ioctl is the only
+> one left.
 
-Sure, will use the extack for existing errors.
+Remind me - are the DSA CPU-side interfaces linked as lower devices 
+of the ports?
 
-Prasanna V
+> In fact, the underlying reason which is prompting me to make this change
+> is that I'd like to hide as many DSA data structures from public API as
+> I can. But struct net_device :: dsa_ptr is a struct dsa_port (which is a
+> huge structure), and I'd like to create a smaller structure. I'd like
+> struct dsa_netdevice_ops to not be a part of this, so this is how the
+> need to delete it arose.
 
+Isn't it enough to move the implementation to a C source instead 
+of having it be a static inline?
+
+> The established way for unrelated modules to react on a net device event
+> is via netdevice notifiers. These have the advantage of loose coupling,
+> i.e. they work even when DSA is built as module, without resorting to
+> static inline functions (which cannot offer the desired data structure
+> encapsulation).
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> I'd mostly like to take this opportunity to raise a discussion about how
+> to handle this. It's clear that calling the notifier chain is less
+> efficient than having some dev->dsa_ptr checks, but I'm not sure if the
+> ndo_eth_ioctl can tolerate the extra performance hit at the expense of
+> some code cleanliness.
+> 
+> Of course, what would be great is if we didn't have the limitation to
+> begin with, but the effort to add UAPI for multiple TX timestamps per
+> packet isn't proportional to the stated goal here, which is to hide some
+> DSA data structures.
+
+Was there a reason we haven't converted the timestamping to ndos?
+Just a matter of finding someone with enough cycles to go thru all 
+the drivers?
