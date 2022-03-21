@@ -2,82 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 684294E2508
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 12:10:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 570144E2525
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 12:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346688AbiCULLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 07:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48698 "EHLO
+        id S1346731AbiCULXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 07:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346577AbiCULLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 07:11:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC60393CD;
-        Mon, 21 Mar 2022 04:10:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S1346730AbiCULXP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 07:23:15 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E569E8BE19;
+        Mon, 21 Mar 2022 04:21:49 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E577060AD6;
-        Mon, 21 Mar 2022 11:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4664BC340F3;
-        Mon, 21 Mar 2022 11:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647861010;
-        bh=Lr+4/BKBMCYUnCpDZoFsUsNMahesPV4BHyDtQEQpEMM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=spQDtEZDyjbhXtN8V/UJKEFis6TQiyUaMpqNIkSUqBMbvM5xHMk2ww4f/E1HRJfyy
-         Vt5S4+v/KTuClgGqdgAEquZnOrU7FA4BBORumaNNxeTWYJeZD+YuFbHz2rFvJf2lX/
-         qvbF5Cp7qX00twYveeQ3c/TWCvEzPRp/hBzEFp75mSorW5kwaC8bQC2cMBxaIzciTj
-         lQK8K3LnrBVuYcoofauNSr9Ay3b5Dv6V6sDzncJz246MtMPMQAQPNMv1GQvTH3d3YX
-         oO5N0XAIdo2fcjyLB4XwF0y2zpeNmkR5qeExmyWNrjh/0fv0K1DEAOedKRHf85ATET
-         AXhlskd2Tq2fw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 27054E7BB0B;
-        Mon, 21 Mar 2022 11:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 62E6922175;
+        Mon, 21 Mar 2022 12:21:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1647861708;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vTGNgxQ0XsK0oOSlp1IzamOEjyBB0AvzrZZ0Ss1/2Tw=;
+        b=iDE/Qo46vzHu5Jo2ge2/0/5mkHGnU95dkxQV1qJi9UuT5U8YZU2qVRjiDdtWhi3b/1qlZp
+        r2kNcTMAhx4m3uef4liOCmsIeaN09p/SY7AaOVElqoAQqZJMJPYG8mo0o+c1wvOtDLMQPM
+        U/URznJuJo9Dx41uHSfuaMbbKqWQ1Ns=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] qed: remove unnecessary memset in qed_init_fw_funcs
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164786101015.12168.12932590241083044976.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 11:10:10 +0000
-References: <20220318093153.521634-1-wanjiabing@vivo.com>
-In-Reply-To: <20220318093153.521634-1-wanjiabing@vivo.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 21 Mar 2022 12:21:48 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Clause 45 and Clause 22 PHYs on one MDIO bus
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+I have a board with a c22 phy (microchip lan8814) and a c45 phy
+(intel/maxlinear gyp215) on one bus. If I understand it correctly, both
+accesses should be able to coexist on one bus. But the microchip lan8814
+actually has a bug and gets confused by c45 accesses. For example it 
+will
+respond in the middle of another transaction with its own data if it
+decodes it as a read. That is something we can see on a logic analyzer.
+But we also see random register writes on the lan8814 (which you don't 
+see
+on the logic analyzer obviously). Fortunately, the GPY215 supports 
+indirect
+MMD access by the standard c22 registers. Thus as a workaround for the
+problem, we could have a c22 only mdio bus.
 
-On Fri, 18 Mar 2022 17:31:53 +0800 you wrote:
-> allocated_mem is allocated by kcalloc(). The memory is set to zero.
-> It is unnecessary to call memset again.
-> 
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
->  drivers/net/ethernet/qlogic/qed/qed_init_fw_funcs.c | 2 --
->  1 file changed, 2 deletions(-)
+The SoC I'm using is the LAN9668, which uses the mdio-mscc-mdio driver.
+First problem there, it doesn't support C45 (yet) but also doesn't check
+for MII_ADDR_C45 and happily reads/writes bogus registers.
 
-Here is the summary with links:
-  - qed: remove unnecessary memset in qed_init_fw_funcs
-    https://git.kernel.org/netdev/net-next/c/b8f7544a6cb3
+I've looked at the mdio subsystem in linux, there is probe_capabilities
+(MDIOBUS_C45 and friends) but the mxl-gpy.c is using c45 accesses
+nevertheless. I'm not sure if this is a bug or not.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I was thinking of a fallback mechanism for the c45 read access like
+in read_mmd. And even if the mdio controller is c45 capable, a PHY
+might opt out. In my case, the lan8814.
 
+What do you think?
 
+-michael
