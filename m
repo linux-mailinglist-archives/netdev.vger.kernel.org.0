@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C06894E339B
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:58:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A2524E338F
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:56:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231598AbiCUW5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 18:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57412 "EHLO
+        id S231618AbiCUW5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 18:57:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231410AbiCUW5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:57:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A29443B6DAD;
-        Mon, 21 Mar 2022 15:37:20 -0700 (PDT)
+        with ESMTP id S231324AbiCUW5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:57:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C622537764A;
+        Mon, 21 Mar 2022 15:37:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98C7261556;
-        Mon, 21 Mar 2022 21:53:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B177C340E8;
-        Mon, 21 Mar 2022 21:53:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABF7261574;
+        Mon, 21 Mar 2022 21:53:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04734C36AE7;
+        Mon, 21 Mar 2022 21:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899623;
-        bh=V71uAhPOIm1dgSRYeDXlMVloISpJ0FIXrczDGgzcvWI=;
+        s=k20201202; t=1647899628;
+        bh=TtYaq9/U0mcGokV5YP+KOEgHqM7Tv1eSAcP4xaQd3s8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXVgpOjSdk81uyB2wY0Jx5kJfYa4sJtEqXDQnsnYKgm3xG9nU6qwqM0YzKTfGyyoP
-         /7mOMJkbAog0IdnHsPVSQPaIbNbEzqYa1irjJBXDCVUl6wR7itdc6eoW9iEIJsHatW
-         YArUOdK+hlZtAkOkod71qt7wwY1zXbDKqhSYVfOGvGIyufG+m3tk98/0VwjrT70wnX
-         y9c6pGpBmNmRG1CmGQs3hda92floqB51AzWUakLxjp4wlVhcLYNNFLb3wbu61cMqVf
-         Q+ZP4CAYW6VWou8bAO7EOfxpEVOM7tldjGzLXcIZouTG6wxZ3mmDZDjOD4yG+sW5+D
-         PAkDTnHq1r1tA==
+        b=K7ZRKrTzQJ6uvFq9cJFgNmzIX0iOlArc1srlpzLQl/IiT2kM1+Gn1Mpr1ckCPetDk
+         dJycRsmCVeqo+hXWKNpijK5OD5k2DA/cI/u9VKV/AMHoUbbHLsM28i/W9YGNISUwV+
+         gAkJQa5PQFTiZoXV2NTjpaiJwM/fSgbM3z+Xff97RATdsCVtHwAH2v4+6n4FZSikhg
+         NRPJUtSwyZZcvADZ8H/XpBWwfG3n7S78/9qEOmg89pLMFffOZfKAahk6VzSpqgHyWk
+         a5yZ9WJp+CrVeSAlPJJIh00MOquiSL4JXBKUgjknhBwBc1FPqqQQE776SY0th7BYSp
+         1cxNOEA1tgsug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
@@ -40,12 +40,12 @@ Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 2/2] net: ipv6: fix skb_over_panic in __ip6_append_data
-Date:   Mon, 21 Mar 2022 17:53:38 -0400
-Message-Id: <20220321215338.490562-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 2/2] net: ipv6: fix skb_over_panic in __ip6_append_data
+Date:   Mon, 21 Mar 2022 17:53:43 -0400
+Message-Id: <20220321215343.490600-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220321215338.490562-1-sashal@kernel.org>
-References: <20220321215338.490562-1-sashal@kernel.org>
+In-Reply-To: <20220321215343.490600-1-sashal@kernel.org>
+References: <20220321215343.490600-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -90,10 +90,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index c474e4b4c4bb..fbad7828568f 100644
+index 55be18cae35b..775901abe678 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -1321,8 +1321,8 @@ static int __ip6_append_data(struct sock *sk,
+@@ -1329,8 +1329,8 @@ static int __ip6_append_data(struct sock *sk,
  		      sizeof(struct frag_hdr) : 0) +
  		     rt->rt6i_nfheader_len;
  
