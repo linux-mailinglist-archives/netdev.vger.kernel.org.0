@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31ADE4E20E7
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 08:04:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB9A84E2109
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 08:15:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344716AbiCUHEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 03:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47988 "EHLO
+        id S1344766AbiCUHRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 03:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344718AbiCUHEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 03:04:37 -0400
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4961EC5C
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 00:03:04 -0700 (PDT)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 22L6ofVV062513;
-        Mon, 21 Mar 2022 14:50:41 +0800 (GMT-8)
-        (envelope-from dylan_hung@aspeedtech.com)
-Received: from DylanHung-PC.aspeed.com (192.168.2.216) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 21 Mar
- 2022 15:01:06 +0800
-From:   Dylan Hung <dylan_hung@aspeedtech.com>
-To:     <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <p.zabel@pengutronix.de>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>, <stable@vger.kernel.org>
-Subject: [PATCH 2/2] ARM: dts: aspeed: add reset properties into MDIO nodes
-Date:   Mon, 21 Mar 2022 15:01:31 +0800
-Message-ID: <20220321070131.23363-3-dylan_hung@aspeedtech.com>
+        with ESMTP id S245477AbiCUHRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 03:17:00 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FBF3EBAB;
+        Mon, 21 Mar 2022 00:15:35 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id d19so14675201pfv.7;
+        Mon, 21 Mar 2022 00:15:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OUJOZBwGbollWrpdYQoZPkdenvguOm3D7K6hbDbX3PU=;
+        b=hng2vQGxKUpbyul73fNVPi5UIZanX4aLXWj8pyRLyGYjb+VcYR1+gxxWnaJIb7MV5U
+         AZn027iDkdKY9GXaRJy9A8rxuAF355IszIfGZcOiCz30PH/ZaojLpi08jJOXPVS3SZuR
+         sZkoPZWPtm+PzwOP98hvIB7t/0xl5cxOCm/StZY4FyVMl4O3LhdfZY77DpqClbXvbWjn
+         3V1xI4TxhxloTbtLlX8pHcwBQVpjuOv6PbGn7H0eyICCSpXq30j3I4+LIEhaK8wxSI1I
+         AqplfshvYcKzyxF9S7w92w/1hqJE3qLSuuAJDLAP4sqceyAJ7PPTOtqHqMRuAl//h/uw
+         or6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OUJOZBwGbollWrpdYQoZPkdenvguOm3D7K6hbDbX3PU=;
+        b=rwSCbopFb+s5oZmD9ElWBzpzYb/4GQ6SB3+WkbTNg3WHbZk1nAsRjANA+0J+RSTWAq
+         PBUluGqfx93DATIX9IpevR6MvdrZ3hCii9E1IKNVekgbHPn2G3AfwKn9d0r4FoVYwjy0
+         ENRas8G9I7lNjVh2jX0XlZ4CfPyxpsApbBs/VZ0TqKAJt9LjiBjgxdQjSRyk3GW0AlD5
+         cZ6II/zO+vhx/6c6G4WG+gBjn6jomt4EoiteCUmfHkcNMEBolck7JMZjFTXjaZCpuReF
+         09TChukfFUYjkZkFO8dhzysQJmFwwfFzD/5dSpe7SQ9Kx8tXhVLAk1kW2Nq+kvXepsVs
+         IakQ==
+X-Gm-Message-State: AOAM531CiQo6n5cZZA6FDTv+K1XDGgAX//ut3U4TS91wKbSYRwEPvG5Y
+        nNqSLvMdviKvDEdsnKbYMNI=
+X-Google-Smtp-Source: ABdhPJzlRaJRgpY29vlVyh8Ywx8tQrnGEO3U7HoRjp0EoXBNvs47FPCiSsu9hD6zQzwfOhL1aNcHdA==
+X-Received: by 2002:a05:6a00:1687:b0:4e1:45d:3ded with SMTP id k7-20020a056a00168700b004e1045d3dedmr22428890pfc.0.1647846934909;
+        Mon, 21 Mar 2022 00:15:34 -0700 (PDT)
+Received: from tong-desktop.local ([2600:1700:3ec7:421f:a425:dbce:b9cb:7c6f])
+        by smtp.googlemail.com with ESMTPSA id 3-20020a630003000000b003828fc1455esm1333261pga.60.2022.03.21.00.15.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 00:15:34 -0700 (PDT)
+From:   Tong Zhang <ztong0001@gmail.com>
+To:     Karsten Keil <isdn@linux-pingi.de>, Sam Creasey <sammy@sammy.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pontus Fuchs <pontus.fuchs@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tong Zhang <ztong0001@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-s390@vger.kernel.org
+Subject: [PATCH 0/4] fix typos: "to short" -> "too short"
+Date:   Mon, 21 Mar 2022 00:13:50 -0700
+Message-Id: <20220321071350.3476185-1-ztong0001@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220321070131.23363-1-dylan_hung@aspeedtech.com>
-References: <20220321070131.23363-1-dylan_hung@aspeedtech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.216]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 22L6ofVV062513
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add reset control properties into MDIO nodes.  The 4 MDIO controllers in
-AST2600 SOC share one reset control bit SCU50[3].
+doing some code review and I found out there are a couple of places
+where "too short" is misspelled as "to short".
 
-Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-Cc: stable@vger.kernel.org
----
- arch/arm/boot/dts/aspeed-g6.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+Tong Zhang (4):
+  ar5523: fix typo "to short" -> "too short"
+  s390/ctcm: fix typo "length to short" -> "length too short"
+  i825xx: fix typo "Frame to short" -> "Frame too short"
+  mISDN: fix typo "frame to short" -> "frame too short"
 
-diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-index c32e87fad4dc..ab20ea8d829d 100644
---- a/arch/arm/boot/dts/aspeed-g6.dtsi
-+++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-@@ -181,6 +181,7 @@ mdio0: mdio@1e650000 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio1_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio1: mdio@1e650008 {
-@@ -191,6 +192,7 @@ mdio1: mdio@1e650008 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio2_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio2: mdio@1e650010 {
-@@ -201,6 +203,7 @@ mdio2: mdio@1e650010 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio3_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mdio3: mdio@1e650018 {
-@@ -211,6 +214,7 @@ mdio3: mdio@1e650018 {
- 			status = "disabled";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&pinctrl_mdio4_default>;
-+			resets = <&syscon ASPEED_RESET_MII>;
- 		};
- 
- 		mac0: ftgmac@1e660000 {
+ drivers/isdn/hardware/mISDN/mISDNipac.c  | 2 +-
+ drivers/isdn/hardware/mISDN/mISDNisar.c  | 4 ++--
+ drivers/net/ethernet/i825xx/sun3_82586.h | 2 +-
+ drivers/net/wireless/ath/ar5523/ar5523.c | 2 +-
+ drivers/s390/net/ctcm_fsms.c             | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
+
 -- 
 2.25.1
 
