@@ -2,497 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6526C4E2D1F
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:07:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 455BA4E2E2C
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:37:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350646AbiCUQJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 12:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
+        id S1351258AbiCUQio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 12:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240640AbiCUQJH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:09:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E64CE6662C
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:07:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1647878857;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zpcoCC4yHq3ajeXZ8IqHbBVz9eP4OTlopTuEhplFUg4=;
-        b=iIHMcUiXpXOevy4z71I3UcGhsQMHIk7Yg5xxkJfLxPyKHzxRTx2qA8q2rj+WOTNPyuf4CW
-        8/+FG+pflcliq31FSNK9wjOXq251I9N/kUvsrkSfshuFcypqxg/2m/vei5Fs5Flu2qA4ks
-        2MlZqStmLoSi1N781hxlBJx9UahV7MM=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-613-Vk9O9nqQMK-tmzNKTEgv-A-1; Mon, 21 Mar 2022 12:07:35 -0400
-X-MC-Unique: Vk9O9nqQMK-tmzNKTEgv-A-1
-Received: by mail-pj1-f71.google.com with SMTP id mm2-20020a17090b358200b001bf529127dfso9168694pjb.6
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:07:35 -0700 (PDT)
+        with ESMTP id S241534AbiCUQin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:38:43 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBCAED9DF;
+        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so8705757wmb.3;
+        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
+        b=Ygw7anaet6FzKMcreNetMcmSvYsQ2nE3AES8PzqVWlfid4Fn3IlD7aSbMq7k14XCwm
+         jt7B73SYmymXM738S4I7e9xM86Ed8GLrAAgl0Vo76f4eZ2x+B+hovBAWNjRXmG0qKcEw
+         2sRUuesnrrvO1u6K/fiKe9ytSq0ljYh2VcFvWYN23/TEiNUGck6Ols8Mh060+EVneig3
+         q0oK4gUmWOSLJxEhllVIbbSZ2CUy0Wh7vahJxhu/kLH3oJ/GERSosq+nYQJ8IxrZGwrZ
+         4XsEv951FBlOXVNkaDJNenl5bIZz+jwAqZBK66lGl958FGoXTs/JPJVwgpBv/3REfkLG
+         byxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zpcoCC4yHq3ajeXZ8IqHbBVz9eP4OTlopTuEhplFUg4=;
-        b=MGKFMu443kmLfAEVgob+YwhBjFZDUUzdcq4tMiY6w+OXXmSvzkq8Nmx4FaNRrBDkiq
-         ozqXG3lN7MBTxUD/JYzATZNdUKr0wpouBFiQfrX5PBDMn+E1efBSdq8LvA88VepSK7B3
-         QHUGM1zDpaLIFK78g1Y2OH9SOMDO3hau+3BJX4tJnVmyFcSge+O531U8aNU2PPFxXE4b
-         CbaecZaJu1HNnXhYP71Q1G/4dFh2uCEEHai6L7ULMy507vVfms1yw02QY9NQWfqkYJuR
-         3sK/8Gdi+pBs1jWJlR5HE0omIeHQetwUrdzPW1h8MSlUDLaUdGpRAIkjWU8oIpJZdwTG
-         6kVQ==
-X-Gm-Message-State: AOAM532YjGHriiIk+bxRVv3hSH4PIMDJHoa+y5JCbki13deZeoI03CDj
-        ttlLGbTRYlKMmTxcnEQQRi5SeNwwZHqhiqlANog8f/GLWdhBU5GK4knUQxWsc6yuygh9on/QEvK
-        oAFTKtlolJ2cA1lpc6hFel8gt3/NZ7nYR
-X-Received: by 2002:a17:902:c401:b0:154:1398:a16b with SMTP id k1-20020a170902c40100b001541398a16bmr13429812plk.67.1647878853133;
-        Mon, 21 Mar 2022 09:07:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfR7xojQGSh+SlE52ZB3p3sYi5T6jUKMUP6HdTYmBdE+aOadzDpu21O7Hr0mDvNquBoaR05abTWhccSffR0dM=
-X-Received: by 2002:a17:902:c401:b0:154:1398:a16b with SMTP id
- k1-20020a170902c40100b001541398a16bmr13429769plk.67.1647878852756; Mon, 21
- Mar 2022 09:07:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
+        b=sME/2rO3cPxA6eESTcmTfBWo5L6JGfbflpri1MQ6QYqZmENzJRP47m4ySpFmTqOrzD
+         kjGw3xRkC9lYKtW+2vp/EFQAGVGHVEgbdcr4DYrVnD3p716Rla+EpJRr/4/b7cGRP/4w
+         ge0nmI4JMDuhD/VCb0ZEkhdhdvvfvD4tilZWehlv9NQOF/lS5lNscl65FmSZiyyxNJIp
+         PM4hTpedCCJua32hmCQawvFILS6q0xltfPOZ1NTM3SXglctfwuFhGEulSRmsjtrFk/Xc
+         ZVf8CMHzWzvGDvhXww7yMM/IH/ddkZUAXz2+7H6w+h5cL3j6fYyLQJ9P22yBV5A5OkwO
+         RD1A==
+X-Gm-Message-State: AOAM531O8glLHL/wP22UqpLV4sO//J7TPPCB46ebfZrbNLpZwF9ArJQW
+        ZdC9+33aAowPYOj89ZB5HQE=
+X-Google-Smtp-Source: ABdhPJws43+PByf1nFz9BFFhtx17Jjxiu/klSS58SjNzfZPynJArDoCJb6L9T+lAc4m8l+8q5bSa/A==
+X-Received: by 2002:a05:600c:1548:b0:389:cde3:35cc with SMTP id f8-20020a05600c154800b00389cde335ccmr27858632wmg.133.1647880635504;
+        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
+Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
+        by smtp.gmail.com with ESMTPSA id m23-20020a05600c3b1700b0038bbd24f401sm311178wms.2.2022.03.21.09.37.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 17:07:55 +0100
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH v2] net: dsa: qca8k: pack driver struct and
+ improve cache use
+Message-ID: <Yjii20KryAsEQp1k@Ansuel-xps.localdomain>
+References: <20220228110408.4903-1-ansuelsmth@gmail.com>
+ <20220303015327.k3fqkkxunm6kihjl@skbuf>
 MIME-Version: 1.0
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
- <20220318161528.1531164-3-benjamin.tissoires@redhat.com> <CAPhsuW5qseqVs4=hz3VvSJ2ObqB2kTbKXoaOCh=5vjoU_AXnKQ@mail.gmail.com>
-In-Reply-To: <CAPhsuW5qseqVs4=hz3VvSJ2ObqB2kTbKXoaOCh=5vjoU_AXnKQ@mail.gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 21 Mar 2022 17:07:21 +0100
-Message-ID: <CAO-hwJ+WSi645HhNV_BYACoJe2UTc4KZzqH0oHocfnBR8xUYEQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 02/17] bpf: introduce hid program type
-To:     Song Liu <song@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220303015327.k3fqkkxunm6kihjl@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Song,
-
-many thanks for the quick response.
-
-On Fri, Mar 18, 2022 at 9:48 PM Song Liu <song@kernel.org> wrote:
+On Thu, Mar 03, 2022 at 03:53:27AM +0200, Vladimir Oltean wrote:
+> On Mon, Feb 28, 2022 at 12:04:08PM +0100, Ansuel Smith wrote:
+> > Pack qca8k priv and other struct using pahole and set the first priv
+> > struct entry to mgmt_master and mgmt_eth_data to speedup access.
+> > While at it also rework pcs struct and move it qca8k_ports_config
+> > following other configuration set for the cpu ports.
+> > 
+> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > ---
+> 
+> How did you "pack" struct qca8k_priv exactly?
 >
-> On Fri, Mar 18, 2022 at 9:16 AM Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> [...]
-> >
-> > diff --git a/include/linux/bpf-hid.h b/include/linux/bpf-hid.h
-> > new file mode 100644
-> > index 000000000000..9c8dbd389995
-> > --- /dev/null
-> > +++ b/include/linux/bpf-hid.h
-> >
-> [...]
-> > +
-> > +struct hid_bpf_ctx_kern {
-> > +       enum hid_bpf_event type;        /* read-only */
-> > +       struct hid_device *hdev;        /* read-only */
-> > +
-> > +       u16 size;                       /* used size in data (RW) */
-> > +       u8 *data;                       /* data buffer (RW) */
-> > +       u32 allocated_size;             /* allocated size of data (RO) */
->
-> Why u16 size vs. u32 allocated_size?
 
-Probably an oversight because I wrote u32 in the public uapi. Will
-change this into u16 too.
+I'm trying to understand it too... also this was done basend on what
+target? 
 
-> Also, maybe shuffle the members
-> to remove some holes?
+> Before:
+> 
+> struct qca8k_priv {
+>         u8                         switch_id;            /*     0     1 */
+>         u8                         switch_revision;      /*     1     1 */
+>         u8                         mirror_rx;            /*     2     1 */
+>         u8                         mirror_tx;            /*     3     1 */
+>         u8                         lag_hash_mode;        /*     4     1 */
+>         bool                       legacy_phy_port_mapping; /*     5     1 */
+>         struct qca8k_ports_config  ports_config;         /*     6     7 */
+> 
+>         /* XXX 3 bytes hole, try to pack */
+> 
+>         struct regmap *            regmap;               /*    16     8 */
+>         struct mii_bus *           bus;                  /*    24     8 */
+>         struct ar8xxx_port_status  port_sts[7];          /*    32    28 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         /* --- cacheline 1 boundary (64 bytes) --- */
+>         struct dsa_switch *        ds;                   /*    64     8 */
+>         struct mutex               reg_mutex;            /*    72   160 */
+>         /* --- cacheline 3 boundary (192 bytes) was 40 bytes ago --- */
+>         struct device *            dev;                  /*   232     8 */
+>         struct dsa_switch_ops      ops;                  /*   240   864 */
+>         /* --- cacheline 17 boundary (1088 bytes) was 16 bytes ago --- */
+>         struct gpio_desc *         reset_gpio;           /*  1104     8 */
+>         unsigned int               port_mtu[7];          /*  1112    28 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         struct net_device *        mgmt_master;          /*  1144     8 */
+>         /* --- cacheline 18 boundary (1152 bytes) --- */
+>         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*  1152   280 */
+>         /* --- cacheline 22 boundary (1408 bytes) was 24 bytes ago --- */
+>         struct qca8k_mib_eth_data  mib_eth_data;         /*  1432   272 */
+>         /* --- cacheline 26 boundary (1664 bytes) was 40 bytes ago --- */
+>         struct qca8k_mdio_cache    mdio_cache;           /*  1704     6 */
+> 
+>         /* XXX 2 bytes hole, try to pack */
+> 
+>         struct qca8k_pcs           pcs_port_0;           /*  1712    32 */
+> 
+>         /* XXX last struct has 4 bytes of padding */
+> 
+>         /* --- cacheline 27 boundary (1728 bytes) was 16 bytes ago --- */
+>         struct qca8k_pcs           pcs_port_6;           /*  1744    32 */
+> 
+>         /* XXX last struct has 4 bytes of padding */
+> 
+>         /* size: 1776, cachelines: 28, members: 22 */
+>         /* sum members: 1763, holes: 4, sum holes: 13 */
+>         /* paddings: 2, sum paddings: 8 */
+>         /* last cacheline: 48 bytes */
+> };
+> 
+> After:
+> 
+> struct qca8k_priv {
+>         struct net_device *        mgmt_master;          /*     0     8 */
+>         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*     8   280 */
+>         /* --- cacheline 4 boundary (256 bytes) was 32 bytes ago --- */
+>         struct qca8k_mdio_cache    mdio_cache;           /*   288     6 */
+>         u8                         switch_id;            /*   294     1 */
+>         u8                         switch_revision;      /*   295     1 */
+>         u8                         mirror_rx;            /*   296     1 */
+>         u8                         mirror_tx;            /*   297     1 */
+>         u8                         lag_hash_mode;        /*   298     1 */
+>         bool                       legacy_phy_port_mapping; /*   299     1 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         struct qca8k_ports_config  ports_config;         /*   304    72 */
+>         /* --- cacheline 5 boundary (320 bytes) was 56 bytes ago --- */
+>         struct regmap *            regmap;               /*   376     8 */
+>         /* --- cacheline 6 boundary (384 bytes) --- */
+>         struct mii_bus *           bus;                  /*   384     8 */
+>         struct ar8xxx_port_status  port_sts[7];          /*   392    28 */
+> 
+>         /* XXX 4 bytes hole, try to pack */
+> 
+>         struct dsa_switch *        ds;                   /*   424     8 */
+>         struct mutex               reg_mutex;            /*   432   160 */
+>         /* --- cacheline 9 boundary (576 bytes) was 16 bytes ago --- */
+>         struct device *            dev;                  /*   592     8 */
+>         struct gpio_desc *         reset_gpio;           /*   600     8 */
+>         struct dsa_switch_ops      ops;                  /*   608   864 */
+>         /* --- cacheline 23 boundary (1472 bytes) --- */
+>         struct qca8k_mib_eth_data  mib_eth_data;         /*  1472   280 */
+> 
+>         /* XXX last struct has 4 bytes of padding */
+> 
+>         /* --- cacheline 27 boundary (1728 bytes) was 24 bytes ago --- */
+>         unsigned int               port_mtu[7];          /*  1752    28 */
+> 
+>         /* size: 1784, cachelines: 28, members: 20 */
+>         /* sum members: 1772, holes: 2, sum holes: 8 */
+>         /* padding: 4 */
+>         /* paddings: 1, sum paddings: 4 */
+>         /* last cacheline: 56 bytes */
+> };
+> 
+> 1776 vs 1784. That's... larger?!
+> 
+> Also, struct qca8k_priv is so large because the "ops" member is a full
+> copy of qca8k_switch_ops. I understand why commit db460c54b67f ("net:
+> dsa: qca8k: extend slave-bus implementations") did this, but I wonder,
+> is there no better way?
+> 
 
-Ack will do in the next version.
+Actually from what I can see the struct can be improved in 2 way...
+The ancient struct
+ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
+can be totally dropped as I can't see why we still need it.
 
->
-> > +
-> > +       s32 retval;                     /* in use when BPF_HID_ATTACH_USER_EVENT (RW) */
-> > +};
-> > +
-> [...]
->
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->
-> We need to mirror these changes to tools/include/uapi/linux/bpf.h.
+The duplicated ops is funny. I could be very confused but why it's done
+like that? Can't we modify directly the already defined one and drop
+struct dsa_switch_ops ops; from qca8k_priv?
 
-OK. I did that in patch 4/17 but I can bring in the changes there too.
+I mean is all of that to use priv->ops.phy_read instead of
+priv->ds->ops.phy_read or even qca8k_switch_ops directly? o.o
 
->
-> > index 99fab54ae9c0..0e8438e93768 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -952,6 +952,7 @@ enum bpf_prog_type {
-> >         BPF_PROG_TYPE_LSM,
-> >         BPF_PROG_TYPE_SK_LOOKUP,
-> >         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-> > +       BPF_PROG_TYPE_HID,
+Am I missing something?
+
+> >  drivers/net/dsa/qca8k.c |  8 ++++----
+> >  drivers/net/dsa/qca8k.h | 33 ++++++++++++++++-----------------
+> >  2 files changed, 20 insertions(+), 21 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index ee0dbf324268..8d059da5f0ca 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -1685,11 +1685,11 @@ qca8k_phylink_mac_select_pcs(struct dsa_switch *ds, int port,
+> >  	case PHY_INTERFACE_MODE_1000BASEX:
+> >  		switch (port) {
+> >  		case 0:
+> > -			pcs = &priv->pcs_port_0.pcs;
+> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT0].pcs;
+> >  			break;
+> >  
+> >  		case 6:
+> > -			pcs = &priv->pcs_port_6.pcs;
+> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT6].pcs;
+> >  			break;
+> >  		}
+> >  		break;
+> > @@ -2889,8 +2889,8 @@ qca8k_setup(struct dsa_switch *ds)
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > -	qca8k_setup_pcs(priv, &priv->pcs_port_0, 0);
+> > -	qca8k_setup_pcs(priv, &priv->pcs_port_6, 6);
+> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT0], 0);
+> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT6], 6);
+> >  
+> >  	/* Make sure MAC06 is disabled */
+> >  	ret = regmap_clear_bits(priv->regmap, QCA8K_REG_PORT0_PAD_CTRL,
+> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> > index f375627174c8..611dc2335dbe 100644
+> > --- a/drivers/net/dsa/qca8k.h
+> > +++ b/drivers/net/dsa/qca8k.h
+> > @@ -341,18 +341,24 @@ enum {
+> >  
+> >  struct qca8k_mgmt_eth_data {
+> >  	struct completion rw_done;
+> > -	struct mutex mutex; /* Enforce one mdio read/write at time */
+> > +	u32 data[4];
+> >  	bool ack;
+> >  	u32 seq;
+> > -	u32 data[4];
+> > +	struct mutex mutex; /* Enforce one mdio read/write at time */
 > >  };
-> [...]
-> > +
-> >  /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
-> >   * the following extensions:
-> >   *
-> > @@ -5129,6 +5145,16 @@ union bpf_attr {
-> >   *             The **hash_algo** is returned on success,
-> >   *             **-EOPNOTSUP** if the hash calculation failed or **-EINVAL** if
-> >   *             invalid arguments are passed.
-> > + *
-> > + * void *bpf_hid_get_data(void *ctx, u64 offset, u64 size)
-> > + *     Description
-> > + *             Returns a pointer to the data associated with context at the given
-> > + *             offset and size (in bytes).
-> > + *
-> > + *             Note: the returned pointer is refcounted and must be dereferenced
-> > + *             by a call to bpf_hid_discard;
-> > + *     Return
-> > + *             The pointer to the data. On error, a null value is returned.
->
-> Please use annotations like *size*, **NULL**.
-
-Ack
-
->
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -5325,6 +5351,7 @@ union bpf_attr {
-> >         FN(copy_from_user_task),        \
-> >         FN(skb_set_tstamp),             \
-> >         FN(ima_file_hash),              \
-> > +       FN(hid_get_data),               \
-> >         /* */
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> > @@ -5925,6 +5952,10 @@ struct bpf_link_info {
-> >                 struct {
-> >                         __u32 ifindex;
-> >                 } xdp;
-> > +               struct  {
-> > +                       __s32 hidraw_number;
-> > +                       __u32 attach_type;
-> > +               } hid;
-> >         };
-> >  } __attribute__((aligned(8)));
-> >
-> > diff --git a/include/uapi/linux/bpf_hid.h b/include/uapi/linux/bpf_hid.h
-> > new file mode 100644
-> > index 000000000000..64a8b9dd8809
-> > --- /dev/null
-> > +++ b/include/uapi/linux/bpf_hid.h
-> > @@ -0,0 +1,31 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note */
-> > +
-> > +/*
-> > + *  HID BPF public headers
-> > + *
-> > + *  Copyright (c) 2022 Benjamin Tissoires
-> > + */
-> > +
-> > +#ifndef _UAPI__LINUX_BPF_HID_H__
-> > +#define _UAPI__LINUX_BPF_HID_H__
-> > +
-> > +#include <linux/types.h>
-> > +
-> > +enum hid_bpf_event {
-> > +       HID_BPF_UNDEF = 0,
-> > +       HID_BPF_DEVICE_EVENT,           /* when attach type is BPF_HID_DEVICE_EVENT */
-> > +       HID_BPF_RDESC_FIXUP,            /* ................... BPF_HID_RDESC_FIXUP */
-> > +       HID_BPF_USER_EVENT,             /* ................... BPF_HID_USER_EVENT */
->
-> Why don't we have a DRIVER_EVENT type here?
-
-For driver event, I want to have a little bit more of information
-which tells which event we have:
-- HID_BPF_DRIVER_PROBE
-- HID_BPF_DRIVER_SUSPEND
-- HID_BPF_DRIVER_RAW_REQUEST
-- HID_BPF_DRIVER_RAW_REQUEST_ANSWER
-- etc...
-
-However, I am not entirely sure on the implementation of all of those,
-so I left them aside for now.
-
-I'll work on that for v4.
-
->
-> >
-> [...]
-> > +
-> > +BPF_CALL_3(bpf_hid_get_data, struct hid_bpf_ctx_kern*, ctx, u64, offset, u64, size)
-> > +{
-> > +       if (!size)
-> > +               return 0UL;
-> > +
-> > +       if (offset + size > ctx->allocated_size)
-> > +               return 0UL;
-> > +
-> > +       return (unsigned long)(ctx->data + offset);
-> > +}
-> > +
-> > +static const struct bpf_func_proto bpf_hid_get_data_proto = {
-> > +       .func      = bpf_hid_get_data,
-> > +       .gpl_only  = true,
-> > +       .ret_type  = RET_PTR_TO_ALLOC_MEM_OR_NULL,
-> > +       .arg1_type = ARG_PTR_TO_CTX,
-> > +       .arg2_type = ARG_ANYTHING,
-> > +       .arg3_type = ARG_CONST_ALLOC_SIZE_OR_ZERO,
->
-> I think we should use ARG_CONST_SIZE or ARG_CONST_SIZE_OR_ZERO?
-
-I initially tried this with ARG_CONST_SIZE_OR_ZERO but it doesn't work
-for 2 reasons:
-- we need to pair the argument ARG_CONST_SIZE_* with a pointer to a
-memory just before, which doesn't really make sense here
-- ARG_CONST_SIZE_* isn't handled in the same way
-ARG_CONST_ALLOC_SIZE_OR_ZERO is. The latter tells the verifier that
-the given size is the available size of the returned
-PTR_TO_ALLOC_MEM_OR_NULL, which is exactly what we want.
-
->
+> >  
+> >  struct qca8k_mib_eth_data {
+> >  	struct completion rw_done;
+> > +	u64 *data; /* pointer to ethtool data */
+> > +	u8 req_port;
+> >  	struct mutex mutex; /* Process one command at time */
+> >  	refcount_t port_parsed; /* Counter to track parsed port */
+> > -	u8 req_port;
+> > -	u64 *data; /* pointer to ethtool data */
 > > +};
 > > +
-> > +static const struct bpf_func_proto *
-> > +hid_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-> > +{
-> > +       switch (func_id) {
-> > +       case BPF_FUNC_hid_get_data:
-> > +               return &bpf_hid_get_data_proto;
-> > +       default:
-> > +               return bpf_base_func_proto(func_id);
-> > +       }
-> > +}
-> [...]
-> > +
-> > +static int hid_bpf_prog_test_run(struct bpf_prog *prog,
-> > +                                const union bpf_attr *attr,
-> > +                                union bpf_attr __user *uattr)
-> > +{
-> > +       struct hid_device *hdev = NULL;
-> > +       struct bpf_prog_array *progs;
-> > +       bool valid_prog = false;
-> > +       int i;
-> > +       int target_fd, ret;
-> > +       void __user *data_out = u64_to_user_ptr(attr->test.data_out);
-> > +       void __user *data_in = u64_to_user_ptr(attr->test.data_in);
-> > +       u32 user_size_in = attr->test.data_size_in;
-> > +       u32 user_size_out = attr->test.data_size_out;
-> > +       u32 allocated_size = max(user_size_in, user_size_out);
-> > +       struct hid_bpf_ctx_kern ctx = {
-> > +               .type = HID_BPF_USER_EVENT,
-> > +               .allocated_size = allocated_size,
-> > +       };
-> > +
-> > +       if (!hid_hooks.hdev_from_fd)
-> > +               return -EOPNOTSUPP;
-> > +
-> > +       if (attr->test.ctx_size_in != sizeof(int))
-> > +               return -EINVAL;
->
-> ctx_size_in is always 4 bytes?
+> > +struct qca8k_pcs {
+> > +	struct phylink_pcs pcs;
+> > +	struct qca8k_priv *priv;
+> > +	int port;
+> >  };
+> >  
+> >  struct qca8k_ports_config {
+> > @@ -361,6 +367,7 @@ struct qca8k_ports_config {
+> >  	bool sgmii_enable_pll;
+> >  	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+> >  	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
+> > +	struct qca8k_pcs qpcs[QCA8K_NUM_CPU_PORTS];
+> >  };
+> >  
+> >  struct qca8k_mdio_cache {
+> > @@ -376,13 +383,10 @@ struct qca8k_mdio_cache {
+> >  	u16 hi;
+> >  };
+> >  
+> > -struct qca8k_pcs {
+> > -	struct phylink_pcs pcs;
+> > -	struct qca8k_priv *priv;
+> > -	int port;
+> > -};
+> > -
+> >  struct qca8k_priv {
+> > +	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+> > +	struct qca8k_mgmt_eth_data mgmt_eth_data;
+> > +	struct qca8k_mdio_cache mdio_cache;
+> >  	u8 switch_id;
+> >  	u8 switch_revision;
+> >  	u8 mirror_rx;
+> > @@ -396,15 +400,10 @@ struct qca8k_priv {
+> >  	struct dsa_switch *ds;
+> >  	struct mutex reg_mutex;
+> >  	struct device *dev;
+> > -	struct dsa_switch_ops ops;
+> >  	struct gpio_desc *reset_gpio;
+> > -	unsigned int port_mtu[QCA8K_NUM_PORTS];
+> > -	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+> > -	struct qca8k_mgmt_eth_data mgmt_eth_data;
+> > +	struct dsa_switch_ops ops;
+> >  	struct qca8k_mib_eth_data mib_eth_data;
+> > -	struct qca8k_mdio_cache mdio_cache;
+> > -	struct qca8k_pcs pcs_port_0;
+> > -	struct qca8k_pcs pcs_port_6;
+> > +	unsigned int port_mtu[QCA8K_NUM_PORTS];
+> >  };
+> >  
+> >  struct qca8k_mib_desc {
+> > -- 
+> > 2.34.1
+> > 
+> 
 
-Yes. Basically what I had in mind is that the "ctx" for
-user_prog_test_run is the file descriptor to the sysfs that represent
-the HID device.
-This seemed to me to be the easiest to handle for users.
-
-I'm open to suggestions though.
-
->
-> > +
-> > +       if (allocated_size > HID_MAX_BUFFER_SIZE)
-> > +               return -E2BIG;
-> > +
-> > +       if (copy_from_user(&target_fd, (void *)attr->test.ctx_in, attr->test.ctx_size_in))
-> > +               return -EFAULT;
-> > +
-> > +       hdev = hid_hooks.hdev_from_fd(target_fd);
-> > +       if (IS_ERR(hdev))
-> > +               return PTR_ERR(hdev);
-> > +
-> > +       if (allocated_size) {
-> > +               ctx.data = kzalloc(allocated_size, GFP_KERNEL);
-> > +               if (!ctx.data)
-> > +                       return -ENOMEM;
-> > +
-> > +               ctx.allocated_size = allocated_size;
-> > +       }
-> > +       ctx.hdev = hdev;
-> > +
-> > +       ret = mutex_lock_interruptible(&bpf_hid_mutex);
-> > +       if (ret)
-> > +               return ret;
-> > +
-> > +       /* check if the given program is of correct type and registered */
-> > +       progs = rcu_dereference_protected(hdev->bpf.run_array[BPF_HID_ATTACH_USER_EVENT],
-> > +                                         lockdep_is_held(&bpf_hid_mutex));
-> > +       if (!progs) {
-> > +               ret = -EFAULT;
-> > +               goto unlock;
-> > +       }
-> > +
-> > +       for (i = 0; i < bpf_prog_array_length(progs); i++) {
-> > +               if (progs->items[i].prog == prog) {
-> > +                       valid_prog = true;
-> > +                       break;
-> > +               }
-> > +       }
-> > +
-> > +       if (!valid_prog) {
-> > +               ret = -EINVAL;
-> > +               goto unlock;
-> > +       }
-> > +
-> > +       /* copy data_in from userspace */
-> > +       if (user_size_in) {
-> > +               if (copy_from_user(ctx.data, data_in, user_size_in)) {
-> > +                       ret = -EFAULT;
-> > +                       goto unlock;
-> > +               }
-> > +
-> > +               ctx.size = user_size_in;
-> > +       }
-> > +
-> > +       migrate_disable();
-> > +
-> > +       ret = bpf_prog_run(prog, &ctx);
-> > +
-> > +       migrate_enable();
-> > +
-> > +       if (user_size_out && data_out) {
-> > +               user_size_out = min3(user_size_out, (u32)ctx.size, allocated_size);
-> > +
-> > +               if (copy_to_user(data_out, ctx.data, user_size_out)) {
-> > +                       ret = -EFAULT;
-> > +                       goto unlock;
-> > +               }
-> > +
-> > +               if (copy_to_user(&uattr->test.data_size_out,
-> > +                                &user_size_out,
-> > +                                sizeof(user_size_out))) {
-> > +                       ret = -EFAULT;
-> > +                       goto unlock;
-> > +               }
-> > +       }
-> > +
-> > +       if (copy_to_user(&uattr->test.retval, &ctx.retval, sizeof(ctx.retval)))
-> > +               ret = -EFAULT;
-> > +
-> > +unlock:
-> > +       kfree(ctx.data);
-> > +
-> > +       mutex_unlock(&bpf_hid_mutex);
-> > +       return ret;
-> > +}
-> > +
-> > +const struct bpf_prog_ops hid_prog_ops = {
-> > +       .test_run = hid_bpf_prog_test_run,
-> > +};
-> > +
-> > +int bpf_hid_init(struct hid_device *hdev)
-> > +{
-> > +       int type;
-> > +
-> > +       for (type = 0; type < MAX_BPF_HID_ATTACH_TYPE; type++)
-> > +               INIT_LIST_HEAD(&hdev->bpf.links[type]);
-> > +
-> > +       return 0;
-> > +}
-> > +EXPORT_SYMBOL_GPL(bpf_hid_init);
-> > +
-> > +void bpf_hid_exit(struct hid_device *hdev)
-> > +{
-> > +       enum bpf_hid_attach_type type;
-> > +       struct bpf_hid_link *hid_link;
-> > +
-> > +       mutex_lock(&bpf_hid_mutex);
-> > +       for (type = 0; type < MAX_BPF_HID_ATTACH_TYPE; type++) {
-> > +               bpf_hid_run_array_detach(hdev, type);
-> > +               list_for_each_entry(hid_link, &hdev->bpf.links[type], node) {
-> > +                       hid_link->hdev = NULL; /* auto-detach link */
-> > +               }
-> > +       }
-> > +       mutex_unlock(&bpf_hid_mutex);
-> > +}
-> > +EXPORT_SYMBOL_GPL(bpf_hid_exit);
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index b88688264ad0..d1c05011e5ab 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -3,6 +3,7 @@
-> >   */
-> >  #include <linux/bpf.h>
-> >  #include <linux/bpf-cgroup.h>
-> > +#include <linux/bpf-hid.h>
-> >  #include <linux/bpf_trace.h>
-> >  #include <linux/bpf_lirc.h>
-> >  #include <linux/bpf_verifier.h>
-> > @@ -2205,6 +2206,7 @@ static bool is_sys_admin_prog_type(enum bpf_prog_type prog_type)
-> >  {
-> >         switch (prog_type) {
-> >         case BPF_PROG_TYPE_LIRC_MODE2:
-> > +       case BPF_PROG_TYPE_HID:
-> >                 return true;
-> >         default:
-> >                 return false;
-> > @@ -3199,6 +3201,11 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
-> >                 return BPF_PROG_TYPE_SK_LOOKUP;
-> >         case BPF_XDP:
-> >                 return BPF_PROG_TYPE_XDP;
-> > +       case BPF_HID_DEVICE_EVENT:
-> > +       case BPF_HID_RDESC_FIXUP:
-> > +       case BPF_HID_USER_EVENT:
-> > +       case BPF_HID_DRIVER_EVENT:
-> > +               return BPF_PROG_TYPE_HID;
-> >         default:
-> >                 return BPF_PROG_TYPE_UNSPEC;
-> >         }
-> > @@ -3342,6 +3349,11 @@ static int bpf_prog_query(const union bpf_attr *attr,
-> >         case BPF_SK_MSG_VERDICT:
-> >         case BPF_SK_SKB_VERDICT:
-> >                 return sock_map_bpf_prog_query(attr, uattr);
-> > +       case BPF_HID_DEVICE_EVENT:
-> > +       case BPF_HID_RDESC_FIXUP:
-> > +       case BPF_HID_USER_EVENT:
-> > +       case BPF_HID_DRIVER_EVENT:
-> > +               return bpf_hid_prog_query(attr, uattr);
-> >         default:
-> >                 return -EINVAL;
-> >         }
-> > @@ -4336,6 +4348,8 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
-> >                 ret = bpf_perf_link_attach(attr, prog);
-> >                 break;
-> >  #endif
-> > +       case BPF_PROG_TYPE_HID:
-> > +               return bpf_hid_link_create(attr, prog);
-> >         default:
-> >                 ret = -EINVAL;
-> >         }
-> > --
-> > 2.35.1
-> >
->
-
-Cheers,
-Benjamin
-
+-- 
+	Ansuel
