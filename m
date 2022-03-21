@@ -2,71 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB05F4E2C2A
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:26:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ABB94E2C47
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350191AbiCUP2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 11:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        id S1350252AbiCUPbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 11:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350277AbiCUP2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:28:06 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73300103D97
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 08:26:40 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id 17-20020a9d0611000000b005b251571643so10739888otn.2
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 08:26:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uaYYePl58qD2iQ93LY0YiSd1GFMq/Ms9P4dOHYbzMlI=;
-        b=kDFmbf4AUYcplwDiauwDg1kjxYY9CNrcbJmzEghMFM5UCpt1iKIStezrGUo/lpVXgU
-         8MpcjOabilgH+AD6ZYGglj/ForVsTjm3QOGkx91oKL/qrKwAT+zZPwgcmBIk0pEay9c5
-         3NgFw4t9WDT3IEXLOQMpoYYHft4yX2vljoDBaUcYgrI4SR0MHggrOEwfWUj6zl0ri+zc
-         uP/2/VGpKrE2Ye4WCAZk4pLJYp+JB1wno3oZk004MfMLxrRQz2WE3whQJsGE8JXI4OAW
-         wqs8BOQ7nkLXDkUsIsFrpijQUP9nB+5w9T5nyOSmziH1lHCBO8Z9lhJdcotwfOj5PATI
-         zB3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uaYYePl58qD2iQ93LY0YiSd1GFMq/Ms9P4dOHYbzMlI=;
-        b=28/20zBGJI7jUmR4YBfLX+PIUImmvZS+VwJV5F+KGEc7MRoZJUUfGw7W0MMzc8WjB+
-         lnNo9OBAUGjHdVsh30ag3fRmtOGQQPJtFoOnA2ygjG+t0xly5hMCP+xbFU5GF7mlWWzF
-         s4Vwalj1r/eDd1Syx+0O0Fw8yY2I4vBzL1aNUe33EtkkymJbsAM9PWHZxrz3ewv0fMuV
-         /Wa2LfRCYPBF21htsVWxBdUbSFuLt8AbaL+FUOafYhDCObTtvVdB6huHTvsSQ29lONi+
-         h+bfOi/XHEYzwklLK6McMWdrge48xMzha1mkWgio+zV2H5VKY41/aaFmNVYYr/5Edcbi
-         4qdw==
-X-Gm-Message-State: AOAM532rTOxKLd/hg4xG1pArY+FpvY1f3ra6mzG7P3pRpFHqKj0bf/Kx
-        FuO+BuKZv3U/5ar07XihEIBe/UcRr6ovLkUQrRpjjLUqVecL5Q==
-X-Google-Smtp-Source: ABdhPJzo+Gow3AjJyknC7hnuT59nMcfKj/ZSEALpmQFZjy9h9OILBmdMYSId8bh1qQeBKRysv2Abg9CHQ5XPCx7eBO8=
-X-Received: by 2002:a9d:2247:0:b0:5cb:3eef:d42b with SMTP id
- o65-20020a9d2247000000b005cb3eefd42bmr6801297ota.297.1647876399510; Mon, 21
- Mar 2022 08:26:39 -0700 (PDT)
+        with ESMTP id S238427AbiCUPbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:31:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3333814092;
+        Mon, 21 Mar 2022 08:30:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB6CC6106E;
+        Mon, 21 Mar 2022 15:30:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1C1CDC340F2;
+        Mon, 21 Mar 2022 15:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647876610;
+        bh=AveAZ/3hKAGUAES+HC0hqCGqhlq9GGIJEnRyUj9KmHM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CwQLVBeQ4XDqtA6sZedyeIVTYA62GKzs2G4bjxZfLuLpAqv7VXRBjbJZWSnmbYTVN
+         /TztKdkoaKJBhKol0Bo2t8rbyl+mcz7SKUMLHcyVbfKbqCFIbBTQV9PiIOpHMh1UGZ
+         6frvva4mnxxJrhgjFo4/9k0vguCUIBFJrNgmQxsxW5h8stuTPojtYBTMwt/AXjCmR4
+         WyuhC1axRxV2jEhPOISD7rIShVsIBgPbHtODRiP7Y+Q6uPBYT6k0SMamk6dNCStRvE
+         LHYnVASlfdj/6JM5p3HeYSx+qkqfchqTcyPaQ63tvlHigcTq7b/9Cid6su487k4+8I
+         66vKtSNSUqF6Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F16D3E7BB0B;
+        Mon, 21 Mar 2022 15:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220318070039.108948-1-andy.chiu@sifive.com> <20220318070039.108948-2-andy.chiu@sifive.com>
- <557c20e1045320288557c72fd2b9b1fb0899b5a7.camel@calian.com>
-In-Reply-To: <557c20e1045320288557c72fd2b9b1fb0899b5a7.camel@calian.com>
-From:   Andy Chiu <andy.chiu@sifive.com>
-Date:   Mon, 21 Mar 2022 23:26:28 +0800
-Message-ID: <CABgGipW4dU8g5=Cp4725vTsTUXBqMwb+mYdUnUwMe+cuWcuB+Q@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] net: axiemac: use a phandle to reference pcs_phy
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "greentime.hu@sifive.com" <greentime.hu@sifive.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ARM: net: bpf: fix typos in comments
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164787660998.26943.16234173622571786402.git-patchwork-notify@kernel.org>
+Date:   Mon, 21 Mar 2022 15:30:09 +0000
+References: <20220318103729.157574-9-Julia.Lawall@inria.fr>
+In-Reply-To: <20220318103729.157574-9-Julia.Lawall@inria.fr>
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     illusionist.neo@gmail.com, kernel-janitors@vger.kernel.org,
+        linux@armlinux.org.uk, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,5 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for your suggestions. The existence of phy_node looks obsolete
-to me as well. I will include these changes on a v4 patch.
+Hello:
+
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Fri, 18 Mar 2022 11:37:04 +0100 you wrote:
+> Various spelling mistakes in comments.
+> Detected with the help of Coccinelle.
+> 
+> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+> 
+> ---
+>  arch/arm/net/bpf_jit_32.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+Here is the summary with links:
+  - ARM: net: bpf: fix typos in comments
+    https://git.kernel.org/bpf/bpf-next/c/d8dc09a4db45
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
