@@ -2,118 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 409884E2676
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:32:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 637414E2695
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:33:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347434AbiCUMcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 08:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
+        id S232427AbiCUMeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 08:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347408AbiCUMcf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:32:35 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A297985BE1;
-        Mon, 21 Mar 2022 05:31:07 -0700 (PDT)
-Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 99C456303E;
-        Mon, 21 Mar 2022 13:28:25 +0100 (CET)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 19/19] netfilter: flowtable: pass flowtable to nf_flow_table_iterate()
-Date:   Mon, 21 Mar 2022 13:30:52 +0100
-Message-Id: <20220321123052.70553-20-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220321123052.70553-1-pablo@netfilter.org>
-References: <20220321123052.70553-1-pablo@netfilter.org>
+        with ESMTP id S1347415AbiCUMeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:34:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A18788B0B;
+        Mon, 21 Mar 2022 05:32:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBE986101F;
+        Mon, 21 Mar 2022 12:32:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E47C340E8;
+        Mon, 21 Mar 2022 12:32:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1647865953;
+        bh=0hpskIm9pWLXzICrLn1EgKCUMeLCwl9GC0pWEao0jR4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ek6GPB4XtMpHRObk48GuhMd3SeYfPYy7cEP06zfMyyJGWRivY5+JiDL/8r0rhpWz8
+         GubFKuWm71hVPaM+IBfUCgg9KE/sdgt0sRuwTqzQ2X7mDB/qD758lg3fytx6PXO09k
+         OkFnL1yBV3InIdLBFr3AR57Bqv4Sxn1pmo9Nps20=
+Date:   Mon, 21 Mar 2022 13:32:25 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     stable <stable@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        netdev <netdev@vger.kernel.org>, m.reichl@fivetechno.de,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: smsc95xx: Commits for 5.10 stable inclusion
+Message-ID: <YjhwWXCMmbUmTHSJ@kroah.com>
+References: <CAOMZO5BqzQ1vMRHHem1pRydjYQiMJOzBzyHtmaPU07jiY_4JTg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOMZO5BqzQ1vMRHHem1pRydjYQiMJOzBzyHtmaPU07jiY_4JTg@mail.gmail.com>
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The flowtable object is already passed as argument to
-nf_flow_table_iterate(), do use not data pointer to pass flowtable.
+On Fri, Mar 18, 2022 at 08:10:09AM -0300, Fabio Estevam wrote:
+> Hi,
+> 
+> I would like to request the following patches to be included
+> into the stable 5.10 tree:
+> 
+> a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
+> 0bf3885324a8 ("net: usb: Correct reset handling of smsc95xx")
+> c70c453abcbf ("smsc95xx: Ignore -ENODEV errors when device is unplugged")
+> 
+> They are already present in 5.15 and 5.16 and they fix real issues
+> on 5.10 too. I have been running 5.10 with these 3 patches applied locally
+> and no reboot/disconnect errors are seen anymore. Alexander Stein also
+> sees an smsc95xx suspend/resume issue fixed in 5.10 with the series applied.
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_flow_table_core.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+Now queued up, thanks.
 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index e66a375075c9..3db256da919b 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -405,7 +405,8 @@ EXPORT_SYMBOL_GPL(flow_offload_lookup);
- 
- static int
- nf_flow_table_iterate(struct nf_flowtable *flow_table,
--		      void (*iter)(struct flow_offload *flow, void *data),
-+		      void (*iter)(struct nf_flowtable *flowtable,
-+				   struct flow_offload *flow, void *data),
- 		      void *data)
- {
- 	struct flow_offload_tuple_rhash *tuplehash;
-@@ -429,7 +430,7 @@ nf_flow_table_iterate(struct nf_flowtable *flow_table,
- 
- 		flow = container_of(tuplehash, struct flow_offload, tuplehash[0]);
- 
--		iter(flow, data);
-+		iter(flow_table, flow, data);
- 	}
- 	rhashtable_walk_stop(&hti);
- 	rhashtable_walk_exit(&hti);
-@@ -457,10 +458,9 @@ static bool nf_flow_has_stale_dst(struct flow_offload *flow)
- 	       flow_offload_stale_dst(&flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].tuple);
- }
- 
--static void nf_flow_offload_gc_step(struct flow_offload *flow, void *data)
-+static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
-+				    struct flow_offload *flow, void *data)
- {
--	struct nf_flowtable *flow_table = data;
--
- 	if (nf_flow_has_expired(flow) ||
- 	    nf_ct_is_dying(flow->ct) ||
- 	    nf_flow_has_stale_dst(flow))
-@@ -485,7 +485,7 @@ static void nf_flow_offload_work_gc(struct work_struct *work)
- 	struct nf_flowtable *flow_table;
- 
- 	flow_table = container_of(work, struct nf_flowtable, gc_work.work);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
-+	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	queue_delayed_work(system_power_efficient_wq, &flow_table->gc_work, HZ);
- }
- 
-@@ -601,7 +601,8 @@ int nf_flow_table_init(struct nf_flowtable *flowtable)
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_init);
- 
--static void nf_flow_table_do_cleanup(struct flow_offload *flow, void *data)
-+static void nf_flow_table_do_cleanup(struct nf_flowtable *flow_table,
-+				     struct flow_offload *flow, void *data)
- {
- 	struct net_device *dev = data;
- 
-@@ -643,11 +644,10 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
- 
- 	cancel_delayed_work_sync(&flow_table->gc_work);
- 	nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, NULL);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, flow_table);
-+	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	nf_flow_table_offload_flush(flow_table);
- 	if (nf_flowtable_hw_offload(flow_table))
--		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step,
--				      flow_table);
-+		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
- 	rhashtable_destroy(&flow_table->rhashtable);
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_free);
--- 
-2.30.2
-
+greg k-h
