@@ -2,42 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D068F4E31A8
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 21:23:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 811DA4E31AC
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 21:23:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353268AbiCUUWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 16:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
+        id S1353289AbiCUUYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 16:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353251AbiCUUWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 16:22:35 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CCA78E18C;
-        Mon, 21 Mar 2022 13:21:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Uk8HaBOL7P4QfOhIUP9iNl2Dlr9/HuQQ9W6qQrbtWew=; b=3jgl895yz7aW01SrmLfCaEzigE
-        6Ghr8BJ/yTtOWwrrOjwyZzJkpabCe8wkAFbsZEyOv7oQXISDqtfeo3y2LplYTIPl9zeoGr3ZqW98R
-        3LRBUnUbMLKAlZLCFc4IKJbldxUYVqZGhabI/aMxwETIJQt64x0AaFidZps8fNEUEk+k=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nWOWY-00C0u3-C7; Mon, 21 Mar 2022 21:21:06 +0100
-Date:   Mon, 21 Mar 2022 21:21:06 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Clause 45 and Clause 22 PHYs on one MDIO bus
-Message-ID: <YjjeMo2YjMZkPIYa@lunn.ch>
-References: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
+        with ESMTP id S1353114AbiCUUYk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 16:24:40 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4558C2A736;
+        Mon, 21 Mar 2022 13:23:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1647894194; x=1679430194;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2XKSa393AJ/u/J5kUeoinz3LLqVWqafJGXbziCYPgUk=;
+  b=BBKYcwjsETXEsv0qSZWDe6YRk8wFOU9P1kxq5IRDug/vPew8MaDyERcq
+   B+eTUO8zat1m/QPsvxLF87J5hjb41VBxrEtvVwuqtq5yU7nyOjULnZLEs
+   Wbh0A7YCVAcC0TBNAUHAGyHn6N86VnD3uTgfCkQq18wQv/YvThZRiXevH
+   2rUT7r+fpzZe/M9vGNDv627Jku9fO3Dz9jIOayXM7nM4U5tjUSjBcJaEt
+   KkzaaPthFRWKyENDevzC7Bs6QKrj4Y4B2MMZpSjsdM07A3Uj21ZIPCO2V
+   gEWklXpsqR1aAeTD6tydFG/wvLCwfbRu2woTFVRpF6Dt8byHaizsWCz4p
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,199,1643698800"; 
+   d="scan'208";a="152737954"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2022 13:23:13 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 21 Mar 2022 13:23:13 -0700
+Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 21 Mar 2022 13:23:02 -0700
+Message-ID: <661489ea4ba5646d695d55242808f1fb4ae35cfb.camel@microchip.com>
+Subject: Re: [PATCH v9 net-next 09/11] net: dsa: microchip: add support for
+ port mirror operations
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <robh+dt@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
+Date:   Tue, 22 Mar 2022 01:52:59 +0530
+In-Reply-To: <20220318110033.nuwvrok6ywsagxwf@skbuf>
+References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
+         <20220318085540.281721-10-prasanna.vengateshan@microchip.com>
+         <20220318110033.nuwvrok6ywsagxwf@skbuf>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.0-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -45,46 +68,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 12:21:48PM +0100, Michael Walle wrote:
-> Hi,
+On Fri, 2022-03-18 at 13:00 +0200, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+> content is safe
 > 
-> I have a board with a c22 phy (microchip lan8814) and a c45 phy
-> (intel/maxlinear gyp215) on one bus. If I understand it correctly, both
-> accesses should be able to coexist on one bus.
+> On Fri, Mar 18, 2022 at 02:25:38PM +0530, Prasanna Vengateshan wrote:
+> > Added support for port_mirror_add() and port_mirror_del operations
+> > 
+> > Sniffing is limited to one port & alert the user if any new
+> > sniffing port is selected
+> > 
+> > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> > Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> > ---
+> >  drivers/net/dsa/microchip/lan937x_main.c | 84 ++++++++++++++++++++++++
+> >  1 file changed, 84 insertions(+)
+> > 
+> > diff --git a/drivers/net/dsa/microchip/lan937x_main.c
+> > b/drivers/net/dsa/microchip/lan937x_main.c
+> > index c54aba6a05b5..5a57a2ce8992 100644
+> > --- a/drivers/net/dsa/microchip/lan937x_main.c
+> > +++ b/drivers/net/dsa/microchip/lan937x_main.c
+> > @@ -98,6 +98,88 @@ static void lan937x_port_stp_state_set(struct dsa_switch
+> > *ds, int port,
+> >       ksz_update_port_member(dev, port);
+> >  }
+> > 
+> > +static int lan937x_port_mirror_add(struct dsa_switch *ds, int port,
+> > +                                struct dsa_mall_mirror_tc_entry *mirror,
+> > +                                bool ingress)
+> 
+> This function gained a new extack argument yesterday => your patch
+> doesn't compile. Maybe you could even use the extack to propagate the
+> "existing sniffer port" error.
+> 
+> 
 
-Yes. A C22 PHY should ignore a C45 access and vica versa.
+Sure, will use the extack for existing errors.
 
-> But the microchip lan8814
-> actually has a bug and gets confused by c45 accesses. For example it will
-> respond in the middle of another transaction with its own data if it
-> decodes it as a read. That is something we can see on a logic analyzer.
-> But we also see random register writes on the lan8814 (which you don't see
-> on the logic analyzer obviously). Fortunately, the GPY215 supports indirect
-> MMD access by the standard c22 registers. Thus as a workaround for the
-> problem, we could have a c22 only mdio bus.
+Prasanna V
 
-That should work, but you loose some performance.
-
-> The SoC I'm using is the LAN9668, which uses the mdio-mscc-mdio driver.
-> First problem there, it doesn't support C45 (yet) but also doesn't check
-> for MII_ADDR_C45 and happily reads/writes bogus registers.
-
-There are many drivers like that :-(
-
-Whenever a new driver is posted, it is one of the things i ask
-for. But older drivers are missing such checks.
-
-> I've looked at the mdio subsystem in linux, there is probe_capabilities
-> (MDIOBUS_C45 and friends) but the mxl-gpy.c is using c45 accesses
-> nevertheless. I'm not sure if this is a bug or not.
-
-No, that is not a bug. The PHY driver knows the device should be c45
-capable. So it will use C45 addresses. The phydev->is_c45 should
-indicate if it is possible to perform c45 transactions to the PHY. If
-it is not, the core will make use of indirect access via C22,
-otherwise the core will perform a direct C45 access.
-
-So it seems like all you need to do is make mdio-mscc-mdio return
--EOPNOTSUPP for C45 and check that phydev->is_c45 is correctly false.
-
-	   Andrew
