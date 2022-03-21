@@ -2,51 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8FA4E1F01
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 03:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 874574E1F08
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 03:30:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344156AbiCUCVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 20 Mar 2022 22:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59900 "EHLO
+        id S1344171AbiCUCbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 20 Mar 2022 22:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344147AbiCUCVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 22:21:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B7156755;
-        Sun, 20 Mar 2022 19:20:10 -0700 (PDT)
+        with ESMTP id S1344168AbiCUCbh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 20 Mar 2022 22:31:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4336757B12;
+        Sun, 20 Mar 2022 19:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 816C960A27;
-        Mon, 21 Mar 2022 02:20:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D2A8FC340EE;
-        Mon, 21 Mar 2022 02:20:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7192B81062;
+        Mon, 21 Mar 2022 02:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 816A8C340EE;
+        Mon, 21 Mar 2022 02:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647829209;
-        bh=64/k54pvMqj6twISzt0WN6Gl+zN6N395oF0BTzFgfWs=;
+        s=k20201202; t=1647829810;
+        bh=kM4pAdRUerTimRuR7pRzFlmQ8d7hQ17c7SQgBjafwmc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sX3wH74DfZCyLwTljShxRriiEQUsXLkvr/4Ix548wnakfswmgMwTW7HrpI5r29I7s
-         Ma7JV3MImRpfudqxgAW5rxo/T/ai8InKZjdT4LtMGZJvybNr0e40O8vwKogpgjmBqW
-         OdV4YiB9+Qrws+y+OJ9hwl0y8lWhCQPuXK8zGiWd/b4Uaj8vmxMDR/n2pp4JwNZXpg
-         yc5DOuAr2nUrE7LVBjd24pftG6QgnBlAJ8gks5VNub92l8Iqvlnov7o8dEvdUNHo/L
-         Me5YVgBml8Gw7eOuD2nKZKVE43p9dypBSc2S1NC0OwJjlfj/WKqWlbEaKWtP37A3wd
-         OBHNl/zYnytsw==
+        b=IDkC6YEFBZYRjCxnDaEUdK9j7OkIgrTtG4lW2orET3v+cvZR7OkLeWYaMVlXAxyem
+         zutqYR40ZnVdGjclS+R+hQZ0UuP3VgxCD3iIpytKbCs5OblqqkzkdhFMXMVKW5GQtn
+         XS+Hh6c64UYdldrhaYEJk/Krl+d+Dob6u/8oIDVE9U2obSKb5XefyXow6AeLLc6GKf
+         mrAJJkP2Hyrszdr6DUuT8QhvtUGrdBTXJkAn8ZzMeRPYHgXPlhPRg6LTRcmFPZQ4DQ
+         IO0G3oG9zki1nmQC/u23LFYFzFFl1dQEosfNFnDduVwxHf1CWIB7GiApDVylZ/mITj
+         JO5QcS8/pHu5w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B69ECE6D406;
-        Mon, 21 Mar 2022 02:20:09 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 633BCF03846;
+        Mon, 21 Mar 2022 02:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 bpf-next] bpf: select proper size for bpf_prog_pack
+Subject: Re: [PATCH v3 1/2] bpf: Adjust BPF stack helper functions to accommodate
+ skip > 0
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164782920974.9354.16623497137141452745.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 02:20:09 +0000
-References: <20220311201135.3573610-1-song@kernel.org>
-In-Reply-To: <20220311201135.3573610-1-song@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kernel-team@fb.com,
-        edumazet@google.com
+Message-Id: <164782981040.13314.15450443324560487136.git-patchwork-notify@kernel.org>
+Date:   Mon, 21 Mar 2022 02:30:10 +0000
+References: <20220314182042.71025-1-namhyung@kernel.org>
+In-Reply-To: <20220314182042.71025-1-namhyung@kernel.org>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, acme@kernel.org,
+        peterz@infradead.org, eugene.loh@oracle.com, haoluo@google.com
 X-Spam-Status: No, score=-8.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,26 +63,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to bpf/bpf-next.git (master)
+This series was applied to bpf/bpf-next.git (master)
 by Alexei Starovoitov <ast@kernel.org>:
 
-On Fri, 11 Mar 2022 12:11:35 -0800 you wrote:
-> Using HPAGE_PMD_SIZE as the size for bpf_prog_pack is not ideal in some
-> cases. Specifically, for NUMA systems, __vmalloc_node_range requires
-> PMD_SIZE * num_online_nodes() to allocate huge pages. Also, if the system
-> does not support huge pages (i.e., with cmdline option nohugevmalloc), it
-> is better to use PAGE_SIZE packs.
+On Mon, 14 Mar 2022 11:20:41 -0700 you wrote:
+> Let's say that the caller has storage for num_elem stack frames.  Then,
+> the BPF stack helper functions walk the stack for only num_elem frames.
+> This means that if skip > 0, one keeps only 'num_elem - skip' frames.
 > 
-> Add logic to select proper size for bpf_prog_pack. This solution is not
-> ideal, as it makes assumption about the behavior of module_alloc and
-> __vmalloc_node_range. However, it appears to be the easiest solution as
-> it doesn't require changes in module_alloc and vmalloc code.
+> This is because it sets init_nr in the perf_callchain_entry to the end
+> of the buffer to save num_elem entries only.  I believe it was because
+> the perf callchain code unwound the stack frames until it reached the
+> global max size (sysctl_perf_event_max_stack).
 > 
 > [...]
 
 Here is the summary with links:
-  - [v4,bpf-next] bpf: select proper size for bpf_prog_pack
-    https://git.kernel.org/bpf/bpf-next/c/ef078600eec2
+  - [v3,1/2] bpf: Adjust BPF stack helper functions to accommodate skip > 0
+    https://git.kernel.org/bpf/bpf-next/c/ee2a098851bf
+  - [v3,2/2] bpf/selftests: Test skipping stacktrace
+    https://git.kernel.org/bpf/bpf-next/c/e1cc1f39981b
 
 You are awesome, thank you!
 -- 
