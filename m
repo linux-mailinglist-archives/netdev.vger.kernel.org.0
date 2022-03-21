@@ -2,73 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 455BA4E2E2C
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:37:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 674B34E2D77
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351258AbiCUQio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 12:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
+        id S242728AbiCUQMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 12:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241534AbiCUQin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:38:43 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBCAED9DF;
-        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so8705757wmb.3;
-        Mon, 21 Mar 2022 09:37:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
-        b=Ygw7anaet6FzKMcreNetMcmSvYsQ2nE3AES8PzqVWlfid4Fn3IlD7aSbMq7k14XCwm
-         jt7B73SYmymXM738S4I7e9xM86Ed8GLrAAgl0Vo76f4eZ2x+B+hovBAWNjRXmG0qKcEw
-         2sRUuesnrrvO1u6K/fiKe9ytSq0ljYh2VcFvWYN23/TEiNUGck6Ols8Mh060+EVneig3
-         q0oK4gUmWOSLJxEhllVIbbSZ2CUy0Wh7vahJxhu/kLH3oJ/GERSosq+nYQJ8IxrZGwrZ
-         4XsEv951FBlOXVNkaDJNenl5bIZz+jwAqZBK66lGl958FGoXTs/JPJVwgpBv/3REfkLG
-         byxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CR5MhstiautQ+fKo0102plnWfdRHnkKf/5yTqnlcE0Y=;
-        b=sME/2rO3cPxA6eESTcmTfBWo5L6JGfbflpri1MQ6QYqZmENzJRP47m4ySpFmTqOrzD
-         kjGw3xRkC9lYKtW+2vp/EFQAGVGHVEgbdcr4DYrVnD3p716Rla+EpJRr/4/b7cGRP/4w
-         ge0nmI4JMDuhD/VCb0ZEkhdhdvvfvD4tilZWehlv9NQOF/lS5lNscl65FmSZiyyxNJIp
-         PM4hTpedCCJua32hmCQawvFILS6q0xltfPOZ1NTM3SXglctfwuFhGEulSRmsjtrFk/Xc
-         ZVf8CMHzWzvGDvhXww7yMM/IH/ddkZUAXz2+7H6w+h5cL3j6fYyLQJ9P22yBV5A5OkwO
-         RD1A==
-X-Gm-Message-State: AOAM531O8glLHL/wP22UqpLV4sO//J7TPPCB46ebfZrbNLpZwF9ArJQW
-        ZdC9+33aAowPYOj89ZB5HQE=
-X-Google-Smtp-Source: ABdhPJws43+PByf1nFz9BFFhtx17Jjxiu/klSS58SjNzfZPynJArDoCJb6L9T+lAc4m8l+8q5bSa/A==
-X-Received: by 2002:a05:600c:1548:b0:389:cde3:35cc with SMTP id f8-20020a05600c154800b00389cde335ccmr27858632wmg.133.1647880635504;
-        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.gmail.com with ESMTPSA id m23-20020a05600c3b1700b0038bbd24f401sm311178wms.2.2022.03.21.09.37.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 09:37:15 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 17:07:55 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S235135AbiCUQMR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:12:17 -0400
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com (mail-gv0che01on2120.outbound.protection.outlook.com [40.107.23.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFDD6C1CA;
+        Mon, 21 Mar 2022 09:10:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GdsRGyHNaVQmv3x0CIA6bWxtwCnpWqdTIZL3dCSGt4V8MWU/feUQ3Jz/joihIDcgX0xdR/IohQfV6Ich1/Jce/TL+ZgX365rS8T8FTRhNGvBU0NVcfPH20samcR+c1nYnCCch4K//i9Z8ykxf2DKNwXRAXRK/qBL4lwafGW7pLTAqEBSrEvvGdb3fnK+MoguWvuO1WsbFk0Sht3WrIwuBW81M3WUK0UMFb/CyHZB5ZOTG5dykYRIX0CV6Ps35EsipESheM9/2vxx1CfzCofq6VgIl2WgZmvrA48BDPFDiB4E0FKyFZ5Uuo42vG0mJOc09IeoSn3LVgTfhD0dOtfiYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LKskZzkpTwMGsRMgJ1nM5HJHfwgawchScT+9Uj8+Jpk=;
+ b=bLk24vXB+u9Pv893Mfcle1MP9ySQiQhAjkgtv6cXFvjwKIw/Ze3vtr/wguT1TsArElTSbaQJ10nc6tGkCrOTu2XUCR0cl1OUtmxSamrq8lVfEaiCBmYl7J0O2nRE3sjAtqMxr9bkY2vwlQUjQcB8Z7zM7ngLlkKHfzENMzCAxfy/FRxM9eJ4oPhH1b7Wv/db3FN/XofXhP6JekrduN2xXI2iE1bVFFhQTkUKhYw8OK/w97xrHUX8l9QVWFoq7LVS8j3iF+emnUpaoES3B88t5GaAyxiSStrKppjU20wdFiBSRMydLZvh46AMhcyT/BygJ8qvJFzRxqOGh9+Db+VzfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LKskZzkpTwMGsRMgJ1nM5HJHfwgawchScT+9Uj8+Jpk=;
+ b=lVhMDeypH9AQJoebl79EeSQTjsWDAHS+tMYCK2SFM7Cer4YFCKVXqCH0lbVqoUNR7Wpz9gRj5tWkBtvqIulObTjlyvQ4e+PqKa/h4H7n0y33WSft59egnzbVfknO3WpBqRRaJib+Ng1fbALDKFg0yqQ7FQDoF6+APokvU1JaPhQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:33::8) by
+ ZRAP278MB0579.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3e::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5081.17; Mon, 21 Mar 2022 16:10:34 +0000
+Received: from GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::e071:a2dc:c5fe:31b0]) by GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::e071:a2dc:c5fe:31b0%4]) with mapi id 15.20.5081.022; Mon, 21 Mar 2022
+ 16:10:33 +0000
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        linux-wireless@vger.kernel.org
+Cc:     Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH v2] net: dsa: qca8k: pack driver struct and
- improve cache use
-Message-ID: <Yjii20KryAsEQp1k@Ansuel-xps.localdomain>
-References: <20220228110408.4903-1-ansuelsmth@gmail.com>
- <20220303015327.k3fqkkxunm6kihjl@skbuf>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>
+Subject: [RFC PATCH] mwifiex: Select firmware based on strapping
+Date:   Mon, 21 Mar 2022 17:10:03 +0100
+Message-Id: <20220321161003.39214-1-francesco.dolcini@toradex.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: GVAP278CA0003.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:20::13) To GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:33::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220303015327.k3fqkkxunm6kihjl@skbuf>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cd898167-910f-409f-26f9-08da0b555147
+X-MS-TrafficTypeDiagnostic: ZRAP278MB0579:EE_
+X-Microsoft-Antispam-PRVS: <ZRAP278MB0579AABA8CB420261F13EDEBE2169@ZRAP278MB0579.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: R3uBvu+J2G7SpSEtPbdwOA1+rOEqxra5kx7Eq/VzSs3BXpM8R5KBfDQCH4/UuoRsUN9It5HCkGrsvdg/IiZE05XrNjoIJ0o7bXyZvbQivO45dHLSAXXj0hMcTiRKid4UlOIRazvqRRqUUlnBd/eajU+7O3OkR3BC03P1d5NXGz1yv1/9kPTYw782qL/7o3i/PVKl1udebqZiENdhN6ZEjN0/VGWjTDhAYs6MOmdQNmUqMugKFJQVnwqGiJU/+BUsLvTrUoytubGkRd66MGxQuzpDoE5rt50491UDuNrFaROpxEvKEiIyCzZcnOL7hMhliUQKXD31YU44Ki8qU4wN/Duz5+C0+J5LymwSqptbcDNlaN97A4OyjR/re1HfSA5Ru3OgavKi6MCuwwM6dPSuTUdUliMkTaHGTn/xB2dB/A1HvBnoG07O9r+jB2SUfijpSIC+jgu0aQo3J13ZWlcndVdFpXgMtJMJRsQRQhXmCt81Y9HI2O6fPROrxFQ4puOxed5BMfG4S8TDz+1RxNzfzd8E84wH6OtpISwCz5EjlbptwrGClmbsWVPWYckzIYGubV6DZohH9/yVExRMf6rbtueMhBhZh0zuBZc0VlsYWxVKqOMb+wWDnTgP89UBQ/CPmMzqxT3kMsCyv8uuy/d5MfnB3LzgMjNZBpVdFXqrkHWDNpcHI8izeKma2Rf20RbCVHh+150DOv3qCo4UEDpm11pecXCMd6Ljs9y+URYhugidTnGO6GyeZj1Ai5kAD8sYLdu9NdEtLqtqVkCVGujcdw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(366004)(186003)(26005)(8936002)(110136005)(54906003)(5660300002)(86362001)(7416002)(107886003)(2616005)(1076003)(36756003)(38100700002)(38350700002)(6666004)(52116002)(6486002)(966005)(83380400001)(44832011)(6512007)(66946007)(8676002)(66556008)(4326008)(66476007)(6506007)(2906002)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Y81W6Y9Cbhl6iBTleYcJFXNw/kY49VgnFmVzQvPN1BhQQmPXuxxqWE20fjA4?=
+ =?us-ascii?Q?NQiPKjcxFgoHi8GtkLVJ/1Jn6Rxf4TtqsPTQ/PVYVsOzBhusKvsVmgTFzYYS?=
+ =?us-ascii?Q?r3kSBktxdOT1HdvEtmvRAifpMeMUgBsOYFi6dgCTrSLrGx5AlOOzVMrMClHc?=
+ =?us-ascii?Q?Ab30DImuu8N9dJJ5d9WYuR25gn8Eoi051oBT454HeDS2CSu3P4uO0U+YApCE?=
+ =?us-ascii?Q?1rLsf8gtq4ax6HJBA4hVWRfpEpF5WHcKyBmGqHdqj6iyuYT5xydSeCwdcjb/?=
+ =?us-ascii?Q?HNkD+UYAHIkoYDQv8ileNLIl+B2tinVr1Ch9SERtmRqsMHglhd9KfpDY+2ca?=
+ =?us-ascii?Q?iW0JQt3NLolkuVGVF3ejBQ0KD9er+FQEomesEy3BF+etTKug0DMOAQcKYirU?=
+ =?us-ascii?Q?4c5cp19Esvo3upvcSCapiFlRSO0Yhhr8uH8APu7ZE0dKh1eFu+9XBZt/R96v?=
+ =?us-ascii?Q?nkN42LMJ/psVHuUwQcFlnEwMCQhfWWvgUsp7RP0aepx/euJb7nwJ0SmAtVhe?=
+ =?us-ascii?Q?mioCe55ji1XEzvta9eRJe4Q2jwBxItvQkxp+MvcKg6MPS+Kt56LxwzPkk3Nn?=
+ =?us-ascii?Q?QKEhd3NREB3s8hk4tF65QWWzyqFv1GjGd0xWYAq+JYdBOBXNc8cAAx9h2b4p?=
+ =?us-ascii?Q?p+tCMRXbFE6FvxCxHMBzT2cdqS8xC+zWjTtsaHrrMDiCfh8uNjw8odpn3hrN?=
+ =?us-ascii?Q?copK6ccdGxTuxJnbUsJO0ZOHxhBFN3RMyEC9PQYcsQEeGlwoXqFjZI7iebG5?=
+ =?us-ascii?Q?63NP9VmUjDzZR/WKNzQHU4tXjpBVdjDLh75cOCRwJ1r5066PllCSCxKNPUwn?=
+ =?us-ascii?Q?YrI8cOcaRkOY0ByocpUz7ijCKciqnK60XeJGZLhCRDIyiJtzZZi4E+bVID17?=
+ =?us-ascii?Q?6JpGrnzk3+DxqcqhxPL8Vr9fmEZ08Fh0bL7SKmIJ1tsUWpQc17v6nq7WrOyb?=
+ =?us-ascii?Q?FYwsVl8EAMpXLyHp3I/srBn36CqneXRieK2p06dQzEgTq0Mp+YJh9+dsdd5j?=
+ =?us-ascii?Q?SdpacZrEScev0RgQUddfm4JWZwnX6CL+vJ3gkb+hR0Au+Y9nSTWJx/tGW1yt?=
+ =?us-ascii?Q?ySpE37w084WNjWFpVteHpYgjQURho7synjvV8lx24Yg9T3Gab3tszTUVQWin?=
+ =?us-ascii?Q?ax6AaybSmGvvO7WPQP7lSi7UWmc4pE1QdU8ObSsaqPGSfU8N1ihkGkrT2MyU?=
+ =?us-ascii?Q?K8lj1ubKxRL3t35KzrIjH2SNRLQsDf1v/nHRMBLSm7w64lKaJFbIkz/V4GOy?=
+ =?us-ascii?Q?JBgjZIbsDS8JRgkJetb9XKyutrljNDRKSH2fd0TUqsLnmfKTrCA8xb2n9x7d?=
+ =?us-ascii?Q?0GhI8ib2OpY+Ivxa9EGW6JVP233vJ2lsgBqKVGpbhUpKRZ7pGmqnH36bxTKG?=
+ =?us-ascii?Q?7FABoFy2xft0exWHZC+AK6C/1b794tKcTgZ9JZBiHHrNs0/v8wGWNne/mBJm?=
+ =?us-ascii?Q?hFzIqlxHDmDbkpkt70rG/19Stm5k+yTLL9g/XqrXymb7icApP/1O6g=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd898167-910f-409f-26f9-08da0b555147
+X-MS-Exchange-CrossTenant-AuthSource: GV0P278MB0484.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2022 16:10:33.4161
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: B4MeMhSdzS9KeyjKL3qKu+jhwJjGOb8TvOIeOaanWclDWalIYzuHQCePMyqBSQcCFc76SKx/o+L7dcmGE2PsKuq0N6DG/FbFF7lar7Ilw0w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0579
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,259 +117,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 03:53:27AM +0200, Vladimir Oltean wrote:
-> On Mon, Feb 28, 2022 at 12:04:08PM +0100, Ansuel Smith wrote:
-> > Pack qca8k priv and other struct using pahole and set the first priv
-> > struct entry to mgmt_master and mgmt_eth_data to speedup access.
-> > While at it also rework pcs struct and move it qca8k_ports_config
-> > following other configuration set for the cpu ports.
-> > 
-> > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> > ---
-> 
-> How did you "pack" struct qca8k_priv exactly?
->
+From: Andrejs Cainikovs <andrejs.cainikovs@toradex.com>
 
-I'm trying to understand it too... also this was done basend on what
-target? 
+Some WiFi/Bluetooth modules might have different host connection
+options, allowing to either use SDIO for both WiFi and Bluetooth,
+or SDIO for WiFi and UART for Bluetooth. It is possible to detect
+whether a module has SDIO-SDIO or SDIO-UART connection by reading
+its host strap register.
 
-> Before:
-> 
-> struct qca8k_priv {
->         u8                         switch_id;            /*     0     1 */
->         u8                         switch_revision;      /*     1     1 */
->         u8                         mirror_rx;            /*     2     1 */
->         u8                         mirror_tx;            /*     3     1 */
->         u8                         lag_hash_mode;        /*     4     1 */
->         bool                       legacy_phy_port_mapping; /*     5     1 */
->         struct qca8k_ports_config  ports_config;         /*     6     7 */
-> 
->         /* XXX 3 bytes hole, try to pack */
-> 
->         struct regmap *            regmap;               /*    16     8 */
->         struct mii_bus *           bus;                  /*    24     8 */
->         struct ar8xxx_port_status  port_sts[7];          /*    32    28 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         /* --- cacheline 1 boundary (64 bytes) --- */
->         struct dsa_switch *        ds;                   /*    64     8 */
->         struct mutex               reg_mutex;            /*    72   160 */
->         /* --- cacheline 3 boundary (192 bytes) was 40 bytes ago --- */
->         struct device *            dev;                  /*   232     8 */
->         struct dsa_switch_ops      ops;                  /*   240   864 */
->         /* --- cacheline 17 boundary (1088 bytes) was 16 bytes ago --- */
->         struct gpio_desc *         reset_gpio;           /*  1104     8 */
->         unsigned int               port_mtu[7];          /*  1112    28 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         struct net_device *        mgmt_master;          /*  1144     8 */
->         /* --- cacheline 18 boundary (1152 bytes) --- */
->         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*  1152   280 */
->         /* --- cacheline 22 boundary (1408 bytes) was 24 bytes ago --- */
->         struct qca8k_mib_eth_data  mib_eth_data;         /*  1432   272 */
->         /* --- cacheline 26 boundary (1664 bytes) was 40 bytes ago --- */
->         struct qca8k_mdio_cache    mdio_cache;           /*  1704     6 */
-> 
->         /* XXX 2 bytes hole, try to pack */
-> 
->         struct qca8k_pcs           pcs_port_0;           /*  1712    32 */
-> 
->         /* XXX last struct has 4 bytes of padding */
-> 
->         /* --- cacheline 27 boundary (1728 bytes) was 16 bytes ago --- */
->         struct qca8k_pcs           pcs_port_6;           /*  1744    32 */
-> 
->         /* XXX last struct has 4 bytes of padding */
-> 
->         /* size: 1776, cachelines: 28, members: 22 */
->         /* sum members: 1763, holes: 4, sum holes: 13 */
->         /* paddings: 2, sum paddings: 8 */
->         /* last cacheline: 48 bytes */
-> };
-> 
-> After:
-> 
-> struct qca8k_priv {
->         struct net_device *        mgmt_master;          /*     0     8 */
->         struct qca8k_mgmt_eth_data mgmt_eth_data;        /*     8   280 */
->         /* --- cacheline 4 boundary (256 bytes) was 32 bytes ago --- */
->         struct qca8k_mdio_cache    mdio_cache;           /*   288     6 */
->         u8                         switch_id;            /*   294     1 */
->         u8                         switch_revision;      /*   295     1 */
->         u8                         mirror_rx;            /*   296     1 */
->         u8                         mirror_tx;            /*   297     1 */
->         u8                         lag_hash_mode;        /*   298     1 */
->         bool                       legacy_phy_port_mapping; /*   299     1 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         struct qca8k_ports_config  ports_config;         /*   304    72 */
->         /* --- cacheline 5 boundary (320 bytes) was 56 bytes ago --- */
->         struct regmap *            regmap;               /*   376     8 */
->         /* --- cacheline 6 boundary (384 bytes) --- */
->         struct mii_bus *           bus;                  /*   384     8 */
->         struct ar8xxx_port_status  port_sts[7];          /*   392    28 */
-> 
->         /* XXX 4 bytes hole, try to pack */
-> 
->         struct dsa_switch *        ds;                   /*   424     8 */
->         struct mutex               reg_mutex;            /*   432   160 */
->         /* --- cacheline 9 boundary (576 bytes) was 16 bytes ago --- */
->         struct device *            dev;                  /*   592     8 */
->         struct gpio_desc *         reset_gpio;           /*   600     8 */
->         struct dsa_switch_ops      ops;                  /*   608   864 */
->         /* --- cacheline 23 boundary (1472 bytes) --- */
->         struct qca8k_mib_eth_data  mib_eth_data;         /*  1472   280 */
-> 
->         /* XXX last struct has 4 bytes of padding */
-> 
->         /* --- cacheline 27 boundary (1728 bytes) was 24 bytes ago --- */
->         unsigned int               port_mtu[7];          /*  1752    28 */
-> 
->         /* size: 1784, cachelines: 28, members: 20 */
->         /* sum members: 1772, holes: 2, sum holes: 8 */
->         /* padding: 4 */
->         /* paddings: 1, sum paddings: 4 */
->         /* last cacheline: 56 bytes */
-> };
-> 
-> 1776 vs 1784. That's... larger?!
-> 
-> Also, struct qca8k_priv is so large because the "ops" member is a full
-> copy of qca8k_switch_ops. I understand why commit db460c54b67f ("net:
-> dsa: qca8k: extend slave-bus implementations") did this, but I wonder,
-> is there no better way?
-> 
+This change introduces a way to automatically select appropriate
+firmware depending of the connection method, and removes a need
+of symlinking or overwriting the original firmware file with a
+required one.
 
-Actually from what I can see the struct can be improved in 2 way...
-The ancient struct
-ar8xxx_port_status port_sts[QCA8K_NUM_PORTS];
-can be totally dropped as I can't see why we still need it.
+Signed-off-by: Andrejs Cainikovs <andrejs.cainikovs@toradex.com>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+Hi all,
 
-The duplicated ops is funny. I could be very confused but why it's done
-like that? Can't we modify directly the already defined one and drop
-struct dsa_switch_ops ops; from qca8k_priv?
+Current mwifiex_sdio implementation does not have strapping detection, which
+means there's no way system will automatically detect which firmware needs to
+be picked depending of the strapping. SD8997, in particular, can be strapped
+for sdiosdio (Wi-Fi over SDIO, Bluetooth over SDIO) or sdiouart (Wi-Fi over
+SDIO, Bluetooth over UART). What we do now - simply replace the
+original sdiosdio firmware file with the one supplied by NXP [1] for sdiouart.
 
-I mean is all of that to use priv->ops.phy_read instead of
-priv->ds->ops.phy_read or even qca8k_switch_ops directly? o.o
+Of course, this is not clean, and by submitting this patch I would like to
+receive your comments regarding how it would be better to implement the
+strapping detection.
 
-Am I missing something?
+[1] https://github.com/NXP/imx-firmware/blob/lf-5.10.52_2.1.0/nxp/FwImage_8997_SD/sdiouart8997_combo_v4.bin
 
-> >  drivers/net/dsa/qca8k.c |  8 ++++----
-> >  drivers/net/dsa/qca8k.h | 33 ++++++++++++++++-----------------
-> >  2 files changed, 20 insertions(+), 21 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> > index ee0dbf324268..8d059da5f0ca 100644
-> > --- a/drivers/net/dsa/qca8k.c
-> > +++ b/drivers/net/dsa/qca8k.c
-> > @@ -1685,11 +1685,11 @@ qca8k_phylink_mac_select_pcs(struct dsa_switch *ds, int port,
-> >  	case PHY_INTERFACE_MODE_1000BASEX:
-> >  		switch (port) {
-> >  		case 0:
-> > -			pcs = &priv->pcs_port_0.pcs;
-> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT0].pcs;
-> >  			break;
-> >  
-> >  		case 6:
-> > -			pcs = &priv->pcs_port_6.pcs;
-> > +			pcs = &priv->ports_config.qpcs[QCA8K_CPU_PORT6].pcs;
-> >  			break;
-> >  		}
-> >  		break;
-> > @@ -2889,8 +2889,8 @@ qca8k_setup(struct dsa_switch *ds)
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > -	qca8k_setup_pcs(priv, &priv->pcs_port_0, 0);
-> > -	qca8k_setup_pcs(priv, &priv->pcs_port_6, 6);
-> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT0], 0);
-> > +	qca8k_setup_pcs(priv, &priv->ports_config.qpcs[QCA8K_CPU_PORT6], 6);
-> >  
-> >  	/* Make sure MAC06 is disabled */
-> >  	ret = regmap_clear_bits(priv->regmap, QCA8K_REG_PORT0_PAD_CTRL,
-> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
-> > index f375627174c8..611dc2335dbe 100644
-> > --- a/drivers/net/dsa/qca8k.h
-> > +++ b/drivers/net/dsa/qca8k.h
-> > @@ -341,18 +341,24 @@ enum {
-> >  
-> >  struct qca8k_mgmt_eth_data {
-> >  	struct completion rw_done;
-> > -	struct mutex mutex; /* Enforce one mdio read/write at time */
-> > +	u32 data[4];
-> >  	bool ack;
-> >  	u32 seq;
-> > -	u32 data[4];
-> > +	struct mutex mutex; /* Enforce one mdio read/write at time */
-> >  };
-> >  
-> >  struct qca8k_mib_eth_data {
-> >  	struct completion rw_done;
-> > +	u64 *data; /* pointer to ethtool data */
-> > +	u8 req_port;
-> >  	struct mutex mutex; /* Process one command at time */
-> >  	refcount_t port_parsed; /* Counter to track parsed port */
-> > -	u8 req_port;
-> > -	u64 *data; /* pointer to ethtool data */
-> > +};
-> > +
-> > +struct qca8k_pcs {
-> > +	struct phylink_pcs pcs;
-> > +	struct qca8k_priv *priv;
-> > +	int port;
-> >  };
-> >  
-> >  struct qca8k_ports_config {
-> > @@ -361,6 +367,7 @@ struct qca8k_ports_config {
-> >  	bool sgmii_enable_pll;
-> >  	u8 rgmii_rx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
-> >  	u8 rgmii_tx_delay[QCA8K_NUM_CPU_PORTS]; /* 0: CPU port0, 1: CPU port6 */
-> > +	struct qca8k_pcs qpcs[QCA8K_NUM_CPU_PORTS];
-> >  };
-> >  
-> >  struct qca8k_mdio_cache {
-> > @@ -376,13 +383,10 @@ struct qca8k_mdio_cache {
-> >  	u16 hi;
-> >  };
-> >  
-> > -struct qca8k_pcs {
-> > -	struct phylink_pcs pcs;
-> > -	struct qca8k_priv *priv;
-> > -	int port;
-> > -};
-> > -
-> >  struct qca8k_priv {
-> > +	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
-> > +	struct qca8k_mgmt_eth_data mgmt_eth_data;
-> > +	struct qca8k_mdio_cache mdio_cache;
-> >  	u8 switch_id;
-> >  	u8 switch_revision;
-> >  	u8 mirror_rx;
-> > @@ -396,15 +400,10 @@ struct qca8k_priv {
-> >  	struct dsa_switch *ds;
-> >  	struct mutex reg_mutex;
-> >  	struct device *dev;
-> > -	struct dsa_switch_ops ops;
-> >  	struct gpio_desc *reset_gpio;
-> > -	unsigned int port_mtu[QCA8K_NUM_PORTS];
-> > -	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
-> > -	struct qca8k_mgmt_eth_data mgmt_eth_data;
-> > +	struct dsa_switch_ops ops;
-> >  	struct qca8k_mib_eth_data mib_eth_data;
-> > -	struct qca8k_mdio_cache mdio_cache;
-> > -	struct qca8k_pcs pcs_port_0;
-> > -	struct qca8k_pcs pcs_port_6;
-> > +	unsigned int port_mtu[QCA8K_NUM_PORTS];
-> >  };
-> >  
-> >  struct qca8k_mib_desc {
-> > -- 
-> > 2.34.1
-> > 
-> 
+Francesco & Andrejs
 
+---
+ drivers/net/wireless/marvell/mwifiex/sdio.c | 17 ++++++++++++++++-
+ drivers/net/wireless/marvell/mwifiex/sdio.h |  6 ++++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
+index bde9e4bbfffe..8670ded74c27 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.c
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
+@@ -182,6 +182,9 @@ static const struct mwifiex_sdio_card_reg mwifiex_reg_sd8997 = {
+ 	.host_int_rsr_reg = 0x4,
+ 	.host_int_status_reg = 0x0C,
+ 	.host_int_mask_reg = 0x08,
++	.host_strap_reg = 0xF4,
++	.host_strap_mask = 0x01,
++	.host_strap_value = 0x00,
+ 	.status_reg_0 = 0xE8,
+ 	.status_reg_1 = 0xE9,
+ 	.sdio_int_mask = 0xff,
+@@ -402,6 +405,7 @@ static const struct mwifiex_sdio_device mwifiex_sdio_sd8977 = {
+ 
+ static const struct mwifiex_sdio_device mwifiex_sdio_sd8997 = {
+ 	.firmware = SD8997_DEFAULT_FW_NAME,
++	.firmware_alt_strap = SD8997_SDIOUART_FW_NAME,
+ 	.reg = &mwifiex_reg_sd8997,
+ 	.max_ports = 32,
+ 	.mp_agg_pkt_limit = 16,
+@@ -536,6 +540,7 @@ mwifiex_sdio_probe(struct sdio_func *func, const struct sdio_device_id *id)
+ 		struct mwifiex_sdio_device *data = (void *)id->driver_data;
+ 
+ 		card->firmware = data->firmware;
++		card->firmware_alt_strap = data->firmware_alt_strap;
+ 		card->reg = data->reg;
+ 		card->max_ports = data->max_ports;
+ 		card->mp_agg_pkt_limit = data->mp_agg_pkt_limit;
+@@ -2439,6 +2444,7 @@ static int mwifiex_register_dev(struct mwifiex_adapter *adapter)
+ 	int ret;
+ 	struct sdio_mmc_card *card = adapter->card;
+ 	struct sdio_func *func = card->func;
++	const char *firmware = card->firmware;
+ 
+ 	/* save adapter pointer in card */
+ 	card->adapter = adapter;
+@@ -2455,7 +2461,15 @@ static int mwifiex_register_dev(struct mwifiex_adapter *adapter)
+ 		return ret;
+ 	}
+ 
+-	strcpy(adapter->fw_name, card->firmware);
++	/* Select alternative firmware based on the strapping options */
++	if (card->firmware_alt_strap) {
++		u8 val;
++		mwifiex_read_reg(adapter, card->reg->host_strap_reg, &val);
++		if ((val & card->reg->host_strap_mask) == card->reg->host_strap_value)
++			firmware = card->firmware_alt_strap;
++	}
++	strcpy(adapter->fw_name, firmware);
++
+ 	if (card->fw_dump_enh) {
+ 		adapter->mem_type_mapping_tbl = generic_mem_type_map;
+ 		adapter->num_mem_types = 1;
+@@ -3157,3 +3171,4 @@ MODULE_FIRMWARE(SD8887_DEFAULT_FW_NAME);
+ MODULE_FIRMWARE(SD8977_DEFAULT_FW_NAME);
+ MODULE_FIRMWARE(SD8987_DEFAULT_FW_NAME);
+ MODULE_FIRMWARE(SD8997_DEFAULT_FW_NAME);
++MODULE_FIRMWARE(SD8997_SDIOUART_FW_NAME);
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.h b/drivers/net/wireless/marvell/mwifiex/sdio.h
+index 5648512c9300..bfea4d5998b7 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.h
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.h
+@@ -39,6 +39,7 @@
+ #define SD8977_DEFAULT_FW_NAME "mrvl/sdsd8977_combo_v2.bin"
+ #define SD8987_DEFAULT_FW_NAME "mrvl/sd8987_uapsta.bin"
+ #define SD8997_DEFAULT_FW_NAME "mrvl/sdsd8997_combo_v4.bin"
++#define SD8997_SDIOUART_FW_NAME "nxp/sdiouart8997_combo_v4.bin"
+ 
+ #define BLOCK_MODE	1
+ #define BYTE_MODE	0
+@@ -196,6 +197,9 @@ struct mwifiex_sdio_card_reg {
+ 	u8 host_int_rsr_reg;
+ 	u8 host_int_status_reg;
+ 	u8 host_int_mask_reg;
++	u8 host_strap_reg;
++	u8 host_strap_mask;
++	u8 host_strap_value;
+ 	u8 status_reg_0;
+ 	u8 status_reg_1;
+ 	u8 sdio_int_mask;
+@@ -241,6 +245,7 @@ struct sdio_mmc_card {
+ 
+ 	struct completion fw_done;
+ 	const char *firmware;
++	const char *firmware_alt_strap;
+ 	const struct mwifiex_sdio_card_reg *reg;
+ 	u8 max_ports;
+ 	u8 mp_agg_pkt_limit;
+@@ -274,6 +279,7 @@ struct sdio_mmc_card {
+ 
+ struct mwifiex_sdio_device {
+ 	const char *firmware;
++	const char *firmware_alt_strap;
+ 	const struct mwifiex_sdio_card_reg *reg;
+ 	u8 max_ports;
+ 	u8 mp_agg_pkt_limit;
 -- 
-	Ansuel
+2.25.1
+
