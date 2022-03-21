@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FBF74E3180
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 21:13:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACA0F4E3184
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 21:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352999AbiCUUOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 16:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        id S1347295AbiCUUOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 16:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353420AbiCUUNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 16:13:09 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A2C2CCA3;
-        Mon, 21 Mar 2022 13:10:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647893429; x=1679429429;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JflRYBzJ/v3lV9RjWArieyXQLSJLXWoiJMZIx4KYloU=;
-  b=hx+FFJQOFoN9PfEe6l/sU+1J8adfL6b2VrbsbQiGFHQjjdA7kykMpmPM
-   xMkEC2m5WnTBDbm7iN1Gk7WrayoY4fq2fdUTyoP9LlKZAxpLJf51tdpik
-   TJPJoDFzdWyzHHOvQCVTfjNqJMIlYvxD8BxhgyP+Jjo1JhTnZ8MdwySEv
-   JFNT9SNNqaESEsDOYESbkckSM7Uff2iXe6Cdeg8aq9c2ahZ1dwZ4wnYzX
-   tTau/McJs1zZW+2dSgu8DB4MRCdcRzker3N310r2EMDPDpoHxawhGgg57
-   FHv3I/IrPBUPZShOJtzhBt+nx/4N5SAVrLdBVT24faAOKSEnZRADyCyIH
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,199,1643698800"; 
-   d="scan'208";a="157194855"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Mar 2022 13:09:39 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 21 Mar 2022 13:09:38 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 21 Mar 2022 13:09:30 -0700
-Message-ID: <3441a9f60834f8a32a537145303f4a93e2e76c60.camel@microchip.com>
-Subject: Re: [PATCH v9 net-next 06/11] net: dsa: microchip: add DSA support
- for microchip lan937x
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <olteanv@gmail.com>,
-        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <woojung.huh@microchip.com>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Tue, 22 Mar 2022 01:39:28 +0530
-In-Reply-To: <YjaAqXfiBrMggIdA@lunn.ch>
-References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
-         <20220318085540.281721-7-prasanna.vengateshan@microchip.com>
-         <YjaAqXfiBrMggIdA@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
+        with ESMTP id S1353801AbiCUUNi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 16:13:38 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B81DB1903C3;
+        Mon, 21 Mar 2022 13:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647893500; x=1679429500;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=z8WP1RGPL88u36PT8SomMKEO3KoX3/fuD+pk4+0xO5s=;
+  b=GQthUszUsCsySLpMhb2ahpHnj54CRKqlkqgpebrsHk8iIaqaEjg7S0D3
+   ADbh9s8ansYvWkKeb4je6H/pghdF0iBzUouJgMkINq/nRt5KoDSmJuJEd
+   4ru4mRrvT2Xsy8T7t25UTVoopE+FNKBW7J0O0OhG+Sr5qZscWCetKrZou
+   aisNQspWo6Gm82cLMXtgAASfEhTAlXa/k9V+cW6MfqugVKb1bMgvQvTV0
+   81U/6EpAMCf6QK+NG+4KOWiqrIS/4kNnM4pd0bHDpEfF0PlRVI6SCWzW/
+   0g5tB9jui5S3lzIgPHjTJYH2aLw5iuY6KcfvzSErVwe6fXGZLXfrZD9Vb
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="245112937"
+X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
+   d="scan'208";a="245112937"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 13:11:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
+   d="scan'208";a="518572519"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 21 Mar 2022 13:11:36 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWONL-000I7U-9Q; Mon, 21 Mar 2022 20:11:35 +0000
+Date:   Tue, 22 Mar 2022 04:11:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, oliver@neukum.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn,
+        sunshouxin@chinatelecom.cn
+Subject: Re: [PATCH v5 4/4] net:bonding:Add support for IPV6 RLB to
+ balance-alb mode
+Message-ID: <202203220325.jryz7YMX-lkp@intel.com>
+References: <20220321084704.36370-5-sunshouxin@chinatelecom.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220321084704.36370-5-sunshouxin@chinatelecom.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,144 +68,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2022-03-20 at 02:17 +0100, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> > +int lan937x_reset_switch(struct ksz_device *dev)
-> > +{
-> > +     u32 data32;
-> > +     u8 data8;
-> > +     int ret;
-> > +
-> > +     /* reset switch */
-> > +     ret = lan937x_cfg(dev, REG_SW_OPERATION, SW_RESET, true);
-> > +     if (ret < 0)
-> > +             return ret;
-> > +
-> > +     ret = ksz_read8(dev, REG_SW_LUE_CTRL_1, &data8);
-> > +     if (ret < 0)
-> > +             return ret;
-> > +
-> > +     /* Enable Auto Aging */
-> > +     ret = ksz_write8(dev, REG_SW_LUE_CTRL_1, data8 | SW_LINK_AUTO_AGING);
-> > +     if (ret < 0)
-> > +             return ret;
-> > +
-> > +     /* disable interrupts */
-> > +     ret = ksz_write32(dev, REG_SW_INT_MASK__4, SWITCH_INT_MASK);
-> > +     if (ret < 0)
-> > +             return ret;
-> > +
-> > +     ret = ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0xFF);
-> > +     if (ret < 0)
-> > +             return ret;
-> > +
-> > +     return ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
-> 
-> I would probably enable auto aging in the setup routing, not the
-> reset.  Disabling interrupts is less clear, maybe it also belongs in
-> setup?
+Hi Sun,
 
-Actually lan937x_reset_switch() gets called from setup() as well.
+Thank you for the patch! Yet something to improve:
 
-> 
-> > +static void lan937x_switch_exit(struct ksz_device *dev)
-> > +{
-> > +     lan937x_reset_switch(dev);
-> > +}
-> 
-> Humm. Does a reset leave the switch in a dumb mode, or is it totally
-> disabled?
+[auto build test ERROR on 092d992b76ed9d06389af0bc5efd5279d7b1ed9f]
 
-Its a kind of unconfiguring and you are right, Auto aging & disabling interrupts
-can be directly moved to setup().
+url:    https://github.com/0day-ci/linux/commits/Sun-Shouxin/Add-support-for-IPV6-RLB-to-balance-alb-mode/20220321-164934
+base:   092d992b76ed9d06389af0bc5efd5279d7b1ed9f
+config: parisc-buildonly-randconfig-r002-20220320 (https://download.01.org/0day-ci/archive/20220322/202203220325.jryz7YMX-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/d84e696c74aa408d01d0e142f8ec11dd5b6410a5
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Sun-Shouxin/Add-support-for-IPV6-RLB-to-balance-alb-mode/20220321-164934
+        git checkout d84e696c74aa408d01d0e142f8ec11dd5b6410a5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> 
-> > +int lan937x_internal_phy_write(struct ksz_device *dev, int addr, int reg,
-> > +                            u16 val)
-> > +{
-> > +     u16 temp, addr_base;
-> > +     unsigned int value;
-> > +     int ret;
-> > +
-> > +     /* Check for internal phy port */
-> > +     if (!lan937x_is_internal_phy_port(dev, addr))
-> > +             return -EOPNOTSUPP;
-> > +
-> > +     if (lan937x_is_internal_base_tx_phy_port(dev, addr))
-> > +             addr_base = REG_PORT_TX_PHY_CTRL_BASE;
-> > +     else
-> > +             addr_base = REG_PORT_T1_PHY_CTRL_BASE;
-> > +
-> > +     temp = PORT_CTRL_ADDR(addr, (addr_base + (reg << 2)));
-> > +
-> > +     ret = ksz_write16(dev, REG_VPHY_IND_ADDR__2, temp);
-> > +     if (ret < 0)
-> > +             return ret;
-> 
-> ...
-> 
-> > +}
-> > +
-> > +int lan937x_internal_phy_read(struct ksz_device *dev, int addr, int reg,
-> > +                           u16 *val)
-> > +{
-> > +     u16 temp, addr_base;
-> > +     unsigned int value;
-> > +     int ret;
-> > +
-> > +     /* Check for internal phy port, return 0xffff for non-existent phy */
-> > +     if (!lan937x_is_internal_phy_port(dev, addr))
-> > +             return 0xffff;
-> > +
-> > +     if (lan937x_is_internal_base_tx_phy_port(dev, addr))
-> > +             addr_base = REG_PORT_TX_PHY_CTRL_BASE;
-> > +     else
-> > +             addr_base = REG_PORT_T1_PHY_CTRL_BASE;
-> > +
-> > +     /* get register address based on the logical port */
-> > +     temp = PORT_CTRL_ADDR(addr, (addr_base + (reg << 2)));
-> > +
-> > +     ret = ksz_write16(dev, REG_VPHY_IND_ADDR__2, temp);
-> > +     if (ret < 0)
-> > +             return ret;
-> 
-> Looks pretty similar to me. You should pull this out into a helper.
+All errors (new ones prefixed by >>):
 
-Sure, i think it can be made except if check lan937x_is_internal_phy_port() 
+   hppa-linux-ld: drivers/net/phy/micrel.o: in function `lan8814_ts_info':
+   (.text+0xd74): undefined reference to `ptp_clock_index'
+   hppa-linux-ld: drivers/net/phy/micrel.o: in function `lan8814_probe':
+   (.text+0x2ee8): undefined reference to `ptp_clock_register'
+   hppa-linux-ld: drivers/net/bonding/bond_alb.o: in function `rlb_nd_recv':
+>> (.text+0x2538): undefined reference to `ipv6_get_ifaddr'
+>> hppa-linux-ld: (.text+0x25d0): undefined reference to `inet6_ifa_finish_destroy'
 
-> 
-> 
-> > +struct lan_alu_struct {
-> > +     /* entry 1 */
-> > +     u8      is_static:1;
-> > +     u8      is_src_filter:1;
-> > +     u8      is_dst_filter:1;
-> > +     u8      prio_age:3;
-> > +     u32     _reserv_0_1:23;
-> > +     u8      mstp:3;
-> 
-> I assume this works O.K, but bitfields are nornaly defined using one
-> type. I would of used u32 for them all. Is there some advantage of
-> missing u8 and u32?
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for MICREL_PHY
+   Depends on NETDEVICES && PHYLIB && PTP_1588_CLOCK_OPTIONAL
+   Selected by
+   - KS8851_MLL && NETDEVICES && ETHERNET && NET_VENDOR_MICREL && HAS_IOMEM
+   Selected by
+   - KS8851 && NETDEVICES && ETHERNET && NET_VENDOR_MICREL && SPI
 
-It works because direct assignments are used. But using one type is the right
-way. I will change it in the next patch.
-
-> 
-> > +     /* entry 2 */
-> > +     u8      is_override:1;
-> > +     u8      is_use_fid:1;
-> > +     u32     _reserv_1_1:22;
-> > +     u8      port_forward:8;
-> > +     /* entry 3 & 4*/
-> > +     u32     _reserv_2_1:9;
-> > +     u8      fid:7;
-> > +     u8      mac[ETH_ALEN];
-> > +};
-> 
->   Andrew
-
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
