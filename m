@@ -2,110 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 971D74E33B3
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 00:11:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 283004E3427
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 00:22:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232330AbiCUXKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 19:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
+        id S230393AbiCUXOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 19:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234126AbiCUXJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 19:09:15 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5504E40C2CF
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 15:57:01 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id b7so11353666ilm.12
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 15:57:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TdNlSMywY5dPT3xGYRT5dMhqNPmTRCENX2z/JgdMXr8=;
-        b=ksDEoj9c4zCwIHUlgTViS0OKP5x3NGVM77uPQjf1hTSBLs4spw6GVhT9cezZ3YBIV0
-         1H7lG6syyPWEExgmYrFaJTs+FL8kEnIbyZcesgtq9yGtoWiLGQsAbRy7IXouK6OAV8Su
-         KiA6LR9nX/0hTX2RvlCdy6RP/USIP087U/q3q1aZYjdIXTI8t1R3ZQUSuY0xZv2SsOFe
-         ahDcDaOnk+ZEO8W+oj4dlJ9yodG+CkUi0AYMaLCzh9XDVK3cjXEn2OAlu55Ajuig/d7c
-         qkCa9CUv7aDrJr0IFTGRgRceXguD4e3Eu2gipeIQeSMFcfvspVKv3tMXcgat73eO60QC
-         v+Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TdNlSMywY5dPT3xGYRT5dMhqNPmTRCENX2z/JgdMXr8=;
-        b=Vs0+pIp4ISR0zcO1C48GPvYImNBuXAoPkcVKtX4QNJxpn/2rx2c/05cJx8bliGtOMT
-         h5s1U/cCFWMRUcEytUKnpi0lLJ6UGtugfCteovnif1iYgq25YDkrImA1KBoD4wvIPuPa
-         5fUTKKw3RWpgPHBaz+JW1Q2tAkKDN5zEl6Mqqnr4HXdY5m9PkVaIlxUFknZSDbxZNSxi
-         vs7gUiLLRAxnHLBVULtIZ9eHLpgRPWXwa9NdaJjDpjdMM/vxJb4h0x8GwnD0ALJ4wbJB
-         ZcR4SEU0lk8Caehx6ipz6R+zMOmNh7TfuO8oUp7ZgoDXYi2v3ticAvaIn/CM28oLEr7g
-         Usig==
-X-Gm-Message-State: AOAM532oMiqWlXksbwDytJzQKHvCf3BPnSA5OeLTdRiEjpdWb9mBYJa7
-        rzK2sPeGY0oYu4CVmiRYCQfe91mcVvb6bA==
-X-Google-Smtp-Source: ABdhPJyyM+TIYnaOZ1ahZo5ewABTFb6noRVSCI40uLzoZFUnU3b+uazy5qTHMAGGaCb2T6TwEbeq9A==
-X-Received: by 2002:a63:eb51:0:b0:382:53c4:bb66 with SMTP id b17-20020a63eb51000000b0038253c4bb66mr9281733pgk.540.1647899100292;
-        Mon, 21 Mar 2022 14:45:00 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id ob8-20020a17090b390800b001c6a1e5595asm384681pjb.21.2022.03.21.14.44.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Mar 2022 14:44:59 -0700 (PDT)
-Date:   Mon, 21 Mar 2022 14:44:57 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: Re: [RFC PATCH net-next] net: create a NETDEV_ETH_IOCTL notifier
- for DSA to reject PTP on DSA master
-Message-ID: <20220321144457.7dc6e8e0@hermes.local>
-In-Reply-To: <20220317225035.3475538-1-vladimir.oltean@nxp.com>
-References: <20220317225035.3475538-1-vladimir.oltean@nxp.com>
+        with ESMTP id S231717AbiCUXOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 19:14:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C2734BE18;
+        Mon, 21 Mar 2022 16:02:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E4D861290;
+        Mon, 21 Mar 2022 21:45:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C7CEC340E8;
+        Mon, 21 Mar 2022 21:45:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899133;
+        bh=PLATsyQnK/O0pIHqhHWMWdIfCJuI1483DX+TA0bTLOg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GGSFdgbJv3Cjk4DlKoaGX6GmbjYj2N+msTu/8T0fGL42WZ1/HBdFX/X/mVfDYZ+FV
+         uVpb/HkEVBbm7bJRctk8RsWvHGJWwsfgcrFB1r6QkDxJVl5/2SweXcgiupjQyAbp+5
+         I59ZYTIeBJQqdFcXck8LuwrOmzDOVN/PlsIYXkiq+COVbNb7Oc9A341q0YmOv2yF6B
+         l6/fskCqA/xl7B8lDilPkmckO6j3CeHTGFvavHsXXqflPjJIyj3oqxRJLbifiEa+8q
+         UClaFiETzaod2lfN435a4r+K/RN6h6hjuq5DQvWr/UcjipoUuD96fMjjQ/TtwH2PWX
+         3ppLAJbOO1TXA==
+Date:   Mon, 21 Mar 2022 14:45:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the net-next tree
+Message-ID: <20220321144531.2b0503a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220321183941.74be2543@canb.auug.org.au>
+References: <20220321183941.74be2543@canb.auug.org.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 18 Mar 2022 00:50:35 +0200
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Mon, 21 Mar 2022 18:39:41 +1100 Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the net-next tree, today's linux-next build (x86_64
+> allmodconfig) failed like this:
+> 
+> In file included from include/linux/string.h:253,
+>                  from include/linux/bitmap.h:11,
+>                  from include/linux/cpumask.h:12,
+>                  from arch/x86/include/asm/cpumask.h:5,
+>                  from arch/x86/include/asm/msr.h:11,
+>                  from arch/x86/include/asm/processor.h:22,
+>                  from arch/x86/include/asm/timex.h:5,
+>                  from include/linux/timex.h:65,
+>                  from include/linux/time32.h:13,
+>                  from include/linux/time.h:60,
+>                  from include/linux/ktime.h:24,
+>                  from include/linux/timer.h:6,
+>                  from include/linux/netdevice.h:24,
+>                  from include/trace/events/xdp.h:8,
+>                  from include/linux/bpf_trace.h:5,
+>                  from drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c:33:
+> In function 'fortify_memset_chk',
+>     inlined from 'mlx5e_xmit_xdp_frame' at drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c:438:3:
+> include/linux/fortify-string.h:242:25: error: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Werror=attribute-warning]
+>   242 |                         __write_overflow_field(p_size_field, size);
+>       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> Caused by commit
+> 
+>   9ded70fa1d81 ("net/mlx5e: Don't prefill WQEs in XDP SQ in the multi buffer mode")
+> 
+> exposed by the kspp tree.
+> 
+> I have applied the following fix patch for today (a better one is
+> probably possible).
 
-> The fact that PTP 2-step TX timestamping is deeply broken on DSA
-> switches if the master also timestamps the same packets is well
-> documented by commit f685e609a301 ("net: dsa: Deny PTP on master if
-> switch supports it"). We attempt to help the users avoid shooting
-> themselves in the foot by making DSA reject the timestamping ioctls on
-> an interface that is a DSA master, and the switch tree beneath it
-> contains switches which are aware of PTP.
-> 
-> The only problem is that there isn't an established way of intercepting
-> ndo_eth_ioctl calls, so DSA creates avoidable burden upon the network
-> stack by creating a struct dsa_netdevice_ops with overlaid function
-> pointers that are manually checked from the relevant call sites. There
-> used to be 2 such dsa_netdevice_ops, but now, ndo_eth_ioctl is the only
-> one left.
-> 
-> In fact, the underlying reason which is prompting me to make this change
-> is that I'd like to hide as many DSA data structures from public API as
-> I can. But struct net_device :: dsa_ptr is a struct dsa_port (which is a
-> huge structure), and I'd like to create a smaller structure. I'd like
-> struct dsa_netdevice_ops to not be a part of this, so this is how the
-> need to delete it arose.
-> 
-> The established way for unrelated modules to react on a net device event
-> is via netdevice notifiers. These have the advantage of loose coupling,
-> i.e. they work even when DSA is built as module, without resorting to
-> static inline functions (which cannot offer the desired data structure
-> encapsulation).
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi Saeed, 
 
-Why is this not using netlink? 
+thoughts? 
+
+Would be great to get this sorted by tomorrow.
+
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Mon, 21 Mar 2022 18:29:24 +1100
+> Subject: [PATCH] fxup for "net/mlx5e: Don't prefill WQEs in XDP SQ in the multi buffer mode"
+> 
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 3 +--
+>  include/linux/mlx5/qp.h                          | 5 +++++
+>  2 files changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> index f35b62ce4c07..8f321a6c0809 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
+> @@ -435,8 +435,7 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx5e_xmit_data *xdptxd,
+>  		u8 num_pkts = 1 + num_frags;
+>  		int i;
+>  
+> -		memset(&cseg->signature, 0, sizeof(*cseg) -
+> -		       sizeof(cseg->opmod_idx_opcode) - sizeof(cseg->qpn_ds));
+> +		memset(&cseg->trailer, 0, sizeof(cseg->trailer));
+>  		memset(eseg, 0, sizeof(*eseg) - sizeof(eseg->trailer));
+>  
+>  		eseg->inline_hdr.sz = cpu_to_be16(inline_hdr_sz);
+> diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
+> index 61e48d459b23..8bda3ba5b109 100644
+> --- a/include/linux/mlx5/qp.h
+> +++ b/include/linux/mlx5/qp.h
+> @@ -202,6 +202,9 @@ struct mlx5_wqe_fmr_seg {
+>  struct mlx5_wqe_ctrl_seg {
+>  	__be32			opmod_idx_opcode;
+>  	__be32			qpn_ds;
+> +
+> +	struct_group(trailer,
+> +
+>  	u8			signature;
+>  	u8			rsvd[2];
+>  	u8			fm_ce_se;
+> @@ -211,6 +214,8 @@ struct mlx5_wqe_ctrl_seg {
+>  		__be32		umr_mkey;
+>  		__be32		tis_tir_num;
+>  	};
+> +
+> +	); /* end of trailer group */
+>  };
+>  
+>  #define MLX5_WQE_CTRL_DS_MASK 0x3f
+
