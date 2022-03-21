@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6534E2DE5
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:28:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0711D4E2E1D
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:32:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351097AbiCUQ3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 12:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
+        id S1351295AbiCUQd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 12:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351104AbiCUQ3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:29:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC83DF47
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:28:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4FD2B8189B
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 16:28:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31ECBC340F2
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 16:28:07 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="SODin2tF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1647880083;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=3OOD2MfGfSggaNPfeCMOT5B6+t2ohiJDT109MO1Op8A=;
-        b=SODin2tF44/WhFsXT4NsSm2CNI3WLJAP+LEVUKvF95tO3H8l7h0Q69SmAB/0yoX+VNNNzy
-        9GIkxHmeid4ck6F9EmxoSwTYHtXUEXB9fLVxYlDIE8yeHvQ/MJWje5AfL0ohVt7LKlC8vk
-        50VRTOumv1n3LpUXdSzAeCRL895DQOo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8e4c02e9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <netdev@vger.kernel.org>;
-        Mon, 21 Mar 2022 16:28:03 +0000 (UTC)
-Received: by mail-yb1-f173.google.com with SMTP id j2so29136983ybu.0
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:28:03 -0700 (PDT)
-X-Gm-Message-State: AOAM533Fx0/rO8rW/hS2zcZ8Z9BLqg4zsY+kcZqx2i4Pv+Hsptsrdel6
-        oCU/NVPqWLEPTkq1Be1jjyaSst6ZVKzUD7LknFA=
-X-Google-Smtp-Source: ABdhPJzAwnNXsC7CxbncboSkp/CbcNL0Wroq8xEXIvjpLTA6lrUxo75s5sKk4bww1UE44GL346rieL0iqozWjteRqWI=
-X-Received: by 2002:a5b:6cf:0:b0:61e:1371:3cda with SMTP id
- r15-20020a5b06cf000000b0061e13713cdamr23302155ybq.235.1647880081252; Mon, 21
- Mar 2022 09:28:01 -0700 (PDT)
+        with ESMTP id S1351279AbiCUQdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:33:46 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FE41877E1
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:32:17 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id r22so10911561ejs.11
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:32:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=RpaJWnAf2rDUakFbrGje6X31hkHThFND4YL7s3N2H5Q=;
+        b=RcaksR3otle+Gsg9Y4CUR8nW8LGymVRd7KbTwzCjs7zAxopSDIGWnPxjQEJ0ghRWU0
+         NVHTgGp9UXDL2zmuJMS+JF+h8EE5j0rxvCJN4kljOKbtcuOlwT1CtCne9du9IN7YH0ec
+         Twy7Q552Kz4k0hzQIOt0p9xMOG4bwlbLZhWbq7VMZrnR14s1S78SIzgOYJcYGAL620hW
+         T/w1MSBALLICG4CUni0Med+UahdLlwjCzW6lVdZzUMwwCT12D0nPvKnWYCdhzbUBkCth
+         tOEftQ8VrsI8Fu09gm2yZXabjY2jWPXgcD4ZfQMqun86ajCU0DXLJLiIrvHhC3qljD7L
+         /KbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=RpaJWnAf2rDUakFbrGje6X31hkHThFND4YL7s3N2H5Q=;
+        b=kes1oCr76rOVMvCLfaKv7cVyuH7/G12nZp3noWUn2fHTWp/EFH+CtkG/qzzmryAqf5
+         Nj8Nqbd9Cg7asq/sOeRAedoMaYQ2qSOvFcg+vfATBzQJVkbDY66WmcF0QL2lP+wOy5Ye
+         XXBxzX57OBPrOWwttuAmMT0TV8E+41HO5MKSgtUuVNwvROuuuFEv759g9+C6g6Ljq5LK
+         xbtCtx1dCTgMcYh6+OcrrlVUM+qQMGg095aDUt3abDMJXySR3LEii0fngTcUXYWTF3Mc
+         IIaBVHmtSj+tUuU4cU3zECyyWXa6wg+Mgn2Y/atz00b24B6YKXzzMXNIwGRfPOCkyotb
+         oqaA==
+X-Gm-Message-State: AOAM5331AGpJ//QDu9+xTwaSRj5ni+1OmuW2Bae+k/wZKiO95MamI6Dq
+        qWWqj2+auos1fxlWbe8aky0=
+X-Google-Smtp-Source: ABdhPJy7JcJeCQy0OXCsbl9MRsmzEYrQCs/L1pIPU0FyORmeUVS51hykRlCMBeJB63Yj/ScbomRDKg==
+X-Received: by 2002:a17:907:3f12:b0:6df:e7c1:9afb with SMTP id hq18-20020a1709073f1200b006dfe7c19afbmr9784062ejc.84.1647880335533;
+        Mon, 21 Mar 2022 09:32:15 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id v2-20020a509d02000000b00412d53177a6sm8179653ede.20.2022.03.21.09.32.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 09:32:15 -0700 (PDT)
+Date:   Mon, 21 Mar 2022 18:32:13 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Alexander Duyck <alexanderduyck@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Possible to use both dev_mc_sync and __dev_mc_sync?
+Message-ID: <20220321163213.lrn5sk7m6grighbl@skbuf>
 MIME-Version: 1.0
-References: <YjhD3ZKWysyw8rc6@linutronix.de>
-In-Reply-To: <YjhD3ZKWysyw8rc6@linutronix.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 21 Mar 2022 10:27:50 -0600
-X-Gmail-Original-Message-ID: <CAHmME9r=NNaA1v55dHxy0Szsqp4PbbSDGUaOeKYtjyNXhGN7_Q@mail.gmail.com>
-Message-ID: <CAHmME9r=NNaA1v55dHxy0Szsqp4PbbSDGUaOeKYtjyNXhGN7_Q@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: Revert the softirq will run annotation in ____napi_schedule().
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,27 +67,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sebastian,
+Hello,
 
-On Mon, Mar 21, 2022 at 3:22 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
->
-> The lockdep annotation lockdep_assert_softirq_will_run() expects that
-> either hard or soft interrupts are disabled because both guaranty that
-> the "raised" soft-interrupts will be processed once the context is left.
->
-> This triggers in flush_smp_call_function_from_idle() but it this case it
-> explicitly calls do_softirq() in case of pending softirqs.
->
-> Revert the "softirq will run" annotation in ____napi_schedule() and move
-> the check back to __netif_rx() as it was. Keep the IRQ-off assert in
-> ____napi_schedule() because this is always required.
->
-> Fixes: fbd9a2ceba5c7 ("net: Add lockdep asserts to ____napi_schedule().")
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Despite the similar names, the 2 functions above serve quite different
+purposes, and as it happens, DSA needs to use both of them, each for its
+own purpose.
 
-I can confirm that this fixes the WireGuard splat, so:
+static void dsa_slave_set_rx_mode(struct net_device *dev)
+{
+	struct net_device *master = dsa_slave_to_master(dev);
+	struct dsa_port *dp = dsa_slave_to_port(dev);
+	struct dsa_switch *ds = dp->ds;
 
-Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
+	dev_mc_sync(master, dev); // DSA is a stacked device
+	dev_uc_sync(master, dev);
+	if (dsa_switch_supports_mc_filtering(ds))
+		__dev_mc_sync(dev, dsa_slave_sync_mc, dsa_slave_unsync_mc); // DSA is also a hardware device
+	if (dsa_switch_supports_uc_filtering(ds))
+		__dev_uc_sync(dev, dsa_slave_sync_uc, dsa_slave_unsync_uc);
+}
 
-Jason
+What I'm noticing is that some addresses, for example 33:33:00:00:00:01
+(added by addrconf.c as in6addr_linklocal_allnodes) are synced to the
+master via dev_mc_sync(), but not to hardware by __dev_mc_sync().
+
+Superficially, this is because dev_mc_sync() -> __hw_addr_sync_one()
+will increase ha->sync_cnt to a non-zero value. Then, when __dev_mc_sync()
+-> __hw_addr_sync_dev() checks ha->sync_cnt, it sees that it has been
+"already synced" (not really), so it doesn't call the "sync" method
+(dsa_slave_sync_mc) for this ha.
+
+However I don't understand the deep reasons and I am confused by the
+members of struct netdev_hw_addr (synced vs sync_cnt vs refcount).
+I can't tell if this was supposed to work, given that "sync address to
+another device" is conceptually a different kind of sync than "sync
+address to hardware", so I'm a bit surprised that they share the same
+variables.
+
+Any ideas?
