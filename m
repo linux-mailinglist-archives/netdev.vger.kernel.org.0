@@ -2,74 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 637414E2695
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F50E4E26A6
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:35:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232427AbiCUMeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 08:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32986 "EHLO
+        id S1347357AbiCUMhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 08:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347415AbiCUMeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:34:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A18788B0B;
-        Mon, 21 Mar 2022 05:32:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S236565AbiCUMhA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:37:00 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5FAE1F619;
+        Mon, 21 Mar 2022 05:35:34 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBE986101F;
-        Mon, 21 Mar 2022 12:32:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E47C340E8;
-        Mon, 21 Mar 2022 12:32:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1647865953;
-        bh=0hpskIm9pWLXzICrLn1EgKCUMeLCwl9GC0pWEao0jR4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ek6GPB4XtMpHRObk48GuhMd3SeYfPYy7cEP06zfMyyJGWRivY5+JiDL/8r0rhpWz8
-         GubFKuWm71hVPaM+IBfUCgg9KE/sdgt0sRuwTqzQ2X7mDB/qD758lg3fytx6PXO09k
-         OkFnL1yBV3InIdLBFr3AR57Bqv4Sxn1pmo9Nps20=
-Date:   Mon, 21 Mar 2022 13:32:25 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     stable <stable@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        netdev <netdev@vger.kernel.org>, m.reichl@fivetechno.de,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: smsc95xx: Commits for 5.10 stable inclusion
-Message-ID: <YjhwWXCMmbUmTHSJ@kroah.com>
-References: <CAOMZO5BqzQ1vMRHHem1pRydjYQiMJOzBzyHtmaPU07jiY_4JTg@mail.gmail.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KMYxG5SyMz4xNq;
+        Mon, 21 Mar 2022 23:35:30 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1647866131;
+        bh=NQKo9FIKqY9u7TjgkhyAI+6zVMUtISL0WDla4R4QnWY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=RGe5FZYqDVS+g8AiLbzcC55LJJdJ2t7SweK6Z/nuzS5n11ncToziEunFnMQa7zFD1
+         9qLabWGzHV8lU0dJfVKTQHJ/Ia7LdUOcRzuuhDD01Tn0Pfd1hbYKY2w1EDzi6/sRDL
+         m9NX9OkM+2mMnJNfijhYfm+M+i6L3tbM69HdMBn2RxQQv314qvMfD0LEB1oX4vFEXR
+         8kXU9qG3RY+dYJA29Nqd7svbPI5CzLSAybGaTj1Xm6/hrfz1raUb1VFRzZlVmHC6l+
+         WwRZF332vH/Km8RAlRqgTpVHUBVyxuFEDm0Km508A0DK3wtj2oAkjLEMSCOSy3EuvJ
+         sjP8kKpMpi4mg==
+Date:   Mon, 21 Mar 2022 23:35:24 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: run time failure after merge of the bpf-next tree
+Message-ID: <20220321233524.5fdb66b6@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5BqzQ1vMRHHem1pRydjYQiMJOzBzyHtmaPU07jiY_4JTg@mail.gmail.com>
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/o4KJpFsc9Wpo_db5+dCT+kq";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 18, 2022 at 08:10:09AM -0300, Fabio Estevam wrote:
-> Hi,
-> 
-> I would like to request the following patches to be included
-> into the stable 5.10 tree:
-> 
-> a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
-> 0bf3885324a8 ("net: usb: Correct reset handling of smsc95xx")
-> c70c453abcbf ("smsc95xx: Ignore -ENODEV errors when device is unplugged")
-> 
-> They are already present in 5.15 and 5.16 and they fix real issues
-> on 5.10 too. I have been running 5.10 with these 3 patches applied locally
-> and no reboot/disconnect errors are seen anymore. Alexander Stein also
-> sees an smsc95xx suspend/resume issue fixed in 5.10 with the series applied.
+--Sig_/o4KJpFsc9Wpo_db5+dCT+kq
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Now queued up, thanks.
+Hi all,
 
-greg k-h
+After merging the bpf-next tree, today's linux-next qemu run (powerpc
+pseries_le_defconfig) failed with a NULL dererence.
+
+This has been fixed in the bpf-next tree after I merged it today, so I
+have cherry-picked the fix patch into today's linux-next.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/o4KJpFsc9Wpo_db5+dCT+kq
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI4cQwACgkQAVBC80lX
+0GziLAf9GiPXtltX35sPgenejdvmBoh/gRuPEaWzz2GbvgA1Ygk1n68yq40Sz21H
+7xqzccfAvitHCAld45rky2CnnqlJN0zFv9wDlWNe8ew1Zw+Zl2Yn/YmuJRFU4itk
+CYKmrxU3CumsDOBy8uGrjtyABg/OIEwVLOon13J6++fcEU4nEV4Sl6z2mkZ/ufDH
+bB+OS1hMgPqFTZ4jY69ZAALZC1f6Qm0Qz16KNxOkz0BMT9+NPNgaMeYsIlL4uxCK
+yENIRPQoLxs4B/XQopcsqwc7bYGxAyiIu/N3xMCxsTspy1PWzDZ//OqaZNyjWvVc
+OoE9uZ43fH3Npv0XF6EgcAP8r+WVvQ==
+=33je
+-----END PGP SIGNATURE-----
+
+--Sig_/o4KJpFsc9Wpo_db5+dCT+kq--
