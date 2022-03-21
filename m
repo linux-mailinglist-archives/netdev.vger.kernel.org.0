@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4321E4E333E
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:56:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8F64E3335
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:56:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231304AbiCUW4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 18:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
+        id S231295AbiCUW4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 18:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiCUWzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:55:48 -0400
+        with ESMTP id S231383AbiCUWz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:55:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E357305A;
-        Mon, 21 Mar 2022 15:37:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97563B2076;
+        Mon, 21 Mar 2022 15:37:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E0A4B81A58;
-        Mon, 21 Mar 2022 21:52:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2A09C340F2;
-        Mon, 21 Mar 2022 21:52:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BABC0B81A5E;
+        Mon, 21 Mar 2022 21:52:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B07B4C340F0;
+        Mon, 21 Mar 2022 21:52:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647899567;
-        bh=zBPAwrlnCH7aaxkOxVUA1qL6iUWum35JVI5DILXQjHA=;
+        s=k20201202; t=1647899569;
+        bh=jmP3FPdm1hh5kPbcapZm2SdByBPDlY4fxfWaKWpCmCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tEV/iWOlvCnKRt9MVMWBRSdfMvQE+wlb2ph/0pPh8VVs2QwSYVAosOTjnQonE6GMc
-         iGDwAc5s0ukDP/o2d376+NDWwHZCPqp524Z+hx8F6VuGxn5OyS7iuy8EqJxsyUrgSn
-         B4YYoClTNjk7n+Q6BEFIe1fhc2YEBKKgaicaIG+ejXfHK8xORQFHPByB1VSF9NBgfc
-         Nx/INnTefkAeNL/yfgaxkj5uFcBK6qCqXfTmlveoLosvCNY2zggFPyGmn40rypicTv
-         tsnwUhddeS0RvVKdBdrgn8qs+AuBlpWEZo0cyCu+lLzXxQN2jB8UrsPWUIj3HKMMR/
-         lGKrL+P3LGqgQ==
+        b=r1V3JgMXsulEUhPXSYUr05+H2bBJ5VThKT0WH8uAqspWWuMY4IWh9h9R3iJVTLgnl
+         Ur5F1i4QEYmR0W5FdoOr4emkEDsf7SEXdreVYGaWbMKrHe/3qLyvegrhjFZhSmD4G4
+         83qvtgldY00BheXdsJS1+pKDOcHqCYtrhWQUoU8wqy4SNn/6DCYQvuGExUy/v6a3tE
+         FtibWn9+CYAOW47730m4VGjLYaVE41IKSRgcAWIOqusWSSGEfNBZgo2PRW6+h09SIx
+         +Ym0N7rqw4pgX0/L4nmYXwQOOCWGNz+lUlx3GL13mJXWpaI5WsSyF5LMnVaFZ6H8sJ
+         tnbKF0lcABtug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 3/6] net: ipv6: fix skb_over_panic in __ip6_append_data
-Date:   Mon, 21 Mar 2022 17:52:34 -0400
-Message-Id: <20220321215240.490132-3-sashal@kernel.org>
+Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 4/6] net: dsa: microchip: add spi_device_id tables
+Date:   Mon, 21 Mar 2022 17:52:35 -0400
+Message-Id: <20220321215240.490132-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220321215240.490132-1-sashal@kernel.org>
 References: <20220321215240.490132-1-sashal@kernel.org>
@@ -60,50 +59,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tadeusz Struk <tadeusz.struk@linaro.org>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit 5e34af4142ffe68f01c8a9acae83300f8911e20c ]
+[ Upstream commit e981bc74aefc6a177b50c16cfa7023599799cf74 ]
 
-Syzbot found a kernel bug in the ipv6 stack:
-LINK: https://syzkaller.appspot.com/bug?id=205d6f11d72329ab8d62a610c44c5e7e25415580
-The reproducer triggers it by sending a crafted message via sendmmsg()
-call, which triggers skb_over_panic, and crashes the kernel:
+Add spi_device_id tables to avoid logs like "SPI driver ksz9477-switch
+has no spi_device_id".
 
-skbuff: skb_over_panic: text:ffffffff84647fb4 len:65575 put:65575
-head:ffff888109ff0000 data:ffff888109ff0088 tail:0x100af end:0xfec0
-dev:<NULL>
-
-Update the check that prevents an invalid packet with MTU equal
-to the fregment header size to eat up all the space for payload.
-
-The reproducer can be found here:
-LINK: https://syzkaller.appspot.com/text?tag=ReproC&x=1648c83fb00000
-
-Reported-by: syzbot+e223cf47ec8ae183f2a0@syzkaller.appspotmail.com
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/r/20220310232538.1044947-1-tadeusz.struk@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_output.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/microchip/ksz8795_spi.c | 11 +++++++++++
+ drivers/net/dsa/microchip/ksz9477_spi.c | 12 ++++++++++++
+ 2 files changed, 23 insertions(+)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 61970fd839c3..8aaf9cf3d74a 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1476,8 +1476,8 @@ static int __ip6_append_data(struct sock *sk,
- 		      sizeof(struct frag_hdr) : 0) +
- 		     rt->rt6i_nfheader_len;
+diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
+index 866767b70d65..b0a7dee27ffc 100644
+--- a/drivers/net/dsa/microchip/ksz8795_spi.c
++++ b/drivers/net/dsa/microchip/ksz8795_spi.c
+@@ -124,12 +124,23 @@ static const struct of_device_id ksz8795_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ksz8795_dt_ids);
  
--	if (mtu < fragheaderlen ||
--	    ((mtu - fragheaderlen) & ~7) + fragheaderlen < sizeof(struct frag_hdr))
-+	if (mtu <= fragheaderlen ||
-+	    ((mtu - fragheaderlen) & ~7) + fragheaderlen <= sizeof(struct frag_hdr))
- 		goto emsgsize;
++static const struct spi_device_id ksz8795_spi_ids[] = {
++	{ "ksz8765" },
++	{ "ksz8794" },
++	{ "ksz8795" },
++	{ "ksz8863" },
++	{ "ksz8873" },
++	{ },
++};
++MODULE_DEVICE_TABLE(spi, ksz8795_spi_ids);
++
+ static struct spi_driver ksz8795_spi_driver = {
+ 	.driver = {
+ 		.name	= "ksz8795-switch",
+ 		.owner	= THIS_MODULE,
+ 		.of_match_table = of_match_ptr(ksz8795_dt_ids),
+ 	},
++	.id_table = ksz8795_spi_ids,
+ 	.probe	= ksz8795_spi_probe,
+ 	.remove	= ksz8795_spi_remove,
+ 	.shutdown = ksz8795_spi_shutdown,
+diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
+index e3cb0e6c9f6f..43addeabfc25 100644
+--- a/drivers/net/dsa/microchip/ksz9477_spi.c
++++ b/drivers/net/dsa/microchip/ksz9477_spi.c
+@@ -98,12 +98,24 @@ static const struct of_device_id ksz9477_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ksz9477_dt_ids);
  
- 	maxfraglen = ((mtu - fragheaderlen) & ~7) + fragheaderlen -
++static const struct spi_device_id ksz9477_spi_ids[] = {
++	{ "ksz9477" },
++	{ "ksz9897" },
++	{ "ksz9893" },
++	{ "ksz9563" },
++	{ "ksz8563" },
++	{ "ksz9567" },
++	{ },
++};
++MODULE_DEVICE_TABLE(spi, ksz9477_spi_ids);
++
+ static struct spi_driver ksz9477_spi_driver = {
+ 	.driver = {
+ 		.name	= "ksz9477-switch",
+ 		.owner	= THIS_MODULE,
+ 		.of_match_table = of_match_ptr(ksz9477_dt_ids),
+ 	},
++	.id_table = ksz9477_spi_ids,
+ 	.probe	= ksz9477_spi_probe,
+ 	.remove	= ksz9477_spi_remove,
+ 	.shutdown = ksz9477_spi_shutdown,
 -- 
 2.34.1
 
