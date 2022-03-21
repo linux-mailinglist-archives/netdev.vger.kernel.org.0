@@ -2,102 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 736434E32E3
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 23:48:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A7BC4E3280
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 22:57:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiCUWr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 18:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
+        id S229657AbiCUV6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 17:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiCUWrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 18:47:35 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67843A35D7;
-        Mon, 21 Mar 2022 15:27:35 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        with ESMTP id S229522AbiCUV6g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 17:58:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D02F5E76E
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 14:55:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 81CD722175;
-        Mon, 21 Mar 2022 22:41:56 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1647898916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H8b7+3L8jyoijK3U5LHdUPt3et03RXlG9z84o4vPklU=;
-        b=o/s/oQAP6fhf078SLdCjf35BeBa/MVgWK2EQ5ACRLZmmB8sjXAdT3mItde5d4yhj+YoGJW
-        3SLTBJsX0ffwSsf8G6o0IqCEkV2zYwBf0JTd4YWhUQpjzGtOJcFLRbz7kGeP13ltxceJGS
-        NnJZuKXpaSB3iQSAX/Coq1cQjYYnYPE=
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A336B81A32
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 21:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4A63FC340F5;
+        Mon, 21 Mar 2022 21:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647899411;
+        bh=HLiDyX1DpvVJYny1sd14hXbYbtJ2lIxrQQftjVTtQg4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cN0zrkY8aff7sOD4Ve+nRkCv3wJPJgyZElXbKuUwL9Uqm/4pHST8aUFdpGNaVIOqW
+         PobHJoaynirSluiC7gvQdci6MMbDZl4VtxCpG0hains7e+8yzQ3IKoK54mahfZ5mOD
+         hQAYiWpY3w00NMkIi8vG0liIeE1r5ROZ9dBIK/BZul5CGNBws6+OaEMNg8EGbUPIFV
+         UtjUmy6Vk/yluPkJXSEoTSWTQSzlVemlyNwxI2CRZFIQEEvNayYMyKF0W/X3OLVw6A
+         xFJuMG5OoP8AlEWz89E9ySqL9gvrswlWjORO7TkioFl/4yRiBItUqF8/xRY5KXG7eE
+         Jj3Flgu1c4Jjg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3535DEAC096;
+        Mon, 21 Mar 2022 21:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 21 Mar 2022 22:41:56 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Clause 45 and Clause 22 PHYs on one MDIO bus
-In-Reply-To: <YjjhxbZgKHykJ+35@lunn.ch>
-References: <240354b0a54b37e8b5764773711b8aa3@walle.cc>
- <cdb3d3f6ad35d4e26fd8abb23b2e96a3@walle.cc> <YjjhxbZgKHykJ+35@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <4d728d267e45fe591c933c86cdfff333@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] tcp: ensure PMTU updates are processed during fastopen
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164789941121.5210.14121283533931105356.git-patchwork-notify@kernel.org>
+Date:   Mon, 21 Mar 2022 21:50:11 +0000
+References: <20220321165957.1769954-1-kuba@kernel.org>
+In-Reply-To: <20220321165957.1769954-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, ycheng@google.com,
+        weiwan@google.com, netdev@vger.kernel.org, ntspring@fb.com
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-03-21 21:36, schrieb Andrew Lunn:
->> Actually, it looks like mdiobus_c45_read() is really c45 only and only
->> used for PHYs which just support c45 and not c45-over-c22 (?). I was
->> mistaken by the heavy use of the function in phy_device.c. All the
->> methods in phy-c45.c use phy_*_mmd() functions. Thus it might only be
->> the mxl-gpy doing something fishy in its probe function.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 21 Mar 2022 09:59:57 -0700 you wrote:
+> tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
+> rise it to the local MSS. tp->mss_cache is not updated, however:
 > 
-> Yes, there is something odd here. You should search back on the
-> mailing list.
+> tcp_v6_connect():
+>   tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
+>   tcp_connect():
+>      tcp_connect_init():
+>        tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
+>      tcp_send_syn_data():
+>        tp->rx_opt.mss_clamp = tp->advmss
 > 
-> If i remember correctly, it is something like it responds to both c22
-> and c45. If it is found via c22, phylib does not set phydev->is_c45,
-> and everything ends up going indirect. So the probe additionally tries
-> to find it via c45? Or something like that.
+> [...]
 
-Yeah, found it: https://lore.kernel.org/netdev/YLaG9cdn6ewdffjV@lunn.ch/
+Here is the summary with links:
+  - [net] tcp: ensure PMTU updates are processed during fastopen
+    https://git.kernel.org/netdev/net/c/ed0c99dc0f49
 
-But that means that if the controller is not c45 capable, it will always
-fail to probe, no?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I've added the "if (regnum & MII_ADDR_C45) return -EOPNOTSUPP" to the
-mdio driver and the gpy phy will then fail to probe - as expected.
 
-Should it check for -EOPNOTSUPP and just ignore that error and continue
-probing? Or make it a no-op if probe_capabilities say it has no c45
-access so it would take advantage of a quirk flag (derived from dt)?
-
->> Nevertheless, I'd still need the opt-out of any c45 access. Otherwise,
->> if someone will ever implement c45 support for the mdio-mscc-mdio
->> driver, I'll run in the erratic behavior.
-> 
-> Yah, i need to think about that. Are you purely in the DT world, or is
-> ACPI also an option?
-
-Just DT world.
-
-> Maybe extend of_mdiobus_register() to look for a DT property to limit
-> what values probe_capabilities can take?
-
-I'll have to give it a try. First I was thinking that we wouldn't need
-it because a broken PHY driver could just set a quirk 
-"broken_c45_access"
-or similar. But that would mean it has to be probed before any c45 PHY.
-Dunno if that will be true for the future. And it sounds rather fragile.
-So yes, a dt property might be a better option.
-
--michael
