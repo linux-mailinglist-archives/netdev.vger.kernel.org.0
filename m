@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F090F4E30DD
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 20:43:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE6464E30E6
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 20:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245480AbiCUTo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 15:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
+        id S1347539AbiCUTst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 15:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242624AbiCUTo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 15:44:58 -0400
+        with ESMTP id S239684AbiCUTsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 15:48:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEC8572E10
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 12:43:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2158176298
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 12:47:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58D64B819BE
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 19:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1D79C340E8;
-        Mon, 21 Mar 2022 19:43:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE240B819BC
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 19:47:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDEBDC340E8;
+        Mon, 21 Mar 2022 19:47:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647891810;
-        bh=x//9Wh+ojA5nbP498FO16reYQz7a7y5jcbtEgIJ1nJI=;
+        s=k20201202; t=1647892039;
+        bh=WrVmoyHHvP3KxUHXy/LLNp8kMGX3mrL7tjuXvepd5GY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dqLzIO3327uROD0ZcthcuEUvrpJ0GHKlmTpTQxQNHLXhKRd5euDGc4n/fNo26p/uq
-         mP1uS8olSm4ffZ6Dv4/r+t+I7kumlLET7+WCgs0ciVndMnUokgkNaA3ah+8tiTuVve
-         Rpe08DJldmeIlJ6qbbsLjS/aExjUW8PGTHpepyBNew8W21wYEmLNZnJx+v9Wlxk+/T
-         gIQSsZtn0IjhjbV7DrtG84y4+h0VVN7D3W4EnBcUY4AaJTT8tjbOjlLUR7Lh2/i2Hy
-         gIJWmJlJ60JYEItivsfZpDLR3nmwxokmiRyiEm6xFrqvU8aZy4Wc2O+JVEbs3o6Nwa
-         +iH/LtGXzHUVg==
-Date:   Mon, 21 Mar 2022 12:43:28 -0700
+        b=UtdS+QfVGukgH9glb0lEXRud63OkpLWfVI8boFoL9pESGoIHuCFUsOpvHrzWrJRSz
+         v1Z9v8QP+ISylmq+rekvN6A+jN1uaUhVFC9yKqNtFXxvAREKfkJ4uhDFRvN4t43+LQ
+         StjNB7GG+0wJgZBzCUvg4RczhLatvDiUCwC71+plKBw+fTHpic0MMe9TlW0vqA+5T4
+         gbGSLU8qxzck7+AC9HwBnFMZl851wlWGD9X6Y0gUvKfNAXJui7XfrlXaUzlBVgCzIl
+         RRFg8SwBJaCr/3Z8+H1LawB+5UrDVQLQuW+xXtVXN6BMwM2PQyMDrnouywU26gP8+r
+         tAiOe2G2hl+FA==
+Date:   Mon, 21 Mar 2022 12:47:17 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Yuchung Cheng <ycheng@google.com>,
-        Wei Wang <weiwan@google.com>, netdev <netdev@vger.kernel.org>,
-        Neil Spring <ntspring@fb.com>
-Subject: Re: [PATCH net] tcp: ensure PMTU updates are processed during
- fastopen
-Message-ID: <20220321124328.524139c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89i+2WXu2dFf6sg-G1NbBnoEmQuFmek3RxjW5HL6t93zG4g@mail.gmail.com>
-References: <20220321165957.1769954-1-kuba@kernel.org>
-        <CANn89i+2WXu2dFf6sg-G1NbBnoEmQuFmek3RxjW5HL6t93zG4g@mail.gmail.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     <davem@davemloft.net>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <lars.povlsen@microchip.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next 0/2] net: sparx5: Add multicast support
+Message-ID: <20220321124717.610fdcdf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <2c3b730d91c8a39e3e6131237ff1274dbd4b9cbb.camel@microchip.com>
+References: <20220321101446.2372093-1-casper.casan@gmail.com>
+        <164786941368.23699.3039977702070639823.git-patchwork-notify@kernel.org>
+        <2c3b730d91c8a39e3e6131237ff1274dbd4b9cbb.camel@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,7 +56,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 21 Mar 2022 12:32:34 -0700 Eric Dumazet wrote:
-> Do you have a packetdrill test by any chance ?
+On Mon, 21 Mar 2022 14:33:34 +0100 Steen Hegelund wrote:
+> I have just added some comments to the series, and I have not had
+> more than a few hours to look at it, so I do not think that you have
+> given this enough time to mature.
 
-I don't :( I was using veths to repro.
+Sorry about that. Is it possible to fix the issues in a follow up
+or should we revert the patches?
