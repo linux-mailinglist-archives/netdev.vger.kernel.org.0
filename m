@@ -2,52 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5B634E2E81
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 17:50:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A254E2EA8
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 18:00:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350310AbiCUQvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 12:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44820 "EHLO
+        id S1351545AbiCURBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 13:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238378AbiCUQvi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 12:51:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB095AED9
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:50:13 -0700 (PDT)
+        with ESMTP id S1351544AbiCURBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 13:01:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92646D97C
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 09:59:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54663B81890
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 16:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 05E1BC340F2;
-        Mon, 21 Mar 2022 16:50:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44ADA6143A
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 16:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D2FC340E8;
+        Mon, 21 Mar 2022 16:59:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647881411;
-        bh=KLINMYNyq1Cco7DS0TNTOv2cLWiwGUh2B8jAsCus97A=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PdeXx6l5Qs00XsiQMarVZbKkwK2o85WHFUQoI20XEVXt5DTszZ+ca1rIuFWWMIF5N
-         M7wOUypx6H815DHEDALvHReQLOC5B1/vQJUqJeHIlZV7459MrmZHXuGFRemsCOmW+P
-         3WnomHE6sA0cLEmbEgTPXpJCMlB83OwHUEbIHkXZU6rzGKfHCXl4OFqhCvHACkflrM
-         ABqLH5RNdkAolTV/8NLbe431LRJ+GZJbuVoTDFXUpXUfxybQ0PfqGdzOTr+VTR5siX
-         qBvkd1roJkKlW49kAf+YwBnFiFK8Hvd1x7c6d+uzwptYiFGNQsz4gxL7+xr7RZ841A
-         btlUR0U2grrbQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D78E4EAC09C;
-        Mon, 21 Mar 2022 16:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1647881998;
+        bh=R6rIpy355nqLjsDBshcsMBVnnQqtVycDCqLjAE4VaMM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ca0MPj2LfmZqDArE5PA10k+YhboTcfaIBhlvIUzQUgkIsyMfcYC656aaeZ2umd06l
+         aXnPev37D9+QxF+Ncgi6XZY5lE6shUWgWWKHOiG4qkkj9X/f13g00zQE4j00X9dGzO
+         vSQZWl9nOqEcwi5UEz7bcYwhNzqSzVQI41hXE4+1cA5YZL2xzYB9VXua2GgTKNORdo
+         dzVn4w9wPoUKqv3+6/yzNgX8rRa30szSNbzEU/UOYa9gELhYCTUsQtL6Yyacfiqsyk
+         wj/V30w0bUhKg2Ht6Uh9sspCKIKgQWd5iciMWHLJxPNtZCyqFzSGM2B3oKKzAnidvG
+         6AJh/8MWUDiog==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net, edumazet@google.com
+Cc:     ycheng@google.com, weiwan@google.com, netdev@vger.kernel.org,
+        ntspring@fb.com
+Subject: [PATCH net] tcp: ensure PMTU updates are processed during fastopen
+Date:   Mon, 21 Mar 2022 09:59:57 -0700
+Message-Id: <20220321165957.1769954-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/5] devlink: hold the instance lock in eswitch
- callbacks
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164788141087.8756.4036477791453541767.git-patchwork-notify@kernel.org>
-Date:   Mon, 21 Mar 2022 16:50:10 +0000
-References: <20220318192344.1587891-1-kuba@kernel.org>
-In-Reply-To: <20220318192344.1587891-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, jiri@resnulli.us,
-        leonro@nvidia.com, saeedm@nvidia.com, idosch@idosch.org,
-        michael.chan@broadcom.com, simon.horman@corigine.com
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,45 +51,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+tp->rx_opt.mss_clamp is not populated, yet, during TFO send so we
+rise it to the local MSS. tp->mss_cache is not updated, however:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+tcp_v6_connect():
+  tp->rx_opt.mss_clamp = IPV6_MIN_MTU - headers;
+  tcp_connect():
+     tcp_connect_init():
+       tp->mss_cache = min(mtu, tp->rx_opt.mss_clamp)
+     tcp_send_syn_data():
+       tp->rx_opt.mss_clamp = tp->advmss
 
-On Fri, 18 Mar 2022 12:23:39 -0700 you wrote:
-> Series number 2 in the effort to hold the devlink instance lock
-> in call driver callbacks. We have the following drivers using
-> this API:
-> 
->  - bnxt, nfp, netdevsim - their own locking is removed / simplified
->    by this series; all of them needed a lock to protect from changes
->    to the number of VFs while switching modes, now the VF config bus
->    callback takes the devlink instance lock via devl_lock();
->  - ice - appears not to allow changing modes while SR-IOV enabled,
->    so nothing to do there;
->  - liquidio - does not contain any locking;
->  - octeontx2/af - is very special but at least doesn't have locking
->    so doesn't get in the way either;
->  - mlx5 has a wealth of locks - I chickened out and dropped the lock
->    in the callbacks so that I can leave the driver be, for now.
-> 
-> [...]
+After recent fixes to ICMPv6 PTB handling we started dropping
+PMTU updates higher than tp->mss_cache. Because of the stale
+tp->mss_cache value PMTU updates during TFO are always dropped.
 
-Here is the summary with links:
-  - [net-next,v2,1/5] bnxt: use the devlink instance lock to protect sriov
-    https://git.kernel.org/netdev/net-next/c/7a1b0b1a555e
-  - [net-next,v2,2/5] devlink: add explicitly locked flavor of the rate node APIs
-    https://git.kernel.org/netdev/net-next/c/8879b32a3a80
-  - [net-next,v2,3/5] netdevsim: replace port_list_lock with devlink instance lock
-    https://git.kernel.org/netdev/net-next/c/76eea6c2e663
-  - [net-next,v2,4/5] netdevsim: replace vfs_lock with devlink instance lock
-    https://git.kernel.org/netdev/net-next/c/aff3a9250946
-  - [net-next,v2,5/5] devlink: hold the instance lock during eswitch_mode callbacks
-    https://git.kernel.org/netdev/net-next/c/14e426bf1a4d
+Thanks to Wei for helping zero in on the problem and the fix!
 
-You are awesome, thank you!
+Fixes: c7bb4b89033b ("ipv6: tcp: drop silly ICMPv6 packet too big messages")
+Reported-by: Andre Nash <alnash@fb.com>
+Reported-by: Neil Spring <ntspring@fb.com>
+Reviewed-by: Wei Wang <weiwan@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/ipv4/tcp_output.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 5079832af5c1..257780f93305 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3719,6 +3719,7 @@ static void tcp_connect_queue_skb(struct sock *sk, struct sk_buff *skb)
+  */
+ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
+ {
++	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct tcp_fastopen_request *fo = tp->fastopen_req;
+ 	int space, err = 0;
+@@ -3733,8 +3734,10 @@ static int tcp_send_syn_data(struct sock *sk, struct sk_buff *syn)
+ 	 * private TCP options. The cost is reduced data space in SYN :(
+ 	 */
+ 	tp->rx_opt.mss_clamp = tcp_mss_clamp(tp, tp->rx_opt.mss_clamp);
++	/* Sync mss_cache after updating the mss_clamp */
++	tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+ 
+-	space = __tcp_mtu_to_mss(sk, inet_csk(sk)->icsk_pmtu_cookie) -
++	space = __tcp_mtu_to_mss(sk, icsk->icsk_pmtu_cookie) -
+ 		MAX_TCP_OPTION_SPACE;
+ 
+ 	space = min_t(size_t, space, fo->size);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
