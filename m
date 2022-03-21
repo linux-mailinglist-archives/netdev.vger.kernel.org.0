@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A47F4E268E
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 058404E266A
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 13:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347396AbiCUMcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 08:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53780 "EHLO
+        id S1347409AbiCUMcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 08:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347378AbiCUMc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:32:26 -0400
+        with ESMTP id S242294AbiCUMc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 08:32:27 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73D4984EEB;
-        Mon, 21 Mar 2022 05:31:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CAF4C85642;
+        Mon, 21 Mar 2022 05:31:01 -0700 (PDT)
 Received: from localhost.localdomain (unknown [78.30.32.163])
-        by mail.netfilter.org (Postfix) with ESMTPSA id 26BB763034;
+        by mail.netfilter.org (Postfix) with ESMTPSA id B58FD63035;
         Mon, 21 Mar 2022 13:28:18 +0100 (CET)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 06/19] netfilter: nft_lookup: only cancel tracking for clobbered dregs
-Date:   Mon, 21 Mar 2022 13:30:39 +0100
-Message-Id: <20220321123052.70553-7-pablo@netfilter.org>
+Subject: [PATCH net-next 07/19] netfilter: nft_meta: extend reduce support to bridge family
+Date:   Mon, 21 Mar 2022 13:30:40 +0100
+Message-Id: <20220321123052.70553-8-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220321123052.70553-1-pablo@netfilter.org>
 References: <20220321123052.70553-1-pablo@netfilter.org>
@@ -39,46 +39,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-In most cases, nft_lookup will be read-only, i.e. won't clobber
-registers.  In case of map, we need to cancel the registers that will
-see stores.
+its enough to export the meta get reduce helper and then call it
+from nft_meta_bridge too.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nft_lookup.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ include/net/netfilter/nft_meta.h       | 2 ++
+ net/bridge/netfilter/nft_meta_bridge.c | 1 +
+ net/netfilter/nft_meta.c               | 5 +++--
+ 3 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nft_lookup.c b/net/netfilter/nft_lookup.c
-index 90becbf5bff3..dfae12759c7c 100644
---- a/net/netfilter/nft_lookup.c
-+++ b/net/netfilter/nft_lookup.c
-@@ -253,6 +253,17 @@ static int nft_lookup_validate(const struct nft_ctx *ctx,
+diff --git a/include/net/netfilter/nft_meta.h b/include/net/netfilter/nft_meta.h
+index 246fd023dcf4..9b51cc67de54 100644
+--- a/include/net/netfilter/nft_meta.h
++++ b/include/net/netfilter/nft_meta.h
+@@ -44,4 +44,6 @@ int nft_meta_set_validate(const struct nft_ctx *ctx,
+ 			  const struct nft_expr *expr,
+ 			  const struct nft_data **data);
+ 
++bool nft_meta_get_reduce(struct nft_regs_track *track,
++			 const struct nft_expr *expr);
+ #endif
+diff --git a/net/bridge/netfilter/nft_meta_bridge.c b/net/bridge/netfilter/nft_meta_bridge.c
+index 380a31ebf840..8c3eaba87ad2 100644
+--- a/net/bridge/netfilter/nft_meta_bridge.c
++++ b/net/bridge/netfilter/nft_meta_bridge.c
+@@ -99,6 +99,7 @@ static const struct nft_expr_ops nft_meta_bridge_get_ops = {
+ 	.eval		= nft_meta_bridge_get_eval,
+ 	.init		= nft_meta_bridge_get_init,
+ 	.dump		= nft_meta_get_dump,
++	.reduce		= nft_meta_get_reduce,
+ };
+ 
+ static bool nft_meta_bridge_set_reduce(struct nft_regs_track *track,
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 482eed7c7bbf..ac4859241e17 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -752,8 +752,8 @@ static int nft_meta_get_offload(struct nft_offload_ctx *ctx,
  	return 0;
  }
  
-+static bool nft_lookup_reduce(struct nft_regs_track *track,
-+			      const struct nft_expr *expr)
-+{
-+	const struct nft_lookup *priv = nft_expr_priv(expr);
-+
-+	if (priv->set->flags & NFT_SET_MAP)
-+		nft_reg_track_cancel(track, priv->dreg, priv->set->dlen);
-+
-+	return false;
-+}
-+
- static const struct nft_expr_ops nft_lookup_ops = {
- 	.type		= &nft_lookup_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_lookup)),
-@@ -263,6 +274,7 @@ static const struct nft_expr_ops nft_lookup_ops = {
- 	.destroy	= nft_lookup_destroy,
- 	.dump		= nft_lookup_dump,
- 	.validate	= nft_lookup_validate,
-+	.reduce		= nft_lookup_reduce,
- };
+-static bool nft_meta_get_reduce(struct nft_regs_track *track,
+-				const struct nft_expr *expr)
++bool nft_meta_get_reduce(struct nft_regs_track *track,
++			 const struct nft_expr *expr)
+ {
+ 	const struct nft_meta *priv = nft_expr_priv(expr);
+ 	const struct nft_meta *meta;
+@@ -775,6 +775,7 @@ static bool nft_meta_get_reduce(struct nft_regs_track *track,
  
- struct nft_expr_type nft_lookup_type __read_mostly = {
+ 	return nft_expr_reduce_bitwise(track, expr);
+ }
++EXPORT_SYMBOL_GPL(nft_meta_get_reduce);
+ 
+ static const struct nft_expr_ops nft_meta_get_ops = {
+ 	.type		= &nft_meta_type,
 -- 
 2.30.2
 
