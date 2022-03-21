@@ -2,113 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3644E2CB7
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:46:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CEA54E2CC7
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 16:47:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350515AbiCUPrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 11:47:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
+        id S1350539AbiCUPtE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 21 Mar 2022 11:49:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350522AbiCUPrb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:47:31 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F52357B1A;
-        Mon, 21 Mar 2022 08:46:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647877566; x=1679413566;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pu7vZcm3vds3YMiUNrGH7dI0e1cLyRyYAZeDHVPZQ6Q=;
-  b=OwwM4e0zBZMujiHvgXO59HILe3VFiiULSooFeeVYYblWArgMOcNYXkoK
-   dQgvLawtRUmEB/cOhM1wkNYWNMK4Eey/WUX7nhQ0LwMw/GENJarNvZxwD
-   A7gtB2BXFRiR1gGNRfpt7W6tpiV88gewn5VMNkPPfubyasZBHbSPRF0NP
-   QFUWTgmf11FqCenETH7Uy3j6c9/bVID3L+jfxsz6fDO4gg+SsExCTISc1
-   A7YkVaQpoFIaMjXQ0jM0ORHSbtSzCC0zF7NdZ7eAfZr1s4zdrxR06Ao+r
-   8nVNlXaYUNhb6OoiH3fAiHT/qiTvRkltt/45DvqLXwky1sXamXl7z7l26
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10292"; a="282409575"
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="282409575"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2022 08:46:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,199,1643702400"; 
-   d="scan'208";a="582906172"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 21 Mar 2022 08:46:03 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nWKEM-000Hww-O1; Mon, 21 Mar 2022 15:46:02 +0000
-Date:   Mon, 21 Mar 2022 23:44:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Roopa Prabhu <roopa@nvidia.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] vxlan: fix returnvar.cocci warnings
-Message-ID: <20220321154456.GA30106@e0e7ddfdfbf7>
-References: <202203212331.4ZEJaAXK-lkp@intel.com>
+        with ESMTP id S1349115AbiCUPtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 11:49:03 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63829606C0
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 08:47:37 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-246-Ub5TnyEPOam9cnZmzS-F3A-2; Mon, 21 Mar 2022 15:47:34 +0000
+X-MC-Unique: Ub5TnyEPOam9cnZmzS-F3A-2
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Mon, 21 Mar 2022 15:47:28 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Mon, 21 Mar 2022 15:47:28 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Alexander Lobakin' <alexandr.lobakin@intel.com>,
+        Wan Jiabing <wanjiabing@vivo.com>
+CC:     Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [Intel-wired-lan] [PATCH] ice: use min() to make code cleaner in
+ ice_gnss
+Thread-Topic: [Intel-wired-lan] [PATCH] ice: use min() to make code cleaner in
+ ice_gnss
+Thread-Index: AQHYPRqWSkYKaVGfxkysTLMqXUCuZazJ+yGQ
+Date:   Mon, 21 Mar 2022 15:47:28 +0000
+Message-ID: <ff90ebe7eed741829dc03b2bf92a41f7@AcuMS.aculab.com>
+References: <20220318094629.526321-1-wanjiabing@vivo.com>
+ <8822dfa2-bdb8-fceb-e920-94afb50881e8@intel.com>
+ <20220321115412.844440-1-alexandr.lobakin@intel.com>
+In-Reply-To: <20220321115412.844440-1-alexandr.lobakin@intel.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202203212331.4ZEJaAXK-lkp@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+> Use `min_t(typeof(bytes_left), ICE_MAX_I2C_DATA_SIZE)` to avoid
+> this. Plain definitions are usually treated as `unsigned long`
+> unless there's a suffix (u, ull etc.).
 
-drivers/net/vxlan/vxlan_core.c:2962:5-8: Unneeded variable: "ret". Return "0" on line 2971
+I suspect they are 'int'.
+And the compiler will convert to 'unsigned int' in any
+arithmetic.
+And the 'signed v unsigned' compare warning is supressed
+to integer constants.
 
+	David
 
- Remove unneeded variable used to store return value.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-Generated by: scripts/coccinelle/misc/returnvar.cocci
-
-Fixes: f9c4bb0b245c ("vxlan: vni filtering support on collect metadata device")
-CC: Roopa Prabhu <roopa@nvidia.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   6d72dda014a4753974eb08950089ddf71fec4f60
-commit: f9c4bb0b245cee35ef66f75bf409c9573d934cf9 [8808/13988] vxlan: vni filtering support on collect metadata device
-:::::: branch date: 3 days ago
-:::::: commit date: 3 weeks ago
-
- drivers/net/vxlan/vxlan_core.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -2959,7 +2959,6 @@ static void vxlan_flush(struct vxlan_dev
- static int vxlan_stop(struct net_device *dev)
- {
- 	struct vxlan_dev *vxlan = netdev_priv(dev);
--	int ret = 0;
- 
- 	vxlan_multicast_leave(vxlan);
- 
-@@ -2968,7 +2967,7 @@ static int vxlan_stop(struct net_device
- 	vxlan_flush(vxlan, false);
- 	vxlan_sock_release(vxlan);
- 
--	return ret;
-+	return 0;
- }
- 
- /* Stub, nothing needs to be done. */
