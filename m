@@ -2,172 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0A514E217A
-	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 08:39:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE42E4E2195
+	for <lists+netdev@lfdr.de>; Mon, 21 Mar 2022 08:50:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344984AbiCUHlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 03:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
+        id S1345037AbiCUHwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 03:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238264AbiCUHlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 03:41:09 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B60622513;
-        Mon, 21 Mar 2022 00:39:44 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4KMRMy59Ysz4xPv;
-        Mon, 21 Mar 2022 18:39:41 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1647848383;
-        bh=xDLtKCzIwCMOXBHCTysR+A2l6/zwqzCD/UzOuvSWAZI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ARNjyVoIrw6o8vWG9ZOvzpl09B5jTblExDJW+LtVbrDL1Z5zK4eFu2N5sSu6Z/QMv
-         vfVuMtzwy+EARzZ2O/Qj2lNVLgK2YzxGLZtXQlFnUsYYqXrWrxaSuSJq/Nkda2vsmo
-         qyxeBvJEYSIspuqz/p59yb/WU+FDaJ+QzWHOiQ8fQopCjzKIZDwIxY/XerR4P0nNV6
-         rnEicGuESxOAA0rQmbGHcJzIGriGZp3zrq+ds0t1bKeHpV61SYW8zcNdplHktzeb9z
-         1iShVynPMzmlFyo/HP0z1EH0N4fJTbtAKTME/eBLClg/9bly+APcQ+jthF6zB7YyOy
-         JB6DDeaXrzkOw==
-Date:   Mon, 21 Mar 2022 18:39:41 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>
-Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20220321183941.74be2543@canb.auug.org.au>
+        with ESMTP id S236143AbiCUHwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 03:52:14 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78235286E2;
+        Mon, 21 Mar 2022 00:50:47 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id B2A3A1BF20E;
+        Mon, 21 Mar 2022 07:50:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647849044;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oyewfmDrMNw+w6+feNe7eI+y5/zMvOy/2DQM7Bmk60I=;
+        b=ncVvFFrRh9wP2PFth4q+uYSwK+8q26M1t++LZ7geib9/toPxbqT3NzW+FNLv4W+YRPiq/C
+        i2xyQFIeyW7jDZPFPfGbLGyrdi4WXgveVFAD7tYOLdn/fNMhSUMnGEjMCvaQI88PZbxqlr
+        GMpSMwIBfwWopJsAW1l452eWa+JNmx9GBIXsksq5fZWxpBxUqQlPgZOTRpTAP4HXiPrbIH
+        VHGX9CyV+Mfg+qfHxduN0BAX5jR8S5byV6rM1uCUEJbracEhv3F852UUNYUzOc+NQwSCDV
+        PeNcafchnRU5Oe6znE6OIgTRi1ojJqu8HX3CVg1R7/ed0GUIFLSevp0tUKUnoA==
+Date:   Mon, 21 Mar 2022 08:49:21 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "'Rafael J . Wysocki '" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 1/6] property: add fwnode_property_read_string_index()
+Message-ID: <20220321084921.069c688e@fixe.home>
+In-Reply-To: <YjTK4UW7DwZ0S3QY@smile.fi.intel.com>
+References: <20220318160059.328208-1-clement.leger@bootlin.com>
+        <20220318160059.328208-2-clement.leger@bootlin.com>
+        <YjSymEpNH8vnkQ+L@smile.fi.intel.com>
+        <20220318174912.5759095f@fixe.home>
+        <YjTK4UW7DwZ0S3QY@smile.fi.intel.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Nd0fBZt5UlW52XVUm3/L7yX";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Nd0fBZt5UlW52XVUm3/L7yX
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Le Fri, 18 Mar 2022 20:09:37 +0200,
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit :
 
-Hi all,
+> On Fri, Mar 18, 2022 at 05:49:12PM +0100, Cl=C3=A9ment L=C3=A9ger wrote:
+> > Le Fri, 18 Mar 2022 18:26:00 +0200,
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> a =C3=A9crit : =20
+> > > On Fri, Mar 18, 2022 at 05:00:47PM +0100, Cl=C3=A9ment L=C3=A9ger wro=
+te: =20
+> > > > Add fwnode_property_read_string_index() function which allows to
+> > > > retrieve a string from an array by its index. This function is the
+> > > > equivalent of of_property_read_string_index() but for fwnode suppor=
+t.   =20
+>=20
+> ...
+>=20
+> > > > +	values =3D kcalloc(nval, sizeof(*values), GFP_KERNEL);
+> > > > +	if (!values)
+> > > > +		return -ENOMEM;
+> > > > +
+> > > > +	ret =3D fwnode_property_read_string_array(fwnode, propname, value=
+s, nval);
+> > > > +	if (ret < 0)
+> > > > +		goto out;
+> > > > +
+> > > > +	*string =3D values[index];
+> > > > +out:
+> > > > +	kfree(values);   =20
+> > >=20
+> > > Here is UAF (use after free). How is it supposed to work? =20
+> >=20
+> > values is an array of pointers. I'm only retrieving a pointer out of
+> > it. =20
+>=20
+> I see, thanks for pointing out.
+>=20
+> Nevertheless, I don't like the idea of allocating memory in this case.
+> Can we rather add a new callback that will provide us the necessary
+> property directly?
+>=20
 
-After merging the net-next tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
+IMHO, it would indeed be better. However,
+fwnode_property_match_string() also allocates memory to do the same
+kind of operation. Would you also like a callback for this one ?
 
-In file included from include/linux/string.h:253,
-                 from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from arch/x86/include/asm/cpumask.h:5,
-                 from arch/x86/include/asm/msr.h:11,
-                 from arch/x86/include/asm/processor.h:22,
-                 from arch/x86/include/asm/timex.h:5,
-                 from include/linux/timex.h:65,
-                 from include/linux/time32.h:13,
-                 from include/linux/time.h:60,
-                 from include/linux/ktime.h:24,
-                 from include/linux/timer.h:6,
-                 from include/linux/netdevice.h:24,
-                 from include/trace/events/xdp.h:8,
-                 from include/linux/bpf_trace.h:5,
-                 from drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c:33:
-In function 'fortify_memset_chk',
-    inlined from 'mlx5e_xmit_xdp_frame' at drivers/net/ethernet/mellanox/ml=
-x5/core/en/xdp.c:438:3:
-include/linux/fortify-string.h:242:25: error: call to '__write_overflow_fie=
-ld' declared with attribute warning: detected write beyond size of field (1=
-st parameter); maybe use struct_group()? [-Werror=3Dattribute-warning]
-  242 |                         __write_overflow_field(p_size_field, size);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Caused by commit
-
-  9ded70fa1d81 ("net/mlx5e: Don't prefill WQEs in XDP SQ in the multi buffe=
-r mode")
-
-exposed by the kspp tree.
-
-I have applied the following fix patch for today (a better one is
-probably possible).
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Mon, 21 Mar 2022 18:29:24 +1100
-Subject: [PATCH] fxup for "net/mlx5e: Don't prefill WQEs in XDP SQ in the m=
-ulti buffer mode"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c | 3 +--
- include/linux/mlx5/qp.h                          | 5 +++++
- 2 files changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c b/drivers/net=
-/ethernet/mellanox/mlx5/core/en/xdp.c
-index f35b62ce4c07..8f321a6c0809 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xdp.c
-@@ -435,8 +435,7 @@ mlx5e_xmit_xdp_frame(struct mlx5e_xdpsq *sq, struct mlx=
-5e_xmit_data *xdptxd,
- 		u8 num_pkts =3D 1 + num_frags;
- 		int i;
-=20
--		memset(&cseg->signature, 0, sizeof(*cseg) -
--		       sizeof(cseg->opmod_idx_opcode) - sizeof(cseg->qpn_ds));
-+		memset(&cseg->trailer, 0, sizeof(cseg->trailer));
- 		memset(eseg, 0, sizeof(*eseg) - sizeof(eseg->trailer));
-=20
- 		eseg->inline_hdr.sz =3D cpu_to_be16(inline_hdr_sz);
-diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
-index 61e48d459b23..8bda3ba5b109 100644
---- a/include/linux/mlx5/qp.h
-+++ b/include/linux/mlx5/qp.h
-@@ -202,6 +202,9 @@ struct mlx5_wqe_fmr_seg {
- struct mlx5_wqe_ctrl_seg {
- 	__be32			opmod_idx_opcode;
- 	__be32			qpn_ds;
-+
-+	struct_group(trailer,
-+
- 	u8			signature;
- 	u8			rsvd[2];
- 	u8			fm_ce_se;
-@@ -211,6 +214,8 @@ struct mlx5_wqe_ctrl_seg {
- 		__be32		umr_mkey;
- 		__be32		tis_tir_num;
- 	};
-+
-+	); /* end of trailer group */
- };
-=20
- #define MLX5_WQE_CTRL_DS_MASK 0x3f
---=20
-2.34.1
+Thanks,
 
 --=20
-Cheers,
-Stephen Rothwell
-
---Sig_/Nd0fBZt5UlW52XVUm3/L7yX
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmI4K70ACgkQAVBC80lX
-0GwSsQf/SjRsicTXSYYGxTyqF9otWEDRGHu9z6Zen6irTuRD7utl2m8heIBL18Za
-ZNDQM+tJp5uL2h80cS/V/v09QhQgb22VwweKrxgZ733duJTizPZjUWbmjTpaJGUU
-yPQ2uGah1A6gIHSZelE1pxFNs8atMQn9lXnuJC3VonlWK18d9HbDLXdZ4zhnsWzv
-BVutgzCvU8r4l4NHAN4auhkzPZpLYAkPMKPFOa6Y7Oxh54Fk7OTFM+4vaDXVT99M
-YnCiuHkE5MQxaL4j3Njb5q0Sw4Z0wquvkgbzulPpRxpixMwnr0qXlqNH11LQuDmq
-uan7jV11As4rNQwx5O2yLchxbUnGeA==
-=x6Ul
------END PGP SIGNATURE-----
-
---Sig_/Nd0fBZt5UlW52XVUm3/L7yX--
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
