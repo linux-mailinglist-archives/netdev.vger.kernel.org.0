@@ -2,118 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE744E4235
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 15:46:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A2F4E4240
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 15:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238137AbiCVOrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 10:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
+        id S238185AbiCVOtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 10:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236277AbiCVOrj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 10:47:39 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE176FA09;
-        Tue, 22 Mar 2022 07:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647960369; x=1679496369;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zP725tvXUiO7zKOyNAbjmJfwuMlzSbKo9AwbYYlFB/U=;
-  b=gxmJV7osb3tq9BvThiJENUb79TnL85WN3ES3AP6N44fswtIu+F8UVDkZ
-   2FlqtICeHbmk70FIa3kjvDZ0BrLDIEDiKlLoiS/N8wtwys4LlNLKiqkzt
-   cslAjMA4p4yWehXQjcdxZqO5G0H5TucFXoVXc3WnC1o5ivCzspMw7fOhE
-   fhSi4bQUvQh37+pgVeHQX6/PGJHfmzdBAouZWNQ7mUmzsa8z1QuSgILC3
-   O0JshWB2D83DIL6oJYWfFA6bCO6FNANVA76zUmZavqLZMJA0lg8YA3x+k
-   kmoddcWSRCUEguCLDTVLdFz1tRrKOmPAv4Ph2I2+8FXHz8jPlpN4so+eg
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,201,1643698800"; 
-   d="scan'208";a="152834847"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Mar 2022 07:46:08 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 22 Mar 2022 07:46:08 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 22 Mar 2022 07:46:02 -0700
-Message-ID: <7526eff194e4dcfec1b8d88fc30b22aeb83e3100.camel@microchip.com>
-Subject: Re: [PATCH v9 net-next 02/11] dt-bindings: net: add mdio property
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
-        <UNGLinuxDriver@microchip.com>, <woojung.huh@microchip.com>,
-        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Tue, 22 Mar 2022 20:16:00 +0530
-In-Reply-To: <YjkJxykT2dQxe3d/@robh.at.kernel.org>
-References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
-         <20220318085540.281721-3-prasanna.vengateshan@microchip.com>
-         <YjkJxykT2dQxe3d/@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
+        with ESMTP id S238609AbiCVOsk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 10:48:40 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB78976E06;
+        Tue, 22 Mar 2022 07:47:11 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id e16so16011467lfc.13;
+        Tue, 22 Mar 2022 07:47:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=Wb2ma3uVeIWnLHFtR3kKOKEIt80yrxzBwcG4cgGN60c=;
+        b=mHSjbQq+OgyRwkqECYu3nqz5ujv01cV7cVXHUmooouQxNKsFWEUB4s48v5dviHz9Yd
+         wBNrq5OIK0l2Lrh/4XmltSFrCs3Xvi7JTxfWj62cCOb0hQy0lSLzhCLOyuN881QCjJ+j
+         YliwuttuJ4nuFGCdYsQoeawBMgz9neTb/DTmwE3WI//X98k9NoSvnmq9n9hl+DgR1RuU
+         2EXvCywQEvcQK6VIKGAUFRHzLPUNy69o1hDrKTLjMsHVKCwS6WM6+xDX595GinO9ubbL
+         URUnRL8fTTOM/Cc2Y1Wvf4akOeL6bE13ryIiTrDbw2TlyonSk2MmqzLNbJq9X/0Qc6jW
+         3cfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Wb2ma3uVeIWnLHFtR3kKOKEIt80yrxzBwcG4cgGN60c=;
+        b=GaooPlg+qSp3VPAF7BLBfylLKxgby35wH+MlTTxtxgeV0eO0xlXZG00Yvp14kH8FP3
+         qGbYR3r96ENmjxc6MSyiKYkto7SsvQlyqN/8NY5hO4ROWOpI7cukX//RS1hRXC0B5QZg
+         KXjc7wbog1bQjmkxNjn1PRf1PVejWz0eXPgTxX7A/+y6QGM6QvOt5lPgwMujAXLHB99l
+         sCiW9lYC0i94qaeQkOR0+f8pv9DnoT7FCNEDR9xL6LbrColRhH8bDRrAEWIkB4F6xAhp
+         lrMcnTnpiNpodkUgLyNRDkeVGvjO10ebLSYSmRih2tVYJuLiR2gWFNfqPfw3UJZyN2aq
+         dyFw==
+X-Gm-Message-State: AOAM531L6CEFgF8w+0gi0nXJTo07tudm9pQ1xxuIlaFx9NQe0+4KYKa1
+        3dXv4IXtEX81yEjbwmvgtTk=
+X-Google-Smtp-Source: ABdhPJza5+qDIUgZlsYxL349CWJBQ13kC9g3HL7gLt26EQE8U0XWtKHGzDJSUk/i7YGp4UdGj6nfNw==
+X-Received: by 2002:a05:6512:a8e:b0:44a:2db0:8045 with SMTP id m14-20020a0565120a8e00b0044a2db08045mr6747464lfu.30.1647960428432;
+        Tue, 22 Mar 2022 07:47:08 -0700 (PDT)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id g2-20020a2ea4a2000000b0024983b1a8dcsm755478ljm.105.2022.03.22.07.47.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 07:47:07 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Hans Schultz <schultz.hans@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Hans Schultz <schultz.hans@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <86ee2ujf61.fsf@gmail.com>
+References: <20220317153625.2ld5zgtuhoxbcgvo@skbuf>
+ <86ilscr2a4.fsf@gmail.com> <20220317161808.psftauoz5iaecduy@skbuf>
+ <8635jg5xe5.fsf@gmail.com> <20220317172013.rhjvknre5w7mfmlo@skbuf>
+ <86tubvk24r.fsf@gmail.com> <20220318121400.sdc4guu5m4auwoej@skbuf>
+ <86pmmjieyl.fsf@gmail.com> <20220318131943.hc7z52beztqlzwfq@skbuf>
+ <86a6dixnd2.fsf@gmail.com> <20220322110806.kbdb362jf6pbtqaf@skbuf>
+ <86ee2ujf61.fsf@gmail.com>
+Date:   Tue, 22 Mar 2022 15:47:05 +0100
+Message-ID: <86r16u6o46.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-03-21 at 18:27 -0500, Rob Herring wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> On Fri, Mar 18, 2022 at 02:25:31PM +0530, Prasanna Vengateshan wrote:
-> > mdio bus is applicable to any switch hence it is added as per the below
-> > request,
-> > https://lore.kernel.org/netdev/1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com/
-> 
-> Quoting that thread:
-> 
-> > Yes indeed, since this is a common property of all DSA switches, it can
-> > be defined or not depending on whether the switch does have an internal
-> > MDIO bus controller or not.
-> 
-> Whether or not a switch has an MDIO controller or not is a property of
-> that switch and therefore 'mdio' needs to be documented in those switch
-> bindings.
-> 
-> > 
-> > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> > ---
-> >  Documentation/devicetree/bindings/net/dsa/dsa.yaml | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > index b9d48e357e77..0f8426e219eb 100644
-> > --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > @@ -31,6 +31,10 @@ properties:
-> >        switch 1. <1 0> is cluster 1, switch 0. A switch not part of any
-> > cluster
-> >        (single device hanging off a CPU port) must not specify this property
-> >      $ref: /schemas/types.yaml#/definitions/uint32-array
-> > +
-> > +  mdio:
-> > +    $ref: /schemas/net/mdio.yaml#
-> > +    unevaluatedProperties: false
-> 
-> From a schema standpoint, this bans every switch from adding additional
-> properties under an mdio node. Not likely what you want.
-> 
-> Rob
+On tis, mar 22, 2022 at 14:21, Hans Schultz <schultz.hans@gmail.com> wrote:
+> On tis, mar 22, 2022 at 13:08, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> On Tue, Mar 22, 2022 at 12:01:13PM +0100, Hans Schultz wrote:
+>>> On fre, mar 18, 2022 at 15:19, Vladimir Oltean <olteanv@gmail.com> wrote:
+>>> > On Fri, Mar 18, 2022 at 02:10:26PM +0100, Hans Schultz wrote:
+>>> >> In the offloaded case there is no difference between static and dynamic
+>>> >> flags, which I see as a general issue. (The resulting ATU entry is static
+>>> >> in either case.)
+>>> >
+>>> > It _is_ a problem. We had the same problem with the is_local bit.
+>>> > Independently of this series, you can add the dynamic bit to struct
+>>> > switchdev_notifier_fdb_info and make drivers reject it.
+>>> >
+>>> >> These FDB entries are removed when link goes down (soft or hard). The
+>>> >> zero DPV entries that the new code introduces age out after 5 minutes,
+>>> >> while the locked flagged FDB entries are removed by link down (thus the
+>>> >> FDB and the ATU are not in sync in this case).
+>>> >
+>>> > Ok, so don't let them disappear from hardware, refresh them from the
+>>> > driver, since user space and the bridge driver expect that they are
+>>> > still there.
+>>> 
+>>> I have now tested with two extra unmanaged switches (each connected to a
+>>> seperate port on our managed switch, and when migrating from one port to
+>>> another, there is member violations, but as the initial entry ages out,
+>>> a new miss violation occurs and the new port adds the locked entry. In
+>>> this case I only see one locked entry, either on the initial port or
+>>> later on the port the host migrated to (via switch).
+>>> 
+>>> If I refresh the ATU entries indefinitly, then this migration will for
+>>> sure not work, and with the member violation suppressed, it will be
+>>> silent about it.
+>>
+>> Manual says that migrations should trigger miss violations if configured
+>> adequately, is this not the case?
+>>
+> Yes, but that depends on the ATU entries ageing out. As it is now, it works.
+>
+>>> So I don't think it is a good idea to refresh the ATU entries
+>>> indefinitely.
+>>> 
+>>> Another issue I see, is that there is a deadlock or similar issue when
+>>> receiving violations and running 'bridge fdb show' (it seemed that
+>>> member violations also caused this, but not sure yet...), as the unit
+>>> freezes, not to return...
 
-Thanks for the feedback. Do you mean that the 'unevaluatedProperties: false' to
-be removed, so that the additional properties can be added? or mdio is not
-supposed to be defined in the dsa.yaml ?
+I have now verified that it is only on miss violations that the problem
+occurs, so it seems that there is a deadlock (with 'bridge fdb show')
+somehow with the nl lock that the handling of ATU miss violations
+acquires.
 
-
+>>
+>> Have you enabled lockdep, debug atomic sleep, detect hung tasks, things
+>> like that?
+>
+> No, I haven't looked deeper into it yet. Maybe I was hoping someone had
+> an idea... but I guess it cannot be a netlink deadlock?
