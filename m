@@ -2,62 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86FEA4E3A18
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 09:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3678B4E3A52
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 09:12:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiCVIJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 04:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52456 "EHLO
+        id S230229AbiCVIN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 04:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229769AbiCVIJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 04:09:26 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5371F13F95
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 01:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1647936478; x=1679472478;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zYQNtD+FBltv2TyYR5BxkKM7xxtd3n+XRFRV/2e34vQ=;
-  b=SwhBrinKxWC/NYEUq6SrYIFeGiNolTBYkFYfPxPRZtEAAtlAADS2s677
-   /sh5oK7VV4UTGNxLGJN//oxcd1jmG2di4Y6s0ceiqOduOLv4irfh8DmIv
-   5C2e5NXQ4ulGMmJX7ksI8fVRrj2gQviqu2Q7Mkab8mQ5GGuEUu+31gaPx
-   rbt7dbTkU6rEby+5d1t7ndKKmHj7lqzt2+nDthAemEmEqoVKH+Rqt9y6w
-   xXtIpc0OfdwjgqdJRNCFunO1wjlAmnouHdjQ65+MhiAsQ45ld3PMfW0dl
-   mNV4DHJfcHEqTAgKIQpJUq7f2lj26BnKo5iu6J907xW1+fSgF8dcb9m0E
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,201,1643698800"; 
-   d="scan'208";a="152794019"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Mar 2022 01:07:55 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 22 Mar 2022 01:07:54 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 22 Mar 2022 01:07:53 -0700
-Message-ID: <a47d223f28d9aa72536344f1cd7ab3c6cf91fca8.camel@microchip.com>
-Subject: Re: [PATCH net-next 0/2] net: sparx5: Add multicast support
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Casper Andersson <casper.casan@gmail.com>
-CC:     <davem@davemloft.net>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>
-Date:   Tue, 22 Mar 2022 09:06:31 +0100
-In-Reply-To: <20220321124717.610fdcdf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220321101446.2372093-1-casper.casan@gmail.com>
-         <164786941368.23699.3039977702070639823.git-patchwork-notify@kernel.org>
-         <2c3b730d91c8a39e3e6131237ff1274dbd4b9cbb.camel@microchip.com>
-         <20220321124717.610fdcdf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 
+        with ESMTP id S230208AbiCVINZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 04:13:25 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D167DF03;
+        Tue, 22 Mar 2022 01:11:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647936714;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=hNp8yDlEQPqE3EPVW7S4rvLP+Xs41OUZDqDWILoqWac=;
+    b=Z1OxvbJImZM9vEF6DtdMG0izZkkovQFkCOZihvbk2u8Uuv0cSW+77NTa4E+0eIgRuJ
+    +25fEPG7wjVjV3UERRV4Of9zEycMcdQ7iGeqEAJCwvjAjuJUW3e2d43PmAPgeC3q29TP
+    MLN91212ZPiOS/vofXrPTGM988zOV5uDQR5K/bQp03soEASrKGS0yXvxPFeuu8ZBG4tx
+    E5WpTw/CJrBVF5x5QbLLSpC65WgdXSnZIxiDwPuuLD+XqQsr4aqVyDa6za7V9r58edZx
+    lIMsUP2TeBIGpOceKfP8l7H8hW6Fbe22rjqDYhLKXbfG2oXsIfMXht8Reob6XpiCgaBz
+    eq/g==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.41.1 AUTH)
+    with ESMTPSA id cc2803y2M8BsDgH
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 22 Mar 2022 09:11:54 +0100 (CET)
+Message-ID: <5d550eea-21ae-c495-6936-1747b9619304@hartkopp.net>
+Date:   Tue, 22 Mar 2022 09:11:48 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH net-next v2] net: remove noblock parameter from
+ skb_recv_datagram()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+References: <20220319094138.84637-1-socketcan@hartkopp.net>
+ <20220321145613.5ebd85ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220321145613.5ebd85ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,22 +62,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jacub,
 
-I guess that Casper can fix the issues in a follow up.
-What do you say Casper?
 
-BR
-Steen
-
-On Mon, 2022-03-21 at 12:47 -0700, Jakub Kicinski wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On 21.03.22 22:56, Jakub Kicinski wrote:
+> On Sat, 19 Mar 2022 10:41:38 +0100 Oliver Hartkopp wrote:
+>> skb_recv_datagram() has two parameters 'flags' and 'noblock' that are
+>> merged inside skb_recv_datagram() by 'flags | (noblock ? MSG_DONTWAIT : 0)'
+>>
+>> As 'flags' may contain MSG_DONTWAIT as value most callers split the 'flags'
+>> into 'flags' and 'noblock' with finally obsolete bit operations like this:
+>>
+>> skb_recv_datagram(sk, flags & ~MSG_DONTWAIT, flags & MSG_DONTWAIT, &rc);
+>>
+>> And this is not even done consistently with the 'flags' parameter.
+>>
+>> This patch removes the obsolete and costly splitting into two parameters
+>> and only performs bit operations when really needed on the caller side.
+>>
+>> One missing conversion thankfully reported by kernel test robot. I missed
+>> to enable kunit tests to build the mctp code.
 > 
-> On Mon, 21 Mar 2022 14:33:34 +0100 Steen Hegelund wrote:
-> > I have just added some comments to the series, and I have not had
-> > more than a few hours to look at it, so I do not think that you have
-> > given this enough time to mature.
-> 
-> Sorry about that. Is it possible to fix the issues in a follow up
-> or should we revert the patches?
+> net/vmw_vsock/vmci_transport.c: In function ‘vmci_transport_dgram_dequeue’:
+> net/vmw_vsock/vmci_transport.c:1735:13: warning: unused variable ‘noblock’ [-Wunused-variable]
+>   1735 |         int noblock;
+>        |             ^~~~~~~
 
+Sorry. Double checked that really all touched files are now built on my 
+machine.
+
+(Except in af_iucv.c which depends on S390 - but double checked the 
+changes 4 times).
+
+v3 is already posted:
+https://lore.kernel.org/netdev/20220322080317.54887-1-socketcan@hartkopp.net/T/#u
+
+Best regards,
+Oliver
