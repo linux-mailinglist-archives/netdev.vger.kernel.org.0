@@ -2,89 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1ABF4E350D
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 01:07:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE4E24E3562
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 01:25:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233739AbiCVADD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 20:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52530 "EHLO
+        id S233750AbiCVARj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 20:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233451AbiCVADB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 20:03:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FA584B410;
-        Mon, 21 Mar 2022 17:00:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CE35B81AD0;
-        Tue, 22 Mar 2022 00:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C5480C340F0;
-        Tue, 22 Mar 2022 00:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647907210;
-        bh=7mbnWhk2gsDvVNZ3Wk1nPfvu+lgkukTfJP6wkI3XKXc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=u3BBCmsiv8fqWpc8tMo4CTu5KuyH2c/dsGx5RFw2cOOkxSdJfaPv9cBjoC9TrjTly
-         6uKmgS6hZldcOZv6cOrHwa2T+Z4yi+cfwiSAfloSeVPfhE+gFpvdD3Cn5zhXgUNx5+
-         F89mFpR0bbHnLW8P9BL7DcGABgZFmCDlP0bM1FLKPZz3uow4/ye7uJiif3MXzKbYSR
-         Zejjf5SPUFXnpE1WHLJLmXu7CENP3k39X5jgoPLkOljrORhDDQJm7CnbQ058Z+SNvA
-         TC+PqIZxIBKoqks7OU1c+4iwG/QVn2giSRLlDUvybrQFYGI4knmKDxkVMvgebwxe1A
-         3wEWL4XOpKlyQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A3349EAC096;
-        Tue, 22 Mar 2022 00:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233690AbiCVARi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 20:17:38 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7817D2DE794;
+        Mon, 21 Mar 2022 17:15:05 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id l18so18620656ioj.2;
+        Mon, 21 Mar 2022 17:15:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=C8V0ICZ2MM8fBPT/GcG935f784ooAUiEoHS2Z1Rzmno=;
+        b=l55a/icvfAmgvATWM55qjOxhGU1sZ+w7ES+Sop6T0Vd/UvopXVed/2Me8t9XPwXX5/
+         AuqdVKiXjXABXxqx1vIFioP+EdnQW1ntwvZMvOKBYKCDO7t1mUucwxhSAtpO6J1wchwZ
+         9v6hjPP3XVj5x+4x8+S2uAoReUI0TVVBasV/g9Ln3LAG4y9+NVFAXXvgAIsHgPQgpMBW
+         2OBY/dOnNr4O6VQGOuyD+7JMQC81efqzAdMCfhC9m2KnNXoaAylH7xzPVvP98TDAuR4E
+         8R2q8I6rMY8aT9dkMC6/vK3NRi2Hj9okATb2jp6pBXe9Ey2DeectDOhyKpNewk7LbcBb
+         RjLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=C8V0ICZ2MM8fBPT/GcG935f784ooAUiEoHS2Z1Rzmno=;
+        b=XMAcbDWZxJw77IEwdAX6dPYZoZpYYhPQkJGG0gLR6c5Ym14kU9nTxHl7zrLxVDabrw
+         Q4Ii3Jy5mxMY4tW2j4kSo7npG8LZGGtmwgb9rTUKx2fHnMO6uOk7FqE/v1Gq7TTZ6iGf
+         8MSGQNGg/3ffZ3ExnTzfWs9BWOmBDjVSizpvvx/G5Kho3vMxYwdv248e45OZWlsUua2M
+         bdM1k0XnvTNB88NodyoVt7o97LN22Kvn8mIrECymNVethR2jXhD+17iuWvUeMRTyNszJ
+         q0FAtksmkhaXrdLd4jPrjYxW+saqypQpT51s1MpMBoteMul3w5ZAtNUbRvLJYszPCRTC
+         Ez/g==
+X-Gm-Message-State: AOAM530EpZm/4fhkvC9v1sOFvR1vPl2MqBqoawHWMJfQrYku8M27Mtbr
+        IrZd7pvcVKn6/48O5yhl2Z5zgcnEjZTMCr2RZHM=
+X-Google-Smtp-Source: ABdhPJxlJMmggp7K1/hN6vMAK2bHm0saTyKRdxPvqEcmmnD8Fj9sc8EH3JwGeXNDxnZF3/6mfEZm5OEDkYlCyBxVHMY=
+X-Received: by 2002:a05:6602:3c6:b0:63d:cac9:bd35 with SMTP id
+ g6-20020a05660203c600b0063dcac9bd35mr11193640iov.144.1647908008659; Mon, 21
+ Mar 2022 17:13:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Fill in STU support for all
- supported chips
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164790721066.15202.17830576160916908515.git-patchwork-notify@kernel.org>
-Date:   Tue, 22 Mar 2022 00:00:10 +0000
-References: <20220319110345.555270-1-tobias@waldekranz.com>
-In-Reply-To: <20220319110345.555270-1-tobias@waldekranz.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, kabel@kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, pabeni@redhat.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220320060815.7716-2-laoar.shao@gmail.com> <0D674EA5-3626-4885-9ADC-5B7847CC967D@linux.dev>
+In-Reply-To: <0D674EA5-3626-4885-9ADC-5B7847CC967D@linux.dev>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 21 Mar 2022 17:13:17 -0700
+Message-ID: <CAEf4BzbpoYbPzYRA8bW=f48=wX0jJPuWX=Jr_uNnC_Jq80Bz3Q@mail.gmail.com>
+Subject: Re: [PATCH] bpf: selftests: cleanup RLIMIT_MEMLOCK
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Yafang Shao <laoar.shao@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sun, Mar 20, 2022 at 9:58 AM Roman Gushchin <roman.gushchin@linux.dev> w=
+rote:
+>
+>
+> > On Mar 19, 2022, at 11:08 PM, Yafang Shao <laoar.shao@gmail.com> wrote:
+> >
+> > =EF=BB=BFSince we have alread switched to memcg-based memory accouting =
+and control,
+> > we don't need RLIMIT_MEMLOCK any more.
+> >
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > Cc: Roman Gushchin <roman.gushchin@linux.dev>
+> >
+> > ---
+> > RLIMIT_MEMLOCK is still used in bpftool and libbpf, but it may be usefu=
+l
+> > for backward compatibility, so I don't cleanup them.
+>
+> Hi Yafang!
+>
+> As I remember, we haven=E2=80=99t cleaned selftests up with the same logi=
+c: it=E2=80=99s nice to be able to run the same version of tests on older k=
+ernels.
+>
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+It should be fine, at least for test_progs and test_progs-no_alu32.
+Libbpf now does this automatically if running in "libbpf 1.0" mode.
 
-On Sat, 19 Mar 2022 12:03:45 +0100 you wrote:
-> Some chips using the split VTU/STU design will not accept VTU entries
-> who's SID points to an invalid STU entry. Therefore, mark all those
-> chips with either the mv88e6352_g1_stu_* or mv88e6390_g1_stu_* ops as
-> appropriate.
-> 
-> Notably, chips for the Opal Plus (6085/6097) era seem to use a
-> different implementation than those from Agate (6352) and onwards,
-> even though their external interface is the same. The former happily
-> accepts VTU entries referencing invalid STU entries, while the latter
-> does not.
-> 
-> [...]
+Yafang, please make sure that all the test binaries you are cleaning
+up have libbpf_set_strict_mode(LIBBPF_STRICT_ALL) (test_progs does
+already). You might need to clean up some SEC() definitions, in case
+we still missed some non-conforming ones, though.
 
-Here is the summary with links:
-  - [net-next] net: dsa: mv88e6xxx: Fill in STU support for all supported chips
-    https://git.kernel.org/netdev/net-next/c/c050f5e91b47
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Thanks!
