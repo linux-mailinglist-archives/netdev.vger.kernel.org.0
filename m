@@ -2,218 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 139184E4851
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 22:35:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E51754E4922
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 23:25:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235706AbiCVVhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 17:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
+        id S237969AbiCVW1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 18:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235678AbiCVVhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 17:37:08 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A0D6252
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 14:35:39 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id qa43so38851494ejc.12
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 14:35:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3f9gOqodXg2DfxJMkma6JKgLENjNywgG1bzM+q07pGA=;
-        b=W6pHo66zFqoLpEUOJK1YlIdKV63yTZ025pdAgsdj8huJ4FQUtPZPg6gddugaKmGYx3
-         ZSrzAY8ndyKuOsV0R/3ef1w4sDrTaSNhCajIkfYIUEK9ClHvIwGt0QCXC6w3e8JUAKnW
-         Ae5SKC4oKcl1YHQUYvj3yb0jX9sl0i9GrOVAIPzlQMHiGNum4DJC7lWCtvoe8lAVid1Q
-         i2s2+IoFlt9o6sgRo2He9NrV3ZyB4mKi/OIgw0M50Bbzd3jqK1hLdKS+pu5iocA9ndFT
-         BBavFOBtKemz9KRAtrL/v2ZJr9HCd20A66G+jaa/BKRcZlpW4CV7gvIZ0ScV7qPZxIbW
-         7GEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3f9gOqodXg2DfxJMkma6JKgLENjNywgG1bzM+q07pGA=;
-        b=gAiz5dMl3hhqMH7KVEJ0/eDyz5oiujCvPSSYCNPjcPQf+qtMR6gNK6FCnu84XGAf7P
-         KEwX9vakkveFV+/2TazW3EgpfW8pu5TphXxqDEoASY/sPXyXcXclmu4+vWMKcGttiCd6
-         hVMrYY+qQRi32Ud5UrtjEjjClHJ35PQ5ON5F7dqolDVSkelK4eYhY20S8I4rpNe9ZpnN
-         KwNXWKwCCRIj0PYDyXHVL83raoG/hkBc2UyI6+Y7SZ661sFtGgz0ymM7Rl+lVUKzbyDD
-         xFSlf8RtO/hGZY0/S2AZ/2NAnG8ReRT2DYi7RvBKzEzL0jhUiMCBh6PvBgAt73YFrjXm
-         3SxA==
-X-Gm-Message-State: AOAM53344/DHxPDhBdwY1yLVJA9PZvufku8CciSlW3OcvDmD6xWz8AXv
-        6sXIIjI+Er/jB0Vg25ONNbpIOPGibRmmSQ==
-X-Google-Smtp-Source: ABdhPJw3ucB6D4gmyfF6QGuIK9DymeouyoTCQpcJFJagJg3tVezAoPSnt2QQhvqG4CsVzSQ9+vZeqw==
-X-Received: by 2002:a17:907:7da6:b0:6e0:5b7c:e3f9 with SMTP id oz38-20020a1709077da600b006e05b7ce3f9mr883559ejc.239.1647984938406;
-        Tue, 22 Mar 2022 14:35:38 -0700 (PDT)
-Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
-        by smtp.gmail.com with ESMTPSA id og49-20020a1709071df100b006db0dcf673esm9051572ejc.27.2022.03.22.14.35.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 14:35:37 -0700 (PDT)
-From:   Niels Dossche <dossche.niels@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Niels Dossche <dossche.niels@gmail.com>
-Subject: [PATCH] ipv6: fix locking issues with loops over idev->addr_list
-Date:   Tue, 22 Mar 2022 22:34:08 +0100
-Message-Id: <20220322213406.55977-1-dossche.niels@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S237921AbiCVW1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 18:27:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA5E56217;
+        Tue, 22 Mar 2022 15:25:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 380DC60C8F;
+        Tue, 22 Mar 2022 22:25:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA69C340ED;
+        Tue, 22 Mar 2022 22:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647987937;
+        bh=Ed0nMIb/RBckBNQpKd5NUVBf2jhmICvp28BlhuI3xbE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Nq+FuN1atoKl8SfjOIFNVqa0ZoNLbORB99O19R34+IQior+WudfejNM6YcD0Q3Zsx
+         ksZlZGVWy3t1RvC2ByrjNCbS12rYTiS3snxtU5PcL2NTDQ8c6wnAaahCeBVkvURwE4
+         92FSwL3ZuxZ5J3AYYx8eHjU6tDV66Zs1SCMCzj0QnP+c9c4f1iATceie+TJ7rLSTgF
+         +PwQezeFUtPLImmynxffrx3tn60TO0sbtbeKx1oH7Tv7PnDwzvaMjKtuBXAJ3vPNij
+         AMcj4ZQsMJaAVotPf5nLARjE7qs261QjktQYkbSGKSRQTIO0Sl3R5CatRi+pZi3o87
+         Hh6Lq1Cpip7+Q==
+Date:   Tue, 22 Mar 2022 15:25:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <michael@walle.cc>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH net-next v2 3/4] net: lan966x: Add FDMA functionality
+Message-ID: <20220322152536.4460aea2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220322210402.ebr2zghcisrqz4ju@soft-dev3-1.localhost>
+References: <20220318204750.1864134-1-horatiu.vultur@microchip.com>
+        <20220318204750.1864134-4-horatiu.vultur@microchip.com>
+        <20220321230123.4d38ad5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20220322210402.ebr2zghcisrqz4ju@soft-dev3-1.localhost>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-idev->addr_list needs to be protected by idev->lock. However, it is not
-always possible to do so while iterating and performing actions on
-inet6_ifaddr instances. For example, multiple functions (like
-addrconf_{join,leave}_anycast) eventually call down to other functions
-that acquire the idev->lock. The current code temporarily unlocked the
-idev->lock during the loops, which can cause race conditions. Moving the
-locks up is also not an appropriate solution as the ordering of lock
-acquisition will be inconsistent with for example mc_lock.
+On Tue, 22 Mar 2022 22:04:02 +0100 Horatiu Vultur wrote:
+> > > +static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx)
+> > > +{
+> > > +     struct lan966x *lan966x = rx->lan966x;
+> > > +     u64 src_port, timestamp;
+> > > +     struct sk_buff *new_skb;
+> > > +     struct lan966x_db *db;
+> > > +     struct sk_buff *skb;
+> > > +
+> > > +     /* Check if there is any data */
+> > > +     db = &rx->dcbs[rx->dcb_index].db[rx->db_index];
+> > > +     if (unlikely(!(db->status & FDMA_DCB_STATUS_DONE)))
+> > > +             return NULL;
+> > > +
+> > > +     /* Get the received frame and unmap it */
+> > > +     skb = rx->skb[rx->dcb_index][rx->db_index];
+> > > +     dma_unmap_single(lan966x->dev, (dma_addr_t)db->dataptr,
+> > > +                      FDMA_DCB_STATUS_BLOCKL(db->status),
+> > > +                      DMA_FROM_DEVICE);
+> > > +
+> > > +     /* Allocate a new skb and map it */
+> > > +     new_skb = lan966x_fdma_rx_alloc_skb(rx, db);
+> > > +     if (unlikely(!new_skb))
+> > > +             return NULL;  
+> > 
+> > So how is memory pressure handled, exactly? Looks like it's handled
+> > the same as if the ring was empty, so the IRQ is going to get re-raise
+> > immediately, or never raised again?  
+> 
+> That is correct, the IRQ is going to get re-raised.
+> But I am not sure that this is correct approach. Do you have any
+> suggestions how it should be?
 
-This solution adds an additional field to inet6_ifaddr that is used
-to temporarily add the instances to a temporary list while holding
-idev->lock. The temporary list can then be traversed without holding
-idev->lock. This change was done in two places. In addrconf_ifdown, the
-list_for_each_entry_safe variant of the list loop is also no longer
-necessary as there is no deletion within that specific loop.
+In my experience it's better to let the ring drain and have a service
+task kick in some form of refill. Usually when machine is out of memory
+last thing it needs is getting stormed by network IRQs. Some form of
+back off would be good, at least?
 
-The remaining loop in addrconf_ifdown that unlocks idev->lock in its
-loop body is of no issue. This is because that loop always gets the
-first entry and performs the delete and condition check under the
-idev->lock.
+> > > +     return counter;
+> > > +}
+> > > +
+> > > +irqreturn_t lan966x_fdma_irq_handler(int irq, void *args)
+> > > +{
+> > > +     struct lan966x *lan966x = args;
+> > > +     u32 db, err, err_type;
+> > > +
+> > > +     db = lan_rd(lan966x, FDMA_INTR_DB);
+> > > +     err = lan_rd(lan966x, FDMA_INTR_ERR);  
+> > 
+> > Hm, IIUC you request a threaded IRQ for this. Why?
+> > The register accesses can't sleep because you poke
+> > them from napi_poll as well...  
+> 
+> Good point. What about the WARN?
 
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
----
+which one? Did something generate a warning without the threaded IRQ?
 
-This was previously discussed in the mailing thread of
-[PATCH v2] ipv6: acquire write lock for addr_list in dev_forward_change
+> > > +int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
+> > > +{
+> > > +     struct lan966x_port *port = netdev_priv(dev);
+> > > +     struct lan966x *lan966x = port->lan966x;
+> > > +     struct lan966x_tx_dcb_buf *next_dcb_buf;
+> > > +     struct lan966x_tx_dcb *next_dcb, *dcb;
+> > > +     struct lan966x_tx *tx = &lan966x->tx;
+> > > +     struct lan966x_db *next_db;
+> > > +     int needed_headroom;
+> > > +     int needed_tailroom;
+> > > +     dma_addr_t dma_addr;
+> > > +     int next_to_use;
+> > > +     int err;
+> > > +
+> > > +     /* Get next index */
+> > > +     next_to_use = lan966x_fdma_get_next_dcb(tx);
+> > > +     if (next_to_use < 0) {
+> > > +             netif_stop_queue(dev);
+> > > +             err = NETDEV_TX_BUSY;
+> > > +             goto out;
+> > > +     }
+> > > +
+> > > +     if (skb_put_padto(skb, ETH_ZLEN)) {
+> > > +             dev->stats.tx_dropped++;  
+> > 
+> > It's preferred not to use the old dev->stats, but I guess you already
+> > do so :( This is under some locks, right? No chance for another queue
+> > or port to try to touch those stats at the same time?  
+> 
+> What is the preffered way of doing it?
+> Yes, it is under a lock.
 
- include/net/if_inet6.h |  7 +++++++
- net/ipv6/addrconf.c    | 29 +++++++++++++++++++++++------
- 2 files changed, 30 insertions(+), 6 deletions(-)
-
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index f026cf08a8e8..a17f29f75e9a 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -64,6 +64,13 @@ struct inet6_ifaddr {
- 
- 	struct hlist_node	addr_lst;
- 	struct list_head	if_list;
-+	/*
-+	 * Used to safely traverse idev->addr_list in process context
-+	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-+	 * In that case, add the items to this list temporarily and iterate
-+	 * without holding idev->lock. See addrconf_ifdown and dev_forward_change.
-+	 */
-+	struct list_head	if_list_aux;
- 
- 	struct list_head	tmp_list;
- 	struct inet6_ifaddr	*ifpub;
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index f908e2fd30b2..72790d1934c7 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -800,6 +800,7 @@ static void dev_forward_change(struct inet6_dev *idev)
- {
- 	struct net_device *dev;
- 	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 
- 	if (!idev)
- 		return;
-@@ -818,14 +819,23 @@ static void dev_forward_change(struct inet6_dev *idev)
- 		}
- 	}
- 
-+	read_lock_bh(&idev->lock);
- 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
- 		if (ifa->flags&IFA_F_TENTATIVE)
- 			continue;
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	}
-+	read_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
-+		ifa = list_first_entry(&tmp_addr_list, struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
- 		if (idev->cnf.forwarding)
- 			addrconf_join_anycast(ifa);
- 		else
- 			addrconf_leave_anycast(ifa);
- 	}
-+
- 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 				     NETCONFA_FORWARDING,
- 				     dev->ifindex, &idev->cnf);
-@@ -3730,10 +3740,11 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
--	struct inet6_ifaddr *ifa, *tmp;
-+	struct inet6_ifaddr *ifa;
- 	bool keep_addr = false;
- 	bool was_ready;
- 	int state, i;
-+	LIST_HEAD(tmp_addr_list);
- 
- 	ASSERT_RTNL();
- 
-@@ -3822,16 +3833,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 		write_lock_bh(&idev->lock);
- 	}
- 
--	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
-+	list_for_each_entry(ifa, &idev->addr_list, if_list) {
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	}
-+	write_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
- 		struct fib6_info *rt = NULL;
- 		bool keep;
- 
-+		ifa = list_first_entry(&tmp_addr_list, struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
-+
- 		addrconf_del_dad_work(ifa);
- 
- 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
- 			!addr_is_local(&ifa->addr);
- 
--		write_unlock_bh(&idev->lock);
- 		spin_lock_bh(&ifa->lock);
- 
- 		if (keep) {
-@@ -3862,15 +3880,14 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 			addrconf_leave_solict(ifa->idev, &ifa->addr);
- 		}
- 
--		write_lock_bh(&idev->lock);
- 		if (!keep) {
-+			write_lock_bh(&idev->lock);
- 			list_del_rcu(&ifa->if_list);
-+			write_unlock_bh(&idev->lock);
- 			in6_ifa_put(ifa);
- 		}
- 	}
- 
--	write_unlock_bh(&idev->lock);
--
- 	/* Step 5: Discard anycast and multicast list */
- 	if (unregister) {
- 		ipv6_ac_destroy_dev(idev);
--- 
-2.35.1
-
+Drivers can put counters they need in their own structures and then
+implement ndo_get_stats64 to copy it to the expected format.
+If you have locks and there's no risk of races - I guess it's fine.
+Unlikely we'll ever convert all the drivers, anyway.
