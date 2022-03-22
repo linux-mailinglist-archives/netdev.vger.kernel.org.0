@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 680B44E388E
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 06:43:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8857A4E38A8
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 07:02:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236749AbiCVFou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 01:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
+        id S236725AbiCVGBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 02:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236692AbiCVFon (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 01:44:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B33626D7;
-        Mon, 21 Mar 2022 22:43:16 -0700 (PDT)
+        with ESMTP id S236846AbiCVGBa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 02:01:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA251CE;
+        Mon, 21 Mar 2022 23:00:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 16BA6CE1C55;
-        Tue, 22 Mar 2022 05:43:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8867EC340EC;
-        Tue, 22 Mar 2022 05:43:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 053D5B81BA0;
+        Tue, 22 Mar 2022 06:00:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D3C2C340EC;
+        Tue, 22 Mar 2022 05:59:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647927792;
-        bh=XXsgQplv5tsDsp+JpjAV2mFQ8BN34vMZd+O0m7OTm1U=;
+        s=k20201202; t=1647928799;
+        bh=eM12kvrYB5hVv0W8vVbY75zKg1lSok/mpn4aMMVvgzE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dJSy6/yFohhy868TQqhKWePp8sp9qI4GmvX4XE39sYWTU0FjgDaJKEVGmJ30rAmEC
-         UMmFUkAd7JJ+rto2ebWs0Q+YgD2VaO/JvYtsHWesaLwin8O+8uyi9Fsh441O0Tb0TB
-         yGj0jdBi75V07P4vYn3eAdKL4PkORFIPrE9enzVSjPdVhWReP8xJSdLvMMSD6/37pw
-         0rPC3PTh9tTjnyxCASMTyYKkGS4pvK9ZfcSsMenXpJDJJG0lrCkGD0GRvAam60c6GE
-         dja41NNMX2W0eMf6r2AnBrpPBFj9U0buTbrYCeEeh2qZx2fSUbJ9hB24urwHFXwRs5
-         2MXGUSUg/Bgxw==
-Date:   Tue, 22 Mar 2022 14:43:07 +0900
+        b=GLbnB2xQklJlaZ0pTt0K0P+1Sz+M5gSk9aWtjl7KxZe99ARABg7HM2fXeoxs4HaKI
+         fGwyINfjJvZF064cpRUe+ItaNJIcEb9M75WrO3uKX688lNDwOEDa1ivaUrD78UqhTw
+         UGCRXgIAzheoFHm5zsLysqnvfNgruAA+wGkwSRZnsfAzaBrNCuEUqRdJWcWymIp2kY
+         sH23T066GiYmRvnXFRZZI7c8fxJT9ekuuKQUsU/BU9/314A8d/afeAsxsb5IMWR56W
+         3Gacac72DoLMGRmHHGGUghbkIhU7X/WW+sJo7qJK6vgAmsLZnRlq9c9ayyhIV3bMsY
+         TmpdRSb4Rl9EA==
+Date:   Tue, 22 Mar 2022 14:59:55 +0900
 From:   Masami Hiramatsu <mhiramat@kernel.org>
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
@@ -45,7 +45,7 @@ Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Kernel Team <kernel-team@fb.com>
 Subject: Re: pull-request: bpf-next 2022-03-21
-Message-Id: <20220322144307.72e040b482728241f7aeb5ad@kernel.org>
+Message-Id: <20220322145955.dff920a7c25cf94d3ebc9f39@kernel.org>
 In-Reply-To: <CAADnVQKXi_sO-3ouBM0DnGvtEp0SjdzctPRD-E_ODv=XxH+SFw@mail.gmail.com>
 References: <20220321224608.55798-1-alexei.starovoitov@gmail.com>
         <CAHk-=wheGrBxOfMpWhQg1iswCKYig8vADnFVsA4oFWTY9NU5jA@mail.gmail.com>
@@ -172,10 +172,8 @@ Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 > 
 > It's a temporary hack.
 > bpf prog cannot call an arbitrary function like ftrace_location.
-
-Ah, OK. Then you may need to check the addr in some range.
-
-
+> 
+> > >
 > > > to pass when both CONFIG_FPROBE=y and CONFIG_X86_KERNEL_IBT=y.
 > > > The test is too strict. It didn't account for the possibility of endbr.
 > > >
@@ -189,9 +187,13 @@ Ah, OK. Then you may need to check the addr in some range.
 > with endbr annotations and get it acked.
 > The other archs will wait until the next merge window.
 
-OK. I'll send the patch.
+Hmm, I found the bpf-next tree doesn't have the IBT, so the annotation doesn't work.
+However, the tip tree doesn't have the rethook itself. If I send the patch to
+x86 maintainers to be reviewed, I need at least arch independent rethook patch.
+Or, can you rebase the bpf-next on the tip tree's IBT annotation series?
 
 Thank you,
+
 
 -- 
 Masami Hiramatsu <mhiramat@kernel.org>
