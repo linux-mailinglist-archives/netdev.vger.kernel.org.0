@@ -2,96 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1E44E4957
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 23:51:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60E594E4955
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 23:50:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238366AbiCVWw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 18:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36984 "EHLO
+        id S229935AbiCVWv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 18:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiCVWw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 18:52:56 -0400
-X-Greylist: delayed 528 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 22 Mar 2022 15:51:27 PDT
-Received: from postfix01.core.dcmtl.stgraber.net (postfix01.core.dcmtl.stgraber.net [IPv6:2602:fc62:a:1001:216:3eff:feb3:6927])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5AC5DA5E;
-        Tue, 22 Mar 2022 15:51:27 -0700 (PDT)
-Received: from dakara.stgraber.net (unknown [IPv6:2602:fc62:b:1000:5436:5b25:64e4:d81a])
-        by postfix01.core.dcmtl.stgraber.net (Postfix) with ESMTP id 41FD41FD94;
-        Tue, 22 Mar 2022 22:42:36 +0000 (UTC)
-From:   =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, iyappan@os.amperecomputing.com,
-        keyur@os.amperecomputing.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, quan@os.amperecomputing.com,
-        stable@vger.kernel.org, stgraber@ubuntu.com,
-        toan@os.amperecomputing.com
-Subject: [PATCH v2] drivers: net: xgene: Fix regression in CRC stripping
-Date:   Tue, 22 Mar 2022 18:42:06 -0400
-Message-Id: <20220322224205.752795-1-stgraber@ubuntu.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220318141207.284972b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220318141207.284972b7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S229778AbiCVWv6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 18:51:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B0365DA5E;
+        Tue, 22 Mar 2022 15:50:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8903560F76;
+        Tue, 22 Mar 2022 22:50:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D91DFC340F2;
+        Tue, 22 Mar 2022 22:50:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647989426;
+        bh=FFKP6nY5FeetNs2/Moob5TkdE8pyS6iLSMf135q2HJc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KPfmW0b7VuxIvri2aGnCqEvFhTRJ+IyNWHq09z0Ls3gFifvuWgDWUb2KH4s4ZGEBM
+         oYn/LB1z8ZqiecChKlGbkpbH4EHQXfqnkO4Clrwx4zLSIYfxV8nQkw4gkzVIzoRUut
+         b4/YFDbIKTQ/HIf+obcdQaI63vbgOe0eoCGPq/ALqTj1QlKT8okOQGQMe+4jAxP9kw
+         HQwshC72Foi19zbDdrpyz01AN1+Gey60H0Im+p1GA1lvWB0MairGIrqJtGJ4s7BJ+O
+         f4XWmvYNhnv1v8uVo0jqQ2Wbu383BGxMEPD7HUBadjuJc9wmbXOK2pg+/BC/h7xSpz
+         eeKL9ADchBv4g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BD7D3EAC081;
+        Tue, 22 Mar 2022 22:50:26 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: pull-request: bpf-next 2022-03-21 v2
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164798942677.23339.9509425257963920048.git-patchwork-notify@kernel.org>
+Date:   Tue, 22 Mar 2022 22:50:26 +0000
+References: <20220322050159.5507-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20220322050159.5507-1-alexei.starovoitov@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, peterz@infradead.org,
+        rostedt@goodmis.org, mhiramat@kernel.org, kuba@kernel.org,
+        andrii@kernel.org, torvalds@linux-foundation.org,
+        sfr@canb.auug.org.au, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephane Graber <stgraber@ubuntu.com>
+Hello:
 
-All packets on ingress (except for jumbo) are terminated with a 4-bytes
-CRC checksum. It's the responsability of the driver to strip those 4
-bytes. Unfortunately a change dating back to March 2017 re-shuffled some
-code and made the CRC stripping code effectively dead.
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-This change re-orders that part a bit such that the datalen is
-immediately altered if needed.
+On Mon, 21 Mar 2022 22:01:59 -0700 you wrote:
+> Hi David, hi Jakub,
+> 
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 137 non-merge commits during the last 17 day(s) which contain
+> a total of 143 files changed, 7123 insertions(+), 1092 deletions(-).
+> 
+> [...]
 
-Fixes: 4902a92270fb ("drivers: net: xgene: Add workaround for errata 10GE_8/ENET_11")
-Signed-off-by: Stephane Graber <stgraber@ubuntu.com>
-Tested-by: Stephane Graber <stgraber@ubuntu.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: stable@vger.kernel.org
----
- drivers/net/ethernet/apm/xgene/xgene_enet_main.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Here is the summary with links:
+  - pull-request: bpf-next 2022-03-21 v2
+    https://git.kernel.org/netdev/net-next/c/0db8640df595
 
-diff --git a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-index ff2d099aab21..53dc8d5fede8 100644
---- a/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-+++ b/drivers/net/ethernet/apm/xgene/xgene_enet_main.c
-@@ -696,6 +696,12 @@ static int xgene_enet_rx_frame(struct xgene_enet_desc_ring *rx_ring,
- 	buf_pool->rx_skb[skb_index] = NULL;
- 
- 	datalen = xgene_enet_get_data_len(le64_to_cpu(raw_desc->m1));
-+
-+	/* strip off CRC as HW isn't doing this */
-+	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
-+	if (!nv)
-+		datalen -= 4;
-+
- 	skb_put(skb, datalen);
- 	prefetch(skb->data - NET_IP_ALIGN);
- 	skb->protocol = eth_type_trans(skb, ndev);
-@@ -717,12 +723,8 @@ static int xgene_enet_rx_frame(struct xgene_enet_desc_ring *rx_ring,
- 		}
- 	}
- 
--	nv = GET_VAL(NV, le64_to_cpu(raw_desc->m0));
--	if (!nv) {
--		/* strip off CRC as HW isn't doing this */
--		datalen -= 4;
-+	if (!nv)
- 		goto skip_jumbo;
--	}
- 
- 	slots = page_pool->slots - 1;
- 	head = page_pool->head;
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
