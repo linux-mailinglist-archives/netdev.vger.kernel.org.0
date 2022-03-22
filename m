@@ -2,81 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABB994E3B46
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 09:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EE444E3B42
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 09:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231268AbiCVI4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 04:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49656 "EHLO
+        id S231987AbiCVIy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 04:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiCVI4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 04:56:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550E3F1
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 01:55:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B379461646
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 08:55:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19818C340F2
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 08:55:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647939307;
-        bh=7gD/CF3+DINfj3pu9jiHI44C/OKCFrwOx47e7QWUJfo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=eJkP8FXSxipFCxJNktP79fIPaz0/3z+z9nWXUqyzjb0oJBYs+dnVaro4MlrwvZpJi
-         99+QToKJ4xF5RN7u1m8d5FBKV0sI3Fj3gjKq3TahAzUeIij5Ajidhbl+NdgguzxDnu
-         RbBTNbBg7KYzAzmqDZfPTgWVuUvlAn8J6FVGM3XT9wsnlmNI3RbuRJWRcIe070qdML
-         AEKuMVm4AJF2ToIbwHLIOVH1tG5mjE1yXtLwe30hMZpquTCAOadGApyd6DBvAJ1coG
-         cl/g0adf+5pyWXQWhYyuUcatD3axkhUdPhzpxz60bgVP/r0Gj4onB2OKJdzITw660a
-         6+bGFWPV9VT2Q==
-Received: by mail-wr1-f49.google.com with SMTP id r13so8870492wrr.9
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 01:55:07 -0700 (PDT)
-X-Gm-Message-State: AOAM532jPJDaqCD5hHX2pgG0kzfSV2vpOmEzRMPOVMIxXVWkzZyqjwjO
-        X8Nfwsum0vKZAhOGvKKftABeOkq60Y3Vr+PAnfM=
-X-Google-Smtp-Source: ABdhPJz1tWmtPtxZ+OI0CxhJT0nNCAhtKU/wXqyQq3qsn1P5V1TESPtY6YEpZikLo1lK6qsLynhWTqtGdH0eLRFKMEo=
-X-Received: by 2002:adf:f04b:0:b0:203:f0bf:1d83 with SMTP id
- t11-20020adff04b000000b00203f0bf1d83mr17539124wro.317.1647939305284; Tue, 22
- Mar 2022 01:55:05 -0700 (PDT)
+        with ESMTP id S231918AbiCVIyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 04:54:53 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6648DF1;
+        Tue, 22 Mar 2022 01:53:25 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KN4wl0fyjzfZ71;
+        Tue, 22 Mar 2022 16:51:51 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 22 Mar 2022 16:53:23 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 22 Mar
+ 2022 16:53:22 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <yevhen.orlov@plvision.eu>, <tchornyi@marvell.com>,
+        <oleksandr.mazur@plvision.eu>, <davem@davemloft.net>
+Subject: [PATCH -next] net: marvell: prestera: add missing destroy_workqueue() in prestera_module_init()
+Date:   Tue, 22 Mar 2022 17:02:36 +0800
+Message-ID: <20220322090236.1439649-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220321144013.440d7fc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <m37d8mieun.fsf@t19.piap.pl>
-In-Reply-To: <m37d8mieun.fsf@t19.piap.pl>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 22 Mar 2022 09:54:49 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3x47zHZU54XhW2juoP3sBxdKH8XknLTOL-EFZc0=9TJA@mail.gmail.com>
-Message-ID: <CAK8P3a3x47zHZU54XhW2juoP3sBxdKH8XknLTOL-EFZc0=9TJA@mail.gmail.com>
-Subject: Re: Is drivers/net/wan/lmc dead?
-To:     =?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Andrew Stanley-Jones <asj@cban.com>,
-        Rob Braun <bbraun@vix.com>, Michael Graff <explorer@vix.com>,
-        Matt Thomas <matt@3am-software.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Zhao Qiang <qiang.zhao@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 9:14 AM Krzysztof Ha=C5=82asa <khalasa@piap.pl> wro=
-te:
-> QUICC isn't exactly new :-) but it seems to be referenced by arm64 and
-> PPC DTS files (so this isn't the original ~68020 QUICC).
+Add the missing destroy_workqueue() before return from
+prestera_module_init() in the error handling case.
 
-Zhao Qiang from NXP added the fsl,ucc-hdlc node to arm64 ls1043a,
-so I assume they actually support that device. The chip was introduced
-in 2015, with a 15+ year product longevity cycle. The older arm32 based
-ls1021 and the ls1088 also mention the quicc engine in the marketing
-material but not the kernel sources, and I found no evidence of them
-on any of the later layerscape chips.
+Fixes: 4394fbcb78cf ("net: marvell: prestera: handle fib notifications")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/marvell/prestera/prestera_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-       Arnd
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 1402c7889e78..3952fdcc9240 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -1032,8 +1032,10 @@ static int __init prestera_module_init(void)
+ 		return -ENOMEM;
+ 
+ 	prestera_owq = alloc_ordered_workqueue("prestera_ordered", 0);
+-	if (!prestera_owq)
++	if (!prestera_owq) {
++		destroy_workqueue(prestera_wq);
+ 		return -ENOMEM;
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.25.1
+
