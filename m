@@ -2,62 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5584E3559
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 01:25:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3489D4E35C7
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 01:53:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233950AbiCVAX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 21 Mar 2022 20:23:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
+        id S234435AbiCVAsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 21 Mar 2022 20:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbiCVAX4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 20:23:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F6022BD9
-        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 17:21:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66BE96159A
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 00:19:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 922B3C340E8;
-        Tue, 22 Mar 2022 00:19:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647908395;
-        bh=yz2HsEPB15vob2ZyDuvGZxXm4nZX4zlilN56i7l6xig=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LzXRwlpEqPcD2OLR93OUDhZZluTkvKe1FL047G3BkXFn6UHbBpfEQwkJjdBJdyI8o
-         Ll0fg5VlZ1yTTiTPlUA0UCyJ7Rr79dUqp8uBI07zEysKoy6JWPJIXBq/d29EK7xydF
-         xGn8fzGjp5jUB1Ohlu5TPJh2QKTGhxprS124CDB86mC+aLS5aYZ5WaHWCmvGywqCXI
-         CxucgtWdaDyQ23JNYrL6ELH19ZMjwn483Ed6nX4H38ZhLX2Iq1bWLu14FeMV+tRhfB
-         I0uI/VYTEYZt3L7j42kkAjd3Vqv7LgX6o4Lz+CybNw4lwVB7C8CdYOpo/zceeybiou
-         aUQoy3s9eT/UQ==
-Date:   Mon, 21 Mar 2022 17:19:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eyal Birger <eyal.birger@gmail.com>
-Cc:     davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: geneve: add missing netlink policy and
- size for IFLA_GENEVE_INNER_PROTO_INHERIT
-Message-ID: <20220321171954.28d89f5a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220319093454.1871948-1-eyal.birger@gmail.com>
-References: <20220319093454.1871948-1-eyal.birger@gmail.com>
+        with ESMTP id S234341AbiCVAsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 21 Mar 2022 20:48:35 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBFC1C938;
+        Mon, 21 Mar 2022 17:47:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=59s+ADf1BnOZDJpEUupH6dQ+wtfTBnaf9al8HVTZ3Pk=; b=sWnwNtXA41fFknrAgiMjxnMxG4
+        J8sDqtL6TLufFRtnDxa11WAAm3S9HlxvfPqfwN5TuVxw1CoS69V+lUqydICnWGJrcPWIzzh6YmlKF
+        N+tXk/M7uguexV5LQeBfTS8Wo9k3HZ4UaeXbCa0EdMSNZuyta8K1qagkfRuvqKj01Pms=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nWSGn-00C2mG-Nz; Tue, 22 Mar 2022 01:21:05 +0100
+Date:   Tue, 22 Mar 2022 01:21:05 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Radhey Shyam Pandey <radheys@xilinx.com>,
+        Andy Chiu <andy.chiu@sifive.com>,
+        "robert.hancock@calian.com" <robert.hancock@calian.com>,
+        Michal Simek <michals@xilinx.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Harini Katakam <harinik@xilinx.com>
+Subject: Re: [PATCH v4 3/4] dt-bindings: net: xilinx_axienet: add pcs-handle
+ attribute
+Message-ID: <YjkWca40JbosV7Hq@lunn.ch>
+References: <20220321152515.287119-1-andy.chiu@sifive.com>
+ <20220321152515.287119-3-andy.chiu@sifive.com>
+ <SA1PR02MB856080742C4C5B1AA50FA254C7169@SA1PR02MB8560.namprd02.prod.outlook.com>
+ <YjkN6uo/3hXMU36c@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjkN6uo/3hXMU36c@robh.at.kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 19 Mar 2022 11:34:54 +0200 Eyal Birger wrote:
-> Add missing netlink attribute policy and size calculation.
+> > The use case is generic i.e. require separate handle to internal SGMII
+> > and external Phy so would prefer this new DT convention is 
+> > standardized or we discuss possible approaches on how to handle
+> > both phys and not add it as vendor specific property in the first 
+> > place.
 > 
-> Fixes: 435fe1c0c1f7 ("net: geneve: support IPv4/IPv6 as inner protocol")
-> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+> IMO, you should use 'phys' for the internal PCS phy. That's aligned with 
+> other uses like PCIe, SATA, etc. (there is phy h/w that will do PCS, 
+> PCIe, SATA). 'phy-handle' is for the ethernet PHY.
 
-You should also set .strict_start_type on the policy to
-IFLA_GENEVE_INNER_PROTO_INHERIT while at it.
+We need to be careful here, because the PCS can have a well defined
+set of registers accessible over MDIO. Generic PHY has no
+infrastructure for that, it is all inside phylink which implements the
+pcs registers which are part of 802.3.
+
+I also wonder if a PCS might actually have a generic PHY embedded in
+it to provide its lower interface?
+
+   Andrew
