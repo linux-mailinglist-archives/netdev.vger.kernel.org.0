@@ -2,96 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C0D4E4456
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 17:38:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4F34E448B
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 17:51:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239157AbiCVQjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 12:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S236512AbiCVQxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 12:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239162AbiCVQjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 12:39:52 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18125DA0E;
-        Tue, 22 Mar 2022 09:38:19 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id s8so18574421pfk.12;
-        Tue, 22 Mar 2022 09:38:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NJN6cvug/10iiAJgDTC9S5tiBDNsJnlTHUuBYkSpNaU=;
-        b=TX05opdSyTQAGNgrLionRFhZE5NFzupFeD+ib2R3QPiYbtviA8jY03vzwWVQPr7KvE
-         8bQaqte4UcRs8NqVL4EkP5WfJFwHDLQyY99ibP4Epfphhy5Zq0yVRR0o7HL9ez8uGC8w
-         laacPJRNqtdR6q10lzfy0Etb6F/Sx9Tr3HCPp0l/14Ak5pR/pCEF8xjM0RFPPWYD5qde
-         Bbg84M+fG4cAFMKB9RpG5DWafFn8V2K6rDOU7pCPRkfkN0F9SUpq3DrhqTC1y0TtW1sN
-         QoIkeqKdyAAtSRf5JkNjApf+6g0XJYIXah3XHDP+aBjM/R0Gt0HzSqMwhVkkKtUN/cDw
-         4rEg==
+        with ESMTP id S234897AbiCVQxK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 12:53:10 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6653C85671;
+        Tue, 22 Mar 2022 09:51:42 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-d6ca46da48so2257079fac.12;
+        Tue, 22 Mar 2022 09:51:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NJN6cvug/10iiAJgDTC9S5tiBDNsJnlTHUuBYkSpNaU=;
-        b=ErHFlhBquxsk3nM/RvRbDC4utdosMRemIPWoaX5Kz1FVKDY9m3LzqKDH5syA3S/5Bp
-         Va6h++SeAOkRmZ6hBY5SzoQiIo8IFc57/f2C+BR3rhGtye/5WytG8Enh4PWcP8azHIny
-         PjvtUtjF2kUZ8O23cPg5EXJxOjUP9YvLG3oce76YgI3SlhOE+9nDD6mXUuTNo8W9U+kB
-         SZh18LVs3t0XiSsCuadYBCTnTKF1F0hxhAbpB7zphxeW1b+v+hwUAxriMjlcFG9S/+tm
-         iXFTPNOfVDAWXvxdtAKxw9ElzwNDg082nXjOFTAfACfWpHbdbNm4teWivcKU979GCIcI
-         UPPw==
-X-Gm-Message-State: AOAM532m0AIIwgbndWV5ZbdHIOvK4lw1erNlimraoFYQ0XNQz/17EyQs
-        DfWtm0udn7VxNWEzSl6PhAYjw1OTVZrraj6LGYw=
-X-Google-Smtp-Source: ABdhPJzVmN2QuKjSAGNcvDAtl//mEJbdUogh2Y/rnDOeObr1Gjnhoo2BZ3DF01U9IoG04OUs3CJBcZGQxdIuLiRBlvE=
-X-Received: by 2002:a63:6809:0:b0:37c:68d3:1224 with SMTP id
- d9-20020a636809000000b0037c68d31224mr22092354pgc.287.1647967099353; Tue, 22
- Mar 2022 09:38:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zvgWAYARdRLJ1nVqJhPCnY48Nqpcp9HM0eT5TESAt8o=;
+        b=nQnic7AiVIBE8XFIarh4nczv3drHlkE1S359jf37WJY9R0S8J66nf24cyd9QxZWDA/
+         UHgB4JMyM09KF/2TrPJsn4faHN6K9Btg7in/ZWXfoo2/hKpJ4P3YDHpbBIoHlsA/7/1F
+         WR93MQlMXLut2mhHxK8lWnwnyVzFIDp3F/BNCECJV1JIbXom4K7qkKznvbhL6Yi3e6ee
+         uBcyYqbEwL0Cy4WPLP0McUXsfxpe2YFKG0WKAOeW1v+cvgfcXB1SMzvjGjR3YhshpP7G
+         1UdkU+7XS1Sy9fv8T/ZpjQUyh5UNxabMDMRb7t8L5s6S+eC+DH3h7zt+1Bu1mqWvrt3U
+         Qrxg==
+X-Gm-Message-State: AOAM530RZJN8B0TcL+RrfE8gAy9g/P8OYE3CTjlmyNCoRFqCEZEr0EJJ
+        G7ThWDgC/7ju4lDA28QG3Q==
+X-Google-Smtp-Source: ABdhPJx78WOrvUoO4mLORYb5IlvGM+FtNbdD8Rl9H05HaiyYGpdJM7gRQOuNxEW/L8wDNrvUD/zOgg==
+X-Received: by 2002:a05:6870:206:b0:dd:b3d7:3f7e with SMTP id j6-20020a056870020600b000ddb3d73f7emr2140325oad.252.1647967901683;
+        Tue, 22 Mar 2022 09:51:41 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 24-20020a056870109800b000dded4f78f1sm4044802oaq.51.2022.03.22.09.51.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 09:51:40 -0700 (PDT)
+Received: (nullmailer pid 2162771 invoked by uid 1000);
+        Tue, 22 Mar 2022 16:51:39 -0000
+Date:   Tue, 22 Mar 2022 11:51:39 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Radhey Shyam Pandey <radheys@xilinx.com>,
+        Andy Chiu <andy.chiu@sifive.com>,
+        "robert.hancock@calian.com" <robert.hancock@calian.com>,
+        Michal Simek <michals@xilinx.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Harini Katakam <harinik@xilinx.com>
+Subject: Re: [PATCH v4 3/4] dt-bindings: net: xilinx_axienet: add pcs-handle
+ attribute
+Message-ID: <Yjn+m6OwkxPAc8/A@robh.at.kernel.org>
+References: <20220321152515.287119-1-andy.chiu@sifive.com>
+ <20220321152515.287119-3-andy.chiu@sifive.com>
+ <SA1PR02MB856080742C4C5B1AA50FA254C7169@SA1PR02MB8560.namprd02.prod.outlook.com>
+ <YjkN6uo/3hXMU36c@robh.at.kernel.org>
+ <YjkWca40JbosV7Hq@lunn.ch>
 MIME-Version: 1.0
-References: <20220322050159.5507-1-alexei.starovoitov@gmail.com> <20220322233223.5e1a3c418f6d60081fae973e@kernel.org>
-In-Reply-To: <20220322233223.5e1a3c418f6d60081fae973e@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 22 Mar 2022 09:38:07 -0700
-Message-ID: <CAADnVQK0OrNHZRj3M8J8cOpyS99guMSc7103Ac+=EUp+8ubgyw@mail.gmail.com>
-Subject: Re: pull-request: bpf-next 2022-03-21 v2
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjkWca40JbosV7Hq@lunn.ch>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 7:32 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hi Alexei,
->
-> So after this is merged, would you have a plan to merge the tip tree
-> which has IBT to the bpf-next? Or should I wait for merging this series
-> or IBT(ENDBR) series in Linus tree?
->
-> If I add the no ENDBR annotation to the x86 rethook trampoline on this
-> bpf-next branch, it will cause a build error...
+On Tue, Mar 22, 2022 at 01:21:05AM +0100, Andrew Lunn wrote:
+> > > The use case is generic i.e. require separate handle to internal SGMII
+> > > and external Phy so would prefer this new DT convention is 
+> > > standardized or we discuss possible approaches on how to handle
+> > > both phys and not add it as vendor specific property in the first 
+> > > place.
+> > 
+> > IMO, you should use 'phys' for the internal PCS phy. That's aligned with 
+> > other uses like PCIe, SATA, etc. (there is phy h/w that will do PCS, 
+> > PCIe, SATA). 'phy-handle' is for the ethernet PHY.
+> 
+> We need to be careful here, because the PCS can have a well defined
+> set of registers accessible over MDIO. Generic PHY has no
+> infrastructure for that, it is all inside phylink which implements the
+> pcs registers which are part of 802.3.
 
-Right now (after arch bits revert) there are no build errors in bpf-next
-and won't be any after the merge into Linus's tree either.
+Using the phy binding doesn't mean you have to use the kernel's 'generic 
+PHY' subsytem.
 
-linux-next is a proxy of what Linus's tree will look like in a few days.
-Please create a single x86 arch patch against linux-next and make sure
-Peter is happy with it.
-We will land that patch at that time.
+But if there's a need to do something different then propose something 
+that handles the complex cases.
 
-That patch will be pretty much the same as what you had earlier
-with ENDBR annotation. And maybe regs->ss set which is future proofing
-optional bit and not a functional part of the patch.
+> 
+> I also wonder if a PCS might actually have a generic PHY embedded in
+> it to provide its lower interface?
+
+That's just looking at a single PCS/PHY block the other way around. 
+PCS is part of the PHY or the PHY is part of PCS? I don't think that 
+matters too much. I think the 2 cases would be it's all 1 block or 2 
+blocks.
+
+Rob
