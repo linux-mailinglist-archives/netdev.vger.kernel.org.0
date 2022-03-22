@@ -2,170 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24FBF4E3AAA
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 09:34:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55C484E3AB5
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 09:35:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231273AbiCVIfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 04:35:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
+        id S231267AbiCVIfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 04:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231267AbiCVIfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 04:35:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8556164EC;
-        Tue, 22 Mar 2022 01:33:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA2E2615B3;
-        Tue, 22 Mar 2022 08:33:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BEDEC340F5;
-        Tue, 22 Mar 2022 08:33:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647938028;
-        bh=7yG7Rj1VOotT8xX3nRCCSE4Ps7fblBYLqMoV0UuyWJM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BJK1GGolAjE6rSFsIt3dzd0rnKqmf4VcuC8PJxB7J9TxZ00JG0cVinufnM38eRwIi
-         US5k3W99mRVZWG+tV2wHPL+K7icMB0ekx1UpqirgD9DmzzhV6Rz/k/MvxmeQ1TlYNo
-         QlcHuSGeJaszLFh/t3HFdA2Ln7AudXLysEQ09E6jQ1pDlbsnBi/MkEq/J1iXUovKu4
-         W9zJ/Vi7UtDWXq0wUeoeYTKgGLCtxd+dVroslBbLKSAmB3aMwYW9VhSVKeVSX0pEnx
-         yh3uOFpyiRkJ9UX14FLEPB7/BHP3wkg4K2tXHCzWJoXwmHP5F52me7SlOTjuDvK61E
-         qqSk0kGNM7xmw==
-Received: by mail-wm1-f53.google.com with SMTP id m26-20020a05600c3b1a00b0038c8b999f58so917618wms.1;
-        Tue, 22 Mar 2022 01:33:48 -0700 (PDT)
-X-Gm-Message-State: AOAM530U0hB5yYlr55Y+FUGEVZ13r7SaF2Ij5/KFwl6bT4JhSzwXf62E
-        GH9fpqXV7MnhLp1naErhFvFAt4NJhjL7b2yXWt0=
-X-Google-Smtp-Source: ABdhPJz5v+zJtqsD7CQvEue0+LXmyMue51pVlFjcyHnuYqDSz49W6bDG1f2r6DkwUSUn34XRjmur3M91FPmlxkcDMDw=
-X-Received: by 2002:a7b:cd13:0:b0:38b:f39c:1181 with SMTP id
- f19-20020a7bcd13000000b0038bf39c1181mr2760345wmj.20.1647938026486; Tue, 22
- Mar 2022 01:33:46 -0700 (PDT)
+        with ESMTP id S230467AbiCVIft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 04:35:49 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4A545510;
+        Tue, 22 Mar 2022 01:34:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1647938013;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=ntrq2GDLVZrYGtItjUXPdagiGGLGKRv1C9uWWopglQU=;
+    b=jlYDY1xt9eqCm8cyhDwadLpuygIPvUnrPSRWlrZKufoT9rGv8zvlmdRr11VjewO+mz
+    czpM096lvUC1eBwFWTne5ueeqCprl4lJoXydJdArqbSlkmMa0X8OvLsCbAke7JCp1/aV
+    W1OlanywjKPJVzlQOqgWf0zPYdNnVm66BoMtBO3KdFdFwBCXB4abcTmN/+clZo+NV7/l
+    jtaccaY979cr/zm5CtKV7fXBLGckN8aaDDeK0KDQZSsfGZL0jr7bug2EPBP2AJu4Xm+h
+    4j7UZR6fJZHZeesEFAjkmFl0sUqnfJrPxfO35KugV/cq5Q9677ZXZwpFi+PvEhpqWFYq
+    JXwQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.41.1 AUTH)
+    with ESMTPSA id cc2803y2M8XWDnA
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 22 Mar 2022 09:33:32 +0100 (CET)
+Message-ID: <17c8dc7b-7768-09cb-b48f-a923514f02db@hartkopp.net>
+Date:   Tue, 22 Mar 2022 09:33:31 +0100
 MIME-Version: 1.0
-References: <20220321144013.440d7fc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAK8P3a12=qpMHn5daK3-E6PjWuSOYOyWp2u2XU0kfzZ8=EoRdA@mail.gmail.com> <20220321160627.6003e4e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220321160627.6003e4e7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Tue, 22 Mar 2022 09:33:30 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1tfnWe4nUDDeTyiH-U4XB4tTsZp-n5Oo=X1ovSwLOCVA@mail.gmail.com>
-Message-ID: <CAK8P3a1tfnWe4nUDDeTyiH-U4XB4tTsZp-n5Oo=X1ovSwLOCVA@mail.gmail.com>
-Subject: Re: Is drivers/net/wan/lmc dead?
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>,
-        Andrew Stanley-Jones <asj@cban.com>,
-        Rob Braun <bbraun@vix.com>, Michael Graff <explorer@vix.com>,
-        Matt Thomas <matt@3am-software.com>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Linux X25 <linux-x25@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [PATCH v8 0/7] CTU CAN FD open-source IP core SocketCAN driver,
+ PCI, platform integration and documentation
+Content-Language: en-US
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
+        Drew Fustini <pdp7pdp7@gmail.com>
+References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
+ <20220322074622.5gkjhs25epurecvx@pengutronix.de>
+ <202203220918.33033.pisa@cmp.felk.cvut.cz>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <202203220918.33033.pisa@cmp.felk.cvut.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 12:06 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> On Mon, 21 Mar 2022 23:10:32 +0100 Arnd Bergmann wrote:
-> > On Mon, Mar 21, 2022 at 10:40 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > The driver for LAN Media WAN interfaces spews build warnings on
-> > > microblaze.
-> > >
-> > > CCing usual suspects and people mentioned as authors in the source code.
-> > >
-> > > As far as I can tell it has no maintainer.
-> > >
-> > > It has also received not received a single functional change that'd
-> > > indicate someone owns this HW since the beginning of the git era.
-> > >
-> > > Can we remove this driver or should we invest effort into fixing it?
-> >
-> > I have not seen the exact error, but I suspect the problem is that
-> > microblaze selects CONFIG_VIRT_TO_BUS without actually
-> > providing those interfaces. The easy workaround would be to
-> > have microblaze not select that symbol.
->
-> FWIW the warning is that virt_to_bus() discards the __iomem qualifier.
-> I think it's a macro on most platforms but not microblaze.
-> Anyway, some approximation of "VIRT_TO_BUS on mircoblaze is broken"
-> sounds right.
 
-Ok, I've reproduced it now, and I see that microblaze gets the virt_to_bus()
-definition from include/asm-generic/io.h. The definition is in fact
-correct, though
-arguably microblaze (also h8300 and xtensa, probably more) should not
-set CONFIG_VIRT_TO_BUS anyway because they do not use PCI
-hardware from the 1990s.
 
-The warning that I get is actually about the descriptor pointers
-being marked 'volatile' (not '__iomem') and used as normal pointers
-when passed to virt_to_bus(). Not sure whether the volatile here is
-correct or not, but either removing it from lmc or adding it to the
-virt_to_bus() prototype would avoid the warning.
+On 22.03.22 09:18, Pavel Pisa wrote:
+> Hello Marc,
+> 
+> thanks for positive reply for our years effort.
+> 
+> On Tuesday 22 of March 2022 08:46:22 Marc Kleine-Budde wrote:
+>> On 22.03.2022 00:32:27, Pavel Pisa wrote:
+>>> This driver adds support for the CTU CAN FD open-source IP core.
+>>
+>> The driver looks much better now. Good work. Please have a look at the
+>> TX path of the mcp251xfd driver, especially the tx_stop_queue and
+>> tx_wake_queue in mcp251xfd_start_xmit() and mcp251xfd_handle_tefif(). A
+>> lockless implementation should work in your hardware, too.
+> 
+> Is this blocker for now? I would like to start with years tested base.
+> 
+> We have HW timestamping implemented for actual stable CTU CAN FD IP core
+> version, support for variable number of TX buffers which count can be
+> parameterized up to 8 in the prepared version and long term desire to
+> configurable-SW defined multi-queue which our HW interface allows to
+> dynamically server by á TX buffers. But plan is to keep combinations
+> of the design and driver compatible from the actual revision.
+> 
+> I would be happy if we can agree on some base/minimal support and get
+> it into mainline and use it as base for the followup patch series.
 
-> > Drivers using virt_to_bus() are inherently nonportable because
-> > they don't work on architectures that use an IOMMU or swiotlb,
-> > or that require cache maintenance for DMA operations.
-> >
-> > $ git grep -wl virt_to_bus drivers/
-> > drivers/atm/ambassador.c
-> > drivers/atm/firestream.c
-> > drivers/atm/horizon.c
-> > drivers/atm/zatm.c
-> > drivers/block/swim3.c
-> > drivers/gpu/drm/mga/mga_dma.c
-> > drivers/net/appletalk/ltpc.c
-> > drivers/net/ethernet/amd/au1000_eth.c
-> > drivers/net/ethernet/amd/ni65.c
-> > drivers/net/ethernet/apple/bmac.c
-> > drivers/net/ethernet/apple/mace.c
-> > drivers/net/ethernet/dec/tulip/de4x5.c
-> > drivers/net/ethernet/i825xx/82596.c
-> > drivers/net/ethernet/i825xx/lasi_82596.c
-> > drivers/net/ethernet/i825xx/lib82596.c
-> > drivers/net/hamradio/dmascc.c
-> > drivers/net/wan/cosa.c
-> > drivers/net/wan/lmc/lmc_main.c
-> > drivers/net/wan/z85230.c
-> > drivers/scsi/3w-xxxx.c
-> > drivers/scsi/a2091.c
-> > drivers/scsi/a3000.c
-> > drivers/scsi/dpt_i2o.c
-> > drivers/scsi/gvp11.c
-> > drivers/scsi/mvme147.c
-> > drivers/scsi/qla1280.c
-> > drivers/tty/serial/cpm_uart/cpm_uart_cpm2.c
-> > drivers/vme/bridges/vme_ca91cx42.c
-> >
-> > Among the drivers/net/wan/ drivers, I think lmc is actually
-> > one of the newer pieces of hardware, most of the other ones
-> > appear to even predate PCI.
->
-> You know what's even newer than lmc?  Me :S  This HW is so old
-> many of us have never interacted with these technologies directly.
->
-> How do we start getting rid of this stuff? Should we send out patches
-> to delete anything that's using virt_to_bus() under net|atm and see
-> which ones don't get shot down?
+IMHO I would vote for this approach too.
 
-I found the email from Martin Schiller that gives some background
-on how hdlc/x25 is being used:
-https://lore.kernel.org/lkml/407acd92c92c3ba04578da89b1a0f191@dev.tdt.de/
+There are many users of that open source IP CAN core right now and the 
+out-of-tree maintenance is no fun for all of them.
 
-In short (and confirmed by Krzysztof's reply), most of the hdlc wan
-hardware has been obsolete, but the subsystem itself is still used with
-out-of-tree drivers. The situation for ATM is similar IIRC, as nobody uses
-actual ATM is pretty much obsolete (I don't know how common it is in
-practice) but DSL is still widely used.
+When the driver status is fine from the technical and programming style 
+standpoint we should move the improvements for the lockless 
+transmissions to a later date.
 
-I think we can probably come up with a set of atm, wan and appletalk
-drivers that use either an ISA bus or the virt_to_bus() interface as
-a starting point for a mass removal. From what I can tell, the majority
-of the drivers using virt_to_bus() are platform specific already, mostly
-m68k, and rooting out virt_to_bus() from all platform-independent
-drivers would be good.
+Best regards,
+Oliver
 
-       Arnd
+> 
+> I understand that I have sent code late for actual merge window,
+> but I am really loaded by teaching, related RISC-V simulator
+> https://github.com/cvut/qtrvsim , ESA and robotic projects
+> at company. So I would prefer to go step by step and cooperate
+> on updates and testing with my diploma students.
+> 
+>> BTW: The PROP_SEG/PHASE_SEG1 issue is known:
+>>> +A curious reader will notice that the durations of the segments PROP_SEG
+>>> +and PHASE_SEG1 are not determined separately but rather combined and
+>>> +then, by default, the resulting TSEG1 is evenly divided between PROP_SEG
+>>> +and PHASE_SEG1.
+>>
+>> and the flexcan IP core in CAN-FD mode has the same problem. When
+>> working on the bit timing parameter, I'll plan to have separate
+>> PROP_SEG/PHASE_SEG1 min/max in the kernel, so that the bit timing
+>> algorithm can take care of this.
+> 
+> Hmm, when I have thought about that years ago I have not noticed real
+> difference when time quanta is move between PROP_SEG and PHASE_SEG1.
+> So for me it had no influence on the algorithm computation and
+> could be done on the chip level when minimal and maximal sum is
+> respected. But may it be I have overlooked something and there is
+> difference for CAN FD.  May it be my colleagues Jiri Novak and
+> Ondrej Ille are more knowable.
+> 
+> As for the optimal timequantas per bit value, I agree that it
+> is not so simple. In the fact SJW and even tipple-sampling
+> should be defined in percentage of bit time and then all should
+> be optimized together and even combination with slight bitrate
+> error should be preferred against other exact matching when
+> there is significant difference in the other parameters values.
+> 
+> But I am not ready to dive into it till our ESA space NanoXplore
+> FPGA project passes final stage...
+> 
+> By the way we have received report from Andrew Dennison about
+> successful integration of CTU CAN FD into Litex based RISC-V
+> system. Tested with the Linux our Linux kernel driver.
+> 
+> The first iteration there, but he reported that some corrections
+> from his actual development needs to be added to the public
+> repo still to be usable out of the box
+> 
+>    https://github.com/AndrewD/litecan
+> 
+> Best wishes,
+> 
+>                  Pavel Pisa
+>      phone:      +420 603531357
+>      e-mail:     pisa@cmp.felk.cvut.cz
+>      Department of Control Engineering FEE CVUT
+>      Karlovo namesti 13, 121 35, Prague 2
+>      university: http://dce.fel.cvut.cz/
+>      personal:   http://cmp.felk.cvut.cz/~pisa
+>      projects:   https://www.openhub.net/accounts/ppisa
+>      CAN related:http://canbus.pages.fel.cvut.cz/
+>      Open Technologies Research Education and Exchange Services
+>      https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+> 
