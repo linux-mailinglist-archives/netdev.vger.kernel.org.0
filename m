@@ -2,68 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B04804E3FB7
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 14:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C12564E3FE6
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 14:55:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233574AbiCVNmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 09:42:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
+        id S235945AbiCVN5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 09:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230049AbiCVNmX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 09:42:23 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D245BBE12;
-        Tue, 22 Mar 2022 06:40:55 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 22MDemPm052496;
-        Tue, 22 Mar 2022 08:40:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1647956448;
-        bh=5hLLpwxsp52IRim8ibcb7alxLGLTEl2Qjp29Nl5HWSg=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=KynNgZ54UsEQ6DDAHePynTL+07QbRto5/QihoyMUiNd/b8hdSWd74yEZICZIDBGuH
-         55T2HvH8FfTTZ4xW5NG1Wp2488CG1wX4cLzcW8gvjYAzdWFX2XbIpIXiY3W1NlE8J0
-         dNAAuhZzXFnF7+DaY2OasDcv4PdKJnPbjhRCvpyw=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 22MDemEK116895
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Mar 2022 08:40:48 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 22
- Mar 2022 08:40:47 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 22 Mar 2022 08:40:48 -0500
-Received: from [10.250.235.115] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 22MDejHO050865;
-        Tue, 22 Mar 2022 08:40:46 -0500
-Message-ID: <d1fab209-b215-d254-d98b-4ad0ab26b1b0@ti.com>
-Date:   Tue, 22 Mar 2022 19:10:45 +0530
+        with ESMTP id S233580AbiCVN5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 09:57:07 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C567517A9A;
+        Tue, 22 Mar 2022 06:55:38 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id x34so20593667ede.8;
+        Tue, 22 Mar 2022 06:55:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LbeRwG0S/Pt5LZP0Vg7JRe9n4qoS+94Y4w5zYWdMgTs=;
+        b=BFksIoja0l4lbrhfRO5o8HH85XMEmgCueBHG7rXiEg3zTi035UeXCOtacl7+HwY5kY
+         zx9r8LGf6/guEPVx5uK8lMhXndaoanqWbSEsPDBXJutNJaNZaB3zLC5v+e3MK+v2nTSj
+         UXkubSOnrt4poHvw/9ka7G1d2NwF/SiUSPBf1DmVxPwzw71e+lDTwoFAIBP0cbxrEE9R
+         pUoneX+jppKMBgPgyV01PaBeY0S5lgpHN2xFx3LNLkpgD6+EUHpHcPt+KvHOCKEM7It5
+         fGLrLF7VlbGf0bNlWfFZfsit2QirC7DdM+6DNLdHwM3Nus4GtuqajNtQduzPnt0XldMx
+         I5vA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LbeRwG0S/Pt5LZP0Vg7JRe9n4qoS+94Y4w5zYWdMgTs=;
+        b=heqyW6qE0WmCahAHlP71CsT30z+jKpqZz9H+X54XdTMbp2ldt0tTJzcDpXtvAtJ3sz
+         hpaM6IgnhqfWa9VjnHUH8V/3JRCFqnl4DxpHepJcQFMoJyXJTOEKVyNYjIeVVKh1xe7Y
+         VY/MrCqQkJj572iCyKw1obWs5JexAIezUAUd3NkB75xPmqiOykHLVBT890l6Fz0VLTEr
+         9hZ3cC9DPjuavtGOuW9twZ+M4NCXaXH56IBkDyEYtXiVre0RwssT1rU2H7o1IQ2VP9q3
+         Il9YLp6hKyYHeT05qRnOqx7uWZRMKG+pCXDx4HyRW3wG68TvoBfxW6/0UOFgqewD9JeB
+         B+2Q==
+X-Gm-Message-State: AOAM532MpZ91vK0pdIIpOMLqHRKTqfKeH0Kje4u/l/ZA6atWfIIsyYNx
+        QFeANUEe8gtLh68ZMrDya0s=
+X-Google-Smtp-Source: ABdhPJx9UgKOhFO1xXGXKFq0pdiUbkTaH6jmTP9H084N9GNJAEjHA6XrrX0rLaSIAIVPaVCWSMsUlA==
+X-Received: by 2002:a05:6402:5304:b0:413:8a0c:c54a with SMTP id eo4-20020a056402530400b004138a0cc54amr28401345edb.172.1647957337135;
+        Tue, 22 Mar 2022 06:55:37 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id u23-20020a17090626d700b006cfcd39645fsm8327076ejc.88.2022.03.22.06.55.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 06:55:36 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 15:55:35 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH 1/4] drivers: net: dsa: qca8k: drop MTU tracking
+ from qca8k_priv
+Message-ID: <20220322135535.au5d2n7hcu4mfdxr@skbuf>
+References: <20220322014506.27872-1-ansuelsmth@gmail.com>
+ <20220322014506.27872-2-ansuelsmth@gmail.com>
+ <20220322115812.mwue2iu2xxrmknxg@skbuf>
+ <YjnRQNg/Do0SwNq/@Ansuel-xps.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drivers: ethernet: cpsw: fix panic when interrupt
- coaleceing is set via ethtool
-Content-Language: en-US
-To:     =?UTF-8?Q?Sondhau=c3=9f=2c_Jan?= <Jan.Sondhauss@wago.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>
-CC:     "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220322063221.28132-1-jan.sondhauss@wago.com>
- <d3fac0ae-6d5c-33d7-4e1e-da9058ef525f@ti.com>
- <dd897805-38a9-b1e7-b1cf-707aa3de1afb@wago.com>
-From:   Vignesh Raghavendra <vigneshr@ti.com>
-In-Reply-To: <dd897805-38a9-b1e7-b1cf-707aa3de1afb@wago.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YjnRQNg/Do0SwNq/@Ansuel-xps.localdomain>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,114 +78,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 22/03/22 5:50 pm, Sondhauß, Jan wrote:
-> Hi
+On Tue, Mar 22, 2022 at 02:38:08PM +0100, Ansuel Smith wrote:
+> On Tue, Mar 22, 2022 at 01:58:12PM +0200, Vladimir Oltean wrote:
+> > On Tue, Mar 22, 2022 at 02:45:03AM +0100, Ansuel Smith wrote:
+> > > Drop the MTU array from qca8k_priv and use slave net dev to get the max
+> > > MTU across all user port. CPU port can be skipped as DSA already make
+> > > sure CPU port are set to the max MTU across all ports.
+> > > 
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > 
+> > I hardly find this to be an improvement and I would rather not see such
+> > unjustified complexity in a device driver. What are the concrete
+> > benefits, size wise?
+> >
 > 
-> On 22/03/2022 11:34, Vignesh Raghavendra wrote:
->> Hi, Adding netdev list and maintainers Please cc netdev ML and net 
->> maintainers ./scripts/get_maintainer.pl -f 
->> drivers/net/ethernet/ti/cpsw_ethtool.c On 22/03/22 12:02 pm, Sondhauß, 
->> Jan wrote: > cpsw_ethtool uses the power management in the 
->> ZjQcmQRYFpfptBannerStart
->> This Message Is From an External Sender
->> Please use caution when clicking on links or opening attachments!
->> ZjQcmQRYFpfptBannerEnd
->>
->> Hi,
->>
->> Adding netdev list and maintainers
->>
->> Please cc netdev ML and net maintainers
->>
->> ./scripts/get_maintainer.pl -f drivers/net/ethernet/ti/cpsw_ethtool.c
->>
->> On 22/03/22 12:02 pm, Sondhauß, Jan wrote:
->>> cpsw_ethtool uses the power management in the begin and complete
->>> functions of the ethtool_ops. The result of pm_runtime_get_sync was
->>> returned unconditionally, which results in problems since the ethtool-
->>> interface relies on 0 for success and negativ values for errors.
->>> d43c65b05b84 (ethtool: runtime-resume netdev parent in ethnl_ops_begin)
->>> introduced power management to the netlink implementation for the
->>> ethtool interface and does not explicitly check for negative return
->>> values.
->>>
->>> As a result the pm_runtime_suspend function is called one-too-many
->>> times in ethnl_ops_begin and that leads to an access violation when
->>> the cpsw hardware is accessed after using
->>> 'ethtool -C eth-of-cpsw rx-usecs 1234'. To fix this the call to
->>> pm_runtime_get_sync in cpsw_ethtool_op_begin is replaced with a call
->>> to pm_runtime_resume_and_get as it provides a returnable error-code.
->>>
->>
->> pm_runtime_resume_and_get() is just wrapper around pm_runtime_get_sync()
->> + error handling (as done in the below code) and both return 0 on
->> success and -ve error code on failure
-> 
-> pm_runtime_get_sync returns -ve error code on failure and 0 on success 
-> and also 1 is returned if nothing has to be done besides increment of 
-> the usage counter.
-> So for active devices that don't need to be resumed a 1 is returned.
-> pm_runtime_resume_and_get is a return-friendly wrapper that returns 
-> -error code on failure but returns 0 on both other cases.
-> 
+> The main idea here is, if the value is already present and accessible,
+> why should we duplicate it? Tracking the MTU in this custom way already
+> caused some bugs (check the comment i'm removing). We both use standard
+> way to track ports MTU and we save some additional space. At the cost of
+> 2 additional checks are are not that much of a problem.
 
-I think this is a better explanation than the original commit message,
-but see below
+Where is the bug?
 
->>
->>
->>> Signed-off-by: Jan Sondhauss <jan.sondhauss@wago.com>
->>> ---
->>>  drivers/net/ethernet/ti/cpsw_ethtool.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
->>> index 158c8d3793f4..5eda20039cc1 100644
->>> --- a/drivers/net/ethernet/ti/cpsw_ethtool.c
->>> +++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
->>> @@ -364,7 +364,7 @@ int cpsw_ethtool_op_begin(struct net_device *ndev)
->>>  	struct cpsw_common *cpsw = priv->cpsw;
->>>  	int ret;
->>>  
->>> -	ret = pm_runtime_get_sync(cpsw->dev);
->>> +	ret = pm_runtime_resume_and_get(cpsw->dev)>  	if (ret < 0) {
->>>  		cpsw_err(priv, drv, "ethtool begin failed %d\n", ret);
->>>  		pm_runtime_put_noidle(cpsw->dev);
->>
->>
->> In fact code now ends up calling pm_runtime_put_noidle() twice in case
->> of failure, once inside pm_runtime_resume_and_get() and again here?
->>
->> So something looks fishy?
-> 
-> Sort of. There is no actual failure but pm_runtime_put is still called 
-> twice. That is due to
-> 	1. cpsw_ethtool_op_begin returning 1 when it should return 0
-> 	2. ethnl_ops_begin treating values not equal to 0 as failure
-> 	3. coalesce_prepare_data only treating negative values as failure
-> 
-> The patch addresses 1.
-> 
-> In net/ethtool/netlink.c:33 ethnl_ops_begin() the cpsw_ethtool_op_begin 
-> is called (returning 1) and in the error path of ethnl_ops_begin a 
-> pm_runtime_put is called. The function calling ethnl_ops_begin only 
-> checks for negative values: net/ethtool/coalesce.c:60 
-> coalesce_prepare_data and continues the sucess path calling 
-> ethnl_ops_complete. ethnl_ops_complete also calls pm_runtime_put. So the 
-> success path of coalesce_prepare_data and the error path of 
-> ethnl_ops_begin both end up calling pm_runtime_put when only one of them 
-> should.
-> 
+> Also from this I discovered that (at least on ipq806x that use stmmac)
+> when master needs to change MTU, stmmac complains that the interface is
+> up and it must be put down. Wonder if that's common across other drivers
+> or it's only specific to stmmac.
 
-Thanks for the explanation!
-
-Sorry, But what about the error case (ie ret < 0) With this patch, don't
-we end up calling pm_runtime_put_noidle() twice (once inside
-pm_runtime_resume_and_get() and again in cpsw_ethtool_op_begin()). How
-is that okay?
-
-
-Regards
-Vignesh
+I never had the pleasure of dealing with such DSA masters. I wonder why
+can't stmmac_change_mtu() check if netif_running(), call dev_close and
+set a bool, and at the end, if the bool was set, call dev_open back?
