@@ -2,115 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E9D4E4019
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 15:05:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76B984E402C
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 15:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236186AbiCVOFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 10:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53652 "EHLO
+        id S233461AbiCVOHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 10:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236144AbiCVOFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 10:05:34 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B3C2FFDB;
-        Tue, 22 Mar 2022 07:04:02 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id d76so3399068pga.8;
-        Tue, 22 Mar 2022 07:04:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=VKG/1kYND0WoR55B4lqLT7k0KiJbzmuO8Y2vRUl0xR0=;
-        b=Bn1p97RjLF9BxY3dry3X6BL6A0QNHbVTPaeSiQYpszmHcRBHMRldkiWcykDDU0enr6
-         8s0Q1JRRpDaA7VM7nmPJ/EIVDcu4CWQ0Vi/BJWtQVzjNImof7Yi/SA2yDlaBM0O19PUt
-         eOavBJD4kI6cZude4SxH01MIRg9B8/zEnTFrgmgHXl0JnAelmJSIEs4mYHFBGAsNSWgx
-         EQFY2o96LOLCdQgaJW4gu3f+OYTL+xULrKiZDRkoM8ncC7l4Fn4MrBcO4DZo0S99bx0m
-         I51Tfn2snPA/j1sYhqDgx7yhu2EzViZ+OfNgfWAHzut944DVMfs2XeMNYx3L80xev0Mx
-         QfFA==
+        with ESMTP id S234614AbiCVOHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 10:07:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A7A624BFDB
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 07:05:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1647957908;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WWSu3wiWy99oqRDajCtjPLsUAPwXYFjyrn/okc9AKDQ=;
+        b=ONW+mvp9oggZT7X+HtAXL/d8Ku/3aSRKt0t15O5X3Yx/3XtgCI4bNxJLGD+JTu+gIrADVd
+        020zQJHqym9be7eYrwdzOE8RhBfgYacYLMrXTYnNX9P2vZlK6XpyjexmcgnCAo/iZugxJY
+        tsmqMvFWxJa3JaqXfKJCO3yKR3kcRnc=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611-k0FpN4VwNOaoAzfQ6sj79Q-1; Tue, 22 Mar 2022 10:05:07 -0400
+X-MC-Unique: k0FpN4VwNOaoAzfQ6sj79Q-1
+Received: by mail-qv1-f69.google.com with SMTP id p12-20020a0c9a0c000000b0043299cbbd36so13784426qvd.16
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 07:05:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VKG/1kYND0WoR55B4lqLT7k0KiJbzmuO8Y2vRUl0xR0=;
-        b=EZrJaLT8BEqQMn3LFR9bRjw3ciYUVH2/Lorc8gcXx8eiKrc7v56gkD9zsJl9adWTZF
-         V/YFE/la34MjZiaKyrTgBMdKmPY093Dfxvj1DC0g6zwePHNjvec8GbfVmayKKoI1rvTG
-         5fYBUxgdM8hSEjRttzEWZCV1Z7z3R91c/vpSpC+jLOupX/SsfvtgF5nLPU+8/iYqBDV0
-         SBFkYoQHBbGmAxohVUMc9YGDCqEY7TkLsI89upJqxkFITdHQA1/r/P/TFrPs2Hg+2fZW
-         ZK+rDHPNdCGBXAhKQbs9xmaQeu2dQJczl2EsKyL5xPAxcAr+8vgxlVPtYK3pJazHc0MA
-         cDHw==
-X-Gm-Message-State: AOAM531hBg09/99yImT/NClCzpozyrhxpSb6Oj3YZxkZo4kFEo3B2vh3
-        b1tICY0JuqjwE7lp+f87Ixc=
-X-Google-Smtp-Source: ABdhPJy6TjhaP//V1y7jA7vEnRVP7B/fgoF/xy27P4PhL8ZiJNiV1cqoLHRVE8c1CWiPUp8X48cc/A==
-X-Received: by 2002:a05:6a00:1741:b0:4fa:9de9:93a1 with SMTP id j1-20020a056a00174100b004fa9de993a1mr10899699pfc.64.1647957842246;
-        Tue, 22 Mar 2022 07:04:02 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id y85-20020a626458000000b004fa77892f76sm14135304pfb.200.2022.03.22.07.04.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 07:04:01 -0700 (PDT)
-Message-ID: <92e86620-3457-6ca1-6888-fdbcdf0a4e4e@gmail.com>
-Date:   Tue, 22 Mar 2022 07:03:59 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WWSu3wiWy99oqRDajCtjPLsUAPwXYFjyrn/okc9AKDQ=;
+        b=DYPvFKt2TzQtChPQugIPTAYwUh3amj1mQaB7xxg59JMmdnp7wyKd7sUg3aiisV8bwd
+         TrgSw/9ukI0J77oJ+dd/z9K2eC7boNZoR6aTvOm9ehl7jxAVSJk+gTV0LWOfsLPPhC4G
+         Ag35MoDQE1DY3h+kdVsEN5YvSEpRHDJgmTQUqCAVN8xElmVW4QZqgB0Tk58uilGzus3U
+         B3BmnWLyc9z+n9As2lFuStirX2xzWxoDLEsaP309eJYIBl7TCxgQgqBTJ3PMwMsApo9Q
+         l6F7S9F/V7wu6NWqpH2t4xs1h//BCE1YgEjZpj2VgqQNjOrBIlB3nVmqPkzgBG6xHhYs
+         yZZA==
+X-Gm-Message-State: AOAM533q6oQywSX6vgfPHY8bOO70pd58ZAvRSCQbXZNgZlNXE0sMw1jp
+        ROZf2JnuVxnjb74JiJrgPtaCsa7OYrAyYFPWCqlHe/0miyo3lMFsxfMm7duVUgl486CaCco6e0V
+        FojcupAH2rLJSo1wu
+X-Received: by 2002:a05:6214:e87:b0:441:a5d:681c with SMTP id hf7-20020a0562140e8700b004410a5d681cmr12300780qvb.38.1647957907073;
+        Tue, 22 Mar 2022 07:05:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy8/P7gBREOiebiPL6hs1ySKYG/JtpPyzM46Q58fFbmK5VNi/3+BC5pcuLrkbzn9AowdZrExg==
+X-Received: by 2002:a05:6214:e87:b0:441:a5d:681c with SMTP id hf7-20020a0562140e8700b004410a5d681cmr12300737qvb.38.1647957906751;
+        Tue, 22 Mar 2022 07:05:06 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-12-25-114.business.telecomitalia.it. [87.12.25.114])
+        by smtp.gmail.com with ESMTPSA id l8-20020a05622a174800b002e1e3f7d4easm14583649qtk.86.2022.03.22.07.05.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 07:05:06 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 15:05:00 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net] vsock/virtio: enable VQs early on probe
+Message-ID: <20220322140500.bn5yrqj5ljckhcdb@sgarzare-redhat>
+References: <20220322103823.83411-1-sgarzare@redhat.com>
+ <20220322092723-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH net-next v3 1/3] net: ipvlan: fix potential UAF problem
- for phy_dev
-Content-Language: en-US
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Cc:     edumazet@google.com, brianvv@google.com,
-        linux-kernel@vger.kernel.org
-References: <cover.1647664114.git.william.xuanziyang@huawei.com>
- <abef9f7ad2c6e6b8ae053225766d34f3fc930ddf.1647664114.git.william.xuanziyang@huawei.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <abef9f7ad2c6e6b8ae053225766d34f3fc930ddf.1647664114.git.william.xuanziyang@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220322092723-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 3/19/22 02:52, Ziyang Xuan wrote:
-> There is a known scenario can trigger UAF problem for lower
-> netdevice as following:
-
-
-But this known scenario never happens.
-
-So maybe you should not add it 'in the future'
-
-
+On Tue, Mar 22, 2022 at 09:36:14AM -0400, Michael S. Tsirkin wrote:
+>On Tue, Mar 22, 2022 at 11:38:23AM +0100, Stefano Garzarella wrote:
+>> virtio spec requires drivers to set DRIVER_OK before using VQs.
+>> This is set automatically after probe returns, but virtio-vsock
+>> driver uses VQs in the probe function to fill rx and event VQs
+>> with new buffers.
 >
-> Someone module puts the NETDEV_UNREGISTER event handler to a
-> work, and lower netdevice is accessed in the work handler. But
-> when the work is excuted, lower netdevice has been destroyed
-> because upper netdevice did not get reference to lower netdevice
-> correctly.
-
-Again, whoever would like to use a work queue would also
-
-need to hold a reference on the device.
-
-Regardless of ipvlan being used or not.
-
-
 >
-> Although it can not happen for ipvlan now because there is no
-> way to access phy_dev outside ipvlan. But it is necessary to
-> add the reference operation to phy_dev to avoid the potential
-> UAF problem in the future.
+>So this is a spec violation. absolutely.
 >
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
+>> Let's fix this, calling virtio_device_ready() before using VQs
+>> in the probe function.
+>>
+>> Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
+>> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+>> ---
+>>  net/vmw_vsock/virtio_transport.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>> index 5afc194a58bb..b1962f8cd502 100644
+>> --- a/net/vmw_vsock/virtio_transport.c
+>> +++ b/net/vmw_vsock/virtio_transport.c
+>> @@ -622,6 +622,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
+>>  	INIT_WORK(&vsock->event_work, virtio_transport_event_work);
+>>  	INIT_WORK(&vsock->send_pkt_work, virtio_transport_send_pkt_work);
+>>
+>> +	virtio_device_ready(vdev);
+>> +
+>>  	mutex_lock(&vsock->tx_lock);
+>>  	vsock->tx_run = true;
+>>  	mutex_unlock(&vsock->tx_lock);
+>
+>Here's the whole code snippet:
+>
+>
+>        mutex_lock(&vsock->tx_lock);
+>        vsock->tx_run = true;
+>        mutex_unlock(&vsock->tx_lock);
+>
+>        mutex_lock(&vsock->rx_lock);
+>        virtio_vsock_rx_fill(vsock);
+>        vsock->rx_run = true;
+>        mutex_unlock(&vsock->rx_lock);
+>
+>        mutex_lock(&vsock->event_lock);
+>        virtio_vsock_event_fill(vsock);
+>        vsock->event_run = true;
+>        mutex_unlock(&vsock->event_lock);
+>
+>        if (virtio_has_feature(vdev, VIRTIO_VSOCK_F_SEQPACKET))
+>                vsock->seqpacket_allow = true;
+>
+>        vdev->priv = vsock;
+>        rcu_assign_pointer(the_virtio_vsock, vsock);
+>
+>        mutex_unlock(&the_virtio_vsock_mutex);
+>
+>
+>I worry that this is not the only problem here:
+>seqpacket_allow and setting of vdev->priv at least after
+>device is active look suspicious.
 
+Right, so if you agree I'll move these before virtio_device_ready().
 
-Your patch makes no sense to me really.
+>E.g.:
+>
+>static void virtio_vsock_event_done(struct virtqueue *vq)
+>{
+>        struct virtio_vsock *vsock = vq->vdev->priv;
+>
+>        if (!vsock)
+>                return;
+>        queue_work(virtio_vsock_workqueue, &vsock->event_work);
+>}
+>
+>looks like it will miss events now they will be reported earlier.
+>One might say that since vq has been kicked it might send
+>interrupts earlier too so not a new problem, but
+>there's a chance device actually waits until DRIVER_OK
+>to start operating.
 
+Yes I see, should I break into 2 patches (one where I move the code 
+already present and this one)?
+
+Maybe a single patch is fine since it's the complete solution.
+
+Thank you for the detailed explanation,
+Stefano
 
