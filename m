@@ -2,191 +2,440 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 318654E3E86
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 13:32:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C43994E3E8F
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 13:33:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234879AbiCVMde (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 08:33:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
+        id S233585AbiCVMfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 08:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233214AbiCVMdd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 08:33:33 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783226D867;
-        Tue, 22 Mar 2022 05:32:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1647952325; x=1679488325;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=whvh601WI9v3GtquiQCtN3tCwEdYSA9tQKGmcV2TCX4=;
-  b=jCs+fqCpJ57jrbOsdyJCHXDRvZRjcp+wEVD44wt6svV+GvmnX8OOp292
-   CFGoKLT7ynDQqsWHqN68qMaT7wtHnfixOzMQECsM6Km9wpRwT7bXpDZZG
-   lXSKRvY1cFI9whicqPkAvxoqUFHVFwkDFVDW9p2fppl+s6/No/ms/jrWV
-   e+x/yTRdBed5pJneG6anCm9cO08ACvO7E5/7U9yhpVgktUkEM5p1bGujR
-   wFRIxkbxn2OXEL7OWi+yjtDD8840dGycJItIcxXlbnt73rDYjJa/8V9e+
-   BHomS+yczuDQiItd7cTg9G56o2xZc3dUPJ8vcygLr6V3ukIXgDprzWIuJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10293"; a="245279558"
-X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
-   d="scan'208";a="245279558"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 05:32:05 -0700
-X-IronPort-AV: E=Sophos;i="5.90,201,1643702400"; 
-   d="scan'208";a="560365733"
-Received: from dcolomor-mobl1.ger.corp.intel.com ([10.252.55.151])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 05:31:59 -0700
-Date:   Tue, 22 Mar 2022 14:31:44 +0200 (EET)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-cc:     Netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
-Subject: Re: [PATCH net-next v5 12/13] net: wwan: t7xx: Device deep sleep
- lock/unlock
-In-Reply-To: <a43666ad-4216-29e9-762d-ade19fd77620@linux.intel.com>
-Message-ID: <a4eeb46f-2df1-16a6-b0e4-c6ea7683b75f@linux.intel.com>
-References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com> <20220223223326.28021-13-ricardo.martinez@linux.intel.com> <1aca9e1f-8b6b-d3e2-d3ff-1bf37abe63f5@linux.intel.com> <a43666ad-4216-29e9-762d-ade19fd77620@linux.intel.com>
+        with ESMTP id S233562AbiCVMfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 08:35:07 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34D7925E8E;
+        Tue, 22 Mar 2022 05:33:38 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KN9pg3zwwz688fv;
+        Tue, 22 Mar 2022 20:31:55 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 22 Mar 2022 13:33:35 +0100
+Message-ID: <cb30248d-a8ae-c366-2c9f-2ab0fe44cc9a@huawei.com>
+Date:   Tue, 22 Mar 2022 15:33:17 +0300
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2107175543-1647952324=:1722"
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v4 03/15] landlock: landlock_find/insert_rule
+ refactoring
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        <willemdebruijn.kernel@gmail.com>
+CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-4-konstantin.meskhidze@huawei.com>
+ <bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net>
+ <6535183b-5fad-e3a9-1350-d22122205be6@huawei.com>
+ <92d498f0-c598-7413-6b7c-d19c5aec6cab@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <92d498f0-c598-7413-6b7c-d19c5aec6cab@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323329-2107175543-1647952324=:1722
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
 
-On Fri, 18 Mar 2022, Martinez, Ricardo wrote:
+3/18/2022 9:33 PM, Mickaël Salaün пишет:
+> 
+> On 17/03/2022 15:29, Konstantin Meskhidze wrote:
+>>
+>>
+>> 3/16/2022 11:27 AM, Mickaël Salaün пишет:
+>>>
+>>> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>>>> A new object union added to support a socket port
+>>>> rule type. To support it landlock_insert_rule() and
+>>>> landlock_find_rule() were refactored. Now adding
+>>>> or searching a rule in a ruleset depends on a
+>>>> rule_type argument provided in refactored
+>>>> functions mentioned above.
+>>>>
+>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>> ---
+>>>>
+>>>> Changes since v3:
+>>>> * Split commit.
+>>>> * Refactoring landlock_insert_rule and landlock_find_rule functions.
+>>>> * Rename new_ruleset->root_inode.
+>>>>
+>>>> ---
+>>>>   security/landlock/fs.c      |   5 +-
+>>>>   security/landlock/ruleset.c | 108 
+>>>> +++++++++++++++++++++++++-----------
+>>>>   security/landlock/ruleset.h |  26 +++++----
+>>>>   3 files changed, 94 insertions(+), 45 deletions(-)
+>>>>
+>>>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>>>> index 97f5c455f5a7..1497948d754f 100644
+>>>> --- a/security/landlock/fs.c
+>>>> +++ b/security/landlock/fs.c
+>>>> @@ -168,7 +168,7 @@ int landlock_append_fs_rule(struct 
+>>>> landlock_ruleset *const ruleset,
+>>>>       if (IS_ERR(object))
+>>>>           return PTR_ERR(object);
+>>>>       mutex_lock(&ruleset->lock);
+>>>> -    err = landlock_insert_rule(ruleset, object, access_rights);
+>>>> +    err = landlock_insert_rule(ruleset, object, 0, access_rights, 
+>>>> LANDLOCK_RULE_PATH_BENEATH);
+>>>
+>>> For consistency, please use 80 columns everywhere.
+>>
+>>    Ok. I got it.
+>>>
+>>>>       mutex_unlock(&ruleset->lock);
+>>>>       /*
+>>>>        * No need to check for an error because landlock_insert_rule()
+>>>> @@ -195,7 +195,8 @@ static inline u64 unmask_layers(
+>>>>       inode = d_backing_inode(path->dentry);
+>>>>       rcu_read_lock();
+>>>>       rule = landlock_find_rule(domain,
+>>>> -            rcu_dereference(landlock_inode(inode)->object));
+>>>> +            (uintptr_t)rcu_dereference(landlock_inode(inode)->object),
+>>>> +            LANDLOCK_RULE_PATH_BENEATH);
+>>>>       rcu_read_unlock();
+>>>>       if (!rule)
+>>>>           return layer_mask;
+>>>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>>>> index a6212b752549..971685c48641 100644
+>>>> --- a/security/landlock/ruleset.c
+>>>> +++ b/security/landlock/ruleset.c
+>>>> @@ -34,7 +34,7 @@ static struct landlock_ruleset 
+>>>> *create_ruleset(const u32 num_layers)
+>>>>           return ERR_PTR(-ENOMEM);
+>>>>       refcount_set(&new_ruleset->usage, 1);
+>>>>       mutex_init(&new_ruleset->lock);
+>>>> -    new_ruleset->root = RB_ROOT;
+>>>> +    new_ruleset->root_inode = RB_ROOT;
+>>>>       new_ruleset->num_layers = num_layers;
+>>>>       /*
+>>>>        * hierarchy = NULL
+>>>> @@ -81,10 +81,12 @@ static void build_check_rule(void)
+>>>>   }
+>>>>
+>>>>   static struct landlock_rule *create_rule(
+>>>> -        struct landlock_object *const object,
+>>>> +        struct landlock_object *const object_ptr,
+>>>> +        const uintptr_t object_data,
+>>>>           const struct landlock_layer (*const layers)[],
+>>>>           const u32 num_layers,
+>>>> -        const struct landlock_layer *const new_layer)
+>>>> +        const struct landlock_layer *const new_layer,
+>>>> +        const u16 rule_type)
+>>>>   {
+>>>>       struct landlock_rule *new_rule;
+>>>>       u32 new_num_layers;
+>>>> @@ -103,8 +105,16 @@ static struct landlock_rule *create_rule(
+>>>>       if (!new_rule)
+>>>>           return ERR_PTR(-ENOMEM);
+>>>>       RB_CLEAR_NODE(&new_rule->node);
+>>>> -    landlock_get_object(object);
+>>>> -    new_rule->object = object;
+>>>> +
+>>>> +    switch (rule_type) {
+>>>> +    case LANDLOCK_RULE_PATH_BENEATH:
+>>>> +        landlock_get_object(object_ptr);
+>>>> +        new_rule->object.ptr = object_ptr;
+>>>> +        break;
+>>>> +    default:
+>>>> +        return ERR_PTR(-EINVAL);
+>>>
+>>> This would lead to memory leak. You should at least add a 
+>>> WARN_ON_ONCE(1) here, but a proper solution would be to remove the 
+>>> use of rule_type and only rely on object_ptr and object_data values. 
+>>> You can also add a WARN_ON_ONCE(object_ptr && object_data).
+>>>
+>>>
+>>    But rule_type is needed here in coming commits to support network
+>>    rules. For LANDLOCK_RULE_PATH_BENEATH rule type 
+>> landlock_get_object() is used but for LANDLOCK_RULE_NET_SERVICE is 
+>> not. Using rule type is convenient for distinguising between fs and 
+>> network rules.
+> 
+> rule_type is not required to infer if the rule use a pointer or raw 
+> data, even with the following commits, because you can rely on 
+> object_ptr being NULL or not. This would make create_rule() generic for 
+> pointer-based and data-based object, even if not-yet-existing rule 
+> types. It is less error-prone to only be able to infer something from 
+> one source (i.e. object_ptr and not rule_type).
+> 
+  Ok. I got you. Will be refactored.
+> 
+>>>> +    }
+>>>> +
+>>>>       new_rule->num_layers = new_num_layers;
+>>>>       /* Copies the original layer stack. */
+>>>>       memcpy(new_rule->layers, layers,
+>>>> @@ -120,7 +130,7 @@ static void free_rule(struct landlock_rule 
+>>>> *const rule)
+>>>>       might_sleep();
+>>>>       if (!rule)
+>>>>           return;
+>>>> -    landlock_put_object(rule->object);
+>>>> +    landlock_put_object(rule->object.ptr);
+>>>>       kfree(rule);
+>>>>   }
+>>>>
+>>>> @@ -156,26 +166,38 @@ static void build_check_ruleset(void)
+>>>>    * access rights.
+>>>>    */
+>>>>   static int insert_rule(struct landlock_ruleset *const ruleset,
+>>>> -        struct landlock_object *const object,
+>>>> +        struct landlock_object *const object_ptr,
+>>>> +        const uintptr_t object_data,
+> 
+> Can you move rule_type here for this function and similar ones? It makes 
+> sense to group object-related arguments.
+
+  Just to group them together, not putting rule_type in the end?
+> 
+> 
+>>>>           const struct landlock_layer (*const layers)[],
+>>>> -        size_t num_layers)
+>>>> +        size_t num_layers, u16 rule_type)
+>>>>   {
+>>>>       struct rb_node **walker_node;
+>>>>       struct rb_node *parent_node = NULL;
+>>>>       struct landlock_rule *new_rule;
+>>>> +    uintptr_t object;
+>>>> +    struct rb_root *root;
+>>>>
+>>>>       might_sleep();
+>>>>       lockdep_assert_held(&ruleset->lock);
+>>>> -    if (WARN_ON_ONCE(!object || !layers))
+>>>> -        return -ENOENT;
+>>>
+>>> You can leave this code here.
+>>
+>>   But anyway in coming commits with network rules this code will be 
+>> moved into case LANDLOCK_RULE_PATH_BENEATH: ....
+> 
+> Yes, but without rule_type you don't need to duplicate this check, just 
+> to remove object_ptr from WARN_ON_ONCE() and replace the rule_type 
+> switch/case with if (object_ptr).
+> 
+> You can change to this:
+> 
+> --- a/security/landlock/ruleset.c
+> +++ b/security/landlock/ruleset.c
+> @@ -194,43 +194,49 @@ static void build_check_ruleset(void)
+>    */
+>   static int insert_rule(struct landlock_ruleset *const ruleset,
+>           struct landlock_object *const object_ptr,
+> -        const uintptr_t object_data,
+> +        uintptr_t object_data, /* move @rule_type here */
+>           const struct landlock_layer (*const layers)[],
+> -        size_t num_layers, u16 rule_type)
+> +        size_t num_layers, const enum landlock_rule_type rule_type)
+>   {
+>       struct rb_node **walker_node;
+>       struct rb_node *parent_node = NULL;
+>       struct landlock_rule *new_rule;
+> -    uintptr_t object;
+>       struct rb_root *root;
+> 
+>       might_sleep();
+>       lockdep_assert_held(&ruleset->lock);
+> -    /* Choose rb_tree structure depending on a rule type */
+> +
+> +    if (WARN_ON_ONCE(!layers))
+> +        return -ENOENT;
+> +    if (WARN_ON_ONCE(object_ptr && object_data))
+> +        return -EINVAL;
+> +
+> +    /* Chooses the rb_tree according to the rule type. */
+>       switch (rule_type) {
+>       case LANDLOCK_RULE_PATH_BENEATH:
+> -        if (WARN_ON_ONCE(!object_ptr || !layers))
+> +        if (WARN_ON_ONCE(!object_ptr))
+>               return -ENOENT;
+> -        object = (uintptr_t)object_ptr;
+> +        object_data = (uintptr_t)object_ptr;
+>           root = &ruleset->root_inode;
+>           break;
+>       case LANDLOCK_RULE_NET_SERVICE:
+> -        if (WARN_ON_ONCE(!object_data || !layers))
+> -            return -ENOENT;
+> -        object = object_data;
+> +        if (WARN_ON_ONCE(object_ptr))
+> +            return -EINVAL;
+>           root = &ruleset->root_net_port;
+>           break;
+>       default:
+> +        WARN_ON_ONCE(1);
+>           return -EINVAL;
+>       }
+> +
+>       walker_node = &root->rb_node;
+>       while (*walker_node) {
+>           struct landlock_rule *const this = rb_entry(*walker_node,
+>                   struct landlock_rule, node);
+> 
+> -        if (this->object.data != object) {
+> +        if (this->object.data != object_data) {
+>               parent_node = *walker_node;
+> -            if (this->object.data < object)
+> +            if (this->object.data < object_data)
+>                   walker_node = &((*walker_node)->rb_right);
+>               else
+>                   walker_node = &((*walker_node)->rb_left);
+> 
+> 
+> This highlight an implicit error handling for a port value of 0. I'm not 
+> sure if this should be allowed or not though. If not, it should be an 
+> explicit service_port check in add_rule_net_service(). A data value of 
+> zero might be legitimate for this use case or not-yet-existing 
+> data-based rule types. Anyway, this kind of check is specific to the use 
+> case and should not be part of insert_rule().
+> 
+  Ok. I got it.
+> 
+> 
+>>>
+>>>> -    walker_node = &(ruleset->root.rb_node);
+>>>> +    /* Choose rb_tree structure depending on a rule type */
+>>>> +    switch (rule_type) {
+>>>> +    case LANDLOCK_RULE_PATH_BENEATH:
+>>>> +        if (WARN_ON_ONCE(!object_ptr || !layers))
+>>>> +            return -ENOENT;
+>>>> +        object = (uintptr_t)object_ptr;
+>>>> +        root = &ruleset->root_inode;
+>>>> +        break;
+>>>> +    default:
+>>>> +        return -EINVAL;
+>>>> +    }
+>>>> +    walker_node = &root->rb_node;
+>>>>       while (*walker_node) {
+>>>>           struct landlock_rule *const this = rb_entry(*walker_node,
+>>>>                   struct landlock_rule, node);
+>>>>
+>>>> -        if (this->object != object) {
+>>>> +        if (this->object.data != object) {
+>>>>               parent_node = *walker_node;
+>>>> -            if (this->object < object)
+>>>> +            if (this->object.data < object)
+>>>>                   walker_node = &((*walker_node)->rb_right);
+>>>>               else
+>>>>                   walker_node = &((*walker_node)->rb_left);
+>>>> @@ -207,11 +229,15 @@ static int insert_rule(struct landlock_ruleset 
+>>>> *const ruleset,
+>>>>            * Intersects access rights when it is a merge between a
+>>>>            * ruleset and a domain.
+>>>>            */
+>>>> -        new_rule = create_rule(object, &this->layers, 
+>>>> this->num_layers,
+>>>> -                &(*layers)[0]);
+>>>> +        switch (rule_type) {
+>>>> +        case LANDLOCK_RULE_PATH_BENEATH:
+>>>
+>>> Same here and for the following code, you should replace such 
+>>> switch/case with an if (object_ptr).
+>>>    What about coming commits with network rule_type support?
+> 
+> This will still works.
+> 
+   Yep. Ok.
+> 
+>>>
+>>>> +            new_rule = create_rule(object_ptr, 0, &this->layers, 
+>>>> this->num_layers,
+>>>> +                           &(*layers)[0], rule_type);
+>>>> +            break;
+>>>> +        }
+>>>>           if (IS_ERR(new_rule))
+>>>>               return PTR_ERR(new_rule);
+>>>> -        rb_replace_node(&this->node, &new_rule->node, &ruleset->root);
+>>>> +        rb_replace_node(&this->node, &new_rule->node, 
+>>>> &ruleset->root_inode);
+>>>
+>>> Use the root variable here. Same for the following code and patches.
+>>
+>>   What about your suggestion to use 2 rb_tress to support different 
+>> rule_types:
+>>       1. root_inode - for filesystem objects
+>>           2. root_net_port - for network port objects
+>> ????
+> 
+> I was talking about the root variable you declared a few line before. 
+> The conversion from ruleset->root to ruleset->root_inode is fine.
+> 
+  Sorry. It was a misunderstanding. Got your point.
+> 
+> [...]
+> 
+>>>> @@ -465,20 +501,28 @@ struct landlock_ruleset *landlock_merge_ruleset(
+>>>>    */
+>>>>   const struct landlock_rule *landlock_find_rule(
+>>>>           const struct landlock_ruleset *const ruleset,
+>>>> -        const struct landlock_object *const object)
+>>>> +        const uintptr_t object_data, const u16 rule_type)
+>>>>   {
+>>>>       const struct rb_node *node;
+>>>>
+>>>> -    if (!object)
+>>>> +    if (!object_data)
+>>>
+>>> object_data can be 0. You need to add a test with such value.
+>>>
+>>> We need to be sure that this change cannot affect the current FS code.
+>>
+>>   I got it. I will refactor it.
+> 
+> Well, 0 means a port 0, which might not be correct, but this check 
+> should not be performed by landlock_merge_ruleset().
+> 
+  Do you mean landlock_find_rule()?? Cause this check is not
+  performed in landlock_merge_ruleset().
 
 > 
-> On 3/10/2022 2:21 AM, Ilpo Järvinen wrote:
-> > On Wed, 23 Feb 2022, Ricardo Martinez wrote:
-> > 
-> > > From: Haijun Liu <haijun.liu@mediatek.com>
-> > > 
-> > > Introduce the mechanism to lock/unlock the device 'deep sleep' mode.
-> > > When the PCIe link state is L1.2 or L2, the host side still can keep
-> > > the device is in D0 state from the host side point of view. At the same
-> > > time, if the device's 'deep sleep' mode is unlocked, the device will
-> > > go to 'deep sleep' while it is still in D0 state on the host side.
-> > > 
-> > > Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> > > Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
-> > > Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> > > Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> > > ---
-> ...
-> > > +int t7xx_pci_sleep_disable_complete(struct t7xx_pci_dev *t7xx_dev)
-> > > +{
-> > > +	struct device *dev = &t7xx_dev->pdev->dev;
-> > > +	int ret;
-> > > +
-> > > +	ret = wait_for_completion_timeout(&t7xx_dev->sleep_lock_acquire,
-> > > +
-> > > msecs_to_jiffies(PM_SLEEP_DIS_TIMEOUT_MS));
-> > > +	if (!ret)
-> > > +		dev_err_ratelimited(dev, "Resource wait complete timed
-> > > out\n");
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +
-> > > +/**
-> > > + * t7xx_pci_disable_sleep() - Disable deep sleep capability.
-> > > + * @t7xx_dev: MTK device.
-> > > + *
-> > > + * Lock the deep sleep capability, note that the device can still go into
-> > > deep sleep
-> > > + * state while device is in D0 state, from the host's point-of-view.
-> > > + *
-> > > + * If device is in deep sleep state, wake up the device and disable deep
-> > > sleep capability.
-> > > + */
-> > > +void t7xx_pci_disable_sleep(struct t7xx_pci_dev *t7xx_dev)
-> > > +{
-> > > +	unsigned long flags;
-> > > +
-> > > +	if (atomic_read(&t7xx_dev->md_pm_state) < MTK_PM_RESUMED) {
-> > > +		atomic_inc(&t7xx_dev->sleep_disable_count);
-> > > +		complete_all(&t7xx_dev->sleep_lock_acquire);
-> > > +		return;
-> > > +	}
-> > > +
-> > > +	spin_lock_irqsave(&t7xx_dev->md_pm_lock, flags);
-> > > +	if (atomic_inc_return(&t7xx_dev->sleep_disable_count) == 1) {
-> > > +		u32 deep_sleep_enabled;
-> > > +
-> > > +		reinit_completion(&t7xx_dev->sleep_lock_acquire);
-> > You might want to check that there's a mechanism that prevents this
-> > racing with wait_for_completion_timeout() in
-> > t7xx_pci_sleep_disable_complete().
-> > 
-> > I couldn't prove it myself but there are probably aspect in the PM side of
-> > things I wasn't able to take fully into account (that is, which call
-> > paths are not possible to occur).
-> Those functions are called in the following order:
-> 1.- t7xx_pci_disable_sleep()
-> 2.- t7xx_pci_sleep_disable_complete()
-> 3.- t7xx_pci_enable_sleep()
+>>>
+>>>
+>>>>           return NULL;
+>>>> -    node = ruleset->root.rb_node;
+>>>> +
+>>>> +    switch (rule_type) {
+>>>> +    case LANDLOCK_RULE_PATH_BENEATH:
+>>>> +        node = ruleset->root_inode.rb_node;
+>>>> +        break;
+>>>> +    default:
+>>>> +        return ERR_PTR(-EINVAL);
+>>>
+>>> This is a bug. There is no check for such value. You need to check 
+>>> and update all call sites to catch such errors. Same for all new use 
+>>> of ERR_PTR().
+>>
+>> Sorry, I did not get your point.
+>> Do you mean I should check the correctness of rule_type in above 
+>> function which calls landlock_find_rule() ??? Why can't I add such 
+>> check here?
+> 
+> landlock_find_rule() only returns NULL or a valid pointer, not an error.
 
-That sequence gets called from 5 places:
-
-- t7xx_cldma_send_skb
-- t7xx_dpmaif_rxq_work
-- t7xx_dpmaif_bat_release_work
-- t7xx_dpmaif_tx_done
-- t7xx_dpmaif_tx_hw_push_thread + t7xx_do_tx_hw_push
-
-Which of those can run parallel to each other, I'm not sure of. But they 
-can, the race is likely there between those "instances" of the sequence, 
-one instance doing reinit_completion() and the other 
-wait_for_completion_timeout().
-
-> That sequence and md_pm_lock protect against a race condition between
-> wait_for_completion_timeout() and  reinit_completion().
-
-wait_for_completion_timeout() is not protected by md_pm_lock. There is 
-a path with return in t7xx_pci_disable_sleep() before taking md_pm_lock.
-
-> On the other hand, there could be a race condition between
-> t7xx_pci_disable_sleep() and t7xx_pci_enable_sleep() which may cause sleep to
-> get enabled while one thread expects it to be disabled.
-
-...And once sleep gets enabled, this can get true, no?
-
-	if (atomic_read(&t7xx_dev->md_pm_state) < MTK_PM_RESUMED) {
-
-...after which there's nothing which protects 
-wait_for_completion_timeout() from racing with another instance of 
-the sequence which has not yet executed reinit_completion()?
-
-I think you found the very race which I was worried about. :-)
-
-> The fix would be to protect sleep_disable_count with md_pm_lock, then
-> sleep_disable_count doesn't need to be declared as atomic.
-> The next version will include cleanup in this area.
-
-Ok. I'll take a look once you post the next version.
-
--- 
- i.
-
---8323329-2107175543-1647952324=:1722--
+   What about incorrect rule_type?? Return NULL? Or final rule_checl 
+must be in upper function?
+> 
+> [...]
+> .
