@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C86434E4816
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 22:07:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A624E4818
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 22:07:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235032AbiCVVJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 17:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        id S235100AbiCVVJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 17:09:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiCVVJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 17:09:13 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42C16151
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 14:07:43 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id l7-20020a05600c1d0700b0038c99618859so4103726wms.2
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 14:07:43 -0700 (PDT)
+        with ESMTP id S235021AbiCVVJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 17:09:14 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B013EAA5
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 14:07:45 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id v130-20020a1cac88000000b00389d0a5c511so4085701wme.5
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 14:07:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dOjiq8Aqyi8KntJHZ/EWB00zgN02oNcNdxQFPgwQW6w=;
-        b=J8LYC5pkKNpKe6OeijsMM3+GJo69vUpHBF6B+YmEgYZwKj+P2IVAIwh11IL/InqTrm
-         FqlYlYMawYfYzRPBTmy1hoiCJACJpw0G7bCF4lkVXnnH2DeA7P5QFk/oFirbPVHh7oeV
-         XXT9CTJEwqx/2ZxPGnVYxl0g0YMWvneV89PDuyv82xRfTpPQPPfZSvyCwDdG2VPgjYJ5
-         5btcR7J+UpnPLWx961Ikj9EdD74FmmpRkQvhkmzeltMNT+/yGjaswxeqGztJfMnvJzVt
-         yUgopuYu/XbQa2wVd+Xx7DmRDEUVvkOVIo6XqfTey9XxlS3pwG6+ujQvDFF45Kbs6vNy
-         T26w==
+        bh=lIYEEzHUYKzkWkxt1nwU2xaGYq4yK0UBpk6s66e1KD4=;
+        b=c7JZOjdlVB/hNXmn+I2Vk1+M2KyKT1MtJn0t2XLD3/Up4911XVoTUIf7TWD4EGlYFu
+         +0FgCxM634JO08vusv4DfGM34JUZvGVuAj44eUyhNU8Vzw8W9NnXQVbw1xZ8FdtPOnz+
+         Wrsq05UoJmTs4taZi1Ad2KArn0/bQWb+Mr05X9QMRB1U5KVlYOymF37IDXUA0/DASHgn
+         P5o9vkdKS6B3u4v1A5UwwcLAU06gE0I4dgU3fJOmU8yF6IEzYnO+d41dC4eca9twtFhg
+         HyQ9xWj3Wavu8jK4T+mYE9L8ignnXe4olnayGohbDZR78jATxZ+NuM5aHjuPMSiuecdy
+         qUKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dOjiq8Aqyi8KntJHZ/EWB00zgN02oNcNdxQFPgwQW6w=;
-        b=xHDHHjP1bdHuOAHUQ0OHXzEODqVGAYPZuH56nY1h+hNaJ2QjDPim/BBMjF73esdo2y
-         QvIcYrX4JRE80LpJBFOjNzDvZ8VzTmUbQZp2EZ3RNd6Tm3TpNg8Bub6XRX5oMbb+haK4
-         FcIvUh0zK0pj97/yKkmTvqBDk0Cf5Td3ZKZaG+dp0Ut+fUkLa0lDG1jx6nNuhxYFzfxB
-         44BYQFCH/zrOa8McMZDbxrBonQIKjs7JfGnrAFAUTnC9N/kGXRnIfyiRWbirqEW/5ktR
-         MFxVW+RyDbgsaipIcc+eArKp2GLuHdzVGNcyIglXVtdnC6RBwHPjBZ1dCkJv4ODvn/Yw
-         4ROA==
-X-Gm-Message-State: AOAM533yTvidnMvSvlG0J5VAwUYFxtHR2niPAMK7H+hta/0F+nJDSMal
-        POK/ujASjmiYnwKCxUL/as5xCQ==
-X-Google-Smtp-Source: ABdhPJzenh++JnlXb5IWu7bsEZ6UrSl/D0L/fwAWeYNr26lfBnCM0vd2Xx+ZjAGBI3Z3KPJ6VA/QOw==
-X-Received: by 2002:a05:600c:4f92:b0:38a:1d7:c01c with SMTP id n18-20020a05600c4f9200b0038a01d7c01cmr5764372wmq.164.1647983262489;
-        Tue, 22 Mar 2022 14:07:42 -0700 (PDT)
+        bh=lIYEEzHUYKzkWkxt1nwU2xaGYq4yK0UBpk6s66e1KD4=;
+        b=dVp31fSf4x21skjUQ8kvhOw0cHexDaE0lr0iAWg+5suj+DMs1i40lc1njOyB6JAkrS
+         OGmG4dix/elYClVS4QxDSkd+KcIgUHcHAHVb8vcPjNOHPRZCPE7EKnGQPiQqkqZtJSgs
+         JcIz2RQhrQ579xOE7oaZz26zYFEVHszEQNBlw4ivSBCCTfLm5mQbBG7wWVAmvr2/jriX
+         xjvVwtZREttiPrS/PuRDGR2zvDRiWWgld0hTzpLPPmEp7TnJ6dYYgc6GJiuTIXnqF5LE
+         T3y+SKv+lcH/i+x4wQ44sJHKhskMAFTDd1qNHHycoD64Jn3ZlxW4VYIe+4iIeOx1QGSp
+         s0dg==
+X-Gm-Message-State: AOAM5329lAo/Dy0JqrzoOdkI2U0dTKkO1p17EbUU+ZaGvQJgUbHLobKQ
+        UkBX6vjCwGKyiKuaQ26O+x0Xag==
+X-Google-Smtp-Source: ABdhPJzC4CkdJU8Mjb9hZGgZTUueN21KJNVRaff5uqR89ZD64UBuJx7nM45hvERhXu6qBlfJU3oWCg==
+X-Received: by 2002:a1c:c904:0:b0:38c:8dc1:87a3 with SMTP id f4-20020a1cc904000000b0038c8dc187a3mr5884410wmb.101.1647983264184;
+        Tue, 22 Mar 2022 14:07:44 -0700 (PDT)
 Received: from hornet.engleder.at ([2001:871:23a:8366:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id c7-20020a5d4f07000000b00203db8f13c6sm16281805wru.75.2022.03.22.14.07.41
+        by smtp.gmail.com with ESMTPSA id c7-20020a5d4f07000000b00203db8f13c6sm16281805wru.75.2022.03.22.14.07.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 14:07:42 -0700 (PDT)
+        Tue, 22 Mar 2022 14:07:43 -0700 (PDT)
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net,
         kuba@kernel.org
 Cc:     mlichvar@redhat.com, vinicius.gomes@intel.com,
         netdev@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v1 2/6] ptp: Request cycles for TX timestamp
-Date:   Tue, 22 Mar 2022 22:07:18 +0100
-Message-Id: <20220322210722.6405-3-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v1 3/6] ptp: Pass hwtstamp to ptp_convert_timestamp()
+Date:   Tue, 22 Mar 2022 22:07:19 +0100
+Message-Id: <20220322210722.6405-4-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220322210722.6405-1-gerhard@engleder-embedded.com>
 References: <20220322210722.6405-1-gerhard@engleder-embedded.com>
@@ -70,69 +70,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The free running time of physical clocks called cycles shall be used for
-hardware timestamps to enable synchronisation.
+ptp_convert_timestamp() converts only the timestamp hwtstamp, which is
+a field of the argument with the type struct skb_shared_hwtstamps *. So
+a pointer to the hwtstamp field of this structure is sufficient.
 
-Introduce new flag SKBTX_HW_TSTAMP_USE_CYCLES, which signals driver to
-provide a TX timestamp based on cycles if cycles are supported.
+Rework ptp_convert_timestamp() to use an argument of type ktime_t *.
+This allows to add additional timestamp manipulation stages before the
+call of ptp_convert_timestamp().
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- include/linux/skbuff.h |  3 +++
- net/core/skbuff.c      |  2 ++
- net/socket.c           | 10 +++++++++-
- 3 files changed, 14 insertions(+), 1 deletion(-)
+ drivers/ptp/ptp_vclock.c         | 5 ++---
+ include/linux/ptp_clock_kernel.h | 7 +++----
+ net/socket.c                     | 2 +-
+ 3 files changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 26538ceb4b01..f494ddbfc826 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -578,6 +578,9 @@ enum {
- 	/* device driver is going to provide hardware time stamp */
- 	SKBTX_IN_PROGRESS = 1 << 2,
+diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
+index 3a095eab9cc5..c30bcce2bb43 100644
+--- a/drivers/ptp/ptp_vclock.c
++++ b/drivers/ptp/ptp_vclock.c
+@@ -232,8 +232,7 @@ int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
+ }
+ EXPORT_SYMBOL(ptp_get_vclocks_index);
  
-+	/* generate hardware time stamp based on cycles if supported */
-+	SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
-+
- 	/* generate wifi status information (where possible) */
- 	SKBTX_WIFI_STATUS = 1 << 4,
+-ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
+-			      int vclock_index)
++ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index)
+ {
+ 	char name[PTP_CLOCK_NAME_LEN] = "";
+ 	struct ptp_vclock *vclock;
+@@ -255,7 +254,7 @@ ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
  
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 10bde7c6db44..c0f8f1341c3f 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4847,6 +4847,8 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
- 		skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
- 					     SKBTX_ANY_TSTAMP;
- 		skb_shinfo(skb)->tskey = skb_shinfo(orig_skb)->tskey;
-+	} else {
-+		skb_shinfo(skb)->tx_flags &= ~SKBTX_HW_TSTAMP_USE_CYCLES;
- 	}
+ 	vclock = info_to_vclock(ptp->info);
  
- 	if (hwtstamps)
+-	ns = ktime_to_ns(hwtstamps->hwtstamp);
++	ns = ktime_to_ns(*hwtstamp);
+ 
+ 	spin_lock_irqsave(&vclock->lock, flags);
+ 	ns = timecounter_cyc2time(&vclock->tc, ns);
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index acdcaa4a1ec2..cc6a7b2e267d 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -379,17 +379,16 @@ int ptp_get_vclocks_index(int pclock_index, int **vclock_index);
+ /**
+  * ptp_convert_timestamp() - convert timestamp to a ptp vclock time
+  *
+- * @hwtstamps:    skb_shared_hwtstamps structure pointer
++ * @hwtstamp:     timestamp
+  * @vclock_index: phc index of ptp vclock.
+  *
+  * Returns converted timestamp, or 0 on error.
+  */
+-ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
+-			      int vclock_index);
++ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index);
+ #else
+ static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
+ { return 0; }
+-static inline ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
++static inline ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp,
+ 					    int vclock_index)
+ { return 0; }
+ 
 diff --git a/net/socket.c b/net/socket.c
-index 982eecad464c..1acebcb19e8f 100644
+index 1acebcb19e8f..2e932c058002 100644
 --- a/net/socket.c
 +++ b/net/socket.c
-@@ -683,9 +683,17 @@ void __sock_tx_timestamp(__u16 tsflags, __u8 *tx_flags)
- {
- 	u8 flags = *tx_flags;
- 
--	if (tsflags & SOF_TIMESTAMPING_TX_HARDWARE)
-+	if (tsflags & SOF_TIMESTAMPING_TX_HARDWARE) {
- 		flags |= SKBTX_HW_TSTAMP;
- 
-+		/* PTP hardware clocks can provide a free running time called
-+		 * cycles as base for virtual clocks. Tell driver to use cycles
-+		 * for timestamp if socket is bound to virtual clock.
-+		 */
-+		if (tsflags & SOF_TIMESTAMPING_BIND_PHC)
-+			flags |= SKBTX_HW_TSTAMP_USE_CYCLES;
-+	}
-+
- 	if (tsflags & SOF_TIMESTAMPING_TX_SOFTWARE)
- 		flags |= SKBTX_SW_TSTAMP;
- 
+@@ -887,7 +887,7 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+ 	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+ 	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
+ 		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
+-			hwtstamp = ptp_convert_timestamp(shhwtstamps,
++			hwtstamp = ptp_convert_timestamp(&shhwtstamps->hwtstamp,
+ 							 sk->sk_bind_phc);
+ 		else
+ 			hwtstamp = shhwtstamps->hwtstamp;
 -- 
 2.20.1
 
