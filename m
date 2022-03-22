@@ -2,124 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42A844E4264
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 15:56:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF7164E4304
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 16:31:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238247AbiCVO5e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 10:57:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        id S235881AbiCVPdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 11:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235385AbiCVO5d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 10:57:33 -0400
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08A67091C;
-        Tue, 22 Mar 2022 07:56:05 -0700 (PDT)
-Received: by mail-ot1-f48.google.com with SMTP id k25-20020a056830151900b005b25d8588dbso12678082otp.4;
-        Tue, 22 Mar 2022 07:56:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=3aZJSkaV4ny64t/6HlHKKxxt5945ozoooWtgmmX/uNU=;
-        b=tcL9lgGIuxoOkEksljj69uUN2duPSYqeZb+/1vFQJCmYHaGeHfJKL9N6zGl5wmq9J1
-         5iQxS2KTuiCWKxB/R5f8S+OfXGtULOlKa25Wjx49GLCoLvVn8e31TIXDNVvrqsOIcbxb
-         ogW8uP2ytdngg5t83H/uhfSOxEPNX1RM0343SI0WQ7RrCZ3E9eziwDfibo3xBkbUgNpW
-         YVKiPaj37pLbba8XTkSOcD5rUGVczo0JJmQ4qHQ00qvdr0OTPc8R8zBCqc+Uo0GTfqDW
-         kfri1ky1hxxnia8RTKzucK6F/BYLwm2tCKLFBuVh4ZIie1TltCZk/YLNQ9FlrjvT62yx
-         lWVQ==
-X-Gm-Message-State: AOAM532ehZBwGel73dFnNxivIMvT//FmMNrA1RBq7fA5m83bZTEk0ZaJ
-        SlR2Y/IxjM228AdxNlSHQQ==
-X-Google-Smtp-Source: ABdhPJx9+FpzjzNAETTVdejkaoBHKTeQ1RW2pVbI9oyMCE0s9FJqTk+pnMGCEg+8AMXBEDVft4MD5A==
-X-Received: by 2002:a05:6830:2aa1:b0:5c9:2691:ea3c with SMTP id s33-20020a0568302aa100b005c92691ea3cmr10173109otu.365.1647960965013;
-        Tue, 22 Mar 2022 07:56:05 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05687013cb00b000dd9b5dd71csm7523019oat.56.2022.03.22.07.56.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 07:56:03 -0700 (PDT)
-Received: (nullmailer pid 2004138 invoked by uid 1000);
-        Tue, 22 Mar 2022 14:56:01 -0000
-Date:   Tue, 22 Mar 2022 09:56:01 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
-        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v9 net-next 02/11] dt-bindings: net: add mdio property
-Message-ID: <YjnjgVchVwskX+kL@robh.at.kernel.org>
-References: <20220318085540.281721-1-prasanna.vengateshan@microchip.com>
- <20220318085540.281721-3-prasanna.vengateshan@microchip.com>
- <YjkJxykT2dQxe3d/@robh.at.kernel.org>
- <7526eff194e4dcfec1b8d88fc30b22aeb83e3100.camel@microchip.com>
+        with ESMTP id S235839AbiCVPdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 11:33:02 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074E5240A3
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 08:31:35 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9D9AA5C010D;
+        Tue, 22 Mar 2022 11:31:32 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Tue, 22 Mar 2022 11:31:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=edi1Avf6TKC+cH05A
+        9XGNw+gdRFjteMtQu1DgSgPUGs=; b=PzdmvQfSEhX47zpyQF1OMaV8jG8wsjFRy
+        dYr8Z8qJ9TaKBjGLqpVsZGZAcM1EEQufzlyzjjkZVAt4MJ7fUSKICTjXduy1jBz5
+        WS867tx7WiYc8Ur5KorgRNDEVA2JciOj3zW5F965LSUfVjWPWNIKEa5IFH6zB017
+        Qct6wW8VJhUHGMkML/0IWwG9RCP8bMeF4ogFpicTRlNJqX2GG6EUeuDgoVO2Qlz+
+        wKvEq1FpRRLsMeubOw5IJRVQhqQY2V6cCmbFflCMVq3W30+p0kGJowo0eEtUJZWp
+        hTAz40qRcveJUE/jpyg9kLCFGXymbm48y2uxCVN7N9d0rbTFKiivg==
+X-ME-Sender: <xms:1Os5YjM_53goo6zAqNBGK2WAEL8wgfRbIq9F1A0Tutuw5kblITSS8A>
+    <xme:1Os5Yt_WNwIZ6A__UadNF63weM-YoEa8vdCQ1klt88YR5NPVMP4kBsIzSA6OiWg3Q
+    dMuGiu_3R4VFgc>
+X-ME-Received: <xmr:1Os5YiQvx4sxhhazGiUIMdSakLYroCYNEMZ-9WBpnw3jYX8OkVJ2FsdF5lnvglaxNzSS8gpOHdySi3PzZgmcdo2KAUk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeghedgjeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:1Os5YnvWPGphvjY8IRYNoZzoml9ydvEYuiiY2VfSFRg5Y31i1EJMqA>
+    <xmx:1Os5YreYQYQSs4qeXzJQazhawdhbIRZBMcpXyVtaeaHhgI3xeLPLVw>
+    <xmx:1Os5Yj0MvToPouHHYW1oLad_lHERb16hpIqYAaA2FCXW3upjj4imPA>
+    <xmx:1Os5YspljEJXCjXvT71ecX_WI9gG-R6sE1LTkPNFQCA-4KY_wdk3nA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 22 Mar 2022 11:31:31 -0400 (EDT)
+Date:   Tue, 22 Mar 2022 17:31:27 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        greearb@candelatech.com
+Subject: Re: [PATCH net-next] net: Add l3mdev index to flow struct and avoid
+ oif reset for port devices
+Message-ID: <Yjnrz7vL9HqE5UBz@shredder>
+References: <20220314204551.16369-1-dsahern@kernel.org>
+ <YjmVZzwE3XY750v6@shredder>
+ <0b0b61a1-e46d-6134-0151-913b324f056a@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7526eff194e4dcfec1b8d88fc30b22aeb83e3100.camel@microchip.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <0b0b61a1-e46d-6134-0151-913b324f056a@kernel.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 08:16:00PM +0530, Prasanna Vengateshan wrote:
-> On Mon, 2022-03-21 at 18:27 -0500, Rob Herring wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> > content is safe
+On Tue, Mar 22, 2022 at 08:26:48AM -0600, David Ahern wrote:
+> On 3/22/22 3:22 AM, Ido Schimmel wrote:
+> > On Mon, Mar 14, 2022 at 02:45:51PM -0600, David Ahern wrote:
+> >> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+> >> index 2af2b99e0bea..fb0e49c36c2e 100644
+> >> --- a/net/ipv4/fib_trie.c
+> >> +++ b/net/ipv4/fib_trie.c
+> >> @@ -1429,11 +1429,8 @@ bool fib_lookup_good_nhc(const struct fib_nh_common *nhc, int fib_flags,
+> >>  	    !(fib_flags & FIB_LOOKUP_IGNORE_LINKSTATE))
+> >>  		return false;
+> >>  
+> >> -	if (!(flp->flowi4_flags & FLOWI_FLAG_SKIP_NH_OIF)) {
+> >> -		if (flp->flowi4_oif &&
+> >> -		    flp->flowi4_oif != nhc->nhc_oif)
+> >> -			return false;
+> >> -	}
+> >> +	if (flp->flowi4_oif && flp->flowi4_oif != nhc->nhc_oif)
+> >> +		return false;
 > > 
-> > On Fri, Mar 18, 2022 at 02:25:31PM +0530, Prasanna Vengateshan wrote:
-> > > mdio bus is applicable to any switch hence it is added as per the below
-> > > request,
-> > > https://lore.kernel.org/netdev/1300f84832ef1c43ecb9edb311fb817e3aab5420.camel@microchip.com/
+> > David, we have several test cases that are failing which I have tracked
+> > down to this patch.
 > > 
-> > Quoting that thread:
+> > Before the patch, if the original output interface was enslaved to a
+> > VRF, the output interface in the flow struct would be updated to the VRF
+> > and the 'FLOWI_FLAG_SKIP_NH_OIF' flag would be set, causing the above
+> > check to be skipped.
 > > 
-> > > Yes indeed, since this is a common property of all DSA switches, it can
-> > > be defined or not depending on whether the switch does have an internal
-> > > MDIO bus controller or not.
+> > After the patch, the check is no longer skipped, as original output
+> > interface is retained and the flag was removed.
 > > 
-> > Whether or not a switch has an MDIO controller or not is a property of
-> > that switch and therefore 'mdio' needs to be documented in those switch
-> > bindings.
+> > This breaks scenarios where a GRE tunnel specifies a dummy device
+> > enslaved to a VRF as its physical device. The purpose of this
+> > configuration is to redirect the underlay lookup to the table associated
+> > with the VRF to which the dummy device is enslaved to. The check fails
+> > because 'flp->flowi4_oif' points to the dummy device, whereas
+> > 'nhc->nhc_oif' points to the interface via which the encapsulated packet
+> > should egress.
 > > 
-> > > 
-> > > Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/net/dsa/dsa.yaml | 4 ++++
-> > >  1 file changed, 4 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > > b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > > index b9d48e357e77..0f8426e219eb 100644
-> > > --- a/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > > +++ b/Documentation/devicetree/bindings/net/dsa/dsa.yaml
-> > > @@ -31,6 +31,10 @@ properties:
-> > >        switch 1. <1 0> is cluster 1, switch 0. A switch not part of any
-> > > cluster
-> > >        (single device hanging off a CPU port) must not specify this property
-> > >      $ref: /schemas/types.yaml#/definitions/uint32-array
-> > > +
-> > > +  mdio:
-> > > +    $ref: /schemas/net/mdio.yaml#
-> > > +    unevaluatedProperties: false
+> > Skipping the check when an l3mdev was set seems to solve the problem:
 > > 
-> > From a schema standpoint, this bans every switch from adding additional
-> > properties under an mdio node. Not likely what you want.
+> > diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+> > index fb0e49c36c2e..cf1164e05d92 100644
+> > --- a/net/ipv4/fib_trie.c
+> > +++ b/net/ipv4/fib_trie.c
+> > @@ -1429,7 +1429,8 @@ bool fib_lookup_good_nhc(const struct fib_nh_common *nhc, int fib_flags,
+> >             !(fib_flags & FIB_LOOKUP_IGNORE_LINKSTATE))
+> >                 return false;
+> >  
+> > -       if (flp->flowi4_oif && flp->flowi4_oif != nhc->nhc_oif)
+> > +       if (!flp->flowi4_l3mdev &&
+> > +           flp->flowi4_oif && flp->flowi4_oif != nhc->nhc_oif)
+> >                 return false;
+> >  
+> >         return true;
 > > 
-> > Rob
+> > AFAICT, this scenario does not break with ip6gre/ip6gretap tunnels
+> > because 'RT6_LOOKUP_F_IFACE' is not set in
+> > ip6_route_output_flags_noref() in this case.
+> > 
+> > WDYT? I plan to test this patch in our regression, but I'm not sure if I
+> > missed other cases that might remain broken.
 > 
-> Thanks for the feedback. Do you mean that the 'unevaluatedProperties: false' to
-> be removed, so that the additional properties can be added? or mdio is not
-> supposed to be defined in the dsa.yaml ?
+> one of the requests with VRF has been to bind a socket to a port device
+> and expect the lookup to enforce use of that egress port (e.g.,
+> multipath). Switching the oif to the VRF device and then ignoring the
+> oif check was making that check too flexible for that use case.
 
-'mdio' should not be defined here.
+I see
 
-Rob
+> 
+> What's the callchain for this failure? Perhaps the
+> FLOWI_FLAG_SKIP_NH_OIF needs to be kept for this particular use case.
+
+This is the stack trace for the failure:
+
+    fib_lookup_good_nhc+5
+    fib_table_lookup+3281
+    fib4_rule_action+501
+    fib_rules_lookup+858
+    __fib_lookup+233
+    fib_lookup.constprop.0+926
+    ip_route_output_key_hash_rcu+3707
+    ip_route_output_key_hash+392
+    ip_route_output_flow+33
+    ip_tunnel_xmit+1794
+    gre_tap_xmit+1312
+    dev_hard_start_xmit+448
+    sch_direct_xmit+615
+    __dev_queue_xmit+4841
+
+The GRE tap is using a dummy device enslaved to a VRF as its physical
+device.
