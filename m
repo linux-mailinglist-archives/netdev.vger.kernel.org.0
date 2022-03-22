@@ -2,71 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 703194E37FA
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 05:37:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56C324E3806
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 05:40:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236470AbiCVEhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 00:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46964 "EHLO
+        id S236487AbiCVEld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 00:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236489AbiCVEhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 00:37:36 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858AE205C7;
-        Mon, 21 Mar 2022 21:36:07 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id n7-20020a17090aab8700b001c6aa871860so1116387pjq.2;
-        Mon, 21 Mar 2022 21:36:07 -0700 (PDT)
+        with ESMTP id S236517AbiCVElc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 00:41:32 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1D266CB2
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 21:40:01 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so616150wmp.5
+        for <netdev@vger.kernel.org>; Mon, 21 Mar 2022 21:40:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uo/1OUaIznEFGmobWpbSlJ+BL/SSeNvkm1s2vVWafZU=;
-        b=VxGwARXiHft1JHO4SAJ6G/DRxNMioJC6K7RIZxbTrXyiIFXwfbF77MKTRdTwyKMU7G
-         tTgE4GF0A3yJfuxyQ7BpF1dUWaV40mT5ZN0rBS8t6VTwYu2cJdZJbNSuPHLYbcd8rn4c
-         X4bFG9I/V/9NsaU0gfg1Um8LujbGbBMzgIjBf8DrsZruloGr98miTvbhKC2f1BXdMQ77
-         akglctU4K+6xK/rL65YVVWTKrlNRkKc3vUL9LoBPdc1cTdKlaYgqdtVlRVybSng5l0HJ
-         sHB9/6vFcw1EjcJNZdHhGwFZPGxWNT+ZEKJAN9e0a/KE5EHhxQ0w6s+lC9JUIdvY7dn4
-         psaA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pfAFSXsYW7IurbNR8wiZcNvhd8iQJitOFky0jQmj+GE=;
+        b=GB0vdPxqx9g/nL6zny38I6ell/fxNm0856f+it1P/cHryW4h7EUjl20n9hqqPbv6gE
+         XaKNlbfTILuAY276lEIKB6hxzl0t9v2pdPpVpnGzX3DObxCSAM/u9/Gt2H+FuQSMJ3rb
+         eImTS4p3ijkvovwsccZlCo6PvInQnPyGYwY/BsAOssHELUEqozZn3fBJV+H6g+u7Eil7
+         zEkUDAk0/Fbh1bwMu+8kFNy9dOEzjqv68NQ8hkhsisVPxWjN3uX5FfOukWR2iy1qAbHS
+         8JhJm/tQlLWSlS+Pw8VGA0ONWTFvtfFrtFfgojhQKkNzd4KFZgj59+NXWnT6ukHLqI39
+         /zuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uo/1OUaIznEFGmobWpbSlJ+BL/SSeNvkm1s2vVWafZU=;
-        b=JcI9pe15Okgtm7dZ2SzKCNJRYmTsab8/nJuud0prfx+9Pv/wgbdzGaF5VfvsVW/xxD
-         yGsZ5z1QTsIr1diZwL4lJnBEze9rBEC7MCrgsPIV1BpAFM1gV7o7uvWovZ3wGpJPFcTe
-         l0n8setiVXSH0Z5ita0LVjEjJn0RJ27ndEVf3LKiYBuSzHoCChWAi/sKSYqEGOxNkhML
-         /SMJgJD6auMasUCY4pqwHgEq/dMLCmiNmyYd8qBUZGYz0Kf1mcp54PvyqEtQI/MIwOaw
-         VSc97QCEbg04v0CMHFo60M3VW/DguXAPzmvcr7nYjPlu1rwWz0JDHROC6jy9LrNnpS/S
-         PbQA==
-X-Gm-Message-State: AOAM5314zyAMcc5iZywCkNkXHrIDzlk5/2LUw2AnpDuGLMWNYt/BKxlJ
-        TyD2Y1eA9UkC7L4UWiMbNtbdpGvSg8y/JGVj6KnV13CY1o8=
-X-Google-Smtp-Source: ABdhPJxOA+BRHz2sLBDJXgEVfv5tAqA/pffZbkqJacB3s0IXsENfHi7cQMTW6xX1PHHj9v+YLYeUpyvMIpC1OJCJVlo=
-X-Received: by 2002:a17:90b:4f43:b0:1c7:552b:7553 with SMTP id
- pj3-20020a17090b4f4300b001c7552b7553mr2613710pjb.117.1647923766902; Mon, 21
- Mar 2022 21:36:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pfAFSXsYW7IurbNR8wiZcNvhd8iQJitOFky0jQmj+GE=;
+        b=DP0/Az98cLiVezHgZYb667co9LrH4AF7Zsl0X9nfDoe3mKezS0OeiLqU0H+htpaGZ6
+         +sJY5uzGNkM9tT/YU5RXebWbYwXxoP077wvD0OSA05OWsN2Fgn27g2+O141RBuFP/6Gm
+         0+eKCnLM+uCEbkZmx7OelBhP6RG4XMhNSV42meCNliYC+C1Xv+tTzJXXmcb6e6+Sj6Ge
+         5WiOFPTIzEAIbVmwK7dityFOSYTEhOfT07ryIuyqGexsQ+7TnVviswqoyVnytKDnoagr
+         n9LjeDLt3HrwFNAWNTOulgKyrZxGe5LusrdT7FgNAjQxfLeuTSidS+tSUq1QiHFcFoVr
+         kmtQ==
+X-Gm-Message-State: AOAM530STIGtv7dkQ45u6LMZEmB+pEdjXGky2Pwpu0JQb6VGr8SOTzey
+        1zXxidI+VwLir7NlIltVtNaO2C+9jLKftw==
+X-Google-Smtp-Source: ABdhPJzJpW6G30eMBgFHG1gZcorVr0WYMEHf2ZZqFbkwGbpg+s93m3HPrMzICxda0iQCV4prA4agQA==
+X-Received: by 2002:a05:600c:a0a:b0:350:564b:d55e with SMTP id z10-20020a05600c0a0a00b00350564bd55emr1914081wmp.124.1647923999746;
+        Mon, 21 Mar 2022 21:39:59 -0700 (PDT)
+Received: from jimi.localdomain ([213.57.189.88])
+        by smtp.gmail.com with ESMTPSA id 185-20020a1c19c2000000b0038a1d06e862sm1011015wmz.14.2022.03.21.21.39.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Mar 2022 21:39:59 -0700 (PDT)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>
+Subject: [PATCH net-next,v2] net: geneve: add missing netlink policy and size for IFLA_GENEVE_INNER_PROTO_INHERIT
+Date:   Tue, 22 Mar 2022 06:39:54 +0200
+Message-Id: <20220322043954.3042468-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220321224608.55798-1-alexei.starovoitov@gmail.com>
- <CAHk-=wheGrBxOfMpWhQg1iswCKYig8vADnFVsA4oFWTY9NU5jA@mail.gmail.com>
- <CAADnVQK=JsytH_OtT6Q6fnijkTyv7NANV2902woQ6XT-fwWXQA@mail.gmail.com>
- <CAHk-=wi0fNH+FS-ng2Nvq2p1Jbfn+-G1AsK-XY7MD4gTJZg5ZA@mail.gmail.com>
- <CAADnVQKreLtGkfAVXxwLGUVKobqYhBS5r+GtNa6Oc8BUzYa92Q@mail.gmail.com> <20220322113641.763885257f741ac5c0cb2c06@kernel.org>
-In-Reply-To: <20220322113641.763885257f741ac5c0cb2c06@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 21 Mar 2022 21:35:55 -0700
-Message-ID: <CAADnVQ+HEeBXm0qXdnxn1of-dPr7THcVZxb9Adud0t9epVsWKQ@mail.gmail.com>
-Subject: Re: pull-request: bpf-next 2022-03-21
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        David Miller <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -77,85 +66,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 7:36 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hi Linus and Alexei,
->
-> At first, sorry about this issue. I missed to Cc'ed to arch maintainers.
->
-> On Mon, 21 Mar 2022 17:31:28 -0700
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
->
-> > On Mon, Mar 21, 2022 at 4:59 PM Linus Torvalds
-> > <torvalds@linux-foundation.org> wrote:
-> > >
-> > > On Mon, Mar 21, 2022 at 4:11 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > Did you look at the code?
-> > > > In particular:
-> > > > https://lore.kernel.org/bpf/164735286243.1084943.7477055110527046644.stgit@devnote2/
-> > > >
-> > > > it's a copy paste of arch/x86/kernel/kprobes/core.c
-> > > >
-> > > > How is it "bad architecture code" ?
-> > >
-> > > It's "bad architecture code" because the architecture maintainers have
-> > > made changes to check ENDBR in the meantime.
-> > >
-> > > So it used to be perfectly fine. It's not any longer - and the
-> > > architecture maintainers were clearly never actually cc'd on the
-> > > changes, so they didn't find out until much too late.
->
-> Let me retry porting fprobe on top of ENDBR things and confirm with
-> arch maintainers.
+Add missing netlink attribute policy and size calculation.
+Also enable strict validation from this new attribute onwards.
 
-Just look at linux-next.
-objtool warning is the only issue.
+Fixes: 435fe1c0c1f7 ("net: geneve: support IPv4/IPv6 as inner protocol")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 
-> >
-> > Not denying that missing cc was an issue.
-> >
-> > We can drop just arch patches:
-> >       rethook: x86: Add rethook x86 implementation
-> >       arm64: rethook: Add arm64 rethook implementation
-> >       powerpc: Add rethook support
-> >       ARM: rethook: Add rethook arm implementation
-> >
-> > or everything including Jiri's work on top of it.
-> > Which would be a massive 27 patches.
-> >
-> > We'd prefer the former, of course.
-> > Later during the merge window we can add a single
-> > 'rethook: x86' patch that takes endbr into account,
-> > so that multi-kprobe feature will work on x86.
-> > For the next merge window we can add other archs.
-> > Would that work?
->
-> BTW, As far as I can see the ENDBR things, the major issue on fprobe
-> is that the ftrace'ed ip address will be different from the symbol
-> address (even) on x86. That must be ensured to work before merge.
-> Let me check it on Linus's tree at first.
+---
 
-That's not an issue. Peter tweaked ftrace logic and fprobe plugs
-into that.
-The fprobe/multi-kprobe works fine in linux-next.
+v2: add .strict_start_type on geneve policy (suggested by Jakub Kicinski)
+---
+ drivers/net/geneve.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-bpf selftest for multi kprobe needs this hack:
-diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi.c
-b/tools/testing/selftests/bpf/progs/kprobe_multi.c
-index af27d2c6fce8..530a64e2996a 100644
---- a/tools/testing/selftests/bpf/progs/kprobe_multi.c
-+++ b/tools/testing/selftests/bpf/progs/kprobe_multi.c
-@@ -45,7 +45,7 @@ static void kprobe_multi_check(void *ctx, bool is_return)
-        __u64 addr = bpf_get_func_ip(ctx);
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 8f30660224c5..7db6c135ac6c 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -1262,6 +1262,7 @@ static void geneve_setup(struct net_device *dev)
+ }
+ 
+ static const struct nla_policy geneve_policy[IFLA_GENEVE_MAX + 1] = {
++	[IFLA_GENEVE_UNSPEC]		= { .strict_start_type = IFLA_GENEVE_INNER_PROTO_INHERIT },
+ 	[IFLA_GENEVE_ID]		= { .type = NLA_U32 },
+ 	[IFLA_GENEVE_REMOTE]		= { .len = sizeof_field(struct iphdr, daddr) },
+ 	[IFLA_GENEVE_REMOTE6]		= { .len = sizeof(struct in6_addr) },
+@@ -1275,6 +1276,7 @@ static const struct nla_policy geneve_policy[IFLA_GENEVE_MAX + 1] = {
+ 	[IFLA_GENEVE_UDP_ZERO_CSUM6_RX]	= { .type = NLA_U8 },
+ 	[IFLA_GENEVE_TTL_INHERIT]	= { .type = NLA_U8 },
+ 	[IFLA_GENEVE_DF]		= { .type = NLA_U8 },
++	[IFLA_GENEVE_INNER_PROTO_INHERIT]	= { .type = NLA_FLAG },
+ };
+ 
+ static int geneve_validate(struct nlattr *tb[], struct nlattr *data[],
+@@ -1780,6 +1782,7 @@ static size_t geneve_get_size(const struct net_device *dev)
+ 		nla_total_size(sizeof(__u8)) + /* IFLA_GENEVE_UDP_ZERO_CSUM6_TX */
+ 		nla_total_size(sizeof(__u8)) + /* IFLA_GENEVE_UDP_ZERO_CSUM6_RX */
+ 		nla_total_size(sizeof(__u8)) + /* IFLA_GENEVE_TTL_INHERIT */
++		nla_total_size(0) +	 /* IFLA_GENEVE_INNER_PROTO_INHERIT */
+ 		0;
+ }
+ 
+-- 
+2.32.0
 
- #define SET(__var, __addr, __cookie) ({                        \
--       if (((const void *) addr == __addr) &&          \
-+       if (((const void *) addr == __addr + 4) &&              \
-             (!test_cookie || (cookie == __cookie)))    \
-
-to pass when both CONFIG_FPROBE=y and CONFIG_X86_KERNEL_IBT=y.
-The test is too strict. It didn't account for the possibility of endbr.
-
-So I'm inclined to drop only 4 arch patches instead of the whole thing.
