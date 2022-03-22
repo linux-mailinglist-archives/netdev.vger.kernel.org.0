@@ -2,150 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C31474E3D94
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 12:29:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C644E3DE3
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 12:58:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233982AbiCVLa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 07:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40348 "EHLO
+        id S234508AbiCVL7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 07:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiCVLa2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 07:30:28 -0400
-Received: from APC01-TYZ-obe.outbound.protection.outlook.com (mail-tyzapc01on2106.outbound.protection.outlook.com [40.107.117.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACAA86BDC3;
-        Tue, 22 Mar 2022 04:28:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ezQRRbfxQz2hdK1k8L+dxHjPmxncROV5oMYY9nBD7GsQRaNnSbNwnPDwpnWMURQfiGn/KrppsLZ3mL/09w2nmpXqpPsWZAV+SlI4aUcCWrBKr46byf2/oGntk2B3WgPoTqca3eBa8CFwNnm4GQK11kdmhO3fu/u/1Tv8lmqFDl6HRFTPRMn5jlFMeY0SB55Qi8PywQ0Hc+D32GoEfrkbDJAwg5lEwqOCv0bOKskcoxBQLzdZJKazunLa160VDi/LlOAThCQ0Vt89QRJH8d6+M3ZyPdcLbpUlPtaAVSUoviGKPA4rD/X59xqQvwqAqoYXQn/hyNywArhRfKoJ35X1MQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PTtdTkg/3fOoFCJF/EaXFaHDdZMfoFjMhuTym2OpEOM=;
- b=GFIUZINwN936eSAXtGXsDrWhXB1L3N2fsrClg+DxDOAToP8nefWsg7cPdSY2mcAITyz4LySvAcj607uKg/22NHl74UpQKLQ/au6pJbOjjpyK6W2cbIiy2DS84KDMOUey7R5oN8qTR9/gnWLyn7jME7vp73TUOm+R1vjU7NH9QExpBVjQDUXkXWKTBvEg4dVQpI+QYHJjrmYYBBratGO25/7TANyoRqSlbDyAH8M3bZvpOZ/85u+qV0L16JaJhQvmaug7U1mKqFRXRYRppQ3XfStZArm+thua6j8EC2wIq4lFgdK78Oa0Mv4EEV5EomoxYdaaK+XOS6vuwFwXgk3liQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PTtdTkg/3fOoFCJF/EaXFaHDdZMfoFjMhuTym2OpEOM=;
- b=mR1PqqN26ggjXUjdMGJX+aQL8qFfAPPjBdvEC6bEVARLTxXkQddRFR0PYixQcJvzxPSlRQPq3V3/y06uDb77DJLsUkd3W3fBcpkPKodhtvdrORyfnu4P2cn/QTG5xK1q5ocAwA1kG4SJ1QHVcYPn8OwZAB/3e0POIGwuR3hyOJk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com (2603:1096:400:26::14)
- by KL1PR0601MB4784.apcprd06.prod.outlook.com (2603:1096:820:87::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5081.18; Tue, 22 Mar
- 2022 11:28:56 +0000
-Received: from TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::4005:4e49:1e4e:463c]) by TYZPR06MB4173.apcprd06.prod.outlook.com
- ([fe80::4005:4e49:1e4e:463c%3]) with mapi id 15.20.5081.023; Tue, 22 Mar 2022
- 11:28:56 +0000
-From:   Yihao Han <hanyihao@vivo.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     kernel@vivo.com, Yihao Han <hanyihao@vivo.com>
-Subject: [PATCH] bpf: use vmemdup_user instead of kvmalloc and copy_from_user
-Date:   Tue, 22 Mar 2022 04:28:43 -0700
-Message-Id: <20220322112843.6687-1-hanyihao@vivo.com>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-ClientProxiedBy: HKAPR04CA0016.apcprd04.prod.outlook.com
- (2603:1096:203:d0::26) To TYZPR06MB4173.apcprd06.prod.outlook.com
- (2603:1096:400:26::14)
+        with ESMTP id S234456AbiCVL7n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 07:59:43 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A005A2615;
+        Tue, 22 Mar 2022 04:58:15 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id yy13so35686877ejb.2;
+        Tue, 22 Mar 2022 04:58:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3iZV15ZtVYOUmV8EiLudZttlT0NsfmQmzWRM1AYdhO4=;
+        b=F26Qju0rPRAL3uHEr5yZFSZAIU7iJmzXRa6OaU3ZOOVo+p318GXHvEnPS1QJgaLsiv
+         ydB7AZSguagbKQa0Iy7zL7+GCyXcHgf6i3i2QVM5cXc6uOawQtoh7q0tp41z1nMj97rO
+         3+vIJtT2VxpMLFwhAyy5Tjocxcxtbph43XVvmCi9ln643Sn4+ducIcVAkI6WsUgKevHk
+         U1uamnTlMttO2Y6YwA8m6vNHVFLl2GAu6udrqMDqRTeSM2+8O9rlUw6ESsgPZfvCufvG
+         Bhj8AqEyLAEbogSRAyP6euHC8YVtXOaCTJxGewWo0ZXZIILElnP34z1nlnrb5CNT1MEF
+         q2pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3iZV15ZtVYOUmV8EiLudZttlT0NsfmQmzWRM1AYdhO4=;
+        b=qld9obB2SQyr+HwMsVmmX8pgqsE2puckM6BWEq8pdZWUesa+KVD1cdvEzbx+Jyjine
+         doTKHxUu9zjmoDRfJHe0Jnj772K4hIFdd2VEY9o746cX8k57Q2zqGnGAuZv09T/RHB6U
+         UKOLSufUx8DEBn4DdFuDhL4MA4LHwphKch7v2IofvDmmZ7vlu/Meu3Zzw56NdrwSIn7I
+         f69HaVuO/oY4S+bdhGia+jK3woUHeykIXQQIu/QOh1Y3/d+m26/fR/p3JwMaFDkm5NfK
+         aWnLgRoXbQyZvU5We/NMhm4zAvvu+1dQ0hgkyGCbo6pnEciSyVvhFPEXz6CTSWV/1g5N
+         jnNg==
+X-Gm-Message-State: AOAM531rLgvvIgCwJoKwNoo327ePSFfjkV3OrszNs+HLoeu99iUVbthJ
+        C18HkVpUFgDlqmLp96JRvxM=
+X-Google-Smtp-Source: ABdhPJxaiBKfmey1QVLLfKFJzt1ON7lVxPQNGNL0VdxWSQC79PoJCAS5iz+KxowKmNlUCsGHAAG5jg==
+X-Received: by 2002:a17:906:c107:b0:6df:c114:e286 with SMTP id do7-20020a170906c10700b006dfc114e286mr17908187ejc.216.1647950294112;
+        Tue, 22 Mar 2022 04:58:14 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id a1-20020a1709063e8100b006ce06ed8aa7sm8327040ejj.142.2022.03.22.04.58.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Mar 2022 04:58:13 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 13:58:12 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH 1/4] drivers: net: dsa: qca8k: drop MTU tracking
+ from qca8k_priv
+Message-ID: <20220322115812.mwue2iu2xxrmknxg@skbuf>
+References: <20220322014506.27872-1-ansuelsmth@gmail.com>
+ <20220322014506.27872-2-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7700f824-8ef5-4448-6bf4-08da0bf726ce
-X-MS-TrafficTypeDiagnostic: KL1PR0601MB4784:EE_
-X-Microsoft-Antispam-PRVS: <KL1PR0601MB47845A648D4896735B583593A2179@KL1PR0601MB4784.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ajNp69PLBSWL8+eixlPPgTay2U4cvmOwNYEX/CLfYcfA/IJdCPmlSqKyfypd40sDyLBWKqljoyTNMxKppnOzmOZPb5C8IfkZsjjcipFsJtFuyl2sziuXSnW564rgVW2PXNqxpfX1TYjcKthHfZFNEOCW4wZqZKzkDA27of/gcIq4fxfNpXjyhpRpIsJcTQ+NaSgiYsIj5fNIa+HPV4rD3rrnfciNwlDIxxcXtlNKABj7Di4QIdX90+tUM2VcGqXBNail9NSVSy/otWjcqKsgnKOVVLyHJmTaqfATEX0gUVutiHVvn7XZJrVMqcECvZHKazfUJvubekmltz/3fBx0X+Gh4gpMoCMdjJ1bJqSJCX/zYBlmN78DNNLAJRHlpZp0v1JF+RGyvUzEkRrOdk20XPrdKy+tgcsJj85uzTzOnRCd66O9XTUKkbqHuWJT2klrTNbdIvn9E8fI2lkmwaR6HLMDsROYKP91EKXRB4I1QtMyBD+IXl2FyS1ww4hE7E4u5jwz8ebLjgugJkAGLmlzeTJRHGS8QOpHJb2jgzgv3G2NqH3igiuRhRu9ZwbgT5wiwCP12SnKLvxTtNdc9PtrHRvCqu5bbt1vKoPFUSx3iXrrz2LnD245c2SYV4Itr4mdMPOElfN4AgE+ax0aKn5/sLeAUY5k6kJeaRKzSIXWfd7bEyHMyrKCmlIQZWxS5/uWLxQVlgdZj4p23Mgw3p5v3bSabmQPPCXPrDXfRMOPkdc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR06MB4173.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(6486002)(66476007)(66556008)(66946007)(8936002)(5660300002)(4326008)(38350700002)(4744005)(7416002)(86362001)(38100700002)(921005)(8676002)(110136005)(316002)(36756003)(52116002)(6506007)(26005)(186003)(6512007)(2616005)(1076003)(6666004)(83380400001)(107886003)(508600001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GiwhIRuGWW8pDAp4xcieSULyU+iZdVq2XHRGD8cqn8IOd/fcWNYDYpUPbkbj?=
- =?us-ascii?Q?nVgCHTnnQyvmuJnVu/0Gqe8SS7JLwnv6wvjP9drzt2el4Jssn5qWRVavLp0r?=
- =?us-ascii?Q?pFBJVJgKgogV3dMyGSJaDVOSyy1aOcVdylPU5Ax+NeFzQMDSH9o9/uvZObUF?=
- =?us-ascii?Q?8if4AsFnaSqnu0iIbQxN0A+VOZVXdpQDvEPDKqf9W07A2v/rqRoStir/kmcH?=
- =?us-ascii?Q?zaieb9ejoZ6mCztPlV6BK0JH2WtPYRdQEOvE69aLiVesVP4eBlCkF+9nc0HY?=
- =?us-ascii?Q?9IEd1eTFwirUXxnbmCKeEOIWFzoZkkL/1G83HCpVVpXRHPlPsA+qI/StjC1P?=
- =?us-ascii?Q?9nQ6sb0HZMI392xNzHrSrEmntBmmWyPPScIqehnA+Wdm3ssw0cHj7V0LsCWI?=
- =?us-ascii?Q?lzBhelt43Sz/PDq2+7CnuitZoZPYI4IcX0Uw9Wu/1gI0juGc4D5AT5EhWtQ9?=
- =?us-ascii?Q?ts1T0m0k9sl6Pc43Bc1RGkh7W8g2lNdoAhqa168n1D4vsp1TKaGHErzrZ/Vj?=
- =?us-ascii?Q?gQ8oFvuD9p6p1DzTlyOEC2INf6ofvvIbyaErFi0mQI8jqFH38ZxQ9J1qQTwX?=
- =?us-ascii?Q?NqdqkcPqI12wIPVf8W1tRBW64KRhkFR9jRF2vm3fZjHQaJncIa68m9SN7sj3?=
- =?us-ascii?Q?lm5r1o6E7zFxR4skOzEtjR7DhsiezCqxxSibn7t+BX1N75F7HkIhMbEsgNru?=
- =?us-ascii?Q?BCRX/tC0la44hWOhnEmfUXtZtNPGsTXFkd3UmUuuAyYTUDMnHDLKYvIY8Zwx?=
- =?us-ascii?Q?vQkA6D1q4I720IKnd8Qb5YRRZwrJ07VwYrzLCNbE3XFY46L9dDu4Zmdk52X4?=
- =?us-ascii?Q?HMlvoh5q6PGqkFiTCn2gc2frDXzWsCJPimz8xVLXyi48AWpgWC2PhZoQ1fm7?=
- =?us-ascii?Q?6Y1WuLvNZlz8rp9AyulNkfwS78A5ldprS1Qq7RQIxo4GNU6TY/okVke5FWG5?=
- =?us-ascii?Q?dG//dPiy9lGiBNPPZu6cbw5ysS9NjhKAFtLt207ywd8Ztc9wI2P20gi37vfK?=
- =?us-ascii?Q?sHxpZJdZ4Apvm6FdpoGpsKj/iU4fjYb+vSWLSaSXHmAybZWV73s8VEasSImz?=
- =?us-ascii?Q?QzCjbJ4BfVv+NzQX+xqvRKfrxEat3oX+GfAy4M5O+HsH4L7z2W/CILIgWcBu?=
- =?us-ascii?Q?N9tGeuG/c9CF5dlEDE8GK2vj21f//uee9cygY7PEfCjq9zvXBn42emygvedC?=
- =?us-ascii?Q?r3w5EQ7u/+YUJmxqT4f5ULKJ/H/MglsaiT9AfYMfKhwjy5aI3zST1GeiEVj+?=
- =?us-ascii?Q?pfx2Q7zZefCAxegGgXki7tVftiqMD12AEIX1BHV5TNZI76vfdcT8uyymq1eU?=
- =?us-ascii?Q?dEjIyoH3crvcnTcTOQ0aMrNs2+uw2asOZfbZQEgbdARGosU3x1oa2PG8MELL?=
- =?us-ascii?Q?fcYi4XHAEZJnRmNeHCocTh5Xj+Pet+zV92mKdGF4fTCXUTLWe4I/robOkOlX?=
- =?us-ascii?Q?+zCJtrOzlc1tUiRF3ZzQ2fKgUt8EN2je?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7700f824-8ef5-4448-6bf4-08da0bf726ce
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR06MB4173.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Mar 2022 11:28:56.3954
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NsR3HnL7VN1cT2DQOdlUEdesRGLiav/ydfm22RLJBKkxWUNnguQ0iwjmHcttb4vhmX8FDfUji5ny7xAnY8hWgg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0601MB4784
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322014506.27872-2-ansuelsmth@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix memdup_user.cocci warning:
-kernel/trace/bpf_trace.c:2450:12-20: WARNING opportunity
-for vmemdup_user
+On Tue, Mar 22, 2022 at 02:45:03AM +0100, Ansuel Smith wrote:
+> Drop the MTU array from qca8k_priv and use slave net dev to get the max
+> MTU across all user port. CPU port can be skipped as DSA already make
+> sure CPU port are set to the max MTU across all ports.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
 
-Signed-off-by: Yihao Han <hanyihao@vivo.com>
----
- kernel/trace/bpf_trace.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+I hardly find this to be an improvement and I would rather not see such
+unjustified complexity in a device driver. What are the concrete
+benefits, size wise?
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 7fa2ebc07f60..aff2461c1ea2 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2447,13 +2447,9 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 
- 	ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
- 	if (ucookies) {
--		cookies = kvmalloc(size, GFP_KERNEL);
--		if (!cookies) {
--			err = -ENOMEM;
--			goto error;
--		}
--		if (copy_from_user(cookies, ucookies, size)) {
--			err = -EFAULT;
-+		cookies = vmemdup_user(ucookies, size);
-+		if (IS_ERR(cookies)) {
-+			err = PTR_ERR(cookies);
- 			goto error;
- 		}
- 	}
--- 
-2.17.1
+>  drivers/net/dsa/qca8k.c | 38 +++++++++++++++++++++++---------------
+>  drivers/net/dsa/qca8k.h |  1 -
+>  2 files changed, 23 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> index d3ed0a7f8077..4366d87b4bbd 100644
+> --- a/drivers/net/dsa/qca8k.c
+> +++ b/drivers/net/dsa/qca8k.c
+> @@ -2367,13 +2367,31 @@ static int
+>  qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+>  {
+>  	struct qca8k_priv *priv = ds->priv;
+> -	int i, mtu = 0;
+> +	struct dsa_port *dp;
+> +	int mtu = new_mtu;
+>  
+> -	priv->port_mtu[port] = new_mtu;
+> +	/* We have only have a general MTU setting. So check
+> +	 * every port and set the max across all port.
+> +	 */
+> +	list_for_each_entry(dp, &ds->dst->ports, list) {
+> +		/* We can ignore cpu port, DSA will itself chose
+> +		 * the max MTU across all port
+> +		 */
+> +		if (!dsa_port_is_user(dp))
+> +			continue;
+>  
+> -	for (i = 0; i < QCA8K_NUM_PORTS; i++)
+> -		if (priv->port_mtu[i] > mtu)
+> -			mtu = priv->port_mtu[i];
+> +		if (dp->index == port)
+> +			continue;
+> +
+> +		/* Address init phase where not every port have
+> +		 * a slave device
+> +		 */
+> +		if (!dp->slave)
+> +			continue;
+> +
+> +		if (mtu < dp->slave->mtu)
+> +			mtu = dp->slave->mtu;
+> +	}
+>  
+>  	/* Include L2 header / FCS length */
+>  	return qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, mtu + ETH_HLEN + ETH_FCS_LEN);
+> @@ -3033,16 +3051,6 @@ qca8k_setup(struct dsa_switch *ds)
+>  				  QCA8K_PORT_HOL_CTRL1_WRED_EN,
+>  				  mask);
+>  		}
+> -
+> -		/* Set initial MTU for every port.
+> -		 * We have only have a general MTU setting. So track
+> -		 * every port and set the max across all port.
+> -		 * Set per port MTU to 1500 as the MTU change function
+> -		 * will add the overhead and if its set to 1518 then it
+> -		 * will apply the overhead again and we will end up with
+> -		 * MTU of 1536 instead of 1518
+> -		 */
+> -		priv->port_mtu[i] = ETH_DATA_LEN;
+>  	}
+>  
+>  	/* Special GLOBAL_FC_THRESH value are needed for ar8327 switch */
+> diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> index f375627174c8..562d75997e55 100644
+> --- a/drivers/net/dsa/qca8k.h
+> +++ b/drivers/net/dsa/qca8k.h
+> @@ -398,7 +398,6 @@ struct qca8k_priv {
+>  	struct device *dev;
+>  	struct dsa_switch_ops ops;
+>  	struct gpio_desc *reset_gpio;
+> -	unsigned int port_mtu[QCA8K_NUM_PORTS];
+>  	struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+>  	struct qca8k_mgmt_eth_data mgmt_eth_data;
+>  	struct qca8k_mib_eth_data mib_eth_data;
+> -- 
+> 2.34.1
+> 
 
