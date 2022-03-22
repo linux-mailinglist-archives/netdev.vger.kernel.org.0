@@ -2,157 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 013C24E4328
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 16:40:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E0264E435F
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 16:54:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238618AbiCVPmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 11:42:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
+        id S235956AbiCVPzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 11:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232168AbiCVPmF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 11:42:05 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF7C88B08
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 08:40:37 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id w27so30480260lfa.5
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 08:40:37 -0700 (PDT)
+        with ESMTP id S236021AbiCVPzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 11:55:33 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95192395
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 08:54:04 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id h23so23419391wrb.8
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 08:54:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=4d7gIjQl0V3Oh4gsfkrKWLngKVWGvQPuyJmJmLTtyAk=;
-        b=azjrQH8IGXtaShcDdecwREomUrYlvqjAfzFbSKdRMMy8X2dJFkX0JyjpBvqmiBMdEN
-         aSy39kmJjfNdgt0xrB5e3hWFqn/mYDSMKgbkobkuE1z7JNrJ2gLbANAUqsZ4b7ON9PeY
-         rqr0Jled6btZvLT4gOJD8tG15k5gsYkeoEn3jm3k7rVNsBxLbZHIYLPjEWgRPWEds6D3
-         ir6uvoBaM9ai4koWC4UokseR3qZfRbpTpIcOL7oDg/QphYSvGkP5t0NL1tOmasqVhiS7
-         CKzLleTFRTNGWPvbEFX2EalYtYYEhWL36oNgEtgHl8YA+MYqZTvVhInOQn16IDeTaZwg
-         odSA==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Tt/SqUUAabCfrKOj3ZmKo00ir/Hdf+gvpwIpDHz4tJ0=;
+        b=u0r3dKDia8A+bA6cPKHpTBTKwD8N19KhhoGEYRUXhw3CSMkJMsRPQZh8wfIE72d8aX
+         8ACa6BFIpZ93AvJqplhYepzpe5Mdn7exXF5SvCXtpLwZB8NEaRAuxTgyVZ5mWWcW+fKS
+         eXNmuJ8wqRqdtzF5yNrJ4seI0UoLO+Byx317CiZ0GRbLZoIsi8ImcLXetNR/2yfzX94V
+         /G5QBSQup2v9d7WqPHbfT/+DFUkY6p6WzBWw//hnQW5rJ5mLkSi3KzDwPIzw5TPqm3FP
+         +Un0m04g2I3URHC4zzHt6eJOMYm6YOuaJlvlEc8xIBVZzTeE3ooTQx99RagBk3rtEJg6
+         CUTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4d7gIjQl0V3Oh4gsfkrKWLngKVWGvQPuyJmJmLTtyAk=;
-        b=m7nWKXsZkINh1w2hjwdhBGM9EMjC2zzrnXmlQyzDiqF0nzZRhjf9CdUXZJbz+hQE8G
-         OQGbj3VXgCnZakoywNamFXVUtqbs7zBZW25bUvny/LwGhOIj+VDCaPxJ5rOsFS52xysX
-         PUvLyQqmtj/gaJI0a4aUjWRmvqH/y5aUco0i0HvEmjlgvR60YRHg/bRIbYD6fj7YFIwM
-         lWImxCVmZdxLoAZnwwAxvEByTq2eOBQWLDkxv0iVVCZMiAU/Utcoykw4is/LInlzmO7Z
-         gdJOp/rdy3yPC1Rp2o8TmJfAewGULkagpOPWio0JjGPd59P3undQ578bJbEA1r6Ex59r
-         36Hg==
-X-Gm-Message-State: AOAM533T0QKNbYUUlc1txDCpb+/xC3Eka06841sHIH39v8kzxIeA0yS6
-        Vtk+Lp1arSvqtOy01E9BLknaFSZvDQTH1w==
-X-Google-Smtp-Source: ABdhPJwhpZTXQYIAppVBhjyboUXU758ayJh7oEx4TQIIdFH6WY/u7Hn73wPf+mmk53vFxVzWQh1Imw==
-X-Received: by 2002:a19:6a14:0:b0:44a:1ef1:c198 with SMTP id u20-20020a196a14000000b0044a1ef1c198mr11029606lfu.396.1647963633297;
-        Tue, 22 Mar 2022 08:40:33 -0700 (PDT)
-Received: from wse-c0155 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id n1-20020a2e7201000000b00249588970b7sm2432275ljc.46.2022.03.22.08.40.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 08:40:32 -0700 (PDT)
-Date:   Tue, 22 Mar 2022 16:40:31 +0100
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next 2/2] net: sparx5: Add mdb handlers
-Message-ID: <20220322154031.df5o2xtosem2aio4@wse-c0155>
-References: <20220321101446.2372093-1-casper.casan@gmail.com>
- <20220321101446.2372093-3-casper.casan@gmail.com>
- <23c07e81392bd5ae8f44a5270f91c6ca696baa31.camel@microchip.com>
- <20220322095920.hptmgkby3tfxwmw4@wse-c0155>
- <ac37852d1fd2715209ad7679fa4d705083322b23.camel@microchip.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Tt/SqUUAabCfrKOj3ZmKo00ir/Hdf+gvpwIpDHz4tJ0=;
+        b=7USIGG76kKOqWUEy4y69C427gsMSCmdNCs9p9pxP9181ydCJVzDJmM4iNk7rAJhoG+
+         NQgjjp8OakQdD4GoK1iiA+q8nALX6w9tRtm1GlyM6qoKk+3BrAttBEkhvffzbr561yIe
+         vxmf9wh2GJR9xFzmEua64uFIoU2tduJmM6KNzVQ4QSsBctAnEfN219EnPacR3TXnjN4l
+         w7WHowUtvRbDGQDaHccm6Fcff7Qsdt+cfqA962HMqvitvXzXxD3tpRaDEJ9r/3ije+rm
+         GJmpSFjooYfeU94wjTi36XHs/qCuKhYIDumhwI/5Greb4FjnHTokkqG7A5qIvuQOilmk
+         Lz5g==
+X-Gm-Message-State: AOAM530I5uJbobqdZ3k78hLS2AIkgBgnMUKi3nRVuK5iZwBr4cl93/hn
+        I/Ji1zOvjnx0RRpRdNWX+GzgzA==
+X-Google-Smtp-Source: ABdhPJwo5Sa4Qyqu6v1d9pTlT7/ULYTzyX2OiF25Z6tPgiwYFJ7ys4wNU6wL7LL9+VKH4HgBHcR/Rg==
+X-Received: by 2002:adf:90e9:0:b0:204:2ee:7d5 with SMTP id i96-20020adf90e9000000b0020402ee07d5mr12944907wri.536.1647964443149;
+        Tue, 22 Mar 2022 08:54:03 -0700 (PDT)
+Received: from ?IPV6:2a02:168:f656:0:b0e1:d1e9:8b3d:5512? ([2a02:168:f656:0:b0e1:d1e9:8b3d:5512])
+        by smtp.gmail.com with ESMTPSA id v10-20020a056000144a00b00203df06cf9bsm16606795wrx.106.2022.03.22.08.54.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 08:54:02 -0700 (PDT)
+Message-ID: <ca7b331c-bd35-7d51-3df4-723bc36676f8@isovalent.com>
+Date:   Tue, 22 Mar 2022 15:54:01 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ac37852d1fd2715209ad7679fa4d705083322b23.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH bpf-next] bpf/bpftool: add unprivileged_bpf_disabled check
+ against value of 2
+Content-Language: en-GB
+To:     Milan Landaverde <milan@mdaverde.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Paul Chaignon <paul@isovalent.com>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@corigine.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220322145012.1315376-1-milan@mdaverde.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <20220322145012.1315376-1-milan@mdaverde.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-03-22 15:51, Steen Hegelund wrote:
-> Hi Casper
+2022-03-22 10:49 UTC-0400 ~ Milan Landaverde <milan@mdaverde.com>
+> In [1], we added a kconfig knob that can set
+> /proc/sys/kernel/unprivileged_bpf_disabled to 2
 > 
-> On Tue, 2022-03-22 at 10:59 +0100, Casper Andersson wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > So this was already merged, but I have some comments on the feedback for
-> > the follow up patch.
-> > 
-> > > > +static int sparx5_handle_port_mdb_add(struct net_device *dev,
-> > > > +                                     struct notifier_block *nb,
-> > > > +                                     const struct switchdev_obj_port_mdb *v)
-> > > > +{
-> > > > +       struct sparx5_port *port = netdev_priv(dev);
-> > > > +       struct sparx5 *spx5 = port->sparx5;
-> > > > +       u16 pgid_idx, vid;
-> > > > +       u32 mact_entry;
-> > > > +       int res, err;
-> > > > +
-> > > > +       /* When VLAN unaware the vlan value is not parsed and we receive vid 0.
-> > > > +        * Fall back to bridge vid 1.
-> > > > +        */
-> > > > +       if (!br_vlan_enabled(spx5->hw_bridge_dev))
-> > > > +               vid = 1;
-> > > > +       else
-> > > > +               vid = v->vid;
-> > > > +
-> > > > +       res = sparx5_mact_find(spx5, v->addr, vid, &mact_entry);
-> > > > +
-> > > > +       if (res) {
-> > > > +               pgid_idx = LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_GET(mact_entry);
-> > > > +
-> > > > +               /* MC_IDX has an offset of 65 in the PGID table. */
-> > > > +               pgid_idx += PGID_MCAST_START;
-> > > 
-> > > This will overlap some of the first ports with the flood masks according to:
-> > > 
-> > > https://microchip-ung.github.io/sparx-5_reginfo/reginfo_sparx-5.html?select=ana_ac,pgid
-> > > 
-> > > You should use the custom area (PGID_BASE + 8 and onwards) for this new feature.
-> > 
-> > I'm aware of the overlap, hence why the PGID table has those fields
-> > marked as reserved. But your datasheet says that the multicast index
-> > has an offset of 65 (ie. MC_IDX = 0 is at PGID = 65). This is already
-> > taken into account in the mact_learn function. I could set the
-> > allocation to start at PGID_BASE + 8, but the offset still needs to
-> > be 65, right?
+> We now check against this value in bpftool feature probe
 > 
-> As I understand the PGID table functionality, you will need to start your custom table at PGID_BASE
-> + 8 as the bitmasks at offset 65 to 70 are used as flood masks, so their purpose are already
-> defined.
-
-It is fine to start the allocation of multicast entries at PGID_BASE + 8,
-but the multicast index (MC_IDX) in the mactable (that points at the
-PGID table, to get the port mask) assumes that MC_IDX = 0 is at PGID = 65.
-Not sure if it's appropriate to reference the datasheet here on Netdev,
-but on figure 4-48 (PGID Layout) this is shown.
-
-I tried setting the offset to base + 8 but it does not seem to find the 
-right mask. Because if I say I put the mask on MC_IDX 0, and then place
-it on base + 8 (73), then it will not find that mask because the hardware
-will look for the mask at 65.
-
-Even though the offset is 65, the PGID allocation will make sure
-that it never allocates anything below 73. Meaning that the lowest
-possible MC_IDX it can allocate will be 8.
-
-I'm also a bit confused as to why the multicast offset is 65, but there
-are a lot of overlapping areas in the PGID table and, e.g., GLAG has 
-another offset where its index 0 is at PGID = 833 (as can be seen in
-figure 4-48).
-
-BR
-Casper
-
-> BR
-> Steen
+> [1] https://lore.kernel.org/bpf/74ec548079189e4e4dffaeb42b8987bb3c852eee.1620765074.git.daniel@iogearbox.net
 > 
-> > 
-> > BR
-> > Casper
-> 
+> Signed-off-by: Milan Landaverde <milan@mdaverde.com>
+
+Acked-by: Quentin Monnet <quentin@isovalent.com>
+
+Thanks!
