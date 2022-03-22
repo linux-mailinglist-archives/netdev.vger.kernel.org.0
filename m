@@ -2,135 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DD704E3F66
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 14:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78CFD4E3F75
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 14:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiCVNXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 09:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        id S235479AbiCVNZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 09:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235406AbiCVNXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 09:23:33 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBAA7E5BE;
-        Tue, 22 Mar 2022 06:22:04 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id q14so10624612ljc.12;
-        Tue, 22 Mar 2022 06:22:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=AjcCl508/3oBfoVa+HHFPodqa5oQijS6CmLfzMEJ/u4=;
-        b=RbgTHNgJumkKhypcVJzqThV2d98m5yX0RD5BZKNJlLmXSNgMuLiLI24cCu53Me2Y41
-         kFFJPAq2f+tJChxDH/EPhvnv5EnETOgWfdtGRGm2jijKSd2anzrZEG6GYmHaxxLEpNHE
-         ki3QBs951g5pKa6JoS9uSl2NWDERGyfhhT3If/gClFoO0owTBcU+bW5dcSeiVNzrUQr+
-         GYah0ydJN+vLiU7DBBSjo7XlkmcB64QodtXu7Bsssvb0CTNrkR9OhyyK1KDFj5eWVPF2
-         pPfLPxmeUl/JtK3y93wMJRS2xBBYUgp6feZdgCppceRbeg881nn/wlcQSuETg3D0yCWL
-         W3Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=AjcCl508/3oBfoVa+HHFPodqa5oQijS6CmLfzMEJ/u4=;
-        b=Fjliz4ymDuf+8IROMCPXyX+9kIiCeks76f/z46e1J6W7VOv1kX+41bRt2hU0zQ4AaT
-         E1+P983+D6sN3FDTbk8QOupwiz+axBbSgcM9PQeXygyeCmVjTaY2gb+PjzGHiIfEtgjP
-         mZw4zYNBmNp9l1td57Dm6ahU2CKUxd0Siyk3RfVaBq/xSrclzuYwufEtIlw+W+VKZARO
-         KcwIfTwtegkAsh73iPzO/eoBJNPl2bH2n8IbbEL6NX3fPdhoGCn+pId8kWAWJ9eYjnRg
-         hVOlgbAsX6ry4KkoG0a8I7Sa8XoiupjaX2vXLPUQlcaLbO3Yhes2/AcBXwDPsrruMyMA
-         udzQ==
-X-Gm-Message-State: AOAM533dXufsdyFdelTC6wZftaeiUISAwn0GDS5bmAfvmC7cTQm1Muk4
-        0/5UvMZ5r4iTUYz7rJKdDco=
-X-Google-Smtp-Source: ABdhPJzFswqUOAuAWZ/WBTHRItFTQwUGjyxdjYGlpcmIQYC2z/Bnt3kcgiq8Zgmq2gEsp5Ka7wtgyQ==
-X-Received: by 2002:a2e:bf04:0:b0:246:7ace:e157 with SMTP id c4-20020a2ebf04000000b002467acee157mr19388105ljr.241.1647955322452;
-        Tue, 22 Mar 2022 06:22:02 -0700 (PDT)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id x11-20020a19e00b000000b004488bf4137esm2204467lfg.245.2022.03.22.06.21.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 06:22:01 -0700 (PDT)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-In-Reply-To: <20220322110806.kbdb362jf6pbtqaf@skbuf>
-References: <20220317153625.2ld5zgtuhoxbcgvo@skbuf>
- <86ilscr2a4.fsf@gmail.com> <20220317161808.psftauoz5iaecduy@skbuf>
- <8635jg5xe5.fsf@gmail.com> <20220317172013.rhjvknre5w7mfmlo@skbuf>
- <86tubvk24r.fsf@gmail.com> <20220318121400.sdc4guu5m4auwoej@skbuf>
- <86pmmjieyl.fsf@gmail.com> <20220318131943.hc7z52beztqlzwfq@skbuf>
- <86a6dixnd2.fsf@gmail.com> <20220322110806.kbdb362jf6pbtqaf@skbuf>
-Date:   Tue, 22 Mar 2022 14:21:58 +0100
-Message-ID: <86ee2ujf61.fsf@gmail.com>
+        with ESMTP id S235491AbiCVNZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 09:25:19 -0400
+Received: from smtp-190c.mail.infomaniak.ch (smtp-190c.mail.infomaniak.ch [IPv6:2001:1600:4:17::190c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AD386E11
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 06:23:50 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KNByX54ljzMq0qg;
+        Tue, 22 Mar 2022 14:23:48 +0100 (CET)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4KNByX0fZMzlhMSK;
+        Tue, 22 Mar 2022 14:23:47 +0100 (CET)
+Message-ID: <90a20548-39f6-6e84-efb1-8ef3ad992255@digikod.net>
+Date:   Tue, 22 Mar 2022 14:24:54 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>,
+        willemdebruijn.kernel@gmail.com
+Cc:     linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-4-konstantin.meskhidze@huawei.com>
+ <bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net>
+ <6535183b-5fad-e3a9-1350-d22122205be6@huawei.com>
+ <92d498f0-c598-7413-6b7c-d19c5aec6cab@digikod.net>
+ <cb30248d-a8ae-c366-2c9f-2ab0fe44cc9a@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 03/15] landlock: landlock_find/insert_rule
+ refactoring
+In-Reply-To: <cb30248d-a8ae-c366-2c9f-2ab0fe44cc9a@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On tis, mar 22, 2022 at 13:08, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Mar 22, 2022 at 12:01:13PM +0100, Hans Schultz wrote:
->> On fre, mar 18, 2022 at 15:19, Vladimir Oltean <olteanv@gmail.com> wrote:
->> > On Fri, Mar 18, 2022 at 02:10:26PM +0100, Hans Schultz wrote:
->> >> In the offloaded case there is no difference between static and dynamic
->> >> flags, which I see as a general issue. (The resulting ATU entry is static
->> >> in either case.)
->> >
->> > It _is_ a problem. We had the same problem with the is_local bit.
->> > Independently of this series, you can add the dynamic bit to struct
->> > switchdev_notifier_fdb_info and make drivers reject it.
->> >
->> >> These FDB entries are removed when link goes down (soft or hard). The
->> >> zero DPV entries that the new code introduces age out after 5 minutes,
->> >> while the locked flagged FDB entries are removed by link down (thus the
->> >> FDB and the ATU are not in sync in this case).
->> >
->> > Ok, so don't let them disappear from hardware, refresh them from the
->> > driver, since user space and the bridge driver expect that they are
->> > still there.
->> 
->> I have now tested with two extra unmanaged switches (each connected to a
->> seperate port on our managed switch, and when migrating from one port to
->> another, there is member violations, but as the initial entry ages out,
->> a new miss violation occurs and the new port adds the locked entry. In
->> this case I only see one locked entry, either on the initial port or
->> later on the port the host migrated to (via switch).
->> 
->> If I refresh the ATU entries indefinitly, then this migration will for
->> sure not work, and with the member violation suppressed, it will be
->> silent about it.
->
-> Manual says that migrations should trigger miss violations if configured
-> adequately, is this not the case?
->
-Yes, but that depends on the ATU entries ageing out. As it is now, it works.
 
->> So I don't think it is a good idea to refresh the ATU entries
->> indefinitely.
->> 
->> Another issue I see, is that there is a deadlock or similar issue when
->> receiving violations and running 'bridge fdb show' (it seemed that
->> member violations also caused this, but not sure yet...), as the unit
->> freezes, not to return...
->
-> Have you enabled lockdep, debug atomic sleep, detect hung tasks, things
-> like that?
+On 22/03/2022 13:33, Konstantin Meskhidze wrote:
+> 
+> 
+> 3/18/2022 9:33 PM, Mickaël Salaün пишет:
+>>
+>> On 17/03/2022 15:29, Konstantin Meskhidze wrote:
+>>>
+>>>
+>>> 3/16/2022 11:27 AM, Mickaël Salaün пишет:
+>>>>
+>>>> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>>>>> A new object union added to support a socket port
+>>>>> rule type. To support it landlock_insert_rule() and
+>>>>> landlock_find_rule() were refactored. Now adding
+>>>>> or searching a rule in a ruleset depends on a
+>>>>> rule_type argument provided in refactored
+>>>>> functions mentioned above.
+>>>>>
+>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>>> ---
 
-No, I haven't looked deeper into it yet. Maybe I was hoping someone had
-an idea... but I guess it cannot be a netlink deadlock?
+[...]
+
+>>>>> @@ -156,26 +166,38 @@ static void build_check_ruleset(void)
+>>>>>    * access rights.
+>>>>>    */
+>>>>>   static int insert_rule(struct landlock_ruleset *const ruleset,
+>>>>> -        struct landlock_object *const object,
+>>>>> +        struct landlock_object *const object_ptr,
+>>>>> +        const uintptr_t object_data,
+>>
+>> Can you move rule_type here for this function and similar ones? It 
+>> makes sense to group object-related arguments.
+> 
+>   Just to group them together, not putting rule_type in the end?
+
+Yes
+
+[...]
+
+>>>>> @@ -465,20 +501,28 @@ struct landlock_ruleset *landlock_merge_ruleset(
+>>>>>    */
+>>>>>   const struct landlock_rule *landlock_find_rule(
+>>>>>           const struct landlock_ruleset *const ruleset,
+>>>>> -        const struct landlock_object *const object)
+>>>>> +        const uintptr_t object_data, const u16 rule_type)
+>>>>>   {
+>>>>>       const struct rb_node *node;
+>>>>>
+>>>>> -    if (!object)
+>>>>> +    if (!object_data)
+>>>>
+>>>> object_data can be 0. You need to add a test with such value.
+>>>>
+>>>> We need to be sure that this change cannot affect the current FS code.
+>>>
+>>>   I got it. I will refactor it.
+>>
+>> Well, 0 means a port 0, which might not be correct, but this check 
+>> should not be performed by landlock_merge_ruleset().
+>>
+>   Do you mean landlock_find_rule()?? Cause this check is not
+>   performed in landlock_merge_ruleset().
+
+Yes, I was thinking about landlock_find_rule(). If you run your tests 
+with the patch I proposed, you'll see that one of these tests will fail 
+(when port equal 0). When creating a new network rule, 
+add_rule_net_service() should check if the port value is valid. However, 
+the above `if (!object_data)` is not correct anymore.
+
+The remaining question is: should we need to accept 0 as a valid TCP 
+port? Can it be used? How does the kernel handle it?
+
+> 
+>>
+>>>>
+>>>>
+>>>>>           return NULL;
+>>>>> -    node = ruleset->root.rb_node;
+>>>>> +
+>>>>> +    switch (rule_type) {
+>>>>> +    case LANDLOCK_RULE_PATH_BENEATH:
+>>>>> +        node = ruleset->root_inode.rb_node;
+>>>>> +        break;
+>>>>> +    default:
+>>>>> +        return ERR_PTR(-EINVAL);
+>>>>
+>>>> This is a bug. There is no check for such value. You need to check 
+>>>> and update all call sites to catch such errors. Same for all new use 
+>>>> of ERR_PTR().
+>>>
+>>> Sorry, I did not get your point.
+>>> Do you mean I should check the correctness of rule_type in above 
+>>> function which calls landlock_find_rule() ??? Why can't I add such 
+>>> check here?
+>>
+>> landlock_find_rule() only returns NULL or a valid pointer, not an error.
+> 
+>    What about incorrect rule_type?? Return NULL? Or final rule_checl 
+> must be in upper function?
+
+This case should never happen anyway. You should return NULL and call 
+WARN_ON_ONCE(1) just before. The same kind of WARN_ON_ONCE(1) call 
+should be part of all switch/cases of rule_type (except the two valid 
+values of course).
