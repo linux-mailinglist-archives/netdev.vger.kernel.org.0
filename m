@@ -2,129 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 269134E39D8
-	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 08:47:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A33BD4E39F0
+	for <lists+netdev@lfdr.de>; Tue, 22 Mar 2022 08:54:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229531AbiCVHsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 03:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
+        id S229613AbiCVHzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 03:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiCVHsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 03:48:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9998D13A
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 00:46:47 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nWZDl-0000k1-JB; Tue, 22 Mar 2022 08:46:25 +0100
-Received: from pengutronix.de (2a03-f580-87bc-d400-7c76-e54b-1dbb-9ff1.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:7c76:e54b:1dbb:9ff1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3DBDF511F6;
-        Tue, 22 Mar 2022 07:46:23 +0000 (UTC)
-Date:   Tue, 22 Mar 2022 08:46:22 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-Subject: Re: [PATCH v8 0/7] CTU CAN FD open-source IP core SocketCAN driver,
- PCI, platform integration and documentation
-Message-ID: <20220322074622.5gkjhs25epurecvx@pengutronix.de>
-References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
+        with ESMTP id S229450AbiCVHzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 03:55:45 -0400
+Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14A74A3D4;
+        Tue, 22 Mar 2022 00:54:17 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id D2EA4240002;
+        Tue, 22 Mar 2022 07:54:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1647935656;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hL95WIkdjvtUtma7mkkPOD4nhIAtPPlN3w0wuizzJOs=;
+        b=CtYGjJ3RELDYNEkF8xpunTXp7/UOD8Z1R5pYu/yHzgzpNiIWaVp+5QTsjUZ7X1eUepxBiT
+        7AdNl5rSbXWguc2UV5n8SRvtlL7SwbaOzuqTjJ6axk5N9M0aHhs8N6XQ9bmAioR4sdpax9
+        sDKHg8s13+R4MwRpc6/Fk1lloD+yl00xvaI9bafNniv0TtZUYBHA2zpqFQ+daiuqRd2e/S
+        q9SvPNlVW2QremxkvnjZmr99XWsWmaEM4bEajI4ZUXUkKYtsWRH6zJOtIhs0ct23zFa9/F
+        xOh2gHpUdmvscPFGHNJpsQ7v3XjUj4dt1dj7JlpL0mM4Lne0bah6cuomJFm6cQ==
+Date:   Tue, 22 Mar 2022 08:52:52 +0100
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "'Rafael J . Wysocki '" <rafael@kernel.org>,
+        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Allan Nielsen <allan.nielsen@microchip.com>,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 0/6] introduce fwnode in the I2C subsystem
+Message-ID: <20220322085252.143a700f@fixe.home>
+In-Reply-To: <20220321113634.56d6fe2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220318160059.328208-1-clement.leger@bootlin.com>
+        <20220318100201.630c70bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20220321115634.5f4b8bd4@fixe.home>
+        <20220321113634.56d6fe2b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="36z23q6udvpbfk4u"
-Content-Disposition: inline
-In-Reply-To: <cover.1647904780.git.pisa@cmp.felk.cvut.cz>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Le Mon, 21 Mar 2022 11:36:34 -0700,
+Jakub Kicinski <kuba@kernel.org> a =C3=A9crit :
 
---36z23q6udvpbfk4u
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 22.03.2022 00:32:27, Pavel Pisa wrote:
-> This driver adds support for the CTU CAN FD open-source IP core.
-> More documentation and core sources at project page
-> (https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core).
-> The core integration to Xilinx Zynq system as platform driver
-> is available (https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top=
-).
-> Implementation on Intel FPGA based PCI Express board is available
-> from project (https://gitlab.fel.cvut.cz/canbus/pcie-ctucanfd).
-> The CTU CAN FD core emulation send for review for QEMU mainline.
-> Development repository for QEMU emulation - ctu-canfd branch of
->   https://gitlab.fel.cvut.cz/canbus/qemu-canbus
+> > Hi Jakub,
+> >=20
+> > Ok, to be clear, you would like a series which contains all the
+> > "base" fwnode functions that I'm going to add to be sent separately
+> > right ? And then also split i2c/net stuff that was sent in this series =
+? =20
 >=20
-> More about CAN bus related projects used and developed at CTU FEE
-> on the guidepost page http://canbus.pages.fel.cvut.cz/ .
+> I'm mostly concerned about conflicts, so if you can get the entire
+> series into 5.18 before the merge window is over then consider it=20
+> acked. If it doesn't make 5.18 looks like you'd need to send patches=20
+> 1 and 2 as a PR so that both the i2c and net trees can pull it.=20
+> Once pulled send patch 6 out to net-next. Does that make sense?
 
-The driver looks much better now. Good work. Please have a look at the
-TX path of the mcp251xfd driver, especially the tx_stop_queue and
-tx_wake_queue in mcp251xfd_start_xmit() and mcp251xfd_handle_tefif(). A
-lockless implementation should work in your hardware, too.
+Yes totally, I guess I'll go for I2C only and then I'll move on with
+next patches individually later. No need to hurry.
 
-BTW: The PROP_SEG/PHASE_SEG1 issue is known:
-
-> +A curious reader will notice that the durations of the segments PROP_SEG
-> +and PHASE_SEG1 are not determined separately but rather combined and
-> +then, by default, the resulting TSEG1 is evenly divided between PROP_SEG
-> +and PHASE_SEG1.
-
-and the flexcan IP core in CAN-FD mode has the same problem. When
-working on the bit timing parameter, I'll plan to have separate
-PROP_SEG/PHASE_SEG1 min/max in the kernel, so that the bit timing
-algorithm can take care of this.
-
-regards,
-Marc
 
 --=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---36z23q6udvpbfk4u
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmI5fswACgkQrX5LkNig
-013PMQgAry/PkuGGU7GSA3xJRLELcIKOAuwmQaJF/J1/IKeEaZOtD6W/7ml1q9OX
-jpiKdNr/4kgkkEbmF4RpUJcu47Q3R4pYsKdu02b80vbul8tz+pc1vSrJdectiZgN
-2Ni1L+fR78bnICKivXNyPBFRhmbwakBkEUihKIMipb9+r6i7EhzuEt2f9B7ENyin
-3OtnjT9ilKigKGyWhzFgpVE1OVpZA6JuU4FeI5Tn1W1hq3oR7285Z9pI78++mC5a
-2YRreiqXhywLExr46RWqEnnAqhQApJr8TLB323llhmzeYQcb/uz5RZhXKull3Lzx
-lAkWRDnyip0aWFAvXdpaSva9WQoFCg==
-=VfJn
------END PGP SIGNATURE-----
-
---36z23q6udvpbfk4u--
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
