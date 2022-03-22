@@ -2,99 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6DF74E4984
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 00:08:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89FD54E4997
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 00:15:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236343AbiCVXJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 19:09:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47184 "EHLO
+        id S238828AbiCVXQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 19:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiCVXJ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 19:09:57 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D1E5EDDC
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 16:08:27 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id t14so13695488pgr.3
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 16:08:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=spacecubics-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WVuJ5iTMnLNg6p4o6FYZzWHkDiNOVLzOVLvxqh6C8Y4=;
-        b=LlXGZhX0rVNs3cNb3DAGu9aomSpRR2vuW7l7DcvmvZVZMKPgeUSI7WxeyGGKf6V3+v
-         4q2Az1q/1o1sFKWPwC4qHAM9UwHxP2ZpGa6kjxB5e3YcEH44psttcBZgtOom+aa3qDEx
-         QnAZWL9FNaQesELzuft1OW9ZoJ751IRQKRFK4Qy+kjZW++9xQtx40OXaEmhXpsdTydaQ
-         ocKEYwgkVDMMCTvNJuUiCOU5mlr3HCkzjtg2zjkQZTxeun8p2VdGNx25frevoEfsn4vu
-         9XwWyaqB6PWKQXO1V+JwKP0ZDzdW9ZTkSCE9brkxKKJA92CRiaVv/8LumBs2EmSGk5qQ
-         iIMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WVuJ5iTMnLNg6p4o6FYZzWHkDiNOVLzOVLvxqh6C8Y4=;
-        b=ZQ/kUM/HcLtovpqhXe+krEp9Sayg5+r9EvKtLkv3l3vxmSHa03vzbep65A8deFe+DA
-         eoxjy9Z41uckAEj8TYHoEpBQuZF8MIqHmCkTrrEw6I0jyA7psres2mCMx4TL2lZ2BoCH
-         d6kr4RHL5NErZMfl9iMBcMAu5ZElnZMksDeeTTM0nyorB7HIekQ/lVsJSvxsRlrgmy5a
-         yRr6GmLNYQNu8pT1/7wHdTg4DgkSzoh9MKzLwdxdbFmmBBlX7QYW/0odiCF5oCbLgsaG
-         qMj5e8/r7k4exCufO/rgJMrolPT++DV4GgDi2FFpXNlR90wRLubPIBto7B73ol+D/k/K
-         DBWw==
-X-Gm-Message-State: AOAM530ZnUZJc/r8U1V76wByXdT/2ibyi+GMz1+4rFvIOyTmBej1UBDq
-        kVKo0wExODnhpS4SivXljtI9IpviRGXIk7zGcel5kg==
-X-Google-Smtp-Source: ABdhPJytcKyVVLZRHTvS/Y/aI+XgKcwjXvUtr6xRy6GO8nXN6NBbyX6AuEi+Tpd6Lc9sF9z5bKeJWcwSkPju1XRiW6Y=
-X-Received: by 2002:a05:6a02:19c:b0:385:f2a0:2b38 with SMTP id
- bj28-20020a056a02019c00b00385f2a02b38mr3263566pgb.286.1647990507325; Tue, 22
- Mar 2022 16:08:27 -0700 (PDT)
+        with ESMTP id S238806AbiCVXQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 19:16:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934212655A;
+        Tue, 22 Mar 2022 16:15:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A44761142;
+        Tue, 22 Mar 2022 23:15:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097FEC340ED;
+        Tue, 22 Mar 2022 23:15:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647990907;
+        bh=pBrqpyLtYd4UIYjhiSpOvd/QUc5BWeFThh4yI2ezz8o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lx56S2c8R7VXgElUlzYFgMyufCqxevzyQ0sDb7jP7soNXWhdXSw3LPaqbdHLxbU7w
+         P28FnLnbXBJ4+ZNcfffqJTsR7iGflexpC8FGV3/eGMMadQ6/ZAQjZirCwF2Cxrt9AD
+         1gnz9BvhZM2Cz9obG31UYnTL4+ASJWShmfXnk+snUJ+bqp44KWidsanyQ1TCT9ClTa
+         Bu5FVDcHSNBIrLS5BdVXlKpDpsuFaSCrwHxO/TaLrzjLGv3L0Sa3ayG4A8v/M1mW1S
+         cTYWaKyfMQ95LYw8sr6rHUcRytP2vflxcHrUKe3ZbXKH6e9qnz7OsBL6BTOyfsB5OK
+         KN9lykvUQ0vsg==
+Date:   Tue, 22 Mar 2022 16:15:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     <andrew@lunn.ch>, <netdev@vger.kernel.org>, <olteanv@gmail.com>,
+        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <woojung.huh@microchip.com>, <hkallweit1@gmail.com>,
+        <linux@armlinux.org.uk>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>,
+        <pabeni@redhat.com>
+Subject: Re: [PATCH v10 net-next 00/10] net: dsa: microchip: DSA driver
+ support for LAN937x switch
+Message-ID: <20220322161506.252e008c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220322195455.703921-1-prasanna.vengateshan@microchip.com>
+References: <20220322195455.703921-1-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
-References: <20220311080208.45047-1-hbh25y@gmail.com>
-In-Reply-To: <20220311080208.45047-1-hbh25y@gmail.com>
-From:   Yasushi SHOJI <yashi@spacecubics.com>
-Date:   Wed, 23 Mar 2022 08:08:16 +0900
-Message-ID: <CAGLTpnK=4Gd8S488osvrbttkMvtsPy8eCGspV4-=z2N3UGZ5rw@mail.gmail.com>
-Subject: Re: [PATCH] can: mcba_usb: fix possible double dev_kfree_skb in mcba_usb_start_xmit
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        stefan.maetje@esd.eu, Pavel Skripkin <paskripkin@gmail.com>,
-        remigiusz.kollataj@mobica.com,
-        linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hangyu,
+On Wed, 23 Mar 2022 01:24:45 +0530 Prasanna Vengateshan wrote:
+> LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch  
+> compliant with the IEEE 802.3bw-2015 specification. The device  
+> provides 100 Mbit/s transmit and receive capability over a single 
+> Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision 
+> of KSZ series switch. This series of patches provide the DSA driver  
+> support for Microchip LAN937X switch and it configures through  
+> SPI interface. 
+> 
+> This driver shares some of the functions from KSZ common 
+> layer. 
 
-On Fri, Mar 11, 2022 at 5:02 PM Hangyu Hua <hbh25y@gmail.com> wrote:
->
-> There is no need to call dev_kfree_skb when usb_submit_urb fails beacause
-> can_put_echo_skb deletes original skb and can_free_echo_skb deletes the cloned
-> skb.
-
-So, it's more like, "we don't need to call dev_kfree_skb() after
-can_put_echo_skb()
-because can_put_echo_skb() consumes the given skb.".  It seems it doesn't depend
-on the condition of usb_submit_urb().  Plus, we don't see the "cloned
-skb" at the
-call site.
-
-Would you mind adding a comment on can_put_echo_skb(), in a separate patch,
-saying the fact that it consumes the skb?
-
-ems_usb.c, gs_usb.c and possibly some others seem to call
-dev_kfree_skb() as well.
-Are they affected?
-
-Best,
--- 
-           yashi
+net-next is closed during the merge window. You can continue code review
+by posing RFC patches but you'll have to repost for merging once
+5.18-rc1 has been tagged.
