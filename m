@@ -2,79 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DB664E5B4B
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 23:37:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75BB64E5B56
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 23:38:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345252AbiCWWix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 18:38:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
+        id S1345267AbiCWWkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 18:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345248AbiCWWiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 18:38:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FF279024B
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 15:37:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648075039;
+        with ESMTP id S240410AbiCWWkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 18:40:17 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D036167C1;
+        Wed, 23 Mar 2022 15:38:46 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 08027221D4;
+        Wed, 23 Mar 2022 23:38:44 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648075124;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GCO9kWmcJK/zqnHuqkvNPWBBfJrDpoSVizCjP9r818U=;
-        b=STYULCXmu/mInbQuHjB3Hebp8QDOz8lWt+82ULzjkkFzptNBQancCg53TG7hCfX32rCKFK
-        mnhatWTPJ+f7A3R7hGndq8117VMSuCuLJjhnUSXuRM9RZlxzrnku4vTyvsIDRvdJWJLo1e
-        8gzSqk6U/hLqGYMoaLWjQCxi2uPXNlo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-664-hGnSWDsfN4mt8hWBY-Mx7A-1; Wed, 23 Mar 2022 18:37:17 -0400
-X-MC-Unique: hGnSWDsfN4mt8hWBY-Mx7A-1
-Received: by mail-wm1-f70.google.com with SMTP id n19-20020a7bcbd3000000b0038c94b86258so1030832wmi.2
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 15:37:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GCO9kWmcJK/zqnHuqkvNPWBBfJrDpoSVizCjP9r818U=;
-        b=3fBJTVx71GUbXq2uyQ20mQCp+cscuNpbiI3oNOutLRTLUMdfgri0gvdQp3npZQQmNK
-         nFdJPbRlDFnZSJbVL0VNZYJMnvHk/CcOsjaG11MTs765bvG8PD55PhYoA0rS+i7HROtg
-         Pgwt0GZahICNzIsVbUD2c83gwUTV8SIPtm177yy014TJR78LgTMAmjxu3j7qTfS+7LTm
-         O5zGfssI3T5/ph6IYgdCf3IUeYm8Lt78GmlCyUya3TMPQddaWV5cq06+1sAex7S18LgS
-         Mr7vdO57eaS0oKDujDyf9DFVNf0wsDJV+bkg906qjeS+CDN24/On+wdMZM/jfPm4Cjor
-         jRjw==
-X-Gm-Message-State: AOAM533Aimk/UwdRhZPRdeIFDcJG11+GgD1J5Orax329NvaC8RsyNnW8
-        HBUEAC+WeUntDLvYEPWFVSZi+BLs1A0wpyXSvB54zMbKzrqXSryUObqDpsVJWZeRl6N3qKoMPPi
-        z+BPa+ffsMDTs8M82
-X-Received: by 2002:adf:9dc3:0:b0:205:7bf0:669f with SMTP id q3-20020adf9dc3000000b002057bf0669fmr1944321wre.4.1648075036542;
-        Wed, 23 Mar 2022 15:37:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzf4BMQJkf+iGF0bxSMIgVNRplbXP5vi6oAc/EcslZHs0qUwYj6/T80KpKvYkRJT0LDAxm8Pw==
-X-Received: by 2002:adf:9dc3:0:b0:205:7bf0:669f with SMTP id q3-20020adf9dc3000000b002057bf0669fmr1944308wre.4.1648075036322;
-        Wed, 23 Mar 2022 15:37:16 -0700 (PDT)
-Received: from redhat.com ([2.55.151.118])
-        by smtp.gmail.com with ESMTPSA id a18-20020a05600c349200b0038ca453a887sm4944273wmq.19.2022.03.23.15.37.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 15:37:15 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 18:37:11 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Asias He <asias@redhat.com>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net v3 0/3] vsock/virtio: enable VQs early on probe and
- finish the setup before using them
-Message-ID: <20220323183657-mutt-send-email-mst@kernel.org>
-References: <20220323173625.91119-1-sgarzare@redhat.com>
+        bh=U8jdoR5jqJ3/I0PWZz2NXnJG2RKiRWixoRqKl2Hur6U=;
+        b=nVBcxd4j5IU6vfFmHjAuziycN0DAYCCG9p55wtx+3lKUFc84gNrL0WYDwtLSzYMZHh2HVh
+        CvCWT3SIhW7p0AHA5uzPI8telKF3X70GtqPVhlGcXIaIr32QmevLKDcyRkFN4K9tpYtqI9
+        rCAhTAzjzOcMKL32Xbdh1BJn/L6N4Pw=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220323173625.91119-1-sgarzare@redhat.com>
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 23 Mar 2022 23:38:43 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
+In-Reply-To: <Yjt99k57mM5PQ8bT@lunn.ch>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-5-michael@walle.cc> <Yjt99k57mM5PQ8bT@lunn.ch>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <8304fb3578ee38525a158af768691e75@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,31 +62,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 06:36:22PM +0100, Stefano Garzarella wrote:
-> The first patch fixes a virtio-spec violation. The other two patches
-> complete the driver configuration before using the VQs in the probe.
+Am 2022-03-23 21:07, schrieb Andrew Lunn:
+> On Wed, Mar 23, 2022 at 07:34:18PM +0100, Michael Walle wrote:
+>> The GPY215 driver supports indirect accesses to c45 over the c22
+>> registers. In its probe function phy_get_c45_ids() is called and the
+>> author descibed their use case as follows:
+>> 
+>>   The problem comes from condition "phydev->c45_ids.mmds_present &
+>>   MDIO_DEVS_AN".
+>> 
+>>   Our product supports both C22 and C45.
+>> 
+>>   In the real system, we found C22 was used by customers (with 
+>> indirect
+>>   access to C45 registers when necessary).
+>> 
+>> So it is pretty clear that the intention was to have a method to use 
+>> the
+>> c45 features over a c22-only MDIO bus. The purpose of calling
+>> phy_get_c45_ids() is to populate the .c45_ids for a PHY which wasn't
+>> probed as a c45 one. Thus, first rename the phy_get_c45_ids() function
+>> to reflect its actual meaning and second, add a new flag which 
+>> indicates
+>> that this is actually a c45 PHY but behind a c22 bus. The latter is
+>> important for phylink because phylink will treat c45 in a special way 
+>> by
+>> checking the .is_c45 property. But in our case this isn't set.
 > 
-> The patch order should simplify backporting in stable branches.
-
-
-Series:
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-> v3:
-> - re-ordered the patch to improve bisectability [MST]
+> Thinking out loud...
 > 
-> v2: https://lore.kernel.org/netdev/20220323084954.11769-1-sgarzare@redhat.com/
-> v1: https://lore.kernel.org/netdev/20220322103823.83411-1-sgarzare@redhat.com/
+> 1) We have a C22 only bus. Easy, C45 over C22 should be used.
 > 
-> Stefano Garzarella (3):
->   vsock/virtio: initialize vdev->priv before using VQs
->   vsock/virtio: read the negotiated features before using VQs
->   vsock/virtio: enable VQs early on probe
+> 2) We have a C45 only bus. Easy, C45 should be used, and it will of
+>    probed that way.
 > 
->  net/vmw_vsock/virtio_transport.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
+> 3) We have a C22 and C45 bus, but MDIOBUS_NO_CAP. It will probe C22,
+>    but ideally we want to swap to C45.
 > 
-> -- 
-> 2.35.1
+> 4) We have a C22 and C45 bus, MDIOBUS_C22_C45. It will probe C22, but
+>    ideally we want to swap to C45.
 
+I presume you are speaking of
+https://elixir.bootlin.com/linux/v5.17/source/drivers/net/phy/mdio_bus.c#L700
+
+Shouldn't that be the other way around then? How would you tell if
+you can do C45?
+
+>> @@ -99,7 +99,7 @@ static int gpy_probe(struct phy_device *phydev)
+>>  	int ret;
+>> 
+>>  	if (!phydev->is_c45) {
+>> -		ret = phy_get_c45_ids(phydev);
+>> +		ret = phy_get_c45_ids_by_c22(phydev);
+>>  		if (ret < 0)
+>>  			return ret;
+>>  	}
+> 
+> If we are inside the if, we know we probed C22. We have to achieve two
+> things:
+> 
+> 1) Get the c45 ids,
+> 2) Figure out if C45 works, or if C45 over C22 is needed.
+> 
+> I don't see how we are getting this second bit of information, if we
+> are explicitly using c45 over c22.
+
+That is related to how C45 capable PHYs are probed (your 4) above),
+right? If the PHY would be probed correctly as C45 we wouldn't have
+to worry about it. TBH I didn't consider that a valid case because
+I thought there were other means to tell "treat this PHY as C45",
+that is by the device tree compatible, for example.
+
+Btw. all of this made me question if this is actually the correct
+place, or if if shouldn't be handled in the core. With a flag
+in the phy driver which might indicate its capable of doing
+c45 over c22.
+
+> This _by_c22 is also making me think of the previous patch, where we
+> look at the bus capabilities. We are explicitly saying here was want
+> c45 over c22, and the PHY driver should know the PHY is capable of
+> it. So we don't need to look at the capabilities, just do it.
+
+Mh? I can't follow you here. Are you talking about the
+probe_capabilites? These are for the bus probing, i.e. if you can
+call mdiobus_c45_read().
+
+-michael
