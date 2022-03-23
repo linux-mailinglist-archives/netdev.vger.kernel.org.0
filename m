@@ -2,243 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A6D4E50CA
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 11:57:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 066A34E50C5
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 11:57:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233943AbiCWK7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 06:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52268 "EHLO
+        id S243638AbiCWK6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 06:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243667AbiCWK7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 06:59:03 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCB978063
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 03:57:29 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso6068971pjb.0
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 03:57:29 -0700 (PDT)
+        with ESMTP id S243654AbiCWK6x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 06:58:53 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6335878062;
+        Wed, 23 Mar 2022 03:57:21 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id u3so1324953ljd.0;
+        Wed, 23 Mar 2022 03:57:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
          :mime-version;
-        bh=TSViUaYbE+wRlWDmACxL70V6MiV5smQwsgR8toRtEJo=;
-        b=LYKZzUaJ8OPwwiSPIoRBdhHnxqXI0IJM1+D8KTPjSIPcP2yAorMAFaRwRMoEK2VCOX
-         yPKg+mS3PWrsyG8nryrShuGaL8hvsu4yfuXzZmcMqUGTbD4IhnYMxTUV0BshWEPios/R
-         OyPrRAiRtDEKW2C9uoeqmjIWUmg9ffFJLR5ko=
+        bh=OXIgpQewnxlg0QpZCeU/b/t8bzjboH/kCWJvwnGyNJc=;
+        b=MMJDo4C5ZsXS02QHJkGPkc2lyI5LXoN+MlgkdrsVMW5SssCeJVW62Hs8mQRF3COpAT
+         VoO5NNnXNPCV4rNmVczeMJZdEJK+aGSdrLdzEa/e4kve9X3PhraQJf3lE+5NyF/0sQqD
+         MS2xjVtu0Xrt1BF9eRkLSzjEISDF0SDQNKCgEPF/mhGwcW4uoOgOHLtMIEfWVKdS0/17
+         4TmHYqPFP1N3VJNhdX7S6rtXZvyW8EH2g+P2iZMreLFP5sL3HUkBfPb8eZy1b3fKu7Gn
+         RcXSB1t5eFFxEuRKGIynxbt7uuw1MSFaG0Y2wRLVCmncp7cHrBFYKq7TvBKJtC5cHXXE
+         zP5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=TSViUaYbE+wRlWDmACxL70V6MiV5smQwsgR8toRtEJo=;
-        b=j/FK7d1R0kRjFCuSyyw/tapW0nVapjQQ4n6XuPPUJM+P6zk9JBNcgx/tKSOvd+rtZE
-         TndtTPzS8G+B4zwIjwmDP7/x9D9t+FRepLvHYpfCa0YgFiCXsCt02eHpJ3ct9xIRfzVM
-         7GztZeLw8YcuTMGQ+o9jXhomgzwmrjfsHc3hlKAlWz99JjAdsGSbhpMKMCvufDBAOPmx
-         dfHvvFBl97AvODMU8S+IW90pUS0AbCst75KrGk1Fi1bmzUwd8Q4ng9kxEv9oCJOB9H3S
-         4tnkMzQ/yxU0cDP9NM2UTYOthjAZ5ucQpKbsKIwa2HzbBBwI9xGGaImZXAJYpQl4XI5n
-         APVg==
-X-Gm-Message-State: AOAM533cROanojBdmoi5lHW1DCzpU3taS1D2ijmm6LIpQU0lRdJfAvdJ
-        Q9PxcGnUDc7TZeojfV/B/KVCZ02yJI5Qi8K/0CbN9r7CQS0M9/ILdgowBQtPjJdZvQrRhD6nRxO
-        T56gD9LmPKU5piZQEE7ePYIrVSBzjHin9O+wR1Vw0cjxGVx/YV1EIKxKCfVOBM3i84Pkj1ORbp1
-        8zAUt/zTjosA==
-X-Google-Smtp-Source: ABdhPJxne2dL1/+G4N3uegLEd+Mu2SgBR0dB/ku0vaWnjS0MVbq/fi3/lDpaN963p/qT1wfycHW6ew==
-X-Received: by 2002:a17:90b:2486:b0:1bc:9d6a:f22 with SMTP id nt6-20020a17090b248600b001bc9d6a0f22mr10849884pjb.211.1648033048688;
-        Wed, 23 Mar 2022 03:57:28 -0700 (PDT)
-Received: from localhost.localdomain ([192.19.250.250])
-        by smtp.gmail.com with ESMTPSA id d11-20020aa7868b000000b004f768dfe93asm25535927pfo.176.2022.03.23.03.57.24
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=OXIgpQewnxlg0QpZCeU/b/t8bzjboH/kCWJvwnGyNJc=;
+        b=tQJb3O1rW+o3i/ULIl4Z6PlCQsNbvbOUSs8J3elzaQt9nDcMJ4CoyZt9Zde44gsdfQ
+         /FxjD4EaEgucZjdVZZ8y02XI+O5fo/B56aUpF2tABQEq1a8sxRlrK/q52Zu3KnxDWQLp
+         2GghyUR14ckFuvk9kIhHFEgN3eId9xy5DiVxfIyQF68ZUJQGP3S/OaZHZL2hPROaD42d
+         7nVh2DOoEKdk7AQeEUs+vpGDQSf+5MTt1+6O+D1PdXl68dNYmeecn3NRlJ1IWS8Xw7TL
+         GS1xK7qZ+A+gK7XO0I3Fqpi3Zjtn+pgnGrXpafmU3wruxQdgOGSWk4zdzgZlbPf2JT/L
+         Hyug==
+X-Gm-Message-State: AOAM530Q9qjsPBBe1MRfTckUd+IY1Lrx7ffqY6lW/+00K9YmqJPdUBEZ
+        12Qaj0CSmjSCPANsHSKbCGMQBUUDPNM05w==
+X-Google-Smtp-Source: ABdhPJxhKO/5vy8tmJTecOngQH5nB4XpLXNl7EL+81Szm3yq5mv9kBuGhnMN5unFmagxo5GjkOcSdw==
+X-Received: by 2002:a2e:b014:0:b0:23c:9593:f7 with SMTP id y20-20020a2eb014000000b0023c959300f7mr21851030ljk.209.1648033039623;
+        Wed, 23 Mar 2022 03:57:19 -0700 (PDT)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id l4-20020a2e9084000000b00244cb29e3e4sm2738763ljg.133.2022.03.23.03.57.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 03:57:28 -0700 (PDT)
-From:   Boris Sukholitko <boris.sukholitko@broadcom.com>
-To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
+        Wed, 23 Mar 2022 03:57:19 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Hans Schultz <schultz.hans@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Eric Dumazet <edumazet@google.com>,
-        zhang kai <zhangkaiheb@126.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>
-Cc:     Ilya Lifshits <ilya.lifshits@broadcom.com>,
-        Boris Sukholitko <boris.sukholitko@broadcom.com>
-Subject: [PATCH net-next 5/5] Consider the number of vlan tags for vlan filters
-Date:   Wed, 23 Mar 2022 12:56:02 +0200
-Message-Id: <20220323105602.30072-6-boris.sukholitko@broadcom.com>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220323105602.30072-1-boris.sukholitko@broadcom.com>
-References: <20220323105602.30072-1-boris.sukholitko@broadcom.com>
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
+ implementation
+In-Reply-To: <20220323101643.kum3nuqctunakcfo@skbuf>
+References: <20220317161808.psftauoz5iaecduy@skbuf>
+ <8635jg5xe5.fsf@gmail.com> <20220317172013.rhjvknre5w7mfmlo@skbuf>
+ <86tubvk24r.fsf@gmail.com> <20220318121400.sdc4guu5m4auwoej@skbuf>
+ <86pmmjieyl.fsf@gmail.com> <20220318131943.hc7z52beztqlzwfq@skbuf>
+ <86a6dixnd2.fsf@gmail.com> <20220322110806.kbdb362jf6pbtqaf@skbuf>
+ <86fsn90ye8.fsf@gmail.com> <20220323101643.kum3nuqctunakcfo@skbuf>
+Date:   Wed, 23 Mar 2022 11:57:16 +0100
+Message-ID: <864k3p5437.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000078fbf305dae09828"
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000078fbf305dae09828
-Content-Transfer-Encoding: 8bit
+On ons, mar 23, 2022 at 12:16, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Wed, Mar 23, 2022 at 11:13:51AM +0100, Hans Schultz wrote:
+>> On tis, mar 22, 2022 at 13:08, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> > On Tue, Mar 22, 2022 at 12:01:13PM +0100, Hans Schultz wrote:
+>> >> On fre, mar 18, 2022 at 15:19, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> >> > On Fri, Mar 18, 2022 at 02:10:26PM +0100, Hans Schultz wrote:
+>> >> >> In the offloaded case there is no difference between static and dynamic
+>> >> >> flags, which I see as a general issue. (The resulting ATU entry is static
+>> >> >> in either case.)
+>> >> >
+>> >> > It _is_ a problem. We had the same problem with the is_local bit.
+>> >> > Independently of this series, you can add the dynamic bit to struct
+>> >> > switchdev_notifier_fdb_info and make drivers reject it.
+>> >> >
+>> >> >> These FDB entries are removed when link goes down (soft or hard). The
+>> >> >> zero DPV entries that the new code introduces age out after 5 minutes,
+>> >> >> while the locked flagged FDB entries are removed by link down (thus the
+>> >> >> FDB and the ATU are not in sync in this case).
+>> >> >
+>> >> > Ok, so don't let them disappear from hardware, refresh them from the
+>> >> > driver, since user space and the bridge driver expect that they are
+>> >> > still there.
+>> >> 
+>> >> I have now tested with two extra unmanaged switches (each connected to a
+>> >> seperate port on our managed switch, and when migrating from one port to
+>> >> another, there is member violations, but as the initial entry ages out,
+>> >> a new miss violation occurs and the new port adds the locked entry. In
+>> >> this case I only see one locked entry, either on the initial port or
+>> >> later on the port the host migrated to (via switch).
+>> >> 
+>> >> If I refresh the ATU entries indefinitly, then this migration will for
+>> >> sure not work, and with the member violation suppressed, it will be
+>> >> silent about it.
+>> >
+>> > Manual says that migrations should trigger miss violations if configured
+>> > adequately, is this not the case?
+>> >
+>> >> So I don't think it is a good idea to refresh the ATU entries
+>> >> indefinitely.
+>> >> 
+>> >> Another issue I see, is that there is a deadlock or similar issue when
+>> >> receiving violations and running 'bridge fdb show' (it seemed that
+>> >> member violations also caused this, but not sure yet...), as the unit
+>> >> freezes, not to return...
+>> >
+>> > Have you enabled lockdep, debug atomic sleep, detect hung tasks, things
+>> > like that?
+>> 
+>> I have now determined that it is the rtnl_lock() that causes the
+>> "deadlock". The doit() in rtnetlink.c is under rtnl_lock() and is what
+>> takes care of getting the fdb entries when running 'bridge fdb show'. In
+>> principle there should be no problem with this, but I don't know if some
+>> interrupt queue is getting jammed as they are blocked from rtnetlink.c?
+>
+> Sorry, I forgot to respond yesterday to this.
+> By any chance do you maybe have an AB/BA lock inversion, where from the
+> ATU interrupt handler you do mv88e6xxx_reg_lock() -> rtnl_lock(), while
+> from the port_fdb_dump() handler you do rtnl_lock() -> mv88e6xxx_reg_lock()?
 
-Currently the existence of vlan filters is conditional on the vlan
-protocol being matched in the tc rule. I.e. the following rule:
-
-tc filter add dev eth1 ingress flower vlan_prio 5
-
-is illegal because we lack protocol 802.1q in the rule.
-
-Having the num_of_vlans filter configured removes this restriction. The
-following rule becomes ok:
-
-tc filter add dev eth1 ingress flower num_of_vlans 1 vlan_prio 5
-
-because we know that the packet is single tagged.
-
-Signed-off-by: Boris Sukholitko <boris.sukholitko@broadcom.com>
----
- net/sched/cls_flower.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
-
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 42dd84f5a037..464a91e64b5f 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -1023,8 +1023,10 @@ static void fl_set_key_vlan(struct nlattr **tb,
- 			VLAN_PRIORITY_MASK;
- 		key_mask->vlan_priority = VLAN_PRIORITY_MASK;
- 	}
--	key_val->vlan_tpid = ethertype;
--	key_mask->vlan_tpid = cpu_to_be16(~0);
-+	if (ethertype) {
-+		key_val->vlan_tpid = ethertype;
-+		key_mask->vlan_tpid = cpu_to_be16(~0);
-+	}
- }
- 
- static void fl_set_key_flag(u32 flower_key, u32 flower_mask,
-@@ -1495,13 +1497,18 @@ static int fl_set_key_ct(struct nlattr **tb,
- }
- 
- static bool is_vlan_key(struct nlattr *tb, __be16 *ethertype,
--			struct fl_flow_key *key, struct fl_flow_key *mask)
-+			struct fl_flow_key *key, struct fl_flow_key *mask,
-+			int vthresh)
- {
--	if (!tb)
--		return false;
-+	const bool good_num_of_vlans = key->num_of_vlans.num_of_vlans > vthresh;
-+
-+	if (!tb) {
-+		*ethertype = 0;
-+		return good_num_of_vlans;
-+	}
- 
- 	*ethertype = nla_get_be16(tb);
--	if (eth_type_vlan(*ethertype))
-+	if (good_num_of_vlans || eth_type_vlan(*ethertype))
- 		return true;
- 
- 	key->basic.n_proto = *ethertype;
-@@ -1536,12 +1543,13 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 		       TCA_FLOWER_UNSPEC,
- 		       sizeof(key->num_of_vlans));
- 
--	if (is_vlan_key(tb[TCA_FLOWER_KEY_ETH_TYPE], &ethertype, key, mask)) {
-+	if (is_vlan_key(tb[TCA_FLOWER_KEY_ETH_TYPE], &ethertype, key, mask, 0)) {
- 		fl_set_key_vlan(tb, ethertype, TCA_FLOWER_KEY_VLAN_ID,
- 				TCA_FLOWER_KEY_VLAN_PRIO, &key->vlan,
- 				&mask->vlan);
- 
--		if (is_vlan_key(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE], &ethertype, key, mask)) {
-+		if (is_vlan_key(tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE],
-+				&ethertype, key, mask, 1)) {
- 			fl_set_key_vlan(tb, ethertype,
- 					TCA_FLOWER_KEY_CVLAN_ID,
- 					TCA_FLOWER_KEY_CVLAN_PRIO,
--- 
-2.29.2
-
-
---00000000000078fbf305dae09828
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVgwggRAoAMCAQICDDSzinKpvcPTN4ZIJTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNzMwMDRaFw0yMjA5MDUwNzM3NTVaMIGW
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xGTAXBgNVBAMTEEJvcmlzIFN1a2hvbGl0a28xLDAqBgkqhkiG
-9w0BCQEWHWJvcmlzLnN1a2hvbGl0a29AYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
-AQ8AMIIBCgKCAQEAy/C7bjpxs+95egWV8sWrK9KO0SQi6Nxu14tJBgP+MOK5tvokizPFHoiXTymZ
-7ClfnmbcqT4PzWgI3thyfk64bgUo1nQkCTApn7ov3IRsWjmHExLSNoJ/siUHagO6BPAk4JSycrj5
-9tC9sL4FnIAbAHmOSILCyGyyaBAcmiyH/3toYqXyjJkK+vbWQSTxk2NlqJLIN/ypLJ1pYffVZGUs
-52g1hlQtHhgLIznB1Qx3Fop3nOUk8nNpQLON/aM8K5sl18964c7aXh7YZnalUQv3md4p2rAQQqIR
-rZ8HBc7YjlZynwOnZl1NrK4cP5aM9lMkbfRGIUitHTIhoDYp8IZ1dwIDAQABo4IB3jCCAdowDgYD
-VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
-ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
-CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
-MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
-d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
-hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
-bDAoBgNVHREEITAfgR1ib3Jpcy5zdWtob2xpdGtvQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUtBmGs9S4
-t1FcFSfkrP2LKQQwBKMwDQYJKoZIhvcNAQELBQADggEBAJMAjVBkRmr1lvVvEjMaLfvMhwGpUfh6
-CMZsKICyz/ZZmvTmIZNwy+7b9r6gjLCV4tP63tz4U72X9qJwfzldAlYLYWIq9e/DKDjwJRYlzN8H
-979QJ0DHPSJ9EpvSKXob7Ci/FMkTfq1eOLjkPRF72mn8KPbHjeN3VVcn7oTe5IdIXaaZTryjM5Ud
-bR7s0ZZh6mOhJtqk3k1L1DbDTVB4tOZXZHRDghEGaQSnwU/qxCNlvQ52fImLFVwXKPnw6+9dUvFR
-ORaZ1pZbapCGbs/4QLplv8UaBmpFfK6MW/44zcsDbtCFfgIP3fEJBByIREhvRC5mtlRtdM+SSjgS
-ZiNfUggxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw0
-s4pyqb3D0zeGSCUwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFtNt5RCFdpDQ8de
-DaIZZr9AZciFMYMD1PIKvAYRI4MSMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcN
-AQkFMQ8XDTIyMDMyMzEwNTcyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZI
-AWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEH
-MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQCYljfFzp/gtE+leWbAnEcyDRCLX8J5KmyL
-LpmkJTLwNnwHqb0HsPsG7vWqKMkPhiSVnUNajj0wXJENA+E1FRrHYpVOlGKx96riU1Wy0at2maJA
-8LcAuYK8zxy3veZDyeO0exf6PPhQhX0w57u5XSzOIAgU9i+vvwvwUs/OpNsEvi16nJMfZRMmXQ4e
-RPGjbjIDzPXFerifGV55oqXzKIf88VOUEZBtCpq9Iag5kZOaC8vQvwVa5DKiS6HH9NE4MAD9Ofde
-boJtrN9NDRi9bgJrMauiYfk79omJlhG8Ptvu2xTJ0Eb9YuJ4E9lRVg2hKuMc6OC+lMUIHSTSpFuZ
-dRF6
---00000000000078fbf305dae09828--
+If I release the mv88e6xxx_reg_lock() before calling the handler, I need
+to get it again for the mv88e6xxx_g1_atu_loadpurge() call at least. But
+maybe the vtu_walk also needs the mv88e6xxx_reg_lock()?
+I could also just release the mv88e6xxx_reg_lock() before the
+call_switchdev_notifiers() call and reacquire it immediately after?
