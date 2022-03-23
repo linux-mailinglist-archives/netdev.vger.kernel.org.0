@@ -2,67 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC6BB4E4A90
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 02:38:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 333644E4AA5
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 02:53:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237500AbiCWBjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 21:39:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41522 "EHLO
+        id S240821AbiCWBzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 21:55:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231200AbiCWBjr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 21:39:47 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87948BE22;
-        Tue, 22 Mar 2022 18:38:17 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id b16so130659ioz.3;
-        Tue, 22 Mar 2022 18:38:17 -0700 (PDT)
+        with ESMTP id S240797AbiCWBzG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 21:55:06 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05F256202
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 18:53:36 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id m22so343050pja.0
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 18:53:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XKnZR1Uiyw2PN5sPoFzxBAiQwF0e221zQ+vA02UCB0Q=;
-        b=S4w2/7eEKrLn3Y8CNsCRT6p1ZPy6URN+PwVKEznVp2aShgRS5SUpcoKxTOy8N7MNJX
-         74WZc15swxSMNMDwfww6Wo3grfbpcqr5gID+gHcO8uAor6QzZ4dM6f0F75kWMEBEJlZB
-         rUoUr9YtFLCrOKT7mp3HTkZYr0IALey4/5hqBAr+PYCjX26sSQ+WdwovgdH0T7iLRF2J
-         vhj72tE702Z93glT9I5cSTTP+nc3S17zELm4G6QYqY1vBa4NhkWoFl4OdZGCUMZ/8+x+
-         Isup6CXqNgxrBIjJWh/nyCfAabNCNXpktHy/F42ZZ0DWf66RVklW/KqrnbyXTpD58kl/
-         evFw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=48zLxq6Ao+u9okFonUAASL2xEfX5JzmLT/yDLCNUOZQ=;
+        b=ehHxHp/lmXAA2DRp+8wTr+i7+BC6yVG8TJkrMsRfMyNG9kVZ+0MQC+IWcEsHx3FsG3
+         KkTcHRF4ZQpdjNPTtV/nkGmMfYpn1ze5FVxlrIlXZb6bxMNpnTeEnOw/xc9hVqqQoSNv
+         urLQ2cWN456QkJ4j0sZfOKAAIghZUEvv++f9fXi0KOWmflvtdHe6d0YC5dQu42ZwaeI+
+         rkNKp74JRb/U8e+eVzp4CXj9HkjYFWMaKdwH7/UlQcY3QIQasQRQ3VMO+odDlsR8J+kK
+         ojbSoDv+8L+GPEzEwK4tBnYqpSWIuxF5TnGQqfnHC6NvkqKbYmMdAi8pR9+5eMKM2onz
+         pTFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XKnZR1Uiyw2PN5sPoFzxBAiQwF0e221zQ+vA02UCB0Q=;
-        b=TYUCRSKQrCRvSLmfkMQ8ZFXqXsWQYu4aOIjkAJ99OEEMkZHI/5knTunCpN8SDaLfyB
-         VXp4CFGitCEigblneH/lB/o66DApU66jrfo4HHjc7e0I03Q52lYWVHwKV98mJi7f6ICG
-         X4WAyzYamjzlnJ5FYxAVRoLcbNGav+uJ7QaCvdpBANeaTKEJ2p5njk9hV/J0Mz8CT5M4
-         Y9v+4kairuX4hn1S16VUm2JB4xNfP3qbIomifa7B8UKSguYvZzRnrgKmFMzMHEdGaiNf
-         egjikx9OKCeAzXWQXDu72kSpdJnXsZB9h6aGIWxEFyLoEZsJ8iKCNK10FQjXZVI5o28P
-         grKQ==
-X-Gm-Message-State: AOAM533qaA21akb4YiWlgEO2P3CzY4V2vbbZ0dkCSm01M1o88SHnX6n2
-        HHQ98uAZR+tnpZtsBpe0uesmS5kfbfBrBfkRIgHxx6sD22c=
-X-Google-Smtp-Source: ABdhPJzJpv2xZGPVvY4Eou0BEF7mREHYpI2wRSXguuppQ/Dbxxdg85pNMxIKt32W6LE0Peu/QBDem48FNUQT4Ay+6Ns=
-X-Received: by 2002:a02:c014:0:b0:317:bbd9:839e with SMTP id
- y20-20020a02c014000000b00317bbd9839emr15464091jai.140.1647999496894; Tue, 22
- Mar 2022 18:38:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=48zLxq6Ao+u9okFonUAASL2xEfX5JzmLT/yDLCNUOZQ=;
+        b=o1NdfH+QcjhCAJKOu8r5IkwTqrRCP2O1bXQ4Q75V5VhIUXaX8PA6ZHLmj31e7ygsuI
+         Fya7h3gq3p50CnvkZskzZ4RtYWRuTjm2RqAVqmA9BjiBl/GVwNPer9tcqWLqZW/RneqM
+         UJLdsNX7/bwseFVbqoa8i1DVu0U3zKJc9gCG5jpp78qL1nwliEdpcK+f+ULrnRCBRrAu
+         kePgR0eV0W238w7UQSeq4L88RyQ32EG74wOmsM8R0hwv3nMNAY9yp2aFBikOU7Zd/69B
+         QqkW5NJV7HjVZH+2BnsE2g85szcPxPK0OeR8H0DjtonBsfNxRrGnApGlQCELI7hPcejn
+         wnEQ==
+X-Gm-Message-State: AOAM532YhjE9i0h6FNwf5+WftOWsNhGheR/L5hZ5Ds4Brh2nLX4pY/K2
+        5ycNREeH8hAcvMKDindEZHghY66DVDx6pQ==
+X-Google-Smtp-Source: ABdhPJx/ZAkayrfwEU139T55WTjHcICIjTszsq2ZKd3Fk7NzDETfBKELRuBJpehBzDUDS9KW3wtXVA==
+X-Received: by 2002:a17:902:aa0a:b0:154:9ce:366 with SMTP id be10-20020a170902aa0a00b0015409ce0366mr21614224plb.8.1648000415954;
+        Tue, 22 Mar 2022 18:53:35 -0700 (PDT)
+Received: from localhost.xiaojukeji.com ([111.201.151.228])
+        by smtp.gmail.com with ESMTPSA id z23-20020a056a001d9700b004fa8f24702csm10184924pfw.85.2022.03.22.18.53.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 22 Mar 2022 18:53:34 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>
+Subject: [net-next v2] net: core: use shared sysctl macro
+Date:   Wed, 23 Mar 2022 09:53:26 +0800
+Message-Id: <20220323015326.26478-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-References: <20220319173036.23352-1-laoar.shao@gmail.com> <YjkBkIHde+fWHw9K@carbon.dhcp.thefacebook.com>
- <CALOAHbBaRnF4g0uFdYMMJfAimfK+oQDhgshuohrLdQiKVShP+A@mail.gmail.com> <YjofCAq3chsgVv2n@carbon.dhcp.thefacebook.com>
-In-Reply-To: <YjofCAq3chsgVv2n@carbon.dhcp.thefacebook.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Wed, 23 Mar 2022 09:37:40 +0800
-Message-ID: <CALOAHbB5i71Y6cq6oy7-zdySP6wh8b1rKzKJ5+oP5WJmAMaNgQ@mail.gmail.com>
-Subject: Re: [PATCH 00/14] bpf: Allow not to charge bpf memory
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, shuah@kernel.org,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,243 +84,288 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 3:10 AM Roman Gushchin <roman.gushchin@linux.dev> w=
-rote:
->
-> On Wed, Mar 23, 2022 at 12:10:34AM +0800, Yafang Shao wrote:
-> > On Tue, Mar 22, 2022 at 6:52 AM Roman Gushchin <roman.gushchin@linux.de=
-v> wrote:
-> > >
-> > > Hello, Yafang!
-> > >
-> > > Thank you for continuing working on this!
-> > >
-> > > On Sat, Mar 19, 2022 at 05:30:22PM +0000, Yafang Shao wrote:
-> > > > After switching to memcg-based bpf memory accounting, the bpf memor=
-y is
-> > > > charged to the loader's memcg by defaut, that causes unexpected iss=
-ues for
-> > > > us. For instance, the container of the loader-which loads the bpf p=
-rograms
-> > > > and pins them on bpffs-may restart after pinning the progs and maps=
-. After
-> > > > the restart, the pinned progs and maps won't belong to the new cont=
-ainer
-> > > > any more, while they actually belong to an offline memcg left by th=
-e
-> > > > previous generation. That inconsistent behavior will make trouble f=
-or the
-> > > > memory resource management for this container.
-> > >
-> > > I'm looking at this text and increasingly feeling that it's not a bpf=
--specific
-> > > problem and it shouldn't be solved as one.
-> > >
-> >
-> > I'm not sure whether it is a common issue or not, but I'm sure bpf has
-> > its special attribute that we should handle it specifically.  I can
-> > show you an example on why bpf is a special one.
-> >
-> > The pinned bpf is similar to a kernel module, right?
-> > But that issue can't happen in a kernel module, while it can happen in
-> > bpf only.  The reason is that the kernel module has the choice on
-> > whether account the allocated memory or not, e.g.
-> >     - Account
-> >       kmalloc(size,  GFP_KERNEL | __GFP_ACCOUNT);
-> >    - Not Account
-> >       kmalloc(size, GFP_KERNEL);
-> >
-> > While the bpf has no choice because the GFP_KERNEL is a KAPI which is
-> > not exposed to the user.
->
-> But if your process opens a file, creates a pipe etc there are also
-> kernel allocations happening and the process has no control over whether
-> these allocations are accounted or not. The same applies for the anonymou=
-s
-> memory and pagecache as well, so it's not even kmem-specific.
->
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-So what is the real problem in practice ?
-Does anyone complain about it ?
+This patch introdues the SYSCTL_THREE, and replace the
+two, three and long_one to SYSCTL_XXX accordingly.
 
-[At least,  there's no behavior change in these areas.]
+ KUnit:
+ [23:03:58] ================ sysctl_test (10 subtests) =================
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_null_tbl_data
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_table_maxlen_unset
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_table_len_is_zero
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_table_read_but_position_set
+ [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_positive
+ [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_negative
+ [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_positive
+ [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_negative
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_less_int_min
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_greater_int_max
+ [23:03:58] =================== [PASSED] sysctl_test ===================
 
-> >
-> > Then the issue is exposed when the memcg-based accounting is
-> > forcefully enabled to all bpf programs. That is a behavior change,
-> > while unfortunately we don't give the user a chance to keep the old
-> > behavior unless they don't use memcg....
-> >
-> > But that is not to say the memcg-based accounting is bad, while it is
-> > really useful, but it needs to be improved. We can't expose
-> > GFP_ACCOUNT to the user, but we can expose a wrapper of GFP_ACCOUNT to
-> > the user, that's what this patchset did, like what we always have done
-> > in bpf.
-> >
-> > > Is there any significant reason why the loader can't temporarily ente=
-r the
-> > > root cgroup before creating bpf maps/progs? I know it will require so=
-me changes
-> > > in the userspace code, but so do new bpf flags.
-> > >
-> >
-> > On our k8s environment, the user agents should be deployed in a
-> > Daemonset[1].  It will make more trouble to temporarily enter the root
-> > group before creating bpf maps/progs, for example we must change the
-> > way we used to deploy user agents, that will be a big project.
->
-> I understand, however introducing new kernel interfaces to overcome such
-> things has its own downside: every introduced interface will stay pretty
-> much forever and we'll _have_ to support it. Kernel interfaces have a ver=
-y long
-> life cycle, we have to admit it.
->
-> The problem you're describing - inconsistencies on accounting of shared r=
-egions
-> of memory - is a generic cgroup problem, which has a configuration soluti=
-on:
-> the resource accounting and control should be performed on a stable level=
- and
-> actual workloads can be (re)started in sub-cgroups with optionally disabl=
-ed
-> physical controllers.
-> E.g.:
->                         /
->         workload2.slice   workload1.slice     <- accounting should be per=
-formed here
-> workload_gen1.scope workload_gen2.scope ...
->
+ ./run_kselftest.sh -c sysctl
+ ...
+ # Running test: sysctl_test_0006 - run #49
+ # Checking bitmap handler... ok
+ # Wed Mar 16 14:58:41 UTC 2022
+ # Running test: sysctl_test_0007 - run #0
+ # Boot param test only possible sysctl_test is built-in, not module:
+ # CONFIG_TEST_SYSCTL=m
+ ok 1 selftests: sysctl: sysctl.sh
 
-I think we talked about it several days earlier.
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Iurii Zaikin <yzaikin@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Simon Horman <horms@verge.net.au>
+Cc: Julian Anastasov <ja@ssi.bg>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Cc: Akhmat Karakotov <hmukos@yandex-team.ru>
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+v2: add KUnit and selftests in commit msg
+---
+ fs/proc/proc_sysctl.c          |  2 +-
+ include/linux/sysctl.h         | 13 +++++++------
+ net/core/sysctl_net_core.c     | 14 +++++---------
+ net/ipv4/sysctl_net_ipv4.c     | 16 ++++++----------
+ net/ipv6/sysctl_net_ipv6.c     |  6 ++----
+ net/netfilter/ipvs/ip_vs_ctl.c |  4 +---
+ 6 files changed, 22 insertions(+), 33 deletions(-)
 
->
-> >
-> > [1]. https://kubernetes.io/docs/concepts/workloads/controllers/daemonse=
-t/
-> >
-> > > >
-> > > > The reason why these progs and maps have to be persistent across mu=
-ltiple
-> > > > generations is that these progs and maps are also used by other pro=
-cesses
-> > > > which are not in this container. IOW, they can't be removed when th=
-is
-> > > > container is restarted. Take a specific example, bpf program for cl=
-sact
-> > > > qdisc is loaded by a agent running in a container, which not only l=
-oads
-> > > > bpf program but also processes the data generated by this program a=
-nd do
-> > > > some other maintainace things.
-> > > >
-> > > > In order to keep the charging behavior consistent, we used to consi=
-der a
-> > > > way to recharge these pinned maps and progs again after the contain=
-er is
-> > > > restarted, but after the discussion[1] with Roman, we decided to go
-> > > > another direction that don't charge them to the container in the fi=
-rst
-> > > > place. TL;DR about the mentioned disccussion: recharging is not a g=
-eneric
-> > > > solution and it may take too much risk.
-> > > >
-> > > > This patchset is the solution of no charge. Two flags are introduce=
-d in
-> > > > union bpf_attr, one for bpf map and another for bpf prog. The user =
-who
-> > > > doesn't want to charge to current memcg can use these two flags. Th=
-ese two
-> > > > flags are only permitted for sys admin as these memory will be acco=
-unted to
-> > > > the root memcg only.
-> > >
-> > > If we're going with bpf-specific flags (which I'd prefer not to), let=
-'s
-> > > define them as the way to create system-wide bpf objects which are ex=
-pected
-> > > to outlive the original cgroup. With expectations that they will be t=
-reated
-> > > as belonging to the root cgroup by any sort of existing or future res=
-ource
-> > > accounting (e.g. if we'll start accounting CPU used by bpf prgrams).
-> > >
-> >
-> > Now that talking about the cpu resource, I have some more complaints
-> > that cpu cgroup does really better than memory cgroup. Below is the
-> > detailed information why cpu cgroup does a good job,
-> >
-> >    - CPU
-> >                         Task Cgroup
-> >       Code          CPU time is accounted to the one who is executeING
-> >  this code
-> >
-> >    - Memory
-> >                          Memory Cgroup
-> >       Data           Memory usage is accounted to the one who
-> > allocatED this data.
-> >
-> > Have you found the difference?
->
-> Well, RAM is a vastly different thing than CPU :)
-> They have different physical properties and corresponding accounting limi=
-tations.
->
-> > The difference is that, cpu time is accounted to the one who is using
-> > it (that is reasonable), while memory usage is accounted to the one
-> > who allocated it (that is unreasonable). If we split the Data/Code
-> > into private and shared, we can find why it is unreasonable.
-> >
-> >                                 Memory Cgroup
-> > Private Data           Private and thus accounted to one single memcg, =
-good.
-> > Shared Data           Shared but accounted to one single memcg, bad.
-> >
-> >                                 Task Cgroup
-> > Private Code          Private and thus accounted to one single task gro=
-up, good.
-> > Shared Code          Shared and thus accounted to all the task groups, =
-good.
-> >
-> > The pages are accounted when they are allocated rather than when they
-> > are used, that is why so many ridiculous things happen.   But we have
-> > a common sense that we can=E2=80=99t dynamically charge the page to the
-> > process who is accessing it, right?  So we have to handle the issues
-> > caused by shared pages case by case.
->
-> The accounting of shared regions of memory is complex because of two
-> physical limitations:
->
-> 1) Amount of (meta)data which we can be used to track ownership. We expec=
-t
-> the memory overhead be small in comparison to the accounted data. If a pa=
-ge
-> is used by many cgroups, even saving a single pointer to each cgroup can =
-take
-> a lot of space. Even worse for slab objects. At some point it stops makin=
-g
-> sense: if the accounting takes more memory than the accounted memory, it'=
-s
-> better to not account at all.
->
-> 2) CPU overhead: tracking memory usage beyond the initial allocation adds
-> an overhead to some very hot paths. Imagine two processes mapping the sam=
-e file,
-> first processes faults in the whole file and the second just uses the pag=
-ecache.
-> Currently it's very efficient. Causing the second process to change the o=
-wnership
-> information on each minor page fault will lead to a performance regressio=
-n.
-> Think of libc binary as this file.
->
-> That said, I'm not saying it can't be done better that now. But it's a co=
-mplex
-> problem.
->
+diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
+index 7d9cfc730bd4..0bdd9249666b 100644
+--- a/fs/proc/proc_sysctl.c
++++ b/fs/proc/proc_sysctl.c
+@@ -26,7 +26,7 @@ static const struct file_operations proc_sys_dir_file_operations;
+ static const struct inode_operations proc_sys_dir_operations;
+ 
+ /* shared constants to be used in various sysctls */
+-const int sysctl_vals[] = { -1, 0, 1, 2, 4, 100, 200, 1000, 3000, INT_MAX, 65535 };
++const int sysctl_vals[] = { -1, 0, 1, 2, 3, 4, 100, 200, 1000, 3000, INT_MAX, 65535 };
+ EXPORT_SYMBOL(sysctl_vals);
+ 
+ const unsigned long sysctl_long_vals[] = { 0, 1, LONG_MAX };
+diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
+index 6353d6db69b2..b2ac6542455f 100644
+--- a/include/linux/sysctl.h
++++ b/include/linux/sysctl.h
+@@ -42,12 +42,13 @@ struct ctl_dir;
+ #define SYSCTL_ZERO			((void *)&sysctl_vals[1])
+ #define SYSCTL_ONE			((void *)&sysctl_vals[2])
+ #define SYSCTL_TWO			((void *)&sysctl_vals[3])
+-#define SYSCTL_FOUR			((void *)&sysctl_vals[4])
+-#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[5])
+-#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[6])
+-#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[7])
+-#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[8])
+-#define SYSCTL_INT_MAX			((void *)&sysctl_vals[9])
++#define SYSCTL_THREE			((void *)&sysctl_vals[4])
++#define SYSCTL_FOUR			((void *)&sysctl_vals[5])
++#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[6])
++#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[7])
++#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[8])
++#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[9])
++#define SYSCTL_INT_MAX			((void *)&sysctl_vals[10])
+ 
+ /* this is needed for the proc_dointvec_minmax for [fs_]overflow UID and GID */
+ #define SYSCTL_MAXOLDUID		((void *)&sysctl_vals[10])
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 7123fe7feeac..6ea51c155860 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -23,14 +23,10 @@
+ #include <net/busy_poll.h>
+ #include <net/pkt_sched.h>
+ 
+-static int two = 2;
+-static int three = 3;
+ static int int_3600 = 3600;
+ static int min_sndbuf = SOCK_MIN_SNDBUF;
+ static int min_rcvbuf = SOCK_MIN_RCVBUF;
+ static int max_skb_frags = MAX_SKB_FRAGS;
+-static long long_one __maybe_unused = 1;
+-static long long_max __maybe_unused = LONG_MAX;
+ 
+ static int net_msg_warn;	/* Unused, but still a sysctl */
+ 
+@@ -388,7 +384,7 @@ static struct ctl_table net_core_table[] = {
+ 		.extra2		= SYSCTL_ONE,
+ # else
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ # endif
+ 	},
+ # ifdef CONFIG_HAVE_EBPF_JIT
+@@ -399,7 +395,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0600,
+ 		.proc_handler	= proc_dointvec_minmax_bpf_restricted,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "bpf_jit_kallsyms",
+@@ -417,7 +413,7 @@ static struct ctl_table net_core_table[] = {
+ 		.maxlen		= sizeof(long),
+ 		.mode		= 0600,
+ 		.proc_handler	= proc_dolongvec_minmax_bpf_restricted,
+-		.extra1		= &long_one,
++		.extra1		= SYSCTL_LONG_ONE,
+ 		.extra2		= &bpf_jit_limit_max,
+ 	},
+ #endif
+@@ -544,7 +540,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "devconf_inherit_init_net",
+@@ -553,7 +549,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "high_order_alloc_disable",
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index ad80d180b60b..cd448cdd3b38 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -20,10 +20,6 @@
+ #include <net/protocol.h>
+ #include <net/netevent.h>
+ 
+-static int two = 2;
+-static int three __maybe_unused = 3;
+-static int four = 4;
+-static int thousand = 1000;
+ static int tcp_retr1_max = 255;
+ static int ip_local_port_range_min[] = { 1, 1 };
+ static int ip_local_port_range_max[] = { 65535, 65535 };
+@@ -1006,7 +1002,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "tcp_max_syn_backlog",
+@@ -1059,7 +1055,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_fib_multipath_hash_policy,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "fib_multipath_hash_fields",
+@@ -1117,7 +1113,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &four,
++		.extra2		= SYSCTL_FOUR,
+ 	},
+ 	{
+ 		.procname	= "tcp_recovery",
+@@ -1310,7 +1306,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &thousand,
++		.extra2		= SYSCTL_ONE_THOUSAND,
+ 	},
+ 	{
+ 		.procname	= "tcp_pacing_ca_ratio",
+@@ -1319,7 +1315,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &thousand,
++		.extra2		= SYSCTL_ONE_THOUSAND,
+ 	},
+ 	{
+ 		.procname	= "tcp_wmem",
+@@ -1391,7 +1387,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{ }
+ };
+diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+index d53dd142bf87..94a0a294c6a1 100644
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@ -23,8 +23,6 @@
+ #endif
+ #include <linux/ioam6.h>
+ 
+-static int two = 2;
+-static int three = 3;
+ static int flowlabel_reflect_max = 0x7;
+ static int auto_flowlabels_max = IP6_AUTO_FLOW_LABEL_MAX;
+ static u32 rt6_multipath_hash_fields_all_mask =
+@@ -172,7 +170,7 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler   = proc_rt6_multipath_hash_policy,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "fib_multipath_hash_fields",
+@@ -197,7 +195,7 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1         = SYSCTL_ZERO,
+-		.extra2         = &two,
++		.extra2         = SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "ioam6_id",
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 7f645328b47f..efab2b06d373 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -1767,8 +1767,6 @@ static int ip_vs_zero_all(struct netns_ipvs *ipvs)
+ 
+ #ifdef CONFIG_SYSCTL
+ 
+-static int three = 3;
+-
+ static int
+ proc_do_defense_mode(struct ctl_table *table, int write,
+ 		     void *buffer, size_t *lenp, loff_t *ppos)
+@@ -1977,7 +1975,7 @@ static struct ctl_table vs_vars[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "nat_icmp_send",
+-- 
+2.27.0
 
-Memcg-based accounting is also complex, but it introduces user visible
-behavior change now :(
-
---=20
-Thanks
-Yafang
