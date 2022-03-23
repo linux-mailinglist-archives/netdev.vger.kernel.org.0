@@ -2,91 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51A664E59B2
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 21:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A3384E59D4
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 21:30:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344581AbiCWUQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 16:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43726 "EHLO
+        id S1344633AbiCWUcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 16:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242759AbiCWUQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 16:16:21 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7CA56450;
-        Wed, 23 Mar 2022 13:14:51 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id m22so2832578pja.0;
-        Wed, 23 Mar 2022 13:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=sYah4SQ6W5gTXb2skvrUwE0UEgeqEkzpL8l65r/35FQ=;
-        b=f4+4CT/zI9xJEEoy/SkNPQFcM1czgdB+qToPtmg8m8QF9UoEI0jQPib+phZG29WBnb
-         xQy/7GquJnndMlwh19dUdFJyRDGnPIM+CE8fCRwgKrbP6mSOgqQLdabluFHQTcn6yMBD
-         NNXPxFP2jmoXQUQynMLEMWWYMV7jzRfl+EJ0dDgSE49QtZNuWgKbyUZZbtk/Cpcf7sga
-         GXLTKnmUSLZDTbvbIC22PwYgb9pS0imbne8DB/AjafWQQKlsDADCklDS4HvvIZv2Vc20
-         jCSuYkxNiXzn6j6dz+5zJ1Bp5BlQGCNFHj5qghRC4JEY8DcUfWKy07xU29PVQR3OijrX
-         qiAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=sYah4SQ6W5gTXb2skvrUwE0UEgeqEkzpL8l65r/35FQ=;
-        b=v3oL9BsK50PHEO8pd8/dg6SI1ECTyf/AzNKpVQDWYWXmZQdEUZc+8AYJyz+PCFYOeL
-         PSL+BAzoPf4nZDJREq7xxxoG9v8F5SjUbgYv45DBNoxP4vnzhh1+5scrQG9yn1u0cXqA
-         iiAUGVaz9cqyE/uY9+YMj1I3NZe7LkRYZJjk7gbTI7TX8KFahFfRSzDapK5jOmIOF86X
-         N+PTrA1m8GJNn/uk1j2WgLqWOX1Sa3aYIZGpsAuNtXRlpWv8JbvWy02zDL3+4Nlyq0Au
-         nJDDbg/WIHsimdrhAk90wDdxjDmQ1EGH8ncQWDz+cxqBpykkMg6/i0J8IvCYv1oo0Ib3
-         Mt1w==
-X-Gm-Message-State: AOAM531U8pPa1PcwqMNIB10dOvxBRQkJNyQXboknWxJzsfW/CZie/tg5
-        WRfBXxAfCaqRLS9PiN9K8e4=
-X-Google-Smtp-Source: ABdhPJzZE6U1gBg7GK3BXfNCNRtxNBr8VckFk+ezjoOV4N65Y9oyrSaeDmvOiO4HGY7Ye89RNB9FVA==
-X-Received: by 2002:a17:90a:ca06:b0:1c6:6af7:db3 with SMTP id x6-20020a17090aca0600b001c66af70db3mr1592461pjt.217.1648066491303;
-        Wed, 23 Mar 2022 13:14:51 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a5-20020a621a05000000b004f79f8f795fsm844289pfa.0.2022.03.23.13.14.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 13:14:50 -0700 (PDT)
-Message-ID: <3b695cb6-c0f9-a099-273a-cee14f287163@gmail.com>
-Date:   Wed, 23 Mar 2022 13:14:47 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RFC net-next 3/5] net: phy: mscc-miim: add
- probe_capabilities
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S234460AbiCWUcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 16:32:20 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB1D8878E;
+        Wed, 23 Mar 2022 13:30:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=/P+1boOsbCQ6AVBVCSZ/z5hphLHXogBYDH2FQO7KmI4=; b=Ve7FKq/JIk+7trK6q3RWgSvlnS
+        CrLHPojrgili7GrvVHfgwtk8st5K1uZU3yc0M2ag1k7eKYuAezQJZSLfvd38TXJ+CJqTKqZQyoCTZ
+        MdFb4I9j+y0/A8L7pN2t2qd6ftDI59koFx3nbQtPMOFXqAfJAesd3R6FaTdxA0C00l9Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nX7cs-00CL1M-RO; Wed, 23 Mar 2022 21:30:38 +0100
+Date:   Wed, 23 Mar 2022 21:30:38 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Xu Liang <lxu@maxlinear.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 0/5] net: phy: C45-over-C22 access
+Message-ID: <YjuDbqZom8knPVpm@lunn.ch>
 References: <20220323183419.2278676-1-michael@walle.cc>
- <20220323183419.2278676-4-michael@walle.cc>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220323183419.2278676-4-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323183419.2278676-1-michael@walle.cc>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/23/22 11:34, Michael Walle wrote:
-> The driver is currently only capable of doing c22 accesses. Add the
-> corresponding probe_capabilities.
+On Wed, Mar 23, 2022 at 07:34:14PM +0100, Michael Walle wrote:
+> Hi,
 > 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+> This is the result of this discussion:
+> https://lore.kernel.org/netdev/240354b0a54b37e8b5764773711b8aa3@walle.cc/
+> 
+> The goal here is to get the GYP215 and LAN8814 running on the Microchip
+> LAN9668 SoC. The LAN9668 suppports one external bus and unfortunately, the
+> LAN8814 has a bug which makes it impossible to use C45 on that bus.
+> Fortunately, it was the intention of the GPY215 driver to be used on a C22
+> bus. But I think this could have never really worked, because the
+> phy_get_c45_ids() will always do c45 accesses and thus on MDIO bus drivers
+> which will correctly check for the MII_ADDR_C45 flag and return -EOPNOTSUPP
+> the function call will fail and thus gpy_probe() will fail. This series
+> tries to fix that and will lay the foundation to add a workaround for the
+> LAN8814 bug by forcing an MDIO bus to be c22-only.
+> 
+> At the moment, the probe_capabilities is taken into account to decide if
+> we have to use C45-over-C22. What is still missing from this series is the
+> handling of a device tree property to restrict the probe_capabilities to
+> c22-only.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+We have a problem here with phydev->is_c45.
+
+In phy-core.c, functions __phy_read_mmd() and __phy_write_mmd() it
+means perform c45 transactions over the bus. We know we want to access
+a register in c45 space because we are using an _mmd() function.
+
+In phy.c, it means does this PHY have c45 registers and we should
+access that register space, or should we use the c22 register
+space. So far example phy_restart_aneg() decides to either call
+genphy_c45_restart_aneg() or genphy_restart_aneg() depending on
+is_c45.
+
+So a PHY with C45 register space but only accessible by C45 over C22
+is probably going to do the wrong thing with the current code.
+
+For this patchset to work, we need to cleanly separate the concepts of
+what sort of transactions to do over the bus, from what register
+spaces the PHY has. We probably want something like phydev->has_c45 to
+indicate the register space is implemented, and phydev->c45_over_c22
+to indicate what sort of transaction should be used in the _mmd()
+functions.
+
+Your patches start in that direction, but i don't think it goes far
+enough.
+
+	Andrew
