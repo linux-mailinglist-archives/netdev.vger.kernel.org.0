@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD37F4E51E7
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 13:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79ED84E51EA
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 13:10:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242599AbiCWMMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 08:12:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
+        id S243293AbiCWMML (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 08:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242989AbiCWMME (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 08:12:04 -0400
+        with ESMTP id S242743AbiCWMMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 08:12:10 -0400
 Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0EE043E5E1;
-        Wed, 23 Mar 2022 05:10:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6444C3EF0B;
+        Wed, 23 Mar 2022 05:10:37 -0700 (PDT)
 HMM_SOURCE_IP: 172.18.0.48:39292.1744386625
 HMM_ATTACHE_NUM: 0000
 HMM_SOURCE_TYPE: SMTP
 Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id 125AB280099;
-        Wed, 23 Mar 2022 20:10:28 +0800 (CST)
+        by chinatelecom.cn (HERMES) with SMTP id 006A6280096;
+        Wed, 23 Mar 2022 20:10:33 +0800 (CST)
 X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
 Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id ccaaf357fcfc45afb99e515e79688f1d for j.vosburgh@gmail.com;
-        Wed, 23 Mar 2022 20:10:32 CST
-X-Transaction-ID: ccaaf357fcfc45afb99e515e79688f1d
+        by app0024 with ESMTP id 276ae1b2306842268f39292b7fe3135a for j.vosburgh@gmail.com;
+        Wed, 23 Mar 2022 20:10:37 CST
+X-Transaction-ID: 276ae1b2306842268f39292b7fe3135a
 X-Real-From: sunshouxin@chinatelecom.cn
 X-Receive-IP: 172.18.0.48
 X-MEDUSA-Status: 0
@@ -35,9 +35,9 @@ To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
         yoshfuji@linux-ipv6.org, dsahern@kernel.org, oliver@neukum.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         huyd12@chinatelecom.cn, sunshouxin@chinatelecom.cn
-Subject: [PATCH v6 2/4] net:ipv6:Refactor ndisc_send_na to support sending na by slave directly
-Date:   Wed, 23 Mar 2022 08:09:04 -0400
-Message-Id: <20220323120906.42692-3-sunshouxin@chinatelecom.cn>
+Subject: [PATCH v6 3/4] net:ipv6:Export inet6_ifa_finish_destroy and ipv6_get_ifaddr
+Date:   Wed, 23 Mar 2022 08:09:05 -0400
+Message-Id: <20220323120906.42692-4-sunshouxin@chinatelecom.cn>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
 References: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
@@ -52,108 +52,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor ndisc_send_na to support sending na by slave directly.
+Export inet6_ifa_finish_destroy and ipv6_get_ifaddr for bonding usage.
 
 Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
 ---
- include/net/ndisc.h |  6 +++++
- net/ipv6/ndisc.c    | 55 +++++++++++++++++++++++++++++++++------------
- 2 files changed, 47 insertions(+), 14 deletions(-)
+ net/ipv6/addrconf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/net/ndisc.h b/include/net/ndisc.h
-index 24cf6e92fecc..e71702a44a3d 100644
---- a/include/net/ndisc.h
-+++ b/include/net/ndisc.h
-@@ -107,6 +107,12 @@ struct nd_opt_hdr {
- 	__u8		nd_opt_len;
- } __packed;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index bb1912eacd90..6825d70c34fb 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -975,6 +975,7 @@ void inet6_ifa_finish_destroy(struct inet6_ifaddr *ifp)
  
-+struct nd_sendinfo {
-+	__u16 vlanid;
-+	void *mac_dst;
-+	const void *mac_src;
-+};
-+
- /* ND options */
- struct ndisc_options {
- 	struct nd_opt_hdr *nd_opt_array[__ND_OPT_ARRAY_MAX];
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index f7bd7082abb4..47875aab86e5 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -526,22 +526,29 @@ void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
- 	struct inet6_ifaddr *ifp;
- 	const struct in6_addr *src_addr;
- 	struct nd_msg *msg;
-+	struct nd_sendinfo *sendinfo = data;
-+	struct net *net = dev_net(dev);
-+	struct sock *sk = net->ipv6.ndisc_sk;
- 	int optlen = 0;
- 
--	/* for anycast or proxy, solicited_addr != src_addr */
--	ifp = ipv6_get_ifaddr(dev_net(dev), solicited_addr, dev, 1);
--	if (ifp) {
--		src_addr = solicited_addr;
--		if (ifp->flags & IFA_F_OPTIMISTIC)
--			override = false;
--		inc_opt |= ifp->idev->cnf.force_tllao;
--		in6_ifa_put(ifp);
-+	if (!sendinfo) {
-+		/* for anycast or proxy, solicited_addr != src_addr */
-+		ifp = ipv6_get_ifaddr(dev_net(dev), solicited_addr, dev, 1);
-+		if (ifp) {
-+			src_addr = solicited_addr;
-+			if (ifp->flags & IFA_F_OPTIMISTIC)
-+				override = false;
-+			inc_opt |= ifp->idev->cnf.force_tllao;
-+			in6_ifa_put(ifp);
-+		} else {
-+			if (ipv6_dev_get_saddr(dev_net(dev), dev, daddr,
-+					       inet6_sk(dev_net(dev)->ipv6.ndisc_sk)->srcprefs,
-+					       &tmpaddr))
-+				return;
-+			src_addr = &tmpaddr;
-+		}
- 	} else {
--		if (ipv6_dev_get_saddr(dev_net(dev), dev, daddr,
--				       inet6_sk(dev_net(dev)->ipv6.ndisc_sk)->srcprefs,
--				       &tmpaddr))
--			return;
--		src_addr = &tmpaddr;
-+		src_addr = solicited_addr;
- 	}
- 
- 	if (!dev->addr_len)
-@@ -569,8 +576,28 @@ void ndisc_send_na(struct net_device *dev, const struct in6_addr *daddr,
- 		ndisc_fill_addr_option(skb, ND_OPT_TARGET_LL_ADDR,
- 				       dev->dev_addr,
- 				       NDISC_NEIGHBOUR_ADVERTISEMENT);
-+	if (!sendinfo) {
-+		ndisc_send_skb(skb, daddr, src_addr);
-+	} else {
-+		if (sendinfo->vlanid)
-+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-+					       sendinfo->vlanid);
-+
-+		msg->icmph.icmp6_cksum = csum_ipv6_magic(src_addr, daddr, skb->len,
-+							 IPPROTO_ICMPV6,
-+							 csum_partial(&msg->icmph,
-+								      skb->len, 0));
- 
--	ndisc_send_skb(skb, daddr, src_addr);
-+		ip6_nd_hdr(skb, src_addr, daddr, inet6_sk(sk)->hop_limit, skb->len);
-+
-+		skb->protocol = htons(ETH_P_IPV6);
-+		skb->dev = dev;
-+		if (dev_hard_header(skb, dev, ETH_P_IPV6, sendinfo->mac_dst,
-+				    sendinfo->mac_src, skb->len) < 0)
-+			return;
-+
-+		dev_queue_xmit(skb);
-+	}
+ 	kfree_rcu(ifp, rcu);
  }
++EXPORT_SYMBOL(inet6_ifa_finish_destroy);
  
- static void ndisc_send_unsol_na(struct net_device *dev)
+ static void
+ ipv6_link_dev_addr(struct inet6_dev *idev, struct inet6_ifaddr *ifp)
+@@ -2037,6 +2038,7 @@ struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net, const struct in6_addr *add
+ 
+ 	return result;
+ }
++EXPORT_SYMBOL(ipv6_get_ifaddr);
+ 
+ /* Gets referenced address, destroys ifaddr */
+ 
 -- 
 2.27.0
 
