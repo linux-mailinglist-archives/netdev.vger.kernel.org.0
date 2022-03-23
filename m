@@ -2,125 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 630294E4A25
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 01:42:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15AAC4E4A3D
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 01:55:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237254AbiCWAn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 20:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
+        id S240489AbiCWA5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 20:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235042AbiCWAn3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 20:43:29 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268D16F490
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 17:41:53 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id p17so110692plo.9
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 17:41:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=G/p0PBNg4dEvZZdMOPc8ADEFCTxd+e0LJg9ienvfqRQ=;
-        b=R2XAJRIElru74UMX8bGPkvfxkFznzwzVbv4KUM6qCrVR3y1lCaxa9U+SM2zNkjYJSJ
-         q3L/RZBa6iVlL4r8znaXf2DtdqFSJGCJsoYKVqEbGB/1jSuHc0MSTTZjCA7Y+AW1VpJT
-         G3UcjyxamHCly9Cg+4SbqlzvWM0Au9wxDLgdmTLHhQbakmLKgNjbphsbsKfGM/FuOyZO
-         d5CoYWdDzfk8PDXI6sJrEwYhQeAEcxHsIhi7aVkpOTbmWIKjWpN8Mv0ssujbRwgUFGge
-         CnTCjorl9G7h+R6Ji2IjjaMAX/vFbdS9vsaa/PFI3fl8kveVqjOFV/2LWYvMCSKoeFVZ
-         aMpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=G/p0PBNg4dEvZZdMOPc8ADEFCTxd+e0LJg9ienvfqRQ=;
-        b=kWuqf+38VSa8gbUBYQPVhYmmZhaZURYrnGCaaR0JsQbDzU1G/ruTuPBhbW0tS2+VDm
-         fXXpORyyYkCcVDk37is5SBraxZnRD/9I85bcVl+Z+U2b4cVckz/K3il4Buv9oFW6eohU
-         9bPmSWvS8PUztzhjNGqI7xIW4h5xSWDcOkg/0HgiUU09GzHaxXkSG3+nloKeevFBj54Y
-         9q54pEUihRKsHJLk0TyA31ijqD2WD9ZPxAv8SeEp9a0jmQfK+z9X66AbR+lXgJrFth5p
-         OsP1sckMf6cVzRpqMqhov8He7F+XI8HQEuwaAgaWPJaoQZgXO+Hlaf8MHoT7ZbroUu/o
-         7BDQ==
-X-Gm-Message-State: AOAM530qL31YH1WD20+7pa8aD3MyRADKGAhNEDGVKlafN2XHOuIi6gHc
-        QxLMIUM2YFzyVoCJY2Jv8qI=
-X-Google-Smtp-Source: ABdhPJwiStIKbVRgeVTsQ+tRYFjKIb2n+jskZ6pQPvY91atmRaljBS/nLr1paqoZ6h5VSDwHDMDk7w==
-X-Received: by 2002:a17:902:ecca:b0:154:8802:7cc2 with SMTP id a10-20020a170902ecca00b0015488027cc2mr5895413plh.37.1647996112077;
-        Tue, 22 Mar 2022 17:41:52 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:3cb4:8c88:992d:f1b2])
-        by smtp.gmail.com with ESMTPSA id u15-20020a056a00098f00b004faa58d44eesm8262170pfg.145.2022.03.22.17.41.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Mar 2022 17:41:51 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        =?UTF-8?q?=E8=B5=B5=E5=AD=90=E8=BD=A9?= <beraphin@gmail.com>,
-        Stoyan Manolov <smanolov@suse.de>
-Subject: [PATCH net-next] llc: fix netdevice reference leaks in llc_ui_bind()
-Date:   Tue, 22 Mar 2022 17:41:47 -0700
-Message-Id: <20220323004147.1990845-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
+        with ESMTP id S241008AbiCWA5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 20:57:07 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56CAD22BC4
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 17:55:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1647996939; x=1679532939;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=KDkOHuQ5GZPHGouYErVB7MxMz0ACSUOr3jgxtugP31Q=;
+  b=MMfG93Ksk84FwUQgVorA9KEWsVS+Kv/BNGKqJH6Rw0Vy6JQCIGx4I8MN
+   svhh9gEgSlwK1UKmA61LboAsmow0k4j/zVQCtGalWAv8x+WccWFEjnrYv
+   rz7JAb+pzghTA1OoR0BDbB8n/wR9daPyzpjQtfOIP8EBq0U+KK6SwsSww
+   kVTcEkQOMXQMGgahgVs9dClvkxflGV+D5EPATat2Yq5yATmzRIyoMUSNG
+   lF6PRm8zdfyR4uBigHrIkMY3NJF0OvuTBGMtyS0ufOM9IfcU2T5JR0rJ7
+   r4y/9XR5a1I5fRcc9pkOaeE2O78nxqvtR/TP2Ch4Sdjo02lEru3sI/fwg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="255553604"
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="255553604"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 17:55:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="785611139"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 22 Mar 2022 17:55:36 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWpHj-000JSx-QG; Wed, 23 Mar 2022 00:55:35 +0000
+Date:   Wed, 23 Mar 2022 08:54:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, mlichvar@redhat.com,
+        vinicius.gomes@intel.com, netdev@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: Re: [PATCH net-next v1 5/6] ptp: Support late timestamp determination
+Message-ID: <202203230801.KMxkRkMZ-lkp@intel.com>
+References: <20220322210722.6405-6-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322210722.6405-6-gerhard@engleder-embedded.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi Gerhard,
 
-Whenever llc_ui_bind() and/or llc_ui_autobind()
-took a reference on a netdevice but subsequently fail,
-they must properly release their reference
-or risk the infamous message from unregister_netdevice()
-at device dismantle.
+Thank you for the patch! Yet something to improve:
 
-unregister_netdevice: waiting for eth0 to become free. Usage count = 3
+[auto build test ERROR on net-next/master]
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: 赵子轩 <beraphin@gmail.com>
-Reported-by: Stoyan Manolov <smanolov@suse.de>
----
+url:    https://github.com/0day-ci/linux/commits/Gerhard-Engleder/ptp-Support-hardware-clocks-with-additional-free-running-time/20220323-051003
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 4a0cb83ba6e0cd73a50fa4f84736846bf0029f2b
+config: microblaze-randconfig-r022-20220321 (https://download.01.org/0day-ci/archive/20220323/202203230801.KMxkRkMZ-lkp@intel.com/config)
+compiler: microblaze-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/754e870cb9699166113d6ea383e48b0207165c1a
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Gerhard-Engleder/ptp-Support-hardware-clocks-with-additional-free-running-time/20220323-051003
+        git checkout 754e870cb9699166113d6ea383e48b0207165c1a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=microblaze SHELL=/bin/bash drivers/spi/
 
-This can be applied on net tree, depending on how network maintainers
-plan to push the fix to Linus, this is obviously a stable candidate.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
- net/llc/af_llc.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+All errors (new ones prefixed by >>):
 
-diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
-index 26c00ebf4fbae4d7dc1c27d180385470fa252be0..c86256064743523f0621f21d5d023956cf1df9a0 100644
---- a/net/llc/af_llc.c
-+++ b/net/llc/af_llc.c
-@@ -311,6 +311,10 @@ static int llc_ui_autobind(struct socket *sock, struct sockaddr_llc *addr)
- 	sock_reset_flag(sk, SOCK_ZAPPED);
- 	rc = 0;
- out:
-+	if (rc) {
-+		dev_put_track(llc->dev, &llc->dev_tracker);
-+		llc->dev = NULL;
-+	}
- 	return rc;
- }
- 
-@@ -408,6 +412,10 @@ static int llc_ui_bind(struct socket *sock, struct sockaddr *uaddr, int addrlen)
- out_put:
- 	llc_sap_put(sap);
- out:
-+	if (rc) {
-+		dev_put_track(llc->dev, &llc->dev_tracker);
-+		llc->dev = NULL;
-+	}
- 	release_sock(sk);
- 	return rc;
- }
+   In file included from drivers/spi/spi.c:36:
+>> include/linux/ptp_clock_kernel.h:418:1: error: expected identifier or '(' before '{' token
+     418 | { return 0; }
+         | ^
+   include/linux/ptp_clock_kernel.h:415:23: warning: 'ptp_get_timestamp' declared 'static' but never defined [-Wunused-function]
+     415 | static inline ktime_t ptp_get_timestamp(int index,
+         |                       ^~~~~~~~~~~~~~~~~
+
+
+vim +418 include/linux/ptp_clock_kernel.h
+
+   404	
+   405	/**
+   406	 * ptp_convert_timestamp() - convert timestamp to a ptp vclock time
+   407	 *
+   408	 * @hwtstamp:     timestamp
+   409	 * @vclock_index: phc index of ptp vclock.
+   410	 *
+   411	 * Returns converted timestamp, or 0 on error.
+   412	 */
+   413	ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index);
+   414	#else
+   415	static inline ktime_t ptp_get_timestamp(int index,
+   416						const struct skb_shared_hwtstamps *hwtstamps,
+   417						bool cycles);
+ > 418	{ return 0; }
+   419	static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
+   420	{ return 0; }
+   421	static inline ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp,
+   422						    int vclock_index)
+   423	{ return 0; }
+   424	
+
 -- 
-2.35.1.894.gb6a874cedc-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
