@@ -2,110 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B023E4E53B8
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 14:58:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0483A4E53D1
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 15:00:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244548AbiCWOAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 10:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
+        id S244581AbiCWOCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 10:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241517AbiCWOAG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 10:00:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1ED7322290
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 06:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648043916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NPsFKWBDc285bGf4fkPtm66sH099xvtiav0N2gh4FPU=;
-        b=GaL2dwQWRT2fRFMWvcDzObQji9OoNdcP3Q4lAchoT9CoYVn++Ch0l5SuvkTyIN4CbzGoOA
-        //kerV4lhnLxQhzz4X/lBHWUXk6RGL4M9zhmKZkvnDudaGZ7lVi697Xn52z1aInh6Ld8bx
-        jqT3xuKZFxMnnDwk84pbYy+Aje0PA40=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-587-99w9fyUfPM-3XaVeV6T16Q-1; Wed, 23 Mar 2022 09:58:33 -0400
-X-MC-Unique: 99w9fyUfPM-3XaVeV6T16Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S244576AbiCWOCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 10:02:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51437DE27;
+        Wed, 23 Mar 2022 07:00:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7A075106655B;
-        Wed, 23 Mar 2022 13:58:32 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.40.192.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6C2B403D1A3;
-        Wed, 23 Mar 2022 13:58:30 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     poros@redhat.com, mschmidt@redhat.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] ice: Fix MAC address setting
-Date:   Wed, 23 Mar 2022 14:58:29 +0100
-Message-Id: <20220323135829.4015645-1-ivecera@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5EFD616CC;
+        Wed, 23 Mar 2022 14:00:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350A9C340F3;
+        Wed, 23 Mar 2022 14:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648044043;
+        bh=0iSclD+CWJo049DAjnNmpJPmyTaLxoM33bJuF/qUYIU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jZ+K6QtSrHhnIoImw542na484JXIO49e49FdbBKfgDnU5cncgJ2q8UUGU82ue/Xbi
+         KAB+CmdOZ1X58l9kDuVnAV9HtUnKQWpMdvJdL4MVp26ta3q7x+dYSIxNv75EuUBIfF
+         cVZxZT/djEZBclgGulDEdZz5nxnPV0ScYwTcKmYB5egJ+ACg2iQobgStpUYixiggOT
+         /bqOkJBeAEEnn1gxH8JkMFC+PaRxdRLS/mjB5t3vsKKtQ8rNQIeiiA8hyUCDzA8Z5H
+         R3KyQFS7jNouiuGR3lC1pit1u7VdnnNzQ9MzIylbB/nKj2JazUYeCK28O2WomIamp9
+         m0qjKUg8PACOg==
+Received: by mail-ej1-f45.google.com with SMTP id bi12so3051224ejb.3;
+        Wed, 23 Mar 2022 07:00:43 -0700 (PDT)
+X-Gm-Message-State: AOAM533qFgNHYhwYACkcGvj9NbPZg1reJSgLkqT0WM9NWg76p3mGnHj6
+        ByvpNj37Rh5tZQqeylqOjMe44QuDP78EEGcf6Q==
+X-Google-Smtp-Source: ABdhPJzJCX1fd6x6XUQvELujRx+GXFcimDLm2YbxSHA7op+nKKjo5EIzA07JjYkwARfwQ/qJhXNGyMd50X5K9s9lP8M=
+X-Received: by 2002:a17:907:1c1b:b0:6e0:6618:8ac with SMTP id
+ nc27-20020a1709071c1b00b006e0661808acmr109252ejc.82.1648044041365; Wed, 23
+ Mar 2022 07:00:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <20220314075713.29140-1-biao.huang@mediatek.com> <20220314075713.29140-6-biao.huang@mediatek.com>
+In-Reply-To: <20220314075713.29140-6-biao.huang@mediatek.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 23 Mar 2022 09:00:29 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+6XKvS5RcE6j9vRd3JL-Wbi-O6BrcoGQ5xV0Q2ZG8EMw@mail.gmail.com>
+Message-ID: <CAL_Jsq+6XKvS5RcE6j9vRd3JL-Wbi-O6BrcoGQ5xV0Q2ZG8EMw@mail.gmail.com>
+Subject: Re: [PATCH net-next v13 5/7] net: dt-bindings: dwmac: Convert
+ mediatek-dwmac to DT schema
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "moderated list:ARM/STM32 ARCHITECTURE" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        srv_heupstream <srv_heupstream@mediatek.com>,
+        Macpaul Lin <macpaul.lin@mediatek.com>, dkirjanov@suse.de
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
-the usage of 'status' and 'err' variables into single one in
-function ice_set_mac_address(). Unfortunately this causes
-a regression when call of ice_fltr_add_mac() returns -EEXIST because
-this return value does not indicate an error in this case but
-value of 'err' value remains to be -EEXIST till the end of
-the function and is returned to caller.
+On Mon, Mar 14, 2022 at 2:57 AM Biao Huang <biao.huang@mediatek.com> wrote:
+>
+> Convert mediatek-dwmac to DT schema, and delete old mediatek-dwmac.txt.
+> And there are some changes in .yaml than .txt, others almost keep the same:
+>   1. compatible "const: snps,dwmac-4.20".
+>   2. delete "snps,reset-active-low;" in example, since driver remove this
+>      property long ago.
+>   3. add "snps,reset-delay-us = <0 10000 10000>" in example.
+>   4. the example is for rgmii interface, keep related properties only.
+>
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/net/mediatek-dwmac.txt           |  91 ----------
+>  .../bindings/net/mediatek-dwmac.yaml          | 155 ++++++++++++++++++
+>  2 files changed, 155 insertions(+), 91 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
 
-Prior this commit this does not happen because return value of
-ice_fltr_add_mac() was stored to 'status' variable first and
-if it was -EEXIST then 'err' remains to be zero.
+Now failing in linux-next:
 
-The patch fixes the problem by reset 'err' to zero when
-ice_fltr_add_mac() returns -EEXIST.
+/builds/robherring/linux-dt/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb:
+ethernet@1101c000: snps,txpbl:0:0: 1 is not one of [2, 4, 8]
+ From schema: /builds/robherring/linux-dt/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+/builds/robherring/linux-dt/Documentation/devicetree/bindings/net/mediatek-dwmac.example.dtb:
+ethernet@1101c000: snps,rxpbl:0:0: 1 is not one of [2, 4, 8]
+ From schema: /builds/robherring/linux-dt/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
 
-Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 168a41ea37b8..420558d1cd21 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5474,14 +5474,15 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
- 
- 	/* Add filter for new MAC. If filter exists, return success */
- 	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
--	if (err == -EEXIST)
-+	if (err == -EEXIST) {
- 		/* Although this MAC filter is already present in hardware it's
- 		 * possible in some cases (e.g. bonding) that dev_addr was
- 		 * modified outside of the driver and needs to be restored back
- 		 * to this value.
- 		 */
- 		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
--	else if (err)
-+		err = 0;
-+	} else if (err)
- 		/* error if the new filter addition failed */
- 		err = -EADDRNOTAVAIL;
- 
--- 
-2.34.1
-
+Rob
