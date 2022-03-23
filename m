@@ -2,184 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D96ED4E4D33
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 08:17:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 408F44E4D50
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 08:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242155AbiCWHSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 03:18:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
+        id S240713AbiCWHaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 03:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241199AbiCWHSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 03:18:40 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E58972E0B;
-        Wed, 23 Mar 2022 00:17:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648019829; x=1679555829;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IXsOZBoR4f0U9eReg1/3tbeiq3LtujYFsBJtuRYeVt0=;
-  b=IBhebgWCmvMWDpEv1Su0UPxHL1cU9h60tdvDnZ0lanDRsZsNbgyMEkCO
-   rnoAHNgPcuDqhli300Uu0GCx14RcbQBbal22PAtH0sY1pIYRBU8Be7gn5
-   NsOpFr5BMLTzDk2QF5BowqWuxToKfpJ3PuS5cw7m8240rHezIKpLjitkM
-   nNO8jAUc6GemGJVvuS3Apx7N0DtVSlg6zr6suSilcVruz6vusSOTmAI4+
-   D1toEGV6iTPcw96ecD6YybmUifQGJY2r3wfsPlvYgrue6yRyc4d8XBpAN
-   DsPJITh9ZRCCh+t1Ux6XlP4wD0sQF/VrCmW7E54orBvwY1R82YG8TDmIc
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,203,1643698800"; 
-   d="scan'208";a="150104681"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Mar 2022 00:16:57 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 23 Mar 2022 00:16:56 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Wed, 23 Mar 2022 00:16:56 -0700
-Date:   Wed, 23 Mar 2022 08:19:57 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <michael@walle.cc>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next v2 3/4] net: lan966x: Add FDMA functionality
-Message-ID: <20220323071957.4ufveau3wbjawsfv@soft-dev3-1.localhost>
-References: <20220318204750.1864134-1-horatiu.vultur@microchip.com>
- <20220318204750.1864134-4-horatiu.vultur@microchip.com>
- <20220321230123.4d38ad5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20220322210402.ebr2zghcisrqz4ju@soft-dev3-1.localhost>
- <20220322152536.4460aea2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S232058AbiCWHaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 03:30:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012C85FCB;
+        Wed, 23 Mar 2022 00:28:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 604DA616AF;
+        Wed, 23 Mar 2022 07:28:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3822C340E8;
+        Wed, 23 Mar 2022 07:28:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648020508;
+        bh=hKNgS86ZsDxy6XOWOVYZ4mXSoI2JeEPeXjYKqdb3U/g=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=mvilRrJh2Xh3sYVP75oDnkZonVy/ryJJtSI8z90QiLrFVbjYSWkaVUVlTbWcpgcL9
+         WGNyFDQXKH7lwjYnbAPc/O2uuRo8YZurdS9AHiVPpbHmSDXAgBkr9FtO2panArUiks
+         8U5oNTgQgK4Sgl+oFFaaU+Qxikoap7zp60ceW1t9xvFEw+EV2flAYrl/Wel2pELyfl
+         Kx4W/EyS3zjqeAITrFoQlZPInv2XvFbIbVoFRptXDrcOpQnS00jrxPA6Axoa154b6O
+         lmjVViEC13FzBd8r5PLlGmbE52GD7f+BUxEyqR/dDPYk2KhKLZqw2Aw4QA8th2p3M9
+         pDt0RUc4D24BA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>
+Cc:     Halil Pasic <pasic@linux.ibm.com>, Christoph Hellwig <hch@lst.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, regressions@lists.linux.dev
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break ath9k-based AP
+References: <1812355.tdWV9SEqCh@natalenko.name>
+Date:   Wed, 23 Mar 2022 09:28:20 +0200
+In-Reply-To: <1812355.tdWV9SEqCh@natalenko.name> (Oleksandr Natalenko's
+        message of "Wed, 23 Mar 2022 08:19:24 +0100")
+Message-ID: <874k3pm8kr.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20220322152536.4460aea2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 03/22/2022 15:25, Jakub Kicinski wrote:
-> On Tue, 22 Mar 2022 22:04:02 +0100 Horatiu Vultur wrote:
-> > > > +static struct sk_buff *lan966x_fdma_rx_get_frame(struct lan966x_rx *rx)
-> > > > +{
-> > > > +     struct lan966x *lan966x = rx->lan966x;
-> > > > +     u64 src_port, timestamp;
-> > > > +     struct sk_buff *new_skb;
-> > > > +     struct lan966x_db *db;
-> > > > +     struct sk_buff *skb;
-> > > > +
-> > > > +     /* Check if there is any data */
-> > > > +     db = &rx->dcbs[rx->dcb_index].db[rx->db_index];
-> > > > +     if (unlikely(!(db->status & FDMA_DCB_STATUS_DONE)))
-> > > > +             return NULL;
-> > > > +
-> > > > +     /* Get the received frame and unmap it */
-> > > > +     skb = rx->skb[rx->dcb_index][rx->db_index];
-> > > > +     dma_unmap_single(lan966x->dev, (dma_addr_t)db->dataptr,
-> > > > +                      FDMA_DCB_STATUS_BLOCKL(db->status),
-> > > > +                      DMA_FROM_DEVICE);
-> > > > +
-> > > > +     /* Allocate a new skb and map it */
-> > > > +     new_skb = lan966x_fdma_rx_alloc_skb(rx, db);
-> > > > +     if (unlikely(!new_skb))
-> > > > +             return NULL;
-> > >
-> > > So how is memory pressure handled, exactly? Looks like it's handled
-> > > the same as if the ring was empty, so the IRQ is going to get re-raise
-> > > immediately, or never raised again?
-> >
-> > That is correct, the IRQ is going to get re-raised.
-> > But I am not sure that this is correct approach. Do you have any
-> > suggestions how it should be?
-> 
-> In my experience it's better to let the ring drain and have a service
-> task kick in some form of refill. Usually when machine is out of memory
-> last thing it needs is getting stormed by network IRQs. Some form of
-> back off would be good, at least?
+Adding regressions list so that this can be tracked properly, including
+the full report below.
 
-OK. I will try to implement something like this in the next version.
+Oleksandr Natalenko <oleksandr@natalenko.name> writes:
 
-> 
-> > > > +     return counter;
-> > > > +}
-> > > > +
-> > > > +irqreturn_t lan966x_fdma_irq_handler(int irq, void *args)
-> > > > +{
-> > > > +     struct lan966x *lan966x = args;
-> > > > +     u32 db, err, err_type;
-> > > > +
-> > > > +     db = lan_rd(lan966x, FDMA_INTR_DB);
-> > > > +     err = lan_rd(lan966x, FDMA_INTR_ERR);
-> > >
-> > > Hm, IIUC you request a threaded IRQ for this. Why?
-> > > The register accesses can't sleep because you poke
-> > > them from napi_poll as well...
-> >
-> > Good point. What about the WARN?
-> 
-> which one? Did something generate a warning without the threaded IRQ?
-
-Ah.. no. I was talking about the WARN in case err is set.
----
-if (err) {
-	err_type = lan_rd(lan966x, FDMA_ERRORS);
-
-	WARN(1, "Unexpected error: %d, error_type: %d\n", err, err_type);
-	...
-}
----
-But that is fine. So I will change to non threaded irq.
-
-> 
-> > > > +int lan966x_fdma_xmit(struct sk_buff *skb, __be32 *ifh, struct net_device *dev)
-> > > > +{
-> > > > +     struct lan966x_port *port = netdev_priv(dev);
-> > > > +     struct lan966x *lan966x = port->lan966x;
-> > > > +     struct lan966x_tx_dcb_buf *next_dcb_buf;
-> > > > +     struct lan966x_tx_dcb *next_dcb, *dcb;
-> > > > +     struct lan966x_tx *tx = &lan966x->tx;
-> > > > +     struct lan966x_db *next_db;
-> > > > +     int needed_headroom;
-> > > > +     int needed_tailroom;
-> > > > +     dma_addr_t dma_addr;
-> > > > +     int next_to_use;
-> > > > +     int err;
-> > > > +
-> > > > +     /* Get next index */
-> > > > +     next_to_use = lan966x_fdma_get_next_dcb(tx);
-> > > > +     if (next_to_use < 0) {
-> > > > +             netif_stop_queue(dev);
-> > > > +             err = NETDEV_TX_BUSY;
-> > > > +             goto out;
-> > > > +     }
-> > > > +
-> > > > +     if (skb_put_padto(skb, ETH_ZLEN)) {
-> > > > +             dev->stats.tx_dropped++;
-> > >
-> > > It's preferred not to use the old dev->stats, but I guess you already
-> > > do so :( This is under some locks, right? No chance for another queue
-> > > or port to try to touch those stats at the same time?
-> >
-> > What is the preffered way of doing it?
-> > Yes, it is under a lock.
-> 
-> Drivers can put counters they need in their own structures and then
-> implement ndo_get_stats64 to copy it to the expected format.
-> If you have locks and there's no risk of races - I guess it's fine.
-> Unlikely we'll ever convert all the drivers, anyway.
-
-OK, now I see.
-
-I can create a different patch for this because then I should update the
-statistics when injecting frames the other way(when writing each
-word of the frame to HW).
+> Hello.
+>
+> The following upstream commits:
+>
+> aa6f8dcbab47 swiotlb: rework "fix info leak with DMA_FROM_DEVICE"
+> ddbd89deb7d3 swiotlb: fix info leak with DMA_FROM_DEVICE
+>
+> break ath9k-based Wi-Fi access point for me. The AP emits beacons, but no client can connect to it, either from the very beginning, or shortly after start. These are the only symptoms I've noticed (i.e., no BUG/WARNING messages in `dmesg` etc).
+>
+> The hardware is:
+>
+> ```
+> $ dmesg | grep -i swiotlb
+> [    0.426785] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+>
+> BIOS Information
+>     Vendor: American Megatrends Inc.
+>     Version: P1.50
+>     Release Date: 04/16/2018
+>
+> Base Board Information
+>     Manufacturer: ASRock
+>     Product Name: J3710-ITX
+>
+> 02:00.0 Network controller: Qualcomm Atheros AR9462 Wireless Network Adapter (rev 01)
+> 	Subsystem: Lite-On Communications Inc Device 6621
+> 	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+> 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+> 	Latency: 0, Cache Line Size: 64 bytes
+> 	Interrupt: pin A routed to IRQ 17
+> 	Region 0: Memory at 81400000 (64-bit, non-prefetchable) [size=512K]
+> 	Expansion ROM at 81480000 [disabled] [size=64K]
+> 	Capabilities: [40] Power Management version 2
+> 		Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA PME(D0+,D1+,D2+,D3hot+,D3cold+)
+> 		Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+> 	Capabilities: [50] MSI: Enable- Count=1/4 Maskable+ 64bit+
+> 		Address: 0000000000000000  Data: 0000
+> 		Masking: 00000000  Pending: 00000000
+> 	Capabilities: [70] Express (v2) Endpoint, MSI 00
+> 		DevCap:	MaxPayload 128 bytes, PhantFunc 0, Latency L0s unlimited, L1 <64us
+> 			ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset- SlotPowerLimit 10.000W
+> 		DevCtl:	CorrErr- NonFatalErr- FatalErr- UnsupReq-
+> 			RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop-
+> 			MaxPayload 128 bytes, MaxReadReq 512 bytes
+> 		DevSta:	CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr+ TransPend-
+> 		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <4us, L1 <64us
+> 			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp-
+> 		LnkCtl:	ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+> 			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+> 		LnkSta:	Speed 2.5GT/s (ok), Width x1 (ok)
+> 			TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
+> 		DevCap2: Completion Timeout: Not Supported, TimeoutDis+ NROPrPrP- LTR-
+> 			 10BitTagComp- 10BitTagReq- OBFF Not Supported, ExtFmt- EETLPPrefix-
+> 			 EmergencyPowerReduction Not Supported, EmergencyPowerReductionInit-
+> 			 FRS- TPHComp- ExtTPHComp-
+> 			 AtomicOpsCap: 32bit- 64bit- 128bitCAS-
+> 		DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis- LTR- OBFF Disabled,
+> 			 AtomicOpsCtl: ReqEn-
+> 		LnkCap2: Supported Link Speeds: 2.5GT/s, Crosslink- Retimer- 2Retimers- DRS-
+> 		LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- SpeedDis-
+> 			 Transmit Margin: Normal Operating Range, EnterModifiedCompliance- ComplianceSOS-
+> 			 Compliance De-emphasis: -6dB
+> 		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete- EqualizationPhase1-
+> 			 EqualizationPhase2- EqualizationPhase3- LinkEqualizationRequest-
+> 			 Retimer- 2Retimers- CrosslinkRes: unsupported
+> 	Capabilities: [100 v1] Advanced Error Reporting
+> 		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+> 		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+> 		UESvrt:	DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+> 		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
+> 		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+> 		AERCap:	First Error Pointer: 00, ECRCGenCap- ECRCGenEn- ECRCChkCap- ECRCChkEn-
+> 			MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+> 		HeaderLog: 00000000 00000000 00000000 00000000
+> 	Capabilities: [140 v1] Virtual Channel
+> 		Caps:	LPEVC=0 RefClk=100ns PATEntryBits=1
+> 		Arb:	Fixed- WRR32- WRR64- WRR128-
+> 		Ctrl:	ArbSelect=Fixed
+> 		Status:	InProgress-
+> 		VC0:	Caps:	PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
+> 			Arb:	Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
+> 			Ctrl:	Enable+ ID=0 ArbSelect=Fixed TC/VC=ff
+> 			Status:	NegoPending- InProgress-
+> 	Capabilities: [160 v1] Device Serial Number 00-00-00-00-00-00-00-00
+> 	Kernel driver in use: ath9k
+> 	Kernel modules: ath9k
+> ```
+>
+> These commits appeared in v5.17 and v5.16.15, and both kernels are broken for me. I'm pretty confident these commits make the difference since I've built both v5.17 and v5.16.15 without them, and it fixed the issue.
+>
+> The machine has also got another Wi-Fi card that acts as a 802.11ax AP, and it is not affected:
+>
+> ```
+> 01:00.0 Unclassified device [0002]: MEDIATEK Corp. MT7915E 802.11ax PCI Express Wireless Network Adapter (prog-if 80)
+> ```
+>
+> So, I do understand this might be an issue with regard to SG I/O handling in ath9k, hence relevant people in Cc.
+>
+> Please suggest on how to deal with this. Both me and Olha (in Cc) will be glad to test patches if needed. In case any extra info is required, please also let me know.
+>
+> Thanks.
 
 -- 
-/Horatiu
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
