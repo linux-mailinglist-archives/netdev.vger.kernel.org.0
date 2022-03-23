@@ -2,90 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ECF74E4D5C
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 08:31:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 223124E4D74
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 08:37:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242117AbiCWHdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 03:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55892 "EHLO
+        id S242269AbiCWHia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 03:38:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232562AbiCWHdL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 03:33:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCF072E36;
-        Wed, 23 Mar 2022 00:31:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 103FAB81DC9;
-        Wed, 23 Mar 2022 07:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CD96C340E8;
-        Wed, 23 Mar 2022 07:31:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648020699;
-        bh=xmpfDtMMsZeVIRw9r9g+fWtSN/SN5MNsLW7UTEV9McM=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=IBCyqHOLXNrlbiOTOo8IH2EftaGeTKVcQ/ZTBEM2LBP+7wIATYSO+t32nlNxUsEUT
-         WqPOxuJHQb6BtHqGEaBBf3rgFHB4V4PnK87T2PYd5BmB/9SkTLf1Jijx4kYXMLUkvg
-         wa33664W3GEZGeZaIev6rwm/GxoTK2/++PTXCEmzqticobTTM5HRg8ZZiwPPrpXMqH
-         ayRApnKFzE2ZbEahrHuk+9llMSlntJxRE5Ij+3T1VaolGU2MQs4qbjGlzEdexe/zFf
-         TGpaPDDvAOczg67f/uvTxfUfJPmeXicB6E9uR5wXoUSqxCjLZdihV7Bjdo/UrCDP41
-         BfrJOXhwdgxVw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        linux-wireless@vger.kernel.org,
-        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Jonas =?utf-8?Q?Dre=C3=9Fler?= <verdre@v0yd.nl>
-Subject: Re: [RFC PATCH] mwifiex: Select firmware based on strapping
-References: <20220321161003.39214-1-francesco.dolcini@toradex.com>
-        <Yjjgi4YJVYBnJTqK@google.com>
-Date:   Wed, 23 Mar 2022 09:31:32 +0200
-In-Reply-To: <Yjjgi4YJVYBnJTqK@google.com> (Brian Norris's message of "Mon, 21
-        Mar 2022 13:31:07 -0700")
-Message-ID: <87zglhktuz.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S235948AbiCWHi1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 03:38:27 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BD35EDFD;
+        Wed, 23 Mar 2022 00:36:53 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id w8so746787pll.10;
+        Wed, 23 Mar 2022 00:36:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m1iCmozCFO2nDUbdDZOeMBYLeshVtbE1//V44gRhfv8=;
+        b=MqHMspPcSlKu9NLkB7yl/rkEVfNptO/w7y0kPb8esvKHzzWH+HAarv7W2zksAiOvGI
+         L0smPUkUiYS9wnFvpXA5v+/kODBl8g9RSJC7wuoIRew8x2ULMgJidGZS7U+6GZHomqR+
+         dDWPGSStirVRDj8dZZjVJ/TRFTrgJrfbg3tA47YXVxldwQK3s+NakqlxIAREsmGYcx/E
+         CS2EZEd5uQJ58J6xxMAlmopw05uvtpaeIGkgidxIiACTsASMiIYWHDowxTDKoMX1v30b
+         KqDYqoLRn5mOEwIGZfMZBW9QUCx7kpVAIfxFsd9mne+96jPRdWyX1cY1pECqxYU22Rz3
+         uvfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=m1iCmozCFO2nDUbdDZOeMBYLeshVtbE1//V44gRhfv8=;
+        b=j4Mr5P4hPKpNaKlhrnBAxDOA3roSNGrvvt0CZX9JKRPkwKLUUGxJ78cUtm+Eyoikn8
+         N1ScFks3zFDhflni5vkt9GClhGQe0XtTxT9MUOxXhxmMWGm546JPdT98lf+OxBoJjeC/
+         r936YLKonPKtuhiZChsnqSGZarBhDCw0al3J9V79UmWhTCi26EUNf5ex1w/R1OHUyXDV
+         9JsanXu6cLTgZmd6xMmKHE0tq9N06FqzAhxyc+elROKzkaqWWWMx5u38FXRR8z+UWN0M
+         Z2Edr9ZHn392noV5UfaO7ZpR65ZBQ+Hnp4/u/8eFupN+y7xDEldvvOOkOpgbOqtjNPJY
+         9AiA==
+X-Gm-Message-State: AOAM532oYTR0RSlh4h6+TDcOEyI9e2PPqHsCCsGwUUYMQAn609rpXCPw
+        I5fBsk66/QKUXtUyTzArQMc=
+X-Google-Smtp-Source: ABdhPJzPEEK9ZixNQwtvEIi5X0A3WXJM+iT8soYrHwThTS4gHEbROpq/XN7nXTl9qLmD3gS6GCfT+g==
+X-Received: by 2002:a17:902:c40a:b0:154:2302:9b88 with SMTP id k10-20020a170902c40a00b0015423029b88mr22204578plk.165.1648021012846;
+        Wed, 23 Mar 2022 00:36:52 -0700 (PDT)
+Received: from localhost.localdomain ([43.132.141.4])
+        by smtp.gmail.com with ESMTPSA id u9-20020a056a00158900b004faad3ae570sm8416190pfk.189.2022.03.23.00.36.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 00:36:52 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] bpf: Remove redundant assignment to smap->map.value_size
+Date:   Wed, 23 Mar 2022 15:36:26 +0800
+Message-Id: <20220323073626.958652-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.0.rc2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Brian Norris <briannorris@chromium.org> writes:
+The attr->value_size is already assigned to smap->map.value_size
+in bpf_map_init_from_attr(), there is no need to do it again in
+stack_map_alloc()
 
->> --- a/drivers/net/wireless/marvell/mwifiex/sdio.h
->> +++ b/drivers/net/wireless/marvell/mwifiex/sdio.h
->> @@ -39,6 +39,7 @@
->>  #define SD8977_DEFAULT_FW_NAME "mrvl/sdsd8977_combo_v2.bin"
->>  #define SD8987_DEFAULT_FW_NAME "mrvl/sd8987_uapsta.bin"
->>  #define SD8997_DEFAULT_FW_NAME "mrvl/sdsd8997_combo_v4.bin"
->> +#define SD8997_SDIOUART_FW_NAME "nxp/sdiouart8997_combo_v4.bin"
->
-> This isn't your main issue, but just because companies buy and sell IP
-> doesn't mean we'll change the firmware paths. Qualcomm drivers still use
-> "ath" prefixes, for one ;)
->
-> Personally, I'd still keep the mrvl/ path. But that might be up to Kalle
-> and/or linux-firmware.git maintainers.
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ kernel/bpf/stackmap.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-I also prefer to have all the firmware files in the mrvl directory.
-
-Actually I would prefer that each driver has it's own firmware
-directory, but that's another topic.
-
+diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
+index 34725bfa1e97..6131b4a19572 100644
+--- a/kernel/bpf/stackmap.c
++++ b/kernel/bpf/stackmap.c
+@@ -106,7 +106,6 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	bpf_map_init_from_attr(&smap->map, attr);
+-	smap->map.value_size = value_size;
+ 	smap->n_buckets = n_buckets;
+ 
+ 	err = get_callchain_buffers(sysctl_perf_event_max_stack);
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.35.0.rc2
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
