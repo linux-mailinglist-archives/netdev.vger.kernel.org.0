@@ -2,73 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77FF94E59F1
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 21:35:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B4A24E5A3C
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 21:54:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244386AbiCWUgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 16:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
+        id S1344825AbiCWUzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 16:55:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235348AbiCWUgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 16:36:47 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F4A269;
-        Wed, 23 Mar 2022 13:35:15 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id bu29so4730526lfb.0;
-        Wed, 23 Mar 2022 13:35:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to;
-        bh=yvypnLVjCrWy5spCJBsgRPFJn4U1BSlCRE6N0KMRzWU=;
-        b=TLCkjNe8KY46ih5qA1GtmMXB57U6LTd+kdCmexWzAF2WwlSu8eaRgtGVcQ78s6Fxt6
-         v3FksA3mvB8IXngY9316GUf0riflRzNyWD1veXCWM2cC7Vn02ybuO77PPQ969CAXZrCv
-         7HCFbAahuIavcEEGqYQFW0cuBrQ0Rb1pI9yx0NXRvNLb8ZHShXFgwtM+LQi5O9Lo/NrC
-         GcQ/l45g21PIH0SUSMRE2WQ+V5Jmalr/RudVM9cakXi/HUzxTCNwVaN/h+g/rcgn4KU7
-         lRy0nlzgOAlS31WeN6/eSk+qukjydsyO4D/XKLkVZBJA3jhXhMpM0KjjJoztSuka612j
-         guBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to;
-        bh=yvypnLVjCrWy5spCJBsgRPFJn4U1BSlCRE6N0KMRzWU=;
-        b=bK+FxVho9ywvRsjK3JR5BcQf+wk0ab+O7oOskBVC0pcb+HrOv/OrFDHqoAtA0zFS4+
-         veWKXmbJpRvMlirO+FxotVxKWJelZK48MxBTPsztoK3iephnjclWfe4llvZliMt3w9tI
-         U6wx54hNJ5wYJIUMvrrDhfglJO+d2Wh1iQRkEIbHWlqNJW9b/42g5uVwT9QG8jdDYlGi
-         xdr02DSv39Y+E3Fksw7ivN+8akyusQh9FoFJLjOXuAKkwpip0cBgUARzMfo1mNuWX5rQ
-         xb7YiOtGL3O/vXpLE+kR70gJn88eeXnTPSoebqcAN/RHGT0NOxHnVDpNwmVT+jiG7vXQ
-         4f7w==
-X-Gm-Message-State: AOAM531xR3YlZ6bJLSoA6HwyrUSHxKrhAQAW4QiwC+0sNIgqwpok56zh
-        AEwsKzGvohThS2jfF64YwAg=
-X-Google-Smtp-Source: ABdhPJwfztJuCDhkEzxS/JcI1aU8U4w5CymWH04dRCfYpin0MrgEuXHRoMGZo+rV0KHOBUfj7AIzAg==
-X-Received: by 2002:a05:6512:2348:b0:44a:3134:7d52 with SMTP id p8-20020a056512234800b0044a31347d52mr1164464lfu.207.1648067713945;
-        Wed, 23 Mar 2022 13:35:13 -0700 (PDT)
-Received: from [192.168.1.11] ([46.235.67.145])
-        by smtp.gmail.com with ESMTPSA id c22-20020ac24156000000b0044846901eabsm89637lfi.24.2022.03.23.13.35.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 13:35:13 -0700 (PDT)
-Message-ID: <f35435f3-13bd-2985-bfdd-b693388e49a0@gmail.com>
-Date:   Wed, 23 Mar 2022 23:35:11 +0300
+        with ESMTP id S244002AbiCWUzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 16:55:46 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2318B8AE78;
+        Wed, 23 Mar 2022 13:54:16 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5E8E4D6E;
+        Wed, 23 Mar 2022 13:54:15 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9CBF03F73B;
+        Wed, 23 Mar 2022 13:54:12 -0700 (PDT)
+Message-ID: <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+Date:   Wed, 23 Mar 2022 20:54:08 +0000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v3] can: mcba_usb: properly check endpoint type
-Content-Language: en-US
-To:     yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
-        davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-References: <CAMZ6RqKn4E9wstZF1xbefBaR3AbcORq60KXvxUTCSH8dZ+Cxag@mail.gmail.com>
- <20220313100903.10868-1-paskripkin@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220313100903.10868-1-paskripkin@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------wuJb3knIS3Bcn2sAl3RLDNAC"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Content-Language: en-GB
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+ <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
+ <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,76 +62,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------wuJb3knIS3Bcn2sAl3RLDNAC
-Content-Type: multipart/mixed; boundary="------------zMAyY88wsciZQYHPRhRowlKy";
- protected-headers="v1"
-From: Pavel Skripkin <paskripkin@gmail.com>
-To: yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
- davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr
-Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
-Message-ID: <f35435f3-13bd-2985-bfdd-b693388e49a0@gmail.com>
-Subject: Re: [PATCH v3] can: mcba_usb: properly check endpoint type
-References: <CAMZ6RqKn4E9wstZF1xbefBaR3AbcORq60KXvxUTCSH8dZ+Cxag@mail.gmail.com>
- <20220313100903.10868-1-paskripkin@gmail.com>
-In-Reply-To: <20220313100903.10868-1-paskripkin@gmail.com>
+On 2022-03-23 19:16, Linus Torvalds wrote:
+> On Wed, Mar 23, 2022 at 12:06 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2022-03-23 17:27, Linus Torvalds wrote:
+>>>
+>>> I'm assuming that the ath9k issue is that it gives DMA mapping a big
+>>> enough area to handle any possible packet size, and just expects -
+>>> quite reasonably - smaller packets to only fill the part they need.
+>>>
+>>> Which that "info leak" patch obviously breaks entirely.
+>>
+>> Except that's the exact case which the new patch is addressing
+> 
+> Not "addressing". Breaking.
+> 
+> Which is why it will almost certainly get reverted.
+> 
+> Not doing DMA to the whole area seems to be quite the sane thing to do
+> for things like network packets, and overwriting the part that didn't
+> get DMA'd with zeroes seems to be exactly the wrong thing here.
+> 
+> So the SG_IO - and other random untrusted block command sources - data
+> leak will almost certainly have to be addressed differently. Possibly
+> by simply allocating the area with GFP_ZERO to begin with.
 
---------------zMAyY88wsciZQYHPRhRowlKy
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+Er, the point of the block layer case is that whole area *is* zeroed to 
+begin with, and a latent memory corruption problem in SWIOTLB itself 
+replaces those zeros with random other kernel data unexpectedly. Let me 
+try illustrating some sequences for clarity...
 
-T24gMy8xMy8yMiAxMzowOSwgUGF2ZWwgU2tyaXBraW4gd3JvdGU6DQo+IFN5emJvdCByZXBv
-cnRlZCB3YXJuaW5nIGluIHVzYl9zdWJtaXRfdXJiKCkgd2hpY2ggaXMgY2F1c2VkIGJ5IHdy
-b25nDQo+IGVuZHBvaW50IHR5cGUuIFdlIHNob3VsZCBjaGVjayB0aGF0IGluIGVuZHBvaW50
-IGlzIGFjdHVhbGx5IHByZXNlbnQgdG8NCj4gcHJldmVudCB0aGlzIHdhcm5pbmcNCj4gDQo+
-IEZvdW5kIHBpcGVzIGFyZSBub3cgc2F2ZWQgdG8gc3RydWN0IG1jYmFfcHJpdiBhbmQgY29k
-ZSB1c2VzIHRoZW0gZGlyZWN0bHkNCj4gaW5zdGVhZCBvZiBtYWtpbmcgcGlwZXMgaW4gcGxh
-Y2UuDQo+IA0KPiBGYWlsIGxvZzoNCj4gDQo+IHVzYiA1LTE6IEJPR1VTIHVyYiB4ZmVyLCBw
-aXBlIDMgIT0gdHlwZSAxDQo+IFdBUk5JTkc6IENQVTogMSBQSUQ6IDQ5IGF0IGRyaXZlcnMv
-dXNiL2NvcmUvdXJiLmM6NTAyIHVzYl9zdWJtaXRfdXJiKzB4ZWQyLzB4MThhMCBkcml2ZXJz
-L3VzYi9jb3JlL3VyYi5jOjUwMg0KPiBNb2R1bGVzIGxpbmtlZCBpbjoNCj4gQ1BVOiAxIFBJ
-RDogNDkgQ29tbToga3dvcmtlci8xOjIgTm90IHRhaW50ZWQgNS4xNy4wLXJjNi1zeXprYWxs
-ZXItMDAxODQtZzM4ZjgwZjQyMTQ3ZiAjMA0KPiBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0YW5k
-YXJkIFBDIChRMzUgKyBJQ0g5LCAyMDA5KSwgQklPUyAxLjE0LjAtMiAwNC8wMS8yMDE0DQo+
-IFdvcmtxdWV1ZTogdXNiX2h1Yl93cSBodWJfZXZlbnQNCj4gUklQOiAwMDEwOnVzYl9zdWJt
-aXRfdXJiKzB4ZWQyLzB4MThhMCBkcml2ZXJzL3VzYi9jb3JlL3VyYi5jOjUwMg0KPiAuLi4N
-Cj4gQ2FsbCBUcmFjZToNCj4gICA8VEFTSz4NCj4gICBtY2JhX3VzYl9zdGFydCBkcml2ZXJz
-L25ldC9jYW4vdXNiL21jYmFfdXNiLmM6NjYyIFtpbmxpbmVdDQo+ICAgbWNiYV91c2JfcHJv
-YmUrMHg4YTMvMHhjNTAgZHJpdmVycy9uZXQvY2FuL3VzYi9tY2JhX3VzYi5jOjg1OA0KPiAg
-IHVzYl9wcm9iZV9pbnRlcmZhY2UrMHgzMTUvMHg3ZjAgZHJpdmVycy91c2IvY29yZS9kcml2
-ZXIuYzozOTYNCj4gICBjYWxsX2RyaXZlcl9wcm9iZSBkcml2ZXJzL2Jhc2UvZGQuYzo1MTcg
-W2lubGluZV0NCj4gDQo+IFJlcG9ydGVkLWFuZC10ZXN0ZWQtYnk6IHN5emJvdCszYmMxZGNl
-MGNjMDA1MmQ2MGZkZUBzeXprYWxsZXIuYXBwc3BvdG1haWwuY29tDQo+IEZpeGVzOiA1MWYz
-YmFhZDdkZTkgKCJjYW46IG1jYmFfdXNiOiBBZGQgc3VwcG9ydCBmb3IgTWljcm9jaGlwIENB
-TiBCVVMgQW5hbHl6ZXIiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBQYXZlbCBTa3JpcGtpbiA8cGFz
-a3JpcGtpbkBnbWFpbC5jb20+DQo+IFJldmlld2VkLWJ5OiBWaW5jZW50IE1haWxob2wgPG1h
-aWxob2wudmluY2VudEB3YW5hZG9vLmZyPg0KDQpnZW50bGUgcGluZy4gbG9va3MgbGlrZSB0
-aGlzIHBhdGNoIGdvdCBzb21laG93IGxvc3QNCg0KDQoNCg0KV2l0aCByZWdhcmRzLA0KUGF2
-ZWwgU2tyaXBraW4NCg==
+Expected behaviour/without SWIOTLB:
+                              Memory
+---------------------------------------------------
+start                        12345678
+dma_map(DMA_FROM_DEVICE)      no-op
+device writes partial data   12ABC678 <- ABC
+dma_unmap(DMA_FROM_DEVICE)   12ABC678
 
---------------zMAyY88wsciZQYHPRhRowlKy--
 
---------------wuJb3knIS3Bcn2sAl3RLDNAC
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+SWIOTLB previously:
+                              Memory      Bounce buffer
+---------------------------------------------------
+start                        12345678    xxxxxxxx
+dma_map(DMA_FROM_DEVICE)             no-op
+device writes partial data   12345678    xxABCxxx <- ABC
+dma_unmap(DMA_FROM_DEVICE)   xxABCxxx <- xxABCxxx
 
------BEGIN PGP SIGNATURE-----
 
-wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmI7hH8FAwAAAAAACgkQbk1w61LbBA2A
-7w//UDuGW6KEDfBJmFHbEIeC19pI4v2v1q8B6LWq0TEhvK9afaiDdereDT4g36kpAJQdq36oHr5m
-WychvLnb9QWMZaGR/vT4UyRIlC7G+LRcdJZP0aIhaLMr2QxQzlZ+WeGHVP5vlNUaByCeCjO7r79O
-f0OB9G3TyBA976RkG2kY1TxutGEH537aEC8+VllnBibB8ysKRfU1bNBd8kcoN0zmcvcXkVfvxYIW
-wtc4nLaKUzQmT3RbIiIxkZylK04e1XR0cAeGeZG0TC9sv+ASXlZLLb6wUsGMox4LvSMp9InuT9JX
-AqXjK3cTbSIOW5NMy27w14nFFVTX3eBX0X9Z/nquwEojo9IiRwZwrC5ZRb742X/nQsoFa/Ou9IQM
-VZRRgWWBMMh5e2NvmxcKiIHMgIoXHq+pOMaSH7rpxb1fNl1CihgrmixKdfxVVz8EAmclzf1csOVh
-QEBdl2Uvhyr5kYq/Yw0hoi6FHhCxL/FHZHp7KFaGpRBXH3akzq/6yS1OPn/Q8fhnJpiIOWobwR95
-0dwI+3N8O+e9bYzcxfH34qZcFYrlCiuh/Xdnpwdu3i1Eq1XmYitrYJ6KcvHfpxgjBH+wmJB7I8/s
-HqDThr1md9FM6N27zRL9po77M3qit1+krSvYxlhnrz2KiDYBVn8Idj8n1jJUmPwHZG812gqFYR2k
-Ens=
-=RjdE
------END PGP SIGNATURE-----
+SWIOTLB Now:
+                              Memory      Bounce buffer
+---------------------------------------------------
+start                        12345678    xxxxxxxx
+dma_map(DMA_FROM_DEVICE)     12345678 -> 12345678
+device writes partial data   12345678    12ABC678 <- ABC
+dma_unmap(DMA_FROM_DEVICE)   12ABC678 <- 12ABC678
 
---------------wuJb3knIS3Bcn2sAl3RLDNAC--
+
+Now, sure we can prevent any actual information leakage by initialising 
+the bounce buffer slot with zeros, but then we're just corrupting the 
+not-written-to parts of the mapping with zeros instead of anyone else's 
+old data. That's still fundamentally not OK. The only thing SWIOTLB can 
+do to be correct is treat DMA_FROM_DEVICE as a read-modify-write of the 
+entire mapping, because it has no way to know how much of it is actually 
+going to be modified.
+
+I'll admit I still never quite grasped the reason for also adding the 
+override to swiotlb_sync_single_for_device() in aa6f8dcbab47, but I 
+think by that point we were increasingly tired and confused and starting 
+to second-guess ourselves (well, I was, at least). I don't think it's 
+wrong per se, but as I said I do think it can bite anyone who's been 
+doing dma_sync_*() wrong but getting away with it until now. If 
+ddbd89deb7d3 alone turns out to work OK then I'd be inclined to try a 
+partial revert of just that one hunk.
+
+Thanks,
+Robin.
