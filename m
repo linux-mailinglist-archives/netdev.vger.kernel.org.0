@@ -2,138 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FB894E4F53
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 10:26:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4901D4E4FC8
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 10:52:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241829AbiCWJ1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 05:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
+        id S243350AbiCWJyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 05:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242642AbiCWJ13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 05:27:29 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2099.outbound.protection.outlook.com [40.107.93.99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA1753E26
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 02:25:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KFdjzoUwUhE5Fk/LNBiNulS6SAp8c0vlWbs87p7Ra6i1fOUnqFEfe6+Lsjs7BCoLXgqyL7MAcjSmrqSVRjCwWHuUYeJGcuC7gfD5BFpjhx+ES7+r3peehVqicMPFgW3H1Ch1oyfdiWxdlENE/5IMGmo1z/6qpzs2yzNOrTQIFJuuh274jYHXfJqQxVTdyNj54Gq8EnknHQ0Sy2hY4rmLqGDg0kUFwQNu8XsHTuYdRt2TLxM4g4/ginXn3A88xtrgz10YTWMBjbc8hj+boxBbLbU+irBLD8s87wWg4G9oSKlqCi1f4hbYv17mjozZEvA9oS9r4amN8kNAF28ueBuYxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=siTY176O7bB1NWpOmpRTr9Ci2FES6/w7GqHhtSiMgEQ=;
- b=kbYEnQ8eCMesyriQx/br6kT4SEe/HqO3kPvGqqpVU+Yvx4zrPoWqNw1mf0hx/KpEWCvU29m5720QTjwJ7lQdIOySxr7MO9hc+oW986de8HNEk4ih1yg92OyJkiJoIpJPiGH6xZdKmrLe2tCcFfqt0ep8VOu+ihS+GHU8FemZxnXgisYa9jguX5NoTxO+Iud586+dYP3TAV/2cN+pJ0sRdoE9lBdD/aK0Z8Uyn3hxCp+fElJSfkPGnE/Mw50VcLTTliO1AQeSIyQ0vLQk2V7lgWVksAv/OEwR1a1mZi9Vp/qdOLADo4ij6b+wD2Wuf4r+vAf734nguHBegE16EyfA8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S241170AbiCWJyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 05:54:14 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466E941315;
+        Wed, 23 Mar 2022 02:52:44 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id qx21so1660293ejb.13;
+        Wed, 23 Mar 2022 02:52:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=siTY176O7bB1NWpOmpRTr9Ci2FES6/w7GqHhtSiMgEQ=;
- b=lKYLV9ngSMVr3Klp7KypArSeN2iEX+/kU31u/LcnkGo8wuwXGM6jl4FUeT0MgJzkGAy7I8nRthpsn/heiq/ZFO9HK2l57qKn/HvTAZDSd6cAaQFVartMZL7UROXZRZDiaP/X9B8QmJsjaiwQQH1rB31XS08Kx0WxS6U/Ff+cNM8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from DM6PR13MB4249.namprd13.prod.outlook.com (2603:10b6:5:7b::25) by
- MWHPR1301MB2079.namprd13.prod.outlook.com (2603:10b6:301:35::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.16; Wed, 23 Mar
- 2022 09:25:58 +0000
-Received: from DM6PR13MB4249.namprd13.prod.outlook.com
- ([fe80::ac34:cea7:1509:b711]) by DM6PR13MB4249.namprd13.prod.outlook.com
- ([fe80::ac34:cea7:1509:b711%6]) with mapi id 15.20.5102.017; Wed, 23 Mar 2022
- 09:25:57 +0000
-From:   louis.peens@corigine.com
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     maord@nvidia.com, roid@nvidia.com, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Louis Peens <louis.peens@corigine.com>
-Subject: [net] net/sched: fix incorrect vlan_push_eth dest field
-Date:   Wed, 23 Mar 2022 11:25:06 +0200
-Message-Id: <20220323092506.21639-1-louis.peens@corigine.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: ZR0P278CA0055.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:21::6) To DM6PR13MB4249.namprd13.prod.outlook.com
- (2603:10b6:5:7b::25)
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g1j3QaJfU8qeuiCsSbkKdkVm/9jgLAYyU1jVDoQTArk=;
+        b=cbjXTfm1kiiTn5jphmGVgQgCdkCclOaeE8QNpxq90be6QVhVd7VL6IDTidBmyAs8+o
+         Fdz7dxj7hJNfPtU4dExwA47sq6+1hSfqAgc7GrehDKT4CrJWCZKlaaU1oOqiHQrtYFZ3
+         qAxmRdePPsmuyoG0p51F0JDKY10f6aofntln8DFReZNpsDPbYzHkc3gGfg7dOy18DjI8
+         lmEhoAPgXTPMt/uZP/KgHnRpKBBAOnUKZNkM6eKwL0C6uxPV9rMp2Ol+PnS33YW/3xx/
+         v9/X6pky4lr50hyhH+z13NNtUAzNgAv6HN/HGbzObR34v6GYh3QzeK8xAPwtDhUGwzuZ
+         GKcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g1j3QaJfU8qeuiCsSbkKdkVm/9jgLAYyU1jVDoQTArk=;
+        b=z8Dp/ziOdTeMsmEYEIvJo/tjrWnyvM4a/WA114xJ89RtfsLRwmtk04ovieAxx5Yy3F
+         LwlJbkolfrhOckrZhg9Yq2TlKfy26JUSqxVM8MfOqFs/plVuVgUuOkwmhOVt28woiunP
+         K+sMyDch5R/fk6AWwR8Rx+S+bgloMaM2MrtYaldPen/OiyOv/vbpRebgoS5BcFjfcmHd
+         R00vR5IG9TRG7MaJi8yWc/AnNOO4Mh8nZ7Eh78PvOXhrip5JgCezsh58nI4SXaExGgeF
+         2+XrLBL2NsfgAaRQ8gv+FQUmWvyYUu/JXC04aPvUjS9+UnSeS0eEr81WdtM1Hy+4XyvZ
+         C6gQ==
+X-Gm-Message-State: AOAM5317azMRfEQx/33DTXvx3Gayaaisl4f2jmuN5R92x9PFImiOP4op
+        5AzUntFNVaYuO4DvFBupmjI=
+X-Google-Smtp-Source: ABdhPJw+s2CWDk9HRphMq93oXWt4VU4Sp6efJAuhWSrKlPgBCSMUm0H8XNz1vWbclIGav+R3JCG/9Q==
+X-Received: by 2002:a17:906:3117:b0:6cd:f81b:e295 with SMTP id 23-20020a170906311700b006cdf81be295mr29357488ejx.511.1648029162650;
+        Wed, 23 Mar 2022 02:52:42 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id bm23-20020a170906c05700b006d597fd51c6sm9738191ejb.145.2022.03.23.02.52.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 02:52:41 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 11:52:40 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: sja1105q: proper way to solve PHY clk dependecy
+Message-ID: <20220323095240.y4xnp6ivz57obyvv@skbuf>
+References: <20220323060331.GA4519@pengutronix.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e1b859e3-fc85-4c38-bc36-08da0caf232a
-X-MS-TrafficTypeDiagnostic: MWHPR1301MB2079:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR1301MB2079AD47C4DE140F10744EFE88189@MWHPR1301MB2079.namprd13.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2i1RkFZp9d+0jqjHMZdOEyYZzxZh93Yee/lQYrBh98w0BIxBtOgZHuIhv6xc33V7W5yNo8NpBiuN02r6khc7+slTDL7FMAmTZ6Vpsft5W0GdSCp7oVqCxmMBzImC5K6yPnKHL6Tl6F7qiYEEf5m3iS8+EhWMS5WiRLou9W4yaJitiahLUxiys6EwEdcMr+CdrWYdThgG/qA8JlResS5xspBwP409df5Qx0iYjedRjmaFW/F3hzPlAzdc5ezBYKFPd82RJQnn3A+zYr4URDgAuDzvk8Yidsn3u/GsPd53AiIV2RIeyALbCX5yBiKyVdMbkkDEHN7yPj8WV9yYoIGURSFaNSAUJ78FgGlnyJ8DE/y/ndR+tWhhaSMuMzjX0C1No+aXfVR/SPIYIFIdN/iTamY6STuk4gwFMXq8LkUWJ7DJhvudyzXs2hrC+BXbLhVe4Ak/n/ESeIr7VOnsbsmTOYHTBbc5CJUKQiuCkwEuLq7S50uBFR59yQOV6kXO/lb8VLjAyNA0y8Lin51gTF1e/58bZfZYumqA4VWSeAo68N7MPgk3a7XTLBvZyOer0wL2Q3nCmqty+hBTWDzDOBURhnHMdU14IZVf21EDfthFZm5ZLEV6lJkOlxMt/1TQCzna3pL4Cb/uh4FzqRpJD05TuOzJYrWx8fcTQoDarVTff1KFmmK/ucqspiT5wGG477Xnl5zN3QUxmQ864sg0iubo8A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB4249.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(396003)(136003)(39830400003)(366004)(376002)(83380400001)(5660300002)(6506007)(508600001)(66476007)(6486002)(316002)(66556008)(9686003)(8676002)(66946007)(4326008)(6512007)(86362001)(8936002)(36756003)(2906002)(38350700002)(38100700002)(4744005)(26005)(1076003)(107886003)(6666004)(52116002)(186003)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ns1ctOQFFQ2obpAd0zjUir+k7KOQ+FxkxuSoSSVXLYZCTeDx7hynLLDPFceH?=
- =?us-ascii?Q?uSvCgRKzqqOFrw1rOOQtdApv4juImP4D0R5CfY2QJ8t5UroTgsWUpIU+q63E?=
- =?us-ascii?Q?YFlXTF2WSQZtwVatN0B1jcesN6rAxVOPwvNgKj7Q68sOIBW6JcU2kl/1hkoh?=
- =?us-ascii?Q?+5YP+3g4d4KV4rMrY6JwjaA/nGHnaQE5a2zOT/2LGGbHdZy6IbjZcvwVdk6K?=
- =?us-ascii?Q?Fb87ED68fB0BM3mQFbfEcocg8cMruNQpS9qCFuSolNlb/OVWI6f+ChGao3sQ?=
- =?us-ascii?Q?SqNXfI/NUZgeAyaa46dUvKgdNu1BZcYcfonpmIsKIyCmxWY85AiUL4D4PTxf?=
- =?us-ascii?Q?LTxRmTPQRKbk3xecXYbaNkzhIvBWlKW2SZ8XunH6Bg685S2ctIDpUFG8eOKg?=
- =?us-ascii?Q?z71cgwPi8scxU3TjO53uYprFjYvYAqWqrtZa8xb5mIPsoJgI3naGWp7+vMzs?=
- =?us-ascii?Q?nD+JtYAbkykyQlHaVsFuB46oBoHT9xvX2SXMuCORAIcfTtSv/zULIC8b8aka?=
- =?us-ascii?Q?sH+FYTRFQsK/6TElHvkTsPfbl4Sj6Wfu4cWKmOpzO2RhsZvwRR1mu/Yz+tIS?=
- =?us-ascii?Q?brW9K+9Pf8WFSyl86z6DYakJRz7R8oF6LELxPForXcq7QhzxnTzrD+/gklpk?=
- =?us-ascii?Q?FmWVw3gK6PIRfW1+Nw++qMtksyTAEkbtqmqwM+JzZnfxSyF6W9S+9zLYI2Gt?=
- =?us-ascii?Q?n5GgUYX0bV0tqrHQ+oSc1y5jzw/zx1JD9ddhhZ9oDoiyg6VEGsXmRpVsO6Ql?=
- =?us-ascii?Q?alTU/K7RVXu0vrfAglcEztRSkPEKHinGT+Y/XDJOsJZ23ONeFd7/r4CGDAXT?=
- =?us-ascii?Q?sbb4ClEsEYRbb/N6RtAVZlBsLIm1bRU/XcBmhOuQ5p49qGfXsScxamE45koR?=
- =?us-ascii?Q?YKP2iSecsVggAigV619rMdYQC9SPW+X/dXNmROz+d7UJwVWMVfP9k1ZkXYQy?=
- =?us-ascii?Q?uR+w6N2p0+cdw7Y4iWC/ISSoSa/cJjSab5BFqXkCFj0ixHI7JqynTvmDJ4GU?=
- =?us-ascii?Q?yUJJ2cxOEqRr/QPeVG5szgtLTnwzUPNu5UBzuwh7c/VRJWc9HeBjqqEpFVdV?=
- =?us-ascii?Q?lN9o6T8sv8CLD7jdJWUjDzDGjN5yfZabaA0YZf2lWukeiUbD1RANF4d4JeVm?=
- =?us-ascii?Q?H4/lTXDsvh0oSgqSbX/X/iamW6SRBEGfbQ6N2RnfwM7XuiYeV+pfovr5BbFp?=
- =?us-ascii?Q?kftrLFx0v1Wc5t4zHVoPcg45Z6S2yFIdK6dc/Znbd9+AyFyqVh94JgW1VaXY?=
- =?us-ascii?Q?7Cf21pu7tT2SruyxK4uiUDRKDbGGElxqh5IW+bJKJ+Z03tcoeUaJBIlimdjL?=
- =?us-ascii?Q?PSIu4QiX14A/GdkEaaLIhUXmSSJgKCQuMmUYfED7xpFFrewQdZLClyNz0owf?=
- =?us-ascii?Q?UhPFNAfHx3zl8BeguwxPdj6BXxV1sXj3XrIddSRKCWLtML3bLok7warRDK8F?=
- =?us-ascii?Q?vQRd8UnuqqLMGmv84DFayRm3xMR34iTys5Rp+0dk6WlTAkq94SNHFQ=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e1b859e3-fc85-4c38-bc36-08da0caf232a
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB4249.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2022 09:25:57.7815
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mYgFqUD5jvOIHpySCOUraHJkgphvWKdft32sTyZBTeKxRZQjIdVoRCnxZpAAhR5AePHq4YHfL6fI1fEtXgXHEZRH0PTbAMKQCL8yf7W/OCA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1301MB2079
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323060331.GA4519@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Louis Peens <louis.peens@corigine.com>
+Hello Oleksij,
 
-Seems like a potential copy-paste bug slipped in here,
-the second memcpy should of course be populating src
-and not dest.
+On Wed, Mar 23, 2022 at 07:03:31AM +0100, Oleksij Rempel wrote:
+> Hi Vladimir,
+> 
+> I have SJA1105Q based switch with 3 T1L PHYs connected over RMII
+> interface. The clk input "XI" of PHYs is connected to "MII0_TX_CLK/REF_CLK/TXC"
+> pins of the switch. Since this PHYs can't be configured reliably over MDIO
+> interface without running clk on XI input, i have a dependency dilemma:
+> i can't probe MDIO bus, without enabling DSA ports.
+> 
+> If I see it correctly, following steps should be done:
+> - register MDIO bus without scanning for PHYs
+> - define SJA1105Q switch as clock provider and PHYs as clk consumer
+> - detect and attach PHYs on port enable if clks can't be controlled
+>   without enabling the port.
+> - HW reset line of the PHYs should be asserted if we disable port and
+>   deasserted with proper reinit after port is enabled.
+> 
+> Other way would be to init and enable switch ports and PHYs by a bootloader and
+> keep it enabled.
+> 
+> What is the proper way to go?
+> 
+> Regards,
+> Oleksij
+> -- 
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
-Fixes: ab95465cde23 ("net/sched: add vlan push_eth and pop_eth action to the hardware IR")
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
----
- include/net/tc_act/tc_vlan.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The facts, as I see them, are as follows, feel free to debate them.
 
-diff --git a/include/net/tc_act/tc_vlan.h b/include/net/tc_act/tc_vlan.h
-index a97600f742de..904eddfc1826 100644
---- a/include/net/tc_act/tc_vlan.h
-+++ b/include/net/tc_act/tc_vlan.h
-@@ -84,7 +84,7 @@ static inline void tcf_vlan_push_eth(unsigned char *src, unsigned char *dest,
- {
- 	rcu_read_lock();
- 	memcpy(dest, rcu_dereference(to_vlan(a)->vlan_p)->tcfv_push_dst, ETH_ALEN);
--	memcpy(dest, rcu_dereference(to_vlan(a)->vlan_p)->tcfv_push_src, ETH_ALEN);
-+	memcpy(src, rcu_dereference(to_vlan(a)->vlan_p)->tcfv_push_src, ETH_ALEN);
- 	rcu_read_unlock();
- }
- 
--- 
-2.25.1
+1. Scanning the bus is not the problem, but PHY probing is.
 
+If the MDIO bus is registered with of_mdiobus_register() - which is to
+be expected, since the sja1105 driver only connects to a PHY using a
+phy-handle - that should set mdio->phy_mask = ~0; which should disable
+PHY scanning.
+
+But of_mdiobus_register() will still call of_mdiobus_register_phy()
+which will probe the phy_device. Here, depending on the code path,
+_some_ PHY reads might be performed - which will return an error if the
+PHY is missing its clock. For example, if the PHY ID isn't part of the
+compatible string, fwnode_mdiobus_register_phy() will attempt to read it
+from the PHY via get_phy_device(). Alternatively, you could put the PHY
+ID in the DT and this will end up calling phy_device_create().
+
+Then there's the probe() method of the T1L PHY driver, which is the
+reason why it would be good to know what that driver is. Since its clock
+might not be available, I expect that this driver doesn't access
+hardware from probe(), knowing that it is an RMII PHY driver and this is
+a generic problem for RMII PHYs.
+
+2. The sja1105 driver already does all it reasonably can to make the
+   RMII PHY happy.
+
+The clocks of a port are enabled/configured from sja1105_clocking_setup_port()
+which has 3 call paths:
+(a) during sja1105_setup(), aka during switch initialization, all ports
+    except RGMII ports have their clocks configured and enabled, via
+    priv->info->clocking_setup(). The RGMII ports have a clock that
+    depends upon the link speed, and we don't know the link speed.
+(b) during sja1105_static_config_reload(). The sja1105 switch needs to
+    dynamically reset itself at runtime, and this cuts off the clocks
+    for a while. Again there is a call to priv->info->clocking_setup()
+    here.
+(c) during phylink_mac_link_up -> sja1105_adjust_port_config(), a call
+    is made to sja1105_clocking_setup_port() for RGMII PHYs, because the
+    speed is now known.
+
+Since DSA calls dsa_slave_phy_setup() _after_ dsa_switch_setup(), this
+means that by the time the PHY is attached, its config_init() runs, etc,
+the RMII clock configured by sja1105_setup() should be running.
+
+3. Clock gating the PHY won't make it lose its settings.
+
+I expect that during the time when the sja1105 switch needs to reset,
+the PHY just sees this as a few hundreds of ms during which there are no
+clock edges on the crystal input pin. Sure, the PHY won't do anything
+during that time, but this is quite different from a reset, is it not?
+So asserting the hardware reset line of the PHY during the momentary
+loss of clock, which is what you seem to suggest, will actively do more
+harm than good.
+
+4. Making the sja1105 driver a clock provider doesn't solve the problem
+   in the general sense.
+
+If you make this PHY driver expect the MAC to be a clock provider,
+are you going to expect that all RMII-capable MAC drivers be patched?
+For this reason I am in principle opposed to making the sja1105 driver
+a clock provider, you won't be able to generalize this solution and it
+would just create a huge mess going forward.
