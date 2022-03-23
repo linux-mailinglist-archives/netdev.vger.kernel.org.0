@@ -2,65 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DCB4E57B3
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:38:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAFC14E57BA
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:40:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245162AbiCWRjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 13:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58714 "EHLO
+        id S1343686AbiCWRlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 13:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237353AbiCWRjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:39:55 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A639FD2C
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 10:38:25 -0700 (PDT)
+        with ESMTP id S240424AbiCWRlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:41:35 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D59D65801;
+        Wed, 23 Mar 2022 10:40:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648057105; x=1679593105;
-  h=message-id:date:mime-version:subject:cc:references:from:
-   to:in-reply-to:content-transfer-encoding;
-  bh=xb2ash3QyjsdxeY1io12OmLXhZtU8Z36q39iIKBI5UI=;
-  b=BvaqOYQhe88egtt8zplAGQO8CQZvdd40nHRMVSxIVQF3h47RRluGBmgK
-   5cATQSoHKCQPFBJMEGkZIM7jMKVURry0xHxxYYncwse74eo9m2w7Qe41s
-   kdUCZGRVSAmVnyqEZLq/q4BBONqyJaPJZ+EU4nLi+/xiC2NZXLZd9vuXu
-   cNIBH/BvETGIeUDfYpQvOXnSasVJSbhAjlXFi4/9ZDZCdIIz5c4OtA4y+
-   fCLmphb2g01gE+b359r85/XqnOt33hu31gwdXJWJ7qSUafsEYsztpLJah
-   +OERxfKClDOaGVxa9SCqe53ONDP/vfJq2idyGZPxOxfzHAXg0voUPf39u
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="240346269"
+  t=1648057205; x=1679593205;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zJDagyibNbk8SsVd5xnyYaCfEE/tEBY6Q2NBuH6XAnc=;
+  b=jMIRmujp71gB8GNDqUw13ovVkYpv1LWSOy2W5U7hR1sD488yF/2+/IQ/
+   pmG8VBo9+xLwCjY15NCn0B24nWuHdhiqoPKTnBaDabS6Dc/Af7i4dYklC
+   tfMLEoClyWtKYOuCYZirwPTeHDP9OWINIP8/txOiELlaxZGfuGjMqElt4
+   KDPapIk82UoD4CXbGE359yIQiJLU0YvC54FAw1qw+lwhLNhzCwzEKl5EU
+   tN1NIeSsLmeAsMRfSMpM0YeWnHCEg3ySxq6+qMxaCm743Mfz+M2+6BlUS
+   8EuCe2Ea/y61mJH638UX6blZnEfHoeVVlt/K0ul/TkaUiP8CDtSYoxxhb
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="258140196"
 X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="240346269"
+   d="scan'208";a="258140196"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:37:01 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:39:18 -0700
 X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="561011437"
-Received: from mckumar-mobl1.gar.corp.intel.com (HELO [10.215.128.237]) ([10.215.128.237])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:36:59 -0700
-Message-ID: <6590efa9-8fcd-5d77-9dff-6f2d1244cdb0@linux.intel.com>
-Date:   Wed, 23 Mar 2022 23:06:55 +0530
+   d="scan'208";a="561012724"
+Received: from mszycik-mobl.ger.corp.intel.com (HELO [10.249.137.148]) ([10.249.137.148])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:39:13 -0700
+Message-ID: <45b155ff-8e26-fa96-f89e-6a561de01abb@linux.intel.com>
+Date:   Wed, 23 Mar 2022 18:39:11 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: net: wwan: ethernet interface support
+Subject: Re: [PATCH net] ice: Clear default forwarding VSI during VSI release
 Content-Language: en-US
-Cc:     Johannes Berg <johannes@sipsolutions.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
+To:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org
+Cc:     poros@redhat.com, mschmidt@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>
-References: <1eb3d9e6-2adf-7f6c-4745-481451813522@linux.intel.com>
- <CAHNKnsQMFDdRzjAGW8+KHJrJUnganM0gi8AWmBnF1h_M2RSLeg@mail.gmail.com>
- <CAMZdPi_veiVaQYBcu9o0GqbmUcYtkL4NawOo2AGPKxfmaNrdhg@mail.gmail.com>
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-To:     "loic.poulain@linaro.org >> Loic Poulain" <loic.poulain@linaro.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>
-In-Reply-To: <CAMZdPi_veiVaQYBcu9o0GqbmUcYtkL4NawOo2AGPKxfmaNrdhg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Brett Creeley <brett.creeley@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220322142554.3253428-1-ivecera@redhat.com>
+From:   Marcin Szycik <marcin.szycik@linux.intel.com>
+In-Reply-To: <20220322142554.3253428-1-ivecera@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -68,41 +71,56 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 3/23/2022 10:36 PM, Loic Poulain wrote:
-> On Sat, 19 Mar 2022 at 19:34, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
->>
->> Hello,
->>
->> On Sat, Mar 19, 2022 at 6:21 PM Kumar, M Chetan
->> <m.chetan.kumar@linux.intel.com> wrote:
->>> Release16 5G WWAN Device need to support Ethernet interface for TSN requirement.
->>> So far WWAN interface are of IP type. Is there any plan to scale it to support
->>> ethernet interface type ?
->>
->> What did you mean when you talked about supporting interfaces of Ethernet type?
->>
->> The WWAN subsystem provides an interface for users to request the
->> creation of a network interface from a modem driver. At the moment,
->> all modem drivers that support the WWAN subsystem integration create
->> network interfaces of the ARPHRD_NONE or ARPHRD_RAWIP type. But it is
->> up to the driver what type of interface it will create. At any time,
->> the driver can decide to create an ARPHRD_ETHER network interface, and
->> it will be Ok.
+
+On 22-Mar-22 15:25, Ivan Vecera wrote:
+> VSI is set as default forwarding one when promisc mode is set for
+> PF interface, when PF is switched to switchdev mode or when VF
+> driver asks to enable allmulticast or promisc mode for the VF
+> interface (when vf-true-promisc-support priv flag is off).
+> The third case is buggy because in that case VSI associated with
+> VF remains as default one after VF removal.
 > 
-> Agree, WWAN does not require a specific type, so you can do whatever
-> you want in the newlink callback.
+> Reproducer:
+> 1. Create VF
+>    echo 1 > sys/class/net/ens7f0/device/sriov_numvfs
+> 2. Enable allmulticast or promisc mode on VF
+>    ip link set ens7f0v0 allmulticast on
+>    ip link set ens7f0v0 promisc on
+> 3. Delete VF
+>    echo 0 > sys/class/net/ens7f0/device/sriov_numvfs
+> 4. Try to enable promisc mode on PF
+>    ip link set ens7f0 promisc on
 > 
-> Should a modem/driver be able to expose mixed interface types (e.g. ip
-> + eth), in that case we probably need to add extra param to newlink.
+> Although it looks that promisc mode on PF is enabled the opposite
+> is true because ice_vsi_sync_fltr() responsible for IFF_PROMISC
+> handling first checks if any other VSI is set as default forwarding
+> one and if so the function does not do anything. At this point
+> it is not possible to enable promisc mode on PF without re-probe
+> device.
+> 
+> To resolve the issue this patch clear default forwarding VSI
+> during ice_vsi_release() when the VSI to be released is the default
+> one.
+> 
+> Fixes: 01b5e89aab49 ("ice: Add VF promiscuous support")
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+> index 53256aca27c7..20d755822d43 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+> @@ -3147,6 +3147,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
+>  		}
+>  	}
+>  
+> +	if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
+> +		ice_clear_dflt_vsi(pf->first_sw);
 
-The wwan device which is complaint to 3GPP release16 specification (TSN 
-supported) will have to create both the types of interfaces ARPHRD_RAWIP/ 
-ARPHRD_NONE to carry default IP traffic and ARPHRD_ETHER for carrying TSN 
-specific traffic.
+It would probably be good to check `ice_clear_dflt_vsi` return code.
 
-Since both can co-exist can we consider this extra param added to newlink to 
-distinguish
-1> Ethernet interface creation from ip interface
-2> Ethernet interface to session id mapping.
-
-Kindly provide your inputs.
+>  	ice_fltr_remove_all(vsi);
+>  	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
+>  	err = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
