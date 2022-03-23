@@ -2,111 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8706B4E4AAA
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 02:57:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28AFC4E4AB9
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 03:06:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbiCWB7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 21:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39554 "EHLO
+        id S231679AbiCWCIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 22:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiCWB7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 21:59:14 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBC1D5621F
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 18:57:45 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-130-lFQCKZA0NSGnTdW-G_mNsQ-1; Wed, 23 Mar 2022 01:57:41 +0000
-X-MC-Unique: lFQCKZA0NSGnTdW-G_mNsQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Wed, 23 Mar 2022 01:57:41 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Wed, 23 Mar 2022 01:57:41 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Torin Carey' <torin@tcarey.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] udp: change MSG_TRUNC return behaviour for MSG_PEEK in
- recvmsg
-Thread-Topic: [PATCH] udp: change MSG_TRUNC return behaviour for MSG_PEEK in
- recvmsg
-Thread-Index: AQHYPh+fV1aILsQYJkGFKR0h1ZEPnazMNg+w
-Date:   Wed, 23 Mar 2022 01:57:41 +0000
-Message-ID: <eff8db769c314119a8867e968e4dddea@AcuMS.aculab.com>
-References: <YjodjXHN7j69h/kd@kappa>
-In-Reply-To: <YjodjXHN7j69h/kd@kappa>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S231596AbiCWCIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 22:08:10 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF766F484
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 19:06:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648001201; x=1679537201;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=c6kCEefIb3Hrpw1mbxiEREzW+yJ/0qaXMwwd2UlQRVQ=;
+  b=bepPHMYvSCgdA9M0gtXCcJziPdp7hP/1EvEODMebIcApj6purpUDYbOt
+   9E0TMAlMxRhAx4vK21suSftPvJv0M/4SnkfQ7bgH3bQ11/KeuLf0LHs3p
+   LgWC7E9PwNXJiVhAa0oD5jcbYO6nLZzbAU4hX5CvXyWqWVv4MdjWbpjhu
+   QoU77izqpq4ttnJ7zI2pxw7YY4e2bHsvqclLyhHNaebrU3yQI6S3BTkEi
+   isfQmM4QxpSn3i4xO3mR+WfXPruyp6JiqJCIgDCfg3S+xo292sH2PJFsk
+   m3k7XdXsNUFO4+5Ouf5YUqXaHSZVNQO0QAvTmjV8zi4gmxDntO61wzsGg
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="255563427"
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="255563427"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2022 19:06:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,203,1643702400"; 
+   d="scan'208";a="500834407"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 22 Mar 2022 19:06:38 -0700
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nWqOU-000JX2-1E; Wed, 23 Mar 2022 02:06:38 +0000
+Date:   Wed, 23 Mar 2022 10:06:18 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, mlichvar@redhat.com,
+        vinicius.gomes@intel.com, netdev@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: Re: [PATCH net-next v1 5/6] ptp: Support late timestamp determination
+Message-ID: <202203231015.YRlUe3av-lkp@intel.com>
+References: <20220322210722.6405-6-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322210722.6405-6-gerhard@engleder-embedded.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogVG9yaW4gQ2FyZXkNCj4gU2VudDogMjIgTWFyY2ggMjAyMiAxOTowNA0KPiANCj4gTWFr
-ZSBVRFAgcmVjdm1zZyBvbmx5IHJldHVybiB0aGUgTVNHX1RSVU5DIGZsYWcgaWYgdGhlIHJlYWQg
-ZG9lcyBub3QNCj4gY29weSB0aGUgdGFpbCBlbmQgb2YgdGhlIGRhdGFncmFtLiAgU3BlY2lmaWNh
-bGx5LCB0aGlzIHRhcmdldHMgTVNHX1BFRUsNCj4gd2hlbiB3ZSdyZSB1c2luZyBhIHBvc2l0aXZl
-IHBlZWsgb2Zmc2V0Lg0KPiANCj4gVGhlIGN1cnJlbnQgYmVoYXZpb3VyIG1lYW5zIHRoYXQgaWYg
-d2UgaGF2ZSBhIHBvc2l0aXZlIHBlZWsgb2Zmc2V0IGBvZmZgDQo+IGFuZCB3ZSdyZSByZWFkaW5n
-IGByYCBieXRlcyBmcm9tIGEgZGF0YWdyYW0gb2YgYHVsZW5gIGxlbmd0aCwgd2UgcmVzcG9uZA0K
-PiB3aXRoIE1TR19UUlVOQyBpZiBhbmQgb25seSBpZiBgciA8PSB1bGVuIC0gb2ZmYC4gIFRoaXMg
-aXMgb2RkIGJlaGF2aW91cg0KPiBhcyB3ZSByZXR1cm4gTVNHX1RSVU5DIGlmIHRoZSB1c2VyIHJl
-cXVlc3RzIGV4YWN0bHkgYHVsZW4gLSBvZmZgIHdoaWNoDQo+IGhhcyBubyB0cnVuY2F0aW9uLg0K
-PiANCj4gVGhlIGJlaGF2aW91ciBjb3VsZCBiZSBjb3JyZWN0ZWQgaW4gdHdvIHdheXM6DQo+IA0K
-PiBUaGlzIHBhdGNoIHJldHVybnMgTVNHX1RSVU5DIG9ubHkgZm9yIHRhaWwtZW5kIHRydW5jYXRp
-b24gYW5kIG5vdCBoZWFkDQo+IHRydW5jYXRpb24uICBUaGlzIGlzIG1vcmUgY29uc2lzdGVudCB3
-aXRoIHJlY3YoMik6DQo+ID4gTVNHX1RSVU5DDQo+ID4gICAgIGluZGljYXRlcyB0aGF0IHRoZSB0
-cmFpbGluZyBwb3J0aW9uIG9mIGEgZGF0YWdyYW0gd2FzIGRpc2NhcmRlZA0KPiA+ICAgICBiZWNh
-dXNlIHRoZSBkYXRhZ3JhbSB3YXMgbGFyZ2VyIHRoYW4gdGhlIGJ1ZmZlciBzdXBwbGllZC4NCj4g
-YWx0aG91Z2ggdGhpcyBpc24ndCB3cml0dGVuIHdpdGggU09fUEVFS19PRkYgaW4gbWluZC4NCj4g
-DQo+IFRoZSBzZWNvbmQgb3B0aW9uIGlzIHRvIGFsd2F5cyByZXR1cm4gTVNHX1RSVU5DIGlmIGBv
-ZmYgPiAwYCBsaWtlIHRoZQ0KPiBtYW4tcGFnZXMgc29ja2V0KDcpIHBhZ2Ugc3RhdGVzOg0KPiA+
-IEZvciBkYXRhZ3JhbSBzb2NrZXRzLCBpZiB0aGUgInBlZWsgb2Zmc2V0IiBwb2ludHMgdG8gdGhl
-IG1pZGRsZSBvZiBhDQo+ID4gcGFja2V0LCB0aGUgZGF0YSByZXR1cm5lZCB3aWxsIGJlIG1hcmtl
-ZCB3aXRoIHRoZSBNU0dfVFJVTkMgZmxhZy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFRvcmluIENh
-cmV5IDx0b3JpbkB0Y2FyZXkudWs+DQo+IC0tLQ0KPiAgbmV0L2lwdjQvdWRwLmMgfCAyICstDQo+
-ICBuZXQvaXB2Ni91ZHAuYyB8IDIgKy0NCj4gIDIgZmlsZXMgY2hhbmdlZCwgMiBpbnNlcnRpb25z
-KCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL25ldC9pcHY0L3VkcC5jIGIv
-bmV0L2lwdjQvdWRwLmMNCj4gaW5kZXggMzE5ZGQ3YmJmZTMzLi5lNTc3NDBhMmMzMDggMTAwNjQ0
-DQo+IC0tLSBhL25ldC9pcHY0L3VkcC5jDQo+ICsrKyBiL25ldC9pcHY0L3VkcC5jDQo+IEBAIC0x
-ODU1LDcgKzE4NTUsNyBAQCBpbnQgdWRwX3JlY3Ztc2coc3RydWN0IHNvY2sgKnNrLCBzdHJ1Y3Qg
-bXNnaGRyICptc2csIHNpemVfdCBsZW4sIGludCBub2Jsb2NrLA0KPiAgCWNvcGllZCA9IGxlbjsN
-Cj4gIAlpZiAoY29waWVkID4gdWxlbiAtIG9mZikNCj4gIAkJY29waWVkID0gdWxlbiAtIG9mZjsN
-Cj4gLQllbHNlIGlmIChjb3BpZWQgPCB1bGVuKQ0KPiArCWVsc2UgaWYgKGNvcGllZCA8IHVsZW4g
-LSBvZmYpDQo+ICAJCW1zZy0+bXNnX2ZsYWdzIHw9IE1TR19UUlVOQzsNCg0KWW91IGNhbiByZW1v
-dmUgYSB0ZXN0Og0KCWlmIChjb3BpZWQgPj0gdWxlbiAtIG9mZikNCgkJY29waWVkID0gdWxlbiAt
-IG9mZjsNCgllbHNlDQoJCW1zZy0+bXNnX2ZsYWdzIHw9IE1TR19UUlVOQzsNCg0KICAgIERhdmlk
-DQoNCj4gDQo+ICAJLyoNCj4gZGlmZiAtLWdpdCBhL25ldC9pcHY2L3VkcC5jIGIvbmV0L2lwdjYv
-dWRwLmMNCj4gaW5kZXggMTRhOTRjZGRjZjBiLi5kNmMwZWVkOTQ1NjQgMTAwNjQ0DQo+IC0tLSBh
-L25ldC9pcHY2L3VkcC5jDQo+ICsrKyBiL25ldC9pcHY2L3VkcC5jDQo+IEBAIC0zNDgsNyArMzQ4
-LDcgQEAgaW50IHVkcHY2X3JlY3Ztc2coc3RydWN0IHNvY2sgKnNrLCBzdHJ1Y3QgbXNnaGRyICpt
-c2csIHNpemVfdCBsZW4sDQo+ICAJY29waWVkID0gbGVuOw0KPiAgCWlmIChjb3BpZWQgPiB1bGVu
-IC0gb2ZmKQ0KPiAgCQljb3BpZWQgPSB1bGVuIC0gb2ZmOw0KPiAtCWVsc2UgaWYgKGNvcGllZCA8
-IHVsZW4pDQo+ICsJZWxzZSBpZiAoY29waWVkIDwgdWxlbiAtIG9mZikNCj4gIAkJbXNnLT5tc2df
-ZmxhZ3MgfD0gTVNHX1RSVU5DOw0KPiANCj4gIAlpc191ZHA0ID0gKHNrYi0+cHJvdG9jb2wgPT0g
-aHRvbnMoRVRIX1BfSVApKTsNCj4gLS0NCj4gMi4zNC4xDQo+IA0KDQotDQpSZWdpc3RlcmVkIEFk
-ZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywg
-TUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+Hi Gerhard,
 
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on net-next/master]
+
+url:    https://github.com/0day-ci/linux/commits/Gerhard-Engleder/ptp-Support-hardware-clocks-with-additional-free-running-time/20220323-051003
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 4a0cb83ba6e0cd73a50fa4f84736846bf0029f2b
+config: nios2-randconfig-r023-20220321 (https://download.01.org/0day-ci/archive/20220323/202203231015.YRlUe3av-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/754e870cb9699166113d6ea383e48b0207165c1a
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Gerhard-Engleder/ptp-Support-hardware-clocks-with-additional-free-running-time/20220323-051003
+        git checkout 754e870cb9699166113d6ea383e48b0207165c1a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from net/socket.c:108:
+   include/linux/ptp_clock_kernel.h:418:1: error: expected identifier or '(' before '{' token
+     418 | { return 0; }
+         | ^
+   net/socket.c: In function '__sys_getsockopt':
+   net/socket.c:2227:13: warning: variable 'max_optlen' set but not used [-Wunused-but-set-variable]
+    2227 |         int max_optlen;
+         |             ^~~~~~~~~~
+   In file included from net/socket.c:108:
+   net/socket.c: At top level:
+>> include/linux/ptp_clock_kernel.h:415:23: warning: 'ptp_get_timestamp' used but never defined
+     415 | static inline ktime_t ptp_get_timestamp(int index,
+         |                       ^~~~~~~~~~~~~~~~~
+
+
+vim +/ptp_get_timestamp +415 include/linux/ptp_clock_kernel.h
+
+   404	
+   405	/**
+   406	 * ptp_convert_timestamp() - convert timestamp to a ptp vclock time
+   407	 *
+   408	 * @hwtstamp:     timestamp
+   409	 * @vclock_index: phc index of ptp vclock.
+   410	 *
+   411	 * Returns converted timestamp, or 0 on error.
+   412	 */
+   413	ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index);
+   414	#else
+ > 415	static inline ktime_t ptp_get_timestamp(int index,
+   416						const struct skb_shared_hwtstamps *hwtstamps,
+   417						bool cycles);
+   418	{ return 0; }
+   419	static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
+   420	{ return 0; }
+   421	static inline ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp,
+   422						    int vclock_index)
+   423	{ return 0; }
+   424	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
