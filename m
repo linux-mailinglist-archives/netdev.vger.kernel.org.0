@@ -2,211 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD7C84E4E16
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 09:21:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE384E4E6A
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 09:41:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242625AbiCWIWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 04:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50972 "EHLO
+        id S232197AbiCWInL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 04:43:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242609AbiCWIWc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 04:22:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DF566CA61
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 01:21:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648023661;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Vqk26j7GPt6tpaNBmnZBuv0WdpMn55RPsz9Eg2gtLzU=;
-        b=aGchXGOr7ktww9sinjp4Mplyx7kMdM3qlZgMNmyQP8MLYzAi7fYM0qtK2s/2GA0zPu8lh5
-        ICcE2x7e52j7bLx01Ocw2kt08SHbAzaPCiE0UPJn6/ZuvalxPqlMvxbDmTPaeUeLgCTlDv
-        Mwj/+gw20U3OM0S2inHXKChLUhZ3O4I=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-480-zZaxuu2yP7u6x7nO16PD3A-1; Wed, 23 Mar 2022 04:21:00 -0400
-X-MC-Unique: zZaxuu2yP7u6x7nO16PD3A-1
-Received: by mail-qk1-f200.google.com with SMTP id v22-20020a05620a0a9600b0067e87a1ff57so516497qkg.14
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 01:21:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Vqk26j7GPt6tpaNBmnZBuv0WdpMn55RPsz9Eg2gtLzU=;
-        b=QxYm6PQl+mygYHUmzcq/m9sEhEtERRgeTGMhpnJx+KI9AxU0TBu4929uo3bI97JpUg
-         efJhJMRKcDtb3nmiTJamTvA65fGVqmAn52m/kyVUtw1Z9APdGTrXXTQEZipdvljAHy2m
-         3vThNWqyHmWkOHMoqtEmqvgoRAwRN9NkCpkmLmEJ7jpXs7ecLAkEp0TY5LUVG9DOsqdm
-         w/KaZAaLMO67AC+o5wS7EbcqZYrnAia9MGjc3HeshwB9UBUXbrJiy5K/EARaDTJnLeyO
-         3z4kqa3wTmpKN9CMeueeC7+PFfGHcMfxagp+8zh9mPcrphkNwUy5U4AYagBvFWjiPYTv
-         P4Eg==
-X-Gm-Message-State: AOAM533weQHleTn/mLw60HGgRJY0845Uq5m9cgqUr3kQ1mosu2/w0DuU
-        os0Pl6sg2yYu0vOkmZp55HMOoG06nigOcl5X3S7wM3iX5c8+V59xb4Uq0yNcAqo8Sy0U93T58Qc
-        YZGb7q4/64fLJnpay
-X-Received: by 2002:a37:a18c:0:b0:67b:2d46:4db5 with SMTP id k134-20020a37a18c000000b0067b2d464db5mr17764226qke.67.1648023659489;
-        Wed, 23 Mar 2022 01:20:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy4n3qE43FHHavcLRTxT+2AkpO+gQUIrIWi2gkLhhFoTbdr0vHSfrSar769ZcLk0WlsulDPDw==
-X-Received: by 2002:a37:a18c:0:b0:67b:2d46:4db5 with SMTP id k134-20020a37a18c000000b0067b2d464db5mr17764214qke.67.1648023659177;
-        Wed, 23 Mar 2022 01:20:59 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id z15-20020a05622a060f00b002e2070bf899sm9937266qta.90.2022.03.23.01.20.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 01:20:58 -0700 (PDT)
-Message-ID: <2ef6b0571179c75636830bd9810a777d197738f4.camel@redhat.com>
-Subject: Re: [PATCH] ipv6: fix locking issues with loops over idev->addr_list
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Niels Dossche <dossche.niels@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Wed, 23 Mar 2022 09:20:55 +0100
-In-Reply-To: <20220322213406.55977-1-dossche.niels@gmail.com>
-References: <20220322213406.55977-1-dossche.niels@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        with ESMTP id S229760AbiCWInJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 04:43:09 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BB641615;
+        Wed, 23 Mar 2022 01:41:39 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KNhbw01RBz6H6mB;
+        Wed, 23 Mar 2022 16:39:24 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Wed, 23 Mar 2022 09:41:36 +0100
+Message-ID: <212ac1b3-b78b-4030-1f3d-f5cd1001bb7d@huawei.com>
+Date:   Wed, 23 Mar 2022 11:41:32 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v4 03/15] landlock: landlock_find/insert_rule
+ refactoring
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        <willemdebruijn.kernel@gmail.com>
+CC:     <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-4-konstantin.meskhidze@huawei.com>
+ <bc44f11f-0eaa-a5f6-c5dc-1d36570f1be1@digikod.net>
+ <6535183b-5fad-e3a9-1350-d22122205be6@huawei.com>
+ <92d498f0-c598-7413-6b7c-d19c5aec6cab@digikod.net>
+ <cb30248d-a8ae-c366-2c9f-2ab0fe44cc9a@huawei.com>
+ <90a20548-39f6-6e84-efb1-8ef3ad992255@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <90a20548-39f6-6e84-efb1-8ef3ad992255@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-03-22 at 22:34 +0100, Niels Dossche wrote:
-> idev->addr_list needs to be protected by idev->lock. However, it is not
-> always possible to do so while iterating and performing actions on
-> inet6_ifaddr instances. For example, multiple functions (like
-> addrconf_{join,leave}_anycast) eventually call down to other functions
-> that acquire the idev->lock. The current code temporarily unlocked the
-> idev->lock during the loops, which can cause race conditions. Moving the
-> locks up is also not an appropriate solution as the ordering of lock
-> acquisition will be inconsistent with for example mc_lock.
+
+
+3/22/2022 4:24 PM, Mickaël Salaün пишет:
 > 
-> This solution adds an additional field to inet6_ifaddr that is used
-> to temporarily add the instances to a temporary list while holding
-> idev->lock. The temporary list can then be traversed without holding
-> idev->lock. This change was done in two places. In addrconf_ifdown, the
-> list_for_each_entry_safe variant of the list loop is also no longer
-> necessary as there is no deletion within that specific loop.
+> On 22/03/2022 13:33, Konstantin Meskhidze wrote:
+>>
+>>
+>> 3/18/2022 9:33 PM, Mickaël Salaün пишет:
+>>>
+>>> On 17/03/2022 15:29, Konstantin Meskhidze wrote:
+>>>>
+>>>>
+>>>> 3/16/2022 11:27 AM, Mickaël Salaün пишет:
+>>>>>
+>>>>> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>>>>>> A new object union added to support a socket port
+>>>>>> rule type. To support it landlock_insert_rule() and
+>>>>>> landlock_find_rule() were refactored. Now adding
+>>>>>> or searching a rule in a ruleset depends on a
+>>>>>> rule_type argument provided in refactored
+>>>>>> functions mentioned above.
+>>>>>>
+>>>>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>>>>> ---
 > 
-> The remaining loop in addrconf_ifdown that unlocks idev->lock in its
-> loop body is of no issue. This is because that loop always gets the
-> first entry and performs the delete and condition check under the
-> idev->lock.
+> [...]
 > 
-> Suggested-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-> ---
+>>>>>> @@ -156,26 +166,38 @@ static void build_check_ruleset(void)
+>>>>>>    * access rights.
+>>>>>>    */
+>>>>>>   static int insert_rule(struct landlock_ruleset *const ruleset,
+>>>>>> -        struct landlock_object *const object,
+>>>>>> +        struct landlock_object *const object_ptr,
+>>>>>> +        const uintptr_t object_data,
+>>>
+>>> Can you move rule_type here for this function and similar ones? It 
+>>> makes sense to group object-related arguments.
+>>
+>>   Just to group them together, not putting rule_type in the end?
 > 
-> This was previously discussed in the mailing thread of
-> [PATCH v2] ipv6: acquire write lock for addr_list in dev_forward_change
+> Yes
+
+   Ok. Got it.
 > 
->  include/net/if_inet6.h |  7 +++++++
->  net/ipv6/addrconf.c    | 29 +++++++++++++++++++++++------
->  2 files changed, 30 insertions(+), 6 deletions(-)
+> [...]
 > 
-> diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-> index f026cf08a8e8..a17f29f75e9a 100644
-> --- a/include/net/if_inet6.h
-> +++ b/include/net/if_inet6.h
-> @@ -64,6 +64,13 @@ struct inet6_ifaddr {
->  
->  	struct hlist_node	addr_lst;
->  	struct list_head	if_list;
-> +	/*
-> +	 * Used to safely traverse idev->addr_list in process context
-> +	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-> +	 * In that case, add the items to this list temporarily and iterate
-> +	 * without holding idev->lock. See addrconf_ifdown and dev_forward_change.
-> +	 */
-> +	struct list_head	if_list_aux;
->  
->  	struct list_head	tmp_list;
->  	struct inet6_ifaddr	*ifpub;
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index f908e2fd30b2..72790d1934c7 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -800,6 +800,7 @@ static void dev_forward_change(struct inet6_dev *idev)
->  {
->  	struct net_device *dev;
->  	struct inet6_ifaddr *ifa;
-> +	LIST_HEAD(tmp_addr_list);
->  
->  	if (!idev)
->  		return;
-> @@ -818,14 +819,23 @@ static void dev_forward_change(struct inet6_dev *idev)
->  		}
->  	}
->  
-> +	read_lock_bh(&idev->lock);
->  	list_for_each_entry(ifa, &idev->addr_list, if_list) {
->  		if (ifa->flags&IFA_F_TENTATIVE)
->  			continue;
-> +		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-> +	}
-> +	read_unlock_bh(&idev->lock);
-> +
-> +	while (!list_empty(&tmp_addr_list)) {
-> +		ifa = list_first_entry(&tmp_addr_list, struct inet6_ifaddr, if_list_aux);
-> +		list_del(&ifa->if_list_aux);
->  		if (idev->cnf.forwarding)
->  			addrconf_join_anycast(ifa);
->  		else
->  			addrconf_leave_anycast(ifa);
->  	}
-> +
->  	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
->  				     NETCONFA_FORWARDING,
->  				     dev->ifindex, &idev->cnf);
-> @@ -3730,10 +3740,11 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
->  	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
->  	struct net *net = dev_net(dev);
->  	struct inet6_dev *idev;
-> -	struct inet6_ifaddr *ifa, *tmp;
-> +	struct inet6_ifaddr *ifa;
->  	bool keep_addr = false;
->  	bool was_ready;
->  	int state, i;
-> +	LIST_HEAD(tmp_addr_list);
+>>>>>> @@ -465,20 +501,28 @@ struct landlock_ruleset 
+>>>>>> *landlock_merge_ruleset(
+>>>>>>    */
+>>>>>>   const struct landlock_rule *landlock_find_rule(
+>>>>>>           const struct landlock_ruleset *const ruleset,
+>>>>>> -        const struct landlock_object *const object)
+>>>>>> +        const uintptr_t object_data, const u16 rule_type)
+>>>>>>   {
+>>>>>>       const struct rb_node *node;
+>>>>>>
+>>>>>> -    if (!object)
+>>>>>> +    if (!object_data)
+>>>>>
+>>>>> object_data can be 0. You need to add a test with such value.
+>>>>>
+>>>>> We need to be sure that this change cannot affect the current FS code.
+>>>>
+>>>>   I got it. I will refactor it.
+>>>
+>>> Well, 0 means a port 0, which might not be correct, but this check 
+>>> should not be performed by landlock_merge_ruleset().
+>>>
+>>   Do you mean landlock_find_rule()?? Cause this check is not
+>>   performed in landlock_merge_ruleset().
+> 
+> Yes, I was thinking about landlock_find_rule(). If you run your tests 
+> with the patch I proposed, you'll see that one of these tests will fail 
+> (when port equal 0). When creating a new network rule, 
+> add_rule_net_service() should check if the port value is valid. However, 
+> the above `if (!object_data)` is not correct anymore.
+> 
+> The remaining question is: should we need to accept 0 as a valid TCP 
+> port? Can it be used? How does the kernel handle it?
 
-Very minot nit: I guess it's better to try to enforce the reverse x-mas
-tree order for newly added variables - that is: this declaration should
-me moved up, just after 'ifa'.
+  I agree that must be a check for port 0 in add_rule_net_service(), 
+cause unlike most port numbers, port 0 is a reserved port in TCP/IP 
+networking, meaning that it should not be used in TCP or UDP messages.
+Also network traffic sent across the internet to hosts listening on port 
+0 might be generated from network attackers or accidentally by 
+applications programmed incorrectly.
+Source: https://www.lifewire.com/port-0-in-tcp-and-udp-818145
 
->  	ASSERT_RTNL();
->  
-> @@ -3822,16 +3833,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
->  		write_lock_bh(&idev->lock);
->  	}
->  
-> -	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
-> +	list_for_each_entry(ifa, &idev->addr_list, if_list) {
-> +		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-> +	}
+> 
+>>
+>>>
+>>>>>
+>>>>>
+>>>>>>           return NULL;
+>>>>>> -    node = ruleset->root.rb_node;
+>>>>>> +
+>>>>>> +    switch (rule_type) {
+>>>>>> +    case LANDLOCK_RULE_PATH_BENEATH:
+>>>>>> +        node = ruleset->root_inode.rb_node;
+>>>>>> +        break;
+>>>>>> +    default:
+>>>>>> +        return ERR_PTR(-EINVAL);
+>>>>>
+>>>>> This is a bug. There is no check for such value. You need to check 
+>>>>> and update all call sites to catch such errors. Same for all new 
+>>>>> use of ERR_PTR().
+>>>>
+>>>> Sorry, I did not get your point.
+>>>> Do you mean I should check the correctness of rule_type in above 
+>>>> function which calls landlock_find_rule() ??? Why can't I add such 
+>>>> check here?
+>>>
+>>> landlock_find_rule() only returns NULL or a valid pointer, not an error.
+>>
+>>    What about incorrect rule_type?? Return NULL? Or final rule_checl 
+>> must be in upper function?
+> 
+> This case should never happen anyway. You should return NULL and call 
+> WARN_ON_ONCE(1) just before. The same kind of WARN_ON_ONCE(1) call 
+> should be part of all switch/cases of rule_type (except the two valid 
+> values of course).
 
-
-Other minor nit: the braces are not required here.
-
-Otherwise LGTM:
-
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-
-However this looks like net-next material, and we are in the merge
-window right now. I think you should re-post in (slighly less) than 2w.
-Please add the target tree into the subj.
-
-Side note: AFAICS after this patch, there is still the suspicious
-tempaddr_list usage in addrconf_ifdown to be handled.
-
-Cheers,
-
-Paolo
-
+  Ok. I got it. Thanks.
+> .
