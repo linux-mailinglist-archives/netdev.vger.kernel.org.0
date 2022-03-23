@@ -2,221 +2,496 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B461C4E596C
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 20:54:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDBC84E5984
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 21:05:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344418AbiCWTzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 15:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47762 "EHLO
+        id S240423AbiCWUG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 16:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344169AbiCWTzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 15:55:48 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD9013D03;
-        Wed, 23 Mar 2022 12:54:17 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id b8so2742602pjb.4;
-        Wed, 23 Mar 2022 12:54:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=n+2YDPeCQ5RNafqcYigDGSF7Yp+Z8AA9OG6G9jeyxXs=;
-        b=ePVbc8kbtR2YYiozM5gtZaI5yJBodOW3dClglBBYQisv/vTMAvZ3E2J1SIqPSQ0Ejj
-         igjQkPtfhVyMndtBgCNcNftd4wgM4YhwRzzzTI1HUvquGCC1CkjEdsvFHwWb+vOc00e1
-         q6KOfkWdV7QPUGbciIUV0o14FnO26N4t5fgL6kYA4y8G5s03rrlZaBn7RXiDCznH7kum
-         3B/P3SFxvWPs31YUsC87ZOF2MBJIKuoVi3Dbp//MThVpVpJOeqTBgpewGlYhyw8mGsTr
-         stDhLWfz2Fgtl6I00We9RhrCJuJNBbv9hBgHRmqYJjZaxVwMrlbhZs7NJwlabvONQrxw
-         /jcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n+2YDPeCQ5RNafqcYigDGSF7Yp+Z8AA9OG6G9jeyxXs=;
-        b=1dUS8YNNDNLrH5Rppui9XIITfUrGbwpqy0iqB/Ya1gRG0DhpWjgWY/gcpJvVtRKo4Z
-         dDudrHChlernjfwGx45JY+UeY9py77YmFNO2+cylaSXfYt5dX/Jjn+Nunokcs4OXYMMk
-         T0Ihnd7j2uaPSL9qw07647kHF9y0jG8rfXNvCYJ5twCpHYxBguwjyg7m6YxLvjQy7Od2
-         7AdLgNCqqoczt1badj+ZuFIqvbShYmAP7o5MrG/ea/0ShjokJIjw70lCTPp6woIyOhHd
-         8Q+utg92ifz8U2I52roZ5FE8JBlioZD0AIP0fSFPiB4R4nZ1f+uFFoF993VKFsZU+QUm
-         87nA==
-X-Gm-Message-State: AOAM533tMFbx6oce8HAmN2OHz4ZTWFUMtcuHStJ58Ry1Ud9IXewQGb34
-        3jbcvQIH2DYO2T9bWsNpLntkajk1KSfdvhyOkkl/04E7
-X-Google-Smtp-Source: ABdhPJw7cjIPjUQP2QbQ2SS6yS+Xx2xieRV/lW4HxjomclaEzDk7dmLb/g71dT9nIfcdSsymv6loZ3cPI5xDITObVDk=
-X-Received: by 2002:a17:903:32c7:b0:154:4156:f384 with SMTP id
- i7-20020a17090332c700b001544156f384mr1788360plr.34.1648065256877; Wed, 23 Mar
- 2022 12:54:16 -0700 (PDT)
+        with ESMTP id S233155AbiCWUG5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 16:06:57 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106008564D;
+        Wed, 23 Mar 2022 13:05:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648065927; x=1679601927;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=nSgKm/aUFHPKNlr3V9fjF16/jnH0t5gAjdmxsskSuPc=;
+  b=MsjqXCdyOOeJ9scD+vLywKRyuK56crVsLo7H/SDXmFUf/XPRP8qpc42g
+   eEWN75Xyr2NUkdMQCT7fLM1SgBXyrE/eKeToy3//s5n6MN20efR61yiX9
+   MCvZ+3LXogg0LjesMOZplMJRNOFHbb8R9qxBMPWKQnNUVsSHiTy2gbRg9
+   FkcyYLjTLN4s12/ulxQYNnBbxmqLAahoXkS2wdOKmXw02JOOk3xgcW41+
+   5NgzsPdsrr+eFCqLBkUN0HZf5XHnxNr5AySMe11Yoce6RMj80Uap1W9a2
+   N9g3Q2D9SJ2V9NbIM4oUWtsQLKqPdS0IS4CexXm1ITUsib0X3wFGHUlpR
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="321412186"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="321412186"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 13:05:26 -0700
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="561066269"
+Received: from mszycik-mobl.ger.corp.intel.com (HELO [10.249.137.148]) ([10.249.137.148])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 13:05:22 -0700
+Message-ID: <eb6538d9-4667-f1f5-492c-e1e113a6da35@linux.intel.com>
+Date:   Wed, 23 Mar 2022 21:05:20 +0100
 MIME-Version: 1.0
-References: <00000000000054c45805dae78903@google.com>
-In-Reply-To: <00000000000054c45805dae78903@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 23 Mar 2022 12:54:05 -0700
-Message-ID: <CAADnVQLn-K_a9s_RtTKCWY_d-ahn84yvTqX93oM1G8juNxAHMA@mail.gmail.com>
-Subject: Re: [syzbot] bpf-next boot error: KASAN: null-ptr-deref Write in register_btf_kfunc_id_set
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] ice: Fix broken IFF_ALLMULTI handling
+Content-Language: en-US
+To:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org
+Cc:     poros@redhat.com, mschmidt@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Akeem G Abodunrin <akeem.g.abodunrin@intel.com>,
+        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220321191731.2596414-1-ivecera@redhat.com>
+From:   Marcin Szycik <marcin.szycik@linux.intel.com>
+In-Reply-To: <20220321191731.2596414-1-ivecera@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kumar,
 
-please take a look.
 
-Thanks!
-
-On Wed, Mar 23, 2022 at 12:14 PM syzbot
-<syzbot+12babd2d45fac8bfff7d@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    a8fee96202e2 libbpf: Avoid NULL deref when initializing ma..
-> git tree:       bpf-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1686180b700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=820db791969fe863
-> dashboard link: https://syzkaller.appspot.com/bug?extid=12babd2d45fac8bfff7d
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+12babd2d45fac8bfff7d@syzkaller.appspotmail.com
->
-> usbcore: registered new interface driver snd-usb-audio
-> usbcore: registered new interface driver snd-ua101
-> usbcore: registered new interface driver snd-usb-usx2y
-> usbcore: registered new interface driver snd-usb-us122l
-> usbcore: registered new interface driver snd-usb-caiaq
-> usbcore: registered new interface driver snd-usb-6fire
-> usbcore: registered new interface driver snd-usb-hiface
-> usbcore: registered new interface driver snd-bcd2000
-> usbcore: registered new interface driver snd_usb_pod
-> usbcore: registered new interface driver snd_usb_podhd
-> usbcore: registered new interface driver snd_usb_toneport
-> usbcore: registered new interface driver snd_usb_variax
-> drop_monitor: Initializing network drop monitor service
-> NET: Registered PF_LLC protocol family
-> GACT probability on
-> Mirror/redirect action on
-> Simple TC action Loaded
-> netem: version 1.3
-> u32 classifier
->     Performance counters on
->     input device check on
->     Actions configured
-> nf_conntrack_irc: failed to register helpers
-> nf_conntrack_sane: failed to register helpers
-> nf_conntrack_sip: failed to register helpers
-> xt_time: kernel timezone is -0000
-> IPVS: Registered protocols (TCP, UDP, SCTP, AH, ESP)
-> IPVS: Connection hash table configured (size=4096, memory=64Kbytes)
-> IPVS: ipvs loaded.
-> IPVS: [rr] scheduler registered.
-> IPVS: [wrr] scheduler registered.
-> IPVS: [lc] scheduler registered.
-> IPVS: [wlc] scheduler registered.
-> IPVS: [fo] scheduler registered.
-> IPVS: [ovf] scheduler registered.
-> IPVS: [lblc] scheduler registered.
-> IPVS: [lblcr] scheduler registered.
-> IPVS: [dh] scheduler registered.
-> IPVS: [sh] scheduler registered.
-> IPVS: [mh] scheduler registered.
-> IPVS: [sed] scheduler registered.
-> IPVS: [nq] scheduler registered.
-> IPVS: [twos] scheduler registered.
-> IPVS: [sip] pe registered.
-> ipip: IPv4 and MPLS over IPv4 tunneling driver
-> gre: GRE over IPv4 demultiplexor driver
-> ip_gre: GRE over IPv4 tunneling driver
-> IPv4 over IPsec tunneling driver
-> ipt_CLUSTERIP: ClusterIP Version 0.8 loaded successfully
-> ==================================================================
-> BUG: KASAN: null-ptr-deref in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
-> BUG: KASAN: null-ptr-deref in atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
-> BUG: KASAN: null-ptr-deref in __refcount_add include/linux/refcount.h:193 [inline]
-> BUG: KASAN: null-ptr-deref in __refcount_inc include/linux/refcount.h:250 [inline]
-> BUG: KASAN: null-ptr-deref in refcount_inc include/linux/refcount.h:267 [inline]
-> BUG: KASAN: null-ptr-deref in btf_get kernel/bpf/btf.c:1636 [inline]
-> BUG: KASAN: null-ptr-deref in btf_get_module_btf kernel/bpf/btf.c:6588 [inline]
-> BUG: KASAN: null-ptr-deref in register_btf_kfunc_id_set+0x99/0x8b0 kernel/bpf/btf.c:6812
-> Write of size 4 at addr 0000000000000054 by task swapper/0/1
->
-> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc6-syzkaller-02045-ga8fee96202e2 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  __kasan_report mm/kasan/report.c:446 [inline]
->  kasan_report.cold+0x66/0xdf mm/kasan/report.c:459
->  check_region_inline mm/kasan/generic.c:183 [inline]
->  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
->  instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
->  atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
->  __refcount_add include/linux/refcount.h:193 [inline]
->  __refcount_inc include/linux/refcount.h:250 [inline]
->  refcount_inc include/linux/refcount.h:267 [inline]
->  btf_get kernel/bpf/btf.c:1636 [inline]
->  btf_get_module_btf kernel/bpf/btf.c:6588 [inline]
->  register_btf_kfunc_id_set+0x99/0x8b0 kernel/bpf/btf.c:6812
->  bbr_register+0x18/0x48 net/ipv4/tcp_bbr.c:1183
->  do_one_initcall+0x103/0x650 init/main.c:1302
->  do_initcall_level init/main.c:1375 [inline]
->  do_initcalls init/main.c:1391 [inline]
->  do_basic_setup init/main.c:1410 [inline]
->  kernel_init_freeable+0x6b1/0x73a init/main.c:1615
->  kernel_init+0x1a/0x1d0 init/main.c:1504
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
->  </TASK>
-> ==================================================================
-> Kernel panic - not syncing: panic_on_warn set ...
-> CPU: 0 PID: 1 Comm: swapper/0 Tainted: G    B             5.17.0-rc6-syzkaller-02045-ga8fee96202e2 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  panic+0x2b0/0x6dd kernel/panic.c:233
->  end_report.cold+0x63/0x6f mm/kasan/report.c:128
->  __kasan_report mm/kasan/report.c:449 [inline]
->  kasan_report.cold+0x71/0xdf mm/kasan/report.c:459
->  check_region_inline mm/kasan/generic.c:183 [inline]
->  kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
->  instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
->  atomic_fetch_add_relaxed include/linux/atomic/atomic-instrumented.h:116 [inline]
->  __refcount_add include/linux/refcount.h:193 [inline]
->  __refcount_inc include/linux/refcount.h:250 [inline]
->  refcount_inc include/linux/refcount.h:267 [inline]
->  btf_get kernel/bpf/btf.c:1636 [inline]
->  btf_get_module_btf kernel/bpf/btf.c:6588 [inline]
->  register_btf_kfunc_id_set+0x99/0x8b0 kernel/bpf/btf.c:6812
->  bbr_register+0x18/0x48 net/ipv4/tcp_bbr.c:1183
->  do_one_initcall+0x103/0x650 init/main.c:1302
->  do_initcall_level init/main.c:1375 [inline]
->  do_initcalls init/main.c:1391 [inline]
->  do_basic_setup init/main.c:1410 [inline]
->  kernel_init_freeable+0x6b1/0x73a init/main.c:1615
->  kernel_init+0x1a/0x1d0 init/main.c:1504
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
->  </TASK>
-> Kernel Offset: disabled
-> Rebooting in 86400 seconds..
->
->
+On 21-Mar-22 20:17, Ivan Vecera wrote:
+> Handling of all-multicast flag and associated multicast promiscuous
+> mode is broken in ice driver. When a user switches allmulticast
+> flag on or off the driver checks whether any VLANs are configured
+> over the interface (except default VLAN 0).
+> 
+> If any extra VLANs are registered it enables multicast promiscuous
+> mode for all these VLANs (including default VLAN 0) using
+> ICE_SW_LKUP_PROMISC_VLAN look-up type. In this situation all
+> multicast packets tagged with known VLAN ID or untagged are received
+> and multicast packets tagged with unknown VLAN ID ignored.
+> 
+> If no extra VLANs are registered (so only VLAN 0 exists) it enables
+> multicast promiscuous mode for VLAN 0 and uses ICE_SW_LKUP_PROMISC
+> look-up type. In this situation any multicast packets including
+> tagged ones are received.
+> 
+> The driver handles IFF_ALLMULTI in ice_vsi_sync_fltr() this way:
+> 
+> ice_vsi_sync_fltr() {
+>   ...
+>   if (changed_flags & IFF_ALLMULTI) {
+>     if (netdev->flags & IFF_ALLMULTI) {
+>       if (vsi->num_vlans > 1)
+>         ice_set_promisc(..., ICE_MCAST_VLAN_PROMISC_BITS);
+>       else
+>         ice_set_promisc(..., ICE_MCAST_PROMISC_BITS);
+>     } else {
+>       if (vsi->num_vlans > 1)
+>         ice_clear_promisc(..., ICE_MCAST_VLAN_PROMISC_BITS);
+>       else
+>         ice_clear_promisc(..., ICE_MCAST_PROMISC_BITS);
+>     }
+>   }
+>   ...
+> }
+> 
+> The code above depends on value vsi->num_vlan that specifies number
+> of VLANs configured over the interface (including VLAN 0) and
+> this is problem because that value is modified in NDO callbacks
+> ice_vlan_rx_add_vid() and ice_vlan_rx_kill_vid().
+> 
+> Scenario 1:
+> 1. ip link set ens7f0 allmulticast on
+> 2. ip link add vlan10 link ens7f0 type vlan id 10
+> 3. ip link set ens7f0 allmulticast off
+> 4. ip link set ens7f0 allmulticast on
+> 
+> [1] In this scenario IFF_ALLMULTI is enabled and the driver calls
+>     ice_set_promisc(..., ICE_MCAST_PROMISC_BITS) that installs
+>     multicast promisc rule with non-VLAN look-up type.
+> [2] Then VLAN with ID 10 is added and vsi->num_vlan incremented to 2
+> [3] Command switches IFF_ALLMULTI off and the driver calls
+>     ice_clear_promisc(..., ICE_MCAST_VLAN_PROMISC_BITS) but this
+>     call is effectively NOP because it looks for multicast promisc
+>     rules for VLAN 0 and VLAN 10 with VLAN look-up type but no such
+>     rules exist. So the all-multicast remains enabled silently
+>     in hardware.
+> [4] Command tries to switch IFF_ALLMULTI on and the driver calls
+>     ice_clear_promisc(..., ICE_MCAST_PROMISC_BITS) but this call
+>     fails (-EEXIST) because non-VLAN multicast promisc rule already
+>     exists.
+> 
+> Scenario 2:
+> 1. ip link add vlan10 link ens7f0 type vlan id 10
+> 2. ip link set ens7f0 allmulticast on
+> 3. ip link add vlan20 link ens7f0 type vlan id 20
+> 4. ip link del vlan10 ; ip link del vlan20
+> 5. ip link set ens7f0 allmulticast off
+> 
+> [1] VLAN with ID 10 is added and vsi->num_vlan==2
+> [2] Command switches IFF_ALLMULTI on and driver installs multicast
+>     promisc rules with VLAN look-up type for VLAN 0 and 10
+> [3] VLAN with ID 20 is added and vsi->num_vlan==3 but no multicast
+>     promisc rules is added for this new VLAN so the interface does
+>     not receive MC packets from VLAN 20
+> [4] Both VLANs are removed but multicast rule for VLAN 10 remains
+>     installed so interface receives multicast packets from VLAN 10
+> [5] Command switches IFF_ALLMULTI off and because vsi->num_vlan is 1
+>     the driver tries to remove multicast promisc rule for VLAN 0
+>     with non-VLAN look-up that does not exist.
+>     All-multicast looks disabled from user point of view but it
+>     is partially enabled in HW (interface receives all multicast
+>     packets either untagged or tagged with VLAN ID 10)
+> 
+> To resolve these issues the patch introduces these changes:
+> 1. Adds handling for IFF_ALLMULTI to ice_vlan_rx_add_vid() and
+>    ice_vlan_rx_kill_vid() callbacks. So when VLAN is added/removed
+>    and IFF_ALLMULTI is enabled an appropriate multicast promisc
+>    rule for that VLAN ID is added/removed.
+> 2. In ice_vlan_rx_add_vid() when first VLAN besides VLAN 0 is added
+>    so (vsi->num_vlan == 2) and IFF_ALLMULTI is enabled then look-up
+>    type for existing multicast promisc rule for VLAN 0 is updated
+>    to ICE_MCAST_VLAN_PROMISC_BITS.
+> 3. In ice_vlan_rx_kill_vid() when last VLAN besides VLAN 0 is removed
+>    so (vsi->num_vlan == 1) and IFF_ALLMULTI is enabled then look-up
+>    type for existing multicast promisc rule for VLAN 0 is updated
+>    to ICE_MCAST_PROMISC_BITS.
+> 4. Both ice_vlan_rx_{add,kill}_vid() have to run under ICE_CFG_BUSY
+>    bit protection to avoid races with ice_vsi_sync_fltr() that runs
+>    in ice_service_task() context.
+> 5. Bit ICE_VSI_VLAN_FLTR_CHANGED is use-less and can be removed.
+> 6. Error messages added to ice_fltr_*_vsi_promisc() helper functions
+>    to avoid them in their callers
+> 7. Small improvements to increase readability
+> 
+> Fixes: 5eda8afd6bcc ("ice: Add support for PF/VF promiscuous mode")
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
 > ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>  drivers/net/ethernet/intel/ice/ice.h      |   1 -
+>  drivers/net/ethernet/intel/ice/ice_fltr.c |  52 +++++++++-
+>  drivers/net/ethernet/intel/ice/ice_main.c | 119 +++++++++++++++-------
+>  3 files changed, 131 insertions(+), 41 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+> index bea1d1e39fa2..717542e49d65 100644
+> --- a/drivers/net/ethernet/intel/ice/ice.h
+> +++ b/drivers/net/ethernet/intel/ice/ice.h
+> @@ -300,7 +300,6 @@ enum ice_vsi_state {
+>  	ICE_VSI_NETDEV_REGISTERED,
+>  	ICE_VSI_UMAC_FLTR_CHANGED,
+>  	ICE_VSI_MMAC_FLTR_CHANGED,
+> -	ICE_VSI_VLAN_FLTR_CHANGED,
+>  	ICE_VSI_PROMISC_CHANGED,
+>  	ICE_VSI_STATE_NBITS		/* must be last */
+>  };
+> diff --git a/drivers/net/ethernet/intel/ice/ice_fltr.c b/drivers/net/ethernet/intel/ice/ice_fltr.c
+> index c29177c6bb9d..8ed87b43a367 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_fltr.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_fltr.c
+> @@ -58,7 +58,18 @@ int
+>  ice_fltr_set_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
+>  			      u8 promisc_mask)
+>  {
+> -	return ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, false);
+> +	struct ice_pf *pf = hw->back;
+> +	int result;
+> +
+> +	result = ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, false);
+> +	if (!result)
+> +		return result;
+> +
+> +	dev_err(ice_pf_to_dev(pf),
+> +		"Error setting promisc mode on VSI %i (rc=%d)\n", vsi->vsi_num,
+> +		result);
+> +
+> +	return result;
+>  }
+>  
+>  /**
+> @@ -73,7 +84,18 @@ int
+>  ice_fltr_clear_vlan_vsi_promisc(struct ice_hw *hw, struct ice_vsi *vsi,
+>  				u8 promisc_mask)
+>  {
+> -	return ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, true);
+> +	struct ice_pf *pf = hw->back;
+> +	int result;
+> +
+> +	result = ice_set_vlan_vsi_promisc(hw, vsi->idx, promisc_mask, true);
+> +	if (!result)
+> +		return result;
+> +
+> +	dev_err(ice_pf_to_dev(pf),
+> +		"Error clearing promisc mode on VSI %i (rc=%d)\n",
+> +		vsi->vsi_num, result);
+> +
+> +	return result;
+>  }
+>  
+>  /**
+> @@ -87,7 +109,18 @@ int
+>  ice_fltr_clear_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
+>  			   u16 vid)
+>  {
+> -	return ice_clear_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
+> +	struct ice_pf *pf = hw->back;
+> +	int result;
+> +
+> +	result = ice_clear_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
+> +	if (!result)
+> +		return result;
+> +
+> +	dev_err(ice_pf_to_dev(pf),
+> +		"Error clearing promisc mode on VSI %i for VID %u (rc=%d)\n",
+> +		ice_get_hw_vsi_num(hw, vsi_handle), vid, result);
+> +
+> +	return result;
+>  }
+>  
+>  /**
+> @@ -101,7 +134,18 @@ int
+>  ice_fltr_set_vsi_promisc(struct ice_hw *hw, u16 vsi_handle, u8 promisc_mask,
+>  			 u16 vid)
+>  {
+> -	return ice_set_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
+> +	struct ice_pf *pf = hw->back;
+> +	int result;
+> +
+> +	result = ice_set_vsi_promisc(hw, vsi_handle, promisc_mask, vid);
+> +	if (!result)
+> +		return result;
+> +
+> +	dev_err(ice_pf_to_dev(pf),
+> +		"Error setting promisc mode on VSI %i for VID %u (rc=%d)\n",
+> +		ice_get_hw_vsi_num(hw, vsi_handle), vid, result);
+> +
+> +	return result;
+>  }
+>  
+>  /**
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index b7e8744b0c0a..168a41ea37b8 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -227,8 +227,7 @@ static int ice_add_mac_to_unsync_list(struct net_device *netdev, const u8 *addr)
+>  static bool ice_vsi_fltr_changed(struct ice_vsi *vsi)
+>  {
+>  	return test_bit(ICE_VSI_UMAC_FLTR_CHANGED, vsi->state) ||
+> -	       test_bit(ICE_VSI_MMAC_FLTR_CHANGED, vsi->state) ||
+> -	       test_bit(ICE_VSI_VLAN_FLTR_CHANGED, vsi->state);
+> +	       test_bit(ICE_VSI_MMAC_FLTR_CHANGED, vsi->state);
+>  }
+>  
+>  /**
+> @@ -244,10 +243,15 @@ static int ice_set_promisc(struct ice_vsi *vsi, u8 promisc_m)
+>  	if (vsi->type != ICE_VSI_PF)
+>  		return 0;
+>  
+> -	if (vsi->num_vlan > 1)
+> -		status = ice_fltr_set_vlan_vsi_promisc(&vsi->back->hw, vsi, promisc_m);
+> -	else
+> -		status = ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m, 0);
+> +	if (vsi->num_vlan > 1) {
+> +		promisc_m |= (ICE_PROMISC_VLAN_RX | ICE_PROMISC_VLAN_TX);
+> +		status = ice_fltr_set_vlan_vsi_promisc(&vsi->back->hw, vsi,
+> +						       promisc_m);
+> +	} else {
+> +		status = ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +						  promisc_m, 0);
+> +	}
+> +
+>  	return status;
+>  }
+>  
+> @@ -264,10 +268,15 @@ static int ice_clear_promisc(struct ice_vsi *vsi, u8 promisc_m)
+>  	if (vsi->type != ICE_VSI_PF)
+>  		return 0;
+>  
+> -	if (vsi->num_vlan > 1)
+> -		status = ice_fltr_clear_vlan_vsi_promisc(&vsi->back->hw, vsi, promisc_m);
+> -	else
+> -		status = ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx, promisc_m, 0);
+> +	if (vsi->num_vlan > 1) {
+> +		promisc_m |= (ICE_PROMISC_VLAN_RX | ICE_PROMISC_VLAN_TX);
+> +		status = ice_fltr_clear_vlan_vsi_promisc(&vsi->back->hw, vsi,
+> +							 promisc_m);
+> +	} else {
+> +		status = ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +						    promisc_m, 0);
+> +	}
+> +
+>  	return status;
+>  }
+>  
+> @@ -285,7 +294,6 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+>  	struct ice_pf *pf = vsi->back;
+>  	struct ice_hw *hw = &pf->hw;
+>  	u32 changed_flags = 0;
+> -	u8 promisc_m;
+>  	int err;
+>  
+>  	if (!vsi->netdev)
+> @@ -303,7 +311,6 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+>  	if (ice_vsi_fltr_changed(vsi)) {
+>  		clear_bit(ICE_VSI_UMAC_FLTR_CHANGED, vsi->state);
+>  		clear_bit(ICE_VSI_MMAC_FLTR_CHANGED, vsi->state);
+> -		clear_bit(ICE_VSI_VLAN_FLTR_CHANGED, vsi->state);
+>  
+>  		/* grab the netdev's addr_list_lock */
+>  		netif_addr_lock_bh(netdev);
+> @@ -352,29 +359,15 @@ static int ice_vsi_sync_fltr(struct ice_vsi *vsi)
+>  	/* check for changes in promiscuous modes */
+>  	if (changed_flags & IFF_ALLMULTI) {
+>  		if (vsi->current_netdev_flags & IFF_ALLMULTI) {
+> -			if (vsi->num_vlan > 1)
+> -				promisc_m = ICE_MCAST_VLAN_PROMISC_BITS;
+> -			else
+> -				promisc_m = ICE_MCAST_PROMISC_BITS;
+
+Because `ice_{set,clear}_promisc()` are now always called with the same second argument (ICE_MCAST_PROMISC_BITS), wouldn't it be better to remove the arg and instead call `ice_fltr_{clear,set}_{vlan,vsi}_vsi_promisc()` with either ICE_MCAST_VLAN_PROMISC_BITS or ICE_MCAST_PROMISC_BITS inside the function?
+
+> -
+> -			err = ice_set_promisc(vsi, promisc_m);
+> +			err = ice_set_promisc(vsi, ICE_MCAST_PROMISC_BITS);>  			if (err) {
+> -				netdev_err(netdev, "Error setting Multicast promiscuous mode on VSI %i\n",
+> -					   vsi->vsi_num);
+>  				vsi->current_netdev_flags &= ~IFF_ALLMULTI;
+>  				goto out_promisc;
+>  			}
+>  		} else {
+>  			/* !(vsi->current_netdev_flags & IFF_ALLMULTI) */
+> -			if (vsi->num_vlan > 1)
+> -				promisc_m = ICE_MCAST_VLAN_PROMISC_BITS;
+> -			else
+> -				promisc_m = ICE_MCAST_PROMISC_BITS;
+> -
+> -			err = ice_clear_promisc(vsi, promisc_m);
+> +			err = ice_clear_promisc(vsi, ICE_MCAST_PROMISC_BITS);
+>  			if (err) {
+> -				netdev_err(netdev, "Error clearing Multicast promiscuous mode on VSI %i\n",
+> -					   vsi->vsi_num);
+>  				vsi->current_netdev_flags |= IFF_ALLMULTI;
+>  				goto out_promisc;
+>  			}
+> @@ -3445,19 +3438,47 @@ ice_vlan_rx_add_vid(struct net_device *netdev, __always_unused __be16 proto,
+>  	if (!vid)
+>  		return 0;
+>  
+> +	while (test_and_set_bit(ICE_CFG_BUSY, vsi->state))
+> +		usleep_range(1000, 2000);
+> +
+>  	/* Enable VLAN pruning when a VLAN other than 0 is added */
+>  	if (!ice_vsi_is_vlan_pruning_ena(vsi)) {
+>  		ret = ice_cfg_vlan_pruning(vsi, true);
+>  		if (ret)
+> -			return ret;
+> +			goto finish;
+> +	}
+> +
+> +	/* Add multicast promisc rule for the VLAN ID to be added if
+> +	 * all-multicast is currently enabled.
+> +	 */
+> +	if (vsi->current_netdev_flags & IFF_ALLMULTI) {
+> +		ret = ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +					       ICE_MCAST_VLAN_PROMISC_BITS,
+> +					       vid);
+> +		if (ret)
+> +			goto finish;
+>  	}
+>  
+>  	/* Add a switch rule for this VLAN ID so its corresponding VLAN tagged
+>  	 * packets aren't pruned by the device's internal switch on Rx
+>  	 */
+>  	ret = ice_vsi_add_vlan(vsi, vid, ICE_FWD_TO_VSI);
+> -	if (!ret)
+> -		set_bit(ICE_VSI_VLAN_FLTR_CHANGED, vsi->state);
+> +	if (ret)
+> +		goto finish;
+> +
+> +	/* If all-multicast is currently enabled and this VLAN ID is only one
+> +	 * besides VLAN-0 we have to update look-up type of multicast promisc
+> +	 * rule for VLAN-0 from ICE_SW_LKUP_PROMISC to ICE_SW_LKUP_PROMISC_VLAN.
+> +	 */
+> +	if ((vsi->current_netdev_flags & IFF_ALLMULTI) && vsi->num_vlan == 2) {
+> +		ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +					   ICE_MCAST_PROMISC_BITS, 0);
+> +		ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +					 ICE_MCAST_VLAN_PROMISC_BITS, 0);
+> +	}
+> +
+> +finish:
+> +	clear_bit(ICE_CFG_BUSY, vsi->state);
+>  
+>  	return ret;
+>  }
+> @@ -3482,18 +3503,44 @@ ice_vlan_rx_kill_vid(struct net_device *netdev, __always_unused __be16 proto,
+>  	if (!vid)
+>  		return 0;
+>  
+> +	while (test_and_set_bit(ICE_CFG_BUSY, vsi->state))
+> +		usleep_range(1000, 2000);
+> +
+>  	/* Make sure ice_vsi_kill_vlan is successful before updating VLAN
+>  	 * information
+>  	 */
+>  	ret = ice_vsi_kill_vlan(vsi, vid);
+>  	if (ret)
+> -		return ret;
+> +		goto finish;
+>  
+> -	/* Disable pruning when VLAN 0 is the only VLAN rule */
+> -	if (vsi->num_vlan == 1 && ice_vsi_is_vlan_pruning_ena(vsi))
+> -		ret = ice_cfg_vlan_pruning(vsi, false);
+> +	/* Remove multicast promisc rule for the removed VLAN ID if
+> +	 * all-multicast is enabled.
+> +	 */
+> +	if (vsi->current_netdev_flags & IFF_ALLMULTI)
+> +		ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +					   ICE_MCAST_VLAN_PROMISC_BITS, vid);
+> +
+> +	if (vsi->num_vlan == 1) {
+> +		/* Disable pruning when VLAN 0 is the only VLAN rule */
+> +		if (ice_vsi_is_vlan_pruning_ena(vsi))
+> +			ice_cfg_vlan_pruning(vsi, false);
+
+Why was `ret = ...` removed here?
+
+> +
+> +		/* Update look-up type of multicast promisc rule for VLAN 0
+> +		 * from ICE_SW_LKUP_PROMISC_VLAN to ICE_SW_LKUP_PROMISC when
+> +		 * all-multicast is enabled and VLAN 0 is the only VLAN rule.
+> +		 */
+> +		if (vsi->current_netdev_flags & IFF_ALLMULTI) {
+> +			ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +						   ICE_MCAST_VLAN_PROMISC_BITS,
+> +						   0);
+> +			ice_fltr_set_vsi_promisc(&vsi->back->hw, vsi->idx,
+> +						 ICE_MCAST_PROMISC_BITS, 0);
+> +		}
+> +	}
+> +
+> +finish:
+> +	clear_bit(ICE_CFG_BUSY, vsi->state);
+>  
+> -	set_bit(ICE_VSI_VLAN_FLTR_CHANGED, vsi->state);
+>  	return ret;
+>  }
+>  
+
+Otherwise LGTM (though my experience in this area is rather limited).
+
+Marcin
