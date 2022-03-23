@@ -2,370 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 333644E4AA5
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 02:53:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8706B4E4AAA
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 02:57:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240821AbiCWBzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 22 Mar 2022 21:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
+        id S231562AbiCWB7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 22 Mar 2022 21:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240797AbiCWBzG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 21:55:06 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05F256202
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 18:53:36 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id m22so343050pja.0
-        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 18:53:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=48zLxq6Ao+u9okFonUAASL2xEfX5JzmLT/yDLCNUOZQ=;
-        b=ehHxHp/lmXAA2DRp+8wTr+i7+BC6yVG8TJkrMsRfMyNG9kVZ+0MQC+IWcEsHx3FsG3
-         KkTcHRF4ZQpdjNPTtV/nkGmMfYpn1ze5FVxlrIlXZb6bxMNpnTeEnOw/xc9hVqqQoSNv
-         urLQ2cWN456QkJ4j0sZfOKAAIghZUEvv++f9fXi0KOWmflvtdHe6d0YC5dQu42ZwaeI+
-         rkNKp74JRb/U8e+eVzp4CXj9HkjYFWMaKdwH7/UlQcY3QIQasQRQ3VMO+odDlsR8J+kK
-         ojbSoDv+8L+GPEzEwK4tBnYqpSWIuxF5TnGQqfnHC6NvkqKbYmMdAi8pR9+5eMKM2onz
-         pTFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=48zLxq6Ao+u9okFonUAASL2xEfX5JzmLT/yDLCNUOZQ=;
-        b=o1NdfH+QcjhCAJKOu8r5IkwTqrRCP2O1bXQ4Q75V5VhIUXaX8PA6ZHLmj31e7ygsuI
-         Fya7h3gq3p50CnvkZskzZ4RtYWRuTjm2RqAVqmA9BjiBl/GVwNPer9tcqWLqZW/RneqM
-         UJLdsNX7/bwseFVbqoa8i1DVu0U3zKJc9gCG5jpp78qL1nwliEdpcK+f+ULrnRCBRrAu
-         kePgR0eV0W238w7UQSeq4L88RyQ32EG74wOmsM8R0hwv3nMNAY9yp2aFBikOU7Zd/69B
-         QqkW5NJV7HjVZH+2BnsE2g85szcPxPK0OeR8H0DjtonBsfNxRrGnApGlQCELI7hPcejn
-         wnEQ==
-X-Gm-Message-State: AOAM532YhjE9i0h6FNwf5+WftOWsNhGheR/L5hZ5Ds4Brh2nLX4pY/K2
-        5ycNREeH8hAcvMKDindEZHghY66DVDx6pQ==
-X-Google-Smtp-Source: ABdhPJx/ZAkayrfwEU139T55WTjHcICIjTszsq2ZKd3Fk7NzDETfBKELRuBJpehBzDUDS9KW3wtXVA==
-X-Received: by 2002:a17:902:aa0a:b0:154:9ce:366 with SMTP id be10-20020a170902aa0a00b0015409ce0366mr21614224plb.8.1648000415954;
-        Tue, 22 Mar 2022 18:53:35 -0700 (PDT)
-Received: from localhost.xiaojukeji.com ([111.201.151.228])
-        by smtp.gmail.com with ESMTPSA id z23-20020a056a001d9700b004fa8f24702csm10184924pfw.85.2022.03.22.18.53.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 22 Mar 2022 18:53:34 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229509AbiCWB7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 22 Mar 2022 21:59:14 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBC1D5621F
+        for <netdev@vger.kernel.org>; Tue, 22 Mar 2022 18:57:45 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-130-lFQCKZA0NSGnTdW-G_mNsQ-1; Wed, 23 Mar 2022 01:57:41 +0000
+X-MC-Unique: lFQCKZA0NSGnTdW-G_mNsQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Wed, 23 Mar 2022 01:57:41 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Wed, 23 Mar 2022 01:57:41 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Torin Carey' <torin@tcarey.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>,
-        Simon Horman <horms@verge.net.au>,
-        Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Akhmat Karakotov <hmukos@yandex-team.ru>
-Subject: [net-next v2] net: core: use shared sysctl macro
-Date:   Wed, 23 Mar 2022 09:53:26 +0800
-Message-Id: <20220323015326.26478-1-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] udp: change MSG_TRUNC return behaviour for MSG_PEEK in
+ recvmsg
+Thread-Topic: [PATCH] udp: change MSG_TRUNC return behaviour for MSG_PEEK in
+ recvmsg
+Thread-Index: AQHYPh+fV1aILsQYJkGFKR0h1ZEPnazMNg+w
+Date:   Wed, 23 Mar 2022 01:57:41 +0000
+Message-ID: <eff8db769c314119a8867e968e4dddea@AcuMS.aculab.com>
+References: <YjodjXHN7j69h/kd@kappa>
+In-Reply-To: <YjodjXHN7j69h/kd@kappa>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-
-This patch introdues the SYSCTL_THREE, and replace the
-two, three and long_one to SYSCTL_XXX accordingly.
-
- KUnit:
- [23:03:58] ================ sysctl_test (10 subtests) =================
- [23:03:58] [PASSED] sysctl_test_api_dointvec_null_tbl_data
- [23:03:58] [PASSED] sysctl_test_api_dointvec_table_maxlen_unset
- [23:03:58] [PASSED] sysctl_test_api_dointvec_table_len_is_zero
- [23:03:58] [PASSED] sysctl_test_api_dointvec_table_read_but_position_set
- [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_positive
- [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_negative
- [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_positive
- [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_negative
- [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_less_int_min
- [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_greater_int_max
- [23:03:58] =================== [PASSED] sysctl_test ===================
-
- ./run_kselftest.sh -c sysctl
- ...
- # Running test: sysctl_test_0006 - run #49
- # Checking bitmap handler... ok
- # Wed Mar 16 14:58:41 UTC 2022
- # Running test: sysctl_test_0007 - run #0
- # Boot param test only possible sysctl_test is built-in, not module:
- # CONFIG_TEST_SYSCTL=m
- ok 1 selftests: sysctl: sysctl.sh
-
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Iurii Zaikin <yzaikin@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Simon Horman <horms@verge.net.au>
-Cc: Julian Anastasov <ja@ssi.bg>
-Cc: Pablo Neira Ayuso <pablo@netfilter.org>
-Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc: Florian Westphal <fw@strlen.de>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-Cc: Lorenz Bauer <lmb@cloudflare.com>
-Cc: Akhmat Karakotov <hmukos@yandex-team.ru>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
-v2: add KUnit and selftests in commit msg
----
- fs/proc/proc_sysctl.c          |  2 +-
- include/linux/sysctl.h         | 13 +++++++------
- net/core/sysctl_net_core.c     | 14 +++++---------
- net/ipv4/sysctl_net_ipv4.c     | 16 ++++++----------
- net/ipv6/sysctl_net_ipv6.c     |  6 ++----
- net/netfilter/ipvs/ip_vs_ctl.c |  4 +---
- 6 files changed, 22 insertions(+), 33 deletions(-)
-
-diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-index 7d9cfc730bd4..0bdd9249666b 100644
---- a/fs/proc/proc_sysctl.c
-+++ b/fs/proc/proc_sysctl.c
-@@ -26,7 +26,7 @@ static const struct file_operations proc_sys_dir_file_operations;
- static const struct inode_operations proc_sys_dir_operations;
- 
- /* shared constants to be used in various sysctls */
--const int sysctl_vals[] = { -1, 0, 1, 2, 4, 100, 200, 1000, 3000, INT_MAX, 65535 };
-+const int sysctl_vals[] = { -1, 0, 1, 2, 3, 4, 100, 200, 1000, 3000, INT_MAX, 65535 };
- EXPORT_SYMBOL(sysctl_vals);
- 
- const unsigned long sysctl_long_vals[] = { 0, 1, LONG_MAX };
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index 6353d6db69b2..b2ac6542455f 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -42,12 +42,13 @@ struct ctl_dir;
- #define SYSCTL_ZERO			((void *)&sysctl_vals[1])
- #define SYSCTL_ONE			((void *)&sysctl_vals[2])
- #define SYSCTL_TWO			((void *)&sysctl_vals[3])
--#define SYSCTL_FOUR			((void *)&sysctl_vals[4])
--#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[5])
--#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[6])
--#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[7])
--#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[8])
--#define SYSCTL_INT_MAX			((void *)&sysctl_vals[9])
-+#define SYSCTL_THREE			((void *)&sysctl_vals[4])
-+#define SYSCTL_FOUR			((void *)&sysctl_vals[5])
-+#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[6])
-+#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[7])
-+#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[8])
-+#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[9])
-+#define SYSCTL_INT_MAX			((void *)&sysctl_vals[10])
- 
- /* this is needed for the proc_dointvec_minmax for [fs_]overflow UID and GID */
- #define SYSCTL_MAXOLDUID		((void *)&sysctl_vals[10])
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index 7123fe7feeac..6ea51c155860 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -23,14 +23,10 @@
- #include <net/busy_poll.h>
- #include <net/pkt_sched.h>
- 
--static int two = 2;
--static int three = 3;
- static int int_3600 = 3600;
- static int min_sndbuf = SOCK_MIN_SNDBUF;
- static int min_rcvbuf = SOCK_MIN_RCVBUF;
- static int max_skb_frags = MAX_SKB_FRAGS;
--static long long_one __maybe_unused = 1;
--static long long_max __maybe_unused = LONG_MAX;
- 
- static int net_msg_warn;	/* Unused, but still a sysctl */
- 
-@@ -388,7 +384,7 @@ static struct ctl_table net_core_table[] = {
- 		.extra2		= SYSCTL_ONE,
- # else
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &two,
-+		.extra2		= SYSCTL_TWO,
- # endif
- 	},
- # ifdef CONFIG_HAVE_EBPF_JIT
-@@ -399,7 +395,7 @@ static struct ctl_table net_core_table[] = {
- 		.mode		= 0600,
- 		.proc_handler	= proc_dointvec_minmax_bpf_restricted,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &two,
-+		.extra2		= SYSCTL_TWO,
- 	},
- 	{
- 		.procname	= "bpf_jit_kallsyms",
-@@ -417,7 +413,7 @@ static struct ctl_table net_core_table[] = {
- 		.maxlen		= sizeof(long),
- 		.mode		= 0600,
- 		.proc_handler	= proc_dolongvec_minmax_bpf_restricted,
--		.extra1		= &long_one,
-+		.extra1		= SYSCTL_LONG_ONE,
- 		.extra2		= &bpf_jit_limit_max,
- 	},
- #endif
-@@ -544,7 +540,7 @@ static struct ctl_table net_core_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &two,
-+		.extra2		= SYSCTL_TWO,
- 	},
- 	{
- 		.procname	= "devconf_inherit_init_net",
-@@ -553,7 +549,7 @@ static struct ctl_table net_core_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
- 	},
- 	{
- 		.procname	= "high_order_alloc_disable",
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index ad80d180b60b..cd448cdd3b38 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -20,10 +20,6 @@
- #include <net/protocol.h>
- #include <net/netevent.h>
- 
--static int two = 2;
--static int three __maybe_unused = 3;
--static int four = 4;
--static int thousand = 1000;
- static int tcp_retr1_max = 255;
- static int ip_local_port_range_min[] = { 1, 1 };
- static int ip_local_port_range_max[] = { 65535, 65535 };
-@@ -1006,7 +1002,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &two,
-+		.extra2		= SYSCTL_TWO,
- 	},
- 	{
- 		.procname	= "tcp_max_syn_backlog",
-@@ -1059,7 +1055,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_fib_multipath_hash_policy,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
- 	},
- 	{
- 		.procname	= "fib_multipath_hash_fields",
-@@ -1117,7 +1113,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &four,
-+		.extra2		= SYSCTL_FOUR,
- 	},
- 	{
- 		.procname	= "tcp_recovery",
-@@ -1310,7 +1306,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &thousand,
-+		.extra2		= SYSCTL_ONE_THOUSAND,
- 	},
- 	{
- 		.procname	= "tcp_pacing_ca_ratio",
-@@ -1319,7 +1315,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &thousand,
-+		.extra2		= SYSCTL_ONE_THOUSAND,
- 	},
- 	{
- 		.procname	= "tcp_wmem",
-@@ -1391,7 +1387,7 @@ static struct ctl_table ipv4_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &two,
-+		.extra2		= SYSCTL_TWO,
- 	},
- 	{ }
- };
-diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
-index d53dd142bf87..94a0a294c6a1 100644
---- a/net/ipv6/sysctl_net_ipv6.c
-+++ b/net/ipv6/sysctl_net_ipv6.c
-@@ -23,8 +23,6 @@
- #endif
- #include <linux/ioam6.h>
- 
--static int two = 2;
--static int three = 3;
- static int flowlabel_reflect_max = 0x7;
- static int auto_flowlabels_max = IP6_AUTO_FLOW_LABEL_MAX;
- static u32 rt6_multipath_hash_fields_all_mask =
-@@ -172,7 +170,7 @@ static struct ctl_table ipv6_table_template[] = {
- 		.mode		= 0644,
- 		.proc_handler   = proc_rt6_multipath_hash_policy,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
- 	},
- 	{
- 		.procname	= "fib_multipath_hash_fields",
-@@ -197,7 +195,7 @@ static struct ctl_table ipv6_table_template[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dou8vec_minmax,
- 		.extra1         = SYSCTL_ZERO,
--		.extra2         = &two,
-+		.extra2         = SYSCTL_TWO,
- 	},
- 	{
- 		.procname	= "ioam6_id",
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index 7f645328b47f..efab2b06d373 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -1767,8 +1767,6 @@ static int ip_vs_zero_all(struct netns_ipvs *ipvs)
- 
- #ifdef CONFIG_SYSCTL
- 
--static int three = 3;
--
- static int
- proc_do_defense_mode(struct ctl_table *table, int write,
- 		     void *buffer, size_t *lenp, loff_t *ppos)
-@@ -1977,7 +1975,7 @@ static struct ctl_table vs_vars[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= &three,
-+		.extra2		= SYSCTL_THREE,
- 	},
- 	{
- 		.procname	= "nat_icmp_send",
--- 
-2.27.0
+RnJvbTogVG9yaW4gQ2FyZXkNCj4gU2VudDogMjIgTWFyY2ggMjAyMiAxOTowNA0KPiANCj4gTWFr
+ZSBVRFAgcmVjdm1zZyBvbmx5IHJldHVybiB0aGUgTVNHX1RSVU5DIGZsYWcgaWYgdGhlIHJlYWQg
+ZG9lcyBub3QNCj4gY29weSB0aGUgdGFpbCBlbmQgb2YgdGhlIGRhdGFncmFtLiAgU3BlY2lmaWNh
+bGx5LCB0aGlzIHRhcmdldHMgTVNHX1BFRUsNCj4gd2hlbiB3ZSdyZSB1c2luZyBhIHBvc2l0aXZl
+IHBlZWsgb2Zmc2V0Lg0KPiANCj4gVGhlIGN1cnJlbnQgYmVoYXZpb3VyIG1lYW5zIHRoYXQgaWYg
+d2UgaGF2ZSBhIHBvc2l0aXZlIHBlZWsgb2Zmc2V0IGBvZmZgDQo+IGFuZCB3ZSdyZSByZWFkaW5n
+IGByYCBieXRlcyBmcm9tIGEgZGF0YWdyYW0gb2YgYHVsZW5gIGxlbmd0aCwgd2UgcmVzcG9uZA0K
+PiB3aXRoIE1TR19UUlVOQyBpZiBhbmQgb25seSBpZiBgciA8PSB1bGVuIC0gb2ZmYC4gIFRoaXMg
+aXMgb2RkIGJlaGF2aW91cg0KPiBhcyB3ZSByZXR1cm4gTVNHX1RSVU5DIGlmIHRoZSB1c2VyIHJl
+cXVlc3RzIGV4YWN0bHkgYHVsZW4gLSBvZmZgIHdoaWNoDQo+IGhhcyBubyB0cnVuY2F0aW9uLg0K
+PiANCj4gVGhlIGJlaGF2aW91ciBjb3VsZCBiZSBjb3JyZWN0ZWQgaW4gdHdvIHdheXM6DQo+IA0K
+PiBUaGlzIHBhdGNoIHJldHVybnMgTVNHX1RSVU5DIG9ubHkgZm9yIHRhaWwtZW5kIHRydW5jYXRp
+b24gYW5kIG5vdCBoZWFkDQo+IHRydW5jYXRpb24uICBUaGlzIGlzIG1vcmUgY29uc2lzdGVudCB3
+aXRoIHJlY3YoMik6DQo+ID4gTVNHX1RSVU5DDQo+ID4gICAgIGluZGljYXRlcyB0aGF0IHRoZSB0
+cmFpbGluZyBwb3J0aW9uIG9mIGEgZGF0YWdyYW0gd2FzIGRpc2NhcmRlZA0KPiA+ICAgICBiZWNh
+dXNlIHRoZSBkYXRhZ3JhbSB3YXMgbGFyZ2VyIHRoYW4gdGhlIGJ1ZmZlciBzdXBwbGllZC4NCj4g
+YWx0aG91Z2ggdGhpcyBpc24ndCB3cml0dGVuIHdpdGggU09fUEVFS19PRkYgaW4gbWluZC4NCj4g
+DQo+IFRoZSBzZWNvbmQgb3B0aW9uIGlzIHRvIGFsd2F5cyByZXR1cm4gTVNHX1RSVU5DIGlmIGBv
+ZmYgPiAwYCBsaWtlIHRoZQ0KPiBtYW4tcGFnZXMgc29ja2V0KDcpIHBhZ2Ugc3RhdGVzOg0KPiA+
+IEZvciBkYXRhZ3JhbSBzb2NrZXRzLCBpZiB0aGUgInBlZWsgb2Zmc2V0IiBwb2ludHMgdG8gdGhl
+IG1pZGRsZSBvZiBhDQo+ID4gcGFja2V0LCB0aGUgZGF0YSByZXR1cm5lZCB3aWxsIGJlIG1hcmtl
+ZCB3aXRoIHRoZSBNU0dfVFJVTkMgZmxhZy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFRvcmluIENh
+cmV5IDx0b3JpbkB0Y2FyZXkudWs+DQo+IC0tLQ0KPiAgbmV0L2lwdjQvdWRwLmMgfCAyICstDQo+
+ICBuZXQvaXB2Ni91ZHAuYyB8IDIgKy0NCj4gIDIgZmlsZXMgY2hhbmdlZCwgMiBpbnNlcnRpb25z
+KCspLCAyIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL25ldC9pcHY0L3VkcC5jIGIv
+bmV0L2lwdjQvdWRwLmMNCj4gaW5kZXggMzE5ZGQ3YmJmZTMzLi5lNTc3NDBhMmMzMDggMTAwNjQ0
+DQo+IC0tLSBhL25ldC9pcHY0L3VkcC5jDQo+ICsrKyBiL25ldC9pcHY0L3VkcC5jDQo+IEBAIC0x
+ODU1LDcgKzE4NTUsNyBAQCBpbnQgdWRwX3JlY3Ztc2coc3RydWN0IHNvY2sgKnNrLCBzdHJ1Y3Qg
+bXNnaGRyICptc2csIHNpemVfdCBsZW4sIGludCBub2Jsb2NrLA0KPiAgCWNvcGllZCA9IGxlbjsN
+Cj4gIAlpZiAoY29waWVkID4gdWxlbiAtIG9mZikNCj4gIAkJY29waWVkID0gdWxlbiAtIG9mZjsN
+Cj4gLQllbHNlIGlmIChjb3BpZWQgPCB1bGVuKQ0KPiArCWVsc2UgaWYgKGNvcGllZCA8IHVsZW4g
+LSBvZmYpDQo+ICAJCW1zZy0+bXNnX2ZsYWdzIHw9IE1TR19UUlVOQzsNCg0KWW91IGNhbiByZW1v
+dmUgYSB0ZXN0Og0KCWlmIChjb3BpZWQgPj0gdWxlbiAtIG9mZikNCgkJY29waWVkID0gdWxlbiAt
+IG9mZjsNCgllbHNlDQoJCW1zZy0+bXNnX2ZsYWdzIHw9IE1TR19UUlVOQzsNCg0KICAgIERhdmlk
+DQoNCj4gDQo+ICAJLyoNCj4gZGlmZiAtLWdpdCBhL25ldC9pcHY2L3VkcC5jIGIvbmV0L2lwdjYv
+dWRwLmMNCj4gaW5kZXggMTRhOTRjZGRjZjBiLi5kNmMwZWVkOTQ1NjQgMTAwNjQ0DQo+IC0tLSBh
+L25ldC9pcHY2L3VkcC5jDQo+ICsrKyBiL25ldC9pcHY2L3VkcC5jDQo+IEBAIC0zNDgsNyArMzQ4
+LDcgQEAgaW50IHVkcHY2X3JlY3Ztc2coc3RydWN0IHNvY2sgKnNrLCBzdHJ1Y3QgbXNnaGRyICpt
+c2csIHNpemVfdCBsZW4sDQo+ICAJY29waWVkID0gbGVuOw0KPiAgCWlmIChjb3BpZWQgPiB1bGVu
+IC0gb2ZmKQ0KPiAgCQljb3BpZWQgPSB1bGVuIC0gb2ZmOw0KPiAtCWVsc2UgaWYgKGNvcGllZCA8
+IHVsZW4pDQo+ICsJZWxzZSBpZiAoY29waWVkIDwgdWxlbiAtIG9mZikNCj4gIAkJbXNnLT5tc2df
+ZmxhZ3MgfD0gTVNHX1RSVU5DOw0KPiANCj4gIAlpc191ZHA0ID0gKHNrYi0+cHJvdG9jb2wgPT0g
+aHRvbnMoRVRIX1BfSVApKTsNCj4gLS0NCj4gMi4zNC4xDQo+IA0KDQotDQpSZWdpc3RlcmVkIEFk
+ZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywg
+TUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
