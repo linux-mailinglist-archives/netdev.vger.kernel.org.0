@@ -2,147 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7568E4E52DC
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 14:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4335E4E52F9
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 14:22:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244193AbiCWNPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 09:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
+        id S244246AbiCWNXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 09:23:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238027AbiCWNPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 09:15:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C95A3DFF0
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 06:13:34 -0700 (PDT)
+        with ESMTP id S229482AbiCWNXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 09:23:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE3E77CDFD
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 06:22:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648041213;
+        s=mimecast20190719; t=1648041731;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ifuc5oqWU21Io0fAnVVGyPcyUyUccxzM0pDfQGg0di4=;
-        b=XO0YXmNXHujDODAYqvwg4c6IUPeesIobDdGWhhFoTBDHL9J7OPcJy8J1VPWEhuqh5encfa
-        vJNNLzv7AKoixslyBhvT+lfGyuelQLcehfmR7Yhzm4L5g/8tB0HaNUZ8wSMqbkt365zVaf
-        m7zjgI0tOT6lSGw6v5WqdmP46TjDJi8=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=suvndhg5i90sE3alVpWaoy01Es5EJ/QlvWcm+elPd0I=;
+        b=gKnZmccY1DbHQu2UBDe6WX7bI95sTIdY/HAPq/SmYPdnlJPEvM6Jkgn8SMLXn9KA7YLPQ6
+        Qqk+CYyTupWrP2ligJhfOjFbB1WYYb/W48qaaxjw1EkSKTSCX5KYySglQcd7Ixmz4cAf4a
+        7H6UGx7xPaBdtU1UZoRIAr93IdBF5G4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-147--aB9q3YKOnG-GF3oXiLYyA-1; Wed, 23 Mar 2022 09:13:30 -0400
-X-MC-Unique: -aB9q3YKOnG-GF3oXiLYyA-1
-Received: by mail-qk1-f199.google.com with SMTP id w200-20020a3762d1000000b0067d2149318dso950513qkb.1
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 06:13:30 -0700 (PDT)
+ us-mta-376-XBLtdpCcPCaNp_H2QNkurQ-1; Wed, 23 Mar 2022 09:22:09 -0400
+X-MC-Unique: XBLtdpCcPCaNp_H2QNkurQ-1
+Received: by mail-wm1-f69.google.com with SMTP id v2-20020a05600c214200b0038c7c02deceso601631wml.8
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 06:22:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Ifuc5oqWU21Io0fAnVVGyPcyUyUccxzM0pDfQGg0di4=;
-        b=Ze+ehwjVdRo+lxFyzZng3MejgrCngR0aWcbTLuxpg4tz1tFGaLih8SqGP7bJrAd+jr
-         xXo7vv9lL6Q5lTfOKqRDuHv7lYnfGX5uJpIHjcsOFv1ztTRMUZSvvNJrFR1qsCTpnT5Q
-         D67wR4yRXomn9W/7Ag1xhexBSCcim+7177I4npRH6LRHRR2PMBet82+fJLeH/GRsQXcz
-         GCLa31/Q1gNtesqiU7GG3zLz64Q4E/7Nd2kVCBBpXe8FtR1GDctrYN9G2Nu8Wf92knOx
-         U0Ilnl2+PN8UPjFhILwMbhsqiRgL4c8nxrIP0b4MuR/n/0H7UGxLgddSIfTDLbkcZOXa
-         tBag==
-X-Gm-Message-State: AOAM532Po6vUx5MFM4BD9nAQgN2m9Xi3wrimAXHD4GwbWaJyf+iA2Boc
-        HNC8EJ8IUsCCNWa6ByzukFSuowmrx8Cc1dZkaiIiTrRKs7Q2izFsyw67qvglvMacpz2yPcDdo6j
-        5aHpUwBt3/ZaVmeXn
-X-Received: by 2002:ad4:5f05:0:b0:440:ea8c:c439 with SMTP id fo5-20020ad45f05000000b00440ea8cc439mr22435354qvb.69.1648041210026;
-        Wed, 23 Mar 2022 06:13:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwUgNb4wvcfdWZ2zbAFuWeegIGg+k6cziT03ZdV/wBH98ZC0J9cJTusg3OZ0832ZtCJW5BOOA==
-X-Received: by 2002:ad4:5f05:0:b0:440:ea8c:c439 with SMTP id fo5-20020ad45f05000000b00440ea8cc439mr22435335qvb.69.1648041209812;
-        Wed, 23 Mar 2022 06:13:29 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id b202-20020ae9ebd3000000b0067b11d53365sm10517757qkg.47.2022.03.23.06.13.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 06:13:28 -0700 (PDT)
-Subject: Re: [PATCH] ath9k: initialize arrays at compile time
-To:     Joe Perches <joe@perches.com>,
-        Sebastian Gottschall <s.gottschall@newmedia-net.de>,
-        John Crispin <john@phrozen.org>, toke@toke.dk,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220320152028.2263518-1-trix@redhat.com>
- <af6042d0-952f-f497-57e7-37fef45a1f76@phrozen.org>
- <233074c3-03dc-cf8b-a597-da0fb5d98be0@newmedia-net.de>
- <7a12fd4599758b8cd5fd376db6c9a950d2ed2094.camel@perches.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <c290ae27-9e4a-96ed-d8d6-a8b8bf8d0181@redhat.com>
-Date:   Wed, 23 Mar 2022 06:13:25 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=suvndhg5i90sE3alVpWaoy01Es5EJ/QlvWcm+elPd0I=;
+        b=mbbTtnRjBwDIeYAO/qHazrkrvKzSE91gYAMAlZF8rV/KwwBzk9aoEcfD1aEnmWwOUN
+         qAxkkmRgm8TNoA68vBpFO2e0FIknzIbT4aVFxNSQ7tW0iV9xKN2piitlf0UBuC8RuIx3
+         QUSZxIIrVcVV3um8MImr5PDC38sFPBCFvMOcaXs+USrM9KvCVCHzYMZOYbOkt8Fv8mvx
+         i6dgaRnSxuk7kb94xkylHG5FmD5ugUnjvkZweNTeRcE7xVK2t8tghafOokgAucO2RSF/
+         xeQp+M+EVVWeV+mh6Rzr10o6VdszjVgieW1S1dXXQLQw00G7wc4137AxOHfijFwLjYdd
+         4Swg==
+X-Gm-Message-State: AOAM5330IV0nSMD8yq6avS9ITD92YAz8+I3uXG7tgZMmnMuF5sH05vJJ
+        ucbLTVdBVV/Ky5np1l52NMIf1oGj//ZaAmLFWobv9hAlcVg+/atvWUOoCmgyyXqwrwPOX8Cuf0C
+        5BxtH6sjTDA/XyUQa
+X-Received: by 2002:a05:6000:15c7:b0:205:87a2:87bc with SMTP id y7-20020a05600015c700b0020587a287bcmr2861189wry.260.1648041728536;
+        Wed, 23 Mar 2022 06:22:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwyp9kjUHrJnPA7iyjXS+pAxAeSdHIG+pVsNH4tY9VWV5thpBNO3b44rofEKgNXV0UAniIaJg==
+X-Received: by 2002:a05:6000:15c7:b0:205:87a2:87bc with SMTP id y7-20020a05600015c700b0020587a287bcmr2861171wry.260.1648041728292;
+        Wed, 23 Mar 2022 06:22:08 -0700 (PDT)
+Received: from redhat.com ([2.55.151.118])
+        by smtp.gmail.com with ESMTPSA id g17-20020a05600c4ed100b0038ca32d0f26sm4091594wmq.17.2022.03.23.06.22.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 06:22:06 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 09:22:02 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, Stefan Hajnoczi <stefanha@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        "David S. Miller" <davem@davemloft.net>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org, Asias He <asias@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net v2 0/3] vsock/virtio: enable VQs early on probe and
+ finish the setup before using them
+Message-ID: <20220323092118-mutt-send-email-mst@kernel.org>
+References: <20220323084954.11769-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <7a12fd4599758b8cd5fd376db6c9a950d2ed2094.camel@perches.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323084954.11769-1-sgarzare@redhat.com>
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 23, 2022 at 09:49:51AM +0100, Stefano Garzarella wrote:
+> The first patch fixes a virtio-spec violation. The other two patches
+> complete the driver configuration before using the VQs in the probe.
+> 
+> The patch order should simplify backporting in stable branches.
 
-On 3/20/22 10:36 AM, Joe Perches wrote:
-> On Sun, 2022-03-20 at 18:17 +0100, Sebastian Gottschall wrote:
->> Am 20.03.2022 um 17:48 schrieb John Crispin:
->>>
->>> On 20.03.22 16:20, trix@redhat.com wrote:
->>>> array[size] = { 0 };
->>> should this not be array[size] = { }; ?!
->>>
->>> If I recall correctly { 0 } will only set the first element of the
->>> struct/array to 0 and leave random data in all others elements
->>>
->>>      John
->> You are right, john
-> No.  The patch is fine.
->
-> Though generally the newer code in the kernel uses
->
-> 	type dec[size] = {};
->
-> to initialize stack arrays.
->
-> array stack declarations not using 0
->
-> $ git grep -P '^\t(?:\w++\s*){1,2}\[\s*\w+\s*\]\s*=\s*\{\s*\};' -- '*.c' | wc -l
-> 213
->
-> array stack declarations using 0
->
-> $ git grep -P '^\t(?:\w++\s*){1,2}\[\s*\w+\s*\]\s*=\s*\{\s*0\s*\};' -- '*.c' | wc -l
-> 776
->
-> Refer to the c standard section on initialization 6.7.8 subsections 19 and 21
->
-> 19
->
-> The initialization shall occur in initializer list order, each initializer provided for a
-> particular subobject overriding any previously listed initializer for the same subobject
-> all subobjects that are not initialized explicitly shall be initialized implicitly the same as
-> objects that have static storage duration.
->
-> ...
->
-> 21
->
-> If there are fewer initializers in a brace-enclosed list than there are elements or members
-> of an aggregate, or fewer characters in a string literal used to initialize an array of known
-> size than there are elements in the array, the remainder of the aggregate shall be
-> initialized implicitly the same as objects that have static storage duration.
->
-Joe,
+Ok but I think the order is wrong. It should be 2-3-1,
+otherwise bisect can pick just 1 and it will have
+the issues previous reviw pointed out.
 
-Thanks for providing these sections for c reference !
 
-I will update the commit log and replace { 0 } with { }
 
-Tom
+> v2:
+> - patch 1 is not changed from v1
+> - added 2 patches to complete the driver configuration before using the
+>   VQs in the probe [MST]
+> 
+> v1: https://lore.kernel.org/netdev/20220322103823.83411-1-sgarzare@redhat.com/
+> 
+> Stefano Garzarella (3):
+>   vsock/virtio: enable VQs early on probe
+>   vsock/virtio: initialize vdev->priv before using VQs
+>   vsock/virtio: read the negotiated features before using VQs
+> 
+>  net/vmw_vsock/virtio_transport.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> -- 
+> 2.35.1
 
