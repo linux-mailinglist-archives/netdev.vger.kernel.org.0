@@ -2,131 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 959BA4E51A7
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 12:54:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09DDD4E51DC
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 13:08:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241262AbiCWLz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 07:55:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33892 "EHLO
+        id S240593AbiCWMKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 08:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232988AbiCWLz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 07:55:56 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D84762A0;
-        Wed, 23 Mar 2022 04:54:23 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id r13so2325490ejd.5;
-        Wed, 23 Mar 2022 04:54:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tjXHN/eiBOH25O5STfPTfLcMinZ5HpozLUsy3qwmmWQ=;
-        b=In1lSLjOxNHM4lD+mv/8ysYHAWkl7ETBHGwMnp4xudlx8mi44elGLdb08B5eEJSRlu
-         k+iECO8zs1svCZSfH4zbgyfFRAvnMe3vyv6q82h6/+/IXlukfE2oLslpiPBYzHaXtdkj
-         kaLB+YrriT+JdvU/D3xm7ZTyiuPei5ti+aDRpHp+B1f7CWoQQ0QauEUpOqYkiMe+fkQy
-         mD67albiSCRCVe0v1H3qySwvrUJsTgaRmiYcs1P5gXkIX1jRxChiFmcyN1ZWi06TxHRs
-         64AnXEgUCSupTx+TEEBR/YUY227lWtixDt2APmAM7LPtMh/O/CepNNQlzPCYj4kfV1zH
-         fk7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tjXHN/eiBOH25O5STfPTfLcMinZ5HpozLUsy3qwmmWQ=;
-        b=LMrLBUHU/2ro4kkADgW/FnDc80EzZ3jLe4gFfwLSq3sMoeD1V4KiKEvRhxUBxIa3se
-         +HQjEcwkTK6uxU/F1YKNRc8TiH2orYW3baqD1MMx/+eNgAr3kxg9qsQiktUMxBqoh8NM
-         ryrKmk626xJhcxxSvnWTVPI0KGK7PViNARACbOHRZbw8Z/0tBNz0nDOSsJ2Ste7+Favq
-         SqmxYHJ0LVGGl8WbT46/T19zf4+M0YdnWZlewKOX+l+ONp71wYsV6XvsT4Nd7IyukD56
-         Dmcob1kuV6QQkg4X5fk9iyZai4qvlkTZ78kE44/3vJ6Cpu5HPolJclPPkDzQtim/+HH9
-         lh9A==
-X-Gm-Message-State: AOAM532v0QcAhW/yEZBt//BlLv6PZiL8gneqFARNubzOnTfnyq5Zm3M7
-        //YN3Styd3VOp8K3zz9liXc=
-X-Google-Smtp-Source: ABdhPJzQdK6GZGqgS6tUs7KA2VUiibYqbOoA4gUyryiq0os00EyiyyvnXylRtnBUGjSvy1PZNlmCnQ==
-X-Received: by 2002:a17:906:c211:b0:6ce:e221:4c21 with SMTP id d17-20020a170906c21100b006cee2214c21mr30817095ejz.691.1648036461593;
-        Wed, 23 Mar 2022 04:54:21 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05640211d100b00419357a2647sm5517586edw.25.2022.03.23.04.54.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 04:54:20 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 13:54:19 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: mac-auth/MAB
- implementation
-Message-ID: <20220323115419.svxnbcqqd7pyargn@skbuf>
-References: <20220318121400.sdc4guu5m4auwoej@skbuf>
- <86pmmjieyl.fsf@gmail.com>
- <20220318131943.hc7z52beztqlzwfq@skbuf>
- <86a6dixnd2.fsf@gmail.com>
- <20220322110806.kbdb362jf6pbtqaf@skbuf>
- <86fsn90ye8.fsf@gmail.com>
- <20220323101643.kum3nuqctunakcfo@skbuf>
- <864k3p5437.fsf@gmail.com>
- <20220323112116.q6shx2g4r23ungtc@skbuf>
- <86tuboao8o.fsf@gmail.com>
+        with ESMTP id S238332AbiCWMJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 08:09:59 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4FD5FB1;
+        Wed, 23 Mar 2022 05:08:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648037309; x=1679573309;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Kh1zhhFyD5e+xt5v88i7C1KQ20psD7NhVkn7j6I0Ibg=;
+  b=VSa6/4lN+YZv/0e9kHxkhYlyMs4WD1hJ6E7kfkYpbb2fm35rxTRgT8a5
+   kjHTHv1XuqSZEado4eatgKrQo49GzLNpN1v7wwnY7VhI+0palFtlN+HfJ
+   /jWuykeONY0bcVUq8SgnVH3FymQxPXYfpBJ1uZKabwIRhprliNAXSoWJ0
+   AU27MhTrRU1RW7MVqOZg8GaxWIkpVC2Wp6hdTvhKP8QCRhUbi2SZfcgqh
+   RqMLDu2uhg2aaB6X5Ij0LyWPVAlKqFbOzFnU5tZF/xgZABkBiNLCc6/oG
+   wkQv4o5mkz63PkZamQumn/+dxFB2Eq8D9bYsftsFfBU7a1APZpe3H6p+L
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="344527497"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="344527497"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 05:08:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="544167582"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga007.jf.intel.com with ESMTP; 23 Mar 2022 05:08:24 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22NC8N9O006846;
+        Wed, 23 Mar 2022 12:08:23 GMT
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Wan Jiabing <wanjiabing@vivo.com>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [Intel-wired-lan] Don't do arithmetic on anything smaller than 'int' (was: [PATCH v2] ice: use min_t() to make code cleaner in ice_gnss)
+Date:   Wed, 23 Mar 2022 13:06:43 +0100
+Message-Id: <20220323120643.2759011-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <68ccb162-459b-cb95-19cf-3e0335e4c981@molgen.mpg.de>
+References: <20220321135947.378250-1-wanjiabing@vivo.com> <f888e3cf09944f9aa63532c9f59e69fb@AcuMS.aculab.com> <20220322175038.2691665-1-alexandr.lobakin@intel.com> <af3fa59809654c9b9939f1e0bd8ca76b@AcuMS.aculab.com> <20220322112730.482d674d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <68ccb162-459b-cb95-19cf-3e0335e4c981@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86tuboao8o.fsf@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 12:43:03PM +0100, Hans Schultz wrote:
-> On ons, mar 23, 2022 at 13:21, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Wed, Mar 23, 2022 at 11:57:16AM +0100, Hans Schultz wrote:
-> >> >> >> Another issue I see, is that there is a deadlock or similar issue when
-> >> >> >> receiving violations and running 'bridge fdb show' (it seemed that
-> >> >> >> member violations also caused this, but not sure yet...), as the unit
-> >> >> >> freezes, not to return...
-> >> >> >
-> >> >> > Have you enabled lockdep, debug atomic sleep, detect hung tasks, things
-> >> >> > like that?
-> >> >> 
-> >> >> I have now determined that it is the rtnl_lock() that causes the
-> >> >> "deadlock". The doit() in rtnetlink.c is under rtnl_lock() and is what
-> >> >> takes care of getting the fdb entries when running 'bridge fdb show'. In
-> >> >> principle there should be no problem with this, but I don't know if some
-> >> >> interrupt queue is getting jammed as they are blocked from rtnetlink.c?
-> >> >
-> >> > Sorry, I forgot to respond yesterday to this.
-> >> > By any chance do you maybe have an AB/BA lock inversion, where from the
-> >> > ATU interrupt handler you do mv88e6xxx_reg_lock() -> rtnl_lock(), while
-> >> > from the port_fdb_dump() handler you do rtnl_lock() -> mv88e6xxx_reg_lock()?
-> >> 
-> >> If I release the mv88e6xxx_reg_lock() before calling the handler, I need
-> >> to get it again for the mv88e6xxx_g1_atu_loadpurge() call at least. But
-> >> maybe the vtu_walk also needs the mv88e6xxx_reg_lock()?
-> >> I could also just release the mv88e6xxx_reg_lock() before the
-> >> call_switchdev_notifiers() call and reacquire it immediately after?
-> >
-> > The cleanest way to go about this would be to have the call_switchdev_notifiers()
-> > portion of the ATU interrupt handling at the very end of mv88e6xxx_g1_atu_prob_irq_thread_fn(),
-> > with no hardware access needed, and therefore no reg_lock() held.
-> 
-> So something like?
-> 	mv88e6xxx_reg_unlock(chip);
-> 	rtnl_lock();
-> 	err = call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE, brport, &info.info, NULL);
-> 	rtnl_unlock();
-> 	mv88e6xxx_reg_lock(chip);
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+Date: Tue, 22 Mar 2022 22:02:06 +0100
 
-No, call_switchdev_notifiers() should be the very end, no reg_lock() afterwards.
-Do all the hardware handling you need, populate some variables to denote
-that you need to notify switchdev, and if you do, lock the rtnetlink
-mutex and do it.
+> Dear Linux folks,
+> 
+> 
+> Am 22.03.22 um 19:27 schrieb Jakub Kicinski:
+> > On Tue, 22 Mar 2022 18:12:08 +0000 David Laight wrote:
+> >>>> Oh FFS why is that u16?
+> >>>> Don't do arithmetic on anything smaller than 'int'
+> >>>
+> >>> Any reasoning? I don't say it's good or bad, just want to hear your
+> >>> arguments (disasms, perf and object code measurements) etc.
+> >>
+> >> Look at the object code on anything except x86.
+> >> The compiler has to add instruction to mask the value
+> >> (which is in a full sized register) down to 16 bits
+> >> after every arithmetic operation.
+> >
+> > Isn't it also slower on some modern x86 CPUs?
+> > I could have sworn someone mentioned that in the past.
+> 
+> I know of Scott's article *Small Integers: Big Penalty* from 2012 [1].
+
+Thank you all guys, makes sense!
+
+Apart from this article, I tested some stuff on MIPS32 yesterday.
+Previously I was sure that it's okay to put u16 on stack to conserve
+it and there will be no code difference. I remember even having some
+bloat-o-meter data. Well, human memory tends to lie sometimes.
+I have a bunch of networking stats on stack which I collect during
+a NAPI cycle (receiving 64 packets), it's about 20 counters. I made
+them as u16 initially as it is (sizeof(u32) - sizeof(u16)) * 20 = 40
+bytes. So I converted them yesterday to u32 and instead of having
++40 bytes of .text, I got -36 in one function and even -88 in
+another one!
+So it really makes no sense to declare anything on stack smaller
+than u32 or int unless it is something to be passed to some HW or
+standardized structures, e.g. __be16 etc.
+
+Another interesting observation, on x86_64, is that u32 = u64
+assignments take more instructions as well. I converted some
+structure field recently from u64 to u32, but forgot that I'm
+assigning it in one function from an onstack variable, which was
+still unconverted from u64 to u32. When I did the latter, the .text
+size became smaller.
+
+> 
+> 
+> Kind regards,
+> 
+> Paul
+> 
+> 
+> [1]: https://notabs.org/coding/smallIntsBigPenalty.htm
+
+Thanks,
+Al
