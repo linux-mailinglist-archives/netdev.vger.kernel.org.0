@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F073A4E541C
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 15:19:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 608664E544D
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 15:35:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244739AbiCWOUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 10:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
+        id S241717AbiCWOgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 10:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244700AbiCWOUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 10:20:22 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEF1A7CDC6;
-        Wed, 23 Mar 2022 07:18:52 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 57972D6E;
-        Wed, 23 Mar 2022 07:18:52 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4BE903F73D;
-        Wed, 23 Mar 2022 07:18:49 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 14:18:40 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>, catalin.marinas@arm.com,
-        will@kernel.org
-Subject: Re: [PATCH v13 bpf-next 0/1] fprobe: Introduce fprobe function
- entry/exit probe
-Message-ID: <YjssQKblWeKqr/x8@lakrids>
-References: <164800288611.1716332.7053663723617614668.stgit@devnote2>
+        with ESMTP id S232141AbiCWOgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 10:36:38 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE0D49F9D;
+        Wed, 23 Mar 2022 07:35:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 862ACCE1F54;
+        Wed, 23 Mar 2022 14:35:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15F3BC340E8;
+        Wed, 23 Mar 2022 14:35:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648046104;
+        bh=mgIr0EJj1nfhvugLVQSBH+2sRCIPmpVhT59MmZP0smg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=GFTobHABrfa11Tf04GwxRArl3nWDFDEwidsEE6ZNM4vzCZMsZj/+cAnVnbqE6XZ2w
+         cOlWmeos7/DiPJXLFsNAHCVyVDi9lz0plBv7lDHJLNL+SJ5+2Ut2aOa8u7xwByc5/u
+         XIRfq1MaDqSVBT6zorHbvipdxlX/ZdIQoSGXjlafMdYETm5qzpqd5mjaiglpAaV9Z6
+         EMeTlzMpPw/yyICML66W8HOt7fIB+/NoV6m2Fnjk383GG5zvTZb6Kfq33bTP42iNSP
+         Dx8kZKP2JRC4q7uyiXEdq9i+TBqOmb+kqMxLVfiDBhjcLmYxoSdZd7gDCm27MQx/T3
+         nArunKyc1AVwg==
+Message-ID: <7288faa9-0bb1-4538-606d-3366a7a02da5@kernel.org>
+Date:   Wed, 23 Mar 2022 08:35:03 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <164800288611.1716332.7053663723617614668.stgit@devnote2>
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH v6 0/4] Add support for IPV6 RLB to balance-alb mode
+Content-Language: en-US
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, yoshfuji@linux-ipv6.org,
+        oliver@neukum.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+References: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220323120906.42692-1-sunshouxin@chinatelecom.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 11:34:46AM +0900, Masami Hiramatsu wrote:
-> Hi,
-
-Hi Masami,
-
-> Here is the 13th version of rethook x86 port. This is developed for a part
-> of fprobe series [1] for hooking function return. But since I forgot to send
-> it to arch maintainers, that caused conflict with IBT and SLS mitigation series.
-> Now I picked the x86 rethook part and send it to x86 maintainers to be
-> reviewed.
+On 3/23/22 6:09 AM, Sun Shouxin wrote:
+> This patch is implementing IPV6 RLB for balance-alb mode.
 > 
-> [1] https://lore.kernel.org/all/164735281449.1084943.12438881786173547153.stgit@devnote2/T/#u
+> Sun Shouxin (4):
+>   net:ipv6:Add void *data to ndisc_send_na function
+>   net:ipv6:Refactor ndisc_send_na to support sending na by slave
+>     directly
+>   net:ipv6:Export inet6_ifa_finish_destroy and ipv6_get_ifaddr
+>   net:bonding:Add support for IPV6 RLB to balance-alb mode
+> 
+>  drivers/net/bonding/bond_3ad.c     |   2 +-
+>  drivers/net/bonding/bond_alb.c     | 612 ++++++++++++++++++++++++++++-
+>  drivers/net/bonding/bond_debugfs.c |  14 +
+>  drivers/net/bonding/bond_main.c    |   6 +-
+>  drivers/net/usb/cdc_mbim.c         |   3 +-
+>  include/net/bond_3ad.h             |   2 +-
+>  include/net/bond_alb.h             |   7 +
+>  include/net/bonding.h              |   6 +-
+>  include/net/ipv6_stubs.h           |   3 +-
+>  include/net/ndisc.h                |   9 +-
+>  net/ipv6/addrconf.c                |   4 +-
+>  net/ipv6/ndisc.c                   |  64 ++-
+>  12 files changed, 696 insertions(+), 36 deletions(-)
+> 
+> 
+> base-commit: 2af7e566a8616c278e1d7287ce86cd3900bed943
 
-As mentioned elsewhere, I have similar (though not identical) concerns
-to Peter for the arm64 patch, which was equally unreviewed by
-maintainers, and the overall structure.
-
-> Note that this patch is still for the bpf-next since the rethook itself
-> is on the bpf-next tree. But since this also uses the ANNOTATE_NOENDBR
-> macro which has been introduced by IBT/ENDBR patch, to build this series
-> you need to merge the tip/master branch with the bpf-next.
-> (hopefully, it is rebased soon)
-
-I thought we were going to drop the series from the bpf-next tree so
-that this could all go through review it had missed thusfar.
-
-Is that still the plan? What's going on?
-
-> The fprobe itself is for providing the function entry/exit probe
-> with multiple probe point. The rethook is a sub-feature to hook the
-> function return as same as kretprobe does. Eventually, I would like
-> to replace the kretprobe's trampoline with this rethook.
-
-Can we please start by converting each architecture to rethook?
-
-Ideally we'd unify things such that each architecture only needs *one*
-return trampoline that both ftrace and krpboes can use, which'd be
-significantly easier to get right and manage.
-
-Thanks,
-Mark.
+net-next is closed, so this set needs to be delayed until it re-opens.
