@@ -2,80 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55DB54E57AF
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:37:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54DCB4E57B3
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:38:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343699AbiCWRid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 13:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        id S245162AbiCWRjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 13:39:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343654AbiCWRiQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:38:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B5A38021C
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 10:36:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648057005;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xWGdi1UqdjNcgIoNh0luPYt8s0RItagontqZa8O7xH4=;
-        b=DNWJKdZiCyrL5IIAvSeVGoH5AkolypKMjOjAedZiKbeaQuQXDZF7I6lZN4P5jMiMnup0C0
-        iYCDw3FrKxsfuCs9oFV8YgEy7G9z+cKJCwnfcsVJh5F4KW/wRL0lcKQNW0s+QzbiA3wKlF
-        ynyht0H8sDHgikusV77QxtwxrHmxOJA=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-140-Kcgvw4BUNq6RqRFo_ao2aw-1; Wed, 23 Mar 2022 13:36:44 -0400
-X-MC-Unique: Kcgvw4BUNq6RqRFo_ao2aw-1
-Received: by mail-qv1-f72.google.com with SMTP id fw9-20020a056214238900b0043522aa5b81so1749032qvb.21
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 10:36:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xWGdi1UqdjNcgIoNh0luPYt8s0RItagontqZa8O7xH4=;
-        b=MMHvFbgM/IZWaKKyLUVWmc0UDf3WY418jdg02zVSUuKyvOMra2fDcSbVhpdkJGrik5
-         uqv1ypKYKe5QT6QyiTeam21QxCapitjMkCzlSv8v/2tT7AgYESKIyyH8e3v9hVv1NXZP
-         5eizCTn6WBABaw63jtQtmQgdrcxhtwmXI4IIqKoRU9SRBQiK7oGbXRe+ELzoOBTVcLq/
-         i1UatPBa4TCv8FLiLLlclJ8w0e/9rhgzM5ve4jQRQSEQLDLLGdAARG2nt1epDG/kXCzs
-         KmVDo068SYg0I5Q/y76EYaf2eBsNItd3cl8thVLFPtJvprBxm1KJZZi18Vy0VEODwxEF
-         Cw+w==
-X-Gm-Message-State: AOAM533bIwkngBLd77A56auro+1S/dAdiF37+AAikwbOdQhcBK2tlDDi
-        W/5yKMpjtjA3OoHBv91X8VmZPhkj/QhJMGL8mRH1fShe7h9dBiDl6B4uu0FDis/xIm+r/IlpdNI
-        /LRYkgs0rj9ot79yumSEPW4yixaR9r8sJX9AOhOo146PapfvlaCIinpZAQzt7FKBBvoaH
-X-Received: by 2002:ac8:5dcf:0:b0:2e1:baf1:502d with SMTP id e15-20020ac85dcf000000b002e1baf1502dmr806279qtx.635.1648057003109;
-        Wed, 23 Mar 2022 10:36:43 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxTpPllZkLf2utvzNGXglhcnTlOLeIMc4F/54ZX4LmPDik4Rh6CKZ6+/p5IKQ52dEZjvQk8DA==
-X-Received: by 2002:ac8:5dcf:0:b0:2e1:baf1:502d with SMTP id e15-20020ac85dcf000000b002e1baf1502dmr806235qtx.635.1648057002476;
-        Wed, 23 Mar 2022 10:36:42 -0700 (PDT)
-Received: from step1.redhat.com (host-87-12-25-114.business.telecomitalia.it. [87.12.25.114])
-        by smtp.gmail.com with ESMTPSA id h14-20020a05622a170e00b002e1a65754d8sm476127qtk.91.2022.03.23.10.36.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 10:36:41 -0700 (PDT)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, Asias He <asias@redhat.com>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net v3 3/3] vsock/virtio: enable VQs early on probe
-Date:   Wed, 23 Mar 2022 18:36:25 +0100
-Message-Id: <20220323173625.91119-4-sgarzare@redhat.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220323173625.91119-1-sgarzare@redhat.com>
-References: <20220323173625.91119-1-sgarzare@redhat.com>
+        with ESMTP id S237353AbiCWRjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:39:55 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A639FD2C
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 10:38:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648057105; x=1679593105;
+  h=message-id:date:mime-version:subject:cc:references:from:
+   to:in-reply-to:content-transfer-encoding;
+  bh=xb2ash3QyjsdxeY1io12OmLXhZtU8Z36q39iIKBI5UI=;
+  b=BvaqOYQhe88egtt8zplAGQO8CQZvdd40nHRMVSxIVQF3h47RRluGBmgK
+   5cATQSoHKCQPFBJMEGkZIM7jMKVURry0xHxxYYncwse74eo9m2w7Qe41s
+   kdUCZGRVSAmVnyqEZLq/q4BBONqyJaPJZ+EU4nLi+/xiC2NZXLZd9vuXu
+   cNIBH/BvETGIeUDfYpQvOXnSasVJSbhAjlXFi4/9ZDZCdIIz5c4OtA4y+
+   fCLmphb2g01gE+b359r85/XqnOt33hu31gwdXJWJ7qSUafsEYsztpLJah
+   +OERxfKClDOaGVxa9SCqe53ONDP/vfJq2idyGZPxOxfzHAXg0voUPf39u
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="240346269"
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="240346269"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:37:01 -0700
+X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
+   d="scan'208";a="561011437"
+Received: from mckumar-mobl1.gar.corp.intel.com (HELO [10.215.128.237]) ([10.215.128.237])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:36:59 -0700
+Message-ID: <6590efa9-8fcd-5d77-9dff-6f2d1244cdb0@linux.intel.com>
+Date:   Wed, 23 Mar 2022 23:06:55 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: net: wwan: ethernet interface support
+Content-Language: en-US
+Cc:     Johannes Berg <johannes@sipsolutions.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>
+References: <1eb3d9e6-2adf-7f6c-4745-481451813522@linux.intel.com>
+ <CAHNKnsQMFDdRzjAGW8+KHJrJUnganM0gi8AWmBnF1h_M2RSLeg@mail.gmail.com>
+ <CAMZdPi_veiVaQYBcu9o0GqbmUcYtkL4NawOo2AGPKxfmaNrdhg@mail.gmail.com>
+From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
+To:     "loic.poulain@linaro.org >> Loic Poulain" <loic.poulain@linaro.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
+In-Reply-To: <CAMZdPi_veiVaQYBcu9o0GqbmUcYtkL4NawOo2AGPKxfmaNrdhg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,33 +67,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtio spec requires drivers to set DRIVER_OK before using VQs.
-This is set automatically after probe returns, but virtio-vsock
-driver uses VQs in the probe function to fill rx and event VQs
-with new buffers.
 
-Let's fix this, calling virtio_device_ready() before using VQs
-in the probe function.
+On 3/23/2022 10:36 PM, Loic Poulain wrote:
+> On Sat, 19 Mar 2022 at 19:34, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
+>>
+>> Hello,
+>>
+>> On Sat, Mar 19, 2022 at 6:21 PM Kumar, M Chetan
+>> <m.chetan.kumar@linux.intel.com> wrote:
+>>> Release16 5G WWAN Device need to support Ethernet interface for TSN requirement.
+>>> So far WWAN interface are of IP type. Is there any plan to scale it to support
+>>> ethernet interface type ?
+>>
+>> What did you mean when you talked about supporting interfaces of Ethernet type?
+>>
+>> The WWAN subsystem provides an interface for users to request the
+>> creation of a network interface from a modem driver. At the moment,
+>> all modem drivers that support the WWAN subsystem integration create
+>> network interfaces of the ARPHRD_NONE or ARPHRD_RAWIP type. But it is
+>> up to the driver what type of interface it will create. At any time,
+>> the driver can decide to create an ARPHRD_ETHER network interface, and
+>> it will be Ok.
+> 
+> Agree, WWAN does not require a specific type, so you can do whatever
+> you want in the newlink callback.
+> 
+> Should a modem/driver be able to expose mixed interface types (e.g. ip
+> + eth), in that case we probably need to add extra param to newlink.
 
-Fixes: 0ea9e1d3a9e3 ("VSOCK: Introduce virtio_transport.ko")
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport.c | 2 ++
- 1 file changed, 2 insertions(+)
+The wwan device which is complaint to 3GPP release16 specification (TSN 
+supported) will have to create both the types of interfaces ARPHRD_RAWIP/ 
+ARPHRD_NONE to carry default IP traffic and ARPHRD_ETHER for carrying TSN 
+specific traffic.
 
-diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
-index 3954d3be9083..ba1c8cc0c467 100644
---- a/net/vmw_vsock/virtio_transport.c
-+++ b/net/vmw_vsock/virtio_transport.c
-@@ -627,6 +627,8 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
- 
- 	vdev->priv = vsock;
- 
-+	virtio_device_ready(vdev);
-+
- 	mutex_lock(&vsock->tx_lock);
- 	vsock->tx_run = true;
- 	mutex_unlock(&vsock->tx_lock);
--- 
-2.35.1
+Since both can co-exist can we consider this extra param added to newlink to 
+distinguish
+1> Ethernet interface creation from ip interface
+2> Ethernet interface to session id mapping.
 
+Kindly provide your inputs.
