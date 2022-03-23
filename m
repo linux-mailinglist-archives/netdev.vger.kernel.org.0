@@ -2,68 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C444E57FB
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:57:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 211154E5802
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 19:00:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244898AbiCWR6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 13:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
+        id S1343902AbiCWSBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 14:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343916AbiCWR55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:57:57 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC216BC11;
-        Wed, 23 Mar 2022 10:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648058187; x=1679594187;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UVTweHN61rHkZzXfM5jm3uhIUIF0gAVJSjh3UNXQLgA=;
-  b=OpbI+5o/lOXO5v4D58AS3A1G95+IOKmCOUKUOHIhMn54G98NlESI9H85
-   FxUPQfbyXWVa9hNFV56tjrtSXC9sJEXQkGsrR1QnBN7ZGAa0jiUHUjyU3
-   vn6RiOwh3gDIs1/Q2xddbzpRQgeFLanz8Mmzyk2jwvO4F+2H6XhViF4TS
-   5K6Aqv7T9xvnYTeuUvFgApox/Fj6ZNmWzQTSrQWDQHcqshfOd0cSzdZAg
-   JG6osqg3l8TXJdSylrHA8I0EzZTmHB4g2ID9gzxWs65SInQhfwo5qlTRG
-   SVuECRLt3imJ2r3rGaM5XBbYgVE6gaAxuYjYPeMOPw20afRr8NOkRTkaz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="344624096"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="344624096"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 10:56:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="501100457"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga003.jf.intel.com with ESMTP; 23 Mar 2022 10:56:24 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22NHuMKm030590;
-        Wed, 23 Mar 2022 17:56:22 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 0/2] ice: avoid sleeping/scheduling in atomic contexts
-Date:   Wed, 23 Mar 2022 18:54:46 +0100
-Message-Id: <20220323175446.2777027-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220323104005.2a58a57c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20220323124353.2762181-1-alexandr.lobakin@intel.com> <20220323104005.2a58a57c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S235384AbiCWSBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 14:01:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 585F837AB5;
+        Wed, 23 Mar 2022 11:00:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1ACC8B82005;
+        Wed, 23 Mar 2022 18:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BA5C7C36AE2;
+        Wed, 23 Mar 2022 18:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648058413;
+        bh=I+InwoXQcf+sONGnxw2zxvs+HMUOtaWfmkHUkjj3LAo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=SysejPG8+usZ2W5ix2yNbvGZXvMc0x9e/E1ZEr435V7kfXoAkm4SOSSuxJ/PW5n4H
+         1byoVXJ5sIke6dXFR4du6AFbWq0rkYpHe7MCFw4d+uGd4pLkiY4PTFPYTI86KSdHYs
+         26XCx4NjBXuCxSB52oaFgzJYmCieLccqijCdvQ4fc3ZwR0+oRM/grv6p869p6QQYr+
+         sW6N88cdj1vq0X/STHwkBaFrThJrBEF0Wsi+z58LaV23r9+A0N/Ci67ScmR9/Q/jIn
+         G0YWIGda+b/4R+nR2UfhjgB7fIsFV8UpjDg9EitI4tHy50rCfW2TdqIDZWvli5Fwvm
+         yPfBp6KS+ootg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 94F5FE6D402;
+        Wed, 23 Mar 2022 18:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Subject: Re: [PATCH v2] drivers: ethernet: cpsw: fix panic when intrrupt
+ coaleceing is set via ethtool
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164805841360.28459.4057344335857009664.git-patchwork-notify@kernel.org>
+Date:   Wed, 23 Mar 2022 18:00:13 +0000
+References: <20220323084725.65864-1-jan.sondhauss@wago.com>
+In-Reply-To: <20220323084725.65864-1-jan.sondhauss@wago.com>
+To:     =?utf-8?b?U29uZGhhdcOfLCBKYW4gPGphbi5zb25kaGF1c3NAd2Fnby5jb20+?=@ci.codeaurora.org
+Cc:     grygorii.strashko@ti.com, vigneshr@ti.com, netdev@vger.kernel.org,
+        linux-omap@vger.kernel.org, Jan.Sondhauss@wago.com
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,16 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
-Date: Wed, 23 Mar 2022 10:40:05 -0700
+Hello:
 
-> On Wed, 23 Mar 2022 13:43:51 +0100 Alexander Lobakin wrote:
-> > --
-> > Urgent fix, would like to make it directly through -net.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 23 Mar 2022 08:47:33 +0000 you wrote:
+> cpsw_ethtool_begin directly returns the result of pm_runtime_get_sync
+> when successful.
+> pm_runtime_get_sync returns -error code on failure and 0 on successful
+> resume but also 1 when the device is already active. So the common case
+> for cpsw_ethtool_begin is to return 1. That leads to inconsistent calls
+> to pm_runtime_put in the call-chain so that pm_runtime_put is called
+> one too many times and as result leaving the cpsw dev behind suspended.
 > 
-> You may want to use three hyphens, two hyphens mean footer.
-> Email clients gray those out, it's easy to miss :)
+> [...]
 
-Good to know, thanks! :)
+Here is the summary with links:
+  - [v2] drivers: ethernet: cpsw: fix panic when intrrupt coaleceing is set via ethtool
+    https://git.kernel.org/netdev/net-next/c/2844e2434385
 
-Al
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
