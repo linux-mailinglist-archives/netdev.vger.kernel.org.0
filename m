@@ -2,108 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 733774E5268
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 13:45:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BBEA4E527C
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 13:49:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243121AbiCWMrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 08:47:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
+        id S242938AbiCWMvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 08:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236374AbiCWMrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 08:47:16 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2F97C151;
-        Wed, 23 Mar 2022 05:45:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648039547; x=1679575547;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GyXNqf4GNLod3cqKTITvf8LiaDU11jwMImeBJOPCznE=;
-  b=Qqk8B2ELOoesTpK/imtY5oZPB0ysAIDMbDdhAfhbTEwvD8TTVAecK3JH
-   qUx1Q/iOqNP2RSlezeqyFvrheKIJzPzYuXudMe0dnIia2iNB2wnW2yLvg
-   6EYat3pwH2MXHEbxAst7Eox9W6gWAi5Zdm2vABlg36JQfkEeEb+an+3mM
-   tLJZhUH/KoRYSSSYf4H75vRPjHyyTxP0a18RNozNp16FUO1Hzw4PtRkuQ
-   MXl0hx2OuK/At2YqkdqCk/IWDYWi+gvmpWK4GLjPpl7C3M2riWSrTSQs7
-   AFXum0f3WKTVYiwvgVM8+BU4qc91ygikbdTjyPJo5JMxEIsgsX9JxqdYd
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10294"; a="318809750"
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="318809750"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2022 05:45:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,204,1643702400"; 
-   d="scan'208";a="785776616"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga006.fm.intel.com with ESMTP; 23 Mar 2022 05:45:44 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22NCjeuE017350;
-        Wed, 23 Mar 2022 12:45:42 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Kubiak <michal.kubiak@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH net 2/2] ice: don't allow to run ice_send_event_to_aux() in atomic ctx
-Date:   Wed, 23 Mar 2022 13:43:53 +0100
-Message-Id: <20220323124353.2762181-3-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220323124353.2762181-1-alexandr.lobakin@intel.com>
-References: <20220323124353.2762181-1-alexandr.lobakin@intel.com>
+        with ESMTP id S235121AbiCWMvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 08:51:07 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9002978934;
+        Wed, 23 Mar 2022 05:49:37 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id 17so1658222ljw.8;
+        Wed, 23 Mar 2022 05:49:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=nM4ECUsKD86TuX1aebriaMiAFYf1FOMfworhtEK62yY=;
+        b=q4QXZ6ZYBRVEjNXVeG4HyqNr/xsvJ41Yrfq1g3qXiSTGEX/JyAKhQYXsucxBKhrPoX
+         1zALqoDFrlUEazH4Utx9a5idSyhlM5jEkiIx8KAhoiW4MqmaSiooQIrlBuZHBc29Kp71
+         YdInh1dNzHDr6/a+0Iz5PofA7Zmy3jM0BGyS5+pUq9nEy9jHQDPZGwAhU/R1UBr2fn90
+         s14w5/bTh/a70n/j/2g8ScpAjOCveJ2AEywNjgbUN5mTLEcoOepBH10NACleW3L2Enoz
+         33uT5HmvypS9EpSoHduNTMc9H9g0NHv7dBMJIHiR0Pez0K7Mr+MbmNiSjYZOEoG8j34n
+         kCPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=nM4ECUsKD86TuX1aebriaMiAFYf1FOMfworhtEK62yY=;
+        b=MIvBJeq6W0zQNXCyzVUWrxzer3Q8jDBSuOzOGorxWNRhZtqySQ/5+r5cCy4WhS5i4A
+         QJsw748PgXauLx/GX51lbNTZzXuW3cOIA/cP4APeeZ8Tv9XYLvhdlWG61nmLdu8L/mDe
+         ZfVSpkZou2rctfJK/tOGMGcE+KfE9u4r+Hl/mPvRDkaQpVR+drdSfOzB27qC46WANFWJ
+         yV3k9+DbUhupqTUjiRLfymMfzwdepErW3duAq8SClM17w6eHqceSen+u0XiAALh7azJf
+         gR0nUdM678UCUkpRFv+ica7aF7+ru0w6lOeDcrsAFzhMHiPkBuY95/eil94OoEWAwWwz
+         OGog==
+X-Gm-Message-State: AOAM5320kNbQajfkwXte8e4IX3g4bk63OaQRbe9jgKQLctLrkkW1rbpX
+        46XvaeGL8ZoIADxOoJK2xoXjQMor7/nKGw==
+X-Google-Smtp-Source: ABdhPJxzVlKNn3Jz26qzmOxkGiYvN7hZ1TF3R5fHeuNMvIa8zgMHBmDQdKGFqBG0N1ilCFcXwDnrzw==
+X-Received: by 2002:a2e:944e:0:b0:246:4a4f:c610 with SMTP id o14-20020a2e944e000000b002464a4fc610mr21656073ljh.458.1648039775924;
+        Wed, 23 Mar 2022 05:49:35 -0700 (PDT)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id n2-20020a056512310200b0044a30030d33sm905924lfb.91.2022.03.23.05.49.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 05:49:35 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
+ offloading of fdb locked flag
+In-Reply-To: <20220323123534.i2whyau3doq2xdxg@skbuf>
+References: <20220317093902.1305816-1-schultz.hans+netdev@gmail.com>
+ <20220317093902.1305816-3-schultz.hans+netdev@gmail.com>
+ <86o81whmwv.fsf@gmail.com> <20220323123534.i2whyau3doq2xdxg@skbuf>
+Date:   Wed, 23 Mar 2022 13:49:32 +0100
+Message-ID: <86wngkbzqb.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ice_send_event_to_aux() eventually descends to mutex_lock()
-(-> might_sched()), so it must not be called under non-task
-context. However, at least two fixes have happened already for the
-bug splats occurred due to this function being called from atomic
-context.
-To make the emergency landings softer, bail out early when executed
-in non-task context emitting a warn splat only once. This way we
-trade some events being potentially lost for system stability and
-avoid any related hangs and crashes.
+On ons, mar 23, 2022 at 14:35, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Wed, Mar 23, 2022 at 01:29:52PM +0100, Hans Schultz wrote:
+>> On tor, mar 17, 2022 at 10:39, Hans Schultz <schultz.hans@gmail.com> wrote:
+>> > Used for Mac-auth/MAB feature in the offloaded case.
+>> >
+>> > Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+>> > ---
+>> >  include/net/switchdev.h | 3 ++-
+>> >  net/bridge/br.c         | 3 ++-
+>> >  net/bridge/br_fdb.c     | 7 +++++--
+>> >  net/bridge/br_private.h | 2 +-
+>> >  4 files changed, 10 insertions(+), 5 deletions(-)
+>> >
+>> > diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+>> > index 3e424d40fae3..d5d923411f5e 100644
+>> > --- a/include/net/switchdev.h
+>> > +++ b/include/net/switchdev.h
+>> > @@ -229,7 +229,8 @@ struct switchdev_notifier_fdb_info {
+>> >  	u16 vid;
+>> >  	u8 added_by_user:1,
+>> >  	   is_local:1,
+>> > -	   offloaded:1;
+>> > +	   offloaded:1,
+>> > +	   locked:1;
+>> >  };
+>> >  
+>> >  struct switchdev_notifier_port_obj_info {
+>> > diff --git a/net/bridge/br.c b/net/bridge/br.c
+>> > index b1dea3febeea..adcdbecbc218 100644
+>> > --- a/net/bridge/br.c
+>> > +++ b/net/bridge/br.c
+>> > @@ -166,7 +166,8 @@ static int br_switchdev_event(struct notifier_block *unused,
+>> >  	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+>> >  		fdb_info = ptr;
+>> >  		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
+>> > -						fdb_info->vid, false);
+>> > +						fdb_info->vid, false,
+>> > +						fdb_info->locked);
+>> >  		if (err) {
+>> >  			err = notifier_from_errno(err);
+>> >  			break;
+>> > diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+>> > index 57ec559a85a7..57aa1955d34d 100644
+>> > --- a/net/bridge/br_fdb.c
+>> > +++ b/net/bridge/br_fdb.c
+>> > @@ -987,7 +987,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+>> >  					   "FDB entry towards bridge must be permanent");
+>> >  			return -EINVAL;
+>> >  		}
+>> > -		err = br_fdb_external_learn_add(br, p, addr, vid, true);
+>> > +		err = br_fdb_external_learn_add(br, p, addr, vid, true,
+>> >  false);
+>> 
+>> Does someone have an idea why there at this point is no option to add a
+>> dynamic fdb entry?
+>> 
+>> The fdb added entries here do not age out, while the ATU entries do
+>> (after 5 min), resulting in unsynced ATU vs fdb.
+>
+> I think the expectation is to use br_fdb_external_learn_del() if the
+> externally learned entry expires. The bridge should not age by itself
+> FDB entries learned externally.
+>
 
-Fixes: 348048e724a0e ("ice: Implement iidc operations")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Tested-by: Michal Kubiak <michal.kubiak@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_idc.c | 3 +++
- 1 file changed, 3 insertions(+)
+It seems to me that something is missing then?
+My tests using trafgen that I gave a report on to Lunn generated massive
+amounts of fdb entries, but after a while the ATU was clean and the fdb
+was still full of random entries...
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_idc.c b/drivers/net/ethernet/intel/ice/ice_idc.c
-index fc3580167e7b..5559230eff8b 100644
---- a/drivers/net/ethernet/intel/ice/ice_idc.c
-+++ b/drivers/net/ethernet/intel/ice/ice_idc.c
-@@ -34,6 +34,9 @@ void ice_send_event_to_aux(struct ice_pf *pf, struct iidc_event *event)
- {
- 	struct iidc_auxiliary_drv *iadrv;
- 
-+	if (WARN_ON_ONCE(!in_task()))
-+		return;
-+
- 	if (!pf->adev)
- 		return;
- 
--- 
-2.35.1
-
+>> >  	} else {
+>> >  		spin_lock_bh(&br->hash_lock);
+>> >  		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
+>> > @@ -1216,7 +1216,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
+>> >  
+>> >  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>> >  			      const unsigned char *addr, u16 vid,
+>> > -			      bool swdev_notify)
+>> > +			      bool swdev_notify, bool locked)
+>> >  {
+>> >  	struct net_bridge_fdb_entry *fdb;
+>> >  	bool modified = false;
+>> > @@ -1236,6 +1236,9 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>> >  		if (!p)
+>> >  			flags |= BIT(BR_FDB_LOCAL);
+>> >  
+>> > +		if (locked)
+>> > +			flags |= BIT(BR_FDB_ENTRY_LOCKED);
+>> > +
+>> >  		fdb = fdb_create(br, p, addr, vid, flags);
+>> >  		if (!fdb) {
+>> >  			err = -ENOMEM;
+>> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+>> > index f5a0b68c4857..3275e33b112f 100644
+>> > --- a/net/bridge/br_private.h
+>> > +++ b/net/bridge/br_private.h
+>> > @@ -790,7 +790,7 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+>> >  void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+>> >  int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+>> >  			      const unsigned char *addr, u16 vid,
+>> > -			      bool swdev_notify);
+>> > +			      bool swdev_notify, bool locked);
+>> >  int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+>> >  			      const unsigned char *addr, u16 vid,
+>> >  			      bool swdev_notify);
+>> > -- 
+>> > 2.30.2
