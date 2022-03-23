@@ -2,61 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4484E5B00
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 23:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBB34E5B1E
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 23:14:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345086AbiCWWB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 18:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
+        id S1345170AbiCWWPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 18:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345080AbiCWWB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 18:01:57 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C845B5AEE5;
-        Wed, 23 Mar 2022 15:00:26 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-d6ca46da48so3121044fac.12;
-        Wed, 23 Mar 2022 15:00:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=cCUJOW25CLr0CeLCnE62n9am59728Z8IpIAoIkTyH8w=;
-        b=BrN0/8+UKuT/c/CxI6vxUQoH8bAOu5CLLGm0B1gaXmAlXGpD5RAIYpoQiv/g/PHo0n
-         zgrW2NzOL21eJiKJMrksxsLY5cEzU8GdSIiMvX+jEo7JBJPVAJaX+cA6ixDdJ6xq1zKM
-         TK6NO1/dGDclpceuyLpigdW8hUJim1AVc1Cykc564tB6rp3wjlFprtbbYbBsdyhomcch
-         uJ+DH7iQUKJiujYBygCXWhVZozbUTzMXzFa96/0JIlqGvJZ6WisDrpGk2jy7OOcpGZXE
-         U3cm/P9/4RmHUpiA+5v0jFwbTf4Pr8RHeaVsvtZduhILkPrc4CRMBMB9eKc61WSRwoDP
-         sfJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=cCUJOW25CLr0CeLCnE62n9am59728Z8IpIAoIkTyH8w=;
-        b=wingd7PxZXTPptVSgziEAP5limmTh/KSJ8KmBaZZwskzbNPwtIuKrXuH47Q7A/nQS0
-         6Zr29LA64CoZOpytCDkMfNLo9po1a9aBd1QrlJA7zM1ufgUTbquBu/EoD5Pz/QyenGyE
-         qDYNYcJ39gG/3SBdo4HXCPSLxYpku28/ekBRzx72AkSJtE14knxVCHUHqTlgZO0cBlmK
-         SB0i2Xk//gaj9m3lgpkmeRUTECz1IBhuDV8mf1jaPYK2FKD/rbGsNrhAXx0zBGvnHOPs
-         fzVYc2vq2y+cT9VMq7TpT02wPvc2umk0g+tIPU5aFMcnYtUD1+J3NVMmYRPD6jp+w9Nk
-         L/6Q==
-X-Gm-Message-State: AOAM531ByyHBsXhMy6BidHpuBl9fIaUA6wyLPPJeAm+I2kPQ8/QErUzP
-        VPMAkeVPf0OqCNOWLZ5YCvKe5GLjfGldcvOj
-X-Google-Smtp-Source: ABdhPJxKYcohZLXbzIiEAcg3BmdYtw/mH4Ru7srghs3Ss4x/V6+R8kTndUbj/ELK42v6ZBNc50K2+w==
-X-Received: by 2002:a05:6870:42d0:b0:dd:acbd:14dc with SMTP id z16-20020a05687042d000b000ddacbd14dcmr1041713oah.87.1648072825998;
-        Wed, 23 Mar 2022 15:00:25 -0700 (PDT)
-Received: from test-HP-EliteDesk-800-G1-SFF ([70.102.108.170])
-        by smtp.gmail.com with ESMTPSA id w8-20020aca3008000000b002ef7e3ad3b8sm490262oiw.29.2022.03.23.15.00.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Mar 2022 15:00:25 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 15:00:24 -0700
-From:   Greg Jesionowski <jesionowskigreg@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: usb: ax88179_178a: add Allied Telesis AT-UMCs
-Message-ID: <20220323220024.GA36800@test-HP-EliteDesk-800-G1-SFF>
+        with ESMTP id S241243AbiCWWPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 18:15:48 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1F689330;
+        Wed, 23 Mar 2022 15:14:14 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E536B221D4;
+        Wed, 23 Mar 2022 23:14:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648073652;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W6I5uXL5BQ9Fq8+54NpWJEnlpv+fNccLE9GVeB9+xdg=;
+        b=C7DQtxKA1eJ7QFA/2kF0rAbU3Zxg48MUOF73SQiHHf7aNNDgcj9Q8xvDUmNWWGFuAinUs7
+        Pd2BOIwB+1nhT2XB+FZ1v31pudztrno8xTNsGSUaOolre6LoTJdPSmrgNniusIe0jqnvxh
+        5+GdcH1QlocPNVvxFDV8QJ38NCAvtRQ=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 23 Mar 2022 23:14:11 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 2/5] net: phy: support indirect c45 access in
+ get_phy_c45_ids()
+In-Reply-To: <Yjt3hHWt0mW6er8/@lunn.ch>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-3-michael@walle.cc> <Yjt3hHWt0mW6er8/@lunn.ch>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <43227d27d938fad8a2441363d175106e@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -65,84 +63,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds the driver_info and IDs for the AX88179 based Allied Telesis AT-UMC
-family of devices.
+Am 2022-03-23 20:39, schrieb Andrew Lunn:
+>> +static int mdiobus_probe_mmd_read(struct mii_bus *bus, int prtad, int 
+>> devad,
+>> +				  u16 regnum)
+>> +{
+>> +	int ret;
+>> +
+>> +	/* For backwards compatibility, treat MDIOBUS_NO_CAP as c45 capable 
+>> */
+>> +	if (bus->probe_capabilities == MDIOBUS_NO_CAP ||
+>> +	    bus->probe_capabilities >= MDIOBUS_C45)
+> 
+> Maybe we should do the work and mark up those that are C45 capable. At
+> a quick count, see 16 of them.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Jesionowski <jesionowskigreg@gmail.com>
----
- drivers/net/usb/ax88179_178a.c | 51 ++++++++++++++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
+You mean look at they are MDIOBUS_C45, MDIOBUS_C22_C45 or MDIOBUS_C22
+and drop MDIOBUS_NO_CAP?
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index a31098981a65..e2fa56b92685 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1872,6 +1872,45 @@ static const struct driver_info mct_info = {
- 	.tx_fixup = ax88179_tx_fixup,
- };
- 
-+static const struct driver_info at_umc2000_info = {
-+	.description = "AT-UMC2000 USB 3.0/USB 3.1 Gen 1 to Gigabit Ethernet Adapter",
-+	.bind   = ax88179_bind,
-+	.unbind = ax88179_unbind,
-+	.status = ax88179_status,
-+	.link_reset = ax88179_link_reset,
-+	.reset  = ax88179_reset,
-+	.stop   = ax88179_stop,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.rx_fixup = ax88179_rx_fixup,
-+	.tx_fixup = ax88179_tx_fixup,
-+};
-+
-+static const struct driver_info at_umc200_info = {
-+	.description = "AT-UMC200 USB 3.0/USB 3.1 Gen 1 to Fast Ethernet Adapter",
-+	.bind   = ax88179_bind,
-+	.unbind = ax88179_unbind,
-+	.status = ax88179_status,
-+	.link_reset = ax88179_link_reset,
-+	.reset  = ax88179_reset,
-+	.stop   = ax88179_stop,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.rx_fixup = ax88179_rx_fixup,
-+	.tx_fixup = ax88179_tx_fixup,
-+};
-+
-+static const struct driver_info at_umc2000sp_info = {
-+	.description = "AT-UMC2000/SP USB 3.0/USB 3.1 Gen 1 to Gigabit Ethernet Adapter",
-+	.bind   = ax88179_bind,
-+	.unbind = ax88179_unbind,
-+	.status = ax88179_status,
-+	.link_reset = ax88179_link_reset,
-+	.reset  = ax88179_reset,
-+	.stop   = ax88179_stop,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.rx_fixup = ax88179_rx_fixup,
-+	.tx_fixup = ax88179_tx_fixup,
-+};
-+
- static const struct usb_device_id products[] = {
- {
- 	/* ASIX AX88179 10/100/1000 */
-@@ -1913,6 +1952,18 @@ static const struct usb_device_id products[] = {
- 	/* Magic Control Technology U3-A9003 USB 3.0 Gigabit Ethernet Adapter */
- 	USB_DEVICE(0x0711, 0x0179),
- 	.driver_info = (unsigned long)&mct_info,
-+}, {
-+	/* Allied Telesis AT-UMC2000 USB 3.0/USB 3.1 Gen 1 to Gigabit Ethernet Adapter */
-+	USB_DEVICE(0x07c9, 0x000e),
-+	.driver_info = (unsigned long)&at_umc2000_info,
-+}, {
-+	/* Allied Telesis AT-UMC200 USB 3.0/USB 3.1 Gen 1 to Fast Ethernet Adapter */
-+	USB_DEVICE(0x07c9, 0x000f),
-+	.driver_info = (unsigned long)&at_umc200_info,
-+}, {
-+	/* Allied Telesis AT-UMC2000/SP USB 3.0/USB 3.1 Gen 1 to Gigabit Ethernet Adapter */
-+	USB_DEVICE(0x07c9, 0x0010),
-+	.driver_info = (unsigned long)&at_umc2000sp_info,
- },
- 	{ },
- };
--- 
-2.25.1
+> 
+>> +		return mdiobus_c45_read(bus, prtad, devad, regnum);
+>> +
+>> +	mutex_lock(&bus->mdio_lock);
+>> +
+>> +	/* Write the desired MMD Devad */
+>> +	ret = __mdiobus_write(bus, prtad, MII_MMD_CTRL, devad);
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	/* Write the desired MMD register address */
+>> +	ret = __mdiobus_write(bus, prtad, MII_MMD_DATA, regnum);
+>> +	if (ret)
+>> +		goto out;
+>> +
+>> +	/* Select the Function : DATA with no post increment */
+>> +	ret = __mdiobus_write(bus, prtad, MII_MMD_CTRL,
+>> +			      devad | MII_MMD_CTRL_NOINCR);
+>> +	if (ret)
+>> +		goto out;
+> 
+> Make mmd_phy_indirect() usable, rather then repeat it.
 
+I actually had that. But mmd_phy_indirect() doesn't check
+the return code and neither does the __phy_write_mmd() it
+actually deliberatly sets "ret = 0". So I wasn't sure. If you
+are fine with a changed code flow in the error case, then sure.
+I.e. mmd_phy_indirect() always (try to) do three accesses; with
+error checks it might end after the first. If you are fine
+with the error checks, should __phy_write_mmd() also check the
+last mdiobus_write()?
+
+-michael
