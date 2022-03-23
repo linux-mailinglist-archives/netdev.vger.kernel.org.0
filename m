@@ -2,60 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBBB34E5B1E
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 23:14:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB664E5B4B
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 23:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345170AbiCWWPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 18:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
+        id S1345252AbiCWWix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 18:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241243AbiCWWPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 18:15:48 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C1F689330;
-        Wed, 23 Mar 2022 15:14:14 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E536B221D4;
-        Wed, 23 Mar 2022 23:14:11 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648073652;
+        with ESMTP id S1345248AbiCWWiw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 18:38:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FF279024B
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 15:37:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648075039;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=W6I5uXL5BQ9Fq8+54NpWJEnlpv+fNccLE9GVeB9+xdg=;
-        b=C7DQtxKA1eJ7QFA/2kF0rAbU3Zxg48MUOF73SQiHHf7aNNDgcj9Q8xvDUmNWWGFuAinUs7
-        Pd2BOIwB+1nhT2XB+FZ1v31pudztrno8xTNsGSUaOolre6LoTJdPSmrgNniusIe0jqnvxh
-        5+GdcH1QlocPNVvxFDV8QJ38NCAvtRQ=
+        bh=GCO9kWmcJK/zqnHuqkvNPWBBfJrDpoSVizCjP9r818U=;
+        b=STYULCXmu/mInbQuHjB3Hebp8QDOz8lWt+82ULzjkkFzptNBQancCg53TG7hCfX32rCKFK
+        mnhatWTPJ+f7A3R7hGndq8117VMSuCuLJjhnUSXuRM9RZlxzrnku4vTyvsIDRvdJWJLo1e
+        8gzSqk6U/hLqGYMoaLWjQCxi2uPXNlo=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-664-hGnSWDsfN4mt8hWBY-Mx7A-1; Wed, 23 Mar 2022 18:37:17 -0400
+X-MC-Unique: hGnSWDsfN4mt8hWBY-Mx7A-1
+Received: by mail-wm1-f70.google.com with SMTP id n19-20020a7bcbd3000000b0038c94b86258so1030832wmi.2
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 15:37:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GCO9kWmcJK/zqnHuqkvNPWBBfJrDpoSVizCjP9r818U=;
+        b=3fBJTVx71GUbXq2uyQ20mQCp+cscuNpbiI3oNOutLRTLUMdfgri0gvdQp3npZQQmNK
+         nFdJPbRlDFnZSJbVL0VNZYJMnvHk/CcOsjaG11MTs765bvG8PD55PhYoA0rS+i7HROtg
+         Pgwt0GZahICNzIsVbUD2c83gwUTV8SIPtm177yy014TJR78LgTMAmjxu3j7qTfS+7LTm
+         O5zGfssI3T5/ph6IYgdCf3IUeYm8Lt78GmlCyUya3TMPQddaWV5cq06+1sAex7S18LgS
+         Mr7vdO57eaS0oKDujDyf9DFVNf0wsDJV+bkg906qjeS+CDN24/On+wdMZM/jfPm4Cjor
+         jRjw==
+X-Gm-Message-State: AOAM533Aimk/UwdRhZPRdeIFDcJG11+GgD1J5Orax329NvaC8RsyNnW8
+        HBUEAC+WeUntDLvYEPWFVSZi+BLs1A0wpyXSvB54zMbKzrqXSryUObqDpsVJWZeRl6N3qKoMPPi
+        z+BPa+ffsMDTs8M82
+X-Received: by 2002:adf:9dc3:0:b0:205:7bf0:669f with SMTP id q3-20020adf9dc3000000b002057bf0669fmr1944321wre.4.1648075036542;
+        Wed, 23 Mar 2022 15:37:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzf4BMQJkf+iGF0bxSMIgVNRplbXP5vi6oAc/EcslZHs0qUwYj6/T80KpKvYkRJT0LDAxm8Pw==
+X-Received: by 2002:adf:9dc3:0:b0:205:7bf0:669f with SMTP id q3-20020adf9dc3000000b002057bf0669fmr1944308wre.4.1648075036322;
+        Wed, 23 Mar 2022 15:37:16 -0700 (PDT)
+Received: from redhat.com ([2.55.151.118])
+        by smtp.gmail.com with ESMTPSA id a18-20020a05600c349200b0038ca453a887sm4944273wmq.19.2022.03.23.15.37.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Mar 2022 15:37:15 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 18:37:11 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Asias He <asias@redhat.com>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net v3 0/3] vsock/virtio: enable VQs early on probe and
+ finish the setup before using them
+Message-ID: <20220323183657-mutt-send-email-mst@kernel.org>
+References: <20220323173625.91119-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 23 Mar 2022 23:14:11 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Xu Liang <lxu@maxlinear.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 2/5] net: phy: support indirect c45 access in
- get_phy_c45_ids()
-In-Reply-To: <Yjt3hHWt0mW6er8/@lunn.ch>
-References: <20220323183419.2278676-1-michael@walle.cc>
- <20220323183419.2278676-3-michael@walle.cc> <Yjt3hHWt0mW6er8/@lunn.ch>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <43227d27d938fad8a2441363d175106e@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323173625.91119-1-sgarzare@redhat.com>
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,54 +82,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-03-23 20:39, schrieb Andrew Lunn:
->> +static int mdiobus_probe_mmd_read(struct mii_bus *bus, int prtad, int 
->> devad,
->> +				  u16 regnum)
->> +{
->> +	int ret;
->> +
->> +	/* For backwards compatibility, treat MDIOBUS_NO_CAP as c45 capable 
->> */
->> +	if (bus->probe_capabilities == MDIOBUS_NO_CAP ||
->> +	    bus->probe_capabilities >= MDIOBUS_C45)
+On Wed, Mar 23, 2022 at 06:36:22PM +0100, Stefano Garzarella wrote:
+> The first patch fixes a virtio-spec violation. The other two patches
+> complete the driver configuration before using the VQs in the probe.
 > 
-> Maybe we should do the work and mark up those that are C45 capable. At
-> a quick count, see 16 of them.
+> The patch order should simplify backporting in stable branches.
 
-You mean look at they are MDIOBUS_C45, MDIOBUS_C22_C45 or MDIOBUS_C22
-and drop MDIOBUS_NO_CAP?
 
+Series:
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+> v3:
+> - re-ordered the patch to improve bisectability [MST]
 > 
->> +		return mdiobus_c45_read(bus, prtad, devad, regnum);
->> +
->> +	mutex_lock(&bus->mdio_lock);
->> +
->> +	/* Write the desired MMD Devad */
->> +	ret = __mdiobus_write(bus, prtad, MII_MMD_CTRL, devad);
->> +	if (ret)
->> +		goto out;
->> +
->> +	/* Write the desired MMD register address */
->> +	ret = __mdiobus_write(bus, prtad, MII_MMD_DATA, regnum);
->> +	if (ret)
->> +		goto out;
->> +
->> +	/* Select the Function : DATA with no post increment */
->> +	ret = __mdiobus_write(bus, prtad, MII_MMD_CTRL,
->> +			      devad | MII_MMD_CTRL_NOINCR);
->> +	if (ret)
->> +		goto out;
+> v2: https://lore.kernel.org/netdev/20220323084954.11769-1-sgarzare@redhat.com/
+> v1: https://lore.kernel.org/netdev/20220322103823.83411-1-sgarzare@redhat.com/
 > 
-> Make mmd_phy_indirect() usable, rather then repeat it.
+> Stefano Garzarella (3):
+>   vsock/virtio: initialize vdev->priv before using VQs
+>   vsock/virtio: read the negotiated features before using VQs
+>   vsock/virtio: enable VQs early on probe
+> 
+>  net/vmw_vsock/virtio_transport.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> -- 
+> 2.35.1
 
-I actually had that. But mmd_phy_indirect() doesn't check
-the return code and neither does the __phy_write_mmd() it
-actually deliberatly sets "ret = 0". So I wasn't sure. If you
-are fine with a changed code flow in the error case, then sure.
-I.e. mmd_phy_indirect() always (try to) do three accesses; with
-error checks it might end after the first. If you are fine
-with the error checks, should __phy_write_mmd() also check the
-last mdiobus_write()?
-
--michael
