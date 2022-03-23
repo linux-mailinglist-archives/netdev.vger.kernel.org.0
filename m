@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75BB64E5B56
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 23:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AD9C4E5BA1
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 00:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345267AbiCWWkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 18:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36446 "EHLO
+        id S1345386AbiCWXDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 19:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240410AbiCWWkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 18:40:17 -0400
+        with ESMTP id S1345421AbiCWXDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 19:03:12 -0400
 Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D036167C1;
-        Wed, 23 Mar 2022 15:38:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712A02CC8C;
+        Wed, 23 Mar 2022 16:01:42 -0700 (PDT)
 Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 08027221D4;
-        Wed, 23 Mar 2022 23:38:44 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 644F5221D4;
+        Thu, 24 Mar 2022 00:01:40 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648075124;
+        t=1648076500;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=U8jdoR5jqJ3/I0PWZz2NXnJG2RKiRWixoRqKl2Hur6U=;
-        b=nVBcxd4j5IU6vfFmHjAuziycN0DAYCCG9p55wtx+3lKUFc84gNrL0WYDwtLSzYMZHh2HVh
-        CvCWT3SIhW7p0AHA5uzPI8telKF3X70GtqPVhlGcXIaIr32QmevLKDcyRkFN4K9tpYtqI9
-        rCAhTAzjzOcMKL32Xbdh1BJn/L6N4Pw=
+        bh=mrbZnCx5ImFtI+d/9SJ/+v1bhmyj3qBx9rMgcrWC17Q=;
+        b=Rs87I7ubuG5FwsuqBEU0Wbdrk44gkKESedjD6nAYcoxcQ3F8Y8Fcd2DiHKlYL/vVP31iMX
+        jWcQPJrtcj6ULwLw6oXsrfaQWByIlQFUy7MJuNSXhF/PcDb0SpDJueH4k9EIX530VU4K8N
+        ELSDV6o0AMdR9Gxg/AzbhsbbDyniDRQ=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Wed, 23 Mar 2022 23:38:43 +0100
+Date:   Thu, 24 Mar 2022 00:01:40 +0100
 From:   Michael Walle <michael@walle.cc>
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -45,12 +45,12 @@ Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
-In-Reply-To: <Yjt99k57mM5PQ8bT@lunn.ch>
+Subject: Re: [PATCH RFC net-next 0/5] net: phy: C45-over-C22 access
+In-Reply-To: <YjuDbqZom8knPVpm@lunn.ch>
 References: <20220323183419.2278676-1-michael@walle.cc>
- <20220323183419.2278676-5-michael@walle.cc> <Yjt99k57mM5PQ8bT@lunn.ch>
+ <YjuDbqZom8knPVpm@lunn.ch>
 User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <8304fb3578ee38525a158af768691e75@walle.cc>
+Message-ID: <a09f9ac88b599f7124270a5063130c9e@walle.cc>
 X-Sender: michael@walle.cc
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
@@ -62,89 +62,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-03-23 21:07, schrieb Andrew Lunn:
-> On Wed, Mar 23, 2022 at 07:34:18PM +0100, Michael Walle wrote:
->> The GPY215 driver supports indirect accesses to c45 over the c22
->> registers. In its probe function phy_get_c45_ids() is called and the
->> author descibed their use case as follows:
+Am 2022-03-23 21:30, schrieb Andrew Lunn:
+> On Wed, Mar 23, 2022 at 07:34:14PM +0100, Michael Walle wrote:
+>> Hi,
 >> 
->>   The problem comes from condition "phydev->c45_ids.mmds_present &
->>   MDIO_DEVS_AN".
+>> This is the result of this discussion:
+>> https://lore.kernel.org/netdev/240354b0a54b37e8b5764773711b8aa3@walle.cc/
 >> 
->>   Our product supports both C22 and C45.
->> 
->>   In the real system, we found C22 was used by customers (with 
->> indirect
->>   access to C45 registers when necessary).
->> 
->> So it is pretty clear that the intention was to have a method to use 
+>> The goal here is to get the GYP215 and LAN8814 running on the 
+>> Microchip
+>> LAN9668 SoC. The LAN9668 suppports one external bus and unfortunately, 
 >> the
->> c45 features over a c22-only MDIO bus. The purpose of calling
->> phy_get_c45_ids() is to populate the .c45_ids for a PHY which wasn't
->> probed as a c45 one. Thus, first rename the phy_get_c45_ids() function
->> to reflect its actual meaning and second, add a new flag which 
->> indicates
->> that this is actually a c45 PHY but behind a c22 bus. The latter is
->> important for phylink because phylink will treat c45 in a special way 
->> by
->> checking the .is_c45 property. But in our case this isn't set.
-> 
-> Thinking out loud...
-> 
-> 1) We have a C22 only bus. Easy, C45 over C22 should be used.
-> 
-> 2) We have a C45 only bus. Easy, C45 should be used, and it will of
->    probed that way.
-> 
-> 3) We have a C22 and C45 bus, but MDIOBUS_NO_CAP. It will probe C22,
->    but ideally we want to swap to C45.
-> 
-> 4) We have a C22 and C45 bus, MDIOBUS_C22_C45. It will probe C22, but
->    ideally we want to swap to C45.
-
-I presume you are speaking of
-https://elixir.bootlin.com/linux/v5.17/source/drivers/net/phy/mdio_bus.c#L700
-
-Shouldn't that be the other way around then? How would you tell if
-you can do C45?
-
->> @@ -99,7 +99,7 @@ static int gpy_probe(struct phy_device *phydev)
->>  	int ret;
+>> LAN8814 has a bug which makes it impossible to use C45 on that bus.
+>> Fortunately, it was the intention of the GPY215 driver to be used on a 
+>> C22
+>> bus. But I think this could have never really worked, because the
+>> phy_get_c45_ids() will always do c45 accesses and thus on MDIO bus 
+>> drivers
+>> which will correctly check for the MII_ADDR_C45 flag and return 
+>> -EOPNOTSUPP
+>> the function call will fail and thus gpy_probe() will fail. This 
+>> series
+>> tries to fix that and will lay the foundation to add a workaround for 
+>> the
+>> LAN8814 bug by forcing an MDIO bus to be c22-only.
 >> 
->>  	if (!phydev->is_c45) {
->> -		ret = phy_get_c45_ids(phydev);
->> +		ret = phy_get_c45_ids_by_c22(phydev);
->>  		if (ret < 0)
->>  			return ret;
->>  	}
+>> At the moment, the probe_capabilities is taken into account to decide 
+>> if
+>> we have to use C45-over-C22. What is still missing from this series is 
+>> the
+>> handling of a device tree property to restrict the probe_capabilities 
+>> to
+>> c22-only.
 > 
-> If we are inside the if, we know we probed C22. We have to achieve two
-> things:
+> We have a problem here with phydev->is_c45.
 > 
-> 1) Get the c45 ids,
-> 2) Figure out if C45 works, or if C45 over C22 is needed.
+> In phy-core.c, functions __phy_read_mmd() and __phy_write_mmd() it
+> means perform c45 transactions over the bus. We know we want to access
+> a register in c45 space because we are using an _mmd() function.
 > 
-> I don't see how we are getting this second bit of information, if we
-> are explicitly using c45 over c22.
+> In phy.c, it means does this PHY have c45 registers and we should
+> access that register space, or should we use the c22 register
+> space. So far example phy_restart_aneg() decides to either call
+> genphy_c45_restart_aneg() or genphy_restart_aneg() depending on
+> is_c45.
 
-That is related to how C45 capable PHYs are probed (your 4) above),
-right? If the PHY would be probed correctly as C45 we wouldn't have
-to worry about it. TBH I didn't consider that a valid case because
-I thought there were other means to tell "treat this PHY as C45",
-that is by the device tree compatible, for example.
+Yes, that is probably the reason why the gpy215 has explicitly
+set .aneg_done to genphy_c45_aneg_done() for example.
 
-Btw. all of this made me question if this is actually the correct
-place, or if if shouldn't be handled in the core. With a flag
-in the phy driver which might indicate its capable of doing
-c45 over c22.
+> So a PHY with C45 register space but only accessible by C45 over C22
+> is probably going to do the wrong thing with the current code.
 
-> This _by_c22 is also making me think of the previous patch, where we
-> look at the bus capabilities. We are explicitly saying here was want
-> c45 over c22, and the PHY driver should know the PHY is capable of
-> it. So we don't need to look at the capabilities, just do it.
+Oh my, yes. Looks like the whole phy_get_c45_ids() isn't working
+at all for the gpy at the moment (or maybe it will work because
+it supports AN via the c22 registers, too). I'll have to dig deeper
+into that tomorrow. I know that _something_ worked at least ;)
 
-Mh? I can't follow you here. Are you talking about the
-probe_capabilites? These are for the bus probing, i.e. if you can
-call mdiobus_c45_read().
+> For this patchset to work, we need to cleanly separate the concepts of
+> what sort of transactions to do over the bus, from what register
+> spaces the PHY has. We probably want something like phydev->has_c45 to
+> indicate the register space is implemented, and phydev->c45_over_c22
+> to indicate what sort of transaction should be used in the _mmd()
+> functions.
+> 
+> Your patches start in that direction, but i don't think it goes far
+> enough.
+
+Thanks for the review!
 
 -michael
