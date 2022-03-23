@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBE554E57BB
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D74FD4E57C3
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:44:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343732AbiCWRlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 13:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38326 "EHLO
+        id S1343749AbiCWRqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 13:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343725AbiCWRln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:41:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7F466AC7;
-        Wed, 23 Mar 2022 10:40:13 -0700 (PDT)
+        with ESMTP id S236472AbiCWRqS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:46:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0576E558
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 10:44:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BFE8AB81FC7;
-        Wed, 23 Mar 2022 17:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7B339C340EE;
-        Wed, 23 Mar 2022 17:40:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F351260F55
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 17:44:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD26C340ED;
+        Wed, 23 Mar 2022 17:44:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648057210;
-        bh=tf4MfN6g7/j4rdQw/VT1syg7Tg3kdyij/Xcns7Lfv2o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Kc+5Spr3XdEDZfjLlNZqbVX3gr9eqEx2V+x9i8jCAdDGAYn882ciK1ZMh5GBAIG2y
-         dc6MlaPN4YdppIGEkc+g1VtmTrc6tPZDcQz2CWPkyD8LhM6yeyryjc3MhrvmAfmeUq
-         /4n2STAcrhkdEvCtQQMVn7IJefTtbagoR9jnFc/JugiYFgwixNP1Sb8aj6Vmedp+TB
-         grYNn7voR3tKyyKURDZqbExZqM84+xQmDkyX+vWVAe9t/53wXHdKhWRt0E53og2uQr
-         v2o5EDUlpXZhI9H1Y2r6zSyQGY8T0MikMau/0gZt/DNOyNnC0iqNG4gTGUhJ4v9YRe
-         YBTt/DyxmRYYg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5F7E4EAC081;
-        Wed, 23 Mar 2022 17:40:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1648057487;
+        bh=LrFz7aT4EGyFDlS03wM6ARE/JlF083HQCM5JMhEzkL8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KIs0499BO/79LC0RrkEGyWeFZbK8L+3aku3go47SREMHzbSMBmmU/gq7M2rAelQu2
+         b43O+Kl1VGieHCpbxAd7kKbsd8alYkOeRk2heRiDImUfU8UmTroel9KfLLSLp+kbHa
+         6PiPZp9vtZ4nH/9YMU/0vCGMYNLzCx9+dZXwewgsd3n2eckcJoclQjJpaD3AT8SWTm
+         vSB81XovyzKiZ+2N+4SueYa1a8bzvBSgCeuUIfrTErt1wKogsPXwe9ahLagSrhPBdo
+         NOg9mTWfk8rh9jWyXKQXbQ4WJoJpZLEq2GpQcuIuN3hzX/5TL8Jkt+u2dy+jkOM5vb
+         wNqimN3sYQqqQ==
+Date:   Wed, 23 Mar 2022 10:44:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Boris Sukholitko <boris.sukholitko@broadcom.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        zhang kai <zhangkaiheb@126.com>,
+        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        Ilya Lifshits <ilya.lifshits@broadcom.com>
+Subject: Re: [PATCH net-next 0/5] flower: match on the number of vlan tags
+Message-ID: <20220323104445.03a54654@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220323105602.30072-1-boris.sukholitko@broadcom.com>
+References: <20220323105602.30072-1-boris.sukholitko@broadcom.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] drivers: net: xgene: Fix regression in CRC stripping
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164805721038.18073.13961440765175042448.git-patchwork-notify@kernel.org>
-Date:   Wed, 23 Mar 2022 17:40:10 +0000
-References: <20220322224205.752795-1-stgraber@ubuntu.com>
-In-Reply-To: <20220322224205.752795-1-stgraber@ubuntu.com>
-To:     =?utf-8?q?St=C3=A9phane_Graber_=3Cstgraber=40ubuntu=2Ecom=3E?=@ci.codeaurora.org
-Cc:     kuba@kernel.org, davem@davemloft.net,
-        iyappan@os.amperecomputing.com, keyur@os.amperecomputing.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        quan@os.amperecomputing.com, stable@vger.kernel.org,
-        toan@os.amperecomputing.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,28 +61,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 22 Mar 2022 18:42:06 -0400 you wrote:
-> From: Stephane Graber <stgraber@ubuntu.com>
+On Wed, 23 Mar 2022 12:55:57 +0200 Boris Sukholitko wrote:
+> Our customers in the fiber telecom world have network configurations
+> where they would like to control their traffic according to the number
+> of tags appearing in the packet.
 > 
-> All packets on ingress (except for jumbo) are terminated with a 4-bytes
-> CRC checksum. It's the responsability of the driver to strip those 4
-> bytes. Unfortunately a change dating back to March 2017 re-shuffled some
-> code and made the CRC stripping code effectively dead.
+> For example, TR247 GPON conformance test suite specification mostly
+> talks about untagged, single, double tagged packets and gives lax
+> guidelines on the vlan protocol vs. number of vlan tags.
 > 
-> [...]
+> This is different from the common IT networks where 802.1Q and 802.1ad
+> protocols are usually describe single and double tagged packet. GPON
+> configurations that we work with have arbitrary mix the above protocols
+> and number of vlan tags in the packet.
+> 
+> The following patch series implement number of vlans flower filter. They
+> add num_of_vlans flower filter as an alternative to vlan ethtype protocol
+> matching. The end result is that the following command becomes possible:
+> 
+> tc filter add dev eth1 ingress flower \
+>   num_of_vlans 1 vlan_prio 5 action drop
 
-Here is the summary with links:
-  - [v2] drivers: net: xgene: Fix regression in CRC stripping
-    https://git.kernel.org/netdev/net-next/c/e9e6faeafaa0
+# Form letter - net-next is closed
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+We have already sent the networking pull request for 5.18
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
 
+Please repost when net-next reopens after 5.18-rc1 is cut.
 
+RFC patches sent for review only are obviously welcome at any time.
