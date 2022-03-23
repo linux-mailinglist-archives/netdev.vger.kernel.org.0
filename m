@@ -2,102 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3384E59D4
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 21:30:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77FF94E59F1
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 21:35:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344633AbiCWUcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 16:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54036 "EHLO
+        id S244386AbiCWUgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 16:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234460AbiCWUcU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 16:32:20 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB1D8878E;
-        Wed, 23 Mar 2022 13:30:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=/P+1boOsbCQ6AVBVCSZ/z5hphLHXogBYDH2FQO7KmI4=; b=Ve7FKq/JIk+7trK6q3RWgSvlnS
-        CrLHPojrgili7GrvVHfgwtk8st5K1uZU3yc0M2ag1k7eKYuAezQJZSLfvd38TXJ+CJqTKqZQyoCTZ
-        MdFb4I9j+y0/A8L7pN2t2qd6ftDI59koFx3nbQtPMOFXqAfJAesd3R6FaTdxA0C00l9Q=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nX7cs-00CL1M-RO; Wed, 23 Mar 2022 21:30:38 +0100
-Date:   Wed, 23 Mar 2022 21:30:38 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Xu Liang <lxu@maxlinear.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 0/5] net: phy: C45-over-C22 access
-Message-ID: <YjuDbqZom8knPVpm@lunn.ch>
-References: <20220323183419.2278676-1-michael@walle.cc>
+        with ESMTP id S235348AbiCWUgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 16:36:47 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F4A269;
+        Wed, 23 Mar 2022 13:35:15 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id bu29so4730526lfb.0;
+        Wed, 23 Mar 2022 13:35:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to;
+        bh=yvypnLVjCrWy5spCJBsgRPFJn4U1BSlCRE6N0KMRzWU=;
+        b=TLCkjNe8KY46ih5qA1GtmMXB57U6LTd+kdCmexWzAF2WwlSu8eaRgtGVcQ78s6Fxt6
+         v3FksA3mvB8IXngY9316GUf0riflRzNyWD1veXCWM2cC7Vn02ybuO77PPQ969CAXZrCv
+         7HCFbAahuIavcEEGqYQFW0cuBrQ0Rb1pI9yx0NXRvNLb8ZHShXFgwtM+LQi5O9Lo/NrC
+         GcQ/l45g21PIH0SUSMRE2WQ+V5Jmalr/RudVM9cakXi/HUzxTCNwVaN/h+g/rcgn4KU7
+         lRy0nlzgOAlS31WeN6/eSk+qukjydsyO4D/XKLkVZBJA3jhXhMpM0KjjJoztSuka612j
+         guBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to;
+        bh=yvypnLVjCrWy5spCJBsgRPFJn4U1BSlCRE6N0KMRzWU=;
+        b=bK+FxVho9ywvRsjK3JR5BcQf+wk0ab+O7oOskBVC0pcb+HrOv/OrFDHqoAtA0zFS4+
+         veWKXmbJpRvMlirO+FxotVxKWJelZK48MxBTPsztoK3iephnjclWfe4llvZliMt3w9tI
+         U6wx54hNJ5wYJIUMvrrDhfglJO+d2Wh1iQRkEIbHWlqNJW9b/42g5uVwT9QG8jdDYlGi
+         xdr02DSv39Y+E3Fksw7ivN+8akyusQh9FoFJLjOXuAKkwpip0cBgUARzMfo1mNuWX5rQ
+         xb7YiOtGL3O/vXpLE+kR70gJn88eeXnTPSoebqcAN/RHGT0NOxHnVDpNwmVT+jiG7vXQ
+         4f7w==
+X-Gm-Message-State: AOAM531xR3YlZ6bJLSoA6HwyrUSHxKrhAQAW4QiwC+0sNIgqwpok56zh
+        AEwsKzGvohThS2jfF64YwAg=
+X-Google-Smtp-Source: ABdhPJwfztJuCDhkEzxS/JcI1aU8U4w5CymWH04dRCfYpin0MrgEuXHRoMGZo+rV0KHOBUfj7AIzAg==
+X-Received: by 2002:a05:6512:2348:b0:44a:3134:7d52 with SMTP id p8-20020a056512234800b0044a31347d52mr1164464lfu.207.1648067713945;
+        Wed, 23 Mar 2022 13:35:13 -0700 (PDT)
+Received: from [192.168.1.11] ([46.235.67.145])
+        by smtp.gmail.com with ESMTPSA id c22-20020ac24156000000b0044846901eabsm89637lfi.24.2022.03.23.13.35.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Mar 2022 13:35:13 -0700 (PDT)
+Message-ID: <f35435f3-13bd-2985-bfdd-b693388e49a0@gmail.com>
+Date:   Wed, 23 Mar 2022 23:35:11 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220323183419.2278676-1-michael@walle.cc>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v3] can: mcba_usb: properly check endpoint type
+Content-Language: en-US
+To:     yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
+        davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+References: <CAMZ6RqKn4E9wstZF1xbefBaR3AbcORq60KXvxUTCSH8dZ+Cxag@mail.gmail.com>
+ <20220313100903.10868-1-paskripkin@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220313100903.10868-1-paskripkin@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------wuJb3knIS3Bcn2sAl3RLDNAC"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 07:34:14PM +0100, Michael Walle wrote:
-> Hi,
-> 
-> This is the result of this discussion:
-> https://lore.kernel.org/netdev/240354b0a54b37e8b5764773711b8aa3@walle.cc/
-> 
-> The goal here is to get the GYP215 and LAN8814 running on the Microchip
-> LAN9668 SoC. The LAN9668 suppports one external bus and unfortunately, the
-> LAN8814 has a bug which makes it impossible to use C45 on that bus.
-> Fortunately, it was the intention of the GPY215 driver to be used on a C22
-> bus. But I think this could have never really worked, because the
-> phy_get_c45_ids() will always do c45 accesses and thus on MDIO bus drivers
-> which will correctly check for the MII_ADDR_C45 flag and return -EOPNOTSUPP
-> the function call will fail and thus gpy_probe() will fail. This series
-> tries to fix that and will lay the foundation to add a workaround for the
-> LAN8814 bug by forcing an MDIO bus to be c22-only.
-> 
-> At the moment, the probe_capabilities is taken into account to decide if
-> we have to use C45-over-C22. What is still missing from this series is the
-> handling of a device tree property to restrict the probe_capabilities to
-> c22-only.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------wuJb3knIS3Bcn2sAl3RLDNAC
+Content-Type: multipart/mixed; boundary="------------zMAyY88wsciZQYHPRhRowlKy";
+ protected-headers="v1"
+From: Pavel Skripkin <paskripkin@gmail.com>
+To: yashi@spacecubics.com, wg@grandegger.com, mkl@pengutronix.de,
+ davem@davemloft.net, kuba@kernel.org, mailhol.vincent@wanadoo.fr
+Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ syzbot+3bc1dce0cc0052d60fde@syzkaller.appspotmail.com
+Message-ID: <f35435f3-13bd-2985-bfdd-b693388e49a0@gmail.com>
+Subject: Re: [PATCH v3] can: mcba_usb: properly check endpoint type
+References: <CAMZ6RqKn4E9wstZF1xbefBaR3AbcORq60KXvxUTCSH8dZ+Cxag@mail.gmail.com>
+ <20220313100903.10868-1-paskripkin@gmail.com>
+In-Reply-To: <20220313100903.10868-1-paskripkin@gmail.com>
 
-We have a problem here with phydev->is_c45.
+--------------zMAyY88wsciZQYHPRhRowlKy
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-In phy-core.c, functions __phy_read_mmd() and __phy_write_mmd() it
-means perform c45 transactions over the bus. We know we want to access
-a register in c45 space because we are using an _mmd() function.
+T24gMy8xMy8yMiAxMzowOSwgUGF2ZWwgU2tyaXBraW4gd3JvdGU6DQo+IFN5emJvdCByZXBv
+cnRlZCB3YXJuaW5nIGluIHVzYl9zdWJtaXRfdXJiKCkgd2hpY2ggaXMgY2F1c2VkIGJ5IHdy
+b25nDQo+IGVuZHBvaW50IHR5cGUuIFdlIHNob3VsZCBjaGVjayB0aGF0IGluIGVuZHBvaW50
+IGlzIGFjdHVhbGx5IHByZXNlbnQgdG8NCj4gcHJldmVudCB0aGlzIHdhcm5pbmcNCj4gDQo+
+IEZvdW5kIHBpcGVzIGFyZSBub3cgc2F2ZWQgdG8gc3RydWN0IG1jYmFfcHJpdiBhbmQgY29k
+ZSB1c2VzIHRoZW0gZGlyZWN0bHkNCj4gaW5zdGVhZCBvZiBtYWtpbmcgcGlwZXMgaW4gcGxh
+Y2UuDQo+IA0KPiBGYWlsIGxvZzoNCj4gDQo+IHVzYiA1LTE6IEJPR1VTIHVyYiB4ZmVyLCBw
+aXBlIDMgIT0gdHlwZSAxDQo+IFdBUk5JTkc6IENQVTogMSBQSUQ6IDQ5IGF0IGRyaXZlcnMv
+dXNiL2NvcmUvdXJiLmM6NTAyIHVzYl9zdWJtaXRfdXJiKzB4ZWQyLzB4MThhMCBkcml2ZXJz
+L3VzYi9jb3JlL3VyYi5jOjUwMg0KPiBNb2R1bGVzIGxpbmtlZCBpbjoNCj4gQ1BVOiAxIFBJ
+RDogNDkgQ29tbToga3dvcmtlci8xOjIgTm90IHRhaW50ZWQgNS4xNy4wLXJjNi1zeXprYWxs
+ZXItMDAxODQtZzM4ZjgwZjQyMTQ3ZiAjMA0KPiBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0YW5k
+YXJkIFBDIChRMzUgKyBJQ0g5LCAyMDA5KSwgQklPUyAxLjE0LjAtMiAwNC8wMS8yMDE0DQo+
+IFdvcmtxdWV1ZTogdXNiX2h1Yl93cSBodWJfZXZlbnQNCj4gUklQOiAwMDEwOnVzYl9zdWJt
+aXRfdXJiKzB4ZWQyLzB4MThhMCBkcml2ZXJzL3VzYi9jb3JlL3VyYi5jOjUwMg0KPiAuLi4N
+Cj4gQ2FsbCBUcmFjZToNCj4gICA8VEFTSz4NCj4gICBtY2JhX3VzYl9zdGFydCBkcml2ZXJz
+L25ldC9jYW4vdXNiL21jYmFfdXNiLmM6NjYyIFtpbmxpbmVdDQo+ICAgbWNiYV91c2JfcHJv
+YmUrMHg4YTMvMHhjNTAgZHJpdmVycy9uZXQvY2FuL3VzYi9tY2JhX3VzYi5jOjg1OA0KPiAg
+IHVzYl9wcm9iZV9pbnRlcmZhY2UrMHgzMTUvMHg3ZjAgZHJpdmVycy91c2IvY29yZS9kcml2
+ZXIuYzozOTYNCj4gICBjYWxsX2RyaXZlcl9wcm9iZSBkcml2ZXJzL2Jhc2UvZGQuYzo1MTcg
+W2lubGluZV0NCj4gDQo+IFJlcG9ydGVkLWFuZC10ZXN0ZWQtYnk6IHN5emJvdCszYmMxZGNl
+MGNjMDA1MmQ2MGZkZUBzeXprYWxsZXIuYXBwc3BvdG1haWwuY29tDQo+IEZpeGVzOiA1MWYz
+YmFhZDdkZTkgKCJjYW46IG1jYmFfdXNiOiBBZGQgc3VwcG9ydCBmb3IgTWljcm9jaGlwIENB
+TiBCVVMgQW5hbHl6ZXIiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBQYXZlbCBTa3JpcGtpbiA8cGFz
+a3JpcGtpbkBnbWFpbC5jb20+DQo+IFJldmlld2VkLWJ5OiBWaW5jZW50IE1haWxob2wgPG1h
+aWxob2wudmluY2VudEB3YW5hZG9vLmZyPg0KDQpnZW50bGUgcGluZy4gbG9va3MgbGlrZSB0
+aGlzIHBhdGNoIGdvdCBzb21laG93IGxvc3QNCg0KDQoNCg0KV2l0aCByZWdhcmRzLA0KUGF2
+ZWwgU2tyaXBraW4NCg==
 
-In phy.c, it means does this PHY have c45 registers and we should
-access that register space, or should we use the c22 register
-space. So far example phy_restart_aneg() decides to either call
-genphy_c45_restart_aneg() or genphy_restart_aneg() depending on
-is_c45.
+--------------zMAyY88wsciZQYHPRhRowlKy--
 
-So a PHY with C45 register space but only accessible by C45 over C22
-is probably going to do the wrong thing with the current code.
+--------------wuJb3knIS3Bcn2sAl3RLDNAC
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-For this patchset to work, we need to cleanly separate the concepts of
-what sort of transactions to do over the bus, from what register
-spaces the PHY has. We probably want something like phydev->has_c45 to
-indicate the register space is implemented, and phydev->c45_over_c22
-to indicate what sort of transaction should be used in the _mmd()
-functions.
+-----BEGIN PGP SIGNATURE-----
 
-Your patches start in that direction, but i don't think it goes far
-enough.
+wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmI7hH8FAwAAAAAACgkQbk1w61LbBA2A
+7w//UDuGW6KEDfBJmFHbEIeC19pI4v2v1q8B6LWq0TEhvK9afaiDdereDT4g36kpAJQdq36oHr5m
+WychvLnb9QWMZaGR/vT4UyRIlC7G+LRcdJZP0aIhaLMr2QxQzlZ+WeGHVP5vlNUaByCeCjO7r79O
+f0OB9G3TyBA976RkG2kY1TxutGEH537aEC8+VllnBibB8ysKRfU1bNBd8kcoN0zmcvcXkVfvxYIW
+wtc4nLaKUzQmT3RbIiIxkZylK04e1XR0cAeGeZG0TC9sv+ASXlZLLb6wUsGMox4LvSMp9InuT9JX
+AqXjK3cTbSIOW5NMy27w14nFFVTX3eBX0X9Z/nquwEojo9IiRwZwrC5ZRb742X/nQsoFa/Ou9IQM
+VZRRgWWBMMh5e2NvmxcKiIHMgIoXHq+pOMaSH7rpxb1fNl1CihgrmixKdfxVVz8EAmclzf1csOVh
+QEBdl2Uvhyr5kYq/Yw0hoi6FHhCxL/FHZHp7KFaGpRBXH3akzq/6yS1OPn/Q8fhnJpiIOWobwR95
+0dwI+3N8O+e9bYzcxfH34qZcFYrlCiuh/Xdnpwdu3i1Eq1XmYitrYJ6KcvHfpxgjBH+wmJB7I8/s
+HqDThr1md9FM6N27zRL9po77M3qit1+krSvYxlhnrz2KiDYBVn8Idj8n1jJUmPwHZG812gqFYR2k
+Ens=
+=RjdE
+-----END PGP SIGNATURE-----
 
-	Andrew
+--------------wuJb3knIS3Bcn2sAl3RLDNAC--
