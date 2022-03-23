@@ -2,57 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9D3A4E56E4
-	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 17:48:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C70AE4E5725
+	for <lists+netdev@lfdr.de>; Wed, 23 Mar 2022 18:06:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245559AbiCWQuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 12:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
+        id S239444AbiCWRIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 13:08:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245583AbiCWQuA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 12:50:00 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66BCBBE2E;
-        Wed, 23 Mar 2022 09:48:21 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CB7C8D6E;
-        Wed, 23 Mar 2022 09:48:20 -0700 (PDT)
-Received: from lakrids (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C04A03F73D;
-        Wed, 23 Mar 2022 09:48:17 -0700 (PDT)
-Date:   Wed, 23 Mar 2022 16:47:48 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>, catalin.marinas@arm.com,
-        will@kernel.org
-Subject: Re: [PATCH v13 bpf-next 0/1] fprobe: Introduce fprobe function
- entry/exit probe
-Message-ID: <YjtPNAFQZ15NY0sp@lakrids>
-References: <164800288611.1716332.7053663723617614668.stgit@devnote2>
- <YjssQKblWeKqr/x8@lakrids>
- <20220323235539.644ad8ace98347467de3e897@kernel.org>
+        with ESMTP id S237903AbiCWRIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 13:08:10 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0E574DD7
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 10:06:40 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id o3-20020a17090a3d4300b001c6bc749227so2454993pjf.1
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 10:06:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oXZo6ZCMxvR2wI9wR3kaNle0BThcFCe2JNx/cU3GJL8=;
+        b=TeNYFVOsIc7jS+zi51ONM9O06chEwBHgo2dAXG01JvKGh/0wydujNfdFhxSjlJCzG6
+         Pl22CD++UULu5i00mN0QSliaRg+rRLRXFquxP/yPxM/xrErnrCO+5FovFzVkwyEEkVVM
+         vO7cxPm8zVaLMGej02OwpiQqpLsc72cohOSaMO7AKlLGuim5DSU0Zho1ftDUZC0l5Qqt
+         jVwNIrxvz+I3Wpszi9gZZOzxgqF/ZjbXrjoigpqGpqF3nCpfEzVRPOi5OPzr/5FSopG8
+         qdgbVkjXmGWUk/iF/26gW3xbXxYKtA6B283qd6eXwR99qcmQ9YL+H9jNclbu9t7hh2mH
+         BUDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oXZo6ZCMxvR2wI9wR3kaNle0BThcFCe2JNx/cU3GJL8=;
+        b=CC2dj7dQ5kznKv66k+Izu9CxzZXAA2jw9tzTXJGsjVDsdr9snOZlfZTKuLwNNaEtna
+         dCffw2WwHX1bBhHTXzXog1B3vF+enNYvRhaKZyqtrCfirSnrRBt7B4SmHvyGB2neQZI0
+         fthadBwLUneqC6DRgmi6LvBMsWSxs29bBxxkN431nH5mx1ey4Hl6C6nqA3DIUueOO3D8
+         mGrrvCFOaUhMuX6QkWsLKYkfiBpYUWQOl9GjNrJApHsbfj43g+/xrkPPdcaiLDOTPZDB
+         ksDPU9G05KGHRKnNxBO3FzW0p56bqeelvvawZMZ5HV6nowXL0ciULqNjHzhIsVC8MC17
+         LS5Q==
+X-Gm-Message-State: AOAM533FxTQwTesFsziRqjJZdUlbpNxeNAYPs1/tXpI/o0CXCr1I/F1Y
+        iYTqZ+F59BVJUlXN5j1pACs2qqpLeFie3LhpkIWW5g==
+X-Google-Smtp-Source: ABdhPJxrcU5e3z/zDo4jv/QLntdvinC7EmFQDSZGAHoYNXm2giTyynNWq3AiGNgqpAPIoA0nRf58W4wI6V7r92YiPtM=
+X-Received: by 2002:a17:90b:1d8d:b0:1c6:fad4:2930 with SMTP id
+ pf13-20020a17090b1d8d00b001c6fad42930mr716587pjb.159.1648055199780; Wed, 23
+ Mar 2022 10:06:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220323235539.644ad8ace98347467de3e897@kernel.org>
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+References: <1eb3d9e6-2adf-7f6c-4745-481451813522@linux.intel.com> <CAHNKnsQMFDdRzjAGW8+KHJrJUnganM0gi8AWmBnF1h_M2RSLeg@mail.gmail.com>
+In-Reply-To: <CAHNKnsQMFDdRzjAGW8+KHJrJUnganM0gi8AWmBnF1h_M2RSLeg@mail.gmail.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 23 Mar 2022 18:06:03 +0100
+Message-ID: <CAMZdPi_veiVaQYBcu9o0GqbmUcYtkL4NawOo2AGPKxfmaNrdhg@mail.gmail.com>
+Subject: Re: net: wwan: ethernet interface support
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,68 +69,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 11:55:39PM +0900, Masami Hiramatsu wrote:
-> On Wed, 23 Mar 2022 14:18:40 +0000
-> Mark Rutland <mark.rutland@arm.com> wrote:
-> 
-> > On Wed, Mar 23, 2022 at 11:34:46AM +0900, Masami Hiramatsu wrote:
-> > > Hi,
-> > 
-> > Hi Masami,
-> > 
-> > > Here is the 13th version of rethook x86 port. This is developed for a part
-> > > of fprobe series [1] for hooking function return. But since I forgot to send
-> > > it to arch maintainers, that caused conflict with IBT and SLS mitigation series.
-> > > Now I picked the x86 rethook part and send it to x86 maintainers to be
-> > > reviewed.
-> > > 
-> > > [1] https://lore.kernel.org/all/164735281449.1084943.12438881786173547153.stgit@devnote2/T/#u
-> > 
-> > As mentioned elsewhere, I have similar (though not identical) concerns
-> > to Peter for the arm64 patch, which was equally unreviewed by
-> > maintainers, and the overall structure.
-> 
-> Yes, those should be reviewed by arch maintainers.
-> 
-> > > Note that this patch is still for the bpf-next since the rethook itself
-> > > is on the bpf-next tree. But since this also uses the ANNOTATE_NOENDBR
-> > > macro which has been introduced by IBT/ENDBR patch, to build this series
-> > > you need to merge the tip/master branch with the bpf-next.
-> > > (hopefully, it is rebased soon)
-> > 
-> > I thought we were going to drop the series from the bpf-next tree so
-> > that this could all go through review it had missed thusfar.
-> > 
-> > Is that still the plan? What's going on?
-> 
-> Now the arm64 (and other arch) port is reverted from bpf-next.
-> I'll send those to you soon.
+On Sat, 19 Mar 2022 at 19:34, Sergey Ryazanov <ryazanov.s.a@gmail.com> wrote:
+>
+> Hello,
+>
+> On Sat, Mar 19, 2022 at 6:21 PM Kumar, M Chetan
+> <m.chetan.kumar@linux.intel.com> wrote:
+> > Release16 5G WWAN Device need to support Ethernet interface for TSN requirement.
+> > So far WWAN interface are of IP type. Is there any plan to scale it to support
+> > ethernet interface type ?
+>
+> What did you mean when you talked about supporting interfaces of Ethernet type?
+>
+> The WWAN subsystem provides an interface for users to request the
+> creation of a network interface from a modem driver. At the moment,
+> all modem drivers that support the WWAN subsystem integration create
+> network interfaces of the ARPHRD_NONE or ARPHRD_RAWIP type. But it is
+> up to the driver what type of interface it will create. At any time,
+> the driver can decide to create an ARPHRD_ETHER network interface, and
+> it will be Ok.
 
-Ah; thanks for confirming!
+Agree, WWAN does not require a specific type, so you can do whatever
+you want in the newlink callback.
 
-> Since bpf-next is focusing on x86 at first, I chose this for review in
-> this version. Sorry for confusion.
+Should a modem/driver be able to expose mixed interface types (e.g. ip
++ eth), in that case we probably need to add extra param to newlink.
 
-No problem; I think the confusion is all my own, so nothing to apologise
-for! :)
-
-> > > The fprobe itself is for providing the function entry/exit probe
-> > > with multiple probe point. The rethook is a sub-feature to hook the
-> > > function return as same as kretprobe does. Eventually, I would like
-> > > to replace the kretprobe's trampoline with this rethook.
-> > 
-> > Can we please start by converting each architecture to rethook?
-> 
-> Yes. As Peter pointed, I'm planning to add a kretprobe patches to use
-> rethook if available in that series. let me prepare it.
-> 
-> > Ideally we'd unify things such that each architecture only needs *one*
-> > return trampoline that both ftrace and krpboes can use, which'd be
-> > significantly easier to get right and manage.
-> 
-> Agreed :-)
-
-Great!
-
-Thanks,
-Mark.
+>
+> > Any thought process on TSN requirement support.
+>
+> Could you please elaborate what specific protocol or feature should be
+> implemented for it?
