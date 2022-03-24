@@ -2,104 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03A744E647A
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 14:54:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A5B24E647C
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 14:55:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350688AbiCXN4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 09:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
+        id S1344870AbiCXN4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 09:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350682AbiCXNzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 09:55:54 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9B23AA51;
-        Thu, 24 Mar 2022 06:54:22 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1648130061;
+        with ESMTP id S242799AbiCXN4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 09:56:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C8914B84B
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 06:55:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648130115;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=bo4oh0xgueLYq/ZucSpzqDXmdQwXHyaJwvL+CGmcSVg=;
-        b=n2mkfR5ErnTI17aWRsmxHA4JLR70o7LNo8nMWo2Hywde6OoRxPhE7FuBCehyVUYtmN1G3g
-        LR69WNhbDCcQwHUYLpAxW19+Yc/BnbOU/OsuSluiKrwmemkwt6mR+R2itDPNa0/SXryA+B
-        kCuS8YmjEQrNRnveOh/6t0UHL91YvI35yh2Pu6lqcJO8BJsbIOsDDUXFO2khgvrNNM0+9w
-        jliDisJJX7RvpVHMGLBZEW83gKb8a7IiUz9oIeVSVCMotpU9dVh6fBO4kvchAtuQaFb7LW
-        bG0sUHiw20ALTFPSI6hAg2iGJsbHDgHEWqn2n0kpsbXQygbXETVImIoVuGE4MA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1648130061;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bo4oh0xgueLYq/ZucSpzqDXmdQwXHyaJwvL+CGmcSVg=;
-        b=PgKBGTgT2lglTNsJjTiAMUa7pDuUgUiyaQyd3SQh17Ir3RDl04oCLL//HuioEWtDSfDyJ5
-        vBr0yD/TANvOkDCA==
-To:     Artem Savkov <asavkov@redhat.com>, jpoimboe@redhat.com,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>
-Subject: Re: [PATCH 1/2] timer: introduce upper bound timers
-In-Reply-To: <87tubn8rgk.ffs@tglx>
-References: <20220323111642.2517885-1-asavkov@redhat.com>
- <20220323111642.2517885-2-asavkov@redhat.com> <87tubn8rgk.ffs@tglx>
-Date:   Thu, 24 Mar 2022 14:54:21 +0100
-Message-ID: <87h77ncv76.ffs@tglx>
+        bh=jN9ZXxxaxvUNrOGbnMyP+TSXSOuww55tdZertHPVKPc=;
+        b=gmg7KCCvd02gPC7rmzEXp06jpkmHsR/tAyU3Z46qlvYXMAAMcCqqiEVA6xJNxzefBd1WyA
+        92sA3BVl3WoDrM99QQymlhKGDc00rSf5PY9kmiOPcgnu4k4HqsZwYDvCxqWoEt419MpIzO
+        70N9BPWQTokcwGPEs6kJZdMV1dZbJ7A=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-465-QLn3KwR4Ns2mi3SZ1vYFYQ-1; Thu, 24 Mar 2022 09:55:10 -0400
+X-MC-Unique: QLn3KwR4Ns2mi3SZ1vYFYQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 11F57811E81;
+        Thu, 24 Mar 2022 13:55:10 +0000 (UTC)
+Received: from localhost (unknown [10.43.135.229])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id D1DC5698CFA;
+        Thu, 24 Mar 2022 13:55:08 +0000 (UTC)
+Date:   Thu, 24 Mar 2022 14:55:07 +0100
+From:   Miroslav Lichvar <mlichvar@redhat.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        vinicius.gomes@intel.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 2/6] ptp: Request cycles for TX timestamp
+Message-ID: <Yjx4O/nOwriKKoNj@localhost>
+References: <20220322210722.6405-1-gerhard@engleder-embedded.com>
+ <20220322210722.6405-3-gerhard@engleder-embedded.com>
+ <20220324134934.GB27824@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324134934.GB27824@hoboy.vegasvil.org>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 24 2022 at 13:28, Thomas Gleixner wrote:
-> On Wed, Mar 23 2022 at 12:16, Artem Savkov wrote:
->> Add TIMER_UPPER_BOUND flag which allows creation of timers that would
->> expire at most at specified time or earlier.
->>
->> This was previously discussed here:
->> https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
->
-> please add the context to the changelog. A link is only supplemental
-> information and does not replace content.
->
->>  static inline unsigned calc_index(unsigned long expires, unsigned lvl,
->> -				  unsigned long *bucket_expiry)
->> +				  unsigned long *bucket_expiry, bool upper_bound)
->>  {
->>  
->>  	/*
->> @@ -501,34 +501,39 @@ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
->>  	 * - Truncation of the expiry time in the outer wheel levels
->>  	 *
->>  	 * Round up with level granularity to prevent this.
->> +	 * Do not perform round up in case of upper bound timer.
->>  	 */
->> -	expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
->> +	if (upper_bound)
->> +		expires = expires >> LVL_SHIFT(lvl);
->> +	else
->> +		expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
->
-> While this "works", I fundamentally hate this because it adds an extra
-> conditional into the common case. That affects every user of the timer
-> wheel. We went great length to optimize that code and I'm not really enthused
-> to sacrifice that just because of _one_ use case.
+On Thu, Mar 24, 2022 at 06:49:34AM -0700, Richard Cochran wrote:
+> On Tue, Mar 22, 2022 at 10:07:18PM +0100, Gerhard Engleder wrote:
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -578,6 +578,9 @@ enum {
+> >  	/* device driver is going to provide hardware time stamp */
+> >  	SKBTX_IN_PROGRESS = 1 << 2,
+> >  
+> > +	/* generate hardware time stamp based on cycles if supported */
+> > +	SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
+> 
+> Bit 4 used, but 3 was unused... interesting!
 
-Aside of that this is not mathematically correct. Why?
+It seems the bit 3 and 5 were removed in commit 06b4feb37e64
+("net: group skb_shinfo zerocopy related bits together.").
 
-The level selection makes the cutoff at: LEVEL_MAX(lvl) - 1. E.g. 62
-instead of 63 for the first level.
+-- 
+Miroslav Lichvar
 
-The reason is that this accomodates for the + LVL_GRAN(lvl). Now with
-surpressing the roundup this creates a gap. Not a horrible problem, but
-not correct either.
-
-Thanks,
-
-        tglx
