@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1262D4E655A
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 15:35:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D321D4E656F
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 15:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348570AbiCXOgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 10:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
+        id S1351114AbiCXOk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 10:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351053AbiCXOgy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 10:36:54 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D422384;
-        Thu, 24 Mar 2022 07:35:23 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id b24so5824096edu.10;
-        Thu, 24 Mar 2022 07:35:23 -0700 (PDT)
+        with ESMTP id S1351025AbiCXOk0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 10:40:26 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35AE35DF8
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 07:38:54 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id f38so8825121ybi.3
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 07:38:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jt66HNIsSgHK1QN5MOHClDI947FHdQQhnkZW+fpRDcI=;
-        b=XRqYDq2e0KeQ2nMyIYT8PphgcQN7TW3zxsdDlXUss9wHPnmqE9yQFQ5gAUy5UJw4jr
-         LSTvz6mViI7htcfUKFqU86pLNNPy2C0z72qaTnzJFthZlfQHVxDh8h2KMMN1XkkNFIek
-         ym8pM6ySzBGLDjGRZ6/Y8Ymy9lbo10VuWywm1Ajn9X/clGHgwv2YBlRNpg3glWWK9EAy
-         qTpTp3+FYUUE2aCBuIk/xgWY4cwLr26kCBhHmZrpMalZqQ+sPHh87kaIk2CgZv1PVD/1
-         aOolLQhIeTSB85mzSfxY6x9jQjwvj8H8Ml9D2cay2zXEbvZS8cRw5ceoFhLGz0X/Agqy
-         hlzg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=5eazXpvUYRuHpEXSXh/7pV6yjwLyPDdyTbYcpugheYI=;
+        b=LZYbEpYPqdt2rybMGihDWkehY74Bx/oRyd2T0jfoT2yVukWTWdMEcHCe7gMPos5Tkq
+         TquH2Fb++aZFVMMNUOjs1lmX+aDfCTdfE4vYyEuSCnmLf4UGEQHaO/zw6aLuaV3JEha8
+         ZjyZ4H0upDKfQYsxA6oZg4EmiidfL8ajljihQavYDivdvkzHkNyDA9+aW5jPtLiKKC9t
+         t+mvXy/x2NOg16qY5qSvdToEY+Zck0eTCliXHmboHPhr0GC6yTVAKy+0CFM7sV4IIWET
+         74dK+5xmpuVz+WsTxmH2TUPPQna2D20+HFRBv/S/Ka8gye8sVaOVwda1AB94h7GDX8qV
+         Cuzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jt66HNIsSgHK1QN5MOHClDI947FHdQQhnkZW+fpRDcI=;
-        b=SitME5c6m9jAUvB5WXZFxvll7TvqwXPGuavZ71k4fCCw0PGBapgUG+DG6bs829DNkR
-         86zQGLL/fhVpbdynRJQ7RzIOv9hTYxLxnZ1GNID4xSd4SAiUFWnOAfpkbPXetI0bWGYh
-         P9bFB6AL2IuWGo1YcqEn2VVun4z7pRQpl8psevaF2zfa9mG2tZb7MzeG+KP2jntC9581
-         DEoPr2LF2rlE1H1rC/5GWnulnW5Yqaiqew6wQH2JzVwp9WdBFif1bib2pjMZkE5O665X
-         +w2EHNKz4VFfId1k8PW9DLCDH1JURFysPPP9I5vhtPop440X52NTpu0qvt9ZHO46sdo/
-         TmRQ==
-X-Gm-Message-State: AOAM532dvA7qbusMa4VZ9Re4WszOGpBr3LKn9BEip5RzazEeRuc9MetZ
-        1ObchKob4K/eCRu+MAV0nlc=
-X-Google-Smtp-Source: ABdhPJyFzj7rNrzhvO2H9J6CJvMnktnldUdFz1zY1bP+sgzg4enOZvVJS34NA0uYDFgiwazwrOxlQQ==
-X-Received: by 2002:a50:ec0c:0:b0:418:f415:6bfe with SMTP id g12-20020a50ec0c000000b00418f4156bfemr7082712edr.15.1648132521606;
-        Thu, 24 Mar 2022 07:35:21 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id hr13-20020a1709073f8d00b006dfcc331a42sm1183208ejc.203.2022.03.24.07.35.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 07:35:20 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 16:35:19 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: sja1105q: proper way to solve PHY clk dependecy
-Message-ID: <20220324143519.yvcgt3u2icnbbafy@skbuf>
-References: <20220323060331.GA4519@pengutronix.de>
- <20220323095240.y4xnp6ivz57obyvv@skbuf>
- <20220324134824.GG4519@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=5eazXpvUYRuHpEXSXh/7pV6yjwLyPDdyTbYcpugheYI=;
+        b=P186sc5TqKvod4o4WJXeUE43U0BwL5v3e8opq0kEgFMbO0s44AQTkM3raNUqvwHCsm
+         prCEKZTJ2Og7/ltnqpSxml12UPDsvOjWjuzY62w55UiLOD8ZWofYw1JpEZqr1iBOV1OE
+         IbYBkJ7MoguEV408CKqRhEVwULjfLszCvp013QF7HSW/9hzjVz8/4lPxyQjvTiI5BY/J
+         w0sTkSV+jFAX7oeJnJ/oQn7aw+5VYqhZsnIbVQXcol2MNgPIzpF+C1Vlq3h14eZIkbEe
+         l4xrzVNP7eWP8IAyW8TGL6LDmvDV3WOqckvGh/eTas2zSQ+XGDnprbVS0hZnn2tJePfU
+         hGEg==
+X-Gm-Message-State: AOAM531h/oqiAVMvwFJt+CXCOfm/s3390qFQRDAHj0M0f5Rd/oZFwaKO
+        7gL+KfE7hT9BuON3SZAkjiGWE1jCWWX8Of/pBvr6z9aIxteklQ==
+X-Google-Smtp-Source: ABdhPJx5I40kNqQQZLQmA+RrWRpoNnvtdjlTCUinwy3T0ErqgVMz2tEk725HDKMxLnBLEz0f9lNePFLd61SqZN2vAE4=
+X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr4733011ybq.407.1648132733671;
+ Thu, 24 Mar 2022 07:38:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324134824.GG4519@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220323004147.1990845-1-eric.dumazet@gmail.com> <20220324062243.GA2496@kili>
+In-Reply-To: <20220324062243.GA2496@kili>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 24 Mar 2022 07:38:42 -0700
+Message-ID: <CANn89iKJamk6v5gt67tE0tG0i3XS2LofJu34uT=_AVqYCs-0SQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] llc: fix netdevice reference leaks in llc_ui_bind()
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?6LW15a2Q6L2p?= <beraphin@gmail.com>,
+        Stoyan Manolov <smanolov@suse.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,45 +71,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 02:48:24PM +0100, Oleksij Rempel wrote:
-> > 3. Clock gating the PHY won't make it lose its settings.
-> > 
-> > I expect that during the time when the sja1105 switch needs to reset,
-> > the PHY just sees this as a few hundreds of ms during which there are no
-> > clock edges on the crystal input pin. Sure, the PHY won't do anything
-> > during that time, but this is quite different from a reset, is it not?
-> > So asserting the hardware reset line of the PHY during the momentary
-> > loss of clock, which is what you seem to suggest, will actively do more
-> > harm than good.
-> 
-> can i be sure that MDIO access happens in the period where PHY is
-> supplied with stable clk
+On Wed, Mar 23, 2022 at 11:23 PM Dan Carpenter <dan.carpenter@oracle.com> w=
+rote:
+>
+> On Tue, Mar 22, 2022 at 05:41:47PM -0700, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > Whenever llc_ui_bind() and/or llc_ui_autobind()
+> > took a reference on a netdevice but subsequently fail,
+> > they must properly release their reference
+> > or risk the infamous message from unregister_netdevice()
+> > at device dismantle.
+> >
+> > unregister_netdevice: waiting for eth0 to become free. Usage count =3D =
+3
+> >
+> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Reported-by: =E8=B5=B5=E5=AD=90=E8=BD=A9 <beraphin@gmail.com>
+> > Reported-by: Stoyan Manolov <smanolov@suse.de>
+> > ---
+> >
+> > This can be applied on net tree, depending on how network maintainers
+> > plan to push the fix to Linus, this is obviously a stable candidate.
+>
+> This patch is fine, but it's that function is kind of ugly and difficult
+> for static analysis to parse.
 
-This is a good question. I suppose not, but I never ran into this issue.
-You can try to force this by having the PHY library use poll mode for an
-RMII PHY (case in which, IIRC, 3 or 4 PHY registers will be read every 2
-seconds), then from user space do something like this:
+We usually do not mix bug fixes and code refactoring.
 
-ip link add br0 type bridge && ip link set br0 up
-ip link set swp0 master br0 && ip link set swp0 up
-while :; do
-	ip link set br0 type bridge vlan_filtering 1
-	sleep 1
-	ip link set br0 type bridge vlan_filtering 0
-	sleep 1
-done
+Please feel free to send a refactor when net-next reopens in two weeks.
 
-Every VLAN awareness change triggers a reset in the switch, and this
-ends up calling sja1105_static_config_reload().
+Thanks.
 
-If you can artificially reproduce PHY access failures, first it's
-interesting to analyze their impact, does the PHY state machine
-transition to a halted state, or does it ignore the errors and continue
-with the next poll cycle? If it continues, it's probably not worth doing
-something.
-
-To avoid the problem, you should probably need to iterate using
-dsa_switch_for_each_user_port(), and mutex_lock(&dp->slave->phydev->lock)
-for each RMII PHY during the reset procedure (similar to the other
-things we lock out during the switch reset). The tricky part seems to be
-releasing the locks in the reverse order of the acquire...
+>
+> net/llc/af_llc.c
+>    274  static int llc_ui_autobind(struct socket *sock, struct sockaddr_l=
+lc *addr)
+>    275  {
+>    276          struct sock *sk =3D sock->sk;
+>    277          struct llc_sock *llc =3D llc_sk(sk);
+>    278          struct llc_sap *sap;
+>    279          int rc =3D -EINVAL;
+>    280
+>    281          if (!sock_flag(sk, SOCK_ZAPPED))
+>    282                  goto out;
+>
+> This condition is checking to see if someone else already initialized
+> llc->dev.  If we call dev_put_track(llc->dev, &llc->dev_tracker) on
+> something we didn't allocate then it leads to a use after free.  But
+> fortunately the callers all check SOCK_ZAPPED so the condition is
+> impossible.
+>
+>    283          if (!addr->sllc_arphrd)
+>    284                  addr->sllc_arphrd =3D ARPHRD_ETHER;
+>    285          if (addr->sllc_arphrd !=3D ARPHRD_ETHER)
+>    286                  goto out;
+>
+> Thus we know that "llc->dev" is NULL on these first couple gotos and
+> calling dev_put_track(llc->dev, &llc->dev_tracker); is a no-op so it's
+> fine.
+>
+> But complicated to review.
+>
+>    287          rc =3D -ENODEV;
+>    288          if (sk->sk_bound_dev_if) {
+>    289                  llc->dev =3D dev_get_by_index(&init_net, sk->sk_b=
+ound_dev_if);
+>    290                  if (llc->dev && addr->sllc_arphrd !=3D llc->dev->=
+type) {
+>    291                          dev_put(llc->dev);
+>    292                          llc->dev =3D NULL;
+>    293                  }
+>    294          } else
+>    295                  llc->dev =3D dev_getfirstbyhwtype(&init_net, addr=
+->sllc_arphrd);
+>    296          if (!llc->dev)
+>    297                  goto out;
+>    298          netdev_tracker_alloc(llc->dev, &llc->dev_tracker, GFP_KER=
+NEL);
+>    299          rc =3D -EUSERS;
+>    300          llc->laddr.lsap =3D llc_ui_autoport();
+>    301          if (!llc->laddr.lsap)
+>    302                  goto out;
+>    303          rc =3D -EBUSY; /* some other network layer is using the s=
+ap */
+>    304          sap =3D llc_sap_open(llc->laddr.lsap, NULL);
+>    305          if (!sap)
+>    306                  goto out;
+>    307          memcpy(llc->laddr.mac, llc->dev->dev_addr, IFHWADDRLEN);
+>    308          memcpy(&llc->addr, addr, sizeof(llc->addr));
+>    309          /* assign new connection to its SAP */
+>    310          llc_sap_add_socket(sap, sk);
+>    311          sock_reset_flag(sk, SOCK_ZAPPED);
+>    312          rc =3D 0;
+>    313  out:
+>    314          if (rc) {
+>    315                  dev_put_track(llc->dev, &llc->dev_tracker);
+>    316                  llc->dev =3D NULL;
+>    317          }
+>    318          return rc;
+>    319  }
+>
+> regards,
+> dan carpenter
