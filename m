@@ -2,115 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB7B4E6245
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:18:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C274E6294
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:39:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349751AbiCXLTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 07:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
+        id S1349833AbiCXLkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 07:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349728AbiCXLTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:19:10 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DBDA66D4;
-        Thu, 24 Mar 2022 04:17:38 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22OB4h2Y015841;
-        Thu, 24 Mar 2022 07:17:19 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3f0denc07n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Mar 2022 07:17:19 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 22OBHIk5032741
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 24 Mar 2022 07:17:18 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Thu, 24 Mar
- 2022 07:17:17 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 24 Mar 2022 07:17:17 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22OBGjPg000657;
-        Thu, 24 Mar 2022 07:17:10 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <andrew@lunn.ch>
-CC:     <o.rempel@pengutronix.de>, <alexandru.tachici@analog.com>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <hkallweit1@gmail.com>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: [PATCH v5 7/7] dt-bindings: net: phy: Add 10-baseT1L 2.4 Vpp
-Date:   Thu, 24 Mar 2022 13:26:20 +0200
-Message-ID: <20220324112620.46963-8-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220324112620.46963-1-alexandru.tachici@analog.com>
-References: <20220324112620.46963-1-alexandru.tachici@analog.com>
+        with ESMTP id S1349699AbiCXLk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:40:28 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958EC515B0
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 04:38:56 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id d7so6214571wrb.7
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 04:38:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=bjI0cGhDGMIZKR+Hyo3RMWR53BAljyzuWzOAdVJru88=;
+        b=nVD4w1tDBNZ7x32sGNWqQ/u/qUAkp8x3RGJbrR4dsAfonjXATGgH1b3T5GbS8Jpdrv
+         bu+/K9+I5crzjocqfrSsruGpWKq3EoADRJny2+7NvDDiQdKozyYLQlA2i/8HYhKBWyXi
+         8GI6iHqoyavP9jk4sGKBR+ZusEwxWAKCSh+GlaSRHcAQpiUZrlppEcsvhd3w2Lf22+uC
+         JsuFdDU/BUy9XNCSkSmLecSVxVBBXNI/1FyWhlCUR0j6G/hG/dZGE8Ui1kRWeIh+Gz5W
+         gimrwlJwCu+qUUG91ToXFOTU0e/fgD8/l9+TXBy4fI29EiowGG2p4yOWF46TSvUBHqZD
+         y8nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=bjI0cGhDGMIZKR+Hyo3RMWR53BAljyzuWzOAdVJru88=;
+        b=e+RYoqq2Hu0ghPNPtw/oK/QmGgSPbj9YJrXyX83feNZ+YvfFgkIOY2v9fYNzZ+Vd6B
+         9R8FAgxBs88Na1i+Y5Cou8wSiRBE+zPXd4fkIbs9EWKCVvLjI8g/rC1XpshSNydvEN0F
+         2Ho4vBji9LUkgLcAa/LbdvQ547r2O405W+whVqoBd+6IN7Y3kuOim+bDgq6WRPR6TsPQ
+         hULnLiAW2Hb6fCny/ihZ+HT6iFc574PIhIM45Gj7O/FNPBbdlGTbUeCOgcDp3zCYh1B8
+         1FXIRj3B4JfBmM4d1NwF+sArmdKJt8pYKB+mToUkMvi7PmxaKgN/T3n4V6xFtzosseB9
+         JLlw==
+X-Gm-Message-State: AOAM533VfZc27GsOz1eT3BMyQgSqHXFAofws7mCa1a13Se+A5xV/Dnco
+        UgS3ewKz47CnWbLSZ8rsCHy30qqXR6Y=
+X-Google-Smtp-Source: ABdhPJxZJHMEjccNIXQ04o43ZHKbtb4cqZjU75To6gzyC//KaCD1uMC3zYdZQXYWb/QOxX/AFzOyxA==
+X-Received: by 2002:a05:6000:1541:b0:204:18c9:7179 with SMTP id 1-20020a056000154100b0020418c97179mr4151645wry.581.1648121934917;
+        Thu, 24 Mar 2022 04:38:54 -0700 (PDT)
+Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id g1-20020a1c4e01000000b003899c8053e1sm2472498wmh.41.2022.03.24.04.38.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 04:38:54 -0700 (PDT)
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: sparx5: Refactor based on feedback on
+Date:   Thu, 24 Mar 2022 12:38:51 +0100
+Message-Id: <20220324113853.576803-1-casper.casan@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: WqPUrBxedtxsijG92gj85RHr3V-Z8Hug
-X-Proofpoint-ORIG-GUID: WqPUrBxedtxsijG92gj85RHr3V-Z8Hug
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-24_03,2022-03-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
- malwarescore=0 mlxlogscore=791 priorityscore=1501 adultscore=0 bulkscore=0
- clxscore=1015 suspectscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2203240067
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+This is a follow up to a previous patch that was merged
+before manufacturer could give feedback. This addresses
+the feedback. See link below for previous patch series.
+https://lore.kernel.org/netdev/20220322081823.wqbx7vud4q7qtjuq@wse-c0155/T/#t
 
-Add a tristate property to advertise desired transmit level.
+Casper Andersson (2):
+  net: sparx5: Remove unused GLAG handling in PGID
+  net: sparx5: Refactor mdb handling according to feedback
 
-If the device supports the 2.4 Vpp operating mode for 10BASE-T1L,
-as defined in 802.3gc, and the 2.4 Vpp transmit voltage operation
-is desired, property should be set to 1. This property is used
-to select whether Auto-Negotiation advertises a request to
-operate the 10BASE-T1L PHY in increased transmit level mode.
+ .../microchip/sparx5/sparx5_mactable.c        | 19 ++++--------------
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  7 ++-----
+ .../ethernet/microchip/sparx5/sparx5_pgid.c   | 20 +++----------------
+ .../microchip/sparx5/sparx5_switchdev.c       | 18 ++++++++---------
+ .../ethernet/microchip/sparx5/sparx5_vlan.c   |  7 +++++++
+ 5 files changed, 24 insertions(+), 47 deletions(-)
 
-If property is set to 1, the PHY shall advertise a request
-to operate the 10BASE-T1L PHY in increased transmit level mode.
-If property is set to zero, the PHY shall not advertise
-a request to operate the 10BASE-T1L PHY in increased transmit level mode.
-
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- Documentation/devicetree/bindings/net/ethernet-phy.yaml | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index ee42328a109d..ed1415a4381f 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -77,6 +77,15 @@ properties:
-     description:
-       Maximum PHY supported speed in Mbits / seconds.
- 
-+  phy-10base-t1l-2.4vpp:
-+    description: |
-+      tristate, request/disable 2.4 Vpp operating mode. The values are:
-+      0: Disable 2.4 Vpp operating mode.
-+      1: Request 2.4 Vpp operating mode from link partner.
-+      Absence of this property will leave configuration to default values.
-+    $ref: "/schemas/types.yaml#/definitions/uint32"
-+    enum: [0, 1]
-+
-   broken-turn-around:
-     $ref: /schemas/types.yaml#/definitions/flag
-     description:
 -- 
-2.25.1
+2.30.2
 
