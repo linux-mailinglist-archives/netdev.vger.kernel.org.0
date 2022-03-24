@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91BF14E665A
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 16:55:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B79B4E6695
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 17:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351414AbiCXP4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 11:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
+        id S1351471AbiCXQEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 12:04:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351381AbiCXP4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 11:56:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6545AC93C
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 08:55:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648137307;
+        with ESMTP id S243557AbiCXQEh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 12:04:37 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BE973AA;
+        Thu, 24 Mar 2022 09:03:03 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6F6FF2222E;
+        Thu, 24 Mar 2022 17:03:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648137781;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qhk/cSlBhu9FyIQHni5JTdj5gaUuouDSx4dOdLvCXlU=;
-        b=GTj7+ZaE++yKbztKl/UsZ0PvVDzOHG/NJOtznfL8UhNbwitPCCG2mfVCm5Kzh1XaXYce25
-        QKum/nKFqw0e1NZpeh9XTwhCTf8skt+YwCVw633XTFQNM761tdefYVWcZdS30jgI7WXBqS
-        ogi3aEtZTSxxI1jnDrID8ahC6OKTkLE=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-XGELB1YLM0WwMYKHKCvZHg-1; Thu, 24 Mar 2022 11:55:03 -0400
-X-MC-Unique: XGELB1YLM0WwMYKHKCvZHg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 68C2E892D1A;
-        Thu, 24 Mar 2022 15:54:57 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.17.221])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3144740146E;
-        Thu, 24 Mar 2022 15:54:57 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH iproute2 next] bond: add mac_filter option
-Date:   Thu, 24 Mar 2022 11:54:42 -0400
-Message-Id: <2d08b009c8a66524609902d3707bf325f7905691.1648136550.git.jtoppins@redhat.com>
-In-Reply-To: <b03f0896e1a0b65cc1b278aecc9d080b2ec9d8a6.1648136359.git.jtoppins@redhat.com>
-References: <b03f0896e1a0b65cc1b278aecc9d080b2ec9d8a6.1648136359.git.jtoppins@redhat.com>
+        bh=kOeoWOP9P8ui80SyFUlad9ju5LUWsfcnsPplOFlDO70=;
+        b=EeKxMp06ZQk8ui1RpJzLu7AJ8sC9SP8bJawlTrirSxK7N4gPhe+cvKGGPvrx11fj8j0fiz
+        i8I5Y6C7jeOAYZ+NWFSwM96K9gEBFT+0WCuO1y6T2aRH6L3xuA7mqiNhGhX7EqVba63aJ4
+        h925PIv4NCf3XOdylWO1/ktUHnhU/y8=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 24 Mar 2022 17:03:00 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
+In-Reply-To: <Yju+SGuZ9aB52ARi@lunn.ch>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-5-michael@walle.cc> <Yjt99k57mM5PQ8bT@lunn.ch>
+ <8304fb3578ee38525a158af768691e75@walle.cc> <Yju+SGuZ9aB52ARi@lunn.ch>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <30012bd8256be3be9977bd15d1486c84@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,68 +63,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ability to set bonding option `mac_filter`. Values greater than zero
-represent the maximum hashtable size the mac filter is allowed to grow
-to, zero disables the filter.
+Am 2022-03-24 01:41, schrieb Andrew Lunn:
+>> > Thinking out loud...
+>> >
+>> > 1) We have a C22 only bus. Easy, C45 over C22 should be used.
+>> >
+>> > 2) We have a C45 only bus. Easy, C45 should be used, and it will of
+>> >    probed that way.
+>> >
+>> > 3) We have a C22 and C45 bus, but MDIOBUS_NO_CAP. It will probe C22,
+>> >    but ideally we want to swap to C45.
+>> >
+>> > 4) We have a C22 and C45 bus, MDIOBUS_C22_C45. It will probe C22, but
+>> >    ideally we want to swap to C45.
+>> 
+>> I presume you are speaking of
+>> https://elixir.bootlin.com/linux/v5.17/source/drivers/net/phy/mdio_bus.c#L700
+> 
+> Yes.
+> 
+>> Shouldn't that be the other way around then? How would you tell if
+>> you can do C45?
+> 
+> For a long time, only C22 was probed. To actually make use of a C45
+> only PHY, you had to have a compatible string in DT which indicated a
+> C45 device is present on the bus. But then none DT systems came along
+> which needed to find a C45 only PHY during probe without the hint it
+> is was actually there. That is when the probe capabilities we added,
+> and the scan extended to look for a C45 device if the capabilities
+> indicates the bus actually supported it. But to keep backwards
+> compatibility, C22 was scanned first and then C45 afterwards.
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
- include/uapi/linux/if_link.h |  1 +
- ip/iplink_bond.c             | 15 +++++++++++++++
- 2 files changed, 16 insertions(+)
+Ok, I figured.
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 22e21e57afc9..23b61679b4ff 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -927,6 +927,7 @@ enum {
- 	IFLA_BOND_AD_LACP_ACTIVE,
- 	IFLA_BOND_MISSED_MAX,
- 	IFLA_BOND_NS_IP6_TARGET,
-+	IFLA_BOND_MAC_FILTER,
- 	__IFLA_BOND_MAX,
- };
- 
-diff --git a/ip/iplink_bond.c b/ip/iplink_bond.c
-index 650411fc7de1..64f910e2b4cc 100644
---- a/ip/iplink_bond.c
-+++ b/ip/iplink_bond.c
-@@ -156,6 +156,7 @@ static void print_explain(FILE *f)
- 		"                [ ad_actor_sys_prio SYSPRIO ]\n"
- 		"                [ ad_actor_system LLADDR ]\n"
- 		"                [ arp_missed_max MISSED_MAX ]\n"
-+		"                [ mac_filter HASH_SIZE ]\n"
- 		"\n"
- 		"BONDMODE := balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb\n"
- 		"ARP_VALIDATE := none|active|backup|all|filter|filter_active|filter_backup\n"
-@@ -409,6 +410,14 @@ static int bond_parse_opt(struct link_util *lu, int argc, char **argv,
- 			}
- 			addattr8(n, 1024, IFLA_BOND_TLB_DYNAMIC_LB,
- 				 tlb_dynamic_lb);
-+		} else if (matches(*argv, "mac_filter") == 0) {
-+			__u8 mac_filter;
-+			NEXT_ARG();
-+			if (get_u8(&mac_filter, *argv, 0)) {
-+				invarg("invalid mac_filter", *argv);
-+				return -1;
-+			}
-+			addattr8(n, 1024, IFLA_BOND_MAC_FILTER, mac_filter);
- 		} else if (matches(*argv, "help") == 0) {
- 			explain();
- 			return -1;
-@@ -490,6 +499,12 @@ static void bond_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 			   "arp_missed_max %u ",
- 			   rta_getattr_u8(tb[IFLA_BOND_MISSED_MAX]));
- 
-+	if (tb[IFLA_BOND_MAC_FILTER])
-+		print_uint(PRINT_ANY,
-+			   "mac_filter",
-+			   "mac_filter %u ",
-+			   rta_getattr_u8(tb[IFLA_BOND_MAC_FILTER]));
-+
- 	if (tb[IFLA_BOND_ARP_IP_TARGET]) {
- 		struct rtattr *iptb[BOND_MAX_ARP_TARGETS + 1];
- 
--- 
-2.27.0
+> To some extent, we need to separate finding the device on the bus to
+> actually using the device. The device might respond to C22, give us
+> its ID, get the correct driver loaded based on that ID, and the driver
+> then uses the C45 address space to actually configure the PHY.
+> 
+> Then there is the Marvel 10G PHY. It responds to C22, but returns 0
+> for the ID! There is a special case for this in the code, it then
+> looks in the C45 space and uses the ID from there, if it finds
+> something useful.
+> 
+> So as i said in my reply to the cover letter, we have two different
+> state variables:
+> 
+> 1) The PHY has the C45 register space.
+> 
+> 2) We need to either use C45 transfers, or C45 over C22 transfers to
+>    access the C45 register space.
+> 
+> And we potentially have a chicken/egg problem. The PHY driver knows
+> 1), but in order to know what driver to load we need the ID registers
+> from the PHY, or some external hint like DT. We are also currently
+> only probing C22, or C45, but not C45 over C22. And i'm not sure we
+> actually can probe C45 over C22 because there are C22 only PHYs which
+> use those two register for other things. So we are back to the driver
+> again which does know if C45 over C22 will work.
 
+Isn't it safe to assume that if a PHY implements the indirect
+registers for c45 in its c22 space that it will also have a valid
+PHY ID and then the it's driver will be probed? So if a PHY is
+probed as c22 its driver might tell us "wait, it's actually a c45
+phy and hey for your convenience it also have the indirect registers
+in c22". We can then set has_c45 and maybe c45_over_c22 (also depending
+on the bus capabilities).
+
+> So phydev->has_c45 we can provisionally set if we probed the PHY by
+> C45. But the driver should also set it if it knows better, or even the
+> core can set it the first time the driver uses an _mmd API call.
+
+I'm not sure about the _mmd calls, there are PHYs which have MMDs
+(I guess EEE is an example?) but are not capable of C45 accesses.
+
+> phydev->c45_over_c22 we are currently in a bad shape for. We cannot
+> reliably say the bus master supports C45. If the bus capabilities say
+> C22 only, we can set phydev->c45_over_c22. If the bus capabilities
+> list C45, we can set it false. But that only covers a few busses, most
+> don't have any capabilities set. We can try a C45 access and see if we
+> get an -EOPNOTSUPP, in which case we can set phydev->c45_over_c22. But
+> the bus driver could also do the wrong thing, issue a C22 transfer and
+> give us back rubbish.
+
+First question, what do you think about keeping the is_c45 property but
+with a different meaning and add use_c45_over_c22. That way it will be
+less code churn:
+
+  * @is_c45:  Set to true if this PHY has clause 45 address space.
+  * @use_c45_over_c22:  Set to true if c45-over-c22 addressing is used.
+
+  1) c45 phy probed as c45 -> is_c45 = 1, like it is at the moment
+     use c45 transfers
+2a) c45 phy probed as c22 -> is_c45 = 1, use_c45_over_c22 = 0
+     use c45 transfers
+2b) c45 phy probed as c22 -> is_c45 = 1, use_c45_over_c22 = 1
+     use c22 transfers
+
+Did I miss something?
+
+To promote from c22 to c45 we could look at a flag in the PHY
+driver. That should be basically that what the gpy driver is trying
+to do with the "if (!is_c45) get_c45_ids()" (but fail).
+
+> So i think we do need to review all the bus drivers and any which do
+> support C45 need their capabilities set to indicate that. We can then
+> set phydev->c45_over_c22.
+
+I could add the probe_capabilites, or at least I could try. But it won't
+tell us if the PHY is capable of the indirect addressing. So we aren't
+much further in this regard. But IMHO this can be done incrementally
+if someone is interested in having that feature. He should also be in
+the position to test it properly.
+
+[just saw your latest mail while writing this, so half of it is done
+anyway, btw, I did the same today ;)]
+
+-michael
