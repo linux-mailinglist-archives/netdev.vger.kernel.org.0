@@ -2,127 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBA454E6269
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:25:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C6524E6274
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:26:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346119AbiCXLZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 07:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33370 "EHLO
+        id S1349810AbiCXL1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 07:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236913AbiCXLZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:25:17 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 141173ED1E;
-        Thu, 24 Mar 2022 04:23:45 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id h11so5711030ljb.2;
-        Thu, 24 Mar 2022 04:23:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=zbdwVgmEzDHA4WNpeMf8bwrU5wjzXUixO+mPzgyLSZI=;
-        b=UpFKoE+XZn1XgesQCFLWG+c4rStcpUK9jHmSYwU5uRzUVpZXQnBJDo+rMH+3h7n/12
-         72ptiKgHeuDJZPiu6fwyPB26xc0C2Vs/ZeE3hjWjx4SM3AC7FhLRs2j+5pwfeHhuSiaA
-         KBG2+6ngx4lRKZLxTRkgJG5JrySYO5rMXWM1nCC+hXprBjkk7l144WjsfcQaZ/bwMyPv
-         BDpy0tIM0YCzILV5Nlnces8sVUAIrtdezsexH7cu9PR2YPfcRRdpb3gYTOlzxC7FohSq
-         6dOVBzI0kiyYFTd5biaLHNaRmOLpy1HsIg2L13+u6BaSTot8UcrGL0UCPAbu2iZOn01X
-         Q9SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=zbdwVgmEzDHA4WNpeMf8bwrU5wjzXUixO+mPzgyLSZI=;
-        b=0zNy0KM9qMggpMH1SmCXfAK3mvNw+mF0BP7x0bwYgUWp2YzQXaab5tZfgFHEzZj3lD
-         xoFuUAUugceJ9DdZLOnsIRn8lLbTr+i3bRW+6Km6T6HC5IR3EOdBWUMkDIRQm9I7js3f
-         9dUC4qesLdVkVX9o+29kE/691BjCpw55aUYody6gBPKS9vtbbj028A1JmPM6mmKFWFz1
-         aDPQWyF//EGllCSqNwEZGjByMjxQLk9HCKYZiETSq3i9fLYKHy9D335wyWEQyjXo+2mN
-         R238jnAowPHRYiDJSiPD+nR85fG9D+gXeTb4tmh1+g96Yt1IuKyVGLCPzLEcxO3JJWYE
-         8evw==
-X-Gm-Message-State: AOAM532FSH1qnruBjeLWHt7bUUkWbpDKfiOPoL20LkibB+v4vsaSzV1M
-        +ZzvUzBl8yQ4qY4y4tuaFa6BVSHCHZDIAgET
-X-Google-Smtp-Source: ABdhPJzUbdvFK0PzuPbcYo1YnvFUJKYjAXVakppqx3v8jhG8emZHBuIPJU6uBBIjOEdMZeQZ+8rh0w==
-X-Received: by 2002:a2e:8547:0:b0:248:b0a:bc45 with SMTP id u7-20020a2e8547000000b002480b0abc45mr3774397ljj.271.1648121023224;
-        Thu, 24 Mar 2022 04:23:43 -0700 (PDT)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id i6-20020a2ea366000000b00248073ae9a2sm311183ljn.84.2022.03.24.04.23.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 04:23:42 -0700 (PDT)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
- offloading of fdb locked flag
-In-Reply-To: <20220324110959.t4hqale35qbrakdu@skbuf>
-References: <20220317093902.1305816-1-schultz.hans+netdev@gmail.com>
- <20220317093902.1305816-3-schultz.hans+netdev@gmail.com>
- <86o81whmwv.fsf@gmail.com> <20220323123534.i2whyau3doq2xdxg@skbuf>
- <86wngkbzqb.fsf@gmail.com> <20220323144304.4uqst3hapvzg3ej6@skbuf>
- <86lewzej4n.fsf@gmail.com> <20220324110959.t4hqale35qbrakdu@skbuf>
-Date:   Thu, 24 Mar 2022 12:23:39 +0100
-Message-ID: <86v8w3vbk4.fsf@gmail.com>
+        with ESMTP id S1349727AbiCXL1f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:27:35 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5924A66EC;
+        Thu, 24 Mar 2022 04:26:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648121162; x=1679657162;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TKRStjgNvvvrYB1tQ/Y0SqCKUerOWglVcd2B3O7GaC4=;
+  b=JO28bFqU5xlE1DdLMHKs+6zrmzYc3211QFlWNeq8TLqSsfIe4gjAKCRw
+   smFcFsQjevRvtRyW8YqF9zMnVOQE2YLb47L1t7knRQ0FlYCrKYds5NrEw
+   rKv46Bpn4Lkp37MKw2HS3RQyPq6K0JqazAbH4+muOeU7Kbw9nhQDNWToo
+   f8zNgOvn/Qyh1eWTy2URC+WUJX8aoC18FFgd0JzkX1UZzjItmSbSa7t7/
+   Dp4eMkguH16PTmMRw2dPc8WMqrHzsQGsRM9i2527sGGZTQlqopltdNrCx
+   inIRd0VSi4rz9sHrMQp2iMgm9sr2pYlkH7QQNyGh22QU8dgO7vG614z1r
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="258304846"
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="258304846"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 04:26:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
+   d="scan'208";a="561333561"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by orsmga008.jf.intel.com with ESMTP; 24 Mar 2022 04:25:59 -0700
+Date:   Thu, 24 Mar 2022 12:25:58 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Ivan Vecera <ivecera@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "poros@redhat.com" <poros@redhat.com>,
+        "mschmidt@redhat.com" <mschmidt@redhat.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] ice: Fix MAC address setting
+Message-ID: <YjxVRqTppQeYKb1h@boxer>
+References: <20220323135829.4015645-1-ivecera@redhat.com>
+ <CO1PR11MB508946CC906E8B851D69D31AD6189@CO1PR11MB5089.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB508946CC906E8B851D69D31AD6189@CO1PR11MB5089.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On tor, mar 24, 2022 at 13:09, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Thu, Mar 24, 2022 at 11:32:08AM +0100, Hans Schultz wrote:
->> On ons, mar 23, 2022 at 16:43, Vladimir Oltean <olteanv@gmail.com> wrote:
->> > On Wed, Mar 23, 2022 at 01:49:32PM +0100, Hans Schultz wrote:
->> >> >> Does someone have an idea why there at this point is no option to add a
->> >> >> dynamic fdb entry?
->> >> >> 
->> >> >> The fdb added entries here do not age out, while the ATU entries do
->> >> >> (after 5 min), resulting in unsynced ATU vs fdb.
->> >> >
->> >> > I think the expectation is to use br_fdb_external_learn_del() if the
->> >> > externally learned entry expires. The bridge should not age by itself
->> >> > FDB entries learned externally.
->> >> >
->> >> 
->> >> It seems to me that something is missing then?
->> >> My tests using trafgen that I gave a report on to Lunn generated massive
->> >> amounts of fdb entries, but after a while the ATU was clean and the fdb
->> >> was still full of random entries...
->> >
->> > I'm no longer sure where you are, sorry..
->> > I think we discussed that you need to enable ATU age interrupts in order
->> > to keep the ATU in sync with the bridge FDB? Which means either to
->> > delete the locked FDB entries from the bridge when they age out in the
->> > ATU, or to keep refreshing locked ATU entries.
->> > So it seems that you're doing neither of those 2 things if you end up
->> > with bridge FDB entries which are no longer in the ATU.
->> 
->> Any idea why G2 offset 5 ATUAgeIntEn (bit 10) is set? There is no define
->> for it, so I assume it is something default?
->
-> No idea, but I can confirm that the out-of-reset value I see for
-> MV88E6XXX_G2_SWITCH_MGMT on 6190 and 6390 is 0x400. It's best not to
-> rely on any reset defaults though.
+On Wed, Mar 23, 2022 at 05:28:02PM +0000, Keller, Jacob E wrote:
+> 
+> 
+> > -----Original Message-----
+> > From: Ivan Vecera <ivecera@redhat.com>
+> > Sent: Wednesday, March 23, 2022 6:58 AM
+> > To: netdev@vger.kernel.org
+> > Cc: poros@redhat.com; mschmidt@redhat.com; Brandeburg, Jesse
+> > <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> > <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Jakub
+> > Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; moderated
+> > list:INTEL ETHERNET DRIVERS <intel-wired-lan@lists.osuosl.org>; open list <linux-
+> > kernel@vger.kernel.org>
+> > Subject: [PATCH net] ice: Fix MAC address setting
+> > 
+> > Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
+> > the usage of 'status' and 'err' variables into single one in
+> > function ice_set_mac_address(). Unfortunately this causes
+> > a regression when call of ice_fltr_add_mac() returns -EEXIST because
+> > this return value does not indicate an error in this case but
+> > value of 'err' value remains to be -EEXIST till the end of
 
-I see no age out interrupts, even though the ports Age Out Int is on
-(PAV bit 14) on the locked port, and the ATU entries do age out (HoldAt1
-is off). Any idea why that can be?
+s/'err' value/'err'
 
-I combination with this I think it would be nice to have an ability to
-set the AgeOut time even though it is not per port but global.
+> > the function and is returned to caller.
+> > 
+> > Prior this commit this does not happen because return value of
+
+s/this/mentioned ?
+
+> > ice_fltr_add_mac() was stored to 'status' variable first and
+> > if it was -EEXIST then 'err' remains to be zero.
+> > 
+> > The patch fixes the problem by reset 'err' to zero when
+> > ice_fltr_add_mac() returns -EEXIST.
+
+Again, i'd recommend imperative mood. Besides, good catch!
+
+> > 
+> > Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
+> > Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/intel/ice/ice_main.c
+> > b/drivers/net/ethernet/intel/ice/ice_main.c
+> > index 168a41ea37b8..420558d1cd21 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> > +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> > @@ -5474,14 +5474,15 @@ static int ice_set_mac_address(struct net_device
+> > *netdev, void *pi)
+> > 
+> >  	/* Add filter for new MAC. If filter exists, return success */
+> >  	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
+> > -	if (err == -EEXIST)
+> > +	if (err == -EEXIST) {
+> >  		/* Although this MAC filter is already present in hardware it's
+> >  		 * possible in some cases (e.g. bonding) that dev_addr was
+> >  		 * modified outside of the driver and needs to be restored back
+> >  		 * to this value.
+> >  		 */
+> >  		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
+> > -	else if (err)
+> > +		err = 0;
+> > +	} else if (err)
+> >  		/* error if the new filter addition failed */
+> >  		err = -EADDRNOTAVAIL;
+> > 
+> 
+> Style wise, don't we typically use {} for all branches if its needed on one?
+
++1, please add braces around second branch as well.
+
+> 
+> I'm ok takin this fix as-is now and doing the {} fix up afterwards if we want to avoid delay.
+> 
+> Thanks,
+> Jake
+> 
+> > --
+> > 2.34.1
+> 
