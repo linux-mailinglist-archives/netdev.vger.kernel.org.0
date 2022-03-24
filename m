@@ -2,121 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D3DA4E6A23
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 22:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B61B4E6A53
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 22:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354061AbiCXVQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 17:16:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
+        id S1354221AbiCXVlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 17:41:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349749AbiCXVQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 17:16:04 -0400
-X-Greylist: delayed 24396 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 14:14:30 PDT
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125CF2898C;
-        Thu, 24 Mar 2022 14:14:29 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1648156468; bh=10YpchtIHtcZ8NSl6ZT7uwLuFlfFgJXa9Oolkv8NtQg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=bgzPaBmGHN+bnivn53/b7ZIz9/UwYFmY03s5yT9g1LzfZvAJ3uIC7ce11QS/c9gDk
-         R+EyTlbehDyeBvELCV6f+pU+CmP91zr7lx482udUYxg9jrlR/ovTm9K8oIjoB/rEha
-         koK3I9RsZ9nIP/hbajSqIVn+Bk0NpwJEeSXvuQ3T1G3hO5g+mSdwUwK93gKKp92h+F
-         OmmTJoRUd4/LgjWY01urisinyN5elIPMT5iEkPrjHSSPHnq9iwLcPxdf+NOnHNHk0j
-         L5ovl1Ohbmz8Q5MEpZ3NdLlM2L2Qx85IIHFm9o24PgoAXbuYmLr7yHvHkB7jVoVtj+
-         eFDzUyYMP1/pw==
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Maxime Bizon <mbizon@freebox.fr>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S235526AbiCXVlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 17:41:31 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063AF6517C
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 14:39:58 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id qx21so11741382ejb.13
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 14:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=vAv++6Ka2pHCMdt2V4TKWEdbarlaFc2/zhh4e1HEnfs=;
+        b=jr9qqQhv2SSJOCMShSG33diffvDR4DjQ4qEOM9Bces5kuL+TpV+st0BkID8Vik/1iY
+         99D8XzX+vN1SmM7dvDE0r0Y6abLWXNa1dyA4idYTKiPL7WE96jNe3La8dPSY4V6ru4df
+         To//r7jC5hk5qWePIV7HInKfVlxk4vR7de82CX0eFeHPrl737aYT+EZU6KfjzMbxH6op
+         +nDHMU2w/UIzUWJbNbwT1996LXsBJu+nFtIYfRhHZrlFfHCmyWcB5Ijie9h9MfRWPky6
+         NysYOH94KkfREUxpoXdMS4T0HP+ydtFabzg8tzkwf9zXVJQanGlro2XjhlgRTe2QX6WL
+         S7aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=vAv++6Ka2pHCMdt2V4TKWEdbarlaFc2/zhh4e1HEnfs=;
+        b=RpCzk67KUfS8DdckzgvApU5zgQsniwtLLegg2LxNF8duncnBxyj5K/xXCKfLETTult
+         16vFg6cpmO8T4sSEv34PspnxzlqcWDfT0NzKgeer6GyrbsdzlWmqRiOq+/heIeUJY4KU
+         Y81S9ivlEa3oEim7ukqJGuGxIFN7pVUu/lgcvqM5jnctaouNJzKx+v/si0xeax+bD2YB
+         pvVDgA4+ozfPBzSkUjLHDLZM1X9g7BYoPicVqbdZexD8rwnFcKwKCDXkkGl5mB9LwEkZ
+         3Bu2ILmUEDlXN0gqSYr/KdP1642IsVivXMFRe0daq/lLOcmZecaA12NjOWeLQprcSyEg
+         SDaQ==
+X-Gm-Message-State: AOAM533vm685gNRjvjCrORnXMtV2iccDxKCt8kfdtFLQ29DuEHWHUgNU
+        EBxUztXmLWlq34n4N3ApN/CkteheEYw=
+X-Google-Smtp-Source: ABdhPJzcD+x9c98PnCyKsJpNnJxfdvc8Zukx9DfrDgGx4GLoYOv4fHWnkm7RkJ88qStFp80CtZVM7g==
+X-Received: by 2002:a17:907:6d8f:b0:6e0:1512:913b with SMTP id sb15-20020a1709076d8f00b006e01512913bmr8262183ejc.491.1648157996489;
+        Thu, 24 Mar 2022 14:39:56 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id by4-20020a0564021b0400b00418fc410299sm1910258edb.62.2022.03.24.14.39.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 14:39:56 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 23:39:54 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-In-Reply-To: <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de>
- <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
- <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-Date:   Thu, 24 Mar 2022 22:14:28 +0100
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87r16r834b.fsf@toke.dk>
+        "David S. Miller" <davem@davemloft.net>
+Subject: Broken SOF_TIMESTAMPING_OPT_ID in linux-4.19.y and earlier stable
+ branches
+Message-ID: <20220324213954.3ln7kvl5utadnux6@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+Hello Willem,
 
-> On Thu, Mar 24, 2022 at 10:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@t=
-oke.dk> wrote:
->>
->> Right, but is that sync_for_device call really needed?
->
-> Well, imagine that you have a non-cache-coherent DMA (not bounce
-> buffers - just bad hardware)...
->
-> So the driver first does that dma_sync_single_for_cpu() for the CPU
-> see the current state (for the non-cache-coherent case it would just
-> invalidate caches).
->
-> The driver then examines the command buffer state, sees that it's
-> still in progress, and does that return -EINPROGRESS.
->
-> It's actually very natural in that situation to flush the caches from
-> the CPU side again. And so dma_sync_single_for_device() is a fairly
-> reasonable thing to do in that situation.
->
-> But it doesn't seem *required*, no. The CPU caches only have a copy of
-> the data in them, no writeback needed (and writeback wouldn't work
-> since DMA from the device may be in progress).
->
-> So I don't think the dma_sync_single_for_device() is *wrong* per se,
-> because the CPU didn't actually do any modifications.
->
-> But yes, I think it's unnecessary - because any later CPU accesses
-> would need that dma_sync_single_for_cpu() anyway, which should
-> invalidate any stale caches.
+I have an application which makes use of SOF_TIMESTAMPING_OPT_ID, and I
+received reports from multiple users that all timestamps are delivered
+with a tskey of 0 for all stable kernel branches earlier than, and
+including, 4.19.
 
-OK, the above was basically how I understood it. Thank you for
-confirming!
+I bisected this issue down to:
 
-> And it clearly doesn't work in a bounce-buffer situation, but honestly
-> I don't think a "CPU modified buffers concurrently with DMA" can
-> *ever* work in that situation, so I think it's wrong for a bounce
-> buffer model to ever do anything in the dma_sync_single_for_device()
-> situation.
+| commit 8f932f762e7928d250e21006b00ff9b7718b0a64 (HEAD)
+| Author: Willem de Bruijn <willemb@google.com>
+| Date:   Mon Dec 17 12:24:00 2018 -0500
+| 
+|     net: add missing SOF_TIMESTAMPING_OPT_ID support
+| 
+|     SOF_TIMESTAMPING_OPT_ID is supported on TCP, UDP and RAW sockets.
+|     But it was missing on RAW with IPPROTO_IP, PF_PACKET and CAN.
+| 
+|     Add skb_setup_tx_timestamp that configures both tx_flags and tskey
+|     for these paths that do not need corking or use bytestream keys.
+| 
+|     Fixes: 09c2d251b707 ("net-timestamp: add key to disambiguate concurrent datagrams")
+|     Signed-off-by: Willem de Bruijn <willemb@google.com>
+|     Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+|     Signed-off-by: David S. Miller <davem@davemloft.net>
 
-Right.
+and, interestingly, I found this discussion on the topic:
+https://www.spinics.net/lists/netdev/msg540752.html
+(copied here in case the link rots in the future)
 
-> Does removing that dma_sync_single_for_device() actually fix the
-> problem for the ath driver?
+| > Series applied.
+| >
+| > What is your opinion about -stable for this?
+| 
+| Thanks David. Since these are just missing features that no one has
+| reported as actually having been missing a whole lot, I don't think
+| that they are worth the effort or risk.
 
-I am hoping Oleksandr can help answer that since my own ath9k hardware
-is currently on strike :(
+So I have 2 questions:
 
--Toke
+Is there a way for user space to validate functional kernel support for
+SOF_TIMESTAMPING_OPT_ID? What I'm noticing is that (at least with
+AF_PACKET sockets) the "level == SOL_PACKET && type == PACKET_TX_TIMESTAMP"
+cmsg is _not_ missing, but instead contains a valid sock_err->ee_data
+(tskey) of 0.
+
+If it's not possible, could you please consider sending these fixes as
+patches to linux-stable?
