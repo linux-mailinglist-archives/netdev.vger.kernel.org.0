@@ -2,75 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 639A44E6484
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 14:57:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02AE04E6491
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 15:01:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346540AbiCXN6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 09:58:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34378 "EHLO
+        id S1345934AbiCXOCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 10:02:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350696AbiCXN6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 09:58:49 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F878AC046
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 06:57:17 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id s11so4012094pfu.13
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 06:57:17 -0700 (PDT)
+        with ESMTP id S231871AbiCXOCw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 10:02:52 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB980A9953
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 07:01:20 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id s72so3904922pgc.5
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 07:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cGjdAn3X5Xn7Njp4qqsz1FMGmZpYJRwbD19LSouBYgg=;
-        b=XvDFIjjnOb9BPXwmsXDnbGsoHg4Zl8o5ATohsZyM7RQGE6i8xhi8v7MIrvepVeaNld
-         ueP0ksRZcJSOACafBOBw58LONxIqSnrkAud4B3JRJrhGzZwUJmi95iJQEeZQapW6EidE
-         7gRRQ9Bdt1oiPPEH7uLYM9MmkYCzfSk13pVtO6OSm4TdmqTbkCJsop8rF+zI1NdgfuOx
-         HIududsh92gSdwScXLuS6f8tuhmyBPub5rI6On8KPsI2NVCNIEC6FcckPnW8rjAqRznS
-         83UUlh9thmcDFLdQ6tQrkXQhwAVst7PNX1q25BIjBLIoNo+8HZzf4JE8oZFkG2mGrZ7w
-         zzwg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XTKTkeXiyppbP2htdDq7iVgYAkGXCBbQxtaJcRh5rUU=;
+        b=jxWwGR/ToRI+cIroIxKFlY/pS92q1v6notFPt//1v3z/nwd3ALDiXldp9DwQDUTX+2
+         piGnj3qg72Jh6hLMwyuVW8dx+Qh2czVO4x5LxMTs//ghdphfSiAuM8uqgcwuBLvyY14A
+         qafJmdUyR9jhmHbvAF3DElJ/42k6fXEOKJmp2o2NYfenggI/QUBpwxUTmzyr9DizbBcK
+         T3ML1vXxBiiK7DJ+mOJrZKVuHzBS01ofR8ZYaQRTzzVCZQUJ5zyIPUXeMKVkyaMqa8KD
+         eV5j1/8wLtA3DDuaxjMqvk2m9OJ6GMziiA6Cmr2aBa+YhwNTFVYaiQwJ9EzBeckyNzG0
+         9jxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cGjdAn3X5Xn7Njp4qqsz1FMGmZpYJRwbD19LSouBYgg=;
-        b=dV5AB9sDr/bw+qQE7oP9M4CDR/LNAUpwtrukvkHV6xMY1wAWTX8+epb6tiLJEljLVz
-         fhGD1wuvEFBVZKNCzu5yma7dbcdskNtMDB2T2gk0oheidlMZad0MetMJuVUSeuzOLEof
-         bbRanIOVFkOayieYZS5ssSEb30WqEFzuh+Ato/Mt+afZufQydumQpzJDCu75ffR/nh61
-         OSXYwsEz/FofnmzElZRotFfWLVM7lSxSxUhMwwVoLRUrtBzvDChF1U57jOf2C62JodrX
-         8joEZt0WZmSfY3OACbks4z0fksXSlRyQv23ZbzO2cuc8JnUblW0RvG2gJBfLP1sTRItm
-         HN/Q==
-X-Gm-Message-State: AOAM532kpiolivTtbZ0vxzEsE0IqV0CiyhXzFPI5onmAYgIIM3SWNbz+
-        NQke4z+1deOKaQUpVdf+CUq2QLINfGg2qQ==
-X-Google-Smtp-Source: ABdhPJx4/U0VItcyWk3H2+TST2M1RCeeleeY5fTHxyH0PedejDZNjU6PDeRAfcdWJFITVrgNL/wGUg==
-X-Received: by 2002:a65:6a4a:0:b0:380:fd52:1677 with SMTP id o10-20020a656a4a000000b00380fd521677mr4052650pgu.597.1648130236711;
-        Thu, 24 Mar 2022 06:57:16 -0700 (PDT)
-Received: from localhost.localdomain ([111.204.182.106])
-        by smtp.gmail.com with ESMTPSA id i9-20020a17090a2a0900b001c6e540fb6asm3282991pjd.13.2022.03.24.06.57.11
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Mar 2022 06:57:16 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Wei Wang <weiwan@google.com>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net v6 2/2] selftests: bpf: add bpf_redirect to ifb
-Date:   Thu, 24 Mar 2022 21:56:53 +0800
-Message-Id: <20220324135653.2189-3-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220324135653.2189-1-xiangxia.m.yue@gmail.com>
-References: <20220324135653.2189-1-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XTKTkeXiyppbP2htdDq7iVgYAkGXCBbQxtaJcRh5rUU=;
+        b=JDwKV1qS6nU0lA8b6Ale7ZhwGBT2+ZIZWPpr8OwTvP/MvXxSKHIKhg5JwMwlniSjzD
+         hvNt9zvPC2UnKim2av5epK8U5znF5crzGnt+P7VivlYPI9LLZ0JZZjjPXBH3LlWmbYqA
+         tO/aPoPwkSE3NvJ0gYOA80FSR9LXgOHrMGGwv42KraOz9kTxRoY4a/0L+QkaBeb4WY5b
+         p/bXIzdUDI+uAIjRtezBEx8PdEZurzfSDlKrBrJABt2DpnyGvK8GPhf+zNTZS/NnmMoe
+         V7TTC/JvtZ0+k7vOSW1jMRO7bztzlWsnvk234z1QPU9IB8kIE08smPR5SrZY2KdOCLW/
+         LdeA==
+X-Gm-Message-State: AOAM533KNkPv0lF30onPO6HtrGXh3JHs2TRDkedXIy6CHfbm4uqDY+C4
+        OCLpvD/109g3oJ/EKUGtxfk=
+X-Google-Smtp-Source: ABdhPJzoFrbFba6hbqW+aw8V+bzubjR9soK2mQ5sv0EDy/IoFW7sk+SXQ47O8eyHOB9+wDUXPdq3yg==
+X-Received: by 2002:a63:2320:0:b0:381:f11:20d7 with SMTP id j32-20020a632320000000b003810f1120d7mr4115965pgj.612.1648130480331;
+        Thu, 24 Mar 2022 07:01:20 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id p128-20020a622986000000b004e1366dd88esm3513656pfp.160.2022.03.24.07.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 07:01:19 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 07:01:17 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        mlichvar@redhat.com, vinicius.gomes@intel.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 5/6] ptp: Support late timestamp determination
+Message-ID: <20220324140117.GE27824@hoboy.vegasvil.org>
+References: <20220322210722.6405-1-gerhard@engleder-embedded.com>
+ <20220322210722.6405-6-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220322210722.6405-6-gerhard@engleder-embedded.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,139 +72,222 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Tue, Mar 22, 2022 at 10:07:21PM +0100, Gerhard Engleder wrote:
+> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+> index 54b9f54ac0b2..b7a8cf27c349 100644
+> --- a/drivers/ptp/ptp_clock.c
+> +++ b/drivers/ptp/ptp_clock.c
+> @@ -450,6 +450,33 @@ void ptp_cancel_worker_sync(struct ptp_clock *ptp)
+>  }
+>  EXPORT_SYMBOL(ptp_cancel_worker_sync);
+>  
+> +ktime_t ptp_get_timestamp(int index,
+> +			  const struct skb_shared_hwtstamps *hwtstamps,
+> +			  bool cycles)
+> +{
+> +	char name[PTP_CLOCK_NAME_LEN] = "";
+> +	struct ptp_clock *ptp;
+> +	struct device *dev;
+> +	ktime_t ts;
+> +
+> +	snprintf(name, PTP_CLOCK_NAME_LEN, "ptp%d", index);
+> +	dev = class_find_device_by_name(ptp_class, name);
 
-ifb netdev is used for queueing incoming traffic for shaping.
-we may run bpf progs in tc cls hook(ingress or egress), to
-redirect the packets to ifb.
+This seems expensive for every single Rx frame in a busy PTP network.
+Can't this be cached in the socket?
 
-This patch adds this test, for bpf.
+> +	if (!dev)
+> +		return 0;
+> +
+> +	ptp = dev_get_drvdata(dev);
+> +
+> +	if (ptp->info->gettstamp)
+> +		ts = ptp->info->gettstamp(ptp->info, hwtstamps, cycles);
+> +	else
+> +		ts = hwtstamps->hwtstamp;
+> +
+> +	put_device(dev);
+> +
+> +	return ts;
+> +}
+> +EXPORT_SYMBOL(ptp_get_timestamp);
+> +
+>  /* module operations */
+>  
+>  static void __exit ptp_exit(void)
+> diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+> index cc6a7b2e267d..f4f0d8a880c6 100644
+> --- a/include/linux/ptp_clock_kernel.h
+> +++ b/include/linux/ptp_clock_kernel.h
+> @@ -133,6 +133,16 @@ struct ptp_system_timestamp {
+>   *                   parameter cts: Contains timestamp (device,system) pair,
+>   *                   where system time is realtime and monotonic.
+>   *
+> + * @gettstamp:  Get hardware timestamp based on normal/adjustable time or free
+> + *              running time. If @getcycles64 or @getcyclesx64 are supported,
+> + *              then this method is required to provide timestamps based on the
+> + *              free running time. This method will be called if
+> + *              SKBTX_HW_TSTAMP_PHC is set by the driver.
+> + *              parameter hwtstamps: skb_shared_hwtstamps structure pointer.
+> + *              parameter cycles: If false, then hardware timestamp based on
+> + *              normal/adjustable time is requested. If true, then hardware
+> + *              timestamp based on free running time is requested.
+> + *
+>   * @enable:   Request driver to enable or disable an ancillary feature.
+>   *            parameter request: Desired resource to enable or disable.
+>   *            parameter on: Caller passes one to enable or zero to disable.
+> @@ -185,6 +195,9 @@ struct ptp_clock_info {
+>  			    struct ptp_system_timestamp *sts);
+>  	int (*getcrosscycles)(struct ptp_clock_info *ptp,
+>  			      struct system_device_crosststamp *cts);
+> +	ktime_t (*gettstamp)(struct ptp_clock_info *ptp,
+> +			     const struct skb_shared_hwtstamps *hwtstamps,
+> +			     bool cycles);
+>  	int (*enable)(struct ptp_clock_info *ptp,
+>  		      struct ptp_clock_request *request, int on);
+>  	int (*verify)(struct ptp_clock_info *ptp, unsigned int pin,
+> @@ -364,6 +377,19 @@ static inline void ptp_cancel_worker_sync(struct ptp_clock *ptp)
+>   * a loadable module.
+>   */
+>  
+> +/**
+> + * ptp_get_timestamp() - get timestamp of ptp clock
+> + *
+> + * @index:     phc index of ptp pclock.
+> + * @hwtstamps: skb_shared_hwtstamps structure pointer.
+> + * @cycles:    true for timestamp based on cycles.
+> + *
+> + * Returns timestamp, or 0 on error.
+> + */
+> +ktime_t ptp_get_timestamp(int index,
+> +			  const struct skb_shared_hwtstamps *hwtstamps,
+> +			  bool cycles);
+> +
+>  /**
+>   * ptp_get_vclocks_index() - get all vclocks index on pclock, and
+>   *                           caller is responsible to free memory
+> @@ -386,6 +412,10 @@ int ptp_get_vclocks_index(int pclock_index, int **vclock_index);
+>   */
+>  ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index);
+>  #else
+> +static inline ktime_t ptp_get_timestamp(int index,
+> +					const struct skb_shared_hwtstamps *hwtstamps,
+> +					bool cycles);
+> +{ return 0; }
+>  static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
+>  { return 0; }
+>  static inline ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp,
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index f494ddbfc826..38929c113953 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -564,7 +564,10 @@ static inline bool skb_frag_must_loop(struct page *p)
+>   * &skb_shared_info. Use skb_hwtstamps() to get a pointer.
+>   */
+>  struct skb_shared_hwtstamps {
+> -	ktime_t	hwtstamp;
+> +	union {
+> +		ktime_t	hwtstamp;
+> +		void *phc_data;
 
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: KP Singh <kpsingh@kernel.org>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Antoine Tenart <atenart@kernel.org>
-Cc: Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc: Wei Wang <weiwan@google.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- tools/testing/selftests/bpf/Makefile          |  1 +
- .../bpf/progs/test_bpf_redirect_ifb.c         | 13 ++++
- .../selftests/bpf/test_bpf_redirect_ifb.sh    | 64 +++++++++++++++++++
- 3 files changed, 78 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c
- create mode 100755 tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh
+needs kdoc update
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 3820608faf57..7de55ec0b0bb 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -65,6 +65,7 @@ TEST_PROGS := test_kmod.sh \
- 	test_xdp_vlan_mode_native.sh \
- 	test_lwt_ip_encap.sh \
- 	test_tcp_check_syncookie.sh \
-+	test_bpf_redirect_ifb.sh \
- 	test_tc_tunnel.sh \
- 	test_tc_edt.sh \
- 	test_xdping.sh \
-diff --git a/tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c b/tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c
-new file mode 100644
-index 000000000000..8b960cd8786b
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_bpf_redirect_ifb.c
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2021 DiDi Global */
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+SEC("redirect_ifb")
-+int redirect(struct __sk_buff *skb)
-+{
-+	return bpf_redirect(skb->ifindex + 1 /* ifbX */, 0);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh b/tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh
-new file mode 100755
-index 000000000000..c599aa0ec22e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_bpf_redirect_ifb.sh
-@@ -0,0 +1,64 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+
-+# Topology:
-+# ---------
-+#      n1 namespace    |     n2 namespace
-+#                      |
-+#      -----------     |     ----------------
-+#      |  veth0  | --------- |  veth1, ifb1 |
-+#      -----------   peer    ----------------
-+#
-+
-+readonly prefix="ns-$$-"
-+readonly ns1="${prefix}1"
-+readonly ns2="${prefix}2"
-+readonly ns1_addr=192.168.1.1
-+readonly ns2_addr=192.168.1.2
-+
-+setup() {
-+	echo "Load ifb module"
-+	if ! /sbin/modprobe -q -n ifb; then
-+		echo "test_bpf_redirect ifb: module ifb is not found [SKIP]"
-+		exit 4
-+	fi
-+
-+	modprobe -q ifb numifbs=0
-+
-+	ip netns add "${ns1}"
-+	ip netns add "${ns2}"
-+
-+	ip link add dev veth0 mtu 1500 netns "${ns1}" type veth \
-+	      peer name veth1 mtu 1500 netns "${ns2}"
-+	# ifb1 created after veth1
-+	ip link add dev ifb1 mtu 1500 netns "${ns2}" type ifb
-+
-+	ip -netns "${ns1}" link set veth0 up
-+	ip -netns "${ns2}" link set veth1 up
-+	ip -netns "${ns2}" link set ifb1 up
-+	ip -netns "${ns1}" -4 addr add "${ns1_addr}/24" dev veth0
-+	ip -netns "${ns2}" -4 addr add "${ns2_addr}/24" dev veth1
-+
-+	ip netns exec "${ns2}" tc qdisc add dev veth1 clsact
-+}
-+
-+cleanup() {
-+	ip netns del "${ns2}" &>/dev/null
-+	ip netns del "${ns1}" &>/dev/null
-+	modprobe -r ifb
-+}
-+
-+trap cleanup EXIT
-+
-+setup
-+
-+ip netns exec "${ns2}" tc filter add dev veth1 \
-+	ingress bpf direct-action obj test_bpf_redirect_ifb.o sec redirect_ifb
-+ip netns exec "${ns1}" ping -W 2 -c 2 -i 0.2 -q "${ns2_addr}" &>/dev/null
-+if [ $? -ne 0 ]; then
-+	echo "bpf redirect to ifb on ingress path [FAILED]"
-+	exit 1
-+fi
-+
-+echo OK
--- 
-2.27.0
+> +	};
+>  };
+>  
+>  /* Definitions for tx_flags in struct skb_shared_info */
+> @@ -581,6 +584,9 @@ enum {
+>  	/* generate hardware time stamp based on cycles if supported */
+>  	SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
+>  
+> +	/* call PHC to get actual hardware time stamp */
+> +	SKBTX_HW_TSTAMP_PHC = 1 << 3,
+> +
+>  	/* generate wifi status information (where possible) */
+>  	SKBTX_WIFI_STATUS = 1 << 4,
+>  
+> diff --git a/net/socket.c b/net/socket.c
+> index 2e932c058002..fe765d559086 100644
+> --- a/net/socket.c
+> +++ b/net/socket.c
+> @@ -804,21 +804,17 @@ static bool skb_is_swtx_tstamp(const struct sk_buff *skb, int false_tstamp)
+>  	return skb->tstamp && !false_tstamp && skb_is_err_queue(skb);
+>  }
+>  
+> -static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
+> +static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb,
+> +			   int if_index)
+>  {
+>  	struct scm_ts_pktinfo ts_pktinfo;
+> -	struct net_device *orig_dev;
+>  
+>  	if (!skb_mac_header_was_set(skb))
+>  		return;
+>  
+>  	memset(&ts_pktinfo, 0, sizeof(ts_pktinfo));
+>  
+> -	rcu_read_lock();
+> -	orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> -	if (orig_dev)
+> -		ts_pktinfo.if_index = orig_dev->ifindex;
+> -	rcu_read_unlock();
+> +	ts_pktinfo.if_index = if_index;
+>  
+>  	ts_pktinfo.pkt_length = skb->len - skb_mac_offset(skb);
+>  	put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPING_PKTINFO,
+> @@ -838,6 +834,9 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+>  	int empty = 1, false_tstamp = 0;
+>  	struct skb_shared_hwtstamps *shhwtstamps =
+>  		skb_hwtstamps(skb);
+> +	struct net_device *orig_dev;
+> +	int if_index = 0;
+> +	int phc_index = -1;
+>  	ktime_t hwtstamp;
+>  
+>  	/* Race occurred between timestamp enabling and packet
+> @@ -886,18 +885,32 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+>  	if (shhwtstamps &&
+>  	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+>  	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
+> -		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
+> -			hwtstamp = ptp_convert_timestamp(&shhwtstamps->hwtstamp,
+> -							 sk->sk_bind_phc);
+> +		rcu_read_lock();
+> +		orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> +		if (orig_dev) {
+> +			if_index = orig_dev->ifindex;
+> +			if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP_PHC)
+> +				phc_index = ethtool_get_phc(orig_dev);
 
+again, this is something that can be cached, no?
+
+> +		}
+> +		rcu_read_unlock();
+> +
+> +		if ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP_PHC) &&
+> +		    (phc_index != -1))
+> +			hwtstamp = ptp_get_timestamp(phc_index, shhwtstamps,
+> +						     sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC);
+>  		else
+>  			hwtstamp = shhwtstamps->hwtstamp;
+>  
+> +		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
+> +			hwtstamp = ptp_convert_timestamp(&hwtstamp,
+> +							 sk->sk_bind_phc);
+> +
+>  		if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
+>  			empty = 0;
+>  
+>  			if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
+>  			    !skb_is_err_queue(skb))
+> -				put_ts_pktinfo(msg, skb);
+> +				put_ts_pktinfo(msg, skb, if_index);
+>  		}
+>  	}
+>  	if (!empty) {
+> -- 
+> 2.20.1
+> 
+
+Thanks,
+Richard
