@@ -2,79 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA1974E64EA
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 15:18:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CF6F4E64F3
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 15:18:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350783AbiCXOTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 10:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
+        id S1350898AbiCXOUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 10:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236272AbiCXOTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 10:19:43 -0400
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C3811C08;
-        Thu, 24 Mar 2022 07:18:11 -0700 (PDT)
-Received: by mail-oo1-f46.google.com with SMTP id p34-20020a4a95e5000000b003248d73d460so797045ooi.1;
-        Thu, 24 Mar 2022 07:18:11 -0700 (PDT)
+        with ESMTP id S1350847AbiCXOTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 10:19:47 -0400
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2F917066;
+        Thu, 24 Mar 2022 07:18:15 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id q189so4994135oia.9;
+        Thu, 24 Mar 2022 07:18:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=Jna4fyumBD0bsBuDM2E70JQUhEhnD+mfetOCaVsAbQk=;
-        b=O4RWvPRW2mD8lSrZTwaOIPxR9pbT32C7WmkJDMs3RRcMbQ8rNnZZEqdQmqBGGgLbM5
-         v5SUnjO1TdWOCI8Aw+nZlzMTMfBzj3ZTrxrFLB+p5NoR+4+Y03NUsqUdU4rivjZ7F2r2
-         ce4HHYmSoURabB8tuSdDgq0wHzVG33IRGvND8tk+lnr/V8Mt/pJzBU79SdWqeRnYFyq1
-         aUjQ6SqDQsPETwUAPqDLDXIEUv3abkxfELBiULGnIWyNjRsvp12FMx6q6VmcglG5DYUb
-         NVQ3uDcrCKTNxy67IOJzX8UZIhr0yW0Z+sKdfSnM0uv951PnKsP59HpMRbc+eYmX/7gG
-         Y3dg==
-X-Gm-Message-State: AOAM532smXqEuOKOuze2sEg1XYX8L9RAtGwDwRAcijCBqDQFtjZ28Do8
-        owXfNWsZacEXXdheOsd8Hg==
-X-Google-Smtp-Source: ABdhPJzJuf8Db7RwHK6W2v9lHlH2Uobl2lgItPUE3wBiHzc1/e/y0yGslIGw8IsCKFJahe0bJkm/iA==
-X-Received: by 2002:a4a:de52:0:b0:320:d6a0:cf7f with SMTP id z18-20020a4ade52000000b00320d6a0cf7fmr2025395oot.83.1648131490312;
-        Thu, 24 Mar 2022 07:18:10 -0700 (PDT)
+        bh=UX9c1q8lourTfPi9NddD+4IFmspIC15S3XHcsJRKc5c=;
+        b=WjeZDBfZZtgnhLGr7O5Q6UYkHAmeu/2RoY5KvK2ddB2z/ezMP5+en1hAjpGRXrIsuV
+         v1KYz39BKApp/5R55qjLApPTdZXtkXBqlrDAMQXh1YxH16h4845Gp8W65xyhQ31f6C4M
+         FELgnAvs9Py+0AwXenKa9RY1weBmj8J0qoeQYNrTOGVxsirNgBY5HqJxYwDyZBnHMqKh
+         jxJGp1/Oh2br2ZXWB4b/meInJaks3jm1K8DdSaW1gdtwvkTvPsuxb/r+0OrtyLrOFbbp
+         I62dRdj310xJvQPlrbIaanqFm/S7TGaaPo6/9y2dze9NgZEs7debKejt6p81ZKgqLMzP
+         Dz5w==
+X-Gm-Message-State: AOAM530xB3Fc42f21RppP55K1JmL5g9eDcneND3qvkCfLlTWqUc40nsf
+        n3nzMHKwWH/vM5XCOs03og==
+X-Google-Smtp-Source: ABdhPJzZo7f9WriFBFsYJXaB9MNd6tnJ4/pdKBDsEr2xhQidW2RTX47fFs1ytVcAUout4kV+tNNz0g==
+X-Received: by 2002:a05:6808:bc2:b0:2ec:e1c2:bd3f with SMTP id o2-20020a0568080bc200b002ece1c2bd3fmr2800927oik.161.1648131494416;
+        Thu, 24 Mar 2022 07:18:14 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id x65-20020a9d20c7000000b005cdaeec68d5sm1349219ota.37.2022.03.24.07.18.09
+        by smtp.gmail.com with ESMTPSA id j145-20020acaeb97000000b002d9f37166c1sm1433368oih.17.2022.03.24.07.18.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 07:18:09 -0700 (PDT)
-Received: (nullmailer pid 1995382 invoked by uid 1000);
+        Thu, 24 Mar 2022 07:18:13 -0700 (PDT)
+Received: (nullmailer pid 1995385 invoked by uid 1000);
         Thu, 24 Mar 2022 14:18:08 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Biao Huang <biao.huang@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, macpaul.lin@mediatek.com,
-        linux-kernel@vger.kernel.org, srv_heupstream@mediatek.com,
-        Jose Abreu <joabreu@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-mediatek@lists.infradead.org,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-In-Reply-To: <20220324012112.7016-2-biao.huang@mediatek.com>
-References: <20220324012112.7016-1-biao.huang@mediatek.com> <20220324012112.7016-2-biao.huang@mediatek.com>
-Subject: Re: [PATCH net-next] dt-bindings: net: snps,dwmac: modify available values of PBL
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     davem@davemloft.net, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        pabeni@redhat.com, krzk+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, s.hauer@pengutronix.de,
+        mkl@pengutronix.de, netdev@vger.kernel.org, robh+dt@kernel.org,
+        kuba@kernel.org, linux-imx@nxp.com, shawnguo@kernel.org,
+        festevam@gmail.com, linux-can@vger.kernel.org,
+        kernel@pengutronix.de, qiangqing.zhang@nxp.com,
+        ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        wg@grandegger.com
+In-Reply-To: <20220324042024.26813-3-peng.fan@oss.nxp.com>
+References: <20220324042024.26813-1-peng.fan@oss.nxp.com> <20220324042024.26813-3-peng.fan@oss.nxp.com>
+Subject: Re: [PATCH 2/4] dt-bindings: net: fsl,fec: introduce nvmem property
 Date:   Thu, 24 Mar 2022 09:18:08 -0500
-Message-Id: <1648131488.593520.1995381.nullmailer@robh.at.kernel.org>
+Message-Id: <1648131488.609060.1995384.nullmailer@robh.at.kernel.org>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Mar 2022 09:21:12 +0800, Biao Huang wrote:
-> PBL can be any of the following values: 1, 2, 4, 8, 16 or 32
-> according to the datasheet, so modify available values of PBL in
-> snps,dwmac.yaml.
+On Thu, 24 Mar 2022 12:20:22 +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
 > 
-> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> To i.MX8M Family variants, fec maybe fused out. Bootloader could use
+> this property to read out the fuse value and mark the node status
+> at runtime.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 > ---
->  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  Documentation/devicetree/bindings/net/fsl,fec.yaml | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 > 
 
 Running 'make dtbs_check' with the schema in this patch gives the
@@ -84,150 +86,82 @@ incorrect. These may not be new warnings.
 Note that it is not yet a requirement to have 0 warnings for dtbs_check.
 This will change in the future.
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1608860
+Full log is available here: https://patchwork.ozlabs.org/patch/1608877
 
 
-dwmac@9630000: $nodename:0: 'dwmac@9630000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/stih407-b2120.dt.yaml
-	arch/arm/boot/dts/stih410-b2120.dt.yaml
-	arch/arm/boot/dts/stih410-b2260.dt.yaml
-	arch/arm/boot/dts/stih418-b2199.dt.yaml
-	arch/arm/boot/dts/stih418-b2264.dt.yaml
+ethernet@2188000: More than one condition true in oneOf schema:
+	arch/arm/boot/dts/imx6dl-mba6a.dt.yaml
+	arch/arm/boot/dts/imx6dl-nit6xlite.dt.yaml
+	arch/arm/boot/dts/imx6dl-nitrogen6x.dt.yaml
+	arch/arm/boot/dts/imx6dl-riotboard.dt.yaml
+	arch/arm/boot/dts/imx6dl-sabreauto.dt.yaml
+	arch/arm/boot/dts/imx6dl-ts7970.dt.yaml
+	arch/arm/boot/dts/imx6q-arm2.dt.yaml
+	arch/arm/boot/dts/imx6q-evi.dt.yaml
+	arch/arm/boot/dts/imx6q-mba6a.dt.yaml
+	arch/arm/boot/dts/imx6q-mccmon6.dt.yaml
+	arch/arm/boot/dts/imx6q-nitrogen6_max.dt.yaml
+	arch/arm/boot/dts/imx6q-nitrogen6_som2.dt.yaml
+	arch/arm/boot/dts/imx6q-nitrogen6x.dt.yaml
+	arch/arm/boot/dts/imx6qp-nitrogen6_max.dt.yaml
+	arch/arm/boot/dts/imx6qp-nitrogen6_som2.dt.yaml
+	arch/arm/boot/dts/imx6qp-sabreauto.dt.yaml
+	arch/arm/boot/dts/imx6q-sabreauto.dt.yaml
+	arch/arm/boot/dts/imx6q-ts7970.dt.yaml
 
-eth@5c400000: $nodename:0: 'eth@5c400000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
+ethernet@30be0000: nvmem-cell-names:0: 'fused' was expected
+	arch/arm64/boot/dts/freescale/imx8mm-beacon-kit.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-ddr4-evk.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-evk.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-icore-mx8mm-ctouch2.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-icore-mx8mm-edimm2.2.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-nitrogen-r2.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-tqma8mqml-mba8mx.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-var-som-symphony.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw71xx-0x.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw72xx-0x.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7901.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-venice-gw7902.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-beacon-kit.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-ddr4-evk.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-evk.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-tqma8mqnl-mba8mx.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-var-som-symphony.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mn-venice-gw7902.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mp-evk.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-evk.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-hummingboard-pulse.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-kontron-pitx-imx8m.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-librem5-devkit.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-librem5-r2.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-librem5-r4.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-nitrogen.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-phanbell.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-pico-pi.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-thor96.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-tqma8mq-mba8mx.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-rmb3.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mq-zii-ultra-zest.dt.yaml
 
-eth@5c400000: compatible: ['st,spear600-gmac'] does not contain items matching the given schema
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
+ethernet@30be0000: 'phy-connection-type' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dt.yaml
 
-eth@5c500000: $nodename:0: 'eth@5c500000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
+ethernet@5b040000: 'power-domains' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml
 
-eth@5c500000: compatible: ['st,spear600-gmac'] does not contain items matching the given schema
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
-
-eth@5c600000: $nodename:0: 'eth@5c600000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
-
-eth@5c600000: compatible: ['st,spear600-gmac'] does not contain items matching the given schema
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
-
-eth@5c700000: $nodename:0: 'eth@5c700000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
-
-eth@5c700000: compatible: ['st,spear600-gmac'] does not contain items matching the given schema
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
-
-eth@e0800000: $nodename:0: 'eth@e0800000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/spear300-evb.dt.yaml
-	arch/arm/boot/dts/spear310-evb.dt.yaml
-	arch/arm/boot/dts/spear320-evb.dt.yaml
-	arch/arm/boot/dts/spear320-hmi.dt.yaml
-
-eth@e2000000: $nodename:0: 'eth@e2000000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
-	arch/arm/boot/dts/spear1340-evb.dt.yaml
-
-eth@e2000000: compatible: ['st,spear600-gmac'] does not contain items matching the given schema
-	arch/arm/boot/dts/spear1310-evb.dt.yaml
-	arch/arm/boot/dts/spear1340-evb.dt.yaml
-
-ethernet@c9410000: 'phy-mode' is a required property
-	arch/arm/boot/dts/meson6-atv1200.dt.yaml
-	arch/arm/boot/dts/meson8-minix-neo-x8.dt.yaml
-
-ethernet@e0800000: compatible: ['st,spear600-gmac'] does not contain items matching the given schema
-	arch/arm/boot/dts/spear600-evb.dt.yaml
-
-ethernet@f8010000: interrupt-names:1: 'eth_wake_irq' was expected
-	arch/arm/boot/dts/artpec6-devboard.dt.yaml
-
-ethernet@fe2a0000: clock-names: ['stmmaceth', 'mac_clk_rx', 'mac_clk_tx', 'clk_mac_refout', 'aclk_mac', 'pclk_mac', 'clk_mac_speed', 'ptp_ref', 'pclk_xpcs'] is too long
-	arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml
-
-ethernet@fe2a0000: clocks: [[15, 386], [15, 389], [15, 389], [15, 184], [15, 180], [15, 181], [15, 389], [15, 185], [15, 172]] is too long
-	arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml
-
-ethernet@ff800000: reset-names: ['stmmaceth', 'stmmaceth-ocp'] is too long
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dt.yaml
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_nand.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_qspi.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_sdmmc.dt.yaml
-
-ethernet@ff800000: resets: [[6, 32], [6, 40]] is too long
-	arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_nand.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_qspi.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_sdmmc.dt.yaml
-
-ethernet@ff800000: resets: [[7, 32], [7, 40]] is too long
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dt.yaml
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dt.yaml
-
-ethernet@ff802000: reset-names: ['stmmaceth', 'stmmaceth-ocp'] is too long
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dt.yaml
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_nand.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_qspi.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_sdmmc.dt.yaml
-
-ethernet@ff802000: resets: [[6, 33], [6, 41]] is too long
-	arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_nand.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_qspi.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_sdmmc.dt.yaml
-
-ethernet@ff802000: resets: [[7, 33], [7, 41]] is too long
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dt.yaml
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dt.yaml
-
-ethernet@ff804000: reset-names: ['stmmaceth', 'stmmaceth-ocp'] is too long
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dt.yaml
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_nand.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_qspi.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_sdmmc.dt.yaml
-
-ethernet@ff804000: resets: [[6, 34], [6, 42]] is too long
-	arch/arm/boot/dts/socfpga_arria10_mercury_aa1.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_nand.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_qspi.dt.yaml
-	arch/arm/boot/dts/socfpga_arria10_socdk_sdmmc.dt.yaml
-
-ethernet@ff804000: resets: [[7, 34], [7, 42]] is too long
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk.dt.yaml
-	arch/arm64/boot/dts/altera/socfpga_stratix10_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_agilex_socdk_nand.dt.yaml
-	arch/arm64/boot/dts/intel/socfpga_n5x_socdk.dt.yaml
-
-eth@f0802000: $nodename:0: 'eth@f0802000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/nuvoton-npcm730-gbs.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-gsj.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm730-kudo.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
-
-eth@f0804000: $nodename:0: 'eth@f0804000' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/nuvoton-npcm750-evb.dt.yaml
-	arch/arm/boot/dts/nuvoton-npcm750-runbmc-olympus.dt.yaml
+ethernet@5b050000: 'power-domains' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm64/boot/dts/freescale/imx8qm-mek.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8qxp-ai_ml.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8qxp-colibri-eval-v3.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8qxp-mek.dt.yaml
 
