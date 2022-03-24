@@ -2,81 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87A184E646E
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 14:51:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A744E647A
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 14:54:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346229AbiCXNxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 09:53:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49920 "EHLO
+        id S1350688AbiCXN4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 09:56:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240823AbiCXNxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 09:53:15 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E70A0BD0
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 06:51:44 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id b13so2157334pfv.0
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 06:51:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bQu9CyB07PzvsCBVAksc641BaYFKG8GRbzDkv/L+7zQ=;
-        b=kQVTmkX8Q3ihqVLWN8/fc9lviLtzjzlFG/S3JpIusRCHQx2Hi8jLOEuDH9Af7QzmTg
-         i8cHD0YoAH/tUCwxEVs49hJTJsYDXWCpxnT0p+Q0wyhI1bdg/UP9//3PFXWRZKS9daDN
-         mZUhiz197TbBKvOfjP7VvypkAfMLTKd6N3A0VsD5HxwCZfEk1M00+uvoUhJifv0lhTpj
-         2H+HJSThe8A1cKW8qoqMmZoKNBvASVfAQDyLlkwajf4MqShUO41tUfn+zIKvS900ulVu
-         /7B+U8qIZLnnuhdRKrIBgVdUsJ00ZAM9MggH+GNTmzUdCsnuD3W55Irli/lFYGQrnsW5
-         mQeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bQu9CyB07PzvsCBVAksc641BaYFKG8GRbzDkv/L+7zQ=;
-        b=KuSk89oyTfcZeuDlH8R4yPSF3TL+zaC43BI7XhzqJ2qHIuyu+hhdkQKRNRCeofr/O4
-         AfbyKgDI6mFB2+p2LffnowoHiLfLaS1yflhXBmaDeuT/4UPE2FV9YTZo/8mZ8nmPxdFp
-         EMvwUDtctjt7HjhHYnwSOmTOOPI5GnlXYDnvMEzeUvV6IOyBDOrcy5K/9rtGjav/jcyQ
-         4IRUZkDdJyNO/T/4H3lOWGd6J9rxixPNPVmeKZjctVsHApzI7k8qR5tQEiwaU0HoytxO
-         SUAHQlBs9yFXnce/YVFuTm9bAlgNK7yqj4yvVD15/Myf9BOWOzBLVdG63SOsY+MEVZJR
-         RJtg==
-X-Gm-Message-State: AOAM531XAg63ALIf6QwG3yJ40npMHYBNxj7MapJEp5NrfyXjnFf2W1DQ
-        mczfYOYAPmsBaagEOzdd/HQ=
-X-Google-Smtp-Source: ABdhPJzihrbDqfXdoY51T8KKiNQpLQndBewKjw7uhQU3QCGDpPvUq1Xiyq7jqfuWf8iatjyS8a6KYQ==
-X-Received: by 2002:a65:644e:0:b0:382:800d:153a with SMTP id s14-20020a65644e000000b00382800d153amr4142376pgv.366.1648129904009;
-        Thu, 24 Mar 2022 06:51:44 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id q6-20020a056a00150600b004fab3b767d0sm3515197pfu.30.2022.03.24.06.51.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 06:51:43 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 06:51:41 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>
-Cc:     yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        mlichvar@redhat.com, vinicius.gomes@intel.com,
+        with ESMTP id S1350682AbiCXNzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 09:55:54 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9B23AA51;
+        Thu, 24 Mar 2022 06:54:22 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648130061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bo4oh0xgueLYq/ZucSpzqDXmdQwXHyaJwvL+CGmcSVg=;
+        b=n2mkfR5ErnTI17aWRsmxHA4JLR70o7LNo8nMWo2Hywde6OoRxPhE7FuBCehyVUYtmN1G3g
+        LR69WNhbDCcQwHUYLpAxW19+Yc/BnbOU/OsuSluiKrwmemkwt6mR+R2itDPNa0/SXryA+B
+        kCuS8YmjEQrNRnveOh/6t0UHL91YvI35yh2Pu6lqcJO8BJsbIOsDDUXFO2khgvrNNM0+9w
+        jliDisJJX7RvpVHMGLBZEW83gKb8a7IiUz9oIeVSVCMotpU9dVh6fBO4kvchAtuQaFb7LW
+        bG0sUHiw20ALTFPSI6hAg2iGJsbHDgHEWqn2n0kpsbXQygbXETVImIoVuGE4MA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648130061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bo4oh0xgueLYq/ZucSpzqDXmdQwXHyaJwvL+CGmcSVg=;
+        b=PgKBGTgT2lglTNsJjTiAMUa7pDuUgUiyaQyd3SQh17Ir3RDl04oCLL//HuioEWtDSfDyJ5
+        vBr0yD/TANvOkDCA==
+To:     Artem Savkov <asavkov@redhat.com>, jpoimboe@redhat.com,
         netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v1 4/6] ethtool: Add kernel API for PHC index
-Message-ID: <20220324135141.GD27824@hoboy.vegasvil.org>
-References: <20220322210722.6405-1-gerhard@engleder-embedded.com>
- <20220322210722.6405-5-gerhard@engleder-embedded.com>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>,
+        Anna-Maria Gleixner <anna-maria@linutronix.de>
+Subject: Re: [PATCH 1/2] timer: introduce upper bound timers
+In-Reply-To: <87tubn8rgk.ffs@tglx>
+References: <20220323111642.2517885-1-asavkov@redhat.com>
+ <20220323111642.2517885-2-asavkov@redhat.com> <87tubn8rgk.ffs@tglx>
+Date:   Thu, 24 Mar 2022 14:54:21 +0100
+Message-ID: <87h77ncv76.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220322210722.6405-5-gerhard@engleder-embedded.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 22, 2022 at 10:07:20PM +0100, Gerhard Engleder wrote:
-> Add a new function, which returns the physical clock index of a
-> networking device. This function will be used to get the physical clock
-> of a device for timestamp manipulation in the receive path.
-> 
-> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+On Thu, Mar 24 2022 at 13:28, Thomas Gleixner wrote:
+> On Wed, Mar 23 2022 at 12:16, Artem Savkov wrote:
+>> Add TIMER_UPPER_BOUND flag which allows creation of timers that would
+>> expire at most at specified time or earlier.
+>>
+>> This was previously discussed here:
+>> https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
+>
+> please add the context to the changelog. A link is only supplemental
+> information and does not replace content.
+>
+>>  static inline unsigned calc_index(unsigned long expires, unsigned lvl,
+>> -				  unsigned long *bucket_expiry)
+>> +				  unsigned long *bucket_expiry, bool upper_bound)
+>>  {
+>>  
+>>  	/*
+>> @@ -501,34 +501,39 @@ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
+>>  	 * - Truncation of the expiry time in the outer wheel levels
+>>  	 *
+>>  	 * Round up with level granularity to prevent this.
+>> +	 * Do not perform round up in case of upper bound timer.
+>>  	 */
+>> -	expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
+>> +	if (upper_bound)
+>> +		expires = expires >> LVL_SHIFT(lvl);
+>> +	else
+>> +		expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
+>
+> While this "works", I fundamentally hate this because it adds an extra
+> conditional into the common case. That affects every user of the timer
+> wheel. We went great length to optimize that code and I'm not really enthused
+> to sacrifice that just because of _one_ use case.
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+Aside of that this is not mathematically correct. Why?
+
+The level selection makes the cutoff at: LEVEL_MAX(lvl) - 1. E.g. 62
+instead of 63 for the first level.
+
+The reason is that this accomodates for the + LVL_GRAN(lvl). Now with
+surpressing the roundup this creates a gap. Not a horrible problem, but
+not correct either.
+
+Thanks,
+
+        tglx
