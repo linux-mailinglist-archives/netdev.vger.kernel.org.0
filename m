@@ -2,152 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C6AF4E6553
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 15:34:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1262D4E655A
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 15:35:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351004AbiCXOgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 10:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S1348570AbiCXOgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 10:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348570AbiCXOgF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 10:36:05 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0751024
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 07:34:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1648132474; x=1679668474;
-  h=message-id:subject:from:to:date:in-reply-to:references:
-   mime-version:content-transfer-encoding;
-  bh=CPUeDxRcLjxnthD3Bcb4XgAg40kR0HUyUGSkE5Waaes=;
-  b=WvVvGstDSr6jE7sQNCgONIXvxm6Ew+jWwUBke+gYnpZCjGoePLmXFJj/
-   1GrQyEEvuszAYapDoDuQGXnt9IXUCNrIQiFmi1gyY//gmLF+sMKNAgnMh
-   qH9PtZe0N0nK8g3CL8yroxeoJjfSk9KHpaJ6FEiVg+If22ymVov4h0YxY
-   LaizrVWLTiOOqJq/f1MLor/bgvS7937SE7fsDW1Q+bQZoPafTiixc10QS
-   TQEc8iTW+9BdYTesMgmsaJ8jucztjKakAk4p3sdL/G5+dIjd+aHMhCoJu
-   XukoN4lwDdOVbXgRJu6IyBLxhlDW3kwE5IZzZAxV1dxbuhSopX07enrzs
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,207,1643698800"; 
-   d="scan'208";a="153136973"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Mar 2022 07:34:33 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 24 Mar 2022 07:34:33 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 24 Mar 2022 07:34:31 -0700
-Message-ID: <c126074bed96fb4c553af9e402211e596df5124d.camel@microchip.com>
-Subject: Re: [PATCH net-next 1/2] net: sparx5: Remove unused GLAG handling
- in PGID
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Casper Andersson <casper.casan@gmail.com>,
+        with ESMTP id S1351053AbiCXOgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 10:36:54 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D422384;
+        Thu, 24 Mar 2022 07:35:23 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id b24so5824096edu.10;
+        Thu, 24 Mar 2022 07:35:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jt66HNIsSgHK1QN5MOHClDI947FHdQQhnkZW+fpRDcI=;
+        b=XRqYDq2e0KeQ2nMyIYT8PphgcQN7TW3zxsdDlXUss9wHPnmqE9yQFQ5gAUy5UJw4jr
+         LSTvz6mViI7htcfUKFqU86pLNNPy2C0z72qaTnzJFthZlfQHVxDh8h2KMMN1XkkNFIek
+         ym8pM6ySzBGLDjGRZ6/Y8Ymy9lbo10VuWywm1Ajn9X/clGHgwv2YBlRNpg3glWWK9EAy
+         qTpTp3+FYUUE2aCBuIk/xgWY4cwLr26kCBhHmZrpMalZqQ+sPHh87kaIk2CgZv1PVD/1
+         aOolLQhIeTSB85mzSfxY6x9jQjwvj8H8Ml9D2cay2zXEbvZS8cRw5ceoFhLGz0X/Agqy
+         hlzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jt66HNIsSgHK1QN5MOHClDI947FHdQQhnkZW+fpRDcI=;
+        b=SitME5c6m9jAUvB5WXZFxvll7TvqwXPGuavZ71k4fCCw0PGBapgUG+DG6bs829DNkR
+         86zQGLL/fhVpbdynRJQ7RzIOv9hTYxLxnZ1GNID4xSd4SAiUFWnOAfpkbPXetI0bWGYh
+         P9bFB6AL2IuWGo1YcqEn2VVun4z7pRQpl8psevaF2zfa9mG2tZb7MzeG+KP2jntC9581
+         DEoPr2LF2rlE1H1rC/5GWnulnW5Yqaiqew6wQH2JzVwp9WdBFif1bib2pjMZkE5O665X
+         +w2EHNKz4VFfId1k8PW9DLCDH1JURFysPPP9I5vhtPop440X52NTpu0qvt9ZHO46sdo/
+         TmRQ==
+X-Gm-Message-State: AOAM532dvA7qbusMa4VZ9Re4WszOGpBr3LKn9BEip5RzazEeRuc9MetZ
+        1ObchKob4K/eCRu+MAV0nlc=
+X-Google-Smtp-Source: ABdhPJyFzj7rNrzhvO2H9J6CJvMnktnldUdFz1zY1bP+sgzg4enOZvVJS34NA0uYDFgiwazwrOxlQQ==
+X-Received: by 2002:a50:ec0c:0:b0:418:f415:6bfe with SMTP id g12-20020a50ec0c000000b00418f4156bfemr7082712edr.15.1648132521606;
+        Thu, 24 Mar 2022 07:35:21 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id hr13-20020a1709073f8d00b006dfcc331a42sm1183208ejc.203.2022.03.24.07.35.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 07:35:20 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 16:35:19 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>
-Date:   Thu, 24 Mar 2022 15:33:09 +0100
-In-Reply-To: <20220324113853.576803-2-casper.casan@gmail.com>
-References: <20220324113853.576803-1-casper.casan@gmail.com>
-         <20220324113853.576803-2-casper.casan@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 
+        Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: sja1105q: proper way to solve PHY clk dependecy
+Message-ID: <20220324143519.yvcgt3u2icnbbafy@skbuf>
+References: <20220323060331.GA4519@pengutronix.de>
+ <20220323095240.y4xnp6ivz57obyvv@skbuf>
+ <20220324134824.GG4519@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324134824.GG4519@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Casper,
+On Thu, Mar 24, 2022 at 02:48:24PM +0100, Oleksij Rempel wrote:
+> > 3. Clock gating the PHY won't make it lose its settings.
+> > 
+> > I expect that during the time when the sja1105 switch needs to reset,
+> > the PHY just sees this as a few hundreds of ms during which there are no
+> > clock edges on the crystal input pin. Sure, the PHY won't do anything
+> > during that time, but this is quite different from a reset, is it not?
+> > So asserting the hardware reset line of the PHY during the momentary
+> > loss of clock, which is what you seem to suggest, will actively do more
+> > harm than good.
+> 
+> can i be sure that MDIO access happens in the period where PHY is
+> supplied with stable clk
 
-On Thu, 2022-03-24 at 12:38 +0100, Casper Andersson wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> Removes PGID handling for GLAG since it is not used
-> yet. According to feedback on previous patch.
-> https://lore.kernel.org/netdev/20220322081823.wqbx7vud4q7qtjuq@wse-c0155/T/#t
-> 
-> Signed-off-by: Casper Andersson <casper.casan@gmail.com>
-> ---
->  .../net/ethernet/microchip/sparx5/sparx5_main.h |  4 ----
->  .../net/ethernet/microchip/sparx5/sparx5_pgid.c | 17 -----------------
->  2 files changed, 21 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-> b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-> index 7a04b8f2a546..8e77d7ee8e68 100644
-> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
-> @@ -69,9 +69,6 @@ enum sparx5_vlan_port_type {
->  #define PGID_TABLE_SIZE               3290
-> 
->  #define PGID_MCAST_START 65
-> -#define PGID_GLAG_START 833
-> -#define PGID_GLAG_END 1088
-> -
->  #define IFH_LEN                9 /* 36 bytes */
->  #define NULL_VID               0
->  #define SPX5_MACT_PULL_DELAY   (2 * HZ)
-> @@ -374,7 +371,6 @@ enum sparx5_pgid_type {
->         SPX5_PGID_FREE,
->         SPX5_PGID_RESERVED,
->         SPX5_PGID_MULTICAST,
-> -       SPX5_PGID_GLAG
->  };
-> 
->  void sparx5_pgid_init(struct sparx5 *spx5);
-> diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
-> b/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
-> index 90366fcb9958..851a559269e1 100644
-> --- a/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
-> +++ b/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
-> @@ -15,28 +15,11 @@ void sparx5_pgid_init(struct sparx5 *spx5)
->                 spx5->pgid_map[i] = SPX5_PGID_RESERVED;
->  }
-> 
-> -int sparx5_pgid_alloc_glag(struct sparx5 *spx5, u16 *idx)
-> -{
-> -       int i;
-> -
-> -       for (i = PGID_GLAG_START; i <= PGID_GLAG_END; i++)
-> -               if (spx5->pgid_map[i] == SPX5_PGID_FREE) {
-> -                       spx5->pgid_map[i] = SPX5_PGID_GLAG;
-> -                       *idx = i;
-> -                       return 0;
-> -               }
-> -
-> -       return -EBUSY;
-> -}
-> -
->  int sparx5_pgid_alloc_mcast(struct sparx5 *spx5, u16 *idx)
->  {
->         int i;
-> 
->         for (i = PGID_MCAST_START; i < PGID_TABLE_SIZE; i++) {
-> -               if (i == PGID_GLAG_START)
-> -                       i = PGID_GLAG_END + 1;
-> -
->                 if (spx5->pgid_map[i] == SPX5_PGID_FREE) {
->                         spx5->pgid_map[i] = SPX5_PGID_MULTICAST;
->                         *idx = i;
-> --
-> 2.30.2
-> 
+This is a good question. I suppose not, but I never ran into this issue.
+You can try to force this by having the PHY library use poll mode for an
+RMII PHY (case in which, IIRC, 3 or 4 PHY registers will be read every 2
+seconds), then from user space do something like this:
 
-Reviewed-by: Steen Hegelund <Steen.Hegelund@microchip.com>
+ip link add br0 type bridge && ip link set br0 up
+ip link set swp0 master br0 && ip link set swp0 up
+while :; do
+	ip link set br0 type bridge vlan_filtering 1
+	sleep 1
+	ip link set br0 type bridge vlan_filtering 0
+	sleep 1
+done
 
--- 
-Best Regards
-Steen
+Every VLAN awareness change triggers a reset in the switch, and this
+ends up calling sja1105_static_config_reload().
 
--=-=-=-=-=-=-=-=-=-=-=-=-=-=
-steen.hegelund@microchip.com
+If you can artificially reproduce PHY access failures, first it's
+interesting to analyze their impact, does the PHY state machine
+transition to a halted state, or does it ignore the errors and continue
+with the next poll cycle? If it continues, it's probably not worth doing
+something.
 
+To avoid the problem, you should probably need to iterate using
+dsa_switch_for_each_user_port(), and mutex_lock(&dp->slave->phydev->lock)
+for each RMII PHY during the reset procedure (similar to the other
+things we lock out during the switch reset). The tricky part seems to be
+releasing the locks in the reverse order of the acquire...
