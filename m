@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C6524E6274
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:26:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3FEF4E624A
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349810AbiCXL1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 07:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41386 "EHLO
+        id S1348307AbiCXLTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 07:19:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349727AbiCXL1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:27:35 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5924A66EC;
-        Thu, 24 Mar 2022 04:26:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648121162; x=1679657162;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TKRStjgNvvvrYB1tQ/Y0SqCKUerOWglVcd2B3O7GaC4=;
-  b=JO28bFqU5xlE1DdLMHKs+6zrmzYc3211QFlWNeq8TLqSsfIe4gjAKCRw
-   smFcFsQjevRvtRyW8YqF9zMnVOQE2YLb47L1t7knRQ0FlYCrKYds5NrEw
-   rKv46Bpn4Lkp37MKw2HS3RQyPq6K0JqazAbH4+muOeU7Kbw9nhQDNWToo
-   f8zNgOvn/Qyh1eWTy2URC+WUJX8aoC18FFgd0JzkX1UZzjItmSbSa7t7/
-   Dp4eMkguH16PTmMRw2dPc8WMqrHzsQGsRM9i2527sGGZTQlqopltdNrCx
-   inIRd0VSi4rz9sHrMQp2iMgm9sr2pYlkH7QQNyGh22QU8dgO7vG614z1r
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10295"; a="258304846"
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="258304846"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 04:26:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,207,1643702400"; 
-   d="scan'208";a="561333561"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by orsmga008.jf.intel.com with ESMTP; 24 Mar 2022 04:25:59 -0700
-Date:   Thu, 24 Mar 2022 12:25:58 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Ivan Vecera <ivecera@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "poros@redhat.com" <poros@redhat.com>,
-        "mschmidt@redhat.com" <mschmidt@redhat.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] ice: Fix MAC address setting
-Message-ID: <YjxVRqTppQeYKb1h@boxer>
-References: <20220323135829.4015645-1-ivecera@redhat.com>
- <CO1PR11MB508946CC906E8B851D69D31AD6189@CO1PR11MB5089.namprd11.prod.outlook.com>
+        with ESMTP id S1349720AbiCXLTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:19:10 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F93A66E1;
+        Thu, 24 Mar 2022 04:17:39 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22O8EDxU000304;
+        Thu, 24 Mar 2022 07:17:07 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3f0hftjea7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 24 Mar 2022 07:17:07 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 22OBH6ju032720
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 24 Mar 2022 07:17:06 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Thu, 24 Mar
+ 2022 07:17:05 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Thu, 24 Mar 2022 07:17:05 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22OBGjPZ000657;
+        Thu, 24 Mar 2022 07:16:51 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <andrew@lunn.ch>
+CC:     <o.rempel@pengutronix.de>, <alexandru.tachici@analog.com>,
+        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
+Subject: [PATCH v5 0/7] net: phy: adin1100: Add initial support for ADIN1100 industrial PHY
+Date:   Thu, 24 Mar 2022 13:26:13 +0200
+Message-ID: <20220324112620.46963-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB508946CC906E8B851D69D31AD6189@CO1PR11MB5089.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: t7QV_XB0tj72jaRm14JpnBCUk2-AdBki
+X-Proofpoint-ORIG-GUID: t7QV_XB0tj72jaRm14JpnBCUk2-AdBki
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-24_03,2022-03-24_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 suspectscore=0 mlxscore=0 impostorscore=0 adultscore=0
+ mlxlogscore=825 spamscore=0 bulkscore=0 phishscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203240067
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,86 +68,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 05:28:02PM +0000, Keller, Jacob E wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Ivan Vecera <ivecera@redhat.com>
-> > Sent: Wednesday, March 23, 2022 6:58 AM
-> > To: netdev@vger.kernel.org
-> > Cc: poros@redhat.com; mschmidt@redhat.com; Brandeburg, Jesse
-> > <jesse.brandeburg@intel.com>; Nguyen, Anthony L
-> > <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Jakub
-> > Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; moderated
-> > list:INTEL ETHERNET DRIVERS <intel-wired-lan@lists.osuosl.org>; open list <linux-
-> > kernel@vger.kernel.org>
-> > Subject: [PATCH net] ice: Fix MAC address setting
-> > 
-> > Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
-> > the usage of 'status' and 'err' variables into single one in
-> > function ice_set_mac_address(). Unfortunately this causes
-> > a regression when call of ice_fltr_add_mac() returns -EEXIST because
-> > this return value does not indicate an error in this case but
-> > value of 'err' value remains to be -EEXIST till the end of
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-s/'err' value/'err'
+The ADIN1100 is a low power single port 10BASE-T1L transceiver designed for
+industrial Ethernet applications and is compliant with the IEEE 802.3cg
+Ethernet standard for long reach 10 Mb/s Single Pair Ethernet.
 
-> > the function and is returned to caller.
-> > 
-> > Prior this commit this does not happen because return value of
+The ADIN1100 uses Auto-Negotiation capability in accordance
+with IEEE 802.3 Clause 98, providing a mechanism for
+exchanging information between PHYs to allow link partners to
+agree to a common mode of operation.
 
-s/this/mentioned ?
+The concluded operating mode is the transmit amplitude mode and
+master/slave preference common across the two devices.
 
-> > ice_fltr_add_mac() was stored to 'status' variable first and
-> > if it was -EEXIST then 'err' remains to be zero.
-> > 
-> > The patch fixes the problem by reset 'err' to zero when
-> > ice_fltr_add_mac() returns -EEXIST.
+Both device and LP advertise their ability and request for
+increased transmit at:
+- BASE-T1 autonegotiation advertisement register [47:32]\
+Clause 45.2.7.21 of Standard 802.3
+- BIT(13) - 10BASE-T1L High Level Transmit Operating Mode Ability
+- BIT(12) - 10BASE-T1L High Level Transmit Operating Mode Request
 
-Again, i'd recommend imperative mood. Besides, good catch!
+For 2.4 Vpp (high level transmit) operation, both devices need
+to have the High Level Transmit Operating Mode Ability bit set,
+and only one of them needs to have the High Level Transmit
+Operating Mode Request bit set. Otherwise 1.0 Vpp transmit level
+will be used.
 
-> > 
-> > Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
-> > Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> > ---
-> >  drivers/net/ethernet/intel/ice/ice_main.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/intel/ice/ice_main.c
-> > b/drivers/net/ethernet/intel/ice/ice_main.c
-> > index 168a41ea37b8..420558d1cd21 100644
-> > --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> > +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> > @@ -5474,14 +5474,15 @@ static int ice_set_mac_address(struct net_device
-> > *netdev, void *pi)
-> > 
-> >  	/* Add filter for new MAC. If filter exists, return success */
-> >  	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
-> > -	if (err == -EEXIST)
-> > +	if (err == -EEXIST) {
-> >  		/* Although this MAC filter is already present in hardware it's
-> >  		 * possible in some cases (e.g. bonding) that dev_addr was
-> >  		 * modified outside of the driver and needs to be restored back
-> >  		 * to this value.
-> >  		 */
-> >  		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
-> > -	else if (err)
-> > +		err = 0;
-> > +	} else if (err)
-> >  		/* error if the new filter addition failed */
-> >  		err = -EADDRNOTAVAIL;
-> > 
-> 
-> Style wise, don't we typically use {} for all branches if its needed on one?
+Settings for eth1:
+	Supported ports: [ TP	 MII ]
+	Supported link modes:   10baseT1L/Full
+	Supported pause frame use: Symmetric Receive-only
+	Supports auto-negotiation: Yes
+	Supported FEC modes: Not reported
+	Advertised link modes:  10baseT1L/Full
+	Advertised pause frame use: No
+	Advertised auto-negotiation: Yes
+	Advertised FEC modes: Not reported
+	Link partner advertised link modes:  10baseT1L/Full
+	Link partner advertised pause frame use: No
+	Link partner advertised auto-negotiation: Yes
+	Link partner advertised FEC modes: Not reported
+	Speed: 10Mb/s
+	Duplex: Full
+	Auto-negotiation: on
+	master-slave cfg: preferred slave
+	master-slave status: slave
+	Port: Twisted Pair
+	PHYAD: 0
+	Transceiver: external
+	MDI-X: Unknown
+	Link detected: yes
+	SQI: 7/7
 
-+1, please add braces around second branch as well.
+1. Add basic support for ADIN1100.
 
-> 
-> I'm ok takin this fix as-is now and doing the {} fix up afterwards if we want to avoid delay.
-> 
-> Thanks,
-> Jake
-> 
-> > --
-> > 2.34.1
-> 
+Alexandru Ardelean (1):
+  net: phy: adin1100: Add initial support for ADIN1100 industrial PHY
+
+1. Added 10baset-T1L link modes.
+
+2. Added 10-BasetT1L registers.
+
+3. Added Base-T1 auto-negotiation registers. For Base-T1 these
+registers decide master/slave status and TX voltage of the
+device and link partner.
+
+4. Added 10BASE-T1L support in phy-c45.c. Now genphy functions will call
+Base-T1 functions where registers don't match, like the auto-negotiation ones.
+
+5. Convert MSE to SQI using a predefined table and allow user access
+through ethtool.
+
+6. DT bindings for the 2.4 Vpp transmit mode.
+
+Alexandru Ardelean (1):
+  net: phy: adin1100: Add initial support for ADIN1100 industrial PHY
+
+Alexandru Tachici (6):
+  ethtool: Add 10base-T1L link mode entry
+  net: phy: Add 10-BaseT1L registers
+  net: phy: Add BaseT1 auto-negotiation registers
+  net: phy: Add 10BASE-T1L support in phy-c45
+  net: phy: adin1100: Add SQI support
+  dt-bindings: net: phy: Add 10-baseT1L 2.4 Vpp
+
+Changelog V4 -> V5:
+  - added int pma_extable; attribute to struct phy_device;
+  - added genphy_c45_baset1_able() function to determine base-t1 ability
+  - replaced constant reading of MDIO_PMA_EXTABLE and checking for MDIO_PMA_EXTABLE_BT1 in
+phy-c45.c with the genphy_c45_baset1_able() call
+
+ .../devicetree/bindings/net/ethernet-phy.yaml |   9 +
+ drivers/net/phy/Kconfig                       |   7 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/adin1100.c                    | 299 ++++++++++++++++++
+ drivers/net/phy/phy-c45.c                     | 258 ++++++++++++++-
+ drivers/net/phy/phy-core.c                    |   3 +-
+ drivers/net/phy/phy_device.c                  |   1 +
+ include/linux/mdio.h                          |  70 ++++
+ include/linux/phy.h                           |   2 +
+ include/uapi/linux/ethtool.h                  |   1 +
+ include/uapi/linux/mdio.h                     |  75 +++++
+ net/ethtool/common.c                          |   3 +
+ 12 files changed, 723 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/net/phy/adin1100.c
+
+--
+2.25.1
