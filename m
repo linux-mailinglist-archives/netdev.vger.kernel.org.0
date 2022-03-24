@@ -2,178 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDDB4E66DD
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 17:20:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A81E4E66EA
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 17:23:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349304AbiCXQVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 12:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39578 "EHLO
+        id S1351642AbiCXQZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 12:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243598AbiCXQV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 12:21:28 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8589D5A0AC;
-        Thu, 24 Mar 2022 09:19:55 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KPVk743BQz67xJk;
-        Fri, 25 Mar 2022 00:17:35 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Thu, 24 Mar 2022 17:19:52 +0100
-Message-ID: <9830cb55-d5c1-8ef7-349b-a0af247ad7b7@huawei.com>
-Date:   Thu, 24 Mar 2022 19:19:50 +0300
+        with ESMTP id S1351639AbiCXQZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 12:25:19 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1D63D4A8;
+        Thu, 24 Mar 2022 09:23:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Mpi6o7xeN/Ty9X1JVI6zzFbTtsWQQmcFLPuvEEzpv28=; b=5MDxCKDl5ahia3QE0xFnOqhof3
+        xWkDmQm1KTUQo3bK/ac0g4lDScq9s+idUmSQyKHIM0TbXzSt+q3yQp+atePfuO8JVAIbmGgRzBpSp
+        ayUMw3/ehGCG82LzA1108dkosaZh7gJgc65WHvjUgR2n7qk5g8uKtnOnQq1+wG7kXbow=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nXQFL-00CTiC-TQ; Thu, 24 Mar 2022 17:23:35 +0100
+Date:   Thu, 24 Mar 2022 17:23:35 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
+Message-ID: <YjybB/fseibDU4dT@lunn.ch>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-5-michael@walle.cc>
+ <Yjt99k57mM5PQ8bT@lunn.ch>
+ <8304fb3578ee38525a158af768691e75@walle.cc>
+ <Yju+SGuZ9aB52ARi@lunn.ch>
+ <30012bd8256be3be9977bd15d1486c84@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH v4 00/15] Landlock LSM
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
-References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
- <c9333349-5e05-de95-85da-f6a0cd836162@digikod.net>
- <29244d4d-70cc-9c4f-6d0f-e3ce3beb2623@huawei.com>
- <ef128eed-65a3-1617-d630-275f3cfa8220@digikod.net>
- <b367c8c6-adfc-9ec1-a898-f9aa13815ca5@huawei.com>
- <59923702-3a1f-e018-c9b4-7a53f97b1791@digikod.net>
- <621efd5b-6f01-e616-8bb3-e8f0d31402a9@huawei.com>
- <3a33baf2-3de7-fecd-29d3-715500e3631f@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <3a33baf2-3de7-fecd-29d3-715500e3631f@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml752-chm.china.huawei.com (10.201.108.202) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <30012bd8256be3be9977bd15d1486c84@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> > To some extent, we need to separate finding the device on the bus to
+> > actually using the device. The device might respond to C22, give us
+> > its ID, get the correct driver loaded based on that ID, and the driver
+> > then uses the C45 address space to actually configure the PHY.
+> > 
+> > Then there is the Marvel 10G PHY. It responds to C22, but returns 0
+> > for the ID! There is a special case for this in the code, it then
+> > looks in the C45 space and uses the ID from there, if it finds
+> > something useful.
+> > 
+> > So as i said in my reply to the cover letter, we have two different
+> > state variables:
+> > 
+> > 1) The PHY has the C45 register space.
+> > 
+> > 2) We need to either use C45 transfers, or C45 over C22 transfers to
+> >    access the C45 register space.
+> > 
+> > And we potentially have a chicken/egg problem. The PHY driver knows
+> > 1), but in order to know what driver to load we need the ID registers
+> > from the PHY, or some external hint like DT. We are also currently
+> > only probing C22, or C45, but not C45 over C22. And i'm not sure we
+> > actually can probe C45 over C22 because there are C22 only PHYs which
+> > use those two register for other things. So we are back to the driver
+> > again which does know if C45 over C22 will work.
+> 
+> Isn't it safe to assume that if a PHY implements the indirect
+> registers for c45 in its c22 space that it will also have a valid
+> PHY ID and then the it's driver will be probed?
 
+See: https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy_device.c#L895
 
-3/24/2022 6:30 PM, Mickaël Salaün пишет:
+No valid ID in C22 space.
+
+> So if a PHY is
+> probed as c22 its driver might tell us "wait, it's actually a c45
+> phy and hey for your convenience it also have the indirect registers
+> in c22". We can then set has_c45 and maybe c45_over_c22 (also depending
+> on the bus capabilities).
+
+In general, if the core can do something, it is better than the driver
+doing it. If the core cannot reliably figure it out, then we have to
+leave it to the drivers. It could well be we need the drivers to set
+has_c45. I would prefer that drivers don't touch c45_over_c22 because
+they don't have the knowledge of what the bus is capable of doing. The
+only valid case i can think of is for a very oddball PHY which has C45
+register space, but cannot actually do C45 transfers, and so C45 over
+C22 is the only option.
+
+> > So phydev->has_c45 we can provisionally set if we probed the PHY by
+> > C45. But the driver should also set it if it knows better, or even the
+> > core can set it the first time the driver uses an _mmd API call.
 > 
+> I'm not sure about the _mmd calls, there are PHYs which have MMDs
+> (I guess EEE is an example?) but are not capable of C45 accesses.
+
+Ah, yes, i forgot about EEE. That was a bad idea.
+
+> > phydev->c45_over_c22 we are currently in a bad shape for. We cannot
+> > reliably say the bus master supports C45. If the bus capabilities say
+> > C22 only, we can set phydev->c45_over_c22. If the bus capabilities
+> > list C45, we can set it false. But that only covers a few busses, most
+> > don't have any capabilities set. We can try a C45 access and see if we
+> > get an -EOPNOTSUPP, in which case we can set phydev->c45_over_c22. But
+> > the bus driver could also do the wrong thing, issue a C22 transfer and
+> > give us back rubbish.
 > 
-> On 24/03/2022 14:34, Konstantin Meskhidze wrote:
->>
->>
->> 3/24/2022 3:27 PM, Mickaël Salaün пишет:
->>>
->>> On 23/03/2022 17:30, Konstantin Meskhidze wrote:
->>>>
->>>>
->>>> 3/17/2022 8:26 PM, Mickaël Salaün пишет:
->>>>>
->>>>> On 17/03/2022 14:01, Konstantin Meskhidze wrote:
->>>>>>
->>>>>>
->>>>>> 3/15/2022 8:02 PM, Mickaël Salaün пишет:
->>>>>>> Hi Konstantin,
->>>>>>>
->>>>>>> This series looks good! Thanks for the split in multiple patches.
->>>>>>>
->>>>>>   Thanks. I follow your recommendations.
->>>>>>>
->>>>>>> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
->>>>>>>> Hi,
->>>>>>>> This is a new V4 bunch of RFC patches related to Landlock LSM 
->>>>>>>> network confinement.
->>>>>>>> It brings deep refactirong and commit splitting of previous 
->>>>>>>> version V3.
->>>>>>>> Also added additional selftests.
->>>>>>>>
->>>>>>>> This patch series can be applied on top of v5.17-rc3.
->>>>>>>>
->>>>>>>> All test were run in QEMU evironment and compiled with
->>>>>>>>   -static flag.
->>>>>>>>   1. network_test: 9/9 tests passed.
->>>>>>>
->>>>>>> I get a kernel warning running the network tests.
->>>>>>
->>>>>>    What kind of warning? Can you provide it please?
->>>>>
->>>>> You really need to get a setup that gives you such kernel warning. 
->>>>> When running network_test you should get:
->>>>> WARNING: CPU: 3 PID: 742 at security/landlock/ruleset.c:218 
->>>>> insert_rule+0x220/0x270
->>>>>
->>>>> Before sending new patches, please make sure you're able to catch 
->>>>> such issues.
->>>>>
->>>>>
->>>>>>>
->>>>>>>>   2. base_test: 8/8 tests passed.
->>>>>>>>   3. fs_test: 46/46 tests passed.
->>>>>>>>   4. ptrace_test: 4/8 tests passed.
->>>>>>>
->>>>>>> Does your test machine use Yama? That would explain the 4/8. You 
->>>>>>> can disable it with the appropriate sysctl.
->>>>>
->>>>> Can you answer this question?
->>>>>
->>>>>
->>>>>>>
->>>>>>>>
->>>>>>>> Tests were also launched for Landlock version without
->>>>>>>> v4 patch:
->>>>>>>>   1. base_test: 8/8 tests passed.
->>>>>>>>   2. fs_test: 46/46 tests passed.
->>>>>>>>   3. ptrace_test: 4/8 tests passed.
->>>>>>>>
->>>>>>>> Could not provide test coverage cause had problems with tests
->>>>>>>> on VM (no -static flag the tests compiling, no v4 patch applied):
->>>>>>>
->>>>     Hi, Mickaёl!
->>>>     I tried to get base test coverage without v4 patch applied.
->>>>
->>>>     1. Kernel configuration :
->>>>      - CONFIG_DEBUG_FS=y
->>>>      - CONFIG_GCOV_KERNEL=y
->>>>      - CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=y
->>>>     2. Added GCOV_PROFILE := y in security/landlock/Makefile
->>>
->>> I think this is useless because of 
->>> CONFIG_ARCH_HAS_GCOV_PROFILE_ALL=y. I don't add GCOV_PROFILE anyway.
->>>
->>>
->>>>     3. Compiled kernel  and rebooted VM with the new one.
->>>>     4. Run landlock selftests as root user:
->>>>      $ cd tools/testing/selftests/landlock
->>>>      $ ./base_test
->>>>      $ ./fs_test
->>>>      $ ./ptrace_test
->>>>     5. Copied GCOV data to some folder :
->>>>        $ cp -r 
->>>> /sys/kernel/debug/gcov/<source-dir>/linux/security/landlock/ 
->>>> /gcov-before
->>>>        $ cd /gcov-before
->>>>        $ lcov -c -d ./landlock -o lcov.info && genhtml -o html 
->>>> lcov.info
->>>
->>> I do this step on my host but that should work as long as you have 
->>> the kernel sources in the same directory. I guess this is not the 
->>> case. I think you also need GCC >= 4.8 .
->>>    I found the reason why .gcda files were not executed :
->>        "lcov -c -d ./landlock -o lcov.info && genhtml -o html 
->> lcov.info" was run not under ROOT user.
->>    Running lcov by ROOT one solved the issue. I will provide network test
->>    coverage in RFC patch V5.
->>    Thanks for help anyway.
+> First question, what do you think about keeping the is_c45 property but
+> with a different meaning and add use_c45_over_c22. That way it will be
+> less code churn:
 > 
-> I run lcov as a normal user with kernel source access.
-> 
-> I'll review the other patches soon. But for the next series, please 
-> don't reuse "Landlock LSM" as a cover letter subject, something like 
-> "Network support for Landlock" would fit better. ;)
-> .
-   No problem. Thanks.
+>  * @is_c45:  Set to true if this PHY has clause 45 address space.
+>  * @use_c45_over_c22:  Set to true if c45-over-c22 addressing is used.
+
+I prefer to change is_c45. We then get the compiler to help us with
+code review. The build bots will tell us about any code we fail to
+check and change. It will also help anybody with out of tree code
+making use of is_c45.
+
+       Andrew
