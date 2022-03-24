@@ -2,122 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 432744E66A2
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 17:07:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9494E66B4
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 17:12:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351493AbiCXQIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 12:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
+        id S1347716AbiCXQOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 12:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236762AbiCXQIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 12:08:17 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B55F050B15;
-        Thu, 24 Mar 2022 09:06:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=KCYZNR0DLQtC/d/G+7mDrCn/HPx7CoTGKtODd2xHtMg=; b=0sSxb6GH3H5fI0U9vqZvk6pxAy
-        5dQJNy9rKaMdjqAoQeB+oZ4VO/nKoP3cgf/oL0ig1zvhcy3zI2KDHU9Pat01r3Loh1vSKB8yUsYOT
-        HxZ3/lB72IYkSobOSvhBHb7J/BUrYD41YfabVp5vUGGXmjtMlGuNQVSNq2RVP0gvIeNs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nXPyt-00CTUk-Up; Thu, 24 Mar 2022 17:06:35 +0100
-Date:   Thu, 24 Mar 2022 17:06:35 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun.Ramadoss@microchip.com
-Cc:     linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        linux@armlinux.org.uk, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, davem@davemloft.net, hkallweit1@gmail.com
-Subject: Re: [RFC Patch net-next 3/3] net: phy: lan87xx: added ethtool SQI
- support
-Message-ID: <YjyXCzPVl0ZlRUeE@lunn.ch>
-References: <20220321155337.16260-1-arun.ramadoss@microchip.com>
- <20220321155337.16260-4-arun.ramadoss@microchip.com>
- <YjjFtUEDm2Dta1ez@lunn.ch>
- <ba1d251a9bd93cdf4c894313637dd9618cd8091c.camel@microchip.com>
+        with ESMTP id S233340AbiCXQN6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 12:13:58 -0400
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10086.outbound.protection.outlook.com [40.107.1.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB592E6BF
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 09:12:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WrFK4qCZa4jcu2qRyaCW0C6LEybm05MTc+MBVcuL10RQuYnnp+RvtQxsz9jDTaKwhh1r/1b1BuquzLiQsNovcRjXTUHTbvWGojQXIOWxsY3FLOx+Syl142pxbOMs05oOaXAn75lJPvbxMzVAPZwBB8oDuaG8K+4hahltNVZiDIPjvMa5Sej8gens/ExS9QqNTZ2RvOhHyGq+Ff+lxOaH2D/Gwv6sxSo1eeAeQIX6aPVNKIShC2hkxrlvuMUld2WVegyKbv4P1mfPXksBBrMgRjRMvqH4vxqpEVJ7mF3asZ49OORPwrZKCz84zjBgM/HgzRk54IFpi2xs9EiMIFCQ7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8HQ+zxT0JO5OTSVfYubIadXSlyLh9Kck/qW73DYib+U=;
+ b=hcfkztzlxJ9H6Fqxsyc4P+pmkpyGeHlGpt6/C5srJKQhc22x0dIfUvYs87Tz8iPPSZdLYApLmqrciHw4Q6XG/jZuyrxwZ5+PcDJFAWnSL4S8KM70nFgsmbNyWvaXzd7DKnXqfYp+z0JxwyjpDvZS6m3kBrAODVoUu0pzyN08JpgGeqAHKPye4Pgx9RboqwQO1rUWMf4MN4w74ujJ7PeyiE5AeleJTyMkjqsk/GOMpgMYU3mV70SMakt8eEVNerjQNwHFBeG7hzrVoyI48CPXOkDCpOeTOHzflhRiMUwjMdlq9c4cvUrbNQagldMIWMJKtj9DGaIWaO5pii/7b67HvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8HQ+zxT0JO5OTSVfYubIadXSlyLh9Kck/qW73DYib+U=;
+ b=f65JeBe7Fkp/Ok/Vo0znTVPlzsHOqN4+C4LZXbH0UibLPhIMMoqSFjfa5ar2K4NpBEfUMr+pXdAJgIyIclaoyvzDpTVxqt7quioq2ScoQRLRYCLHJTtPVtz/XQnvIClDQy9cbBPFdYQk9hHM03EU0IAKuQSsydjUg8qmB00tjSc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
+ by AM6PR04MB6326.eurprd04.prod.outlook.com (2603:10a6:20b:be::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18; Thu, 24 Mar
+ 2022 16:12:23 +0000
+Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::4502:5fbf:8bf2:b7bd]) by AM0PR04MB5121.eurprd04.prod.outlook.com
+ ([fe80::4502:5fbf:8bf2:b7bd%7]) with mapi id 15.20.5102.018; Thu, 24 Mar 2022
+ 16:12:23 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Michael Walle <michael@walle.cc>,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: [PATCH net] net: enetc: report software timestamping via SO_TIMESTAMPING
+Date:   Thu, 24 Mar 2022 18:12:10 +0200
+Message-Id: <20220324161210.4122281-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: VI1PR07CA0232.eurprd07.prod.outlook.com
+ (2603:10a6:802:58::35) To AM0PR04MB5121.eurprd04.prod.outlook.com
+ (2603:10a6:208:c1::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ba1d251a9bd93cdf4c894313637dd9618cd8091c.camel@microchip.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f389001b-7946-4300-272a-08da0db1140e
+X-MS-TrafficTypeDiagnostic: AM6PR04MB6326:EE_
+X-Microsoft-Antispam-PRVS: <AM6PR04MB6326A5A418BDA8F21B227F13E0199@AM6PR04MB6326.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 20ndCROUFHVEWkhfiSkNxdkYeUYojWzMdeFkBppVCoPbKf/NWXGvDw5rBKlPXhzUwivWuKIel0A5GNMLzyFsc4O1S8pBWFfY9JwQgLexk/v0mJmjlXPSQOKfcMeMj6SqfYrkoxTgq4rZ+fTHPu7l024bllWWPiTpFLIK2McOY2g+KVV25cKVMzMTd2xxl3hEvDXuY05jmgSWUjMqsNxc3MrSs/GN/SP1tQ3DtSPX4Ev6+0x219jdC1SpZyo0VhgJY1FBiHq9aRLChovZSp8Xfjhj3ezRdJ+VN0KCLh/XQfc/OxAkvoIBeHffDIhpj4crUr7/DuaZ9HREIR/hwq7yfYuKji9o2BFeUnDVGzGNoQ2XjZoE8QCw0pTFGYl7KGrOetFcsc7L+HbQ+P1YXjiOXIIX7te3xY83xpD6332HqvBtfi1obNUEnwBa7tVgU3jSF3lu4sRj9eYU8uyveJKIqMt//HaYZnSoYK61V2lPyHgSiKztiVdU69qQdI8RVw7xHl/B9bi+n1JFPL9eegBxd/we17E2gQouey9JUolUOGCBmYPdeZs2G7e208EDtcktQgku4hLLAmLGrd5uUBOsmEyyUPDEGX7NNYC5dv7b0HSuYpZ/4ICKOGhxE3UKAGI2JtEC/qS2+n+jjD8DcuYDbwkiHODvtLqHmqrMPExDOwt3E+inPsyxPqRB+qhn0jIZ6cOUYNCZAEJTNuRmNiDcgA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(8936002)(38100700002)(38350700002)(44832011)(52116002)(6512007)(2906002)(26005)(6916009)(1076003)(54906003)(6666004)(2616005)(508600001)(6486002)(66946007)(66556008)(186003)(8676002)(66476007)(4326008)(6506007)(316002)(83380400001)(86362001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0Pd4xOiuERI6AHI9tWM9L7B4FwgfApq+w2obP3wnQb8iil2I2ynPt/zRPlEg?=
+ =?us-ascii?Q?8KQb3TmJ/+Bk6hA8hv42zSNGZ8jhi3BvmDwpR5y6P6kZOfxebbItSXA9keEl?=
+ =?us-ascii?Q?FS4OCVmtlYQ507cRXlxaOUjgjx78bQ7EM4ktCmz1/lqW8qYwhKkFgQyJ35To?=
+ =?us-ascii?Q?pYQVFwGnJKNuWyc5p+smnUGBfK4TMcw5vW23I+VO+56l/Vf9wFuXXHRrJ+zJ?=
+ =?us-ascii?Q?AXrdQLAgu4RRQufgTAMJx6lR9wsKsEHxDhpbA9JHP7leK4T96WzsBPdFFWri?=
+ =?us-ascii?Q?IASEeDKVCRPpENpYzhiBukf+jrGiccLGwBm/qXLmGyCQ3c9kSNWA4MKIgDIB?=
+ =?us-ascii?Q?6YMTJTKU8PrVRDV0iZgcckJ9qcEran+HXqmkKq6tdVLEnZg11K5chTxnzrdg?=
+ =?us-ascii?Q?Bje6CBXLgFjWbbz1IBdM/3k3if81Zo6LBOPYKXdGSy8etS3DZQCZcUWX9c6/?=
+ =?us-ascii?Q?vHAVGyzOu+8PTIDFJUKJ2Lb+Wtr12yz10XHRuneVzlvZrj3Ma8YnC96F0Lq2?=
+ =?us-ascii?Q?+AianCfdnenDRNh8UbCdhRG0hL9ldr4rR7vUWwXPNo0MEtXlLDIs1860fwSn?=
+ =?us-ascii?Q?6abk6+v1VKiNnG6thLsf8qgMk2/WZRDEoIeAqpQvBkpxxj6LIZsuvAItZf4S?=
+ =?us-ascii?Q?s2gAUnrdAfxHd3CGgmL8XYU6GSifXaYiTnBbkUJi3ywyVnFExGE4efx3laHj?=
+ =?us-ascii?Q?hJkloxHbh9mjTZvIGyOzx84rYXPHX2+n6nA9yovmJ+1dhSpPlsHDo1O0SZv4?=
+ =?us-ascii?Q?vxVSE1PIt5IYYw7xgrmkm+RzARSEKeh74QijeJFH5aZaVyY//5mbdQRXuUwM?=
+ =?us-ascii?Q?6L5tMHtsbjdua5ptRBsyKuSUSw1lHCyW5SmZnh1Ma0pyyjI40igyBnO4LkTr?=
+ =?us-ascii?Q?rNVv0+2Jerpm643drtuvJkV7umX5Wf6bYjoJUsgbq8PbFpWqOTeXVWY8QdFF?=
+ =?us-ascii?Q?aVS+gvjZsAAl7TBRIuFSAmM0twn4LoMa8aanZYnnpUf8eDbAkFfnV4Oxf731?=
+ =?us-ascii?Q?lC5NJNKng3znbhX6gaBL95nwlURL/cDEPYNTQxzqAd2QGSW+cRsv4OSOl+vy?=
+ =?us-ascii?Q?67i7je37N3yIGISl2ForlY1P5y0Y/OofBrGzSoYGLgKJ44nm7g4VXfhVLcfQ?=
+ =?us-ascii?Q?BccrHU8U7ndelS5xh9HBKsgCCZfZ7CmrTizaRwvAZsULL4DvUy8timGS6w59?=
+ =?us-ascii?Q?BlvuzRV2r/CykMx0NL0TPw1UXGNlOPMUWYc9BUi6KUBXwejU4GIqPO+rCK3U?=
+ =?us-ascii?Q?QAhh+CIBX2MirbfvaiN0ILnQOD1meMCeJx5mZPWC7FVUKTTQ427G50PRajHw?=
+ =?us-ascii?Q?QuawB+yoieYWJD3hJahMS0r1nmYbTzVm+wxkh09Y+8RpK/mZd9o8wivB5V8H?=
+ =?us-ascii?Q?RRukSQmn+wwSCdFAA1DuE1oDfI8agIkvxVm9+VR5PgcMVNJDZjlRd8L4woUv?=
+ =?us-ascii?Q?my0kb2fcJzFSCZXbQX4K1ftd59hLb+j08yeBaB5NH3Wy3+dxsZpzi1x+WmC1?=
+ =?us-ascii?Q?Ymvo9lvQltbaki2tHlcdQoTl3C1xoxzFOP0RsireDJ4KprOPrDD1RoDQyvgV?=
+ =?us-ascii?Q?fR2jA65d6nOCs5o94e0D+9Puk7PSw28Xmu49khgHAFRwJx++P8XfdcewBinm?=
+ =?us-ascii?Q?OGRJ3w2jmHQrvh+p6Pr0Gqkz3rTfZx67EcE2dPg+oF2/vHNGupBpMd74zB5H?=
+ =?us-ascii?Q?uC4XGrC+n+IuVKOpPaYvOPa3y/+3Ti+UHiWYi2nd+68LDbSVt37VjP+3dxV7?=
+ =?us-ascii?Q?mVAtKl0qjYXdHP4Qtjeijer1ZU65joo=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f389001b-7946-4300-272a-08da0db1140e
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2022 16:12:22.9909
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FpG1YKiqwfC24UY2BmaMDsDP4Wa+eFc6gG19pJzefhNX4nhQQJKfoUWlAJ8mo8jZAk+EHorjHRKsXWjxb8qT+w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6326
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 03:48:57PM +0000, Arun.Ramadoss@microchip.com wrote:
-> Hi Andrew,
-> 
-> Thanks for the review.
-> 
-> On Mon, 2022-03-21 at 19:36 +0100, Andrew Lunn wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you
-> > know the content is safe
-> > 
-> > > +#define T1_DCQ_SQI_MSK                       GENMASK(3, 1)
-> > > +static int lan87xx_get_sqi(struct phy_device *phydev)
-> > > +{
-> > > +     u16 sqi_value[LAN87XX_SQI_ENTRY];
-> > > +     for (i = 0; i < LAN87XX_SQI_ENTRY; i++) {
-> > > +
-> > > +             sqi_value[i] = FIELD_GET(T1_DCQ_SQI_MSK, rc);
-> > > +
-> > > +     /* Sorting SQI values */
-> > > +     sort(sqi_value, LAN87XX_SQI_ENTRY, sizeof(u16),
-> > > lan87xx_sqi_cmp, NULL);
-> > 
-> > Sort is quite heavyweight. Your SQI values are in the range 0-7
-> > right?
-> > So rather than have an array of LAN87XX_SQI_ENTRY entries, why not
-> > create a histogram? You then just need to keep 8 uints. There is no
-> > need to perform a sort to discard the outliers, simply remove from
-> > the
-> > outer histogram buckets. And then you can calculate the average.
-> > 
-> > That should be faster and use less memory.
-> > 
-> >      Andrew
-> 
-> I could get the algorithm for replacing array of LAN87XX_SQI_ENTRY(200)
-> to array of 8 (sqi values 0 to 7) and increment the array[sqi_value]
-> for every reading. And calculate the Average = ( 1 * array[1] + 2 *
-> array[2] ... + 7 * array[7])/LAN87XX_SQI_ENTRY. By this way we get the
-> average for 200 entries.
-> But I couldn't get the algorithm on how to discard the outliers from
-> the buckets. our main aim is to average from array[40] to arrary[160]
-> value. Can you bit elaborate on how to remove the outer histogram
-> buckets.
+Let user space properly determine that the enetc driver provides
+software timestamps.
 
-So your raw results look something like
+Fixes: 4caefbce06d1 ("enetc: add software timestamping")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ drivers/net/ethernet/freescale/enetc/enetc_ethtool.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-array[0] = 10
-array[1] = 10
-array[2] = 25
-array[3] = 100
-array[4] = 50
-array[5] = 1
-array[6] = 4
-array[7] = 0
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+index fa5b4f885b17..60ec64bfb3f0 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
+@@ -674,7 +674,10 @@ static int enetc_get_ts_info(struct net_device *ndev,
+ #ifdef CONFIG_FSL_ENETC_PTP_CLOCK
+ 	info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
+ 				SOF_TIMESTAMPING_RX_HARDWARE |
+-				SOF_TIMESTAMPING_RAW_HARDWARE;
++				SOF_TIMESTAMPING_RAW_HARDWARE |
++				SOF_TIMESTAMPING_TX_SOFTWARE |
++				SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE;
+ 
+ 	info->tx_types = (1 << HWTSTAMP_TX_OFF) |
+ 			 (1 << HWTSTAMP_TX_ON) |
+-- 
+2.25.1
 
-To discard the lower outliers, take 40 away from the array[0],
-array[1], array[2], etc. To discard the upper outliers, take 40 away
-from array[7], array[6], array[5], etc. So you should end up with:
-
-array[0] = 0
-array[1] = 0
-array[2] = 5
-array[3] = 100
-array[4] = 15
-array[5] = 0
-array[6] = 0
-array[7] = 0
-
-and then calculate the average: (2*5 + 3*100 + 4*15) / 120 = 3.
-
-    Andrew
