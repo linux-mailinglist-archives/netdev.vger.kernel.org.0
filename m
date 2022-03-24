@@ -2,129 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A9EF4E60FD
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 10:20:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 104054E6101
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 10:20:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348801AbiCXJV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 05:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55678 "EHLO
+        id S1349178AbiCXJWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 05:22:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237756AbiCXJV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 05:21:27 -0400
-Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0F7D25A592
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 02:19:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=/+Yyru6eznxWnIS5vS
-        g8ztqHwIA+k1oSMs1Rz4ZXzVE=; b=El6yNZ4oySvOwvtcbkHeW7wyxatXf78yV4
-        OkU+6zy/omXerPCRRBR3x9I3R9edK15vOuaIwub8VN6a8bdyvRadNgBvLN5qAeO/
-        pfayrJFhbQoC7JPEqxjYf1NcGuhAUQrpIUrdha4KZO4sJC89Y84qq2Kq5/7yvLi0
-        VTUE9lMko=
-Received: from localhost.localdomain.localdomain (unknown [116.228.45.98])
-        by smtp12 (Coremail) with SMTP id EMCowAA38huTNzxisgjzAg--.8498S2;
-        Thu, 24 Mar 2022 17:19:15 +0800 (CST)
-From:   08005325@163.com
-To:     netdev@vger.kernel.org
-Cc:     parav@nvidia.com, stephen@networkplumber.org,
-        Michael Qiu <qiudayu@archeros.com>
-Subject: [PATCH iproute2] vdpa: Add virtqueue pairs set capacity
-Date:   Thu, 24 Mar 2022 05:19:13 -0400
-Message-Id: <1648113553-10547-1-git-send-email-08005325@163.com>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: EMCowAA38huTNzxisgjzAg--.8498S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxGF1fXFy3Gr4fKFy7ZF4kXrb_yoW5XrWUpa
-        98A3W5W3yFqrZrAa47JF4kWwn3CwnIg34q9Fnavw1jyF43GrykJ3s29F4xur1vkFyrXa4f
-        uw4YyF15tF4DXaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j5txhUUUUU=
-X-Originating-IP: [116.228.45.98]
-X-CM-SenderInfo: qqyqikqtsvqiywtou0bp/xtbBrRfNrF75eTve6wAAsL
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1346488AbiCXJWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 05:22:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4AC65D65E
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 02:20:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648113636;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m6cTh4I7UZgOvgJZg1g3+MamKX/v6MrkfYevPTqDtOQ=;
+        b=T3dzAKokgF24odxQyjCqAf2BZNNdTP+Vc7dnEea7pfyYY+0fQVqwB0bKpNPf1OSgdW6gzo
+        h/M1kPsP4lqJNqUOWCG2oDnfQ0q5tNOfmrFWWg6kM+CNCOK/k6XUvLO1ZspzyFb//2joU3
+        uqHBvmUMywGtdxoRkXP43bBiAyw6MI0=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-251-gVDYTvbPMXGAN7VyNstF0A-1; Thu, 24 Mar 2022 05:20:32 -0400
+X-MC-Unique: gVDYTvbPMXGAN7VyNstF0A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 360163806648;
+        Thu, 24 Mar 2022 09:20:32 +0000 (UTC)
+Received: from localhost (unknown [10.39.195.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AD764140262B;
+        Thu, 24 Mar 2022 09:20:31 +0000 (UTC)
+Date:   Thu, 24 Mar 2022 09:20:30 +0000
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, Asias He <asias@redhat.com>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net v3 0/3] vsock/virtio: enable VQs early on probe and
+ finish the setup before using them
+Message-ID: <Yjw33hb1u4Da6pKK@stefanha-x1.localdomain>
+References: <20220323173625.91119-1-sgarzare@redhat.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="eKzvWnn8+0FZDZiL"
+Content-Disposition: inline
+In-Reply-To: <20220323173625.91119-1-sgarzare@redhat.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Qiu <qiudayu@archeros.com>
 
-vdpa framework not only support query the max virtqueue pair, but
-also for the set action.
+--eKzvWnn8+0FZDZiL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This patch enable this capacity, and it is very useful for VMs
- who needs multiqueue support.
+On Wed, Mar 23, 2022 at 06:36:22PM +0100, Stefano Garzarella wrote:
+> The first patch fixes a virtio-spec violation. The other two patches
+> complete the driver configuration before using the VQs in the probe.
+>=20
+> The patch order should simplify backporting in stable branches.
+>=20
+> v3:
+> - re-ordered the patch to improve bisectability [MST]
+>=20
+> v2: https://lore.kernel.org/netdev/20220323084954.11769-1-sgarzare@redhat=
+=2Ecom/
+> v1: https://lore.kernel.org/netdev/20220322103823.83411-1-sgarzare@redhat=
+=2Ecom/
+>=20
+> Stefano Garzarella (3):
+>   vsock/virtio: initialize vdev->priv before using VQs
+>   vsock/virtio: read the negotiated features before using VQs
+>   vsock/virtio: enable VQs early on probe
+>=20
+>  net/vmw_vsock/virtio_transport.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+>=20
+> --=20
+> 2.35.1
+>=20
 
-Signed-off-by: Michael Qiu <qiudayu@archeros.com>
----
- vdpa/vdpa.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+A subtle point is that we still drop events and rx packets during the
+window where DRIVER_OK has been set but vqs haven't been filled.
+This is acceptable because it's unavoidable and equivalent to events
+happening before DRIVER_OK is set. What this revision *does* fix is that
+vq used buffer notifications are no longer lost. Good.
 
-diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-index f048e47..434d68e 100644
---- a/vdpa/vdpa.c
-+++ b/vdpa/vdpa.c
-@@ -23,6 +23,7 @@
- #define VDPA_OPT_VDEV_HANDLE		BIT(3)
- #define VDPA_OPT_VDEV_MAC		BIT(4)
- #define VDPA_OPT_VDEV_MTU		BIT(5)
-+#define VDPA_OPT_VDEV_QUEUE_PAIRS	BIT(6)
- 
- struct vdpa_opts {
- 	uint64_t present; /* flags of present items */
-@@ -32,6 +33,7 @@ struct vdpa_opts {
- 	unsigned int device_id;
- 	char mac[ETH_ALEN];
- 	uint16_t mtu;
-+	uint16_t max_vq_pairs;
- };
- 
- struct vdpa {
-@@ -219,6 +221,8 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
- 			     sizeof(opts->mac), opts->mac);
- 	if (opts->present & VDPA_OPT_VDEV_MTU)
- 		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MTU, opts->mtu);
-+	if (opts->present & VDPA_OPT_VDEV_QUEUE_PAIRS)
-+		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, opts->max_vq_pairs);
- }
- 
- static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
-@@ -287,6 +291,15 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
- 
- 			NEXT_ARG_FWD();
- 			o_found |= VDPA_OPT_VDEV_MTU;
-+		} else if ((strcmp(*argv, "max_vq_pairs") == 0) &&
-+			   (o_all & VDPA_OPT_VDEV_QUEUE_PAIRS)) {
-+			NEXT_ARG_FWD();
-+			err = vdpa_argv_u16(vdpa, argc, argv, &opts->max_vq_pairs);
-+			if (err)
-+				return err;
-+
-+			NEXT_ARG_FWD();
-+			o_found |= VDPA_OPT_VDEV_QUEUE_PAIRS;
- 		} else {
- 			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
- 			return -EINVAL;
-@@ -467,7 +480,7 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
- static void cmd_dev_help(void)
- {
- 	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
--	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
-+	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ] [ max_vq_pairs N ]\n");
- 	fprintf(stderr, "       vdpa dev del DEV\n");
- 	fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
- }
-@@ -557,7 +570,7 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
- 					  NLM_F_REQUEST | NLM_F_ACK);
- 	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
- 				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
--				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU);
-+				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU | VDPA_OPT_VDEV_QUEUE_PAIRS);
- 	if (err)
- 		return err;
- 
--- 
-1.8.3.1
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+--eKzvWnn8+0FZDZiL
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmI8N94ACgkQnKSrs4Gr
+c8j+jAgAl3SNYonulML5v3KQQY538H3xIog/TepsoHOzV9JYFRnvHbKd45XUy9uQ
+/SWZsBt1J4gXz73ejgF+aNpMhfy5rNvFzEETQhsdm8Jd9Nsdh9bmh53GBaYzXm8M
+SzhrB2Zje+VAVpemGrAWfpSSIuc8ZbZYUOb2eQzpWelR2GKiVyqAXdjyZzbr5CLI
+n0T9fgrzNIejcl6AQ0sGKNw8a60ArlWdU0EHQzaT5hmeDbUF3dsZ9lfGT5IFrxpu
+ksdPyCe5vidOQye9dRAvRQVXhVpo9MPAL83jcKY09QWpSrsz3UJZZbYAbULbOQhO
+IrbJvaefmdbRXxr1Ylv8d1qhJ9pWXA==
+=bbzl
+-----END PGP SIGNATURE-----
+
+--eKzvWnn8+0FZDZiL--
 
