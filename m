@@ -2,62 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 902674E60D7
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 10:06:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC274E60EE
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 10:15:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349124AbiCXJGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 05:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51546 "EHLO
+        id S1349141AbiCXJQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 05:16:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238929AbiCXJGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 05:06:40 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBED9D0FF
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 02:05:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1648112710; x=1679648710;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lH+ZuaAqLREV/aQsdMolMgakOA8/CZzUc7xQAAdmeos=;
-  b=dVieAl7betZxSpx/YAe5JB7iYVvG/xirTyDStYE3BDxV8OMFLfHRYIs0
-   VrVY2iQ0MHWgRQ7x4hifLw4+lqs5FRdh9m9e0uMiFsiPkUOs1goQ/Uu66
-   USwhAuYvUg60kFiuvmm2Zz2eCgudsLu44D1B7CVANs7CnaDs19MGnD8Oa
-   s=;
-X-IronPort-AV: E=Sophos;i="5.90,206,1643673600"; 
-   d="scan'208";a="184143503"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 24 Mar 2022 09:05:09 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1e-b69ea591.us-east-1.amazon.com (Postfix) with ESMTPS id 1A1B6C0846;
-        Thu, 24 Mar 2022 09:05:05 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Thu, 24 Mar 2022 09:05:04 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.224) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Thu, 24 Mar 2022 09:05:00 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <wanghai38@huawei.com>
-CC:     <davem@davemloft.net>, <ebiederm@xmission.com>,
-        <edumazet@google.com>, <eric.dumazet@gmail.com>,
-        <jannh@google.com>, <kuba@kernel.org>, <luiz.von.dentz@intel.com>,
-        <marcel@holtmann.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] af_unix: fix races in sk_peer_pid and sk_peer_cred accesses
-Date:   Thu, 24 Mar 2022 18:04:55 +0900
-Message-ID: <20220324090455.78057-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <660fecfc-167d-ce6f-9c08-bbc37790ea81@huawei.com>
-References: <660fecfc-167d-ce6f-9c08-bbc37790ea81@huawei.com>
+        with ESMTP id S1343943AbiCXJQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 05:16:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C64C3F30E
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 02:15:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648113305;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OJgscDC9GXXgE5qcEpR/61U9wQz24uDUwpyxgmBF8s0=;
+        b=EmnSNLyue7YsoaOE+oCUqket0+DEpPEcGoLKZUMgN2JAEIu2NGxQTAapG5r7g4IAdBExDH
+        bR0p7DmrwSZmx9xkw3/FBeqqbSM78ZGQeaoQPOnOQEKpO2f8bWXxgx4iyUlJ0UPVutLJO3
+        VLk/eELqExDD0SGNOs+tIiEf46fIbi0=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-119-ChabECUPNA6WQ63NdpyE_w-1; Thu, 24 Mar 2022 05:15:04 -0400
+X-MC-Unique: ChabECUPNA6WQ63NdpyE_w-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8156F1066559;
+        Thu, 24 Mar 2022 09:15:03 +0000 (UTC)
+Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 31BCB403176;
+        Thu, 24 Mar 2022 09:15:03 +0000 (UTC)
+Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
+        id 346E41C02C1; Thu, 24 Mar 2022 10:15:02 +0100 (CET)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     tglx@linutronix.de, jpoimboe@redhat.com, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
+Subject: [PATCH v2 0/2] Upper bound mode for kernel timers
+Date:   Thu, 24 Mar 2022 10:14:58 +0100
+Message-Id: <20220324091500.2638745-1-asavkov@redhat.com>
+In-Reply-To: <20220323184026.wkj55y55jbeumngs@treble>
+References: <20220323184026.wkj55y55jbeumngs@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.43.160.224]
-X-ClientProxiedBy: EX13D28UWC004.ant.amazon.com (10.43.162.24) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,82 +61,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   "wanghai (M)" <wanghai38@huawei.com>
-Date:   Thu, 24 Mar 2022 16:03:31 +0800
-> 在 2021/9/30 6:57, Eric Dumazet 写道:
->> From: Eric Dumazet <edumazet@google.com>
->>
->> Jann Horn reported that SO_PEERCRED and SO_PEERGROUPS implementations
->> are racy, as af_unix can concurrently change sk_peer_pid and sk_peer_cred.
->>
->> In order to fix this issue, this patch adds a new spinlock that needs
->> to be used whenever these fields are read or written.
->>
->> Jann also pointed out that l2cap_sock_get_peer_pid_cb() is currently
->> reading sk->sk_peer_pid which makes no sense, as this field
->> is only possibly set by AF_UNIX sockets.
->> We will have to clean this in a separate patch.
->> This could be done by reverting b48596d1dc25 "Bluetooth: L2CAP: Add get_peer_pid callback"
->> or implementing what was truly expected.
->>
->> Fixes: 109f6e39fa07 ("af_unix: Allow SO_PEERCRED to work across namespaces.")
->> Signed-off-by: Eric Dumazet <edumazet@google.com>
->> Reported-by: Jann Horn <jannh@google.com>
->> Cc: Eric W. Biederman <ebiederm@xmission.com>
->> Cc: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
->> Cc: Marcel Holtmann <marcel@holtmann.org>
->> ---
-> ...
->>   static void copy_peercred(struct sock *sk, struct sock *peersk)
->>   {
->> -	put_pid(sk->sk_peer_pid);
->> -	if (sk->sk_peer_cred)
->> -		put_cred(sk->sk_peer_cred);
->> +	const struct cred *old_cred;
->> +	struct pid *old_pid;
->> +
->> +	if (sk < peersk) {
->> +		spin_lock(&sk->sk_peer_lock);
->> +		spin_lock_nested(&peersk->sk_peer_lock, SINGLE_DEPTH_NESTING);
->> +	} else {
->> +		spin_lock(&peersk->sk_peer_lock);
->> +		spin_lock_nested(&sk->sk_peer_lock, SINGLE_DEPTH_NESTING);
->> +	}
-> Hi, ALL.
-> I'm sorry to bother you.
-> 
-> This patch adds sk_peer_lock to solve the problem that af_unix may
-> concurrently change sk_peer_pid and sk_peer_cred.
-> 
-> I am confused as to why the order of locks is needed here based on
-> the address size of sk and peersk.
+As previously discussed [1] we had a report of a regression in TCP keepalive
+timer where timers were up to 4 minutes late resulting in disconnects.
 
-To simply avoid dead lock.  These locks must be acquired in the same
-order.  The smaller address lock is acquired first, then larger one.
+This patchset tries to fix the problem by introducing upper bound kernel timers
+and making tcp keepalive timer use those.
 
-  e.g.) CPU-A calls copy_peercred(sk-A, sk-B), and
-        CPU-B calls copy_peercred(sk-B, sk-A).
+[1] https://lore.kernel.org/all/20210302001054.4qgrvnkltvkgikzr@treble/T/#u
 
-There are some implementations like this:
+---
 
-  $ grep -rn double_lock
+Changes in v2:
+  - TIMER_UPPER_BOUND flag description added as a comment in timer.h
+  - Code style fixes
+  - More elaborate commit message in timer commit
 
+Artem Savkov (2):
+  timer: introduce upper bound timers
+  net: make tcp keepalive timer upper bound
 
-> 
-> Any feedback would be appreciated, thanks.
->> +	old_pid = sk->sk_peer_pid;
->> +	old_cred = sk->sk_peer_cred;
->>   	sk->sk_peer_pid  = get_pid(peersk->sk_peer_pid);
->>   	sk->sk_peer_cred = get_cred(peersk->sk_peer_cred);
->> +
->> +	spin_unlock(&sk->sk_peer_lock);
->> +	spin_unlock(&peersk->sk_peer_lock);
->> +
->> +	put_pid(old_pid);
->> +	put_cred(old_cred);
->>   }
->>   
->>   static int unix_listen(struct socket *sock, int backlog)
-> 
-> -- 
-> Wang Hai
+ include/linux/timer.h           |  6 +++++-
+ kernel/time/timer.c             | 36 ++++++++++++++++++++-------------
+ net/ipv4/inet_connection_sock.c |  2 +-
+ 3 files changed, 28 insertions(+), 16 deletions(-)
+
+-- 
+2.34.1
+
