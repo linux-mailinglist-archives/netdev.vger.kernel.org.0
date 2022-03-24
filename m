@@ -2,742 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07BE34E5C0B
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 00:52:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 255C34E5C3B
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 01:13:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346538AbiCWXxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Mar 2022 19:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56406 "EHLO
+        id S1346756AbiCXAPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Mar 2022 20:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346575AbiCWXw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 19:52:56 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1ADF3FD86
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 16:51:19 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id j15so5934295eje.9
-        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 16:51:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=4QeesTCGYt1DAnR2JB7g+DpYIYm4GgcZ+JJm+GQt5S4=;
-        b=jVlNOZyw0CW8VinG9HZ4TKjbX/gO0fpBIiIxEQqvD/Fjm981flpa9/7Y0NlDklnMHo
-         2pur2GVuHioLOfS+/7MGAgxCAnWch4y3+XDhSeoj6ZBGdDzr7OZOXK3WRaxH5w5klFci
-         6AW4w48hKoCycwxOhxeu9t4tyx+5o5BNF9S5Sg9ODeU1M2Vkr6JQVIGwnmK281t+rbb+
-         /o4eZl5Rz8XzaFXxFg/9UJ+814N/gEjGCk9oGA9L+X1Es0VamvZqK3E/V51eSG57o3uR
-         ffwx4XTzbn54tb+j7OwO0W8CPRgIo1DY22FMasOye6c5BQDDTRj9eUbN7Vg4x39RCD6T
-         X/3g==
+        with ESMTP id S1345719AbiCXAPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Mar 2022 20:15:08 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F140E140A1
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 17:13:37 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id u10-20020a5ec00a000000b00648e5804d5bso2059058iol.12
+        for <netdev@vger.kernel.org>; Wed, 23 Mar 2022 17:13:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=4QeesTCGYt1DAnR2JB7g+DpYIYm4GgcZ+JJm+GQt5S4=;
-        b=LG5DZfLRI3N4OoS5Bp+0wvx51z/hEAXJ9cFDR91j+IpXV9MTSWncG5bA8ntVf0NOTQ
-         5z8Ru0652pATprsB4jPL1P4Kvpa8xkIGuMI5zDN6orOU+nJv4kFEAjnxUp2J/PDgl7hq
-         N51kXtkiuSk30H8cUmOGRX8FROLMiKSdb2Bg6M0/nrtpcpB330Bo3sziThXL9OZa14QO
-         fFo4G07yLk3eYP47Zzu3ptDJHNXQt0c9iNhcszFEhaZXydsmVeD2lax3CxCWeWFI+2IZ
-         TP4FGPYLXf3wd7vbX+tg7EhQ8w6Od/4c7qA4Z3/fPjdcV0WL1CNwjscdDfgt/A84CmO2
-         zpQQ==
-X-Gm-Message-State: AOAM530unOmPjF5BIiDDSLWFdCh3RpJPNIqvriEYW9hCKbVGG/oyXMqu
-        YLQStyr32o0+uk7Pec9t7aqKSFyIpxyA+K7uaV4=
-X-Google-Smtp-Source: ABdhPJyqbrXf4Jd9BIXzj8vsofJKvh9vyGALRPrSaWvS4lHsyAQKvAqmlt0Xazt0eEwp2RZF+qkIf1qL1yJyTX0udB4=
-X-Received: by 2002:a17:907:d27:b0:6db:d928:a976 with SMTP id
- gn39-20020a1709070d2700b006dbd928a976mr2953933ejc.24.1648079477531; Wed, 23
- Mar 2022 16:51:17 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=V+6A96zcUHBo/1Vd9cbgrqSOLXByL/HQVaxu+/o75IY=;
+        b=vwOw6xbK8vFkbH0XpsF1Wy+PH+NnooQIdVbG8u2d9L0jsvFTAF8jbwwl4qNRZgQEDE
+         UxRylCg7vXFWugel5t840BRBpu8m6LS4GFmH0/6AKmmE3y1+G9DNbYotC9HtWcunJ32w
+         SFLl/OFRaLm4x/r1WWWwetqA39R4tBkxIp30lnvimoCYCRDOKimtx7ADmj1/fQB/Ikfr
+         EJvga0GYE64MoZDps/5BRHADlwt8qGwDxFwsMRDAegZUEmT/o+M0oyRAp8Lt9ZuQWEjp
+         WHnc+3p/hcr3PxnCo7oieipDIqYAVQm/iE4IcyxfkU6oYR8eeAWF8P/27NjPhb7aw/Vy
+         FEYg==
+X-Gm-Message-State: AOAM532TlsuBhhB7iQFKipwV5YyMLXA8R++ne+OevQ7EmWzRbeQHUMIu
+        BaTos/2ABLiLCJnzu8GG7kzgDy9XZbfNDgd7bSpEVX3aAK5V
+X-Google-Smtp-Source: ABdhPJwhGqpJ45ABs6FnJ2w8RR9JPgROyxztusezrFVT7uaQWYKGlAH76DqYNK3/06j6SIAWT26iBIMGqNSJD5FDoOmpcIvLXPsd
 MIME-Version: 1.0
-From:   Duke Abbaddon <duke.abbaddon@gmail.com>
-Date:   Wed, 23 Mar 2022 23:51:10 +0000
-Message-ID: <CAHpNFcPhgpFPG8d0v=p_SM0TFw+JOz8YsFH1XA_wFd=FvwDKUQ@mail.gmail.com>
-Subject: Kernel NTP : Experiences of NTPSecure for linux & NTP Daemon
- Mitenburg Time optimizes & secures our network & provides crypto RAND : Why
- can't we answer more? @1ClockCycle * 200000 @1% CPU + SSL & TLS & TSL
- (Transaction Security layer)
-To:     torvalds@linux-foundation.org
+X-Received: by 2002:a5d:848a:0:b0:648:b2f4:d5cd with SMTP id
+ t10-20020a5d848a000000b00648b2f4d5cdmr1347523iom.53.1648080817286; Wed, 23
+ Mar 2022 17:13:37 -0700 (PDT)
+Date:   Wed, 23 Mar 2022 17:13:37 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000acf1e405daebb7c7@google.com>
+Subject: [syzbot] BUG: unable to handle kernel NULL pointer dereference in __tcp_transmit_skb
+From:   syzbot <syzbot+090d23ddbd5cd185c2e0@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,PDS_OTHER_BAD_TLD,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Time optimizes & secures our network & provides crypto RAND : Why
-can't we answer more? @1ClockCycle * 200000 @1% CPU + SSL & TLS & TSL
-(Transaction Security layer) :
+Hello,
 
-If you want to tier 1 to 3 : clearly and openly source from t1 as your
-main priority, GSM is clearly 3G+ 4G + 5G & obviously has sweet
-traffic if you connect a mobile box!
+syzbot found the following issue on:
 
-However Satellite sources EG locators are a primary source, however in the past
-(Upto 5 minutes discrepancy in 1996) :
+HEAD commit:    36c2e31ad25b net: geneve: add missing netlink policy and s..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17c308a5700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=4a15e2288cf165c9
+dashboard link: https://syzkaller.appspot.com/bug?extid=090d23ddbd5cd185c2e0
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=171eadbd700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12cacda3700000
 
-So a satellite receiver IS a primary T1 source & clearly big antenna
-arrays are a primary proven quality, GSM or a university with both a
-DISH & atomic clock regulator : Being realistic though! Gravity waves
-cause differential : RS 2022-01
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+090d23ddbd5cd185c2e0@syzkaller.appspotmail.com
 
-https://science.n-helix.com/2022/01/ntp.html
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+PGD 13fd5067 P4D 13fd5067 PUD 77ebc067 PMD 0 
+Oops: 0010 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 7423 Comm: syz-executor720 Not tainted 5.17.0-rc8-syzkaller-02803-g36c2e31ad25b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:0x0
+Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+RSP: 0018:ffffc900001d0a60 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff88801e00cd10 RCX: 0000000000000100
+RDX: 1ffff11003c019a3 RSI: ffff8880155c5c80 RDI: ffff888014bac800
+RBP: ffff888014bac800 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87bccdc7 R11: 0000000000000000 R12: ffff8880155c5c80
+R13: 0000000000000000 R14: ffff888014bacf60 R15: ffff88807527012c
+FS:  000055555733b3c0(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 00000000757b0000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ __tcp_transmit_skb+0x1098/0x38b0 net/ipv4/tcp_output.c:1371
+ tcp_transmit_skb net/ipv4/tcp_output.c:1420 [inline]
+ tcp_xmit_probe_skb+0x28c/0x320 net/ipv4/tcp_output.c:4006
+ tcp_write_wakeup+0x1bd/0x610 net/ipv4/tcp_output.c:4059
+ tcp_send_probe0+0x44/0x560 net/ipv4/tcp_output.c:4074
+ tcp_probe_timer net/ipv4/tcp_timer.c:398 [inline]
+ tcp_write_timer_handler+0x9ed/0xbc0 net/ipv4/tcp_timer.c:626
+ tcp_write_timer+0xa2/0x2b0 net/ipv4/tcp_timer.c:642
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+ expire_timers kernel/time/timer.c:1466 [inline]
+ __run_timers.part.0+0x67c/0xa30 kernel/time/timer.c:1734
+ __run_timers kernel/time/timer.c:1715 [inline]
+ run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1747
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+RIP: 0010:lock_acquire+0x1ef/0x510 kernel/locking/lockdep.c:5607
+Code: e4 a4 7e 83 f8 01 0f 85 b4 02 00 00 9c 58 f6 c4 02 0f 85 9f 02 00 00 48 83 7c 24 08 00 74 01 fb 48 b8 00 00 00 00 00 fc ff df <48> 01 c3 48 c7 03 00 00 00 00 48 c7 43 08 00 00 00 00 48 8b 84 24
+RSP: 0018:ffffc90002eaf888 EFLAGS: 00000206
+RAX: dffffc0000000000 RBX: 1ffff920005d5f13 RCX: 5ad5b746ce328923
+RDX: 1ffff1100e5374eb RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8fe0c947
+R10: fffffbfff1fc1928 R11: 0000000000000001 R12: 0000000000000002
+R13: 0000000000000000 R14: ffffffff8bb84ca0 R15: 0000000000000000
+ rcu_lock_acquire include/linux/rcupdate.h:268 [inline]
+ rcu_read_lock include/linux/rcupdate.h:694 [inline]
+ fib_lookup.constprop.0+0x8f/0x460 include/net/ip_fib.h:377
+ ip_route_output_key_hash_rcu+0xf54/0x2c80 net/ipv4/route.c:2737
+ ip_route_output_key_hash+0x183/0x2f0 net/ipv4/route.c:2627
+ __ip_route_output_key include/net/route.h:127 [inline]
+ ip_route_output_flow+0x23/0x150 net/ipv4/route.c:2857
+ ip_route_newports include/net/route.h:343 [inline]
+ tcp_v4_connect+0x12a5/0x1d00 net/ipv4/tcp_ipv4.c:283
+ __inet_stream_connect+0x8cf/0xed0 net/ipv4/af_inet.c:660
+ inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:724
+ smc_connect+0x230/0x450 net/smc/af_smc.c:1522
+ __sys_connect_file+0x155/0x1a0 net/socket.c:1900
+ __sys_connect+0x161/0x190 net/socket.c:1917
+ __do_sys_connect net/socket.c:1927 [inline]
+ __se_sys_connect net/socket.c:1924 [inline]
+ __x64_sys_connect+0x6f/0xb0 net/socket.c:1924
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f23b4ec0889
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 e1 14 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffce8f74658 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+RAX: ffffffffffffffda RBX: 00007ffce8f746b0 RCX: 00007f23b4ec0889
+RDX: 0000000000000010 RSI: 00000000200001c0 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 000000000000cf1c R09: 000000000000cf1c
+R10: 0000000000000004 R11: 0000000000000246 R12: 00007ffce8f746a0
+R13: 000000000000cf1c R14: 00007ffce8f7469c R15: 431bde82d7b634db
+ </TASK>
+Modules linked in:
+CR2: 0000000000000000
+---[ end trace 0000000000000000 ]---
+RIP: 0010:0x0
+Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+RSP: 0018:ffffc900001d0a60 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff88801e00cd10 RCX: 0000000000000100
+RDX: 1ffff11003c019a3 RSI: ffff8880155c5c80 RDI: ffff888014bac800
+RBP: ffff888014bac800 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff87bccdc7 R11: 0000000000000000 R12: ffff8880155c5c80
+R13: 0000000000000000 R14: ffff888014bacf60 R15: ffff88807527012c
+FS:  000055555733b3c0(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 00000000757b0000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	e4 a4                	in     $0xa4,%al
+   2:	7e 83                	jle    0xffffff87
+   4:	f8                   	clc
+   5:	01 0f                	add    %ecx,(%rdi)
+   7:	85 b4 02 00 00 9c 58 	test   %esi,0x589c0000(%rdx,%rax,1)
+   e:	f6 c4 02             	test   $0x2,%ah
+  11:	0f 85 9f 02 00 00    	jne    0x2b6
+  17:	48 83 7c 24 08 00    	cmpq   $0x0,0x8(%rsp)
+  1d:	74 01                	je     0x20
+  1f:	fb                   	sti
+  20:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
+  27:	fc ff df
+* 2a:	48 01 c3             	add    %rax,%rbx <-- trapping instruction
+  2d:	48 c7 03 00 00 00 00 	movq   $0x0,(%rbx)
+  34:	48 c7 43 08 00 00 00 	movq   $0x0,0x8(%rbx)
+  3b:	00
+  3c:	48                   	rex.W
+  3d:	8b                   	.byte 0x8b
+  3e:	84                   	.byte 0x84
+  3f:	24                   	.byte 0x24
 
-htRefer to NTP.html For Links/SecNTP4U
 
-htRefer to NTP.html For Links/AppCache2m
-htRefer to NTP.html For Links/AppCacheJSZip
-htRefer to NTP.html For Links/LinuxHPCNode
-https://bit.ly/VESA_BT
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Security & Great codecs for streaming & production FRANKEN :
-https://bit.ly/DJ_EQ
-
-*RAND OP Ubuntu :
-https://manpages.ubuntu.com/manpages/trusty/man1/pollinate.1.html
-
-https://pollinate.n-helix.com
-
-htRefer to NTP.html For Links/CryptoRAND
-Each Zip presents 8 x 1MB present 2048 x 4096KB HASH Object or if you
-probably like 8100+ Multi sorted HASH RAND Objects : 8 Way sorted &
-hashed : RS 2022-02-02
-
-htRefer to NTP.html For Links/SecurityHSM
-*
-
-NTP , PTP (time services) & DNS ntp16.nx7v.icu node, 100MB in & out
-(Current) Latency 17ms
-NTP , PTP (time services) & DNS ntp16.dn.n-helix.com node capacity superb ;)
-NTP , PTP (time services) ntp17.dn.n-helix.com node capacity superb ;)
-NTP , PTP (time services) time-16.nx7v.icu node capacity superb ;)
-
-https://science.n-helix.com/2018/12/rng.html
-
-https://science.n-helix.com/2022/02/rdseed.html
-
-https://science.n-helix.com/2017/04/rng-and-random-web.html
-
-https://science.n-helix.com/2022/02/interrupt-entropy.html
-
-https://science.n-helix.com/2021/11/monticarlo-workload-selector.html
-
-https://science.n-helix.com/2022/03/security-aspect-leaf-hash-identifiers.html
-
-https://science.n-helix.com/2022/02/visual-acuity-of-eye-replacements.html
-
-TRNG Samples & Method
-
-https://drive.google.com/file/d/1b_Sl1oI7qTlc6__ihLt-N601nyLsY7QU/view?usp=drive_web
-https://drive.google.com/file/d/1yi4ERt0xdPc9ooh9vWrPY1LV_eXV-1Wc/view?usp=drive_web
-https://drive.google.com/file/d/11dKUNl0ngouSIJzOD92lO546tfGwC0tu/view?usp=drive_web
-https://drive.google.com/file/d/10a0E4Gh5S-itzBVh0fOaxS7JS9ru-68T/view?usp=drive_web
-
-*
-
-*145.238.203.14  .MRS.            1 u   16  256  277    8.615   -0.233   1.594
--62.108.36.235   157.90.24.29     3 u   66  256  365   20.251   -1.186   1.362
-+193.52.184.106  .LTFB.           1 u  415  256  136   19.435   +0.318  34.411
-+162.159.200.1   10.19.12.255     3 u   56  256  277    8.353   -0.398   1.310
-#132.163.97.2    .NIST.           1 u   85  256   73  130.397   -0.932   6.394
-#204.9.54.119    .GPS.            1 u   63  256  373  101.035   +0.026  14.172
-#151.80.168.4    185.242.112.53   3 u   45  256  277   13.685   -0.686   3.017
-#63.250.53.99    85.199.214.102   2 u   88  256  153   17.175   -0.220  42.373
-#37.187.101.179  12.159.180.5     3 u   74  256  277   13.808   -2.022  90.069
-#216.239.35.8    .GOOG.           1 u   88  256  163   13.189   +0.224 332.916
-+131.176.107.13  .MRS.            1 u  412  256  336   18.244   -0.323   0.601
-+129.134.28.123  .FB...           1 u   62  256  273    9.195   -0.171   0.482
-#81.82.227.219   81.82.236.197    2 u   81  256  277   39.463   -0.346  45.392
-#51.145.123.29   25.66.230.1      3 u   36  256  237   14.748   +1.311   0.672
--139.143.5.30    139.143.45.145   2 u   38  256  237   15.344   -0.216   2.837
-+216.239.35.0    .GOOG.           1 u   56  256  273   13.979   -0.228   0.909
-+95.81.173.74    138.96.64.10     2 u   34  256  237   10.809   -1.319   0.802
-#132.163.96.6    .NIST.           1 u   67  256  277  129.317   -0.600  37.091
-#200.160.7.197   .GPS.            1 u   74  256   67  202.436   +6.078   1.854
-#139.143.5.31    139.143.45.169   2 u   28  256  277   17.863   -0.539   6.581
--130.159.196.118 193.62.22.74     2 u  338  256  372   27.789   -0.694   5.625
-
-*145.238.203.14  .MRS.            1 u  153  128  236    9.830   -0.614   1.226
-+62.108.36.235   157.90.24.29     3 u   86  128    7   21.885   -2.045   0.974
-+193.52.184.106  .LTFB.           1 u  144  128    2   19.823   -0.245   3.298
-+162.159.200.1   10.19.12.255     3 u  181  128  236    8.353   -0.398   0.273
-#132.163.97.2    .NIST.           1 u  341  128  114  130.037   -1.122 164.694
-#204.9.54.119    .GPS.            1 u   65  128  173  105.064   -2.004 151.458
-+151.80.168.4    54.36.110.36     3 u  190  128  332   13.290   -1.041  72.567
-+63.250.53.99    85.199.214.102   2 u   83  128   11   16.968   -0.810  41.283
-#37.187.101.179  12.159.180.5     3 u  204  128  106   13.582   -2.457  53.193
-#216.239.35.8    .GOOG.           1 u   71  128  111   13.308   -0.377 265.072
-+131.176.107.13  .MRS.            1 u  155  128    6   21.617   -1.403   0.505
-+129.134.28.123  .FB...           1 u  194  128  336    8.944   -0.662  59.310
-+81.82.227.219   81.82.236.197    2 u  201  128  112   43.548   -5.623  44.732
-+51.145.123.29   25.66.230.1      3 u  170  128  276   16.846   +1.028   1.254
-+139.143.5.30    139.143.45.145   2 u  175  128  276   18.233   -0.776   3.071
-+216.239.35.0    .GOOG.           1 u  193  128  376   13.102   -0.361 128.568
-+95.81.173.74    138.96.64.10     2 u  173  128  236    9.720   -2.123   1.136
-+132.163.96.6    .NIST.           1 u  201  128   56  128.928   -0.885  62.291
-#200.160.7.197   .GPS.            1 u  340  128  114  202.436   +6.078  14.325
-+139.143.5.31    139.143.45.169   2 u  160  128  276   17.743   -1.033   1.170
-+130.159.196.118 193.62.22.74     2 u   72  128  253   26.918   -0.858  25.165
-
-*145.238.203.14  .MRS.            1 u  101  128  343   10.068   -0.452   2.160
-#62.108.36.235   157.90.24.29     3 u   95  128  253   22.305   -1.326   1.638
-+193.52.184.106  .LTFB.           1 u   98  128  343   19.997   -0.219   1.057
-+162.159.200.1   10.19.12.255     3 u   72  128  277    7.575   -0.764 130.587
-#132.163.97.2    .NIST.           1 u   73  128  277  129.886   -0.831   2.812
-+204.9.54.119    .GPS.            1 u   79  128  257  101.026   -0.417   3.610
-#151.80.168.4    54.36.110.36     3 u   62  128  377   12.952   -1.338   1.112
-#63.250.53.99    85.199.214.102   2 u   81  128  377   16.613   -0.887 122.955
-#37.187.101.179  12.159.180.5     3 u   69  128  277   12.998   -2.736  80.224
-+216.239.35.8    .GOOG.           1 u   79  128  277   12.417   -0.736  80.265
-+131.176.107.13  .MRS.            1 u   83  128  257   22.909   -0.977   2.439
-+129.134.28.123  .FB...           1 u   77  128  277    8.717   -0.669  79.539
-#81.82.227.219   81.82.236.197    2 u   70  128  237   35.702   -1.209   4.267
-#51.145.123.29   25.66.230.4      3 u   48  128  277   16.573   +0.481   1.787
-#139.143.5.30    139.143.45.145   2 u  308  128  374   18.092   -1.421   1.545
-+216.239.35.0    .GOOG.           1 u   66  128  377   13.468   -0.326  24.963
-#95.81.173.74    138.96.64.10     2 u   66  128  377   10.489   -1.572   1.567
-#132.163.96.6    .NIST.           1 u   67  128  367  129.597   -1.092   8.978
-#200.160.7.197   .GPS.            1 u   71  128  377  201.929   +5.866 134.601
--139.143.5.31    139.143.45.169   2 u  308  128  374   17.987   -0.845   0.354
-+130.159.196.118 193.62.22.90     2 u   82  128  317   27.612   -0.540   3.281
-
-*145.238.203.14  .MRS.            1 u   40   64  177   10.689   -0.033   1.880
-#62.108.36.235   157.90.24.29     3 u   35   64  333   22.175   -0.949  98.702
-+193.52.184.106  .LTFB.           1 u   39   64   77   19.809   -0.357   1.333
-+162.159.200.1   10.19.12.255     3 u   22   64  273    8.336   +0.026   7.227
-+132.163.97.2    .NIST.           1 u   22   64  277  130.212   -0.408   4.049
-+204.9.54.119    .GPS.            1 u   28   64  173  100.447   -0.429   8.496
-+151.80.168.4    54.36.110.36     3 u    9   64  377   13.680   -0.405   3.059
-+63.250.53.99    85.199.214.102   2 u   17   64  377   16.449   -2.374   2.544
-#37.187.101.179  12.159.180.5     3 u   17   64  277   13.372   -1.892   8.715
-+216.239.35.8    .GOOG.           1 u   17   64  377   13.233   -0.202   1.304
-+131.176.107.13  .MRS.            1 u   30   64  273   23.479   -0.543  25.696
-+129.134.28.123  .FB...           1 u   21   64  277    9.715   +0.015   6.412
-+81.82.227.219   81.82.236.197    2 u   11   64  377   35.194   -0.187   1.932
-#51.145.123.29   25.66.230.5      3 u  134   64  152   17.102   +0.470   1.980
-+139.143.5.30    139.143.45.145   2 u   55   64   53   18.390   -0.276   1.315
-+216.239.35.0    .GOOG.           1 u   15   64  277   13.649   -0.122   0.392
-#95.81.173.74    138.96.64.10     2 u    8   64  377   10.284   -1.640   1.821
-#132.163.96.6    .NIST.           1 u   15   64  377  124.710   +1.196  18.965
-#200.160.7.197   .GPS.            1 u   13   64  377  202.852   +6.226   1.005
-+139.143.5.31    139.143.45.169   2 u   51   64  173   17.864   -0.767   0.307
-#130.159.196.118 193.62.22.90     2 u   45   64  377   28.422   -0.134 178.215
-
-+62.108.36.235   157.90.24.29     3 u   25  512  177   23.336   -0.893   6.261
-*193.52.184.106  .LTFB.           1 u  121  512  133   21.785   -0.682  40.096
-+162.159.200.1   10.19.12.255     3 u  866  512  176    9.718   -0.285   3.749
-+204.9.54.119    .GPS.            1 u  372  512  177  100.220   +0.045   2.448
-+51.255.197.148  90.187.148.77    2 u  345  512  177   17.604   -1.917   8.223
-+162.159.200.123 10.19.12.255     3 u  384  512  167   10.153   -0.922   5.430
-+194.57.169.1    194.57.169.49    2 u  114  512  373   21.493   -2.021   2.529
-+216.239.35.0    .GOOG.           1 u  403  512  167   14.270   -1.030   2.625
-+131.176.107.13  .MRS.            1 u  380  512  175   24.977   -2.648   5.763
-+129.134.29.123  .FB...           1 u   83  512  173   24.463   -2.656   3.676
-#164.132.80.137  204.9.54.119     2 u  145  512  373   18.231   -3.113   2.242
-#51.145.123.29   25.66.230.3      3 u  353  512  171   18.414   +0.654   4.597
-+216.239.35.12   .GOOG.           1 u  345  512  177   23.890   -1.026   3.183
-+176.137.36.37   .GPS.            1 u  122  512  133   21.642   +0.659   4.617
-+132.163.97.6    .NIST.           1 u   20  512  337  131.181   -1.472   2.148
-#200.160.7.197   .GPS.            1 u   90  512  133  203.228   +7.283   4.907
-+145.238.203.14  .MRS.            1 u  139  512  377   11.568   -1.001   3.349
-+195.186.4.100   195.186.133.101  2 u   82  512  133   22.891   -0.010   5.862
-+139.143.5.30    139.143.45.145   2 u  227  512  377   19.622   -1.745  14.617
-+139.143.5.31    139.143.45.169   2 u  882  512  176   19.584   -1.818   3.728
-+130.159.196.117 193.62.22.66     2 u  395  512  165   28.405   +0.056   4.298
-
-+62.108.36.235   157.90.24.29     3 u  214  256  377   22.766   -4.199   2.279
-*193.52.184.106  .LTFB.           1 u  200  256  377   21.964   -3.282  41.235
-+162.159.200.1   10.19.12.255     3 u  225  256  377    9.726   -3.534   1.093
-#204.9.54.119    .GPS.            1 u  246  256  377   99.505   -2.522   1.625
-#51.255.197.148  90.187.148.77    2 u  246  256  377   15.634   -9.496   3.326
-+162.159.200.123 10.19.12.255     3 u  252  256  377    9.429   -3.825   4.054
-+194.57.169.1    145.238.203.14   2 u   25  512  377   20.069   -4.461   1.951
-+216.239.35.0    .GOOG.           1 u  234  256  377   14.825   -3.532   2.900
-+131.176.107.13  .MRS.            1 u  226  256  377   23.591   -4.410   1.267
-+129.134.29.123  .FB...           1 u  226  256  377   24.113   -4.779   5.542
-#164.132.80.137  204.9.54.119     2 u   12  512  377   14.944   -3.959   2.103
-+51.145.123.29   25.66.230.2      3 u  227  256  377   17.840   -3.273  12.823
-+216.239.35.12   .GOOG.           1 u  259  256  377   24.364   -5.610   3.939
-+176.137.36.37   .GPS.            1 u  236  256  377   22.702   -4.003   1.591
-+132.163.97.6    .NIST.           1 u    5  512  377  131.821   -4.262  25.386
-#200.160.7.197   .GPS.            1 u  236  256  377  202.984   +2.369   2.337
-+145.238.203.14  .MRS.            1 u   27  512  377   11.430   -3.693   2.011
-+195.186.4.100   195.186.133.101  2 u  223  256  377   22.397   -4.045   2.552
-+139.143.5.30    139.143.45.145   2 u   77  512  377   19.870   -3.662   0.823
-#139.143.5.31    139.143.45.169   2 u  240  256  377   20.185   -3.036   3.117
-#130.159.196.117 193.62.22.90     2 u  273  256  376   29.002   -2.811   2.142
-
-#62.108.36.235   157.90.24.29     3 u   75  128  377   22.011   -3.480   0.617
-*193.52.184.106  .LTFB.           1 u  130  128  375   21.180   -1.047   0.982
-+162.159.200.1   10.19.12.255     3 u  100  128  377    9.260   -1.269   0.974
-#204.9.54.119    .GPS.            1 u   93  128  377   98.997   -1.124   0.742
-+51.255.197.148  90.187.148.77    2 u   88  128  377   14.859   -4.447   0.619
-+162.159.200.123 10.19.12.255     3 u   82  128  377    9.215   -1.509   1.239
-+194.57.169.1    145.238.203.14   2 u  105  128  377   19.813   -2.103  15.720
-+216.239.35.0    .GOOG.           1 u   94  128  377   14.647   -1.427  14.231
-+131.176.107.13  .MRS.            1 u   73  128  377   23.612   -2.389   7.157
-+129.134.29.123  .FB...           1 u   86  128  377   23.486   -3.596   5.377
-+164.132.80.137  204.9.54.119     2 u  105  128  377   14.011   -2.310  16.398
-#51.145.123.29   25.66.230.2      3 u  215  128  376   18.256   -0.902   2.662
-+216.239.35.12   .GOOG.           1 u   85  128  377   23.482   -2.528   3.939
-+176.137.36.37   .GPS.            1 u   99  128  377   23.456   -2.792   2.095
-+132.163.97.6    .NIST.           1 u   21  128  377  132.147   -2.256   0.759
-#200.160.7.197   .GPS.            1 u  111  128  373  203.123   +4.781   3.008
-+145.238.203.14  .MRS.            1 u  107  128  377   11.542   -1.699   1.207
-+195.186.4.100   195.186.133.101  2 u   77  128  377   21.902   -3.437  31.445
-+139.143.5.30    139.143.45.145   2 u   77  128  377   20.132   -1.823   2.083
-+139.143.5.31    139.143.45.169   2 u   90  128  373   19.624   -1.630  13.613
-+130.159.196.117 140.203.204.77   2 u   89  128  377   28.478   -1.198   0.358
-
--131.176.107.13  .MRS.            1 u  220   64  370   17.672   +0.662   7.113
-*193.52.184.106  .LTFB.           1 u  139   64  254   18.512   +1.153  15.860
-+62.12.167.109   76.82.118.39     3 u   63   64  177   23.271   +1.146   4.350
--132.163.96.4    .NIST.           1 u  202   64  164  126.477   +3.366   2.872
-+162.159.200.1   10.19.12.255     3 u   61   64  177    7.499   +1.464  27.285
--204.9.54.119    .GPS.            1 u  120   64  136   98.830   +1.369   9.875
-#94.237.64.20    210.23.25.77     2 u   58   64  133  171.483   -3.569   7.869
-#212.51.181.242  193.190.230.65   2 u   62   64  137   13.290   +1.977  26.243
--216.239.35.0    .GOOG.           1 u   57   64  133   12.301   +1.407   1.956
--129.134.26.123  .FB...           1 u  121   64  136    7.538   +0.984   3.013
--51.15.175.180   193.204.114.233  2 u   62   64  175    9.027   -0.310  38.821
- 51.145.123.29   25.66.230.5      3 u  113   64  376   15.315   +1.385   0.348
-#139.143.5.30    139.143.45.145   2 u   64   64  127   17.110   +0.708   3.611
- 139.143.5.31    139.143.45.169   2 u   62   64  177   15.641   +1.146  26.593
- 130.159.196.117 193.62.22.90     2 u  124   64  132   25.527   +0.260   2.111
--216.239.35.8    .GOOG.           1 u   20   64  371   11.643   +1.455   0.750
-#132.163.97.4    .NIST.           1 u   63   64  125  129.039   +0.596   1.823
-#62.108.36.235   157.90.24.29     3 u   43   64  173   21.825   -0.928   1.628
- 200.160.7.197   .GPS.            1 u   64   64  376  199.712   +4.343   3.598
- 145.238.203.14  .MRS.            1 u  119   64   16    8.554   +0.644   2.268
-
-*145.238.203.14  .MRS.            1 u   44   64  177   10.255   +0.884  39.284
-+217.147.223.78  194.242.34.149   2 u   53   64   77   23.238   +0.001   1.449
-#132.163.97.3    .NIST.           1 u   48   64   77  131.537   -2.184   5.400
-+162.159.200.1   10.19.12.255     3 u   39   64  377    9.135   +1.179   1.366
-#204.9.54.119    .GPS.            1 u   41   64  177  100.552   +0.848   1.273
-#91.224.149.41   193.204.114.233  2 u    8   64  267   17.490   +0.058   1.316
-#185.123.84.51   200.98.196.212   2 u    8   64  367   16.179   -1.299   1.523
-+162.159.200.123 10.19.12.255     3 u   34   64  367    9.649   +0.468   1.851
-#131.176.107.13  .MRS.            1 u   34   64  227   23.865   +0.134  25.952
-+129.134.25.123  .FB...           1 u    1   64  377   18.205   +0.705  18.372
-#139.143.5.30    139.143.45.145   2 u   23   64  237   19.428   +1.276  14.164
-+139.143.5.31    139.143.45.169   2 u   67   64  377   17.933   +0.548  21.810
-+216.239.35.8    .GOOG.           1 u   16   64  277   14.153   +1.482   2.845
-#151.80.211.8    194.58.202.148   2 u   16   64  277   12.234   +0.560   0.744
-#128.138.140.44  .NIST.           1 u   17   64  277  127.748   +0.180  12.092
--62.108.36.235   157.90.24.29     3 u   20   64  277   22.735   -0.451  12.063
-#200.160.7.197   .GPS.            1 u   13   64  227  201.953   +6.979   1.004
-+94.23.215.121   176.137.36.37    2 u    1   64   17   13.329   +0.369   0.602
-#51.145.123.29   25.66.230.4      3 u   67   64    7   18.386   +2.673   2.255
-+130.159.196.118 193.62.22.90     2 u   64   64    7   28.430   +0.689   0.465
-
-*145.238.203.14  .MRS.            1 u  129  512  377   10.611   +6.753   2.311
-+62.108.36.235   157.90.24.29     3 u  200  512  377   22.884   +4.551   1.230
-+193.52.184.106  .LTFB.           1 u  190  512  357   20.502   +6.595   5.436
-+156.106.214.48  131.188.3.223    2 u  155  512  373   26.870   +4.540   1.888
-#128.138.140.44  .NIST.           1 u  138  512  377  130.478   +7.827   2.207
-+162.159.200.1   10.19.12.255     3 u  131  512  377    9.475   +7.344   7.227
-+204.9.54.119    .GPS.            1 u  201  512  377  102.597   +5.557   4.201
-#103.123.108.222 216.239.35.4     2 u  149  512  373  231.015   -3.933   2.375
-+176.235.22.135  .GPS.            1 u  168  512  373   61.001   +5.659   1.517
-+194.58.200.20   .PPS.            1 u  174  512  277   38.727   +7.492   3.546
-+216.239.35.4    .GOOG.           1 u  192  512  377   16.233   +6.686   4.227
-+131.176.107.13  .MRS.            1 u  229  512  337   23.279   +5.451   1.216
-+129.134.26.123  .FB...           1 u  158  512  377   11.142   +5.763   2.489
-+5.196.75.23     193.190.230.65   2 u  177  512  373   14.078   +6.435   2.378
-+51.145.123.29   25.66.230.5      3 u  141  512  377   18.540   +7.563   1.747
-+139.143.5.30    139.143.45.145   2 u  169  512  373   19.429   +5.579   1.896
-+139.143.5.31    139.143.45.169   2 u  366  512  337   19.549   +5.938   1.959
-+132.163.96.3    .NIST.           1 u  222  512  277  130.787   +5.905   1.590
-#200.160.7.197   .GPS.            1 u  101  512  373  203.130  +12.801  25.952
-+130.159.196.117 193.62.22.90     2 u  206  512  377   29.165   +6.510   2.021
-+216.239.35.0    .GOOG.           1 u  165  512  377   14.728   +6.165   1.630
-+51.77.12.38     85.199.214.101   2 u  127  512  377   14.341   +5.931  55.692
-+129.134.28.123  .FB...           1 u  228  512  373   10.608   +6.624   2.172
-+40.119.148.38   25.66.230.5      3 u  336  512  317   24.731   +6.759   5.640
-
-*145.238.203.14  .MRS.            1 u  137  512  377   10.315   +5.129  31.588
-#62.108.36.235   157.90.24.29     3 u  176  512  377   22.416   +4.004   0.935
-+193.52.184.106  .LTFB.           1 u  685  512  376   20.902   +4.623   0.928
-+156.106.214.48  195.176.26.205   2 u  144  512  377   26.203   +3.231   1.022
-#128.138.140.44  .NIST.           1 u  167  512  377  131.029   +5.290   1.445
-+162.159.200.1   10.19.12.255     3 u  127  512  377   10.416   +4.797   6.484
-+204.9.54.119    .GPS.            1 u  198  512  277  100.758   +4.482   0.854
-#103.123.108.222 216.239.35.4     2 u  141  512  377  231.038   -6.443   6.831
-+176.235.22.135  .GPS.            1 u  187  512  377   61.237   +4.435   1.043
-+194.58.200.20   .PPS.            1 u  169  512  373   38.246   +5.747   1.978
-+216.239.35.4    .GOOG.           1 u  171  512  277   14.459   +4.252   0.845
-+131.176.107.13  .MRS.            1 u  236  512  275   23.035   +3.610   0.873
-+129.134.26.123  .FB...           1 u  131  512  377   10.237   +4.382   1.739
-#5.196.75.23     193.190.230.37   2 u  159  512  377   15.484   +5.812  22.618
-#51.145.123.29   25.66.230.5      3 u  147  512  377   18.226   +5.790   0.891
-#139.143.5.30    139.143.45.145   2 u  194  512  377   19.116   +3.949  28.460
-#139.143.5.31    139.143.45.169   2 u  389  512  375   20.792   +3.369   1.609
-#132.163.96.3    .NIST.           1 u  178  512  233  130.625   +3.202   2.926
-#200.160.7.197   .GPS.            1 u  144  512  377  202.363  +10.443  37.261
-+130.159.196.117 193.62.22.90     2 u  196  512  377   28.260   +4.848   1.309
-+216.239.35.0    .GOOG.           1 u  170  512  377   13.537   +5.243   1.260
-#51.77.12.38     85.199.214.101   2 u  134  512  377   15.326   +4.709  56.142
-+129.134.28.123  .FB...           1 u  192  512  277   10.300   +5.123   1.397
-+40.119.148.38   25.66.230.3      3 u 1323  512  354   23.620   +4.796   5.556
-
-*145.238.203.14  .MRS.            1 u  286  512  377   11.747   +3.221  32.270
-+62.108.36.235   157.90.24.29     3 u  342  512  277   22.416   +4.004   0.344
-+193.52.184.106  .LTFB.           1 u  335  512  277   20.941   +4.459   0.883
- 194.35.252.7    .STEP.          16 u    - 1024    0    0.000   +0.000   0.000
-+156.106.214.48  195.176.26.205   2 u  306  512  277   26.015   +1.172   1.385
-+128.138.140.44  .NIST.           1 u  316  512  277  131.660   +4.674   1.117
-+162.159.200.1   10.19.12.255     3 u  306  512  377    9.637   +3.919   5.968
-+204.9.54.119    .GPS.            1 u  364  512  267  101.726   +3.744   1.035
-#103.123.108.222 216.239.35.4     2 u  303  512  377  231.279   -7.196   6.646
-+176.235.22.135  .GPS.            1 u  360  512  277   61.338   +3.044   0.496
-+194.58.200.20   .PPS.            1 u  341  512  277   38.250   +4.733   1.434
-+216.239.35.4    .GOOG.           1 u  362  512  267   14.023   +3.810   0.727
-+131.176.107.13  .MRS.            1 u  374  512  267   23.298   +2.861   1.214
-+129.134.26.123  .FB...           1 u  319  512  277   10.039   +3.748   2.006
-+5.196.75.23     193.190.230.37   2 u  310  512  377   14.412   +3.841  23.281
-+51.145.123.29   25.66.230.5      3 u  340  512  277   17.624   +5.295   1.460
-+139.143.5.30    139.143.45.145   2 u  344  512  277   19.169   +3.380  35.683
-+139.143.5.31    139.143.45.169   2 u   16  512  377   20.451   +2.490   1.435
-+132.163.96.3    .NIST.           1 u  354  512  263  129.800   +2.824   3.342
-#200.160.7.197   .GPS.            1 u  298  512  377  202.363  +10.443  37.258
-+130.159.196.117 130.149.17.21    2 u  345  512  277   29.012   +3.036   0.774
-+216.239.35.0    .GOOG.           1 u  327  512  277   14.522   +3.023   1.194
-+51.77.12.38     85.199.214.101   2 u  312  512  277   15.177   +3.498  56.583
-+129.134.28.123  .FB...           1 u  384  512  367   10.206   +3.683   0.556
-+40.119.148.38   25.66.230.1      3 u  420  512  375   23.620   +4.796   5.555
-
-*145.238.203.14  .MRS.            1 u   27  128  377   11.344   +1.514  42.094
-+62.108.36.235   157.90.24.29     3 u   97  128  371   22.493   +1.408   5.759
-+193.52.184.106  .LTFB.           1 u   57  128  377   20.018   +1.787  17.550
-+156.106.214.48  195.176.26.205   2 u  193  128  376   26.220   -1.392   9.318
-+128.138.140.44  .NIST.           1 u   84  128  377  131.799   +2.616   1.154
-+162.159.200.1   10.19.12.255     3 u   42  128  377    9.371   +2.303  28.967
-+204.9.54.119    .GPS.            1 u   84  128  377  101.751   +1.577   3.307
-#103.123.108.222 216.239.35.4     2 u  196  128  376  230.280   -9.398  20.539
-+176.235.22.135  .GPS.            1 u   74  128  377   61.582   +1.302   2.240
-+194.58.200.20   .PPS.            1 u   74  128  377   38.526   +2.733   4.569
-+216.239.35.4    .GOOG.           1 u  193  128  376   14.755   +1.804  26.498
-+131.176.107.13  .MRS.            1 u   98  128  373   23.510   +1.304   9.165
-+129.134.26.123  .FB...           1 u   82  128  377   10.917   +1.666   0.802
-+5.196.75.23     193.190.230.37   2 u   52  128  377   14.138   +1.615   0.940
-+51.145.123.29   25.66.230.3      3 u   72  128  377   17.815   +2.951   0.647
-+139.143.5.30    139.143.45.145   2 u   81  128  377   19.571   +1.310   3.676
-+139.143.5.31    139.143.45.169   2 u  192  128  376   19.944   +1.928  25.122
-+132.163.96.3    .NIST.           1 u   95  128  373  130.276   +1.587   2.042
-#200.160.7.197   .GPS.            1 u   34  128  377  202.835   +7.907   0.847
-+130.159.196.117 193.62.22.90     2 u   98  128  371   28.744   +1.604  11.215
-+216.239.35.0    .GOOG.           1 u   71  128  377   14.055   +2.021   0.678
-+51.77.12.38     85.199.214.101   2 u   50  128  377   14.244   +1.840  40.837
-+129.134.28.123  .FB...           1 u  113  128  377    9.996   +1.764   7.191
-
-*145.238.203.14  .MRS.            1 u   46  128  377   11.066   +1.351   0.720
-+62.108.36.235   157.90.24.29     3 u  106  128  377   22.959   +0.685   2.348
-+193.52.184.106  .LTFB.           1 u   69  128  277   20.702   +1.698   2.398
-+156.106.214.48  195.176.26.205   2 u   69  128  277   26.833   -1.402   0.668
-+128.138.140.44  .NIST.           1 u   99  128  277  131.389   +2.121   0.895
-+162.159.200.1   10.19.12.255     3 u   66  128  277    8.899   +1.487   0.875
-+204.9.54.119    .GPS.            1 u   91  128  277  101.492   +1.505   0.515
-#103.123.108.222 216.239.35.4     2 u   85  128  277  230.289  -10.480  14.837
-+176.235.22.135  .GPS.            1 u   89  128  277   61.201   +0.926   1.032
-+194.58.200.20   .PPS.            1 u   85  128  277   37.966   +2.470   1.388
-+216.239.35.4    .GOOG.           1 u   74  128  277   14.385   +1.293   2.420
-+131.176.107.13  .MRS.            1 u  108  128  377   22.887   +0.888   4.499
-+129.134.26.123  .FB...           1 u   79  128  277   10.290   +1.434  18.096
-+5.196.75.23     193.190.230.37   2 u   63  128  277   14.022   +1.265   1.493
-+51.145.123.29   25.66.230.3      3 u   86  128  277   18.184   +2.814   5.711
-+139.143.5.30    139.143.45.145   2 u   93  128  277   19.487   +1.410   0.542
-+139.143.5.31    139.143.45.169   2 u   76  128  277   19.073   +1.402   2.170
-+132.163.96.3    .NIST.           1 u  120  128  375  129.998   +1.232   0.294
-#200.160.7.197   .GPS.            1 u   55  128  377  202.608   +7.725   0.752
-+130.159.196.117 193.62.22.90     2 u  106  128  377   28.558   +1.223   0.908
-+216.239.35.0    .GOOG.           1 u   69  128  277   14.717   +1.449   0.921
-+51.77.12.38     85.199.214.101   2 u   58  128  277   15.201   +1.761   0.489
- 129.134.28.123  .FB...           1 u  129  128    3   10.101   +1.547   1.831
-
-*145.238.203.14  .MRS.            1 u   23   64  377   11.434   +2.088   6.943
-+62.108.36.235   157.90.24.29     3 u   19   64  367   22.895   +1.595   2.541
-+193.52.184.106  .LTFB.           1 u   49   64  357   21.351   +2.693  24.451
-+156.106.214.48  195.176.26.205   2 u   48   64  357   26.262   -0.915   1.313
-#128.138.140.44  .NIST.           1 u    8   64  377  132.221   +2.925   1.031
-+162.159.200.1   10.19.12.255     3 u   37   64  357    9.592   +2.210   1.177
-#204.9.54.119    .GPS.            1 u   66   64  357  101.485   +1.993   9.093
-#103.123.108.222 216.239.35.4     2 u   66   64  357  230.362   -9.812   3.194
-+176.235.22.135  .GPS.            1 u    -   64  337   62.743   +1.787   7.787
-+194.58.200.20   .PPS.            1 u   61   64  357   39.189   +3.452  12.347
-+216.239.35.4    .GOOG.           1 u   44   64  357   14.544   +1.602  11.226
-+131.176.107.13  .MRS.            1 u   30   64  377   23.508   +1.589   6.059
-+129.134.26.123  .FB...           1 u   60   64  357   10.561   +2.123   1.618
-+5.196.75.23     193.190.230.37   2 u   45   64  357   14.538   +2.144   0.856
-+51.145.123.29   25.66.230.4      3 u   50   64  357   18.076   +3.585   2.159
-+139.143.5.30    139.143.45.145   2 u    4   64  327   19.838   +1.546   3.660
-+139.143.5.31    139.143.45.169   2 u   55   64  313   19.952   +1.827   4.348
-+132.163.96.3    .NIST.           1 u   32   64  377  129.462   +1.289   6.657
-#200.160.7.197   .GPS.            1 u   30   64  377  201.851   +8.058   1.076
- 130.159.196.117 193.62.22.90     2 u   18   64    7   29.009   +1.907   2.173
- 216.239.35.0    .GOOG.           1 u   42   64    3   14.523   +2.135   0.895
- 51.77.12.38     85.199.214.101   2 u   41   64    3   14.838   +2.188   0.875
-
-*145.238.203.14  .MRS.            1 u   12   64   27   14.265   -0.363  57.774
-+62.108.36.235   157.90.24.29     3 u   11   64   27   20.015   +6.849   5.425
-+193.52.184.106  .LTFB.           1 u   40   64   27  133.513  -54.087  45.286
- 194.35.252.7    .STEP.          16 u    -   64    0    0.000   +0.000   0.000
-+156.106.214.48  195.176.26.205   2 u   33   64   37   25.865   -2.396   4.630
-+128.138.140.44  .NIST.           1 u   25   64   13  135.320   +3.208   3.853
-+162.159.200.1   10.19.12.255     3 u   22   64   21    9.401   +1.178   7.003
-+204.9.54.119    .GPS.            1 u   24   64   13  102.822   +0.266   6.568
-+103.123.108.222 216.239.35.4     2 u   23   64   13  232.321  -12.221   7.262
-+176.235.22.135  .GPS.            1 u   27   64   13   64.334   -1.486   7.560
-+194.58.200.20   .PPS.            1 u   27   64   13   38.505   +1.594  16.072
-#216.239.35.4    .GOOG.           1 u   60   64    7   15.611   +0.617   5.263
-+131.176.107.13  .MRS.            1 u   19   64   25   25.229   -0.625   7.451
-+129.134.26.123  .FB...           1 u   45   64   33   11.348   +1.510   5.689
-+5.196.75.23     193.190.230.37   2 u   30   64   37   20.115   -1.746  21.676
-+51.145.123.29   25.66.230.4      3 u   34   64   37   20.735   +2.424  24.479
-+139.143.5.30    139.143.45.145   2 u   61   64    7   19.376   +0.409   4.006
-#139.143.5.31    139.143.45.169   2 u   46   64   13   19.660   +0.900   4.000
-+132.163.96.3    .NIST.           1 u   15   64    5  130.505   +0.053   4.550
-+200.160.7.197   .GPS.            1 u   16   64    5  203.260   +6.928   4.069
-
-*145.238.203.14  .MRS.            1 u   42   64  357    9.677   +1.270   4.571
-+62.108.36.235   157.90.24.29     3 u    5   64  337   20.928  +10.558  23.636
-+193.52.184.106  .LTFB.           1 u   61   64  353   20.354  +12.320  32.587
- 194.35.252.7    .XFAC.          16 u    -  512    0    0.000   +0.000   0.000
-+185.122.238.196 192.33.96.101    2 u    8   64    7   23.954   +2.327  19.981
-#132.163.96.2    .NIST.           1 u    8   64    7  129.809   +1.377  25.291
-+162.159.200.1   10.19.12.255     3 u    8   64    7    9.327   +1.844   2.557
-#204.9.54.119    .GPS.            1 u    8   64    7  102.509   +1.796  28.842
-+51.15.182.163   193.190.230.37   2 u   12   64    7   11.145   +2.672   3.327
-+51.255.197.148  90.187.148.77    2 u   24   64  337   13.518   -1.198   6.087
-+216.239.35.8    .GOOG.           1 u   10   64    7   14.014   +1.590   9.301
-+131.176.107.13  .MRS.            1 u   42   64  357   23.379   +4.719  10.188
-+129.134.25.123  .FB...           1 u   13   64    7   19.400   +1.636  10.727
-+51.158.146.73   88.117.229.109   2 u   22   64  337   20.755   +1.334   4.203
-+51.145.123.29   25.66.230.5      3 u   14   64    7   17.706   +2.468  19.401
-#151.80.211.8    194.58.202.148   2 u   39   64    3   13.254   +1.228   1.359
-#84.16.67.12     .GPS.            1 u   69   64    7   26.949   +1.818   9.899
-#132.163.97.4    .NIST.           1 u    4   64   17  131.822   +1.084   7.994
-+62.108.36.235   157.90.24.29     3 u   45   64  333   22.007   -2.421   1.771
-+132.163.96.1    .NIST.           1 u   17   64   17  129.316   -0.112  13.148
-+162.159.200.123 10.19.12.255     3 u   61   64  315    8.633   -0.343  66.884
-*204.9.54.119    .GPS.            1 u   47   64  333  100.997   +0.270   6.862
- 91.121.154.174  213.251.128.249  3 u   16   64    1   15.084   -0.675   2.771
-+37.187.122.11   254.48.138.1     2 u   29   64  365   13.931   -0.785  85.468
-+78.124.165.81   .PPS0.           1 u    7   64  375   20.457   -1.918  15.032
-+216.239.35.8    .GOOG.           1 u    3   64  177   14.575   +0.517  98.156
-+139.143.5.31    139.143.45.169   2 u   28   64   75   19.135   +0.095   1.307
- 132.163.97.4    .NIST.           1 u   48   64    3  130.614   -0.288   0.600
- 200.160.7.197   .GPS.            1 u   29   64   15  202.175   +6.711   0.428
-
-*145.238.203.14  .MRS.            1 u   41  128  377   10.685   -2.133   2.374
-#62.108.36.235   157.90.24.29     3 u   36  128  367   22.192   -3.285   0.479
-+193.52.184.106  .LTFB.           1 u  242  256  377   20.413   -2.144  15.266
-+185.32.222.237  195.176.26.206   2 u   50  128  377   24.787   -2.794   1.018
-+128.138.140.44  .NIST.           1 u    8  128  337  130.705   -1.557   0.602
-+162.159.200.1   10.19.12.255     3 u  100  128  377    9.640   -1.666   1.020
-#204.9.54.119    .GPS.            1 u   50  128  377  105.101   -4.086   1.457
-#194.0.5.123     85.199.214.98    2 u    1  256  373   10.515   -1.323   0.796
-+212.85.158.10   145.238.203.14   2 u   36  128  377   20.791   -2.123   1.704
-+193.141.27.1    192.53.103.108   2 u  176  256  375   19.038   -1.809   1.183
-+216.239.35.4    .GOOG.           1 u   66  128  377   14.783   -2.300   0.912
-+131.176.107.13  .MRS.            1 u  124  128  377   22.952   -2.518   0.722
-+129.134.25.123  .FB...           1 u   79  128  337   20.538   -1.387   1.528
-+178.33.111.49   5.196.160.139    3 u   85  128  337   14.328   -1.999   1.422
-+51.145.123.29   25.66.230.5      3 u   46  128  377   18.937   -0.791   0.618
-+139.143.5.30    139.143.45.145   2 u  118  128  377   19.399   -2.217   1.314
-+139.143.5.31    139.143.45.169   2 u   71  128  337   19.109   -2.370   1.862
-#130.159.196.117 193.62.22.90     2 u   77  256  357   28.371   -2.956   1.675
-+162.159.200.123 10.19.12.255     3 u   48  128  367    9.522   -1.249   0.804
-+132.163.96.4    .NIST.           1 u   35  128  337  130.177   -2.509   1.644
-#2001:12ff:0:7:: .GPS.            1 u   62  128  377  190.123   -1.985   2.680
-
-*145.238.203.14  .MRS.            1 u  217  256  377   11.415  -11.005 107.502
-+62.108.36.235   157.90.24.29     3 u   10  256  375   22.073  -12.018  43.944
-+193.52.184.106  .LTFB.           1 u  254  256  377   21.045  -10.232   8.740
-+185.32.222.237  195.176.26.206   2 u  249  256  377   25.226  -11.520   2.795
-+128.138.140.44  .NIST.           1 u    9  256  377  127.887  -10.761   7.737
-+162.159.200.1   10.19.12.255     3 u  248  256  377    9.115   -9.712  15.319
-+204.9.54.119    .GPS.            1 u  236  256  377  102.117   -9.661   2.688
-+194.0.5.123     85.199.214.98    2 u   21  256  375   10.936   -9.155  12.138
-+212.85.158.10   195.176.26.206   2 u  252  256  377   19.947  -11.374  19.507
-+193.141.27.1    192.53.103.104   2 u   20  256  173   19.416  -12.185  11.630
-+216.239.35.4    .GOOG.           1 u  252  256  377   14.179  -11.091   9.438
-+131.176.107.13  .MRS.            1 u  229  256  377   26.573   -9.935  57.564
-+129.134.25.123  .FB...           1 u   20  256  375   19.831  -11.653  22.500
-+178.33.111.49   5.196.160.139    3 u  243  256  377   13.885   -8.856  24.362
-#51.145.123.29   25.66.230.4      3 u   12  256  375   18.022   -8.466   9.868
-+139.143.5.30    139.143.45.145   2 u  202  256  377   19.581   -9.765   8.044
-+139.143.5.31    139.143.45.169   2 u    9  256  375   19.155  -11.841  23.829
-#130.159.196.117 193.62.22.90     2 u  251  256  377   28.250  -11.489  12.695
-+162.159.200.123 10.19.12.255     3 u   24  256  375    9.021   -9.802   8.759
-+132.163.96.4    .NIST.           1 u    3  256  377  130.035   -9.887  11.991
-+2001:12ff:0:7:: .GPS.            1 u   13  256  377  193.366   -9.258  12.933
-
-*145.238.203.14  .MRS.            1 u  140  256  377   10.393   -4.825  20.871
-+62.108.36.235   157.90.24.29     3 u  212  256  337   21.914   -4.083  53.880
-+193.52.184.106  .LTFB.           1 u  182  256  317   19.894   -4.720  13.540
-+185.32.222.237  195.176.26.206   2 u  194  256  357   23.559   -5.650   5.082
-+128.138.140.44  .NIST.           1 u   61  256  377  128.095   -5.556  10.784
-+162.159.200.1   10.19.12.255     3 u  180  256  357    8.801   -3.513  11.013
-+204.9.54.119    .GPS.            1 u  201  256  317  102.110   -2.542   3.621
-+194.0.5.123     85.199.214.102   2 u  191  256  317    9.599   -3.795   5.701
-+212.85.158.10   195.176.26.206   2 u  186  256  317   28.453   -4.524  10.984
-+193.141.27.1    170.231.250.158  2 u  180  256  377   19.486   -4.919   3.719
-+216.239.35.4    .GOOG.           1 u  186  256  317   14.131   -2.918   6.733
-+131.176.107.13  .MRS.            1 u  176  256  357   24.320   -2.869   4.061
-+129.134.25.123  .FB...           1 u  180  256  357   19.152   -5.130   3.182
-+178.33.111.49   5.196.160.139    3 u  179  256  357   13.343   -2.699  11.274
-+51.145.123.29   25.66.230.4      3 u  205  256  317   17.359   -3.681   3.176
-+139.143.5.30    139.143.45.145   2 u  161  256  377   18.618   -3.987   8.039
-+139.143.5.31    139.143.45.169   2 u  188  256  177   17.916   -5.180   3.705
-+130.159.196.117 193.62.22.90     2 u  178  256  377   27.634   -3.688   9.666
-+162.159.200.123 10.19.12.255     3 u  224  256  327    9.204   -4.497  10.084
-+132.163.96.4    .NIST.           1 u   60  256  137  128.699   -4.103  61.665
-+2001:12ff:0:7:: .GPS.            1 u  216  256  317  189.636   -2.667  11.995
-
-*145.238.203.14  .MRS.            1 u   82  128  377   10.524   -2.244   2.964
-+62.108.36.235   157.90.24.29     3 u   24  128  377   21.964   -2.749   8.685
-+193.52.184.106  .LTFB.           1 u   16  128  377   20.097   -2.096   4.173
-+185.32.222.237  195.176.26.206   2 u  111  128  367   23.570   -3.361   2.447
-#128.138.140.44  .NIST.           1 u   38  128  377  127.725   -3.263   0.879
-+162.159.200.1   10.19.12.255     3 u  126  128  367   10.304   -1.245   4.469
-+204.9.54.119    .GPS.            1 u  125  128  367  100.907   -2.427   0.815
-+194.0.5.123     85.199.214.102   2 u  125  128  367    9.931   -1.678   3.888
-+212.85.158.10   195.176.26.206   2 u  126  128  377   28.073   -2.147   2.208
-+193.141.27.1    222.217.153.8    2 u  105  128  367   18.581   -2.419   1.743
-+216.239.35.4    .GOOG.           1 u  129  128  367   13.545   -2.167   2.341
-+131.176.107.13  .MRS.            1 u  124  128  377   22.868   -2.933   2.023
-+129.134.25.123  .FB...           1 u  131  128  377   18.895   -2.045   1.381
-+178.33.111.49   5.196.160.139    3 u  111  128  367   13.506   -1.520   1.684
-#51.145.123.29   25.66.230.5      3 u  126  128  367   17.037   -1.066   3.273
-+139.143.5.30    139.143.45.145   2 u   98  128  377   19.172   -2.328  21.970
-+139.143.5.31    139.143.45.169   2 u  114  128  367   18.245   -3.014   0.743
-+130.159.196.117 193.62.22.90     2 u  112  128  367   27.633   -2.377   0.756
-+162.159.200.123 10.19.12.255     3 u   18  128  377    9.152   -1.858   3.029
-+132.163.96.4    .NIST.           1 u   33  128  377  129.529   -2.603   4.901
-+2001:12ff:0:7:: .GPS.            1 u   23  128  377  189.738   -2.261   1.288
-
-*145.238.203.14  .MRS.            1 u   39  128  377   10.524   -2.244   0.568
-+62.108.36.235   157.90.24.29     3 u  100  128  377   23.073   -2.617   0.492
-+193.52.184.106  .LTFB.           1 u   91  128  377   20.097   -2.096   1.062
-+185.32.222.237  195.176.26.206   2 u   63  128  377   24.109   -2.563   2.562
-#128.138.140.44  .NIST.           1 u   56  128  377  128.565   -2.557   0.581
-+162.159.200.1   10.19.12.255     3 u   73  128  377    9.756   -2.011   0.460
-+204.9.54.119    .GPS.            1 u   74  128  377  100.565   -1.749   0.526
-+194.0.5.123     85.199.214.100   2 u   75  128  377    9.931   -1.678   0.439
-+212.85.158.10   145.238.203.14   2 u   79  128  377   28.306   -1.519   0.528
-+193.141.27.1    192.53.103.103   2 u   68  128  377   19.159   -1.706   1.427
-+216.239.35.4    .GOOG.           1 u   70  128  377   14.151   -1.361   9.324
-+131.176.107.13  .MRS.            1 u   79  128  377   22.872   -2.237   0.608
-+129.134.25.123  .FB...           1 u   77  128  377   18.956   -1.809   0.466
-+178.33.111.49   5.196.160.139    3 u   62  128  377   13.939   -0.993   0.777
-#51.145.123.29   25.66.230.5      3 u   71  128  377   17.726   -0.039   3.855
-+139.143.5.30    139.143.45.145   2 u   49  128  377   19.172   -2.328   2.448
-+139.143.5.31    139.143.45.169   2 u   65  128  377   18.761   -2.009   0.527
-+130.159.196.117 193.62.22.90     2 u   54  128  377   27.712   -1.987   0.612
-+162.159.200.123 10.19.12.255     3 u  101  128  377    8.643   -1.621   1.333
-+132.163.96.4    .NIST.           1 u   10  128  377  129.625   -1.965   3.158
-+2001:12ff:0:7:: .GPS.            1 u  107  128  377  190.484   -1.767   0.759
-
-*145.238.203.14  .MRS.            1 u   44   64    3   11.489   +0.114   6.599
-#62.108.36.235   157.90.24.29     3 u   35   64    3   22.574   -4.562   1.314
-+193.52.184.106  .LTFB.           1 u   25   64    3   20.201   -3.051   1.982
-+185.32.222.237  195.176.26.206   2 u   11   64    3   23.983   -2.712   1.477
-#128.138.140.44  .NIST.           1 u    9   64    3  128.840   -2.380   1.154
-+162.159.200.1   10.19.12.255     3 u    8   64    3    9.610   -1.118   1.240
-+204.9.54.119    .GPS.            1 u   10   64    3  101.430   -1.817   0.900
-+194.0.5.123     85.199.214.99    2 u   10   64    3   10.166   -0.791   1.093
-+212.85.158.10   145.238.203.14   2 u   10   64    3   20.053   -1.809   1.046
-+193.141.27.1    222.217.153.8    2 u    8   64    3   18.811   -1.304   1.004
-+216.239.35.4    .GOOG.           1 u    9   64    3   13.980   -0.886   2.867
-+131.176.107.13  .MRS.            1 u    6   64    3   23.491   -1.734   1.914
-+129.134.25.123  .FB...           1 u   11   64    3   19.952   -1.002   2.204
-+178.33.111.49   5.196.160.139    3 u    7   64    3   13.270   -0.909   0.801
-+51.145.123.29   25.66.230.1      3 u    8   64    3   17.322   +0.200   1.135
-+139.143.5.30    139.143.45.145   2 u   55   64    1   20.000   -1.468   1.275
-+139.143.5.31    139.143.45.169   2 u   53   64    1   21.103   -1.674   1.188
-+130.159.196.117 130.149.17.21    2 u   52   64    1   28.340   -0.106   0.733
- 162.159.200.123 10.19.12.255     3 u   30   64    1    8.637   -0.318   0.814
- 132.163.96.4    .NIST.           1 u   32   64    1  129.782   -0.774   0.705
- 2001:12ff:0:7:: .GPS.            1 u   25   64    1  190.132   -0.047   1.777
-
-*145.238.203.14  .MRS.            1 u  243  256  377   10.949   -4.928   6.312
-+62.108.36.235   157.90.24.29     3 u   28  512  377   22.296   -5.242  11.357
-+193.52.184.106  .LTFB.           1 u   25  512  377   20.566   -5.000   2.024
-+162.159.200.1   10.19.12.255     3 u   58  512  317    9.861   -2.107  12.157
-+132.163.97.6    .NIST.           1 u   52  512  357  130.259   -5.552   6.345
-+204.9.54.119    .GPS.            1 u   40  512  377  102.108   -4.288   8.629
-+51.255.209.72   145.238.203.14   2 u  260  256  377   21.000   -2.974  11.185
-+195.154.220.89  84.16.73.33      2 u   42  512  337   11.395   -4.357   5.109
-+78.124.165.81   .PPS0.           1 u  244  256  377   20.198   -5.744   1.948
-+216.239.35.0    .GOOG.           1 u   30  512  377   15.688   -4.162  28.253
-+131.176.107.13  .MRS.            1 u   59  512  337   23.635   -5.484  11.938
-+129.134.25.123  .FB...           1 u  125  512  377   20.293   -1.742   2.647
-#94.23.215.121   62.210.244.146   3 u  107  512  377   14.027   -2.151   4.854
-#51.145.123.29   25.66.230.1      3 u    7  512  377   18.678   -3.388   8.437
-+139.143.5.30    139.143.45.145   2 u   32  512  277   19.408   -4.006   1.899
-+139.143.5.31    139.143.45.169   2 u   81  512  377   18.905   -4.405  25.135
-+130.159.196.118 193.62.22.90     2 u   24  512  377   27.977   -4.435   1.931
-+216.239.35.4    .GOOG.           1 u  250  256  377   14.636   -2.196   7.914
-+132.163.97.1    .NIST.           1 u   31  256  377  130.615   -4.395   3.377
-#200.160.7.197   .GPS.            1 u  167  512  377  202.080   +2.928  11.943
-
-*145.238.203.14  .MRS.            1 u   30  128  377   10.847   -1.477   1.329
-#62.108.36.235   157.90.24.29     3 u   52  128  377   23.727   -2.627   2.220
-+193.52.184.106  .LTFB.           1 u   79  128  377   20.076   -1.496   1.038
-+162.159.200.1   10.19.12.255     3 u  107  128  177   10.519   -1.466   2.698
-+132.163.97.6    .NIST.           1 u   46  128  377  131.844   -1.896   2.939
-+204.9.54.119    .GPS.            1 u   64  128  377  101.703   -1.389   0.929
-+51.255.209.72   138.96.64.10     2 u   44  128  377   21.239   -1.968   3.200
-+195.154.220.89  84.16.73.33      2 u   60  128  377   10.857   -1.951   1.525
-#78.124.165.81   .PPS0.           1 u   38  128  377   22.363   -3.562  15.894
-+216.239.35.0    .GOOG.           1 u   34  128  377   13.805   -1.505   0.591
-+131.176.107.13  .MRS.            1 u   86  128  377   23.036   -2.152   1.151
-+129.134.25.123  .FB...           1 u   21  128  377   19.563   -2.154   7.962
-+94.23.215.121   176.137.36.37    2 u   93  128  377   14.163   -1.236  28.302
-#51.145.123.29   25.66.230.1      3 u   36  128  377   18.453   +0.383   1.946
-+139.143.5.30    139.143.45.145   2 u   60  128  377   18.850   -1.811   2.318
-+139.143.5.31    139.143.45.169   2 u  228  128  376   19.003   -1.356   0.710
-#130.159.196.118 193.62.22.90     2 u   63  128  377   28.130   -2.632  12.419
-+216.239.35.4    .GOOG.           1 u   34  128  357   14.145   -1.356   8.528
-#132.163.97.1    .NIST.           1 u   16  128  377  131.114   -2.020   0.924
-#200.160.7.197   .GPS.            1 u   27  128  377  201.984   +4.759   2.148
-
-*145.238.203.14  .MRS.            1 u   61   64  377   10.855   -1.927  20.204
-#62.108.36.235   40.95.204.66     3 u   58   64  377   23.094   -3.373   2.186
-+193.52.184.106  .LTFB.           1 u   97  128  377   19.451   -3.594   3.155
-+162.159.200.1   10.19.12.255     3 u   52   64  377    8.908   -1.978   1.224
-+132.163.97.6    .NIST.           1 u    1   64  377  131.529   -3.368  12.733
-+204.9.54.119    .GPS.            1 u   18   64  357  101.274   -2.572  30.723
-+51.255.209.72   138.96.64.10     2 u    2   64  377   21.205   -3.676   0.908
-+195.154.220.89  84.16.73.33      2 u   53   64  377   10.257   -3.100   1.331
-+78.124.165.81   .PPS0.           1 u    1   64  377   20.855   -4.208  14.952
-+216.239.35.0    .GOOG.           1 u   67   64  377   13.695   -2.500  12.102
-+131.176.107.13  .MRS.            1 u   44   64  377   22.778   -2.656  16.275
-+129.134.25.123  .FB...           1 u   18   64  357   18.699   -2.135   3.382
-#94.23.215.121   176.137.36.37    2 u  137  128  155   12.648   -4.914   2.521
-+51.145.123.29   25.66.230.5      3 u   54   64  377   17.817   -0.672   5.552
-+139.143.5.30    139.143.45.145   2 u  104   64  376   18.813   -2.829   5.318
-+139.143.5.31    139.143.45.169   2 u   50   64  377   18.803   -2.965  51.293
-#130.159.196.118 193.62.22.74     2 u   86  128  277   28.001   -4.543   6.561
-+216.239.35.4    .GOOG.           1 u   54   64  377   15.215   -1.159   3.228
-+132.163.97.1    .NIST.           1 u    3   64  357  130.724   -3.087   9.269
-#200.160.7.197   .GPS.            1 u   64   64  377  202.174   +4.347  14.987
-
-*145.238.203.14  .MRS.            1 u   67   64  377    9.855   -5.975   3.062
-#62.108.36.235   40.95.204.66     3 u   41   64  377   20.414   -6.924  57.245
-+193.52.184.106  .LTFB.           1 u  121  128  277   19.204   -5.191  14.169
-+162.159.200.1   10.19.12.255     3 u   43   64  377    8.285   -5.478   3.960
-#132.163.97.6    .NIST.           1 u   48   64  377  129.697   -5.913  16.403
-+204.9.54.119    .GPS.            1 u   13   64  377  100.087   -5.545   5.688
-+51.255.209.72   138.96.64.10     2 u   59   64  377   19.770   -5.677  12.745
-+195.154.220.89  84.16.73.33      2 u    3   64  377    9.164   -5.863   5.831
-#78.124.165.81   .PPS0.           1 u   59   64  377   18.912   -7.742  24.834
-+216.239.35.0    .GOOG.           1 u   66   64  377   13.358   -5.297   3.003
-#131.176.107.13  .MRS.            1 u   38   64  277   21.348  -21.034   8.806
-+129.134.25.123  .FB...           1 u   14   64  377   17.188   -6.046   5.677
-#94.23.215.121   176.137.36.37    2 u   25  128  237   11.917   -5.434  14.830
-#51.145.123.29   25.66.230.1      3 u   48   64  377   16.366   -4.547  25.622
-+139.143.5.30    139.143.45.145   2 u   31   64  377   17.852   -5.509  20.805
-+139.143.5.31    139.143.45.169   2 u   48   64  377   17.836   -5.050  24.120
-#130.159.196.118 193.62.22.74     2 u  114  128  277   27.251   -7.107  16.812
-+216.239.35.4    .GOOG.           1 u   42   64  377   12.249   -5.770   3.772
-#132.163.97.1    .NIST.           1 u   26   64  377  130.728   -5.991   6.079
-#200.160.7.197   .GPS.            1 u   53   64  377  200.567   +0.940   6.219
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
