@@ -2,139 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A81E4E66EA
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 17:23:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65DFA4E66F9
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 17:25:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351642AbiCXQZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 12:25:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
+        id S243204AbiCXQ1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 12:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351639AbiCXQZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 12:25:19 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1D63D4A8;
-        Thu, 24 Mar 2022 09:23:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Mpi6o7xeN/Ty9X1JVI6zzFbTtsWQQmcFLPuvEEzpv28=; b=5MDxCKDl5ahia3QE0xFnOqhof3
-        xWkDmQm1KTUQo3bK/ac0g4lDScq9s+idUmSQyKHIM0TbXzSt+q3yQp+atePfuO8JVAIbmGgRzBpSp
-        ayUMw3/ehGCG82LzA1108dkosaZh7gJgc65WHvjUgR2n7qk5g8uKtnOnQq1+wG7kXbow=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nXQFL-00CTiC-TQ; Thu, 24 Mar 2022 17:23:35 +0100
-Date:   Thu, 24 Mar 2022 17:23:35 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S236357AbiCXQ1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 12:27:08 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 273E26E7BE
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 09:25:35 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id g9so6932526ybf.1
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 09:25:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mk3MOuKJsVjxN7vOMpMgb0Z3pMUNj/bOGsrAecjCYYs=;
+        b=T/GWT01SPJUR96uv1nLOdB1f17Ez7GOBbaHJP3OC+J4Lz43JiuAfoxrxuNponjq9/3
+         9Ah4ttyPi5jk+GuWIAukl3SgMys7v9SafLmV4VuYUT86B18o9m0br0ryNy566I2Csf/9
+         nVaBOu1ToOmTHoKRE5CcbtHIspJaEbOLgrR2Km3tIZWuH5KTWiKbqzrohcX+pqMLDBMI
+         lO5Gr0DJy2d2P5+LPdTkvEfiex9jPM5/EsOkZXKGfXCsmDJVkHQZriOTk83QEu16LCzu
+         tFYnGY0IQgNTqsy/Uz/5MIBnbvOY0IRYGvyMCJkDIYheBgmlhQQMR8ERcoVfk+E5iRuo
+         to1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mk3MOuKJsVjxN7vOMpMgb0Z3pMUNj/bOGsrAecjCYYs=;
+        b=VTS5fA6oKyt/FkMjV3pMrfLm+Um5hcdyPStSDgfJaJYLuu9+qgdDvAlVuKvtK14itz
+         dfKUKDYcZq75Xuh43P2NtMZDDDDhHYfNPEcJQw7NtqMGnAbdySN8bl2aKu5zPGnl6jaz
+         jYuJLHyWoLjub+3WJ1UX17w5R016QRcY7iB9AhQ84/NHxRWAH/4F85k9g/0Un5UDBICd
+         0eJFen9murfpnYA2dkJNWntcBhD5OcfsLQK2B/rIHnZPwBPSrl/wFuLKM5oONBoHs0bB
+         TMKLiN67yAnNxwICdrlv8qBsj7ZgInA1i3SYuXqk0r5TKHpy5CA+InnaXXcW7i7JcqIv
+         8M6Q==
+X-Gm-Message-State: AOAM530zXhGi405ykJsrxeER/310S3wBbIuL30Krs+AgRBP3sA/vJ5sA
+        RfMFeA/d91nFYeGC4qHr9hkA7KuFdwz19w4vGN20cg==
+X-Google-Smtp-Source: ABdhPJxyQJQNF6aX65rAbQqRlolHS9ZRiN3trbxhkgovk8ml5L58NLYRwcg+Oo0+n9/rt0Aj6BWsD12/ddM++KY7q48=
+X-Received: by 2002:a5b:7c6:0:b0:60b:a0ce:19b with SMTP id t6-20020a5b07c6000000b0060ba0ce019bmr5289850ybq.407.1648139134851;
+ Thu, 24 Mar 2022 09:25:34 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220323004147.1990845-1-eric.dumazet@gmail.com>
+ <20220324062243.GA2496@kili> <CANn89iKJamk6v5gt67tE0tG0i3XS2LofJu34uT=_AVqYCs-0SQ@mail.gmail.com>
+In-Reply-To: <CANn89iKJamk6v5gt67tE0tG0i3XS2LofJu34uT=_AVqYCs-0SQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 24 Mar 2022 09:25:23 -0700
+Message-ID: <CANn89iKUMHrr8esnT2yMf6Pe6uLDRwemEsPhhTp+G_CRy_CCvg@mail.gmail.com>
+Subject: Re: [PATCH net-next] llc: fix netdevice reference leaks in llc_ui_bind()
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Xu Liang <lxu@maxlinear.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 4/5] net: phy: introduce is_c45_over_c22 flag
-Message-ID: <YjybB/fseibDU4dT@lunn.ch>
-References: <20220323183419.2278676-1-michael@walle.cc>
- <20220323183419.2278676-5-michael@walle.cc>
- <Yjt99k57mM5PQ8bT@lunn.ch>
- <8304fb3578ee38525a158af768691e75@walle.cc>
- <Yju+SGuZ9aB52ARi@lunn.ch>
- <30012bd8256be3be9977bd15d1486c84@walle.cc>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <30012bd8256be3be9977bd15d1486c84@walle.cc>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?6LW15a2Q6L2p?= <beraphin@gmail.com>,
+        Stoyan Manolov <smanolov@suse.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > To some extent, we need to separate finding the device on the bus to
-> > actually using the device. The device might respond to C22, give us
-> > its ID, get the correct driver loaded based on that ID, and the driver
-> > then uses the C45 address space to actually configure the PHY.
-> > 
-> > Then there is the Marvel 10G PHY. It responds to C22, but returns 0
-> > for the ID! There is a special case for this in the code, it then
-> > looks in the C45 space and uses the ID from there, if it finds
-> > something useful.
-> > 
-> > So as i said in my reply to the cover letter, we have two different
-> > state variables:
-> > 
-> > 1) The PHY has the C45 register space.
-> > 
-> > 2) We need to either use C45 transfers, or C45 over C22 transfers to
-> >    access the C45 register space.
-> > 
-> > And we potentially have a chicken/egg problem. The PHY driver knows
-> > 1), but in order to know what driver to load we need the ID registers
-> > from the PHY, or some external hint like DT. We are also currently
-> > only probing C22, or C45, but not C45 over C22. And i'm not sure we
-> > actually can probe C45 over C22 because there are C22 only PHYs which
-> > use those two register for other things. So we are back to the driver
-> > again which does know if C45 over C22 will work.
-> 
-> Isn't it safe to assume that if a PHY implements the indirect
-> registers for c45 in its c22 space that it will also have a valid
-> PHY ID and then the it's driver will be probed?
+On Thu, Mar 24, 2022 at 7:38 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Wed, Mar 23, 2022 at 11:23 PM Dan Carpenter <dan.carpenter@oracle.com>=
+ wrote:
+> >
+> > On Tue, Mar 22, 2022 at 05:41:47PM -0700, Eric Dumazet wrote:
+> > > From: Eric Dumazet <edumazet@google.com>
+> > >
+> > > Whenever llc_ui_bind() and/or llc_ui_autobind()
+> > > took a reference on a netdevice but subsequently fail,
+> > > they must properly release their reference
+> > > or risk the infamous message from unregister_netdevice()
+> > > at device dismantle.
+> > >
+> > > unregister_netdevice: waiting for eth0 to become free. Usage count =
+=3D 3
+> > >
+> > > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > > Reported-by: =E8=B5=B5=E5=AD=90=E8=BD=A9 <beraphin@gmail.com>
+> > > Reported-by: Stoyan Manolov <smanolov@suse.de>
+> > > ---
+> > >
+> > > This can be applied on net tree, depending on how network maintainers
+> > > plan to push the fix to Linus, this is obviously a stable candidate.
+> >
+> > This patch is fine, but it's that function is kind of ugly and difficul=
+t
+> > for static analysis to parse.
+>
+> We usually do not mix bug fixes and code refactoring.
+>
+> Please feel free to send a refactor when net-next reopens in two weeks.
+>
+> Thanks.
 
-See: https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/phy_device.c#L895
+I took another look at this code, and there might be an issue in llc_ui_bin=
+d(),
+if the "goto out;" is taken _before_ we took a reference on a device.
 
-No valid ID in C22 space.
+We might now release the reference taken by a prior (and successful bind)
 
-> So if a PHY is
-> probed as c22 its driver might tell us "wait, it's actually a c45
-> phy and hey for your convenience it also have the indirect registers
-> in c22". We can then set has_c45 and maybe c45_over_c22 (also depending
-> on the bus capabilities).
-
-In general, if the core can do something, it is better than the driver
-doing it. If the core cannot reliably figure it out, then we have to
-leave it to the drivers. It could well be we need the drivers to set
-has_c45. I would prefer that drivers don't touch c45_over_c22 because
-they don't have the knowledge of what the bus is capable of doing. The
-only valid case i can think of is for a very oddball PHY which has C45
-register space, but cannot actually do C45 transfers, and so C45 over
-C22 is the only option.
-
-> > So phydev->has_c45 we can provisionally set if we probed the PHY by
-> > C45. But the driver should also set it if it knows better, or even the
-> > core can set it the first time the driver uses an _mmd API call.
-> 
-> I'm not sure about the _mmd calls, there are PHYs which have MMDs
-> (I guess EEE is an example?) but are not capable of C45 accesses.
-
-Ah, yes, i forgot about EEE. That was a bad idea.
-
-> > phydev->c45_over_c22 we are currently in a bad shape for. We cannot
-> > reliably say the bus master supports C45. If the bus capabilities say
-> > C22 only, we can set phydev->c45_over_c22. If the bus capabilities
-> > list C45, we can set it false. But that only covers a few busses, most
-> > don't have any capabilities set. We can try a C45 access and see if we
-> > get an -EOPNOTSUPP, in which case we can set phydev->c45_over_c22. But
-> > the bus driver could also do the wrong thing, issue a C22 transfer and
-> > give us back rubbish.
-> 
-> First question, what do you think about keeping the is_c45 property but
-> with a different meaning and add use_c45_over_c22. That way it will be
-> less code churn:
-> 
->  * @is_c45:  Set to true if this PHY has clause 45 address space.
->  * @use_c45_over_c22:  Set to true if c45-over-c22 addressing is used.
-
-I prefer to change is_c45. We then get the compiler to help us with
-code review. The build bots will tell us about any code we fail to
-check and change. It will also help anybody with out of tree code
-making use of is_c45.
-
-       Andrew
+So it turns out another fix is needed.
