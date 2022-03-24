@@ -2,124 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 203B34E61B1
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 11:25:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 172E04E61C5
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 11:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349490AbiCXK0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 06:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
+        id S242695AbiCXKdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 06:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349483AbiCXK0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 06:26:53 -0400
-Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B765C483A3;
-        Thu, 24 Mar 2022 03:25:21 -0700 (PDT)
-Received: from spock.localnet (unknown [83.148.33.151])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 46336E4A5DD;
-        Thu, 24 Mar 2022 11:25:08 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1648117508;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0kZDRe244Ho+56p1lKIcy0+GT4xOH+L25rK8rNrmj5M=;
-        b=xTLCXRCNMwAKN6C6abDkvpf8K2mg/Sm4GaWSCsryLwp5Fq4HqX8lUoEohqBSWrzOqMIaix
-        kRFT7EmZ97tKbHZfyY4//hxr65jVGb/7gVgp7+S6tP4fJ8p1HUuP7h1jt5+OqhjIlCJgG2
-        yc1FDX9OJ6CAbtcVZklteEyyfX7d5Cw=
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Toke =?ISO-8859-1?Q?H=F8iland=2DJ=F8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break ath9k-based AP
-Date:   Thu, 24 Mar 2022 11:25:06 +0100
-Message-ID: <4386660.LvFx2qVVIh@natalenko.name>
-In-Reply-To: <20220324055732.GB12078@lst.de>
-References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com> <20220324055732.GB12078@lst.de>
+        with ESMTP id S229541AbiCXKdp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 06:33:45 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83D39E9CC;
+        Thu, 24 Mar 2022 03:32:13 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id 17so5519175ljw.8;
+        Thu, 24 Mar 2022 03:32:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=yIGBhHdGmmA6wfhq/C+I/3lptUPuCRf9dLkGG/+jm/0=;
+        b=UECv386z8DX2m17XrbzsWDtNOzryfJvtsSbyNTgODZ/baOrSAi26WyQodjOx/EVuTN
+         i9gdHVYgFlKbM9Q1+/08aVpUWHklq+lG/ToDHtsZwCGIbpPEHAkKJwagSfcUXchYQejK
+         CEImEFdTQxPQ1Jk2Gq5CPAcOGTEVQlzJT13oM8IuTCrtBQ5xUp1CLp/Ot0YOfOGJ578W
+         Vjnyi9PMvGfFyTaOCvwUxNTPFE3UMKE8WF+xWZCJf92txuRqerdZCpuWlHA0tiW9mYZr
+         cqBHnDx2AnoP/LKtZ6tYr5mbrEwS85AKdUkKcKL+QNtDieFCglv+4bovA/N8I6rA8S9r
+         /6ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=yIGBhHdGmmA6wfhq/C+I/3lptUPuCRf9dLkGG/+jm/0=;
+        b=0VFXeEwBL8RdeAvHfUDf7U/S4V6iP0ouyFiAv+ng+sgHZuYi0V9nwXb4Xy7vBe/qYB
+         2vNVaPEAkkz9XpC3WgfppQaboDufeuVDG4xtA4f+juC08PTXQ95pIk321r/5g76oIxkX
+         xmlHKhQUIUMJlEk4gqovgBZxFMYGIaIH4XBA89E8FKf3jzvudIzInJxbxHwlGZKBzR+f
+         hC25gdnqw+WDKPS3DzCnEKgavQZdSy/phMhPquy8Odc1vK1gi2/gD1XGEiLlsovT147b
+         WLoFuSztjhtWoQKQQsR67iqYXYACZ2JqJnZlIWuXJ7cAeCKuCiDjoG2Sie054LLTnHH9
+         UqcQ==
+X-Gm-Message-State: AOAM533Eup4wSGamh/0yasGXQ4Qk2b7zopa+qd+kipwO7/3xi8iVnX/r
+        FQJTnbpiyU4HUsTbIZ1f77gmcmAMpl2HiWf2
+X-Google-Smtp-Source: ABdhPJzCULThTsLuOBtIbhx5MseJh312jiRpFnwVxEIh8muMTtUjy8iMJZWGuKG5tjrjFK2IU8HUuA==
+X-Received: by 2002:a2e:9904:0:b0:247:ec95:fdee with SMTP id v4-20020a2e9904000000b00247ec95fdeemr3684456lji.291.1648117931993;
+        Thu, 24 Mar 2022 03:32:11 -0700 (PDT)
+Received: from wse-c0127 ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id g27-20020a2eb5db000000b002498222c8dasm286633ljn.65.2022.03.24.03.32.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 03:32:11 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
+ offloading of fdb locked flag
+In-Reply-To: <20220323144304.4uqst3hapvzg3ej6@skbuf>
+References: <20220317093902.1305816-1-schultz.hans+netdev@gmail.com>
+ <20220317093902.1305816-3-schultz.hans+netdev@gmail.com>
+ <86o81whmwv.fsf@gmail.com> <20220323123534.i2whyau3doq2xdxg@skbuf>
+ <86wngkbzqb.fsf@gmail.com> <20220323144304.4uqst3hapvzg3ej6@skbuf>
+Date:   Thu, 24 Mar 2022 11:32:08 +0100
+Message-ID: <86lewzej4n.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+On ons, mar 23, 2022 at 16:43, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Wed, Mar 23, 2022 at 01:49:32PM +0100, Hans Schultz wrote:
+>> >> Does someone have an idea why there at this point is no option to add a
+>> >> dynamic fdb entry?
+>> >> 
+>> >> The fdb added entries here do not age out, while the ATU entries do
+>> >> (after 5 min), resulting in unsynced ATU vs fdb.
+>> >
+>> > I think the expectation is to use br_fdb_external_learn_del() if the
+>> > externally learned entry expires. The bridge should not age by itself
+>> > FDB entries learned externally.
+>> >
+>> 
+>> It seems to me that something is missing then?
+>> My tests using trafgen that I gave a report on to Lunn generated massive
+>> amounts of fdb entries, but after a while the ATU was clean and the fdb
+>> was still full of random entries...
+>
+> I'm no longer sure where you are, sorry..
+> I think we discussed that you need to enable ATU age interrupts in order
+> to keep the ATU in sync with the bridge FDB? Which means either to
+> delete the locked FDB entries from the bridge when they age out in the
+> ATU, or to keep refreshing locked ATU entries.
+> So it seems that you're doing neither of those 2 things if you end up
+> with bridge FDB entries which are no longer in the ATU.
 
-On =C4=8Dtvrtek 24. b=C5=99ezna 2022 6:57:32 CET Christoph Hellwig wrote:
-> On Wed, Mar 23, 2022 at 08:54:08PM +0000, Robin Murphy wrote:
-> > I'll admit I still never quite grasped the reason for also adding the=20
-> > override to swiotlb_sync_single_for_device() in aa6f8dcbab47, but I thi=
-nk=20
-> > by that point we were increasingly tired and confused and starting to=20
-> > second-guess ourselves (well, I was, at least). I don't think it's wron=
-g=20
-> > per se, but as I said I do think it can bite anyone who's been doing=20
-> > dma_sync_*() wrong but getting away with it until now. If ddbd89deb7d3=
-=20
-> > alone turns out to work OK then I'd be inclined to try a partial revert=
- of=20
-> > just that one hunk.
->=20
-> Agreed.  Let's try that first.
->=20
-> Oleksandr, can you try the patch below:
->=20
->=20
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 6db1c475ec827..6c350555e5a1c 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -701,13 +701,10 @@ void swiotlb_tbl_unmap_single(struct device *dev, p=
-hys_addr_t tlb_addr,
->  void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_=
-addr,
->  		size_t size, enum dma_data_direction dir)
->  {
-> -	/*
-> -	 * Unconditional bounce is necessary to avoid corruption on
-> -	 * sync_*_for_cpu or dma_ummap_* when the device didn't overwrite
-> -	 * the whole lengt of the bounce buffer.
-> -	 */
-> -	swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
-> -	BUG_ON(!valid_dma_direction(dir));
-> +	if (dir =3D=3D DMA_TO_DEVICE || dir =3D=3D DMA_BIDIRECTIONAL)
-> +		swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
-> +	else
-> +		BUG_ON(dir !=3D DMA_FROM_DEVICE);
->  }
-> =20
->  void swiotlb_sync_single_for_cpu(struct device *dev, phys_addr_t tlb_add=
-r,
->=20
-
-With this patch the AP works for me.
-
-Thanks.
-
-=2D-=20
-Oleksandr Natalenko (post-factum)
-
-
+Any idea why G2 offset 5 ATUAgeIntEn (bit 10) is set? There is no define
+for it, so I assume it is something default?
