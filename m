@@ -2,120 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20F534E61F0
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 11:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E65274E6214
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:06:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349508AbiCXKru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 06:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        id S1349638AbiCXLGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 07:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240458AbiCXKru (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 06:47:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6037A27C0
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 03:46:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648118777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SY8Zpg3HfKN7OLvRr+t2R2NBXsTqrDCHJm44fgalnyI=;
-        b=H+0yYJohDgCfJzHIuhECwrzd2IoNwfRHJLnGknVRPE/PJlqjJBQiKjzhKgj2EWseTvCXdD
-        gPbsufjNdnWqCpmARxMlLF3+JZZlWK+SXlljE2iKp2sPrUOps9Osl0VJtkVGwoTKRt+pVM
-        zyXlIr2FjBeAU5tKMFoUxDt8NBET5UE=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-36-56vT88VtO-C1uQkHY6W_lg-1; Thu, 24 Mar 2022 06:46:16 -0400
-X-MC-Unique: 56vT88VtO-C1uQkHY6W_lg-1
-Received: by mail-wr1-f72.google.com with SMTP id o9-20020adfca09000000b001ea79f7edf8so1537974wrh.16
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 03:46:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=SY8Zpg3HfKN7OLvRr+t2R2NBXsTqrDCHJm44fgalnyI=;
-        b=Y/z/xXawYMmA4VpiBH4vk7P5gNyWRu2bfo2TBMErBFZhGGunFpzykaU9GKRyhbTijf
-         xV+ms+H9D27lh6XD76B+dXF3+WxDokg8xn1JRQ01kfxl3L8tTazHV7EGK5Q7aq22b79M
-         oB9YMYnXDo9vZl2138N258OvlYqnhYyJnLMl5Y0BPGyROSggApv1LRbbYAg3ar7+w4xe
-         ZYuFOQjuBQ5zaFK5wD85mG4Cfag1B/TkMcmWXyyoMqsVLDVxj6krFSQyuqZHZeF/s4se
-         JmxHxNqGVslgGHcbc/7XcNAucj9EPHyDHUddyQcBpSqCCA7YQj6CcHeXLzSS32/mzyop
-         yBig==
-X-Gm-Message-State: AOAM533aiHidpOc74UfmyFQJPPO2UcwCa/uOkckL4sLb8sgyxa0irs45
-        7IEkWk/sGASOK72IyO4WIBDdfjAHkbCuzUOI+n7H1lW/Dhk0c+0Gfme7N72n87Pw7hCdHFAw1LT
-        tmxs75vUUTeiTidE1
-X-Received: by 2002:a05:6000:1083:b0:203:fbd3:937e with SMTP id y3-20020a056000108300b00203fbd3937emr3947184wrw.139.1648118775385;
-        Thu, 24 Mar 2022 03:46:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxqwK363x/lQQ7GkLV8cbmtKe+6jv7+DtEPxZLenuGRyjD62htTnjjltK8uF850hOZimwkWcw==
-X-Received: by 2002:a05:6000:1083:b0:203:fbd3:937e with SMTP id y3-20020a056000108300b00203fbd3937emr3947168wrw.139.1648118775167;
-        Thu, 24 Mar 2022 03:46:15 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-232-135.dyn.eolo.it. [146.241.232.135])
-        by smtp.gmail.com with ESMTPSA id t4-20020a05600001c400b00203fb5dcf29sm2188758wrx.40.2022.03.24.03.46.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 03:46:14 -0700 (PDT)
-Message-ID: <7393b673c626fd75f2b4f8509faa5459254fb87c.camel@redhat.com>
-Subject: Re: [PATCH] bnx2x: replace usage of found with dedicated list
- iterator variable
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakob Koschel <jakobkoschel@gmail.com>,
-        Ariel Elior <aelior@marvell.com>
-Cc:     Sudarsana Kalluru <skalluru@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Date:   Thu, 24 Mar 2022 11:46:13 +0100
-In-Reply-To: <20220324070816.58599-1-jakobkoschel@gmail.com>
-References: <20220324070816.58599-1-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        with ESMTP id S242588AbiCXLGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:06:48 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B0615BD0E;
+        Thu, 24 Mar 2022 04:05:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D3FD11515;
+        Thu, 24 Mar 2022 04:05:16 -0700 (PDT)
+Received: from [10.57.43.230] (unknown [10.57.43.230])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E8DC3F73D;
+        Thu, 24 Mar 2022 04:05:13 -0700 (PDT)
+Message-ID: <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com>
+Date:   Thu, 24 Mar 2022 11:05:08 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Content-Language: en-GB
+To:     Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Christoph Hellwig <hch@lst.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4386660.LvFx2qVVIh@natalenko.name>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-On Thu, 2022-03-24 at 08:08 +0100, Jakob Koschel wrote:
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
+On 2022-03-24 10:25, Oleksandr Natalenko wrote:
+> Hello.
 > 
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
+> On čtvrtek 24. března 2022 6:57:32 CET Christoph Hellwig wrote:
+>> On Wed, Mar 23, 2022 at 08:54:08PM +0000, Robin Murphy wrote:
+>>> I'll admit I still never quite grasped the reason for also adding the
+>>> override to swiotlb_sync_single_for_device() in aa6f8dcbab47, but I think
+>>> by that point we were increasingly tired and confused and starting to
+>>> second-guess ourselves (well, I was, at least). I don't think it's wrong
+>>> per se, but as I said I do think it can bite anyone who's been doing
+>>> dma_sync_*() wrong but getting away with it until now. If ddbd89deb7d3
+>>> alone turns out to work OK then I'd be inclined to try a partial revert of
+>>> just that one hunk.
+>>
+>> Agreed.  Let's try that first.
+>>
+>> Oleksandr, can you try the patch below:
+>>
+>>
+>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>> index 6db1c475ec827..6c350555e5a1c 100644
+>> --- a/kernel/dma/swiotlb.c
+>> +++ b/kernel/dma/swiotlb.c
+>> @@ -701,13 +701,10 @@ void swiotlb_tbl_unmap_single(struct device *dev, phys_addr_t tlb_addr,
+>>   void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
+>>   		size_t size, enum dma_data_direction dir)
+>>   {
+>> -	/*
+>> -	 * Unconditional bounce is necessary to avoid corruption on
+>> -	 * sync_*_for_cpu or dma_ummap_* when the device didn't overwrite
+>> -	 * the whole lengt of the bounce buffer.
+>> -	 */
+>> -	swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
+>> -	BUG_ON(!valid_dma_direction(dir));
+>> +	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
+>> +		swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
+>> +	else
+>> +		BUG_ON(dir != DMA_FROM_DEVICE);
+>>   }
+>>   
+>>   void swiotlb_sync_single_for_cpu(struct device *dev, phys_addr_t tlb_addr,
+>>
 > 
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
-> 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+> With this patch the AP works for me.
 
-This looks like a purely net-next change, and we are in the merge
-window: net-next is closed for the time being. Could you please re-post
-after net-next re-open?
+Cool, thanks for confirming. So I think ath9k probably is doing 
+something dodgy with dma_sync_*(), but if Linus prefers to make the 
+above change rather than wait for that to get figured out, I believe 
+that should be fine.
 
-Additionally, I suggest you to bundle the net-next patches in a single
-series, namely:
+The crucial part of the "rework" patch is that we'll unconditionally 
+initialise the SWIOTLB bounce slot as it's allocated in 
+swiotlb_tbl_map_single(), regardless of DMA_ATTR_SKIP_CPU_SYNC. As long 
+as that happens, we're safe in terms of leaking data from previous 
+mappings, and any possibility for incorrect sync usage to lose 
+newly-written DMA data is at least no worse than it always has been. The 
+most confusion was around how the proposed DMA_ATTR_OVERWRITE attribute 
+would need to interact with DMA_ATTR_SKIP_CPU_SYNC to remain safe but 
+still have any useful advantage, so unless and until anyone wants to 
+revisit that, this should remain comparatively simple to reason about.
 
-bnx2x: replace usage of found with dedicated list iterator variable 
-octeontx2-pf: replace usage of found with dedicated list iterator variable 
-sctp: replace usage of found with dedicated list iterator variable 
-taprio: replace usage of found with dedicated list iterator variable 
-
-that will simplify the processing, thanks!
-
-Paolo
-
+Cheers,
+Robin.
