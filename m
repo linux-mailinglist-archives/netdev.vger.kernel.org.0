@@ -2,63 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB384E65CF
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 16:08:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 355BD4E65D2
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 16:10:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351201AbiCXPJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 11:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
+        id S1351214AbiCXPLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 11:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242453AbiCXPJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 11:09:44 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375863EBBD
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 08:08:12 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id w8so4976650pll.10
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 08:08:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KVMloc/kbPOlh+fhcenGG2fkM8L2VPd09yHcL/R62pY=;
-        b=P3Ax/+Jl0I/phbXxlX5LA09qVadoXyy9ja9NQbtN5d9Y/jzitCCnKrGqPgBQmd1wUD
-         A0eaoLJNF/VIdw4OVLy2RPy/aCU5tQx7/lVbGFbipYDCiQzW0SEp5wFTJ5Y/05evWw/s
-         fS2XXrtN2n6q++xtNN60zkbm5UG655jWuUFXrE/VmBqDwQWNaMyw/jog0E86HEwtaGhM
-         mH//ElA8VYvsKVTuDoOByWMjRoEM3DdDqyRYrrzviMXOVxli3RhpDF4wKRCGmZL/yLtL
-         IhtJc4i0kVYV6Xff3+Dqcs8Oh92POVh8G+S3yLHJkgwLFOf5Ev9X9sne6h5i4SLcHZ76
-         IEhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KVMloc/kbPOlh+fhcenGG2fkM8L2VPd09yHcL/R62pY=;
-        b=he6ILcq3SMSnG5Fpj0tKpcFj3PqqPwHQF2mXlc0hdrvJI03n5DvmGpxZY6tjYPsUkR
-         YvTy2UrmvIyF12jmu/1TJCwDSPz7mdcY5q6lbKUMyxt7yMCgKrBHN4pSfmlc6D36DZ40
-         eqOAeWDmMAarkPileK2cGDbEYA/haL3ELZqCswinH5dFrXa2cYbyDYrgkhvWIBP7sntT
-         SoTBa5J5RvEiAt1zOTq4/NWoK8z7yxW2B27DdA4ma5tLB03aLqGqtTCRbzF9K+0s04zX
-         E98Itt/ADZWJ9L9w42JtiGzHs0QlrYB17xPjHQwJ2yHMdvi/xWXKTXdV+0A/ORkQ0xXu
-         3rAQ==
-X-Gm-Message-State: AOAM530nfah9n9uTqZs49i/QMRqr5PEIDY84UY8hETrCGJwE8a9D4mF/
-        x0mdIFK3EsMMn3dwFVD4brx4rH7zD85OPg==
-X-Google-Smtp-Source: ABdhPJzghkzypx/8hXSuCG3pRNtPuES7747UxhGFeOnMVuAj66v1zbLjOvrsZxUoSZSVQJbqORAjag==
-X-Received: by 2002:a17:90b:1811:b0:1c7:832a:3388 with SMTP id lw17-20020a17090b181100b001c7832a3388mr6892360pjb.40.1648134491456;
-        Thu, 24 Mar 2022 08:08:11 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id z6-20020a056a00240600b004e17ab23340sm4058168pfh.177.2022.03.24.08.08.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 08:08:11 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 08:08:08 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 215739] New: /proc/sys/net/ipv4/conf/*/send_redirects
- doesn't work per-interface
-Message-ID: <20220324080808.3cddbae4@hermes.local>
+        with ESMTP id S242453AbiCXPLj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 11:11:39 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A2654BD1;
+        Thu, 24 Mar 2022 08:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=f5oOspRh6b6xUiXhiR6MzWaDr0tDAiwTUoZFSaMVZnY=; b=w9CvSAtf/kpb9Pu/HHyjEICpxE
+        zVRVDCUr6YzuaxbNZb8ZQHcu8506AHjM308BqLbF9cwK/DQUwZCBZ0kFJzRgllhp/EgNnZCdnQ5O+
+        ZzwLn9txDJrX36POo7o0qNVThGdM86xfaz051rfUqAY2W1kO0SxR18w81tsgCbSrPOIw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nXP5v-00CSpN-2B; Thu, 24 Mar 2022 16:09:47 +0100
+Date:   Thu, 24 Mar 2022 16:09:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next 2/5] net: phy: support indirect c45 access
+ in get_phy_c45_ids()
+Message-ID: <YjyJu6AlC/0fRIGE@lunn.ch>
+References: <20220323183419.2278676-1-michael@walle.cc>
+ <20220323183419.2278676-3-michael@walle.cc>
+ <Yjt3hHWt0mW6er8/@lunn.ch>
+ <7503a496e1456fa65e4317bbe7590d9d@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7503a496e1456fa65e4317bbe7590d9d@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,44 +57,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 24, 2022 at 03:28:43PM +0100, Michael Walle wrote:
+> Am 2022-03-23 20:39, schrieb Andrew Lunn:
+> > > +static int mdiobus_probe_mmd_read(struct mii_bus *bus, int prtad,
+> > > int devad,
+> > > +				  u16 regnum)
+> > > +{
+> > > +	int ret;
+> > > +
+> > > +	/* For backwards compatibility, treat MDIOBUS_NO_CAP as c45
+> > > capable */
+> > > +	if (bus->probe_capabilities == MDIOBUS_NO_CAP ||
+> > > +	    bus->probe_capabilities >= MDIOBUS_C45)
+> > 
+> > Maybe we should do the work and mark up those that are C45 capable. At
+> > a quick count, see 16 of them.
+> 
+> I guess you grepped for MII_ADDR_C45 and had a look who
+> actually handled it correctly. Correct?
 
+Yes.
 
-Begin forwarded message:
+> Let's say we mark these as either MDIOBUS_C45 or MDIOBUS_C45_C22,
+> can we then drop MDIOBUS_NO_CAP and make MDIOBUS_C22 the default
+> value (i.e. value 0) or do we have to go through all the mdio drivers
+> and add bus->probe_capabilities = MDIOBUS_C22 ? Grepping for
+> {of_,}mdiobus_register lists quite a few of them.
 
-Date: Thu, 24 Mar 2022 13:10:51 +0000
-From: bugzilla-daemon@kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 215739] New: /proc/sys/net/ipv4/conf/*/send_redirects doesn't work per-interface
+The minimum is marking those that support C45 with MDIOBUS_C45 or
+MDIOBUS_C45_C22. We can then really trust it does C45. Those that
+don't set probe_capabilities we assume are C22 only. That should be
+enough for this problem.
 
+FYI: Yesterday i started actually adding probe_capabilities values to
+drivers. I did everything in driver/net/mdio. I will work on the rest
+over the next few days and then post an RFC patchset.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215739
-
-            Bug ID: 215739
-           Summary: /proc/sys/net/ipv4/conf/*/send_redirects doesn't work
-                    per-interface
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.4.154
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: luke-jr+linuxbugs@utopios.org
-        Regression: No
-
-I have some custom routing rules that ICMP redirects interfere with, so I tried
-to disable them by writing 0 to /proc/sys/net/ipv4/conf/br-lan/send_redirects,
-but this didn't actually work. Neither did it for the bridge sub-interfaces.
-
-To disable redirects, I had to write to
-/proc/sys/net/ipv4/conf/lo/send_redirects instead.
-
--- 
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are the assignee for the bug.
+     Andrew
