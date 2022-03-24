@@ -2,108 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C47F84E6A18
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 22:05:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D3DA4E6A23
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 22:14:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353917AbiCXVGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 17:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48976 "EHLO
+        id S1354061AbiCXVQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 17:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353907AbiCXVGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 17:06:44 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7E8427E3;
-        Thu, 24 Mar 2022 14:05:11 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id k10so7068727edj.2;
-        Thu, 24 Mar 2022 14:05:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Jz8mqrCeINcLuETLQq56jM/2c+bU2W9c5RPQ+bVGK/g=;
-        b=KM1I+S0Huz6XlzoIJmCckQ7q4HO9WLvxQ9t3+h+GhZmbA4QI9eKBn+k0D+I6j6B2Gu
-         kHvzNk1OigWzVq4FRUFBUWKQeZRonwE8AaniYbwSWixIvLkEPUCQmJ0rRaiQhbqMeXEh
-         EPOssxT0E8qFSVEq9uIGLCar7CXxDJ/DRQfXQjnJPy+JRgM4QRk6kKyuCl8c/Wxq7yB9
-         TyNUCkYaotcreT4IDepzuSR64vPFywouUIGIwNv7adJu+XevGMBo123iRZ9MUZ03YyHS
-         IKpoZDjfIsP+8KnGNF/uDFOWyekcK7x/lo4Xo3U0P8rz0I+47iNPXuB5aY4zXWlx2Z7f
-         J3yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Jz8mqrCeINcLuETLQq56jM/2c+bU2W9c5RPQ+bVGK/g=;
-        b=m34AEeU+ZwS5fHlvAjNjMQCl7XNjg519z77uqup0COGkmWU0tcHEW+Tm4Y6E/UhRie
-         gNawxschkYWCHkA2facJ/olKSfoxPxjVcyUF2/CfA4ZI1cE/xoVIWP/zVs6FBOqfvWwU
-         7WSJmVgeh2ntaZHS65o2Vt0A6+GRzEuBqgGUx2ULUG2D/3CItrbojwIkd4mkzlQAZ6ye
-         99qqHm4hQqoNjPP2phETPNDJCGIKSDf7KyhVNcnMEnZYlFyeO7bYz7VRQ+lfKis/lOPG
-         0O+AajLVe4SFrVhVXOQrS1t7cYEpvSKZQAbhEmVJJ9Vnz/diyzeJLdG/dmw9jX2j4baV
-         P55Q==
-X-Gm-Message-State: AOAM533a4Xl+ikKz5JcT6myTuYcWRv6bUkMlJu2m8vCImoVQCb91FuTY
-        0piGwIh9VAMox+TaHUMJuulAgE+HHjg=
-X-Google-Smtp-Source: ABdhPJxMIJ+57jQlsDPQLkkv4QDTtxzJoXpWPFokvL6BjmJ002dKidGXMXvKtaAxp0qf22ivYas1HQ==
-X-Received: by 2002:a05:6402:1385:b0:413:2bc6:4400 with SMTP id b5-20020a056402138500b004132bc64400mr9127888edv.94.1648155910283;
-        Thu, 24 Mar 2022 14:05:10 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id m20-20020a056402431400b00419315cc3e2sm1953536edc.61.2022.03.24.14.05.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 14:05:09 -0700 (PDT)
-Date:   Thu, 24 Mar 2022 23:05:08 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        with ESMTP id S1349749AbiCXVQE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 17:16:04 -0400
+X-Greylist: delayed 24396 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Mar 2022 14:14:30 PDT
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125CF2898C;
+        Thu, 24 Mar 2022 14:14:29 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1648156468; bh=10YpchtIHtcZ8NSl6ZT7uwLuFlfFgJXa9Oolkv8NtQg=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=bgzPaBmGHN+bnivn53/b7ZIz9/UwYFmY03s5yT9g1LzfZvAJ3uIC7ce11QS/c9gDk
+         R+EyTlbehDyeBvELCV6f+pU+CmP91zr7lx482udUYxg9jrlR/ovTm9K8oIjoB/rEha
+         koK3I9RsZ9nIP/hbajSqIVn+Bk0NpwJEeSXvuQ3T1G3hO5g+mSdwUwK93gKKp92h+F
+         OmmTJoRUd4/LgjWY01urisinyN5elIPMT5iEkPrjHSSPHnq9iwLcPxdf+NOnHNHk0j
+         L5ovl1Ohbmz8Q5MEpZ3NdLlM2L2Qx85IIHFm9o24PgoAXbuYmLr7yHvHkB7jVoVtj+
+         eFDzUyYMP1/pw==
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Maxime Bizon <mbizon@freebox.fr>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 1/4] drivers: net: dsa: qca8k: drop MTU tracking
- from qca8k_priv
-Message-ID: <20220324210508.doj7fsjn3ihronnx@skbuf>
-References: <20220322014506.27872-1-ansuelsmth@gmail.com>
- <20220322014506.27872-2-ansuelsmth@gmail.com>
- <20220322115812.mwue2iu2xxrmknxg@skbuf>
- <YjnRQNg/Do0SwNq/@Ansuel-xps.localdomain>
- <20220322135535.au5d2n7hcu4mfdxr@skbuf>
- <YjnXOF2TZ7o8Zy2P@Ansuel-xps.localdomain>
- <20220324104524.ou7jyqcbfj3fhpvo@skbuf>
- <YjzYK3oDDclLRmm2@Ansuel-xps.localdomain>
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+In-Reply-To: <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de>
+ <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+ <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+Date:   Thu, 24 Mar 2022 22:14:28 +0100
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87r16r834b.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YjzYK3oDDclLRmm2@Ansuel-xps.localdomain>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 24, 2022 at 09:44:27PM +0100, Ansuel Smith wrote:
-> On Thu, Mar 24, 2022 at 12:45:24PM +0200, Vladimir Oltean wrote:
-> > You need the max MTU.
-> > 
-> > Why calculate it again? Why don't you do what mt7530 does, which has a
-> > similar restriction, and just program the hardware when the CPU port MTU
-> > is updated?
-> >
-> 
-> I just checked and wow it was that easy...
-> Also wonder if I should add some check for jumbo frame... (I should
-> check what is the max MTU for the switch and if it can accept jumbo
-> frame+fcs+l2)
+Linus Torvalds <torvalds@linux-foundation.org> writes:
 
-I'm not following you, sorry. What is your definition of "jumbo frame",
-and what check is there to add?
+> On Thu, Mar 24, 2022 at 10:07 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@t=
+oke.dk> wrote:
+>>
+>> Right, but is that sync_for_device call really needed?
+>
+> Well, imagine that you have a non-cache-coherent DMA (not bounce
+> buffers - just bad hardware)...
+>
+> So the driver first does that dma_sync_single_for_cpu() for the CPU
+> see the current state (for the non-cache-coherent case it would just
+> invalidate caches).
+>
+> The driver then examines the command buffer state, sees that it's
+> still in progress, and does that return -EINPROGRESS.
+>
+> It's actually very natural in that situation to flush the caches from
+> the CPU side again. And so dma_sync_single_for_device() is a fairly
+> reasonable thing to do in that situation.
+>
+> But it doesn't seem *required*, no. The CPU caches only have a copy of
+> the data in them, no writeback needed (and writeback wouldn't work
+> since DMA from the device may be in progress).
+>
+> So I don't think the dma_sync_single_for_device() is *wrong* per se,
+> because the CPU didn't actually do any modifications.
+>
+> But yes, I think it's unnecessary - because any later CPU accesses
+> would need that dma_sync_single_for_cpu() anyway, which should
+> invalidate any stale caches.
 
-> Wonder if I should propose a change for stmmac and just drop the
-> interface and restart it when the change is down.
+OK, the above was basically how I understood it. Thank you for
+confirming!
 
-In the case of stmmac, dev->mtu is considered from stmmac_fix_features()
-and from init_dma_rx_desc_rings(), so yes, putting the interface down
-before updating the MTU and the device features, and then putting it
-back up if it was previously up, should do the trick. Other drivers like
-gianfar and many others do this too.
+> And it clearly doesn't work in a bounce-buffer situation, but honestly
+> I don't think a "CPU modified buffers concurrently with DMA" can
+> *ever* work in that situation, so I think it's wrong for a bounce
+> buffer model to ever do anything in the dma_sync_single_for_device()
+> situation.
+
+Right.
+
+> Does removing that dma_sync_single_for_device() actually fix the
+> problem for the ath driver?
+
+I am hoping Oleksandr can help answer that since my own ath9k hardware
+is currently on strike :(
+
+-Toke
