@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C274E6294
+	by mail.lfdr.de (Postfix) with ESMTP id A62B44E6293
 	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 12:39:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349833AbiCXLkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 07:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
+        id S1349699AbiCXLke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 07:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349699AbiCXLk2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:40:28 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958EC515B0
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 04:38:56 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id d7so6214571wrb.7
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 04:38:56 -0700 (PDT)
+        with ESMTP id S1349838AbiCXLk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 07:40:29 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BB87515BF
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 04:38:57 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id m26-20020a05600c3b1a00b0038c8b999f58so7047296wms.1
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 04:38:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=bjI0cGhDGMIZKR+Hyo3RMWR53BAljyzuWzOAdVJru88=;
-        b=nVD4w1tDBNZ7x32sGNWqQ/u/qUAkp8x3RGJbrR4dsAfonjXATGgH1b3T5GbS8Jpdrv
-         bu+/K9+I5crzjocqfrSsruGpWKq3EoADRJny2+7NvDDiQdKozyYLQlA2i/8HYhKBWyXi
-         8GI6iHqoyavP9jk4sGKBR+ZusEwxWAKCSh+GlaSRHcAQpiUZrlppEcsvhd3w2Lf22+uC
-         JsuFdDU/BUy9XNCSkSmLecSVxVBBXNI/1FyWhlCUR0j6G/hG/dZGE8Ui1kRWeIh+Gz5W
-         gimrwlJwCu+qUUG91ToXFOTU0e/fgD8/l9+TXBy4fI29EiowGG2p4yOWF46TSvUBHqZD
-         y8nw==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :organization:content-transfer-encoding;
+        bh=ryCQnqioYNtD1D24H47sRT1GeeyvXYMQeLTVA5GHrBU=;
+        b=NmKKo9mKFv+tys+zofsAWjUjl68308mYqaEK1V/LUHeFxge+2Ju4S14fqtiFx7hZt2
+         WHCSp94P8AJWF4kiLTTNKTafxdGtN+CvYHcIlOnGNFK6tf7GuVbgk1+aWHsHQEs1tlxc
+         botyDEdwrHKbKGXaeOXVqcP3RTTtVbQEg0IjA0qhf/WTUYTVvvXUMKW/kIIEAS+vGkuJ
+         euOp0NFYh3fTUtdYGwfIzAzujnFoCrdPqMQaNNiwSeLbLXtSlA9GmrbtRk4HI2noEOoh
+         JqliYF5CO3DJaGPWeAYc1St7Ayw7XJRdohEdKRRULYdPLSpCJRDeLA0koBG/5ucwPBSS
+         M5ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=bjI0cGhDGMIZKR+Hyo3RMWR53BAljyzuWzOAdVJru88=;
-        b=e+RYoqq2Hu0ghPNPtw/oK/QmGgSPbj9YJrXyX83feNZ+YvfFgkIOY2v9fYNzZ+Vd6B
-         9R8FAgxBs88Na1i+Y5Cou8wSiRBE+zPXd4fkIbs9EWKCVvLjI8g/rC1XpshSNydvEN0F
-         2Ho4vBji9LUkgLcAa/LbdvQ547r2O405W+whVqoBd+6IN7Y3kuOim+bDgq6WRPR6TsPQ
-         hULnLiAW2Hb6fCny/ihZ+HT6iFc574PIhIM45Gj7O/FNPBbdlGTbUeCOgcDp3zCYh1B8
-         1FXIRj3B4JfBmM4d1NwF+sArmdKJt8pYKB+mToUkMvi7PmxaKgN/T3n4V6xFtzosseB9
-         JLlw==
-X-Gm-Message-State: AOAM533VfZc27GsOz1eT3BMyQgSqHXFAofws7mCa1a13Se+A5xV/Dnco
-        UgS3ewKz47CnWbLSZ8rsCHy30qqXR6Y=
-X-Google-Smtp-Source: ABdhPJxZJHMEjccNIXQ04o43ZHKbtb4cqZjU75To6gzyC//KaCD1uMC3zYdZQXYWb/QOxX/AFzOyxA==
-X-Received: by 2002:a05:6000:1541:b0:204:18c9:7179 with SMTP id 1-20020a056000154100b0020418c97179mr4151645wry.581.1648121934917;
-        Thu, 24 Mar 2022 04:38:54 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=ryCQnqioYNtD1D24H47sRT1GeeyvXYMQeLTVA5GHrBU=;
+        b=jZ0NoYidnkbV6YWLGVMEeW98Kdi7ux8OXZNazmbeGSGSx1vzicPVWpGAqacwz18j6D
+         AiZNURixeU1Ol9/ynIzPUllNC/M0261gXxZVxP4Pb0RgpdFyYI/ppCtV2MZYAz3PtAub
+         e6gPP1cErzrEnuNmkPGRzUt8xwy2f39BMm9Y+V5zTHwpWB4aI4rOk4iv6X/TA0z8T4G7
+         XmRGbODc0CRa/vKHHfnAxeOeGFOXYFmE1+j4msVgh0IJJcdza2VIcC2LOhxdHe4JVIqa
+         scSaCZ+kSCtFWsRsDCyWbUmPVABGHIrHlKm73iAkjnI0JBMGwZ83Gzjc6qlTmpMPDIDS
+         ZX1g==
+X-Gm-Message-State: AOAM531sqQenN/FVAvaYdtu3/E2Hxm37mjhFPvB4SKMK+uw89sZ5xmWw
+        +V1LrnVbEUXDDTUOKF7PEwo=
+X-Google-Smtp-Source: ABdhPJwtEiIkkFuxy/qC7RAkMX+Q0nk9Qe/5+iDpRX1lV4D2Zf6h9tjjkyRIoOrQTK8elcre2AtQmA==
+X-Received: by 2002:a1c:7302:0:b0:38c:bb21:faf7 with SMTP id d2-20020a1c7302000000b0038cbb21faf7mr12409666wmb.31.1648121935912;
+        Thu, 24 Mar 2022 04:38:55 -0700 (PDT)
 Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id g1-20020a1c4e01000000b003899c8053e1sm2472498wmh.41.2022.03.24.04.38.54
+        by smtp.gmail.com with ESMTPSA id g1-20020a1c4e01000000b003899c8053e1sm2472498wmh.41.2022.03.24.04.38.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 04:38:54 -0700 (PDT)
+        Thu, 24 Mar 2022 04:38:55 -0700 (PDT)
 From:   Casper Andersson <casper.casan@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,10 +54,12 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Lars Povlsen <lars.povlsen@microchip.com>,
         Steen Hegelund <Steen.Hegelund@microchip.com>,
         UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/2] net: sparx5: Refactor based on feedback on
-Date:   Thu, 24 Mar 2022 12:38:51 +0100
-Message-Id: <20220324113853.576803-1-casper.casan@gmail.com>
+Subject: [PATCH net-next 1/2] net: sparx5: Remove unused GLAG handling in PGID
+Date:   Thu, 24 Mar 2022 12:38:52 +0100
+Message-Id: <20220324113853.576803-2-casper.casan@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220324113853.576803-1-casper.casan@gmail.com>
+References: <20220324113853.576803-1-casper.casan@gmail.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
@@ -71,22 +73,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a follow up to a previous patch that was merged
-before manufacturer could give feedback. This addresses
-the feedback. See link below for previous patch series.
+Removes PGID handling for GLAG since it is not used
+yet. According to feedback on previous patch.
 https://lore.kernel.org/netdev/20220322081823.wqbx7vud4q7qtjuq@wse-c0155/T/#t
 
-Casper Andersson (2):
-  net: sparx5: Remove unused GLAG handling in PGID
-  net: sparx5: Refactor mdb handling according to feedback
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+---
+ .../net/ethernet/microchip/sparx5/sparx5_main.h |  4 ----
+ .../net/ethernet/microchip/sparx5/sparx5_pgid.c | 17 -----------------
+ 2 files changed, 21 deletions(-)
 
- .../microchip/sparx5/sparx5_mactable.c        | 19 ++++--------------
- .../ethernet/microchip/sparx5/sparx5_main.h   |  7 ++-----
- .../ethernet/microchip/sparx5/sparx5_pgid.c   | 20 +++----------------
- .../microchip/sparx5/sparx5_switchdev.c       | 18 ++++++++---------
- .../ethernet/microchip/sparx5/sparx5_vlan.c   |  7 +++++++
- 5 files changed, 24 insertions(+), 47 deletions(-)
-
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+index 7a04b8f2a546..8e77d7ee8e68 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+@@ -69,9 +69,6 @@ enum sparx5_vlan_port_type {
+ #define PGID_TABLE_SIZE	       3290
+ 
+ #define PGID_MCAST_START 65
+-#define PGID_GLAG_START 833
+-#define PGID_GLAG_END 1088
+-
+ #define IFH_LEN                9 /* 36 bytes */
+ #define NULL_VID               0
+ #define SPX5_MACT_PULL_DELAY   (2 * HZ)
+@@ -374,7 +371,6 @@ enum sparx5_pgid_type {
+ 	SPX5_PGID_FREE,
+ 	SPX5_PGID_RESERVED,
+ 	SPX5_PGID_MULTICAST,
+-	SPX5_PGID_GLAG
+ };
+ 
+ void sparx5_pgid_init(struct sparx5 *spx5);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c b/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
+index 90366fcb9958..851a559269e1 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c
+@@ -15,28 +15,11 @@ void sparx5_pgid_init(struct sparx5 *spx5)
+ 		spx5->pgid_map[i] = SPX5_PGID_RESERVED;
+ }
+ 
+-int sparx5_pgid_alloc_glag(struct sparx5 *spx5, u16 *idx)
+-{
+-	int i;
+-
+-	for (i = PGID_GLAG_START; i <= PGID_GLAG_END; i++)
+-		if (spx5->pgid_map[i] == SPX5_PGID_FREE) {
+-			spx5->pgid_map[i] = SPX5_PGID_GLAG;
+-			*idx = i;
+-			return 0;
+-		}
+-
+-	return -EBUSY;
+-}
+-
+ int sparx5_pgid_alloc_mcast(struct sparx5 *spx5, u16 *idx)
+ {
+ 	int i;
+ 
+ 	for (i = PGID_MCAST_START; i < PGID_TABLE_SIZE; i++) {
+-		if (i == PGID_GLAG_START)
+-			i = PGID_GLAG_END + 1;
+-
+ 		if (spx5->pgid_map[i] == SPX5_PGID_FREE) {
+ 			spx5->pgid_map[i] = SPX5_PGID_MULTICAST;
+ 			*idx = i;
 -- 
 2.30.2
 
