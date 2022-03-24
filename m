@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0848F4E6670
-	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 16:56:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0304E4E6669
+	for <lists+netdev@lfdr.de>; Thu, 24 Mar 2022 16:56:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351482AbiCXP5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 11:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52992 "EHLO
+        id S1351443AbiCXP4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 11:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351436AbiCXP4s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 11:56:48 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1952AD109
+        with ESMTP id S1351430AbiCXP4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 11:56:46 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE39AC93B
         for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 08:55:11 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KPV7f2M37zBrgt;
-        Thu, 24 Mar 2022 23:51:10 +0800 (CST)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KPVBP2JSqzfZhN;
+        Thu, 24 Mar 2022 23:53:33 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -27,9 +27,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
         <alexandr.lobakin@intel.com>, <saeed@kernel.org>, <leon@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linuxarm@openeuler.org>,
         <lipeng321@huawei.com>
-Subject: [RFCv5 PATCH net-next 02/20] net: introduce operation helpers for netdev features
-Date:   Thu, 24 Mar 2022 23:49:14 +0800
-Message-ID: <20220324154932.17557-3-shenjian15@huawei.com>
+Subject: [RFCv5 PATCH net-next 03/20] net: replace general features macroes with global netdev_features variables
+Date:   Thu, 24 Mar 2022 23:49:15 +0800
+Message-ID: <20220324154932.17557-4-shenjian15@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220324154932.17557-1-shenjian15@huawei.com>
 References: <20220324154932.17557-1-shenjian15@huawei.com>
@@ -49,628 +49,580 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a set of bitmap operation helpers for netdev features,
-then we can use them to replace the logical operation with them.
-As the nic driversare not supposed to modify netdev_features
-directly, it also introduces wrappers helpers to this.
-
-The implementation of these helpers are based on the old prototype
-of netdev_features_t is still u64. I will rewrite them on the last
-patch, when the prototype changes.
+There are many netdev_features bits group used in kernel. The definition
+will be illegal when using feature bit more than 64. Replace these macroes
+with global netdev_features variables, initialize them when netdev module
+init.
 
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 ---
- include/linux/netdevice.h | 597 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 597 insertions(+)
+ include/linux/netdev_features.h | 104 +++++++-----
+ net/core/dev.c                  | 113 +++++++++++++
+ net/core/netdev_features.c      | 276 ++++++++++++++++++++++++++++++++
+ 3 files changed, 457 insertions(+), 36 deletions(-)
+ create mode 100644 net/core/netdev_features.c
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 7307b9553bcf..0af4b26896d6 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2295,6 +2295,603 @@ struct net_device {
- };
- #define to_net_dev(d) container_of(d, struct net_device, dev)
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index 2c6b9e416225..b25f2bb31f94 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -190,75 +190,107 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ 	     (bit) >= 0;						\
+ 	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
  
-+static inline void netdev_features_zero(netdev_features_t *dst)
++extern netdev_features_t netdev_ethtool_features __ro_after_init;
++extern netdev_features_t netdev_never_change_features __ro_after_init;
++extern netdev_features_t netdev_gso_features_mask __ro_after_init;
++extern netdev_features_t netdev_ip_csum_features __ro_after_init;
++extern netdev_features_t netdev_csum_features_mask __ro_after_init;
++extern netdev_features_t netdev_general_tso_features __ro_after_init;
++extern netdev_features_t netdev_all_tso_features __ro_after_init;
++extern netdev_features_t netdev_tso_ecn_features __ro_after_init;
++extern netdev_features_t netdev_all_fcoe_features __ro_after_init;
++extern netdev_features_t netdev_gso_software_features __ro_after_init;
++extern netdev_features_t netdev_one_for_all_features __ro_after_init;
++extern netdev_features_t netdev_all_for_all_features __ro_after_init;
++extern netdev_features_t netdev_upper_disable_features __ro_after_init;
++extern netdev_features_t netdev_soft_features __ro_after_init;
++extern netdev_features_t netdev_soft_off_features __ro_after_init;
++extern netdev_features_t netdev_all_vlan_features __ro_after_init;
++extern netdev_features_t netdev_rx_vlan_features __ro_after_init;
++extern netdev_features_t netdev_tx_vlan_features __ro_after_init;
++extern netdev_features_t netdev_ctag_vlan_features __ro_after_init;
++extern netdev_features_t netdev_stag_vlan_features __ro_after_init;
++extern netdev_features_t netdev_vlan_filter_features __ro_after_init;
++extern netdev_features_t netdev_gso_encap_all_features __ro_after_init;
++extern netdev_features_t netdev_xfrm_features __ro_after_init;
++extern netdev_features_t netdev_tls_features __ro_after_init;
++extern netdev_features_t netdev_csum_gso_features_mask __ro_after_init;
++extern netdev_features_t netdev_vlan_features_mask __ro_after_init;
++
++extern const int netif_f_never_change_array[3];
++extern const int netif_f_gso_mask_array[19];
++extern const int netif_f_ip_csum_array[2];
++extern const int netif_f_csum_mask_array[3];
++extern const int netif_f_general_tso_array[2];
++extern const int netif_f_all_tso_array[4];
++extern const int netif_f_tso_ecn_array[1];
++extern const int netif_f_all_fcoe_array[3];
++extern const int netif_f_gso_soft_array[7];
++extern const int netif_f_one_for_all_array[12];
++extern const int netif_f_all_for_all_array[2];
++extern const int netif_f_upper_disables_array[1];
++extern const int netif_f_soft_array[2];
++extern const int netif_f_soft_off_array[2];
++extern const int netif_f_vlan_array[6];
++extern const int netif_f_tx_vlan_array[2];
++extern const int netif_f_rx_vlan_array[2];
++extern const int netif_f_ctag_vlan_array[2];
++extern const int netif_f_stag_vlan_array[2];
++extern const int netif_f_vlan_filter_array[2];
++extern const int netif_f_gso_encap_array[6];
++extern const int netif_f_xfrm_array[3];
++extern const int netif_f_tls_array[2];
++extern const int netif_f_vlan_mask_array[6];
++
+ /* Features valid for ethtool to change */
+ /* = all defined minus driver/device-class-related */
+-#define NETIF_F_NEVER_CHANGE	(NETIF_F_VLAN_CHALLENGED | \
+-				 NETIF_F_LLTX | NETIF_F_NETNS_LOCAL)
++#define NETIF_F_NEVER_CHANGE	netdev_never_change_features
+ 
+ /* remember that ((t)1 << t_BITS) is undefined in C99 */
+-#define NETIF_F_ETHTOOL_BITS	((__NETIF_F_BIT(NETDEV_FEATURE_COUNT - 1) | \
+-		(__NETIF_F_BIT(NETDEV_FEATURE_COUNT - 1) - 1)) & \
+-		~NETIF_F_NEVER_CHANGE)
++#define NETIF_F_ETHTOOL_BITS	netdev_ethtool_features
+ 
+ /* Segmentation offload feature mask */
+-#define NETIF_F_GSO_MASK	(__NETIF_F_BIT(NETIF_F_GSO_LAST + 1) - \
+-		__NETIF_F_BIT(NETIF_F_GSO_SHIFT))
++#define NETIF_F_GSO_MASK	netdev_gso_features_mask
+ 
+ /* List of IP checksum features. Note that NETIF_F_HW_CSUM should not be
+  * set in features when NETIF_F_IP_CSUM or NETIF_F_IPV6_CSUM are set--
+  * this would be contradictory
+  */
+-#define NETIF_F_CSUM_MASK	(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | \
+-				 NETIF_F_HW_CSUM)
++#define NETIF_F_CSUM_MASK	netdev_csum_features_mask
+ 
+-#define NETIF_F_ALL_TSO 	(NETIF_F_TSO | NETIF_F_TSO6 | \
+-				 NETIF_F_TSO_ECN | NETIF_F_TSO_MANGLEID)
++#define NETIF_F_ALL_TSO		netdev_all_tso_features
+ 
+-#define NETIF_F_ALL_FCOE	(NETIF_F_FCOE_CRC | NETIF_F_FCOE_MTU | \
+-				 NETIF_F_FSO)
++#define NETIF_F_ALL_FCOE	netdev_all_fcoe_features
+ 
+ /* List of features with software fallbacks. */
+-#define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | NETIF_F_GSO_SCTP |	     \
+-				 NETIF_F_GSO_UDP_L4 | NETIF_F_GSO_FRAGLIST)
++#define NETIF_F_GSO_SOFTWARE	netdev_gso_software_features
+ 
+ /*
+  * If one device supports one of these features, then enable them
+  * for all in netdev_increment_features.
+  */
+-#define NETIF_F_ONE_FOR_ALL	(NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ROBUST | \
+-				 NETIF_F_SG | NETIF_F_HIGHDMA |		\
+-				 NETIF_F_FRAGLIST | NETIF_F_VLAN_CHALLENGED)
++#define NETIF_F_ONE_FOR_ALL	netdev_one_for_all_features
+ 
+ /*
+  * If one device doesn't support one of these features, then disable it
+  * for all in netdev_increment_features.
+  */
+-#define NETIF_F_ALL_FOR_ALL	(NETIF_F_NOCACHE_COPY | NETIF_F_FSO)
++#define NETIF_F_ALL_FOR_ALL	netdev_all_for_all_features
+ 
+ /*
+  * If upper/master device has these features disabled, they must be disabled
+  * on all lower/slave devices as well.
+  */
+-#define NETIF_F_UPPER_DISABLES	NETIF_F_LRO
++#define NETIF_F_UPPER_DISABLES	netdev_upper_disable_features
+ 
+ /* changeable features with no special hardware requirements */
+-#define NETIF_F_SOFT_FEATURES	(NETIF_F_GSO | NETIF_F_GRO)
++#define NETIF_F_SOFT_FEATURES	netdev_soft_features
+ 
+ /* Changeable features with no special hardware requirements that defaults to off. */
+-#define NETIF_F_SOFT_FEATURES_OFF	(NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD)
+-
+-#define NETIF_F_VLAN_FEATURES	(NETIF_F_HW_VLAN_CTAG_FILTER | \
+-				 NETIF_F_HW_VLAN_CTAG_RX | \
+-				 NETIF_F_HW_VLAN_CTAG_TX | \
+-				 NETIF_F_HW_VLAN_STAG_FILTER | \
+-				 NETIF_F_HW_VLAN_STAG_RX | \
+-				 NETIF_F_HW_VLAN_STAG_TX)
+-
+-#define NETIF_F_GSO_ENCAP_ALL	(NETIF_F_GSO_GRE |			\
+-				 NETIF_F_GSO_GRE_CSUM |			\
+-				 NETIF_F_GSO_IPXIP4 |			\
+-				 NETIF_F_GSO_IPXIP6 |			\
+-				 NETIF_F_GSO_UDP_TUNNEL |		\
+-				 NETIF_F_GSO_UDP_TUNNEL_CSUM)
++#define NETIF_F_SOFT_FEATURES_OFF	netdev_soft_off_features
++
++#define NETIF_F_VLAN_FEATURES	netdev_all_vlan_features
++
++#define NETIF_F_GSO_ENCAP_ALL	netdev_gso_encap_all_features
+ 
+ #endif	/* _LINUX_NETDEV_FEATURES_H */
+diff --git a/net/core/dev.c b/net/core/dev.c
+index a09ddbfb3086..67e4c67f5064 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -11229,6 +11229,117 @@ static struct pernet_operations __net_initdata default_device_ops = {
+ 	.exit_batch = default_device_exit_batch,
+ };
+ 
++static void netdev_features_init(void)
 +{
-+	*dst = 0;
++	netdev_features_t features;
++
++	netdev_features_set_array(netif_f_never_change_array,
++				  ARRAY_SIZE(netif_f_never_change_array),
++				  &netdev_never_change_features);
++
++	netdev_features_set_array(netif_f_gso_mask_array,
++				  ARRAY_SIZE(netif_f_gso_mask_array),
++				  &netdev_gso_features_mask);
++
++	netdev_features_set_array(netif_f_ip_csum_array,
++				  ARRAY_SIZE(netif_f_ip_csum_array),
++				  &netdev_ip_csum_features);
++
++	netdev_features_set_array(netif_f_csum_mask_array,
++				  ARRAY_SIZE(netif_f_csum_mask_array),
++				  &netdev_csum_features_mask);
++
++	netdev_features_set_array(netif_f_general_tso_array,
++				  ARRAY_SIZE(netif_f_general_tso_array),
++				  &netdev_general_tso_features);
++
++	netdev_features_set_array(netif_f_all_tso_array,
++				  ARRAY_SIZE(netif_f_all_tso_array),
++				  &netdev_all_tso_features);
++
++	netdev_features_set_array(netif_f_tso_ecn_array,
++				  ARRAY_SIZE(netif_f_tso_ecn_array),
++				  &netdev_tso_ecn_features);
++
++	netdev_features_set_array(netif_f_all_fcoe_array,
++				  ARRAY_SIZE(netif_f_all_fcoe_array),
++				  &netdev_all_fcoe_features);
++
++	netdev_features_set_array(netif_f_gso_soft_array,
++				  ARRAY_SIZE(netif_f_gso_soft_array),
++				  &netdev_gso_software_features);
++
++	netdev_features_set_array(netif_f_one_for_all_array,
++				  ARRAY_SIZE(netif_f_one_for_all_array),
++				  &netdev_one_for_all_features);
++
++	netdev_features_set_array(netif_f_all_for_all_array,
++				  ARRAY_SIZE(netif_f_all_for_all_array),
++				  &netdev_all_for_all_features);
++
++	netdev_features_set_array(netif_f_upper_disables_array,
++				  ARRAY_SIZE(netif_f_upper_disables_array),
++				  &netdev_upper_disable_features);
++
++	netdev_features_set_array(netif_f_soft_array,
++				  ARRAY_SIZE(netif_f_soft_array),
++				  &netdev_soft_features);
++
++	netdev_features_set_array(netif_f_soft_off_array,
++				  ARRAY_SIZE(netif_f_soft_off_array),
++				  &netdev_soft_off_features);
++
++	netdev_features_set_array(netif_f_rx_vlan_array,
++				  ARRAY_SIZE(netif_f_rx_vlan_array),
++				  &netdev_rx_vlan_features);
++
++	netdev_features_set_array(netif_f_tx_vlan_array,
++				  ARRAY_SIZE(netif_f_tx_vlan_array),
++				  &netdev_tx_vlan_features);
++
++	netdev_features_set_array(netif_f_vlan_filter_array,
++				  ARRAY_SIZE(netif_f_vlan_filter_array),
++				  &netdev_vlan_filter_features);
++
++	netdev_all_vlan_features = netdev_rx_vlan_features;
++	netdev_features_direct_or(&netdev_all_vlan_features,
++				  netdev_tx_vlan_features);
++	netdev_features_direct_or(&netdev_all_vlan_features,
++				  netdev_vlan_filter_features);
++
++	netdev_features_set_array(netif_f_ctag_vlan_array,
++				  ARRAY_SIZE(netif_f_ctag_vlan_array),
++				  &netdev_ctag_vlan_features);
++
++	netdev_features_set_array(netif_f_stag_vlan_array,
++				  ARRAY_SIZE(netif_f_stag_vlan_array),
++				  &netdev_stag_vlan_features);
++
++	netdev_features_set_array(netif_f_gso_encap_array,
++				  ARRAY_SIZE(netif_f_gso_encap_array),
++				  &netdev_gso_encap_all_features);
++
++	netdev_features_set_array(netif_f_xfrm_array,
++				  ARRAY_SIZE(netif_f_xfrm_array),
++				  &netdev_xfrm_features);
++
++	netdev_features_set_array(netif_f_tls_array,
++				  ARRAY_SIZE(netif_f_tls_array),
++				  &netdev_tls_features);
++
++	netdev_features_set_array(netif_f_vlan_mask_array,
++				  ARRAY_SIZE(netif_f_vlan_mask_array),
++				  &netdev_vlan_features_mask);
++
++	netdev_csum_gso_features_mask =
++		netdev_features_or(netdev_gso_software_features,
++				   netdev_csum_features_mask);
++
++	netdev_features_fill(&features);
++	netdev_ethtool_features =
++		netdev_features_andnot(features, netdev_never_change_features);
 +}
 +
-+static inline void netdev_features_fill(netdev_features_t *dst)
-+{
-+	*dst = ~0ULL;
-+}
-+
-+static inline bool netdev_features_empty(const netdev_features_t src)
-+{
-+	return src == 0;
-+}
-+
-+/* helpers for netdev features '==' operation */
-+static inline bool netdev_features_equal(const netdev_features_t src1,
-+					 const netdev_features_t src2)
-+{
-+	return src1 == src2;
-+}
-+
-+#define netdev_active_features_equal(ndev, features) \
-+		netdev_features_equal(ndev->active_features, features)
-+
-+#define netdev_hw_features_equal(ndev, features) \
-+		netdev_features_equal(ndev->hw_features, features)
-+
-+#define netdev_wanted_features_equal(ndev, features) \
-+		netdev_features_equal(ndev->wanted_features, features)
-+
-+#define netdev_vlan_features_equal(ndev, features) \
-+		netdev_features_equal(ndev->vlan_features, features)
-+
-+#define netdev_hw_enc_features_equal(ndev, features) \
-+		netdev_features_equal(ndev->vlan_features, features)
-+
-+#define netdev_mpls_features_equal(ndev, features) \
-+		netdev_features_equal(ndev->vlan_features, features)
-+
-+#define netdev_gso_partial_features_equal(ndev, features) \
-+		netdev_features_equal(ndev->vlan_features, features)
-+
-+/* helpers for netdev features '&' operation */
-+static inline netdev_features_t
-+netdev_features_and(const netdev_features_t a, const netdev_features_t b)
-+{
-+	return a & b;
-+}
-+
-+#define netdev_active_features_and(ndev, features) \
-+		netdev_features_and(ndev->active_features, features)
-+
-+#define netdev_hw_features_and(ndev, features) \
-+		netdev_features_and(ndev->hw_features, features)
-+
-+#define netdev_wanted_features_and(ndev, features) \
-+		netdev_features_and(ndev->wanted_features, features)
-+
-+#define netdev_vlan_features_and(ndev, features) \
-+		netdev_features_and(ndev->vlan_features, features)
-+
-+#define netdev_hw_enc_features_and(ndev, features) \
-+		netdev_features_and(ndev->hw_enc_features, features)
-+
-+#define netdev_mpls_features_and(ndev, features) \
-+		netdev_features_and(ndev->mpls_features, features)
-+
-+#define netdev_gso_partial_features_and(ndev, features) \
-+		netdev_features_and(ndev->gso_partial_features, features)
-+
-+/* helpers for netdev features '&=' operation */
-+static inline void
-+netdev_features_direct_and(netdev_features_t *dst,
-+			   const netdev_features_t features)
-+{
-+	*dst = netdev_features_and(*dst, features);
-+}
-+
-+static inline void
-+netdev_active_features_direct_and(struct net_device *ndev,
-+				  const netdev_features_t features)
-+{
-+	ndev->active_features = netdev_active_features_and(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_features_direct_and(struct net_device *ndev,
-+			      const netdev_features_t features)
-+{
-+	ndev->hw_features = netdev_hw_features_and(ndev, features);
-+}
-+
-+static inline void
-+netdev_wanted_features_direct_and(struct net_device *ndev,
-+				  const netdev_features_t features)
-+{
-+	ndev->wanted_features = netdev_wanted_features_and(ndev, features);
-+}
-+
-+static inline void
-+netdev_vlan_features_direct_and(struct net_device *ndev,
-+				const netdev_features_t features)
-+{
-+	ndev->vlan_features = netdev_vlan_features_and(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_enc_features_direct_and(struct net_device *ndev,
-+				  const netdev_features_t features)
-+{
-+	ndev->hw_enc_features = netdev_hw_enc_features_and(ndev, features);
-+}
-+
-+static inline void
-+netdev_mpls_features_direct_and(struct net_device *ndev,
-+				const netdev_features_t features)
-+{
-+	ndev->mpls_features = netdev_mpls_features_and(ndev, features);
-+}
-+
-+static inline void
-+netdev_gso_partial_features_direct_and(struct net_device *ndev,
-+				       const netdev_features_t features)
-+{
-+	ndev->gso_partial_features = netdev_mpls_features_and(ndev, features);
-+}
-+
-+/* helpers for netdev features '|' operation */
-+static inline netdev_features_t
-+netdev_features_or(const netdev_features_t a, const netdev_features_t b)
-+{
-+	return a | b;
-+}
-+
-+#define netdev_active_features_or(ndev, features) \
-+		netdev_features_or(ndev->active_features, features)
-+
-+#define netdev_hw_features_or(ndev, features) \
-+		netdev_features_or(ndev->hw_features, features)
-+
-+#define netdev_wanted_features_or(ndev, features) \
-+		netdev_features_or(ndev->wanted_features, features)
-+
-+#define netdev_vlan_features_or(ndev, features) \
-+		netdev_features_or(ndev->vlan_features, features)
-+
-+#define netdev_hw_enc_features_or(ndev, features) \
-+		netdev_features_or(ndev->hw_enc_features, features)
-+
-+#define netdev_mpls_features_or(ndev, features) \
-+		netdev_features_or(ndev->mpls_features, features)
-+
-+#define netdev_gso_partial_features_or(ndev, features) \
-+		netdev_features_or(ndev->gso_partial_features, features)
-+
-+/* helpers for netdev features '|=' operation */
-+static inline void
-+netdev_features_direct_or(netdev_features_t *dst,
-+			  const netdev_features_t features)
-+{
-+	*dst = netdev_features_or(*dst, features);
-+}
-+
-+static inline void
-+netdev_active_features_direct_or(struct net_device *ndev,
-+				 const netdev_features_t features)
-+{
-+	ndev->active_features = netdev_active_features_or(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_features_direct_or(struct net_device *ndev,
-+			     const netdev_features_t features)
-+{
-+	ndev->hw_features = netdev_hw_features_or(ndev, features);
-+}
-+
-+static inline void
-+netdev_wanted_features_direct_or(struct net_device *ndev,
-+				 const netdev_features_t features)
-+{
-+	ndev->wanted_features = netdev_wanted_features_or(ndev, features);
-+}
-+
-+static inline void
-+netdev_vlan_features_direct_or(struct net_device *ndev,
-+			       const netdev_features_t features)
-+{
-+	ndev->vlan_features = netdev_vlan_features_or(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_enc_features_direct_or(struct net_device *ndev,
-+				 const netdev_features_t features)
-+{
-+	ndev->hw_enc_features = netdev_hw_enc_features_or(ndev, features);
-+}
-+
-+static inline void
-+netdev_mpls_features_direct_or(struct net_device *ndev,
-+			       const netdev_features_t features)
-+{
-+	ndev->mpls_features = netdev_mpls_features_or(ndev, features);
-+}
-+
-+static inline void
-+netdev_gso_partial_features_direct_or(struct net_device *ndev,
-+				      const netdev_features_t features)
-+{
-+	ndev->gso_partial_features = netdev_mpls_features_or(ndev, features);
-+}
-+
-+/* helpers for netdev features '^' operation */
-+static inline netdev_features_t
-+netdev_features_xor(const netdev_features_t a, const netdev_features_t b)
-+{
-+	return a ^ b;
-+}
-+
-+#define netdev_active_features_xor(ndev, features) \
-+		netdev_features_xor(ndev->active_features, features)
-+
-+#define netdev_hw_features_xor(ndev, features) \
-+		netdev_features_xor(ndev->hw_features, features)
-+
-+#define netdev_wanted_features_xor(ndev, features) \
-+		netdev_features_xor(ndev->wanted_features, features)
-+
-+#define netdev_vlan_features_xor(ndev, features) \
-+		netdev_features_xor(ndev->vlan_features, features)
-+
-+#define netdev_hw_enc_features_xor(ndev, features) \
-+		netdev_features_xor(ndev->hw_enc_features, features)
-+
-+#define netdev_mpls_features_xor(ndev, features) \
-+		netdev_features_xor(ndev->mpls_features, features)
-+
-+#define netdev_gso_partial_features_xor(ndev, features) \
-+		netdev_features_xor(ndev->gso_partial_features, features)
-+
-+/* helpers for netdev features '^=' operation */
-+static inline void
-+netdev_active_features_direct_xor(struct net_device *ndev,
-+				  const netdev_features_t features)
-+{
-+	ndev->active_features = netdev_active_features_xor(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_features_direct_xor(struct net_device *ndev,
-+			      const netdev_features_t features)
-+{
-+	ndev->hw_features = netdev_hw_features_xor(ndev, features);
-+}
-+
-+static inline void
-+netdev_wanted_features_direct_xor(struct net_device *ndev,
-+				  const netdev_features_t features)
-+{
-+	ndev->wanted_features = netdev_wanted_features_xor(ndev, features);
-+}
-+
-+static inline void
-+netdev_vlan_features_direct_xor(struct net_device *ndev,
-+				const netdev_features_t features)
-+{
-+	ndev->vlan_features = netdev_vlan_features_xor(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_enc_features_direct_xor(struct net_device *ndev,
-+				  const netdev_features_t features)
-+{
-+	ndev->hw_enc_features = netdev_hw_enc_features_xor(ndev, features);
-+}
-+
-+static inline void
-+netdev_mpls_features_direct_xor(struct net_device *ndev,
-+				const netdev_features_t features)
-+{
-+	ndev->mpls_features = netdev_mpls_features_xor(ndev, features);
-+}
-+
-+static inline void
-+netdev_gso_partial_features_direct_xor(struct net_device *ndev,
-+				       const netdev_features_t features)
-+{
-+	ndev->gso_partial_features =
-+			netdev_gso_partial_features_xor(ndev, features);
-+}
-+
-+/* helpers for netdev features '& ~' operation */
-+static inline netdev_features_t
-+netdev_features_andnot(const netdev_features_t a, const netdev_features_t b)
-+{
-+	return a & ~b;
-+}
-+
-+#define netdev_active_features_andnot(ndev, features) \
-+		netdev_features_andnot(ndev->active_features, features)
-+
-+#define netdev_hw_features_andnot(ndev, features) \
-+		netdev_features_andnot(ndev->hw_features, features)
-+
-+#define netdev_wanted_features_andnot(ndev, features) \
-+		netdev_features_andnot(ndev->wanted_features, features)
-+
-+#define netdev_vlan_features_andnot(ndev, features) \
-+		netdev_features_andnot(ndev->vlan_features, features)
-+
-+#define netdev_hw_enc_features_andnot(ndev, features) \
-+		netdev_features_andnot(ndev->hw_enc_features, features)
-+
-+#define netdev_mpls_features_andnot(ndev, features) \
-+		netdev_features_andnot(ndev->mpls_features, features)
-+
-+#define netdev_gso_partial_features_andnot(ndev, features) \
-+		netdev_features_andnot(ndev->gso_partial_features, features)
-+
-+#define netdev_active_features_andnot_r(ndev, features) \
-+		netdev_features_andnot(features, ndev->active_features)
-+
-+#define netdev_hw_features_andnot_r(ndev, features) \
-+		netdev_features_andnot(features, ndev->hw_features)
-+
-+#define netdev_wanted_features_andnot_r(ndev, features) \
-+		netdev_features_andnot(features, ndev->wanted_features)
-+
-+#define netdev_vlan_features_andnot_r(ndev, features) \
-+		netdev_features_andnot(features, ndev->vlan_features)
-+
-+#define netdev_hw_enc_features_andnot_r(ndev, features) \
-+		netdev_features_andnot(features, ndev->hw_enc_features)
-+
-+#define netdev_mpls_features_andnot_r(ndev, features) \
-+		netdev_features_andnot(features, ndev->mpls_features)
-+
-+#define netdev_gso_partial_features_andnot_r(ndev, features) \
-+		netdev_features_andnot(features, ndev->gso_partial_features)
-+
-+static inline void
-+netdev_features_direct_andnot(netdev_features_t *dst,
-+			     const netdev_features_t features)
-+{
-+	*dst = netdev_features_andnot(*dst, features);
-+}
-+
-+static inline void
-+netdev_active_features_direct_andnot(struct net_device *ndev,
-+			     const netdev_features_t features)
-+{
-+	ndev->active_features = netdev_active_features_andnot(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_features_direct_andnot(struct net_device *ndev,
-+			 const netdev_features_t features)
-+{
-+	ndev->hw_features = netdev_hw_features_andnot(ndev, features);
-+}
-+
-+static inline void
-+netdev_wanted_features_direct_andnot(struct net_device *ndev,
-+			     const netdev_features_t features)
-+{
-+	ndev->wanted_features = netdev_wanted_features_andnot(ndev, features);
-+}
-+
-+static inline void
-+netdev_vlan_features_direct_andnot(struct net_device *ndev,
-+			   const netdev_features_t features)
-+{
-+	ndev->vlan_features = netdev_vlan_features_andnot(ndev, features);
-+}
-+
-+static inline void
-+netdev_hw_enc_features_direct_andnot(struct net_device *ndev,
-+			     const netdev_features_t features)
-+{
-+	ndev->hw_enc_features = netdev_hw_enc_features_andnot(ndev, features);
-+}
-+
-+static inline void
-+netdev_mpls_features_direct_andnot(struct net_device *ndev,
-+			   const netdev_features_t features)
-+{
-+	ndev->mpls_features = netdev_mpls_features_andnot(ndev, features);
-+}
-+
-+static inline void
-+netdev_gso_partial_features_direct_andnot(struct net_device *ndev,
-+				  const netdev_features_t features)
-+{
-+	ndev->gso_partial_features =
-+		netdev_gso_partial_features_andnot(ndev, features);
-+}
-+
-+/* helpers for netdev features 'set bit' operation */
-+static inline void netdev_features_set_bit(int nr, netdev_features_t *src)
-+{
-+	*src |= __NETIF_F_BIT(nr);
-+}
-+
-+#define netdev_active_features_set_bit(ndev, nr) \
-+		netdev_features_set_bit(nr, &ndev->active_features)
-+
-+#define netdev_hw_features_set_bit(ndev, nr) \
-+		netdev_features_set_bit(nr, &ndev->hw_features)
-+
-+#define netdev_wanted_features_set_bit(ndev, nr) \
-+		netdev_features_set_bit(nr, &ndev->wanted_features)
-+
-+#define netdev_vlan_features_set_bit(ndev, nr) \
-+		netdev_features_set_bit(nr, &ndev->vlan_features)
-+
-+#define netdev_hw_enc_features_set_bit(ndev, nr) \
-+		netdev_features_set_bit(nr, &ndev->hw_enc_features)
-+
-+#define netdev_mpls_features_set_bit(ndev, nr) \
-+		netdev_features_set_bit(nr, &ndev->mpls_features)
-+
-+#define netdev_gso_partial_features_set_bit(ndev, nr) \
-+		netdev_features_set_bit(nr, &ndev->gso_partial_features)
-+
-+/* helpers for netdev features 'set bit array' operation */
-+static inline void netdev_features_set_array(const int *array, int array_size,
-+					     netdev_features_t *dst)
-+{
-+	int i;
-+
-+	for (i = 0; i < array_size; i++)
-+		netdev_features_set_bit(array[i], dst);
-+}
-+
-+#define netdev_active_features_set_array(ndev, array, array_size) \
-+		netdev_features_set_array(array, array_size, &ndev->active_features)
-+
-+#define netdev_hw_features_set_array(ndev, array, array_size) \
-+		netdev_features_set_array(array, array_size, &ndev->hw_features)
-+
-+#define netdev_wanted_features_set_array(ndev, array, array_size) \
-+		netdev_features_set_array(array, array_size, &ndev->wanted_features)
-+
-+#define netdev_vlan_features_set_array(ndev, array, array_size) \
-+		netdev_features_set_array(array, array_size, &ndev->vlan_features)
-+
-+#define netdev_hw_enc_features_set_array(ndev, array, array_size) \
-+		netdev_features_set_array(array, array_size, &ndev->hw_enc_features)
-+
-+#define netdev_mpls_features_set_array(ndev, array, array_size) \
-+		netdev_features_set_array(array, array_size, &ndev->mpls_features)
-+
-+#define netdev_gso_partial_features_set_array(ndev, array, array_size) \
-+		netdev_features_set_array(array, array_size, &ndev->gso_partial_features)
-+
-+/* helpers for netdev features 'clear bit' operation */
-+static inline void netdev_features_clear_bit(int nr, netdev_features_t *src)
-+{
-+	*src &= ~__NETIF_F_BIT(nr);
-+}
-+
-+#define netdev_active_features_clear_bit(ndev, nr) \
-+		netdev_features_clear_bit(nr, &ndev->active_features)
-+
-+#define netdev_hw_features_clear_bit(ndev, nr) \
-+		netdev_features_clear_bit(nr, &ndev->hw_features)
-+
-+#define netdev_wanted_features_clear_bit(ndev, nr) \
-+		netdev_features_clear_bit(nr, &ndev->wanted_features)
-+
-+#define netdev_vlan_features_clear_bit(ndev, nr) \
-+		netdev_features_clear_bit(nr, &ndev->vlan_features)
-+
-+#define netdev_hw_enc_features_clear_bit(ndev, nr) \
-+		netdev_features_clear_bit(nr, &ndev->hw_enc_features)
-+
-+#define netdev_mpls_features_clear_bit(ndev, nr) \
-+		netdev_features_clear_bit(nr, &ndev->mpls_features)
-+
-+#define netdev_gso_partial_features_clear_bit(ndev, nr) \
-+		netdev_features_clear_bit(nr, &ndev->gso_partial_features)
-+
-+/* helpers for netdev features 'test bit' operation */
-+static inline bool netdev_features_test_bit(int nr, const netdev_features_t src)
-+{
-+	return (src & __NETIF_F_BIT(nr)) > 0;
-+}
-+
-+#define netdev_active_features_test_bit(ndev, nr) \
-+		netdev_features_test_bit(nr, ndev->active_features)
-+
-+#define netdev_hw_features_test_bit(ndev, nr) \
-+		netdev_features_test_bit(nr, ndev->hw_features)
-+
-+#define netdev_wanted_features_test_bit(ndev, nr) \
-+		netdev_features_test_bit(nr, ndev->wanted_features)
-+
-+#define netdev_vlan_features_test_bit(ndev, nr) \
-+		netdev_features_test_bit(nr, ndev->vlan_features)
-+
-+#define netdev_hw_enc_features_test_bit(ndev, nr) \
-+		netdev_features_test_bit(nr, ndev->hw_enc_features)
-+
-+#define netdev_mpls_features_test_bit(ndev, nr) \
-+		netdev_features_test_bit(nr, ndev->mpls_features)
-+
-+#define netdev_gso_partial_features_test_bit(ndev, nr) \
-+		netdev_features_test_bit(nr, ndev->gso_partial_features)
-+
-+static inline bool netdev_features_intersects(const netdev_features_t src1,
-+					      const netdev_features_t src2)
-+{
-+	return (src1 & src2) > 0;
-+}
-+
-+#define netdev_active_features_intersects(ndev, features) \
-+		netdev_features_intersects(ndev->active_features, features)
-+
-+#define netdev_hw_features_intersects(ndev, features) \
-+		netdev_features_intersects(ndev->hw_features, features)
-+
-+#define netdev_wanted_features_intersects(ndev, features) \
-+		netdev_features_intersects(ndev->wanted_features, features)
-+
-+#define netdev_vlan_features_intersects(ndev, features) \
-+		netdev_features_intersects(ndev->vlan_features, features)
-+
-+#define netdev_hw_enc_features_intersects(ndev, features) \
-+		netdev_features_intersects(ndev->hw_enc_features, features)
-+
-+#define netdev_mpls_features_intersects(ndev, features) \
-+		netdev_features_intersects(ndev->mpls_features, features)
-+
-+#define netdev_gso_partial_features_intersects(ndev, features) \
-+		netdev_features_intersects(ndev->gso_partial_features, features)
-+
-+
-+/* helpers for netdev features '=' operation */
-+static inline void netdev_set_active_features(struct net_device *netdev,
-+					      const netdev_features_t src)
-+{
-+	netdev->active_features = src;
-+}
-+
-+static inline void netdev_set_hw_features(struct net_device *ndev,
-+					  const netdev_features_t src)
-+{
-+	ndev->hw_features = src;
-+}
-+
-+static inline void netdev_set_wanted_features(struct net_device *ndev,
-+					      const netdev_features_t src)
-+{
-+	ndev->wanted_features = src;
-+}
-+
-+static inline void netdev_set_vlan_features(struct net_device *ndev,
-+					    const netdev_features_t src)
-+{
-+	ndev->vlan_features = src;
-+}
-+
-+static inline void netdev_set_hw_enc_features(struct net_device *ndev,
-+					      const netdev_features_t src)
-+{
-+	ndev->hw_enc_features = src;
-+}
-+
-+static inline void netdev_set_mpls_features(struct net_device *ndev,
-+					    const netdev_features_t src)
-+{
-+	ndev->mpls_features = src;
-+}
-+
-+static inline void netdev_set_gso_partial_features(struct net_device *ndev,
-+					    const netdev_features_t src)
-+{
-+	ndev->gso_partial_features = src;
-+}
-+
-+/* helpers for netdev features 'get' operation */
-+#define netdev_active_features(ndev)	((ndev)->active_features)
-+#define netdev_hw_features(ndev)	((ndev)->hw_features)
-+#define netdev_wanted_features(ndev)	((ndev)->wanted_features)
-+#define netdev_vlan_features(ndev)	((ndev)->vlan_features)
-+#define netdev_hw_enc_features(ndev)	((ndev)->hw_enc_features)
-+#define netdev_mpls_features(ndev)	((ndev)->mpls_features)
-+#define netdev_gso_partial_features(ndev)	((ndev)->gso_partial_features)
-+
-+/* helpers for netdev features 'subset' */
-+static inline bool netdev_features_subset(const netdev_features_t src1,
-+					  const netdev_features_t src2)
-+{
-+	return (src1 & src2) == src2;
-+}
-+
- static inline bool netif_elide_gro(const struct net_device *dev)
- {
- 	if (!(dev->active_features & NETIF_F_GRO) || dev->xdp_prog)
+ /*
+  *	Initialize the DEV module. At boot time this walks the device list and
+  *	unhooks any devices that fail to initialise (normally hardware not
+@@ -11259,6 +11370,8 @@ static int __init net_dev_init(void)
+ 	if (register_pernet_subsys(&netdev_net_ops))
+ 		goto out;
+ 
++	netdev_features_init();
++
+ 	/*
+ 	 *	Initialise the packet receive queues.
+ 	 */
+diff --git a/net/core/netdev_features.c b/net/core/netdev_features.c
+new file mode 100644
+index 000000000000..e92353428ee7
+--- /dev/null
++++ b/net/core/netdev_features.c
+@@ -0,0 +1,276 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Network device features.
++ */
++
++#include <linux/netdev_features.h>
++
++netdev_features_t netdev_ethtool_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_ethtool_features);
++
++netdev_features_t netdev_never_change_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_never_change_features);
++
++netdev_features_t netdev_gso_features_mask __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_gso_features_mask);
++
++netdev_features_t netdev_ip_csum_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_ip_csum_features);
++
++netdev_features_t netdev_csum_features_mask __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_csum_features_mask);
++
++netdev_features_t netdev_general_tso_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_general_tso_features);
++
++netdev_features_t netdev_all_tso_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_all_tso_features);
++
++netdev_features_t netdev_tso_ecn_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_tso_ecn_features);
++
++netdev_features_t netdev_all_fcoe_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_all_fcoe_features);
++
++netdev_features_t netdev_gso_software_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_gso_software_features);
++
++netdev_features_t netdev_one_for_all_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_one_for_all_features);
++
++netdev_features_t netdev_all_for_all_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_all_for_all_features);
++
++netdev_features_t netdev_upper_disable_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_upper_disable_features);
++
++netdev_features_t netdev_soft_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_soft_features);
++
++netdev_features_t netdev_soft_off_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_soft_off_features);
++
++netdev_features_t netdev_all_vlan_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_all_vlan_features);
++
++netdev_features_t netdev_vlan_filter_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_vlan_filter_features);
++
++netdev_features_t netdev_rx_vlan_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_rx_vlan_features);
++
++netdev_features_t netdev_tx_vlan_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_tx_vlan_features);
++
++netdev_features_t netdev_ctag_vlan_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_ctag_vlan_features);
++
++netdev_features_t netdev_stag_vlan_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_stag_vlan_features);
++
++netdev_features_t netdev_gso_encap_all_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_gso_encap_all_features);
++
++netdev_features_t netdev_xfrm_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_xfrm_features);
++
++netdev_features_t netdev_tls_features __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_tls_features);
++
++netdev_features_t netdev_csum_gso_features_mask __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_csum_gso_features_mask);
++
++netdev_features_t netdev_vlan_features_mask __ro_after_init;
++EXPORT_SYMBOL_GPL(netdev_vlan_features_mask);
++
++const int netif_f_never_change_array[] = {
++	NETIF_F_VLAN_CHALLENGED_BIT,
++	NETIF_F_LLTX_BIT,
++	NETIF_F_NETNS_LOCAL_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_never_change_array);
++
++const int netif_f_gso_mask_array[] = {
++	NETIF_F_TSO_BIT,
++	NETIF_F_GSO_ROBUST_BIT,
++	NETIF_F_TSO_ECN_BIT,
++	NETIF_F_TSO_MANGLEID_BIT,
++	NETIF_F_TSO6_BIT,
++	NETIF_F_FSO_BIT,
++	NETIF_F_GSO_GRE_BIT,
++	NETIF_F_GSO_GRE_CSUM_BIT,
++	NETIF_F_GSO_IPXIP4_BIT,
++	NETIF_F_GSO_IPXIP6_BIT,
++	NETIF_F_GSO_UDP_TUNNEL_BIT,
++	NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT,
++	NETIF_F_GSO_PARTIAL_BIT,
++	NETIF_F_GSO_TUNNEL_REMCSUM_BIT,
++	NETIF_F_GSO_SCTP_BIT,
++	NETIF_F_GSO_ESP_BIT,
++	NETIF_F_GSO_UDP_BIT,
++	NETIF_F_GSO_UDP_L4_BIT,
++	NETIF_F_GSO_FRAGLIST_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_gso_mask_array);
++
++const int netif_f_ip_csum_array[] = {
++	NETIF_F_IP_CSUM_BIT,
++	NETIF_F_IPV6_CSUM_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_ip_csum_array);
++
++const int netif_f_csum_mask_array[] = {
++	NETIF_F_IP_CSUM_BIT,
++	NETIF_F_IPV6_CSUM_BIT,
++	NETIF_F_HW_CSUM_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_csum_mask_array);
++
++const int netif_f_general_tso_array[] = {
++	NETIF_F_TSO_BIT,
++	NETIF_F_TSO6_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_general_tso_array);
++
++const int netif_f_all_tso_array[] = {
++	NETIF_F_TSO_BIT,
++	NETIF_F_TSO6_BIT,
++	NETIF_F_TSO_ECN_BIT,
++	NETIF_F_TSO_MANGLEID_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_all_tso_array);
++
++const int netif_f_tso_ecn_array[] = {
++	NETIF_F_TSO_ECN_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_tso_ecn_array);
++
++const int netif_f_all_fcoe_array[] = {
++	NETIF_F_FCOE_CRC_BIT,
++	NETIF_F_FCOE_MTU_BIT,
++	NETIF_F_FSO_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_all_fcoe_array);
++
++const int netif_f_gso_soft_array[] = {
++	NETIF_F_TSO_BIT,
++	NETIF_F_TSO6_BIT,
++	NETIF_F_TSO_ECN_BIT,
++	NETIF_F_TSO_MANGLEID_BIT,
++	NETIF_F_GSO_SCTP_BIT,
++	NETIF_F_GSO_UDP_L4_BIT,
++	NETIF_F_GSO_FRAGLIST_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_gso_soft_array);
++
++const int netif_f_one_for_all_array[] = {
++	NETIF_F_TSO_BIT,
++	NETIF_F_TSO6_BIT,
++	NETIF_F_TSO_ECN_BIT,
++	NETIF_F_TSO_MANGLEID_BIT,
++	NETIF_F_GSO_SCTP_BIT,
++	NETIF_F_GSO_UDP_L4_BIT,
++	NETIF_F_GSO_FRAGLIST_BIT,
++	NETIF_F_GSO_ROBUST_BIT,
++	NETIF_F_SG_BIT,
++	NETIF_F_HIGHDMA_BIT,
++	NETIF_F_FRAGLIST_BIT,
++	NETIF_F_VLAN_CHALLENGED,
++};
++EXPORT_SYMBOL_GPL(netif_f_one_for_all_array);
++
++const int netif_f_all_for_all_array[] = {
++	NETIF_F_NOCACHE_COPY_BIT,
++	NETIF_F_FSO_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_all_for_all_array);
++
++const int netif_f_upper_disables_array[] = {
++	NETIF_F_LRO_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_upper_disables_array);
++
++const int netif_f_soft_array[] = {
++	NETIF_F_GSO_BIT,
++	NETIF_F_GRO_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_soft_array);
++
++const int netif_f_soft_off_array[] = {
++	NETIF_F_GRO_FRAGLIST_BIT,
++	NETIF_F_GRO_UDP_FWD_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_soft_off_array);
++
++const int netif_f_vlan_array[] = {
++	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++	NETIF_F_HW_VLAN_CTAG_RX_BIT,
++	NETIF_F_HW_VLAN_CTAG_TX_BIT,
++	NETIF_F_HW_VLAN_STAG_FILTER_BIT,
++	NETIF_F_HW_VLAN_STAG_RX_BIT,
++	NETIF_F_HW_VLAN_STAG_TX_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_vlan_array);
++
++const int netif_f_tx_vlan_array[] = {
++	NETIF_F_HW_VLAN_CTAG_TX_BIT,
++	NETIF_F_HW_VLAN_STAG_TX_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_tx_vlan_array);
++
++const int netif_f_rx_vlan_array[] = {
++	NETIF_F_HW_VLAN_CTAG_RX_BIT,
++	NETIF_F_HW_VLAN_STAG_RX_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_rx_vlan_array);
++
++const int netif_f_vlan_filter_array[] = {
++	NETIF_F_HW_VLAN_CTAG_FILTER_BIT,
++	NETIF_F_HW_VLAN_STAG_FILTER_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_vlan_filter_array);
++
++const int netif_f_ctag_vlan_array[] = {
++	NETIF_F_HW_VLAN_CTAG_TX_BIT,
++	NETIF_F_HW_VLAN_CTAG_RX_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_ctag_vlan_array);
++
++const int netif_f_stag_vlan_array[] = {
++	NETIF_F_HW_VLAN_STAG_TX_BIT,
++	NETIF_F_HW_VLAN_STAG_RX_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_stag_vlan_array);
++
++const int netif_f_gso_encap_array[] = {
++	NETIF_F_GSO_GRE_BIT,
++	NETIF_F_GSO_GRE_CSUM_BIT,
++	NETIF_F_GSO_IPXIP4_BIT,
++	NETIF_F_GSO_IPXIP6_BIT,
++	NETIF_F_GSO_UDP_TUNNEL_BIT,
++	NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT,
++};
++EXPORT_SYMBOL_GPL(netif_f_gso_encap_array);
++
++const int netif_f_xfrm_array[] = {
++	NETIF_F_HW_ESP_BIT,
++	NETIF_F_HW_ESP_TX_CSUM_BIT,
++	NETIF_F_GSO_ESP_BIT
++};
++EXPORT_SYMBOL_GPL(netif_f_xfrm_array);
++
++const int netif_f_tls_array[] = {
++	NETIF_F_HW_TLS_TX_BIT,
++	NETIF_F_HW_TLS_RX_BIT
++};
++EXPORT_SYMBOL_GPL(netif_f_tls_array);
++
++const int netif_f_vlan_mask_array[] = {
++	NETIF_F_SG_BIT,
++	NETIF_F_HIGHDMA_BIT,
++	NETIF_F_HW_CSUM_BIT,
++	NETIF_F_FRAGLIST_BIT,
++	NETIF_F_HW_VLAN_CTAG_TX_BIT,
++	NETIF_F_HW_VLAN_STAG_TX_BIT
++};
++EXPORT_SYMBOL_GPL(netif_f_vlan_mask_array);
 -- 
 2.33.0
 
