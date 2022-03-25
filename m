@@ -2,72 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4AF24E747B
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 14:49:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CAB4E74A4
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 15:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358292AbiCYNuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 09:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35588 "EHLO
+        id S1346959AbiCYOBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 10:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357290AbiCYNux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 09:50:53 -0400
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D34A5EBC
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 06:49:19 -0700 (PDT)
-Received: by mail-qk1-x72c.google.com with SMTP id p25so5976979qkj.10
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 06:49:19 -0700 (PDT)
+        with ESMTP id S1359119AbiCYOBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 10:01:51 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69EDB63390;
+        Fri, 25 Mar 2022 07:00:08 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id yy13so15577303ejb.2;
+        Fri, 25 Mar 2022 07:00:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=98/USP9WhCm9yFVujLvLXObgTqJRm62hpT05OLs5ACA=;
-        b=GgSUf3Z9vLbK1V1vBPfA3IdL4eq9x0yogPi6T9HzDzU0/dGG8YJEGcY5eGj+GXfOk7
-         XHW9BEGndwU13FG1FXJ8tZA8OD7vTpIOIFgAAJumfLiYWMDpabYnxkKWBPae6tNViESb
-         eEu8qAQkCm69dgYziAnfaUPCLAbVeGLyhortthLcv+9420oBC1UdHypKkxMmCQcjTjB3
-         M2pHvNYYRK5+SBs9FD3Qyj/PB4YOCfzNR9vlu0OcDwnwo1YRRCnOp2cWHe+9LV+w8N30
-         dnbRlIqkSBtttzI17+44DLuCWgvPO3OpoAaxhbCbapLaIoFGlIlGTPV2/bM/KSG7S9or
-         Bh0g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=E3/UBDuXc/UMmAXiWRPwW4yrgBs5CuzWGxqSCJFk/HA=;
+        b=jWTwiuS5J1LrH6cNNWJ4K0NyE7bDgt9LgcQhvS3W40AjSY7EmaEqafmoyHMSa3VizF
+         VoEWDjJDMheSWhOWi+x5jJN2F5AFrOL/bVupo+noUKAbAoVJHeVH+wqHRazBsqnbCIH8
+         QKhnL2aSKn5nuHFty6ORYnsb7WsnVurJYPxNIjZcxTJPb4GqhBgc7Qcn7reHuH7jxI+M
+         wKHfKCOBuNk69pCNkRVrQ6s5keW2Wl49PGXgCkAzapgAW2/cNVJZcMNtc8xUxclNd28F
+         459h0EbhHdNZUZ+rohyB+u+7hR+x1bq5oZMWVyxwy5M3W7SWdewbgV9mY7tEFZbE/dCa
+         0kdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=98/USP9WhCm9yFVujLvLXObgTqJRm62hpT05OLs5ACA=;
-        b=ZwKp9EQU68LYuXEYSSBy7Fmx5l0oN0l0Cxt3HrFdZSa/aW/5oMxXFf2JEkG6ZN41N6
-         KdbKTZxa8eGvqlmBvENpP0ntebyKEG7liRuLyTXItsar0JZUwxN9t+sAPaMaM0dQ0VoD
-         Lk6zakzwvHcsydXFEz9HvoqGjln4kWx0jDvcCIFS5nN8ok8JPvgs3xAZBoS3umUERrXh
-         H4v4ermbVDXHg2fW70IUTfcgUrQBC7rBzYwNsUFO52VUDSW0Ga8EUZxlKhJs+bgmD6Kv
-         DNhjm6DuWAW985YNmjmuqSMaaPz0sjthaklajOYyJL0o0/e66T7J6afDU1TIiwKSsI6B
-         41Rg==
-X-Gm-Message-State: AOAM530zOQKvAhyK72tPl+pWYkmOMPZZRQmKbexffiqVjYUgjnvwxaKC
-        oHp70y/RfvVQjJHDzhoU9UXpibFo0co=
-X-Google-Smtp-Source: ABdhPJx0BMVteB1P+ysW5PrNVvBATJN/EXa7n6xUG7jfw+skG/cWo8xSCRX8t4BgHTRhkmVq2uCPpg==
-X-Received: by 2002:a05:620a:240c:b0:680:a0f6:af19 with SMTP id d12-20020a05620a240c00b00680a0f6af19mr5123355qkn.110.1648216158963;
-        Fri, 25 Mar 2022 06:49:18 -0700 (PDT)
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com. [209.85.128.170])
-        by smtp.gmail.com with ESMTPSA id t7-20020a05622a180700b002e0ccf0aa49sm5280686qtc.62.2022.03.25.06.49.18
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 06:49:18 -0700 (PDT)
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-2e5e176e1b6so83466577b3.13
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 06:49:18 -0700 (PDT)
-X-Received: by 2002:a81:ad67:0:b0:2e5:8466:322a with SMTP id
- l39-20020a81ad67000000b002e58466322amr10500973ywk.54.1648216157853; Fri, 25
- Mar 2022 06:49:17 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=E3/UBDuXc/UMmAXiWRPwW4yrgBs5CuzWGxqSCJFk/HA=;
+        b=AGkLXktG+8i5a5zmuw0vclhCuKN8yjW0xETkGun6mooaxoiViNkyBZSzV4FyDdYLbP
+         c8+GBpG3mkYiYjHrECh7OARDxrDsSRZNow465p9iDNj0w6e2ZmNDJuXrYJFX0Hdu7aS0
+         661Fg33ztQ5jnjcSDscEMs/Na3ZLygpbow8ez9ANMV2yiAbbt5/9zXD1U8tDl2C+iGUO
+         mPGGnKcUXS1hG7aS3I70mkdXpMeJd+RBmSQDq5cHBxJGsGroX5FHctjkaKuwCcYmF6D7
+         vB2qISKTGaGpkY7ewtewWiunxBWcqeALwjPMZfKH2Dn1KW2+aSv+geS0USUFFmD6lwWu
+         yfbw==
+X-Gm-Message-State: AOAM5321EZ/4MLGCbucnhaw1XE2aZ0CEubr8Xdv4iIUvXgC+rZDZqtRm
+        RIwTv6BKgg3IcwCb/5eOI2Y=
+X-Google-Smtp-Source: ABdhPJyc2AGROsTgH7tBlOTLHPM9gCauyoGQNJXHixZDBfPKeV6KEk95m7F6VkXZKLLztYxtxjTSJw==
+X-Received: by 2002:a17:907:9956:b0:6b9:a6d9:a535 with SMTP id kl22-20020a170907995600b006b9a6d9a535mr11905555ejc.64.1648216806904;
+        Fri, 25 Mar 2022 07:00:06 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id z1-20020a05640235c100b004192c7266f5sm2840616edc.16.2022.03.25.07.00.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Mar 2022 07:00:06 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 16:00:03 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
+ offloading of fdb locked flag
+Message-ID: <20220325140003.a4w4hysqbzmrcxbq@skbuf>
+References: <20220323123534.i2whyau3doq2xdxg@skbuf>
+ <86wngkbzqb.fsf@gmail.com>
+ <20220323144304.4uqst3hapvzg3ej6@skbuf>
+ <86lewzej4n.fsf@gmail.com>
+ <20220324110959.t4hqale35qbrakdu@skbuf>
+ <86v8w3vbk4.fsf@gmail.com>
+ <20220324142749.la5til4ys6zva4uf@skbuf>
+ <86czia1ned.fsf@gmail.com>
+ <20220325132102.bss26plrk4sifby2@skbuf>
+ <86fsn6uoqz.fsf@gmail.com>
 MIME-Version: 1.0
-References: <20220324213954.3ln7kvl5utadnux6@skbuf> <CA+FuTSe9hXG1x0-8e1P8_JmckOFaCFujZbJ=-=WTJW3y1sJQNQ@mail.gmail.com>
- <20220325133722.sicgl3kr5ectveix@skbuf>
-In-Reply-To: <20220325133722.sicgl3kr5ectveix@skbuf>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 25 Mar 2022 09:48:41 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeJCZ1F3b9rrLpdcp6sbok8OXBA40jSmtxbJ7cnQayr+w@mail.gmail.com>
-Message-ID: <CA+FuTSeJCZ1F3b9rrLpdcp6sbok8OXBA40jSmtxbJ7cnQayr+w@mail.gmail.com>
-Subject: Re: Broken SOF_TIMESTAMPING_OPT_ID in linux-4.19.y and earlier stable branches
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <86fsn6uoqz.fsf@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -78,105 +89,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 9:37 AM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> Hi Willem,
->
-> Thanks for the reply.
->
-> On Fri, Mar 25, 2022 at 09:15:30AM -0400, Willem de Bruijn wrote:
-> > On Thu, Mar 24, 2022 at 5:43 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> > >
-> > > Hello Willem,
-> > >
-> > > I have an application which makes use of SOF_TIMESTAMPING_OPT_ID, and I
-> > > received reports from multiple users that all timestamps are delivered
-> > > with a tskey of 0 for all stable kernel branches earlier than, and
-> > > including, 4.19.
-> > >
-> > > I bisected this issue down to:
-> > >
-> > > | commit 8f932f762e7928d250e21006b00ff9b7718b0a64 (HEAD)
-> > > | Author: Willem de Bruijn <willemb@google.com>
-> > > | Date:   Mon Dec 17 12:24:00 2018 -0500
-> > > |
-> > > |     net: add missing SOF_TIMESTAMPING_OPT_ID support
-> > > |
-> > > |     SOF_TIMESTAMPING_OPT_ID is supported on TCP, UDP and RAW sockets.
-> > > |     But it was missing on RAW with IPPROTO_IP, PF_PACKET and CAN.
-> > > |
-> > > |     Add skb_setup_tx_timestamp that configures both tx_flags and tskey
-> > > |     for these paths that do not need corking or use bytestream keys.
-> > > |
-> > > |     Fixes: 09c2d251b707 ("net-timestamp: add key to disambiguate concurrent datagrams")
-> > > |     Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > |     Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> > > |     Signed-off-by: David S. Miller <davem@davemloft.net>
-> > >
-> > > and, interestingly, I found this discussion on the topic:
-> > > https://www.spinics.net/lists/netdev/msg540752.html
-> > > (copied here in case the link rots in the future)
-> > >
-> > > | > Series applied.
-> > > | >
-> > > | > What is your opinion about -stable for this?
-> > > |
-> > > | Thanks David. Since these are just missing features that no one has
-> > > | reported as actually having been missing a whole lot, I don't think
-> > > | that they are worth the effort or risk.
-> > >
-> > > So I have 2 questions:
-> > >
-> > > Is there a way for user space to validate functional kernel support for
-> > > SOF_TIMESTAMPING_OPT_ID? What I'm noticing is that (at least with
-> > > AF_PACKET sockets) the "level == SOL_PACKET && type == PACKET_TX_TIMESTAMP"
-> > > cmsg is _not_ missing, but instead contains a valid sock_err->ee_data
-> > > (tskey) of 0.
-> >
-> > The commit only fixes missing OPT_ID support for PF_PACKET and various SOCK_RAW.
-> >
-> > The cmsg structure returned for timestamps is the same regardless of
-> > whether the option is set configured. It just uses an otherwise constant field.
-> >
-> > On these kernels the feature is supported, and should work on TCP and UDP.
-> > So a feature check would give the wrong answer.
->
-> Ok, I read this as "user space can't detect whether OPT_ID works on PF_PACKET sockets",
-> except by retroactively looking at the tskeys, and if they're all zero, say
-> "hmm, something's not right". Pretty complicated.
->
-> So we probably need to fix the stable kernels. For the particular case
-> of my application, I have just about zero control of what kernel the
-> users are running, so the more stable branches we could cover, the better.
->
-> > > If it's not possible, could you please consider sending these fixes as
-> > > patches to linux-stable?
-> >
-> > The first of the two fixes
-> >
-> >     fbfb2321e9509 ("ipv6: add missing tx timestamping on IPPROTO_RAW")
-> >
-> > is in 4.19.y as of 4.19.99
-> >
-> > The follow-on fix that you want
-> >
-> >     8f932f762e79 ("net: add missing SOF_TIMESTAMPING_OPT_ID support")
-> >
-> > applies cleanly to 4.19.236.
-> >
-> > I think it's fine to cherry-pick. Not sure how to go about that.
->
-> Do you have any particular concerns about sending this patch to the
-> linux-stable branches for 4.19, 4.14 and 4.9? From https://www.kernel.org/
-> I see those are the only stable branches left.
+On Fri, Mar 25, 2022 at 02:48:36PM +0100, Hans Schultz wrote:
+> > If you'd cache the locked ATU entry in the mv88e6xxx driver, and you'd
+> > notify switchdev only if the entry is new to the cache, then you'd
+> > actually still achieve something major. Yes, the bridge FDB will contain
+> > locked FDB entries that aren't in the ATU. But that's because your
+> > printer has been silent for X seconds. The policy for the printer still
+> > hasn't changed, as far as the mv88e6xxx, or bridge, software drivers are
+> > concerned. If the unauthorized printer says something again after the
+> > locked ATU entry expires, the mv88e6xxx driver will find its MAC SA
+> > in the cache of denied addresses, and reload the ATU. What this
+> > achieves
+> 
+> The driver will in this case just trigger a new miss violation and add
+> the entry again I think.
+> The problem with all this is that a malicious attack that spams the
+> switch with random mac addresses will be able to DOS the device as any
+> handling of the fdb will be too resource demanding. That is why it is
+> needed to remove those fdb entries after a time out, which dynamic
+> entries would serve.
 
-The second patch does not apply cleanly to 4.14.y and even the first
-(one-liner) has a conflict on 4.9.y.
-
-It would be good to verify by running the expanded
-tools/testing/selftests/net/txtimestamp.c against the patched kernels
-first. That should serve as a good test whether the feature works on a
-kernel, re: that previous point.
-
-If you want to test and send the 4.19.y patch, please go ahead. Or I
-can do it, but it will take some time.
+An attacker sweeping through the 2^47 source MAC address range is a
+problem regardless of the implementations proposed so far, no?
+If unlimited growth of the mv88e6xxx locked ATU entry cache is a
+concern (which it is), we could limit its size, and when we purge a
+cached entry in software is also when we could emit a
+SWITCHDEV_FDB_DEL_TO_BRIDGE for it, right?
