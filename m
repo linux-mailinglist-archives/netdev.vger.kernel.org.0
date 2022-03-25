@@ -2,83 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 023264E7893
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 17:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 278034E78D6
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 17:23:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376663AbiCYQDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 12:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
+        id S1376583AbiCYQZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 12:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbiCYQDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 12:03:45 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360C19F38E;
-        Fri, 25 Mar 2022 09:02:10 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id s25so10906107lji.5;
-        Fri, 25 Mar 2022 09:02:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=+OD60eQPT0VQTzE/zXfu180JDdeuowENv4FkX1dVZFE=;
-        b=I8MvfJJg21hFIKhtqvvBctr1gAN5m6sffrS0rOoehEmmIPayRpaTUaRe/GPXScZ/SH
-         2azU1M4fHHMRKTdXW6AxUyl/Slloo0KWbjmm4M6AA2COT0ckYY06spj7vr4L/0t+aHuP
-         49Dw0R1j2j1bA4IMtVa6mKBme6bH63fkqKJwWv9OP7F3lxP+P4hUmeF5xx+NKJnFMIFr
-         3QQetM/VX8SOp7DeM8FnVuM01Q37nBCTnGwbiujgazzVfNlfdxp70Wqa+R8ryl0ACD52
-         kBx2038L1+1KxinXX1O1I2hOFRB3gq89vkJrGAO+noJWzqsKm7N7ZEokizNpdn9IS/Ys
-         TMow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=+OD60eQPT0VQTzE/zXfu180JDdeuowENv4FkX1dVZFE=;
-        b=Y0lQvnkgwzpLZpRALFTDji3IqRAImXsj4GerD+lFueVTwrWj7wZIvhoKHDvzat+Wr/
-         2ELo5fs/WQDhdV8xg9/v/4mBF4l5hQEqGpMQPn2aOFLtI1JF9CJYb3tK2TQv9OovUkXA
-         sYRkTc8wlcfGKxZPSEfX4t4qEB/KxWn+zyvrJhsSWYvIeLpOo4YOuyI4AfmhFHXBugve
-         cCia46/7CIEHWdeHyCT2XCZ6KikllvlGXBZ7MRS4J53QPhcRKH+GZLoP4ZNtTVBJ20p2
-         G64kagx/r48yUWGxAmO0F7J0ejbevahHXhnDriGVwznKYtMDUD2Kbb4+JSFskWtjNs7q
-         XpZg==
-X-Gm-Message-State: AOAM5303TAy/d2S/OAOvsY5glHLgRHpWgZvNX6r5czxDMJ+Sz2pMa8YI
-        V9/yiGb73pxviOo9aRo5KrIMR0CBEZJQug==
-X-Google-Smtp-Source: ABdhPJy6jB+HkWeuu+mr4Nf5L0XiH1JsJt71ZKa7Kvg7YTo3UzTPXUwRdrvEMV0xlzbN7/m6plkcTA==
-X-Received: by 2002:a05:651c:198b:b0:249:8bf4:498b with SMTP id bx11-20020a05651c198b00b002498bf4498bmr8914549ljb.441.1648224128413;
-        Fri, 25 Mar 2022 09:02:08 -0700 (PDT)
-Received: from wse-c0127 ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id i24-20020a2e8658000000b0024806af7079sm744149ljj.43.2022.03.25.09.02.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 09:02:07 -0700 (PDT)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
- offloading of fdb locked flag
-In-Reply-To: <20220325140003.a4w4hysqbzmrcxbq@skbuf>
-References: <20220323123534.i2whyau3doq2xdxg@skbuf>
- <86wngkbzqb.fsf@gmail.com> <20220323144304.4uqst3hapvzg3ej6@skbuf>
- <86lewzej4n.fsf@gmail.com> <20220324110959.t4hqale35qbrakdu@skbuf>
- <86v8w3vbk4.fsf@gmail.com> <20220324142749.la5til4ys6zva4uf@skbuf>
- <86czia1ned.fsf@gmail.com> <20220325132102.bss26plrk4sifby2@skbuf>
- <86fsn6uoqz.fsf@gmail.com> <20220325140003.a4w4hysqbzmrcxbq@skbuf>
-Date:   Fri, 25 Mar 2022 17:01:59 +0100
-Message-ID: <86tubmt408.fsf@gmail.com>
+        with ESMTP id S1354899AbiCYQZR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 12:25:17 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E27AD5EBF7;
+        Fri, 25 Mar 2022 09:23:41 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E0F1D6E;
+        Fri, 25 Mar 2022 09:23:40 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E48393F73D;
+        Fri, 25 Mar 2022 09:23:37 -0700 (PDT)
+Message-ID: <11d4c863-5bee-aa98-526c-ac7170296485@arm.com>
+Date:   Fri, 25 Mar 2022 16:23:34 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Content-Language: en-GB
+To:     Halil Pasic <pasic@linux.ibm.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+ <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
+ <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324190216.0efa067f.pasic@linux.ibm.com>
+ <20220325162508.3273e0db.pasic@linux.ibm.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220325162508.3273e0db.pasic@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,40 +65,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On fre, mar 25, 2022 at 16:00, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Fri, Mar 25, 2022 at 02:48:36PM +0100, Hans Schultz wrote:
->> > If you'd cache the locked ATU entry in the mv88e6xxx driver, and you'd
->> > notify switchdev only if the entry is new to the cache, then you'd
->> > actually still achieve something major. Yes, the bridge FDB will contain
->> > locked FDB entries that aren't in the ATU. But that's because your
->> > printer has been silent for X seconds. The policy for the printer still
->> > hasn't changed, as far as the mv88e6xxx, or bridge, software drivers are
->> > concerned. If the unauthorized printer says something again after the
->> > locked ATU entry expires, the mv88e6xxx driver will find its MAC SA
->> > in the cache of denied addresses, and reload the ATU. What this
->> > achieves
->> 
->> The driver will in this case just trigger a new miss violation and add
->> the entry again I think.
->> The problem with all this is that a malicious attack that spams the
->> switch with random mac addresses will be able to DOS the device as any
->> handling of the fdb will be too resource demanding. That is why it is
->> needed to remove those fdb entries after a time out, which dynamic
->> entries would serve.
->
-> An attacker sweeping through the 2^47 source MAC address range is a
-> problem regardless of the implementations proposed so far, no?
+On 2022-03-25 15:25, Halil Pasic wrote:
+> On Thu, 24 Mar 2022 19:02:16 +0100
+> Halil Pasic <pasic@linux.ibm.com> wrote:
+> 
+>>> I'll admit I still never quite grasped the reason for also adding the
+>>> override to swiotlb_sync_single_for_device() in aa6f8dcbab47, but I
+>>> think by that point we were increasingly tired and confused and starting
+>>> to second-guess ourselves (well, I was, at least).
+>>
+>> I raised the question, do we need to do the same for
+>> swiotlb_sync_single_for_device(). Did that based on my understanding of the
+>> DMA API documentation. I had the following scenario in mind
+>>
+>> SWIOTLB without the snyc_single:
+>>                                    Memory      Bounce buffer      Owner
+>> --------------------------------------------------------------------------
+>> start                             12345678    xxxxxxxx             C
+>> dma_map(DMA_FROM_DEVICE)          12345678 -> 12345678             C->D
+>> device writes partial data        12345678    12ABC678 <- ABC      D
+>> sync_for_cpu(DMA_FROM_DEVICE)     12ABC678 <- 12ABC678             D->C
+>> cpu modifies buffer               66666666    12ABC678             C
+>> sync_for_device(DMA_FROM_DEVICE)  66666666    12ABC678             C->D
+>> device writes partial data        66666666    1EFGC678 <-EFG       D
+>> dma_unmap(DMA_FROM_DEVICE)        1EFGC678 <- 1EFGC678             D->C
+>>
+>> Legend: in Owner column C stands for cpu and D for device.
+>>
+>> Without swiotlb, I believe we should have arrived at 6EFG6666. To get the
+>> same result, IMHO, we need to do a sync in sync_for_device().
+>> And aa6f8dcbab47 is an imperfect solution to that (because of size).
+>>
+> 
+> @Robin, Christoph: Do we consider this a valid scenario?
 
-The idea is to have a count on the number of locked entries in both the
-ATU and the FDB, so that a limit on entries can be enforced.
+Aha, I see it now (turns out diagrams really do help!) - so essentially 
+the original situation but with buffer recycling thrown into the mix as 
+well... I think it's technically valid, but do we know if anything's 
+actually doing that in a way which ends up affected? For sure it would 
+be nice to know that we had all bases covered without having to audit 
+whether we need to, but if it's fundamentally incompatible with what 
+other code expects, that we know *is* being widely used, and however 
+questionable it may be we don't have an easy fix for, then we're in a 
+bit of a tough spot :(
 
-> If unlimited growth of the mv88e6xxx locked ATU entry cache is a
-> concern (which it is), we could limit its size, and when we purge a
-> cached entry in software is also when we could emit a
-> SWITCHDEV_FDB_DEL_TO_BRIDGE for it, right?
-
-I think the best would be dynamic entries in both the ATU and the FDB
-for locked entries. How the two are kept in sync is another question,
-but if there is a switchcore, it will be the 'master', so I don't think
-the bridge module will need to tell the switchcore to remove entries in
-that case. Or?
+Thanks,
+Robin.
