@@ -2,109 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C58004E6B34
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 00:25:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E08C4E6B63
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 01:03:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355786AbiCXX0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 19:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57018 "EHLO
+        id S1356848AbiCYAEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 20:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355777AbiCXX0W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 19:26:22 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE01EA6E34;
-        Thu, 24 Mar 2022 16:24:48 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id u3so8675471wrg.3;
-        Thu, 24 Mar 2022 16:24:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gbcTt7PKznp7xX+RFiZTZsMSrvKKcg7TzmpForC+1PE=;
-        b=pk+WGrsKj3qCut+OpEUiMONYzGDxLCe28nEfSeRicBl7iAdnNx1FIt9Y6VoIeK/hpN
-         bzlElI3gPgjuWPeS9WrEmd9qrHphTbLVLFv/36PrIsYsZFTx7NtQTLFFdEpZpRqkUxrO
-         j4uPZ7C6qds17HW90+I1VLQg/a5Kp1ddXD/gBFSiYbtIXlc1iZ5UTKQSwgVa03+PVC8z
-         5aisBxq4nPLGQlIBKaHY5HktI4ZcECLxwwx5Y/d8SUUGyBFUI5r3XTDUB1jUS7q/Z209
-         p+I9L4NdIYTaz1Y6mjCzS5dp14KwyoGogKIVuGpdudlldBMv8z6CjXSKCwEMqxe0/3Vi
-         U2Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gbcTt7PKznp7xX+RFiZTZsMSrvKKcg7TzmpForC+1PE=;
-        b=Qr/cAlp0lDwEoNHIGo6WwTT/yh9+rqi6s9Yy9fRcmYf3EjCRwqECgW0jTWzCb1Gwt2
-         ufzyYEzrpMzw/ZhJpqQxL7PWVjscNIwWWKvFqkQ3KmwDd0rAlhj2p1vp6Caf/VGUrifO
-         u+0pEFiDzfvmKoU+nHXaWfLZlzJUf52depQt2B8icVScxEEfpEcLtc/fqURkpR6nU7pt
-         4VyCOXrEafK+b0hfo35wr05jp6s45JHLFxpfoVA0XFO1xUoU4m3F6xysKU/S9Vrzk9yd
-         sMmaExohUj06Zy6XMWWj/NmjY92yOPqIPq5mdUGVtWtznRI2wPCtSGQayo2bfhxg2lRS
-         bEyw==
-X-Gm-Message-State: AOAM532pr+NWpUtOdGx+NngS71nvYVR3EEAnDePp9mjYUidbrs4R472R
-        1zf/c4FjXJc0huoiAuZc0lo=
-X-Google-Smtp-Source: ABdhPJxdTzG8p4/+ibB3Lx6BrFZ2InqzINxR3UEr0PMSaa+mEOZBh4dKQbjszAubSP/awj35VKySIg==
-X-Received: by 2002:a5d:5041:0:b0:203:ecc8:47de with SMTP id h1-20020a5d5041000000b00203ecc847demr6453284wrt.240.1648164286647;
-        Thu, 24 Mar 2022 16:24:46 -0700 (PDT)
-Received: from Ansuel-xps.localdomain (93-42-69-170.ip85.fastwebnet.it. [93.42.69.170])
-        by smtp.gmail.com with ESMTPSA id i206-20020a1c3bd7000000b0038bfc3ab76csm3206042wma.48.2022.03.24.16.24.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Mar 2022 16:24:46 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 00:24:44 +0100
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next PATCH 1/4] drivers: net: dsa: qca8k: drop MTU tracking
- from qca8k_priv
-Message-ID: <Yjz9vNrHvFxCxAY1@Ansuel-xps.localdomain>
-References: <20220322014506.27872-2-ansuelsmth@gmail.com>
- <20220322115812.mwue2iu2xxrmknxg@skbuf>
- <YjnRQNg/Do0SwNq/@Ansuel-xps.localdomain>
- <20220322135535.au5d2n7hcu4mfdxr@skbuf>
- <YjnXOF2TZ7o8Zy2P@Ansuel-xps.localdomain>
- <20220324104524.ou7jyqcbfj3fhpvo@skbuf>
- <YjzYK3oDDclLRmm2@Ansuel-xps.localdomain>
- <20220324210508.doj7fsjn3ihronnx@skbuf>
- <Yjz6WxkElADpJ5e7@Ansuel-xps.localdomain>
- <20220324231423.qyyyd72nn75i7kdc@skbuf>
+        with ESMTP id S1357170AbiCYADc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 20:03:32 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1BDFBB925
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 17:01:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648166519; x=1679702519;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=ktVK5Htz52j6HRtZgSHIYhD6bKZA/XuyDcXCgV6YkPY=;
+  b=K4nzNYlPWPeyTOeza3PxCExT0+svOo9csI+uK6pTxHJtRyQ4U2f7hXgK
+   o3QgzBy24yjmrfSHtborvmROcB6X8gt+hlSD6JK8iLtExL81lh4wTu3DE
+   3f6LuEsHKlcAQH0PnIuVvEN2o3BsBI0kJ2cJcLr4VymG3Grz+GmRKOwPi
+   mQxN/z4R5Bzdhu1Q/MI64zEurQKzlLG5GkeGAzea1iT6gXYIlaPeKA4Mr
+   SChrbyGbHxrqtGrg6gp0HyK+JnjSLQtp/fe/4ONQ6lmflUyc7jwy993Xc
+   JbpOHBxNPIU4yT213akvnavhu9yb+V9h0iMM8+TuIbg3gd6jgOsZ7kNek
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="257344517"
+X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
+   d="scan'208";a="257344517"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 17:01:59 -0700
+X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
+   d="scan'208";a="544866062"
+Received: from lmmcwade-mobl2.amr.corp.intel.com (HELO vcostago-mobl3) ([10.209.121.212])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 17:01:59 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     mlichvar@redhat.com, netdev@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: Re: [PATCH net-next v1 0/6] ptp: Support hardware clocks with
+ additional free running time
+In-Reply-To: <20220322210722.6405-1-gerhard@engleder-embedded.com>
+References: <20220322210722.6405-1-gerhard@engleder-embedded.com>
+Date:   Thu, 24 Mar 2022 17:01:58 -0700
+Message-ID: <87tubm5289.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220324231423.qyyyd72nn75i7kdc@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 01:14:23AM +0200, Vladimir Oltean wrote:
-> On Fri, Mar 25, 2022 at 12:10:19AM +0100, Ansuel Smith wrote:
-> > Ok i'm reworking this in v2 with the stmmac change and the change to
-> > change mtu following what is done for mt7530. Thx a lot for the
-> > suggestion. Happy that the additional space can be dropped and still use
-> > a more correct and simple approach.
-> 
-> That's all fine, but if you read the news you'll notice that net-next is
-> currently closed and will probably be so for around 2 weeks.
-> The pull request for 5.18 was sent by Jakub yesterday:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220323180738.3978487-1-kuba@kernel.org/
-> Not sure why the status page says it's still open, it'll probably be
-> updated eventually:
-> http://vger.kernel.org/~davem/net-next.html
+Hi,
 
-Thanks for the alert! I will send an RFC then hoping to get some review
-tag.
-About the html page, I was also confused some times ago where net-next
-was closed and the page was with the "We are open" image. Wonder if it's
-a CDN problem? No idea but to me that page looks to be a quicker way
-than checking net-next last commit or checking the mailing list.
+Gerhard Engleder <gerhard@engleder-embedded.com> writes:
+
+> ptp vclocks require a clock with free running time for the timecounter.
+> Currently only a physical clock forced to free running is supported.
+> If vclocks are used, then the physical clock cannot be synchronized
+> anymore. The synchronized time is not available in hardware in this
+> case. As a result, timed transmission with TAPRIO hardware support
+> is not possible anymore.
+>
+> If hardware would support a free running time additionally to the
+> physical clock, then the physical clock does not need to be forced to
+> free running. Thus, the physical clocks can still be synchronized while
+> vclocks are in use.
+>
+> The physical clock could be used to synchronize the time domain of the
+> TSN network and trigger TAPRIO. In parallel vclocks can be used to
+> synchronize other time domains.
+>
+> One year ago I thought for two time domains within a TSN network also
+> two physical clocks are required. This would lead to new kernel
+> interfaces for asking for the second clock, ... . But actually for a
+> time triggered system like TSN there can be only one time domain that
+> controls the system itself. All other time domains belong to other
+> layers, but not to the time triggered system itself. So other time
+> domains can be based on a free running counter if similar mechanisms
+> like 2 step synchroisation are used.
+
+I tried to look at this series from the point of view of the Intel i225
+NIC and its 4 sets of timer registers, and thinking how adding support
+for the "extra" 4 timers would fit with this proposal.
+
+From what I could gather, the idea that would make more sense would be
+exposing the other(s?) i225 timers as vclocks. That sounds neat to me,
+i.e. the extra timer registers are indeed other "views" to the same
+clock (the name "virtual" makes sense).
+
+When retrieving the timestamps from packets (we can timestamp each
+packet with two timers), the driver knows what timestamp (and what to do
+with it) the user is interested in.
+
+Is this what you (and others) had in mind?
+
+If so, API-wise this series looks good to me. I will take a closer look
+at the code tomorrow.
+
+>
+> Synchronisation was tested with two time domains between two directly
+> connected hosts. Each host run two ptp4l instances, the first used the
+> physical clock and the second used the virtual clock. I used my FPGA
+> based network controller as network device. ptp4l was used in
+> combination with the virtual clock support patches from Miroslav
+> Lichvar.
+>
+> v1:
+> - comlete rework based on feedback to RFC (Richard Cochran)
+>
+> Gerhard Engleder (6):
+>   ptp: Add cycles support for virtual clocks
+>   ptp: Request cycles for TX timestamp
+>   ptp: Pass hwtstamp to ptp_convert_timestamp()
+>   ethtool: Add kernel API for PHC index
+>   ptp: Support late timestamp determination
+>   tsnep: Add physical clock cycles support
+>
+>  drivers/net/ethernet/engleder/tsnep_hw.h   |  9 ++-
+>  drivers/net/ethernet/engleder/tsnep_main.c | 27 ++++++---
+>  drivers/net/ethernet/engleder/tsnep_ptp.c  | 44 ++++++++++++++
+>  drivers/ptp/ptp_clock.c                    | 58 +++++++++++++++++--
+>  drivers/ptp/ptp_private.h                  | 10 ++++
+>  drivers/ptp/ptp_sysfs.c                    | 10 ++--
+>  drivers/ptp/ptp_vclock.c                   | 18 +++---
+>  include/linux/ethtool.h                    |  8 +++
+>  include/linux/ptp_clock_kernel.h           | 67 ++++++++++++++++++++--
+>  include/linux/skbuff.h                     | 11 +++-
+>  net/core/skbuff.c                          |  2 +
+>  net/ethtool/common.c                       | 13 +++++
+>  net/socket.c                               | 45 +++++++++++----
+>  13 files changed, 275 insertions(+), 47 deletions(-)
+>
+> -- 
+> 2.20.1
+>
 
 -- 
-	Ansuel
+Vinicius
