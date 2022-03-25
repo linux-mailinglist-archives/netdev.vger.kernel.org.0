@@ -2,108 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B7624E7DF1
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E54044E7DEC
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbiCYUKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 16:10:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57506 "EHLO
+        id S232115AbiCYUXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 16:23:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232027AbiCYUJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:09:51 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B92C443C3
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:07:50 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id z16so7330314pfh.3
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:07:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3knZRWWujkRahNIIybfg/CGJU8bv3OrwffFxGrAdCik=;
-        b=bVBePrcqsOxc0Xyz3wyYaw4zq1odh0jKeWdTDhjAX6DDqqtVCeNuAdyE+JjSwIigmV
-         AFj4zT4SGtUfotWWWAtvib+UJSd9Eh5XA6yZwfYGZ7QxWCM0iZe6T+IYoAYevoK4NswG
-         0l/s2odil/62sBOTDEhEzLP9xp9Qes9SV9vztRduyWOqH9xtGFL1wz9au9qyCHiNNJBM
-         AiT5A9XofI8tnjOLuUOnljMbZ1Qoj/YCGuU3djfH++p95F0t9X0MvekDpdygb/97nqS4
-         RGARwAp6QM/Ijh8Rxbnsbeiz6S+eMYQRFgtfQvjJomOwFDFosfnVAbLXMm/s2p5HciKU
-         7nlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3knZRWWujkRahNIIybfg/CGJU8bv3OrwffFxGrAdCik=;
-        b=Mgk3xHl4GqVOrkOMCR14jcHhGNp2ZbBNJeWJEHSZ8jSdYv7Vn3fZBz6HQHS4ILGsBg
-         cai2/6/mDGTH5jKzDAmbTJMe3aNdwgZ/pLKWoD+UOl0KsGk7rPWDGmDxho7luce9tpfH
-         uFXPU0+vN0S++KwORAJCJl/WJ4zVMSziJJjtTJ/2XGRQVtogvzHM+7poOCplwCNsjKex
-         y/7z7ZIee4VD+BI1+yjrR9Hu1ga/8VpMasoroA+/eX+45b2zqUUY3IAhSmmC06tFLLPw
-         tCvgyjXtwgw7qGR82JzuezcHAwKbULX7YYZdzCul9jEECmID8PEnYsUtP72k9kZND0TU
-         RveQ==
-X-Gm-Message-State: AOAM5332FUfseox6dUA8JjFzWnYmvfSpT85tecuRJY4yZY9AGsmy4mFl
-        /uljacIG+wDy4dkRuCHG0QfXv62s/vV8Iw==
-X-Google-Smtp-Source: ABdhPJyzAPS3+sLo/07obtP9q9XmA2zPmwQJeLOzFav+trIQjghYy+nwnz3fXxpmsS0XPCok58gCVA==
-X-Received: by 2002:a63:5020:0:b0:382:4781:7f4c with SMTP id e32-20020a635020000000b0038247817f4cmr968505pgb.230.1648238864561;
-        Fri, 25 Mar 2022 13:07:44 -0700 (PDT)
-Received: from localhost.localdomain ([223.233.78.42])
-        by smtp.gmail.com with ESMTPSA id j23-20020a17090ae61700b001c6bb352763sm6643590pjy.52.2022.03.25.13.07.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 13:07:43 -0700 (PDT)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     netdev@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        vkoul@kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, linux-arm-msm@vger.kernel.org,
-        bjorn.andersson@linaro.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 net-next 1/1] dt-bindings: net: qcom,ethqos: Document SM8150 SoC compatible
-Date:   Sat, 26 Mar 2022 01:37:31 +0530
-Message-Id: <20220325200731.1585554-1-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S232209AbiCYUXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:23:02 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1480C5DA69;
+        Fri, 25 Mar 2022 13:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=b5wJQQ7YqCa3aFhJqIL39US+IJSbvv4VXqtaGEmA6ik=;
+        t=1648239685; x=1649449285; b=CXFnQ8EcqIPxkIZDl6uyj8xPm1TCgANxFC5vmJMRmEWlEim
+        zD7Mp0BhY9R79BpE9noxVMnq12N/vFVsqQXQqll877EK9buQnWPJg4I+qkO8n/wRxkBcUt29e+ttQ
+        DOpMvboK5z2JSvdTqjAcEgrjJ21naFa75Y8Yg+162bhOhHlmW1/YTFtV1JrjWKiqx5Q8pEL9xXZKz
+        HzofRBD+2TlvuyhuTXK5EQiTbqPXh7YAzcgA9RrsngnWvAb/S1HTx4YQngVHNQFGQkmIR5ZgmcBS9
+        Crpq8b79thPjsJEOS8DGPiEqqdxNubU1eyVgR7XfILisUl3W6I0jISQzm1yyGpvw==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nXqQq-000UKo-TY;
+        Fri, 25 Mar 2022 21:21:12 +0100
+Message-ID: <ae6ebb34ba100fa8e17cc7eb187b7cfdf7a20a56.camel@sipsolutions.net>
+Subject: Re: [BUG] deadlock in nl80211_vendor_cmd
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     William McVicker <willmcvicker@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-wireless@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>, kernel-team@android.com,
+        Paolo Abeni <pabeni@redhat.com>
+Date:   Fri, 25 Mar 2022 21:21:11 +0100
+In-Reply-To: <Yj4FFIXi//ivQC3X@google.com>
+References: <0000000000009e9b7105da6d1779@google.com>
+         <99eda6d1dad3ff49435b74e539488091642b10a8.camel@sipsolutions.net>
+         <5d5cf050-7de0-7bad-2407-276970222635@quicinc.com>
+         <YjpGlRvcg72zNo8s@google.com>
+         <dc556455-51a2-06e8-8ec5-b807c2901b7e@quicinc.com>
+         <Yjzpo3TfZxtKPMAG@google.com>
+         <19e12e6b5f04ba9e5b192001fbe31a3fc47d380a.camel@sipsolutions.net>
+         <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
+         <Yj4FFIXi//ivQC3X@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vinod Koul <vkoul@kernel.org>
+On Fri, 2022-03-25 at 18:08 +0000, William McVicker wrote:
+> 
+> I'm able to reproduce this issue pretty easily with a Pixel 6 when I add
+> support to allow vendor commands to request for the RTNL. 
+> 
 
-SM8150 has an ethernet controller and it needs a different
-configuration, so add a new compatible for this.
+Hm, wait, which of the two issues?
 
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-[bhsharma: Massage the commit log]
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
----
+> For this case, I just
+> delay unlocking the RTNL until nl80211_vendor_cmds() at which point I check the
+> flags to see if I should unlock before calling doit(). That allows me to run my
+> tests again and hit this issue. I imagine that I could hit this issue without
+> any changes if I re-work my vendor ops to not need the RTNL.
 
-Changes since v3:
------------------
-- v3 can be seen here: https://lore.kernel.org/lkml/20220303084824.284946-4-bhupesh.sharma@linaro.org/T/
-- Bjorn requested that this patch be sent to networking list separately,
-  so that patch can be easily reviewed and merged.
+What are the vendor ops doing though?
 
- Documentation/devicetree/bindings/net/qcom,ethqos.txt | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+If they're actually unregistering a netdev - which I believe you
+mentioned earlier - then that's quite clearly going to cause an issue,
+if you unlock RTNL while the wiphy mutex is still held.
 
-diff --git a/Documentation/devicetree/bindings/net/qcom,ethqos.txt b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
-index fcf5035810b5..1f5746849a71 100644
---- a/Documentation/devicetree/bindings/net/qcom,ethqos.txt
-+++ b/Documentation/devicetree/bindings/net/qcom,ethqos.txt
-@@ -7,7 +7,9 @@ This device has following properties:
- 
- Required properties:
- 
--- compatible: Should be qcom,qcs404-ethqos"
-+- compatible: Should be one of:
-+		"qcom,qcs404-ethqos"
-+		"qcom,sm8150-ethqos"
- 
- - reg: Address and length of the register set for the device
- 
--- 
-2.35.1
+If not, then I don't see right now how you'd be able to trigger any
+issue here at all.
 
+The original issue - that you rtnl_lock() yourself while the wiphy mutex
+is held - can't happen anymore with your rework I guess.
+
+
+johannes
