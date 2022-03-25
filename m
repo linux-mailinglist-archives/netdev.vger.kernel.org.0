@@ -2,245 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72C404E7D4D
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEF664E7CAC
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232265AbiCYUhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 16:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40784 "EHLO
+        id S232273AbiCYUj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 16:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232273AbiCYUhq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:37:46 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8634710780D
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:36:10 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id c23so9404569plo.0
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:36:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Emd/HGQ57f4JkVHbOiHNLwTEo/Oa19/GIbShZ2V2bh0=;
-        b=BuCEUFhJva4yY81htIZCMYRvqXI9JtWl9NdLs2sLWYPFPidbkS9w5HDQYK0kNcP4x1
-         SMhqVkVR0V/gwgk3U+11qK+t9DGUo/6q+oCO0SVcds1wDEjSOMmr7CGuMhRgSM6z8vSL
-         gS7doJa5BwgulcMwbXgB8sK1kk3aeYhtIzILjEyibZIwV65ZMC3yM/t2q/h1AQfKp1NT
-         qMcrtmA5zhbOFf5/AyBZtaBLlp92WAtckDQZmKb50xCCTq0zdWEsklmMoFL0Egt0bciN
-         G+jgBjV+3du53eAUqpxmKvPQYqFASOniDqwHgHgiX9xtZ9rUtt3DlVO7G/QAT4K8MfLZ
-         049w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Emd/HGQ57f4JkVHbOiHNLwTEo/Oa19/GIbShZ2V2bh0=;
-        b=HbFmIdIWWSafrBz5+zTP4Kd2zyxXBQecuAk33FD+hxkEBynvlWa/ZVBcJDtn+lU+jz
-         5OcpwDLkN87+WD/JtLRyoqmzOtRnlch2K1OQKISUp0pj4ARxMgIXPQClJ7cWT6xM96ie
-         7NbE5quKVBr5XJVt4vp9EwGydT1YSCHQ77atG01Bd7YV/L8t1KPqyK6qFZt9CcUpsbvi
-         JeFB7nr40AZqwGL54VfHtmcwKw99mAGmD7ZbefimvG5Elp8UAP/Su/6rBEkWKtFqMwzw
-         z1xtS5x7TonBxYzoBZ6dBGpVJTd+vTq2wB0kUlIn+53byp2pekZzmBRPHC2rNhL/5QN1
-         OehQ==
-X-Gm-Message-State: AOAM530Wx4JTY3B21/o6JrPFR38gROS5V9SxFILgGxnTHrkuiiL5Itrn
-        a2huGPrLKl8QI/qmWULAfhCpYg==
-X-Google-Smtp-Source: ABdhPJxU8odwDhvBAksm4qaqwuo0z345MIT9U1J6wUZryuylxyyr76kghZAParNG259ykhVgZU7uFw==
-X-Received: by 2002:a17:902:a581:b0:154:8c7d:736a with SMTP id az1-20020a170902a58100b001548c7d736amr13687879plb.74.1648240569769;
-        Fri, 25 Mar 2022 13:36:09 -0700 (PDT)
-Received: from google.com (249.189.233.35.bc.googleusercontent.com. [35.233.189.249])
-        by smtp.gmail.com with ESMTPSA id t2-20020a056a0021c200b004faa4646fc1sm7770294pfj.36.2022.03.25.13.36.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 13:36:09 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 20:36:05 +0000
-From:   William McVicker <willmcvicker@google.com>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-wireless@vger.kernel.org,
+        with ESMTP id S232278AbiCYUjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:39:55 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B1415407A;
+        Fri, 25 Mar 2022 13:38:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=hew7fHVL6FBQI77veB2hwuoO4Es9nvwsanNbsTy12PY=;
+        t=1648240698; x=1649450298; b=PxFb+cxH1F5Ob9Hh8gOR/XulGWvBkFVKkY3m9WqQpmSS5vP
+        elGgFVntHV8gCpZcR5VigbHYs1weDKVePC/MlY3BCRIN/wr0pXamY/d08p7BioTCsfq9MXy2Q47oA
+        XoUgSGaHIJstcs4oWtaR/Ee+QPhUZSnu1t01HGQfbJwAOPpkGhbPBfUxi8ZR+JTis4WYR5JkGGVI9
+        7kgEoTHBBiwdREorkL6xid1BUJhkQP+23/RiWFKcT4WZqOv/Nq6G6/x575l/Xa34YWcm65domhuyr
+        SwVb8uaxQSfytQKq6x1cMeM4zGmtD/o7g/0BR//NhQnH9zjc9Jfo1lFRZUG+FqcA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nXqgi-000Uby-Lq;
+        Fri, 25 Mar 2022 21:37:36 +0100
+Message-ID: <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Maxime Bizon <mbizon@freebox.fr>
+Cc:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Halil Pasic <pasic@linux.ibm.com>,
         Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>, kernel-team@android.com,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [BUG] deadlock in nl80211_vendor_cmd
-Message-ID: <Yj4ntUejxaPhrM5b@google.com>
-References: <0000000000009e9b7105da6d1779@google.com>
- <99eda6d1dad3ff49435b74e539488091642b10a8.camel@sipsolutions.net>
- <5d5cf050-7de0-7bad-2407-276970222635@quicinc.com>
- <YjpGlRvcg72zNo8s@google.com>
- <dc556455-51a2-06e8-8ec5-b807c2901b7e@quicinc.com>
- <Yjzpo3TfZxtKPMAG@google.com>
- <19e12e6b5f04ba9e5b192001fbe31a3fc47d380a.camel@sipsolutions.net>
- <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
- <Yj4FFIXi//ivQC3X@google.com>
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Date:   Fri, 25 Mar 2022 21:37:35 +0100
+In-Reply-To: <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+         <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+         <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+         <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+         <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+         <20220324163132.GB26098@lst.de>
+         <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+         <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+         <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+         <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yj4FFIXi//ivQC3X@google.com>
-X-Spam-Status: No, score=-15.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,HK_RANDOM_ENVFROM,HK_RANDOM_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/25/2022, William McVicker wrote:
-> On 03/25/2022, Johannes Berg wrote:
-> > On Fri, 2022-03-25 at 09:49 -0700, Jakub Kicinski wrote:
-> > > On Fri, 25 Mar 2022 13:04:23 +0100 Johannes Berg wrote:
-> > > > So we can avoid the potential deadlock in cfg80211 in a few ways:
-> > > > 
-> > > >  1) export rtnl_lock_unregistering_all() or maybe a variant after
-> > > >     refactoring the two versions, to allow cfg80211 to use it, that way
-> > > >     netdev_run_todo() can never have a non-empty todo list
-> > > > 
-> > > >  2) export __rtnl_unlock() so cfg80211 can avoid running
-> > > >     netdev_run_todo() in the unlock, personally I like this less because
-> > > >     it might encourage random drivers to use it
-> > > > 
-> > > >  3) completely rework cfg80211's locking, adding a separate mutex for
-> > > >     the wiphy list so we don't need to acquire the RTNL at all here
-> > > >     (unless the ops need it, but there's no issue if we don't drop it),
-> > > >     something like https://p.sipsolutions.net/27d08e1f5881a793.txt
-> > > > 
-> > > > 
-> > > > I think I'm happy with 3) now (even if it took a couple of hours), so I
-> > > > think we can go with it, just need to go through all the possibilities.
-> > > 
-> > > I like 3) as well. FWIW a few places (e.g. mlx5, devlink, I think I've
-> > > seen more) had been converting to xarray for managing the "registered"
-> > > objects. It may be worth looking into if you're re-doing things, anyway.
-> > > 
-> > 
-> > That's not a bad idea, but I think I wouldn't want to backport that, so
-> > separately :) I don't think that fundamentally changes the locking
-> > properties though.
-> > 
-> > 
-> > Couple of more questions I guess: First, are we assuming that the
-> > cfg80211 code *is* actually broken, even if it looks like nothing can
-> > cause the situation, due to the empty todo list?
+So I've been watching this from the sidelines mostly, and discussing a
+bit with Toke, but:
+
+On Fri, 2022-03-25 at 11:30 -0700, Linus Torvalds wrote:
 > 
-> I'm able to reproduce this issue pretty easily with a Pixel 6 when I add
-> support to allow vendor commands to request for the RTNL. For this case, I just
-> delay unlocking the RTNL until nl80211_vendor_cmds() at which point I check the
-> flags to see if I should unlock before calling doit(). That allows me to run my
-> tests again and hit this issue. I imagine that I could hit this issue without
-> any changes if I re-work my vendor ops to not need the RTNL.
+>  (2) The CPU now wants to see any state written by the device since
+> the last sync
 > 
-> > 
-> > Given that we have rtnl_lock_unregistering() (and also
-> > rtnl_lock_unregistering_all()), it looks like we *do* in fact at least
-> > not want to make an assumption that no user of __rtnl_unlock() can have
-> > added a todo item.
-> > 
-> > I mean, there's technically yet *another* thing we could do - something
-> > like this:
-> > 
-> > [this doesn't compile, need to suitably make net_todo_list non-static]
-> > --- a/net/core/rtnetlink.c
-> > +++ b/net/core/rtnetlink.c
-> > @@ -95,6 +95,7 @@ void __rtnl_unlock(void)
-> >  
-> >         defer_kfree_skb_list = NULL;
-> >  
-> > +       WARN_ON(!list_empty(&net_todo_list));
-> >         mutex_unlock(&rtnl_mutex);
-> >  
-> >         while (head) {
-> > 
-> > and actually that would allow us to get rid of rtnl_lock_unregistering()
-> > and rtnl_lock_unregistering_all() simply because we'd actually guarantee
-> > the invariant that when the RTNL is freshly locked, the list is empty
-> > (by guaranteeing that it's always empty when it's unlocked, since it can
-> > only be added to under RTNL).
-> > 
-> > With some suitable commentary, that might also be a reasonable thing?
-> > __rtnl_unlock() is actually rather pretty rare, and not exported.
-> > 
-> > 
-> > However, if you don't like that ...
-> > 
-> > I've been testing with this patch, to make lockdep complain:
-> > 
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -9933,6 +9933,11 @@ void netdev_run_todo(void)
-> >         if (!list_empty(&list))
-> >                 rcu_barrier();
-> >  
-> > +#ifdef CONFIG_LOCKDEP
-> > +       rtnl_lock();
-> > +       __rtnl_unlock();
-> > +#endif
-> > +
-> >         while (!list_empty(&list)) {
-> >                 struct net_device *dev
-> >                         = list_first_entry(&list, struct net_device, todo_list);
-> > 
-> > 
-> > That causes lockdep to complain for cfg80211 even if the list *is* in
-> > fact empty.
-> > 
-> > Would you be open to adding something like that? Perhaps if I don't just
-> > do the easy rtnl_lock/unlock, but try to find the corresponding lockdep-
-> > only things to do there, to cause lockdep to do things without really
-> > locking? OTOH, the locking overhead of the RTNL we just unlocked is
-> > probably minimal, vs. the actual work *lockdep* is doing to track all
-> > this ...
-> > 
-> > Thanks,
-> > johannes
+>     This is "dma_sync_single_for_cpu(DMA_FROM_DEVICE)".
 > 
-> Let me know if you'd like me to test any patches out.
+>     A bounce-buffer implementation needs to copy *from* the bounce buffer.
 > 
-> Thanks,
-> Will
+>     A cache-coherent implementation needs to do nothing.
+> 
+>     A non-coherent implementation maybe needs to do nothing (ie it
+> assumes that previous ops have flushed the cache, and just accessing
+> the data will bring the rigth thing back into it). Or it could just
+> flush the cache.
 
-Hi Johannes,
+Doesn't that just need to *invalidate* the cache, rather than *flush*
+it? The cache is somewhat similar to the bounce buffer, and here you're
+copying _from_ the bounce buffer (which is where the device is
+accessing), so shouldn't it be the same for the cache, i.e. you
+invalidate it so you read again from the real memory?
 
-I found that my wlan driver is using the vendor commands to create/delete NAN
-interfaces for this Android feature called Wi-Fi aware [1]. Basically, this
-features allows users to discover other nearby devices and allows them to
-connect directly with one another over a local network. To get my driver
-working again, I first had to allow the kernel to let my driver request for the
-RTNL lock for these NAN create/delete interface vendor commands. With that
-I got the following code path:
+>  (3) The CPU has seen the state, but wants to leave it to the device
+> 
+>    This is "dma_sync_single_for_device(DMA_FROM_DEVICE)".
+> 
+>    A bounce buffer implementation needs to NOT DO ANYTHING (this is
+> the current ath9k bug - copying to the bounce buffer is wrong)
+> 
+>   A cache coherent implementation needs to do nothing
+> 
+>   A non-coherent implementation needs to flush the cache again, bot
+> not necessarily do a writeback-flush if there is some cheaper form
+> (assuming it does nothing in the "CPU now wants to see any state" case
+> because it depends on the data not having been in the caches)
+
+And similarly here, it would seem that the implementation can't _flush_
+the cache as the device might be writing concurrently (which it does in
+fact do in the ath9k case), but it must invalidate the cache?
+
+I'm not sure about the (2) case, but here it seems fairly clear cut that
+if you have a cache, don't expect the CPU to write to the buffer (as
+evidenced by DMA_FROM_DEVICE), you wouldn't want to write out the cache
+to DRAM?
 
 
-Thread 1                         Thread 2
- nl80211_pre_doit():
-   rtnl_lock()
-   wiphy_lock()                   nl80211_pre_doit():
-                                    rtnl_lock() // blocked by Thread 1
- nl80211_vendor_cmd():
-   doit()
-     cfg80211_unregister_netdevice()
-   rtnl_unlock():
-     netdev_run_todo():
-       __rtnl_unlock()
-                                    <got RTNL lock>
-                                    wiphy_lock() // blocked by Thread 1
-       rtnl_lock(); // DEADLOCK
- nl80211_post_doit():
-   wiphy_unlock();
+I'll also note independently that ath9k actually maps the buffers as
+DMA_BIDIRECTIONAL, but the flush operations happen with DMA_FROM_DEVICE,
+at least after the setup is done. I must admit that I was scratching my
+head about this, I had sort of expected one should be passing the same
+DMA direction to all different APIs for the same buffer, but clearly, as
+we can see in your list of cases here, that's _not_ true.
 
 
-Since I'm unlocking the RTNL inside nl80211_vendor_cmd() after calling doit()
-instead of waiting till post_doit(), I get into the situation you mentioned
-where the net_todo_list is not empty when calling rtnl_unlock. So I decided to
-drop the rtnl_unlock() in nl80211_vendor_cmd() and defer that until
-nl80211_post_doit() after calling wiphy_unlock(). With this change, I haven't
-been able to reproduce the deadlock. So it's possible that we aren't actually
-able to hit this deadlock in nl80211_pre_doit() with the existing code since,
-as you mentioned, one wouldn't be able to call unregister_netdevice() without
-having the RTNL lock.
+Then, however, we need to define what happens if you pass
+DMA_BIDIRECTIONAL to the sync_for_cpu() and sync_for_device() functions,
+which adds two more cases? Or maybe we eventually just think that's not
+valid at all, since you have to specify how you're (currently?) using
+the buffer, which can't be DMA_BIDIRECTIONAL?
 
-Sorry if I sent you down a rabbit hole with the first code path scenario.
 
-Thanks,
-Will
+>  (4) There is a fourth case: dma_sync_single_for_cpu(DMA_TO_DEVICE)
+> which maybe should generate a warning because it seems to make no
+> sense? I can't think of a case where this would be an issue - the data
+> is specifically for the device, but it's synced "for the CPU"?
 
-[1] https://developer.android.com/guide/topics/connectivity/wifi-aware
+I'd tend to agree with that, that's fairly much useless, since if only
+the CPU wrote to it, then you wouldn't care about any caching or bounce
+buffers, so no need to sync back.
+
+> In other words, I think commit aa6f8dcbab47 ("swiotlb: rework 'fix
+> info leak with DMA_FROM_DEVICE'") is fundamentally wrong. It doesn't
+> just break ath9k, it fundamentally break that "case 3" above. It's
+> doing a DMA_TO_DEVICE copy, even though it was a DMA_FROM_DEVICE sync.
+> 
+> So I really think that "revert aa6f8dcbab47" is not only inevitable
+> because of practical worries about what it breaks, but because that
+> commit was just entirely and utterly WRONG.
+
+Honestly, I was scratching my head about this too - sadly it just says
+"what was agreed", without a pointer to how that was derived, but it
+seemed that the original issue was:
+
+ "we're leaking old bounce buffer data to the device"
+
+or was it not? In which case doing any copies during map should've been
+sufficient, since then later no more data leaks could occur?
+
+johannes
