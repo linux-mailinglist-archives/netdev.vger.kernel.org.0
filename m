@@ -2,71 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F4D4E74CE
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 15:06:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFAAE4E74D2
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 15:08:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359181AbiCYOHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 10:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
+        id S239973AbiCYOJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 10:09:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239973AbiCYOHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 10:07:38 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE92D8F66
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 07:06:01 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id bi12so15630280ejb.3
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 07:06:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=L0RwxpkpCXfOp34FE8Xe2aHcGprBogkUgnf1qu7vhKs=;
-        b=kpESudql4xmy6O7fQtn1hTQbcSmcyQ/YsUIC+nS7bgTJcooizHM/+Mc3rmI2cBR9ES
-         xFdiPi1d3+Pa+/FY0/miq5eBJqiCYszB0OV1EDsZbVZ1gbzM41NgZ4f+0ZLpfo546Jsc
-         6R35wMsUFomXmphWy/yDiSMa4mxchdWJe/kc4+pjEBtT53MxEXOn2PeL9s5jyLLiCDsx
-         D+t9vlBvYYamjhsizZYEV2ydpvzD4L7qsglI3Sj+pdXqC0PSwseeWTHjyPBA74J1o/9o
-         ZCkK013zglTMIaKsQoCOS9Yrszvkm38KM9/71z4922SwPvcl/mCf9jmZ1SemmJTaY7OQ
-         qj5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L0RwxpkpCXfOp34FE8Xe2aHcGprBogkUgnf1qu7vhKs=;
-        b=qHMrLqIJvTbGhL/NKjyOvZ+4OQl8eD+3hqj1A6baOf6ugdOHigYQPm9UPkcE3gDrgW
-         YfKZ9LNRBc3G3cbXKQwLD8SaVgFd/KrXMqurrDTdWTqMO3rUPMSb5blfd+4VVfOxnvw2
-         j4eaDHZLQTOSYh5mTpF4y4L+q2xV7dpQRoyhBcLjw2jCYkxcAe+haDjh9VtrVEVWVlzV
-         PqKDx34xmGxeldi+Cy7EM/eIHDlHztCK8cuTrQ3PBQHFT501c27jXvaCEHXc46GpI7+3
-         pNCCAyEYPG/P6Y4oUxV9jbvdKQFjMBwmobsTHeR6N2vnyknEjtm9RV7tu1bjK6fJWTFM
-         P9SQ==
-X-Gm-Message-State: AOAM533yfKoTJYnU5MmXFahRWGhLmR/ROCKkPuTC9ACC7DzxMNzI2SgA
-        NM95NWyX6itCNnwHRBvlHoc=
-X-Google-Smtp-Source: ABdhPJzR+IsqaqL1/wo2y7GbEyefFsPRtfvWt1XxnZw2Nc9vH2SbobBfub0bdLtr68f+cDdHoHkRiA==
-X-Received: by 2002:a17:907:1c16:b0:6d7:622b:efea with SMTP id nc22-20020a1709071c1600b006d7622befeamr11616259ejc.110.1648217160256;
-        Fri, 25 Mar 2022 07:06:00 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id o7-20020a17090608c700b006cef23cf158sm2382295eje.175.2022.03.25.07.05.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 07:05:59 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 16:05:58 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: Broken SOF_TIMESTAMPING_OPT_ID in linux-4.19.y and earlier
- stable branches
-Message-ID: <20220325140558.qdxl25ggqhpztbjh@skbuf>
-References: <20220324213954.3ln7kvl5utadnux6@skbuf>
- <CA+FuTSe9hXG1x0-8e1P8_JmckOFaCFujZbJ=-=WTJW3y1sJQNQ@mail.gmail.com>
- <20220325133722.sicgl3kr5ectveix@skbuf>
- <CA+FuTSeJCZ1F3b9rrLpdcp6sbok8OXBA40jSmtxbJ7cnQayr+w@mail.gmail.com>
-MIME-Version: 1.0
+        with ESMTP id S233381AbiCYOJr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 10:09:47 -0400
+Received: from CHE01-ZR0-obe.outbound.protection.outlook.com (mail-zr0che01on2102.outbound.protection.outlook.com [40.107.24.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB01FD2C
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 07:08:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JqmGGLf7Et97aWlEytODxji0sOHVdVWB6KYI4qgaZiLGm08EmIXwk5iM4WLOL0itO42wE2XpvSACN7ADOipTU9+/hCUYpPQPQg58Wdonrfh/vxVm2rTNKUY2gm7E2BwFTdF9ipgNDe3L69VohVuy3sQEcujPNuapRWrY/dVce8py2O2rDnzQOy5IZpNTPNEIx13z6ZVDGHHwRH3Q8LAzyNWUxu9/AgPlBgIpS7cPJSH/ngakzesOpfyxMd4/QufOoDSXl2Eefvp0Ji53Gz3VrfO780PdLPcVpZStenFkZZKL04rO4SG71RDjIpwIBq4NVK9DrtIoOphVgM4gi7tsCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RYlcg67E1vIuSLIMApnCVJKoKaTihw/oSQbfe9NL1rQ=;
+ b=kuWx28GVFnP4CHHIolvW7Onf8Oi8muTtSysROPKcZ7KBbXz3RHFgZdDiU8hbK7M7MizMTp9AKblDP/kNs8Z9sQ179BVjKQIJEjEazdULuHZyfLU79un4H5nnHeL531Ve9GfJRw8vq4qct5fapQY9BWWy5AzUEDSmdZuqb8nyWe532ThfQlj1xxvV73I/mTj2AO3cRHeMiM2Q+7g7IMWPnOukJfSj0Bo1Rn2dSm6gBCL1s46fwanuWKyVkTWCpZSx1yIxaDtkRCkvxGgY1cHQkbNCVp050oh9wAxezGaHoe7VYXdjaQTpkv8nKeeP59M9nS1/B0mceEk54hK0xsWKtQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
+ dkim=pass header.d=toradex.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RYlcg67E1vIuSLIMApnCVJKoKaTihw/oSQbfe9NL1rQ=;
+ b=cSE/iJro/SP8zQll0kkinu5M7w8DvodEudBB6egpDnM7wC28hVj4rfwav/+IuGDC6cmRpJoXRjcTVJ9z8dXt4IH72ylRnA+6gG4KcwMe/CtSX4PsGi5FdRiKH29GLiuhz5WkL8CEZQ3SPHhJ4DyK0CPKklPfUr/s3mj1UZ9cS0A=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ GVAP278MB0471.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:38::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5102.17; Fri, 25 Mar 2022 14:08:09 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::7d6c:79fa:a2e4:ede8]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::7d6c:79fa:a2e4:ede8%5]) with mapi id 15.20.5102.017; Fri, 25 Mar 2022
+ 14:08:09 +0000
+Date:   Fri, 25 Mar 2022 15:08:08 +0100
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Russell King <linux@armlinux.org.uk>
+Cc:     netdev <netdev@vger.kernel.org>, fugang.duan@nxp.com,
+        Chris Healy <cphealy@gmail.com>
+Subject: FEC MDIO timeout and polled IO
+Message-ID: <20220325140808.GA1047855@francesco-nb.int.toradex.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+FuTSeJCZ1F3b9rrLpdcp6sbok8OXBA40jSmtxbJ7cnQayr+w@mail.gmail.com>
+X-ClientProxiedBy: ZR0P278CA0051.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:1d::20) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4f5813ee-a40e-4937-2c18-08da0e68e40b
+X-MS-TrafficTypeDiagnostic: GVAP278MB0471:EE_
+X-Microsoft-Antispam-PRVS: <GVAP278MB04719EF8785D06C0C28129EEE21A9@GVAP278MB0471.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pWD4v8WH7J0OMR6rUwJ2ntzTJKZHetZZo1e/MJqzL82XcuaEsTTJOMCF5DkU5PtL3hW3ny6l28mgr+YX32cFdSkNtPhwm+YWbW9ddUbaI9kXCyqRlTJT/Z1LG552/jc0tdbPdjs2+6Fa2r1j1X/Z879lDku95oezCYebisNOmsXOO1O1Tj4ocjpbjqk6u6317njqDxSBjln6l3j8pP8KO73vVNT+8CXT/48j5wgi+5xF2uhAmxSo6Z/Ig/hyqyEuUwY53vQCL6yuSyr3yaIo4J/OtkvsQh6smsuE8Ewc/1h/+l2F5aSrhzFPHwxAgohXdozSHBweTks9zxooKnI6v93CPeFWAE0pVb9mVnztGVHYjkU6Yp8yDTndvza3Vc2zz5TqrZR/diVgoM61wm+stL/vI/SrI/tzVKZ/72lcbulDv7vX+ikFwFnFDKnPluktMP4COe+PSIVnGB66yavpgmH7wN2mEUDRw5ylO48sD9zlm4qWzTFmkmsLtn/xZdWGwd5yq5QgIDJcf5s6F8yOiJBDoypsZ/UOE8qA2gRWJe9QEnJyQ/oYdgzbVefgW/2wR69GPgGEtFhrAwBbuRfXsTHCnQhnz0qG79T5r8tADDfb6mBmue1J8YDuHd2D++OMD/C9m47IGUiYEvj3Mif8fydkOpTsXE8AQ4FVilnFLKjJoevzrqpwSzQj74SILF/NMwc4m0p0mGvYg5RyMuf9iw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(83380400001)(4744005)(2906002)(44832011)(33656002)(8936002)(86362001)(5660300002)(66476007)(38100700002)(4326008)(8676002)(316002)(38350700002)(110136005)(6512007)(6506007)(1076003)(52116002)(186003)(508600001)(26005)(66556008)(66946007)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0fPmC85/XT0tWZ70Bb7wxdE7DkfA83o/iIblzFqU+Z1SR98tFAE2sBfkrfwe?=
+ =?us-ascii?Q?NFEyuJR4OR5prJ8oAmQHla8PcVHOQK/kl7Be70ReMfRyow22gwu1X+zpB2GE?=
+ =?us-ascii?Q?3yErgy1n2/nqYVP1yHDLziPdQns5G0DN26XhlyS1ulBcE2u6IzQM9gmvOSmc?=
+ =?us-ascii?Q?bUudApBzak3LxS7qx9Y+8uYPmcCyxweX3kDFem7BBdj+S2bA8ZXCJklzRZDT?=
+ =?us-ascii?Q?eTp6jvXZK+Co/b/H+gir+6HIG6YWkzAzdmsrcfwAkwuvqUGYz42cMk9qY4r0?=
+ =?us-ascii?Q?EjNfjRyLT+RrOZm/vZaynEWtrAEs9gDUebedr8wJegGTOobftpcZIr9fglGO?=
+ =?us-ascii?Q?4yCdt9/hpRDkOVyp9aoUeYPHps85F3t3K6wOuHWOnpkq/h71O5HyiGGPOALY?=
+ =?us-ascii?Q?emwqaJQDwOJOs+m7ZqyKpxoowYDJfD5/Mtu2gBN+rBXhaUAjtLFI+17AI04P?=
+ =?us-ascii?Q?KHuna/V9I9JPt58xZ6Dk1DJbEs49D5z9IAY4BZ3vscVRMNgz/WwwOO6DJCMP?=
+ =?us-ascii?Q?aysCskX67RC2FlY+2su+27SMx+B91vIUQI9kvcd0ofvCCkoPhxsb/xVeFxus?=
+ =?us-ascii?Q?jsFIpyvnNoZ49hlPSNPmsPhuBXaysPZN8FbHtVUHw5aHdXQGN+3XsCdvkbHp?=
+ =?us-ascii?Q?CeiKdDzIA0E9GzrKjLxXnAJ2QJXOM8niQO3JAgZ7T6w9Q5f+qLj7v/LlkYOl?=
+ =?us-ascii?Q?rShoxSWP9Hmyl7Hz210rPpTjWZyvyRar0WEzQa+/53tRFGNKrILhcH3zdV1e?=
+ =?us-ascii?Q?Ggx0gZ9hFKrbMWhIjGRRmbqTBeLOwrEz256Do6PwoH+7K+Kk1JYUxJ1RcetU?=
+ =?us-ascii?Q?6Ca1cVDdibmXpFfTDQw4j1Ps4gwlc9V6K4YqAxKUx/JNp10smjTjxfxWox1c?=
+ =?us-ascii?Q?u70Bq27uF677mQsxJnPu/zQey4/7bJVERMPC0atOQrrGmg37+ztUMJSVtAfY?=
+ =?us-ascii?Q?cVpC7R5k0fGN4kQuOwzNOx7V5kPdBg7U+F3n5AWOw822cP//j863dCUP2OwW?=
+ =?us-ascii?Q?UUqfWFoiz3HnyFTuLDvYXpXQZ97vat3VU5WB1dtFxhFVTnaNbnGA17TqlWod?=
+ =?us-ascii?Q?BuMUcJBKGQ8r+MkVbJuYd84hTYgegfZXuB1Md5lGACLlpfwpdN/Tgczmi+Th?=
+ =?us-ascii?Q?OCKWSYge70QIPTXYAyQzX3wzV5KBeWM7klVSxKdcBwJf0vfoHVlWEexxP8Me?=
+ =?us-ascii?Q?MXKhjzI1jBcQaQs2/tctOusVqD5Yaqmv4JOUij7PRqz1ZTIMUH370IusKl4d?=
+ =?us-ascii?Q?KcTqetK1FPKgH7TNT4ccxAmkANzCHFFuctIanPycEXV+yGEGF+24bkn4viyD?=
+ =?us-ascii?Q?9/NiuQqgp0nthXVbPIt7mrIW/ryLZPuXXLo8mCZMhE6ikLG2m9kzZgd6vUcL?=
+ =?us-ascii?Q?T5hH5RhbffKjfjQ9ngjeN+MXlK3KDIKDZLgP4WNKZ8FErlnyotOO09f/of1g?=
+ =?us-ascii?Q?6uJHpjfGGtypKNxkZIOQOhMezBawGBscXOBhW8gSBSljOoQyfwg3kvTtL8yw?=
+ =?us-ascii?Q?IECF8AUCIWSvM+7+WuxwdgoNFyzW1/7JXx97fswaEjPOxn7zxlC2rakSScNl?=
+ =?us-ascii?Q?sL/0dZyj4cvALhd8otv79weEc8mst77N/6O9NDs7bv24hPVEp8+cHe1SWdQZ?=
+ =?us-ascii?Q?lJeLn1lPEPetxtR/oG/AnOvYSZYfwxwi0VPqBKrIRsjz0iOQdT7kqpZqy91w?=
+ =?us-ascii?Q?ESUQhWYqeBrzoeyTBIMLap0JNA9uxOu5ga9j2ZNolmcFIBdLaNHLQstj/x5u?=
+ =?us-ascii?Q?9mOydJkq9dswe0yJtOzXHSN1mZiVvGE=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f5813ee-a40e-4937-2c18-08da0e68e40b
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2022 14:08:09.2297
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fNnctFKU59IQJ5OIJnkvSChVdJLeqGgQ6mDydi1kYrL2lPLEhumBBzZApKS5mdVsE9h1Ka3yQPZB0j0hE+Go6J95ZR38+LzvAFA9qFkAEnw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0471
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,24 +113,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 09:48:41AM -0400, Willem de Bruijn wrote:
-> > Do you have any particular concerns about sending this patch to the
-> > linux-stable branches for 4.19, 4.14 and 4.9? From https://www.kernel.org/
-> > I see those are the only stable branches left.
-> 
-> The second patch does not apply cleanly to 4.14.y and even the first
-> (one-liner) has a conflict on 4.9.y.
-> 
-> It would be good to verify by running the expanded
-> tools/testing/selftests/net/txtimestamp.c against the patched kernels
-> first. That should serve as a good test whether the feature works on a
-> kernel, re: that previous point.
-> 
-> If you want to test and send the 4.19.y patch, please go ahead. Or I
-> can do it, but it will take some time.
+Hello Andrew and all,
+I was recently debugging an issue in the FEC driver, about 2% of the
+time the driver is failing with "MDIO read timeout" at boot on a 5.4
+kernel.
 
-I think I do have a setup where I can test all 3 stable kernels.
-I'll see if I can backport the SO_TIMESTAMPING fixes to them and
-validate using the kernel selftest and my app. If I'm successful,
-I'll attach the patchsets here for you to review, then send to stable if
-you're okay, would that work?
+This issue is not new and from time to time appear again, it seems that
+the previous interrupt based mechanism is somehow easy to break.
+
+I backported your patch
+f166f890c8f0 (net: ethernet: fec: Replace interrupt driven MDIO with polled IO, 2020-05-02)
+to kernel 5.4 and it seems that it fixes the issue (I was able to do 470
+power cycles, while before it was failing after a couple of hundreds
+cycles best case).
+
+Shouldn't this patch be backported to kernel 5.4? 
+
+Francesco
+
