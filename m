@@ -2,157 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EA2C4E7DF8
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:23:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFFC4E7D8A
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232277AbiCYUmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 16:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56698 "EHLO
+        id S232361AbiCYUy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 16:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232319AbiCYUmU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:42:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099AC17F3DF;
-        Fri, 25 Mar 2022 13:40:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E362B829A3;
-        Fri, 25 Mar 2022 20:40:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C067C004DD;
-        Fri, 25 Mar 2022 20:40:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648240842;
-        bh=0lBSG7GB/U8B6WPdDTFnKxY0g5umJvPVCbTCx5CJxJQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LGN+clpXlJtDj+wh5NzJmBYvZ0RhrVyQ2RF1Pw0NQ1ybhy1ErvCbiz1TZHKa1K39B
-         OQu+ZqXXsmTVJodZ9j//7zp+BTbM2qTAxByUshIbMyK9i7vmJk7jmfliSHGH0OBGXv
-         iAUEPrrezMTopFJ+nJJBE5XBZeFor0U3oA/VYcq22u/sk7M6hufw415k/Or/3Wpc7w
-         WVs5yJWekRV8G0f02bvJPjzjKX+UwCYEmAPGaQw1xWRndAcdHtN/JuQkwgPm8k9Quz
-         GOYxVjNc0AJNmuxWjsllq5S5JjUkFmx4//jsoy+CS35o/nPS5fUEOejaoIVW7Lc5t4
-         IX7mrT9sxwKaQ==
-Date:   Fri, 25 Mar 2022 13:40:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     William McVicker <willmcvicker@google.com>,
-        linux-wireless@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>, kernel-team@android.com,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [BUG] deadlock in nl80211_vendor_cmd
-Message-ID: <20220325134040.0d98835b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
-References: <0000000000009e9b7105da6d1779@google.com>
-        <99eda6d1dad3ff49435b74e539488091642b10a8.camel@sipsolutions.net>
-        <5d5cf050-7de0-7bad-2407-276970222635@quicinc.com>
-        <YjpGlRvcg72zNo8s@google.com>
-        <dc556455-51a2-06e8-8ec5-b807c2901b7e@quicinc.com>
-        <Yjzpo3TfZxtKPMAG@google.com>
-        <19e12e6b5f04ba9e5b192001fbe31a3fc47d380a.camel@sipsolutions.net>
-        <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
+        with ESMTP id S232414AbiCYUyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:54:54 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1294F9E0
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:53:17 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id dr20so17611269ejc.6
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:53:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
+        b=gm5AHFVvThRrK7sA/BQ6fJ/iDwpQq6O0/7tOPWKWfF0gNOKqop2SvIcH4r/OClE48L
+         VFW0eVhGjvjiyVqrrrPg6Q1OkP1qou04a5ugVipBYO9VTlVyEcQ7kokZzVjAoN7pS1Ch
+         +u+3DjL5YncJtUcCyN3Ju5WCdBaFHsUNObffo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qTyIfzc6eWn8tPRbJvu4pItLGCLIkdX7GJakm9zDrl8=;
+        b=bhCNf+zuU81lslJtemuO1whlNJ/PKzr4063/Fp1pg5G4S7PWmGi/45fHEOvgfYbp7P
+         jac3g1R9vqWzgLKKFTEIx12zCo9+OJaAYn/3aIkZPa3u8kibHPOEd1RMBWbqKmVRf09k
+         1GH5fFQxHEryoCElX+9QpGu8xAwaeJyeR2zyPVbz9aXrL9eECCkAw4uA8y55kAlJyaQS
+         tnZH5AIDIk0zOCadZaWiKrFJfmpppRtcsPqSsZlizYYAQ/7/Zv12Zu8YvCn0CerBRj/1
+         yCHHZGIbwGGSCdG913nB2Ms2uEuQjY0TY4yJ8kaujf+nGJWrjA3BEd69mDM7GIad9DMt
+         Z+IA==
+X-Gm-Message-State: AOAM530doq+JbULNVFIvRmlI4lTrzvS0UzPL53wM3GvB/SUBKnhpppMq
+        Ubv936vczRPZVhBQC2piRG8CK5pedPSX/7cOGL0=
+X-Google-Smtp-Source: ABdhPJyIq0LJjFIiWDCc3smvGTXbICTXNEiE/HYf8YKsml+gn6y9DD0hVgjs2MB4lj89fHk0ii1hlA==
+X-Received: by 2002:a17:907:6d0a:b0:6db:f0f8:6528 with SMTP id sa10-20020a1709076d0a00b006dbf0f86528mr13584045ejc.466.1648241595926;
+        Fri, 25 Mar 2022 13:53:15 -0700 (PDT)
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com. [209.85.218.41])
+        by smtp.gmail.com with ESMTPSA id s4-20020a170906a18400b006db0a78bde8sm2710352ejy.87.2022.03.25.13.53.15
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 13:53:15 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id bi12so17656459ejb.3
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:53:15 -0700 (PDT)
+X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
+ y3-20020ac24203000000b004488053d402mr9094484lfh.687.1648241278691; Fri, 25
+ Mar 2022 13:47:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
+ <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+ <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com> <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
+In-Reply-To: <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 25 Mar 2022 13:47:42 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
+Message-ID: <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Maxime Bizon <mbizon@freebox.fr>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Mar 2022 18:01:30 +0100 Johannes Berg wrote:
-> That's not a bad idea, but I think I wouldn't want to backport that, so
-> separately :) I don't think that fundamentally changes the locking
-> properties though.
-> 
-> 
-> Couple of more questions I guess: First, are we assuming that the
-> cfg80211 code *is* actually broken, even if it looks like nothing can
-> cause the situation, due to the empty todo list?
+On Fri, Mar 25, 2022 at 1:38 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> >  (2) The CPU now wants to see any state written by the device since
+> > the last sync
+> >
+> >     This is "dma_sync_single_for_cpu(DMA_FROM_DEVICE)".
+> >
+> >     A bounce-buffer implementation needs to copy *from* the bounce buffer.
+> >
+> >     A cache-coherent implementation needs to do nothing.
+> >
+> >     A non-coherent implementation maybe needs to do nothing (ie it
+> > assumes that previous ops have flushed the cache, and just accessing
+> > the data will bring the rigth thing back into it). Or it could just
+> > flush the cache.
+>
+> Doesn't that just need to *invalidate* the cache, rather than *flush*
+> it?
 
-Right.
+Yes.  I should have been more careful.
 
-> Given that we have rtnl_lock_unregistering() (and also
-> rtnl_lock_unregistering_all()), it looks like we *do* in fact at least
-> not want to make an assumption that no user of __rtnl_unlock() can have
-> added a todo item.
-> 
-> I mean, there's technically yet *another* thing we could do - something
-> like this:
-> 
-> [this doesn't compile, need to suitably make net_todo_list non-static]
-> --- a/net/core/rtnetlink.c
-> +++ b/net/core/rtnetlink.c
-> @@ -95,6 +95,7 @@ void __rtnl_unlock(void)
->  
->         defer_kfree_skb_list = NULL;
->  
-> +       WARN_ON(!list_empty(&net_todo_list));
->         mutex_unlock(&rtnl_mutex);
->  
->         while (head) {
+That said, I think "invalidate without writeback" is a really
+dangerous operation (it can generate some *really* hard to debug
+memory state), so on the whole I think you should always strive to
+just do "flush-and-invalidate".
 
-Yeah, I think we could do that.
+If the core has support for "invalidate clean cache lines only", then
+that's possibly a good alternative.
 
-> and actually that would allow us to get rid of rtnl_lock_unregistering()
-> and rtnl_lock_unregistering_all() simply because we'd actually guarantee
-> the invariant that when the RTNL is freshly locked, the list is empty
-> (by guaranteeing that it's always empty when it's unlocked, since it can
-> only be added to under RTNL).
+> >   A non-coherent implementation needs to flush the cache again, bot
+> > not necessarily do a writeback-flush if there is some cheaper form
+> > (assuming it does nothing in the "CPU now wants to see any state" case
+> > because it depends on the data not having been in the caches)
+>
+> And similarly here, it would seem that the implementation can't _flush_
+> the cache as the device might be writing concurrently (which it does in
+> fact do in the ath9k case), but it must invalidate the cache?
 
-TBH I don't know what you mean by rtnl_lock_unregistering(), I don't
-have that in my tree. rtnl_lock_unregistering_all() can't hurt the case
-we're talking about AFAICT.
+Right, again, when I said "flush" I really should have said "invalidate".
 
-Eric removed some of the netns / loopback dependencies in net-next, 
-make sure you pull!
+> I'm not sure about the (2) case, but here it seems fairly clear cut that
+> if you have a cache, don't expect the CPU to write to the buffer (as
+> evidenced by DMA_FROM_DEVICE), you wouldn't want to write out the cache
+> to DRAM?
 
-> With some suitable commentary, that might also be a reasonable thing?
-> __rtnl_unlock() is actually rather pretty rare, and not exported.
+See above: I'd *really* want to avoid a pure "invalidate cacheline"
+model. The amount of debug issues that can cause is not worth it.
 
-The main use for it seems to be re-locking before loading a module,
-which TBH I have no idea why, is it just a cargo cult or a historical
-thing :S  I don't see how letting netdevs leave before _loading_ 
-a module makes any difference whatsoever.
+So please flush-and-invalidate, or invalidate-non-dirty, but not just
+"invalidate".
 
-> However, if you don't like that ...
-> 
-> I've been testing with this patch, to make lockdep complain:
-> 
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -9933,6 +9933,11 @@ void netdev_run_todo(void)
->         if (!list_empty(&list))
->                 rcu_barrier();
->  
-> +#ifdef CONFIG_LOCKDEP
-> +       rtnl_lock();
-> +       __rtnl_unlock();
-> +#endif
-> +
->         while (!list_empty(&list)) {
->                 struct net_device *dev
->                         = list_first_entry(&list, struct net_device, todo_list);
-> 
-> 
-> That causes lockdep to complain for cfg80211 even if the list *is* in
-> fact empty.
-> 
-> Would you be open to adding something like that? Perhaps if I don't just
-> do the easy rtnl_lock/unlock, but try to find the corresponding lockdep-
-> only things to do there, to cause lockdep to do things without really
-> locking? OTOH, the locking overhead of the RTNL we just unlocked is
-> probably minimal, vs. the actual work *lockdep* is doing to track all
-> this ...
+> Then, however, we need to define what happens if you pass
+> DMA_BIDIRECTIONAL to the sync_for_cpu() and sync_for_device() functions,
+> which adds two more cases? Or maybe we eventually just think that's not
+> valid at all, since you have to specify how you're (currently?) using
+> the buffer, which can't be DMA_BIDIRECTIONAL?
 
-The WARN_ON() you suggested up front make perfect sense to me.
-You can also take the definition of net_unlink_todo() out of
-netdevice.h while at it because o_0
+Ugh. Do we actually have cases that do it? That sounds really odd for
+a "sync" operation. It sounds very reasonable for _allocating_ DMA,
+but for syncing I'm left scratching my head what the semantics would
+be.
+
+But yes, if we do and people come up with semantics for it, those
+semantics should be clearly documented.
+
+And if we don't - or people can't come up with semantics for it - we
+should actively warn about it and not have some code that does odd
+things that we don't know what they mean.
+
+But it sounds like you agree with my analysis, just not with some of
+my bad/incorrect word choices.
+
+            Linus
