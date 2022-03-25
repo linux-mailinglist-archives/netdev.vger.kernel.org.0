@@ -2,57 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A24844E6BAE
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 02:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B0BD4E6BB3
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 02:03:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357091AbiCYBBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 21:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42144 "EHLO
+        id S1349348AbiCYBFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 21:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236251AbiCYBBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 21:01:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823BABBE18;
-        Thu, 24 Mar 2022 18:00:13 -0700 (PDT)
+        with ESMTP id S241524AbiCYBFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 21:05:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F5FB6E40
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 18:03:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3510FB8270A;
-        Fri, 25 Mar 2022 01:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E4B8DC340EE;
-        Fri, 25 Mar 2022 01:00:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7F9761800
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 01:03:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 916E4C340EC;
+        Fri, 25 Mar 2022 01:03:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648170011;
-        bh=d5wIT0LEc5NSb6GdheZy9GT6g8BIIfqcfuV9J4NhnkI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jaCMjPx9bND0CXArgbcaExEPjQBupRg9h2aRPxs2Az1yPbBA/5zDhs8FxtibXyvhz
-         6EPqBtkz6BPwc/jqpqgnfK4HMWnwtjNiV5PWak7D/75c9IuQRfFUoEa9RQl6MLdNL6
-         YdXhTBFmTGQ6/Gf3ERw+aEcLNEQkioBVX8YllIZ1i0RGPfkQ08slYVAdHTLvwz64e7
-         gDuY+sa5Tba17THbnH1KVlqnm//N4qLJ4JYBBV8AeXrG+QPXZqPQ9lgy44KpLiMgOv
-         R3sZy7ok5S1QbBOeWzZf5EvNvVEOPQQrqjmNZLvruCm1zlmibXYEcHAklI+GTwB7P6
-         EjscCWYnSa7PA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C1D50F0383F;
-        Fri, 25 Mar 2022 01:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1648170213;
+        bh=Ty7qsHHKck+/xIVjAUDI4PjpvF25RMOp3Cmj5fDwh5U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gZmFenW9hcTLMZqkakuHOVCasirF31tFbCSkQznwunbF556tvq9eLbEDNFAwEaVJ+
+         m3i8tO1O5EGqJJKYVoVyhq7XSV8SmZKR1en5GQzLI2++xDkPxX2fbBPT+PsLddrtQv
+         fyOvr+aptyuFDUAixcGLcvdZyOt5g0BnflLvaWq94wgIA8gAmnifiVWI76u0KYyf7S
+         q+dVVxT93TmfqT2FwkbXZ2z5Ehe5toVJ2uPIkWRBym3Y2kblIcfLLR/XREtQTAPqat
+         ko7lvKjkeUpMBav8CFBJzPkM+GvY5FbO368nZtaHL67z2DqD00eGVPQKkBW1vYaoYL
+         eWH0njD5+TUag==
+Date:   Thu, 24 Mar 2022 18:03:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jian Shen <shenjian15@huawei.com>
+Cc:     <davem@davemloft.net>, <andrew@lunn.ch>, <ecree.xilinx@gmail.com>,
+        <hkallweit1@gmail.com>, <alexandr.lobakin@intel.com>,
+        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
+        <linuxarm@openeuler.org>, <lipeng321@huawei.com>
+Subject: Re: [RFCv5 PATCH net-next 01/20] net: rename net_device->features
+ to net_device->active_features
+Message-ID: <20220324180331.77a818c5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20220324175832.70a7de9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220324154932.17557-1-shenjian15@huawei.com>
+        <20220324154932.17557-2-shenjian15@huawei.com>
+        <20220324175832.70a7de9d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: stmmac: dwmac-qcom-ethqos: Enable RGMII functional clock
- on resume
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164817001079.21015.15011506494031889384.git-patchwork-notify@kernel.org>
-Date:   Fri, 25 Mar 2022 01:00:10 +0000
-References: <20220323033255.2282930-1-bjorn.andersson@linaro.org>
-In-Reply-To: <20220323033255.2282930-1-bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     vkoul@kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bhupesh.sharma@linaro.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -63,29 +58,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue, 22 Mar 2022 20:32:55 -0700 you wrote:
-> When the Qualcomm ethqos driver is properly described in its associated
-> GDSC power-domain, the hardware will be powered down and loose its state
-> between qcom_ethqos_probe() and stmmac_init_dma_engine().
+On Thu, 24 Mar 2022 17:58:32 -0700 Jakub Kicinski wrote:
+> On Thu, 24 Mar 2022 23:49:13 +0800 Jian Shen wrote:
+> > The net_device->features indicates the active features of the
+> > net device, rename it to active_features, make it esaier to
+> > define feature helpers.  
 > 
-> The result of this is that the functional clock from the RGMII IO macro
-> is no longer provides and the DMA software reset in dwmac4_dma_reset()
-> will time out, due to lacking clock signal.
-> 
-> [...]
+> This breaks the build.
 
-Here is the summary with links:
-  - net: stmmac: dwmac-qcom-ethqos: Enable RGMII functional clock on resume
-    https://git.kernel.org/netdev/net/c/ffba2123e171
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I see you mention that the work is not complete in the cover letter.
+Either way this patch seems unnecessary, you can call the helpers
+for "active" features like you do, but don't start by renaming the
+existing field. The patch will be enormous.
