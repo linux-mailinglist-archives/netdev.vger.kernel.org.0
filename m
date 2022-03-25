@@ -2,193 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A24FD4E7994
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 18:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 288254E7998
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 18:01:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377001AbiCYRCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 13:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44202 "EHLO
+        id S1354507AbiCYRDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 13:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231269AbiCYRCK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 13:02:10 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781E24D264;
-        Fri, 25 Mar 2022 10:00:35 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id d62so9551148iog.13;
-        Fri, 25 Mar 2022 10:00:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ko4mIxnXaw4yoPYh8PjrmsoS3HvZSH7ww79WhJnpMH4=;
-        b=RZcwA6fQAdjrf7FF2zVeX7H/SIgQ1V7SEWgnpQS/0BC3ukM/0D/WwG6gGAbQG5ImZc
-         UGmTvS87mlznXBvJ1kVI3hPtKqXgHOm0ptW8ycyayeL6iwlw++KIQrcRrAkOdqdTwBzr
-         alue6QBo0GDPgl00OiuO0Qx5tERXuLtAYW9RqQ5LR9KCGpkaqAPpcAD1wmEK9OIeQgHK
-         0Pva+Bl+da6MTyOaVyi9vgELNuIQBy6rUBK2Foqor5PgKGQPEPphLzveoreHurQ28Rxn
-         p6A472lXQuuSwzJVR6xaiWkMF2V9eAIf3VItaO3j6u22XpTetxZwZ9YfAFKzka+BEErN
-         XTvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ko4mIxnXaw4yoPYh8PjrmsoS3HvZSH7ww79WhJnpMH4=;
-        b=yjJCq26Tysas8gvKBu9614Xwjj8vuqiJzwifNceVnNlXtOt/A1uazSKgBFjOspoguT
-         +qi9AeFR/dCVxV711L3+O0UHSPzC1cO9+8ruVzUvnZBOmgZxGZANWAf3+Ex2eWJKqORq
-         yJk8ApDMokTerOdy79afxGpl2DfvAz77U2qqxwQWKU44VCsQVOgFd6QLyLf1lCOKaQQs
-         UL2+DPUlGX5yWsxP80u4r7uz07l9jGcfxEO6MUUFocDzR7NgYVOZVR9hLxcd1W8NqRM3
-         8KcZ1SlFlFlAV72rt9Zyoph738XwNNZlmci1c5/RJ/m3tZ23x1mgbwc1IpU4W5kpfoSg
-         hQJw==
-X-Gm-Message-State: AOAM533IlxBEkN6mHmA5yKoRoXIkNi70lLyDSLNHnn8prI4XUJmhExie
-        +JGpPJsUDiILE9iOY/x35TyrA5aO0KhU+7oX4YA=
-X-Google-Smtp-Source: ABdhPJwtmZHUYpe+l+4rcOPjK1FPYXhd0eg1b12cJ7I7RJnY7A8ZlX9X9KSb+nUZXQfEUq4sX7mt2noF9X8EP60JQSk=
-X-Received: by 2002:a05:6602:185a:b0:645:d914:35e9 with SMTP id
- d26-20020a056602185a00b00645d91435e9mr6152428ioi.154.1648227634763; Fri, 25
- Mar 2022 10:00:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
- <20220318161528.1531164-7-benjamin.tissoires@redhat.com> <CAADnVQLvhWxEtHETg0tasJ7Fp5JHNRYWdjhnxi1y1gBpXS=bvQ@mail.gmail.com>
- <CAO-hwJJXR3jtAvLF1phUa5pKZzVkDxAAHO5+7R50hL-fVhDYyA@mail.gmail.com>
-In-Reply-To: <CAO-hwJJXR3jtAvLF1phUa5pKZzVkDxAAHO5+7R50hL-fVhDYyA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 25 Mar 2022 10:00:23 -0700
-Message-ID: <CAEf4BzYVu9JVJvKZK3S9HGwpyPiWrwKPGsTz3wXC_+vmRYGdNw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
- descriptor from an eBPF program
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+        with ESMTP id S1377352AbiCYRDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 13:03:18 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54FB84D268;
+        Fri, 25 Mar 2022 10:01:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=KIBXOVtkmOwL5E0vgfaT6N95rJNQ6um0hl1Uz1iYDsM=;
+        t=1648227704; x=1649437304; b=L4IdXzV4ge3lc5bsXEejWvQ+wEuLPal+k1jKGIH27lTUjuR
+        IvfvmSc8C1Pqh8/U4PW9DHWjMJfPMkCEPNWUiZMHWwLy5zP7GNPMKfaePQnPqYqAMs/8JB92NPezM
+        CphOYxPiukqTAlkYdh12K+LAXVQKjErK0AkYpfA/klWVb2lrL+XmTwL/J2nQLRfcktIfAXK01BSLM
+        wl6AME5PCbw9DuWOyNvMEzjhu2oU2v+3mX6sJPTqmdCQzzKqhAW5nDaWtfNXlJ4OlT32BjWp8w0D3
+        fAbn4ccGC7+42EPk7jw8Hno5bQknFTqFOIrVtFR/gKIRb4PcmsjIlzRLXjl8fWDA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nXnJb-000QWH-Nz;
+        Fri, 25 Mar 2022 18:01:31 +0100
+Message-ID: <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
+Subject: Re: [BUG] deadlock in nl80211_vendor_cmd
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     William McVicker <willmcvicker@google.com>,
+        linux-wireless@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>, kernel-team@android.com,
+        Paolo Abeni <pabeni@redhat.com>
+Date:   Fri, 25 Mar 2022 18:01:30 +0100
+In-Reply-To: <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <0000000000009e9b7105da6d1779@google.com>
+         <99eda6d1dad3ff49435b74e539488091642b10a8.camel@sipsolutions.net>
+         <5d5cf050-7de0-7bad-2407-276970222635@quicinc.com>
+         <YjpGlRvcg72zNo8s@google.com>
+         <dc556455-51a2-06e8-8ec5-b807c2901b7e@quicinc.com>
+         <Yjzpo3TfZxtKPMAG@google.com>
+         <19e12e6b5f04ba9e5b192001fbe31a3fc47d380a.camel@sipsolutions.net>
+         <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 23, 2022 at 9:08 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> Hi Alexei,
->
-> On Tue, Mar 22, 2022 at 11:51 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Fri, Mar 18, 2022 at 9:16 AM Benjamin Tissoires
-> > <benjamin.tissoires@redhat.com> wrote:
-> > >
-> > > +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
-> > > +{
-> > > +       int ret;
-> > > +       struct hid_bpf_ctx_kern ctx = {
-> > > +               .type = HID_BPF_RDESC_FIXUP,
-> > > +               .hdev = hdev,
-> > > +               .size = *size,
-> > > +       };
-> > > +
-> > > +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
-> > > +               goto ignore_bpf;
-> > > +
-> > > +       ctx.data = kmemdup(rdesc, HID_MAX_DESCRIPTOR_SIZE, GFP_KERNEL);
-> > > +       if (!ctx.data)
-> > > +               goto ignore_bpf;
-> > > +
-> > > +       ctx.allocated_size = HID_MAX_DESCRIPTOR_SIZE;
-> > > +
-> > > +       ret = hid_bpf_run_progs(hdev, &ctx);
-> > > +       if (ret)
-> > > +               goto ignore_bpf;
-> > > +
-> > > +       if (ctx.size > ctx.allocated_size)
-> > > +               goto ignore_bpf;
-> > > +
-> > > +       *size = ctx.size;
-> > > +
-> > > +       if (*size) {
-> > > +               rdesc = krealloc(ctx.data, *size, GFP_KERNEL);
-> > > +       } else {
-> > > +               rdesc = NULL;
-> > > +               kfree(ctx.data);
-> > > +       }
-> > > +
-> > > +       return rdesc;
-> > > +
-> > > + ignore_bpf:
-> > > +       kfree(ctx.data);
-> > > +       return kmemdup(rdesc, *size, GFP_KERNEL);
-> > > +}
-> > > +
-> > >  int __init hid_bpf_module_init(void)
-> > >  {
-> > >         struct bpf_hid_hooks hooks = {
-> > >                 .hdev_from_fd = hid_bpf_fd_to_hdev,
-> > >                 .pre_link_attach = hid_bpf_pre_link_attach,
-> > > +               .post_link_attach = hid_bpf_post_link_attach,
-> > >                 .array_detach = hid_bpf_array_detach,
-> > >         };
-> > >
-> > > diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-> > > index 937fab7eb9c6..3182c39db006 100644
-> > > --- a/drivers/hid/hid-core.c
-> > > +++ b/drivers/hid/hid-core.c
-> > > @@ -1213,7 +1213,8 @@ int hid_open_report(struct hid_device *device)
-> > >                 return -ENODEV;
-> > >         size = device->dev_rsize;
-> > >
-> > > -       buf = kmemdup(start, size, GFP_KERNEL);
-> > > +       /* hid_bpf_report_fixup() ensures we work on a copy of rdesc */
-> > > +       buf = hid_bpf_report_fixup(device, start, &size);
-> >
-> > Looking at this patch and the majority of other patches...
-> > the code is doing a lot of work to connect HID side with bpf.
-> > At the same time the evolution of the patch series suggests
-> > that these hook points are not quite stable. More hooks and
-> > helpers are being added.
-> > It tells us that it's way too early to introduce a stable
-> > interface between HID and bpf.
->
-> I understand that you might be under the impression that the interface
-> is changing a lot, but this is mostly due to my poor knowledge of all
-> the arcanes of eBPF.
-> The overall way HID-BPF works is to work on a single array, and we
-> should pretty much be sorted out. There are a couple of helpers to be
-> able to communicate with the device, but the API has been stable in
-> the kernel for those for quite some time now.
->
-> The variations in the hooks is mostly because I don't know what is the
-> best representation we can use in eBPF for those, and the review
-> process is changing that.
+On Fri, 2022-03-25 at 09:49 -0700, Jakub Kicinski wrote:
+> On Fri, 25 Mar 2022 13:04:23 +0100 Johannes Berg wrote:
+> > So we can avoid the potential deadlock in cfg80211 in a few ways:
+> > 
+> >  1) export rtnl_lock_unregistering_all() or maybe a variant after
+> >     refactoring the two versions, to allow cfg80211 to use it, that way
+> >     netdev_run_todo() can never have a non-empty todo list
+> > 
+> >  2) export __rtnl_unlock() so cfg80211 can avoid running
+> >     netdev_run_todo() in the unlock, personally I like this less because
+> >     it might encourage random drivers to use it
+> > 
+> >  3) completely rework cfg80211's locking, adding a separate mutex for
+> >     the wiphy list so we don't need to acquire the RTNL at all here
+> >     (unless the ops need it, but there's no issue if we don't drop it),
+> >     something like https://p.sipsolutions.net/27d08e1f5881a793.txt
+> > 
+> > 
+> > I think I'm happy with 3) now (even if it took a couple of hours), so I
+> > think we can go with it, just need to go through all the possibilities.
+> 
+> I like 3) as well. FWIW a few places (e.g. mlx5, devlink, I think I've
+> seen more) had been converting to xarray for managing the "registered"
+> objects. It may be worth looking into if you're re-doing things, anyway.
+> 
 
-I think such a big feature as this one, especially that most BPF folks
-are (probably) not familiar with the HID subsystem in the kernel,
-would benefit from a bit of live discussion during BPF office hours.
-Do you think you can give a short overview of what you are trying to
-achieve with some background context on HID specifics at one of the
-next BPF office hours? We have a meeting scheduled every week on
-Thursday, 9am Pacific time. But people need to put their topic onto
-the agenda, otherwise the meeting is cancelled. See [0] for
-spreadsheet and links to Zoom meeting, agenda, etc.
+That's not a bad idea, but I think I wouldn't want to backport that, so
+separately :) I don't think that fundamentally changes the locking
+properties though.
 
-  [0] https://docs.google.com/spreadsheets/d/1LfrDXZ9-fdhvPEp_LHkxAMYyxxpwBXjywWa0AejEveU
 
-[...]
+Couple of more questions I guess: First, are we assuming that the
+cfg80211 code *is* actually broken, even if it looks like nothing can
+cause the situation, due to the empty todo list?
+
+Given that we have rtnl_lock_unregistering() (and also
+rtnl_lock_unregistering_all()), it looks like we *do* in fact at least
+not want to make an assumption that no user of __rtnl_unlock() can have
+added a todo item.
+
+I mean, there's technically yet *another* thing we could do - something
+like this:
+
+[this doesn't compile, need to suitably make net_todo_list non-static]
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -95,6 +95,7 @@ void __rtnl_unlock(void)
+ 
+        defer_kfree_skb_list = NULL;
+ 
++       WARN_ON(!list_empty(&net_todo_list));
+        mutex_unlock(&rtnl_mutex);
+ 
+        while (head) {
+
+and actually that would allow us to get rid of rtnl_lock_unregistering()
+and rtnl_lock_unregistering_all() simply because we'd actually guarantee
+the invariant that when the RTNL is freshly locked, the list is empty
+(by guaranteeing that it's always empty when it's unlocked, since it can
+only be added to under RTNL).
+
+With some suitable commentary, that might also be a reasonable thing?
+__rtnl_unlock() is actually rather pretty rare, and not exported.
+
+
+However, if you don't like that ...
+
+I've been testing with this patch, to make lockdep complain:
+
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9933,6 +9933,11 @@ void netdev_run_todo(void)
+        if (!list_empty(&list))
+                rcu_barrier();
+ 
++#ifdef CONFIG_LOCKDEP
++       rtnl_lock();
++       __rtnl_unlock();
++#endif
++
+        while (!list_empty(&list)) {
+                struct net_device *dev
+                        = list_first_entry(&list, struct net_device, todo_list);
+
+
+That causes lockdep to complain for cfg80211 even if the list *is* in
+fact empty.
+
+Would you be open to adding something like that? Perhaps if I don't just
+do the easy rtnl_lock/unlock, but try to find the corresponding lockdep-
+only things to do there, to cause lockdep to do things without really
+locking? OTOH, the locking overhead of the RTNL we just unlocked is
+probably minimal, vs. the actual work *lockdep* is doing to track all
+this ...
+
+Thanks,
+johannes
