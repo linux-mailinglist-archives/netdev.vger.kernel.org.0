@@ -2,113 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C3EA4E73E4
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 14:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A5204E7408
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 14:16:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359211AbiCYNGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 09:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33144 "EHLO
+        id S1344473AbiCYNRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 09:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353651AbiCYNGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 09:06:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 10EDB9A9B2
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 06:04:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648213473;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tE/eAfmAjD6lTZj7wBC76uZYxkyvkom3vjRY4fsJkcM=;
-        b=NwWW1Ub2Gs5z0r/Yl11yIChxLRIVZicdXU9+sb5k9hkQ3RVbrx7CW8FrXylki+JbntO1V/
-        dd3l5UbOCCKfTflWOIVUBr1mFGN2ZrMQcr1X30/pVtgSeMdrd8bm+Qg3WbMsCv4c9JsNy+
-        to12d/u07SB2uap2I3aMv1i3m8r3pSM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-553-TomwG3uSNUuzrcPOhW2nZA-1; Fri, 25 Mar 2022 09:04:30 -0400
-X-MC-Unique: TomwG3uSNUuzrcPOhW2nZA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3DCF9802809;
-        Fri, 25 Mar 2022 13:04:29 +0000 (UTC)
-Received: from ceranb (unknown [10.40.192.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 374C42166B2D;
-        Fri, 25 Mar 2022 13:04:25 +0000 (UTC)
-Date:   Fri, 25 Mar 2022 14:04:24 +0100
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Marcin Szycik <marcin.szycik@linux.intel.com>
-Cc:     netdev@vger.kernel.org, poros@redhat.com, mschmidt@redhat.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Akeem G Abodunrin <akeem.g.abodunrin@intel.com>,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] ice: Fix broken IFF_ALLMULTI handling
-Message-ID: <20220325140424.696e8abc@ceranb>
-In-Reply-To: <eb6538d9-4667-f1f5-492c-e1e113a6da35@linux.intel.com>
-References: <20220321191731.2596414-1-ivecera@redhat.com>
-        <eb6538d9-4667-f1f5-492c-e1e113a6da35@linux.intel.com>
+        with ESMTP id S1351441AbiCYNRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 09:17:45 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFF8D1114
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 06:16:08 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id kk12so6127707qvb.13
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 06:16:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ojhQc8wwq4Mt3zqH+Tzsk4pKO2fJA+vx/nl666A8ZgQ=;
+        b=kAe+D12jyP3SQQDhbwOWEkBriuyTNQIjpvtQMi89l+18wlZkQj+yA2/u7tilj8K9dY
+         veMbA9FVXVU96eWrKNPoWRqKKRMpwLa1BH0z/nsITOj3zGds+BCkXKI+fdFvuKhj5IPp
+         /LXW787m8+849RrG5z52dYIOa0iPlwcdR2RId6nE96ARPcBUWe0B2NjMM0+XKdRkTtJy
+         7nL7m1xws16CAkMXY7JNVfJJ/a7xfokmobOjygoIctJnEDVMnECX1SS1l8bV5+7LoGqv
+         LxFaR+kdQIr8cY7kTK70kIqZg0LVcdQqIl4FZ28uajByW5fRcfgs045yt8BgMwqRqoJY
+         VGgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ojhQc8wwq4Mt3zqH+Tzsk4pKO2fJA+vx/nl666A8ZgQ=;
+        b=Odere/KVQZs2kV4v8TV5IpDApsaOB1/GCyV/OH1/bnuBNa07kh6/9R55BXBwg4NnSS
+         W1TiX000dbuE49e6WLPq+EvIpFh6PjGlAD5+3OIaAdMLZaAfOnpMOv1rIYzsdrUCbq6P
+         kETNRgkldiqTn2KQE7eZ8vzgqo+TCBL9QGS+JoR0e0v/kFzR5bv4HpumrBJEkWEyJi/R
+         cLQzh3Hgn7NLqiFnIvWTf/Zo0cZ/Tq2sOJVjre7SF+w+/8ewYMX7EPBZsadJPfjJGEZq
+         X4jiVjdoceCgE5b3GUzajbZJrxHpHw+ndl3hx9iCE4We67HBkXW+LO8ZCelni5JvB5aE
+         HW4Q==
+X-Gm-Message-State: AOAM532NzzZv4x13KmxiOKEjwxXtFGVuNbogVduF3mPBOcYXRp3S+gAI
+        HNXjBastdqH/GVzadshPyA1bQk4qFbE=
+X-Google-Smtp-Source: ABdhPJxk9OOInRW+NZ38ACToq+s34nyywBSKNA00qa7eBOX0IKbGXMybfKTdMxGtE0vVuDRBkUtOrA==
+X-Received: by 2002:ad4:5bc1:0:b0:42c:3700:a6df with SMTP id t1-20020ad45bc1000000b0042c3700a6dfmr8893620qvt.94.1648214167330;
+        Fri, 25 Mar 2022 06:16:07 -0700 (PDT)
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com. [209.85.128.169])
+        by smtp.gmail.com with ESMTPSA id u187-20020a3792c4000000b0067e679cfe5asm3207844qkd.59.2022.03.25.06.16.06
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 06:16:06 -0700 (PDT)
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-2d07ae0b1c0so82779637b3.2
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 06:16:06 -0700 (PDT)
+X-Received: by 2002:a81:7187:0:b0:2dd:4526:b289 with SMTP id
+ m129-20020a817187000000b002dd4526b289mr10325294ywc.262.1648214166447; Fri, 25
+ Mar 2022 06:16:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220324213954.3ln7kvl5utadnux6@skbuf>
+In-Reply-To: <20220324213954.3ln7kvl5utadnux6@skbuf>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 25 Mar 2022 09:15:30 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSe9hXG1x0-8e1P8_JmckOFaCFujZbJ=-=WTJW3y1sJQNQ@mail.gmail.com>
+Message-ID: <CA+FuTSe9hXG1x0-8e1P8_JmckOFaCFujZbJ=-=WTJW3y1sJQNQ@mail.gmail.com>
+Subject: Re: Broken SOF_TIMESTAMPING_OPT_ID in linux-4.19.y and earlier stable branches
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Mar 2022 21:05:20 +0100
-Marcin Szycik <marcin.szycik@linux.intel.com> wrote:
+"
 
-> > @@ -3482,18 +3503,44 @@ ice_vlan_rx_kill_vid(struct net_device *netdev, __always_unused __be16 proto,
-> >  	if (!vid)
-> >  		return 0;
-> >  
-> > +	while (test_and_set_bit(ICE_CFG_BUSY, vsi->state))
-> > +		usleep_range(1000, 2000);
-> > +
-> >  	/* Make sure ice_vsi_kill_vlan is successful before updating VLAN
-> >  	 * information
-> >  	 */
-> >  	ret = ice_vsi_kill_vlan(vsi, vid);
-> >  	if (ret)
-> > -		return ret;
-> > +		goto finish;
-> >  
-> > -	/* Disable pruning when VLAN 0 is the only VLAN rule */
-> > -	if (vsi->num_vlan == 1 && ice_vsi_is_vlan_pruning_ena(vsi))
-> > -		ret = ice_cfg_vlan_pruning(vsi, false);
-> > +	/* Remove multicast promisc rule for the removed VLAN ID if
-> > +	 * all-multicast is enabled.
-> > +	 */
-> > +	if (vsi->current_netdev_flags & IFF_ALLMULTI)
-> > +		ice_fltr_clear_vsi_promisc(&vsi->back->hw, vsi->idx,
-> > +					   ICE_MCAST_VLAN_PROMISC_BITS, vid);
-> > +
-> > +	if (vsi->num_vlan == 1) {
-> > +		/* Disable pruning when VLAN 0 is the only VLAN rule */
-> > +		if (ice_vsi_is_vlan_pruning_ena(vsi))
-> > +			ice_cfg_vlan_pruning(vsi, false);  
-> 
-> Why was `ret = ...` removed here?
+On Thu, Mar 24, 2022 at 5:43 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> Hello Willem,
+>
+> I have an application which makes use of SOF_TIMESTAMPING_OPT_ID, and I
+> received reports from multiple users that all timestamps are delivered
+> with a tskey of 0 for all stable kernel branches earlier than, and
+> including, 4.19.
+>
+> I bisected this issue down to:
+>
+> | commit 8f932f762e7928d250e21006b00ff9b7718b0a64 (HEAD)
+> | Author: Willem de Bruijn <willemb@google.com>
+> | Date:   Mon Dec 17 12:24:00 2018 -0500
+> |
+> |     net: add missing SOF_TIMESTAMPING_OPT_ID support
+> |
+> |     SOF_TIMESTAMPING_OPT_ID is supported on TCP, UDP and RAW sockets.
+> |     But it was missing on RAW with IPPROTO_IP, PF_PACKET and CAN.
+> |
+> |     Add skb_setup_tx_timestamp that configures both tx_flags and tskey
+> |     for these paths that do not need corking or use bytestream keys.
+> |
+> |     Fixes: 09c2d251b707 ("net-timestamp: add key to disambiguate concurrent datagrams")
+> |     Signed-off-by: Willem de Bruijn <willemb@google.com>
+> |     Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> |     Signed-off-by: David S. Miller <davem@davemloft.net>
+>
+> and, interestingly, I found this discussion on the topic:
+> https://www.spinics.net/lists/netdev/msg540752.html
+> (copied here in case the link rots in the future)
+>
+> | > Series applied.
+> | >
+> | > What is your opinion about -stable for this?
+> |
+> | Thanks David. Since these are just missing features that no one has
+> | reported as actually having been missing a whole lot, I don't think
+> | that they are worth the effort or risk.
+>
+> So I have 2 questions:
+>
+> Is there a way for user space to validate functional kernel support for
+> SOF_TIMESTAMPING_OPT_ID? What I'm noticing is that (at least with
+> AF_PACKET sockets) the "level == SOL_PACKET && type == PACKET_TX_TIMESTAMP"
+> cmsg is _not_ missing, but instead contains a valid sock_err->ee_data
+> (tskey) of 0.
 
-Because we are in ice_vlan_rx_kill_vid() that is used to remove VLAN and at this
-the VLAN ID was removed from VLAN filter so we cannot return value other than 0.
-Network stack would think that the VLAN ID is still present in VLAN filter.
+The commit only fixes missing OPT_ID support for PF_PACKET and various SOCK_RAW.
 
-Ivan
+The cmsg structure returned for timestamps is the same regardless of
+whether the option is set configured. It just uses an otherwise constant field.
 
+On these kernels the feature is supported, and should work on TCP and UDP.
+So a feature check would give the wrong answer.
+
+> If it's not possible, could you please consider sending these fixes as
+> patches to linux-stable?
+
+The first of the two fixes
+
+    fbfb2321e9509 ("ipv6: add missing tx timestamping on IPPROTO_RAW")
+
+is in 4.19.y as of 4.19.99
+
+The follow-on fix that you want
+
+    8f932f762e79 ("net: add missing SOF_TIMESTAMPING_OPT_ID support")
+
+applies cleanly to 4.19.236.
+
+I think it's fine to cherry-pick. Not sure how to go about that.
