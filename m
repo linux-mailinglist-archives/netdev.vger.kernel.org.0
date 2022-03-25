@@ -2,112 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D24C14E7B34
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:20:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 317964E7CE0
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230489AbiCYThp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 15:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59536 "EHLO
+        id S230314AbiCYTg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 15:36:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230475AbiCYTh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:37:27 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9545926130D
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 12:21:54 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id w27so14990875lfa.5
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 12:21:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4MqmH9CCCrUKFAq5y+I/qeK/sNikgDEGLg2VH+hZ/B8=;
-        b=EEYCtzdxDwF4pZQoFLQy5R1bkbtIioQJ+didZOsq+7BOWsBdCAqNeXRuHlQHbxjkxI
-         6ZpgNOxAuZZNbggkh7Po3d0QcOFG1glqGOPQvM9m9QhMt25NNyLu1evDrcAPEgux5s6f
-         doW8iQM9agqh0IgmvQNxMRNQkwdp7w1AkhPq4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4MqmH9CCCrUKFAq5y+I/qeK/sNikgDEGLg2VH+hZ/B8=;
-        b=HZYXIR3ASsf5RXVi/Gp881krasOFtO9hjSVQnqR/wB1pDXoMuZYbMFPYJwu5VSslis
-         w6fa68saSvyCG5ACktvZhzBBpfzFqBkTKVbKHaBhxUUNMjGlBexOnZyskjjGlRaXdEDh
-         Uj3cOPjaznEB+EzTzu/iiO+j+3Ui8ruJ6MtR/o9rAWRu7erQ2/hZi8xXvAuVjdWDoHQ4
-         pYvtTkgg9kyjVrnuq04k2ye7906KschRBI31evQKQNpnSo4UoQeOHmqwVbu4uiCou9B9
-         Ag1PHIntX1VCEpv1G5d2xt2+MD4MNEuQw/vfx1CoQD1oXMu4QgSmyQy8zZWLgudTkgZl
-         Ncwg==
-X-Gm-Message-State: AOAM531qgrtkBNRImPOq5YOK8h1gQbmvkkTHqnj67bkrRbXH7gNy6jZ8
-        GvUMY+nYC6kh5zCusqQeiKEl6PmQ8Ej2Yxzg0oc=
-X-Google-Smtp-Source: ABdhPJznrurJLzuAR2fMxLU/0tQyt+2X5ZgOSSEz64AvRp5qW/l4hG00vfyEnZPV5eEC7gmE3k1RLA==
-X-Received: by 2002:a05:6512:23a9:b0:44a:3b8d:ecc3 with SMTP id c41-20020a05651223a900b0044a3b8decc3mr8961538lfv.643.1648236112657;
-        Fri, 25 Mar 2022 12:21:52 -0700 (PDT)
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com. [209.85.167.51])
-        by smtp.gmail.com with ESMTPSA id c8-20020a196548000000b00448bb4da39fsm800061lfj.106.2022.03.25.12.21.50
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 12:21:51 -0700 (PDT)
-Received: by mail-lf1-f51.google.com with SMTP id k21so14989106lfe.4
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 12:21:50 -0700 (PDT)
-X-Received: by 2002:ac2:4203:0:b0:448:8053:d402 with SMTP id
- y3-20020ac24203000000b004488053d402mr8851909lfh.687.1648236109737; Fri, 25
- Mar 2022 12:21:49 -0700 (PDT)
+        with ESMTP id S229790AbiCYTg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:36:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2EC26F908;
+        Fri, 25 Mar 2022 12:23:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=N+ZKC7KCwSTRxeetW0K6zqFJCKV7rg/oKwuvDGiPjl8=; b=p4y3L+qBksbg1GShFM894Uqzzu
+        YpZuIueXVziRHbN7NaFWlzeIpK+AXEYk2c2GgArL1Ahxk8OR9MCBSI1N9llU+qv5afsWtErCE8XEG
+        dhk05jKd29HqeOuC0BTf+P4+k7VLXMmLdSG23yUFKyEzv4r7nxbALRN9+Vg9j3srrn0c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nXpWZ-00CgJe-IX; Fri, 25 Mar 2022 20:23:03 +0100
+Date:   Fri, 25 Mar 2022 20:23:03 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andy Chiu <andy.chiu@sifive.com>
+Cc:     radhey.shyam.pandey@xilinx.com, robert.hancock@calian.com,
+        michal.simek@xilinx.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        robh@kernel.org, Greentime Hu <greentime.hu@sifive.com>
+Subject: Re: [PATCH v5 net 3/4] dt-bindings: net: add pcs-handle attribute
+Message-ID: <Yj4Wl0zmDtnbxgDb@lunn.ch>
+References: <20220323180022.864567-1-andy.chiu@sifive.com>
+ <20220323180022.864567-4-andy.chiu@sifive.com>
 MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
- <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
- <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
- <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com> <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
-In-Reply-To: <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 25 Mar 2022 12:21:33 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whpKDePfUoKmvJhSNbWcHFY5e7Uq5qEypD=R14+66DNvQ@mail.gmail.com>
-Message-ID: <CAHk-=whpKDePfUoKmvJhSNbWcHFY5e7Uq5qEypD=R14+66DNvQ@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Maxime Bizon <mbizon@freebox.fr>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220323180022.864567-4-andy.chiu@sifive.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 12:14 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> Note "between the DMA transfers", and not "during the DMA transfers".
-> The fundamental assumption of the streaming API is that only one thing
-> is ever accessing the mapping at any given time, which is what the whole
-> notion of ownership is about.
+> + - pcs-handle: 	  Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
+> +		  modes, where "pcs-handle" should be preferably used to point
+> +		  to the PCS/PMA PHY, and "phy-handle" should point to an
+> +		  external PHY if exists.
 
-Well, but that ignores reality.
+Since this is a new property, you don't have any backwards
+compatibility to worry about, don't use 'preferably'. It should point
+to the PCS/PCA PHY and anything else is wrong for this new property.
 
-Any documentation that ignores the "CPU will want to see the
-intermediate state" is by definition garbage, because that is clearly
-a simple fact.
-
-We don't write documentation for fantasy.
-
-            Linus
+   Andrew
