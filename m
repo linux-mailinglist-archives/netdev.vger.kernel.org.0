@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5DB4E6CDB
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 04:32:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B94D84E6CF2
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 04:58:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356434AbiCYDdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 23:33:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
+        id S1354864AbiCYD7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 23:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239983AbiCYDdn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 23:33:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E73ADD78
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 20:32:10 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KPndz6DRhzCrb2;
-        Fri, 25 Mar 2022 11:29:59 +0800 (CST)
-Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Mar
- 2022 11:32:08 +0800
-Subject: Re: [RFCv5 PATCH net-next 04/20] net: replace multiple feature bits
- with netdev features array
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <andrew@lunn.ch>, <ecree.xilinx@gmail.com>,
-        <hkallweit1@gmail.com>, <alexandr.lobakin@intel.com>,
-        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <lipeng321@huawei.com>
-References: <20220324154932.17557-1-shenjian15@huawei.com>
- <20220324154932.17557-5-shenjian15@huawei.com>
- <20220324182235.05dd0f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <3bae8002-1e16-b7c2-f7a2-3c13c14b7aed@huawei.com>
-Date:   Fri, 25 Mar 2022 11:32:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        with ESMTP id S1345340AbiCYD7c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 23:59:32 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF3AC55AE
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 20:57:57 -0700 (PDT)
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 803553F1AC
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 03:57:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1648180670;
+        bh=rL+Lk+TkLUe4IB3XxddpXwlP/mqkcE0LsSD1mSoD/6Y=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=b3FoH5NTBaoTexQsT7R5d4PQxup5HXvBwZ1WZJQHQh6F7JQnvaxmSjXKXvNBZlUFJ
+         mhDtILpJHRDomO6MNLXmUYGXTSkGePxoo3MZsp5wCrxbrEDjG/XnsINA9bjOs8PESQ
+         /QXIeQtH8h3JdyeFOG9QTfeLBGtM45jv12S+gvztyzWGW3zwFHZf1tYOOSVyZpMxGZ
+         Quqb5ZYBaaKwvaL3+hOvGRXkW4y7ACQYoFexeNPC6nCEYRz5epRipBJ3NTKCq9F1xo
+         mKFLZIkYaHYMRQonr1JQJXUYrLT7hVnHExsu5xPd0szdDkfwZcMlj0fETYCHEV2pp1
+         6YKki8uIYNH7g==
+Received: by mail-pl1-f200.google.com with SMTP id u8-20020a170903124800b0015195a5826cso3555878plh.4
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 20:57:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rL+Lk+TkLUe4IB3XxddpXwlP/mqkcE0LsSD1mSoD/6Y=;
+        b=qZHuKptJjB251oHnlQKGpJpxYAgcVZf2YcakIiTI11jW2avJ1bPk2AxMSgvNFtTO+v
+         Ab91aFca8moh8J9zq6j0q6l9XjxufUdq56ry4+6pvn3qwZr3F9a5pl02HJvVTKjGD2t6
+         JxDGrkadTHyeqAGtTWiJUSQEjGPOgkFIlqsGBcsXuWnUy8T3TXC94yZP0c8qs4GoqAI6
+         WhPA06rlAqtfA9Jcdf3uOjBoPtbS8WRoKRIjHEvKCUsOhofmQ9FwtTc/c2NsjGc4nq7b
+         xUDzCEuTgqHzuGs4RneFcxUAbD3ti3jnCUcKT5kdGR8KOTt8wf7PmbO54T9iuGLYjoCX
+         K5Vg==
+X-Gm-Message-State: AOAM532XLjoJ90jcR8CZqACCVvUktdDFIJcJ8SXnpoh3IIJFAtzfFKYm
+        4zxq9UVtMJpTQSlCM6cG9TrUGpKds/RaR702zxxhspsh7gSdNkmubPILNbqlf0mcC+7sNDS9Pr8
+        gYOeszF26qQ8s9L1Z0KeflPKSp6Z7kQwzsQ==
+X-Received: by 2002:a17:902:d4c8:b0:154:2416:2185 with SMTP id o8-20020a170902d4c800b0015424162185mr9592698plg.25.1648180668948;
+        Thu, 24 Mar 2022 20:57:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyA3xdgqaavwF82ZP1ZAM+oGXZMZcWjM/y5nFGCHqIG/Ucn/hx021c9U9OO0rL6spHjyn789w==
+X-Received: by 2002:a17:902:d4c8:b0:154:2416:2185 with SMTP id o8-20020a170902d4c800b0015424162185mr9592674plg.25.1648180668594;
+        Thu, 24 Mar 2022 20:57:48 -0700 (PDT)
+Received: from localhost.localdomain (2001-b400-e286-bae1-8fdb-11c6-cf63-1f23.emome-ip6.hinet.net. [2001:b400:e286:bae1:8fdb:11c6:cf63:1f23])
+        by smtp.gmail.com with ESMTPSA id 21-20020a630115000000b00382a0895661sm3825801pgb.11.2022.03.24.20.57.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 20:57:48 -0700 (PDT)
+From:   Chris Chiu <chris.chiu@canonical.com>
+To:     kvalo@kernel.org, Jes.Sorensen@gmail.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     code@reto-schneider.ch, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Chiu <chris.chiu@canonical.com>
+Subject: [PATCH v3 0/2] rtl8xxxu: Fill up more TX information
+Date:   Fri, 25 Mar 2022 11:57:33 +0800
+Message-Id: <20220325035735.4745-1-chris.chiu@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20220324182235.05dd0f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The antenna information is missing in rtl8xxxu and txrate is NULL
+in 8188cu and 8192cu. Fill up the missing information for iw
+commands.
 
+Chris Chiu (2):
+  rtl8xxxu: feed antenna information for cfg80211
+  rtl8xxxu: fill up txrate info for gen1 chips
 
-ÔÚ 2022/3/25 9:22, Jakub Kicinski Ð´µÀ:
-> On Thu, 24 Mar 2022 23:49:16 +0800 Jian Shen wrote:
->> There are many netdev_features bits group used in drivers, replace them
->> with netdev features array.
-> Maybe we can avoid the ARRAY_SIZE calls by doing something like:
->
-> struct netdev_feature_set {
-> 	unsigned int cnt;
-> 	unsigned short feature_bits[];
-> };
->
-> #define DECLARE_NETDEV_FEATURE_SET(name, features...)    \
->          static unsigned short __ ## name ## _s [] = {features}; \
->          struct netdev_feature_set name = {               \
->                  .cnt = ARRAY_SIZE(__ ## name ## _s),     \
->                  .feature_bits = {features},              \
->          }
->
-> Then:
->
-> DECLARE_NETDEV_FEATURE_SET(siena_offload_features,
-> 			   NETIF_F_IP_CSUM_BIT,
-> 			   NETIF_F_IPV6_CSUM_BIT,
-> 			   NETIF_F_RXHASH_BIT,
-> 			   NETIF_F_NTUPLE_BIT);
->
-> etc.?
-> .
->
-Thanks, it looks good to me.
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 104 +++++++++++++-----
+ 1 file changed, 75 insertions(+), 29 deletions(-)
+
+-- 
+2.25.1
 
