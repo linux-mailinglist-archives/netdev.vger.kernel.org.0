@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57F324E7CA8
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF4A4E7C12
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233501AbiCYVhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 17:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32806 "EHLO
+        id S233421AbiCYVhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 17:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233465AbiCYVhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 17:37:06 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29424C7A0;
+        with ESMTP id S233463AbiCYVhI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 17:37:08 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47E84C781;
         Fri, 25 Mar 2022 14:35:31 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 18A4922438;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7C36622441;
         Fri, 25 Mar 2022 22:35:28 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
         t=1648244128;
@@ -26,10 +26,10 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail20160613
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=H8VkAdaZqV/fF69kPMLAXYZCpovyMDnXX53kDMmonNE=;
-        b=Q3jRUy9zCYFTg6krSaXovRlK0b9oAqpD2mttDgPc/ppJVURS65urJxLnYrw/PcGrrcCl+4
-        WCeKmQ3KUgeyfSUsJZZtLlg7ZEbRThU3IWp4AIOwkynzNH2zf6Byg7pI6TUhLP4UfELdyh
-        9A0dyeYp/Ylvvw57Yz9d1gVw9gfD5k8=
+        bh=XVjpM9D5VGrAUgKJMEHNq1fyfBDvN1zB6ahSnoH5oRg=;
+        b=WGpo/+Y8zl0AwdHULMabyQrRBaUmf/6rJl7N9vyuQHfOyz+BDPHFn0VsF1DxBHrJchG0+s
+        tVtJL+ovtqbxUwmK41dc45SLDkkoKtm7XmCvK4RuWZQ0XmNRJJekiwKQiMqqvDYyWBo00b
+        PxueaPh43Sq/q6mqF8xmnXrQkhyQTec=
 From:   Michael Walle <michael@walle.cc>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -42,9 +42,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Florian Fainelli <f.fainelli@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next v2 7/8] phy: net: introduce phy_promote_to_c45()
-Date:   Fri, 25 Mar 2022 22:35:17 +0100
-Message-Id: <20220325213518.2668832-8-michael@walle.cc>
+Subject: [PATCH RFC net-next v2 8/8] net: phy: mxl-gpy: remove unneeded ops
+Date:   Fri, 25 Mar 2022 22:35:18 +0100
+Message-Id: <20220325213518.2668832-9-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220325213518.2668832-1-michael@walle.cc>
 References: <20220325213518.2668832-1-michael@walle.cc>
@@ -60,100 +60,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If not explitly asked to be probed as a C45 PHY, on a bus which is
-capable of doing both C22 and C45 transfers, C45 PHYs are first tried to
-be probed as C22 PHYs. To be able to promote the PHY to be a C45 one,
-the driver can call phy_promote_to_c45() in its probe function.
-
-This was already done in the mxl-gpy driver by the following snippet:
-
-   if (!phydev->has_c45) {
-	   phydev->has_c45 = true;
-           ret = phy_get_c45_ids(phydev);
-           if (ret < 0)
-                   return ret;
-   }
-
-Move that code into the core by creating a new function
-phy_promote_to_c45().
+Now that we have proper c45-over-c22 support and the PHY driver promote
+the PHY to a C45 device, we can drop the ops because the core will
+already call them.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/phy/mxl-gpy.c    |  8 ++------
- drivers/net/phy/phy_device.c | 19 +++++++++++++++----
- include/linux/phy.h          |  2 +-
- 3 files changed, 18 insertions(+), 11 deletions(-)
+ drivers/net/phy/mxl-gpy.c | 24 ------------------------
+ 1 file changed, 24 deletions(-)
 
 diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
-index 2a19905984fc..fe9417528444 100644
+index fe9417528444..c68c7621c3d9 100644
 --- a/drivers/net/phy/mxl-gpy.c
 +++ b/drivers/net/phy/mxl-gpy.c
-@@ -98,12 +98,8 @@ static int gpy_probe(struct phy_device *phydev)
- {
- 	int ret;
- 
--	if (!phydev->has_c45) {
--		phydev->has_c45 = true;
--		ret = phy_get_c45_ids(phydev);
--		if (ret < 0)
--			return ret;
--	}
-+	/* This might have been probed as a C22 PHY, but this is a C45 PHY */
-+	phy_promote_to_c45(phydev);
- 
- 	/* Show GPY PHY FW version in dmesg */
- 	ret = phy_read(phydev, PHY_FWV);
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 920bc8859069..3dc7d012051d 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1007,18 +1007,29 @@ void phy_device_remove(struct phy_device *phydev)
- EXPORT_SYMBOL(phy_device_remove);
- 
- /**
-- * phy_get_c45_ids - Read 802.3-c45 IDs for phy device.
-- * @phydev: phy_device structure to read 802.3-c45 IDs
-+ * phy_promote_to_c45 - Promote to a C45 PHY
-+ * @phydev: phy_device structure
-+ *
-+ * If a PHY supports both C22 and C45 and it isn't specifically asked to probe
-+ * as a C45 PHY it might be probed as a C22 PHY. The driver can call this
-+ * function to promote a PHY from C22 to C45.
-+ *
-+ * Can also be called if a PHY is already a C45 one. In this case this does
-+ * nothing.
-  *
-  * Returns zero on success, %-EIO on bus access error, or %-ENODEV if
-  * the "devices in package" is invalid.
-  */
--int phy_get_c45_ids(struct phy_device *phydev)
-+int phy_promote_to_c45(struct phy_device *phydev)
- {
-+	if (phydev->has_c45)
-+		return 0;
-+
-+	phydev->has_c45 = true;
- 	return get_phy_c45_ids(phydev->mdio.bus, phydev->mdio.addr,
- 			       &phydev->c45_ids);
- }
--EXPORT_SYMBOL(phy_get_c45_ids);
-+EXPORT_SYMBOL(phy_promote_to_c45);
- 
- /**
-  * phy_find_first - finds the first PHY device on the bus
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 64f2dff2f125..4473e760264a 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1470,7 +1470,7 @@ static inline int phy_device_register(struct phy_device *phy)
- static inline void phy_device_free(struct phy_device *phydev) { }
- #endif /* CONFIG_PHYLIB */
- void phy_device_remove(struct phy_device *phydev);
--int phy_get_c45_ids(struct phy_device *phydev);
-+int phy_promote_to_c45(struct phy_device *phydev);
- int phy_init_hw(struct phy_device *phydev);
- int phy_suspend(struct phy_device *phydev);
- int phy_resume(struct phy_device *phydev);
+@@ -513,13 +513,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY2xx),
+ 		.name		= "Maxlinear Ethernet GPY2xx",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -531,13 +529,11 @@ static struct phy_driver gpy_drivers[] = {
+ 		.phy_id		= PHY_ID_GPY115B,
+ 		.phy_id_mask	= PHY_ID_GPYx15B_MASK,
+ 		.name		= "Maxlinear Ethernet GPY115B",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -548,13 +544,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY115C),
+ 		.name		= "Maxlinear Ethernet GPY115C",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -566,13 +560,11 @@ static struct phy_driver gpy_drivers[] = {
+ 		.phy_id		= PHY_ID_GPY211B,
+ 		.phy_id_mask	= PHY_ID_GPY21xB_MASK,
+ 		.name		= "Maxlinear Ethernet GPY211B",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -583,13 +575,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY211C),
+ 		.name		= "Maxlinear Ethernet GPY211C",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -601,13 +591,11 @@ static struct phy_driver gpy_drivers[] = {
+ 		.phy_id		= PHY_ID_GPY212B,
+ 		.phy_id_mask	= PHY_ID_GPY21xB_MASK,
+ 		.name		= "Maxlinear Ethernet GPY212B",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -618,13 +606,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY212C),
+ 		.name		= "Maxlinear Ethernet GPY212C",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -636,13 +622,11 @@ static struct phy_driver gpy_drivers[] = {
+ 		.phy_id		= PHY_ID_GPY215B,
+ 		.phy_id_mask	= PHY_ID_GPYx15B_MASK,
+ 		.name		= "Maxlinear Ethernet GPY215B",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -653,13 +637,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY215C),
+ 		.name		= "Maxlinear Ethernet GPY215C",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -670,13 +652,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY241B),
+ 		.name		= "Maxlinear Ethernet GPY241B",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -687,13 +667,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY241BM),
+ 		.name		= "Maxlinear Ethernet GPY241BM",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
+@@ -704,13 +682,11 @@ static struct phy_driver gpy_drivers[] = {
+ 	{
+ 		PHY_ID_MATCH_MODEL(PHY_ID_GPY245B),
+ 		.name		= "Maxlinear Ethernet GPY245B",
+-		.get_features	= genphy_c45_pma_read_abilities,
+ 		.config_init	= gpy_config_init,
+ 		.probe		= gpy_probe,
+ 		.suspend	= genphy_suspend,
+ 		.resume		= genphy_resume,
+ 		.config_aneg	= gpy_config_aneg,
+-		.aneg_done	= genphy_c45_aneg_done,
+ 		.read_status	= gpy_read_status,
+ 		.config_intr	= gpy_config_intr,
+ 		.handle_interrupt = gpy_handle_interrupt,
 -- 
 2.30.2
 
