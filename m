@@ -2,91 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED094E7CF3
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AFBF4E7BD6
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234200AbiCYX2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 19:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50792 "EHLO
+        id S234239AbiCYXgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 19:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234184AbiCYX2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 19:28:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301FD5BE48;
-        Fri, 25 Mar 2022 16:27:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B515A61766;
-        Fri, 25 Mar 2022 23:27:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC647C2BBE4;
-        Fri, 25 Mar 2022 23:27:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648250833;
-        bh=4ft5GjKOjv9kZGAeVQsrpTPr9lF5wIbiYZa/m8JLetc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=h30HZwZ4d5GNDL7PX0e4TkktbrZgXpEfV/2+a6bmyG5Oijzept3Qgqh6imeqZOfZE
-         P+5SPC3jbQgnY2pGWIQ5zCOBC3TmXHLEBxhH6GOzoUuL89GTS4MTK4/vD/BNr2va9o
-         11QsOCLntExH2+0ePSp0iF6YOOfP7OkttcfGSGiyR8xWGKEgdxZXu84zWs66gaX4N2
-         IoHUi0vWho7VQpQyxwca+cHlxNSapK7aFaTthzhs6xt9qOTB51jwNDDBpsOf8GrtGA
-         BRgZzsn1he+z/RPXdg9erfFYOkV3hM7ZX1Z3Rs7/wO2zNJX5l5Tkx2fQ4UAwPapHk+
-         8Bsc3ESmgI/DQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     pabeni@redhat.com, netdev@vger.kernel.org, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>
-Subject: [PATCH net] selftests: tls: skip cmsg_to_pipe tests with TLS=n
-Date:   Fri, 25 Mar 2022 16:27:09 -0700
-Message-Id: <20220325232709.2358965-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S234217AbiCYXgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 19:36:04 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4E657153
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 16:34:29 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id w127so9821011oig.10
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 16:34:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NzU86xZaAdGK70/Ylql0VEFWbXnUz3zwu9f5VKchj38=;
+        b=TvokyQbYjz/bU8RXDbUmZTN5CfzDWJFx3PmF3AxOUPnbb6m1OlHuiLtOZhh55des80
+         5bVM7+hehCyFX7lW9rkWGDGxEy+AT6pbsE2TGMOa+mObx4ni/WYOhw+zr3z5Z+TAeHbr
+         skqnmQNn2ONyi3KYF27Qeaa5zSPyAN5MZDUME=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NzU86xZaAdGK70/Ylql0VEFWbXnUz3zwu9f5VKchj38=;
+        b=Qh/8AunFugkmsYIQBe5BngCT9C2L8UpetwGQTwKy04BMNAHFy/wZxKSeg1rRf+CHNz
+         /836yrlXmJ9n2ZQQgIFoahTL/bnFQXI7n0T5GFJqB/ylxepf+gqocKRuVMoCULIxtn7W
+         7R7HyAzb0yUYiKRN2p0ard9YBkgYJjo9oxVHUt4PKfRxjDQTtfgeCvB4qAuuGxqHJXlp
+         p4aliluCwBzBBU5otiKjGAqk33njGkvB+pMalsdC/DQQPjImRmGwBjI31nkaWaNJ9YFW
+         mpKWCEa/TTGLR7NPlNStMYZg/1xgoetmj76BXmBGzOYjCL/dYkaH5TRZNNOyu+kw/Bus
+         kR8w==
+X-Gm-Message-State: AOAM530qrdgU59RCXX1piYGLO/L1oPccTiNWoKb65ZoX2FfuKK0IZcK9
+        yvuNFXZ85GBnf+1CKuOd98ct/A==
+X-Google-Smtp-Source: ABdhPJzypVCEjWeYdeWGllov1AsB7BD9SYlONC7Lg5sTzPKknX6lsHwfE5yOvbucTxzf86+gPV6+uQ==
+X-Received: by 2002:a05:6808:1999:b0:2d9:f6ef:f875 with SMTP id bj25-20020a056808199900b002d9f6eff875mr6855311oib.6.1648251268752;
+        Fri, 25 Mar 2022 16:34:28 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05687036c700b000da4bcdae42sm3138649oak.13.2022.03.25.16.34.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Mar 2022 16:34:28 -0700 (PDT)
+Subject: Re: kselftest: net: tls: hangs
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, Netdev <netdev@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <CA+G9fYsntwPrwk39VfsAjRwoSNnb3nX8kCEUa=Gxit7_pfD6bg@mail.gmail.com>
+ <8c81e8ad-6741-b5ed-cf0a-5a302d51d40a@linuxfoundation.org>
+ <20220325161203.7000698c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <08c5c6f3-e340-eaee-b725-9ec1a4988b84@linuxfoundation.org>
+Date:   Fri, 25 Mar 2022 17:34:27 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220325161203.7000698c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are negative tests, testing TLS code rejects certain
-operations. They won't pass without TLS enabled, pure TCP
-accepts those operations.
+On 3/25/22 5:12 PM, Jakub Kicinski wrote:
+> On Fri, 25 Mar 2022 16:13:33 -0600 Shuah Khan wrote:
+>>> # #  RUN           tls.13_sm4_gcm.splice_cmsg_to_pipe ...
+>>> # # tls.c:688:splice_cmsg_to_pipe:Expected splice(self->cfd, NULL,
+>>> p[1], NULL, send_len, 0) (10) == -1 (-1)
+>>> # # tls.c:689:splice_cmsg_to_pipe:Expected errno (2) == EINVAL (22)
+>>> # # splice_cmsg_to_pipe: Test terminated by timeout
+>>> # #          FAIL  tls.13_sm4_gcm.splice_cmsg_to_pipe
+>>> # not ok 217 tls.13_sm4_gcm.splice_cmsg_to_pipe
+>>> # #  RUN           tls.13_sm4_gcm.splice_dec_cmsg_to_pipe ...
+>>> # # tls.c:708:splice_dec_cmsg_to_pipe:Expected recv(self->cfd, buf,
+>>> send_len, 0) (10) == -1 (-1)
+>>> # # tls.c:709:splice_dec_cmsg_to_pipe:Expected errno (2) == EIO (5)
+>>> [  661.901558] kworker/dying (49) used greatest stack depth: 10576 bytes left
+>>
+>> This seems to be the problem perhaps.
+>>
+>> Jakub, any thoughts. The last change to tls.c was a while back.
+> 
+> Yes, sorry, kicked off a build and got distracted.
+> 
+> I can repro the failures, TLS=n in the config I must have not tested
+> that in the new cases.
+> 
+> But I can't repro the hung, and we have a timer at the hardness level
+> IIUC so IDK how this could "hang"?
+> 
+> Naresh, is there any stack trace in the logs? Can you repro on Linus's
+> tree?
+> 
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Fixes: d87d67fd61ef ("selftests: tls: test splicing cmsgs")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- tools/testing/selftests/net/tls.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+I couldn't reproduce this either - I have TLS=m
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index 6e468e0f42f7..5d70b04c482c 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -683,6 +683,9 @@ TEST_F(tls, splice_cmsg_to_pipe)
- 	char buf[10];
- 	int p[2];
- 
-+	if (self->notls)
-+		SKIP(return, "no TLS support");
-+
- 	ASSERT_GE(pipe(p), 0);
- 	EXPECT_EQ(tls_send_cmsg(self->fd, 100, test_str, send_len, 0), 10);
- 	EXPECT_EQ(splice(self->cfd, NULL, p[1], NULL, send_len, 0), -1);
-@@ -703,6 +706,9 @@ TEST_F(tls, splice_dec_cmsg_to_pipe)
- 	char buf[10];
- 	int p[2];
- 
-+	if (self->notls)
-+		SKIP(return, "no TLS support");
-+
- 	ASSERT_GE(pipe(p), 0);
- 	EXPECT_EQ(tls_send_cmsg(self->fd, 100, test_str, send_len, 0), 10);
- 	EXPECT_EQ(recv(self->cfd, buf, send_len, 0), -1);
--- 
-2.34.1
-
+thanks,
+-- Shuah
