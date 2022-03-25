@@ -2,71 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A65AD4E7C16
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 549404E7D8D
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229505AbiCYTZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 15:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56938 "EHLO
+        id S231292AbiCYTn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 15:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiCYTZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:25:56 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012071D3069;
-        Fri, 25 Mar 2022 11:57:45 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id d134so4759423ybc.13;
-        Fri, 25 Mar 2022 11:57:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pMUdB3zlB3HAdVOnuQq2xqrqNwClgzIqakPQ1O+ryLU=;
-        b=opPwPmQ9CLhSVpFfpRo/PnBU7bPVVHAPFJ1+x8z+qQd0hmCRkVKbvsaSiLtGvH7hri
-         KWFRk2+QKbwa5BOQlXx+GWWjBEs1LVcfK5smQaCJNcIGlwdaJYAJbEQc4O8YDF2FK8dp
-         FkmMTQxcnTuAXTULYRJT9c4v5g6IwTAoAsUpRgZCPr0gevfsCeeumVtaYvdcvYILjzc9
-         ndggUmwBaFt70j4xy/UwL3Q+87A2iGWXSQYBhYfxxDuiIjjQNmcOWvR5iMOEM5RiIttx
-         62+yd1ghBGIlWjr2ABqMozfiBbKKF4+Ro7YbzVDTcuC3Ty9FOj7vlzjp+BxfckRZTD+3
-         m7rA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pMUdB3zlB3HAdVOnuQq2xqrqNwClgzIqakPQ1O+ryLU=;
-        b=VsA1ytTjw03d8z+WiVrjboVkBunHQ9QhSQp8Zvxfjjfg60llg1Ftfy9XDO8X631M15
-         u7Dpvtzu/bybMv5NybIldkdSnqtedH59xaHWiQr+p2WGnFSEGrQMYBNCpHIIU9B1gT7B
-         4bA6VmP2hdIi+ulwABf0p0ek6q+ZvrR4Ur7JG9Ro5sG6c4JA7DecPJUnalKW3+iiiCGn
-         UNoTtZrAgGPu6tLIG1pvkf6UrDEuCa2vaw/g/AArfd+w4F9M7fx1TPctmv9HUE1aFpPH
-         Zu3BtWo+oMqqmFAYf71bMX1jG/5LvyNswT2xAH+nUszTZQKuDjb1Azg97b858tlxn1AV
-         gj6g==
-X-Gm-Message-State: AOAM533DvDixNK+cVIXEXOD8C5lTKDiU2ienZyGJJsH5+TjFf4q7gWxa
-        FqQKwtfd7WBUw/aLt4Fvw+kBHN1r3fchW7f69KIs/RMV
-X-Google-Smtp-Source: ABdhPJz9mZFBCIieZ8fOD5eJ9gyxfBvi/T2xMJdphBpSLz3OJ7s5HzF8ZMV1+EakSTtbiCrhnz4gCLq2e2SfDREHghk=
-X-Received: by 2002:a05:6902:1009:b0:634:674f:ef16 with SMTP id
- w9-20020a056902100900b00634674fef16mr12320198ybt.459.1648234215466; Fri, 25
- Mar 2022 11:50:15 -0700 (PDT)
+        with ESMTP id S232225AbiCYTnc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:43:32 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06B34160FDF;
+        Fri, 25 Mar 2022 12:14:27 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A898413D5;
+        Fri, 25 Mar 2022 12:14:26 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1A5C93F73D;
+        Fri, 25 Mar 2022 12:14:23 -0700 (PDT)
+Message-ID: <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
+Date:   Fri, 25 Mar 2022 19:14:20 +0000
 MIME-Version: 1.0
-References: <20220325033028.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
-In-Reply-To: <20220325033028.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Fri, 25 Mar 2022 11:50:04 -0700
-Message-ID: <CABBYNZKF1Ye6D130XgaFmqN6JAssf78-FaQh_AEkwigy8qaVjw@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
-To:     Ying Hsu <yinghsu@chromium.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        Joseph Hwang <josephsih@chromium.org>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Content-Language: en-GB
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Maxime Bizon <mbizon@freebox.fr>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de>
+ <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+ <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+ <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,94 +69,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ying,
+On 2022-03-25 18:30, Linus Torvalds wrote:
+> On Fri, Mar 25, 2022 at 3:25 AM Maxime Bizon <mbizon@freebox.fr> wrote:
+>>
+>> In the non-cache-coherent scenario, and assuming dma_map() did an
+>> initial cache invalidation, you can write this:
+> 
+> .. but the problem is that the dma mapping code is supposed to just
+> work, and the driver isn't supposed to know or care whether dma is
+> coherent or not, or using bounce buffers or not.
+> 
+> And currently it doesn't work.
+> 
+> Because what that ath9k driver does is "natural", but it's wrong for
+> the bounce buffer case.
+> 
+> And I think the problem is squarely on the dma-mapping side for two reasons:
+> 
+>   (a) this used to work, now it doesn't, and it's unclear how many
+> other drivers are affected
+> 
+>   (b) the dma-mapping naming and calling conventions are horrible and
+> actively misleading
+> 
+> That (a) is a big deal. The reason the ath9k issue was found quickly
+> is very likely *NOT* because ath9k is the only thing affected. No,
+> it's because ath9k is relatively common.
+> 
+> Just grep for dma_sync_single_for_device() and ask yourself: how many
+> of those other drivers have you ever even HEARD of, much less be able
+> to test?
+> 
+> And that's just one "dma_sync" function. Admittedly it's likely one of
+> the more common ones, but still..
+> 
+> Now, (b) is why I think driver nufgt get this so wrong - or, in this
+> case, possibly the dma-mapping code itself.
+> 
+> The naming - and even the documentation(!!!) - implies that what ath9k
+> does IS THE RIGHT THING TO DO.
+> 
+> The documentation clearly states:
+> 
+>    "Before giving the memory to the device, dma_sync_single_for_device() needs
+>     to be called, and before reading memory written by the device,
+>     dma_sync_single_for_cpu(), just like for streaming DMA mappings that are
+>     reused"
 
-On Thu, Mar 24, 2022 at 8:31 PM Ying Hsu <yinghsu@chromium.org> wrote:
->
-> Connecting the same socket twice consecutively in sco_sock_connect()
-> could lead to a race condition where two sco_conn objects are created
-> but only one is associated with the socket. If the socket is closed
-> before the SCO connection is established, the timer associated with the
-> dangling sco_conn object won't be canceled. As the sock object is being
-> freed, the use-after-free problem happens when the timer callback
-> function sco_sock_timeout() accesses the socket. Here's the call trace:
->
-> dump_stack+0x107/0x163
-> ? refcount_inc+0x1c/
-> print_address_description.constprop.0+0x1c/0x47e
-> ? refcount_inc+0x1c/0x7b
-> kasan_report+0x13a/0x173
-> ? refcount_inc+0x1c/0x7b
-> check_memory_region+0x132/0x139
-> refcount_inc+0x1c/0x7b
-> sco_sock_timeout+0xb2/0x1ba
-> process_one_work+0x739/0xbd1
-> ? cancel_delayed_work+0x13f/0x13f
-> ? __raw_spin_lock_init+0xf0/0xf0
-> ? to_kthread+0x59/0x85
-> worker_thread+0x593/0x70e
-> kthread+0x346/0x35a
-> ? drain_workqueue+0x31a/0x31a
-> ? kthread_bind+0x4b/0x4b
-> ret_from_fork+0x1f/0x30
->
-> Signed-off-by: Ying Hsu <yinghsu@chromium.org>
-> Reviewed-by: Joseph Hwang <josephsih@chromium.org>
-> ---
-> Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
-
-We should probably add a link or something to the reproducer then, was
-it syzbot? It does have some instructions on how to link its issues.
-
->  net/bluetooth/sco.c | 21 +++++++++++++--------
->  1 file changed, 13 insertions(+), 8 deletions(-)
->
-> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-> index 8eabf41b2993..380c63194736 100644
-> --- a/net/bluetooth/sco.c
-> +++ b/net/bluetooth/sco.c
-> @@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
->             addr->sa_family != AF_BLUETOOTH)
->                 return -EINVAL;
->
-> -       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
-> -               return -EBADFD;
-> +       lock_sock(sk);
-> +       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
-> +               err = -EBADFD;
-> +               goto done;
-> +       }
->
-> -       if (sk->sk_type != SOCK_SEQPACKET)
-> -               return -EINVAL;
-> +       if (sk->sk_type != SOCK_SEQPACKET) {
-> +               err = -EINVAL;
-> +               goto done;
-> +       }
->
->         hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
-> -       if (!hdev)
-> -               return -EHOSTUNREACH;
-> +       if (!hdev) {
-> +               err = -EHOSTUNREACH;
-> +               goto done;
-> +       }
->         hci_dev_lock(hdev);
->
-> -       lock_sock(sk);
-> -
-
-Also are we sure we are not introducing a locking hierarchy problem
-here? Previously we had hci_dev_lock then sock_lock now it is the
-opposite, or perhaps we never want to have them at the same time?
-
->         /* Set destination address and psm */
->         bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
->
-> --
-> 2.35.1.1021.g381101b075-goog
->
+Except that's documentation for the non-coherent allocation API, rather 
+than the streaming API in question here. I'll refrain from commenting on 
+having at least 3 DMA APIs, with the same set of sync functions serving 
+two of them, and just stand back a safe distance...
 
 
--- 
-Luiz Augusto von Dentz
+
+
+Anyway, the appropriate part of that document is probably:
+
+   "You must do this:
+
+    - Before reading values that have been written by DMA from the device
+      (use the DMA_FROM_DEVICE direction)"
+
+I'm not saying it constitutes *good* documentation, but I would note how 
+it says "have been written", and not "are currently being written". 
+Similarly from the HOWTO:
+
+    "If you need to use the same streaming DMA region multiple times and
+     touch the data in between the DMA transfers, the buffer needs to be
+     synced properly..."
+
+Note "between the DMA transfers", and not "during the DMA transfers". 
+The fundamental assumption of the streaming API is that only one thing 
+is ever accessing the mapping at any given time, which is what the whole 
+notion of ownership is about.
+
+Thanks,
+Robin.
