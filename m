@@ -2,76 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 921F34E7C59
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5C2F4E7BF8
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbiCYTnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 15:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42512 "EHLO
+        id S229614AbiCYT1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 15:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231640AbiCYTnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:43:11 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508F2204AB6;
-        Fri, 25 Mar 2022 12:17:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=6slMIQlhEqm87aKxVQg6SnauUicp81NuO6xcMEdN73M=; b=BP
-        SO9Ml0OnSkpW7WifUh6kWImgj8T0kfL25nez69TyGP1u6AZ+EAy6L9s0T3rV+1/8WTNkvKECPLwKk
-        IK4c6S6fuKHNY1mGqxZH+GTViqoEKp98xLkHZauahf6tvvKvNL2Yb6K75ZrvMZWXtsfNs8WzfBjsS
-        GdpZlNEQCGuAJ9c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nXopM-00Cg15-MW; Fri, 25 Mar 2022 19:38:24 +0100
-Date:   Fri, 25 Mar 2022 19:38:24 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S229670AbiCYT0z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:26:55 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEC171E5222;
+        Fri, 25 Mar 2022 12:00:11 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1AF313D5;
+        Fri, 25 Mar 2022 11:42:25 -0700 (PDT)
+Received: from [10.57.41.19] (unknown [10.57.41.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F0FCD3F73D;
+        Fri, 25 Mar 2022 11:42:22 -0700 (PDT)
+Message-ID: <e077b229-c92b-c9a6-3581-61329c4b4a4b@arm.com>
+Date:   Fri, 25 Mar 2022 18:42:19 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Content-Language: en-GB
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Christoph Hellwig <hch@lst.de>,
+        Halil Pasic <pasic@linux.ibm.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [net-next 1/5] net: mdio: fwnode: add fwnode_mdiobus_register()
-Message-ID: <Yj4MIIu7Qtvv25Fs@lunn.ch>
-References: <20220325172234.1259667-1-clement.leger@bootlin.com>
- <20220325172234.1259667-2-clement.leger@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+ <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
+ <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324190216.0efa067f.pasic@linux.ibm.com> <20220325163204.GB16426@lst.de>
+ <87y20x7vaz.fsf@toke.dk>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <87y20x7vaz.fsf@toke.dk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220325172234.1259667-2-clement.leger@bootlin.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 06:22:30PM +0100, Clément Léger wrote:
-> In order to support software node description transparently, add fwnode
-> support with fwnode_mdiobus_register(). This function behaves exactly
-> like of_mdiobus_register() function but using the fwnode node agnostic
-> API. This support might also be used to merge ACPI mdiobus support
-> which is quite similar to the fwnode one.
+On 2022-03-25 18:15, Toke HÃ¸iland-JÃ¸rgensen wrote:
+> Christoph Hellwig <hch@lst.de> writes:
 > 
-> Some part such as the whitelist matching are kept exclusively for OF
-> nodes since it uses an of_device_id struct and seems tightly coupled
-> with OF. Other parts are generic and will allow to move the existing
-> OF support on top of this fwnode version.
+>> On Thu, Mar 24, 2022 at 07:02:16PM +0100, Halil Pasic wrote:
+>>>> If
+>>>> ddbd89deb7d3 alone turns out to work OK then I'd be inclined to try a
+>>>> partial revert of just that one hunk.
+>>>>
+>>>
+>>> I'm not against being pragmatic and doing the partial revert. But as
+>>> explained above, I do believe for correctness of swiotlb we ultimately
+>>> do need that change. So if the revert is the short term solution,
+>>> what should be our mid-term road-map?
+>>
+>> Unless I'm misunderstanding this thread we found the bug in ath9k
+>> and have a fix for that now?
+> 
+> According to Maxim's comment on the other subthread, that ath9k patch
+> wouldn't work on all platforms (and constitutes a bit of a violation of
+> the DMA API ownership abstraction). So not quite, I think?
 
-Does fwnode have any documentation? How does a developer know what
-properties can be passed? Should you be adding a
+Indeed, it would potentially stand to pose the same problem as the 
+SWIOTLB change, but on the scale of individual cache lines touched by 
+ath9k_hw_process_rxdesc_edma() rather than the whole buffer. However, 
+that might represent a less severe impact on a smaller number of users 
+(maybe the MIPS systems? I'm not sure...) so perhaps it's an acceptable 
+tourniquet? Note that the current code is already a violation of the DMA 
+API (because the device keeps writing even when it doesn't have 
+ownership), so there's not a very strong argument in that regard.
 
-Documentation/fwnode/bindings/net/mdio.yaml ?
-
-	Andrew
+Thanks,
+Robin.
