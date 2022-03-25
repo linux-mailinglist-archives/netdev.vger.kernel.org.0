@@ -2,142 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EEB64E7CBF
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72C404E7D4D
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232234AbiCYUck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 16:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50738 "EHLO
+        id S232265AbiCYUhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 16:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232209AbiCYUcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:32:39 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC902ADD;
-        Fri, 25 Mar 2022 13:31:01 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id c62so10478441edf.5;
-        Fri, 25 Mar 2022 13:31:01 -0700 (PDT)
+        with ESMTP id S232273AbiCYUhq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 16:37:46 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8634710780D
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:36:10 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id c23so9404569plo.0
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 13:36:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=688sj//6ZYYmXeEOBA9mO+3iA2HUWbMyva2TmireD9U=;
-        b=kB/tVx6DI6Rgd6ixZLqpV4Fomxj2NvOTH7zcKgx4vW3AyK/a5uKj7pBDt7VIJSZcTt
-         yFyfwpI8ZA6TINWZ0ypY4Ul0qmcqdEQLmSIj9sb+p4d1/6p4jbwjtKAtUZxsGLgIXIkH
-         rWTswGSYlZlr797QZICFUjlmaasJ+TmHSOuLwE4eGz0j4u2p1Wl/rwjvZsstXDmRvVGr
-         CbuUEfYoqB4dvOnE8+fYS0vSqQEAx2JTeq0d9BPFkWls0GQWb8CuRsVXeSsh62ETyp3n
-         s1EF9/9+bQE0FCDMT4PcH23ASib0CKeaE8GEehwEn9WLltLeQzexfYF+yWEmoUkADJiD
-         CgNg==
+        bh=Emd/HGQ57f4JkVHbOiHNLwTEo/Oa19/GIbShZ2V2bh0=;
+        b=BuCEUFhJva4yY81htIZCMYRvqXI9JtWl9NdLs2sLWYPFPidbkS9w5HDQYK0kNcP4x1
+         SMhqVkVR0V/gwgk3U+11qK+t9DGUo/6q+oCO0SVcds1wDEjSOMmr7CGuMhRgSM6z8vSL
+         gS7doJa5BwgulcMwbXgB8sK1kk3aeYhtIzILjEyibZIwV65ZMC3yM/t2q/h1AQfKp1NT
+         qMcrtmA5zhbOFf5/AyBZtaBLlp92WAtckDQZmKb50xCCTq0zdWEsklmMoFL0Egt0bciN
+         G+jgBjV+3du53eAUqpxmKvPQYqFASOniDqwHgHgiX9xtZ9rUtt3DlVO7G/QAT4K8MfLZ
+         049w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=688sj//6ZYYmXeEOBA9mO+3iA2HUWbMyva2TmireD9U=;
-        b=rtp/44m11S7TctEv6tmUkq72BKtatCmA28vsOxrMMgOFpuuCGcB1lfgjVQNbnG+OiM
-         NHgAyzJnRa6nbfna83QwKVIaGkO/XwY6zNz50uyxojyfIAx52dCyDWBJKijPB1HpzEA/
-         z1jy/XvE8gmuivmVeHyLMN6nZZqLZE9kNPVoqgWBQVhz7z1akfmumXoDSvju10P1yWKc
-         IRVTabop3rjlXgK36IcKcfj3GoJSRDvC7FV72I1DM5OZpzkkVoX1fKAhgPpltMfGlEOV
-         yXSS+0sJUF9ANilZimXaYO9vfSO52UP3HEdkhw9i5R/ovLSkSDvQjVA+khbq6UJ49MUR
-         eZfg==
-X-Gm-Message-State: AOAM532yZvVaYmSdUojvbKwHWMNzQG99D6Lvk8SZdOr8Uniech7C/XU5
-        XHh8SixqkZnMr3kvDf6b8In5Je5yR64=
-X-Google-Smtp-Source: ABdhPJyyV0hsBOrPNn7eKSgqfeP2ZMo+aiWYXa5UNMoWgR3oUZZRiCP+f6kWAjWOPtrDOU7PIpGRCQ==
-X-Received: by 2002:a05:6402:40d5:b0:419:496b:5ab0 with SMTP id z21-20020a05640240d500b00419496b5ab0mr578673edb.284.1648240259548;
-        Fri, 25 Mar 2022 13:30:59 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id b19-20020aa7dc13000000b00418eef0a019sm3237740edu.34.2022.03.25.13.30.58
+        bh=Emd/HGQ57f4JkVHbOiHNLwTEo/Oa19/GIbShZ2V2bh0=;
+        b=HbFmIdIWWSafrBz5+zTP4Kd2zyxXBQecuAk33FD+hxkEBynvlWa/ZVBcJDtn+lU+jz
+         5OcpwDLkN87+WD/JtLRyoqmzOtRnlch2K1OQKISUp0pj4ARxMgIXPQClJ7cWT6xM96ie
+         7NbE5quKVBr5XJVt4vp9EwGydT1YSCHQ77atG01Bd7YV/L8t1KPqyK6qFZt9CcUpsbvi
+         JeFB7nr40AZqwGL54VfHtmcwKw99mAGmD7ZbefimvG5Elp8UAP/Su/6rBEkWKtFqMwzw
+         z1xtS5x7TonBxYzoBZ6dBGpVJTd+vTq2wB0kUlIn+53byp2pekZzmBRPHC2rNhL/5QN1
+         OehQ==
+X-Gm-Message-State: AOAM530Wx4JTY3B21/o6JrPFR38gROS5V9SxFILgGxnTHrkuiiL5Itrn
+        a2huGPrLKl8QI/qmWULAfhCpYg==
+X-Google-Smtp-Source: ABdhPJxU8odwDhvBAksm4qaqwuo0z345MIT9U1J6wUZryuylxyyr76kghZAParNG259ykhVgZU7uFw==
+X-Received: by 2002:a17:902:a581:b0:154:8c7d:736a with SMTP id az1-20020a170902a58100b001548c7d736amr13687879plb.74.1648240569769;
+        Fri, 25 Mar 2022 13:36:09 -0700 (PDT)
+Received: from google.com (249.189.233.35.bc.googleusercontent.com. [35.233.189.249])
+        by smtp.gmail.com with ESMTPSA id t2-20020a056a0021c200b004faa4646fc1sm7770294pfj.36.2022.03.25.13.36.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 13:30:59 -0700 (PDT)
-Date:   Fri, 25 Mar 2022 22:30:57 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
- offloading of fdb locked flag
-Message-ID: <20220325203057.vrw5nbwqctluc6u3@skbuf>
-References: <20220323144304.4uqst3hapvzg3ej6@skbuf>
- <86lewzej4n.fsf@gmail.com>
- <20220324110959.t4hqale35qbrakdu@skbuf>
- <86v8w3vbk4.fsf@gmail.com>
- <20220324142749.la5til4ys6zva4uf@skbuf>
- <86czia1ned.fsf@gmail.com>
- <20220325132102.bss26plrk4sifby2@skbuf>
- <86fsn6uoqz.fsf@gmail.com>
- <20220325140003.a4w4hysqbzmrcxbq@skbuf>
- <86tubmt408.fsf@gmail.com>
+        Fri, 25 Mar 2022 13:36:09 -0700 (PDT)
+Date:   Fri, 25 Mar 2022 20:36:05 +0000
+From:   William McVicker <willmcvicker@google.com>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-wireless@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>, kernel-team@android.com,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [BUG] deadlock in nl80211_vendor_cmd
+Message-ID: <Yj4ntUejxaPhrM5b@google.com>
+References: <0000000000009e9b7105da6d1779@google.com>
+ <99eda6d1dad3ff49435b74e539488091642b10a8.camel@sipsolutions.net>
+ <5d5cf050-7de0-7bad-2407-276970222635@quicinc.com>
+ <YjpGlRvcg72zNo8s@google.com>
+ <dc556455-51a2-06e8-8ec5-b807c2901b7e@quicinc.com>
+ <Yjzpo3TfZxtKPMAG@google.com>
+ <19e12e6b5f04ba9e5b192001fbe31a3fc47d380a.camel@sipsolutions.net>
+ <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
+ <Yj4FFIXi//ivQC3X@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <86tubmt408.fsf@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <Yj4FFIXi//ivQC3X@google.com>
+X-Spam-Status: No, score=-15.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,HK_RANDOM_ENVFROM,HK_RANDOM_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 05:01:59PM +0100, Hans Schultz wrote:
-> > An attacker sweeping through the 2^47 source MAC address range is a
-> > problem regardless of the implementations proposed so far, no?
+On 03/25/2022, William McVicker wrote:
+> On 03/25/2022, Johannes Berg wrote:
+> > On Fri, 2022-03-25 at 09:49 -0700, Jakub Kicinski wrote:
+> > > On Fri, 25 Mar 2022 13:04:23 +0100 Johannes Berg wrote:
+> > > > So we can avoid the potential deadlock in cfg80211 in a few ways:
+> > > > 
+> > > >  1) export rtnl_lock_unregistering_all() or maybe a variant after
+> > > >     refactoring the two versions, to allow cfg80211 to use it, that way
+> > > >     netdev_run_todo() can never have a non-empty todo list
+> > > > 
+> > > >  2) export __rtnl_unlock() so cfg80211 can avoid running
+> > > >     netdev_run_todo() in the unlock, personally I like this less because
+> > > >     it might encourage random drivers to use it
+> > > > 
+> > > >  3) completely rework cfg80211's locking, adding a separate mutex for
+> > > >     the wiphy list so we don't need to acquire the RTNL at all here
+> > > >     (unless the ops need it, but there's no issue if we don't drop it),
+> > > >     something like https://p.sipsolutions.net/27d08e1f5881a793.txt
+> > > > 
+> > > > 
+> > > > I think I'm happy with 3) now (even if it took a couple of hours), so I
+> > > > think we can go with it, just need to go through all the possibilities.
+> > > 
+> > > I like 3) as well. FWIW a few places (e.g. mlx5, devlink, I think I've
+> > > seen more) had been converting to xarray for managing the "registered"
+> > > objects. It may be worth looking into if you're re-doing things, anyway.
+> > > 
+> > 
+> > That's not a bad idea, but I think I wouldn't want to backport that, so
+> > separately :) I don't think that fundamentally changes the locking
+> > properties though.
+> > 
+> > 
+> > Couple of more questions I guess: First, are we assuming that the
+> > cfg80211 code *is* actually broken, even if it looks like nothing can
+> > cause the situation, due to the empty todo list?
 > 
-> The idea is to have a count on the number of locked entries in both the
-> ATU and the FDB, so that a limit on entries can be enforced.
-
-I can agree with that.
-
-Note that as far as I understand regular 802.1X, these locked FDB
-entries are just bloatware if you don't need MAC authentication bypass,
-because the source port is already locked, so it drops all traffic from
-an unknown MAC SA except for the link-local packets necessary to run
-EAPOL, which are trapped to the CPU.
-
-So maybe user space should opt into the MAC authentication bypass
-process, really, since that requires secure CPU-assisted learning, and
-regular 802.1X doesn't. It's a real additional burden that shouldn't be
-ignored or enabled by default.
-
-> > If unlimited growth of the mv88e6xxx locked ATU entry cache is a
-> > concern (which it is), we could limit its size, and when we purge a
-> > cached entry in software is also when we could emit a
-> > SWITCHDEV_FDB_DEL_TO_BRIDGE for it, right?
+> I'm able to reproduce this issue pretty easily with a Pixel 6 when I add
+> support to allow vendor commands to request for the RTNL. For this case, I just
+> delay unlocking the RTNL until nl80211_vendor_cmds() at which point I check the
+> flags to see if I should unlock before calling doit(). That allows me to run my
+> tests again and hit this issue. I imagine that I could hit this issue without
+> any changes if I re-work my vendor ops to not need the RTNL.
 > 
-> I think the best would be dynamic entries in both the ATU and the FDB
-> for locked entries.
+> > 
+> > Given that we have rtnl_lock_unregistering() (and also
+> > rtnl_lock_unregistering_all()), it looks like we *do* in fact at least
+> > not want to make an assumption that no user of __rtnl_unlock() can have
+> > added a todo item.
+> > 
+> > I mean, there's technically yet *another* thing we could do - something
+> > like this:
+> > 
+> > [this doesn't compile, need to suitably make net_todo_list non-static]
+> > --- a/net/core/rtnetlink.c
+> > +++ b/net/core/rtnetlink.c
+> > @@ -95,6 +95,7 @@ void __rtnl_unlock(void)
+> >  
+> >         defer_kfree_skb_list = NULL;
+> >  
+> > +       WARN_ON(!list_empty(&net_todo_list));
+> >         mutex_unlock(&rtnl_mutex);
+> >  
+> >         while (head) {
+> > 
+> > and actually that would allow us to get rid of rtnl_lock_unregistering()
+> > and rtnl_lock_unregistering_all() simply because we'd actually guarantee
+> > the invariant that when the RTNL is freshly locked, the list is empty
+> > (by guaranteeing that it's always empty when it's unlocked, since it can
+> > only be added to under RTNL).
+> > 
+> > With some suitable commentary, that might also be a reasonable thing?
+> > __rtnl_unlock() is actually rather pretty rare, and not exported.
+> > 
+> > 
+> > However, if you don't like that ...
+> > 
+> > I've been testing with this patch, to make lockdep complain:
+> > 
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -9933,6 +9933,11 @@ void netdev_run_todo(void)
+> >         if (!list_empty(&list))
+> >                 rcu_barrier();
+> >  
+> > +#ifdef CONFIG_LOCKDEP
+> > +       rtnl_lock();
+> > +       __rtnl_unlock();
+> > +#endif
+> > +
+> >         while (!list_empty(&list)) {
+> >                 struct net_device *dev
+> >                         = list_first_entry(&list, struct net_device, todo_list);
+> > 
+> > 
+> > That causes lockdep to complain for cfg80211 even if the list *is* in
+> > fact empty.
+> > 
+> > Would you be open to adding something like that? Perhaps if I don't just
+> > do the easy rtnl_lock/unlock, but try to find the corresponding lockdep-
+> > only things to do there, to cause lockdep to do things without really
+> > locking? OTOH, the locking overhead of the RTNL we just unlocked is
+> > probably minimal, vs. the actual work *lockdep* is doing to track all
+> > this ...
+> > 
+> > Thanks,
+> > johannes
+> 
+> Let me know if you'd like me to test any patches out.
+> 
+> Thanks,
+> Will
 
-Making locked (DPV=0) ATU entries be dynamic (age out) makes sense.
-Since you set the IgnoreWrongData for source ports, you suppress ATU
-interrupts for this MAC SA, which in turn means that a station which is
-unauthorized on port A can never redeem itself when it migrates to port B,
-for which it does have an authorization, since software never receives
-any notice that it has moved to a new port.
+Hi Johannes,
 
-But making the locked bridge FDB entry be dynamic, why does it matter?
-I'm not seeing this through. To denote that it can migrate, or to denote
-that it can age out? These locked FDB entries are 'extern_learn', so
-they aren't aged out by the bridge anyway, they are aged out by whomever
-added them => in our case the SWITCHDEV_FDB_DEL_TO_BRIDGE that I mentioned.
+I found that my wlan driver is using the vendor commands to create/delete NAN
+interfaces for this Android feature called Wi-Fi aware [1]. Basically, this
+features allows users to discover other nearby devices and allows them to
+connect directly with one another over a local network. To get my driver
+working again, I first had to allow the kernel to let my driver request for the
+RTNL lock for these NAN create/delete interface vendor commands. With that
+I got the following code path:
 
-> How the two are kept in sync is another question, but if there is a
-> switchcore, it will be the 'master', so I don't think the bridge
-> module will need to tell the switchcore to remove entries in that
-> case. Or?
 
-The bridge will certainly not *need* to tell the switch to delete a
-locked FDB entry, but it certainly *can* (and this is in fact part of
-the authorization process, replace an ATU entry with DPV=0 with an ATU
-entry with DPV=BIT(port)).
+Thread 1                         Thread 2
+ nl80211_pre_doit():
+   rtnl_lock()
+   wiphy_lock()                   nl80211_pre_doit():
+                                    rtnl_lock() // blocked by Thread 1
+ nl80211_vendor_cmd():
+   doit()
+     cfg80211_unregister_netdevice()
+   rtnl_unlock():
+     netdev_run_todo():
+       __rtnl_unlock()
+                                    <got RTNL lock>
+                                    wiphy_lock() // blocked by Thread 1
+       rtnl_lock(); // DEADLOCK
+ nl80211_post_doit():
+   wiphy_unlock();
 
-I feel as if I'm missing the essence of your reply.
+
+Since I'm unlocking the RTNL inside nl80211_vendor_cmd() after calling doit()
+instead of waiting till post_doit(), I get into the situation you mentioned
+where the net_todo_list is not empty when calling rtnl_unlock. So I decided to
+drop the rtnl_unlock() in nl80211_vendor_cmd() and defer that until
+nl80211_post_doit() after calling wiphy_unlock(). With this change, I haven't
+been able to reproduce the deadlock. So it's possible that we aren't actually
+able to hit this deadlock in nl80211_pre_doit() with the existing code since,
+as you mentioned, one wouldn't be able to call unregister_netdevice() without
+having the RTNL lock.
+
+Sorry if I sent you down a rabbit hole with the first code path scenario.
+
+Thanks,
+Will
+
+[1] https://developer.android.com/guide/topics/connectivity/wifi-aware
