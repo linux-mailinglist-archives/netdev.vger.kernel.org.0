@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 797E34E7CA3
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B67AD4E7B4B
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:20:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233575AbiCYVwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 17:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        id S233576AbiCYVwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 17:52:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233563AbiCYVwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 17:52:14 -0400
+        with ESMTP id S233526AbiCYVwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 17:52:42 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC1F641D
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 14:50:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F7B3B54C
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 14:51:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
         Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
         Resent-Message-ID:In-Reply-To:References;
-        bh=AmgDzcqO0uIzaQ0++POPJ1R2r+BTGhJcDvpNHeafAlE=; t=1648245039; x=1649454639; 
-        b=GSdSvJQWLuNxMkTMtxLecq5OXnx7j772pTtGO01jcIgc5uAXddQWk6G22N402MRjUR6pQIpchFa
-        17fYek8YirsErEjxPjjWUpvQwoD/TD3MhPFoCoc8FqjLycW6ZVkfSTZCKbbo9FTgRSCLe1un501du
-        5vKldDaAFWs1g+SY2+XuQLOmlEibnVOF4ia/WKLJL8iYNnNBcH4ZA/bP9olr85YjqNn3f9iMrpqU1
-        +aiGYR9kFQh0WAJHLNXfzfTXwBnaygeVoFNq9/PtIsH2ynYeuT6QgFxKlREXBOiiXqO0r86xbIw/d
-        VCN1qW8x/e8dRdscucr6BukHtrMAaA2ti+2Q==;
+        bh=4x6NgibepUC0UFk60JpqHo0TJfizgSXLMHouyt4spKY=; t=1648245064; x=1649454664; 
+        b=qu5o8B21vUEFvwCNm4112SIrHc85dHPyrXxSSX0lnnnsA6gfthTRE0QUDEb8HKl9z5+g/PRt84Z
+        cKjeTmEhN4mv3NYv7DbFmdpbYUy6Y0LwcmPDihYnliH9m1GVRD2NRE3apbCWttmdf1wX010kdcxc1
+        YnHM8kyeA2o4Cr6x/tKXLz5la/amu00LtgrKR6xGZdC3X2/X8THU9zLqoYhg63AcS/WhooegS96H1
+        0f0X3ZC3LE2NEBpOL0I+2SyKPrUG4vqc0XxMUKu/t/bnJ5qPV0Q5zQisIUgM4Ec+LHx8eyKTveLMX
+        JUjkUjYm5GeSS3SwbUydwSIt/+V+yBpqDJXQ==;
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.95)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1nXrpK-000WZ7-5c;
-        Fri, 25 Mar 2022 22:50:34 +0100
+        id 1nXrpi-000WZV-W4;
+        Fri, 25 Mar 2022 22:50:59 +0100
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     netdev@vger.kernel.org
 Cc:     Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH] net: move net_unlink_todo() out of the header
-Date:   Fri, 25 Mar 2022 22:50:23 +0100
-Message-Id: <20220325225023.f49b9056fe1c.I6b901a2df00000837a9bd251a8dd259bd23f5ded@changeid>
+Subject: [PATCH] net: ensure net_todo_list is processed quickly
+Date:   Fri, 25 Mar 2022 22:50:55 +0100
+Message-Id: <20220325225055.37e89a72f814.Ic73d206e217db20fd22dcec14fe5442ca732804b@changeid>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -50,58 +50,114 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-There's no reason for this to be in netdevice.h, it's all
-just used in dev.c. Also make it no longer inline and let
-the compiler decide to do that by itself.
+In [1], Will raised a potential issue that the cfg80211 code,
+which does (from a locking perspective)
+
+  rtnl_lock()
+  wiphy_lock()
+  rtnl_unlock()
+
+might be suspectible to ABBA deadlocks, because rtnl_unlock()
+calls netdev_run_todo(), which might end up calling rtnl_lock()
+again, which could then deadlock (see the comment in the code
+added here for the scenario).
+
+Some back and forth and thinking ensued, but clearly this can't
+happen if the net_todo_list is empty at the rtnl_unlock() here.
+Clearly, the code here cannot actually put an entry on it, and
+all other users of rtnl_unlock() will empty it since that will
+always go through netdev_run_todo(), emptying the list.
+
+So the only other way to get there would be to add to the list
+and then unlock the RTNL without going through rtnl_unlock(),
+which is only possible through __rtnl_unlock(). However, this
+isn't exported and not used in many places, and none of them
+seem to be able to unregister before using it.
+
+Therefore, add a WARN_ON() in the code to ensure this invariant
+won't be broken, so that the cfg80211 (or any similar) code
+stays safe.
+
+[1] https://lore.kernel.org/r/Yjzpo3TfZxtKPMAG@google.com
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 ---
- include/linux/netdevice.h | 10 ----------
- net/core/dev.c            | 10 ++++++++++
- 2 files changed, 10 insertions(+), 10 deletions(-)
+ include/linux/netdevice.h |  3 ++-
+ net/core/dev.c            |  2 +-
+ net/core/rtnetlink.c      | 33 +++++++++++++++++++++++++++++++++
+ 3 files changed, 36 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index cd7a597c55b1..59e27a2b7bf0 100644
+index 59e27a2b7bf0..b6a1e7f643da 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -4601,16 +4601,6 @@ bool netdev_has_upper_dev(struct net_device *dev, struct net_device *upper_dev);
- struct net_device *netdev_upper_get_next_dev_rcu(struct net_device *dev,
- 						     struct list_head **iter);
+@@ -3894,7 +3894,8 @@ void dev_queue_xmit_nit(struct sk_buff *skb, struct net_device *dev);
+ extern int		netdev_budget;
+ extern unsigned int	netdev_budget_usecs;
  
--#ifdef CONFIG_LOCKDEP
--static LIST_HEAD(net_unlink_list);
--
--static inline void net_unlink_todo(struct net_device *dev)
--{
--	if (list_empty(&dev->unlink_list))
--		list_add_tail(&dev->unlink_list, &net_unlink_list);
--}
--#endif
--
- /* iterate through upper list, must be called under RCU read lock */
- #define netdev_for_each_upper_dev_rcu(dev, updev, iter) \
- 	for (iter = &(dev)->adj_list.upper, \
+-/* Called by rtnetlink.c:rtnl_unlock() */
++/* Used by rtnetlink.c:__rtnl_unlock()/rtnl_unlock() */
++extern struct list_head net_todo_list;
+ void netdev_run_todo(void);
+ 
+ static inline void __dev_put(struct net_device *dev)
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 8a5109479dbe..8c6c08446556 100644
+index 8c6c08446556..2ec17358d7b4 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -7193,6 +7193,16 @@ static int __netdev_update_upper_level(struct net_device *dev,
- 	return 0;
+@@ -9431,7 +9431,7 @@ static int dev_new_index(struct net *net)
  }
  
-+#ifdef CONFIG_LOCKDEP
-+static LIST_HEAD(net_unlink_list);
+ /* Delayed registration/unregisteration */
+-static LIST_HEAD(net_todo_list);
++LIST_HEAD(net_todo_list);
+ DECLARE_WAIT_QUEUE_HEAD(netdev_unregistering_wq);
+ 
+ static void net_set_todo(struct net_device *dev)
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 159c9c61e6af..0e4502d641eb 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -95,6 +95,39 @@ void __rtnl_unlock(void)
+ 
+ 	defer_kfree_skb_list = NULL;
+ 
++	/* Ensure that we didn't actually add any TODO item when __rtnl_unlock()
++	 * is used. In some places, e.g. in cfg80211, we have code that will do
++	 * something like
++	 *   rtnl_lock()
++	 *   wiphy_lock()
++	 *   ...
++	 *   rtnl_unlock()
++	 *
++	 * and because netdev_run_todo() acquires the RTNL for items on the list
++	 * we could cause a situation such as this:
++	 * Thread 1			Thread 2
++	 *				  rtnl_lock()
++	 *				  unregister_netdevice()
++	 *				  __rtnl_unlock()
++	 * rtnl_lock()
++	 * wiphy_lock()
++	 * rtnl_unlock()
++	 *   netdev_run_todo()
++	 *     __rtnl_unlock()
++	 *
++	 *     // list not empty now
++	 *     // because of thread 2
++	 *				  rtnl_lock()
++	 *     while (!list_empty(...))
++	 *       rtnl_lock()
++	 *				  wiphy_lock()
++	 * **** DEADLOCK ****
++	 *
++	 * However, usage of __rtnl_unlock() is rare, and so we can ensure that
++	 * it's not used in cases where something is added to do the list.
++	 */
++	WARN_ON(!list_empty(&net_todo_list));
 +
-+static void net_unlink_todo(struct net_device *dev)
-+{
-+	if (list_empty(&dev->unlink_list))
-+		list_add_tail(&dev->unlink_list, &net_unlink_list);
-+}
-+#endif
-+
- static int __netdev_update_lower_level(struct net_device *dev,
- 				       struct netdev_nested_priv *priv)
- {
+ 	mutex_unlock(&rtnl_mutex);
+ 
+ 	while (head) {
 -- 
 2.35.1
 
