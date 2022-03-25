@@ -2,54 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7FD24E6BF2
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 02:22:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CF0A4E6C0C
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 02:34:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357262AbiCYBYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 21:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41394 "EHLO
+        id S1357455AbiCYBgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 21:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353220AbiCYBYN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 21:24:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BB8BD8A5
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 18:22:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C5FDB8226E
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 01:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA4CC340F6;
-        Fri, 25 Mar 2022 01:22:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648171357;
-        bh=eZUZokOez3vbgzqaO/78P9nScmM6gFeYmbjZt29cEmQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fOr6B3FKP/QWSWhIP2mpVzRaGQqRyw7eYwUrriSmflPsG8V6uOQQeHx2y0QOz4a5U
-         Q+z2Q3fhzmeLQ2gSkEZs/BuElmDoDWXVNZo5EWPjOj8/OGYHzfs+HXarg6ZPsXxh6B
-         HvQ+af5/bEkVF/88B6K02NZ3NVJzZlriT9EVwD9Xc10rnqkvsD74BJ4pLHudhuZlly
-         WeQQkLOq4R+LWYAZqjhxyTTgvMsNxDO2q35OtiNo0pzyePGL+peZAUeH81Kt1K+lNI
-         4UhUMB3uPkiTzE2zKAW+JVBKk3TCblj2VkFws0uML6prY3ROGN8IP3Z2UWANXQZPJR
-         kG55VGYdyaByg==
-Date:   Thu, 24 Mar 2022 18:22:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jian Shen <shenjian15@huawei.com>
-Cc:     <davem@davemloft.net>, <andrew@lunn.ch>, <ecree.xilinx@gmail.com>,
-        <hkallweit1@gmail.com>, <alexandr.lobakin@intel.com>,
-        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>, <lipeng321@huawei.com>
-Subject: Re: [RFCv5 PATCH net-next 04/20] net: replace multiple feature bits
- with netdev features array
-Message-ID: <20220324182235.05dd0f53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220324154932.17557-5-shenjian15@huawei.com>
-References: <20220324154932.17557-1-shenjian15@huawei.com>
-        <20220324154932.17557-5-shenjian15@huawei.com>
+        with ESMTP id S1357426AbiCYBfR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 21:35:17 -0400
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38514C12FE;
+        Thu, 24 Mar 2022 18:33:00 -0700 (PDT)
+Received: by mail-oi1-f182.google.com with SMTP id 12so6724032oix.12;
+        Thu, 24 Mar 2022 18:33:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NoOzwpyI1Ds0dVyme/fVuHLFCjknM/Qs7UeN2WmSfX4=;
+        b=hCXYgVjWOU3sSk5uBiTISjANkwWhjea72HLTTLGxh91w0Z4Ga/MvsNw9SoDoHBP/S7
+         m5L8Gzz0DJs7Hw7HuOUZcflcrJNJ1HZwK2DTw3cvDca1sfLSxMgYDZeki2HFgJIWRfdZ
+         TynZw3EqdrBIpZwMAUul/q7SNC893fA2WSSKYNENBU1h8sIRx/DgUFkbc3KXMgAIh84q
+         S2Q/Fj1AYtJika2RLm8euLsO+CW1ECnSOpEX1A4ccFkeqdopfdH7VvmE9VJS1j3w8kEW
+         0XdfUxd5qWUll6NVFdL2H5jZOMpcuxFQuazD1jBlBM0WqCvGgR4NfNoLVJYBamshK1wL
+         EWBw==
+X-Gm-Message-State: AOAM530AfGgSLls5Ud/HKm0K/4/IFLLscD//W57uW2rErg0vaX888HDi
+        MSEFhE2LXU/r+4eSmoJDNw==
+X-Google-Smtp-Source: ABdhPJwE5Pa4e88ba6g42QV2RJNfidI9/etVdqKq0RQlgzPN/XyPBceq2bvtCosS4jT+Pyn5feZyMw==
+X-Received: by 2002:a05:6808:188a:b0:2da:5026:3663 with SMTP id bi10-20020a056808188a00b002da50263663mr4076928oib.79.1648171979571;
+        Thu, 24 Mar 2022 18:32:59 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id w8-20020aca3008000000b002ef7e3ad3b8sm2089430oiw.29.2022.03.24.18.32.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 18:32:58 -0700 (PDT)
+Received: (nullmailer pid 2946043 invoked by uid 1000);
+        Fri, 25 Mar 2022 01:32:57 -0000
+Date:   Thu, 24 Mar 2022 20:32:57 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Biao Huang <biao.huang@mediatek.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        linux-mediatek@lists.infradead.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        linux-kernel@vger.kernel.org, macpaul.lin@mediatek.com,
+        Jakub Kicinski <kuba@kernel.org>, devicetree@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        srv_heupstream@mediatek.com
+Subject: Re: [PATCH net-next] dt-bindings: net: snps,dwmac: modify available
+ values of PBL
+Message-ID: <Yj0byY2NZ6gQ5CBw@robh.at.kernel.org>
+References: <20220324012112.7016-1-biao.huang@mediatek.com>
+ <20220324012112.7016-2-biao.huang@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220324012112.7016-2-biao.huang@mediatek.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,30 +72,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Mar 2022 23:49:16 +0800 Jian Shen wrote:
-> There are many netdev_features bits group used in drivers, replace them
-> with netdev features array.
+On Thu, 24 Mar 2022 09:21:12 +0800, Biao Huang wrote:
+> PBL can be any of the following values: 1, 2, 4, 8, 16 or 32
+> according to the datasheet, so modify available values of PBL in
+> snps,dwmac.yaml.
+> 
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
 
-Maybe we can avoid the ARRAY_SIZE calls by doing something like:
-
-struct netdev_feature_set {
-	unsigned int cnt;
-	unsigned short feature_bits[];
-};
-
-#define DECLARE_NETDEV_FEATURE_SET(name, features...)    \                               
-        static unsigned short __ ## name ## _s [] = {features}; \                               
-        struct netdev_feature_set name = {               \                               
-                .cnt = ARRAY_SIZE(__ ## name ## _s),     \                               
-                .feature_bits = {features},              \                               
-        }                                                                       
-
-Then:
-
-DECLARE_NETDEV_FEATURE_SET(siena_offload_features,
-			   NETIF_F_IP_CSUM_BIT,
-			   NETIF_F_IPV6_CSUM_BIT,
-			   NETIF_F_RXHASH_BIT,
-			   NETIF_F_NTUPLE_BIT);
-
-etc.?
+Applied, thanks!
