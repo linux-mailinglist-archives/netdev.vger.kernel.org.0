@@ -2,158 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D50ED4E7C11
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30C1E4E7CD2
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233387AbiCYV0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 17:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
+        id S233450AbiCYVhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 17:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233363AbiCYV0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 17:26:52 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3759123932C;
-        Fri, 25 Mar 2022 14:25:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=QEDhIgJeIbzCTSaqjVqTZlpKCAowR+UcFnXwn8gtAfA=;
-        t=1648243516; x=1649453116; b=pf8OVm9SPCIjev//bYF0G+SVdxQ9cy1rcFiKdhlOzQgt58D
-        MAGmC/4Byaal5ODDkraahfVJWGOn7MCS6vG0uTChP0UYTa8kZxdC0eZw2tdVX9kByv1Z74AjDu3cW
-        1LWKYuijksu9NuxrSVHZKt6ZkwtCZ3/N+1lT8uTGrd7oltKxuoDZat1zty3tvhffh9o9dyXmeUVco
-        aCCY/QprEZlfAS6A7lco2UfUgrzwS6Kt8RzptXbt5kK3e/dWg6o31pEE/Oc6PS2dw8UqPmKTMh/az
-        BALcmIMsMtT439hfI4CQiOI2gLQY4vtSOsG/5AlkVEImqQ02mrmZujHxSnOucHUw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nXrQg-000VlP-Hr;
-        Fri, 25 Mar 2022 22:25:06 +0100
-Message-ID: <46b8555d4cded50bc5573fd9b7dd444021317a6b.camel@sipsolutions.net>
-Subject: Re: [BUG] deadlock in nl80211_vendor_cmd
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     William McVicker <willmcvicker@google.com>,
-        linux-wireless@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Xinming Hu <huxinming820@gmail.com>, kernel-team@android.com,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Cong Wang <cwang@twopensource.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Date:   Fri, 25 Mar 2022 22:25:05 +0100
-In-Reply-To: <20220325134040.0d98835b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <0000000000009e9b7105da6d1779@google.com>
-         <99eda6d1dad3ff49435b74e539488091642b10a8.camel@sipsolutions.net>
-         <5d5cf050-7de0-7bad-2407-276970222635@quicinc.com>
-         <YjpGlRvcg72zNo8s@google.com>
-         <dc556455-51a2-06e8-8ec5-b807c2901b7e@quicinc.com>
-         <Yjzpo3TfZxtKPMAG@google.com>
-         <19e12e6b5f04ba9e5b192001fbe31a3fc47d380a.camel@sipsolutions.net>
-         <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
-         <20220325134040.0d98835b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        with ESMTP id S233435AbiCYVhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 17:37:04 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 370EC49CA0;
+        Fri, 25 Mar 2022 14:35:26 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 58EB022247;
+        Fri, 25 Mar 2022 22:35:24 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648244125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RBr8QAEuo8HHbbztFI4VB6EfKz9bI4G2lxNCA6d5X+s=;
+        b=jXNr0n2LpUG6EMjEhNvNjTXchnP+C+AQyZkK2EkBwoJcNZlY9W1qnKsZ1KUsG62oUlApzz
+        EGG5tWzz9uNLdUwVxwsJKoNTwWks6KG+f5ESEFh4vN9BPQwDDwuPjQcTEi0kn2RjuKUCUj
+        vF8XU1QtvfFMo8jA7mFkxkcfg5JDR6o=
+From:   Michael Walle <michael@walle.cc>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Xu Liang <lxu@maxlinear.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH RFC net-next v2 0/8] net: phy: C45-over-C22 access
+Date:   Fri, 25 Mar 2022 22:35:10 +0100
+Message-Id: <20220325213518.2668832-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-03-25 at 13:40 -0700, Jakub Kicinski wrote:
-> On Fri, 25 Mar 2022 18:01:30 +0100 Johannes Berg wrote:
-> > That's not a bad idea, but I think I wouldn't want to backport that, so
-> > separately :) I don't think that fundamentally changes the locking
-> > properties though.
-> > 
-> > 
-> > Couple of more questions I guess: First, are we assuming that the
-> > cfg80211 code *is* actually broken, even if it looks like nothing can
-> > cause the situation, due to the empty todo list?
-> 
-> Right.
+Hi,
 
-I guess that the below is basically saying "it's not really broken" :)
+This is the result of this discussion:
+https://lore.kernel.org/netdev/240354b0a54b37e8b5764773711b8aa3@walle.cc/
 
-> > Given that we have rtnl_lock_unregistering() (and also
-> > rtnl_lock_unregistering_all()), it looks like we *do* in fact at least
-> > not want to make an assumption that no user of __rtnl_unlock() can have
-> > added a todo item.
-> > 
-> > I mean, there's technically yet *another* thing we could do - something
-> > like this:
-> > 
-> > [this doesn't compile, need to suitably make net_todo_list non-static]
-> > --- a/net/core/rtnetlink.c
-> > +++ b/net/core/rtnetlink.c
-> > @@ -95,6 +95,7 @@ void __rtnl_unlock(void)
-> >  
-> >         defer_kfree_skb_list = NULL;
-> >  
-> > +       WARN_ON(!list_empty(&net_todo_list));
-> >         mutex_unlock(&rtnl_mutex);
-> >  
-> >         while (head) {
-> 
-> Yeah, I think we could do that.
+The goal here is to get the GYP215 and LAN8814 running on the Microchip
+LAN9668 SoC. The LAN9668 suppports one external bus and unfortunately, the
+LAN8814 has a bug which makes it impossible to use C45 on that bus.
+Fortunately, it was the intention of the GPY215 driver to be used on a C22
+bus. But I think this could have never really worked, because the
+phy_get_c45_ids() will always do c45 accesses and thus on MDIO bus drivers
+which will correctly check for the MII_ADDR_C45 flag and return -EOPNOTSUPP
+the function call will fail and thus gpy_probe() will fail. This series
+tries to fix that and will lay the foundation to add a workaround for the
+LAN8814 bug by forcing an MDIO bus to be c22-only.
 
-It seems that would be simpler. Even if I might eventually still want to
-do the cfg80211 change, but it would give us some confidence that this
-really cannot be happening anywhere.
+At the moment, the probe_capabilities is taken into account to decide if
+we have to use C45-over-C22. What is still missing from this series is the
+handling of a device tree property to restrict the probe_capabilities to
+c22-only.
 
+Since net-next is closed, this is marked as RFC to get some early feedback.
 
-> TBH I don't know what you mean by rtnl_lock_unregistering(), I don't
-> have that in my tree. rtnl_lock_unregistering_all() can't hurt the case
-> we're talking about AFAICT.
-> 
-> Eric removed some of the netns / loopback dependencies in net-next, 
-> make sure you pull!
+Changes since RFC v1:
+ - use __phy_mmd_indirect() in mdiobus_probe_mmd_read()
+ - add new properties has_c45 c45_over_c22 (and remove is_c45)
+ - drop MDIOBUS_NO_CAP handling, Andrew is preparing a series to
+   add probe_capabilities to mark all C45 capable MDIO bus drivers
 
-Sorry, yeah, I was looking at an older tree where I was testing on in
-the simulation environment - this disappeared in commit 8a4fc54b07d7
-("net: get rid of rtnl_lock_unregistering()").
+Michael Walle (8):
+  net: phy: mscc-miim: reject clause 45 register accesses
+  net: phy: mscc-miim: add probe_capabilities
+  net: phy: add error checks in __phy_mmd_indirect() and export it
+  net: phy: add error handling for __phy_{read,write}_mmd
+  net: phy: support indirect c45 access in get_phy_c45_ids()
+  net: phy: add support for C45-over-C22 transfers
+  phy: net: introduce phy_promote_to_c45()
+  net: phy: mxl-gpy: remove unneeded ops
 
-> > With some suitable commentary, that might also be a reasonable thing?
-> > __rtnl_unlock() is actually rather pretty rare, and not exported.
-> 
-> The main use for it seems to be re-locking before loading a module,
-> which TBH I have no idea why, is it just a cargo cult or a historical
-> thing :S  I don't see how letting netdevs leave before _loading_ 
-> a module makes any difference whatsoever.
+ .../net/ethernet/hisilicon/hns/hns_ethtool.c  |  4 +-
+ drivers/net/mdio/mdio-mscc-miim.c             |  7 ++
+ drivers/net/phy/bcm84881.c                    |  2 +-
+ drivers/net/phy/marvell10g.c                  |  2 +-
+ drivers/net/phy/mxl-gpy.c                     | 31 +------
+ drivers/net/phy/phy-core.c                    | 47 +++++++---
+ drivers/net/phy/phy.c                         |  6 +-
+ drivers/net/phy/phy_device.c                  | 87 ++++++++++++++++---
+ drivers/net/phy/phylink.c                     |  8 +-
+ include/linux/phy.h                           | 12 ++-
+ 10 files changed, 136 insertions(+), 70 deletions(-)
 
-Indeed.
+-- 
+2.30.2
 
-
-> The WARN_ON() you suggested up front make perfect sense to me.
-> You can also take the definition of net_unlink_todo() out of
-> netdevice.h while at it because o_0
-
-Heh indeed, what?
-
-But (and now I'll CC even more people...) if we can actually have an
-invariant that while RTNL is unlocked the todo list is empty, then we
-also don't need rtnl_lock_unregistering_all(), and can remove the
-netdev_unregistering_wq, etc., no?
-
-IOW, I'm not sure why we needed commit 50624c934db1 ("net: Delay
-default_device_exit_batch until no devices are unregistering v2"), but I
-also have little doubt that we did.
-
-Ah, no. This isn't about locking in this case, it's literally about
-ensuring that free_netdev() has been called in netdev_run_todo()?
-
-Which we don't care about in cfg80211 - we just care about the list
-being empty so there's no chance we'll reacquire the RTNL.
-
-johannes
