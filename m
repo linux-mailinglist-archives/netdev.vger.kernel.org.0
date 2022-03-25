@@ -2,75 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B768A4E6E89
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 08:11:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E989B4E6E90
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 08:12:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353502AbiCYHNG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 25 Mar 2022 03:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33680 "EHLO
+        id S1354702AbiCYHOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 03:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238896AbiCYHNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 03:13:04 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE170BD7FA;
-        Fri, 25 Mar 2022 00:11:29 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 22P7B2Pw8028005, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 22P7B2Pw8028005
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 25 Mar 2022 15:11:02 +0800
-Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 25 Mar 2022 15:11:02 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Mar 2022 15:11:01 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::41d7:1d2e:78a6:ff34]) by
- RTEXMBS04.realtek.com.tw ([fe80::41d7:1d2e:78a6:ff34%5]) with mapi id
- 15.01.2308.021; Fri, 25 Mar 2022 15:11:01 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-CC:     Kalle Valo <kvalo@kernel.org>,
+        with ESMTP id S238896AbiCYHOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 03:14:16 -0400
+X-Greylist: delayed 74847 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Mar 2022 00:12:42 PDT
+Received: from vulcan.natalenko.name (vulcan.natalenko.name [104.207.131.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381D9BD898;
+        Fri, 25 Mar 2022 00:12:42 -0700 (PDT)
+Received: from spock.localnet (unknown [83.148.33.151])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id 0402BE4C661;
+        Fri, 25 Mar 2022 08:12:38 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1648192359;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gcXLBP3mIfbGljUpsP//FsQOHOTfI0szjq2ialy/sIU=;
+        b=nTgcEEtgRJjs1kBrwhIgdlq/eHBdXP950twIufQRtgGI9t1yPmzXlHuARe5Mm4Ku1Wl+gj
+        J1qtm2C0WtQDcQ1vPPoPlPSxgR6hQ7w2kxF8mGOtYKwbxIJ1skLC/zf5LPO3fyjV3xW742
+        nilK7AS68nMA3cP9Tzef//M9aMfeDRo=
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Maxime Bizon <mbizon@freebox.fr>,
+        Toke =?ISO-8859-1?Q?H=F8iland=2DJ=F8rgensen?= <toke@toke.dk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        "Cristiano Giuffrida" <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: RE: [PATCH] rtlwifi: replace usage of found with dedicated list iterator variable
-Thread-Topic: [PATCH] rtlwifi: replace usage of found with dedicated list
- iterator variable
-Thread-Index: AQHYP0/7+zW6KtAvT0ClNCbpG6+KwazPsC2A
-Date:   Fri, 25 Mar 2022 07:11:01 +0000
-Message-ID: <8198a7201ce94fc4a40eb91d5b3aa472@realtek.com>
-References: <20220324072124.62458-1-jakobkoschel@gmail.com>
-In-Reply-To: <20220324072124.62458-1-jakobkoschel@gmail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/3/25_=3F=3F_06:00:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break ath9k-based AP
+Date:   Fri, 25 Mar 2022 08:12:37 +0100
+Message-ID: <4699073.GXAFRqVoOG@natalenko.name>
+In-Reply-To: <871qyr9t4e.fsf@toke.dk>
+References: <1812355.tdWV9SEqCh@natalenko.name> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,35 +68,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello.
 
-> -----Original Message-----
-> From: Jakob Koschel <jakobkoschel@gmail.com>
-> Sent: Thursday, March 24, 2022 3:21 PM
-> To: Pkshih <pkshih@realtek.com>
-> Cc: Kalle Valo <kvalo@kernel.org>; David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>;
-> Paolo Abeni <pabeni@redhat.com>; linux-wireless@vger.kernel.org; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Mike Rapoport <rppt@kernel.org>; Brian Johannesmeyer
-> <bjohannesmeyer@gmail.com>; Cristiano Giuffrida <c.giuffrida@vu.nl>; Bos, H.J. <h.j.bos@vu.nl>; Jakob
-> Koschel <jakobkoschel@gmail.com>
-> Subject: [PATCH] rtlwifi: replace usage of found with dedicated list iterator variable
-> 
-> To move the list iterator variable into the list_for_each_entry_*()
-> macro in the future it should be avoided to use the list iterator
-> variable after the loop body.
-> 
-> To *never* use the list iterator variable after the loop it was
-> concluded to use a separate iterator variable instead of a
-> found boolean [1].
-> 
-> This removes the need to use a found variable and simply checking if
-> the variable was set, can determine if the break/goto was hit.
-> 
-> Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+On =C4=8Dtvrtek 24. b=C5=99ezna 2022 18:07:29 CET Toke H=C3=B8iland-J=C3=B8=
+rgensen wrote:
+> Right, but is that sync_for_device call really needed? AFAICT, that
+> ath9k_hw_process_rxdesc_edma() invocation doesn't actually modify any of
+> the data when it returns EINPROGRESS, so could we just skip it? Like
+> the patch below? Or am I misunderstanding the semantics here?
+>=20
+> -Toke
+>=20
+>=20
+> diff --git a/drivers/net/wireless/ath/ath9k/recv.c b/drivers/net/wireless=
+/ath/ath9k/recv.c
+> index 0c0624a3b40d..19244d4c0ada 100644
+> --- a/drivers/net/wireless/ath/ath9k/recv.c
+> +++ b/drivers/net/wireless/ath/ath9k/recv.c
+> @@ -647,12 +647,8 @@ static bool ath_edma_get_buffers(struct ath_softc *s=
+c,
+>                                 common->rx_bufsize, DMA_FROM_DEVICE);
+> =20
+>         ret =3D ath9k_hw_process_rxdesc_edma(ah, rs, skb->data);
+> -       if (ret =3D=3D -EINPROGRESS) {
+> -               /*let device gain the buffer again*/
+> -               dma_sync_single_for_device(sc->dev, bf->bf_buf_addr,
+> -                               common->rx_bufsize, DMA_FROM_DEVICE);
+> +       if (ret =3D=3D -EINPROGRESS)
+>                 return false;
+> -       }
+> =20
+>         __skb_unlink(skb, &rx_edma->rx_fifo);
+>         if (ret =3D=3D -EINVAL) {
 
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+With this patch and both ddbd89deb7d3+aa6f8dcbab47 in place the AP works fo=
+r me.
 
 Thanks.
 
-[...]
+=2D-=20
+Oleksandr Natalenko (post-factum)
+
 
