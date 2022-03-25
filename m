@@ -2,148 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E08C4E6B63
-	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 01:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD9754E6B67
+	for <lists+netdev@lfdr.de>; Fri, 25 Mar 2022 01:04:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356848AbiCYAEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Mar 2022 20:04:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41428 "EHLO
+        id S1356241AbiCYAGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Mar 2022 20:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357170AbiCYADc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 20:03:32 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1BDFBB925
-        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 17:01:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648166519; x=1679702519;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=ktVK5Htz52j6HRtZgSHIYhD6bKZA/XuyDcXCgV6YkPY=;
-  b=K4nzNYlPWPeyTOeza3PxCExT0+svOo9csI+uK6pTxHJtRyQ4U2f7hXgK
-   o3QgzBy24yjmrfSHtborvmROcB6X8gt+hlSD6JK8iLtExL81lh4wTu3DE
-   3f6LuEsHKlcAQH0PnIuVvEN2o3BsBI0kJ2cJcLr4VymG3Grz+GmRKOwPi
-   mQxN/z4R5Bzdhu1Q/MI64zEurQKzlLG5GkeGAzea1iT6gXYIlaPeKA4Mr
-   SChrbyGbHxrqtGrg6gp0HyK+JnjSLQtp/fe/4ONQ6lmflUyc7jwy993Xc
-   JbpOHBxNPIU4yT213akvnavhu9yb+V9h0iMM8+TuIbg3gd6jgOsZ7kNek
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10296"; a="257344517"
-X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
-   d="scan'208";a="257344517"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 17:01:59 -0700
-X-IronPort-AV: E=Sophos;i="5.90,208,1643702400"; 
-   d="scan'208";a="544866062"
-Received: from lmmcwade-mobl2.amr.corp.intel.com (HELO vcostago-mobl3) ([10.209.121.212])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2022 17:01:59 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
-        richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     mlichvar@redhat.com, netdev@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: Re: [PATCH net-next v1 0/6] ptp: Support hardware clocks with
- additional free running time
-In-Reply-To: <20220322210722.6405-1-gerhard@engleder-embedded.com>
+        with ESMTP id S1348213AbiCYAGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Mar 2022 20:06:09 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FA8A5EA8
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 17:04:36 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id gp15-20020a17090adf0f00b001c7cd11b0b3so1998460pjb.3
+        for <netdev@vger.kernel.org>; Thu, 24 Mar 2022 17:04:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OWoekZX+K+s9wuQNjHOZiM3DFWBNSeQKggVjiSuM/vM=;
+        b=L30pGwriqx9Li71zw9WTk5WirnAm6+/JMd8IDuh3A4guM+mdVz9T49GNfCxs2UHj8n
+         aqEqbYctsf6BGqDc2CHtbHKbuHPlOpA/HF2/BlUwVH+xfPhZHocSp3S1UtdPjvqNQyKo
+         ZbwP2Ci09RbVej/oO94YXW7vE0gDB6yljlBUBWJmO7o+ehSIgp6Dy1pTaYZg/Z9+ODff
+         EWZGMSUonAm15SF56YUK9Bl9dzsSwTK6YK3nVbAlTF5kwhBVPJXkNsFq25c9u7WmEEv7
+         Ps+j6udvNrIEWyg5vWUBsbwjkuLkB7s2zbmcDtLqgeABpGXXtgNX1exOUH902UtpquJG
+         jM1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OWoekZX+K+s9wuQNjHOZiM3DFWBNSeQKggVjiSuM/vM=;
+        b=kfJk1jNukdZ10hd70QInJE3kfP/bFMF0ts2Ze7Sda5kzdk0UJ0AEuTUYSEV+DE2ckm
+         BeLR2WMnpf/4lFw2IOZDBcF745e41GlyzdhTogCL8TN5cjXCIs9sMPFEcn05cWmHuDeU
+         zOYJY2d34z/K/vDOFV5xIK/Pi8W9kPrqfpknM959TE615udxv/hl2Ur6Xdr19zWmpaif
+         8rhWnemPaMsQQUeV6NA7OIz9RC9YN1rKfkppasRLyg6Jg7DR/Zrf8BLx6m6f1lHDEt2C
+         NLSoTXZ12uuVGMhyL1XLg39bE9sfHUiWqHDB1odyjf7lVxKAMKPnHi0iVo+NXMMQlK5Y
+         uecA==
+X-Gm-Message-State: AOAM532dsR/WOCxlkFA9bPl2qSYPcY+qjmfL0G6wkmWl01ea13x49vGY
+        PTamJABGbNhEJsjNcQYCCU4=
+X-Google-Smtp-Source: ABdhPJxmJjU59SoXK3/O9C+SzcDmS6qOMwH6WIZ4KCiXJpiPhAbAFB9zdmPko+ydzcHgRICKaPN+8Q==
+X-Received: by 2002:a17:90b:1a87:b0:1c7:3d66:8cb with SMTP id ng7-20020a17090b1a8700b001c73d6608cbmr21595857pjb.142.1648166675580;
+        Thu, 24 Mar 2022 17:04:35 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id d6-20020a056a00244600b004f701135460sm4510426pfj.146.2022.03.24.17.04.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 17:04:35 -0700 (PDT)
+Date:   Thu, 24 Mar 2022 17:04:32 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     yangbo.lu@nxp.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v1 5/6] ptp: Support late timestamp determination
+Message-ID: <20220325000432.GA18007@hoboy.vegasvil.org>
 References: <20220322210722.6405-1-gerhard@engleder-embedded.com>
-Date:   Thu, 24 Mar 2022 17:01:58 -0700
-Message-ID: <87tubm5289.fsf@intel.com>
+ <20220322210722.6405-6-gerhard@engleder-embedded.com>
+ <20220324140117.GE27824@hoboy.vegasvil.org>
+ <CANr-f5zW9J+1Z+Oe270xRpye4qtD2r97QAdoCrykOrk1SOuVag@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANr-f5zW9J+1Z+Oe270xRpye4qtD2r97QAdoCrykOrk1SOuVag@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Mar 24, 2022 at 08:52:18PM +0100, Gerhard Engleder wrote:
 
-Gerhard Engleder <gerhard@engleder-embedded.com> writes:
+> I thought that PTP packages are rare and that bloating the socket is
+> not welcome.
 
-> ptp vclocks require a clock with free running time for the timecounter.
-> Currently only a physical clock forced to free running is supported.
-> If vclocks are used, then the physical clock cannot be synchronized
-> anymore. The synchronized time is not available in hardware in this
-> case. As a result, timed transmission with TAPRIO hardware support
-> is not possible anymore.
->
-> If hardware would support a free running time additionally to the
-> physical clock, then the physical clock does not need to be forced to
-> free running. Thus, the physical clocks can still be synchronized while
-> vclocks are in use.
->
-> The physical clock could be used to synchronize the time domain of the
-> TSN network and trigger TAPRIO. In parallel vclocks can be used to
-> synchronize other time domains.
->
-> One year ago I thought for two time domains within a TSN network also
-> two physical clocks are required. This would lead to new kernel
-> interfaces for asking for the second clock, ... . But actually for a
-> time triggered system like TSN there can be only one time domain that
-> controls the system itself. All other time domains belong to other
-> layers, but not to the time triggered system itself. So other time
-> domains can be based on a free running counter if similar mechanisms
-> like 2 step synchroisation are used.
+Some PTP profiles use insanely high frame rates.  like G.8275.1 with
+Sync and Delay Req at 16/sec each.  times the number of clients.
 
-I tried to look at this series from the point of view of the Intel i225
-NIC and its 4 sets of timer registers, and thinking how adding support
-for the "extra" 4 timers would fit with this proposal.
+Bloating the skbuff is bad, but the `sock` is not so critical in its
+storage costs.
 
-From what I could gather, the idea that would make more sense would be
-exposing the other(s?) i225 timers as vclocks. That sounds neat to me,
-i.e. the extra timer registers are indeed other "views" to the same
-clock (the name "virtual" makes sense).
+Thanks,
+Richard
 
-When retrieving the timestamps from packets (we can timestamp each
-packet with two timers), the driver knows what timestamp (and what to do
-with it) the user is interested in.
 
-Is this what you (and others) had in mind?
-
-If so, API-wise this series looks good to me. I will take a closer look
-at the code tomorrow.
-
->
-> Synchronisation was tested with two time domains between two directly
-> connected hosts. Each host run two ptp4l instances, the first used the
-> physical clock and the second used the virtual clock. I used my FPGA
-> based network controller as network device. ptp4l was used in
-> combination with the virtual clock support patches from Miroslav
-> Lichvar.
->
-> v1:
-> - comlete rework based on feedback to RFC (Richard Cochran)
->
-> Gerhard Engleder (6):
->   ptp: Add cycles support for virtual clocks
->   ptp: Request cycles for TX timestamp
->   ptp: Pass hwtstamp to ptp_convert_timestamp()
->   ethtool: Add kernel API for PHC index
->   ptp: Support late timestamp determination
->   tsnep: Add physical clock cycles support
->
->  drivers/net/ethernet/engleder/tsnep_hw.h   |  9 ++-
->  drivers/net/ethernet/engleder/tsnep_main.c | 27 ++++++---
->  drivers/net/ethernet/engleder/tsnep_ptp.c  | 44 ++++++++++++++
->  drivers/ptp/ptp_clock.c                    | 58 +++++++++++++++++--
->  drivers/ptp/ptp_private.h                  | 10 ++++
->  drivers/ptp/ptp_sysfs.c                    | 10 ++--
->  drivers/ptp/ptp_vclock.c                   | 18 +++---
->  include/linux/ethtool.h                    |  8 +++
->  include/linux/ptp_clock_kernel.h           | 67 ++++++++++++++++++++--
->  include/linux/skbuff.h                     | 11 +++-
->  net/core/skbuff.c                          |  2 +
->  net/ethtool/common.c                       | 13 +++++
->  net/socket.c                               | 45 +++++++++++----
->  13 files changed, 275 insertions(+), 47 deletions(-)
->
-> -- 
-> 2.20.1
->
-
--- 
-Vinicius
