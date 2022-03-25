@@ -2,147 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 549404E7D8D
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:22:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DE74E7DC7
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:23:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231292AbiCYTn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 15:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
+        id S230131AbiCYTnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 15:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232225AbiCYTnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:43:32 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06B34160FDF;
-        Fri, 25 Mar 2022 12:14:27 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A898413D5;
-        Fri, 25 Mar 2022 12:14:26 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1A5C93F73D;
-        Fri, 25 Mar 2022 12:14:23 -0700 (PDT)
-Message-ID: <a1829f4a-d916-c486-ac49-2c6dff77521a@arm.com>
-Date:   Fri, 25 Mar 2022 19:14:20 +0000
+        with ESMTP id S232262AbiCYTne (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 15:43:34 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF79223209;
+        Fri, 25 Mar 2022 12:14:31 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648235669;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HY7hmvosRsrWcoJ7IfSk5DODxbeSrNZv4cuKe9J3RJ8=;
+        b=baJT4Mi746IscqfQX5IvSvx5jV2kXy13AhZA1/bT7pbmjaNalkX7SeeKIN+931mPdTUNJj
+        ceRZWeb/xtwGe9eeCxxdz9jwWOilAPaptfHPxEPlGZwVxN1Y9gbka87tlYPPC3dJGzNpbD
+        uqcIqaIPEkRnR4iMovDQYb0UX+wZXijhqXJTxHuxcbNFZ+C7N8q0Lj6iRRAg1p42zOzF42
+        9BA3kiEtJTgEBol/ak22g7XIsigCBo7vhQaGiBRRyHJ5iWHWScWF+Ld1JPJ3wVbF04FcpQ
+        JnpO/IJorxxLrDafBHIxh6DeaPgmlU3Fxlr+ODo5adeqLuOfuE9Dg6U7cZXv+w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648235669;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HY7hmvosRsrWcoJ7IfSk5DODxbeSrNZv4cuKe9J3RJ8=;
+        b=1bGtsbx48IfJh0tyu9AqnQ3hZYbnfn1sHjxW9kvDApf/N098cIou1RZ1NHFEOExFKzVxWv
+        qNowS2+WL2A//SAg==
+To:     kernel test robot <oliver.sang@intel.com>,
+        Artem Savkov <asavkov@redhat.com>
+Cc:     0day robot <lkp@intel.com>, Josh Poimboeuf <jpoimboe@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        Artem Savkov <asavkov@redhat.com>
+Subject: Re: [timer]  d41e0719d5:
+ UBSAN:shift-out-of-bounds_in_lib/flex_proportions.c
+In-Reply-To: <20220325073827.GB8478@xsang-OptiPlex-9020>
+References: <20220325073827.GB8478@xsang-OptiPlex-9020>
+Date:   Fri, 25 Mar 2022 20:14:27 +0100
+Message-ID: <87k0chhmjw.ffs@tglx>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Content-Language: en-GB
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Maxime Bizon <mbizon@freebox.fr>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-References: <1812355.tdWV9SEqCh@natalenko.name>
- <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de>
- <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
- <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
- <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
- <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-03-25 18:30, Linus Torvalds wrote:
-> On Fri, Mar 25, 2022 at 3:25 AM Maxime Bizon <mbizon@freebox.fr> wrote:
->>
->> In the non-cache-coherent scenario, and assuming dma_map() did an
->> initial cache invalidation, you can write this:
-> 
-> .. but the problem is that the dma mapping code is supposed to just
-> work, and the driver isn't supposed to know or care whether dma is
-> coherent or not, or using bounce buffers or not.
-> 
-> And currently it doesn't work.
-> 
-> Because what that ath9k driver does is "natural", but it's wrong for
-> the bounce buffer case.
-> 
-> And I think the problem is squarely on the dma-mapping side for two reasons:
-> 
->   (a) this used to work, now it doesn't, and it's unclear how many
-> other drivers are affected
-> 
->   (b) the dma-mapping naming and calling conventions are horrible and
-> actively misleading
-> 
-> That (a) is a big deal. The reason the ath9k issue was found quickly
-> is very likely *NOT* because ath9k is the only thing affected. No,
-> it's because ath9k is relatively common.
-> 
-> Just grep for dma_sync_single_for_device() and ask yourself: how many
-> of those other drivers have you ever even HEARD of, much less be able
-> to test?
-> 
-> And that's just one "dma_sync" function. Admittedly it's likely one of
-> the more common ones, but still..
-> 
-> Now, (b) is why I think driver nufgt get this so wrong - or, in this
-> case, possibly the dma-mapping code itself.
-> 
-> The naming - and even the documentation(!!!) - implies that what ath9k
-> does IS THE RIGHT THING TO DO.
-> 
-> The documentation clearly states:
-> 
->    "Before giving the memory to the device, dma_sync_single_for_device() needs
->     to be called, and before reading memory written by the device,
->     dma_sync_single_for_cpu(), just like for streaming DMA mappings that are
->     reused"
+On Fri, Mar 25 2022 at 15:38, kernel test robot wrote:
+> [   42.401895][    C0] UBSAN: shift-out-of-bounds in lib/flex_proportions.c:80:20
+> [   42.410963][    C0] shift exponent -1007885658 is negative
 
-Except that's documentation for the non-coherent allocation API, rather 
-than the streaming API in question here. I'll refrain from commenting on 
-having at least 3 DMA APIs, with the same set of sync functions serving 
-two of them, and just stand back a safe distance...
+Cute.
 
+> [   42.416462][    C0] CPU: 0 PID: 330 Comm: sed Tainted: G          I       5.17.0-rc6-00027-gd41e0719d576 #1
+> [   42.426240][    C0] Hardware name: Dell Inc. OptiPlex 7040/0Y7WYT, BIOS 1.1.1 10/07/2015
+> [   42.434363][    C0] Call Trace:
+> [   42.437516][    C0]  <TASK>
+> [ 42.440319][ C0] dump_stack_lvl (lib/dump_stack.c:107) 
+> [ 42.444699][ C0] ubsan_epilogue (lib/ubsan.c:152) 
+> [ 42.448985][ C0] __ubsan_handle_shift_out_of_bounds.cold (lib/ubsan.c:330) 
+> [ 42.455618][ C0] ? cpumask_next (lib/cpumask.c:23) 
+> [ 42.459996][ C0] ? __percpu_counter_sum (lib/percpu_counter.c:138) 
+> [ 42.465248][ C0] fprop_new_period.cold (lib/flex_proportions.c:80 (discriminator 1)) 
+> [ 42.470224][ C0] writeout_period (mm/page-writeback.c:623) 
 
+So it seems a timer fired early. Which then makes writeout_period() go south:
 
+	int miss_periods = (jiffies - dom->period_time) / VM_COMPLETIONS_PERIOD_LEN;
 
-Anyway, the appropriate part of that document is probably:
+If jiffies < dom->period_time the result is a very large negative
+number.
 
-   "You must do this:
+This happens because of:
 
-    - Before reading values that have been written by DMA from the device
-      (use the DMA_FROM_DEVICE direction)"
+> @@ -67,7 +67,8 @@ struct timer_list {
+>  #define TIMER_DEFERRABLE	0x00080000
+>  #define TIMER_PINNED		0x00100000
+>  #define TIMER_IRQSAFE		0x00200000
+> -#define TIMER_INIT_FLAGS	(TIMER_DEFERRABLE | TIMER_PINNED | TIMER_IRQSAFE)
+> +#define TIMER_UPPER_BOUND	0x00400000
+> +#define TIMER_INIT_FLAGS	(TIMER_DEFERRABLE | TIMER_PINNED | TIMER_IRQSAFE | TIMER_UPPER_BOUND)
+> #define TIMER_ARRAYSHIFT	22
+> #define TIMER_ARRAYMASK		0xFFC00000
 
-I'm not saying it constitutes *good* documentation, but I would note how 
-it says "have been written", and not "are currently being written". 
-Similarly from the HOWTO:
-
-    "If you need to use the same streaming DMA region multiple times and
-     touch the data in between the DMA transfers, the buffer needs to be
-     synced properly..."
-
-Note "between the DMA transfers", and not "during the DMA transfers". 
-The fundamental assumption of the streaming API is that only one thing 
-is ever accessing the mapping at any given time, which is what the whole 
-notion of ownership is about.
+TIMER_UPPER_BOUND steals a bit from the ARRAYMASK. So if the timer is
+armed and the stored arraymask happens to have bit 22 set, then on the
+next arming of the timer it will be treated as upper bound timer,
+expires early and all hell breaks lose. The same can happen the other
+way round. So I really have to ask how this ever "worked".
 
 Thanks,
-Robin.
+
+        tglx
