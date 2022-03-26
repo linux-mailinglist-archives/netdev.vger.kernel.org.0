@@ -2,153 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D71684E7F9F
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 07:42:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A23774E7FAB
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 07:59:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbiCZGoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 02:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49492 "EHLO
+        id S231708AbiCZHBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 03:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231611AbiCZGoH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 02:44:07 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD86417FD1A
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id z128so8155762pgz.2
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DzmW1EwXib0HEBL5ioOFxuUKPvj/IW7QJoaVVg8+xH0=;
-        b=k94K+4orcgP8kDrhyw/hF4hSopr8E4xGvyHDrqmV3/AETXXKBicOS4bD6VEdw0a1rk
-         fhuEs9Biymqy6AHdhF5pzSmXa5ciGqejQRnrQLgx+SNgTm/KSr+Q2OPuHqp9haPiNsxN
-         wWrIRxjQUk6PDVquYpGEneQwQulpcj2oVxdyE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DzmW1EwXib0HEBL5ioOFxuUKPvj/IW7QJoaVVg8+xH0=;
-        b=7Fhp8CmStUlHAhuvFJA1dQU+axeIGWY5EHWlMaWhZyNyr94Le9ODkhyamQsM1xezBc
-         fZO92bqruFYnOwS7knpCdsAR4bHogAD5Q1LROyosFA+VCE+2BUQMtdxlgylSIc7vqJXU
-         uQ2eMgztVwhshKav5TR7D0qThq0NhCmDL90JpChwH0BP+p91Fvy9rzQiB1atMalrveMV
-         d6zvC+v3qYXbBtxArFyTDESlFyZOZGdjgNPo5MQz1nn9RAO8U6yj8MMjLocEU2I1zK7j
-         bfPmtoaJBdpSLZkjgDbMr8KsPXwrYL1jTT98wLNSrrKy/zASQ90qu0BfKhDXhtS7FOx1
-         SC+w==
-X-Gm-Message-State: AOAM531+wgS9dYTEpKhLWhpgk1q5XKGXAJbA6ieSYQehu7t5jetNLjSA
-        DVhS81DVpOLZsLaQgOMdhRsBfA==
-X-Google-Smtp-Source: ABdhPJwXINhn4isrhWwq6UFZEvwUcMk+1i2H2+Yb705ZRLHFhy/5zUzg6kvPyFIyPtyDuoEF4KjUNQ==
-X-Received: by 2002:a05:6a00:98e:b0:4fb:1162:b2a5 with SMTP id u14-20020a056a00098e00b004fb1162b2a5mr6604055pfg.12.1648276949326;
-        Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-Received: from localhost (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
-        by smtp.gmail.com with UTF8SMTPSA id d80-20020a621d53000000b004fae1119955sm8960061pfd.213.2022.03.25.23.42.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Mar 2022 23:42:29 -0700 (PDT)
-From:   Ying Hsu <yinghsu@chromium.org>
-To:     marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Ying Hsu <yinghsu@chromium.org>,
-        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
-        Joseph Hwang <josephsih@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
-Date:   Sat, 26 Mar 2022 06:35:17 +0000
-Message-Id: <20220326063415.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
-X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231687AbiCZHBS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 03:01:18 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 005D658E76;
+        Fri, 25 Mar 2022 23:59:40 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [10.15.192.164])
+        by mail-app2 (Coremail) with SMTP id by_KCgCXOZTDuT5iK3SBAA--.58940S2;
+        Sat, 26 Mar 2022 14:59:28 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     netdev@vger.kernel.org
+Cc:     linux-x25@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ms@dev.tdt.de, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, tanxin.ctf@gmail.com, linma@zju.edu.cn,
+        xiyuyang19@fudan.edu.cn, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net] net/x25: Fix null-ptr-deref caused by x25_disconnect
+Date:   Sat, 26 Mar 2022 14:59:12 +0800
+Message-Id: <20220326065912.41077-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgCXOZTDuT5iK3SBAA--.58940S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7urWfZr1xJw43Wr4UCw17Wrg_yoW8WrW8pF
+        y2yrWkW34DJ3909rs7CFykurn2vwsFgw18Xr15u34Skr9xGrWqvryrKrZIgw13WFs3AFyj
+        vr1UWwsxJF4kCFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvl1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28I
+        cxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
+        DU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwPAVZdtYygQQACsR
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Connecting the same socket twice consecutively in sco_sock_connect()
-could lead to a race condition where two sco_conn objects are created
-but only one is associated with the socket. If the socket is closed
-before the SCO connection is established, the timer associated with the
-dangling sco_conn object won't be canceled. As the sock object is being
-freed, the use-after-free problem happens when the timer callback
-function sco_sock_timeout() accesses the socket. Here's the call trace:
+The previous commit 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when
+x25 disconnect") adds decrement of refcount of x25->neighbour and sets
+x25->neighbour to NULL in x25_disconnect(), but when the link layer is
+terminating, it could cause null-ptr-deref bugs in x25_sendmsg(),
+x25_recvmsg() and x25_connect(). One of the bugs is shown below.
 
-dump_stack+0x107/0x163
-? refcount_inc+0x1c/
-print_address_description.constprop.0+0x1c/0x47e
-? refcount_inc+0x1c/0x7b
-kasan_report+0x13a/0x173
-? refcount_inc+0x1c/0x7b
-check_memory_region+0x132/0x139
-refcount_inc+0x1c/0x7b
-sco_sock_timeout+0xb2/0x1ba
-process_one_work+0x739/0xbd1
-? cancel_delayed_work+0x13f/0x13f
-? __raw_spin_lock_init+0xf0/0xf0
-? to_kthread+0x59/0x85
-worker_thread+0x593/0x70e
-kthread+0x346/0x35a
-? drain_workqueue+0x31a/0x31a
-? kthread_bind+0x4b/0x4b
-ret_from_fork+0x1f/0x30
+x25_link_terminated()          | x25_recvmsg()
+ x25_kill_by_neigh()           |  ...
+  x25_disconnect()             |  lock_sock(sk)
+   ...                         |  ...
+   x25->neighbour = NULL //(1) |
+   ...                         |  x25->neighbour->extended //(2)
 
-Link: https://syzkaller.appspot.com/bug?extid=2bef95d3ab4daa10155b
-Reported-by: syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com
-Fixes: e1dee2c1de2b ("Bluetooth: fix repeated calls to sco_sock_kill")
-Signed-off-by: Ying Hsu <yinghsu@chromium.org>
-Reviewed-by: Joseph Hwang <josephsih@chromium.org>
+We set NULL to x25->neighbour in position (1) and dereference
+x25->neighbour in position (2), which could cause null-ptr-deref bug.
+
+This patch adds lock_sock(sk) in x25_disconnect() in order to synchronize
+with x25_sendmsg(), x25_recvmsg() and x25_connect(). What`s more, the sk
+held by lock_sock() is not NULL, because it is extracted from x25_list
+and uses x25_list_lock to synchronize.
+
+Fixes: 4becb7ee5b3d ("net/x25: Fix x25_neigh refcnt leak when x25 disconnect")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
-Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
+ net/x25/x25_subr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- net/bluetooth/sco.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 8eabf41b2993..380c63194736 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
- 	    addr->sa_family != AF_BLUETOOTH)
- 		return -EINVAL;
- 
--	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
--		return -EBADFD;
-+	lock_sock(sk);
-+	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
-+		err = -EBADFD;
-+		goto done;
-+	}
- 
--	if (sk->sk_type != SOCK_SEQPACKET)
--		return -EINVAL;
-+	if (sk->sk_type != SOCK_SEQPACKET) {
-+		err = -EINVAL;
-+		goto done;
-+	}
- 
- 	hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
--	if (!hdev)
--		return -EHOSTUNREACH;
-+	if (!hdev) {
-+		err = -EHOSTUNREACH;
-+		goto done;
-+	}
- 	hci_dev_lock(hdev);
- 
--	lock_sock(sk);
--
- 	/* Set destination address and psm */
- 	bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
- 
+diff --git a/net/x25/x25_subr.c b/net/x25/x25_subr.c
+index 0285aaa1e93..4e19752bdd0 100644
+--- a/net/x25/x25_subr.c
++++ b/net/x25/x25_subr.c
+@@ -360,7 +360,9 @@ void x25_disconnect(struct sock *sk, int reason, unsigned char cause,
+ 	if (x25->neighbour) {
+ 		read_lock_bh(&x25_list_lock);
+ 		x25_neigh_put(x25->neighbour);
++		lock_sock(sk);
+ 		x25->neighbour = NULL;
++		release_sock(sk);
+ 		read_unlock_bh(&x25_list_lock);
+ 	}
+ }
 -- 
-2.35.1.1021.g381101b075-goog
+2.17.1
 
