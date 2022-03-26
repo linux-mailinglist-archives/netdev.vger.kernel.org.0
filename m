@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AA774E8207
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A86274E8213
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:00:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233827AbiCZRCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 13:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44694 "EHLO
+        id S233857AbiCZRC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 13:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233801AbiCZRCP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:02:15 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 26 Mar 2022 10:00:37 PDT
+        with ESMTP id S233848AbiCZRCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:02:22 -0400
 Received: from stuerz.xyz (stuerz.xyz [IPv6:2001:19f0:5:15da:5400:3ff:fecc:7379])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56432B0A55;
-        Sat, 26 Mar 2022 10:00:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357FBE4382;
+        Sat, 26 Mar 2022 10:00:44 -0700 (PDT)
 Received: by stuerz.xyz (Postfix, from userid 114)
-        id 9D1C6FBBCB; Sat, 26 Mar 2022 17:00:35 +0000 (UTC)
+        id 5422BFBBE2; Sat, 26 Mar 2022 17:00:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648314036; bh=yA14H5kSGXs8c9NCVOmgKRy/cJtHbkLoXQ2K5ISZu/k=;
+        t=1648314043; bh=nThPDkDF2XLY5J3RiAKQRe1b62vpRwWyWtPgVZyXRO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eY1iX0wlkZRA78TwrFBdZG5S+wos6UWvMNaeR3ebSkGbpl4BzyM69Wnujm+MCNQSH
-         XbYHpCtunp+VYPd+8B4Z5YGwrYKyldxYneKwJEtMuoQi4VfjayP4248ZkrvYzPbvb7
-         tGC3cCNQMmjqLyVHL80IqUG9N6enWqcQ/eJAksuxRO0+t/nSWobYmI6E3gPDs1NmYL
-         ++FZTGyvor1q8BXZzeNj7KNTMHP2+jtmpdc0KeaKsrUDcsC7Efw6IdkQp5pRDFDxi5
-         ZHAUmnDb1nehnND3R9P08aARBVYF4iAixYWRlLVzHEAsYgL1pTWrWTNVmmmb1i34gg
-         o2AMI/9CsY+SQ==
+        b=JsiZ950ZLfkne2NOnvzVj10XXg4Zt4h7oNwdhAGtKWsC46eB/TPcb8wq96t+rUk8v
+         L1iiTmLrfN6nfmmKNxsIzXjWqolWkorZ7yhpyvqIH2rh2mnSHy/mKBYhV2Gxyiskoo
+         Qw/icbGFvoYdZoHv9dD2wEtRQ5PdpV9GGM1R4qr7CbXCMDtRR6VWP33Dq7j1LYzTb/
+         L9Zh4YyljFmY9vaOoaj8iBuXWIypdwcu5bajRj2V6P79HBgGo6L0Iw82lX8956KXFQ
+         xhXfkxMyNBX1VyYfTVOuenlmElEGNmfC+PoXKt1F4ZuJrxU4kA8jg2iDvrk2y1WbRN
+         WlJ1i2cciLxcw==
 Received: from benni-fedora.. (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
-        by stuerz.xyz (Postfix) with ESMTPSA id E7EF6FB7D3;
-        Sat, 26 Mar 2022 17:00:26 +0000 (UTC)
+        by stuerz.xyz (Postfix) with ESMTPSA id 7E9C4FBBB2;
+        Sat, 26 Mar 2022 17:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648314033; bh=yA14H5kSGXs8c9NCVOmgKRy/cJtHbkLoXQ2K5ISZu/k=;
+        t=1648314039; bh=nThPDkDF2XLY5J3RiAKQRe1b62vpRwWyWtPgVZyXRO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M6I6oe9jogZM/zVnBnLg0eaNUUV4jcB+jkMO9qefS3HmAz419f42DcLOvKYiY1LvT
-         ker3YtWSKtrbYWXcC4P4Q34z4I0kvS8nnURN2zDZp/1ciFgjp8H5+LMGc47dFCGwK3
-         ZPM4LcjH7WSaWHLXUgQ1uu7Se/TXMvIZ6a51YDM4XN9HQOfPjY/V51c3xkYKlQc9Ff
-         sw/spsdrAwyTcjFyMYk3HffZ0vEu3G6iY0fWhPwKxCUfoge6rziWcIxAyYMFWRia7f
-         wJwSd/xnAYJBhYpaStdDoJq2gMpeyL3UlSNNsSRrS5W5qX2Ex1kaIwSG6rdxXYA+KQ
-         WQdOdxe313yGg==
+        b=wNRlS1xv//eXMRaT7zlFJ8fDp4Tsg2CzMO5ONij0+zqqguTk7QhKI4oCIqXPVryh+
+         tVP+rQ/6jMPFT21raOJfu2nhdw0W4orrMWuDhkMZ2JgtVG7WJA4ykvSfr1xZidzFMB
+         axWfyOmdByaaaBLNtdPHufNsL3Rabi3BawPkeeFDO2RHZKSZ/XhKY8OxzXg+YhTYWm
+         H3oRW50TqfYGA+eq5ZLaryp1Hjp+iw9dn0u+O7WJBbJiq/Yo+72f/A5Zq8O02n9pZ8
+         migv038XS1iEQAyL5ExZAJdD/UiEJgyp8C9pGPCvhaZ+7C/9hLic8i2BVTmosbCwnB
+         aFryaSvC2NznA==
 From:   =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
 To:     andrew@lunn.ch
 Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
@@ -66,9 +65,9 @@ Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
         wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
         linux-pci@vger.kernel.org,
         =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
-Subject: [PATCH 11/22] rdmavt: Replace comments with C99 initializers
-Date:   Sat, 26 Mar 2022 17:58:58 +0100
-Message-Id: <20220326165909.506926-11-benni@stuerz.xyz>
+Subject: [PATCH 12/22] alps: Replace comments with C99 initializers
+Date:   Sat, 26 Mar 2022 17:58:59 +0100
+Message-Id: <20220326165909.506926-12-benni@stuerz.xyz>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
 References: <20220326165909.506926-1-benni@stuerz.xyz>
@@ -77,8 +76,8 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        PDS_OTHER_BAD_TLD,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        PDS_OTHER_BAD_TLD,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -90,82 +89,122 @@ initializers because the kernel supports them now.
 
 Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
 ---
- drivers/infiniband/sw/rdmavt/rc.c | 62 +++++++++++++++----------------
- 1 file changed, 31 insertions(+), 31 deletions(-)
+ drivers/input/mouse/alps.c | 96 +++++++++++++++++++-------------------
+ 1 file changed, 48 insertions(+), 48 deletions(-)
 
-diff --git a/drivers/infiniband/sw/rdmavt/rc.c b/drivers/infiniband/sw/rdmavt/rc.c
-index 4e5d4a27633c..121b8a23ac07 100644
---- a/drivers/infiniband/sw/rdmavt/rc.c
-+++ b/drivers/infiniband/sw/rdmavt/rc.c
-@@ -10,37 +10,37 @@
-  * Convert the AETH credit code into the number of credits.
-  */
- static const u16 credit_table[31] = {
--	0,                      /* 0 */
--	1,                      /* 1 */
--	2,                      /* 2 */
--	3,                      /* 3 */
--	4,                      /* 4 */
--	6,                      /* 5 */
--	8,                      /* 6 */
--	12,                     /* 7 */
--	16,                     /* 8 */
--	24,                     /* 9 */
--	32,                     /* A */
--	48,                     /* B */
--	64,                     /* C */
--	96,                     /* D */
--	128,                    /* E */
--	192,                    /* F */
--	256,                    /* 10 */
--	384,                    /* 11 */
--	512,                    /* 12 */
--	768,                    /* 13 */
--	1024,                   /* 14 */
--	1536,                   /* 15 */
--	2048,                   /* 16 */
--	3072,                   /* 17 */
--	4096,                   /* 18 */
--	6144,                   /* 19 */
--	8192,                   /* 1A */
--	12288,                  /* 1B */
--	16384,                  /* 1C */
--	24576,                  /* 1D */
--	32768                   /* 1E */
-+	[0x00] = 0,
-+	[0x01] = 1,
-+	[0x02] = 2,
-+	[0x03] = 3,
-+	[0x04] = 4,
-+	[0x05] = 6,
-+	[0x06] = 8,
-+	[0x07] = 12,
-+	[0x08] = 16,
-+	[0x09] = 24,
-+	[0x0A] = 32,
-+	[0x0B] = 48,
-+	[0x0C] = 64,
-+	[0x0D] = 96,
-+	[0x0E] = 128,
-+	[0x0F] = 192,
-+	[0x10] = 256,
-+	[0x11] = 384,
-+	[0x12] = 512,
-+	[0x13] = 768,
-+	[0x14] = 1024,
-+	[0x15] = 1536,
-+	[0x16] = 2048,
-+	[0x17] = 3072,
-+	[0x18] = 4096,
-+	[0x19] = 6144,
-+	[0x1A] = 8192,
-+	[0x1B] = 12288,
-+	[0x1C] = 16384,
-+	[0x1D] = 24576,
-+	[0x1E] = 32768
+diff --git a/drivers/input/mouse/alps.c b/drivers/input/mouse/alps.c
+index 4a6b33bbe7ea..333f18b198eb 100644
+--- a/drivers/input/mouse/alps.c
++++ b/drivers/input/mouse/alps.c
+@@ -33,60 +33,60 @@
+ #define ALPS_REG_BASE_PINNACLE	0x0000
+ 
+ static const struct alps_nibble_commands alps_v3_nibble_commands[] = {
+-	{ PSMOUSE_CMD_SETPOLL,		0x00 }, /* 0 */
+-	{ PSMOUSE_CMD_RESET_DIS,	0x00 }, /* 1 */
+-	{ PSMOUSE_CMD_SETSCALE21,	0x00 }, /* 2 */
+-	{ PSMOUSE_CMD_SETRATE,		0x0a }, /* 3 */
+-	{ PSMOUSE_CMD_SETRATE,		0x14 }, /* 4 */
+-	{ PSMOUSE_CMD_SETRATE,		0x28 }, /* 5 */
+-	{ PSMOUSE_CMD_SETRATE,		0x3c }, /* 6 */
+-	{ PSMOUSE_CMD_SETRATE,		0x50 }, /* 7 */
+-	{ PSMOUSE_CMD_SETRATE,		0x64 }, /* 8 */
+-	{ PSMOUSE_CMD_SETRATE,		0xc8 }, /* 9 */
+-	{ ALPS_CMD_NIBBLE_10,		0x00 }, /* a */
+-	{ PSMOUSE_CMD_SETRES,		0x00 }, /* b */
+-	{ PSMOUSE_CMD_SETRES,		0x01 }, /* c */
+-	{ PSMOUSE_CMD_SETRES,		0x02 }, /* d */
+-	{ PSMOUSE_CMD_SETRES,		0x03 }, /* e */
+-	{ PSMOUSE_CMD_SETSCALE11,	0x00 }, /* f */
++	[0x0] = { PSMOUSE_CMD_SETPOLL,		0x00 },
++	[0x1] = { PSMOUSE_CMD_RESET_DIS,	   0x00 },
++	[0x2] = { PSMOUSE_CMD_SETSCALE21,	0x00 },
++	[0x3] = { PSMOUSE_CMD_SETRATE,		0x0a },
++	[0x4] = { PSMOUSE_CMD_SETRATE,		0x14 },
++	[0x5] = { PSMOUSE_CMD_SETRATE,		0x28 },
++	[0x6] = { PSMOUSE_CMD_SETRATE,		0x3c },
++	[0x7] = { PSMOUSE_CMD_SETRATE,		0x50 },
++	[0x8] = { PSMOUSE_CMD_SETRATE,		0x64 },
++	[0x9] = { PSMOUSE_CMD_SETRATE,		0xc8 },
++	[0xa] = { ALPS_CMD_NIBBLE_10,		   0x00 },
++	[0xb] = { PSMOUSE_CMD_SETRES,		   0x00 },
++	[0xc] = { PSMOUSE_CMD_SETRES,		   0x01 },
++	[0xd] = { PSMOUSE_CMD_SETRES,		   0x02 },
++	[0xe] = { PSMOUSE_CMD_SETRES,		   0x03 },
++	[0xf] = { PSMOUSE_CMD_SETSCALE11,	0x00 },
  };
  
- /**
+ static const struct alps_nibble_commands alps_v4_nibble_commands[] = {
+-	{ PSMOUSE_CMD_ENABLE,		0x00 }, /* 0 */
+-	{ PSMOUSE_CMD_RESET_DIS,	0x00 }, /* 1 */
+-	{ PSMOUSE_CMD_SETSCALE21,	0x00 }, /* 2 */
+-	{ PSMOUSE_CMD_SETRATE,		0x0a }, /* 3 */
+-	{ PSMOUSE_CMD_SETRATE,		0x14 }, /* 4 */
+-	{ PSMOUSE_CMD_SETRATE,		0x28 }, /* 5 */
+-	{ PSMOUSE_CMD_SETRATE,		0x3c }, /* 6 */
+-	{ PSMOUSE_CMD_SETRATE,		0x50 }, /* 7 */
+-	{ PSMOUSE_CMD_SETRATE,		0x64 }, /* 8 */
+-	{ PSMOUSE_CMD_SETRATE,		0xc8 }, /* 9 */
+-	{ ALPS_CMD_NIBBLE_10,		0x00 }, /* a */
+-	{ PSMOUSE_CMD_SETRES,		0x00 }, /* b */
+-	{ PSMOUSE_CMD_SETRES,		0x01 }, /* c */
+-	{ PSMOUSE_CMD_SETRES,		0x02 }, /* d */
+-	{ PSMOUSE_CMD_SETRES,		0x03 }, /* e */
+-	{ PSMOUSE_CMD_SETSCALE11,	0x00 }, /* f */
++	[0x0] = { PSMOUSE_CMD_ENABLE,		   0x00 },
++	[0x1] = { PSMOUSE_CMD_RESET_DIS,	   0x00 },
++	[0x2] = { PSMOUSE_CMD_SETSCALE21,	0x00 },
++	[0x3] = { PSMOUSE_CMD_SETRATE,		0x0a },
++	[0x4] = { PSMOUSE_CMD_SETRATE,		0x14 },
++	[0x5] = { PSMOUSE_CMD_SETRATE,		0x28 },
++	[0x6] = { PSMOUSE_CMD_SETRATE,		0x3c },
++	[0x7] = { PSMOUSE_CMD_SETRATE,		0x50 },
++	[0x8] = { PSMOUSE_CMD_SETRATE,		0x64 },
++	[0x9] = { PSMOUSE_CMD_SETRATE,		0xc8 },
++	[0xa] = { ALPS_CMD_NIBBLE_10,		   0x00 },
++	[0xb] = { PSMOUSE_CMD_SETRES,		   0x00 },
++	[0xc] = { PSMOUSE_CMD_SETRES,		   0x01 },
++	[0xd] = { PSMOUSE_CMD_SETRES,		   0x02 },
++	[0xe] = { PSMOUSE_CMD_SETRES,		   0x03 },
++	[0xf] = { PSMOUSE_CMD_SETSCALE11,	0x00 },
+ };
+ 
+ static const struct alps_nibble_commands alps_v6_nibble_commands[] = {
+-	{ PSMOUSE_CMD_ENABLE,		0x00 }, /* 0 */
+-	{ PSMOUSE_CMD_SETRATE,		0x0a }, /* 1 */
+-	{ PSMOUSE_CMD_SETRATE,		0x14 }, /* 2 */
+-	{ PSMOUSE_CMD_SETRATE,		0x28 }, /* 3 */
+-	{ PSMOUSE_CMD_SETRATE,		0x3c }, /* 4 */
+-	{ PSMOUSE_CMD_SETRATE,		0x50 }, /* 5 */
+-	{ PSMOUSE_CMD_SETRATE,		0x64 }, /* 6 */
+-	{ PSMOUSE_CMD_SETRATE,		0xc8 }, /* 7 */
+-	{ PSMOUSE_CMD_GETID,		0x00 }, /* 8 */
+-	{ PSMOUSE_CMD_GETINFO,		0x00 }, /* 9 */
+-	{ PSMOUSE_CMD_SETRES,		0x00 }, /* a */
+-	{ PSMOUSE_CMD_SETRES,		0x01 }, /* b */
+-	{ PSMOUSE_CMD_SETRES,		0x02 }, /* c */
+-	{ PSMOUSE_CMD_SETRES,		0x03 }, /* d */
+-	{ PSMOUSE_CMD_SETSCALE21,	0x00 }, /* e */
+-	{ PSMOUSE_CMD_SETSCALE11,	0x00 }, /* f */
++	[0x0] = { PSMOUSE_CMD_ENABLE,		   0x00 },
++	[0x1] = { PSMOUSE_CMD_SETRATE,		0x0a },
++	[0x2] = { PSMOUSE_CMD_SETRATE,		0x14 },
++	[0x3] = { PSMOUSE_CMD_SETRATE,		0x28 },
++	[0x4] = { PSMOUSE_CMD_SETRATE,		0x3c },
++	[0x5] = { PSMOUSE_CMD_SETRATE,		0x50 },
++	[0x6] = { PSMOUSE_CMD_SETRATE,		0x64 },
++	[0x7] = { PSMOUSE_CMD_SETRATE,		0xc8 },
++	[0x8] = { PSMOUSE_CMD_GETID,		   0x00 },
++	[0x9] = { PSMOUSE_CMD_GETINFO,		0x00 },
++	[0xa] = { PSMOUSE_CMD_SETRES,		   0x00 },
++	[0xb] = { PSMOUSE_CMD_SETRES,		   0x01 },
++	[0xc] = { PSMOUSE_CMD_SETRES,		   0x02 },
++	[0xd] = { PSMOUSE_CMD_SETRES,		   0x03 },
++	[0xe] = { PSMOUSE_CMD_SETSCALE21,	0x00 },
++	[0xf] = { PSMOUSE_CMD_SETSCALE11,	0x00 },
+ };
+ 
+ 
 -- 
 2.35.1
 
