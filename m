@@ -2,96 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB6C4E8320
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 19:02:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F084E8333
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 19:20:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234347AbiCZSEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 14:04:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
+        id S234488AbiCZSWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 14:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232395AbiCZSEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 14:04:16 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DBC13CECF
-        for <netdev@vger.kernel.org>; Sat, 26 Mar 2022 11:02:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=NouxmkbXyieO1Hux/ld3G695f3UzkTVKQUYwNvnmwE8=; b=TAAZxnsjAOaA0cRvvgeIIlUiQ4
-        ml0HEWH+UD7R6dKWsfLumGb20l/fLtlpDcauTSzZomPYi7Rd6NXMBHDGtzAsm4umqH49+fJwwiAPR
-        JLpxTdU13YncFq6aWkdZocjTZFhwMnk/PGHN8xTzVDYJJAR8LIHCe7xNI3OhtP3I3qeanC7ldQk8R
-        KM8HjMbotEuB3UZUVDHqs7EQ00RLmFuPEhAw6uPWLAy+chjaRLQs4Z9NAmE1qK8pG9YWOzjp0VWCf
-        lw7eAglsOQApw6gKBgZCL31R/E35ljUuqZnHdtlUQlEjwOTgXy22/C177oSnfyhtH72C2oocdwEFB
-        Ah3EN+gA==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nYAkF-004f0I-Dp; Sat, 26 Mar 2022 18:02:36 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>
-Subject: [PATCH] net: sparx5: depends on PTP_1588_CLOCK_OPTIONAL
-Date:   Sat, 26 Mar 2022 11:02:34 -0700
-Message-Id: <20220326180234.20814-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S231789AbiCZSWM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 14:22:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BED32058;
+        Sat, 26 Mar 2022 11:20:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98AEF60AB1;
+        Sat, 26 Mar 2022 18:20:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F7CC340ED;
+        Sat, 26 Mar 2022 18:20:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648318835;
+        bh=a9PM8ugoPHcLZbjkxJVPg7uQdblZc8OHq1uRNBRh9Yo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=s7P5sH3ynxDq9DOZZbVd1rpChas+Vz68Xeb96Ar1owhXSRM34zCpvoKdOzTUzoebR
+         BR360GyHKwlEGTC5p52ZTxUc0HpVmY6DeayFlcrfta83zmO0Js3lqZL49AuLjXdOKm
+         6XIj1+zSSRhGdfyyo7NkaAMxFBpUbU6STck0ztGAHeBC+wgBV/SWf8JFGo4VffABB7
+         0a3+EHc7ze3dtRBlbeDGvb9G5alVaEIB6iP+lEi6u2oTYJtnewnepqbNDs0hX56ZwQ
+         fiOegfAmH6kZWXcesJSvQZ0GIf7zJlIGhnxRaHWz1CoWd9psPYt6KvQv/1XFM/8Ea9
+         JoiZWG0bHc/KQ==
+Date:   Sat, 26 Mar 2022 19:20:20 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Benjamin =?UTF-8?B?U3TDvHJ6?= <benni@stuerz.xyz>
+Cc:     andrew@lunn.ch, sebastian.hesselbarth@gmail.com,
+        gregory.clement@bootlin.com, linux@armlinux.org.uk,
+        linux@simtec.co.uk, krzk@kernel.org, alim.akhtar@samsung.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, robert.moore@intel.com,
+        rafael.j.wysocki@intel.com, lenb@kernel.org, 3chas3@gmail.com,
+        laforge@gnumonks.org, arnd@arndb.de, gregkh@linuxfoundation.org,
+        tony.luck@intel.com, james.morse@arm.com, rric@kernel.org,
+        linus.walleij@linaro.org, brgl@bgdev.pl,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
+        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
+        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        nico@fluxnic.net, loic.poulain@linaro.org, kvalo@kernel.org,
+        pkshih@realtek.com, bhelgaas@google.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH 01/22] orion5x: Replace comments with C99 initializers
+Message-ID: <20220326192020.670e0b2f@coco.lan>
+In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
+References: <20220326165909.506926-1-benni@stuerz.xyz>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix build errors when PTP_1588_CLOCK=m and SPARX5_SWTICH=y.
+Em Sat, 26 Mar 2022 17:58:48 +0100
+Benjamin St=C3=BCrz <benni@stuerz.xyz> escreveu:
 
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.o: in function `sparx5_get_ts_info':
-sparx5_ethtool.c:(.text+0x146): undefined reference to `ptp_clock_index'
-arc-linux-ld: sparx5_ethtool.c:(.text+0x146): undefined reference to `ptp_clock_index'
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o: in function `sparx5_ptp_init':
-sparx5_ptp.c:(.text+0xd56): undefined reference to `ptp_clock_register'
-arc-linux-ld: sparx5_ptp.c:(.text+0xd56): undefined reference to `ptp_clock_register'
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o: in function `sparx5_ptp_deinit':
-sparx5_ptp.c:(.text+0xf30): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: sparx5_ptp.c:(.text+0xf30): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: sparx5_ptp.c:(.text+0xf38): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: sparx5_ptp.c:(.text+0xf46): undefined reference to `ptp_clock_unregister'
-arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o:sparx5_ptp.c:(.text+0xf46): more undefined references to `ptp_clock_unregister' follow
+> This replaces comments with C99's designated
+> initializers because the kernel supports them now.
 
-Fixes: 3cfa11bac9bb ("net: sparx5: add the basic sparx5 driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: UNGLinuxDriver@microchip.com
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Steen Hegelund <steen.hegelund@microchip.com>
-Cc: Bjarni Jonasson <bjarni.jonasson@microchip.com>
-Cc: Lars Povlsen <lars.povlsen@microchip.com>
----
- drivers/net/ethernet/microchip/sparx5/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+Please:
 
---- linux-next-20220325.orig/drivers/net/ethernet/microchip/sparx5/Kconfig
-+++ linux-next-20220325/drivers/net/ethernet/microchip/sparx5/Kconfig
-@@ -4,6 +4,7 @@ config SPARX5_SWITCH
- 	depends on HAS_IOMEM
- 	depends on OF
- 	depends on ARCH_SPARX5 || COMPILE_TEST
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	select PHYLINK
- 	select PHY_SPARX5_SERDES
- 	select RESET_CONTROLLER
+1. Split this series per sub-system. It makes no sense to mailbomb all
+   subsystems for things that won't belong there;
+
+2. Add a patch 00 to the series, in order to make easier to do reviews
+   like this that are meant to the series as a hole.
+
+Regards,
+Mauro
+>=20
+> Signed-off-by: Benjamin St=C3=BCrz <benni@stuerz.xyz>
+> ---
+>  arch/arm/mach-orion5x/dns323-setup.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/arch/arm/mach-orion5x/dns323-setup.c b/arch/arm/mach-orion5x=
+/dns323-setup.c
+> index 87cb47220e82..d762248c6512 100644
+> --- a/arch/arm/mach-orion5x/dns323-setup.c
+> +++ b/arch/arm/mach-orion5x/dns323-setup.c
+> @@ -61,9 +61,9 @@
+> =20
+>  /* Exposed to userspace, do not change */
+>  enum {
+> -	DNS323_REV_A1,	/* 0 */
+> -	DNS323_REV_B1,	/* 1 */
+> -	DNS323_REV_C1,	/* 2 */
+> +	DNS323_REV_A1 =3D 0,
+> +	DNS323_REV_B1 =3D 1,
+> +	DNS323_REV_C1 =3D 2,
+>  };
+> =20
+> =20
+
+
+
+Thanks,
+Mauro
