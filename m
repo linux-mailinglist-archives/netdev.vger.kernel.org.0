@@ -2,72 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DDD4E7EAE
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 03:53:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE044E7F8E
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 07:31:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230395AbiCZCy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 22:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43884 "EHLO
+        id S231419AbiCZGdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 02:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiCZCyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 22:54:54 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860ED2DD70;
-        Fri, 25 Mar 2022 19:53:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648263197; x=1679799197;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=uI+S8wJngH0DegLJABgjbAsMLT1fPpAdxr5wiQNUH04=;
-  b=R3ewHIzcYSX84Bd5JI9CFtn9TCr9GSkuiHCeca4tnXPtQt7bzPXp+Jkd
-   +XgNmK+rmRYRj4AfFJbJrKjlIQhHQddS66r0wrXYdpwCPSK+8pOYTBl7y
-   eniV+z8vfX661yivUD85bZmrsb8A7q3KlvPpBcrR1zLK5/hzc/Ozw0DGn
-   eTIPDFFbL1o09CM5gXDuTVUXStWbXOP8fwQPyxOaRLyoOmLiM4wRx5lUc
-   Res09ob3H81VM8SLUVbSYXQLoydP2ipLPA5TuuTHUkomYOIxrtpdoO3+d
-   qeg94ABnMq6au20yV7Lz0MWR9dmxVcJ6ZP5C0A94wUVcJv9bPf7ph/JrO
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="345188336"
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="345188336"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 19:53:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
-   d="scan'208";a="648456233"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2022 19:53:13 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nXwYD-000MvT-6Q; Sat, 26 Mar 2022 02:53:13 +0000
-Date:   Sat, 26 Mar 2022 10:52:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Allan Nielsen <allan.nielsen@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Subject: Re: [net-next 1/5] net: mdio: fwnode: add fwnode_mdiobus_register()
-Message-ID: <202203261007.nhIuHNPd-lkp@intel.com>
-References: <20220325172234.1259667-2-clement.leger@bootlin.com>
+        with ESMTP id S229820AbiCZGdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 02:33:11 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA2727B
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 23:31:34 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id t19so8265293qtc.4
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 23:31:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PTLKNJ1HHVa/CC/OMIeEXrqEsVbWaZOp7AFQBATXJDQ=;
+        b=lUQtPiSM3Sqlxdd43fL+DfdNXAvAAY1bKNTHEfSflmKVRuwGdp6JHLhjUjDv6nQq+g
+         0/+YIxlNQvlXokJXnrkraDIf4Q9elqAoG4z+oUBHynRN61oKnnJ3Z9oHJQKmMoCclCE3
+         Jt9kSWDc+ZfmZRkWINyz0I50DPIYgmEScNspI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PTLKNJ1HHVa/CC/OMIeEXrqEsVbWaZOp7AFQBATXJDQ=;
+        b=Y+jJMIDvTpBPbLQjyFlJmTpC9XJCZUDRWgri+xRrhJlrcGQJtyBhqCedh1g4VOGqfJ
+         6ob9sCt2vlVEgx3/KuPbrlMNTaTcBKBBwHyXGTv2lqsQamDVOKmVGIfjQEqvFynZ7899
+         4aBpq0czZJUrkOl7DfHtGbd0i2cZoi1jg5iYGMX3aGGIao3vFGGWi5nEFyxCx4zh9xA2
+         rB9GDSu4yRGXYPSyNTsQkK7zbjYI9zXxLh7J9/yInCMEQO0d8edZVKBxVcnp2IL1/4yp
+         6fe/bs7WtKi1AKTY4XMP1AuIKrUmSuJ6dXubDEKMHw597JIHtGvS7KhNwmHXrNMDsoiz
+         Jjgw==
+X-Gm-Message-State: AOAM531ncKNwYzcRXPvq0mzPQLZJ33tqqOWBo8k65f4r78hXYlxhMOG4
+        32rUzhrwUX4j1MeIfm5rZwlXRZpZSaxlAj51EelCHA==
+X-Google-Smtp-Source: ABdhPJyNXpv93V1BfrqoR6BPPZvt8TozB6bISb7ecXAcBKX5At5yoq8MUmWtanB+ci+O2oyb/CoairlaOa698avJc2c=
+X-Received: by 2002:ac8:7ee3:0:b0:2e1:a508:c500 with SMTP id
+ r3-20020ac87ee3000000b002e1a508c500mr12523470qtc.117.1648276293617; Fri, 25
+ Mar 2022 23:31:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220325172234.1259667-2-clement.leger@bootlin.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220325033028.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+ <CABBYNZKF1Ye6D130XgaFmqN6JAssf78-FaQh_AEkwigy8qaVjw@mail.gmail.com>
+In-Reply-To: <CABBYNZKF1Ye6D130XgaFmqN6JAssf78-FaQh_AEkwigy8qaVjw@mail.gmail.com>
+From:   Ying Hsu <yinghsu@chromium.org>
+Date:   Sat, 26 Mar 2022 14:31:22 +0800
+Message-ID: <CADwQ6b6cCrKGfS-zhh5KnSNdxm_n_krwpZ=s68WYdoJ-XCHH-Q@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        Joseph Hwang <josephsih@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,63 +72,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi "Clément,
+Hi Luiz,
 
-Thank you for the patch! Perhaps something to improve:
+I compiled and ran the c-reproducer:
+https://syzkaller.appspot.com/x/repro.c?x=152b93e8700000
+I will add relevant links in the commit message. Thanks for the reminder.
 
-[auto build test WARNING on net-next/master]
+While fixing the use-after-free problem , I also found a possible
+deadlock in sco_sock_connect() and sco_sock_getsockopt() :
+sco_sock_connect() {
+  hci_dev_lock(hdev);
+  lock_sock(sk);
+}
 
-url:    https://github.com/0day-ci/linux/commits/Cl-ment-L-ger/net-mdio-fwnode-add-fwnode_mdiobus_register/20220326-040146
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 89695196f0ba78a17453f9616355f2ca6b293402
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220326/202203261007.nhIuHNPd-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/8ed21cbab4f71b382b70d22da18e9331bd9b714f
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Cl-ment-L-ger/net-mdio-fwnode-add-fwnode_mdiobus_register/20220326-040146
-        git checkout 8ed21cbab4f71b382b70d22da18e9331bd9b714f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/mdio/
+sco_sock_getsockopt() {
+  lock_sock(sk);
+  case BT_CODEC:
+    hci_dev_lock(hdev);
+}
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+So, adjusting the locking order in sco_sock_connect() can also avoid
+the possible deadlock.
 
-All warnings (new ones prefixed by >>):
+Ying
 
->> drivers/net/mdio/fwnode_mdio.c:154:34: warning: unused variable 'whitelist_phys' [-Wunused-const-variable]
-   static const struct of_device_id whitelist_phys[] = {
-                                    ^
-   1 warning generated.
-
-
-vim +/whitelist_phys +154 drivers/net/mdio/fwnode_mdio.c
-
-   147	
-   148	/* The following is a list of PHY compatible strings which appear in
-   149	 * some DTBs. The compatible string is never matched against a PHY
-   150	 * driver, so is pointless. We only expect devices which are not PHYs
-   151	 * to have a compatible string, so they can be matched to an MDIO
-   152	 * driver.  Encourage users to upgrade their DT blobs to remove these.
-   153	 */
- > 154	static const struct of_device_id whitelist_phys[] = {
-   155		{ .compatible = "brcm,40nm-ephy" },
-   156		{ .compatible = "broadcom,bcm5241" },
-   157		{ .compatible = "marvell,88E1111", },
-   158		{ .compatible = "marvell,88e1116", },
-   159		{ .compatible = "marvell,88e1118", },
-   160		{ .compatible = "marvell,88e1145", },
-   161		{ .compatible = "marvell,88e1149r", },
-   162		{ .compatible = "marvell,88e1310", },
-   163		{ .compatible = "marvell,88E1510", },
-   164		{ .compatible = "marvell,88E1514", },
-   165		{ .compatible = "moxa,moxart-rtl8201cp", },
-   166		{}
-   167	};
-   168	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+On Sat, Mar 26, 2022 at 2:50 AM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Ying,
+>
+> On Thu, Mar 24, 2022 at 8:31 PM Ying Hsu <yinghsu@chromium.org> wrote:
+> >
+> > Connecting the same socket twice consecutively in sco_sock_connect()
+> > could lead to a race condition where two sco_conn objects are created
+> > but only one is associated with the socket. If the socket is closed
+> > before the SCO connection is established, the timer associated with the
+> > dangling sco_conn object won't be canceled. As the sock object is being
+> > freed, the use-after-free problem happens when the timer callback
+> > function sco_sock_timeout() accesses the socket. Here's the call trace:
+> >
+> > dump_stack+0x107/0x163
+> > ? refcount_inc+0x1c/
+> > print_address_description.constprop.0+0x1c/0x47e
+> > ? refcount_inc+0x1c/0x7b
+> > kasan_report+0x13a/0x173
+> > ? refcount_inc+0x1c/0x7b
+> > check_memory_region+0x132/0x139
+> > refcount_inc+0x1c/0x7b
+> > sco_sock_timeout+0xb2/0x1ba
+> > process_one_work+0x739/0xbd1
+> > ? cancel_delayed_work+0x13f/0x13f
+> > ? __raw_spin_lock_init+0xf0/0xf0
+> > ? to_kthread+0x59/0x85
+> > worker_thread+0x593/0x70e
+> > kthread+0x346/0x35a
+> > ? drain_workqueue+0x31a/0x31a
+> > ? kthread_bind+0x4b/0x4b
+> > ret_from_fork+0x1f/0x30
+> >
+> > Signed-off-by: Ying Hsu <yinghsu@chromium.org>
+> > Reviewed-by: Joseph Hwang <josephsih@chromium.org>
+> > ---
+> > Tested this commit using a C reproducer on qemu-x86_64 for 8 hours.
+>
+> We should probably add a link or something to the reproducer then, was
+> it syzbot? It does have some instructions on how to link its issues.
+>
+> >  net/bluetooth/sco.c | 21 +++++++++++++--------
+> >  1 file changed, 13 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+> > index 8eabf41b2993..380c63194736 100644
+> > --- a/net/bluetooth/sco.c
+> > +++ b/net/bluetooth/sco.c
+> > @@ -574,19 +574,24 @@ static int sco_sock_connect(struct socket *sock, struct sockaddr *addr, int alen
+> >             addr->sa_family != AF_BLUETOOTH)
+> >                 return -EINVAL;
+> >
+> > -       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND)
+> > -               return -EBADFD;
+> > +       lock_sock(sk);
+> > +       if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
+> > +               err = -EBADFD;
+> > +               goto done;
+> > +       }
+> >
+> > -       if (sk->sk_type != SOCK_SEQPACKET)
+> > -               return -EINVAL;
+> > +       if (sk->sk_type != SOCK_SEQPACKET) {
+> > +               err = -EINVAL;
+> > +               goto done;
+> > +       }
+> >
+> >         hdev = hci_get_route(&sa->sco_bdaddr, &sco_pi(sk)->src, BDADDR_BREDR);
+> > -       if (!hdev)
+> > -               return -EHOSTUNREACH;
+> > +       if (!hdev) {
+> > +               err = -EHOSTUNREACH;
+> > +               goto done;
+> > +       }
+> >         hci_dev_lock(hdev);
+> >
+> > -       lock_sock(sk);
+> > -
+>
+> Also are we sure we are not introducing a locking hierarchy problem
+> here? Previously we had hci_dev_lock then sock_lock now it is the
+> opposite, or perhaps we never want to have them at the same time?
+>
+> >         /* Set destination address and psm */
+> >         bacpy(&sco_pi(sk)->dst, &sa->sco_bdaddr);
+> >
+> > --
+> > 2.35.1.1021.g381101b075-goog
+> >
+>
+>
+> --
+> Luiz Augusto von Dentz
