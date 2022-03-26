@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C8CB4E803D
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 10:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B05E04E8040
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 10:57:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232346AbiCZJ61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 05:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
+        id S232380AbiCZJ6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 05:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiCZJ6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 05:58:14 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DB61F606;
+        with ESMTP id S232313AbiCZJ6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 05:58:15 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED6D205F0;
         Sat, 26 Mar 2022 02:56:38 -0700 (PDT)
-Received: from kwepemi500010.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KQZ7n2CSwzfZX2;
+Received: from kwepemi500005.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KQZ7n1l27zfZsP;
         Sat, 26 Mar 2022 17:55:01 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500010.china.huawei.com (7.221.188.191) with Microsoft SMTP Server
+ kwepemi500005.china.huawei.com (7.221.188.179) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.21; Sat, 26 Mar 2022 17:56:36 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -30,9 +30,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net 5/6] net: hns3: add NULL pointer check for hns3_set/get_ringparam()
-Date:   Sat, 26 Mar 2022 17:51:04 +0800
-Message-ID: <20220326095105.54075-6-huangguangbin2@huawei.com>
+Subject: [PATCH net 6/6] net: hns3: fix phy can not link up when autoneg off and reset
+Date:   Sat, 26 Mar 2022 17:51:05 +0800
+Message-ID: <20220326095105.54075-7-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220326095105.54075-1-huangguangbin2@huawei.com>
 References: <20220326095105.54075-1-huangguangbin2@huawei.com>
@@ -52,53 +52,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+Currently, function hclge_mdio_read() will return 0 if during reset(the
+cmd state will be set to disable).
 
-When pci devices init failed and haven't reinit, priv->ring is
-NULL and hns3_set/get_ringparam() will access priv->ring. it
-causes call trace.
+If use general phy driver, the phy_state_machine() will update phy speed
+every second in function genphy_read_status_fixed() when PHY is set to
+autoneg off, no matter of link down or link up.
 
-So, add NULL pointer check for hns3_set/get_ringparam() to
-avoid this situation.
+If phy driver happens to read BMCR register during reset, phy speed will
+be updated to 10Mpbs as BMCR register value is 0. So it may call phy can
+not link up if previous speed is not 10Mpbs.
 
-Fixes: 5668abda0931 ("net: hns3: add support for set_ringparam")
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+To fix this problem, function hclge_mdio_read() should return -EBUSY if
+the cmd state is disable. So does function hclge_mdio_write().
+
+Fixes: 1c1249380992 ("net: hns3: bugfix for hclge_mdio_write and hclge_mdio_read")
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 49e7b022caaa..f4da77452126 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -653,8 +653,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
- 	struct hnae3_handle *h = priv->ae_handle;
- 	int rx_queue_index = h->kinfo.num_tqps;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c
+index 63d2be4349e3..03d63b6a9b2b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c
+@@ -48,7 +48,7 @@ static int hclge_mdio_write(struct mii_bus *bus, int phyid, int regnum,
+ 	int ret;
  
--	if (hns3_nic_resetting(netdev)) {
--		netdev_err(netdev, "dev resetting!");
-+	if (hns3_nic_resetting(netdev) || !priv->ring) {
-+		netdev_err(netdev, "failed to get ringparam value, due to dev resetting or uninited\n");
- 		return;
- 	}
+ 	if (test_bit(HCLGE_COMM_STATE_CMD_DISABLE, &hdev->hw.hw.comm_state))
+-		return 0;
++		return -EBUSY;
  
-@@ -1074,8 +1074,14 @@ static int hns3_check_ringparam(struct net_device *ndev,
- {
- #define RX_BUF_LEN_2K 2048
- #define RX_BUF_LEN_4K 4096
--	if (hns3_nic_resetting(ndev))
-+
-+	struct hns3_nic_priv *priv = netdev_priv(ndev);
-+
-+	if (hns3_nic_resetting(ndev) || !priv->ring) {
-+		netdev_err(ndev, "failed to set ringparam value, due to dev resetting or uninited\n");
- 		return -EBUSY;
-+	}
-+
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_MDIO_CONFIG, false);
  
- 	if (param->rx_mini_pending || param->rx_jumbo_pending)
- 		return -EINVAL;
+@@ -86,7 +86,7 @@ static int hclge_mdio_read(struct mii_bus *bus, int phyid, int regnum)
+ 	int ret;
+ 
+ 	if (test_bit(HCLGE_COMM_STATE_CMD_DISABLE, &hdev->hw.hw.comm_state))
+-		return 0;
++		return -EBUSY;
+ 
+ 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_MDIO_CONFIG, true);
+ 
 -- 
 2.33.0
 
