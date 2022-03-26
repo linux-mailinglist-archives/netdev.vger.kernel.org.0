@@ -2,136 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF184E801C
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 09:50:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 232B24E801F
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 09:56:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232107AbiCZIwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 04:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
+        id S232200AbiCZI6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 04:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiCZIwM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 04:52:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EF3167D8;
-        Sat, 26 Mar 2022 01:50:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFCB2B800C1;
-        Sat, 26 Mar 2022 08:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48932C2BBE4;
-        Sat, 26 Mar 2022 08:50:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648284634;
-        bh=s9f5bnhBuCk46wN4ssaRjCDYFb2Vt9/9/gOzq5IqbM4=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Wsse77TQPF6Ke+C1gwGny+B0XKyIweV6uyw2XgRapNZle2hcsN2dg8aDx9LXj4dAN
-         PBgKW2grATQi5ZyNEWpqzKZ6MPFEaHsQwcezvyaHc8vdwU0sOPnbuZvUhwwC1nxIbo
-         u1PPuhVSk/g20nvY8jYE6NBwWxZR4+yvC451ZqDInfSPsb5OR8BqfSUFywTb3lW0R7
-         fYgax0D8VE7OqsznQ9DK+wZPW07B2wLBBph9ALnjaHIs3KB6qrrbPAR3/QG8t6+rC/
-         fH7TK85liowzjgBSVuBp4MsLChL0z9cOn/59a1QKdbSMjuUrwHbG3VcEnSNrw6TZtT
-         79NjatLt1tMfQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc:     Edmond Gagnon <egagnon@squareup.com>,
-        Benjamin Li <benl@squareup.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <wcn36xx@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4] wcn36xx: Implement tx_rate reporting
-References: <20220323214533.1951791-1-egagnon@squareup.com>
-        <20220325224212.159690-1-egagnon@squareup.com>
-        <7ae9915d-98fc-efd4-4a1e-872c446aacca@quicinc.com>
-Date:   Sat, 26 Mar 2022 10:50:30 +0200
-In-Reply-To: <7ae9915d-98fc-efd4-4a1e-872c446aacca@quicinc.com> (Jeff
-        Johnson's message of "Fri, 25 Mar 2022 17:09:00 -0700")
-Message-ID: <87h77lnlm1.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S232195AbiCZI6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 04:58:15 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6738133655
+        for <netdev@vger.kernel.org>; Sat, 26 Mar 2022 01:56:37 -0700 (PDT)
+Received: from kwepemi100002.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KQXr75F0Sz1GD6c;
+        Sat, 26 Mar 2022 16:56:23 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100002.china.huawei.com (7.221.188.188) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 26 Mar 2022 16:56:35 +0800
+Received: from localhost.localdomain (10.67.165.24) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 26 Mar 2022 16:56:35 +0800
+From:   Jie Wang <wangjie125@huawei.com>
+To:     <mkubecek@suse.cz>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <wangjie125@huawei.com>
+CC:     <netdev@vger.kernel.org>, <huangguangbin2@huawei.com>,
+        <lipeng321@huawei.com>, <shenjian15@huawei.com>,
+        <moyufeng@huawei.com>, <linyunsheng@huawei.com>,
+        <salil.mehta@huawei.com>, <chenhao288@hisilicon.com>
+Subject: [RFCv2 PATCH net-next 0/2] net-next: ethool: add support to get/set tx push by ethtool -G/g
+Date:   Sat, 26 Mar 2022 16:51:00 +0800
+Message-ID: <20220326085102.14111-1-wangjie125@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jeff Johnson <quic_jjohnson@quicinc.com> writes:
+These two patches add tx push in ring parms and adapt the set and get APIs 
+of ring params
 
-> On 3/25/2022 3:42 PM, Edmond Gagnon wrote:
->> Currently, the driver reports a tx_rate of 6.0 MBit/s no matter the true
->> rate:
->>
->> root@linaro-developer:~# iw wlan0 link
->> Connected to 6c:f3:7f:eb:9b:92 (on wlan0)
->>          SSID: SQ-DEVICETEST
->>          freq: 5200
->>          RX: 4141 bytes (32 packets)
->>          TX: 2082 bytes (15 packets)
->>          signal: -77 dBm
->>          rx bitrate: 135.0 MBit/s MCS 6 40MHz short GI
->>          tx bitrate: 6.0 MBit/s
->>
->>          bss flags:      short-slot-time
->>          dtim period:    1
->>          beacon int:     100
->>
->> This patch requests HAL_GLOBAL_CLASS_A_STATS_INFO via a hal_get_stats
->> firmware message and reports it via ieee80211_ops::sta_statistics.
->>
->> root@linaro-developer:~# iw wlan0 link
->> Connected to 6c:f3:7f:eb:73:b2 (on wlan0)
->>          SSID: SQ-DEVICETEST
->>          freq: 5700
->>          RX: 26788094 bytes (19859 packets)
->>          TX: 1101376 bytes (12119 packets)
->>          signal: -75 dBm
->>          rx bitrate: 135.0 MBit/s MCS 6 40MHz short GI
->>          tx bitrate: 108.0 MBit/s VHT-MCS 5 40MHz VHT-NSS 1
->>
->>          bss flags:      short-slot-time
->>          dtim period:    1
->>          beacon int:     100
->>
->> Tested on MSM8939 with WCN3680B running firmware CNSS-PR-2-0-1-2-c1-00083,
->> and verified by sniffing frames over the air with Wireshark to ensure the
->> MCS indices match.
->>
->> Signed-off-by: Edmond Gagnon <egagnon@squareup.com>
->> Reviewed-by: Benjamin Li <benl@squareup.com>
+The former discussion please see [1].
+[1]:https://lore.kernel.org/netdev/20220315032108.57228-1-wangjie125@huawei.com/
 
-[...]
+ChangeLog:
+V1->V2
+extend tx push param in ringparam, suggested by Jakub Kicinski.
 
->>   +static void wcn36xx_sta_statistics(struct ieee80211_hw *hw,
->> struct ieee80211_vif *vif,
->> +				   struct ieee80211_sta *sta, struct station_info *sinfo)
->> +{
->> +	struct wcn36xx *wcn;
->> +	u8 sta_index;
->> +	int status = 0;
->
-> remove initializer that is always overwritten
+Jie Wang (2):
+  net-next: ethtool: extend ringparam set/get APIs for tx_push
+  net-next: hn3: add tx push support in hns3 ring param process
 
-I can fix that in the pending branch, no need to resend because of this.
-
->>   +int wcn36xx_smd_get_stats(struct wcn36xx *wcn, u8 sta_index, u32
->> stats_mask,
->> +			  struct station_info *sinfo)
->> +{
->> +	struct wcn36xx_hal_stats_req_msg msg_body;
->> +	struct wcn36xx_hal_stats_rsp_msg *rsp;
->> +	void *rsp_body;
->> +	int ret = 0;
->
-> remove initializer that is always overwritten before use
-
-Ditto.
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 30 +++++++++++++++++++
+ include/linux/ethtool.h                       |  3 ++
+ include/uapi/linux/ethtool_netlink.h          |  1 +
+ net/ethtool/netlink.h                         |  2 +-
+ net/ethtool/rings.c                           |  9 ++++--
+ 5 files changed, 42 insertions(+), 3 deletions(-)
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.33.0
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
