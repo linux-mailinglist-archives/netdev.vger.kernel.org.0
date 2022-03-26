@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 809874E825D
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:03:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EC254E827A
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:03:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233928AbiCZRDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 13:03:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        id S233967AbiCZRDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 13:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234042AbiCZRDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:03:12 -0400
-Received: from stuerz.xyz (unknown [45.77.206.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C545170D93;
-        Sat, 26 Mar 2022 10:01:18 -0700 (PDT)
+        with ESMTP id S233923AbiCZRDS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:03:18 -0400
+Received: from stuerz.xyz (stuerz.xyz [IPv6:2001:19f0:5:15da:5400:3ff:fecc:7379])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305A716F07B;
+        Sat, 26 Mar 2022 10:01:24 -0700 (PDT)
 Received: by stuerz.xyz (Postfix, from userid 114)
-        id 4DA25FBC15; Sat, 26 Mar 2022 17:01:15 +0000 (UTC)
+        id 7761FFBC19; Sat, 26 Mar 2022 17:01:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648314077; bh=F4mFOP6R8mSC+27qiR8caNRLqSuQe2zZwUjAxTCpWKk=;
+        t=1648314083; bh=Atyp98CUeE2ls+rskgXqrYpiNVHIwFrsLn7qDkbs1Uk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xg8sAhUbcrHjQslpCBEpkyjUdn56VuM10WXDhvaub55YmwddV8jrxDpzfZyVe3yZo
-         QlmdtTsaOietyV0DPj7ab0Rp74UEkocsfhjaKvaVeBvpCk+8U7c1QScPnuhaVExP4X
-         laQCdsDMHofwB+7TQ2HA9PoVE59E/5t/zTbGcKcDptM+7QeMCUe92dlvo/q4XNcQkU
-         W3GYfZdC/X3DxCE5//Whh/muwcIbf0RB3klnYztGrQlbXdJLNj/vOoCPSmgcL5gxV7
-         MUipvDevFObReYEhwHLXtVek1LWz3vzdWZOAwfelAodwolaZwTEHj2h3OTZzkjzJNw
-         iUILBuopsokGw==
+        b=emwG8nalb+cKRb9rbSSMQUWpXih8LgYIA+oLYyPxg44CRUiEfKtmNngfXMyv7UPQO
+         ruUDGJ4RMfUnJ5R2cUfUoKVElH7YDMeVF8V+vienoYH8AjJhvBfm6OmqCxGxbP38Iq
+         vFCrvCxPz+mG5euXDJwYDf0etqWfnfKqwqKrTIMO4gCM3Mm6MTU6epmZUHgD80e0qp
+         PV4vsElXkb/6jUHVpzh9+Z+gdhROvdd09FYVd71UGN/8Wl+P3a9ocdNAf1Y3qQ2WbC
+         ycBnyl1uQxHF107aaHJcc2LASnsDdojAGotqxPBvlvmK3IKHevKi60FuawcSkIfK6W
+         EQ+ebWKwBO17g==
 Received: from benni-fedora.. (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
-        by stuerz.xyz (Postfix) with ESMTPSA id A2186FB7CD;
-        Sat, 26 Mar 2022 17:01:06 +0000 (UTC)
+        by stuerz.xyz (Postfix) with ESMTPSA id 4CC2BFBB90;
+        Sat, 26 Mar 2022 17:01:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648314073; bh=F4mFOP6R8mSC+27qiR8caNRLqSuQe2zZwUjAxTCpWKk=;
+        t=1648314079; bh=Atyp98CUeE2ls+rskgXqrYpiNVHIwFrsLn7qDkbs1Uk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lpn1kNOht3IjqkwWrlXCvwxCCuKRTgm9xratBr2om8NH60q2A3PkG7ny40QNucd/c
-         TI5QLl5gJY3hgaLe/x2wsXDBNDJ8sD7BM5hPjca1hImMajeyzv97QpcvqYXtaodIwn
-         LP32ozhih5w7oBi1imaMTktrGINSREkWcl8znBajxoBVw+kh9bYQXBdB0++rNIqnjk
-         /56oT7zPXmWOO1JkR7/z86GemOpPv2MOrbeEd2gs6B4eQE/NQoych/gsIiVj9RsovA
-         xRoAwNJStE0bvDErb8jy1vAHc4WALCyAibhfkba1AKMkK5kA2ZNDgcbcDAeFBT4Qns
-         573fZe452hA5g==
+        b=qP7TgvW3oJ/sA3Yix4CPfWDhnnvNFSatDRinq+EiKUXUQ0FdQI4CUN9Ml1XU1whAq
+         vjdvv9SLrRySrhuWfF7F3KT2Q0Q/afP2v/4p8uBka44hkcxbWaTdYLE/dfa6u+aVZs
+         Hu5FjvNMk5YoWc87f4DSc4bGRxf3NY8w37161qCITHdWuasXmmoH++J1nnLZ8uMitr
+         F2UHAiWPQaYkH9C51bVT6N2PKeePCyXwAGryWdjCX70SGZRwLFc7L5r/epKTjpJVF3
+         Zxaxa7nN8V9aWqLDpaEQ1RakPYyfGoCHqw6V3gcaaKjBWRIkdx8c/QesH3NlUg1hGk
+         gD7/Pz6t0ggBg==
 From:   =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
 To:     andrew@lunn.ch
 Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
@@ -65,20 +65,19 @@ Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
         wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
         linux-pci@vger.kernel.org,
         =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
-Subject: [PATCH 17/22] cxl: Replace comments with C99 initializers
-Date:   Sat, 26 Mar 2022 17:59:04 +0100
-Message-Id: <20220326165909.506926-17-benni@stuerz.xyz>
+Subject: [PATCH 18/22] smsc: Replace comments with C99 initializers
+Date:   Sat, 26 Mar 2022 17:59:05 +0100
+Message-Id: <20220326165909.506926-18-benni@stuerz.xyz>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
 References: <20220326165909.506926-1-benni@stuerz.xyz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        PDS_OTHER_BAD_TLD,RDNS_DYNAMIC,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        PDS_OTHER_BAD_TLD,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -90,66 +89,65 @@ initializers because the kernel supports them now.
 
 Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
 ---
- drivers/misc/cxl/hcalls.c | 40 +++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/smsc/smc9194.h | 15 ++++++---------
+ drivers/net/ethernet/smsc/smc91x.h  | 18 ++++++++----------
+ 2 files changed, 14 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/misc/cxl/hcalls.c b/drivers/misc/cxl/hcalls.c
-index aba5e20eeb1f..ed2086d579d3 100644
---- a/drivers/misc/cxl/hcalls.c
-+++ b/drivers/misc/cxl/hcalls.c
-@@ -86,32 +86,32 @@
+diff --git a/drivers/net/ethernet/smsc/smc9194.h b/drivers/net/ethernet/smsc/smc9194.h
+index cf69d0a5a1cb..e1c780afb9bb 100644
+--- a/drivers/net/ethernet/smsc/smc9194.h
++++ b/drivers/net/ethernet/smsc/smc9194.h
+@@ -163,15 +163,12 @@ typedef unsigned long int 		dword;
+ #define CHIP_91100	7
+ 
+ static const char * chip_ids[ 15 ] =  {
+-	NULL, NULL, NULL,
+-	/* 3 */ "SMC91C90/91C92",
+-	/* 4 */ "SMC91C94",
+-	/* 5 */ "SMC91C95",
+-	NULL,
+-	/* 7 */ "SMC91C100",
+-	/* 8 */ "SMC91C100FD",
+-	NULL, NULL, NULL,
+-	NULL, NULL, NULL};
++	[3] = "SMC91C90/91C92",
++	[4] = "SMC91C94",
++	[5] = "SMC91C95",
++	[7] = "SMC91C100",
++	[8] = "SMC91C100FD",
++};
+ 
+ /*
+  . Transmit status bits
+diff --git a/drivers/net/ethernet/smsc/smc91x.h b/drivers/net/ethernet/smsc/smc91x.h
+index 387539a8094b..122cdc849507 100644
+--- a/drivers/net/ethernet/smsc/smc91x.h
++++ b/drivers/net/ethernet/smsc/smc91x.h
+@@ -731,16 +731,14 @@ smc_pxa_dma_insw(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
+ #define CHIP_91111FD	9
+ 
+ static const char * chip_ids[ 16 ] =  {
+-	NULL, NULL, NULL,
+-	/* 3 */ "SMC91C90/91C92",
+-	/* 4 */ "SMC91C94",
+-	/* 5 */ "SMC91C95",
+-	/* 6 */ "SMC91C96",
+-	/* 7 */ "SMC91C100",
+-	/* 8 */ "SMC91C100FD",
+-	/* 9 */ "SMC91C11xFD",
+-	NULL, NULL, NULL,
+-	NULL, NULL, NULL};
++	[3] = "SMC91C90/91C92",
++	[4] = "SMC91C94",
++	[5] = "SMC91C95",
++	[6] = "SMC91C96",
++	[7] = "SMC91C100",
++	[8] = "SMC91C100FD",
++	[9] = "SMC91C11xFD",
++};
  
  
- static char *afu_op_names[] = {
--	"UNKNOWN_OP",		/* 0 undefined */
--	"RESET",		/* 1 */
--	"SUSPEND_PROCESS",	/* 2 */
--	"RESUME_PROCESS",	/* 3 */
--	"READ_ERR_STATE",	/* 4 */
--	"GET_AFU_ERR",		/* 5 */
--	"GET_CONFIG",		/* 6 */
--	"GET_DOWNLOAD_STATE",	/* 7 */
--	"TERMINATE_PROCESS",	/* 8 */
--	"COLLECT_VPD",		/* 9 */
--	"UNKNOWN_OP",		/* 10 undefined */
--	"GET_FUNCTION_ERR_INT",	/* 11 */
--	"ACK_FUNCTION_ERR_INT",	/* 12 */
--	"GET_ERROR_LOG",	/* 13 */
-+	[0]  = "UNKNOWN_OP",		         /* undefined */
-+	[1]  = "RESET",
-+	[2]  = "SUSPEND_PROCESS",
-+	[3]  = "RESUME_PROCESS",
-+	[4]  = "READ_ERR_STATE",
-+	[5]  = "GET_AFU_ERR",
-+	[6]  = "GET_CONFIG",
-+	[7]  = "GET_DOWNLOAD_STATE",
-+	[8]  = "TERMINATE_PROCESS",
-+	[9]  = "COLLECT_VPD",
-+	[10] = "UNKNOWN_OP",		         /*  undefined */
-+	[11] = "GET_FUNCTION_ERR_INT",
-+	[12] = "ACK_FUNCTION_ERR_INT",
-+	[13] = "GET_ERROR_LOG",
- };
- 
- static char *control_adapter_op_names[] = {
--	"UNKNOWN_OP",		/* 0 undefined */
--	"RESET",		/* 1 */
--	"COLLECT_VPD",		/* 2 */
-+	[0] = "UNKNOWN_OP",		         /* undefined */
-+	[1] = "RESET",
-+	[2] = "COLLECT_VPD",
- };
- 
- static char *download_op_names[] = {
--	"UNKNOWN_OP",		/* 0 undefined */
--	"DOWNLOAD",		/* 1 */
--	"VALIDATE",		/* 2 */
-+	[0] = "UNKNOWN_OP",		         /* undefined */
-+	[1] = "DOWNLOAD",
-+	[2] = "VALIDATE",
- };
- 
- static char *op_str(unsigned int op, char *name_array[], int array_len)
+ /*
 -- 
 2.35.1
 
