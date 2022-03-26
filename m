@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6ABA4E80CE
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 13:27:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8599E4E80D6
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 13:36:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232906AbiCZM1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 08:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
+        id S232927AbiCZMiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 08:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230494AbiCZM1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 08:27:32 -0400
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C4D292BB2
-        for <netdev@vger.kernel.org>; Sat, 26 Mar 2022 05:25:55 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 146D02805D22E;
-        Sat, 26 Mar 2022 13:25:53 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 0756B415D40; Sat, 26 Mar 2022 13:25:53 +0100 (CET)
-Date:   Sat, 26 Mar 2022 13:25:52 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: ordering of call to unbind() in usbnet_disconnect
-Message-ID: <20220326122552.GA31022@wunner.de>
-References: <62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com>
- <20220310113820.GG15680@pengutronix.de>
- <20220314184234.GA556@wunner.de>
- <Yi+UHF37rb0URSwb@lunn.ch>
- <20220315054403.GA14588@pengutronix.de>
- <20220315083234.GA27883@wunner.de>
- <20220315113841.GA22337@pengutronix.de>
+        with ESMTP id S231126AbiCZMiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 08:38:15 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92B72980D;
+        Sat, 26 Mar 2022 05:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=e2bXraZC1MZ6r0WNb+kmC83YHU78suKj4HNBRd+g+tU=; b=W4O09IqdLN4E6xqnWRKpC0vaSF
+        XBVEVG4v7m2iYMczRlDpSC92tbckxn/5SWO1xk7ThFI8/K0l2DtxCJ27OGHi9PRGYa0a8Y8Ofciza
+        /sRsfq5044BOjqWD/HMTWQfljLMze3UL/03/bnyUsPHXpNVREUeh5D3RRBreveMcDYirPlcSyq4+L
+        zVUQrRYeQJKZ7DMca+7JPKMUSd30xBjB6hzXYcJYXjH0G+01oC915R0LFNQYHWqWvLFj2HcfmJRPj
+        b0bIqhNmg3TmTra6BwyeMvgJY7eTvLuhaOpqh1680y0S7oGWR5HBa/qThLBk/gKKiKfr5b6qwOWHo
+        BGHueX9XDF7EyclhrnoEVlfzqW9MN/kpakkFcQEoOBt6C3gG1xWL4pF+l8mmQPw14blyyrNN76/el
+        BZJpUgCCKhHjwMw3uXGJE0mYwN8uKk8yTshtp0Ge648P6f34Ru1HVrx7TVtU6vT5B1AIsHQif+wnD
+        Gpyg5rg8P6dSKGyUJFuOs+R1ozCdwGCJR6uzwhcKoBhLv3nrikLpBUNDVfpU0eaHy5nPte9ZJm+i6
+        Fi3Jev5d05ri95PtcnBrFqwAOwHPQ9UiHwCKzH9/IpoPEssbpQ+t8kyCEZv7lQC0OKzSHWuYTqrCr
+        jXzrEJN7QcgO4ZXQM2poUlUV+nwLtzDowWlRZJSss=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     asmadeus@codewreck.org
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net,
+        syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
+Subject: Re: [syzbot] WARNING in p9_client_destroy
+Date:   Sat, 26 Mar 2022 13:36:31 +0100
+Message-ID: <2582025.XdajAv7fHn@silver>
+In-Reply-To: <Yj8F6sQzx6Bvy+aZ@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <3597833.OkAhqpS0b6@silver> <Yj8F6sQzx6Bvy+aZ@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220315113841.GA22337@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,139 +54,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 12:38:41PM +0100, Oleksij Rempel wrote:
-> On Tue, Mar 15, 2022 at 09:32:34AM +0100, Lukas Wunner wrote:
-> > > > > > On Thu, Mar 10, 2022 at 12:25:08PM +0100, Oliver Neukum wrote:
-> > > > > > > I got bug reports that 2c9d6c2b871d ("usbnet: run unbind() before
-> > > > > > > unregister_netdev()") is causing regressions.
-> > 
-> > Is it illegal to disconnect a PHY from an unregistered, but not yet freed
-> > net_device?
-> > 
-> > Oleksij, the commit message of 2c9d6c2b871d says that disconnecting the
-> > PHY "fails" in that situation.  Please elaborate what the failure looked
-> > like.  Did you get a stacktrace?
+On Samstag, 26. M=E4rz 2022 13:24:10 CET asmadeus@codewreck.org wrote:
+> Christian Schoenebeck wrote on Sat, Mar 26, 2022 at 12:48:26PM +0100:
+> > [...]
+> >=20
+> > > Signed-off-by: David Kahurani <k.kahurani@gmail.com>
+> > > Reported-by: syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
+>=20
+> Looks good to me - it's pretty much what I'd have done if I hadn't
+> forgotten!
+> It doesn't strike me as anything critical and I don't have anything else
+> for this cycle so I'll just queue it in -next for now, and submit it
+> at the start of the 5.19 cycle in ~2months.
 
-Oleksij, I cannot reproduce your stacktrace (included in full length below).
-I've tested with kernel 5.13 (since the stacktrace was with 5.13-rc3)
-with all your (and other people's) asix patches applied on top,
-except for 2c9d6c2b871d.  Tried unplugging an AX88772A multiple times,
-never got a stacktrace.
+BTW, another issue that I am seeing for a long time affects the fs-cache: W=
+hen
+I use cache=3Dmmap then things seem to be harmless, I periodically see mess=
+ages
+like these, but that's about it:
 
-I've also walked down the code paths from usbnet_disconnect() and cannot
-see how the stacktrace could occur.
+[90763.435562] FS-Cache: Duplicate cookie detected
+[90763.436514] FS-Cache: O-cookie c=3D00dcb42f [p=3D00000003 fl=3D216 nc=3D=
+0 na=3D0]
+[90763.437795] FS-Cache: O-cookie d=3D0000000000000000{?} n=3D0000000000000=
+000
+[90763.440096] FS-Cache: O-key=3D[8] 'a7ab2c0000000000'
+[90763.441656] FS-Cache: N-cookie c=3D00dcb4a7 [p=3D00000003 fl=3D2 nc=3D0 =
+na=3D1]
+[90763.446753] FS-Cache: N-cookie d=3D000000005b583d5a{9p.inode} n=3D000000=
+00212184fb
+[90763.448196] FS-Cache: N-key=3D[8] 'a7ab2c0000000000'
 
-Normally an unregistering netdev is removed from the linkwatch event list
-(lweventlist) via this call stack:
+The real trouble starts when I use cache=3Dloose though, in this case I get=
+ all
+sorts of misbehaviours from time to time, especially complaining about inva=
+lid
+file descriptors.
 
-          usbnet_disconnect()
-            unregister_netdev()
-              rtnl_unlock()
-                netdev_run_todo()
-                  netdev_wait_allrefs()
-                    linkwatch_forget_dev()
-                      linkwatch_do_dev()
+Any clues?
 
-For the stacktrace to occur, the netdev would have to be subsequently
-re-added to the linkwatch event list via linkwatch_fire_event().
+Best regards,
+Christian Schoenebeck
 
-That is called, among other places, from netif_carrier_off().  However,
-netif_carrier_off() is already called *before* linkwatch_forget_dev()
-when unregister_netdev() stops the netdev before unregistering it:
 
-          usbnet_disconnect()
-            unregister_netdev()
-              unregister_netdevice()
-                unregister_netdevice_queue(dev, NULL)
-                  unregister_netdevice_many()
-                    dev_close_many()
-                      __dev_close_many()
-                        usbnet_stop()
-                          ax88772_stop()
-                            phy_stop() # state = PHY_HALTED
-                              phy_state_machine()
-                                phy_link_down()
-                                  phy_link_change()
-                                    netif_carrier_off()
-                                      linkwatch_fire_event()
-
-Again, this is *before* the subsequent call to linkwatch_forget_dev().
-I don't see how netif_carrier_off() could be called once more after that.
-
-Perhaps the stacktrace occurred with an earlier version of your patches
-which lacked the call to phy_stop() in ax88772_stop()?
-
-I'm going to submit a revert of 2c9d6c2b871d.  If you *are* able to
-reproduce the stacktrace after the revert, please add a dump_stack()
-to linkwatch_fire_event() so that we can find the root cause.
-
-Thanks,
-
-Lukas
-
-> 
-> [   15.459655] asix 2-1.2:1.0 eth1: Link is Up - 100Mbps/Full - flow control off
-> [   30.600242] usb 2-1.2: USB disconnect, device number 3
-> [   30.611962] asix 2-1.2:1.0 eth1: unregister 'asix' usb-ci_hdrc.1-1.2, ASIX AX88772B USB 2.0 Ethernet
-> [   30.649173] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
-> [   30.657027] asix 2-1.2:1.0 eth1 (unregistered): Failed to write Medium Mode mode to 0x0000: ffffffed
-> [   30.683006] asix 2-1.2:1.0 eth1 (unregistered): Link is Down
-> [   30.689512] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
-> [   30.697359] asix 2-1.2:1.0 eth1 (unregistered): Failed to enable software MII access
-> [   30.706009] asix 2-1.2:1.0 eth1 (unregistered): Failed to write reg index 0x0000: -19
-> [   30.714277] asix 2-1.2:1.0 eth1 (unregistered): Failed to enable software MII access
-> [   30.732689] 8<--- cut here ---
-> [   30.735757] Unable to handle kernel paging request at virtual address 2e839000
-> [   30.742984] pgd = af824ad7
-> [   30.745695] [2e839000] *pgd=00000000
-> [   30.749282] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-> [   30.754602] Modules linked in:
-> [   30.757663] CPU: 0 PID: 77 Comm: kworker/0:2 Not tainted 5.13.0-rc3-00818-g06edf1a940be #2
-> [   30.765934] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-> [   30.772466] Workqueue: events linkwatch_event
-> [   30.776841] PC is at linkwatch_do_dev+0x6c/0x88
-> [   30.781380] LR is at __local_bh_enable_ip+0x6c/0x100
-> [   30.786356] pc : [<c08637f4>]    lr : [<c013e5c4>]    psr: 60030093
-> [   30.792625] sp : c1d2bed8  ip : 00000001  fp : c28d2000
-> [   30.797852] r10: c0fcf19c  r9 : c0fcf170  r8 : 00000000
-> [   30.803080] r7 : c102f044  r6 : c1d2beec  r5 : 00000063  r4 : c28d2000
-> [   30.809611] r3 : 00000000  r2 : 00000000  r1 : 2e839000  r0 : 60030013
-> [   30.816140] Flags: nZCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
-> [   30.823367] Control: 10c5387d  Table: 12b54059  DAC: 00000051
-> [   30.829114] Register r0 information: non-paged memory
-> [   30.834174] Register r1 information: non-paged memory
-> [   30.839231] Register r2 information: NULL pointer
-> [   30.843941] Register r3 information: NULL pointer
-> [   30.848649] Register r4 information: slab kmalloc-2k start c28d2000 pointer offset 0 size 2048
-> [   30.857287] Register r5 information: non-paged memory
-> [   30.862344] Register r6 information: non-slab/vmalloc memory
-> [   30.868008] Register r7 information: non-slab/vmalloc memory
-> [   30.873673] Register r8 information: NULL pointer
-> [   30.878381] Register r9 information: non-slab/vmalloc memory
-> [   30.884045] Register r10 information: non-slab/vmalloc memory
-> [   30.889797] Register r11 information: slab kmalloc-2k start c28d2000 pointer offset 0 size 2048
-> [   30.898516] Register r12 information: non-paged memory
-> [   30.903662] Process kworker/0:2 (pid: 77, stack limit = 0xded42e9b)
-> [   30.909935] Stack: (0xc1d2bed8 to 0xc1d2c000)
-> [   30.914298] bec0:                                                       c28d22cc c0863a48
-> [   30.922481] bee0: 00000000 c1d2a000 00000008 c1d2beec c1d2beec 73675768 c1d4da84 c0fcf170
-> [   30.930663] bf00: c1ce0d80 ef6d28c0 ef6d5c00 00000000 00000000 c0fed000 ef6d28c0 c0863b8c
-> [   30.938844] bf20: c0fcf170 c0155550 c1d2a000 c0a13fd4 ef6d28d8 c1ce0d80 ef6d28c0 c1ce0d94
-> [   30.947026] bf40: ef6d28d8 c0f03d00 00000008 c1d2a000 ef6d28c0 c0155dc0 c1003e48 c0fec754
-> [   30.955208] bf60: c1ce75e4 c1ce75c0 c1ce7fc0 c1d2a000 00000000 c1931eb4 c0155d5c c1ce0d80
-> [   30.963389] bf80: c1ce75e4 c015bacc 00000000 c1ce7fc0 c015b954 00000000 00000000 00000000
-> [   30.971570] bfa0: 00000000 00000000 00000000 c0100150 00000000 00000000 00000000 00000000
-> [   30.979750] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> [   30.987931] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
-> [   30.996114] [<c08637f4>] (linkwatch_do_dev) from [<c0863a48>] (__linkwatch_run_queue+0xe0/0x1f0)
-> [   31.004917] [<c0863a48>] (__linkwatch_run_queue) from [<c0863b8c>] (linkwatch_event+0x34/0x3c)
-> [   31.013540] [<c0863b8c>] (linkwatch_event) from [<c0155550>] (process_one_work+0x20c/0x5d0)
-> [   31.021911] [<c0155550>] (process_one_work) from [<c0155dc0>] (worker_thread+0x64/0x570)
-> [   31.030010] [<c0155dc0>] (worker_thread) from [<c015bacc>] (kthread+0x178/0x190)
-> [   31.037421] [<c015bacc>] (kthread) from [<c0100150>] (ret_from_fork+0x14/0x24)
-> [   31.044654] Exception stack(0xc1d2bfb0 to 0xc1d2bff8)
-> [   31.049710] bfa0:                                     00000000 00000000 00000000 00000000
-> [   31.057891] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> [   31.066071] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> [   31.072692] Code: e10f0000 f10c0080 e59432c8 ee1d1f90 (e7932001) 
-> [   31.078788] ---[ end trace f80581862631ce84 ]---
