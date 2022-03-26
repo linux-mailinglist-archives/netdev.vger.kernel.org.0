@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 505384E803A
+	by mail.lfdr.de (Postfix) with ESMTP id CA8FF4E803B
 	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 10:57:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232332AbiCZJ6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 05:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55428 "EHLO
+        id S232350AbiCZJ6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 05:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232298AbiCZJ6O (ORCPT
+        with ESMTP id S232301AbiCZJ6O (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 05:58:14 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EC2B167DE;
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99E11EC6F;
         Sat, 26 Mar 2022 02:56:37 -0700 (PDT)
-Received: from kwepemi100011.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KQZ5044Pbz9t0r;
-        Sat, 26 Mar 2022 17:52:36 +0800 (CST)
+Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KQZ7m4DGCzfZWv;
+        Sat, 26 Mar 2022 17:55:00 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi100011.china.huawei.com (7.221.188.134) with Microsoft SMTP Server
+ kwepemi500008.china.huawei.com (7.221.188.139) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.21; Sat, 26 Mar 2022 17:56:35 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -30,9 +30,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net 2/6] net: hns3: add max order judgement for tx spare buffer
-Date:   Sat, 26 Mar 2022 17:51:01 +0800
-Message-ID: <20220326095105.54075-3-huangguangbin2@huawei.com>
+Subject: [PATCH net 3/6] net: hns3: clean residual vf config after disable sriov
+Date:   Sat, 26 Mar 2022 17:51:02 +0800
+Message-ID: <20220326095105.54075-4-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220326095105.54075-1-huangguangbin2@huawei.com>
 References: <20220326095105.54075-1-huangguangbin2@huawei.com>
@@ -52,37 +52,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+From: Peng Li <lipeng321@huawei.com>
 
-Add max order judgement for tx spare buffer to avoid triggering
-call trace, print related fail information instead, when user
-set tx spare buf size to a large value which causes order
-exceeding 10.
+After disable sriov, VF still has some config and info need to be
+cleaned, which configured by PF. This patch clean the HW config
+and SW struct vport->vf_info.
 
-Fixes: e445f08af2b1 ("net: hns3: add support to set/get tx copybreak buf size via ethtool for hns3 driver")
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Fixes: fa8d82e853e8 ("net: hns3: Add support of .sriov_configure in HNS3 driver")
+Signed-off-by: Peng Li<lipeng321@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   |  3 ++
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 18 +++++++
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 50 +++++++++++++++++++
+ 3 files changed, 71 insertions(+)
 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 6f18c9a03231..d44dd7091fa1 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -537,6 +537,8 @@ struct hnae3_ae_dev {
+  *   Get 1588 rx hwstamp
+  * get_ts_info
+  *   Get phc info
++ * clean_vf_config
++ *   Clean residual vf info after disable sriov
+  */
+ struct hnae3_ae_ops {
+ 	int (*init_ae_dev)(struct hnae3_ae_dev *ae_dev);
+@@ -730,6 +732,7 @@ struct hnae3_ae_ops {
+ 			   struct ethtool_ts_info *info);
+ 	int (*get_link_diagnosis_info)(struct hnae3_handle *handle,
+ 				       u32 *status_code);
++	void (*clean_vf_config)(struct hnae3_ae_dev *ae_dev, int num_vfs);
+ };
+ 
+ struct hnae3_dcb_ops {
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 16137238ddbf..530ba8bef503 100644
+index 530ba8bef503..14dc12c2155d 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1038,6 +1038,12 @@ static void hns3_init_tx_spare_buffer(struct hns3_enet_ring *ring)
- 		return;
+@@ -3060,6 +3060,21 @@ static int hns3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return ret;
+ }
  
- 	order = get_order(alloc_size);
-+	if (order >= MAX_ORDER) {
-+		if (net_ratelimit())
-+			dev_warn(ring_to_dev(ring), "failed to allocate tx spare buffer, exceed to max order\n");
-+		return;
-+	}
++/**
++ * hns3_clean_vf_config
++ * @pdev: pointer to a pci_dev structure
++ * @num_vfs: number of VFs allocated
++ *
++ * Clean residual vf config after disable sriov
++ **/
++static void hns3_clean_vf_config(struct pci_dev *pdev, int num_vfs)
++{
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(pdev);
 +
- 	tx_spare = devm_kzalloc(ring_to_dev(ring), sizeof(*tx_spare),
- 				GFP_KERNEL);
- 	if (!tx_spare) {
++	if (ae_dev->ops->clean_vf_config)
++		ae_dev->ops->clean_vf_config(ae_dev, num_vfs);
++}
++
+ /* hns3_remove - Device removal routine
+  * @pdev: PCI device information struct
+  */
+@@ -3098,7 +3113,10 @@ static int hns3_pci_sriov_configure(struct pci_dev *pdev, int num_vfs)
+ 		else
+ 			return num_vfs;
+ 	} else if (!pci_vfs_assigned(pdev)) {
++		int num_vfs_pre = pci_num_vf(pdev);
++
+ 		pci_disable_sriov(pdev);
++		hns3_clean_vf_config(pdev, num_vfs_pre);
+ 	} else {
+ 		dev_warn(&pdev->dev,
+ 			 "Unable to free VFs because some are assigned to VMs.\n");
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 279a1771fe7c..2a5e6a241d52 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -12724,6 +12724,55 @@ static int hclge_get_link_diagnosis_info(struct hnae3_handle *handle,
+ 	return 0;
+ }
+ 
++/* After disable sriov, VF still has some config and info need clean,
++ * which configed by PF.
++ */
++static void hclge_clear_vport_vf_info(struct hclge_vport *vport, int vfid)
++{
++	struct hclge_dev *hdev = vport->back;
++	struct hclge_vlan_info vlan_info;
++	int ret;
++
++	/* after disable sriov, clean VF rate configured by PF */
++	ret = hclge_tm_qs_shaper_cfg(vport, 0);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d rate config, ret = %d\n",
++			vfid, ret);
++
++	vlan_info.vlan_tag = 0;
++	vlan_info.qos = 0;
++	vlan_info.vlan_proto = ETH_P_8021Q;
++	ret = hclge_update_port_base_vlan_cfg(vport,
++					      HNAE3_PORT_BASE_VLAN_DISABLE,
++					      &vlan_info);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d port base vlan, ret = %d\n",
++			vfid, ret);
++
++	ret = hclge_set_vf_spoofchk_hw(hdev, vport->vport_id, false);
++	if (ret)
++		dev_err(&hdev->pdev->dev,
++			"failed to clean vf%d spoof config, ret = %d\n",
++			vfid, ret);
++
++	memset(&vport->vf_info, 0, sizeof(vport->vf_info));
++}
++
++static void hclge_clean_vport_config(struct hnae3_ae_dev *ae_dev, int num_vfs)
++{
++	struct hclge_dev *hdev = ae_dev->priv;
++	struct hclge_vport *vport;
++	int i;
++
++	for (i = 0; i < num_vfs; i++) {
++		vport = &hdev->vport[i + HCLGE_VF_VPORT_START_NUM];
++
++		hclge_clear_vport_vf_info(vport, i);
++	}
++}
++
+ static const struct hnae3_ae_ops hclge_ops = {
+ 	.init_ae_dev = hclge_init_ae_dev,
+ 	.uninit_ae_dev = hclge_uninit_ae_dev,
+@@ -12825,6 +12874,7 @@ static const struct hnae3_ae_ops hclge_ops = {
+ 	.get_rx_hwts = hclge_ptp_get_rx_hwts,
+ 	.get_ts_info = hclge_ptp_get_ts_info,
+ 	.get_link_diagnosis_info = hclge_get_link_diagnosis_info,
++	.clean_vf_config = hclge_clean_vport_config,
+ };
+ 
+ static struct hnae3_ae_algo ae_algo = {
 -- 
 2.33.0
 
