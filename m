@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 220894E803C
+	by mail.lfdr.de (Postfix) with ESMTP id 9C8CB4E803D
 	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 10:57:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232324AbiCZJ6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 05:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        id S232346AbiCZJ61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 05:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232302AbiCZJ6O (ORCPT
+        with ESMTP id S232303AbiCZJ6O (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 05:58:14 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838CE1EEE3;
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DB61F606;
         Sat, 26 Mar 2022 02:56:38 -0700 (PDT)
-Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KQZ9N1Pqjz1GDG7;
-        Sat, 26 Mar 2022 17:56:24 +0800 (CST)
+Received: from kwepemi500010.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KQZ7n2CSwzfZX2;
+        Sat, 26 Mar 2022 17:55:01 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
+ kwepemi500010.china.huawei.com (7.221.188.191) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.21; Sat, 26 Mar 2022 17:56:36 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 26 Mar 2022 17:56:35 +0800
+ 15.1.2308.21; Sat, 26 Mar 2022 17:56:36 +0800
 From:   Guangbin Huang <huangguangbin2@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH net 4/6] net: hns3: add netdev reset check for hns3_set_tunable()
-Date:   Sat, 26 Mar 2022 17:51:03 +0800
-Message-ID: <20220326095105.54075-5-huangguangbin2@huawei.com>
+Subject: [PATCH net 5/6] net: hns3: add NULL pointer check for hns3_set/get_ringparam()
+Date:   Sat, 26 Mar 2022 17:51:04 +0800
+Message-ID: <20220326095105.54075-6-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220326095105.54075-1-huangguangbin2@huawei.com>
 References: <20220326095105.54075-1-huangguangbin2@huawei.com>
@@ -54,44 +54,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hao Chen <chenhao288@hisilicon.com>
 
-When pci device reset failed, it does uninit operation and priv->ring
-is NULL, it causes accessing NULL pointer error.
+When pci devices init failed and haven't reinit, priv->ring is
+NULL and hns3_set/get_ringparam() will access priv->ring. it
+causes call trace.
 
-Add netdev reset check for hns3_set_tunable() to fix it.
+So, add NULL pointer check for hns3_set/get_ringparam() to
+avoid this situation.
 
-Fixes: 99f6b5fb5f63 ("net: hns3: use bounce buffer when rx page can not be reused")
+Fixes: 5668abda0931 ("net: hns3: add support for set_ringparam")
 Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index ae30dbe7ef52..49e7b022caaa 100644
+index 49e7b022caaa..f4da77452126 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1766,9 +1766,6 @@ static int hns3_set_tx_spare_buf_size(struct net_device *netdev,
+@@ -653,8 +653,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
  	struct hnae3_handle *h = priv->ae_handle;
- 	int ret;
+ 	int rx_queue_index = h->kinfo.num_tqps;
  
--	if (hns3_nic_resetting(netdev))
--		return -EBUSY;
--
- 	h->kinfo.tx_spare_buf_size = data;
- 
- 	ret = hns3_reset_notify(h, HNAE3_DOWN_CLIENT);
-@@ -1799,6 +1796,11 @@ static int hns3_set_tunable(struct net_device *netdev,
- 	struct hnae3_handle *h = priv->ae_handle;
- 	int i, ret = 0;
- 
+-	if (hns3_nic_resetting(netdev)) {
+-		netdev_err(netdev, "dev resetting!");
 +	if (hns3_nic_resetting(netdev) || !priv->ring) {
-+		netdev_err(netdev, "failed to set tunable value, dev resetting!");
-+		return -EBUSY;
++		netdev_err(netdev, "failed to get ringparam value, due to dev resetting or uninited\n");
+ 		return;
+ 	}
+ 
+@@ -1074,8 +1074,14 @@ static int hns3_check_ringparam(struct net_device *ndev,
+ {
+ #define RX_BUF_LEN_2K 2048
+ #define RX_BUF_LEN_4K 4096
+-	if (hns3_nic_resetting(ndev))
++
++	struct hns3_nic_priv *priv = netdev_priv(ndev);
++
++	if (hns3_nic_resetting(ndev) || !priv->ring) {
++		netdev_err(ndev, "failed to set ringparam value, due to dev resetting or uninited\n");
+ 		return -EBUSY;
 +	}
 +
- 	switch (tuna->id) {
- 	case ETHTOOL_TX_COPYBREAK:
- 		priv->tx_copybreak = *(u32 *)data;
+ 
+ 	if (param->rx_mini_pending || param->rx_jumbo_pending)
+ 		return -EINVAL;
 -- 
 2.33.0
 
