@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B04714E82E9
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:10:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 728B74E82CA
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:09:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234362AbiCZRK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 13:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49694 "EHLO
+        id S234393AbiCZRLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 13:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233000AbiCZRKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:10:33 -0400
-Received: from stuerz.xyz (stuerz.xyz [IPv6:2001:19f0:5:15da:5400:3ff:fecc:7379])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAF634BA0;
-        Sat, 26 Mar 2022 10:08:33 -0700 (PDT)
+        with ESMTP id S234193AbiCZRKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:10:42 -0400
+Received: from stuerz.xyz (unknown [45.77.206.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F39935870;
+        Sat, 26 Mar 2022 10:08:58 -0700 (PDT)
 Received: by stuerz.xyz (Postfix, from userid 114)
-        id 9D973FBBC6; Sat, 26 Mar 2022 17:00:22 +0000 (UTC)
+        id 7910DFBBCF; Sat, 26 Mar 2022 17:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648314024; bh=gqt1+kI42FGInscQtbmdIv8LY19kdHpeRO5nUSHeT20=;
+        t=1648314029; bh=cHRiuCe1TPpqsDGR7qcb8/Hf5JfE4vitU3VPJy27LKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yTXX8Igb67dmxs2rI659X8bFPAsNUwM4FYdfBfqYco2pov/ruj2kzZjHBlDxNkm4O
-         YrS0PiktRz+Kr7/aFJY64IZPdRchAc2MJNAASFeANAOToGtmTs60gRB0CWYatC4Yz3
-         1ZJDCGLTP8XgRa8IefeCRaT1qjpCVz5BAAoKiFJF7ShxdKbQMTIX0RodhnN2J11VGs
-         k+N760Wph8Ptz1J0J5ixbFLngT+HQI2/cTFotHxVMERaU8M2LJcQTJ7SxTbMfx5rcP
-         YZNQ2bgzHE4XMRQDQRyA9OuyThOohBO9PlEEpixa0+Wbjl+hLiIIhKEEvfsw9ED24f
-         glh+IX8phWjZw==
+        b=x2P2I2GCqtRRZgaVAuhoomC+g8GAZ06UsBilSGu98uWTwc2OuzNov6nTwDjhqRuea
+         hx3FckdbXBuhGGDstNJEie7SB3Gw5NlBXLtM+EeAAWNPwP0IR4Tqo07Ir/I2OTG8gQ
+         MA34jaVN4dXvguHf7lXCC0cDoFpNan0QRxojLwoGiPHGtaUfq3TQAY/qmecCyRUpL3
+         Oo8hGLRKKobx3p3Q5BZ1MRP8CaKZoWkHBfGmE3EPbUQ8JUqnh7jZK7D9Sj7aiZaJ7k
+         9mNuSbmAp5xfIShLKgElkuXgvXKbkE71nerbKNvPwbdeN1tkes+2seDMx3fohInUvU
+         fvNFRSrf0SciQ==
 Received: from benni-fedora.. (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
-        by stuerz.xyz (Postfix) with ESMTPSA id A8729FB7D3;
-        Sat, 26 Mar 2022 17:00:13 +0000 (UTC)
+        by stuerz.xyz (Postfix) with ESMTPSA id 480E0FBB90;
+        Sat, 26 Mar 2022 17:00:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648314020; bh=gqt1+kI42FGInscQtbmdIv8LY19kdHpeRO5nUSHeT20=;
+        t=1648314026; bh=cHRiuCe1TPpqsDGR7qcb8/Hf5JfE4vitU3VPJy27LKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cAGmc7q/v70fp/d8OErxnqAUtLx7NZZMJRTXOS0xd3wx/9j3/80aOVZpisTnSXgpD
-         prCgpdgT77LpFvxgJNlKEBWLSBjZ4kxEnRiiQ8dYJXZz/rVa+mwrDqlAxyVCXFhHlW
-         pIK2SHvu+HJwUEPSNGCBAg9W2pTt/tLFKw/zKUqmtezySp/jWWzvO2dxfFwiuWRJ/2
-         xpQDsn76lN3Gog+YDVovDRsTD/FUOFZK+XpCqNI1kFh28CwW7J2ObwhgE7g2W94Ieh
-         euilI5YMx4HWkP8cW5lsUQrviC9YxhnjqgNxitvFz2aa9gpm6UrKMQ8V/jtHu5kgQn
-         iXGM/MCmHVf9Q==
+        b=LhA3DiEFdOtNy7uA7SQQa2ZnaZ4pRizN+E/xV0EucxFcrYskavpkGHB6rxNcOyihh
+         bqdBiUdc/34LoOGDDXwFJ7lsmTshUHjh+jZXwlS00z67kJdqgDg2f8b3gnH+4V0dba
+         A4mLyzLNw9qgtA+ZJAT/OipI/8D8UtosqcxFP5Pg9zjv62d3P6otALUXkZg+4Spwbg
+         6t0SyEUyBSb9I+kBLYaCCaO0a7VbyD3wr3jWjDTKuWFNEuHjUArTPqFejyF52AAV0F
+         rTNkK9W8RCyaTodKk6RARYTfbMrcmuEDgMVTjqbRl6jlO7mR7OGweFdtfjxizdmwCx
+         pA8QepsBUQyxw==
 From:   =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
 To:     andrew@lunn.ch
 Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
@@ -65,19 +65,21 @@ Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
         wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
         linux-pci@vger.kernel.org,
         =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
-Subject: [PATCH 09/22] gpio-winbond: Use C99 initializers
-Date:   Sat, 26 Mar 2022 17:58:56 +0100
-Message-Id: <20220326165909.506926-9-benni@stuerz.xyz>
+Subject: [PATCH 10/22] hfi1: Replace comments with C99 initializers
+Date:   Sat, 26 Mar 2022 17:58:57 +0100
+Message-Id: <20220326165909.506926-10-benni@stuerz.xyz>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
 References: <20220326165909.506926-1-benni@stuerz.xyz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        PDS_OTHER_BAD_TLD,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        PDS_OTHER_BAD_TLD,RDNS_DYNAMIC,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UPPERCASE_50_75 autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -89,67 +91,1085 @@ initializers because the kernel supports them now.
 
 Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
 ---
- drivers/gpio/gpio-winbond.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/infiniband/hw/hfi1/chip.c | 918 +++++++++++++++---------------
+ drivers/infiniband/hw/hfi1/mad.c  |  34 +-
+ 2 files changed, 476 insertions(+), 476 deletions(-)
 
-diff --git a/drivers/gpio/gpio-winbond.c b/drivers/gpio/gpio-winbond.c
-index 7f8f5b02e31d..0b637fdb407c 100644
---- a/drivers/gpio/gpio-winbond.c
-+++ b/drivers/gpio/gpio-winbond.c
-@@ -249,7 +249,7 @@ struct winbond_gpio_info {
+diff --git a/drivers/infiniband/hw/hfi1/chip.c b/drivers/infiniband/hw/hfi1/chip.c
+index f1245c94ae26..e9b8a7220f5d 100644
+--- a/drivers/infiniband/hw/hfi1/chip.c
++++ b/drivers/infiniband/hw/hfi1/chip.c
+@@ -252,88 +252,88 @@ struct flag_table {
+  * CCE Error flags.
+  */
+ static struct flag_table cce_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY0("CceCsrParityErr",
+-		CCE_ERR_STATUS_CCE_CSR_PARITY_ERR_SMASK),
+-/* 1*/	FLAG_ENTRY0("CceCsrReadBadAddrErr",
+-		CCE_ERR_STATUS_CCE_CSR_READ_BAD_ADDR_ERR_SMASK),
+-/* 2*/	FLAG_ENTRY0("CceCsrWriteBadAddrErr",
+-		CCE_ERR_STATUS_CCE_CSR_WRITE_BAD_ADDR_ERR_SMASK),
+-/* 3*/	FLAG_ENTRY0("CceTrgtAsyncFifoParityErr",
+-		CCE_ERR_STATUS_CCE_TRGT_ASYNC_FIFO_PARITY_ERR_SMASK),
+-/* 4*/	FLAG_ENTRY0("CceTrgtAccessErr",
+-		CCE_ERR_STATUS_CCE_TRGT_ACCESS_ERR_SMASK),
+-/* 5*/	FLAG_ENTRY0("CceRspdDataParityErr",
+-		CCE_ERR_STATUS_CCE_RSPD_DATA_PARITY_ERR_SMASK),
+-/* 6*/	FLAG_ENTRY0("CceCli0AsyncFifoParityErr",
+-		CCE_ERR_STATUS_CCE_CLI0_ASYNC_FIFO_PARITY_ERR_SMASK),
+-/* 7*/	FLAG_ENTRY0("CceCsrCfgBusParityErr",
+-		CCE_ERR_STATUS_CCE_CSR_CFG_BUS_PARITY_ERR_SMASK),
+-/* 8*/	FLAG_ENTRY0("CceCli2AsyncFifoParityErr",
+-		CCE_ERR_STATUS_CCE_CLI2_ASYNC_FIFO_PARITY_ERR_SMASK),
+-/* 9*/	FLAG_ENTRY0("CceCli1AsyncFifoPioCrdtParityErr",
+-	    CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_PIO_CRDT_PARITY_ERR_SMASK),
+-/*10*/	FLAG_ENTRY0("CceCli1AsyncFifoPioCrdtParityErr",
+-	    CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_SDMA_HD_PARITY_ERR_SMASK),
+-/*11*/	FLAG_ENTRY0("CceCli1AsyncFifoRxdmaParityError",
+-	    CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_RXDMA_PARITY_ERROR_SMASK),
+-/*12*/	FLAG_ENTRY0("CceCli1AsyncFifoDbgParityError",
+-		CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_DBG_PARITY_ERROR_SMASK),
+-/*13*/	FLAG_ENTRY0("PcicRetryMemCorErr",
+-		CCE_ERR_STATUS_PCIC_RETRY_MEM_COR_ERR_SMASK),
+-/*14*/	FLAG_ENTRY0("PcicRetryMemCorErr",
+-		CCE_ERR_STATUS_PCIC_RETRY_SOT_MEM_COR_ERR_SMASK),
+-/*15*/	FLAG_ENTRY0("PcicPostHdQCorErr",
+-		CCE_ERR_STATUS_PCIC_POST_HD_QCOR_ERR_SMASK),
+-/*16*/	FLAG_ENTRY0("PcicPostHdQCorErr",
+-		CCE_ERR_STATUS_PCIC_POST_DAT_QCOR_ERR_SMASK),
+-/*17*/	FLAG_ENTRY0("PcicPostHdQCorErr",
+-		CCE_ERR_STATUS_PCIC_CPL_HD_QCOR_ERR_SMASK),
+-/*18*/	FLAG_ENTRY0("PcicCplDatQCorErr",
+-		CCE_ERR_STATUS_PCIC_CPL_DAT_QCOR_ERR_SMASK),
+-/*19*/	FLAG_ENTRY0("PcicNPostHQParityErr",
+-		CCE_ERR_STATUS_PCIC_NPOST_HQ_PARITY_ERR_SMASK),
+-/*20*/	FLAG_ENTRY0("PcicNPostDatQParityErr",
+-		CCE_ERR_STATUS_PCIC_NPOST_DAT_QPARITY_ERR_SMASK),
+-/*21*/	FLAG_ENTRY0("PcicRetryMemUncErr",
+-		CCE_ERR_STATUS_PCIC_RETRY_MEM_UNC_ERR_SMASK),
+-/*22*/	FLAG_ENTRY0("PcicRetrySotMemUncErr",
+-		CCE_ERR_STATUS_PCIC_RETRY_SOT_MEM_UNC_ERR_SMASK),
+-/*23*/	FLAG_ENTRY0("PcicPostHdQUncErr",
+-		CCE_ERR_STATUS_PCIC_POST_HD_QUNC_ERR_SMASK),
+-/*24*/	FLAG_ENTRY0("PcicPostDatQUncErr",
+-		CCE_ERR_STATUS_PCIC_POST_DAT_QUNC_ERR_SMASK),
+-/*25*/	FLAG_ENTRY0("PcicCplHdQUncErr",
+-		CCE_ERR_STATUS_PCIC_CPL_HD_QUNC_ERR_SMASK),
+-/*26*/	FLAG_ENTRY0("PcicCplDatQUncErr",
+-		CCE_ERR_STATUS_PCIC_CPL_DAT_QUNC_ERR_SMASK),
+-/*27*/	FLAG_ENTRY0("PcicTransmitFrontParityErr",
+-		CCE_ERR_STATUS_PCIC_TRANSMIT_FRONT_PARITY_ERR_SMASK),
+-/*28*/	FLAG_ENTRY0("PcicTransmitBackParityErr",
+-		CCE_ERR_STATUS_PCIC_TRANSMIT_BACK_PARITY_ERR_SMASK),
+-/*29*/	FLAG_ENTRY0("PcicReceiveParityErr",
+-		CCE_ERR_STATUS_PCIC_RECEIVE_PARITY_ERR_SMASK),
+-/*30*/	FLAG_ENTRY0("CceTrgtCplTimeoutErr",
+-		CCE_ERR_STATUS_CCE_TRGT_CPL_TIMEOUT_ERR_SMASK),
+-/*31*/	FLAG_ENTRY0("LATriggered",
+-		CCE_ERR_STATUS_LA_TRIGGERED_SMASK),
+-/*32*/	FLAG_ENTRY0("CceSegReadBadAddrErr",
+-		CCE_ERR_STATUS_CCE_SEG_READ_BAD_ADDR_ERR_SMASK),
+-/*33*/	FLAG_ENTRY0("CceSegWriteBadAddrErr",
+-		CCE_ERR_STATUS_CCE_SEG_WRITE_BAD_ADDR_ERR_SMASK),
+-/*34*/	FLAG_ENTRY0("CceRcplAsyncFifoParityErr",
+-		CCE_ERR_STATUS_CCE_RCPL_ASYNC_FIFO_PARITY_ERR_SMASK),
+-/*35*/	FLAG_ENTRY0("CceRxdmaConvFifoParityErr",
+-		CCE_ERR_STATUS_CCE_RXDMA_CONV_FIFO_PARITY_ERR_SMASK),
+-/*36*/	FLAG_ENTRY0("CceMsixTableCorErr",
+-		CCE_ERR_STATUS_CCE_MSIX_TABLE_COR_ERR_SMASK),
+-/*37*/	FLAG_ENTRY0("CceMsixTableUncErr",
+-		CCE_ERR_STATUS_CCE_MSIX_TABLE_UNC_ERR_SMASK),
+-/*38*/	FLAG_ENTRY0("CceIntMapCorErr",
+-		CCE_ERR_STATUS_CCE_INT_MAP_COR_ERR_SMASK),
+-/*39*/	FLAG_ENTRY0("CceIntMapUncErr",
+-		CCE_ERR_STATUS_CCE_INT_MAP_UNC_ERR_SMASK),
+-/*40*/	FLAG_ENTRY0("CceMsixCsrParityErr",
+-		CCE_ERR_STATUS_CCE_MSIX_CSR_PARITY_ERR_SMASK),
++[0]  =	FLAG_ENTRY0("CceCsrParityErr",
++		   CCE_ERR_STATUS_CCE_CSR_PARITY_ERR_SMASK),
++[1]  =	FLAG_ENTRY0("CceCsrReadBadAddrErr",
++		   CCE_ERR_STATUS_CCE_CSR_READ_BAD_ADDR_ERR_SMASK),
++[2]  =	FLAG_ENTRY0("CceCsrWriteBadAddrErr",
++		   CCE_ERR_STATUS_CCE_CSR_WRITE_BAD_ADDR_ERR_SMASK),
++[3]  =	FLAG_ENTRY0("CceTrgtAsyncFifoParityErr",
++		   CCE_ERR_STATUS_CCE_TRGT_ASYNC_FIFO_PARITY_ERR_SMASK),
++[4]  =	FLAG_ENTRY0("CceTrgtAccessErr",
++		   CCE_ERR_STATUS_CCE_TRGT_ACCESS_ERR_SMASK),
++[5]  =	FLAG_ENTRY0("CceRspdDataParityErr",
++		   CCE_ERR_STATUS_CCE_RSPD_DATA_PARITY_ERR_SMASK),
++[6]  =	FLAG_ENTRY0("CceCli0AsyncFifoParityErr",
++		   CCE_ERR_STATUS_CCE_CLI0_ASYNC_FIFO_PARITY_ERR_SMASK),
++[7]  =	FLAG_ENTRY0("CceCsrCfgBusParityErr",
++		   CCE_ERR_STATUS_CCE_CSR_CFG_BUS_PARITY_ERR_SMASK),
++[8]  =	FLAG_ENTRY0("CceCli2AsyncFifoParityErr",
++		   CCE_ERR_STATUS_CCE_CLI2_ASYNC_FIFO_PARITY_ERR_SMASK),
++[9]  =	FLAG_ENTRY0("CceCli1AsyncFifoPioCrdtParityErr",
++	       CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_PIO_CRDT_PARITY_ERR_SMASK),
++[10] =	FLAG_ENTRY0("CceCli1AsyncFifoPioCrdtParityErr",
++	      CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_SDMA_HD_PARITY_ERR_SMASK),
++[11] =	FLAG_ENTRY0("CceCli1AsyncFifoRxdmaParityError",
++	       CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_RXDMA_PARITY_ERROR_SMASK),
++[12] =	FLAG_ENTRY0("CceCli1AsyncFifoDbgParityError",
++		   CCE_ERR_STATUS_CCE_CLI1_ASYNC_FIFO_DBG_PARITY_ERROR_SMASK),
++[13] =	FLAG_ENTRY0("PcicRetryMemCorErr",
++		   CCE_ERR_STATUS_PCIC_RETRY_MEM_COR_ERR_SMASK),
++[14] =	FLAG_ENTRY0("PcicRetryMemCorErr",
++		   CCE_ERR_STATUS_PCIC_RETRY_SOT_MEM_COR_ERR_SMASK),
++[15] =	FLAG_ENTRY0("PcicPostHdQCorErr",
++		   CCE_ERR_STATUS_PCIC_POST_HD_QCOR_ERR_SMASK),
++[16] =	FLAG_ENTRY0("PcicPostHdQCorErr",
++		   CCE_ERR_STATUS_PCIC_POST_DAT_QCOR_ERR_SMASK),
++[17] =	FLAG_ENTRY0("PcicPostHdQCorErr",
++		   CCE_ERR_STATUS_PCIC_CPL_HD_QCOR_ERR_SMASK),
++[18] =	FLAG_ENTRY0("PcicCplDatQCorErr",
++		   CCE_ERR_STATUS_PCIC_CPL_DAT_QCOR_ERR_SMASK),
++[19] =	FLAG_ENTRY0("PcicNPostHQParityErr",
++		   CCE_ERR_STATUS_PCIC_NPOST_HQ_PARITY_ERR_SMASK),
++[20] =	FLAG_ENTRY0("PcicNPostDatQParityErr",
++		   CCE_ERR_STATUS_PCIC_NPOST_DAT_QPARITY_ERR_SMASK),
++[21] =	FLAG_ENTRY0("PcicRetryMemUncErr",
++		   CCE_ERR_STATUS_PCIC_RETRY_MEM_UNC_ERR_SMASK),
++[22] =	FLAG_ENTRY0("PcicRetrySotMemUncErr",
++		   CCE_ERR_STATUS_PCIC_RETRY_SOT_MEM_UNC_ERR_SMASK),
++[23] =	FLAG_ENTRY0("PcicPostHdQUncErr",
++		   CCE_ERR_STATUS_PCIC_POST_HD_QUNC_ERR_SMASK),
++[24] =	FLAG_ENTRY0("PcicPostDatQUncErr",
++		   CCE_ERR_STATUS_PCIC_POST_DAT_QUNC_ERR_SMASK),
++[25] =	FLAG_ENTRY0("PcicCplHdQUncErr",
++		   CCE_ERR_STATUS_PCIC_CPL_HD_QUNC_ERR_SMASK),
++[26] =	FLAG_ENTRY0("PcicCplDatQUncErr",
++		   CCE_ERR_STATUS_PCIC_CPL_DAT_QUNC_ERR_SMASK),
++[27] =	FLAG_ENTRY0("PcicTransmitFrontParityErr",
++		   CCE_ERR_STATUS_PCIC_TRANSMIT_FRONT_PARITY_ERR_SMASK),
++[28] =	FLAG_ENTRY0("PcicTransmitBackParityErr",
++		   CCE_ERR_STATUS_PCIC_TRANSMIT_BACK_PARITY_ERR_SMASK),
++[29] =	FLAG_ENTRY0("PcicReceiveParityErr",
++		   CCE_ERR_STATUS_PCIC_RECEIVE_PARITY_ERR_SMASK),
++[30] =	FLAG_ENTRY0("CceTrgtCplTimeoutErr",
++		   CCE_ERR_STATUS_CCE_TRGT_CPL_TIMEOUT_ERR_SMASK),
++[31] =	FLAG_ENTRY0("LATriggered",
++		   CCE_ERR_STATUS_LA_TRIGGERED_SMASK),
++[32] =	FLAG_ENTRY0("CceSegReadBadAddrErr",
++		   CCE_ERR_STATUS_CCE_SEG_READ_BAD_ADDR_ERR_SMASK),
++[33] =	FLAG_ENTRY0("CceSegWriteBadAddrErr",
++		   CCE_ERR_STATUS_CCE_SEG_WRITE_BAD_ADDR_ERR_SMASK),
++[34] =	FLAG_ENTRY0("CceRcplAsyncFifoParityErr",
++		   CCE_ERR_STATUS_CCE_RCPL_ASYNC_FIFO_PARITY_ERR_SMASK),
++[35] =	FLAG_ENTRY0("CceRxdmaConvFifoParityErr",
++		   CCE_ERR_STATUS_CCE_RXDMA_CONV_FIFO_PARITY_ERR_SMASK),
++[36] =	FLAG_ENTRY0("CceMsixTableCorErr",
++		   CCE_ERR_STATUS_CCE_MSIX_TABLE_COR_ERR_SMASK),
++[37] =	FLAG_ENTRY0("CceMsixTableUncErr",
++		   CCE_ERR_STATUS_CCE_MSIX_TABLE_UNC_ERR_SMASK),
++[38] =	FLAG_ENTRY0("CceIntMapCorErr",
++		   CCE_ERR_STATUS_CCE_INT_MAP_COR_ERR_SMASK),
++[39] =	FLAG_ENTRY0("CceIntMapUncErr",
++		   CCE_ERR_STATUS_CCE_INT_MAP_UNC_ERR_SMASK),
++[40] =	FLAG_ENTRY0("CceMsixCsrParityErr",
++		   CCE_ERR_STATUS_CCE_MSIX_CSR_PARITY_ERR_SMASK),
+ /*41-63 reserved*/
  };
  
- static const struct winbond_gpio_info winbond_gpio_infos[6] = {
--	{ /* 0 */
-+	[0] = {
- 		.dev = WB_SIO_DEV_GPIO12,
- 		.enablereg = WB_SIO_GPIO12_REG_ENABLE,
- 		.enablebit = WB_SIO_GPIO12_ENABLE_1,
-@@ -266,7 +266,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
- 			.warnonly = true
- 		}
- 	},
--	{ /* 1 */
-+	[1] = {
- 		.dev = WB_SIO_DEV_GPIO12,
- 		.enablereg = WB_SIO_GPIO12_REG_ENABLE,
- 		.enablebit = WB_SIO_GPIO12_ENABLE_2,
-@@ -277,7 +277,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
- 		.datareg = WB_SIO_GPIO12_REG_DATA2
- 		/* special conflict handling so doesn't use conflict data */
- 	},
--	{ /* 2 */
-+	[2] = {
- 		.dev = WB_SIO_DEV_GPIO34,
- 		.enablereg = WB_SIO_GPIO34_REG_ENABLE,
- 		.enablebit = WB_SIO_GPIO34_ENABLE_3,
-@@ -294,7 +294,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
- 			.warnonly = true
- 		}
- 	},
--	{ /* 3 */
-+	[3] = {
- 		.dev = WB_SIO_DEV_GPIO34,
- 		.enablereg = WB_SIO_GPIO34_REG_ENABLE,
- 		.enablebit = WB_SIO_GPIO34_ENABLE_4,
-@@ -311,7 +311,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
- 			.warnonly = true
- 		}
- 	},
--	{ /* 4 */
-+	[4] = {
- 		.dev = WB_SIO_DEV_WDGPIO56,
- 		.enablereg = WB_SIO_WDGPIO56_REG_ENABLE,
- 		.enablebit = WB_SIO_WDGPIO56_ENABLE_5,
-@@ -328,7 +328,7 @@ static const struct winbond_gpio_info winbond_gpio_infos[6] = {
- 			.warnonly = true
- 		}
- 	},
--	{ /* 5 */
-+	[5] = {
- 		.dev = WB_SIO_DEV_WDGPIO56,
- 		.enablereg = WB_SIO_WDGPIO56_REG_ENABLE,
- 		.enablebit = WB_SIO_WDGPIO56_ENABLE_6,
+@@ -342,128 +342,128 @@ static struct flag_table cce_err_status_flags[] = {
+  */
+ #define MES(text) MISC_ERR_STATUS_MISC_##text##_ERR_SMASK
+ static struct flag_table misc_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY0("CSR_PARITY", MES(CSR_PARITY)),
+-/* 1*/	FLAG_ENTRY0("CSR_READ_BAD_ADDR", MES(CSR_READ_BAD_ADDR)),
+-/* 2*/	FLAG_ENTRY0("CSR_WRITE_BAD_ADDR", MES(CSR_WRITE_BAD_ADDR)),
+-/* 3*/	FLAG_ENTRY0("SBUS_WRITE_FAILED", MES(SBUS_WRITE_FAILED)),
+-/* 4*/	FLAG_ENTRY0("KEY_MISMATCH", MES(KEY_MISMATCH)),
+-/* 5*/	FLAG_ENTRY0("FW_AUTH_FAILED", MES(FW_AUTH_FAILED)),
+-/* 6*/	FLAG_ENTRY0("EFUSE_CSR_PARITY", MES(EFUSE_CSR_PARITY)),
+-/* 7*/	FLAG_ENTRY0("EFUSE_READ_BAD_ADDR", MES(EFUSE_READ_BAD_ADDR)),
+-/* 8*/	FLAG_ENTRY0("EFUSE_WRITE", MES(EFUSE_WRITE)),
+-/* 9*/	FLAG_ENTRY0("EFUSE_DONE_PARITY", MES(EFUSE_DONE_PARITY)),
+-/*10*/	FLAG_ENTRY0("INVALID_EEP_CMD", MES(INVALID_EEP_CMD)),
+-/*11*/	FLAG_ENTRY0("MBIST_FAIL", MES(MBIST_FAIL)),
+-/*12*/	FLAG_ENTRY0("PLL_LOCK_FAIL", MES(PLL_LOCK_FAIL))
++	[0]  = FLAG_ENTRY0("CSR_PARITY", MES(CSR_PARITY)),
++	[1]  = FLAG_ENTRY0("CSR_READ_BAD_ADDR", MES(CSR_READ_BAD_ADDR)),
++	[2]  = FLAG_ENTRY0("CSR_WRITE_BAD_ADDR", MES(CSR_WRITE_BAD_ADDR)),
++	[3]  = FLAG_ENTRY0("SBUS_WRITE_FAILED", MES(SBUS_WRITE_FAILED)),
++	[4]  = FLAG_ENTRY0("KEY_MISMATCH", MES(KEY_MISMATCH)),
++	[5]  = FLAG_ENTRY0("FW_AUTH_FAILED", MES(FW_AUTH_FAILED)),
++	[6]  = FLAG_ENTRY0("EFUSE_CSR_PARITY", MES(EFUSE_CSR_PARITY)),
++	[7]  = FLAG_ENTRY0("EFUSE_READ_BAD_ADDR", MES(EFUSE_READ_BAD_ADDR)),
++	[8]  = FLAG_ENTRY0("EFUSE_WRITE", MES(EFUSE_WRITE)),
++	[9]  = FLAG_ENTRY0("EFUSE_DONE_PARITY", MES(EFUSE_DONE_PARITY)),
++	[10] = FLAG_ENTRY0("INVALID_EEP_CMD", MES(INVALID_EEP_CMD)),
++	[11] = FLAG_ENTRY0("MBIST_FAIL", MES(MBIST_FAIL)),
++	[12] = FLAG_ENTRY0("PLL_LOCK_FAIL", MES(PLL_LOCK_FAIL))
+ };
+ 
+ /*
+  * TXE PIO Error flags and consequences
+  */
+ static struct flag_table pio_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY("PioWriteBadCtxt",
+-	SEC_WRITE_DROPPED,
+-	SEND_PIO_ERR_STATUS_PIO_WRITE_BAD_CTXT_ERR_SMASK),
+-/* 1*/	FLAG_ENTRY("PioWriteAddrParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_WRITE_ADDR_PARITY_ERR_SMASK),
+-/* 2*/	FLAG_ENTRY("PioCsrParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_CSR_PARITY_ERR_SMASK),
+-/* 3*/	FLAG_ENTRY("PioSbMemFifo0",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_SB_MEM_FIFO0_ERR_SMASK),
+-/* 4*/	FLAG_ENTRY("PioSbMemFifo1",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_SB_MEM_FIFO1_ERR_SMASK),
+-/* 5*/	FLAG_ENTRY("PioPccFifoParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PCC_FIFO_PARITY_ERR_SMASK),
+-/* 6*/	FLAG_ENTRY("PioPecFifoParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PEC_FIFO_PARITY_ERR_SMASK),
+-/* 7*/	FLAG_ENTRY("PioSbrdctlCrrelParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_SBRDCTL_CRREL_PARITY_ERR_SMASK),
+-/* 8*/	FLAG_ENTRY("PioSbrdctrlCrrelFifoParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_SBRDCTRL_CRREL_FIFO_PARITY_ERR_SMASK),
+-/* 9*/	FLAG_ENTRY("PioPktEvictFifoParityErr",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PKT_EVICT_FIFO_PARITY_ERR_SMASK),
+-/*10*/	FLAG_ENTRY("PioSmPktResetParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_SM_PKT_RESET_PARITY_ERR_SMASK),
+-/*11*/	FLAG_ENTRY("PioVlLenMemBank0Unc",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK0_UNC_ERR_SMASK),
+-/*12*/	FLAG_ENTRY("PioVlLenMemBank1Unc",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK1_UNC_ERR_SMASK),
+-/*13*/	FLAG_ENTRY("PioVlLenMemBank0Cor",
+-	0,
+-	SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK0_COR_ERR_SMASK),
+-/*14*/	FLAG_ENTRY("PioVlLenMemBank1Cor",
+-	0,
+-	SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK1_COR_ERR_SMASK),
+-/*15*/	FLAG_ENTRY("PioCreditRetFifoParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_CREDIT_RET_FIFO_PARITY_ERR_SMASK),
+-/*16*/	FLAG_ENTRY("PioPpmcPblFifo",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PPMC_PBL_FIFO_ERR_SMASK),
+-/*17*/	FLAG_ENTRY("PioInitSmIn",
+-	0,
+-	SEND_PIO_ERR_STATUS_PIO_INIT_SM_IN_ERR_SMASK),
+-/*18*/	FLAG_ENTRY("PioPktEvictSmOrArbSm",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PKT_EVICT_SM_OR_ARB_SM_ERR_SMASK),
+-/*19*/	FLAG_ENTRY("PioHostAddrMemUnc",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_HOST_ADDR_MEM_UNC_ERR_SMASK),
+-/*20*/	FLAG_ENTRY("PioHostAddrMemCor",
+-	0,
+-	SEND_PIO_ERR_STATUS_PIO_HOST_ADDR_MEM_COR_ERR_SMASK),
+-/*21*/	FLAG_ENTRY("PioWriteDataParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_WRITE_DATA_PARITY_ERR_SMASK),
+-/*22*/	FLAG_ENTRY("PioStateMachine",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_STATE_MACHINE_ERR_SMASK),
+-/*23*/	FLAG_ENTRY("PioWriteQwValidParity",
+-	SEC_WRITE_DROPPED | SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_WRITE_QW_VALID_PARITY_ERR_SMASK),
+-/*24*/	FLAG_ENTRY("PioBlockQwCountParity",
+-	SEC_WRITE_DROPPED | SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_BLOCK_QW_COUNT_PARITY_ERR_SMASK),
+-/*25*/	FLAG_ENTRY("PioVlfVlLenParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_VLF_VL_LEN_PARITY_ERR_SMASK),
+-/*26*/	FLAG_ENTRY("PioVlfSopParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_VLF_SOP_PARITY_ERR_SMASK),
+-/*27*/	FLAG_ENTRY("PioVlFifoParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_VL_FIFO_PARITY_ERR_SMASK),
+-/*28*/	FLAG_ENTRY("PioPpmcBqcMemParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PPMC_BQC_MEM_PARITY_ERR_SMASK),
+-/*29*/	FLAG_ENTRY("PioPpmcSopLen",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PPMC_SOP_LEN_ERR_SMASK),
++[0]  =	FLAG_ENTRY("PioWriteBadCtxt",
++	      SEC_WRITE_DROPPED,
++	      SEND_PIO_ERR_STATUS_PIO_WRITE_BAD_CTXT_ERR_SMASK),
++[1]  =	FLAG_ENTRY("PioWriteAddrParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_WRITE_ADDR_PARITY_ERR_SMASK),
++[2]  =	FLAG_ENTRY("PioCsrParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_CSR_PARITY_ERR_SMASK),
++[3]  =	FLAG_ENTRY("PioSbMemFifo0",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_SB_MEM_FIFO0_ERR_SMASK),
++[4]  =	FLAG_ENTRY("PioSbMemFifo1",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_SB_MEM_FIFO1_ERR_SMASK),
++[5]  =	FLAG_ENTRY("PioPccFifoParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PCC_FIFO_PARITY_ERR_SMASK),
++[6]  =	FLAG_ENTRY("PioPecFifoParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PEC_FIFO_PARITY_ERR_SMASK),
++[7]  =	FLAG_ENTRY("PioSbrdctlCrrelParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_SBRDCTL_CRREL_PARITY_ERR_SMASK),
++[8]  =	FLAG_ENTRY("PioSbrdctrlCrrelFifoParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_SBRDCTRL_CRREL_FIFO_PARITY_ERR_SMASK),
++[9]  =	FLAG_ENTRY("PioPktEvictFifoParityErr",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PKT_EVICT_FIFO_PARITY_ERR_SMASK),
++[10] =	FLAG_ENTRY("PioSmPktResetParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_SM_PKT_RESET_PARITY_ERR_SMASK),
++[11] =	FLAG_ENTRY("PioVlLenMemBank0Unc",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK0_UNC_ERR_SMASK),
++[12] =	FLAG_ENTRY("PioVlLenMemBank1Unc",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK1_UNC_ERR_SMASK),
++[13] =	FLAG_ENTRY("PioVlLenMemBank0Cor",
++	      0,
++	      SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK0_COR_ERR_SMASK),
++[14] =	FLAG_ENTRY("PioVlLenMemBank1Cor",
++	      0,
++	      SEND_PIO_ERR_STATUS_PIO_VL_LEN_MEM_BANK1_COR_ERR_SMASK),
++[15] =	FLAG_ENTRY("PioCreditRetFifoParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_CREDIT_RET_FIFO_PARITY_ERR_SMASK),
++[16] =	FLAG_ENTRY("PioPpmcPblFifo",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PPMC_PBL_FIFO_ERR_SMASK),
++[17] =	FLAG_ENTRY("PioInitSmIn",
++	      0,
++	      SEND_PIO_ERR_STATUS_PIO_INIT_SM_IN_ERR_SMASK),
++[18] =	FLAG_ENTRY("PioPktEvictSmOrArbSm",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PKT_EVICT_SM_OR_ARB_SM_ERR_SMASK),
++[19] =	FLAG_ENTRY("PioHostAddrMemUnc",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_HOST_ADDR_MEM_UNC_ERR_SMASK),
++[20] =	FLAG_ENTRY("PioHostAddrMemCor",
++	      0,
++	      SEND_PIO_ERR_STATUS_PIO_HOST_ADDR_MEM_COR_ERR_SMASK),
++[21] =	FLAG_ENTRY("PioWriteDataParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_WRITE_DATA_PARITY_ERR_SMASK),
++[22] =	FLAG_ENTRY("PioStateMachine",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_STATE_MACHINE_ERR_SMASK),
++[23] =	FLAG_ENTRY("PioWriteQwValidParity",
++	      SEC_WRITE_DROPPED | SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_WRITE_QW_VALID_PARITY_ERR_SMASK),
++[24] =	FLAG_ENTRY("PioBlockQwCountParity",
++	      SEC_WRITE_DROPPED | SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_BLOCK_QW_COUNT_PARITY_ERR_SMASK),
++[25] =	FLAG_ENTRY("PioVlfVlLenParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_VLF_VL_LEN_PARITY_ERR_SMASK),
++[26] =	FLAG_ENTRY("PioVlfSopParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_VLF_SOP_PARITY_ERR_SMASK),
++[27] =	FLAG_ENTRY("PioVlFifoParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_VL_FIFO_PARITY_ERR_SMASK),
++[28] =	FLAG_ENTRY("PioPpmcBqcMemParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PPMC_BQC_MEM_PARITY_ERR_SMASK),
++[29] =	FLAG_ENTRY("PioPpmcSopLen",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PPMC_SOP_LEN_ERR_SMASK),
+ /*30-31 reserved*/
+-/*32*/	FLAG_ENTRY("PioCurrentFreeCntParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_CURRENT_FREE_CNT_PARITY_ERR_SMASK),
+-/*33*/	FLAG_ENTRY("PioLastReturnedCntParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_LAST_RETURNED_CNT_PARITY_ERR_SMASK),
+-/*34*/	FLAG_ENTRY("PioPccSopHeadParity",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PCC_SOP_HEAD_PARITY_ERR_SMASK),
+-/*35*/	FLAG_ENTRY("PioPecSopHeadParityErr",
+-	SEC_SPC_FREEZE,
+-	SEND_PIO_ERR_STATUS_PIO_PEC_SOP_HEAD_PARITY_ERR_SMASK),
++[32] =	FLAG_ENTRY("PioCurrentFreeCntParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_CURRENT_FREE_CNT_PARITY_ERR_SMASK),
++[33] =	FLAG_ENTRY("PioLastReturnedCntParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_LAST_RETURNED_CNT_PARITY_ERR_SMASK),
++[34] =	FLAG_ENTRY("PioPccSopHeadParity",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PCC_SOP_HEAD_PARITY_ERR_SMASK),
++[35] =	FLAG_ENTRY("PioPecSopHeadParityErr",
++	      SEC_SPC_FREEZE,
++	      SEND_PIO_ERR_STATUS_PIO_PEC_SOP_HEAD_PARITY_ERR_SMASK),
+ /*36-63 reserved*/
+ };
+ 
+@@ -503,14 +503,14 @@ static struct flag_table pio_err_status_flags[] = {
+  * TXE SDMA Error flags
+  */
+ static struct flag_table sdma_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY0("SDmaRpyTagErr",
+-		SEND_DMA_ERR_STATUS_SDMA_RPY_TAG_ERR_SMASK),
+-/* 1*/	FLAG_ENTRY0("SDmaCsrParityErr",
+-		SEND_DMA_ERR_STATUS_SDMA_CSR_PARITY_ERR_SMASK),
+-/* 2*/	FLAG_ENTRY0("SDmaPcieReqTrackingUncErr",
+-		SEND_DMA_ERR_STATUS_SDMA_PCIE_REQ_TRACKING_UNC_ERR_SMASK),
+-/* 3*/	FLAG_ENTRY0("SDmaPcieReqTrackingCorErr",
+-		SEND_DMA_ERR_STATUS_SDMA_PCIE_REQ_TRACKING_COR_ERR_SMASK),
++[0]  =	FLAG_ENTRY0("SDmaRpyTagErr",
++		   SEND_DMA_ERR_STATUS_SDMA_RPY_TAG_ERR_SMASK),
++[1]  =	FLAG_ENTRY0("SDmaCsrParityErr",
++		   SEND_DMA_ERR_STATUS_SDMA_CSR_PARITY_ERR_SMASK),
++[2]  =	FLAG_ENTRY0("SDmaPcieReqTrackingUncErr",
++		   SEND_DMA_ERR_STATUS_SDMA_PCIE_REQ_TRACKING_UNC_ERR_SMASK),
++[3]  =	FLAG_ENTRY0("SDmaPcieReqTrackingCorErr",
++		   SEND_DMA_ERR_STATUS_SDMA_PCIE_REQ_TRACKING_COR_ERR_SMASK),
+ /*04-63 reserved*/
+ };
+ 
+@@ -531,100 +531,100 @@ static struct flag_table sdma_err_status_flags[] = {
+  */
+ #define SEES(text) SEND_EGRESS_ERR_STATUS_##text##_ERR_SMASK
+ static struct flag_table egress_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY0("TxPktIntegrityMemCorErr", SEES(TX_PKT_INTEGRITY_MEM_COR)),
+-/* 1*/	FLAG_ENTRY0("TxPktIntegrityMemUncErr", SEES(TX_PKT_INTEGRITY_MEM_UNC)),
++[0]  =	FLAG_ENTRY0("TxPktIntegrityMemCorErr", SEES(TX_PKT_INTEGRITY_MEM_COR)),
++[1]  =	FLAG_ENTRY0("TxPktIntegrityMemUncErr", SEES(TX_PKT_INTEGRITY_MEM_UNC)),
+ /* 2 reserved */
+-/* 3*/	FLAG_ENTRY0("TxEgressFifoUnderrunOrParityErr",
+-		SEES(TX_EGRESS_FIFO_UNDERRUN_OR_PARITY)),
+-/* 4*/	FLAG_ENTRY0("TxLinkdownErr", SEES(TX_LINKDOWN)),
+-/* 5*/	FLAG_ENTRY0("TxIncorrectLinkStateErr", SEES(TX_INCORRECT_LINK_STATE)),
++[3]  =	FLAG_ENTRY0("TxEgressFifoUnderrunOrParityErr",
++		   SEES(TX_EGRESS_FIFO_UNDERRUN_OR_PARITY)),
++[4]  =	FLAG_ENTRY0("TxLinkdownErr", SEES(TX_LINKDOWN)),
++[5]  =	FLAG_ENTRY0("TxIncorrectLinkStateErr", SEES(TX_INCORRECT_LINK_STATE)),
+ /* 6 reserved */
+-/* 7*/	FLAG_ENTRY0("TxPioLaunchIntfParityErr",
+-		SEES(TX_PIO_LAUNCH_INTF_PARITY)),
+-/* 8*/	FLAG_ENTRY0("TxSdmaLaunchIntfParityErr",
+-		SEES(TX_SDMA_LAUNCH_INTF_PARITY)),
++[7]  =	FLAG_ENTRY0("TxPioLaunchIntfParityErr",
++		   SEES(TX_PIO_LAUNCH_INTF_PARITY)),
++[8]  =	FLAG_ENTRY0("TxSdmaLaunchIntfParityErr",
++		   SEES(TX_SDMA_LAUNCH_INTF_PARITY)),
+ /* 9-10 reserved */
+-/*11*/	FLAG_ENTRY0("TxSbrdCtlStateMachineParityErr",
+-		SEES(TX_SBRD_CTL_STATE_MACHINE_PARITY)),
+-/*12*/	FLAG_ENTRY0("TxIllegalVLErr", SEES(TX_ILLEGAL_VL)),
+-/*13*/	FLAG_ENTRY0("TxLaunchCsrParityErr", SEES(TX_LAUNCH_CSR_PARITY)),
+-/*14*/	FLAG_ENTRY0("TxSbrdCtlCsrParityErr", SEES(TX_SBRD_CTL_CSR_PARITY)),
+-/*15*/	FLAG_ENTRY0("TxConfigParityErr", SEES(TX_CONFIG_PARITY)),
+-/*16*/	FLAG_ENTRY0("TxSdma0DisallowedPacketErr",
+-		SEES(TX_SDMA0_DISALLOWED_PACKET)),
+-/*17*/	FLAG_ENTRY0("TxSdma1DisallowedPacketErr",
+-		SEES(TX_SDMA1_DISALLOWED_PACKET)),
+-/*18*/	FLAG_ENTRY0("TxSdma2DisallowedPacketErr",
+-		SEES(TX_SDMA2_DISALLOWED_PACKET)),
+-/*19*/	FLAG_ENTRY0("TxSdma3DisallowedPacketErr",
+-		SEES(TX_SDMA3_DISALLOWED_PACKET)),
+-/*20*/	FLAG_ENTRY0("TxSdma4DisallowedPacketErr",
+-		SEES(TX_SDMA4_DISALLOWED_PACKET)),
+-/*21*/	FLAG_ENTRY0("TxSdma5DisallowedPacketErr",
+-		SEES(TX_SDMA5_DISALLOWED_PACKET)),
+-/*22*/	FLAG_ENTRY0("TxSdma6DisallowedPacketErr",
+-		SEES(TX_SDMA6_DISALLOWED_PACKET)),
+-/*23*/	FLAG_ENTRY0("TxSdma7DisallowedPacketErr",
+-		SEES(TX_SDMA7_DISALLOWED_PACKET)),
+-/*24*/	FLAG_ENTRY0("TxSdma8DisallowedPacketErr",
+-		SEES(TX_SDMA8_DISALLOWED_PACKET)),
+-/*25*/	FLAG_ENTRY0("TxSdma9DisallowedPacketErr",
+-		SEES(TX_SDMA9_DISALLOWED_PACKET)),
+-/*26*/	FLAG_ENTRY0("TxSdma10DisallowedPacketErr",
+-		SEES(TX_SDMA10_DISALLOWED_PACKET)),
+-/*27*/	FLAG_ENTRY0("TxSdma11DisallowedPacketErr",
+-		SEES(TX_SDMA11_DISALLOWED_PACKET)),
+-/*28*/	FLAG_ENTRY0("TxSdma12DisallowedPacketErr",
+-		SEES(TX_SDMA12_DISALLOWED_PACKET)),
+-/*29*/	FLAG_ENTRY0("TxSdma13DisallowedPacketErr",
+-		SEES(TX_SDMA13_DISALLOWED_PACKET)),
+-/*30*/	FLAG_ENTRY0("TxSdma14DisallowedPacketErr",
+-		SEES(TX_SDMA14_DISALLOWED_PACKET)),
+-/*31*/	FLAG_ENTRY0("TxSdma15DisallowedPacketErr",
+-		SEES(TX_SDMA15_DISALLOWED_PACKET)),
+-/*32*/	FLAG_ENTRY0("TxLaunchFifo0UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO0_UNC_OR_PARITY)),
+-/*33*/	FLAG_ENTRY0("TxLaunchFifo1UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO1_UNC_OR_PARITY)),
+-/*34*/	FLAG_ENTRY0("TxLaunchFifo2UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO2_UNC_OR_PARITY)),
+-/*35*/	FLAG_ENTRY0("TxLaunchFifo3UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO3_UNC_OR_PARITY)),
+-/*36*/	FLAG_ENTRY0("TxLaunchFifo4UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO4_UNC_OR_PARITY)),
+-/*37*/	FLAG_ENTRY0("TxLaunchFifo5UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO5_UNC_OR_PARITY)),
+-/*38*/	FLAG_ENTRY0("TxLaunchFifo6UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO6_UNC_OR_PARITY)),
+-/*39*/	FLAG_ENTRY0("TxLaunchFifo7UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO7_UNC_OR_PARITY)),
+-/*40*/	FLAG_ENTRY0("TxLaunchFifo8UncOrParityErr",
+-		SEES(TX_LAUNCH_FIFO8_UNC_OR_PARITY)),
+-/*41*/	FLAG_ENTRY0("TxCreditReturnParityErr", SEES(TX_CREDIT_RETURN_PARITY)),
+-/*42*/	FLAG_ENTRY0("TxSbHdrUncErr", SEES(TX_SB_HDR_UNC)),
+-/*43*/	FLAG_ENTRY0("TxReadSdmaMemoryUncErr", SEES(TX_READ_SDMA_MEMORY_UNC)),
+-/*44*/	FLAG_ENTRY0("TxReadPioMemoryUncErr", SEES(TX_READ_PIO_MEMORY_UNC)),
+-/*45*/	FLAG_ENTRY0("TxEgressFifoUncErr", SEES(TX_EGRESS_FIFO_UNC)),
+-/*46*/	FLAG_ENTRY0("TxHcrcInsertionErr", SEES(TX_HCRC_INSERTION)),
+-/*47*/	FLAG_ENTRY0("TxCreditReturnVLErr", SEES(TX_CREDIT_RETURN_VL)),
+-/*48*/	FLAG_ENTRY0("TxLaunchFifo0CorErr", SEES(TX_LAUNCH_FIFO0_COR)),
+-/*49*/	FLAG_ENTRY0("TxLaunchFifo1CorErr", SEES(TX_LAUNCH_FIFO1_COR)),
+-/*50*/	FLAG_ENTRY0("TxLaunchFifo2CorErr", SEES(TX_LAUNCH_FIFO2_COR)),
+-/*51*/	FLAG_ENTRY0("TxLaunchFifo3CorErr", SEES(TX_LAUNCH_FIFO3_COR)),
+-/*52*/	FLAG_ENTRY0("TxLaunchFifo4CorErr", SEES(TX_LAUNCH_FIFO4_COR)),
+-/*53*/	FLAG_ENTRY0("TxLaunchFifo5CorErr", SEES(TX_LAUNCH_FIFO5_COR)),
+-/*54*/	FLAG_ENTRY0("TxLaunchFifo6CorErr", SEES(TX_LAUNCH_FIFO6_COR)),
+-/*55*/	FLAG_ENTRY0("TxLaunchFifo7CorErr", SEES(TX_LAUNCH_FIFO7_COR)),
+-/*56*/	FLAG_ENTRY0("TxLaunchFifo8CorErr", SEES(TX_LAUNCH_FIFO8_COR)),
+-/*57*/	FLAG_ENTRY0("TxCreditOverrunErr", SEES(TX_CREDIT_OVERRUN)),
+-/*58*/	FLAG_ENTRY0("TxSbHdrCorErr", SEES(TX_SB_HDR_COR)),
+-/*59*/	FLAG_ENTRY0("TxReadSdmaMemoryCorErr", SEES(TX_READ_SDMA_MEMORY_COR)),
+-/*60*/	FLAG_ENTRY0("TxReadPioMemoryCorErr", SEES(TX_READ_PIO_MEMORY_COR)),
+-/*61*/	FLAG_ENTRY0("TxEgressFifoCorErr", SEES(TX_EGRESS_FIFO_COR)),
+-/*62*/	FLAG_ENTRY0("TxReadSdmaMemoryCsrUncErr",
+-		SEES(TX_READ_SDMA_MEMORY_CSR_UNC)),
+-/*63*/	FLAG_ENTRY0("TxReadPioMemoryCsrUncErr",
+-		SEES(TX_READ_PIO_MEMORY_CSR_UNC)),
++[11] =	FLAG_ENTRY0("TxSbrdCtlStateMachineParityErr",
++		   SEES(TX_SBRD_CTL_STATE_MACHINE_PARITY)),
++[12] =	FLAG_ENTRY0("TxIllegalVLErr", SEES(TX_ILLEGAL_VL)),
++[13] =	FLAG_ENTRY0("TxLaunchCsrParityErr", SEES(TX_LAUNCH_CSR_PARITY)),
++[14] =	FLAG_ENTRY0("TxSbrdCtlCsrParityErr", SEES(TX_SBRD_CTL_CSR_PARITY)),
++[15] =	FLAG_ENTRY0("TxConfigParityErr", SEES(TX_CONFIG_PARITY)),
++[16] =	FLAG_ENTRY0("TxSdma0DisallowedPacketErr",
++		   SEES(TX_SDMA0_DISALLOWED_PACKET)),
++[17] =	FLAG_ENTRY0("TxSdma1DisallowedPacketErr",
++		   SEES(TX_SDMA1_DISALLOWED_PACKET)),
++[18] =	FLAG_ENTRY0("TxSdma2DisallowedPacketErr",
++		   SEES(TX_SDMA2_DISALLOWED_PACKET)),
++[19] =	FLAG_ENTRY0("TxSdma3DisallowedPacketErr",
++		   SEES(TX_SDMA3_DISALLOWED_PACKET)),
++[20] =	FLAG_ENTRY0("TxSdma4DisallowedPacketErr",
++		   SEES(TX_SDMA4_DISALLOWED_PACKET)),
++[21] =	FLAG_ENTRY0("TxSdma5DisallowedPacketErr",
++		   SEES(TX_SDMA5_DISALLOWED_PACKET)),
++[22] =	FLAG_ENTRY0("TxSdma6DisallowedPacketErr",
++		   SEES(TX_SDMA6_DISALLOWED_PACKET)),
++[23] =	FLAG_ENTRY0("TxSdma7DisallowedPacketErr",
++		   SEES(TX_SDMA7_DISALLOWED_PACKET)),
++[24] =	FLAG_ENTRY0("TxSdma8DisallowedPacketErr",
++		   SEES(TX_SDMA8_DISALLOWED_PACKET)),
++[25] =	FLAG_ENTRY0("TxSdma9DisallowedPacketErr",
++		   SEES(TX_SDMA9_DISALLOWED_PACKET)),
++[26] =	FLAG_ENTRY0("TxSdma10DisallowedPacketErr",
++		   SEES(TX_SDMA10_DISALLOWED_PACKET)),
++[27] =	FLAG_ENTRY0("TxSdma11DisallowedPacketErr",
++		   SEES(TX_SDMA11_DISALLOWED_PACKET)),
++[28] =	FLAG_ENTRY0("TxSdma12DisallowedPacketErr",
++		   SEES(TX_SDMA12_DISALLOWED_PACKET)),
++[29] =	FLAG_ENTRY0("TxSdma13DisallowedPacketErr",
++		   SEES(TX_SDMA13_DISALLOWED_PACKET)),
++[30] =	FLAG_ENTRY0("TxSdma14DisallowedPacketErr",
++		   SEES(TX_SDMA14_DISALLOWED_PACKET)),
++[31] =	FLAG_ENTRY0("TxSdma15DisallowedPacketErr",
++		   SEES(TX_SDMA15_DISALLOWED_PACKET)),
++[32] =	FLAG_ENTRY0("TxLaunchFifo0UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO0_UNC_OR_PARITY)),
++[33] =	FLAG_ENTRY0("TxLaunchFifo1UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO1_UNC_OR_PARITY)),
++[34] =	FLAG_ENTRY0("TxLaunchFifo2UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO2_UNC_OR_PARITY)),
++[35] =	FLAG_ENTRY0("TxLaunchFifo3UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO3_UNC_OR_PARITY)),
++[36] =	FLAG_ENTRY0("TxLaunchFifo4UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO4_UNC_OR_PARITY)),
++[37] =	FLAG_ENTRY0("TxLaunchFifo5UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO5_UNC_OR_PARITY)),
++[38] =	FLAG_ENTRY0("TxLaunchFifo6UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO6_UNC_OR_PARITY)),
++[39] =	FLAG_ENTRY0("TxLaunchFifo7UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO7_UNC_OR_PARITY)),
++[40] =	FLAG_ENTRY0("TxLaunchFifo8UncOrParityErr",
++		   SEES(TX_LAUNCH_FIFO8_UNC_OR_PARITY)),
++[41] =	FLAG_ENTRY0("TxCreditReturnParityErr", SEES(TX_CREDIT_RETURN_PARITY)),
++[42] =	FLAG_ENTRY0("TxSbHdrUncErr", SEES(TX_SB_HDR_UNC)),
++[43] =	FLAG_ENTRY0("TxReadSdmaMemoryUncErr", SEES(TX_READ_SDMA_MEMORY_UNC)),
++[44] =	FLAG_ENTRY0("TxReadPioMemoryUncErr", SEES(TX_READ_PIO_MEMORY_UNC)),
++[45] =	FLAG_ENTRY0("TxEgressFifoUncErr", SEES(TX_EGRESS_FIFO_UNC)),
++[46] =	FLAG_ENTRY0("TxHcrcInsertionErr", SEES(TX_HCRC_INSERTION)),
++[47] =	FLAG_ENTRY0("TxCreditReturnVLErr", SEES(TX_CREDIT_RETURN_VL)),
++[48] =	FLAG_ENTRY0("TxLaunchFifo0CorErr", SEES(TX_LAUNCH_FIFO0_COR)),
++[49] =	FLAG_ENTRY0("TxLaunchFifo1CorErr", SEES(TX_LAUNCH_FIFO1_COR)),
++[50] =	FLAG_ENTRY0("TxLaunchFifo2CorErr", SEES(TX_LAUNCH_FIFO2_COR)),
++[51] =	FLAG_ENTRY0("TxLaunchFifo3CorErr", SEES(TX_LAUNCH_FIFO3_COR)),
++[52] =	FLAG_ENTRY0("TxLaunchFifo4CorErr", SEES(TX_LAUNCH_FIFO4_COR)),
++[53] =	FLAG_ENTRY0("TxLaunchFifo5CorErr", SEES(TX_LAUNCH_FIFO5_COR)),
++[54] =	FLAG_ENTRY0("TxLaunchFifo6CorErr", SEES(TX_LAUNCH_FIFO6_COR)),
++[55] =	FLAG_ENTRY0("TxLaunchFifo7CorErr", SEES(TX_LAUNCH_FIFO7_COR)),
++[56] =	FLAG_ENTRY0("TxLaunchFifo8CorErr", SEES(TX_LAUNCH_FIFO8_COR)),
++[57] =	FLAG_ENTRY0("TxCreditOverrunErr", SEES(TX_CREDIT_OVERRUN)),
++[58] =	FLAG_ENTRY0("TxSbHdrCorErr", SEES(TX_SB_HDR_COR)),
++[59] =	FLAG_ENTRY0("TxReadSdmaMemoryCorErr", SEES(TX_READ_SDMA_MEMORY_COR)),
++[60] =	FLAG_ENTRY0("TxReadPioMemoryCorErr", SEES(TX_READ_PIO_MEMORY_COR)),
++[61] =	FLAG_ENTRY0("TxEgressFifoCorErr", SEES(TX_EGRESS_FIFO_COR)),
++[62] =	FLAG_ENTRY0("TxReadSdmaMemoryCsrUncErr",
++		   SEES(TX_READ_SDMA_MEMORY_CSR_UNC)),
++[63] =	FLAG_ENTRY0("TxReadPioMemoryCsrUncErr",
++		   SEES(TX_READ_PIO_MEMORY_CSR_UNC)),
+ };
+ 
+ /*
+@@ -632,28 +632,28 @@ static struct flag_table egress_err_status_flags[] = {
+  */
+ #define SEEI(text) SEND_EGRESS_ERR_INFO_##text##_ERR_SMASK
+ static struct flag_table egress_err_info_flags[] = {
+-/* 0*/	FLAG_ENTRY0("Reserved", 0ull),
+-/* 1*/	FLAG_ENTRY0("VLErr", SEEI(VL)),
+-/* 2*/	FLAG_ENTRY0("JobKeyErr", SEEI(JOB_KEY)),
+-/* 3*/	FLAG_ENTRY0("JobKeyErr", SEEI(JOB_KEY)),
+-/* 4*/	FLAG_ENTRY0("PartitionKeyErr", SEEI(PARTITION_KEY)),
+-/* 5*/	FLAG_ENTRY0("SLIDErr", SEEI(SLID)),
+-/* 6*/	FLAG_ENTRY0("OpcodeErr", SEEI(OPCODE)),
+-/* 7*/	FLAG_ENTRY0("VLMappingErr", SEEI(VL_MAPPING)),
+-/* 8*/	FLAG_ENTRY0("RawErr", SEEI(RAW)),
+-/* 9*/	FLAG_ENTRY0("RawIPv6Err", SEEI(RAW_IPV6)),
+-/*10*/	FLAG_ENTRY0("GRHErr", SEEI(GRH)),
+-/*11*/	FLAG_ENTRY0("BypassErr", SEEI(BYPASS)),
+-/*12*/	FLAG_ENTRY0("KDETHPacketsErr", SEEI(KDETH_PACKETS)),
+-/*13*/	FLAG_ENTRY0("NonKDETHPacketsErr", SEEI(NON_KDETH_PACKETS)),
+-/*14*/	FLAG_ENTRY0("TooSmallIBPacketsErr", SEEI(TOO_SMALL_IB_PACKETS)),
+-/*15*/	FLAG_ENTRY0("TooSmallBypassPacketsErr", SEEI(TOO_SMALL_BYPASS_PACKETS)),
+-/*16*/	FLAG_ENTRY0("PbcTestErr", SEEI(PBC_TEST)),
+-/*17*/	FLAG_ENTRY0("BadPktLenErr", SEEI(BAD_PKT_LEN)),
+-/*18*/	FLAG_ENTRY0("TooLongIBPacketErr", SEEI(TOO_LONG_IB_PACKET)),
+-/*19*/	FLAG_ENTRY0("TooLongBypassPacketsErr", SEEI(TOO_LONG_BYPASS_PACKETS)),
+-/*20*/	FLAG_ENTRY0("PbcStaticRateControlErr", SEEI(PBC_STATIC_RATE_CONTROL)),
+-/*21*/	FLAG_ENTRY0("BypassBadPktLenErr", SEEI(BAD_PKT_LEN)),
++[0]  = FLAG_ENTRY0("Reserved", 0ull),
++[1]  = FLAG_ENTRY0("VLErr", SEEI(VL)),
++[2]  = FLAG_ENTRY0("JobKeyErr", SEEI(JOB_KEY)),
++[3]  = FLAG_ENTRY0("JobKeyErr", SEEI(JOB_KEY)),
++[4]  = FLAG_ENTRY0("PartitionKeyErr", SEEI(PARTITION_KEY)),
++[5]  = FLAG_ENTRY0("SLIDErr", SEEI(SLID)),
++[6]  = FLAG_ENTRY0("OpcodeErr", SEEI(OPCODE)),
++[7]  = FLAG_ENTRY0("VLMappingErr", SEEI(VL_MAPPING)),
++[8]  = FLAG_ENTRY0("RawErr", SEEI(RAW)),
++[9]  = FLAG_ENTRY0("RawIPv6Err", SEEI(RAW_IPV6)),
++[10] = FLAG_ENTRY0("GRHErr", SEEI(GRH)),
++[11] = FLAG_ENTRY0("BypassErr", SEEI(BYPASS)),
++[12] = FLAG_ENTRY0("KDETHPacketsErr", SEEI(KDETH_PACKETS)),
++[13] = FLAG_ENTRY0("NonKDETHPacketsErr", SEEI(NON_KDETH_PACKETS)),
++[14] = FLAG_ENTRY0("TooSmallIBPacketsErr", SEEI(TOO_SMALL_IB_PACKETS)),
++[15] = FLAG_ENTRY0("TooSmallBypassPacketsErr", SEEI(TOO_SMALL_BYPASS_PACKETS)),
++[16] = FLAG_ENTRY0("PbcTestErr", SEEI(PBC_TEST)),
++[17] = FLAG_ENTRY0("BadPktLenErr", SEEI(BAD_PKT_LEN)),
++[18] = FLAG_ENTRY0("TooLongIBPacketErr", SEEI(TOO_LONG_IB_PACKET)),
++[19] = FLAG_ENTRY0("TooLongBypassPacketsErr", SEEI(TOO_LONG_BYPASS_PACKETS)),
++[20] = FLAG_ENTRY0("PbcStaticRateControlErr", SEEI(PBC_STATIC_RATE_CONTROL)),
++[21] = FLAG_ENTRY0("BypassBadPktLenErr", SEEI(BAD_PKT_LEN)),
+ };
+ 
+ /* TXE Egress errors that cause an SPC freeze */
+@@ -681,28 +681,28 @@ static struct flag_table egress_err_info_flags[] = {
+  */
+ #define SES(name) SEND_ERR_STATUS_SEND_##name##_ERR_SMASK
+ static struct flag_table send_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY0("SendCsrParityErr", SES(CSR_PARITY)),
+-/* 1*/	FLAG_ENTRY0("SendCsrReadBadAddrErr", SES(CSR_READ_BAD_ADDR)),
+-/* 2*/	FLAG_ENTRY0("SendCsrWriteBadAddrErr", SES(CSR_WRITE_BAD_ADDR))
++[0] = FLAG_ENTRY0("SendCsrParityErr", SES(CSR_PARITY)),
++[1] = FLAG_ENTRY0("SendCsrReadBadAddrErr", SES(CSR_READ_BAD_ADDR)),
++[2] = FLAG_ENTRY0("SendCsrWriteBadAddrErr", SES(CSR_WRITE_BAD_ADDR))
+ };
+ 
+ /*
+  * TXE Send Context Error flags and consequences
+  */
+ static struct flag_table sc_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY("InconsistentSop",
++[0] =	FLAG_ENTRY("InconsistentSop",
+ 		SEC_PACKET_DROPPED | SEC_SC_HALTED,
+ 		SEND_CTXT_ERR_STATUS_PIO_INCONSISTENT_SOP_ERR_SMASK),
+-/* 1*/	FLAG_ENTRY("DisallowedPacket",
++[1] =	FLAG_ENTRY("DisallowedPacket",
+ 		SEC_PACKET_DROPPED | SEC_SC_HALTED,
+ 		SEND_CTXT_ERR_STATUS_PIO_DISALLOWED_PACKET_ERR_SMASK),
+-/* 2*/	FLAG_ENTRY("WriteCrossesBoundary",
++[2] =	FLAG_ENTRY("WriteCrossesBoundary",
+ 		SEC_WRITE_DROPPED | SEC_SC_HALTED,
+ 		SEND_CTXT_ERR_STATUS_PIO_WRITE_CROSSES_BOUNDARY_ERR_SMASK),
+-/* 3*/	FLAG_ENTRY("WriteOverflow",
++[3] =	FLAG_ENTRY("WriteOverflow",
+ 		SEC_WRITE_DROPPED | SEC_SC_HALTED,
+ 		SEND_CTXT_ERR_STATUS_PIO_WRITE_OVERFLOW_ERR_SMASK),
+-/* 4*/	FLAG_ENTRY("WriteOutOfBounds",
++[4] =	FLAG_ENTRY("WriteOutOfBounds",
+ 		SEC_WRITE_DROPPED | SEC_SC_HALTED,
+ 		SEND_CTXT_ERR_STATUS_PIO_WRITE_OUT_OF_BOUNDS_ERR_SMASK),
+ /* 5-63 reserved*/
+@@ -713,82 +713,82 @@ static struct flag_table sc_err_status_flags[] = {
+  */
+ #define RXES(name) RCV_ERR_STATUS_RX_##name##_ERR_SMASK
+ static struct flag_table rxe_err_status_flags[] = {
+-/* 0*/	FLAG_ENTRY0("RxDmaCsrCorErr", RXES(DMA_CSR_COR)),
+-/* 1*/	FLAG_ENTRY0("RxDcIntfParityErr", RXES(DC_INTF_PARITY)),
+-/* 2*/	FLAG_ENTRY0("RxRcvHdrUncErr", RXES(RCV_HDR_UNC)),
+-/* 3*/	FLAG_ENTRY0("RxRcvHdrCorErr", RXES(RCV_HDR_COR)),
+-/* 4*/	FLAG_ENTRY0("RxRcvDataUncErr", RXES(RCV_DATA_UNC)),
+-/* 5*/	FLAG_ENTRY0("RxRcvDataCorErr", RXES(RCV_DATA_COR)),
+-/* 6*/	FLAG_ENTRY0("RxRcvQpMapTableUncErr", RXES(RCV_QP_MAP_TABLE_UNC)),
+-/* 7*/	FLAG_ENTRY0("RxRcvQpMapTableCorErr", RXES(RCV_QP_MAP_TABLE_COR)),
+-/* 8*/	FLAG_ENTRY0("RxRcvCsrParityErr", RXES(RCV_CSR_PARITY)),
+-/* 9*/	FLAG_ENTRY0("RxDcSopEopParityErr", RXES(DC_SOP_EOP_PARITY)),
+-/*10*/	FLAG_ENTRY0("RxDmaFlagUncErr", RXES(DMA_FLAG_UNC)),
+-/*11*/	FLAG_ENTRY0("RxDmaFlagCorErr", RXES(DMA_FLAG_COR)),
+-/*12*/	FLAG_ENTRY0("RxRcvFsmEncodingErr", RXES(RCV_FSM_ENCODING)),
+-/*13*/	FLAG_ENTRY0("RxRbufFreeListUncErr", RXES(RBUF_FREE_LIST_UNC)),
+-/*14*/	FLAG_ENTRY0("RxRbufFreeListCorErr", RXES(RBUF_FREE_LIST_COR)),
+-/*15*/	FLAG_ENTRY0("RxRbufLookupDesRegUncErr", RXES(RBUF_LOOKUP_DES_REG_UNC)),
+-/*16*/	FLAG_ENTRY0("RxRbufLookupDesRegUncCorErr",
+-		RXES(RBUF_LOOKUP_DES_REG_UNC_COR)),
+-/*17*/	FLAG_ENTRY0("RxRbufLookupDesUncErr", RXES(RBUF_LOOKUP_DES_UNC)),
+-/*18*/	FLAG_ENTRY0("RxRbufLookupDesCorErr", RXES(RBUF_LOOKUP_DES_COR)),
+-/*19*/	FLAG_ENTRY0("RxRbufBlockListReadUncErr",
+-		RXES(RBUF_BLOCK_LIST_READ_UNC)),
+-/*20*/	FLAG_ENTRY0("RxRbufBlockListReadCorErr",
+-		RXES(RBUF_BLOCK_LIST_READ_COR)),
+-/*21*/	FLAG_ENTRY0("RxRbufCsrQHeadBufNumParityErr",
+-		RXES(RBUF_CSR_QHEAD_BUF_NUM_PARITY)),
+-/*22*/	FLAG_ENTRY0("RxRbufCsrQEntCntParityErr",
+-		RXES(RBUF_CSR_QENT_CNT_PARITY)),
+-/*23*/	FLAG_ENTRY0("RxRbufCsrQNextBufParityErr",
+-		RXES(RBUF_CSR_QNEXT_BUF_PARITY)),
+-/*24*/	FLAG_ENTRY0("RxRbufCsrQVldBitParityErr",
+-		RXES(RBUF_CSR_QVLD_BIT_PARITY)),
+-/*25*/	FLAG_ENTRY0("RxRbufCsrQHdPtrParityErr", RXES(RBUF_CSR_QHD_PTR_PARITY)),
+-/*26*/	FLAG_ENTRY0("RxRbufCsrQTlPtrParityErr", RXES(RBUF_CSR_QTL_PTR_PARITY)),
+-/*27*/	FLAG_ENTRY0("RxRbufCsrQNumOfPktParityErr",
+-		RXES(RBUF_CSR_QNUM_OF_PKT_PARITY)),
+-/*28*/	FLAG_ENTRY0("RxRbufCsrQEOPDWParityErr", RXES(RBUF_CSR_QEOPDW_PARITY)),
+-/*29*/	FLAG_ENTRY0("RxRbufCtxIdParityErr", RXES(RBUF_CTX_ID_PARITY)),
+-/*30*/	FLAG_ENTRY0("RxRBufBadLookupErr", RXES(RBUF_BAD_LOOKUP)),
+-/*31*/	FLAG_ENTRY0("RxRbufFullErr", RXES(RBUF_FULL)),
+-/*32*/	FLAG_ENTRY0("RxRbufEmptyErr", RXES(RBUF_EMPTY)),
+-/*33*/	FLAG_ENTRY0("RxRbufFlRdAddrParityErr", RXES(RBUF_FL_RD_ADDR_PARITY)),
+-/*34*/	FLAG_ENTRY0("RxRbufFlWrAddrParityErr", RXES(RBUF_FL_WR_ADDR_PARITY)),
+-/*35*/	FLAG_ENTRY0("RxRbufFlInitdoneParityErr",
+-		RXES(RBUF_FL_INITDONE_PARITY)),
+-/*36*/	FLAG_ENTRY0("RxRbufFlInitWrAddrParityErr",
+-		RXES(RBUF_FL_INIT_WR_ADDR_PARITY)),
+-/*37*/	FLAG_ENTRY0("RxRbufNextFreeBufUncErr", RXES(RBUF_NEXT_FREE_BUF_UNC)),
+-/*38*/	FLAG_ENTRY0("RxRbufNextFreeBufCorErr", RXES(RBUF_NEXT_FREE_BUF_COR)),
+-/*39*/	FLAG_ENTRY0("RxLookupDesPart1UncErr", RXES(LOOKUP_DES_PART1_UNC)),
+-/*40*/	FLAG_ENTRY0("RxLookupDesPart1UncCorErr",
+-		RXES(LOOKUP_DES_PART1_UNC_COR)),
+-/*41*/	FLAG_ENTRY0("RxLookupDesPart2ParityErr",
+-		RXES(LOOKUP_DES_PART2_PARITY)),
+-/*42*/	FLAG_ENTRY0("RxLookupRcvArrayUncErr", RXES(LOOKUP_RCV_ARRAY_UNC)),
+-/*43*/	FLAG_ENTRY0("RxLookupRcvArrayCorErr", RXES(LOOKUP_RCV_ARRAY_COR)),
+-/*44*/	FLAG_ENTRY0("RxLookupCsrParityErr", RXES(LOOKUP_CSR_PARITY)),
+-/*45*/	FLAG_ENTRY0("RxHqIntrCsrParityErr", RXES(HQ_INTR_CSR_PARITY)),
+-/*46*/	FLAG_ENTRY0("RxHqIntrFsmErr", RXES(HQ_INTR_FSM)),
+-/*47*/	FLAG_ENTRY0("RxRbufDescPart1UncErr", RXES(RBUF_DESC_PART1_UNC)),
+-/*48*/	FLAG_ENTRY0("RxRbufDescPart1CorErr", RXES(RBUF_DESC_PART1_COR)),
+-/*49*/	FLAG_ENTRY0("RxRbufDescPart2UncErr", RXES(RBUF_DESC_PART2_UNC)),
+-/*50*/	FLAG_ENTRY0("RxRbufDescPart2CorErr", RXES(RBUF_DESC_PART2_COR)),
+-/*51*/	FLAG_ENTRY0("RxDmaHdrFifoRdUncErr", RXES(DMA_HDR_FIFO_RD_UNC)),
+-/*52*/	FLAG_ENTRY0("RxDmaHdrFifoRdCorErr", RXES(DMA_HDR_FIFO_RD_COR)),
+-/*53*/	FLAG_ENTRY0("RxDmaDataFifoRdUncErr", RXES(DMA_DATA_FIFO_RD_UNC)),
+-/*54*/	FLAG_ENTRY0("RxDmaDataFifoRdCorErr", RXES(DMA_DATA_FIFO_RD_COR)),
+-/*55*/	FLAG_ENTRY0("RxRbufDataUncErr", RXES(RBUF_DATA_UNC)),
+-/*56*/	FLAG_ENTRY0("RxRbufDataCorErr", RXES(RBUF_DATA_COR)),
+-/*57*/	FLAG_ENTRY0("RxDmaCsrParityErr", RXES(DMA_CSR_PARITY)),
+-/*58*/	FLAG_ENTRY0("RxDmaEqFsmEncodingErr", RXES(DMA_EQ_FSM_ENCODING)),
+-/*59*/	FLAG_ENTRY0("RxDmaDqFsmEncodingErr", RXES(DMA_DQ_FSM_ENCODING)),
+-/*60*/	FLAG_ENTRY0("RxDmaCsrUncErr", RXES(DMA_CSR_UNC)),
+-/*61*/	FLAG_ENTRY0("RxCsrReadBadAddrErr", RXES(CSR_READ_BAD_ADDR)),
+-/*62*/	FLAG_ENTRY0("RxCsrWriteBadAddrErr", RXES(CSR_WRITE_BAD_ADDR)),
+-/*63*/	FLAG_ENTRY0("RxCsrParityErr", RXES(CSR_PARITY))
++[0]  =	FLAG_ENTRY0("RxDmaCsrCorErr", RXES(DMA_CSR_COR)),
++[1]  =	FLAG_ENTRY0("RxDcIntfParityErr", RXES(DC_INTF_PARITY)),
++[2]  =	FLAG_ENTRY0("RxRcvHdrUncErr", RXES(RCV_HDR_UNC)),
++[3]  =	FLAG_ENTRY0("RxRcvHdrCorErr", RXES(RCV_HDR_COR)),
++[4]  =	FLAG_ENTRY0("RxRcvDataUncErr", RXES(RCV_DATA_UNC)),
++[5]  =	FLAG_ENTRY0("RxRcvDataCorErr", RXES(RCV_DATA_COR)),
++[6]  =	FLAG_ENTRY0("RxRcvQpMapTableUncErr", RXES(RCV_QP_MAP_TABLE_UNC)),
++[7]  =	FLAG_ENTRY0("RxRcvQpMapTableCorErr", RXES(RCV_QP_MAP_TABLE_COR)),
++[8]  =	FLAG_ENTRY0("RxRcvCsrParityErr", RXES(RCV_CSR_PARITY)),
++[9]  =	FLAG_ENTRY0("RxDcSopEopParityErr", RXES(DC_SOP_EOP_PARITY)),
++[10] =	FLAG_ENTRY0("RxDmaFlagUncErr", RXES(DMA_FLAG_UNC)),
++[11] =	FLAG_ENTRY0("RxDmaFlagCorErr", RXES(DMA_FLAG_COR)),
++[12] =	FLAG_ENTRY0("RxRcvFsmEncodingErr", RXES(RCV_FSM_ENCODING)),
++[13] =	FLAG_ENTRY0("RxRbufFreeListUncErr", RXES(RBUF_FREE_LIST_UNC)),
++[14] =	FLAG_ENTRY0("RxRbufFreeListCorErr", RXES(RBUF_FREE_LIST_COR)),
++[15] =	FLAG_ENTRY0("RxRbufLookupDesRegUncErr", RXES(RBUF_LOOKUP_DES_REG_UNC)),
++[16] =	FLAG_ENTRY0("RxRbufLookupDesRegUncCorErr",
++		   RXES(RBUF_LOOKUP_DES_REG_UNC_COR)),
++[17] =	FLAG_ENTRY0("RxRbufLookupDesUncErr", RXES(RBUF_LOOKUP_DES_UNC)),
++[18] =	FLAG_ENTRY0("RxRbufLookupDesCorErr", RXES(RBUF_LOOKUP_DES_COR)),
++[19] =	FLAG_ENTRY0("RxRbufBlockListReadUncErr",
++		   RXES(RBUF_BLOCK_LIST_READ_UNC)),
++[20] =	FLAG_ENTRY0("RxRbufBlockListReadCorErr",
++		   RXES(RBUF_BLOCK_LIST_READ_COR)),
++[21] =	FLAG_ENTRY0("RxRbufCsrQHeadBufNumParityErr",
++		   RXES(RBUF_CSR_QHEAD_BUF_NUM_PARITY)),
++[22] =	FLAG_ENTRY0("RxRbufCsrQEntCntParityErr",
++		   RXES(RBUF_CSR_QENT_CNT_PARITY)),
++[23] =	FLAG_ENTRY0("RxRbufCsrQNextBufParityErr",
++		   RXES(RBUF_CSR_QNEXT_BUF_PARITY)),
++[24] =	FLAG_ENTRY0("RxRbufCsrQVldBitParityErr",
++		   RXES(RBUF_CSR_QVLD_BIT_PARITY)),
++[25] =	FLAG_ENTRY0("RxRbufCsrQHdPtrParityErr", RXES(RBUF_CSR_QHD_PTR_PARITY)),
++[26] =	FLAG_ENTRY0("RxRbufCsrQTlPtrParityErr", RXES(RBUF_CSR_QTL_PTR_PARITY)),
++[27] =	FLAG_ENTRY0("RxRbufCsrQNumOfPktParityErr",
++		   RXES(RBUF_CSR_QNUM_OF_PKT_PARITY)),
++[28] =	FLAG_ENTRY0("RxRbufCsrQEOPDWParityErr", RXES(RBUF_CSR_QEOPDW_PARITY)),
++[29] =	FLAG_ENTRY0("RxRbufCtxIdParityErr", RXES(RBUF_CTX_ID_PARITY)),
++[30] =	FLAG_ENTRY0("RxRBufBadLookupErr", RXES(RBUF_BAD_LOOKUP)),
++[31] =	FLAG_ENTRY0("RxRbufFullErr", RXES(RBUF_FULL)),
++[32] =	FLAG_ENTRY0("RxRbufEmptyErr", RXES(RBUF_EMPTY)),
++[33] =	FLAG_ENTRY0("RxRbufFlRdAddrParityErr", RXES(RBUF_FL_RD_ADDR_PARITY)),
++[34] =	FLAG_ENTRY0("RxRbufFlWrAddrParityErr", RXES(RBUF_FL_WR_ADDR_PARITY)),
++[35] =	FLAG_ENTRY0("RxRbufFlInitdoneParityErr",
++		   RXES(RBUF_FL_INITDONE_PARITY)),
++[36] =	FLAG_ENTRY0("RxRbufFlInitWrAddrParityErr",
++		   RXES(RBUF_FL_INIT_WR_ADDR_PARITY)),
++[37] =	FLAG_ENTRY0("RxRbufNextFreeBufUncErr", RXES(RBUF_NEXT_FREE_BUF_UNC)),
++[38] =	FLAG_ENTRY0("RxRbufNextFreeBufCorErr", RXES(RBUF_NEXT_FREE_BUF_COR)),
++[39] =	FLAG_ENTRY0("RxLookupDesPart1UncErr", RXES(LOOKUP_DES_PART1_UNC)),
++[40] =	FLAG_ENTRY0("RxLookupDesPart1UncCorErr",
++		   RXES(LOOKUP_DES_PART1_UNC_COR)),
++[41] =	FLAG_ENTRY0("RxLookupDesPart2ParityErr",
++		   RXES(LOOKUP_DES_PART2_PARITY)),
++[42] =	FLAG_ENTRY0("RxLookupRcvArrayUncErr", RXES(LOOKUP_RCV_ARRAY_UNC)),
++[43] =	FLAG_ENTRY0("RxLookupRcvArrayCorErr", RXES(LOOKUP_RCV_ARRAY_COR)),
++[44] =	FLAG_ENTRY0("RxLookupCsrParityErr", RXES(LOOKUP_CSR_PARITY)),
++[45] =	FLAG_ENTRY0("RxHqIntrCsrParityErr", RXES(HQ_INTR_CSR_PARITY)),
++[46] =	FLAG_ENTRY0("RxHqIntrFsmErr", RXES(HQ_INTR_FSM)),
++[47] =	FLAG_ENTRY0("RxRbufDescPart1UncErr", RXES(RBUF_DESC_PART1_UNC)),
++[48] =	FLAG_ENTRY0("RxRbufDescPart1CorErr", RXES(RBUF_DESC_PART1_COR)),
++[49] =	FLAG_ENTRY0("RxRbufDescPart2UncErr", RXES(RBUF_DESC_PART2_UNC)),
++[50] =	FLAG_ENTRY0("RxRbufDescPart2CorErr", RXES(RBUF_DESC_PART2_COR)),
++[51] =	FLAG_ENTRY0("RxDmaHdrFifoRdUncErr", RXES(DMA_HDR_FIFO_RD_UNC)),
++[52] =	FLAG_ENTRY0("RxDmaHdrFifoRdCorErr", RXES(DMA_HDR_FIFO_RD_COR)),
++[53] =	FLAG_ENTRY0("RxDmaDataFifoRdUncErr", RXES(DMA_DATA_FIFO_RD_UNC)),
++[54] =	FLAG_ENTRY0("RxDmaDataFifoRdCorErr", RXES(DMA_DATA_FIFO_RD_COR)),
++[55] =	FLAG_ENTRY0("RxRbufDataUncErr", RXES(RBUF_DATA_UNC)),
++[56] =	FLAG_ENTRY0("RxRbufDataCorErr", RXES(RBUF_DATA_COR)),
++[57] =	FLAG_ENTRY0("RxDmaCsrParityErr", RXES(DMA_CSR_PARITY)),
++[58] =	FLAG_ENTRY0("RxDmaEqFsmEncodingErr", RXES(DMA_EQ_FSM_ENCODING)),
++[59] =	FLAG_ENTRY0("RxDmaDqFsmEncodingErr", RXES(DMA_DQ_FSM_ENCODING)),
++[60] =	FLAG_ENTRY0("RxDmaCsrUncErr", RXES(DMA_CSR_UNC)),
++[61] =	FLAG_ENTRY0("RxCsrReadBadAddrErr", RXES(CSR_READ_BAD_ADDR)),
++[62] =	FLAG_ENTRY0("RxCsrWriteBadAddrErr", RXES(CSR_WRITE_BAD_ADDR)),
++[63] =	FLAG_ENTRY0("RxCsrParityErr", RXES(CSR_PARITY))
+ };
+ 
+ /* RXE errors that will trigger an SPC freeze */
+@@ -901,42 +901,42 @@ static struct flag_table dcc_err_flags[] = {
+  */
+ #define LCBE(name) DC_LCB_ERR_FLG_##name##_SMASK
+ static struct flag_table lcb_err_flags[] = {
+-/* 0*/	FLAG_ENTRY0("CSR_PARITY_ERR", LCBE(CSR_PARITY_ERR)),
+-/* 1*/	FLAG_ENTRY0("INVALID_CSR_ADDR", LCBE(INVALID_CSR_ADDR)),
+-/* 2*/	FLAG_ENTRY0("RST_FOR_FAILED_DESKEW", LCBE(RST_FOR_FAILED_DESKEW)),
+-/* 3*/	FLAG_ENTRY0("ALL_LNS_FAILED_REINIT_TEST",
+-		LCBE(ALL_LNS_FAILED_REINIT_TEST)),
+-/* 4*/	FLAG_ENTRY0("LOST_REINIT_STALL_OR_TOS", LCBE(LOST_REINIT_STALL_OR_TOS)),
+-/* 5*/	FLAG_ENTRY0("TX_LESS_THAN_FOUR_LNS", LCBE(TX_LESS_THAN_FOUR_LNS)),
+-/* 6*/	FLAG_ENTRY0("RX_LESS_THAN_FOUR_LNS", LCBE(RX_LESS_THAN_FOUR_LNS)),
+-/* 7*/	FLAG_ENTRY0("SEQ_CRC_ERR", LCBE(SEQ_CRC_ERR)),
+-/* 8*/	FLAG_ENTRY0("REINIT_FROM_PEER", LCBE(REINIT_FROM_PEER)),
+-/* 9*/	FLAG_ENTRY0("REINIT_FOR_LN_DEGRADE", LCBE(REINIT_FOR_LN_DEGRADE)),
+-/*10*/	FLAG_ENTRY0("CRC_ERR_CNT_HIT_LIMIT", LCBE(CRC_ERR_CNT_HIT_LIMIT)),
+-/*11*/	FLAG_ENTRY0("RCLK_STOPPED", LCBE(RCLK_STOPPED)),
+-/*12*/	FLAG_ENTRY0("UNEXPECTED_REPLAY_MARKER", LCBE(UNEXPECTED_REPLAY_MARKER)),
+-/*13*/	FLAG_ENTRY0("UNEXPECTED_ROUND_TRIP_MARKER",
+-		LCBE(UNEXPECTED_ROUND_TRIP_MARKER)),
+-/*14*/	FLAG_ENTRY0("ILLEGAL_NULL_LTP", LCBE(ILLEGAL_NULL_LTP)),
+-/*15*/	FLAG_ENTRY0("ILLEGAL_FLIT_ENCODING", LCBE(ILLEGAL_FLIT_ENCODING)),
+-/*16*/	FLAG_ENTRY0("FLIT_INPUT_BUF_OFLW", LCBE(FLIT_INPUT_BUF_OFLW)),
+-/*17*/	FLAG_ENTRY0("VL_ACK_INPUT_BUF_OFLW", LCBE(VL_ACK_INPUT_BUF_OFLW)),
+-/*18*/	FLAG_ENTRY0("VL_ACK_INPUT_PARITY_ERR", LCBE(VL_ACK_INPUT_PARITY_ERR)),
+-/*19*/	FLAG_ENTRY0("VL_ACK_INPUT_WRONG_CRC_MODE",
+-		LCBE(VL_ACK_INPUT_WRONG_CRC_MODE)),
+-/*20*/	FLAG_ENTRY0("FLIT_INPUT_BUF_MBE", LCBE(FLIT_INPUT_BUF_MBE)),
+-/*21*/	FLAG_ENTRY0("FLIT_INPUT_BUF_SBE", LCBE(FLIT_INPUT_BUF_SBE)),
+-/*22*/	FLAG_ENTRY0("REPLAY_BUF_MBE", LCBE(REPLAY_BUF_MBE)),
+-/*23*/	FLAG_ENTRY0("REPLAY_BUF_SBE", LCBE(REPLAY_BUF_SBE)),
+-/*24*/	FLAG_ENTRY0("CREDIT_RETURN_FLIT_MBE", LCBE(CREDIT_RETURN_FLIT_MBE)),
+-/*25*/	FLAG_ENTRY0("RST_FOR_LINK_TIMEOUT", LCBE(RST_FOR_LINK_TIMEOUT)),
+-/*26*/	FLAG_ENTRY0("RST_FOR_INCOMPLT_RND_TRIP",
+-		LCBE(RST_FOR_INCOMPLT_RND_TRIP)),
+-/*27*/	FLAG_ENTRY0("HOLD_REINIT", LCBE(HOLD_REINIT)),
+-/*28*/	FLAG_ENTRY0("NEG_EDGE_LINK_TRANSFER_ACTIVE",
+-		LCBE(NEG_EDGE_LINK_TRANSFER_ACTIVE)),
+-/*29*/	FLAG_ENTRY0("REDUNDANT_FLIT_PARITY_ERR",
+-		LCBE(REDUNDANT_FLIT_PARITY_ERR))
++[0]  =	FLAG_ENTRY0("CSR_PARITY_ERR", LCBE(CSR_PARITY_ERR)),
++[1]  =	FLAG_ENTRY0("INVALID_CSR_ADDR", LCBE(INVALID_CSR_ADDR)),
++[2]  =	FLAG_ENTRY0("RST_FOR_FAILED_DESKEW", LCBE(RST_FOR_FAILED_DESKEW)),
++[3]  =	FLAG_ENTRY0("ALL_LNS_FAILED_REINIT_TEST",
++		   LCBE(ALL_LNS_FAILED_REINIT_TEST)),
++[4]  =	FLAG_ENTRY0("LOST_REINIT_STALL_OR_TOS", LCBE(LOST_REINIT_STALL_OR_TOS)),
++[5]  =	FLAG_ENTRY0("TX_LESS_THAN_FOUR_LNS", LCBE(TX_LESS_THAN_FOUR_LNS)),
++[6]  =	FLAG_ENTRY0("RX_LESS_THAN_FOUR_LNS", LCBE(RX_LESS_THAN_FOUR_LNS)),
++[7]  =	FLAG_ENTRY0("SEQ_CRC_ERR", LCBE(SEQ_CRC_ERR)),
++[8]  =	FLAG_ENTRY0("REINIT_FROM_PEER", LCBE(REINIT_FROM_PEER)),
++[9]  =	FLAG_ENTRY0("REINIT_FOR_LN_DEGRADE", LCBE(REINIT_FOR_LN_DEGRADE)),
++[10] =	FLAG_ENTRY0("CRC_ERR_CNT_HIT_LIMIT", LCBE(CRC_ERR_CNT_HIT_LIMIT)),
++[11] =	FLAG_ENTRY0("RCLK_STOPPED", LCBE(RCLK_STOPPED)),
++[12] =	FLAG_ENTRY0("UNEXPECTED_REPLAY_MARKER", LCBE(UNEXPECTED_REPLAY_MARKER)),
++[13] =	FLAG_ENTRY0("UNEXPECTED_ROUND_TRIP_MARKER",
++		   LCBE(UNEXPECTED_ROUND_TRIP_MARKER)),
++[14] =	FLAG_ENTRY0("ILLEGAL_NULL_LTP", LCBE(ILLEGAL_NULL_LTP)),
++[15] =	FLAG_ENTRY0("ILLEGAL_FLIT_ENCODING", LCBE(ILLEGAL_FLIT_ENCODING)),
++[16] =	FLAG_ENTRY0("FLIT_INPUT_BUF_OFLW", LCBE(FLIT_INPUT_BUF_OFLW)),
++[17] =	FLAG_ENTRY0("VL_ACK_INPUT_BUF_OFLW", LCBE(VL_ACK_INPUT_BUF_OFLW)),
++[18] =	FLAG_ENTRY0("VL_ACK_INPUT_PARITY_ERR", LCBE(VL_ACK_INPUT_PARITY_ERR)),
++[19] =	FLAG_ENTRY0("VL_ACK_INPUT_WRONG_CRC_MODE",
++		   LCBE(VL_ACK_INPUT_WRONG_CRC_MODE)),
++[20] =	FLAG_ENTRY0("FLIT_INPUT_BUF_MBE", LCBE(FLIT_INPUT_BUF_MBE)),
++[21] =	FLAG_ENTRY0("FLIT_INPUT_BUF_SBE", LCBE(FLIT_INPUT_BUF_SBE)),
++[22] =	FLAG_ENTRY0("REPLAY_BUF_MBE", LCBE(REPLAY_BUF_MBE)),
++[23] =	FLAG_ENTRY0("REPLAY_BUF_SBE", LCBE(REPLAY_BUF_SBE)),
++[24] =	FLAG_ENTRY0("CREDIT_RETURN_FLIT_MBE", LCBE(CREDIT_RETURN_FLIT_MBE)),
++[25] =	FLAG_ENTRY0("RST_FOR_LINK_TIMEOUT", LCBE(RST_FOR_LINK_TIMEOUT)),
++[26] =	FLAG_ENTRY0("RST_FOR_INCOMPLT_RND_TRIP",
++		   LCBE(RST_FOR_INCOMPLT_RND_TRIP)),
++[27] =	FLAG_ENTRY0("HOLD_REINIT", LCBE(HOLD_REINIT)),
++[28] =	FLAG_ENTRY0("NEG_EDGE_LINK_TRANSFER_ACTIVE",
++		   LCBE(NEG_EDGE_LINK_TRANSFER_ACTIVE)),
++[29] =	FLAG_ENTRY0("REDUNDANT_FLIT_PARITY_ERR",
++		   LCBE(REDUNDANT_FLIT_PARITY_ERR))
+ };
+ 
+ /*
+@@ -1098,14 +1098,14 @@ struct err_reg_info {
+  * another register containing more information.
+  */
+ static const struct err_reg_info misc_errs[NUM_MISC_ERRS] = {
+-/* 0*/	EE(CCE_ERR,		handle_cce_err,    "CceErr"),
+-/* 1*/	EE(RCV_ERR,		handle_rxe_err,    "RxeErr"),
+-/* 2*/	EE(MISC_ERR,	handle_misc_err,   "MiscErr"),
+-/* 3*/	{ 0, 0, 0, NULL }, /* reserved */
+-/* 4*/	EE(SEND_PIO_ERR,    handle_pio_err,    "PioErr"),
+-/* 5*/	EE(SEND_DMA_ERR,    handle_sdma_err,   "SDmaErr"),
+-/* 6*/	EE(SEND_EGRESS_ERR, handle_egress_err, "EgressErr"),
+-/* 7*/	EE(SEND_ERR,	handle_txe_err,    "TxeErr")
++	[0] = EE(CCE_ERR,		handle_cce_err,    "CceErr"),
++	[1] = EE(RCV_ERR,		handle_rxe_err,    "RxeErr"),
++	[2] = EE(MISC_ERR,	handle_misc_err,   "MiscErr"),
++	[3] = { 0, 0, 0, NULL }, /* reserved */
++	[4] = EE(SEND_PIO_ERR,    handle_pio_err,    "PioErr"),
++	[5] = EE(SEND_DMA_ERR,    handle_sdma_err,   "SDmaErr"),
++	[6] = EE(SEND_EGRESS_ERR, handle_egress_err, "EgressErr"),
++	[7] = EE(SEND_ERR,	handle_txe_err,    "TxeErr")
+ 	/* the rest are reserved */
+ };
+ 
+@@ -1123,11 +1123,11 @@ static const struct err_reg_info sdma_eng_err =
+ 	EE(SEND_DMA_ENG_ERR, handle_sdma_eng_err, "SDmaEngErr");
+ 
+ static const struct err_reg_info various_err[NUM_VARIOUS] = {
+-/* 0*/	{ 0, 0, 0, NULL }, /* PbcInt */
+-/* 1*/	{ 0, 0, 0, NULL }, /* GpioAssertInt */
+-/* 2*/	EE(ASIC_QSFP1,	handle_qsfp_int,	"QSFP1"),
+-/* 3*/	EE(ASIC_QSFP2,	handle_qsfp_int,	"QSFP2"),
+-/* 4*/	{ 0, 0, 0, NULL }, /* TCritInt */
++	[0] = { 0, 0, 0, NULL }, /* PbcInt */
++	[1] = { 0, 0, 0, NULL }, /* GpioAssertInt */
++	[2] = EE(ASIC_QSFP1,	handle_qsfp_int,	"QSFP1"),
++	[3] = EE(ASIC_QSFP2,	handle_qsfp_int,	"QSFP2"),
++	[4] = { 0, 0, 0, NULL }, /* TCritInt */
+ 	/* rest are reserved */
+ };
+ 
+@@ -5317,14 +5317,14 @@ static char *flag_string(char *buf, int buf_len, u64 flags,
+ 
+ /* first 8 CCE error interrupt source names */
+ static const char * const cce_misc_names[] = {
+-	"CceErrInt",		/* 0 */
+-	"RxeErrInt",		/* 1 */
+-	"MiscErrInt",		/* 2 */
+-	"Reserved3",		/* 3 */
+-	"PioErrInt",		/* 4 */
+-	"SDmaErrInt",		/* 5 */
+-	"EgressErrInt",		/* 6 */
+-	"TxeErrInt"		/* 7 */
++	[0] = "CceErrInt",
++	[1] = "RxeErrInt",
++	[2] = "MiscErrInt",
++	[3] = "Reserved3",
++	[4] = "PioErrInt",
++	[5] = "SDmaErrInt",
++	[6] = "EgressErrInt",
++	[7] = "TxeErrInt"
+ };
+ 
+ /*
+diff --git a/drivers/infiniband/hw/hfi1/mad.c b/drivers/infiniband/hw/hfi1/mad.c
+index 4146a2113a95..a5cc1979b73a 100644
+--- a/drivers/infiniband/hw/hfi1/mad.c
++++ b/drivers/infiniband/hw/hfi1/mad.c
+@@ -1065,17 +1065,17 @@ static const struct {
+ 	u8 allowed[__N_PHYSTATES][__N_PHYSTATES];
+ } physical_state_transitions = {
+ 	{
+-		/* 2    3    4    5    6    7    8    9   10   11 */
+-	/* 2 */	{ __A, __A, __D, __D, __D, __D, __D, __D, __D, __D },
+-	/* 3 */	{ __A, __I, __D, __D, __D, __D, __D, __D, __D, __A },
+-	/* 4 */	{ __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
+-	/* 5 */	{ __A, __A, __D, __I, __D, __D, __D, __D, __D, __D },
+-	/* 6 */	{ __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
+-	/* 7 */	{ __D, __A, __D, __D, __D, __I, __D, __D, __D, __D },
+-	/* 8 */	{ __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
+-	/* 9 */	{ __I, __A, __D, __D, __D, __D, __D, __I, __D, __D },
+-	/*10 */	{ __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
+-	/*11 */	{ __D, __A, __D, __D, __D, __D, __D, __D, __D, __I },
++		     /* 2    3    4    5    6    7    8    9   10   11 */
++	[2]  = { __A, __A, __D, __D, __D, __D, __D, __D, __D, __D },
++	[3]  = { __A, __I, __D, __D, __D, __D, __D, __D, __D, __A },
++	[4]  = { __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
++	[5]  = { __A, __A, __D, __I, __D, __D, __D, __D, __D, __D },
++	[6]  = { __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
++	[7]  = { __D, __A, __D, __D, __D, __I, __D, __D, __D, __D },
++	[8]  = { __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
++	[9]  = { __I, __A, __D, __D, __D, __D, __D, __I, __D, __D },
++	[10] = { __U, __U, __U, __U, __U, __U, __U, __U, __U, __U },
++	[11] = { __D, __A, __D, __D, __D, __D, __D, __D, __D, __I },
+ 	}
+ };
+ 
+@@ -1096,12 +1096,12 @@ static const struct {
+ 	u8 allowed[__N_LOGICAL_STATES][__N_LOGICAL_STATES];
+ } logical_state_transitions = {
+ 	{
+-		/* 1    2    3    4    5 */
+-	/* 1 */	{ __I, __D, __D, __D, __U},
+-	/* 2 */	{ __D, __I, __A, __D, __U},
+-	/* 3 */	{ __D, __D, __I, __A, __U},
+-	/* 4 */	{ __D, __D, __I, __I, __U},
+-	/* 5 */	{ __U, __U, __U, __U, __U},
++		     /* 1    2    3    4    5 */
++	[1] = { __I, __D, __D, __D, __U},
++	[2] = { __D, __I, __A, __D, __U},
++	[3] = { __D, __D, __I, __A, __U},
++	[4] = { __D, __D, __I, __I, __U},
++	[5] = { __U, __U, __U, __U, __U},
+ 	}
+ };
+ 
 -- 
 2.35.1
 
