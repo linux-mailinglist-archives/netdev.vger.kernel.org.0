@@ -2,97 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 650DC4E839D
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 19:55:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 584894E83B2
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 20:24:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233978AbiCZS5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 14:57:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        id S234639AbiCZTZl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 26 Mar 2022 15:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231740AbiCZS5P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 14:57:15 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C63241B69;
-        Sat, 26 Mar 2022 11:55:38 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id 12so11626132oix.12;
-        Sat, 26 Mar 2022 11:55:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=od8p5pl2U97jeU4B5zrg7n+5mCzeV+pC/ksqgi0ZrCg=;
-        b=FLgjPZbpsRgixevsWBrkzNi6JX+0JOdLVae2WiE33dW2CYOkn5xqbMkUlVUP8W2wu7
-         GkxJRlQBc9JikV5LxxH776y/rCGduf9iWPHNwF2JwC98xLaDJOBMG8veU5JxGQ7nOAvJ
-         m/+JrXhLeGunBEipRoADOWS5rGjDCc6Gz4IggFgtvunK5yE88pyhHsgbZfGiHbN0KDJE
-         NB8NTlDVtPBrxk4PUIVxhTUnFKrA8WccJDTDtm7JqRWvIiRfCooKnwEhY3aTmayCwMpQ
-         V3hyLVfO0DlGQFzspBvlHmqHXQ6R9+E5kFXKetAYpzKWkBQUTmJFethoAMM1paiNI8zm
-         YaGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=od8p5pl2U97jeU4B5zrg7n+5mCzeV+pC/ksqgi0ZrCg=;
-        b=r4k/ZLMSm2hGaZp0BJolxckS67SFML0s78RsE+8NiRJtTIJjiR7iTUcsPn2boAz2Vv
-         ybz7IlRpirjSR8WbZcmDUi67Wcdi/CEzM6IC75FzjbT5nPLL5uTrMwJ4OsKlNa4JEuV7
-         6kdnURfSa8SzqlfjT2hUHF2o46YRSK/+FU7aTVgoSqiwpoHmYmttls0pWSo8pEGumHfo
-         VJahmxfnNxAiHJtGzGQEfZkToklM6Hkq7P71exK6vCC8vpz1uiMqqs26cOr8wMZflN/v
-         PWEstBAt2MWu3qzuSeCYUKmLcIwynnKFScUNbwqPhMENULFQvDB4S2ey95MG6cdsR2IG
-         iviA==
-X-Gm-Message-State: AOAM530nuM0l5w3i2NKx96h5mNEYhFz/NwcMZWQRJgsZ9MFzEF3DaqbJ
-        oDO63FLHbDAVpIwc7lRXkd8=
-X-Google-Smtp-Source: ABdhPJwENpqHi0yoebC6ynBYdoBH1ZAUKF4tDj7px8PfwrXlpK2apNGv6Udv3OPe7ze8luScmr+hMg==
-X-Received: by 2002:a05:6808:118c:b0:2d4:4194:70db with SMTP id j12-20020a056808118c00b002d4419470dbmr8444758oil.93.1648320937799;
-        Sat, 26 Mar 2022 11:55:37 -0700 (PDT)
-Received: from [192.168.1.103] (cpe-24-31-246-181.kc.res.rr.com. [24.31.246.181])
-        by smtp.gmail.com with ESMTPSA id k4-20020a9d4b84000000b005b2310ebdffsm4697502otf.54.2022.03.26.11.55.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Mar 2022 11:55:37 -0700 (PDT)
-Sender: Larry Finger <larry.finger@gmail.com>
-Message-ID: <f7bb9164-2f66-8985-5771-5f31ee5740b7@lwfinger.net>
-Date:   Sat, 26 Mar 2022 13:55:33 -0500
+        with ESMTP id S233620AbiCZTZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 15:25:38 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45D43207F;
+        Sat, 26 Mar 2022 12:24:00 -0700 (PDT)
+Received: from mail-lf1-f49.google.com ([209.85.167.49]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MrhLu-1ntDVC3m0C-00nf9d; Sat, 26 Mar 2022 20:23:59 +0100
+Received: by mail-lf1-f49.google.com with SMTP id p10so12670836lfa.12;
+        Sat, 26 Mar 2022 12:23:58 -0700 (PDT)
+X-Gm-Message-State: AOAM533bmgyf9gtICHhD4uX3bpHPI/aYdc1Wjn6Ki5JXbMOATEGat/Y+
+        Gy1rG/hWj2yhVg3daMun/t2j8RkW6hPx3SLZkuY=
+X-Google-Smtp-Source: ABdhPJxx8NCR/u6qmXzG17FP9feBwegQPJsf9Aqi/l68ye4U4vfPlOZSED7ECKkFvKmT885cCFviGMxdRBsqoooKkLU=
+X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
+ x5-20020a5d6505000000b002059a98e184mr11258676wru.317.1648322627645; Sat, 26
+ Mar 2022 12:23:47 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 21/22] rtw89: Replace comments with C99 initializers
-Content-Language: en-US
-To:     =?UTF-8?Q?Benjamin_St=c3=bcrz?= <benni@stuerz.xyz>, andrew@lunn.ch
-Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
-        linux@armlinux.org.uk, linux@simtec.co.uk, krzk@kernel.org,
-        alim.akhtar@samsung.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        robert.moore@intel.com, rafael.j.wysocki@intel.com,
-        lenb@kernel.org, 3chas3@gmail.com, laforge@gnumonks.org,
-        arnd@arndb.de, gregkh@linuxfoundation.org, mchehab@kernel.org,
-        tony.luck@intel.com, james.morse@arm.com, rric@kernel.org,
-        linus.walleij@linaro.org, brgl@bgdev.pl,
-        mike.marciniszyn@cornelisnetworks.com,
-        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
-        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
-        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        nico@fluxnic.net, loic.poulain@linaro.org, kvalo@kernel.org,
-        pkshih@realtek.com, bhelgaas@google.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-acpi@vger.kernel.org, devel@acpica.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-pci@vger.kernel.org
 References: <20220326165909.506926-1-benni@stuerz.xyz>
- <20220326165909.506926-21-benni@stuerz.xyz>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-In-Reply-To: <20220326165909.506926-21-benni@stuerz.xyz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 26 Mar 2022 20:23:31 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1e57mNUQgronhwrsXsuQW9sZYxCktKij7NwsieBWiGmw@mail.gmail.com>
+Message-ID: <CAK8P3a1e57mNUQgronhwrsXsuQW9sZYxCktKij7NwsieBWiGmw@mail.gmail.com>
+Subject: Re: [PATCH 01/22] orion5x: Replace comments with C99 initializers
+To:     =?UTF-8?Q?Benjamin_St=C3=BCrz?= <benni@stuerz.xyz>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Simtec Linux Team <linux@simtec.co.uk>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Robert Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Len Brown <lenb@kernel.org>, Chas Williams <3chas3@gmail.com>,
+        Harald Welte <laforge@gnumonks.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        gregkh <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Nicolas Pitre <nico@fluxnic.net>, loic.poulain@linaro.org,
+        kvalo@kernel.org, Pkshih <pkshih@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>, linux-ia64@vger.kernel.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
+        linux-atm-general@lists.sourceforge.net,
+        Networking <netdev@vger.kernel.org>, linux-edac@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        wcn36xx@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Provags-ID: V03:K1:9figIUnCgtvaf/cKMq2S8Mrl7ngptWVGWjzOtUo3hOJ8JuZUqXf
+ uGJHsYnWe/msKkwufx5cx8GjLMtmeUa4P0UGqi2U5Ehg8teMr5a6CVVLi/oFydUeqagKVDu
+ 3Vvsy5IH4R2SidR4u3VseNYZpAa9Csqs9tqhrAAeU9/eoVB7bNuRhKsZXmCiVLDG5heinbb
+ Fo2pPNQpCoAlPoGAryzUw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:RlqtZ8kYXZg=:weygU+7tyLUDVksTpjS8e5
+ HMK6a3RwJ4pP/DourG9N6pv/FKqMEGI+hY/rz9ZEkyBfPdVkwMhwkf75UAwHmKUqLiIJ4X16S
+ fERCRgYWtzpSZo5S/1ir1vo+pLydwh5/vJoO4jjki7XDP0mVHb7VcMLUH2KMcATjZEQpBxP5/
+ Le8AXBRQbX0WX4mu1jAQQRUngcl6lVuJ1N0hdMcMMHSV1FjZjnUpBcy6TF8sTFzV/Ku2/DO86
+ XJGfxC0muugsEI3U+JUJGN+eBjFzkg6xS1u57ZMaauo4ALrhTdEi+PO7YxjVvscnqa1Pkx3bI
+ 16XQ0Vt5urqXFfb7WPiNmvS0VF9EYpjL/2Xbi4Ygx4oMcluDFY7y/lgjRWqamPp5v6/mV5Joi
+ hMFe6szOl0BsDPOXMuLdYmXUlkAnsFzL3m/3DhYUko5pP9kD4lRW6ea769aI3pTKOhWQ1/WhZ
+ 2sBRqCre4vFTPxO7FLmbuDIDrgW8YS7mJfyh2dBxfL5qfG0KLCKLLuhoxy2PF86/ZpkzKkSSY
+ TnWCjOoGCAe/Tp+NXlEZ0HKO2mTfVq/vc26d/9rCKENTUPCDGml73zyXYdOoOeXYI97YXlrHH
+ 1/yZ+w9fQMQ4GVXmNtdmjsQTA6+8u8Mfj/oAsvjhc/7Du7Kx+nKd+VVT5m3SLPrK1qC+Oo9ns
+ WO5HxobIpnBO2OVQOgap63NODBQtF5TxKHN5sX6NRJBG24d7dV5t3kW93fmrf+2QNq3W8hLTs
+ xyTuMkuS7qKlerszk+X0tFneKJO4KuUui7P+wsIrahl5OwoahacsFleLfRqSV3i5DFizM/1rv
+ k1jFyA4vTU3aAlFBb3cj/2kYzyHcjB0KWr8wUwgz2924c1/53s=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -100,74 +115,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/26/22 11:59, Benjamin Stürz wrote:
+On Sat, Mar 26, 2022 at 5:58 PM Benjamin Stürz <benni@stuerz.xyz> wrote:
+>
 > This replaces comments with C99's designated
 > initializers because the kernel supports them now.
-> 
-> Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
-> ---
->   drivers/net/wireless/realtek/rtw89/coex.c | 40 +++++++++++------------
->   1 file changed, 20 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw89/coex.c b/drivers/net/wireless/realtek/rtw89/coex.c
-> index 684583955511..3c83a0bfb120 100644
-> --- a/drivers/net/wireless/realtek/rtw89/coex.c
-> +++ b/drivers/net/wireless/realtek/rtw89/coex.c
-> @@ -97,26 +97,26 @@ static const struct rtw89_btc_fbtc_slot s_def[] = {
->   };
->   
->   static const u32 cxtbl[] = {
-> -	0xffffffff, /* 0 */
-> -	0xaaaaaaaa, /* 1 */
-> -	0x55555555, /* 2 */
-> -	0x66555555, /* 3 */
-> -	0x66556655, /* 4 */
-> -	0x5a5a5a5a, /* 5 */
-> -	0x5a5a5aaa, /* 6 */
-> -	0xaa5a5a5a, /* 7 */
-> -	0x6a5a5a5a, /* 8 */
-> -	0x6a5a5aaa, /* 9 */
-> -	0x6a5a6a5a, /* 10 */
-> -	0x6a5a6aaa, /* 11 */
-> -	0x6afa5afa, /* 12 */
-> -	0xaaaa5aaa, /* 13 */
-> -	0xaaffffaa, /* 14 */
-> -	0xaa5555aa, /* 15 */
-> -	0xfafafafa, /* 16 */
-> -	0xffffddff, /* 17 */
-> -	0xdaffdaff, /* 18 */
-> -	0xfafadafa  /* 19 */
-> +	[0]  = 0xffffffff,
-> +	[1]  = 0xaaaaaaaa,
-> +	[2]  = 0x55555555,
-> +	[3]  = 0x66555555,
-> +	[4]  = 0x66556655,
-> +	[5]  = 0x5a5a5a5a,
-> +	[6]  = 0x5a5a5aaa,
-> +	[7]  = 0xaa5a5a5a,
-> +	[8]  = 0x6a5a5a5a,
-> +	[9]  = 0x6a5a5aaa,
-> +	[10] = 0x6a5a6a5a,
-> +	[11] = 0x6a5a6aaa,
-> +	[12] = 0x6afa5afa,
-> +	[13] = 0xaaaa5aaa,
-> +	[14] = 0xaaffffaa,
-> +	[15] = 0xaa5555aa,
-> +	[16] = 0xfafafafa,
-> +	[17] = 0xffffddff,
-> +	[18] = 0xdaffdaff,
-> +	[19] = 0xfafadafa
->   };
->   
->   struct rtw89_btc_btf_tlv {
 
+The change looks fine, but the comment looks misplaced, as enum initializers
+are not c99 feature. Also, the named array and struct intializers have been
+supported by gnu89 for a long time and widely used in the kernel, so it's
+not a recent change even for the others.
 
-Is this change really necessary? Yes, the entries must be ordered; however, the 
-comment carries that information at very few extra characters. To me, this patch 
-looks like unneeded source churn. One other concern is that this driver is 
-backported to older kernels and older compilers by several distros. Will this 
-change require adding extra conditional statements to the source used in these 
-applications?
+Also,
 
-Larry
-
+      Arnd
