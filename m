@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E55524E82F3
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17BE64E82D4
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:10:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234107AbiCZRKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 13:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
+        id S234370AbiCZRK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 13:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232932AbiCZRKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:10:33 -0400
-Received: from stuerz.xyz (unknown [45.77.206.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA4734B96;
-        Sat, 26 Mar 2022 10:08:33 -0700 (PDT)
+        with ESMTP id S234044AbiCZRKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:10:39 -0400
+Received: from stuerz.xyz (stuerz.xyz [IPv6:2001:19f0:5:15da:5400:3ff:fecc:7379])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3CA3585D;
+        Sat, 26 Mar 2022 10:08:58 -0700 (PDT)
 Received: by stuerz.xyz (Postfix, from userid 114)
-        id 15FDCFB7E4; Sat, 26 Mar 2022 16:59:29 +0000 (UTC)
+        id 35150FB7F8; Sat, 26 Mar 2022 16:59:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648313971; bh=h8kNuGjX/tVaFYP7mTBrGXI49VfH81tUX/xpUFBsyPo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=quzw4Veqn1t75q8i+SwY92Od0H4kbj+Jplj+Hrb9t/pLmlKsT6TJwKYv9o17XTzCA
-         3n4+kjK3LG/omELSm+sodJ7uUl4FaExNJQFo4XQbw2amIsW408Doe+3AErNNJZpImZ
-         lx7AVbydSYoFr2bJYXUKmyssrinBABDWXfDrQufUX+8e9VArBlaTIJ/bN2K5xyVq+w
-         0p7uHbBGHtyMHQgqTwLQnNn16UdQEjGi85LRaznlxiosXx3mrR8DCIsPHQcZtPldiM
-         dmTbc/27NaJUevsVWuBjG4Qlevt2k5gOfZ0u7u+jCoIZM3SSZM+fmuEdmLFHsnsnPg
-         mGpj42WHbwZ4g==
+        t=1648313978; bh=2uH++cpt44frpysxfSOHHq51GioRGW69bGRAGT0KbXI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Cq12VylqVwxsnb1TJGM2fG+9lFESXLHbo2EtQ5V3o28QF6KUTpn12/8Vbq1GoSCXw
+         HKjZapXjR3b3kUplntdqD20iB0tXU8uGDrLJAZAAE4Y9OR6AN7aedZRRJaks1j2Ptn
+         K3x6Zsnv8A7ti0JTYFnerN8JoPx08cRyV00MSeYaxJCJow8JFfWgclRgPZPvDBNUnA
+         kfSY2z6a1hbsKhCy+0g0P5u8PAAaEtqVtP84WvIBhcuQ+cvuiXIYBfPB0lUzHuHt1H
+         Hh7VoglqtyAu+NBeXIzS+w9LZDDe59/asw1r/M0dulCEUjGOiqvw7dd2SUt41Q+EFP
+         6vB0DH1LXS2Tg==
 Received: from benni-fedora.. (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
-        by stuerz.xyz (Postfix) with ESMTPSA id 06801FB7CA;
-        Sat, 26 Mar 2022 16:59:20 +0000 (UTC)
+        by stuerz.xyz (Postfix) with ESMTPSA id 98AE0FB7D0;
+        Sat, 26 Mar 2022 16:59:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648313967; bh=h8kNuGjX/tVaFYP7mTBrGXI49VfH81tUX/xpUFBsyPo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vaoJWTFzm8MRCBX+7S85u4Wohc5rAbjDG2T7E8DUltJLkf/krkoSBna4S3pqS99En
-         P3y6O3CiGyfogbGETepdGKzgpDN0QtHf35//97zogTn2Hce6o6WZ17BRWG3tApzQGf
-         aNIkiZhaEmddVF8juLhl42fQ5bbgbuzhcq0ukey1NN8t0guq0sCG3i6sPdM3bYC1U6
-         aU6BRZFuKP75AmwaGReNRozzsPCzJxq44tCraR+Ll6KCKwir1BEUti16KlHrTphFJy
-         +nuQ/wPjFpAX6QV3asHxC7dOJgBXo+wgnEZXWOiibQ9bZKvgZVBmA4ga1hsVtcewJL
-         xOc6w0OY3ukmA==
+        t=1648313973; bh=2uH++cpt44frpysxfSOHHq51GioRGW69bGRAGT0KbXI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cKhwvy4qhsPuBxAq0Y52RSBW8Kxkl55mtNsTt7h2uutsE3Y6bGf2uI+3fV4gjubw8
+         GpKwU9W3Gsv+wbbqaJHSG5dn04mPUxOLS6vQZPWYgqSkhFdKYlwRBwMnnmBwqY8C2y
+         6crdwbggZyh88T++mcaMq+N7QcoI6KJC9AH/jpS8zlcXylv3kJnUsJ9M6wHwPU2lhK
+         5Jy5mDsKEM89BIiyKY4oOsX95B3qpGLhw7sJvKQKpaYWFVH1Z5mqAILb9LQIa5uOep
+         +T7X2leuj8NeWwv8be761msNoWYvaNI/CeR3TDGXvIT6mSEVcBf6YLCLmfISYd0yHC
+         URoafektSpMIg==
 From:   =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
 To:     andrew@lunn.ch
 Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
@@ -65,19 +65,19 @@ Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
         wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
         linux-pci@vger.kernel.org,
         =?UTF-8?q?Benjamin=20St=C3=BCrz?= <benni@stuerz.xyz>
-Subject: [PATCH 01/22] orion5x: Replace comments with C99 initializers
-Date:   Sat, 26 Mar 2022 17:58:48 +0100
-Message-Id: <20220326165909.506926-1-benni@stuerz.xyz>
+Subject: [PATCH 02/22] s3c: Replace comments with C99 initializers
+Date:   Sat, 26 Mar 2022 17:58:49 +0100
+Message-Id: <20220326165909.506926-2-benni@stuerz.xyz>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220326165909.506926-1-benni@stuerz.xyz>
+References: <20220326165909.506926-1-benni@stuerz.xyz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        FROM_SUSPICIOUS_NTLD_FP,PDS_OTHER_BAD_TLD,RDNS_DYNAMIC,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: **
+        PDS_OTHER_BAD_TLD,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -89,26 +89,52 @@ initializers because the kernel supports them now.
 
 Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
 ---
- arch/arm/mach-orion5x/dns323-setup.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/mach-s3c/bast-irq.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/arch/arm/mach-orion5x/dns323-setup.c b/arch/arm/mach-orion5x/dns323-setup.c
-index 87cb47220e82..d762248c6512 100644
---- a/arch/arm/mach-orion5x/dns323-setup.c
-+++ b/arch/arm/mach-orion5x/dns323-setup.c
-@@ -61,9 +61,9 @@
- 
- /* Exposed to userspace, do not change */
- enum {
--	DNS323_REV_A1,	/* 0 */
--	DNS323_REV_B1,	/* 1 */
--	DNS323_REV_C1,	/* 2 */
-+	DNS323_REV_A1 = 0,
-+	DNS323_REV_B1 = 1,
-+	DNS323_REV_C1 = 2,
+diff --git a/arch/arm/mach-s3c/bast-irq.c b/arch/arm/mach-s3c/bast-irq.c
+index d299f124e6dc..bd5471f9973b 100644
+--- a/arch/arm/mach-s3c/bast-irq.c
++++ b/arch/arm/mach-s3c/bast-irq.c
+@@ -29,22 +29,22 @@
+  * the irq is not implemented
+ */
+ static const unsigned char bast_pc104_irqmasks[] = {
+-	0,   /* 0 */
+-	0,   /* 1 */
+-	0,   /* 2 */
+-	1,   /* 3 */
+-	0,   /* 4 */
+-	2,   /* 5 */
+-	0,   /* 6 */
+-	4,   /* 7 */
+-	0,   /* 8 */
+-	0,   /* 9 */
+-	8,   /* 10 */
+-	0,   /* 11 */
+-	0,   /* 12 */
+-	0,   /* 13 */
+-	0,   /* 14 */
+-	0,   /* 15 */
++	[0]  = 0,
++	[1]  = 0,
++	[2]  = 0,
++	[3]  = 1,
++	[4]  = 0,
++	[5]  = 2,
++	[6]  = 0,
++	[7]  = 4,
++	[8]  = 0,
++	[9]  = 0,
++	[10] = 8,
++	[11] = 0,
++	[12] = 0,
++	[13] = 0,
++	[14] = 0,
++	[15] = 0,
  };
  
- 
+ static const unsigned char bast_pc104_irqs[] = { 3, 5, 7, 10 };
 -- 
 2.35.1
 
