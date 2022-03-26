@@ -2,149 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 213F04E8312
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 18:20:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB6C4E8320
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 19:02:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233417AbiCZRWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 13:22:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        id S234347AbiCZSEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 14:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233140AbiCZRWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 13:22:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BEC8949247
-        for <netdev@vger.kernel.org>; Sat, 26 Mar 2022 10:20:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648315215;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0gPCasSItm4Ex2ZMUQbF4T4OAP0GG+ryCRQM09Api5o=;
-        b=glkaJGPiWzyjR+c5dYxaf7j5OHemLfbkYVXTbD0Kp8Tv1YLjKa3fKRY3WnCwdq0ah66Fkr
-        nnYa5VX1q58sBKYXo7gGxiFnUZyMoanFxNqB9Z4VT7QcegSOUWmLG/3XjWqDoLjJkGjo9s
-        4+VWf5NgjYoJevR+6xDs9bKH9oUkN8Y=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-219-6f1EE1BcPPWN7pxvJJYRew-1; Sat, 26 Mar 2022 13:20:13 -0400
-X-MC-Unique: 6f1EE1BcPPWN7pxvJJYRew-1
-Received: by mail-qt1-f200.google.com with SMTP id f7-20020a05622a1a0700b002e06d6279d5so3615068qtb.7
-        for <netdev@vger.kernel.org>; Sat, 26 Mar 2022 10:20:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0gPCasSItm4Ex2ZMUQbF4T4OAP0GG+ryCRQM09Api5o=;
-        b=SJuAqpMavS0xijgAbvJhI19MIdJ+kQcnUaMDiWdbzWnuxqcDahJ84ptoXOjpjU4wSr
-         aaR5D9rkU7u4Kcxo6CQ22yjRXIa8mmHamvunHPCUVWFbDO647apUn5oxK404fpnuPznJ
-         FftK28/Bf1kaY3ckEcMtEMUBWxd8AYagloL2rUpt6NhFwERwBqaPwQzmBp+jDi7yh2jH
-         BWCB1Wsahsbgv12PEGyJlBHQEkSX9nlDoaH0yZbqb6AJ7MGQ449bEGLzG8sxy3VoH/7T
-         9aS6BTTrHVugQ02gfSYkLRepW+t2VCxBPa5g3NvUtj2CZcsnNHv5DwGWNzl1zBPwwHWZ
-         j6rw==
-X-Gm-Message-State: AOAM531q2oeLr39N1a9ARJBuzA6FFrDKQ0USxQWL+7l0mYk05S54zmxU
-        2k+AYtvbcQzPjloU2Ovbx6qM6MlcfMb5qVmfTT10k31pBGllXry4s979fZB2F3oI3TeYGNXtFAy
-        MHJOJjSU0Rw23r+Gx
-X-Received: by 2002:a05:620a:4047:b0:67d:6729:b241 with SMTP id i7-20020a05620a404700b0067d6729b241mr10750090qko.151.1648315213272;
-        Sat, 26 Mar 2022 10:20:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy7zW54pmYavrU4oBp5rsLnr4D2xBrbgGeijtC31l8eEaKfEuQDANgOphYIqyt4r41K+AKekA==
-X-Received: by 2002:a05:620a:4047:b0:67d:6729:b241 with SMTP id i7-20020a05620a404700b0067d6729b241mr10750077qko.151.1648315213068;
-        Sat, 26 Mar 2022 10:20:13 -0700 (PDT)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id t13-20020a05622a148d00b002e22f105099sm8462282qtx.21.2022.03.26.10.20.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Mar 2022 10:20:12 -0700 (PDT)
-From:   trix@redhat.com
-To:     shshaikh@marvell.com, manishc@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com, sucheta.chakraborty@qlogic.com
-Cc:     GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] qlcnic: dcb: default to returning -EOPNOTSUPP
-Date:   Sat, 26 Mar 2022 10:20:03 -0700
-Message-Id: <20220326172003.2906474-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        with ESMTP id S232395AbiCZSEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 14:04:16 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DBC13CECF
+        for <netdev@vger.kernel.org>; Sat, 26 Mar 2022 11:02:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=NouxmkbXyieO1Hux/ld3G695f3UzkTVKQUYwNvnmwE8=; b=TAAZxnsjAOaA0cRvvgeIIlUiQ4
+        ml0HEWH+UD7R6dKWsfLumGb20l/fLtlpDcauTSzZomPYi7Rd6NXMBHDGtzAsm4umqH49+fJwwiAPR
+        JLpxTdU13YncFq6aWkdZocjTZFhwMnk/PGHN8xTzVDYJJAR8LIHCe7xNI3OhtP3I3qeanC7ldQk8R
+        KM8HjMbotEuB3UZUVDHqs7EQ00RLmFuPEhAw6uPWLAy+chjaRLQs4Z9NAmE1qK8pG9YWOzjp0VWCf
+        lw7eAglsOQApw6gKBgZCL31R/E35ljUuqZnHdtlUQlEjwOTgXy22/C177oSnfyhtH72C2oocdwEFB
+        Ah3EN+gA==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nYAkF-004f0I-Dp; Sat, 26 Mar 2022 18:02:36 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>
+Subject: [PATCH] net: sparx5: depends on PTP_1588_CLOCK_OPTIONAL
+Date:   Sat, 26 Mar 2022 11:02:34 -0700
+Message-Id: <20220326180234.20814-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Fix build errors when PTP_1588_CLOCK=m and SPARX5_SWTICH=y.
 
-Clang static analysis reports this issue
-qlcnic_dcb.c:382:10: warning: Assigned value is
-  garbage or undefined
-  mbx_out = *val;
-          ^ ~~~~
+arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.o: in function `sparx5_get_ts_info':
+sparx5_ethtool.c:(.text+0x146): undefined reference to `ptp_clock_index'
+arc-linux-ld: sparx5_ethtool.c:(.text+0x146): undefined reference to `ptp_clock_index'
+arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o: in function `sparx5_ptp_init':
+sparx5_ptp.c:(.text+0xd56): undefined reference to `ptp_clock_register'
+arc-linux-ld: sparx5_ptp.c:(.text+0xd56): undefined reference to `ptp_clock_register'
+arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o: in function `sparx5_ptp_deinit':
+sparx5_ptp.c:(.text+0xf30): undefined reference to `ptp_clock_unregister'
+arc-linux-ld: sparx5_ptp.c:(.text+0xf30): undefined reference to `ptp_clock_unregister'
+arc-linux-ld: sparx5_ptp.c:(.text+0xf38): undefined reference to `ptp_clock_unregister'
+arc-linux-ld: sparx5_ptp.c:(.text+0xf46): undefined reference to `ptp_clock_unregister'
+arc-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_ptp.o:sparx5_ptp.c:(.text+0xf46): more undefined references to `ptp_clock_unregister' follow
 
-val is set in the qlcnic_dcb_query_hw_capability() wrapper.
-If there is no query_hw_capability op in dcp, success is
-returned without setting the val.
-
-For this and similar wrappers, return -EOPNOTSUPP.
-
-Fixes: 14d385b99059 ("qlcnic: dcb: Query adapter DCB capabilities.")
-Signed-off-by: Tom Rix <trix@redhat.com>
+Fixes: 3cfa11bac9bb ("net: sparx5: add the basic sparx5 driver")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc: UNGLinuxDriver@microchip.com
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Steen Hegelund <steen.hegelund@microchip.com>
+Cc: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+Cc: Lars Povlsen <lars.povlsen@microchip.com>
 ---
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/microchip/sparx5/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-index 5d79ee4370bcd..7519773eaca6e 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_dcb.h
-@@ -51,7 +51,7 @@ static inline int qlcnic_dcb_get_hw_capability(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->get_hw_capability)
- 		return dcb->ops->get_hw_capability(dcb);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline void qlcnic_dcb_free(struct qlcnic_dcb *dcb)
-@@ -65,7 +65,7 @@ static inline int qlcnic_dcb_attach(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->attach)
- 		return dcb->ops->attach(dcb);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline int
-@@ -74,7 +74,7 @@ qlcnic_dcb_query_hw_capability(struct qlcnic_dcb *dcb, char *buf)
- 	if (dcb && dcb->ops->query_hw_capability)
- 		return dcb->ops->query_hw_capability(dcb, buf);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline void qlcnic_dcb_get_info(struct qlcnic_dcb *dcb)
-@@ -89,7 +89,7 @@ qlcnic_dcb_query_cee_param(struct qlcnic_dcb *dcb, char *buf, u8 type)
- 	if (dcb && dcb->ops->query_cee_param)
- 		return dcb->ops->query_cee_param(dcb, buf, type);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
-@@ -97,7 +97,7 @@ static inline int qlcnic_dcb_get_cee_cfg(struct qlcnic_dcb *dcb)
- 	if (dcb && dcb->ops->get_cee_cfg)
- 		return dcb->ops->get_cee_cfg(dcb);
- 
--	return 0;
-+	return -EOPNOTSUPP;
- }
- 
- static inline void qlcnic_dcb_aen_handler(struct qlcnic_dcb *dcb, void *msg)
--- 
-2.26.3
-
+--- linux-next-20220325.orig/drivers/net/ethernet/microchip/sparx5/Kconfig
++++ linux-next-20220325/drivers/net/ethernet/microchip/sparx5/Kconfig
+@@ -4,6 +4,7 @@ config SPARX5_SWITCH
+ 	depends on HAS_IOMEM
+ 	depends on OF
+ 	depends on ARCH_SPARX5 || COMPILE_TEST
++	depends on PTP_1588_CLOCK_OPTIONAL
+ 	select PHYLINK
+ 	select PHY_SPARX5_SERDES
+ 	select RESET_CONTROLLER
