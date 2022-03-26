@@ -2,108 +2,310 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C679E4E7BA8
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:21:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B64074E7E1E
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 01:27:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbiCZAOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Mar 2022 20:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
+        id S229487AbiCZA3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Mar 2022 20:29:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiCZAOH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 20:14:07 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1111A1753B6
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 17:12:33 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id c11so7673752pgu.11
-        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 17:12:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Iovdo5gFW3lzHAF30oHCSlnhp9HGhN02yXG4gTQEzBo=;
-        b=IFxbrtw6MX2TzbzPUVW0OZVJ60JT3UsTUf7o84Lwn974qsIPRA2qCnz2AIm3i7ESQ8
-         AnkP997VGJGbxPrru5B+NrOjHm1pxfwjmGmXLN58bOL6b07IqcO91WmgoMoAmPFWddaH
-         TY5AbGT/zqRrPa9VdHwPq3ebX7UVVx4eZpkEP4nVSMq3bagk1iqieC1TBgJc9hEFdT0e
-         bf1/9DM3ZpDF5+mr1ImJYtt+e1Qo5CJvIJAf6SSEJ5eI2YgahFOcmIveR2IhUtrjiv7y
-         T8MsRFfG/uVLki2FNxm0zZV6afAvOzMYFgt2DVHL0ttdcqAWcKhR80mOobAOwid26BtA
-         U2yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Iovdo5gFW3lzHAF30oHCSlnhp9HGhN02yXG4gTQEzBo=;
-        b=tdinAvKxpqSJ5t0/r+BIKn5szsWbafLVfN8OZYR32HWDbbEYzvkxcauhvxipuZc3sL
-         o8itlHK4y3JpUcqK+9TiL/Hb6H5koiuWaydxpx46Wq8AuvFj4NWNMPyF2HQ6++JsVLub
-         KdqFej0wtfBas5cE6rKFifmERgHM/nTP4DfzXFOZxmWPLrj5Nt6qiq016jBbzzerw83c
-         CWCYn7lxGYI8LJXlie/E0j2nKuUNT3bl5XxP85OIjM5MrcENKhGxUVBpGBxOn70CBuVR
-         iRGTScFTXGHGeYBSzc95/ZrWEsD3auLP1B7fJMHHU7QnPKPAptr5sV/jIdjj9NHVVylP
-         zkEA==
-X-Gm-Message-State: AOAM531P57ncLLqAZ+1cHOeA41dpYJkD4gJage8uzcYEB8WTlUpJKQAr
-        7/HL/w6Zwt2uEc/swUCzkwy/gw==
-X-Google-Smtp-Source: ABdhPJxb+QHc1qDnE+bUQ6UG68K0+VneJg5AtSaOi5mGuIUAaFCbZcanO833Lxs5xzdX6+b4ZdaKeQ==
-X-Received: by 2002:a05:6a00:4198:b0:4fa:8591:5456 with SMTP id ca24-20020a056a00419800b004fa85915456mr12630644pfb.81.1648253552353;
-        Fri, 25 Mar 2022 17:12:32 -0700 (PDT)
-Received: from google.com (249.189.233.35.bc.googleusercontent.com. [35.233.189.249])
-        by smtp.gmail.com with ESMTPSA id o3-20020a056a0015c300b004fb24adc4b8sm1269851pfu.159.2022.03.25.17.12.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Mar 2022 17:12:31 -0700 (PDT)
-Date:   Sat, 26 Mar 2022 00:12:28 +0000
-From:   William McVicker <willmcvicker@google.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>, kernel-team@android.com,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [BUG] deadlock in nl80211_vendor_cmd
-Message-ID: <Yj5abNAYJEDdoJNg@google.com>
-References: <dc556455-51a2-06e8-8ec5-b807c2901b7e@quicinc.com>
- <Yjzpo3TfZxtKPMAG@google.com>
- <19e12e6b5f04ba9e5b192001fbe31a3fc47d380a.camel@sipsolutions.net>
- <20220325094952.10c46350@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <f4f8a27dc07c1adaab470fde302ed841113e6b7f.camel@sipsolutions.net>
- <Yj4FFIXi//ivQC3X@google.com>
- <Yj4ntUejxaPhrM5b@google.com>
- <976e8cf697c7e5bc3a752e758a484b69a058710a.camel@sipsolutions.net>
- <Yj5W7VEij0BGwFK0@google.com>
- <20220325170712.69c2c8d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        with ESMTP id S229447AbiCZA3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Mar 2022 20:29:02 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9011740A2A
+        for <netdev@vger.kernel.org>; Fri, 25 Mar 2022 17:27:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648254446; x=1679790446;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=DNDQsmiw6Lkwk7Z50hRsEFPKTraAvD3QLAAaZx9mchw=;
+  b=YtC+V8MbO7m6jKk+lFPd4foX9xnA8rUN4HHUPv4EFdEYAtSYdsEw1IJM
+   wBOmpdkqegPUILHvsF3PhBk8EZBsEl0XMr6iqFKw241lbXmWflDDicr4T
+   6uaAMAJvxct0hKetUHf2kIfnsne8E9uV4AX6Gru2RKRkCk+gR3ZkQwO4I
+   dPAK730RXT7H69u+5tLGdggoityBn339tXljxDMcprwz/2l/EoUDt3bhW
+   qPctHXM117x3HQNn8PNuse1rCuGpOAvi0+aS7EX30YZ20th623MrwwCQm
+   GkrW620j2FerGcnGdie0F+tCGT84iH59dKS24Azplke+hJ0LOq3pxDbLQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10297"; a="246228427"
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="246228427"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 17:27:26 -0700
+X-IronPort-AV: E=Sophos;i="5.90,211,1643702400"; 
+   d="scan'208";a="520378447"
+Received: from hsinying-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.209.20.221])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2022 17:27:25 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>,
+        richardcochran@gmail.com, yangbo.lu@nxp.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     mlichvar@redhat.com, netdev@vger.kernel.org,
+        Gerhard Engleder <gerhard@engleder-embedded.com>
+Subject: Re: [PATCH net-next v1 5/6] ptp: Support late timestamp determination
+In-Reply-To: <20220322210722.6405-6-gerhard@engleder-embedded.com>
+References: <20220322210722.6405-1-gerhard@engleder-embedded.com>
+ <20220322210722.6405-6-gerhard@engleder-embedded.com>
+Date:   Fri, 25 Mar 2022 17:27:25 -0700
+Message-ID: <87mthd4kya.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325170712.69c2c8d3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Spam-Status: No, score=-15.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,HK_RANDOM_ENVFROM,HK_RANDOM_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/25/2022, Jakub Kicinski wrote:
-> On Fri, 25 Mar 2022 23:57:33 +0000 William McVicker wrote:
-> > Instead of open coding it, we could just pass the internal_flags via struct
-> > genl_info to nl80211_vendor_cmds() and then handle the rtnl_unlock() there if
-> > the vendor command doesn't request it. I included the patch below in case
-> > there's any chance you would consider this for upstream. This would at least
-> > add backwards compatibility to the vendor ops API so that existing drivers that
-> > depend on the RTNL being held don't need to be fully refactored.
-> 
-> Sorry to step in, Johannes may be AFK already. There's no asterisk next
-> to the "we don't cater to out of tree code" rule, AFAIK.  We change
-> locking often, making a precedent like this would be ill-advised.
+Gerhard Engleder <gerhard@engleder-embedded.com> writes:
 
-Yeah I understand. I'll talk to Broadcom about this to see why they didn't use
-the existing upstream NAN interface. This sounds like it's going to be
-a problem for all the Android out-of-tree drivers.
+> If a physical clock supports a free running time called cycles, then
+> timestamps shall be based on this time too. For TX it is known in
+> advance before the transmission if a timestamp based on cycles is
+> needed. For RX it is impossible to know which timestamp is needed before
+> the packet is received and assigned to a socket.
+>
+> Support late timestamp determination by a physical clock. Therefore, an
+> address/cookie is stored within the new phc_data field of struct
+> skb_shared_hwtstamps. This address/cookie is provided to a new physical
+> clock method called gettstamp(), which returns a timestamp based on the
+> normal/adjustable time or based on cycles.
+>
+> The previously introduced flag SKBTX_HW_TSTAMP_USE_CYCLES is reused with
+> an additional alias to request the late timestamp determination by the
+> physical clock. That is possible, because SKBTX_HW_TSTAMP_USE_CYCLES is
+> not used in the receive path.
+>
+> Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> ---
+>  drivers/ptp/ptp_clock.c          | 27 ++++++++++++++++++++++++
+>  include/linux/ptp_clock_kernel.h | 30 +++++++++++++++++++++++++++
+>  include/linux/skbuff.h           |  8 +++++++-
+>  net/socket.c                     | 35 ++++++++++++++++++++++----------
+>  4 files changed, 88 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+> index 54b9f54ac0b2..b7a8cf27c349 100644
+> --- a/drivers/ptp/ptp_clock.c
+> +++ b/drivers/ptp/ptp_clock.c
+> @@ -450,6 +450,33 @@ void ptp_cancel_worker_sync(struct ptp_clock *ptp)
+>  }
+>  EXPORT_SYMBOL(ptp_cancel_worker_sync);
+>  
+> +ktime_t ptp_get_timestamp(int index,
+> +			  const struct skb_shared_hwtstamps *hwtstamps,
+> +			  bool cycles)
+> +{
+> +	char name[PTP_CLOCK_NAME_LEN] = "";
+> +	struct ptp_clock *ptp;
+> +	struct device *dev;
+> +	ktime_t ts;
+> +
+> +	snprintf(name, PTP_CLOCK_NAME_LEN, "ptp%d", index);
+> +	dev = class_find_device_by_name(ptp_class, name);
+> +	if (!dev)
+> +		return 0;
+> +
+> +	ptp = dev_get_drvdata(dev);
+> +
+> +	if (ptp->info->gettstamp)
+> +		ts = ptp->info->gettstamp(ptp->info, hwtstamps, cycles);
+> +	else
+> +		ts = hwtstamps->hwtstamp;
+> +
+> +	put_device(dev);
+> +
+> +	return ts;
+> +}
+> +EXPORT_SYMBOL(ptp_get_timestamp);
+> +
+>  /* module operations */
+>  
+>  static void __exit ptp_exit(void)
+> diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+> index cc6a7b2e267d..f4f0d8a880c6 100644
+> --- a/include/linux/ptp_clock_kernel.h
+> +++ b/include/linux/ptp_clock_kernel.h
+> @@ -133,6 +133,16 @@ struct ptp_system_timestamp {
+>   *                   parameter cts: Contains timestamp (device,system) pair,
+>   *                   where system time is realtime and monotonic.
+>   *
+> + * @gettstamp:  Get hardware timestamp based on normal/adjustable time or free
+> + *              running time. If @getcycles64 or @getcyclesx64 are supported,
+> + *              then this method is required to provide timestamps based on the
+> + *              free running time. This method will be called if
+> + *              SKBTX_HW_TSTAMP_PHC is set by the driver.
+> + *              parameter hwtstamps: skb_shared_hwtstamps structure pointer.
+> + *              parameter cycles: If false, then hardware timestamp based on
+> + *              normal/adjustable time is requested. If true, then hardware
+> + *              timestamp based on free running time is requested.
+> + *
+>   * @enable:   Request driver to enable or disable an ancillary feature.
+>   *            parameter request: Desired resource to enable or disable.
+>   *            parameter on: Caller passes one to enable or zero to disable.
+> @@ -185,6 +195,9 @@ struct ptp_clock_info {
+>  			    struct ptp_system_timestamp *sts);
+>  	int (*getcrosscycles)(struct ptp_clock_info *ptp,
+>  			      struct system_device_crosststamp *cts);
+> +	ktime_t (*gettstamp)(struct ptp_clock_info *ptp,
+> +			     const struct skb_shared_hwtstamps *hwtstamps,
+> +			     bool cycles);
+>  	int (*enable)(struct ptp_clock_info *ptp,
+>  		      struct ptp_clock_request *request, int on);
+>  	int (*verify)(struct ptp_clock_info *ptp, unsigned int pin,
+> @@ -364,6 +377,19 @@ static inline void ptp_cancel_worker_sync(struct ptp_clock *ptp)
+>   * a loadable module.
+>   */
+>  
+> +/**
+> + * ptp_get_timestamp() - get timestamp of ptp clock
+> + *
+> + * @index:     phc index of ptp pclock.
+> + * @hwtstamps: skb_shared_hwtstamps structure pointer.
+> + * @cycles:    true for timestamp based on cycles.
+> + *
+> + * Returns timestamp, or 0 on error.
+> + */
+> +ktime_t ptp_get_timestamp(int index,
+> +			  const struct skb_shared_hwtstamps *hwtstamps,
+> +			  bool cycles);
+> +
+>  /**
+>   * ptp_get_vclocks_index() - get all vclocks index on pclock, and
+>   *                           caller is responsible to free memory
+> @@ -386,6 +412,10 @@ int ptp_get_vclocks_index(int pclock_index, int **vclock_index);
+>   */
+>  ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index);
+>  #else
+> +static inline ktime_t ptp_get_timestamp(int index,
+> +					const struct skb_shared_hwtstamps *hwtstamps,
+> +					bool cycles);
+> +{ return 0; }
+>  static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
+>  { return 0; }
+>  static inline ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp,
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index f494ddbfc826..38929c113953 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -564,7 +564,10 @@ static inline bool skb_frag_must_loop(struct page *p)
+>   * &skb_shared_info. Use skb_hwtstamps() to get a pointer.
+>   */
+>  struct skb_shared_hwtstamps {
+> -	ktime_t	hwtstamp;
+> +	union {
+> +		ktime_t	hwtstamp;
+> +		void *phc_data;
+> +	};
+>  };
+>  
+>  /* Definitions for tx_flags in struct skb_shared_info */
+> @@ -581,6 +584,9 @@ enum {
+>  	/* generate hardware time stamp based on cycles if supported */
+>  	SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
+>  
+> +	/* call PHC to get actual hardware time stamp */
+> +	SKBTX_HW_TSTAMP_PHC = 1 << 3,
+> +
+>  	/* generate wifi status information (where possible) */
+>  	SKBTX_WIFI_STATUS = 1 << 4,
+>  
+> diff --git a/net/socket.c b/net/socket.c
+> index 2e932c058002..fe765d559086 100644
+> --- a/net/socket.c
+> +++ b/net/socket.c
+> @@ -804,21 +804,17 @@ static bool skb_is_swtx_tstamp(const struct sk_buff *skb, int false_tstamp)
+>  	return skb->tstamp && !false_tstamp && skb_is_err_queue(skb);
+>  }
+>  
+> -static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
+> +static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb,
+> +			   int if_index)
+>  {
+>  	struct scm_ts_pktinfo ts_pktinfo;
+> -	struct net_device *orig_dev;
+>  
+>  	if (!skb_mac_header_was_set(skb))
+>  		return;
+>  
+>  	memset(&ts_pktinfo, 0, sizeof(ts_pktinfo));
+>  
+> -	rcu_read_lock();
+> -	orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> -	if (orig_dev)
+> -		ts_pktinfo.if_index = orig_dev->ifindex;
+> -	rcu_read_unlock();
+> +	ts_pktinfo.if_index = if_index;
+>  
+>  	ts_pktinfo.pkt_length = skb->len - skb_mac_offset(skb);
+>  	put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPING_PKTINFO,
+> @@ -838,6 +834,9 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+>  	int empty = 1, false_tstamp = 0;
+>  	struct skb_shared_hwtstamps *shhwtstamps =
+>  		skb_hwtstamps(skb);
+> +	struct net_device *orig_dev;
+> +	int if_index = 0;
+> +	int phc_index = -1;
+>  	ktime_t hwtstamp;
+>  
+>  	/* Race occurred between timestamp enabling and packet
+> @@ -886,18 +885,32 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+>  	if (shhwtstamps &&
+>  	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+>  	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
+> -		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
+> -			hwtstamp = ptp_convert_timestamp(&shhwtstamps->hwtstamp,
+> -							 sk->sk_bind_phc);
+> +		rcu_read_lock();
+> +		orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> +		if (orig_dev) {
+> +			if_index = orig_dev->ifindex;
+> +			if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP_PHC)
+> +				phc_index = ethtool_get_phc(orig_dev);
+> +		}
+> +		rcu_read_unlock();
+> +
+> +		if ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP_PHC) &&
+> +		    (phc_index != -1))
+> +			hwtstamp = ptp_get_timestamp(phc_index, shhwtstamps,
+> +						     sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC);
+>  		else
 
-Thanks for the help!
+I think that the only part that I don't like is how ethtool_get_phc()
+and ptp_get_timestamp() work together. Would it make sense for
+ethtool_get_phc() to return a 'struct ptp_clock' directly? And make
+ptp_get_timestamp() accept a ptp_clock?
 
---Will
+I always get worried that by using indexes it's hard to guarantee that
+we are using the "right" device (thinking when the user is creating and
+destrying devices non stop).
+
+It could be that by addressing Richard comments you will handle this
+concern as well.
+
+>  			hwtstamp = shhwtstamps->hwtstamp;
+>  
+> +		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
+> +			hwtstamp = ptp_convert_timestamp(&hwtstamp,
+> +							 sk->sk_bind_phc);
+> +
+>  		if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
+>  			empty = 0;
+>  
+>  			if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
+>  			    !skb_is_err_queue(skb))
+> -				put_ts_pktinfo(msg, skb);
+> +				put_ts_pktinfo(msg, skb, if_index);
+>  		}
+>  	}
+>  	if (!empty) {
+> -- 
+> 2.20.1
+>
+
+Cheers,
+-- 
+Vinicius
