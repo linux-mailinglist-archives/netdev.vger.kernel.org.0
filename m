@@ -2,105 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 261384E80DE
-	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 13:39:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DCD54E80E3
+	for <lists+netdev@lfdr.de>; Sat, 26 Mar 2022 13:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232427AbiCZMlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 08:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        id S232971AbiCZMp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 08:45:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230241AbiCZMlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 08:41:10 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FCD3AF
-        for <netdev@vger.kernel.org>; Sat, 26 Mar 2022 05:39:31 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 0785B10308A1F;
-        Sat, 26 Mar 2022 13:39:30 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id DA4EA2F637E; Sat, 26 Mar 2022 13:39:29 +0100 (CET)
-Date:   Sat, 26 Mar 2022 13:39:29 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Oliver Neukum <oneukum@suse.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: ordering of call to unbind() in usbnet_disconnect
-Message-ID: <20220326123929.GB31022@wunner.de>
-References: <62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com>
- <20220310113820.GG15680@pengutronix.de>
- <20220314184234.GA556@wunner.de>
- <Yi+UHF37rb0URSwb@lunn.ch>
- <20220315054403.GA14588@pengutronix.de>
- <20220315083234.GA27883@wunner.de>
- <20220315113841.GA22337@pengutronix.de>
- <YjCUgCNHw6BUqJxr@lunn.ch>
- <20220321100226.GA19177@wunner.de>
- <Yjh5Qz8XX1ltiRUM@lunn.ch>
+        with ESMTP id S230241AbiCZMp2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 08:45:28 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E571A22BC2;
+        Sat, 26 Mar 2022 05:43:50 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id bu29so17614745lfb.0;
+        Sat, 26 Mar 2022 05:43:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=dkHNlJuCLFrOKAwBePvcq9liX1UlXv47eIJWGN8QrZc=;
+        b=JAcNQ3jmIk15fBuGkSxTQ0Z1MRKZsbwTr1J9MLhZx0gAm0nmzG52Vb/oOTZ2phtbWN
+         fXF4z1p7B005X+pE4FD317P2aItWlrE/EdqUc6UTT1qmWDNt6grzCS2SEZdBokXzd+uH
+         kZTS3tkq/scQY4sqRSkg32KmTFe6fKEGFD/X1vVneUY9/3V4WIp/ZO2BTzGfEbE5S72g
+         kdhbk7+5PMsgfhCRo6Ag+02M1ZuEazPYO25frIvr3nu3TNTzwRvy/n27Pan93JA7UV8e
+         8jL12CBUbxNvdeTVBGM8iBIOjdeiIv9ePtm6oae/hzau5mLZ6cEXV6VL81uus+5/uFeM
+         X01w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dkHNlJuCLFrOKAwBePvcq9liX1UlXv47eIJWGN8QrZc=;
+        b=NNiy2rq9UjWtlTnDkag3QatONqw5ae73N/2feANi7VXt5VwWGsUAb3l8+PJNgogE5l
+         rnrc6mX3dKc96CilCMmpogZdXfZm3GUkA9Soe7kfgPPaxMD3CwjRaNezvJCT5TFyFOkJ
+         MSF+ALhsxF96w58RVZsAqJ3xPkvavgrDAV9M6Fo8IdIkOu5IWPdNCugpJr9Tw7wB3X0z
+         rgJm4xbxSBNXXukkO10fYXZQgVrYtmARo3hNLBmRp3pRYhxxZ2A9y/niTndylTjCZPsM
+         l0WsI7v2UiDP3e3pqDrGri6HVD5qep1pVA9s/oaN0O0tzRmZF/Is309tVwQh2afFtM+n
+         YJAw==
+X-Gm-Message-State: AOAM531/Qg2X9QcJydh27IvXf8iYOO7jn5RHX0/ifPNaswSYYNdPTsZS
+        qVIEmYTysVx/+jooeb0kpnc=
+X-Google-Smtp-Source: ABdhPJx7SmErxDmbkwRJcvtXrz+ac8KvRmFbNYoXprLR7ObTuaF1G6c6R+CUiLzgfpHZ8kzdzLj8FA==
+X-Received: by 2002:a05:6512:16a9:b0:44a:2f67:3b29 with SMTP id bu41-20020a05651216a900b0044a2f673b29mr12238459lfb.153.1648298629015;
+        Sat, 26 Mar 2022 05:43:49 -0700 (PDT)
+Received: from [192.168.1.11] ([94.103.225.225])
+        by smtp.gmail.com with ESMTPSA id m13-20020ac2424d000000b0044859fdd0b7sm1048951lfl.301.2022.03.26.05.43.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 26 Mar 2022 05:43:48 -0700 (PDT)
+Message-ID: <59034997-46f4-697d-3620-7897db7fb97d@gmail.com>
+Date:   Sat, 26 Mar 2022 15:43:47 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yjh5Qz8XX1ltiRUM@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [syzbot] KMSAN: uninit-value in ax88179_led_setting
+Content-Language: en-US
+To:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        jgg@ziepe.ca, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        phil@philpotter.co.uk, syzkaller-bugs@googlegroups.com,
+        syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com,
+        arnd@arndb.de
+References: <CAAZOf27PHWxdZifZpQYfTHb3h=qk22jRc6-A2LvBkLTR6xNOKg@mail.gmail.com>
+ <CAAZOf24Gux0bfS-QGgjcd93NpcpxeA5xU5n2k+EhhyphJo-Mmg@mail.gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <CAAZOf24Gux0bfS-QGgjcd93NpcpxeA5xU5n2k+EhhyphJo-Mmg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 21, 2022 at 02:10:27PM +0100, Andrew Lunn wrote:
-> There are two patterns in use at the moment:
-> 
-> 1) The phy is attached in open() and detached in close(). There is no
->    danger of the netdev disappearing at this time.
-> 
-> 2) The PHY is attached during probe, and detached during release.
-> 
-> This second case is what is being used here in the USB code. This is
-> also a common pattern for complex devices. In probe, you get all the
-> components of a complex devices, stitch them together and then
-> register the composite device. During release, you unregister the
-> composite device, and then release all the components. Since this is a
-> natural model, i think it should work.
+Hi David,
 
-I've gone through all drivers and noticed that some of them use a variation
-of pattern 2 which looks fishy:
+On 3/26/22 14:47, David Kahurani wrote:
+>>
+>> Signed-off-by: David Kahurani <k.kahurani@gmail.com>
+>> Reported-by: syzbot+d3dbdf31fbe9d8f5f311@syzkaller.appspotmail.com
+>> ---
+>>  drivers/net/usb/ax88179_178a.c | 181 +++++++++++++++++++++++++++------
+>>  1 file changed, 152 insertions(+), 29 deletions(-)
+>>
+>> diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+>> index a31098981..932e21a65 100644
+>> --- a/drivers/net/usb/ax88179_178a.c
+>> +++ b/drivers/net/usb/ax88179_178a.c
+>> @@ -224,9 +224,12 @@ static int __ax88179_write_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+>>   ret = fn(dev, cmd, USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+>>   value, index, data, size);
+>>
 
-On probe, they first attach the PHY, then register the netdev.
-On remove, they detach the PHY, then unregister the netdev.
+You've changed __ax88179_write_cmd(), but not __ax88179_read_cmd(). I've 
+missed it. Changing  __ax88179_write_cmd() does not help with uninit 
+value bugs
 
-Is it legal to detach the PHY from a registered (potentially running)
-netdev? It looks wrong to me.
+Also I believe, __ax88179_read_cmd() should have __must_check annotation 
+too, since problem came from it in the first place (I mean after added 
+sane error handling inside it)
 
-Affected drivers:
+Next thing is ax88179_read_cmd_nopm() still prone to uninit value bugs, 
+since it touches uninitialized `buf` in case of __ax88179_read_cmd() 
+error...
 
-          drivers/net/ethernet/actions/owl-emac.c
-          drivers/net/ethernet/altera/altera_tse_main.c
-          drivers/net/ethernet/apm/xgene-v2/mdio.c
-          drivers/net/ethernet/apm/xgene/xgene_enet_hw.c
-          drivers/net/ethernet/arc/emac_main.c
-          drivers/net/ethernet/asix/ax88796c_main.c
-          drivers/net/ethernet/broadcom/tg3.c
-          drivers/net/ethernet/cortina/gemini.c
-          drivers/net/ethernet/dnet.c
-          drivers/net/ethernet/ethoc.c
-          drivers/net/ethernet/hisilicon/hip04_eth.c
-          drivers/net/ethernet/lantiq_etop.c
-          drivers/net/ethernet/marvell/pxa168_eth.c
-          drivers/net/ethernet/toshiba/tc35815.c
 
-Some of these use devm_register_netdev() on probe and disconnect the
-PHY in their ->remove hook.  They're missing the fact that
-__device_release_driver() calls the ->remove hook before
-devres_release_all().
 
-Thanks,
+I remembered why I gave up on fixing this driver... I hope, you have 
+more free time and motivation :)
 
-Lukas
+
+
+
+With regards,
+Pavel Skripkin
