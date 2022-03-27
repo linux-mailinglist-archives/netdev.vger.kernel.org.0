@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B374E8512
-	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 04:54:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B72DE4E8516
+	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 04:54:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233033AbiC0Czw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 22:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        id S233152AbiC0Czz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 22:55:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232935AbiC0Czs (ORCPT
+        with ESMTP id S232940AbiC0Czs (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 22:55:48 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E811FA73;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0A32182D;
         Sat, 26 Mar 2022 19:54:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C64C660EC7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D797960EEA;
         Sun, 27 Mar 2022 02:54:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1962C3410F;
-        Sun, 27 Mar 2022 02:54:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F442C34113;
+        Sun, 27 Mar 2022 02:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648349650;
-        bh=xem/WDbeiv1jg1Gf2N6sgo6Hsoixhq7r6N5ZpgXa7M8=;
+        bh=SPdSfbhLQSOfNpuHBGoThbTO8srfvb+o/1lcDd4PLbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CZ2DeQHuZQys1gawz8tOK+zMfHENie3DuEjAFDZKFVhdoOztlcs2tkmK+3t0eW6Mq
-         nGGAkWWxqmKRuM1Rd+6tyvZwaPz9fYLY7JBM0vvt35Q2NQCyZqt6AbOfZIZSooXH2n
-         gU28dhUn0H9sWcVDPxWqvLSQZiuZqm32IXKHNF3+Y626bNTJO0djjheFX1qxC3jCsN
-         XgIRk2RntVAp/AqNkNoc4MUlaxSj+3zX0KQU1kJZqSnxGcr/M+pK9qlP9rvH15H8pb
-         ZHn/3FZ9kVVNVpwQeG42/XUs2L4ReSOWJq/87GcllqFWlpk5h496hFPUDivt+aX6Px
-         PZJVbNE30ZICw==
+        b=qezV1lKzXPTv8NldJ6ah700q2J6NTkrvYGFpbf2V9rvJ3QetMmrqAfiZfLqWpXnc2
+         Ni0d8X2ZE8sfa1mUa/KGXsxQS5pty92bNWiFMnDUzP8dJfnAb8Jf5erTWW/tP5FV+A
+         7ixmUO2Hug3GSyj2Rf66C1XXzVLLTelyLSTYSgMhzWSTVEZoKYzE0RUjzO9DtWhnh6
+         Tz6z0NoAor8jI7YWXKCyJXzH4VIerZU9ubVshe55WuyifrfiSztqTluA6+5fo6Alsi
+         AQS97HLSK+XslGu1x5UV4vKzX1B33XcPV8UFJcnYPw4PE1cooXt30Uzy7LiaGoRvuc
+         abSPw1sqLCJWw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, pabeni@redhat.com, corbet@lwn.net,
         bpf@vger.kernel.org, linux-doc@vger.kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 04/13] docs: netdev: turn the net-next closed into a Warning
-Date:   Sat, 26 Mar 2022 19:53:51 -0700
-Message-Id: <20220327025400.2481365-5-kuba@kernel.org>
+Subject: [PATCH net 05/13] docs: netdev: shorten the name and mention msgid for patch status
+Date:   Sat, 26 Mar 2022 19:53:52 -0700
+Message-Id: <20220327025400.2481365-6-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220327025400.2481365-1-kuba@kernel.org>
 References: <20220327025400.2481365-1-kuba@kernel.org>
@@ -54,30 +54,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the sphinx Warning box to make the net-next being closed
-stand out more.
+Cut down the length of the question so it renders better in docs.
+Mention that Message-ID can be used to search patchwork.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- Documentation/networking/netdev-FAQ.rst | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ Documentation/networking/netdev-FAQ.rst | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
-index 0bff899f286f..c1683ed1faca 100644
+index c1683ed1faca..f0d452846d84 100644
 --- a/Documentation/networking/netdev-FAQ.rst
 +++ b/Documentation/networking/netdev-FAQ.rst
-@@ -73,8 +73,9 @@ relating to vX.Y
- An announcement indicating when ``net-next`` has been closed is usually
- sent to netdev, but knowing the above, you can predict that in advance.
+@@ -105,14 +105,16 @@ and note the top of the "tags" section.  If it is rc1, it is early in
+ the dev cycle.  If it was tagged rc7 a week ago, then a release is
+ probably imminent.
  
--IMPORTANT: Do not send new ``net-next`` content to netdev during the
--period during which ``net-next`` tree is closed.
-+.. warning::
-+  Do not send new ``net-next`` content to netdev during the
-+  period during which ``net-next`` tree is closed.
+-I sent a patch and I'm wondering what happened to it - how can I tell whether it got merged?
+---------------------------------------------------------------------------------------------
++How can I tell the status of a patch I've sent?
++-----------------------------------------------
+ Start by looking at the main patchworks queue for netdev:
  
- Shortly after the two weeks have passed (and vX.Y-rc1 is released), the
- tree for ``net-next`` reopens to collect content for the next (vX.Y+1)
+   https://patchwork.kernel.org/project/netdevbpf/list/
+ 
+ The "State" field will tell you exactly where things are at with your
+-patch.
++patch. Patches are indexed by the ``Message-ID`` header of the emails
++which carried them so if you have trouble finding your patch append
++the value of ``Message-ID`` to the URL above.
+ 
+ The above only says "Under Review".  How can I find out more?
+ -------------------------------------------------------------
 -- 
 2.34.1
 
