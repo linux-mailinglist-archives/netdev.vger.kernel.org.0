@@ -2,258 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D02A94E89AD
-	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 21:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B4A4E89E6
+	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 22:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236511AbiC0TZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Mar 2022 15:25:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
+        id S236584AbiC0UCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Mar 2022 16:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235228AbiC0TZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 15:25:36 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC9365D6
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 12:23:56 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id q14so16529322ljc.12
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 12:23:56 -0700 (PDT)
+        with ESMTP id S229584AbiC0UCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 16:02:12 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EB9F12087;
+        Sun, 27 Mar 2022 13:00:32 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id r13so24704489ejd.5;
+        Sun, 27 Mar 2022 13:00:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=81R8ObTvU5bcOjgPkhjrVdYMQgLpHwwmsUh10DuWTXw=;
-        b=QVswRSXvuEFhZlnuaBAnMB1TOMg78uyn8mRLwSOZtWi/86mVxTdWeJmg8H09RYWcp4
-         O6lvIOKP0C2OxXUCyV3ffNy61gxSdcLR6Kl9jGUx2xgYt16l8oVTj7BEMInCe8aUUdRF
-         U28WrmitywInVLFpJqv3NSZNOfcB3kKShK/cw=
+         :cc:content-transfer-encoding;
+        bh=78iW5XK4+ASAwJVsAvI1krxN1Cn3kULaSzDMrQW3lbE=;
+        b=W7sg25bHaszzvWVJN0gyX6n6UFKurK5uWS8e6vL3YRtpn8QA30BzDbsf0Fo0KnzuVo
+         f5lgeCM1g7VjeI4+YsTMtUtXLU8OULMmeB5PSBFxtOhNQxOmFPwV58KHSise/8GMyt0R
+         UkRxgQ3CLiyEWm9B5wmzgYC64NBf7VmqUh+uCDsTRhKm1dBL3PhDD7kvx2KxY5v+Ou9s
+         LtCbA+PaAxJA8Aqhhp0q2Rfl3QnpipqfZJ/WNelj96BMMf018qhLZN8AMLxNqJh1Ixg8
+         Af8ZbFHjT7fOZzcs+O1sgyvPQnq9W6Aze+RWRCdQHnD8mS6FSfbjKHib+pU03gWIfqf1
+         ov8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=81R8ObTvU5bcOjgPkhjrVdYMQgLpHwwmsUh10DuWTXw=;
-        b=jxUY8xILzLcUT1SQ3HQndWvr9eHNBct/epfGfmTXxMYP/36m5puSfFuvw5dTXZalVK
-         255mVMWB+SGM5a8UBdnOEWcEuJy8K1JoNUSj/qWtsM6Pj/fnB8+oEvomMoy+jD/IHFdZ
-         U7USeALzC4oLDJK8PYG6iiqk4DUsUHwup6skKxqsU1gEL2U9I3Ol+wUKjx90ONedsgyr
-         KFYMzWiAGUmh0EbdvmzynmqpfBy0BvwBp+1TDZuGdTUaZI0udcFCSCrv/LRhhMwtJWgm
-         UZUpLnLxqrdy8P9ABdNaLP21VQ3YgOI77rqE6II4UtvJA9o4LfIbzKcxoMVWQB6Ygsna
-         lz/Q==
-X-Gm-Message-State: AOAM533Uu3lh2gwTO21yAEeUuJGacu0/vF6/ugP43ExOhUGFDO5WpCDY
-        +IowTWcRbk48rZfolx3N9OLkRC+2TrqIK24HnZE=
-X-Google-Smtp-Source: ABdhPJzQnyTcZwb+X3zifv9cxpJtvqfVCm/DUrFNWQQI6L8W771ARtDgO67OdjX8N7yotHCZYSgD4w==
-X-Received: by 2002:a05:651c:171b:b0:248:c74:76f0 with SMTP id be27-20020a05651c171b00b002480c7476f0mr16782524ljb.106.1648409034273;
-        Sun, 27 Mar 2022 12:23:54 -0700 (PDT)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id k7-20020a196f07000000b0044a5155d334sm1433908lfc.129.2022.03.27.12.23.52
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Mar 2022 12:23:52 -0700 (PDT)
-Received: by mail-lj1-f169.google.com with SMTP id r22so16571606ljd.4
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 12:23:52 -0700 (PDT)
-X-Received: by 2002:a05:651c:1213:b0:247:e2d9:cdda with SMTP id
- i19-20020a05651c121300b00247e2d9cddamr17499555lja.443.1648409031649; Sun, 27
- Mar 2022 12:23:51 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=78iW5XK4+ASAwJVsAvI1krxN1Cn3kULaSzDMrQW3lbE=;
+        b=ZmonW1tyc16bGmt4eGqB/bGDMcjSVrcxHhhvxkq1J2QuvGtadUCuauS2i64BFdbHdh
+         fald6rcruUT0imX2uwJiXvXlKTP8dYRdWeRpHrHRwoOaLy/vXw0XnQRgl+UuKN4iGhUQ
+         wMoMCVYNZokjU2MmEzQ3EFpHSOu5iLZhuXo1XYVH1W/YWB3EsczCMyrT1G9s4luM2sr3
+         dIWUWOl0PGl/bwp825Gil0EH+SXT6FClgZbCeK9NuChTwFaD1jhHmq8SSwa2UOIUvJs4
+         P6C+9+sp47+LpcVKv6x7AAhKT5PgWIIm0c5PXW199mhsksvS50i6feCxjKDtEbueZlzY
+         /qPw==
+X-Gm-Message-State: AOAM5321I1VjcLNmqJUahq/dlTke0c8clt5HM/mKGd9J3P0KvOqalsQC
+        uvWTE6XKEfErJkyt5UtA372kjwV/uL0gsFfvKVo=
+X-Google-Smtp-Source: ABdhPJwdyxkAQAdfH1wRFs+W0MNyk4bgRb4Rgv1M9DLQvwm3YbnfTG06hhOU+eKDq7Hs4uOIofL7RgDFq+x0npk+U+Y=
+X-Received: by 2002:a17:907:628e:b0:6d9:c6fa:6168 with SMTP id
+ nd14-20020a170907628e00b006d9c6fa6168mr23537601ejc.132.1648411230602; Sun, 27
+ Mar 2022 13:00:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
- <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
- <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
- <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
- <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
- <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
- <20220327054848.1a545b12.pasic@linux.ibm.com> <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
- <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com> <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
-In-Reply-To: <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 27 Mar 2022 12:23:34 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
-Message-ID: <CAHk-=wgLyqNJx=bb8=o0Nk5U8gMnf0-=qx53ShLEb3V=Yrt8fw@mail.gmail.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Halil Pasic <pasic@linux.ibm.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Maxime Bizon <mbizon@freebox.fr>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
+References: <20220326165909.506926-1-benni@stuerz.xyz> <20220326165909.506926-5-benni@stuerz.xyz>
+In-Reply-To: <20220326165909.506926-5-benni@stuerz.xyz>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 27 Mar 2022 22:59:54 +0300
+Message-ID: <CAHp75VeTXMAueQc_c0Ryj5+a8PrJ7gk-arugiNnxtAm03x7XTg@mail.gmail.com>
+Subject: Re: [PATCH 05/22] acpica: Replace comments with C99 initializers
+To:     =?UTF-8?Q?Benjamin_St=C3=BCrz?= <benni@stuerz.xyz>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        linux@simtec.co.uk, Krzysztof Kozlowski <krzk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Robert Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Len Brown <lenb@kernel.org>, 3chas3@gmail.com,
+        Harald Welte <laforge@gnumonks.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
+        Nicolas Pitre <nico@fluxnic.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
+        Linux Samsung SOC <linux-samsung-soc@vger.kernel.org>,
+        linux-ia64@vger.kernel.org,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
+        linux-atm-general@lists.sourceforge.net,
+        netdev <netdev@vger.kernel.org>, linux-edac@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:HFI1 DRIVER" <linux-rdma@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>,
+        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
+        <linuxppc-dev@lists.ozlabs.org>, linux-media@vger.kernel.org,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-pci@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 8:24 AM David Laight <David.Laight@aculab.com> wrote:
+On Sat, Mar 26, 2022 at 7:39 PM Benjamin St=C3=BCrz <benni@stuerz.xyz> wrot=
+e:
 >
-> Aren't bounce buffers just a more extreme case on non-coherent
-> memory accesses?
+> This replaces comments with C99's designated
+> initializers because the kernel supports them now.
 
-No.
+Does it follow the conventions which are accepted in the ACPI CA project?
 
-In fact, this whoe change came about exactly because bounce buffers
-are different.
-
-The difference is that bounce buffers have that (wait for it) bounce
-buffer, which can have stale contents.
-
-> They just need explicit memory copies rather than just cache
-> writeback and invalidate operations.
-
-That's the thing - the memory copies introduce entirely new issues.
-
-I really think that instead of making up abstract rules ("ownership"
-or "bounce buffers are just extreme cases of non-coherency") we should
-make the rules very much practical and down to earth, and write out
-exactly what they *do*.
-
-The whole "sync DMA" is odd and abstract enough as a concept on its
-own, we shouldn't then make the rules for it odd and abstract. We
-should make them very very practical.
-
-So I will propose that we really make it very much about practical
-concerns, and we document things as
-
- (a) the "sync" operation has by definition a "whose _future_ access
-do we sync for" notion.
-
-     So "dma_sync_single_for_cpu()" says that the future accesses to
-this dma area is for the CPU.
-
-     Note how it does *NOT* say that the "CPU owns the are". That's
-bullsh*t, and we now know it's BS.
-
- (b) but the sync operation also has a "who wrote the data we're syncing"
-
-     Note that this is *not* "who accessed or owned it last", because
-that's nonsensical: if we're syncing for the CPU, then the only reason
-to do so is because we expect that the last access was by the device,
-so specifying that separately would just be redundant and stupid.
-
-     But specifying who *wrote* to the area is meaningful and matters.
-It matters for the non-coherent cache case (because of writeback
-issues), but it also matters for the bounce buffer case (becasue it
-determines which way we should copy).
-
-Note how this makes sense: a "sync" operation is clearly about taking
-some past state, and making it palatable for a future use. The past
-state is pretty much defined by who wrote the data, and then we can
-use that and the "the next thing to access it" to determine what we
-need to do about the sync.
-
-It is *NOT* about "ownership".
-
-So let's go through the cases, and I'm going to ignore the "CPU caches
-are coherent with device DMA" case because that's always going to be a
-no-op wrt data movement (but it will still generally need a memory
-barrier, which I will mention here and then ignore going forward).
-
-Syncing for *CPU* accesses (ie dma_sync_single_for_cpu()) has four
-choices I can see:
-
- - nobody wrote the data at all (aka DMA_NONE).
-
-   This is nonsensical and should warn. If nobody wrote to it, why
-would the CPU ever validly access it?
-
-   Maybe you should have written "memset(buffer, 0, size)" instead?
-
- - the CPU wrote the data in the first place (aka DMA_TO_DEVICE)
-
-   This is a no-op (possibly a memory barrier), because even stale CPU
-caches are fine, and even if it was in a bounce buffer, the original
-CPU-side data is fine.
-
- - the device wrote the data (aka DMA_FROM_DEVICE)
-
-   This is just the regular case of a device having written something,
-and the CPU wants to see it.
-
-   It obviously needs real work, but it's simple and straightforward.
-
-   For non-coherent caches, it needs a cache invalidate. For a bounce
-buffer, it needs a copy from the bounce buffer to the "real" buffer.
-
- - it's not clear who write the data (aka DMA_BIDIRECTIONAL)
-
-   This is not really doable for a bounce buffer - we just don't know
-which buffer contents are valid.
-
-   I think it's very very questionable for non-coherent caches too,
-but "writeback and invalidate" probably can't hurt.
-
-   So probably warn about it, and do whatever we used to do historically.
-
-Syncing for device accesses (ie dma_sync_single_for_device()) also has
-the same four choices I can see, but obviously does different things:
-
- - nobody wrote the data at all (aka DMA_NONE)
-
-   This sounds as nonsensical as the CPU case, but maybe isn't.
-
-   We may not have any previous explicit writes, but we *do* have that
-"insecure and possibly stale buffer contents" bounce buffer thing on
-the device side.
-
-   So with a bounce buffer, it's actually somewhat sane to say
-"initialize the bounce buffer to a known state".
-
-   Because bounce buffers *are* special. Unlike even the "noncoherent
-caches" issue, they have that entirely *other* hidden state in the
-form of the bounce buffer itself.
-
-   Discuss.
-
- - the CPU wrote the data in the first place (aka DMA_TO_DEVICE).
-
-   This is the regular and common case of "we have data on the CPU
-side that is written to the device".
-
-   Again, needs work, but is simple and straightforward.
-
-   For non-coherent caches, we need a writeback on the CPU. For a
-bounce buffer, we need to copy from the regular buffer to the bounce
-buffer.
-
- - the device wrote the data in the first place (aka DMA_FROM_DEVICE)
-
-   This is the case that we hit on ath9k. It's *not* obvious, but when
-we write this out this way, I really think the semantics are pretty
-clear.
-
-   For non-coherent caches, we may need an "invalidate". For a bounce
-buffer, it's a no-op (because the bounce buffer already contains the
-data)
-
- - it's not clear who write the data (aka DMA_BIDIRECTIONAL)
-
-   This is again not really doable for a bounce buffer. We don't know
-which buffer contains the right data, we should warn about it and do
-whatever we used to do historically.
-
-   Again, it's very questionable for non-coherent caches too, but
-"writeback and invalidate" probably at least can't hurt.
-
-So hey, that's my thinking. The whole "ownership"  model is, I think,
-obviously untenable.
-
-But just going through and listing the different cases and making them
-explicit I think explains exactly what the different situations are,
-and that then makes it fairly clear what the different combinations
-should do.
-
-No?
-
-           Linus
+--=20
+With Best Regards,
+Andy Shevchenko
