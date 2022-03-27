@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B72DE4E8516
-	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 04:54:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 013E14E8524
+	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 04:54:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233152AbiC0Czz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 22:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52498 "EHLO
+        id S233290AbiC0C4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 22:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232940AbiC0Czs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 22:55:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0A32182D;
-        Sat, 26 Mar 2022 19:54:11 -0700 (PDT)
+        with ESMTP id S233026AbiC0Czw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 22:55:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5128D5A;
+        Sat, 26 Mar 2022 19:54:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D797960EEA;
-        Sun, 27 Mar 2022 02:54:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F442C34113;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88976B80C73;
+        Sun, 27 Mar 2022 02:54:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D11BEC34112;
         Sun, 27 Mar 2022 02:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648349650;
-        bh=SPdSfbhLQSOfNpuHBGoThbTO8srfvb+o/1lcDd4PLbA=;
+        s=k20201202; t=1648349651;
+        bh=TZJIrvLHdjUy8d6E2YHam4eLC7lZC+BM83i2BOP+9r4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qezV1lKzXPTv8NldJ6ah700q2J6NTkrvYGFpbf2V9rvJ3QetMmrqAfiZfLqWpXnc2
-         Ni0d8X2ZE8sfa1mUa/KGXsxQS5pty92bNWiFMnDUzP8dJfnAb8Jf5erTWW/tP5FV+A
-         7ixmUO2Hug3GSyj2Rf66C1XXzVLLTelyLSTYSgMhzWSTVEZoKYzE0RUjzO9DtWhnh6
-         Tz6z0NoAor8jI7YWXKCyJXzH4VIerZU9ubVshe55WuyifrfiSztqTluA6+5fo6Alsi
-         AQS97HLSK+XslGu1x5UV4vKzX1B33XcPV8UFJcnYPw4PE1cooXt30Uzy7LiaGoRvuc
-         abSPw1sqLCJWw==
+        b=CiFatBjxf8uvXibFJsxStO3qgx0Q+U/NFO7Z47tHvS6KRcBsdUtlvmfZlAr2sWYxv
+         Vn4AyCubLKvgqzm3q0uMP06EZku431oM5bldX9wkg5CljxrqtnL3pJQimi5FK0aWvh
+         HCHdrbkyg7F9DEvIeHJJUITQzfgv/8YV0VdvUYApXxMu8RFJ1XfqeUNc1Ll/hJvLVn
+         0NeYWD+9m01uI6jURLkGIouKstwbhNs8IL6QkcoLusidmqvVIC1wDk/hvm6nXxqGvs
+         PcXjIGhO9TB1tvauvfBkeZBG68IIjaJPAW7hfDqAzumSL62d8F0/GRIeaKc1T23qA0
+         omJ9sG5R5Lksw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, pabeni@redhat.com, corbet@lwn.net,
         bpf@vger.kernel.org, linux-doc@vger.kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 05/13] docs: netdev: shorten the name and mention msgid for patch status
-Date:   Sat, 26 Mar 2022 19:53:52 -0700
-Message-Id: <20220327025400.2481365-6-kuba@kernel.org>
+Subject: [PATCH net 06/13] docs: netdev: rephrase the 'Under review' question
+Date:   Sat, 26 Mar 2022 19:53:53 -0700
+Message-Id: <20220327025400.2481365-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220327025400.2481365-1-kuba@kernel.org>
 References: <20220327025400.2481365-1-kuba@kernel.org>
@@ -54,8 +54,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cut down the length of the question so it renders better in docs.
-Mention that Message-ID can be used to search patchwork.
+The semantics of "Under review" have shifted. Reword the question
+about it a bit and focus it on the response time.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
@@ -63,29 +63,25 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
-index c1683ed1faca..f0d452846d84 100644
+index f0d452846d84..5f7b1e6fb249 100644
 --- a/Documentation/networking/netdev-FAQ.rst
 +++ b/Documentation/networking/netdev-FAQ.rst
-@@ -105,14 +105,16 @@ and note the top of the "tags" section.  If it is rc1, it is early in
- the dev cycle.  If it was tagged rc7 a week ago, then a release is
- probably imminent.
+@@ -116,10 +116,12 @@ patch. Patches are indexed by the ``Message-ID`` header of the emails
+ which carried them so if you have trouble finding your patch append
+ the value of ``Message-ID`` to the URL above.
  
--I sent a patch and I'm wondering what happened to it - how can I tell whether it got merged?
----------------------------------------------------------------------------------------------
-+How can I tell the status of a patch I've sent?
-+-----------------------------------------------
- Start by looking at the main patchworks queue for netdev:
+-The above only says "Under Review".  How can I find out more?
+--------------------------------------------------------------
++How long before my patch is accepted?
++-------------------------------------
+ Generally speaking, the patches get triaged quickly (in less than
+-48h).  So be patient.  Asking the maintainer for status updates on your
++48h). But be patient, if your patch is active in patchwork (i.e. it's
++listed on the project's patch list) the chances it was missed are close to zero.
++Asking the maintainer for status updates on your
+ patch is a good way to ensure your patch is ignored or pushed to the
+ bottom of the priority list.
  
-   https://patchwork.kernel.org/project/netdevbpf/list/
- 
- The "State" field will tell you exactly where things are at with your
--patch.
-+patch. Patches are indexed by the ``Message-ID`` header of the emails
-+which carried them so if you have trouble finding your patch append
-+the value of ``Message-ID`` to the URL above.
- 
- The above only says "Under Review".  How can I find out more?
- -------------------------------------------------------------
 -- 
 2.34.1
 
