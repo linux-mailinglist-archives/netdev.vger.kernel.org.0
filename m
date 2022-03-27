@@ -2,157 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E43C64E87FA
-	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 16:11:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8303A4E886C
+	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 17:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235707AbiC0ONY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Mar 2022 10:13:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
+        id S235849AbiC0P0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Mar 2022 11:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232854AbiC0ONX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 10:13:23 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058F3B7E2;
-        Sun, 27 Mar 2022 07:11:45 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id mj15-20020a17090b368f00b001c637aa358eso16441124pjb.0;
-        Sun, 27 Mar 2022 07:11:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=H1at9llyYi2Z1V+fDKTA1p3pK6c4N+0psjZ6neSptW8=;
-        b=AY5IKAeG0b/nRO2YNYn5DJ3RJXQRp9cwlerHO9QEu5SuyvqxaRt+Y4kQSu8kPen1gd
-         +QTCTl2i+ujx/iIeLw/OkQYnSaHavw+b5b6dP7O64xgXtICA6Vg46KInj7/bCqZrVRUD
-         jzvqIGaDg9pbEtgsCdeFLfXUOjJ6hdnYIhpfy/WEXomag9x1WCNUb977D8Im063IcAnx
-         WGIz4KJa5ILF5kaVV+mVrXW5xSqv8CE27nLBaU8977U1XXvSvkIdECWDz+0KTCJ35ASh
-         7/DAVYcYONfYMU814D2omwXusfd7cF+dhaRkU3qGN51j2NJjh5ifzCiffylS3JyY8ZqG
-         zvHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=H1at9llyYi2Z1V+fDKTA1p3pK6c4N+0psjZ6neSptW8=;
-        b=KwVXlS0gJcYoaA+XbWdUtanh3gt6NsXFMT9SM2karzz5Nc+8c10rM6NrIjbLVoLTfO
-         PVdB5grTJPr8zE+waVUn+dhdUOhIqD1x9iLWX+TeVHcugjxwb2Ia0WcvCvOur8/zrpt8
-         uL0AUJYlNvuHdHzICqcgbyJYB5mOIlDJ+T2tHTCJr0o6ZCFtzDV6UF3t4g4Q9j3hsL5R
-         wUHYa28kPg0DBYRfq+88BQga155aI6sYNIaIr4TW+PWMhib6zcO9NjllhKgGRyfWyIth
-         z3Px6MlnLySJZ2rrrXkKTzKkfbvihOa2xFUizU9HHuNgSZsQWURr0tfuREvhrYdIEovD
-         YunQ==
-X-Gm-Message-State: AOAM530gufjorvrFjn2EnhuRUbHZGPjpC12nqIvFuRd8RVIgXf3vk3/4
-        U7qwynxEs1T9PO5qQUwFx0SR2nj5+1ouZw==
-X-Google-Smtp-Source: ABdhPJypyC0064bZL/sA9jWIsQTyfVX5ppPpMT+/wezYv0VYl3Q21NusGld36NqZRAk/kYtLeyWPjA==
-X-Received: by 2002:a17:90a:5ae4:b0:1bf:9c61:6973 with SMTP id n91-20020a17090a5ae400b001bf9c616973mr24300806pji.73.1648390304427;
-        Sun, 27 Mar 2022 07:11:44 -0700 (PDT)
-Received: from localhost.localdomain ([115.220.243.108])
-        by smtp.googlemail.com with ESMTPSA id v13-20020a17090a088d00b001c64d30fa8bsm14689431pjc.1.2022.03.27.07.11.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Mar 2022 07:11:43 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     chunkeey@gmail.com
-Cc:     chunkeey@googlemail.com, davem@davemloft.net, kuba@kernel.org,
-        kvalo@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linville@tuxdriver.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, stable@vger.kernel.org,
-        xiam0nd.tong@gmail.com
-Subject: Re: [PATCH] carl9170: main: fix an incorrect use of list iterator
-Date:   Sun, 27 Mar 2022 22:11:36 +0800
-Message-Id: <20220327141136.17059-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <a5689ba5-2a88-2bef-348b-5bec5cbc3b60@gmail.com>
-References: <a5689ba5-2a88-2bef-348b-5bec5cbc3b60@gmail.com>
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S235056AbiC0P0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 11:26:34 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 182D2140C9
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 08:24:54 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-160-sYhtiCskO1qRFgnKRoKrFA-1; Sun, 27 Mar 2022 16:24:51 +0100
+X-MC-Unique: sYhtiCskO1qRFgnKRoKrFA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Sun, 27 Mar 2022 16:24:48 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Sun, 27 Mar 2022 16:24:48 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Linus Torvalds' <torvalds@linux-foundation.org>,
+        Halil Pasic <pasic@linux.ibm.com>
+CC:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Maxime Bizon <mbizon@freebox.fr>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        "Marek Szyprowski" <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Subject: RE: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Thread-Topic: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Thread-Index: AQHYQZpzK/9JYQDqEEKfLChLw6SC36zTVWUA
+Date:   Sun, 27 Mar 2022 15:24:48 +0000
+Message-ID: <0745b44456d44d1e9fc364e5a3780d9a@AcuMS.aculab.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+ <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+ <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+ <20220324163132.GB26098@lst.de>
+ <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+ <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+ <20220327054848.1a545b12.pasic@linux.ibm.com>
+ <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
+ <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
+In-Reply-To: <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 27 Mar 2022 14:05:29, Christian Lamparter <chunkeey@gmail.com> wrote:
-> Hi,
-> 
-> On 27/03/2022 09:27, Xiaomeng Tong wrote:
-> > The bug is here:
-> > 	rcu_assign_pointer(ar->tx_ampdu_iter,
-> > 		(struct carl9170_sta_tid *) &ar->tx_ampdu_list);
-> 
-> yeah, so... I know there's currently a big discussion revolving
-> around LISTs due to incoming the GNU89 to GNU11 switch. I'm not
-> currently aware that something related to this had updated
-> INIT_LIST_HEAD + friends. So, please tell me if there is extra
-> information that has to be considered.
-> 
-> > The 'ar->tx_ampdu_iter' is used as a list iterator variable
-> > which point to a structure object containing the list HEAD
-> > (&ar->tx_ampdu_list), not as the HEAD itself.
-> > 
-> > The only use case of 'ar->tx_ampdu_iter' is as a base pos
-> > for list_for_each_entry_continue_rcu in carl9170_tx_ampdu().
-> > If the iterator variable holds the *wrong* HEAD value here
-> > (has not been modified elsewhere before), this will lead to
-> > an invalid memory access.
-> > 
-> > Using list_entry_rcu to get the right list iterator variable
-> > and reassign it, to fix this bug.
-> > Note: use 'ar->tx_ampdu_list.next' instead of '&ar->tx_ampdu_list'
-> > to avoid compiler error.
-> > 
-> > Cc: stable@vger.kernel.org
-> > Fixes: fe8ee9ad80b28 ("carl9170: mac80211 glue and command interface")
-> > Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> > ---
-> >   drivers/net/wireless/ath/carl9170/main.c | 6 ++++--
-> >   1 file changed, 4 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/wireless/ath/carl9170/main.c b/drivers/net/wireless/ath/carl9170/main.c
-> > index 49f7ee1c912b..a287937bf666 100644
-> > --- a/drivers/net/wireless/ath/carl9170/main.c
-> > +++ b/drivers/net/wireless/ath/carl9170/main.c
-> > @@ -1756,6 +1756,7 @@ static const struct ieee80211_ops carl9170_ops = {
-> >   
-> >   void *carl9170_alloc(size_t priv_size)
-> >   {
-> > +	struct carl9170_sta_tid *tid_info;
-> >   	struct ieee80211_hw *hw;
-> >   	struct ar9170 *ar;
-> >   	struct sk_buff *skb;
-> > @@ -1815,8 +1816,9 @@ void *carl9170_alloc(size_t priv_size)
-> >   	INIT_DELAYED_WORK(&ar->stat_work, carl9170_stat_work);
-> >   	INIT_DELAYED_WORK(&ar->tx_janitor, carl9170_tx_janitor);
-> >   	INIT_LIST_HEAD(&ar->tx_ampdu_list);
-> > -	rcu_assign_pointer(ar->tx_ampdu_iter,
-> > -			   (struct carl9170_sta_tid *) &ar->tx_ampdu_list);
-> > +	tid_info = list_entry_rcu(ar->tx_ampdu_list.next,
-> > +				struct carl9170_sta_tid, list);
-> > +	rcu_assign_pointer(ar->tx_ampdu_iter, tid_info);
-> 
-> 
-> I've tested this. I've added the following pr_info that would
-> print the (raw) pointer of both your new method (your patch)
-> and the old (current code) one:
-> 
->   pr_info("new:%px\n", list_entry_rcu(ar->tx_ampdu_list.next,struct carl9170_sta_tid, list)); // tid_info
->   pr_info("old:%px\n", (struct carl9170_sta_tid *) &ar->tx_ampdu_list);
-> 
-> and run it on AR9170 USB Stick
-> 
-> [  216.547932] usb 2-10: SerialNumber: 12345
-> [  216.673629] usb 2-10: reset high-speed USB device number 10 using xhci_hcd
-> [  216.853488] new:ffff9394268a38e0
-> [  216.853496] old:ffff9394268a38e0
-> [  216.858174] usb 2-10: driver   API: 1.9.9 2016-02-15 [1-1]
-> [  216.858186] usb 2-10: firmware API: 1.9.9 2021-02-05
-> 
-> phew, what a relieve :). Both the new and old pointers are the same.
-> 
+RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMjcgTWFyY2ggMjAyMiAwNjoyMQ0KPiANCj4g
+T24gU2F0LCBNYXIgMjYsIDIwMjIgYXQgMTA6MDYgUE0gTGludXMgVG9ydmFsZHMNCj4gPHRvcnZh
+bGRzQGxpbnV4LWZvdW5kYXRpb24ub3JnPiB3cm90ZToNCj4gPg0KPiA+IE9uIFNhdCwgTWFyIDI2
+LCAyMDIyIGF0IDg6NDkgUE0gSGFsaWwgUGFzaWMgPHBhc2ljQGxpbnV4LmlibS5jb20+IHdyb3Rl
+Og0KPiA+ID4NCj4gPiA+IEkgYWdyZWUgaXQgQ1BVIG1vZGlmaWVkIGJ1ZmZlcnMgKmNvbmN1cnJl
+bnRseSogd2l0aCBETUEgY2FuIG5ldmVyIHdvcmssDQo+ID4gPiBhbmQgSSBiZWxpZXZlIHRoZSBv
+d25lcnNoaXAgbW9kZWwgd2FzIGNvbmNlaXZlZCB0byBwcmV2ZW50IHRoaXMNCj4gPiA+IHNpdHVh
+dGlvbi4NCj4gPg0KPiA+IEJ1dCB0aGF0IGp1c3QgbWVhbnMgdGhhdCB0aGUgIm93bmVyc2hpcCIg
+bW9kZWwgaXMgZ2FyYmFnZSwgYW5kIGNhbm5vdA0KPiA+IGhhbmRsZSB0aGlzIFJFQUwgTElGRSBz
+aXR1YXRpb24uDQo+IA0KPiBKdXN0IHRvIGNsYXJpZnk6IEkgb2J2aW91c2x5IGFncmVlIHRoYXQg
+dGhlICJib3RoIHNpZGVzIG1vZGlmeQ0KPiBjb25jdXJyZW50bHkiIG9idmlvdXNseSBjYW5ub3Qg
+d29yayB3aXRoIGJvdW5jZSBidWZmZXJzLg0KDQpBcmVuJ3QgYm91bmNlIGJ1ZmZlcnMganVzdCBh
+IG1vcmUgZXh0cmVtZSBjYXNlIG9uIG5vbi1jb2hlcmVudA0KbWVtb3J5IGFjY2Vzc2VzPw0KVGhl
+eSBqdXN0IG5lZWQgZXhwbGljaXQgbWVtb3J5IGNvcGllcyByYXRoZXIgdGhhbiBqdXN0IGNhY2hl
+DQp3cml0ZWJhY2sgYW5kIGludmFsaWRhdGUgb3BlcmF0aW9ucy4NCg0KU28gJ2JvdGggc2lkZXMg
+bW9kaWZ5IGNvbmN1cnJlbnRseScganVzdCBoYXMgdGhlIHNhbWUgaXNzdWUNCmFzIGl0IGRvZXMg
+d2l0aCBub24tY29oZXJlbnQgbWVtb3J5IGluIHRoYXQgdGhlIGxvY2F0aW9ucw0KbmVlZCB0byBi
+ZSBpbiBzZXBhcmF0ZSAoZG1hKSBjYWNoZSBsaW5lcy4NCkluZGVlZCwgaWYgdGhlIGJvdW5jZSBi
+dWZmZXJzIGFyZSBhY3R1YWxseSBjb2hlcmVudCB0aGVuDQphcmJpdHJhcnkgY29uY3VycmVudCB1
+cGRhdGVzIGFyZSBwb3NzaWJsZS4NCg0KT25lIGlzc3VlIGlzIHRoYXQgdGhlIGRyaXZlciBuZWVk
+cyB0byBpbmRpY2F0ZSB3aGljaCBwYXJ0cw0Kb2YgYW55IGJ1ZmZlciBhcmUgZGlydHkuDQpXaGVy
+ZWFzIHRoZSBhbnkgJ2NhY2hlIHdyaXRlYmFjaycgcmVxdWVzdCB3aWxsIG9ubHkgd3JpdGUNCmRp
+cnR5IGRhdGEuDQoNCkdldCBldmVyeXRoaW5nIHJpZ2h0IGFuZCB5b3UgY2FuIGV2ZW4gc3VwcG9y
+dCBoYXJkd2FyZSB3aGVyZQ0KdGhlICdib3VuY2UgYnVmZmVycycgYXJlIGFjdHVhbGx5IG9uIHRo
+ZSBjYXJkIGFuZCB0aGUgY29waWVzDQphcmUgTU1JTyAob3IgYmV0dGVyLCBlc3BlY2lhbGx5IG9u
+IFBDSWUsIHN5bmNocm9ub3VzIGhvc3QNCmluaXRpYXRlZCBkbWEgdHJhbnNmZXJzKS4NCg0KCURh
+dmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3Vu
+dCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3
+Mzg2IChXYWxlcykNCg==
 
-I double check it, and this should not be a bug, at least for now.
-the 'list' happens to be the first member of struct carl9170_sta_tid,
-so both the new and old pointers are the same. However, we should not
-depend on the member order of structure or compiler to guarantee the
-correctness, in case some day the order is changed by accident. Instead,
-we should guarantee it using the correct logic explicitly.
-
---
-Xiaomeng Tong
