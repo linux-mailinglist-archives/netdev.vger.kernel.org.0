@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B1AE4E8533
-	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 04:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80B864E852D
+	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 04:54:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbiC0C4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Mar 2022 22:56:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
+        id S233429AbiC0C4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Mar 2022 22:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233184AbiC0C4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 22:56:34 -0400
+        with ESMTP id S233096AbiC0Czy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Mar 2022 22:55:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106EF427F1;
-        Sat, 26 Mar 2022 19:54:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4091EC42;
+        Sat, 26 Mar 2022 19:54:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A164E60E9E;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F2F260ED0;
+        Sun, 27 Mar 2022 02:54:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB8AC340E8;
         Sun, 27 Mar 2022 02:54:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC2DC34100;
-        Sun, 27 Mar 2022 02:54:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1648349652;
-        bh=Ymms6xCtmq72Ojp991fo5pHDOd1C+6SngUKoV4QeW3k=;
+        bh=yMz1qRo2c8PMxZJ4OYHCmlv1drANw/ow3ic99thb9dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TRiMjoXSx+iIoCKDgDeBiyxKPIS1VwbHSXd2zP7kJwWO4BbMNuw+L7MHZGfMU/iia
-         AbrI7sdLgFXcwDUr+I4jQ29O9QxlRfQwWWDN4Ifg+aT98/Pyumb3yav4SD7XejNSlD
-         85ZDD5+2FOfd41hMjkMO2lgy5PHFXtwRAF69A4Km20I94ZgJPYhE+dDmEQuWvHsmwe
-         QGihwkTzOgbKUugGYll4qjvueJJBmT7mtJI5gwWo9fCpEXk2GUU45vbcHqH03nAJRp
-         7ukvXO7ZDt9lECifAMa6Ol9rdq2xm7drvKUKTD3DZ0K3dz+hbj0PeviTCbK+hMsBjx
-         naXvUGPwpIagg==
+        b=RzFb5gCzaPf2X9xmDoxTkM8rUf3TM8YxnRZDRQb8PgkHCIeeM/wvqU8b5AiVdRfH2
+         aApWSZ+hF8DP2E4F0Qv+fgN2Gnb2KSZFp1jLkzvU4vMJ4OHlfZG4W6PKD4LddnbOVK
+         rGNoM+JuBpn5f9u6Q/6sRoipPwltMcoxtD8VkfR4JFqp5IinpC4iqq/jfrpv0eETJ6
+         IQg/zNADnjz+CbFwYbH6Ofnl0WGkM+kBQyZ2hze5ayEGELeAKLFQ9hoycbyUNXinHS
+         rrDwsoCLke1JyEdRy+9xXdQbmiZ9d0ViT7LveGy0k8GwW4KmMz75sTaKPUdNwBjMC7
+         JcDYY2NucVnHA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, pabeni@redhat.com, corbet@lwn.net,
         bpf@vger.kernel.org, linux-doc@vger.kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 08/13] docs: netdev: add a question about re-posting frequency
-Date:   Sat, 26 Mar 2022 19:53:55 -0700
-Message-Id: <20220327025400.2481365-9-kuba@kernel.org>
+Subject: [PATCH net 09/13] docs: netdev: make the testing requirement more stringent
+Date:   Sat, 26 Mar 2022 19:53:56 -0700
+Message-Id: <20220327025400.2481365-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220327025400.2481365-1-kuba@kernel.org>
 References: <20220327025400.2481365-1-kuba@kernel.org>
@@ -54,37 +54,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We have to tell people to stop reposting to often lately,
-or not to repost while the discussion is ongoing.
-Document this.
+These days we often ask for selftests so let's update our
+testing requirements.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- Documentation/networking/netdev-FAQ.rst | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ Documentation/networking/netdev-FAQ.rst | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
-index d2ad55db7d8a..85a0af5dca65 100644
+index 85a0af5dca65..26110201f301 100644
 --- a/Documentation/networking/netdev-FAQ.rst
 +++ b/Documentation/networking/netdev-FAQ.rst
-@@ -140,6 +140,17 @@ No, please resend the entire patch series and make sure you do number your
- patches such that it is clear this is the latest and greatest set of patches
- that can be applied.
+@@ -196,11 +196,15 @@ as possible alternative mechanisms.
  
-+I have received review feedback, when should I post a revised version of the patches?
-+-------------------------------------------------------------------------------------
-+Allow at least 24 hours to pass between postings. This will ensure reviewers
-+from all geographical locations have a chance to chime in. Do not wait
-+too long (weeks) between postings either as it will make it harder for reviewers
-+to recall all the context.
+ What level of testing is expected before I submit my change?
+ ------------------------------------------------------------
+-If your changes are against ``net-next``, the expectation is that you
+-have tested by layering your changes on top of ``net-next``.  Ideally
+-you will have done run-time testing specific to your change, but at a
+-minimum, your changes should survive an ``allyesconfig`` and an
+-``allmodconfig`` build without new warnings or failures.
++At the very minimum your changes must survive an ``allyesconfig`` and an
++``allmodconfig`` build with ``W=1`` set without new warnings or failures.
 +
-+Make sure you address all the feedback in your new posting. Do not post a new
-+version of the code if the discussion about the previous version is still
-+ongoing, unless directly instructed by a reviewer.
++Ideally you will have done run-time testing specific to your change,
++and the patch series contains a set of kernel selftest for
++``tools/testing/selftests/net`` or using the KUnit framework.
 +
- I submitted multiple versions of a patch series and it looks like a version other than the last one has been accepted, what should I do?
- ----------------------------------------------------------------------------------------------------------------------------------------
- There is no revert possible, once it is pushed out, it stays like that.
++You are expected to test your changes on top of the relevant networking
++tree (``net`` or ``net-next``) and not e.g. a stable tree or ``linux-next``.
+ 
+ How do I post corresponding changes to user space components?
+ -------------------------------------------------------------
 -- 
 2.34.1
 
