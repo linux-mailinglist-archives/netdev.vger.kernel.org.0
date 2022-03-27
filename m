@@ -2,137 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D3F4E86F4
-	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 10:32:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A9024E86FB
+	for <lists+netdev@lfdr.de>; Sun, 27 Mar 2022 10:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234980AbiC0IeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Mar 2022 04:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38204 "EHLO
+        id S230398AbiC0Iis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Mar 2022 04:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235663AbiC0IeP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 04:34:15 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8512E192B0;
-        Sun, 27 Mar 2022 01:32:36 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id w7so7305004pfu.11;
-        Sun, 27 Mar 2022 01:32:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=a8W6NfMk0B3fe7GVZNxqPs/w6ty4Ubyw6mWBBlTbHxw=;
-        b=AN8BxtvbVVdUVozmZGv0MPBUH0lNwLqERAEeOsxpBbJfwmcFnJDWOQLR13Rd2DNCNM
-         AKQ4oE9rmgjfSnFV0tzK+WQtKwDpc8EDdRqFWbU3trAtRWg9URWs1EKT6t2+rWvCe734
-         BC3DFyeUstHkl6yGb3rfMIJieXZzMS+Odu3RoKiUuhiiPgd2LXO2rEk6MdqC/TwX4QuH
-         QZwItDmuubAliwYGJ/T52zvlAru4bffICq4P84Lp2pthJ0VwuJxraKSHoQu1+Hr94Ueu
-         dZ/NwlvfftAe8lo+7uPak2xrrYBRX+J/P9Fd1VsT0OIux9PCIKPKL7DYbL3mihAhJGI/
-         mGjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=a8W6NfMk0B3fe7GVZNxqPs/w6ty4Ubyw6mWBBlTbHxw=;
-        b=vrPFz79j0o7XDy9qlRZg0uTnXInA0XQVtqkeYx5t/zMSUBRQ0syJprOUqm/DHmS14i
-         bmH4WCEVnaBFAnMDYJRABtS/5OeZ3x4chx8q/bLjZopvd9fpp50qrYhMb6S6Nv93zDJ+
-         ocZZZFGmJYmDklo5lLI7rkVGN3Mx3DqjiFh+1KrUiNTVkXHpamz8qGREbnPex2JM0sje
-         1J0dfVPDh5+5DJNJP/q4ulPIjVmF/yiUa6aUH7NzAL66ejys2FY2azzDNmx3JGGGBGAi
-         BI4tM03u4Dvgy2n/mCO7NsU9wUibiX72zXfTK28OG7me8lfjS3WHzUWfhe9Rgw2cw90z
-         boQQ==
-X-Gm-Message-State: AOAM532tuMoMWO2UsV5So8l/I+95JCfr2FbZUQWTlciuFNUnL1cbmCbs
-        GRZbjoZOzYS4dZ7taXvWq2A=
-X-Google-Smtp-Source: ABdhPJy3ZgtSpiQ5EWru2cLEHXcTTN64jQrCl49Q5MntIvrND04eywZ9Zfr10n0ClD/CDkDT9Fqp0A==
-X-Received: by 2002:a63:5744:0:b0:385:fe08:e835 with SMTP id h4-20020a635744000000b00385fe08e835mr5899661pgm.397.1648369956042;
-        Sun, 27 Mar 2022 01:32:36 -0700 (PDT)
-Received: from localhost ([2405:201:2003:b021:6001:8ce1:3e29:705e])
-        by smtp.gmail.com with ESMTPSA id k3-20020a056a00168300b004f7e60da26csm12546396pfc.182.2022.03.27.01.32.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Mar 2022 01:32:35 -0700 (PDT)
-Date:   Sun, 27 Mar 2022 14:02:29 +0530
-From:   Raag Jadav <raagjadav@gmail.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
-Message-ID: <20220327083229.GB3254@localhost>
-References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
- <YhdimdT1qLdGqPAW@shell.armlinux.org.uk>
- <20220226072327.GA6830@localhost>
- <YhpV/Q8Pnv+OZ3Fr@shell.armlinux.org.uk>
+        with ESMTP id S230229AbiC0Iir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 04:38:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C4C2140F4
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 01:37:09 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nYOOW-0008P8-5F; Sun, 27 Mar 2022 10:37:04 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nYOOU-0006Jf-7C; Sun, 27 Mar 2022 10:37:02 +0200
+Date:   Sun, 27 Mar 2022 10:37:02 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Oliver Neukum <oneukum@suse.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: ordering of call to unbind() in usbnet_disconnect
+Message-ID: <20220327083702.GC27264@pengutronix.de>
+References: <Yi+UHF37rb0URSwb@lunn.ch>
+ <20220315054403.GA14588@pengutronix.de>
+ <20220315083234.GA27883@wunner.de>
+ <20220315113841.GA22337@pengutronix.de>
+ <YjCUgCNHw6BUqJxr@lunn.ch>
+ <20220321100226.GA19177@wunner.de>
+ <Yjh5Qz8XX1ltiRUM@lunn.ch>
+ <20220326123929.GB31022@wunner.de>
+ <Yj8L2Jl0yyHIyW1m@lunn.ch>
+ <20220326130430.GD31022@wunner.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YhpV/Q8Pnv+OZ3Fr@shell.armlinux.org.uk>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220326130430.GD31022@wunner.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:24:06 up 106 days, 17:09, 55 users,  load average: 0.03, 0.03,
+ 0.06
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 04:31:57PM +0000, Russell King (Oracle) wrote:
-> On Sat, Feb 26, 2022 at 12:53:27PM +0530, Raag Jadav wrote:
-> > On Thu, Feb 24, 2022 at 10:48:57AM +0000, Russell King (Oracle) wrote:
-> > > Sorry for the late comment on this patch.
+On Sat, Mar 26, 2022 at 02:04:30PM +0100, Lukas Wunner wrote:
+> On Sat, Mar 26, 2022 at 01:49:28PM +0100, Andrew Lunn wrote:
+> > On Sat, Mar 26, 2022 at 01:39:29PM +0100, Lukas Wunner wrote:
+> > > On Mon, Mar 21, 2022 at 02:10:27PM +0100, Andrew Lunn wrote:
+> > > > There are two patterns in use at the moment:
+> > > > 
+> > > > 1) The phy is attached in open() and detached in close(). There is no
+> > > >    danger of the netdev disappearing at this time.
+> > > > 
+> > > > 2) The PHY is attached during probe, and detached during release.
+> > > > 
+> > > > This second case is what is being used here in the USB code. This is
+> > > > also a common pattern for complex devices. In probe, you get all the
+> > > > components of a complex devices, stitch them together and then
+> > > > register the composite device. During release, you unregister the
+> > > > composite device, and then release all the components. Since this is a
+> > > > natural model, i think it should work.
 > > > 
-> > > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
-> > > > +static int vsc85xx_config_inband_aneg(struct phy_device *phydev, bool enabled)
-> > > > +{
-> > > > +	int rc;
-> > > > +	u16 reg_val = 0;
-> > > > +
-> > > > +	if (enabled)
-> > > > +		reg_val = MSCC_PHY_SERDES_ANEG;
-> > > > +
-> > > > +	mutex_lock(&phydev->lock);
-> > > > +
-> > > > +	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_3,
-> > > > +			      MSCC_PHY_SERDES_PCS_CTRL, MSCC_PHY_SERDES_ANEG,
-> > > > +			      reg_val);
-> > > > +
-> > > > +	mutex_unlock(&phydev->lock);
+> > > I've gone through all drivers and noticed that some of them use a variation
+> > > of pattern 2 which looks fishy:
 > > > 
-> > > What is the reason for the locking here?
+> > > On probe, they first attach the PHY, then register the netdev.
+> > > On remove, they detach the PHY, then unregister the netdev.
 > > > 
-> > > phy_modify_paged() itself is safe due to the MDIO bus lock, so you
-> > > shouldn't need locking around it.
-> > > 
+> > > Is it legal to detach the PHY from a registered (potentially running)
+> > > netdev? It looks wrong to me.
 > > 
-> > True.
-> > 
-> > My initial thought was to have serialized access at PHY level,
-> > as we have multiple ports to work with.
-> > But I guess MDIO bus lock could do the job as well.
+> > I think the network stack guarantee that the close() method is called
+> > before unregister completes. It is a common pattern to attach the PHY
+> > in open() and detach it in close(). The stack itself should not be
+> > using the PHY when it is down, the exception being IOCTL handlers
+> > which people often get wrong.
 > 
-> The MDIO bus lock is the only lock that will guarantee that no other
-> users can nip onto the bus and possibly access your PHY in the middle
-> of an operation that requires more than one access to complete. Adding
-> local locking at PHY driver level does not give you those guarantees.
-> This is exactly why phy_modify() etc was added - because phy_read()..
-> phy_write() does not give that guarantee.
-> 
-> As an example of something that could interfere - the userspace MII
-> ioctls.
-> 
-> > I've gone through Vladimir's patches and they look more promising
-> > than this approach.
-> > Let me know if I could be of any help.
-> 
-> I haven't seen them - so up to you.
-> 
+> But the PHY is detached from a *running* netdev *before* that netdev
+> is unregistered (and closed).  Is that really legal?
 
-Definitely worth a look.
+IMO, it reflects, more or less, the reality of devices with SFP modules.
+The PHY can be physically removed from running netdev. At same time,
+netdev should be registered and visible for the user, even if PHY is not
+physically attached.
 
-> Thanks.
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
