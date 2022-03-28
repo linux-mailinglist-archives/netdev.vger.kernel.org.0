@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFDCE4E9E7A
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 19:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 180234E9E7B
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 19:57:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244863AbiC1R5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 13:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
+        id S245097AbiC1R5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 13:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244967AbiC1R4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 13:56:53 -0400
+        with ESMTP id S245011AbiC1R4y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 13:56:54 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17DDC23BC0;
-        Mon, 28 Mar 2022 10:55:05 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KS0fd4t1mz67y8R;
-        Tue, 29 Mar 2022 01:53:13 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0441224594;
+        Mon, 28 Mar 2022 10:55:07 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KS0dt6lWgz67sj9;
+        Tue, 29 Mar 2022 01:52:34 +0800 (CST)
 Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
  fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 28 Mar 2022 19:55:02 +0200
+ 15.1.2375.24; Mon, 28 Mar 2022 19:55:04 +0200
 From:   Roberto Sassu <roberto.sassu@huawei.com>
 To:     <corbet@lwn.net>, <viro@zeniv.linux.org.uk>, <ast@kernel.org>,
         <daniel@iogearbox.net>, <andrii@kernel.org>, <kpsingh@kernel.org>,
@@ -35,9 +35,9 @@ CC:     <linux-doc@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
         <linux-security-module@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 17/18] bpf-preload/selftests: Add test for automatic generation of preload methods
-Date:   Mon, 28 Mar 2022 19:50:32 +0200
-Message-ID: <20220328175033.2437312-18-roberto.sassu@huawei.com>
+Subject: [PATCH 18/18] bpf-preload/selftests: Preload a test eBPF program and check pinned objects
+Date:   Mon, 28 Mar 2022 19:50:33 +0200
+Message-ID: <20220328175033.2437312-19-roberto.sassu@huawei.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220328175033.2437312-1-roberto.sassu@huawei.com>
 References: <20220328175033.2437312-1-roberto.sassu@huawei.com>
@@ -57,236 +57,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the test 'gen_preload_methods' to ensure that the preload methods are
-correctly generated. Introduce a sample eBPF program in
-progs/gen_preload_methods.c, generate the light skeleton without and with
-the preload methods, and finally compare the diff with the expected diff
-output in prog_tests/gen_preload_methods.expected.diff.
+Introduce the 'preload_methods' test, which loads the new kernel module
+bpf_testmod_preload.ko (with the light skeleton from
+gen_preload_methods.c), mounts a new instance of the bpf filesystem, and
+checks if the pinned objects exist.
+
+The test requires to include 'gen_preload_methods_lskel' among the list of
+eBPF programs to preload.
 
 Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
 ---
- tools/testing/selftests/bpf/Makefile          | 15 ++-
- .../gen_preload_methods.expected.diff         | 97 +++++++++++++++++++
- .../bpf/prog_tests/test_gen_preload_methods.c | 27 ++++++
- .../selftests/bpf/progs/gen_preload_methods.c | 23 +++++
- 4 files changed, 160 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/gen_preload_methods.expected.diff
- create mode 100644 tools/testing/selftests/bpf/prog_tests/test_gen_preload_methods.c
- create mode 100644 tools/testing/selftests/bpf/progs/gen_preload_methods.c
+ tools/testing/selftests/bpf/Makefile          | 17 ++++-
+ .../bpf/bpf_testmod_preload/.gitignore        |  7 ++
+ .../bpf/bpf_testmod_preload/Makefile          | 20 ++++++
+ .../bpf/prog_tests/test_preload_methods.c     | 69 +++++++++++++++++++
+ 4 files changed, 110 insertions(+), 3 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod_preload/.gitignore
+ create mode 100644 tools/testing/selftests/bpf/bpf_testmod_preload/Makefile
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_preload_methods.c
 
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 3820608faf57..de81779e90e3 100644
+index de81779e90e3..ca419b0a083c 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -337,10 +337,11 @@ test_subskeleton_lib.skel.h-deps := test_subskeleton_lib2.o test_subskeleton_lib
+@@ -82,7 +82,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
+ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
+ 	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
+ 	test_lirc_mode2_user xdping test_cpp runqslower bench bpf_testmod.ko \
+-	xdpxceiver xdp_redirect_multi
++	xdpxceiver xdp_redirect_multi bpf_testmod_preload.ko
  
- LSKELS := kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
- 	test_ringbuf.c atomics.c trace_printk.c trace_vprintk.c \
--	map_ptr_kern.c core_kern.c core_kern_overflow.c
-+	map_ptr_kern.c core_kern.c core_kern_overflow.c gen_preload_methods.c
-+LSKELSP := gen_preload_methods.c
- # Generate both light skeleton and libbpf skeleton for these
- LSKELS_EXTRA := test_ksyms_module.c test_ksyms_weak.c kfunc_call_test_subprog.c
--SKEL_BLACKLIST += $$(LSKELS)
-+SKEL_BLACKLIST += $$(LSKELS) $$(LSKELSP)
+ TEST_CUSTOM_PROGS = $(OUTPUT)/urandom_read
  
- test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
- linked_funcs.skel.h-deps := linked_funcs1.o linked_funcs2.o
-@@ -370,6 +371,7 @@ TRUNNER_BPF_SKELS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.skel.h,	\
- 				 $$(filter-out $(SKEL_BLACKLIST) $(LINKED_BPF_SRCS),\
- 					       $$(TRUNNER_BPF_SRCS)))
- TRUNNER_BPF_LSKELS := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.lskel.h, $$(LSKELS) $$(LSKELS_EXTRA))
-+TRUNNER_BPF_LSKELSP := $$(patsubst %.c,$$(TRUNNER_OUTPUT)/%.preload.lskel.h, $$(LSKELSP))
- TRUNNER_BPF_SKELS_LINKED := $$(addprefix $$(TRUNNER_OUTPUT)/,$(LINKED_SKELS))
- TEST_GEN_FILES += $$(TRUNNER_BPF_OBJS)
+@@ -110,6 +110,7 @@ override define CLEAN
+ 	$(Q)$(RM) -r $(TEST_GEN_FILES)
+ 	$(Q)$(RM) -r $(EXTRA_CLEAN)
+ 	$(Q)$(MAKE) -C bpf_testmod clean
++	$(Q)$(MAKE) -C bpf_testmod_preload clean
+ 	$(Q)$(MAKE) docs-clean
+ endef
  
-@@ -421,6 +423,14 @@ $(TRUNNER_BPF_LSKELS): %.lskel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
- 	$(Q)diff $$(<:.o=.linked2.o) $$(<:.o=.linked3.o)
- 	$(Q)$$(BPFTOOL) gen skeleton -L $$(<:.o=.linked3.o) name $$(notdir $$(<:.o=_lskel)) > $$@
+@@ -502,7 +503,7 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
+ 			 btf_helpers.c flow_dissector_load.h		\
+ 			 cap_helpers.c
+ TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_testmod.ko	\
+-		       ima_setup.sh					\
++		       ima_setup.sh $(OUTPUT)/bpf_testmod_preload.ko	\
+ 		       $(wildcard progs/btf_dump_test_case_*.c)
+ TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+ TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS) -DENABLE_ATOMICS_TESTS
+@@ -575,9 +576,19 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.a %.o,$^) $(LDLIBS) -o $@
  
-+$(TRUNNER_BPF_LSKELSP): %.preload.lskel.h: %.o $(BPFTOOL) | $(TRUNNER_OUTPUT)
-+	$$(call msg,GEN-SKEL,$(TRUNNER_BINARY),$$@)
-+	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked1.o) $$<
-+	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked2.o) $$(<:.o=.linked1.o)
-+	$(Q)$$(BPFTOOL) gen object $$(<:.o=.linked3.o) $$(<:.o=.linked2.o)
-+	$(Q)diff $$(<:.o=.linked2.o) $$(<:.o=.linked3.o)
-+	$(Q)$$(BPFTOOL) gen skeleton -L -P $$(<:.o=.linked3.o) name $$(notdir $$(<:.o=_lskel)) > $$@
++bpf_testmod_preload/bpf_testmod_preload.c: $(OUTPUT)/gen_preload_methods.preload.lskel.h $(BPFTOOL) $(TRUNNER_BPF_LSKELSP)
++	$(call msg,GEN-MOD,,$@)
++	$(BPFTOOL) gen module $< > $@
 +
- $(TRUNNER_BPF_SKELS_LINKED): $(TRUNNER_BPF_OBJS) $(BPFTOOL) | $(TRUNNER_OUTPUT)
- 	$$(call msg,LINK-BPF,$(TRUNNER_BINARY),$$(@:.skel.h=.o))
- 	$(Q)$$(BPFTOOL) gen object $$(@:.skel.h=.linked1.o) $$(addprefix $(TRUNNER_OUTPUT)/,$$($$(@F)-deps))
-@@ -451,6 +461,7 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
- 		      $(TRUNNER_BPF_OBJS)				\
- 		      $(TRUNNER_BPF_SKELS)				\
- 		      $(TRUNNER_BPF_LSKELS)				\
-+		      $(TRUNNER_BPF_LSKELSP)				\
- 		      $(TRUNNER_BPF_SKELS_LINKED)			\
- 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
- 	$$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
-diff --git a/tools/testing/selftests/bpf/prog_tests/gen_preload_methods.expected.diff b/tools/testing/selftests/bpf/prog_tests/gen_preload_methods.expected.diff
++$(OUTPUT)/bpf_testmod_preload.ko: bpf_testmod_preload/bpf_testmod_preload.c
++	$(call msg,MOD,,$@)
++	$(Q)$(RM) bpf_testmod_preload/bpf_testmod_preload.ko # force re-compilation
++	$(Q)$(MAKE) $(submake_extras) -C bpf_testmod_preload
++	$(Q)cp bpf_testmod_preload/bpf_testmod_preload.ko $@
++
+ EXTRA_CLEAN := $(TEST_CUSTOM_PROGS) $(SCRATCH_DIR) $(HOST_SCRATCH_DIR)	\
+ 	prog_tests/tests.h map_tests/tests.h verifier/tests.h		\
+ 	feature bpftool							\
+-	$(addprefix $(OUTPUT)/,*.o *.skel.h *.lskel.h *.subskel.h no_alu32 bpf_gcc bpf_testmod.ko)
++	$(addprefix $(OUTPUT)/,*.o *.skel.h *.lskel.h *.subskel.h no_alu32 bpf_gcc bpf_testmod.ko bpf_testmod_preload.ko)
+ 
+ .PHONY: docs docs-clean
+diff --git a/tools/testing/selftests/bpf/bpf_testmod_preload/.gitignore b/tools/testing/selftests/bpf/bpf_testmod_preload/.gitignore
 new file mode 100644
-index 000000000000..5e010d380e50
+index 000000000000..989530ffc79f
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/gen_preload_methods.expected.diff
-@@ -0,0 +1,97 @@
-+--- gen_preload_methods.lskel.h	2022-03-28 13:40:22.042715754 +0200
-++++ gen_preload_methods.preload.lskel.h	2022-03-28 13:40:22.530715750 +0200
-+@@ -221,4 +221,94 @@ gen_preload_methods_lskel__assert(struct
-+ #endif
-+ }
-+ 
-++static struct bpf_link *dump_bpf_map_link;
-++static struct bpf_map *ringbuf_map;
-++static struct gen_preload_methods_lskel *skel;
-++
-++static void free_objs_and_skel(void)
-++{
-++	bpf_preload_set_ops("gen_preload_methods_lskel", THIS_MODULE, NULL);
-++
-++	if (!IS_ERR_OR_NULL(dump_bpf_map_link))
-++		bpf_link_put(dump_bpf_map_link);
-++	if (!IS_ERR_OR_NULL(ringbuf_map))
-++		bpf_map_put(ringbuf_map);
-++
-++	gen_preload_methods_lskel__destroy(skel);
-++}
-++
-++static int preload(struct dentry *parent)
-++{
-++	int err;
-++
-++	bpf_link_inc(dump_bpf_map_link);
-++	bpf_map_inc(ringbuf_map);
-++
-++	err = bpf_obj_do_pin_kernel(parent, "dump_bpf_map",
-++				    dump_bpf_map_link,
-++				    BPF_TYPE_LINK);
-++	if (err)
-++		goto undo;
-++
-++	err = bpf_obj_do_pin_kernel(parent, "ringbuf",
-++				    ringbuf_map,
-++				    BPF_TYPE_MAP);
-++	if (err)
-++		goto undo;
-++
-++	return 0;
-++undo:
-++	bpf_link_put(dump_bpf_map_link);
-++	bpf_map_put(ringbuf_map);
-++	return err;
-++}
-++
-++static struct bpf_preload_ops ops = {
-++	.preload = preload,
-++	.owner = THIS_MODULE,
-++};
-++
-++static int load_skel(void)
-++{
-++	int err = -ENOMEM;
-++
-++	if (!bpf_preload_set_ops("gen_preload_methods_lskel", THIS_MODULE, &ops))
-++		return 0;
-++
-++	skel = gen_preload_methods_lskel__open();
-++	if (!skel)
-++		goto out;
-++
-++	err = gen_preload_methods_lskel__load(skel);
-++	if (err)
-++		goto out;
-++
-++	err = gen_preload_methods_lskel__attach(skel);
-++	if (err)
-++		goto out;
-++
-++	dump_bpf_map_link = bpf_link_get_from_fd(skel->links.dump_bpf_map_fd);
-++	if (IS_ERR(dump_bpf_map_link)) {
-++		err = PTR_ERR(dump_bpf_map_link);
-++		goto out;
-++	}
-++
-++	ringbuf_map = bpf_map_get(skel->maps.ringbuf.map_fd);
-++	if (IS_ERR(ringbuf_map)) {
-++		err = PTR_ERR(ringbuf_map);
-++		goto out;
-++	}
-++
-++	/* Avoid taking over stdin/stdout/stderr of init process. Zeroing out
-++	 * makes skel_closenz() a no-op later in iterators_bpf__destroy().
-++	 */
-++	close_fd(skel->links.dump_bpf_map_fd);
-++	skel->links.dump_bpf_map_fd = 0;
-++
-++	return 0;
-++out:
-++	free_objs_and_skel();
-++	return err;
-++}
-++
-+ #endif /* __GEN_PRELOAD_METHODS_LSKEL_SKEL_H__ */
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_gen_preload_methods.c b/tools/testing/selftests/bpf/prog_tests/test_gen_preload_methods.c
++++ b/tools/testing/selftests/bpf/bpf_testmod_preload/.gitignore
+@@ -0,0 +1,7 @@
++*.mod
++*.mod.c
++*.o
++.ko
++/Module.symvers
++/modules.order
++bpf_testmod_preload.c
+diff --git a/tools/testing/selftests/bpf/bpf_testmod_preload/Makefile b/tools/testing/selftests/bpf/bpf_testmod_preload/Makefile
 new file mode 100644
-index 000000000000..937b3e606f53
+index 000000000000..d17ac6670974
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/test_gen_preload_methods.c
-@@ -0,0 +1,27 @@
++++ b/tools/testing/selftests/bpf/bpf_testmod_preload/Makefile
+@@ -0,0 +1,20 @@
++BPF_TESTMOD_PRELOAD_DIR := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
++KDIR ?= $(abspath $(BPF_TESTMOD_PRELOAD_DIR)/../../../../..)
++
++ifeq ($(V),1)
++Q =
++else
++Q = @
++endif
++
++MODULES = bpf_testmod_preload.ko
++
++obj-m += bpf_testmod_preload.o
++CFLAGS_bpf_testmod_preload.o = -I$(BPF_TESTMOD_PRELOAD_DIR)/../tools/include
++
++all:
++	+$(Q)make -C $(KDIR) M=$(BPF_TESTMOD_PRELOAD_DIR) modules
++
++clean:
++	+$(Q)make -C $(KDIR) M=$(BPF_TESTMOD_PRELOAD_DIR) clean
++
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_preload_methods.c b/tools/testing/selftests/bpf/prog_tests/test_preload_methods.c
+new file mode 100644
+index 000000000000..bad3b187794b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/test_preload_methods.c
+@@ -0,0 +1,69 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +/*
 + * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
 + */
 +
++#include <errno.h>
++#include <limits.h>
 +#include <test_progs.h>
++#include <sys/mount.h>
++#include <sys/stat.h>
++
++#define MOUNT_FLAGS (MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_RELATIME)
 +
 +static int duration;
 +
-+void test_test_gen_preload_methods(void)
++void test_test_preload_methods(void)
 +{
-+	char diff_cmd[1024];
++	char bpf_mntpoint[] = "/tmp/bpf_mntpointXXXXXX", *dir;
++	char path[PATH_MAX];
++	struct stat st;
 +	int err;
 +
-+	snprintf(diff_cmd, sizeof(diff_cmd),
-+		 "diff -up gen_preload_methods.lskel.h "
-+		 "gen_preload_methods.preload.lskel.h "
-+		 "| tail -n +4 | "
-+		 "diff -u - "
-+		 "<(tail -n +4 prog_tests/gen_preload_methods.expected.diff)");
-+	err = system(diff_cmd);
-+	if (CHECK(err, "diff",
-+		  "differing test output, err=%d, diff cmd:\n%s\n",
-+		  err, diff_cmd))
++	system("rmmod bpf_testmod_preload 2> /dev/null");
++
++	err = system("insmod bpf_testmod_preload.ko");
++	if (CHECK(err, "insmod",
++		  "cannot load bpf_testmod_preload.ko, err=%d\n", err))
 +		return;
-+}
-diff --git a/tools/testing/selftests/bpf/progs/gen_preload_methods.c b/tools/testing/selftests/bpf/progs/gen_preload_methods.c
-new file mode 100644
-index 000000000000..5b3ab27f945d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/gen_preload_methods.c
-@@ -0,0 +1,23 @@
-+// SPDX-License-Identifier: GPL-2.0
 +
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ */
++	dir = mkdtemp(bpf_mntpoint);
++	if (CHECK(!dir, "mkstemp", "cannot create temp file, err=%d\n",
++		  -errno))
++		goto out_rmmod;
 +
-+#include "vmlinux.h"
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
++	err = mount(bpf_mntpoint, bpf_mntpoint, "bpf", MOUNT_FLAGS, NULL);
++	if (CHECK(err, "mount",
++		  "cannot mount bpf filesystem to %s, err=%d\n", bpf_mntpoint,
++		  err))
++		goto out_unlink;
 +
-+struct {
-+	__uint(type, BPF_MAP_TYPE_RINGBUF);
-+	__uint(max_entries, 1 << 12);
-+} ringbuf SEC(".maps");
++	snprintf(path, sizeof(path), "%s/gen_preload_methods_lskel",
++		 bpf_mntpoint);
 +
-+char _license[] SEC("license") = "GPL";
++	err = stat(path, &st);
++	if (CHECK(err, "stat", "cannot find %s\n", path))
++		goto out_unmount;
 +
-+SEC("iter/bpf_map")
-+int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
-+{
-+	return 0;
++	snprintf(path, sizeof(path),
++		 "%s/gen_preload_methods_lskel/dump_bpf_map", bpf_mntpoint);
++
++	err = stat(path, &st);
++	if (CHECK(err, "stat", "cannot find %s\n", path))
++		goto out_unmount;
++
++	snprintf(path, sizeof(path), "%s/gen_preload_methods_lskel/ringbuf",
++		 bpf_mntpoint);
++
++	err = stat(path, &st);
++	if (CHECK(err, "stat", "cannot find %s\n", path))
++		goto out_unmount;
++
++out_unmount:
++	umount(bpf_mntpoint);
++out_unlink:
++	rmdir(bpf_mntpoint);
++out_rmmod:
++	system("rmmod bpf_testmod_preload");
 +}
 -- 
 2.32.0
