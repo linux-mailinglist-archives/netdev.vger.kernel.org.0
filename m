@@ -2,99 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 849404E8E05
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 08:19:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9362D4E8E42
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 08:38:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238081AbiC1GUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 02:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41210 "EHLO
+        id S238489AbiC1GkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 02:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238388AbiC1GUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 02:20:46 -0400
-Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6B54133B
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:19:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1648448346; x=1679984346;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=RjuGAMSNpFhDL9R9KYQsF5lQuk3OXXCw1B6PseBdFbo=;
-  b=iujPJ24Vg6X27jfVv07y/W8PYj6nIwEpjLx9cHAO/hCmhfpZUa4oE7fx
-   FBMSLQYgopZvfwW27QApsv/GHOnncqQSCnE4I/RDzJfWgT+O7q5F+5XHE
-   ZeUUpH/Bn5CLKB4VB/BhUqN39+dDftyIdDQldO3W+VW8ViKqO4jkCvpA/
-   swi6Ogp1fwRxMMFYDIX06tfYVNfa1PGVFjdPt/7CHBIqYlMBsjwYGhY95
-   bIP4dnobC2PLsd49pb6bOKxbzL4a2lUvomRyf4SWd351gquzeXShLMfjQ
-   6AEvPGlns4Tk7kWYAEokYtKCHKrvW2zCs1n7zcDjzSm2J0FlawcKmy/zw
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,216,1643644800"; 
-   d="scan'208";a="197333493"
-Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
-  by ob1.hgst.iphmx.com with ESMTP; 28 Mar 2022 14:19:06 +0800
-IronPort-SDR: WwRGIh5YaC+eo3ybYwmOMJOxOL2JdwUpuAJTSXSuuBKVEtlibZih+cpkpS+LIVHnCGBrI5Cf3w
- JMv+UpLX4Qsil4hroLbkbQ9zrjzzuPTL2/Gju6De6zWkoq4UuWHicPXzJ4mVuFb0V2A/0V1oGT
- 3Tr6qfirjxNrDtH5rSxD45UwLhLEhFJQn/f8fsEzBcTc5+WSONzWUfwfQR0OJ8LyWeQeWyhMUV
- P/5p294VT5hIep/nYWVZKfdo03BZ8KJU/C9szwYO3x+0wsQxJVT276yb7L4wrese+Jhi48yyET
- ZwYN3/XwYakD6lNUywgVKIuA
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Mar 2022 22:49:58 -0700
-IronPort-SDR: jRdKe8cbOq9tqaRUkZfKkX9SJz2KNDKJDL32B3UTGjpeg/gh/Vn4aASawrXtexHPnRyZO1g26T
- 15IIq5TWPnOHWcax964PWpaFhj5SguJWnfC/GlkOFXQzM/AzDLmexMycbpjacMO2jdlROux4bm
- jLiB+StaJiPHZT28Ty/Zs+OZdocVI36VkDmgai0MWC0TyAR7kQ5GkNP+r6dMDZRK1KKq8AwQJD
- okg1Il9B7fmCXDmdrcFh/bSiZx6jnvQdGIcMjYU4eUWd+vbuGaylIRdibLRzl9Xne7xeEKpqF6
- UdM=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Mar 2022 23:19:05 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KRjFh46Hpz1SVp0
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:19:04 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1648448343; x=1651040344; bh=RjuGAMSNpFhDL9R9KYQsF5lQuk3OXXCw1B6
-        PseBdFbo=; b=sBBQmCyL7C50ulZGTdG0xXvnL9RMJkbYu+LMcb+FNcxh9+NNe3o
-        NyaEAY+TaXpiu2fYPHizL2shSuiYoT8i036iI/Kgv/jJsEQ4Lq2WjzvJQlA8hgGH
-        axYatkI2Z955SnClShfQ9NykX17/dSY2y4sKbLaqBYTvVYWpZBAgHo6IFUk1oIT5
-        PzLrZ6cU/saebcw+e+XPnw1RViUyd5JA92Csq4PEyCvTlFhjXw2qhDcMH2paSD1D
-        eV07zYs+gSj1EQrkDV7GHACuJ8j9B2KoGwZ7NDHhVLRJgHzFRBsbPEZqEcZBi/eX
-        0KBcAQlTPoNthBEKr+IaYCTzyVGxs26ZNDA==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id P-_3yhvuLGen for <netdev@vger.kernel.org>;
-        Sun, 27 Mar 2022 23:19:03 -0700 (PDT)
-Received: from [10.225.163.121] (unknown [10.225.163.121])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KRjFf6yrYz1Rvlx;
-        Sun, 27 Mar 2022 23:19:02 -0700 (PDT)
-Message-ID: <83c47061-4f4f-6a92-b2b9-ad8cbb2da99a@opensource.wdc.com>
-Date:   Mon, 28 Mar 2022 15:19:01 +0900
+        with ESMTP id S236714AbiC1GkG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 02:40:06 -0400
+X-Greylist: delayed 1376 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Mar 2022 23:38:24 PDT
+Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.48.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A042C2719
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:38:22 -0700 (PDT)
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id DD37511443
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 01:15:26 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id Yif0nZ3mXHnotYif0nUW7N; Mon, 28 Mar 2022 01:15:26 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=jQgqtKv6g3c9JTlzvFF9fkILdnQrG04PzWMmUtyZ79I=; b=Z9m6Uy21YEhtJzNbcBVhcTYQYn
+        vTB3fNlc3MOfcSh6ksPbcbYt3oSXkofi5a6lRQPC05JtMruK8znKUKiTTX3akYnERi0THt5V62b9k
+        O3i2yVX8iGTxxGcpJ47nvcy0wCRN019I5YMj117403A7hpVRofIkzeD8LQgrGrmdIpYLwgqyOAlD/
+        AW2eJjvcAFsrsOMELIVWO1G++G5f5/H22dbAqQ8Ex3v0lYALkLQtX6V/okDZ43zfuA2OfLBspZOEH
+        Bw9+aSG4L4fcfrJe4f2a4dwsO/Uoddhuvu6U0FDkQ06+RWGTnrDTKhOxrvlY2iBr2UTk1rSe/pNCM
+        ikLFO6lA==;
+Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:38018 helo=[192.168.15.9])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1nYif0-000lJi-7y; Mon, 28 Mar 2022 01:15:26 -0500
+Message-ID: <4c520e2e-d1a5-6d2b-3ef1-b891d7946c01@embeddedor.com>
+Date:   Mon, 28 Mar 2022 01:23:59 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2] net: bnxt_ptp: fix compilation error
+Subject: Re: [PATCH][next] iwlwifi: fw: Replace zero-length arrays with
+ flexible-array members
 Content-Language: en-US
-To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Kalle Valo <kvalo@kernel.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>
-References: <20220328033540.189778-1-damien.lemoal@opensource.wdc.com>
- <CACKFLi=+5NpbeHDkDdKLg9uyfiDw4NL0=q0=shfrAYhqP+z2=w@mail.gmail.com>
- <2bc8f270-e402-5e34-8d87-6b02fe8ef777@opensource.wdc.com>
- <CALs4sv3Wm+oNVZcnWScEk0f3zfLcnApn90iTPt0kSvhuzjXk1Q@mail.gmail.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <CALs4sv3Wm+oNVZcnWScEk0f3zfLcnApn90iTPt0kSvhuzjXk1Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220216195015.GA904148@embeddedor>
+ <202202161235.2FB20E6A5@keescook> <20220326003843.GA2602091@embeddedor>
+ <871qym1vck.fsf@kernel.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+In-Reply-To: <871qym1vck.fsf@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.162.31.110
+X-Source-L: No
+X-Exim-ID: 1nYif0-000lJi-7y
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.9]) [187.162.31.110]:38018
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 3
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -103,128 +89,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/28/22 15:10, Pavan Chebbi wrote:
-> On Mon, Mar 28, 2022 at 11:14 AM Damien Le Moal
-> <damien.lemoal@opensource.wdc.com> wrote:
->>
->> On 3/28/22 14:36, Michael Chan wrote:
->>> On Sun, Mar 27, 2022 at 8:35 PM Damien Le Moal
->>> <damien.lemoal@opensource.wdc.com> wrote:
+
+
+On 3/28/22 00:47, Kalle Valo wrote:
+> "Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
+> 
+>> On Wed, Feb 16, 2022 at 12:35:14PM -0800, Kees Cook wrote:
+>>> On Wed, Feb 16, 2022 at 01:50:15PM -0600, Gustavo A. R. Silva wrote:
+>>>> There is a regular need in the kernel to provide a way to declare
+>>>> having a dynamically sized set of trailing elements in a structure.
+>>>> Kernel code should always use “flexible array members”[1] for these
+>>>> cases. The older style of one-element or zero-length arrays should
+>>>> no longer be used[2].
 >>>>
->>>> The Broadcom bnxt_ptp driver does not compile with GCC 11.2.2 when
->>>> CONFIG_WERROR is enabled. The following error is generated:
+>>>> [1] https://en.wikipedia.org/wiki/Flexible_array_member
+>>>> [2]
+>>>> https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
 >>>>
->>>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c: In function =E2=80=98=
-bnxt_ptp_enable=E2=80=99:
->>>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:400:43: error: array
->>>> subscript 255 is above array bounds of =E2=80=98struct pps_pin[4]=E2=
-=80=99
->>>> [-Werror=3Darray-bounds]
->>>>   400 |  ptp->pps_info.pins[pin_id].event =3D BNXT_PPS_EVENT_EXTERNA=
-L;
->>>>       |  ~~~~~~~~~~~~~~~~~~^~~~~~~~
->>>> In file included from drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:=
-20:
->>>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h:75:24: note: while
->>>> referencing =E2=80=98pins=E2=80=99
->>>>    75 |         struct pps_pin pins[BNXT_MAX_TSIO_PINS];
->>>>       |                        ^~~~
->>>> cc1: all warnings being treated as errors
->>>>
->>>> This is due to the function ptp_find_pin() returning a pin ID of -1 =
-when
->>>> a valid pin is not found and this error never being checked.
->>>> Use the TSIO_PIN_VALID() macroin bnxt_ptp_enable() to check the resu=
-lt
->>>> of the calls to ptp_find_pin() in bnxt_ptp_enable() to fix this
->>>> compilation error.
->>>>
->>>> Fixes: 9e518f25802c ("bnxt_en: 1PPS functions to configure TSIO pins=
-")
->>>> Cc: <stable@vger.kernel.org>
->>>> Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
->>>> ---
->>>> Changes from v1:
->>>> * No need to change the TSIO_PIN_VALID() macro as pin_id is an unsig=
-ned
->>>>   value.
->>>>
->>>>  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 4 ++--
->>>>  1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers=
-/net/ethernet/broadcom/bnxt/bnxt_ptp.c
->>>> index a0b321a19361..3c8fccbb9013 100644
->>>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
->>>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
->>>> @@ -390,7 +390,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info=
- *ptp_info,
->>>>                 /* Configure an External PPS IN */
->>>>                 pin_id =3D ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS=
-,
->>>>                                       rq->extts.index);
->>>> -               if (!on)
->>>> +               if (!on || !TSIO_PIN_VALID(pin_id))
+>>>> Link: https://github.com/KSPP/linux/issues/78
+>>>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 >>>
->>> I think we need to return an error if !TSIO_PIN_VALID().  If we just
->>> break, we'll still use pin_id after the switch statement.
->>>
->>>>                         break;
->>>>                 rc =3D bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS=
-_IN);
->>>>                 if (rc)
->>>> @@ -403,7 +403,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info=
- *ptp_info,
->>>>                 /* Configure a Periodic PPS OUT */
->>>>                 pin_id =3D ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROU=
-T,
->>>>                                       rq->perout.index);
->>>> -               if (!on)
->>>> +               if (!on || !TSIO_PIN_VALID(pin_id))
->>>
->>> Same here.
+>>> Reviewed-by: Kees Cook <keescook@chromium.org>
 >>
->> The call to bnxt_ptp_cfg_pin() after the swith will return -ENOTSUPP f=
-or
->> invalid pin IDs. So I did not feel like adding more changes was necess=
-ary.
+>> Hi all,
 >>
->> We can return an error if you insist, but what should it be ? -EINVAL =
-?
->> -ENODEV ? -ENOTSUPP ? Given that bnxt_ptp_cfg_pin() return -ENOTSUPP, =
-we
->> could use that code.
->=20
-> Would it not be better if we add a check only to validate the
-> ptp_find_pin is not returning -1
-> explicitly? TSIO_PIN_VALID validates just the MAX side. So I think
-> adding a check for -1 only
-> is valid and won't duplicate the code inside the two functions.
-
-I did that in v1, but pin_id is unsigned (u8). So changing
-TSIO_PIN_VALID() to check for "pin >=3D 0" is a bit silly in this case.
-But looking at other drivers using ptp_find_pin(), many do check the
-return value first...
-
-Sending a v3 with that check added.
-
->=20
+>> Friendly ping: can someone take this, please?
 >>
->>>
->>>>                         break;
->>>>
->>>>                 rc =3D bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS=
-_OUT);
->>>> --
->>>> 2.35.1
->>>>
->>
->>
->> --
->> Damien Le Moal
->> Western Digital Research
+>> ...I can take this in my -next tree in the meantime.
+> 
+> Like we have discussed before, please don't take any wireless patches to
+> your tree. The conflicts just cause more work of us.
 
+Sure thing. I just removed it from my tree.
 
---=20
-Damien Le Moal
-Western Digital Research
+I didn't get any reply from wireless people in more than a month, and
+that's why I temporarily took it in my tree so it doesn't get lost. :)
+
+> I assigned this patch to me on patchwork and I'm planning to take it to
+> wireless-next once it opens. Luca, ack?
+
+Awesome.
+
+Thanks
+--
+Gustavo
