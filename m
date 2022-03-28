@@ -2,159 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5F914E967C
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:25:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 818A54E9681
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242417AbiC1M1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 08:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52528 "EHLO
+        id S242441AbiC1M1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 08:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240631AbiC1M1S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:27:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C83C44D247
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648470336;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GvJCNB2Cnl/nlDULpdtsfyTRfdka37fX/FHgNiQs3CE=;
-        b=UWVFKoElXqvWCLqfPsIxURQmLn2qvubUV/RVRGM7DORv0FOGigXsUcqqK9AqWHveY5Kjfk
-        eXV1iu8We8fr2MwjDA7KoDoNzdBFcUctxNB7+WpIbP/oeTnew9secspMqkSFMUI26D6rVi
-        pNxm83e5nbDqyavahy2BqpO5SAWogIc=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-4_f9BnpAPxW4KSCT57xY1g-1; Mon, 28 Mar 2022 08:25:35 -0400
-X-MC-Unique: 4_f9BnpAPxW4KSCT57xY1g-1
-Received: by mail-qk1-f198.google.com with SMTP id bj2-20020a05620a190200b005084968bb24so8241958qkb.23
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:25:35 -0700 (PDT)
+        with ESMTP id S242429AbiC1M1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:27:43 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002AB4D247;
+        Mon, 28 Mar 2022 05:26:00 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id t13so10887934pgn.8;
+        Mon, 28 Mar 2022 05:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=fNWn9Z6ADbA6o5al6zBEcDZHutfYeq1Ua+09g55SEsY=;
+        b=hyBsvFRAnDqXrnLe4zFp4A2phxS+MEVlGv6dFSwVAUKGGNJJMPum3KENT/JYpT8UZN
+         W9uk5uwXYo32qvMACevncJ9Xn4x4LXEVpu6j0dl7ZYYwVGlB3FHgUEtUVKX0VbcgfOBb
+         RSE2w1igMssWSdJD+ZTWW6aOgohp2IiH0bXuHTNSI4AmvGtF3I5Mc92U7QpNTpdbGv05
+         YfOWR6z5Qi44+BK+88HrJzwMPLcVchF4XRbMrN11TkAOg+P/VhBi0YyA2gCcudEDnbRL
+         hLq1c6hCoC66+u7SIVXLFZo3N9OG4FunNx53k6GESjQyaLCgnKPAQLCfZVLH90e6hwMK
+         jP/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=GvJCNB2Cnl/nlDULpdtsfyTRfdka37fX/FHgNiQs3CE=;
-        b=S4IYqHasngiOgVR3fAECpcArxX9I7kspJx36dHc40Ek5oQJHR0DxrS9hKvFWHxnBel
-         EVcWbA0OETyvFMj3NV6trrHnQV6UQ3BoLfXU5xdJkpMyitSyYfwlyJ39ZNdS2iMEiFxe
-         GJ3ln6W/bdarfxydVPla8lfOfCMpM1hCNBwtBFkX/JSX77z1qCMNk+knqzo6gaHAXsJI
-         nA1TihsoO/mU4/tX7AUzEw5FIXslpO7eJamX/DcMLnuopzHqPveiklKxicc8KkIiOSLq
-         k7eAAGCz/NyA5wOxPM+6t+WLxNFTbT1wvqon12bVeyD2hvf/4YfiBTtLa4m0mM80Udup
-         47Zg==
-X-Gm-Message-State: AOAM531kwspf3DKaIDJ3Rg5R14xhmHFNlp33jROvxG33Lk1QOTgh63OU
-        7P/ETmHBiT6WGQ+XESPSYZdP74ZW8PIGRNuch5cyuCIzPpV+J7TDJgJ2HbageG9MfhNnmJPF8F/
-        Z0Jf/HnZhrkrROEoc1B04luvCtIzLIAFn920HkXMoGibPHKoJysEFD1Nq8y+TyeI=
-X-Received: by 2002:a05:622a:107:b0:2e1:d655:cc4c with SMTP id u7-20020a05622a010700b002e1d655cc4cmr21566432qtw.669.1648470334888;
-        Mon, 28 Mar 2022 05:25:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyAQwqAdu+kg9mfWp0pBO/UFlRsaaQCJ2OhGI1xR4a2IZwQG3pphqjbnU8jqdybbi/S9OtTEw==
-X-Received: by 2002:a05:622a:107:b0:2e1:d655:cc4c with SMTP id u7-20020a05622a010700b002e1d655cc4cmr21566381qtw.669.1648470334415;
-        Mon, 28 Mar 2022 05:25:34 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id y17-20020a05622a121100b002e0702457b2sm12282866qtx.20.2022.03.28.05.25.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 05:25:34 -0700 (PDT)
-Subject: Re: [PATCH v1 1/2] hwmon: introduce hwmon_sanitize_name()
-To:     Michael Walle <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220328115226.3042322-1-michael@walle.cc>
- <20220328115226.3042322-2-michael@walle.cc>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <a1f71681-0eb0-c67f-53e0-dfce9d2fdea9@redhat.com>
-Date:   Mon, 28 Mar 2022 05:25:30 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20220328115226.3042322-2-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=fNWn9Z6ADbA6o5al6zBEcDZHutfYeq1Ua+09g55SEsY=;
+        b=wRVa7ZonpwvgD656WX0QORG/gIOXj4asxNxHwYVBctXwSOzEz33OePb+UeE5fxmOIP
+         EM+rh7DWwDROB1mUppA0Eat++9XXpE7qkWllX6C9xOB53+28bTlTzzCF9ibaozi0LKG0
+         OPbObTapC9cMt+71pkNRkdVmkYQRyKG+2f33FWkngSU3L6nVrKZrNSsTBIkfjq2Cv2I9
+         55V9J0p42Ew9ReSTd1ViFryQGrirwKDKO9XQmeYR4U9dQgfBZ0OPbwLUWyE3KYfc640p
+         09p2U/akSiWWsPmeIBc+2GB1GAlAiruvEQVh+RxJKEiHp6KWzM+JlhUvsVWmywxkMiL6
+         vFLQ==
+X-Gm-Message-State: AOAM530s8LD9OM/o8oWAYkTBuqMtVyrhCHQsHyGJz8tp2GiQ8Vryx2cl
+        /dkfBcRVUmVaHsAuHG8uP5c=
+X-Google-Smtp-Source: ABdhPJxApUNNiWFzC8FfcO15afbiVATmwPDG03/UfTbCcUEDLdun03ylQ3CN3oVib23+GpUNHZU0dw==
+X-Received: by 2002:a65:6cc8:0:b0:382:1b18:56a9 with SMTP id g8-20020a656cc8000000b003821b1856a9mr10162480pgw.347.1648470360429;
+        Mon, 28 Mar 2022 05:26:00 -0700 (PDT)
+Received: from ubuntu.huawei.com ([119.3.119.18])
+        by smtp.googlemail.com with ESMTPSA id m18-20020a639412000000b003820bd9f2f2sm13301496pge.53.2022.03.28.05.25.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:25:59 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     chunkeey@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, kvalo@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linville@tuxdriver.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        stable@vger.kernel.org, xiam0nd.tong@gmail.com
+Subject: Re: [PATCH] carl9170: tx: fix an incorrect use of list iterator
+Date:   Mon, 28 Mar 2022 20:25:51 +0800
+Message-Id: <20220328122551.936-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <CAAd0S9CR=PjEskWAi132qWB5WL1yZwzOBfV-y5m2ERzc3L_qcA@mail.gmail.com>
+References: <CAAd0S9CR=PjEskWAi132qWB5WL1yZwzOBfV-y5m2ERzc3L_qcA@mail.gmail.com>
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, 27 Mar 2022 23:40:46 +0200, Christian Lamparter wrote:
+> On Sun, Mar 27, 2022 at 8:10 PM Xiaomeng Tong <xiam0nd.tong@gmail.com> wrote:
+> >
+> > If the previous list_for_each_entry_continue_rcu() don't exit early
+> > (no goto hit inside the loop), the iterator 'cvif' after the loop
+> > will be a bogus pointer to an invalid structure object containing
+> > the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
+> > will lead to a invalid memory access (i.e., 'cvif->id': the invalid
+> > pointer dereference when return back to/after the callsite in the
+> > carl9170_update_beacon()).
+> >
+> > The original intention should have been to return the valid 'cvif'
+> > when found in list, NULL otherwise. So just make 'cvif' NULL when
+> > no entry found, to fix this bug.
+> >
+> > Cc: stable@vger.kernel.org
+> > Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
+> > Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> > ---
+> >  drivers/net/wireless/ath/carl9170/tx.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/net/wireless/ath/carl9170/tx.c b/drivers/net/wireless/ath/carl9170/tx.c
+> > index 1b76f4434c06..2b8084121001 100644
+> > --- a/drivers/net/wireless/ath/carl9170/tx.c
+> > +++ b/drivers/net/wireless/ath/carl9170/tx.c
+> > @@ -1558,6 +1558,9 @@ static struct carl9170_vif_info *carl9170_pick_beaconing_vif(struct ar9170 *ar)
+> >                                         goto out;
+> >                         }
+> >                 } while (ar->beacon_enabled && i--);
+> > +
+> > +               /* no entry found in list */
+> > +               cvif = NULL;
+> >         }
+> >
+> >  out:
+> 
+> hmm, It's really not easy test this.  There are multiple locks, device
+> states and flags to consider.
+> the state of the protecting ar->vifs > 0 (I guess this could be > 1.
+> There's no point in being choosy
+> about "picky choices", if there's only one), the main virtual
+> interface as well as cvif->enable_beacon
+> and ar->beacon_enable don't change on a whim.
+> 
+> But it it is true that this function gets called by the firmware as a
+> callback to the TBTT,
+> so it would warrant any protection that is possible. Whenever a bug
+> can happen or be
+> forced in this case: I don't know, I can't do experiments until much
+> later (easter :( ).
+> But it's better and easy to err on the side of caution.
+> 
+> Note: That "cvif = NULL;" will certainly break the beaconing for good
+> (for the remaining
+> lifetime of the main interface). The driver would need to be stopped
+> and restarted before
+> beaconing would work again. A safer choice would be to return NULL;
+> That said, if the
+> bug can happen, the driver/firmware would be in a bad state at that
+> point anyway.
+> So a call to carl9170_restart(ar, ...there's no code for a
+> driver/firmware mismatch yet) will
+> be necessary in the hope that this was just a temporary glitch.
 
-On 3/28/22 4:52 AM, Michael Walle wrote:
-> More and more drivers will check for bad characters in the hwmon name
-> and all are using the same code snippet. Consolidate that code by adding
-> a new hwmon_sanitize_name() function.
->
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->   drivers/hwmon/intel-m10-bmc-hwmon.c |  5 +----
->   include/linux/hwmon.h               | 16 ++++++++++++++++
->   2 files changed, 17 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/hwmon/intel-m10-bmc-hwmon.c b/drivers/hwmon/intel-m10-bmc-hwmon.c
-> index 7a08e4c44a4b..e6e55fc30153 100644
-> --- a/drivers/hwmon/intel-m10-bmc-hwmon.c
-> +++ b/drivers/hwmon/intel-m10-bmc-hwmon.c
-> @@ -515,7 +515,6 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
->   	struct intel_m10bmc *m10bmc = dev_get_drvdata(pdev->dev.parent);
->   	struct device *hwmon_dev, *dev = &pdev->dev;
->   	struct m10bmc_hwmon *hw;
-> -	int i;
->   
->   	hw = devm_kzalloc(dev, sizeof(*hw), GFP_KERNEL);
->   	if (!hw)
-> @@ -532,9 +531,7 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
->   	if (!hw->hw_name)
->   		return -ENOMEM;
->   
-> -	for (i = 0; hw->hw_name[i]; i++)
-> -		if (hwmon_is_bad_char(hw->hw_name[i]))
-> -			hw->hw_name[i] = '_';
-> +	hwmon_sanitize_name(hw->hw_name);
->   
->   	hwmon_dev = devm_hwmon_device_register_with_info(dev, hw->hw_name,
->   							 hw, &hw->chip, NULL);
-> diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-> index eba380b76d15..210b8c0b2827 100644
-> --- a/include/linux/hwmon.h
-> +++ b/include/linux/hwmon.h
-> @@ -484,4 +484,20 @@ static inline bool hwmon_is_bad_char(const char ch)
->   	}
->   }
+Thank you, i have resubmitted a v2 patch as you suggested: just return NULL
+to fix it. Please check it.
 
-hwmon_is_bad_char is now only used by hwmon_sanitize_name.
-
-as patch 3, consolidate into only hwmon_sanitize_name.
-
-Tom
-
->   
-> +/**
-> + * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
-> + * @name: NUL-terminated name
-> + *
-> + * Invalid characters in the name will be overwritten in-place by an
-> + * underscore.
-> + */
-> +static inline void hwmon_sanitize_name(char *name)
-> +{
-> +	while (*name) {
-> +		if (hwmon_is_bad_char(*name))
-> +			*name = '_';
-> +		name++;
-> +	};
-> +}
-> +
->   #endif
-
+--
+Xiaomeng Tong
