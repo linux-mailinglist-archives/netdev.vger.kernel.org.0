@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 884604EA3B3
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 01:36:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3FB24EA3B7
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 01:36:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230480AbiC1X25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 19:28:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
+        id S230464AbiC1X2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 19:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230358AbiC1X2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 19:28:48 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C2F5A0BB
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:27:05 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d2d45c0df7so131144687b3.1
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:27:05 -0700 (PDT)
+        with ESMTP id S230445AbiC1X2t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 19:28:49 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE66431201
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:27:07 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2dc7bdd666fso130404037b3.7
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:27:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=HI7lVdFOSrlQd5wT9t/SBLu67RK0OyhqHS+mLTojDoE=;
-        b=OOfLyxjdfGI/Zzi87JL87OQfMszCNTUskyTB3iTykwAXRjAEpDXIS+voGrvIAZfDpR
-         Epwup6CsDlPPO2kU6QMzOn0Epm3iM+kImr6kf8OxgLNzzbnruKyXgm/LeewSSA3k0yqp
-         favmnY4DSQkIBaEiZz6q5NwUzkwJ78hb2Y4huCXqqEqyWjpOuVAB67CcxkD9vdR/hOfJ
-         1u2AhCfGi1Mi+uCrQi8MiQH9uaS7hzSH+fiRw0fJ6TwTPMsnj4O6XGGzZLMpkd9BNXO9
-         fGG+9nyuNkcRx+Dxg1AF6oDiL2h9rmOclzepyuG1ulyjca+zHJxSTl+seEh1kjNQXI3I
-         S4RQ==
+        bh=62T0/TU1Sa4Wqe+eN5txv4UBeKWrByFVFuAcfl2TJUY=;
+        b=WuFWAPyS7pgyWDgjtlzsKpFPsxxPd9tgW0nM0IULEGbEsaEs5zE0BwR/iV0yiRyiUr
+         C9LzDD7OQikFacW2EZ3HgTOERW8ioeMdDmGtbxjGjdAvIgFqPAGlWSKO/Fo07kxOusQj
+         xXQTuUoN7COi2/I3yvyXPwYeetZ2hVDiAs6t36XmpeIj0N0pXu41bgEpHgFvTMqjwxGS
+         YkJ0glvboVcb8xY9ZZdbAAgSHoReMnojd0N4VWMYdi2aBcDvyxepEb8RTHF4ZzMUgt9m
+         qUiIro8106ztVL4WbMUEwnsQ0Z0mF/k9xEPBZD0X3XV3XPniYpCSNqCpBNG82OklWGGW
+         su1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=HI7lVdFOSrlQd5wT9t/SBLu67RK0OyhqHS+mLTojDoE=;
-        b=Y2U/e43MRPxNImAScf8WZKYFdWbvjx6vqxY+NIx4DJi54l3jWR3XTjbyvNPoTQVIdF
-         7ATbhA7GONW8ki5p40qEmKJ+t9ryMYHMfDveGo/DUPdRcvRlUWuzGvly3hVDxENe5Ej8
-         gpQXXZ1KODCnb7najJlunNo8WOMD8rS8ZBWwQ6QG0BezNjzXdL316BLvtKFtNDrPeGD8
-         dluevIW0X7Ucgh3imjrshHMBeKQKmqdYNoUCutmCC7/h+fVSWPJxR1ajvP9lUAfLhry6
-         zT23lMWta/QW/G47SCEk6bWYDHFDFOTtqzg6wB0TkJw0Y76RZQMVhX7NwgWcBNYfB+Nn
-         EHMQ==
-X-Gm-Message-State: AOAM531nfTW2/H6qyiDLMX6VIm0R/GUdZ9iOyJn8mdi8WzEoOQ76rUIH
-        WzjTYdGcG384bTY8FpZFKnTbhxx+wFcP
-X-Google-Smtp-Source: ABdhPJxq3SawZ28lJ97d+m1B27jGZL3+ADhO9V4EPLQfdWt+wZImHtVrn+mTGk9KAcNNkDb7tpvSE9m8TcX9
+        bh=62T0/TU1Sa4Wqe+eN5txv4UBeKWrByFVFuAcfl2TJUY=;
+        b=8BmiccnxwVl/VJMBCjbFcc3k2lMB/qCvGbSM0WL/YsONM1Oa7trrOat2lFNs8ReeH8
+         8gDb/oa5wfNpxVm/Au6cydTrfLviI5c4RZgxsBhrJWDn2C0yvyGKq8df8XDwqgbR8sA6
+         GAzsTn5nS0txeOsXQpFRSr9DoyMXuZ2FPVIFxyHdDxn3KZx/TWP1sYPkfim5fD3Bz+9p
+         50fb/al//be7McAcbNSNfrb96VTxuSMNVIz7He93/BMlg0bFgDrD7BQgZy6vrIzbpEoC
+         1e0iJpF1T8sZ5lBrq9RqirEYWKrH7c61NiwjGbxxNAJTaiFEgPpCYN/CFHMnETyz9roD
+         /RKw==
+X-Gm-Message-State: AOAM531UyZE3kIZ4bIoXGCdYd+20130agiqemEu8cN0rLCgJcc4INtZs
+        U0bMRmgzDJzYZ2UuGxHvDmp8Jbru1MRp
+X-Google-Smtp-Source: ABdhPJyGiiWxc4ARHStwB+ZXo/aW9HRYLxvc/de+ZQtJa8gJqpvKLIH6JBfkA9BFTOaLI3PuawSjmI+3PmmF
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9d6a:527d:cf46:71e2])
- (user=irogers job=sendgmr) by 2002:a05:6902:241:b0:633:d3e1:ff5e with SMTP id
- k1-20020a056902024100b00633d3e1ff5emr25241467ybs.625.1648510024506; Mon, 28
- Mar 2022 16:27:04 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 16:26:47 -0700
+ (user=irogers job=sendgmr) by 2002:a25:ba04:0:b0:623:ed7a:701d with SMTP id
+ t4-20020a25ba04000000b00623ed7a701dmr25269976ybg.209.1648510026853; Mon, 28
+ Mar 2022 16:27:06 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 16:26:48 -0700
 In-Reply-To: <20220328232648.2127340-1-irogers@google.com>
-Message-Id: <20220328232648.2127340-6-irogers@google.com>
+Message-Id: <20220328232648.2127340-7-irogers@google.com>
 Mime-Version: 1.0
 References: <20220328232648.2127340-1-irogers@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 5/6] perf cpumap: Add intersect function.
+Subject: [PATCH v2 6/6] perf evlist: Respect all_cpus when setting user_requested_cpus
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -90,81 +90,100 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The merge function gives the union of two cpu maps. Add an intersect
-function which will be used in the next change.
+If all_cpus is calculated it represents the merge/union of all
+evsel cpu maps. By default user_requested_cpus is computed to be
+the online CPUs. For uncore events, it is often the case currently
+that all_cpus is a subset of user_requested_cpus. Metrics printed
+without aggregation and with metric-only, in print_no_aggr_metric,
+iterate over user_requested_cpus assuming every CPU has a metric to
+print. For each CPU the prefix is printed, but then if the
+evsel's cpus doesn't contain anything you get an empty line like
+the following on a 2 socket 36 core SkylakeX:
+
+```
+$ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
+     1.000453137 CPU0                       0.00
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137 CPU18                      0.00
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     1.000453137
+     2.003717143 CPU0                       0.00
+...
+```
+
+While it is possible to be lazier in printing the prefix and
+trailing newline, having user_requested_cpus not be a subset of
+all_cpus is preferential so that wasted work isn't done elsewhere
+user_requested_cpus is used. The change modifies user_requested_cpus
+to be the intersection of user specified CPUs, or default all online
+CPUs, with the CPUs computed through the merge of all evsel cpu maps.
+
+New behavior:
+```
+$ perf stat -A -M DRAM_BW_Use -a --metric-only -I 1000
+     1.001086325 CPU0                       0.00
+     1.001086325 CPU18                      0.00
+     2.003671291 CPU0                       0.00
+     2.003671291 CPU18                      0.00
+...
+```
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/lib/perf/cpumap.c              | 38 ++++++++++++++++++++++++++++
- tools/lib/perf/include/perf/cpumap.h |  2 ++
- 2 files changed, 40 insertions(+)
+ tools/perf/util/evlist.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/lib/perf/cpumap.c b/tools/lib/perf/cpumap.c
-index 384d5e076ee4..60cccd05f243 100644
---- a/tools/lib/perf/cpumap.c
-+++ b/tools/lib/perf/cpumap.c
-@@ -390,3 +390,41 @@ struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
- 	perf_cpu_map__put(orig);
- 	return merged;
- }
-+
-+struct perf_cpu_map *perf_cpu_map__intersect(struct perf_cpu_map *orig,
-+					     struct perf_cpu_map *other)
-+{
-+	struct perf_cpu *tmp_cpus;
-+	int tmp_len;
-+	int i, j, k;
-+	struct perf_cpu_map *merged = NULL;
-+
-+	if (perf_cpu_map__is_subset(other, orig))
-+		return orig;
-+	if (perf_cpu_map__is_subset(orig, other)) {
-+		perf_cpu_map__put(orig);
-+		return perf_cpu_map__get(other);
-+	}
-+
-+	tmp_len = max(orig->nr, other->nr);
-+	tmp_cpus = malloc(tmp_len * sizeof(struct perf_cpu));
-+	if (!tmp_cpus)
-+		return NULL;
-+
-+	i = j = k = 0;
-+	while (i < orig->nr && j < other->nr) {
-+		if (orig->map[i].cpu < other->map[j].cpu)
-+			i++;
-+		else if (orig->map[i].cpu > other->map[j].cpu)
-+			j++;
-+		else {
-+			j++;
-+			tmp_cpus[k++] = orig->map[i++];
-+		}
-+	}
-+	if (k)
-+		merged = cpu_map__trim_new(k, tmp_cpus);
-+	free(tmp_cpus);
-+	perf_cpu_map__put(orig);
-+	return merged;
-+}
-diff --git a/tools/lib/perf/include/perf/cpumap.h b/tools/lib/perf/include/perf/cpumap.h
-index 4a2edbdb5e2b..a2a7216c0b78 100644
---- a/tools/lib/perf/include/perf/cpumap.h
-+++ b/tools/lib/perf/include/perf/cpumap.h
-@@ -19,6 +19,8 @@ LIBPERF_API struct perf_cpu_map *perf_cpu_map__read(FILE *file);
- LIBPERF_API struct perf_cpu_map *perf_cpu_map__get(struct perf_cpu_map *map);
- LIBPERF_API struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
- 						     struct perf_cpu_map *other);
-+LIBPERF_API struct perf_cpu_map *perf_cpu_map__intersect(struct perf_cpu_map *orig,
-+							 struct perf_cpu_map *other);
- LIBPERF_API void perf_cpu_map__put(struct perf_cpu_map *map);
- LIBPERF_API struct perf_cpu perf_cpu_map__cpu(const struct perf_cpu_map *cpus, int idx);
- LIBPERF_API int perf_cpu_map__nr(const struct perf_cpu_map *cpus);
+diff --git a/tools/perf/util/evlist.c b/tools/perf/util/evlist.c
+index cb2cf4463c08..1a3308ec35f1 100644
+--- a/tools/perf/util/evlist.c
++++ b/tools/perf/util/evlist.c
+@@ -1036,6 +1036,8 @@ int evlist__create_maps(struct evlist *evlist, struct target *target)
+ 	if (!cpus)
+ 		goto out_delete_threads;
+ 
++	if (evlist->core.all_cpus)
++		cpus = perf_cpu_map__intersect(cpus, evlist->core.all_cpus);
+ 	evlist->core.has_user_cpus = !!target->cpu_list && !target->hybrid;
+ 
+ 	perf_evlist__set_maps(&evlist->core, cpus, threads);
 -- 
 2.35.1.1021.g381101b075-goog
 
