@@ -2,194 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11BE04EA0D4
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 21:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C03D4EA137
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 22:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245313AbiC1T4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 15:56:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38922 "EHLO
+        id S1344360AbiC1UQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 16:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232294AbiC1T4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 15:56:01 -0400
-Received: from stuerz.xyz (unknown [45.77.206.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EA1B13;
-        Mon, 28 Mar 2022 12:54:19 -0700 (PDT)
-Received: by stuerz.xyz (Postfix, from userid 114)
-        id 3B250FA71D; Mon, 28 Mar 2022 19:54:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648497258; bh=vLujta4nZyWs+WRhXVDs/r9cMmB7D9buGBDSpH905nQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Yn49FpLcNYkEPaqVCB+mlfSyG/bPPHG2t194EzTcGPaC/nM6rV3/RBwyIv/EqPxqr
-         eU31BGDKBFVvILCvvBjSWoZ0mBJzFQpD/CW0feRKghfhyeMKeM6ivADRbIJSOqZ+0s
-         Uq8j3GtApWGBGuSEa9RrgT3vp5wfNaP63p01YhA+/+SW96iCiHPg1QfQpu1Wrb8/fI
-         FQSGutgQVFYrTkWH04ibID/JwKRDtF6Z6ry3mRPDF/Z5GZa790v7pXCanGJbgocNyO
-         PLG20VlLzx5VoiIQHje4gj8NvrxixMlBdj/dYCpmTDAUxFp4lYzW1mYbT+HZfoQPec
-         DPnv+ugxfeWKQ==
-Received: from [IPV6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8] (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
-        by stuerz.xyz (Postfix) with ESMTPSA id E7D78FA6B1;
-        Mon, 28 Mar 2022 19:54:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
-        t=1648497255; bh=vLujta4nZyWs+WRhXVDs/r9cMmB7D9buGBDSpH905nQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=RtLxYW4DBUyyHTFQEL882cfZ2TUySc5QkJJC3ZkaaYG0ptDes5KHHO4xJ+kIgtKAg
-         STWYNCCwYyJSaBybQR5XU2DdrBJ8Gtj0eiVu9BZqnULzAykR5unK/FBX9bdWqeIZCs
-         3HUccN3oyf4iMFW6WbsZyjQPMOYq6M3pZ0HlufcIDinhylPIR67J7Dq0f5KP7d/fRh
-         KRnsh+3OaZc5yM03avILSMBdBMbfMy+2JdqY0hffJIsPIV7zgNH9C1E34dhezUoZwo
-         YKrhD7zHwq2Ev+f/uW/sR5IIJMgliEuWEhu4EfciEB9N/UhFJXKJ4JyYeUEwxGXICg
-         5ckAvpmEYAOVw==
-Message-ID: <6cae7be8-0329-7b0f-9a61-695f3d0cceb4@stuerz.xyz>
-Date:   Mon, 28 Mar 2022 21:54:13 +0200
+        with ESMTP id S1344336AbiC1UQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 16:16:18 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0552655F;
+        Mon, 28 Mar 2022 13:14:34 -0700 (PDT)
+Received: from [192.168.0.4] (ip5f5ae92d.dynamic.kabel-deutschland.de [95.90.233.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7D20261EA1928;
+        Mon, 28 Mar 2022 22:14:30 +0200 (CEST)
+Message-ID: <cc77b58d-657e-b9d9-b1cf-9b72973c1623@molgen.mpg.de>
+Date:   Mon, 28 Mar 2022 22:14:30 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: [PATCH 20/22 v3] ray_cs: Improve card_status[]
+Subject: Re: BUG: Bad page state in process systemd-udevd (was: [PATCH v9
+ bpf-next 1/9] x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with
+ HAVE_ARCH_HUGE_VMAP)
 Content-Language: en-US
-To:     Joe Perches <joe@perches.com>, Kalle Valo <kvalo@kernel.org>
-Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220326165909.506926-20-benni@stuerz.xyz>
- <164846920750.11945.16978682699891961444.kvalo@kernel.org>
- <1b694c4c-100b-951a-20f7-df1c912bb550@stuerz.xyz>
- <683c72536c0672aa69c285ee505ec552fa76935f.camel@perches.com>
-From:   =?UTF-8?Q?Benjamin_St=c3=bcrz?= <benni@stuerz.xyz>
-In-Reply-To: <683c72536c0672aa69c285ee505ec552fa76935f.camel@perches.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Rick P Edgecombe <rick.p.edgecombe@intel.com>,
+        Song Liu <song@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        iii@linux.ibm.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        regressions@lists.linux.dev, amd-gfx@lists.freedesktop.org
+References: <20220204185742.271030-1-song@kernel.org>
+ <20220204185742.271030-2-song@kernel.org>
+ <14444103-d51b-0fb3-ee63-c3f182f0b546@molgen.mpg.de>
+ <7edcd673-decf-7b4e-1f6e-f2e0e26f757a@molgen.mpg.de>
+ <7F597B8E-72B3-402B-BD46-4C7F13A5D7BD@fb.com>
+ <4a49a98a-d958-8e48-10eb-24bb220e24ed@molgen.mpg.de>
+ <44B009D1-2BF8-4C69-9F09-B0F553A48B78@fb.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <44B009D1-2BF8-4C69-9F09-B0F553A48B78@fb.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        PDS_OTHER_BAD_TLD,RDNS_DYNAMIC,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.03.22 21:23, Joe Perches wrote:
-> On Mon, 2022-03-28 at 20:21 +0200, Benjamin Stürz wrote:
->> Replace comments with C99's designated initializers.
-> []
->> diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-> []
->> @@ -2529,20 +2529,23 @@ static void clear_interrupt(ray_dev_t *local)
->>  #define MAXDATA (PAGE_SIZE - 80)
+Dear Song,
+
+
+Am 28.03.22 um 21:24 schrieb Song Liu:
+
+>> On Mar 27, 2022, at 11:51 PM, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+
+>> Am 28.03.22 um 08:37 schrieb Song Liu:
+
+[…]
+
+>>>> On Mar 27, 2022, at 3:36 AM, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
 >>
->>  static const char *card_status[] = {
->> -	"Card inserted - uninitialized",	/* 0 */
->> -	"Card not downloaded",			/* 1 */
->> -	"Waiting for download parameters",	/* 2 */
->> -	"Card doing acquisition",		/* 3 */
->> -	"Acquisition complete",			/* 4 */
->> -	"Authentication complete",		/* 5 */
->> -	"Association complete",			/* 6 */
->> -	"???", "???", "???", "???",		/* 7 8 9 10 undefined */
->> -	"Card init error",			/* 11 */
->> -	"Download parameters error",		/* 12 */
->> -	"???",					/* 13 */
->> -	"Acquisition failed",			/* 14 */
->> -	"Authentication refused",		/* 15 */
->> -	"Association failed"			/* 16 */
->> +	[0]  = "Card inserted - uninitialized",
-> 
-> If you are going to do this at all, please use the #defines
-> in drivers/net/wireless/rayctl.h
-> 
-> 	[CARD_INSERTED] = "Card inserted - uninitialized",
-> 	[CARD_AWAITING_PARAM] = "Card not downloaded",
-> 
-> etc...
-> 
-> $ git grep -w -P 'CARD_\w+' drivers/net/wireless/rayctl.h
-> drivers/net/wireless/rayctl.h:#define CARD_INSERTED       (0)
-> drivers/net/wireless/rayctl.h:#define CARD_AWAITING_PARAM (1)
-> drivers/net/wireless/rayctl.h:#define CARD_INIT_ERROR     (11)
-> drivers/net/wireless/rayctl.h:#define CARD_DL_PARAM       (2)
-> drivers/net/wireless/rayctl.h:#define CARD_DL_PARAM_ERROR (12)
-> drivers/net/wireless/rayctl.h:#define CARD_DOING_ACQ      (3)
-> drivers/net/wireless/rayctl.h:#define CARD_ACQ_COMPLETE   (4)
-> drivers/net/wireless/rayctl.h:#define CARD_ACQ_FAILED     (14)
-> drivers/net/wireless/rayctl.h:#define CARD_AUTH_COMPLETE  (5)
-> drivers/net/wireless/rayctl.h:#define CARD_AUTH_REFUSED   (15)
-> drivers/net/wireless/rayctl.h:#define CARD_ASSOC_COMPLETE (6)
-> drivers/net/wireless/rayctl.h:#define CARD_ASSOC_FAILED   (16)
-> 
->> +	[1]  = "Card not downloaded",
->> +	[2]  = "Waiting for download parameters",
->> +	[3]  = "Card doing acquisition",
->> +	[4]  = "Acquisition complete",
->> +	[5]  = "Authentication complete",
->> +	[6]  = "Association complete",
->> +	[7]  = "???",
->> +	[8]  = "???",
->> +	[9]  = "???",
->> +	[10] = "???",
->> +	[11] = "Card init error",
->> +	[12] = "Download parameters error",
->> +	[13] = "???",
->> +	[14] = "Acquisition failed",
->> +	[15] = "Authentication refused",
->> +	[16] = "Association failed"
->>  };
+>>>> Am 26.03.22 um 19:46 schrieb Paul Menzel:
+>>>>> #regzbot introduced: fac54e2bfb5be2b0bbf115fe80d45f59fd773048
+>>>>> #regzbot title: BUG: Bad page state in process systemd-udevd
+>>>>
+>>>>> Am 04.02.22 um 19:57 schrieb Song Liu:
+>>>>>> From: Song Liu <songliubraving@fb.com>
+>>>>>>
+>>>>>> This enables module_alloc() to allocate huge page for 2MB+ requests.
+>>>>>> To check the difference of this change, we need enable config
+>>>>>> CONFIG_PTDUMP_DEBUGFS, and call module_alloc(2MB). Before the change,
+>>>>>> /sys/kernel/debug/page_tables/kernel shows pte for this map. With the
+>>>>>> change, /sys/kernel/debug/page_tables/ show pmd for thie map.
+>>>>>>
+>>>>>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>>>>>> ---
+>>>>>>    arch/x86/Kconfig | 1 +
+>>>>>>    1 file changed, 1 insertion(+)
+>>>>>>
+>>>>>> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+>>>>>> index 6fddb63271d9..e0e0d00cf103 100644
+>>>>>> --- a/arch/x86/Kconfig
+>>>>>> +++ b/arch/x86/Kconfig
+>>>>>> @@ -159,6 +159,7 @@ config X86
+>>>>>>        select HAVE_ALIGNED_STRUCT_PAGE        if SLUB
+>>>>>>        select HAVE_ARCH_AUDITSYSCALL
+>>>>>>        select HAVE_ARCH_HUGE_VMAP        if X86_64 || X86_PAE
+>>>>>> +    select HAVE_ARCH_HUGE_VMALLOC        if HAVE_ARCH_HUGE_VMAP
+>>>>>>        select HAVE_ARCH_JUMP_LABEL
+>>>>>>        select HAVE_ARCH_JUMP_LABEL_RELATIVE
+>>>>>>        select HAVE_ARCH_KASAN            if X86_64
+>>>>> Testing Linus’ current master branch, Linux logs critical messages like below:
+>>>>>      BUG: Bad page state in process systemd-udevd  pfn:102e03
+>>>>> I bisected to your commit fac54e2bfb5 (x86/Kconfig: select
+>>>>> HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP).
+>>>> Sorry, I forget to mention, that this is a 32-bit (i686) userspace,
+>>>> but a 64-bit Linux kernel, so it might be the same issue as
+>>>> mentioned in commit eed1fcee556f (x86: Disable
+>>>> HAVE_ARCH_HUGE_VMALLOC on 32-bit x86), but didn’t fix the issue for
+>>>> 64-bit Linux kernel and 32-bit userspace.
+>>> I will look more into this tomorrow. To clarify, what is the 32-bit
+>>> user space that triggers this? Is it systemd-udevd? Is the systemd
+>>> also i686?
 >>
->>  static const char *nettype[] = { "Adhoc", "Infra " };
+>> Yes, everything – also systemd – is i686. You can build a 32-bit VM image with grml-debootstrap [1]:
+>>
+>>     sudo DEBOOTSTRAP=mmdebstrap ~/src/grml-debootstrap/grml-debootstrap --vm --vmfile --vmsize 3G --target /dev/shm/debian-32.img -r sid --arch i686 --filesystem ext4
+>>
+>> Then run that with QEMU, but pass the 64-bit Linux kernel to QEMU directly with the switches `-kernel` and `-append`, or install the amd64 Linux kernel into the Debian VM image or the package created with `make bindeb-pkg` with `dpkg -i …`.
 > 
+> Thanks for these information!
 > 
+> I tried the following, but couldn't reproduce the issue.
+> 
+> sudo ./grml-debootstrap --vm --vmfile --vmsize 3G --target ../debian-32.img -r sid --arch i386 --filesystem ext4
+> 
+> Note: s/i686/i386/. Also I run this on Fedora, so I didn't specify DEBOOTSTRAP.
+> 
+> Then I run it with
+> 
+> qemu-system-x86_64 \
+>    -boot d ./debian-32.img -m 1024 -smp 4 \
+>    -kernel ./bzImage \
+>    -nographic -append 'root=/dev/sda1 ro console=ttyS0,115200'
+> 
+> The VM boots fine. The config being used is x86_64_defconfig +
+> CONFIG_DRM_FBDEV_EMULATION.
+> 
+> I wonder whether this is caused by different config or different image.
+> Could you please share your config?
+
+Sorry, for leading you on the wrong path. I actually just wanted to help 
+getting a 32-bit userspace set up quickly. I haven’t tried reproducing 
+the issue in a VM, and used only the ASUS F2A85-M PRO.
+
+Booting the system with `nomodeset`, I didn’t see the error. No idea if 
+it’s related to framebuffer handling or specific to AMD graphics device.
+
+> PS: I couldn't figure out the root password of the image, --password
+> option of grml-debootstrap doesn't seem to work.
+
+Hmm, I thought it’s asking you during install, but I haven’t done it in 
+a while.
 
 
-- Make card_status[] const, because it should never be modified
-- Replace comments with C99's designated initializers to improve
-  readability and maintainability
+Kind regards,
 
-Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
----
- drivers/net/wireless/ray_cs.c | 33 ++++++++++++++++++---------------
- 1 file changed, 18 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
-index 87e98ab068ed..07f36aaefbde 100644
---- a/drivers/net/wireless/ray_cs.c
-+++ b/drivers/net/wireless/ray_cs.c
-@@ -2528,21 +2528,24 @@ static void clear_interrupt(ray_dev_t *local)
- #ifdef CONFIG_PROC_FS
- #define MAXDATA (PAGE_SIZE - 80)
-
--static const char *card_status[] = {
--	"Card inserted - uninitialized",	/* 0 */
--	"Card not downloaded",			/* 1 */
--	"Waiting for download parameters",	/* 2 */
--	"Card doing acquisition",		/* 3 */
--	"Acquisition complete",			/* 4 */
--	"Authentication complete",		/* 5 */
--	"Association complete",			/* 6 */
--	"???", "???", "???", "???",		/* 7 8 9 10 undefined */
--	"Card init error",			/* 11 */
--	"Download parameters error",		/* 12 */
--	"???",					/* 13 */
--	"Acquisition failed",			/* 14 */
--	"Authentication refused",		/* 15 */
--	"Association failed"			/* 16 */
-+static const char * const card_status[] = {
-+	[CARD_INSERTED]		= "Card inserted - uninitialized",
-+	[CARD_AWAITING_PARAM]	= "Card not downloaded",
-+	[CARD_DL_PARAM]		= "Waiting for download parameters",
-+	[CARD_DOING_ACQ]	= "Card doing acquisition",
-+	[CARD_ACQ_COMPLETE]	= "Acquisition complete",
-+	[CARD_AUTH_COMPLETE]	= "Authentication complete",
-+	[CARD_ASSOC_COMPLETE]	= "Association complete",
-+	[7]			= "???",
-+	[8]			= "???",
-+	[9]			= "???",
-+	[10]			= "???",
-+	[CARD_INIT_ERROR]	= "Card init error",
-+	[CARD_DL_PARAM_ERROR]	= "Download parameters error",
-+	[13]			= "???",
-+	[CARD_ACQ_FAILED]	= "Acquisition failed",
-+	[CARD_AUTH_REFUSED]	= "Authentication refused",
-+	[CARD_ASSOC_FAILED]	= "Association failed"
- };
-
- static const char *nettype[] = { "Adhoc", "Infra " };
--- 
-2.35.1
+Paul
