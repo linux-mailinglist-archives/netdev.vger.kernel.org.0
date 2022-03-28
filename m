@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7F34E949A
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 13:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ADCC4E950C
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 13:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241396AbiC1La4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 07:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        id S239027AbiC1Lj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 07:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241394AbiC1La2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 07:30:28 -0400
+        with ESMTP id S241502AbiC1Lbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 07:31:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1311956219;
-        Mon, 28 Mar 2022 04:24:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F28157B05;
+        Mon, 28 Mar 2022 04:24:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2FBF611D0;
-        Mon, 28 Mar 2022 11:24:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D593CC36AE2;
-        Mon, 28 Mar 2022 11:24:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DB2C611D8;
+        Mon, 28 Mar 2022 11:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87CE3C340EC;
+        Mon, 28 Mar 2022 11:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466648;
-        bh=gwJ5FR9DtZIsA2hPSe/5+mSIlwSULFPHfwLGfoecJLM=;
+        s=k20201202; t=1648466671;
+        bh=nkCUznEb/nxqNrdjFSYcrmrAOYnmEWFuMdAke85b898=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJ15vx0otjlnstt1LvyXh0M0Y8xAq5C1h+uJ1bvmC4kDSCqFeYYY0sszJJC6heQYH
-         j/JQMVq8Q5uODC+vG9UvK2h2Yliucj4i8eLUVYHaS0a4SDlu1+MF+t2LT5QU/fV4PS
-         pl8drrw8dyoLXAMjEL9BeUVf/VgzwzUL9N6scM2QughNvHyJ+Pv5KSHdye0GHLIJ5+
-         Gc4XLww1xH0rXj70HOnosXM0GtiTvQgPyZipWIUEKj8XjCc/bM/IvHdrOFUpmFra8r
-         31oR+YWanfC9ksYPdK/HjKK4E/OwFTNRFLPL734NrS9vytAgHK8K59XGEVMve9YiSI
-         7dbC8A8q64EUA==
+        b=SRKg6CkLhnCjSI5tu94B7KhQYeCQ8qD3WCUcdSV4e0SUZRtsFO5JNjTth6LnWgL7k
+         G5dgT5jNW9TIXI/5nzbZp65OtNi4dXJAGFMvkYUi8ChpnzSilEaet87uyP1ici/oyI
+         8Wni6DNosP/etVk2gAOlRIr63z3g7HJmv8z/ULkjLReFew7yNnh3xjQjj7EL+tCUBv
+         F/FrWJSbXtICTPLBDtDUlt5WgURRO1xXPrtTL3h45eNv5yEVhpOGJ5PnQVuex66cd+
+         aopn9H3hNYKYb+GcxwgJPK5g4+OLeQiJ9XeWPeLpeM24qJ9sY9+xB9zwac7LjPBJ4b
+         AD98TtKfav9Jw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
@@ -38,12 +38,12 @@ Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
         Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
         ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 12/16] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
-Date:   Mon, 28 Mar 2022 07:23:41 -0400
-Message-Id: <20220328112345.1556601-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 08/12] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
+Date:   Mon, 28 Mar 2022 07:24:13 -0400
+Message-Id: <20220328112417.1556946-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112345.1556601-1-sashal@kernel.org>
-References: <20220328112345.1556601-1-sashal@kernel.org>
+In-Reply-To: <20220328112417.1556946-1-sashal@kernel.org>
+References: <20220328112417.1556946-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
@@ -112,7 +112,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
-index b9e6c3648be1..98b9fd0354dd 100644
+index 79777645cac9..e7b54ec8ca70 100644
 --- a/lib/raid6/test/Makefile
 +++ b/lib/raid6/test/Makefile
 @@ -4,6 +4,8 @@
@@ -124,7 +124,7 @@ index b9e6c3648be1..98b9fd0354dd 100644
  CC	 = gcc
  OPTFLAGS = -O2			# Adjust as desired
  CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
-@@ -47,7 +49,7 @@ else ifeq ($(HAS_NEON),yes)
+@@ -44,7 +46,7 @@ else ifeq ($(HAS_NEON),yes)
          OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
          CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
  else
