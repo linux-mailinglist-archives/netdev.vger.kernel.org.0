@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 169874E8B3E
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 02:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A408A4E8B43
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 02:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237074AbiC1Ai5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Mar 2022 20:38:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51286 "EHLO
+        id S237124AbiC1Aja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Mar 2022 20:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230373AbiC1Ai5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 20:38:57 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB60C4ECCF
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 17:37:17 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id qa43so25399956ejc.12
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 17:37:17 -0700 (PDT)
+        with ESMTP id S237116AbiC1Aj0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 20:39:26 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9D34ECD8
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 17:37:47 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id a30so9655909ljq.13
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 17:37:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LsBHPoKRCtwDOMc2JT/S0rILfVAOjOsIUEg1vfmMk0I=;
-        b=KTuL8s82i3Mk75qC61EFLCdxdodMcKaC6rZIGrZq6pH27ySo4Ut4D253RZhCx2Apft
-         KLydbkrKIkIu40UMY0bDeeXNtbHp0U0TEYaRj4iCgCkdnXvAOxzWT119PcO/nwUvO8MP
-         RszsIWAmBGdjtyiwR7qPFzhdNHOMzILrN1FLM=
+        bh=LRo9b3MUkbZre2OxOOlq/WFZn88JngO4mNALahdqLLo=;
+        b=LOyMW3j2NDs+H2edr432o6t72bJ9rAAidtE6uQtKka0v04jJxIfLU52bcaFDLDlYM/
+         JetNnRKqVZGNI5IDhgLZasSqq5nol47bGRc3ngtiYDkZguPV/FKkhqaz+XAlXyUCnfUj
+         hkQqnDJ74mGQw+89wAM/GMeJRvAJS7NceW9Uk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LsBHPoKRCtwDOMc2JT/S0rILfVAOjOsIUEg1vfmMk0I=;
-        b=dNojsWfabxIE0TDn9dpr6Cagff6L3SK/pT4ZvmXPwAmHwgx5GfEWMFuRCBMAdoUXz/
-         KIdFj81labvkwUy7VaIIqC4dnLxXlw1aENeqw4rebX/j5o+faKPhe188RpvmftE2fG2H
-         NelEXRw8JDjOP6xaxV4EHs0xn0EIdEUhaFxQGKq0mvh6LKkIcyC6dZZJ4EBKCqIXQlNC
-         upmdGaJV62EUjevXAZyc5aU0kDhztf7KQbRPyESc7uECH6a85sUgbS+083cJQ1pHtpMO
-         XHGpSSbLC2uLaI+T5tVvfq6pwdjOwGKx24wdoG3lzHV5+PKveDDlPaSNXEk3MAJig3au
-         OH3A==
-X-Gm-Message-State: AOAM533Mwf3JwMZw2bdVNE8Zye4z/49YjVwFLsFYBGbM65XJgpe9SQF6
-        IGklSpqOLO6rf88gPCrac8C51dDKFAWQWJxfiok=
-X-Google-Smtp-Source: ABdhPJzFMpDx6KZNSF3g1T47oAw/8ey1DtbUqB5AIRmCibAXIT1rek95G6utdCN6u60CKQz2cNUR9A==
-X-Received: by 2002:a17:907:6d0e:b0:6d7:c85:5bf5 with SMTP id sa14-20020a1709076d0e00b006d70c855bf5mr25105460ejc.31.1648427836236;
-        Sun, 27 Mar 2022 17:37:16 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id i22-20020a170906251600b006d6d9081f46sm5165052ejb.150.2022.03.27.17.37.15
+        bh=LRo9b3MUkbZre2OxOOlq/WFZn88JngO4mNALahdqLLo=;
+        b=4fDZ45dgXoLrfews8ES0Gxp3vTSTLmeJjVrqDyGtKTi4W7NQ1/wJ2rpfXce6o+frbm
+         dOb+jp4dYy0+BEE3LjEIjNs923FqBGq+f7OW9ogKbdBLlxk1SnYFLibFzE6vU7LeVde/
+         KR2QmYBBsfitO4w4sDYAyGWBmjjaJnUriLXR+k+I7gzSZFZeCbrTmHVHlDqL/XXS9p3I
+         nTMTbvJ/NnKjgq2yQvlI3cdI5CGpbzIyU3ctn7Zi6fZcyoKY9FNpl976GtQ4u2oRQqMw
+         blC2M20Ump0g6/CySN07N4g7sQ3mSprJf5sLRPERf5XFfZwToMEBFL0weAaRl5sUYPDr
+         c/NA==
+X-Gm-Message-State: AOAM533nTzal7FfJbG0F79KlLX+R6Tvmmw0EW8dz0opMwvtlTO6C/1PE
+        wZntSKINWMHwGGiEsO5yggc0ujPgqzxIc/Xs9hM=
+X-Google-Smtp-Source: ABdhPJzxMZadqY5vB4SZ7ReXM0Vee5YKSl51h3CqzCMxCBu4meCF0aAmVmdIdI1Tb+tL2jhCBIn5/w==
+X-Received: by 2002:a2e:ba15:0:b0:247:d9d3:a937 with SMTP id p21-20020a2eba15000000b00247d9d3a937mr17774797lja.233.1648427865184;
+        Sun, 27 Mar 2022 17:37:45 -0700 (PDT)
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
+        by smtp.gmail.com with ESMTPSA id e1-20020a196741000000b0044a34fe4e56sm1481703lfj.237.2022.03.27.17.37.41
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Mar 2022 17:37:15 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id j18so18166410wrd.6
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 17:37:15 -0700 (PDT)
-X-Received: by 2002:a2e:a549:0:b0:249:9ec3:f2b with SMTP id
- e9-20020a2ea549000000b002499ec30f2bmr4449509ljn.358.1648427417735; Sun, 27
- Mar 2022 17:30:17 -0700 (PDT)
+        Sun, 27 Mar 2022 17:37:43 -0700 (PDT)
+Received: by mail-lf1-f46.google.com with SMTP id d5so22099353lfj.9
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 17:37:41 -0700 (PDT)
+X-Received: by 2002:a05:6512:3d8f:b0:44a:2c65:8323 with SMTP id
+ k15-20020a0565123d8f00b0044a2c658323mr17468965lfv.52.1648427861326; Sun, 27
+ Mar 2022 17:37:41 -0700 (PDT)
 MIME-Version: 1.0
 References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
  <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
@@ -58,12 +58,12 @@ References: <1812355.tdWV9SEqCh@natalenko.name> <f88ca616-96d1-82dc-1bc8-b17480e
  <20220324163132.GB26098@lst.de> <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
  <871qyr9t4e.fsf@toke.dk> <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
  <20220327054848.1a545b12.pasic@linux.ibm.com> <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
- <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com> <20220328015211.296739a4.pasic@linux.ibm.com>
-In-Reply-To: <20220328015211.296739a4.pasic@linux.ibm.com>
+ <20220328013731.017ae3e3.pasic@linux.ibm.com>
+In-Reply-To: <20220328013731.017ae3e3.pasic@linux.ibm.com>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 27 Mar 2022 17:30:01 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whK3z5O4G55cOb2JYgwisb4cpDK=qhM=0CfmCC8PD+xMQ@mail.gmail.com>
-Message-ID: <CAHk-=whK3z5O4G55cOb2JYgwisb4cpDK=qhM=0CfmCC8PD+xMQ@mail.gmail.com>
+Date:   Sun, 27 Mar 2022 17:37:24 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whScWZnR_DZ12grwOcH_WnU1hJ_YXFmU5GNqrBkhiKgPQ@mail.gmail.com>
+Message-ID: <CAHk-=whScWZnR_DZ12grwOcH_WnU1hJ_YXFmU5GNqrBkhiKgPQ@mail.gmail.com>
 Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
  ath9k-based AP
 To:     Halil Pasic <pasic@linux.ibm.com>
@@ -95,41 +95,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 4:52 PM Halil Pasic <pasic@linux.ibm.com> wrote:
+On Sun, Mar 27, 2022 at 4:37 PM Halil Pasic <pasic@linux.ibm.com> wrote:
 >
-> I have no intention of pursuing this.  When fixing the information leak,
-> I happened to realize, that a somewhat similar situation can emerge when
-> mappings are reused. It seemed like an easy fix, so I asked the swiotlb
-> maintainers, and they agreed. It ain't my field of expertise, and the
-> drivers I'm interested in don't need this functionality.
+>
+> For the record, I believe that the partial revert proposed here
+> https://www.spinics.net/lists/linux-wireless/msg222300.html
+> would have been a wiser choice, than a complete revert of commit
+> aa6f8dcbab47 ("swiotlb: rework "fix info leak with DMA_FROM_DEVICE"").
 
-Ok.
+Yeah, the revert is basically my standard "this doesn't work,
+discussion is still ongoing" thing.
 
-That said, I think you are putting yourself down when you said in an
-earlier email that you aren't veryt knowledgeable in this area.
+I agree that the revert then brought back that DMA_ATTR_SKIP_CPU_SYNC
+complexity.
 
-I think the fact that you *did* think of this other similar situation
-is actually very interesting, and it's something people probably
-_haven't_ been thinking about.
+So that part of commit aa6f8dcbab47 was probably all good.
 
-So I think your first commit fixes the straightforward and common case
-where you do that "map / partial dma / unmap" case.
+I somehow missed that Oleksandr had a tested-by for that smaller change too.
 
-And that straightforward case is probably all that the disk IO case
-ever really triggers, which is presumably why those "drivers I'm
-interested in don't need this functionality" don't need anything else?
-
-And yes, your second commit didn't work, but hey, whatever. The whole
-"multiple operations on the same double buffering allocation"
-situation is something I don't think people have necessarily thought
-about enough.
-
-And by that I don't mean you. I mean very much the whole history of
-our dma mapping code.
-
-I then get opinionated and probably too forceful, but please don't
-take it as being about you - it's about just my frustration with that
-code - and if it comes off too negative then please accept my
-apologies.
-
-          Linus
+              Linus
