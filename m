@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5EDA4EA3AE
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 01:36:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7014EA3B2
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 01:36:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbiC1X2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 19:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34962 "EHLO
+        id S230436AbiC1X2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 19:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230358AbiC1X2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 19:28:35 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682E027CD1
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:26:53 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id x9-20020a5b0809000000b00631d9edfb96so11922449ybp.22
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:26:53 -0700 (PDT)
+        with ESMTP id S230391AbiC1X2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 19:28:37 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E052DA89
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:26:55 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2e696b18eb4so130766047b3.0
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:26:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=YjjZotq4RCxi1HEGt8XYTGKtlbxI8vX9wo23gAEItRk=;
-        b=iHXjgH4UzFDWEG0VHQDrhIabSELk0bK1+ReWsLVjckUkLaaZk1/SR1Dm/fmDU/EGQ5
-         n6XbhQwEbI5NhrZ3ERc7lqctlyLWj9GiSVc1uMpwLlG/gugGDBG+ZPCRO9tT2ACHtol4
-         UtKOlHUM7PAHHtQQJtLe+J/nJDwTlbySOP0rsk1VpKIYBztcZ/KzpzNdYsPVLi0ca936
-         TTymvZNYzc5cLvDYHXTP7amxRu8GbWPq/odwhZ/OSWuf10gChn09zIeQwezhicl02gyw
-         OM7ZA+J5x0DikEYrxOWl6iyKUuRcWvxFYOBWsR+U9FQNPDa9WjrkdDV6tp00cunKv26W
-         CoHg==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=Fupq3XJMUIvfZtd7nCWtM0IzLS07K7rgInQ7zuEb4wY=;
+        b=KVEofwtPahchiHI4Z6dqBFVjvduH18BDAzc6Li3xhStcNzxjpwFFX11Q4eX2TBBix9
+         bcvhgJlkLEtrOvuv9FKy2sJxw5zcHfTv5UUBVZB0SYOOjrfPzED19tZE6GMBHz4NXOrB
+         Il1jPsV3VZv7kzeFLRm8qblxI6/0YvASO5yNOLMeL34nbwkU3DQEZ62p1vlSUPGsn3DM
+         jtljGlSYN0zjnXHRyvS9dXBJmtmuqAB0dvm+rifZFDUFHRQWBPIIdZTTLAg3K/Q08ZvO
+         utwSViH/8XrW1j3KwEgfyRJZrZGFVy0cXqw0UMISd+diKqlJWkeCjB56JIjUp8obP2J9
+         oIRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=YjjZotq4RCxi1HEGt8XYTGKtlbxI8vX9wo23gAEItRk=;
-        b=5nT4nOAVloI6qYg6qGd1vG6wIfLdniLF69JF8ilxcPovPHq+pkV4devmUHocnwZZZD
-         d5n+5BXo1PRjPjXRana2xIXowRSgvO2DbBDfnWvI0lpino4j/vWXea6IS+D0Jvm7xNS9
-         KKR7dLv02ySAQ0Ugyp5qUae68GAHtU/1FcKrYqFq4W9dL4/nOuc4zjQt0XCy3uMHs6Uj
-         td2GIHimSuZJq3x5OtVqg/XARIp1WdT+WkhqDft7F847tMuhDbz09rfEvYuyizW1EZQP
-         Kjp9qeiDk37YqHHBjZWr2E9N/rL53M6tBi5fEycTFCjuqhr/qFHKgS3o1lqDARD00kTW
-         9Jdw==
-X-Gm-Message-State: AOAM5319NILc88BuGd3G9QU/DLxpEktAbzU3h1Pb1OANOtTVxy3xmCIW
-        PCTEOkXJKAmAhgiEx4SJUKJE2HTy42Yx
-X-Google-Smtp-Source: ABdhPJxVFhSI4U7NuLu+ZUaT4BpRjxW9SfXEvu4f1Ek8WdduDSegs7W19jH9xH8Bes9Ma1a3gJwRe2risubi
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=Fupq3XJMUIvfZtd7nCWtM0IzLS07K7rgInQ7zuEb4wY=;
+        b=mWiMAW6zr1zKy6M3s0y4WbBRYB/DAqgE/SxJHp+2dkSRS1nCuAOXcBRceGBOpEprFn
+         landTLizmI8xFm5siL7iiXgQJQdBO38g5K16tH/gnIUQkZOZqTAMFgDALOm9WSJcPtbI
+         qKSST5bHVG/B6N1ai4BEoPf/5nY2zcH383ysrq1zGsPDdyse2/6q8AMEfJX4wShIYNlu
+         WaLYJVIxAhUBRRAlWhvfB9LMFVFpClXW5niSCc8a+B6osBhizQqMeqtrWa6jMPt/TAtd
+         U8UZ98qX6n3kaAYFOmD76jSRhJwhULf04sm3wYFLi15KNY7LSZdUpRJ5tz0sW7w4quOK
+         jZ/Q==
+X-Gm-Message-State: AOAM5308vIP8UP6ZgwtC8v1wW8KNjAINM74oEP9y2NMHxZ1Wk+Qk47o4
+        Jo2JsVRYEy9xKOdGHfXSvIMut5FVNgVq
+X-Google-Smtp-Source: ABdhPJwhgyfHz9+dsnfidErRLGIU1bseQ1e85VsPFp79nt7lIgS3DYCsPf0dsDthmUWrgaFylWFZLs6Ui+gJ
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:9d6a:527d:cf46:71e2])
- (user=irogers job=sendgmr) by 2002:a25:32cc:0:b0:633:c9ed:9e1a with SMTP id
- y195-20020a2532cc000000b00633c9ed9e1amr25234403yby.179.1648510012493; Mon, 28
- Mar 2022 16:26:52 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 16:26:42 -0700
-Message-Id: <20220328232648.2127340-1-irogers@google.com>
+ (user=irogers job=sendgmr) by 2002:a25:3246:0:b0:633:af97:a3eb with SMTP id
+ y67-20020a253246000000b00633af97a3ebmr24623187yby.274.1648510015000; Mon, 28
+ Mar 2022 16:26:55 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 16:26:43 -0700
+In-Reply-To: <20220328232648.2127340-1-irogers@google.com>
+Message-Id: <20220328232648.2127340-2-irogers@google.com>
 Mime-Version: 1.0
+References: <20220328232648.2127340-1-irogers@google.com>
 X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
-Subject: [PATCH v2 0/6] Make evlist CPUs more accurate
+Subject: [PATCH v2 1/6] perf stat: Avoid segv if core.user_cpus isn't set.
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -86,66 +90,38 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-evlist has all_cpus, computed to be the merge of all evsel CPU maps,
-and cpus. cpus may contain more CPUs than all_cpus, as by default cpus
-holds all online CPUs whilst all_cpus holds the merge/union from
-evsels. For an uncore event there may just be 1 CPU per socket, which
-will be a far smaller CPU map than all online CPUs.
+Passing null to perf_cpu_map__max doesn't make sense as there is no
+valid max. Avoid this problem by null checking in
+perf_stat_init_aggr_mode.
 
-These patches change cpus to be called user_requested_cpus, to reflect
-their potential user specified nature. The user_requested_cpus are set
-to be the current value intersected with all_cpus, so that
-user_requested_cpus is always a subset of all_cpus. This fixes
-printing code for metrics so that unnecessary blank lines aren't
-printed.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/builtin-stat.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-To make the intersect function perform well, a perf_cpu_map__is_subset
-function is added. While adding this function, also use it in
-perf_cpu_map__merge to avoid creating a new CPU map for some currently
-missed patterns.
-
-v2. Reorders the "Avoid segv" patch and makes other adjustments
-    suggested by Arnaldo Carvalho de Melo <acme@kernel.org>.
-
-Ian Rogers (6):
-  perf stat: Avoid segv if core.user_cpus isn't set.
-  perf evlist: Rename cpus to user_requested_cpus
-  perf cpumap: Add is_subset function
-  perf cpumap: More cpu map reuse by merge.
-  perf cpumap: Add intersect function.
-  perf evlist: Respect all_cpus when setting user_requested_cpus
-
- tools/lib/perf/cpumap.c                  | 73 ++++++++++++++++++++----
- tools/lib/perf/evlist.c                  | 28 ++++-----
- tools/lib/perf/include/internal/cpumap.h |  1 +
- tools/lib/perf/include/internal/evlist.h |  7 ++-
- tools/lib/perf/include/perf/cpumap.h     |  2 +
- tools/perf/arch/arm/util/cs-etm.c        |  8 +--
- tools/perf/arch/arm64/util/arm-spe.c     |  2 +-
- tools/perf/arch/x86/util/intel-bts.c     |  2 +-
- tools/perf/arch/x86/util/intel-pt.c      |  4 +-
- tools/perf/bench/evlist-open-close.c     |  2 +-
- tools/perf/builtin-ftrace.c              |  2 +-
- tools/perf/builtin-record.c              |  6 +-
- tools/perf/builtin-stat.c                | 11 ++--
- tools/perf/builtin-top.c                 |  2 +-
- tools/perf/util/auxtrace.c               |  2 +-
- tools/perf/util/bpf_ftrace.c             |  4 +-
- tools/perf/util/evlist.c                 | 17 +++---
- tools/perf/util/record.c                 |  6 +-
- tools/perf/util/sideband_evlist.c        |  3 +-
- tools/perf/util/stat-display.c           |  2 +-
- tools/perf/util/synthetic-events.c       |  2 +-
- tools/perf/util/top.c                    |  8 ++-
- 22 files changed, 132 insertions(+), 62 deletions(-)
-
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index 4ee40de698a4..b81ae5053218 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -1472,7 +1472,10 @@ static int perf_stat_init_aggr_mode(void)
+ 	 * taking the highest cpu number to be the size of
+ 	 * the aggregation translate cpumap.
+ 	 */
+-	nr = perf_cpu_map__max(evsel_list->core.cpus).cpu;
++	if (evsel_list->core.cpus)
++		nr = perf_cpu_map__max(evsel_list->core.cpus).cpu;
++	else
++		nr = 0;
+ 	stat_config.cpus_aggr_map = cpu_aggr_map__empty_new(nr + 1);
+ 	return stat_config.cpus_aggr_map ? 0 : -ENOMEM;
+ }
 -- 
 2.35.1.1021.g381101b075-goog
 
