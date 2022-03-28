@@ -2,243 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FBD54E9E97
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 20:07:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0944E9EC7
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 20:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244192AbiC1SBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 14:01:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
+        id S245139AbiC1SS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 14:18:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235846AbiC1SBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 14:01:21 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5093DA59;
-        Mon, 28 Mar 2022 10:59:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648490380; x=1680026380;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=A+MRLxHnzL5u6D7IuuUI2bVOWgeMJ+GIIl1u1wIMXQs=;
-  b=P47xE1MKtHyo0P5Hv2sx1ICsdrlPz6+xAEJxkX/sXay6z6IZj4pqmgIU
-   a7UTvTejWC8heIPwphKOdQPuSimFsP1qum2tRxixSfIOcpOqmtBCAtD5X
-   7I2ZCq6dV/GtSDdlqcM+3eStFzAzmyKvgYiki66oQLFE+vwBv81C1uxg2
-   PIdpPB9JemuEwrjrjXmgpbZ8OUAGbMB1Wa7HzBSxb80HDrBEybmoQ5dj3
-   qD9RuOQyiWQYuHArRoN+fiOUbbZVPX6p3uUj5TKlfBrVZifkzR8gm+qXR
-   /3abbLAUZS2ssP+f22waSbmQ7nIfWJyti8Q+LdMaEBGRHpn3DC0klQ4FR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="259039017"
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="259039017"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 10:59:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,218,1643702400"; 
-   d="scan'208";a="652228554"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga004.jf.intel.com with ESMTP; 28 Mar 2022 10:59:39 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 28 Mar 2022 10:59:39 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 28 Mar 2022 10:59:38 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 28 Mar 2022 10:59:38 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.21; Mon, 28 Mar 2022 10:59:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PHAhYpwBD4uYlu9rbLH05aAShTcRaCURgAkpyHIEOmE8peVifuraKvlgibMwPw1x4BB3ZEhRpXUXK0mdixElFujFVT46POWD/anal1eBmkBEf3qPO1bXv2VE9Vk1WdlTiZbP6tR40+GztC/q+kuez2enLl1muI9b7HUcLiyRHykcWQYr+pWIEW1s/Hhj5j0f4yPICxsbPLtwCADku1S3ntsCY226ws8LV/ZdxR8XUz2wJ/3PZ8JW/BLqMkV3BiCyISvy1bYyV10jvwyGfOR88r5IWp6XJSVM3NjgWB1Hk1knl5jj5riZ/RenDmUiP12UT52ljov3e1eHRM8EW53Brw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/3tAHFhfSrtaXLmuXygotuhd7zQ8PHZ1M5vneSrGi9k=;
- b=JrupJIN7qHVU1Tjz90sC/qzkJrX05ispNtDaemw8/N4nqD2+CcaMTtexqNo+ryjXLLogyEe9JRrmQGt9lJnUbhccwc9yG4pwHEyxpcNtWz3oJifuEyH2DmsBF8HL6wMfZ0nCzTMiTZtmOyfl5S6gpX9r5ZDnFrjHE3DHbwsrE/JUeb2cJkMOW1N6exeueeHBn8Idp5Z/zCvuFN6hVmdI4Eq59XCXRZESUsdBO2029JKPCv9Z/s8/agc1tIgTYLmhH2UpURrTzr4e487+GSlJG7uJmOG1xxWVKY636KjXVUoEsQNmbNxZ4PqNqck6jD5YlJX/m+fAq5yZlq9nueS7kg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by DM6PR11MB3916.namprd11.prod.outlook.com (2603:10b6:5:5::25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5102.16; Mon, 28 Mar 2022 17:59:36 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::8441:e1ac:f3ae:12b8]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::8441:e1ac:f3ae:12b8%8]) with mapi id 15.20.5102.023; Mon, 28 Mar 2022
- 17:59:36 +0000
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>
-CC:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "Raj, Victor" <victor.raj@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH] ice: ice_sched: fix an incorrect NULL check on list
- iterator
-Thread-Topic: [PATCH] ice: ice_sched: fix an incorrect NULL check on list
- iterator
-Thread-Index: AQHYQaYPxsKO3xAdd0iiv3AHWrwYUazVF6wA
-Date:   Mon, 28 Mar 2022 17:59:35 +0000
-Message-ID: <CO1PR11MB5089C7298CC46861FF41D3E3D61D9@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220327064344.7573-1-xiam0nd.tong@gmail.com>
-In-Reply-To: <20220327064344.7573-1-xiam0nd.tong@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e68153e5-f1e1-45ab-e1db-08da10e4b881
-x-ms-traffictypediagnostic: DM6PR11MB3916:EE_
-x-microsoft-antispam-prvs: <DM6PR11MB39168F9BDF70D05671196D95D61D9@DM6PR11MB3916.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yiK+KVdcv44WIRXadd++Oo0IJuEu1ivni/kGQeZobEln55v32+IUA5obQmfiCeuNPDZOLlP8vhHeHxLZfghof2+eShfulEFpVwK4YX9JIQyCIh8YJWmQVVnD/1FycmsJZyCPh3B5tYQS0UwY7Ugl886aakgm3iB0nJAARFBf8hO6DQ3AITazvldX3a+iUHIxIfReV62m9n6ZWJC+ElnLUDCZW3Vj6R05+Fai9k9/deXCSfNEkrIkymc0MgtxmGtn7lLUlzP4+ySY166WhwwkRUpoL8RfYdfmynu97r7sQ9vjQ4Ogp+lNH0cNXcjqFU2ktHLVVjDcuLcFGCMbmOB/C8DON5wg2jlPq3/d93r7geFUqwZ99lrY7TZfTvZ7KFK7zG+knugajYXxikTLKI5jT8eL/wHM5cYKdPe+2ftCC30mRyUB52/ij8nMoKJcYv7sHav2uVo4oixCEIXwYq3I/vLCdFGIeq+ncdk57CmTIvFAgT7KZPxwEi1rt7rJvtDujedabEZmc1/xrEMsPNud237uhEnY7HMtpynlMI+vD5b9rE1UB2egXnZ2y0zPg3fzHa9yDHqDRZl+KQPzvF1uYsFeYBobfAoS9nc/Ad4yF3RJb86fhb8Gz99UUpuf+rIcn/Fxp8ORe0fuEdZxr5kYNNtFHpl07YSdSdsSl6MWzscjlojigyzGC8U/QitAZwNWk/eLL7diDpC12lHrntUEXw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6506007)(66556008)(66446008)(7696005)(53546011)(2906002)(9686003)(38070700005)(76116006)(66946007)(186003)(33656002)(6636002)(8676002)(83380400001)(4326008)(66476007)(122000001)(26005)(316002)(54906003)(64756008)(508600001)(82960400001)(86362001)(8936002)(52536014)(55016003)(38100700002)(71200400001)(5660300002)(110136005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fv1bXTSk2hQi/GoMr8txe1G2EA04df0Y92XMHoOhIrD0h5WdeDgzoLby3dl4?=
- =?us-ascii?Q?k/mMI8+E1YhwV+KUyGYzBCaPfPFe0epc1+eY2QVnatmkjsbp9IzWbE0dIgv4?=
- =?us-ascii?Q?DiJr2A+j+pvtADAE6Kno1zx0M8VHtfQTuYhvRTFwnldlnhI447YTYP9HUaLP?=
- =?us-ascii?Q?mh8GweWA7Xu6XHbleBdK1qWl5h3LS0s7U0zXiv+8iRyyLamAbKtvjPy8DBLU?=
- =?us-ascii?Q?GBT4frGfBaugzIrEKaYqHphVkW3hFJ/hFWwZ7k2omc4F1Ia0ZmVORx8tUV7Q?=
- =?us-ascii?Q?ff9nQBBAd3keuJhKOcrIjvBr7VncEji4zFEGjEMzqxjsEVMqNS8cBijjMvuK?=
- =?us-ascii?Q?sUBpLWw119O9uuLZ4J+CSY+6w3QnOvr3dECAHFuN0F1yEmQVD5wd2ip40c7b?=
- =?us-ascii?Q?WJwO+nEVcNokNDYNHV8ipYt1TUYzZ0ayf/LfsBLNGQdcODSgD79o2mky8V7z?=
- =?us-ascii?Q?Oa2kvlexn6C8LodVNqexxw/YoyxvHiYzg1zlZOCbaQdNRffS7PMnTRK1kvJV?=
- =?us-ascii?Q?pP0eFUlBdz6H5FRo4TjsH4dXghVw2j6Aivf6/wcv9yp8jXqudP2NwoVw5UOR?=
- =?us-ascii?Q?I/H86Se4SQVCq/xrQT7eJKoKcA/dert7QqbBSgg81RYvBnUC/4W3MS90DdAc?=
- =?us-ascii?Q?BrtzkrDKf/Y0Z1UyK6V6cWDxR1QJbq2XTUXb9W77oZBri3+4iZ1RbKjm/fyt?=
- =?us-ascii?Q?f0G4F8vtWyN2n8F7+4J7wi9hIOuw/+1crz3Do53JnAUiSKMDaAyK5te/tWRh?=
- =?us-ascii?Q?JfuDsDP8uMRnsrFi2WyB1OcPKq9F6G/pbYOnM/pjOU9cozrdN2ixF3a9nU8Y?=
- =?us-ascii?Q?B0r7dP9DazelaRAdFVPqBGvq4D46sZa1edFHaTOHKqbLPgG/rO/o8ySZ/mfd?=
- =?us-ascii?Q?m+rRRIH02IADKFAvZKAbv6KAzVm7u5rLU6p59ZDm2kA6zlYSpBEZsNtkgH1S?=
- =?us-ascii?Q?EgGxm2D5JVh/0qZ+ILwp/1H5cupv5V97Cv6nMzmjjLya8cRI+x0dxXbSli+x?=
- =?us-ascii?Q?aZs6TCZLf+XJG6tTIsiI2vTRE+mFqL2mmWHE+dZPq4H6tXTx18hhSzEcpQpV?=
- =?us-ascii?Q?TLIUpidiRFQ+79/fPRe4Gsprtyqfjfy3ZHyhIh5n14XEK20oGlEgniAOwKJc?=
- =?us-ascii?Q?ZMldcFmTlRfR6TFNWyKHgRI3FJXs+PQfKXvos4vbQZm98rHZvR6yyIG1PnXt?=
- =?us-ascii?Q?ylRd2bpJXFEHL4/WUkQXK71ENe+L5aj02YWKEb/1gZnlMWBilY2a9txdPvZx?=
- =?us-ascii?Q?QlY97+67QoKKy1TRs2KEW0Bb7q1vwEgOe1RnOZkmezBeAKB5SKrvIkYLZoME?=
- =?us-ascii?Q?0S2QWD5NQdvi1xKAJnhib3YlWFZ6u0Rs2vCbKErf/lbVtkP71y9wFuu8Ic7h?=
- =?us-ascii?Q?oveZWZojxvXPcWUrmIQg2N7fVfHurUjizFaMnEfR/A0BvPOFKe8G04l8nRda?=
- =?us-ascii?Q?VQIa55tRwsfRHdWvhQqEeK1O+m2ThSLPTvjo71F5wkHqNGfW7iHuWnROzT26?=
- =?us-ascii?Q?eNwBjhHFMdRwuuE1nIRt5xnBagYANDIV5WCDQGHYCiN0cCrtl7fRxnZn3OtA?=
- =?us-ascii?Q?PFSj9oQMIyK9X2ZuxUEyl8ykJoipuadtdXzvtyOpX91ioKFO/DUSBdsjWqzp?=
- =?us-ascii?Q?ziUbuuSlq+c7+DFue3YN5PM5wSvi4NEyQXSKwxShslu128R8xddqWdtX9hx/?=
- =?us-ascii?Q?IW+MA2iDWP5G+UILvS+p5c4U09vzivFEbuxRafAZHuMWsL1dJyrbhPoclmW4?=
- =?us-ascii?Q?LD5tbZdhlQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e68153e5-f1e1-45ab-e1db-08da10e4b881
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2022 17:59:35.9360
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: tUZLuTPpq6wu2fQujGXeGVLGTMdyeakJBqsSfXTtyw0CpmLHi7HoavVs/jfx6oT7I8pOmAJaSLf0v/3K/B3QkEW5xGY9hfnWUP3bUMC5qYY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3916
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S245136AbiC1SS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 14:18:28 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C462045AD2
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 11:16:47 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2e6aaf57a0eso118249287b3.11
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 11:16:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Ks5inujeHMEVxUB7zAVWQxnHOqdx1mqab5HUZltc7vU=;
+        b=J6u58MRMuLgKkN16tqDK8PNzqa87b4p96x0rqR++F8OKJiVqcIKgMDr7gwanIYANyi
+         moIgDDt6nII49PSEg7lqS9u2+9Cw50bUoUAt4Zus4l6BW7Mnb9xnYhJSGKX/O56KZ6XA
+         Tr5v6uFb42Pc/5C168XSU+HerlZJFmPcKXk6EXMDsHhj7XEd7YZSu/M7MJOBF5GOVZcU
+         IUVxJe2zCGe6ft1UbMeIG3UyVa3MGwO/SYu2u4yjy6qsiFT54b4NVFxA6NsnLlMeisxp
+         IfHXCfHS0ijUr8cTyBL8Cq5+t6C8akBAk98LzBTNpWr2ugnMZ6hQkR+9XbP+wEwNao3a
+         8KTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Ks5inujeHMEVxUB7zAVWQxnHOqdx1mqab5HUZltc7vU=;
+        b=VYM7/C43aI8rCY2OFIVyeFhECqWMt7Unio82gY48zrKuwXn7zgU7EOawLMfwJmpx/A
+         do2Wjq28rJayAUgdIg9N+sHG3FAmasquAqLuEsqwFrmJ51Yx81Cjkct3CVpUK9lYawAK
+         LKt65Gol4wUi9ST04gnoKwk9lmN5h9w/z3NEXlW9ErOCL7TkPyzOu8eL1Q9zU+AFYpFx
+         b+mxYTM505v+R3Uq6FkMeBDXEFSJemxhdFskneX2xuvZan2Xf2B1cAzSCck2l9nqWKBm
+         MzDb5wtVfGDwEXNsXg+xhWtveudmG+/alneGBBtiiezz+J1YqYhU+J1CGS3R4XpbJMdS
+         ll0Q==
+X-Gm-Message-State: AOAM530bR2bPIXhD8Hv277Zw/NipuI6q1cU4RVzptbFOJUWAxy6CyP1B
+        pI+5v0uBTY3n9B18c7qSfxzyfYHyI7aG4pGFi1z8uo0yc8mBiHuC+QjMrRR7S97NR56dgKLYX3J
+        p3nd8fKgT0wg+jOtRE2OqfttO5Tyfk09YkNxXk9gKBSPie7MABXkXiw==
+X-Google-Smtp-Source: ABdhPJyiUre3if+KZ6bOtuzRKbFV/CUrxNUqw8n01nz4/VaZSJ046RPKFMkzTHFaytf7wBoFfeAXjz0=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:a900:e0f6:cf98:d8c8])
+ (user=sdf job=sendgmr) by 2002:a0d:c906:0:b0:2e7:f90b:5a4e with SMTP id
+ l6-20020a0dc906000000b002e7f90b5a4emr20096282ywd.51.1648491406922; Mon, 28
+ Mar 2022 11:16:46 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 11:16:37 -0700
+Message-Id: <20220328181644.1748789-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH bpf-next 0/7] bpf: cgroup_sock lsm flavor
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>, kafai@fb.com,
+        kpsingh@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series implements new lsm flavor for attaching per-cgroup programs to
+existing lsm hooks. The cgroup is taken out of 'current', unless
+the first argument of the hook is 'struct socket'. In this case,
+the cgroup association is taken out of socket. The attachment
+looks like a regular per-cgroup attachment: we add new BPF_LSM_CGROUP
+attach type which, together with attach_btf_id, signals per-cgroup lsm.
+Behind the scenes, we allocate trampoline shim program and
+attach to lsm. This program looks up cgroup from current/socket
+and runs cgroup's effective prog array. The rest of the per-cgroup BPF
+stays the same: hierarchy, local storage, retval conventions
+(return 1 == success).
 
+Current limitations:
+* haven't considered sleepable bpf; can be extended later on
+* not sure the verifier does the right thing with null checks;
+  see latest selftest for details
+* total of 10 (global) per-cgroup LSM attach points; this bloats
+  bpf_cgroup a bit
 
-> -----Original Message-----
-> From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> Sent: Saturday, March 26, 2022 11:44 PM
-> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>
-> Cc: Nguyen, Anthony L <anthony.l.nguyen@intel.com>; davem@davemloft.net;
-> kuba@kernel.org; pabeni@redhat.com; Raj, Victor <victor.raj@intel.com>; i=
-ntel-
-> wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org; Xiaomeng Tong <xiam0nd.tong@gmail.com>;
-> stable@vger.kernel.org
-> Subject: [PATCH] ice: ice_sched: fix an incorrect NULL check on list iter=
-ator
->=20
-> The bugs are here:
-> 	if (old_agg_vsi_info)
-> 	if (old_agg_vsi_info && !old_agg_vsi_info->tc_bitmap[0]) {
->=20
-> The list iterator value 'old_agg_vsi_info' will *always* be set
-> and non-NULL by list_for_each_entry_safe(), so it is incorrect
-> to assume that the iterator value will be NULL if the list is
-> empty or no element found (in this case, the check
-> 'if (old_agg_vsi_info)' will always be true unexpectly).
->=20
-> To fix the bug, use a new variable 'iter' as the list iterator,
-> while use the original variable 'old_agg_vsi_info' as a dedicated
-> pointer to point to the found element.
->=20
+Cc: ast@kernel.org
+Cc: daniel@iogearbox.net
+Cc: kafai@fb.com
+Cc: kpsingh@kernel.org
 
-Yep. This looks correct to me.
+Stanislav Fomichev (7):
+  bpf: add bpf_func_t and trampoline helpers
+  bpf: per-cgroup lsm flavor
+  bpf: minimize number of allocated lsm slots per program
+  bpf: allow writing to a subset of sock fields from lsm progtype
+  libbpf: add lsm_cgoup_sock type
+  selftests/bpf: lsm_cgroup functional test
+  selftests/bpf: verify lsm_cgroup struct sock access
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+ include/linux/bpf-cgroup-defs.h               |   8 +
+ include/linux/bpf.h                           |  25 ++-
+ include/linux/bpf_lsm.h                       |   8 +
+ include/uapi/linux/bpf.h                      |   1 +
+ kernel/bpf/bpf_lsm.c                          | 147 +++++++++++++
+ kernel/bpf/btf.c                              |  11 +
+ kernel/bpf/cgroup.c                           | 198 +++++++++++++++--
+ kernel/bpf/syscall.c                          |  10 +
+ kernel/bpf/trampoline.c                       | 205 +++++++++++++++---
+ kernel/bpf/verifier.c                         |   4 +-
+ tools/include/uapi/linux/bpf.h                |   1 +
+ tools/lib/bpf/libbpf.c                        |   2 +
+ .../selftests/bpf/prog_tests/lsm_cgroup.c     | 158 ++++++++++++++
+ .../testing/selftests/bpf/progs/lsm_cgroup.c  |  94 ++++++++
+ tools/testing/selftests/bpf/test_verifier.c   |  54 ++++-
+ .../selftests/bpf/verifier/lsm_cgroup.c       |  34 +++
+ 16 files changed, 902 insertions(+), 58 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/lsm_cgroup.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/lsm_cgroup.c
 
-Thanks,
-Jake
-
-> Cc: stable@vger.kernel.org
-> Fixes: 37c592062b16d ("ice: remove the VSI info from previous agg")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_sched.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c
-> b/drivers/net/ethernet/intel/ice/ice_sched.c
-> index 7947223536e3..fba524148a09 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_sched.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_sched.c
-> @@ -2757,6 +2757,7 @@ ice_sched_assoc_vsi_to_agg(struct ice_port_info *pi=
-,
-> u32 agg_id,
->  			   u16 vsi_handle, unsigned long *tc_bitmap)
->  {
->  	struct ice_sched_agg_vsi_info *agg_vsi_info, *old_agg_vsi_info =3D NULL=
-;
-> +	struct ice_sched_agg_vsi_info *iter;
->  	struct ice_sched_agg_info *agg_info, *old_agg_info;
->  	struct ice_hw *hw =3D pi->hw;
->  	int status =3D 0;
-> @@ -2774,11 +2775,13 @@ ice_sched_assoc_vsi_to_agg(struct ice_port_info
-> *pi, u32 agg_id,
->  	if (old_agg_info && old_agg_info !=3D agg_info) {
->  		struct ice_sched_agg_vsi_info *vtmp;
->=20
-> -		list_for_each_entry_safe(old_agg_vsi_info, vtmp,
-> +		list_for_each_entry_safe(iter, vtmp,
->  					 &old_agg_info->agg_vsi_list,
->  					 list_entry)
-> -			if (old_agg_vsi_info->vsi_handle =3D=3D vsi_handle)
-> +			if (iter->vsi_handle =3D=3D vsi_handle) {
-> +				old_agg_vsi_info =3D iter;
->  				break;
-> +			}
->  	}
->=20
->  	/* check if entry already exist */
-> --
-> 2.17.1
+-- 
+2.35.1.1021.g381101b075-goog
 
