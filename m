@@ -2,109 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 115C84E9692
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:28:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D52EA4E96A4
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242472AbiC1MaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 08:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
+        id S242507AbiC1MdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 08:33:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235479AbiC1MaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:30:11 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BE7BBC24;
-        Mon, 28 Mar 2022 05:28:30 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id y6so12108087plg.2;
-        Mon, 28 Mar 2022 05:28:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=aN5/hKK6I1K6W9z7M8xOelNKPU03XYlOEFKuLiH80Tc=;
-        b=CJeVYurf1hwoW3weRdc17ajFoOMKjRxQzEVCrRLYJPBM/ml56HKeitZICvK7bTTujJ
-         l1E28no6b/Tnr6F6H/uHPgJQo5EU3PVyoJEtbxqYhMb/JNyn/uhaPGQDO/GlZZdh1dYu
-         OAUIFLAIR6AgD+FizlMUc/+qmeFH83O9L5LcjhegUdDkXXri70RauZ2dYFK47ve4vAsI
-         68AfC+PxYnF1D1XgprvyJ8RJO7+L14z/MOScidjJdwNStAuWBKMu/L9PFHpMywEU14V1
-         kqfShh7MnSkFmnNFYMVH7m/HCBfc+cxzrpHVcWd+LneD68NhnSa1feZCN6P5hKx0BAAr
-         QE9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=aN5/hKK6I1K6W9z7M8xOelNKPU03XYlOEFKuLiH80Tc=;
-        b=FFDE3z5wisHSiDVMklNIl/bM/UpN8gHkFWU/wskcvIE5AA3CfpeZvvxGj9/gf4Lo+B
-         5qY/MI3IIis4COBXSWcuUchqo6I9uwFh37ZlL33ezY0IPPFx8YUCjizJrsvK7uy7zQwv
-         wdJJes8EbIFBbjJ1fojCB4IoPrgy6npz5A08bYcVlboWXAkP2AfU+1YWZXGa2IZSnbYX
-         z3qJp4dFjUPR2PNdeYIASj/ZzS/ZFrdFNWzCNuzZ3ivJYxIhc6r9M4ZfcfJqUItuEqpT
-         JGriV0WPYqjQJwML072o/AoywZ4H0p3GbBa11cRbtf70zDik4uOvIEPbxTVSurbCffNu
-         snpw==
-X-Gm-Message-State: AOAM533zJZySHHV1MMaDfu78NrDqz18bcD4CwfWc4KNuNVPnpl/s2CVT
-        JJiL6/MBLfcfpkxImgSJrgA=
-X-Google-Smtp-Source: ABdhPJxOljhQBzZmvpdhVjQt9DSij++CMKx645kMD7vT8Hv3Wm7k4kUdXflESuU3PvSfTpUMXYKMqw==
-X-Received: by 2002:a17:90a:840a:b0:1c9:5c4f:5e83 with SMTP id j10-20020a17090a840a00b001c95c4f5e83mr16907129pjn.144.1648470510126;
-        Mon, 28 Mar 2022 05:28:30 -0700 (PDT)
-Received: from ubuntu.huawei.com ([119.3.119.18])
-        by smtp.googlemail.com with ESMTPSA id d5-20020a056a0010c500b004faee9887ccsm15194942pfu.64.2022.03.28.05.28.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 05:28:29 -0700 (PDT)
-From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
-To:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linville@tuxdriver.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>, stable@vger.kernel.org
-Subject: [PATCH v2] carl9170: tx: fix an incorrect use of list iterator
-Date:   Mon, 28 Mar 2022 20:28:20 +0800
-Message-Id: <20220328122820.1004-1-xiam0nd.tong@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S242545AbiC1MdF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:33:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BD135AA1;
+        Mon, 28 Mar 2022 05:31:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC688B80DFE;
+        Mon, 28 Mar 2022 12:31:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A869FC340EC;
+        Mon, 28 Mar 2022 12:31:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648470682;
+        bh=fLGdb7dSfAqcoc7SmA0DtwuG5S8J1UMKX6NM0JYvlbE=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=vR3sm0Sym9PNeV1iKQGwMQbPO6yRDwohIBCSBdBAAXuDDO0SWpja6OgX6EnOvgTmq
+         TjnzAmmgRqAI7VMMqH2O7CUJ6XEWGQoPVF1AN2lYHSalQOuTT+xH3TeXiapzkBoDDY
+         tTzTYQ5GBWa2GALcTzd9hSykzmqjjHuEIfoQNXYeYukvQqZVWjJgo1IrRVnWgagObl
+         g/dwjiafO/fytUgqLw8IWTrjQWjo/zqFAaNAJAQ8gjKtytzwyaZGjuidRKQhih/yde
+         bDhRRLmxOXxLsSy40enpsfgnUm8nwGiwmrDs+aoLJB2mBmG7Pk8oHcDE3szRC3iHWp
+         ESPsCuNOlpy8A==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Benjamin =?utf-8?Q?St=C3=BCrz?= <benni@stuerz.xyz>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-acpi@vger.kernel.org, devel@acpica.org,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
+        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH 00/22] Replace comments with C99 initializers
+References: <20220326165909.506926-1-benni@stuerz.xyz>
+        <8f9271b6-0381-70a9-f0c2-595b2235866a@stuerz.xyz>
+        <87fsn2zaix.fsf@kernel.org>
+        <cc104272-d79a-41e1-f4de-cb78fb073991@stuerz.xyz>
+Date:   Mon, 28 Mar 2022 15:31:14 +0300
+In-Reply-To: <cc104272-d79a-41e1-f4de-cb78fb073991@stuerz.xyz> ("Benjamin
+        \=\?utf-8\?Q\?St\=C3\=BCrz\=22's\?\= message of "Mon, 28 Mar 2022 13:51:42 +0200")
+Message-ID: <87bkxqz2b1.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the previous list_for_each_entry_continue_rcu() don't exit early
-(no goto hit inside the loop), the iterator 'cvif' after the loop
-will be a bogus pointer to an invalid structure object containing
-the HEAD (&ar->vif_list). As a result, the use of 'cvif' after that
-will lead to a invalid memory access (i.e., 'cvif->id': the invalid
-pointer dereference when return back to/after the callsite in the
-carl9170_update_beacon()).
+Benjamin St=C3=BCrz <benni@stuerz.xyz> writes:
 
-The original intention should have been to return the valid 'cvif'
-when found in list, NULL otherwise. So just return NULL when no
-entry found, to fix this bug.
+> On 28.03.22 11:33, Kalle Valo wrote:
+>> Benjamin St=C3=BCrz <benni@stuerz.xyz> writes:
+>>=20
+>>> This patch series replaces comments with C99's designated initializers
+>>> in a few places. It also adds some enum initializers. This is my first
+>>> time contributing to the Linux kernel, therefore I'm probably doing a
+>>> lot of things the wrong way. I'm sorry for that.
+>>=20
+>> Just a small tip: If you are new, start with something small and learn
+>> from that. Don't do a controversial big patchset spanning multiple
+>> subsystems, that's the hard way to learn things. First submit one patch
+>> at a time to one subsystem and gain understanding of the process that
+>> way.
+>
+> I actually thought this would be such simple thing.
 
-Cc: stable@vger.kernel.org
-Fixes: 1f1d9654e183c ("carl9170: refactor carl9170_update_beacon")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
----
+If there are 22 patches and a dozen different subsystems it's far from
+simple, as you noticed from your replies :)
 
-changes since v1:
- - just return NULL when no entry found (Christian Lamparter)
+> Do you know of any good thing where to start? I already looked into
+> drivers/staging/*/TODO and didn't found something for me personally.
 
-v1:https://lore.kernel.org/lkml/20220327072947.10744-1-xiam0nd.tong@gmail.com/
+I work in wireless and one my annoyance is use of BUG_ON() in wireless
+drivers. There just isn't a good reason to crash the whole system when
+there's a bug in a wireless driver or firmware. You can get list like
+this:
 
----
- drivers/net/wireless/ath/carl9170/tx.c | 3 +++
- 1 file changed, 3 insertions(+)
+git grep BUG_ON drivers/net/wireless/ | grep -v BUILD_BUG_ON
 
-diff --git a/drivers/net/wireless/ath/carl9170/tx.c b/drivers/net/wireless/ath/carl9170/tx.c
-index 1b76f4434c06..791f9f120af3 100644
---- a/drivers/net/wireless/ath/carl9170/tx.c
-+++ b/drivers/net/wireless/ath/carl9170/tx.c
-@@ -1558,6 +1558,9 @@ static struct carl9170_vif_info *carl9170_pick_beaconing_vif(struct ar9170 *ar)
- 					goto out;
- 			}
- 		} while (ar->beacon_enabled && i--);
-+
-+		/* no entry found in list */
-+		return NULL;
- 	}
- 
- out:
--- 
-2.17.1
+It might not be always trivial to fix BUG_ON() usage, so it would be a
+good challenge as well. See the wiki link below how to submit wireless
+patches. But just send a one patch first, don't work for several hours
+and then submit a big set of patches.
 
+We also might have a todo list somewhere in the wiki, but don't know how
+to up-to-date it is.
+
+> Should I drop this patchset and start with something different?=20
+
+Like Mauro suggested, splitting the patchset per subsystem is a very
+good idea. And first try out with one subsystem, and after seeing how it
+goes (if they are accepted or rejected), decide if you send more patches
+to other subsystems.
+
+> If yes, what would the proper way to drop it? Just announcing, that
+> this is going nowhere in a separate patch?
+
+Replying to Mauro's email and telling your intentions is a good way to
+inform everyone.
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
