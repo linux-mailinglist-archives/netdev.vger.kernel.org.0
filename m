@@ -2,75 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DC884E8C58
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 04:51:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0802E4E8C6E
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 05:05:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237109AbiC1CxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Mar 2022 22:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        id S237749AbiC1DHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Mar 2022 23:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233861AbiC1CxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 22:53:19 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655794F9D6;
-        Sun, 27 Mar 2022 19:51:39 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id b15so11353385pfm.5;
-        Sun, 27 Mar 2022 19:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=gQ261RI2Cp+P10H+WpY/iFBXQys4qPm/vC9yh0f0/5w=;
-        b=kcvKa9HRrD9xApF1/0hhsKpwtnt0zgbak1C3/01igYYflJOJnOOzm2pI0W3OoRarhG
-         XU0JK+zVR+6TKTaMKOpKsA0Hq2Zr1s4cliaxJqjI1t/xutg2jPEx+wGgL0pLu9pd+nJg
-         rKwnXwPZxjVHTuMxlUxXuUbE1SnyKCyGlTciPp8N2p+ZS/GjvPK7rWfAmlu+kKK+w07G
-         TbyCgCQm5PxPbapiWpk2Cgeb1o9awwcqMfmnNvh+fNK6WcfVSd/vrqtOiQj06JdtuKz/
-         3QVAIPnRF/fPJlCIE7NZ101bVZLG8eQ1CVyakM6iiWU4saBGVpvIUiNII9hfLegBro7w
-         uztQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gQ261RI2Cp+P10H+WpY/iFBXQys4qPm/vC9yh0f0/5w=;
-        b=157zkW+wGpX+WJRhKf+MrIph0fKdC4/lNdm/IG6bHGtI5NHRyPgObcNjelbMG0+qBz
-         HQiyO9M5frTG9fPeN4gkyA2Y+QhEiK+9JNjUYRwSs/AVr+DhTIlleHZI3lKRnmkPxyIG
-         ZfkE27g2tbniXRiVQakT4pld7r+XFtX1aUBZcd06au4x/cVlvIBpnZZdmvSi3kDpybcZ
-         RrS6VM2jtH7kQvv8iIeIOvQg+QOe3R4Y3u4lkuSzEe/LnlsmjSv+8F5XlA/os0M9/+lC
-         sIWH0koFacuX9lUR58bHitApJQv311AIea8ekEvDCHGPt4nFkKtj4IhIHCGAzkS3ITGJ
-         Nx8g==
-X-Gm-Message-State: AOAM533VlLmW4TtgF+djgpPmAgT1Hk8gq3NCO8S4yi13gxEy6DNZY0J9
-        kWE/ChSzRvIJ0iud6cIbNfsub8PxTgs=
-X-Google-Smtp-Source: ABdhPJzTAHtbZaHGDduzYup9evEOUCvQrN7AGdlDz+V6pTx6P1juspcdwgIDy/rKHzJiX8rPrqPp7w==
-X-Received: by 2002:a65:6941:0:b0:381:fea7:f3d8 with SMTP id w1-20020a656941000000b00381fea7f3d8mr8802699pgq.235.1648435898753;
-        Sun, 27 Mar 2022 19:51:38 -0700 (PDT)
-Received: from ?IPV6:2600:8802:b00:4a48:b1c4:d244:b609:ac10? ([2600:8802:b00:4a48:b1c4:d244:b609:ac10])
-        by smtp.gmail.com with ESMTPSA id d16-20020a056a00245000b004f7728a4346sm14125681pfj.79.2022.03.27.19.51.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Mar 2022 19:51:38 -0700 (PDT)
-Message-ID: <0dd59973-a4da-51db-5234-d4cc48ec13ee@gmail.com>
-Date:   Sun, 27 Mar 2022 19:51:39 -0700
+        with ESMTP id S233861AbiC1DHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Mar 2022 23:07:10 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A9550B10
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 20:05:30 -0700 (PDT)
+Received: from kwepemi100012.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KRcvn2q5kzCrDl;
+        Mon, 28 Mar 2022 11:03:17 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100012.china.huawei.com (7.221.188.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 28 Mar 2022 11:05:28 +0800
+Received: from [127.0.0.1] (10.67.101.149) by kwepemm600017.china.huawei.com
+ (7.193.23.234) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 28 Mar
+ 2022 11:05:27 +0800
+Subject: Re: [RFCv2 PATCH net-next 1/2] net-next: ethtool: extend ringparam
+ set/get APIs for tx_push
+To:     Jakub Kicinski <kuba@kernel.org>
+References: <20220326085102.14111-1-wangjie125@huawei.com>
+ <20220326085102.14111-2-wangjie125@huawei.com>
+ <20220326125042.216c9054@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+CC:     <mkubecek@suse.cz>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <huangguangbin2@huawei.com>,
+        <lipeng321@huawei.com>, <shenjian15@huawei.com>,
+        <moyufeng@huawei.com>, <linyunsheng@huawei.com>,
+        <salil.mehta@huawei.com>, <chenhao288@hisilicon.com>
+From:   "wangjie (L)" <wangjie125@huawei.com>
+Message-ID: <3bc30bb8-f318-3e15-e61f-b430375b3739@huawei.com>
+Date:   Mon, 28 Mar 2022 11:05:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dsa: bcm_sf2_cfp: fix an incorrect NULL check on list
- iterator
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20220327055547.3938-1-xiam0nd.tong@gmail.com>
- <20220327185805.cibcmk4rejgb7jre@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220327185805.cibcmk4rejgb7jre@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20220326125042.216c9054@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.67.101.149]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -79,41 +61,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/27/2022 11:58 AM, Vladimir Oltean wrote:
-> On Sun, Mar 27, 2022 at 01:55:47PM +0800, Xiaomeng Tong wrote:
->> The bug is here:
->> 	return rule;
+On 2022/3/27 3:50, Jakub Kicinski wrote:
+> On Sat, 26 Mar 2022 16:51:01 +0800 Jie Wang wrote:
+>> Currently tx push is a standard driver feature which controls use of a fast
+>> path descriptor push. So this patch extends the ringparam APIs and data
+>> structures to support set/get tx push by ethtool -G/g.
 >>
->> The list iterator value 'rule' will *always* be set and non-NULL
->> by list_for_each_entry(), so it is incorrect to assume that the
->> iterator value will be NULL if the list is empty or no element
->> is found.
->>
->> To fix the bug, return 'rule' when found, otherwise return NULL.
->>
->> Cc: stable@vger.kernel.org
->> Fixes: ae7a5aff783c7 ("net: dsa: bcm_sf2: Keep copy of inserted rules")
->> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+>> Signed-off-by: Jie Wang <wangjie125@huawei.com>
 >> ---
-> 
-> The change looks correct, but from a process standpoint for next time
-> (a) you should have copied Florian, the driver's maintainer (which I did now)
->      who appears on the top of the list in the output of ./get_maintainer.pl
-> (b) networking bugfixes that apply to the "net" tree shouldn't need
->      stable@vger.kernel.org copied, instead just target the patch against
->      the https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
->      tree and mark the subject prefix as "[PATCH net]".
-> 
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+>>  include/linux/ethtool.h              | 3 +++
+>>  include/uapi/linux/ethtool_netlink.h | 1 +
+>>  net/ethtool/netlink.h                | 2 +-
+>>  net/ethtool/rings.c                  | 9 +++++++--
+>
+> You need to add documentation in:
+> Documentation/networking/ethtool-netlink.rst
+>
+OK, i will add it in next version RFC version.
+>> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+>> index 4af58459a1e7..096771ee8586 100644
+>> --- a/include/linux/ethtool.h
+>> +++ b/include/linux/ethtool.h
+>> @@ -72,11 +72,13 @@ enum {
+>>   * @rx_buf_len: Current length of buffers on the rx ring.
+>>   * @tcp_data_split: Scatter packet headers and data to separate buffers
+>>   * @cqe_size: Size of TX/RX completion queue event
+>> + * @tx_push: The flag of tx push mode
+>>   */
+>>  struct kernel_ethtool_ringparam {
+>>  	u32	rx_buf_len;
+>>  	u8	tcp_data_split;
+>>  	u32	cqe_size;
+>> +	u32	tx_push;
+>
+> Can we make this a u8 and move it up above cqe_size?
+> u8 should be enough. You can use ethnl_update_u8().
+>
+yes, u8 is enough, next RFC version i will change it.
+>>  };
+>>
+>>  /**
+>> @@ -87,6 +89,7 @@ struct kernel_ethtool_ringparam {
+>>  enum ethtool_supported_ring_param {
+>>  	ETHTOOL_RING_USE_RX_BUF_LEN = BIT(0),
+>>  	ETHTOOL_RING_USE_CQE_SIZE   = BIT(1),
+>> +	ETHTOOL_RING_USE_TX_PUSH    = BIT(2),
+>
+> You need to actually use this constant to reject the setting for
+> drivers which don't support the feature.
+>
+I will use this constant next version.
+>>  };
+>>
+>>  #define __ETH_RSS_HASH_BIT(bit)	((u32)1 << (bit))
+>
+>> @@ -94,7 +95,8 @@ static int rings_fill_reply(struct sk_buff *skb,
+>>  	     (nla_put_u8(skb, ETHTOOL_A_RINGS_TCP_DATA_SPLIT,
+>>  			 kr->tcp_data_split))) ||
+>>  	    (kr->cqe_size &&
+>> -	     (nla_put_u32(skb, ETHTOOL_A_RINGS_CQE_SIZE, kr->cqe_size))))
+>> +	     (nla_put_u32(skb, ETHTOOL_A_RINGS_CQE_SIZE, kr->cqe_size))) ||
+>> +	    nla_put_u8(skb, ETHTOOL_A_RINGS_TX_PUSH, !!kr->tx_push))
+>>
+>>  		return -EMSGSIZE;
+>>
+>>  	return 0;
+>> @@ -123,6 +125,7 @@ const struct nla_policy ethnl_rings_set_policy[] = {
+>>  	[ETHTOOL_A_RINGS_TX]			= { .type = NLA_U32 },
+>>  	[ETHTOOL_A_RINGS_RX_BUF_LEN]            = NLA_POLICY_MIN(NLA_U32, 1),
+>>  	[ETHTOOL_A_RINGS_CQE_SIZE]		= NLA_POLICY_MIN(NLA_U32, 1),
+>> +	[ETHTOOL_A_RINGS_TX_PUSH]		= { .type = NLA_U8 },
+>
+> This can only be 0 and 1, right? Set a policy to to that effect please.
+>
+I will use NLA_POLICY_MAX(NLA_U8, 1), is this ok?
+>>  };
+>>
+>>  int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+>> @@ -165,6 +168,8 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
+>>  			 tb[ETHTOOL_A_RINGS_RX_BUF_LEN], &mod);
+>>  	ethnl_update_u32(&kernel_ringparam.cqe_size,
+>>  			 tb[ETHTOOL_A_RINGS_CQE_SIZE], &mod);
+>> +	ethnl_update_bool32(&kernel_ringparam.tx_push,
+>> +			    tb[ETHTOOL_A_RINGS_TX_PUSH], &mod);
+>>  	ret = 0;
+>>  	if (!mod)
+>>  		goto out_ops;
+>
+>
+> .
+>
 
-If you could please resubmit with the subject being:
-
-net: dsa: bcm_sf2_cfp: fix an incorrect NULL check on list iterator
-
-and add Vladimir's and my tag below:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-That would be great! Thanks
--- 
-Florian
