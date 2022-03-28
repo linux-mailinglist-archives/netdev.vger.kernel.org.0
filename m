@@ -2,97 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7A74E916F
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 11:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1DF94E91C2
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 11:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239860AbiC1Jfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 05:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60896 "EHLO
+        id S239946AbiC1Juq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 05:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232922AbiC1Jfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 05:35:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07C0DFAE;
-        Mon, 28 Mar 2022 02:33:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 763D060F04;
-        Mon, 28 Mar 2022 09:33:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE0B4C004DD;
-        Mon, 28 Mar 2022 09:33:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648460036;
-        bh=vyhorH3ReopEjyyeOaqNXz1F+fuDMA3PtzKea0coFV8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=N7gslZiAbUk2K0itCjecfsI/RWbD921JgzGNP2Kjob9tlNWKxpcv0XxXJfPNZin/w
-         A0IR7YQPjfgzcF8nfIw2Qp9ZjcFTNb7LTztL9AYoQlq+D0DFSUCrNS2qiH6JPnE1fC
-         d1KCYuVMQdA55JmSSOhMn38gdsnsuJiIvXS7xjuBjd+D58bh2S8/2S5hzqSNDwuMtF
-         wL6A4k/3MHLny+7jUG8f45x9h9oK0icdinMC+NM7pK2YaZF62B/PFs4TG4m+pXcVBe
-         gM+xB7pqzFL7oswhmEfyYWWLVgaR1DNvn0CsMhOvyHk4QEK83ayzd9+XQz5ZI40AA0
-         C+vN55O6TsHMw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Benjamin =?utf-8?Q?St=C3=BCrz?= <benni@stuerz.xyz>
-Cc:     sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
-        linux@armlinux.org.uk, linux@simtec.co.uk, krzk@kernel.org,
-        alim.akhtar@samsung.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, hpa@zytor.com,
-        robert.moore@intel.com, rafael.j.wysocki@intel.com,
-        lenb@kernel.org, 3chas3@gmail.com, laforge@gnumonks.org,
-        arnd@arndb.de, gregkh@linuxfoundation.org, mchehab@kernel.org,
-        tony.luck@intel.com, james.morse@arm.com, rric@kernel.org,
-        linus.walleij@linaro.org, brgl@bgdev.pl,
-        mike.marciniszyn@cornelisnetworks.com,
-        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
-        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
-        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        nico@fluxnic.net, loic.poulain@linaro.org, pkshih@realtek.com,
-        bhelgaas@google.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-acpi@vger.kernel.org,
-        devel@acpica.org, linux-atm-general@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-input@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-media@vger.kernel.org, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: Re: [PATCH 00/22] Replace comments with C99 initializers
-References: <20220326165909.506926-1-benni@stuerz.xyz>
-        <8f9271b6-0381-70a9-f0c2-595b2235866a@stuerz.xyz>
-Date:   Mon, 28 Mar 2022 12:33:42 +0300
-In-Reply-To: <8f9271b6-0381-70a9-f0c2-595b2235866a@stuerz.xyz> ("Benjamin
-        \=\?utf-8\?Q\?St\=C3\=BCrz\=22's\?\= message of "Sun, 27 Mar 2022 14:46:00 +0200")
-Message-ID: <87fsn2zaix.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S239941AbiC1Jup (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 05:50:45 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F5F41F9E;
+        Mon, 28 Mar 2022 02:49:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=/93dChLt+Za1uKCUhSTu2aRMCha+vAJZKphFzk7McsE=;
+        t=1648460942; x=1649670542; b=GrQqsPGmXslqKPkkMv5L9TKn0aHOqHUDd7Mwgbobfr+0/wj
+        ZfRjwz5YxIiiphH2lJt0/j4nocADL6fH/wGwU0+eI/w/2NOg6NhhOGFUtGK+kLkkJ2jVdMxCuTmFS
+        J3wqwMkDf3QphTt5Jx5M/CJzEsRRhwX2YRo4mRBNobtPwgt/VyA/7JtAhpxcAUyiFGkeUz7b9ZaAG
+        DxIUHDdw/HVcbQ8Xjd8AyY2Ry+4ecO6/1wxFkPV8y2e24sPYClwRmqXlOOdyDtXQc8RzEzsZNUb7t
+        KGzPMRop5JNPlDKyDrX4Lh3CslI/XWA8uWx9DKPodItgWYXUmO+/e8lHJgyLgxxA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nYlzJ-001WuR-EZ;
+        Mon, 28 Mar 2022 11:48:37 +0200
+Message-ID: <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
+Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Halil Pasic <pasic@linux.ibm.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Maxime Bizon <mbizon@freebox.fr>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Date:   Mon, 28 Mar 2022 11:48:36 +0200
+In-Reply-To: <20220327051502.63fde20a.pasic@linux.ibm.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+         <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+         <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
+         <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
+         <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
+         <20220324163132.GB26098@lst.de>
+         <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
+         <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
+         <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
+         <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
+         <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
+         <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
+         <e42e4c8bf35b62c671ec20ec6c21a43216e7daa6.camel@sipsolutions.net>
+         <20220327051502.63fde20a.pasic@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Benjamin St=C3=BCrz <benni@stuerz.xyz> writes:
+On Sun, 2022-03-27 at 05:15 +0200, Halil Pasic wrote:
 
-> This patch series replaces comments with C99's designated initializers
-> in a few places. It also adds some enum initializers. This is my first
-> time contributing to the Linux kernel, therefore I'm probably doing a
-> lot of things the wrong way. I'm sorry for that.
+> 
+> The key here is "sync_sg API, all the parameters must be the same
+> as those passed into the single mapping API", but I have to admit,
+> I don't understand the *single* in here.
+> 
 
-Just a small tip: If you are new, start with something small and learn
-from that. Don't do a controversial big patchset spanning multiple
-subsystems, that's the hard way to learn things. First submit one patch
-at a time to one subsystem and gain understanding of the process that
-way.
+Hah. So I wasn't imagining things after all.
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+However, as the rest of the thread arrives, this still means it's all
+broken ... :)
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+> The intended meaning of the
+> last sentence is that one can do partial sync by choose 
+> dma_hande_sync, size_sync such that dma_handle_mapping <= dma_handle_sync
+> < dma_handle_mapping + size_mapping and dma_handle_sync + size_sync <=
+> dma_handle_mapping + size_mapping. But the direction has to remain the
+> same.
+
+Right.
+
+> BTW, the current documented definition of the direction is about the
+> data transfer direction between memory and the device, and how the CPU
+> is interacting with the memory is not in scope. A quote form the
+> documentation.
+> 
+> """
+> ======================= =============================================
+> DMA_NONE                no direction (used for debugging)
+> DMA_TO_DEVICE           data is going from the memory to the device
+> DMA_FROM_DEVICE         data is coming from the device to the memory
+> DMA_BIDIRECTIONAL       direction isn't known
+> ======================= =============================================
+> """
+> (Documentation/core-api/dma-api.rst)
+> 
+> My feeling is, that re-defining the dma direction is not a good idea. But
+> I don't think my opinion has much weight here.
+
+However, this basically means that the direction argument to the flush
+APIs are completely useless, and we do have to define something
+new/else...
+
+johannes
