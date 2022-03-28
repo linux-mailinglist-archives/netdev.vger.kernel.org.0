@@ -2,103 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2C64E9EDC
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 20:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51D6C4E9EE7
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 20:22:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241481AbiC1SVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 14:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59590 "EHLO
+        id S245184AbiC1SXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 14:23:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240614AbiC1SVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 14:21:47 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F5E237D5
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 11:20:06 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id a17so17922774edm.9
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 11:20:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=LWChrUtNlDhcBPRxCF0qjl5iT5wCuOPcJ3dqocrGVgo=;
-        b=Nxa5y5l+bT6SvRxEAinZOnLTkVrVgKZo4qIJovaxeSMTfuXX2Rr8TSBi+VDXP7KfV6
-         ce/bAikyROsZT15/VZHEtlKH34dUF/qSi4FPIletQOMtfGSyfYS22X7UzKDD1BOIzD4q
-         CJa0F19c7K/IeTav1Cj44EdlDtV+vw7PEluorLB2KyCdmt/RpGlzw1DFSkZSwjgQ8XC2
-         3jGsvsol5oLX4nYwjblFbVItbFhJqKU2lk7gXWxcjLq3d/oMtZ6nUjLJTEFK5eYwAGku
-         5EbZT+lVwscyV28kR8YMeH1uXA0LrU6FNqZfwxn3lc0UjxuKPUIQw4oNUn5WNnymmPUU
-         TjMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LWChrUtNlDhcBPRxCF0qjl5iT5wCuOPcJ3dqocrGVgo=;
-        b=fCcmVyE3vPRsQLeJqNreayYX7ewSrm4UM/9UUcHQptsCgClQdPRpYfWYVjSDIOMeTR
-         mwLC/X0aRM/DXEzb/ql9I6ZD3wEueZ5d/XEe+RtkjTYl2jKyWVaCE8kvFrA4DVVNEa5B
-         YSnHMQy9K+omSAcZhIcaoSBLC/uvDngnC5Yq95TmdbMbroxAWYY/m2VZLbvd7o8qxH2p
-         rAYFOqAClMw85sU7JOX3rngrh/C1o/SOkKbs3iyZuW5rXWIUCwiSlwMbbnhfYI6Zv9av
-         hqbe/eeh+MSOqxrlwz/qvKoFF1a3UUmZ8xHMAddSqH8DKYY/giQsqP2q+S7lcgbssdT6
-         40KA==
-X-Gm-Message-State: AOAM530s5ta0B0f++xQZ7P7YzHhMmQJxnVdyP8HN6ZO0EUizIMnhyibz
-        i6W4hnYvx9LpNSHTiUK1U36QgA==
-X-Google-Smtp-Source: ABdhPJxLBPkaytucNbL+wnKlm4YXIAA8QRnRTGtlKciknymn5L/0guEAuhFrS0zIKIxC0ThVp8HkDw==
-X-Received: by 2002:a05:6402:2318:b0:413:7645:fa51 with SMTP id l24-20020a056402231800b004137645fa51mr18184325eda.201.1648491604836;
-        Mon, 28 Mar 2022 11:20:04 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm6059413ejz.57.2022.03.28.11.20.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Mar 2022 11:20:04 -0700 (PDT)
-Message-ID: <8bd7362f-0a23-e11c-445b-1e61d08bb70a@blackwall.org>
-Date:   Mon, 28 Mar 2022 21:20:02 +0300
+        with ESMTP id S234885AbiC1SXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 14:23:42 -0400
+Received: from stuerz.xyz (unknown [45.77.206.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E052940934;
+        Mon, 28 Mar 2022 11:22:01 -0700 (PDT)
+Received: by stuerz.xyz (Postfix, from userid 114)
+        id 3D57DFA6FA; Mon, 28 Mar 2022 18:22:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
+        t=1648491721; bh=cOHs6Dygnr8f9Xh/PIbQCTcmuBFS602dynHyaovTSvg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=pmDCnjHHrqRa3Dm3V+iufHZipADY0FZ9RgG0h/4MHTFWp/zzthsEF7PYGi7xYr8pR
+         lpgnhdE8xLQcEsnK2/UIdvHQfZe4Kz8wO8NvLBLPiATBhCXZ0FN7IoCbtPjTBtonZQ
+         W2TmZuliTiB5rdhySL5ilByt0EhFvAs6E1DwGzqyLSNENpNOfJKI4VE5yvuH18wU9Q
+         vJDauvD8Qywqsetyzze4sgdI9m2e63kWvY7JzC7DU8q+9ndk5DF9+7tkTUdB95F1yO
+         mHvV5hBJnO3XAKcOLTJ8207tCLppwnvHmsHSIU6MDYVY4hAsp1k3Qcy8CbqaBDdPLF
+         hR7kxdr07Ljzg==
+Received: from [IPV6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8] (unknown [IPv6:2a02:8109:a100:1a48:ff0:ef2f:d4da:17d8])
+        by stuerz.xyz (Postfix) with ESMTPSA id 0E643FA6B1;
+        Mon, 28 Mar 2022 18:21:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=stuerz.xyz; s=mail;
+        t=1648491718; bh=cOHs6Dygnr8f9Xh/PIbQCTcmuBFS602dynHyaovTSvg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=u1/OpXzUZAtaaHVVjI5rz6jWnLRgL12meTQpnmtHWY7pmFYqX9xVn2/VALywSlYId
+         HdvAKfF2zgL2YLsfv7ugIAnc/k6GgWbcomXhuPXqgE86BZ1VFJXCv6HDGZAe9dAvUv
+         MOzSVa0Txbqpe4lOxnInZB0vxG/czgco27SkmQJbxJCAWUOBbiVB53WuKm1sq5BFQ1
+         W9cZTtyUwq+GQAYyJG0spxsGlK9GV6D1bmKGf8ibbMPdngjMBrpRI313Bx/wVEb1UY
+         7p1Uihb+xrw1fsI6HqnZQdYy1FiKO0214/OJQSpH+rIPFklALmjefuKSHgbldiALCi
+         9zpgM7BcDqvrw==
+Message-ID: <1b694c4c-100b-951a-20f7-df1c912bb550@stuerz.xyz>
+Date:   Mon, 28 Mar 2022 20:21:56 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [RFC 2/2] net: bridge: add a software fast-path implementation
+ Thunderbird/91.7.0
+Subject: [PATCH 20/22 v2] ray_cs: Replace comments with C99 initializers
 Content-Language: en-US
-To:     Felix Fietkau <nbd@nbd.name>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        netdev@vger.kernel.org
-References: <20220210142401.4912-1-nbd@nbd.name>
- <20220210142401.4912-2-nbd@nbd.name>
- <bc499a39-64b9-ceb4-f36f-21dd74d6272d@nvidia.com>
- <e8f1e8f5-8417-84a8-61c3-793fa7803ac6@nbd.name>
- <0b4318af-4c12-bd5a-ae32-165c70af65b2@nvidia.com>
- <6d85d6a5-190e-2dfd-88f9-f09899c98ee7@nbd.name>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <6d85d6a5-190e-2dfd-88f9-f09899c98ee7@nbd.name>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Benjamin_St=c3=bcrz?= <benni@stuerz.xyz>
+References: <20220326165909.506926-20-benni@stuerz.xyz>
+ <164846920750.11945.16978682699891961444.kvalo@kernel.org>
+From:   =?UTF-8?Q?Benjamin_St=c3=bcrz?= <benni@stuerz.xyz>
+In-Reply-To: <164846920750.11945.16978682699891961444.kvalo@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
+        PDS_OTHER_BAD_TLD,RDNS_DYNAMIC,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/03/2022 18:15, Felix Fietkau wrote:
-> 
-> Hi Nik,
-> 
-> I'd like to follow up on our discussion regarding bridge offloading.
-> I managed to come up with a user space + eBPF implementation that replaces this code and shows mostly the same performance gain as my previous kernel space implementation.
-> 
-> At first I tried to use generic XDP, but after getting it working, performance was pretty bad (due to headroom issues) and I was told that this is by design and nobody should use it in production.
-> 
-> Then I reworked the code to use tc classifier instead and it worked much better.
-> 
-> It's not fully ready yet, I need to add some more tests for incompatible features, but I'm getting there...
-> The code is here: https://github.com/nbd168/bridger
-> 
-> There's one thing I haven't been able to figure out yet: What's the proper way to keep bridge fdb entries alive from user space without modifying them in any other way?
-> 
-> - Felix
+Replace comments with C99's designated initializers.
 
-Hi Felix,
-That's very nice! Interesting work. One way it's usually done is through periodic NTF_USE (refresh),
-another would be to mark them externally learned and delete them yourself (user-space aging).
-It really depends on the exact semantics you'd like.
+Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
+---
+ drivers/net/wireless/ray_cs.c | 31 +++++++++++++++++--------------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
 
-Cheers,
- Nik
+diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+index 87e98ab068ed..dd11018b956c 100644
+--- a/drivers/net/wireless/ray_cs.c
++++ b/drivers/net/wireless/ray_cs.c
+@@ -2529,20 +2529,23 @@ static void clear_interrupt(ray_dev_t *local)
+ #define MAXDATA (PAGE_SIZE - 80)
+
+ static const char *card_status[] = {
+-	"Card inserted - uninitialized",	/* 0 */
+-	"Card not downloaded",			/* 1 */
+-	"Waiting for download parameters",	/* 2 */
+-	"Card doing acquisition",		/* 3 */
+-	"Acquisition complete",			/* 4 */
+-	"Authentication complete",		/* 5 */
+-	"Association complete",			/* 6 */
+-	"???", "???", "???", "???",		/* 7 8 9 10 undefined */
+-	"Card init error",			/* 11 */
+-	"Download parameters error",		/* 12 */
+-	"???",					/* 13 */
+-	"Acquisition failed",			/* 14 */
+-	"Authentication refused",		/* 15 */
+-	"Association failed"			/* 16 */
++	[0]  = "Card inserted - uninitialized",
++	[1]  = "Card not downloaded",
++	[2]  = "Waiting for download parameters",
++	[3]  = "Card doing acquisition",
++	[4]  = "Acquisition complete",
++	[5]  = "Authentication complete",
++	[6]  = "Association complete",
++	[7]  = "???",
++	[8]  = "???",
++	[9]  = "???",
++	[10] = "???",
++	[11] = "Card init error",
++	[12] = "Download parameters error",
++	[13] = "???",
++	[14] = "Acquisition failed",
++	[15] = "Authentication refused",
++	[16] = "Association failed"
+ };
+
+ static const char *nettype[] = { "Adhoc", "Infra " };
+-- 
+2.35.1
