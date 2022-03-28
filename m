@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A99AB4EA203
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 22:52:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EE664EA209
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 22:54:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244465AbiC1Uxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 16:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34456 "EHLO
+        id S241008AbiC1U4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 16:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345728AbiC1Uws (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 16:52:48 -0400
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB651EAF0
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 13:50:33 -0700 (PDT)
-Received: by mail-ua1-x92b.google.com with SMTP id i26so6817014uap.6
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 13:50:33 -0700 (PDT)
+        with ESMTP id S236323AbiC1U4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 16:56:04 -0400
+Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACE4674EF
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 13:54:23 -0700 (PDT)
+Received: by mail-vk1-xa2c.google.com with SMTP id d129so8670622vkh.13
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 13:54:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZW+N1z8CEv3LE1wD1qgx9rdQlxwgYO+dOMzOsexKCX0=;
-        b=EZ4Pn1hyGJfqkjtJMJ5UzhBpoI2gcU/TfKZi1ib8vKfGTY6MjwmFDxB1vzUajMDh6r
-         TUBWBheCGn0f953AUiliYyBkukL317XB7i0HxGCaXfHXW3FVatPgyA7FJ40NV6qQdcp+
-         faVNa1Jrr4qqUs5Qi0iaqmtnaUVY84FzVvfk1d+DXnTm0Y30yvhZTJ0oViRoDkrJZZs+
-         VuI0NwN55nl+a2fNtokkTecoZHXLSYLwoawshrcSRxsVd65zReJmVmEkg3ZuyGBaBpcU
-         qGUzMf35+zwL3Z0AGLehyaFskCPlj8m2JZIBoZvRfXKM2ADgDaFTI/Ef8hS6tVGQUY6E
-         SzDA==
+         :cc;
+        bh=43hk8/Rw4z01LCcqTsH+6mefQsfmUhIYxjOwJf2drRU=;
+        b=hLxJt3z9utJ3Uo3vXalGW/Bt3OtfvP877YBOtHA7cro7T0KF1AMBWq3M79X70C99zY
+         9qQ4pATcIJhHHQHhA4oXAKu5PbglJVKL+iAXssF9Cvttx9GQn+mViWAf9GPUDfEzBQuS
+         0WmnRpeTLk5jr0lmN7BF/ZMWahsVbFCz7faNJn+tbL/Agxcdmo29GupqMmKAF+lDyU71
+         4vdoE5O7mzFNhynhGFNUGCqP8ajcJtRNwumcJ91rRtSGRYGD7gpNRV30emCOrGpgnFc1
+         xPTXeHyKITEcYPQvLROlht/WTrcZQFbmBfJNVVsQJrKjCLfnZPLDWTrwKgn26qMmstsi
+         iC+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZW+N1z8CEv3LE1wD1qgx9rdQlxwgYO+dOMzOsexKCX0=;
-        b=s3QiWfJEMFXYb3OVe+b4gQkmES2Jnamf68LbkLACkS137oLIDUwA/l6qBOD4BLRMtb
-         al+wuBqUzScLIQ3XgNEZ8BSu3FSoUVR25fr4kGoZ2biSJ2IMISphTinidnHHAAZpaxC7
-         j5CsNI+wxKLMn/uraYgcXxdL7RgdrrlJ7i3xwwOhnPYriTF65fpr1Z7bDcQFS8ykrCvx
-         k2JBAPjvWtwCE+Bs5kg2O4s0X5dL6fsy2z2lSN5r6AzXiLIrizX3MfTSJ7zgFO/27Ij3
-         iBk4YG0MFRRp/EubosMw9ZyNKyWcFc4Y955xvhR3j7W7F0jha8sIe5/m5STCX3RCz83E
-         TfbA==
-X-Gm-Message-State: AOAM530BZWiGi3QwA41V6orK9AkGec2mvhhHQ06lfoOVAHJ/Yz1gzEOT
-        7+WC9YzPbyM1VRWXIsHP5DoiKRcN96llZ7cIALzsOg==
-X-Google-Smtp-Source: ABdhPJxMT9lEACJwR6BGk5c3GR+mHlu2ceSmYd943xCDVaeRhZbnPX80uw9WgTMMk3TRehrA/j1015qLMdmvbyuQwtY=
-X-Received: by 2002:a9f:2048:0:b0:352:9b4f:ac98 with SMTP id
- 66-20020a9f2048000000b003529b4fac98mr12932950uam.12.1648500632715; Mon, 28
- Mar 2022 13:50:32 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=43hk8/Rw4z01LCcqTsH+6mefQsfmUhIYxjOwJf2drRU=;
+        b=fqZLiNeApPy/ZD7wYUGvzFMEVm896g5X3c7uygjS3btFYxoHVEN34kA97V+vv30doz
+         TuEMqP+/vVshYCWNCK5oTeTa+Whh2qZ6/1CBL7jDom/rADl50IuE84NcWEBU66t9S4ux
+         vzVqzBRGPY8W8qYObgnNJ8EtQTtvjezpRy63ETNtj8pRrTyg1fNQGd585bRXnrwdWFx/
+         Yzw8qx3MX5Sye1QFXK6bi0OxcsJ7EEiA7JXvcfDfspSRI2h9ZjpQHFQJVzv/jljOdYCS
+         3SD4IoYF7482tPhftQaJCnjELRNfoqKkiPngEeaPzN/tq/1MNbel3fxf1e9y6EtaFqTH
+         2pFw==
+X-Gm-Message-State: AOAM532yIYJ7aSarXJvbZwMgpannslG2d7Y23ZEVhGJ0tde1wB5Au8k/
+        Zp4zOy3Dx1kcD5E+lJomBq/FCquDY294KOfAwDUO5A==
+X-Google-Smtp-Source: ABdhPJyTW9Pbx62C22oC1YD+zYurOg0MAs61ljKl+7+tR+UHAUJd3RvGDA0GVNe6EgwOzow0Jm6Y087gK3FjvbiZSso=
+X-Received: by 2002:ac5:c961:0:b0:33f:4c03:df44 with SMTP id
+ t1-20020ac5c961000000b0033f4c03df44mr14296195vkm.19.1648500857749; Mon, 28
+ Mar 2022 13:54:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220328062414.1893550-1-irogers@google.com> <20220328062414.1893550-3-irogers@google.com>
- <YkIZ8MNdWvtPEikz@kernel.org>
-In-Reply-To: <YkIZ8MNdWvtPEikz@kernel.org>
+References: <20220328062414.1893550-1-irogers@google.com> <20220328062414.1893550-4-irogers@google.com>
+ <YkIaYq2alnNUiIfr@kernel.org>
+In-Reply-To: <YkIaYq2alnNUiIfr@kernel.org>
 From:   Ian Rogers <irogers@google.com>
-Date:   Mon, 28 Mar 2022 13:50:21 -0700
-Message-ID: <CAP-5=fVO6mHhGchtRZBDEYm1spK9JmpJ5OSwhNc8BAgzO_XDUg@mail.gmail.com>
-Subject: Re: [PATCH 2/5] perf cpumap: More cpu map reuse by merge.
+Date:   Mon, 28 Mar 2022 13:54:06 -0700
+Message-ID: <CAP-5=fVfYtu=wcfUQEzwuJMhxexi3d8hVqF5QFLkj_FWPHLK5Q@mail.gmail.com>
+Subject: Re: [PATCH 3/5] perf cpumap: Add intersect function.
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -85,7 +85,6 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -97,138 +96,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 1:26 PM Arnaldo Carvalho de Melo
+On Mon, Mar 28, 2022 at 1:28 PM Arnaldo Carvalho de Melo
 <acme@kernel.org> wrote:
 >
-> Em Sun, Mar 27, 2022 at 11:24:11PM -0700, Ian Rogers escreveu:
-> > perf_cpu_map__merge will reuse one of its arguments if they are equal o=
-r
-> > the other argument is NULL. The arguments could be reused if it is know=
-n
-> > one set of values is a subset of the other. For example, a map of 0-1
-> > and a map of just 0 when merged yields the map of 0-1. Currently a new
-> > map is created rather than adding a reference count to the original 0-1
-> > map.
+> Em Sun, Mar 27, 2022 at 11:24:12PM -0700, Ian Rogers escreveu:
+> > The merge function gives the union of two cpu maps. Add an intersect
+> > function which will be used in the next change.
 > >
 > > Signed-off-by: Ian Rogers <irogers@google.com>
 > > ---
-> >  tools/lib/perf/cpumap.c | 38 ++++++++++++++++++++++++++++----------
-> >  1 file changed, 28 insertions(+), 10 deletions(-)
+> >  tools/lib/perf/cpumap.c              | 38 ++++++++++++++++++++++++++++
+> >  tools/lib/perf/include/perf/cpumap.h |  2 ++
+> >  2 files changed, 40 insertions(+)
 > >
 > > diff --git a/tools/lib/perf/cpumap.c b/tools/lib/perf/cpumap.c
-> > index ee66760f1e63..953bc50b0e41 100644
+> > index 953bc50b0e41..56b4d213039f 100644
 > > --- a/tools/lib/perf/cpumap.c
 > > +++ b/tools/lib/perf/cpumap.c
-> > @@ -319,6 +319,29 @@ struct perf_cpu perf_cpu_map__max(struct perf_cpu_=
-map *map)
-> >       return map->nr > 0 ? map->map[map->nr - 1] : result;
+> > @@ -393,3 +393,41 @@ struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
+> >       perf_cpu_map__put(orig);
+> >       return merged;
 > >  }
-> >
-> > +/** Is 'b' a subset of 'a'. */
-> > +static bool perf_cpu_map__is_subset(const struct perf_cpu_map *a,
-> > +                                 const struct perf_cpu_map *b)
+> > +
+> > +struct perf_cpu_map *perf_cpu_map__intersect(struct perf_cpu_map *orig,
+> > +                                          struct perf_cpu_map *other)
 > > +{
-> > +     int i, j;
+> > +     struct perf_cpu *tmp_cpus;
+> > +     int tmp_len;
+> > +     int i, j, k;
+> > +     struct perf_cpu_map *merged = NULL;
 > > +
-> > +     if (a =3D=3D b || !b)
-> > +             return true;
-> > +     if (!a || b->nr > a->nr)
-> > +             return false;
-> > +     j =3D 0;
-> > +     for (i =3D 0; i < a->nr; i++) {
+> > +     if (perf_cpu_map__is_subset(other, orig))
+> > +             return orig;
+> > +     if (perf_cpu_map__is_subset(orig, other)) {
+> > +             perf_cpu_map__put(orig);
 >
-> Since the kernel bumped the minimum gcc version to one that supports
-> declaring loop variables locally and that perf has been using this since
-> forever:
->
-> =E2=AC=A2[acme@toolbox perf]$ grep -r '(int [[:alpha:]] =3D 0;' tools/per=
-f
-> tools/perf/util/block-info.c:   for (int i =3D 0; i < nr_hpps; i++)
-> tools/perf/util/block-info.c:   for (int i =3D 0; i < nr_hpps; i++) {
-> tools/perf/util/block-info.c:   for (int i =3D 0; i < nr_reps; i++)
-> tools/perf/util/stream.c:       for (int i =3D 0; i < nr_evsel; i++)
-> tools/perf/util/stream.c:       for (int i =3D 0; i < nr_evsel; i++) {
-> tools/perf/util/stream.c:       for (int i =3D 0; i < els->nr_evsel; i++)=
- {
-> tools/perf/util/stream.c:       for (int i =3D 0; i < es_pair->nr_streams=
-; i++) {
-> tools/perf/util/stream.c:       for (int i =3D 0; i < es_base->nr_streams=
-; i++) {
-> tools/perf/util/cpumap.c:               for (int j =3D 0; j < c->nr; j++)=
- {
-> tools/perf/util/mem-events.c:   for (int j =3D 0; j < PERF_MEM_EVENTS__MA=
-X; j++) {
-> tools/perf/util/header.c:       for (int i =3D 0; i < ff->ph->env.nr_hybr=
-id_cpc_nodes; i++) {
-> tools/perf/builtin-diff.c:      for (int i =3D 0; i < num; i++)
-> tools/perf/builtin-diff.c:              for (int i =3D 0; i < pair->block=
-_info->num; i++) {
-> tools/perf/builtin-stat.c:      for (int i =3D 0; i < perf_cpu_map__nr(a-=
->core.cpus); i++) {
-> =E2=AC=A2[acme@toolbox perf]$
->
-> And this builds on all my test containers, please use:
->
->         for (int i =3D 0, j =3D 0; i < a->nr; i++)
->
-> In this case to make the source code more compact.
+> Why this put(orig)?
 
-Ack. We still need to declare 'j' and it is a bit weird to declare j
-before i. Fwiw, Making.config has the CORE_CFLAGS set to gnu99, but
-declaring in the loop is clearly valid in c99.
+As with merge, if orig isn't returned then it is put.
 
-> > +             if (a->map[i].cpu > b->map[j].cpu)
-> > +                     return false;
-> > +             if (a->map[i].cpu =3D=3D b->map[j].cpu) {
-> > +                     j++;
-> > +                     if (j =3D=3D b->nr)
-> > +                             return true;
+> > +             return perf_cpu_map__get(other);
 >
-> Ok, as its guaranteed that cpu_maps are ordered.
->
-> > +             }
-> > +     }
-> > +     return false;
-> > +}
-> > +
-> >  /*
-> >   * Merge two cpumaps
-> >   *
-> > @@ -335,17 +358,12 @@ struct perf_cpu_map *perf_cpu_map__merge(struct p=
-erf_cpu_map *orig,
-> >       int i, j, k;
-> >       struct perf_cpu_map *merged;
-> >
-> > -     if (!orig && !other)
-> > -             return NULL;
-> > -     if (!orig) {
-> > -             perf_cpu_map__get(other);
-> > -             return other;
-> > -     }
-> > -     if (!other)
-> > -             return orig;
-> > -     if (orig->nr =3D=3D other->nr &&
-> > -         !memcmp(orig->map, other->map, orig->nr * sizeof(struct perf_=
-cpu)))
-> > +     if (perf_cpu_map__is_subset(orig, other))
-> >               return orig;
->
-> Can't we have first the introduction of perf_cpu_map__is_subset() and
-> then another patch that gets the refcount, i.e. the four lines below?
+> And why the get here and not on the first if?
 
-I believe that will fail as it'd be an unused static function warning
-and werror.
+The first argument orig is either put or returned while the second may
+be returned only if the reference count is incremented. We could
+change the API for merge and intersect to put both arguments, or to
+not put either argument.
 
 Thanks,
 Ian
 
-> > +     if (perf_cpu_map__is_subset(other, orig)) {
-> > +             perf_cpu_map__put(orig);
-> > +             return perf_cpu_map__get(other);
 > > +     }
-> >
-> >       tmp_len =3D orig->nr + other->nr;
-> >       tmp_cpus =3D malloc(tmp_len * sizeof(struct perf_cpu));
+> > +
+> > +     tmp_len = max(orig->nr, other->nr);
+> > +     tmp_cpus = malloc(tmp_len * sizeof(struct perf_cpu));
+> > +     if (!tmp_cpus)
+> > +             return NULL;
+> > +
+> > +     i = j = k = 0;
+> > +     while (i < orig->nr && j < other->nr) {
+> > +             if (orig->map[i].cpu < other->map[j].cpu)
+> > +                     i++;
+> > +             else if (orig->map[i].cpu > other->map[j].cpu)
+> > +                     j++;
+> > +             else {
+> > +                     j++;
+> > +                     tmp_cpus[k++] = orig->map[i++];
+> > +             }
+> > +     }
+> > +     if (k)
+> > +             merged = cpu_map__trim_new(k, tmp_cpus);
+> > +     free(tmp_cpus);
+> > +     perf_cpu_map__put(orig);
+> > +     return merged;
+> > +}
+> > diff --git a/tools/lib/perf/include/perf/cpumap.h b/tools/lib/perf/include/perf/cpumap.h
+> > index 4a2edbdb5e2b..a2a7216c0b78 100644
+> > --- a/tools/lib/perf/include/perf/cpumap.h
+> > +++ b/tools/lib/perf/include/perf/cpumap.h
+> > @@ -19,6 +19,8 @@ LIBPERF_API struct perf_cpu_map *perf_cpu_map__read(FILE *file);
+> >  LIBPERF_API struct perf_cpu_map *perf_cpu_map__get(struct perf_cpu_map *map);
+> >  LIBPERF_API struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
+> >                                                    struct perf_cpu_map *other);
+> > +LIBPERF_API struct perf_cpu_map *perf_cpu_map__intersect(struct perf_cpu_map *orig,
+> > +                                                      struct perf_cpu_map *other);
+> >  LIBPERF_API void perf_cpu_map__put(struct perf_cpu_map *map);
+> >  LIBPERF_API struct perf_cpu perf_cpu_map__cpu(const struct perf_cpu_map *cpus, int idx);
+> >  LIBPERF_API int perf_cpu_map__nr(const struct perf_cpu_map *cpus);
 > > --
 > > 2.35.1.1021.g381101b075-goog
 >
