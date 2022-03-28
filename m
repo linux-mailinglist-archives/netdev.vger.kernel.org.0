@@ -2,67 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFF064E96F3
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:47:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E304E972A
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:56:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242620AbiC1Ms4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 08:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
+        id S242738AbiC1M6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 08:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239014AbiC1Msz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:48:55 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C6F4D9D6
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:47:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZTZ9JHwlpWTpwIIeBU2FSj4LgQndUnbr98C4VDSogUo=; b=OJFHQKJSoMf1EJycCcC6CvVBv4
-        8ygbNMDVL7vG7fcjnDnh4A2QuDOGvXa86hnT1EGF5ETtg3a6qaY/LTMdOI/JqccKpEERU7ZC+o55v
-        1JJdfjsxOx8aLgNeNyW3XwVdigloUAohcPx06fHUCMbF6eXyHGQpiInw2sObZmkYXTVQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nYolt-00D135-Ke; Mon, 28 Mar 2022 14:46:57 +0200
-Date:   Mon, 28 Mar 2022 14:46:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: Re: [PATCH v2] net: bnxt_ptp: fix compilation error
-Message-ID: <YkGuQXL5cRQveSlZ@lunn.ch>
-References: <20220328033540.189778-1-damien.lemoal@opensource.wdc.com>
- <CACKFLi=+5NpbeHDkDdKLg9uyfiDw4NL0=q0=shfrAYhqP+z2=w@mail.gmail.com>
- <2bc8f270-e402-5e34-8d87-6b02fe8ef777@opensource.wdc.com>
+        with ESMTP id S242716AbiC1M63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:58:29 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3055D5F6
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:56:41 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id q129so15477055oif.4
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:56:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nUNeQRWmWl+TZHkgO/Bfhuvrv+aI+JQn8rKQMeqArOI=;
+        b=m+B3K7ugZ5OAwYa4pyAM9MlQpst948jVTgcf1Y1DXPlHSs7fsNeWABNxCtZMHaFTom
+         M6L+NnEK2r0by4LhkY88o1Lr5iTTKxYOGTYGNcgVeBy2jNQ5drrBoCYIosGgtfuMAyMT
+         6Sp4QDPgvgzF5Vvp0f2Jryl9Y/HgmP5ZxTY5g/VbQHo9uNsNojYGAgxFJRaX7KhQQpe6
+         5qz38TC8XZ5gDVcO0ub8Pn5Vu+SnA1CnAJDgrUbF+9RECxqacP8icdDzwtS0VK/PQ+GK
+         M9YKnj6UyWFAGoogXRQ3w3CllA+3b2e9qSTLmHQz9VH+qvCze3I6hNO9UcTdk6OENW4I
+         s2DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nUNeQRWmWl+TZHkgO/Bfhuvrv+aI+JQn8rKQMeqArOI=;
+        b=2/pbjgvU9loRh3WItGv+VgkhVBzCU0ByzR/g4/cGoSu6rf1ojiDdxlkDQfCjuxmELq
+         exLkpvHnS0g1+Iq2iq/DqRknkw4/Ez7VZg6tcLLPFOujhIalgjWR6fRF6tufHSHuS0k7
+         Hk2cx7ZHVkfpMFyRhZM9WbAzdjPGjfdaGC3mOpfFApdxbdXrGaMQ+ZNnNi2Fa6TdtKtV
+         kuemFujy+uA2BSw71rZEAcUVEey5fX4AxhFGKVXblZTlXM7filNf/XokoYFRTfbBQp6B
+         NdR2A3C2QFTXRy/ncSK61wsUFSCDjBsuDh1C5hM7LhXFfU+Qs2Dkzwj7ptQw7N/XhCRW
+         LnLw==
+X-Gm-Message-State: AOAM530Jm/6kK5GCVJxmaAqiM/QatSEuPiMEFqH7rKgqQSRXxAA0gMAF
+        KmGx61DGMsOPNXkVPpcZxxfdALQNTFTu4h7YaDOzdSAqwbQ11w==
+X-Google-Smtp-Source: ABdhPJy+/WTUEiWMY2nCszzkHBUZVRno2ywz0YzqRMh1SKkAwlsfmwZu23hYZkAgED3lpMRz+KxKiki8mNI/Co/iqdM=
+X-Received: by 2002:a05:6808:1b25:b0:2da:32ff:ab73 with SMTP id
+ bx37-20020a0568081b2500b002da32ffab73mr11475623oib.285.1648472201037; Mon, 28
+ Mar 2022 05:56:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2bc8f270-e402-5e34-8d87-6b02fe8ef777@opensource.wdc.com>
+References: <20220323180022.864567-1-andy.chiu@sifive.com> <20220323180022.864567-4-andy.chiu@sifive.com>
+ <Yj4Wl0zmDtnbxgDb@lunn.ch>
+In-Reply-To: <Yj4Wl0zmDtnbxgDb@lunn.ch>
+From:   Andy Chiu <andy.chiu@sifive.com>
+Date:   Mon, 28 Mar 2022 20:54:32 +0800
+Message-ID: <CABgGipWYUjti1B-kx5nThKNw_WgyeOVeS9rVcWjXFKneKnyx2w@mail.gmail.com>
+Subject: Re: [PATCH v5 net 3/4] dt-bindings: net: add pcs-handle attribute
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     radhey.shyam.pandey@xilinx.com,
+        Robert Hancock <robert.hancock@calian.com>,
+        michal.simek@xilinx.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        robh@kernel.org, Greentime Hu <greentime.hu@sifive.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The call to bnxt_ptp_cfg_pin() after the swith will return -ENOTSUPP for
-> invalid pin IDs. So I did not feel like adding more changes was necessary.
-> 
-> We can return an error if you insist, but what should it be ? -EINVAL ?
-> -ENODEV ? -ENOTSUPP ? Given that bnxt_ptp_cfg_pin() return -ENOTSUPP, we
-> could use that code.
+Thanks for the suggestion. I have included this in the v6 patch.
 
-https://elixir.bootlin.com/linux/v5.17.1/source/include/linux/errno.h#L23
+Andy
 
-ENOTSUPP is an NFS only error code. It should not be used anywhere
-else. EOPNOTSUPP is the generic error that should be used. However,
-don't replace an ENOTSUPP with an EOPNOTSUPP without considering ABI.
 
-    Andrew
+On Sat, Mar 26, 2022 at 3:23 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > + - pcs-handle:         Phandle to the internal PCS/PMA PHY in SGMII or 1000Base-X
+> > +               modes, where "pcs-handle" should be preferably used to point
+> > +               to the PCS/PMA PHY, and "phy-handle" should point to an
+> > +               external PHY if exists.
+>
+> Since this is a new property, you don't have any backwards
+> compatibility to worry about, don't use 'preferably'. It should point
+> to the PCS/PCA PHY and anything else is wrong for this new property.
+>
+>    Andrew
