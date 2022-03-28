@@ -2,95 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 006B94E8D91
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 07:48:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 446EE4E8DDD
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 08:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238181AbiC1FuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 01:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S235718AbiC1GMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 02:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235040AbiC1FuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 01:50:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B582412A94;
-        Sun, 27 Mar 2022 22:48:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 314846109A;
-        Mon, 28 Mar 2022 05:48:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C6AC340F0;
-        Mon, 28 Mar 2022 05:48:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648446508;
-        bh=LQyxRKXMf0S7uzGj5hH8/MvLm79Jjubtz0m602VOG1Y=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=r5X52gFgn7hx5pBW0q/WF5RxNd/bFfG97hhie/kXFd6DHGiu014p/NEc7mw71W4xZ
-         JJpY+PSzyAACVYpBT6O0ZzdFiKjp6QJrXwz+v0jZ7x8AJTX6/l/NDBnYq1sqlVgnP4
-         TC9jttkCIwV4kZjwHq751BRBgg7/+OxOYMBKlQ/1/VEqBv9F3R4vDNzdzejBiC9izJ
-         MwyCxqyS/J6At+JIUj9cKkOJws2Airt7fxk70wDV4zRR3FrKmDl6N3EgrhD7z/mJZs
-         ndT9+LTH0vJ2Dvn9wSN5uSjcwCDucJNGGZLWHffCIeuhJtuxVUhgOof8UH0DuiljxA
-         Bgz69gFqxOmfw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] iwlwifi: mei: Replace zero-length array with flexible-array member
-References: <20220216195030.GA904170@embeddedor>
-        <202202161235.F3A134A9@keescook> <20220326004137.GB2602091@embeddedor>
-Date:   Mon, 28 Mar 2022 08:48:24 +0300
-In-Reply-To: <20220326004137.GB2602091@embeddedor> (Gustavo A. R. Silva's
-        message of "Fri, 25 Mar 2022 19:41:37 -0500")
-Message-ID: <87wngezkyf.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S238303AbiC1GMf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 02:12:35 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D0C515BC;
+        Sun, 27 Mar 2022 23:10:52 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V8LmJtm_1648447836;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V8LmJtm_1648447836)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 28 Mar 2022 14:10:50 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        dust.li@linux.alibaba.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] net/smc: Send out the remaining data in sndbuf before close
+Date:   Mon, 28 Mar 2022 14:10:36 +0800
+Message-Id: <1648447836-111521-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-10.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
+The current autocork algorithms will delay the data transmission
+in BH context to smc_release_cb() when sock_lock is hold by user.
 
-> On Wed, Feb 16, 2022 at 12:35:22PM -0800, Kees Cook wrote:
->> On Wed, Feb 16, 2022 at 01:50:30PM -0600, Gustavo A. R. Silva wrote:
->> > There is a regular need in the kernel to provide a way to declare
->> > having a dynamically sized set of trailing elements in a structure.
->> > Kernel code should always use =E2=80=9Cflexible array members=E2=80=9D=
-[1] for these
->> > cases. The older style of one-element or zero-length arrays should
->> > no longer be used[2].
->> >=20
->> > [1] https://en.wikipedia.org/wiki/Flexible_array_member
->> > [2]
->> > https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-len=
-gth-and-one-element-arrays
->> >=20
->> > Link: https://github.com/KSPP/linux/issues/78
->> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->>=20
->> Reviewed-by: Kees Cook <keescook@chromium.org>
->
-> Hi all,
->
-> Friendly ping: can someone take this, please?
->
-> ...I can take this in my -next tree in the meantime.
+So there is a possibility that when connection is being actively
+closed (sock_lock is hold by user now), some corked data still
+remains in sndbuf, waiting to be sent by smc_release_cb(). This
+will cause:
 
-I'll take this. Luca, ack?
+- smc_close_stream_wait(), which is called under the sock_lock,
+  has a high probability of timeout because data transmission is
+  delayed until sock_lock is released.
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+- Unexpected data sends may happen after connction closed and use
+  the rtoken which has been deleted by remote peer through
+  LLC_DELETE_RKEY messages.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+So this patch will try to send out the remaining corked data in
+sndbuf before active close process, to ensure data integrity and
+avoid unexpected data transmission after close.
+
+Reported-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Fixes: 6b88af839d20 ("net/smc: don't send in the BH context if sock_owned_by_user")
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+---
+ net/smc/smc_close.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/smc/smc_close.c b/net/smc/smc_close.c
+index 292e4d9..676cb23 100644
+--- a/net/smc/smc_close.c
++++ b/net/smc/smc_close.c
+@@ -57,6 +57,9 @@ static void smc_close_stream_wait(struct smc_sock *smc, long timeout)
+ 	if (!smc_tx_prepared_sends(&smc->conn))
+ 		return;
+ 
++	/* Send out corked data remaining in sndbuf */
++	smc_tx_pending(&smc->conn);
++
+ 	smc->wait_close_tx_prepared = 1;
+ 	add_wait_queue(sk_sleep(sk), &wait);
+ 	while (!signal_pending(current) && timeout) {
+-- 
+1.8.3.1
+
