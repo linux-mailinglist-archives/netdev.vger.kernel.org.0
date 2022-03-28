@@ -2,134 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9362D4E8E42
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 08:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 107064E8E10
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 08:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238489AbiC1GkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 02:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59340 "EHLO
+        id S238406AbiC1G0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 02:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236714AbiC1GkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 02:40:06 -0400
-X-Greylist: delayed 1376 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Mar 2022 23:38:24 PDT
-Received: from gateway23.websitewelcome.com (gateway23.websitewelcome.com [192.185.48.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A042C2719
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:38:22 -0700 (PDT)
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id DD37511443
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 01:15:26 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id Yif0nZ3mXHnotYif0nUW7N; Mon, 28 Mar 2022 01:15:26 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jQgqtKv6g3c9JTlzvFF9fkILdnQrG04PzWMmUtyZ79I=; b=Z9m6Uy21YEhtJzNbcBVhcTYQYn
-        vTB3fNlc3MOfcSh6ksPbcbYt3oSXkofi5a6lRQPC05JtMruK8znKUKiTTX3akYnERi0THt5V62b9k
-        O3i2yVX8iGTxxGcpJ47nvcy0wCRN019I5YMj117403A7hpVRofIkzeD8LQgrGrmdIpYLwgqyOAlD/
-        AW2eJjvcAFsrsOMELIVWO1G++G5f5/H22dbAqQ8Ex3v0lYALkLQtX6V/okDZ43zfuA2OfLBspZOEH
-        Bw9+aSG4L4fcfrJe4f2a4dwsO/Uoddhuvu6U0FDkQ06+RWGTnrDTKhOxrvlY2iBr2UTk1rSe/pNCM
-        ikLFO6lA==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:38018 helo=[192.168.15.9])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1nYif0-000lJi-7y; Mon, 28 Mar 2022 01:15:26 -0500
-Message-ID: <4c520e2e-d1a5-6d2b-3ef1-b891d7946c01@embeddedor.com>
-Date:   Mon, 28 Mar 2022 01:23:59 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH][next] iwlwifi: fw: Replace zero-length arrays with
- flexible-array members
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20220216195015.GA904148@embeddedor>
- <202202161235.2FB20E6A5@keescook> <20220326003843.GA2602091@embeddedor>
- <871qym1vck.fsf@kernel.org>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-In-Reply-To: <871qym1vck.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1nYif0-000lJi-7y
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.9]) [187.162.31.110]:38018
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 3
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232653AbiC1G0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 02:26:02 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA424E3A8
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:24:22 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id b16-20020a253410000000b00633b9e71eecso10135646yba.14
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:24:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=x0B3czyjsM+UfZLmfIxDKqt01DOoxfjklLpknwf6OIA=;
+        b=BKA5tvIg1VJxcH3DbfLPgKEmNl0vjbLvRfkVXAU5KOW6bVmQ2bhanMOPwMHb8ztUmQ
+         J5mchyAWm/UvwWoxDViWBVmO8GuuadAnKIkOWzyk5xLtFVBDV9Yb4qOLjl1EJ43ikEIx
+         Oc9YwXCZIFhR1xRWdxe3Po1vWtRWfs3+v/HLJDdepOd5ORa/7ZKd95V6aXVjrRuO4yGx
+         ikmBGu/ZQn57GynRRE3t5Ntqw2S3tlVptup2j2rRCvF/Ntq609BDHgmPPpys2mfXv15g
+         MFbseTvzaVUmkNfqrCI/LJ2CxU9x0kmUVc4/nvoQTg4gP/bBKKL6IQ1HoA43KgvWFefJ
+         kw5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=x0B3czyjsM+UfZLmfIxDKqt01DOoxfjklLpknwf6OIA=;
+        b=L2z7CT8WVg3OBLzTu6ePMxCeHRPoYaXAhIkGQ79uNd+OtnNesASs4R/2DqMPIumncw
+         0yRtJr2Jv/yP9AZRiFs9qf1jfkGjq90yhNsGj/akRNfoqGL7qRKvkK0uoX9MH5f+8/hb
+         PY7N7VTLzTOZd2x++XsuyBju3V1haNZbghCTQWKDDMeGOv8J9pRMecefiX2MfwBmUvIM
+         W0nlQl2JZyXGB++bG37+nqW+UXAMWiq6ljKa5KVo5V6EiRaqnoXoQDVKttNG8DDc1OPY
+         NcLSxjpFnJeZ3HN0BS4LU/ipuu0Vr1IiBeMy74PosItVB3mQOoWShRpGrdFF1fzBm8dr
+         nG5A==
+X-Gm-Message-State: AOAM5310LWyVSe2rTLw53PCIW49IgrjuXbbvT9D1scnS+Dlk7g27vibz
+        8k/IWci0PSrlXN5VYUqcs+ecYrLn5R6G
+X-Google-Smtp-Source: ABdhPJxWHgdCIIH4SXciDGG4Nax8iqLB+oB99XOa+1GirXx4Tq9c1PYuzpznG8p4LqOmcttKMzoe42FGpUSW
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:ef08:ed1b:261f:77fa])
+ (user=irogers job=sendgmr) by 2002:a81:7802:0:b0:2e5:c28d:171b with SMTP id
+ t2-20020a817802000000b002e5c28d171bmr23999477ywc.236.1648448661434; Sun, 27
+ Mar 2022 23:24:21 -0700 (PDT)
+Date:   Sun, 27 Mar 2022 23:24:09 -0700
+Message-Id: <20220328062414.1893550-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
+Subject: [PATCH 0/5] Make evlist CPUs more accurate
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+evlist has all_cpus, computed to be the merge of all evsel CPU maps,
+and cpus. cpus may contain more CPUs than all_cpus, as by default cpus
+holds all online CPUs whilst all_cpus holds the merge/union from
+evsels. For an uncore event there may just be 1 CPU per socket, which
+will be a far smaller CPU map than all online CPUs.
 
+These patches change cpus to be called user_cpus, to reflect their
+potential user specified nature. The user_cpus are set to be the
+current value intersected with all_cpus, so that user_cpus is always a
+subset of all_cpus. This fixes printing code for metrics so that
+unnecessary blank lines aren't printed.
 
-On 3/28/22 00:47, Kalle Valo wrote:
-> "Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
-> 
->> On Wed, Feb 16, 2022 at 12:35:14PM -0800, Kees Cook wrote:
->>> On Wed, Feb 16, 2022 at 01:50:15PM -0600, Gustavo A. R. Silva wrote:
->>>> There is a regular need in the kernel to provide a way to declare
->>>> having a dynamically sized set of trailing elements in a structure.
->>>> Kernel code should always use “flexible array members”[1] for these
->>>> cases. The older style of one-element or zero-length arrays should
->>>> no longer be used[2].
->>>>
->>>> [1] https://en.wikipedia.org/wiki/Flexible_array_member
->>>> [2]
->>>> https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
->>>>
->>>> Link: https://github.com/KSPP/linux/issues/78
->>>> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
->>>
->>> Reviewed-by: Kees Cook <keescook@chromium.org>
->>
->> Hi all,
->>
->> Friendly ping: can someone take this, please?
->>
->> ...I can take this in my -next tree in the meantime.
-> 
-> Like we have discussed before, please don't take any wireless patches to
-> your tree. The conflicts just cause more work of us.
+To make the intersect function perform well, a perf_cpu_map__is_subset
+function is added. While adding this function, also use it in
+perf_cpu_map__merge to avoid creating a new CPU map for some currently
+missed patterns.
 
-Sure thing. I just removed it from my tree.
+Ian Rogers (5):
+  perf evlist: Rename cpus to user_cpus
+  perf cpumap: More cpu map reuse by merge.
+  perf cpumap: Add intersect function.
+  perf stat: Avoid segv if core.user_cpus isn't set.
+  perf evlist: Respect all_cpus when setting user_cpus
 
-I didn't get any reply from wireless people in more than a month, and
-that's why I temporarily took it in my tree so it doesn't get lost. :)
+ tools/lib/perf/cpumap.c                  | 76 ++++++++++++++++++++----
+ tools/lib/perf/evlist.c                  | 28 ++++-----
+ tools/lib/perf/include/internal/evlist.h |  4 +-
+ tools/lib/perf/include/perf/cpumap.h     |  2 +
+ tools/perf/arch/arm/util/cs-etm.c        |  8 +--
+ tools/perf/arch/arm64/util/arm-spe.c     |  2 +-
+ tools/perf/arch/x86/util/intel-bts.c     |  2 +-
+ tools/perf/arch/x86/util/intel-pt.c      |  4 +-
+ tools/perf/bench/evlist-open-close.c     |  2 +-
+ tools/perf/builtin-ftrace.c              |  2 +-
+ tools/perf/builtin-record.c              |  6 +-
+ tools/perf/builtin-stat.c                | 11 ++--
+ tools/perf/builtin-top.c                 |  2 +-
+ tools/perf/util/auxtrace.c               |  2 +-
+ tools/perf/util/bpf_ftrace.c             |  4 +-
+ tools/perf/util/evlist.c                 | 16 ++---
+ tools/perf/util/record.c                 |  6 +-
+ tools/perf/util/sideband_evlist.c        |  2 +-
+ tools/perf/util/stat-display.c           |  2 +-
+ tools/perf/util/synthetic-events.c       |  2 +-
+ tools/perf/util/top.c                    |  6 +-
+ 21 files changed, 127 insertions(+), 62 deletions(-)
 
-> I assigned this patch to me on patchwork and I'm planning to take it to
-> wireless-next once it opens. Luca, ack?
+-- 
+2.35.1.1021.g381101b075-goog
 
-Awesome.
-
-Thanks
---
-Gustavo
