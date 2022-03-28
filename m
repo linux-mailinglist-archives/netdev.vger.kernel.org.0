@@ -2,79 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C83C74EA336
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 00:50:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99BCA4EA341
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 00:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230137AbiC1WsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 18:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60600 "EHLO
+        id S230190AbiC1Wvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 18:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbiC1WsV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 18:48:21 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274F4C74AA;
-        Mon, 28 Mar 2022 15:46:40 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        with ESMTP id S230145AbiC1Wvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 18:51:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C8238181;
+        Mon, 28 Mar 2022 15:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D82EF2223A;
-        Tue, 29 Mar 2022 00:46:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648507598;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HDu381pRR0agv3tRC4rxYFKnPByM+nZCMTshkpw92fU=;
-        b=UcQsgGiCk/vnobpIEFjlRmqkCrWqDsPOoAMEhpR0atrtcaJkgwtq8Ps70hTKCZuqjJ4inQ
-        xMSvUGTmrjXMeOUKJPUiqbuF9N0Y1IBoxj7uDx43gkd6MAsaJUOSdqli2SpW0dFpMEYX/w
-        hjeDGZN50zKJLbC06I+zAJUEpMd7ins=
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08FBD60C27;
+        Mon, 28 Mar 2022 22:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06188C340EC;
+        Mon, 28 Mar 2022 22:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648507812;
+        bh=XFHKrVCMGFjxm/UZYRGZkUrae/PoudT6XXiFP4MNXDo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dPW+S++mOMomZgR1mhPuuXyAs33LJ1rc+GNMVt3EdPDE5oMPoSCAUOCmqkfs7n9+Z
+         4HNEt2ImEzIBaBCUnIQj3RdP/IMnYOi750x4T3g9NQVL/21re4sCybP2zvJct8yNce
+         eVdujFKLGXwnoPitthreD19Tu+Dbr3st61SgUKVWfNxXNF63iAEydmvZ6cReHQ/0er
+         loFnzhPCJ/yspMIoiVpXJDcV8e+McGCO07O4BW3z5zgwdhmeW3Z8KlHTGbYayOd8T0
+         N8lWhZG5wSMWg1xjmyE2lQgXqJm27hUgjEU2Srs6pNa67uOuAXVbOVAifFUIdir3cw
+         da0svqeL1Ibdw==
+Date:   Mon, 28 Mar 2022 15:50:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Melnychenko <andrew@daynix.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, davem@davemloft.net,
+        jasowang@redhat.com, mst@redhat.com, yan@daynix.com,
+        yuri.benditovich@daynix.com
+Subject: Re: [PATCH v5 0/4] RSS support for VirtioNet.
+Message-ID: <20220328155010.620849e5@kernel.org>
+In-Reply-To: <20220328175336.10802-1-andrew@daynix.com>
+References: <20220328175336.10802-1-andrew@daynix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Date:   Tue, 29 Mar 2022 00:46:37 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] net: phy: use hwmon_sanitize_name()
-In-Reply-To: <20220328115226.3042322-3-michael@walle.cc>
-References: <20220328115226.3042322-1-michael@walle.cc>
- <20220328115226.3042322-3-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <7e03397465a5c95cb9cd3a0f6c53b845@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-03-28 13:52, schrieb Michael Walle:
-> Instead of open-coding it, use the new hwmon_sanitize_name() in th
-
-s/th/the/ btw, will be fixed in the next version.
-
-> nxp-tja11xx and sfp driver.
+On Mon, 28 Mar 2022 20:53:32 +0300 Andrew Melnychenko wrote:
+> Virtio-net supports "hardware" RSS with toeplitz key.
+> Also, it allows receiving calculated hash in vheader
+> that may be used with RPS.
+> Added ethtools callbacks to manipulate RSS.
 > 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  drivers/net/phy/nxp-tja11xx.c | 5 +----
->  drivers/net/phy/sfp.c         | 6 ++----
+> Technically hash calculation may be set only for
+> SRC+DST and SRC+DST+PORTSRC+PORTDST hashflows.
+> The completely disabling hash calculation for TCP or UDP
+> would disable hash calculation for IP.
+> 
+> RSS/RXHASH is disabled by default.
 
-Andrew, do you also prefer two seperate patches?
+# Form letter - net-next is closed
 
--michael
+We have already sent the networking pull request for 5.18
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
+
+Please repost when net-next reopens after 5.18-rc1 is cut.
+
+RFC patches sent for review only are obviously welcome at any time.
