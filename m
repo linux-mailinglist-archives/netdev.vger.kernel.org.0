@@ -2,212 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 357D54E8E80
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 08:57:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E82384E8E88
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 09:01:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238631AbiC1G6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 02:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S235069AbiC1HCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 03:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238607AbiC1G6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 02:58:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DEB54FC52
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:57:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648450621;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=GXnAjkr/2A5EMowmWRXznPohqOX2kcPUCHlbiRHmv8Q=;
-        b=SgDT5okSRrZPvir2r4ShkmrkucqjOo9NOP15LUQNMCzXTJt9AyvLhC0kEB6v3V9gn5OCff
-        W0BGrHqq6vVVgOZkVXS9gvh5+0+mDrj2m64MaGSVa5lJUb57p7KVnpscumKIhjxBDDA0PY
-        xZizM+iK0fdYRH1e+ARhfdMgjaNCY9o=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-235-mmEQc-JnNKCEfQxAoDOdwQ-1; Mon, 28 Mar 2022 02:56:59 -0400
-X-MC-Unique: mmEQc-JnNKCEfQxAoDOdwQ-1
-Received: by mail-pj1-f70.google.com with SMTP id ge20-20020a17090b0e1400b001c64f568305so6855077pjb.8
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 23:56:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GXnAjkr/2A5EMowmWRXznPohqOX2kcPUCHlbiRHmv8Q=;
-        b=lqZYrogaC57t9UcooEWZGkvCDPol+KBD+OMk+6ywxOIAVR2qtRwXa8OZwJ82IjQ8k6
-         VA5SMHRyN2PbuSKO+U8RB2G4d367u+W9xykaMocYQa8dghLGKezfdVXMeJKHUlHfD0WM
-         CupcSTB7SMqQI7h4DMNlIAmRjpnHg37zuK+GBPi6Ddjpi9tJ/rtY2uKJB0uzke7ETvrN
-         tecU+3O6f5RyDYM5JqYfteGjJeKyn/GD7+n8MZVNUZSIrw+Ni7p6kbZM2Ivq+KY9SBBB
-         cFvTvrCFnwb2BGbNib7MFJnVmg7i5bVS6BA665AbRAfIXY6ALRJ9OYL/i+IcdiYUqZ+b
-         AnYg==
-X-Gm-Message-State: AOAM53325nLQI1idYddoEb8MHD04EviEmtA8ugUrXSoSEp7vsTGe0+JM
-        QzZ2H/ZHjkFF9/dwYxMb0AkfoW8yKZvxHKtqtSxQhg71jHkiaURbbdxyYGpdVhONKwpB1Yd6VIr
-        2JH96ThJOihX4iqLUREOcj3F4hpDbOeDf
-X-Received: by 2002:a65:5bc3:0:b0:378:4f82:d73d with SMTP id o3-20020a655bc3000000b003784f82d73dmr9382952pgr.191.1648450617851;
-        Sun, 27 Mar 2022 23:56:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwDGbONhbKlNHbKmZvjyqzr931S0/Je+LVeiwY6d3dsfsR2Cx5iTxfjSUu6T4LVTWjACMclHlLj0nzrfl8wGhM=
-X-Received: by 2002:a65:5bc3:0:b0:378:4f82:d73d with SMTP id
- o3-20020a655bc3000000b003784f82d73dmr9382922pgr.191.1648450617255; Sun, 27
- Mar 2022 23:56:57 -0700 (PDT)
+        with ESMTP id S238649AbiC1HCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 03:02:47 -0400
+Received: from esa3.hgst.iphmx.com (esa3.hgst.iphmx.com [216.71.153.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BF59115D
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 00:01:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1648450863; x=1679986863;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=L5sIGQxQZ10m1oP8yY0PjBEgZylHOhi8PoJRC1x63jU=;
+  b=cr9RVsMutgTclQmymRMQbpSa8MzXcgbOUE6C6GCxyN2fA82y06cCcXn0
+   gwWDfxrPqxEoN1jQ8shEy1FB7NHSR9sVfqpebi/K9vrnhIUbT5ysz+3t/
+   Gkdif6aVoWxOC9sfNo/N50F4oeCG108m3gp3cYZP13K3r9ncGO3aUxqkz
+   lsaRDyMHwD9K8We9wXaT2ELkZmmRQvcv9kZ1KE6BePW17Rn8BejamtJxi
+   n4zYg3PX4NFiKvBCes0WWkZ6JXWIor/QnyxF0G32DfCK+9bMW1003ktb7
+   mSB51TjyJtadUF9IJrwJHVaXcD6GYrtxoWxCyLbGcTblRi6snryzk6QBE
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,216,1643644800"; 
+   d="scan'208";a="201266125"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 28 Mar 2022 15:01:03 +0800
+IronPort-SDR: VdDvQEiMVKsWlXjEzT1yz1iFk+Qn5LS5imWfgPu0fauVUNnO3dBYhrsgv0vWy628fuFq5Hr9cG
+ ngGj7Mzk5MDAlLh8KieQvsG9OgyMHJdEOLPNozF4748JB/mK8byHysZZb8f79LOZrvdV5Od8VA
+ EhY40EvpMYaft+R55qcZRPclDzmOLi0KFHxDBC7Tx06EmFAYcUu9e3bDp8Y+yYhRtYGfpwk1fy
+ HtP2KyC5EjQ20f8qPlGjOBZICdSmpRVvpWeZaDyJ+lyC0LxTa4OSQFTLB0I5pKmgGmvJkVsyA+
+ zT7TXavXHIx6OPu5lWzC9efJ
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Mar 2022 23:32:51 -0700
+IronPort-SDR: w5gO+wTCXWL7Resp0jHjc1mARfe7EWDOEgSHM1hmBgHMnWW6IrLJtXsMDnIhzkpqkjNT3MwE/y
+ mICqT3C9bmWzkx/KNy65Bnd2phwQ0bgqEmM31/Dl5Ik44jFOeQhm46Jt+rguOYHk8++GONzLIB
+ do5tbzxmwseUpoG7S1hTh79yrgjt8+0CXO93A+09bSvM6I6yCGO1EUMbvEYrgOUxlT7QVbk/DA
+ qDSDKXhdGL23rJJPDlgOavtNAohv3J4LATO85p0vquQWlGBTi4RmF9bTfl4/8cmn0NwlJjMy6/
+ lIw=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 28 Mar 2022 00:01:05 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KRkB82blzz1SVny
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 00:01:04 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1648450863; x=1651042864; bh=L5sIGQxQZ10m1oP8yY0PjBEgZylHOhi8PoJ
+        RC1x63jU=; b=uNF+TQanmHu3tyzpQ0jEwdvlJ9y4jjGkfHhhnXcF88mY76AX8d5
+        c3dqklqTNuPhrE9Hdl7snYTEB/FiGEIN9GJVnJ1A0+xwFJ2Z61BDIXfoW6qq0iM6
+        8NaCbmrVEtbsyc2P63NbseyIXZVYXJKf3T5qOfwjXXksV21/7Ufs/5guzkqbLbrx
+        O1zaySly5jrvXUfC+EJ16xSkWHSC7Pg7ARLJUYjl5xl7twJrlA9OEmpXzx7XyWq4
+        Gnx17ka4i0F5/mKPmeaG/LoM80FxKUFbnxBDldUeaHqmeD47EcNra/Ym8tkAZAAb
+        A6yrroSmrpur7tT7f60SQgt2DzPZr1YZQJw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id sXlvPJpXQwBs for <netdev@vger.kernel.org>;
+        Mon, 28 Mar 2022 00:01:03 -0700 (PDT)
+Received: from [10.225.163.121] (unknown [10.225.163.121])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KRkB66zVdz1Rvlx;
+        Mon, 28 Mar 2022 00:01:02 -0700 (PDT)
+Message-ID: <03676250-34b4-27ac-4f50-4d507266c7a6@opensource.wdc.com>
+Date:   Mon, 28 Mar 2022 16:01:01 +0900
 MIME-Version: 1.0
-References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
- <20220318161528.1531164-7-benjamin.tissoires@redhat.com> <CAADnVQLvhWxEtHETg0tasJ7Fp5JHNRYWdjhnxi1y1gBpXS=bvQ@mail.gmail.com>
- <CAO-hwJJXR3jtAvLF1phUa5pKZzVkDxAAHO5+7R50hL-fVhDYyA@mail.gmail.com> <CAEf4BzYVu9JVJvKZK3S9HGwpyPiWrwKPGsTz3wXC_+vmRYGdNw@mail.gmail.com>
-In-Reply-To: <CAEf4BzYVu9JVJvKZK3S9HGwpyPiWrwKPGsTz3wXC_+vmRYGdNw@mail.gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 28 Mar 2022 08:56:46 +0200
-Message-ID: <CAO-hwJKPxKCzxCKGpH85j5VG3bQk+7axDYpxYoy-12yL7AQj2w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
- descriptor from an eBPF program
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v3] net: bnxt_ptp: fix compilation error
+Content-Language: en-US
+To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+References: <20220328062708.207079-1-damien.lemoal@opensource.wdc.com>
+ <CALs4sv2X4_VWkqDmA7E3Wi6CBFrAok+s-_MiL=S=a9uiP07otA@mail.gmail.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <CALs4sv2X4_VWkqDmA7E3Wi6CBFrAok+s-_MiL=S=a9uiP07otA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 6:00 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, Mar 23, 2022 at 9:08 AM Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> > Hi Alexei,
-> >
-> > On Tue, Mar 22, 2022 at 11:51 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Fri, Mar 18, 2022 at 9:16 AM Benjamin Tissoires
-> > > <benjamin.tissoires@redhat.com> wrote:
-> > > >
-> > > > +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
-> > > > +{
-> > > > +       int ret;
-> > > > +       struct hid_bpf_ctx_kern ctx = {
-> > > > +               .type = HID_BPF_RDESC_FIXUP,
-> > > > +               .hdev = hdev,
-> > > > +               .size = *size,
-> > > > +       };
-> > > > +
-> > > > +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
-> > > > +               goto ignore_bpf;
-> > > > +
-> > > > +       ctx.data = kmemdup(rdesc, HID_MAX_DESCRIPTOR_SIZE, GFP_KERNEL);
-> > > > +       if (!ctx.data)
-> > > > +               goto ignore_bpf;
-> > > > +
-> > > > +       ctx.allocated_size = HID_MAX_DESCRIPTOR_SIZE;
-> > > > +
-> > > > +       ret = hid_bpf_run_progs(hdev, &ctx);
-> > > > +       if (ret)
-> > > > +               goto ignore_bpf;
-> > > > +
-> > > > +       if (ctx.size > ctx.allocated_size)
-> > > > +               goto ignore_bpf;
-> > > > +
-> > > > +       *size = ctx.size;
-> > > > +
-> > > > +       if (*size) {
-> > > > +               rdesc = krealloc(ctx.data, *size, GFP_KERNEL);
-> > > > +       } else {
-> > > > +               rdesc = NULL;
-> > > > +               kfree(ctx.data);
-> > > > +       }
-> > > > +
-> > > > +       return rdesc;
-> > > > +
-> > > > + ignore_bpf:
-> > > > +       kfree(ctx.data);
-> > > > +       return kmemdup(rdesc, *size, GFP_KERNEL);
-> > > > +}
-> > > > +
-> > > >  int __init hid_bpf_module_init(void)
-> > > >  {
-> > > >         struct bpf_hid_hooks hooks = {
-> > > >                 .hdev_from_fd = hid_bpf_fd_to_hdev,
-> > > >                 .pre_link_attach = hid_bpf_pre_link_attach,
-> > > > +               .post_link_attach = hid_bpf_post_link_attach,
-> > > >                 .array_detach = hid_bpf_array_detach,
-> > > >         };
-> > > >
-> > > > diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-> > > > index 937fab7eb9c6..3182c39db006 100644
-> > > > --- a/drivers/hid/hid-core.c
-> > > > +++ b/drivers/hid/hid-core.c
-> > > > @@ -1213,7 +1213,8 @@ int hid_open_report(struct hid_device *device)
-> > > >                 return -ENODEV;
-> > > >         size = device->dev_rsize;
-> > > >
-> > > > -       buf = kmemdup(start, size, GFP_KERNEL);
-> > > > +       /* hid_bpf_report_fixup() ensures we work on a copy of rdesc */
-> > > > +       buf = hid_bpf_report_fixup(device, start, &size);
-> > >
-> > > Looking at this patch and the majority of other patches...
-> > > the code is doing a lot of work to connect HID side with bpf.
-> > > At the same time the evolution of the patch series suggests
-> > > that these hook points are not quite stable. More hooks and
-> > > helpers are being added.
-> > > It tells us that it's way too early to introduce a stable
-> > > interface between HID and bpf.
-> >
-> > I understand that you might be under the impression that the interface
-> > is changing a lot, but this is mostly due to my poor knowledge of all
-> > the arcanes of eBPF.
-> > The overall way HID-BPF works is to work on a single array, and we
-> > should pretty much be sorted out. There are a couple of helpers to be
-> > able to communicate with the device, but the API has been stable in
-> > the kernel for those for quite some time now.
-> >
-> > The variations in the hooks is mostly because I don't know what is the
-> > best representation we can use in eBPF for those, and the review
-> > process is changing that.
->
-> I think such a big feature as this one, especially that most BPF folks
-> are (probably) not familiar with the HID subsystem in the kernel,
-> would benefit from a bit of live discussion during BPF office hours.
-> Do you think you can give a short overview of what you are trying to
-> achieve with some background context on HID specifics at one of the
-> next BPF office hours? We have a meeting scheduled every week on
-> Thursday, 9am Pacific time. But people need to put their topic onto
-> the agenda, otherwise the meeting is cancelled. See [0] for
-> spreadsheet and links to Zoom meeting, agenda, etc.
+On 3/28/22 15:38, Pavan Chebbi wrote:
+> On Mon, Mar 28, 2022 at 11:57 AM Damien Le Moal
+> <damien.lemoal@opensource.wdc.com> wrote:
+>>
+>> The Broadcom bnxt_ptp driver does not compile with GCC 11.2.2 when
+>> CONFIG_WERROR is enabled. The following error is generated:
+>>
+>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c: In function =E2=80=98bn=
+xt_ptp_enable=E2=80=99:
+>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:400:43: error: array
+>> subscript 255 is above array bounds of =E2=80=98struct pps_pin[4]=E2=80=
+=99
+>> [-Werror=3Darray-bounds]
+>>   400 |  ptp->pps_info.pins[pin_id].event =3D BNXT_PPS_EVENT_EXTERNAL;
+>>       |  ~~~~~~~~~~~~~~~~~~^~~~~~~~
+>> In file included from drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:20=
+:
+>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h:75:24: note: while
+>> referencing =E2=80=98pins=E2=80=99
+>>    75 |         struct pps_pin pins[BNXT_MAX_TSIO_PINS];
+>>       |                        ^~~~
+>> cc1: all warnings being treated as errors
+>>
+>> This is due to the function ptp_find_pin() returning a pin ID of -1 wh=
+en
+>> a valid pin is not found and this error never being checked.
+>> Change the TSIO_PIN_VALID() function to also check that a pin ID is no=
+t
+>> negative and use this macro in bnxt_ptp_enable() to check the result o=
+f
+>> the calls to ptp_find_pin() to return an error early for invalid pins.
+>> This fixes the compilation error.
+>>
+>> Fixes: 9e518f25802c ("bnxt_en: 1PPS functions to configure TSIO pins")
+>> Cc: <stable@vger.kernel.org>
+>> Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+>> ---
+>> Changes from v2:
+>> * Restore the improved check in TSIO_PIN_VALID() and use this macro to
+>>   return an error early in bnxt_ptp_enable() in case of invalid pin ID=
+.
+>> Changes from v1:
+>> * No need to change the TSIO_PIN_VALID() macro as pin_id is an unsigne=
+d
+>>   value.
+>>
+>>  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 6 +++++-
+>>  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h | 2 +-
+>>  2 files changed, 6 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/n=
+et/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> index a0b321a19361..9c2ad5e67a5d 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> @@ -382,7 +382,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info *=
+ptp_info,
+>>         struct bnxt_ptp_cfg *ptp =3D container_of(ptp_info, struct bnx=
+t_ptp_cfg,
+>>                                                 ptp_info);
+>>         struct bnxt *bp =3D ptp->bp;
+>> -       u8 pin_id;
+>> +       int pin_id;
+>>         int rc;
+>>
+>>         switch (rq->type) {
+>> @@ -390,6 +390,8 @@ static int bnxt_ptp_enable(struct ptp_clock_info *=
+ptp_info,
+>>                 /* Configure an External PPS IN */
+>>                 pin_id =3D ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS,
+>>                                       rq->extts.index);
+>> +               if (!TSIO_PIN_VALID(pin_id))
+>> +                       return -EOPNOTSUPP;
+>=20
+> Thanks. Could we now remove this check from the function bnxt_ptp_cfg_p=
+in() ?
 
-This sounds like a good idea. I just added my topic on the agenda and
-will prepare some slides.
+Having a quick glance at all the call sites, it looks like it would be OK=
+.
+But may be in a different patch ?
 
-Cheers,
-Benjamin
+This patch is not actually fixing any real problem. It is only fixing gcc
+not being able to detect that pin_id can never be with an invalid value
+since bnxt_ptp_cfg_pin() would fail before pin_id is used in the
+assignment in bnxt_ptp_enable().
 
->
->   [0] https://docs.google.com/spreadsheets/d/1LfrDXZ9-fdhvPEp_LHkxAMYyxxpwBXjywWa0AejEveU
->
-> [...]
->
+Thoughts ?
 
+>=20
+>>                 if (!on)
+>>                         break;
+>>                 rc =3D bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS_I=
+N);
+>> @@ -403,6 +405,8 @@ static int bnxt_ptp_enable(struct ptp_clock_info *=
+ptp_info,
+>>                 /* Configure a Periodic PPS OUT */
+>>                 pin_id =3D ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT,
+>>                                       rq->perout.index);
+>> +               if (!TSIO_PIN_VALID(pin_id))
+>> +                       return -EOPNOTSUPP;
+>>                 if (!on)
+>>                         break;
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/n=
+et/ethernet/broadcom/bnxt/bnxt_ptp.h
+>> index 373baf45884b..530b9922608c 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
+>> @@ -31,7 +31,7 @@ struct pps_pin {
+>>         u8 state;
+>>  };
+>>
+>> -#define TSIO_PIN_VALID(pin) ((pin) < (BNXT_MAX_TSIO_PINS))
+>> +#define TSIO_PIN_VALID(pin) ((pin) >=3D 0 && (pin) < (BNXT_MAX_TSIO_P=
+INS))
+>>
+>>  #define EVENT_DATA2_PPS_EVENT_TYPE(data2)                            =
+  \
+>>         ((data2) & ASYNC_EVENT_CMPL_PPS_TIMESTAMP_EVENT_DATA2_EVENT_TY=
+PE)
+>> --
+>> 2.35.1
+>>
+
+
+--=20
+Damien Le Moal
+Western Digital Research
