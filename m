@@ -2,112 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8424E8D89
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 07:41:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC21B4E8D8B
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 07:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238116AbiC1Fng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 01:43:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
+        id S237647AbiC1Fqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 01:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231955AbiC1Fnd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 01:43:33 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A83A3122A
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 22:41:54 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id q19so11423423pgm.6
-        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 22:41:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y8kAp00QLV7xO8m2VG6MkDSs9FsqMJapRolUTt2Mc0U=;
-        b=oLc6cy6N8Ye/+bbKML/AmUJCSjJIz8++r6t53T/Lk/BsnCvY565Wmdk3jPOkSoSJyj
-         uRJxzFfeM6XjEEM0hQ20N8BUERNNzLzVuh/eO0oHX8cADV7yas1dcaWakWNQ+bmY1win
-         gfo0kV6dusfC79bBmewjHt/ZBnB/cBol24/Wbao12sfedpBAqzF2INSry+a2pMHK1+Mt
-         nB1bL3X2Xf6UcewlZn7MVJ2I3yjQETPoLqzxU1c0C3QQhSAG0tEs0alzOuFKZrKWXABN
-         hCh7YbtKJiejkBU35SPPRocpSsNbW+Zpvgx6Xk84haE/H2hG9lUGUq0K1wAKM6hY0J2g
-         kimg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y8kAp00QLV7xO8m2VG6MkDSs9FsqMJapRolUTt2Mc0U=;
-        b=nS0Nfxyyu/OxeqCyR2cVXppAyATWN5Tmx1cnS/DTui3rAruX9szBioJ6/9biTsdOhU
-         FvurHtZuULEDd3OBvOxr/ueiLs+dPC8Bgycnw5shjFKBj68OLKeHcbL1maBh98lacM2C
-         2FOjh35hIIwY8iknUQsSnCTMkY3GSMYoZBBJ/YwaO93DvOGmL7AISxgKVP8fkNcdBlwh
-         UpKiTf1ABtwFp95a5mEGC/S84g40Lb6OlRPfw+PaRQLG66fIDsUjHXFD1V5APoat+whK
-         hKj7W6MdpS7ZXt4WYuwWxDcrn1aTWUDI7e2I+bClGHPRog6vNoI43zt/T6asL7vaFlVo
-         QkSw==
-X-Gm-Message-State: AOAM532xYGcbHk9TizS6wQ3XhkqWxINgzjDt88A6wwbZ1IKgST6BFkP/
-        odUXJTU0GWxAi7cYn5rjPXYqufGoRXVpkA==
-X-Google-Smtp-Source: ABdhPJyhbLaHc17cyvtAE31t6ESoLNQAgMo+KogYfUHyeUDWRtxuvzUcCepJkrOkYTEHNW4EkOHJkg==
-X-Received: by 2002:a63:7945:0:b0:398:19c4:14d3 with SMTP id u66-20020a637945000000b0039819c414d3mr8116287pgc.20.1648446113683;
-        Sun, 27 Mar 2022 22:41:53 -0700 (PDT)
-Received: from martin-ubuntu ([136.185.150.175])
-        by smtp.gmail.com with ESMTPSA id i9-20020a17090a2a0900b001c6e540fb6asm13430851pjd.13.2022.03.27.22.41.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Mar 2022 22:41:53 -0700 (PDT)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Cc:     Martin Varghese <martin.varghese@nokia.com>
-Subject: [PATCH net] openvswitch: Fixed nd target mask field in the flow dump.
-Date:   Mon, 28 Mar 2022 11:11:48 +0530
-Message-Id: <20220328054148.3057-1-martinvarghesenokia@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S231955AbiC1Fqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 01:46:37 -0400
+Received: from esa5.hgst.iphmx.com (esa5.hgst.iphmx.com [216.71.153.144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD0F5006F
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 22:44:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1648446297; x=1679982297;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=dQeECniiMobqnr06450Td/lQfvZTsastjnopkzaW51Y=;
+  b=LqdSHK97bFxwnicsP96s7AqTXHbOi+G6lBzCjb0pwn2WWAufBAcqOQaX
+   I4ctXIfqJXHBrX8XBW1NvMhatEDnH9tNJ4nVWy5U0QJjKbkxbVhPiOVdg
+   zTUKgyVGf183F7n6ngfQcJOC+5BpGj2J/lKugpWLns+Ph8qkdKB4QAI7b
+   ii2iuu+oCE6LSOV+QQVvhi8pd8YDysIyn3EbbUd2uoK0eXnRmkyo21Wdg
+   3MYjLaBl5K2GDrFW5eyuKHhOeJjjQdCGlrbr13xur/7mE3NXRF+l2tpw8
+   0Sa/0yGHFsG3CMelJECd739+GFJcWmot24x9uot7raNbbJDYPAfXka3IG
+   w==;
+X-IronPort-AV: E=Sophos;i="5.90,216,1643644800"; 
+   d="scan'208";a="196420007"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 28 Mar 2022 13:44:56 +0800
+IronPort-SDR: HLvxgYbxphqLfisD4t49ez+Pd08vZTwhxdkm7jZsz72aEk+dfcHvtt+/Rf6Vs3zzppI03pi05b
+ XV+1lLIJtqMWU2JjLtCFUxHqUcEiUrtDmghGw9g0fHGV5M3nKGnXSsScnhJnw3XOtFZ5YDIKN7
+ ncNhh4P6JJ2ZXvu1GSBwXO5bh9DSfJhx0AG11XuPKpdiaO1/sxegmj/HqRBLPV8iZfXUpoboPQ
+ kclMxxUsyeRkvw2XKoU0OoUORsWtNbCnruIzLWfawoGjOqfeBded/0ZjizwNYsB/8asOZLTLbB
+ N3kG9DE+GRfeI0y5qoOwPG5X
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Mar 2022 22:16:43 -0700
+IronPort-SDR: IJQDd1OnnsmFq29acUSt/ePmL72tEQwjCpyfKavW1dbV3sazLJhVwFvX578PBEwEE9IX5qGwKL
+ LSsZWo/aACOXsQUzU6z2K34eKQYgjNO9NXNesCURhE2VrscxJ4CYPkywHQfF1mf8L1g2arF+yA
+ zLjyZC9bhtWcr4Zd5dOvSbMZxvOq9ss8gSn6lZRB99jBY6QzEu17XwTodK7mrzUyVbhz9J8zPQ
+ 4CFdfvmYrNCMXuPRjK+qQyKkt5xlHVahxj/3ctNVsgNKn20uisxprzk5IMm8cOiGjm5ZJiDWlz
+ c8s=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 27 Mar 2022 22:44:57 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4KRhVJ4VDdz1SVnx
+        for <netdev@vger.kernel.org>; Sun, 27 Mar 2022 22:44:56 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1648446296; x=1651038297; bh=dQeECniiMobqnr06450Td/lQfvZTsastjno
+        pkzaW51Y=; b=CnkXNbptBp/uAlk5E5ZgXOL+xv9oAM3kpgnnRLDJ+8itP+ON0/g
+        BkADept+nizAgswuGrfYCFbGxD0FW+I22Uyx3iu2zk1L6YVSMi1ToJDJFKXdfOLb
+        KTlngJqHe73E8C2NR1pk2RxJTNG/BuxGMZuzsLq/WqaZ/+fiQtyLDbYlyC3rEpjj
+        MCqIThuSs5Dqhu1HFzYxpmmmmDi91o5VIsQcRIFY2DpkCP5lu2a3A0g3xUFa2plr
+        AgPl/7BdKzboKsVsDwIi3qeOGAEqRmn0jinPUO/7izPwzbF72ZOJfP8p6WRJfY4n
+        cbqAfmhZkNzb5DnTQH2VgyE497BHisgL5wA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id T0htCxSEyC85 for <netdev@vger.kernel.org>;
+        Sun, 27 Mar 2022 22:44:56 -0700 (PDT)
+Received: from [10.225.163.121] (unknown [10.225.163.121])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4KRhVH0RjTz1Rvlx;
+        Sun, 27 Mar 2022 22:44:54 -0700 (PDT)
+Message-ID: <2bc8f270-e402-5e34-8d87-6b02fe8ef777@opensource.wdc.com>
+Date:   Mon, 28 Mar 2022 14:44:53 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] net: bnxt_ptp: fix compilation error
+Content-Language: en-US
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
+References: <20220328033540.189778-1-damien.lemoal@opensource.wdc.com>
+ <CACKFLi=+5NpbeHDkDdKLg9uyfiDw4NL0=q0=shfrAYhqP+z2=w@mail.gmail.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <CACKFLi=+5NpbeHDkDdKLg9uyfiDw4NL0=q0=shfrAYhqP+z2=w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+On 3/28/22 14:36, Michael Chan wrote:
+> On Sun, Mar 27, 2022 at 8:35 PM Damien Le Moal
+> <damien.lemoal@opensource.wdc.com> wrote:
+>>
+>> The Broadcom bnxt_ptp driver does not compile with GCC 11.2.2 when
+>> CONFIG_WERROR is enabled. The following error is generated:
+>>
+>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c: In function =E2=80=98bn=
+xt_ptp_enable=E2=80=99:
+>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:400:43: error: array
+>> subscript 255 is above array bounds of =E2=80=98struct pps_pin[4]=E2=80=
+=99
+>> [-Werror=3Darray-bounds]
+>>   400 |  ptp->pps_info.pins[pin_id].event =3D BNXT_PPS_EVENT_EXTERNAL;
+>>       |  ~~~~~~~~~~~~~~~~~~^~~~~~~~
+>> In file included from drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c:20=
+:
+>> drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h:75:24: note: while
+>> referencing =E2=80=98pins=E2=80=99
+>>    75 |         struct pps_pin pins[BNXT_MAX_TSIO_PINS];
+>>       |                        ^~~~
+>> cc1: all warnings being treated as errors
+>>
+>> This is due to the function ptp_find_pin() returning a pin ID of -1 wh=
+en
+>> a valid pin is not found and this error never being checked.
+>> Use the TSIO_PIN_VALID() macroin bnxt_ptp_enable() to check the result
+>> of the calls to ptp_find_pin() in bnxt_ptp_enable() to fix this
+>> compilation error.
+>>
+>> Fixes: 9e518f25802c ("bnxt_en: 1PPS functions to configure TSIO pins")
+>> Cc: <stable@vger.kernel.org>
+>> Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+>> ---
+>> Changes from v1:
+>> * No need to change the TSIO_PIN_VALID() macro as pin_id is an unsigne=
+d
+>>   value.
+>>
+>>  drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/n=
+et/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> index a0b321a19361..3c8fccbb9013 100644
+>> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
+>> @@ -390,7 +390,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info *=
+ptp_info,
+>>                 /* Configure an External PPS IN */
+>>                 pin_id =3D ptp_find_pin(ptp->ptp_clock, PTP_PF_EXTTS,
+>>                                       rq->extts.index);
+>> -               if (!on)
+>> +               if (!on || !TSIO_PIN_VALID(pin_id))
+>=20
+> I think we need to return an error if !TSIO_PIN_VALID().  If we just
+> break, we'll still use pin_id after the switch statement.
+>=20
+>>                         break;
+>>                 rc =3D bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS_I=
+N);
+>>                 if (rc)
+>> @@ -403,7 +403,7 @@ static int bnxt_ptp_enable(struct ptp_clock_info *=
+ptp_info,
+>>                 /* Configure a Periodic PPS OUT */
+>>                 pin_id =3D ptp_find_pin(ptp->ptp_clock, PTP_PF_PEROUT,
+>>                                       rq->perout.index);
+>> -               if (!on)
+>> +               if (!on || !TSIO_PIN_VALID(pin_id))
+>=20
+> Same here.
 
-IPv6 nd target mask was not getting populated in flow dump.
+The call to bnxt_ptp_cfg_pin() after the swith will return -ENOTSUPP for
+invalid pin IDs. So I did not feel like adding more changes was necessary=
+.
 
-In the function __ovs_nla_put_key the icmp code mask field was checked
-instead of icmp code key field to classify the flow as neighbour discovery.
+We can return an error if you insist, but what should it be ? -EINVAL ?
+-ENODEV ? -ENOTSUPP ? Given that bnxt_ptp_cfg_pin() return -ENOTSUPP, we
+could use that code.
 
-ufid:bdfbe3e5-60c2-43b0-a5ff-dfcac1c37328, recirc_id(0),dp_hash(0/0),
-skb_priority(0/0),in_port(ovs-nm1),skb_mark(0/0),ct_state(0/0),
-ct_zone(0/0),ct_mark(0/0),ct_label(0/0),
-eth(src=00:00:00:00:00:00/00:00:00:00:00:00,
-dst=00:00:00:00:00:00/00:00:00:00:00:00),
-eth_type(0x86dd),
-ipv6(src=::/::,dst=::/::,label=0/0,proto=58,tclass=0/0,hlimit=0/0,frag=no),
-icmpv6(type=135,code=0),
-nd(target=2001::2/::,
-sll=00:00:00:00:00:00/00:00:00:00:00:00,
-tll=00:00:00:00:00:00/00:00:00:00:00:00),
-packets:10, bytes:860, used:0.504s, dp:ovs, actions:ovs-nm2
+>=20
+>>                         break;
+>>
+>>                 rc =3D bnxt_ptp_cfg_pin(bp, pin_id, BNXT_PPS_PIN_PPS_O=
+UT);
+>> --
+>> 2.35.1
+>>
 
-Fixes: e64457191a25 (openvswitch: Restructure datapath.c and flow.c)
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
----
- net/openvswitch/flow_netlink.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index fd1f809e9bc1..0d677c9c2c80 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -2201,8 +2201,8 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
- 			icmpv6_key->icmpv6_type = ntohs(output->tp.src);
- 			icmpv6_key->icmpv6_code = ntohs(output->tp.dst);
- 
--			if (icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_SOLICITATION ||
--			    icmpv6_key->icmpv6_type == NDISC_NEIGHBOUR_ADVERTISEMENT) {
-+			if (swkey->tp.src == htons(NDISC_NEIGHBOUR_SOLICITATION) ||
-+			    swkey->tp.src == htons(NDISC_NEIGHBOUR_ADVERTISEMENT)) {
- 				struct ovs_key_nd *nd_key;
- 
- 				nla = nla_reserve(skb, OVS_KEY_ATTR_ND, sizeof(*nd_key));
--- 
-2.18.2
-
+--=20
+Damien Le Moal
+Western Digital Research
