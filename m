@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1DF94E91C2
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 11:49:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B6D34E91EB
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 11:51:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239946AbiC1Juq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 05:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47240 "EHLO
+        id S240005AbiC1Jw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 05:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239941AbiC1Jup (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 05:50:45 -0400
+        with ESMTP id S240015AbiC1Jwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 05:52:50 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F5F41F9E;
-        Mon, 28 Mar 2022 02:49:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D504F477;
+        Mon, 28 Mar 2022 02:51:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
         Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=/93dChLt+Za1uKCUhSTu2aRMCha+vAJZKphFzk7McsE=;
-        t=1648460942; x=1649670542; b=GrQqsPGmXslqKPkkMv5L9TKn0aHOqHUDd7Mwgbobfr+0/wj
-        ZfRjwz5YxIiiphH2lJt0/j4nocADL6fH/wGwU0+eI/w/2NOg6NhhOGFUtGK+kLkkJ2jVdMxCuTmFS
-        J3wqwMkDf3QphTt5Jx5M/CJzEsRRhwX2YRo4mRBNobtPwgt/VyA/7JtAhpxcAUyiFGkeUz7b9ZaAG
-        DxIUHDdw/HVcbQ8Xjd8AyY2Ry+4ecO6/1wxFkPV8y2e24sPYClwRmqXlOOdyDtXQc8RzEzsZNUb7t
-        KGzPMRop5JNPlDKyDrX4Lh3CslI/XWA8uWx9DKPodItgWYXUmO+/e8lHJgyLgxxA==;
+        Resent-Cc:Resent-Message-ID; bh=nJO5E5YD857Be4i83ypHN59i/VCIHMrXJalTXZF8ChM=;
+        t=1648461070; x=1649670670; b=yK20yxadnBzN8+9B1mQwJU3zPiDgzvgZdc6u8IMOow3L36F
+        JN7CgNZvilXkGCxHZF3v6gt8pCZRES6bh4hP4gsxSuNeSuEJCG3DTpkSLLQ9dscCS0MqHoSvmjibe
+        nCyBHIPgyrCibtGVlDv45CQbNwt0wJityVt1jRZzfomB8sptqE7XqKUm03wjBAz6RdsyTf2jJkVYH
+        oV+6U/yWl/7iZIAwTENCotrfMAEnsWrdPzvBdMpZksjbjyldCmVxKdPyb0723wZd3ZBIxgzE24ZjO
+        6pQTptAn6sIMyGZU+iIuB1eHqvW9/BWUPuw7+62LJoQe1pnnvcmoLmOSNGemSIvA==;
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.95)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1nYlzJ-001WuR-EZ;
-        Mon, 28 Mar 2022 11:48:37 +0200
-Message-ID: <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
+        id 1nYm1Y-001X37-2H;
+        Mon, 28 Mar 2022 11:50:56 +0200
+Message-ID: <bf9a4949635c01c5dec53b0e873eccec4e2b0d33.camel@sipsolutions.net>
 Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
  ath9k-based AP
 From:   Johannes Berg <johannes@sipsolutions.net>
@@ -52,8 +52,8 @@ Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable <stable@vger.kernel.org>
-Date:   Mon, 28 Mar 2022 11:48:36 +0200
-In-Reply-To: <20220327051502.63fde20a.pasic@linux.ibm.com>
+Date:   Mon, 28 Mar 2022 11:50:54 +0200
+In-Reply-To: <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
 References: <1812355.tdWV9SEqCh@natalenko.name>
          <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
          <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
@@ -68,6 +68,7 @@ References: <1812355.tdWV9SEqCh@natalenko.name>
          <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
          <e42e4c8bf35b62c671ec20ec6c21a43216e7daa6.camel@sipsolutions.net>
          <20220327051502.63fde20a.pasic@linux.ibm.com>
+         <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
@@ -82,48 +83,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2022-03-27 at 05:15 +0200, Halil Pasic wrote:
-
+On Mon, 2022-03-28 at 11:48 +0200, Johannes Berg wrote:
 > 
-> The key here is "sync_sg API, all the parameters must be the same
-> as those passed into the single mapping API", but I have to admit,
-> I don't understand the *single* in here.
+> However, this basically means that the direction argument to the flush
+> APIs are completely useless, and we do have to define something
+> new/else...
 > 
 
-Hah. So I wasn't imagining things after all.
-
-However, as the rest of the thread arrives, this still means it's all
-broken ... :)
-
-> The intended meaning of the
-> last sentence is that one can do partial sync by choose 
-> dma_hande_sync, size_sync such that dma_handle_mapping <= dma_handle_sync
-> < dma_handle_mapping + size_mapping and dma_handle_sync + size_sync <=
-> dma_handle_mapping + size_mapping. But the direction has to remain the
-> same.
-
-Right.
-
-> BTW, the current documented definition of the direction is about the
-> data transfer direction between memory and the device, and how the CPU
-> is interacting with the memory is not in scope. A quote form the
-> documentation.
-> 
-> """
-> ======================= =============================================
-> DMA_NONE                no direction (used for debugging)
-> DMA_TO_DEVICE           data is going from the memory to the device
-> DMA_FROM_DEVICE         data is coming from the device to the memory
-> DMA_BIDIRECTIONAL       direction isn't known
-> ======================= =============================================
-> """
-> (Documentation/core-api/dma-api.rst)
-> 
-> My feeling is, that re-defining the dma direction is not a good idea. But
-> I don't think my opinion has much weight here.
-
-However, this basically means that the direction argument to the flush
-APIs are completely useless, and we do have to define something
-new/else...
+No I worded that badly - the direction isn't useless, but thinking of it
+in terms of a buffer property rather than data movement is inaccurate.
+So then if we need something else to indicate how data was expected to
+be moved, the direction argument becomes useless, since it's not a
+buffer property but rather a temporal thing on a specific place that
+expected certain data movement.
 
 johannes
