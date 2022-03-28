@@ -2,98 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E8884E921C
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 11:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3D9C4E923B
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 12:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240096AbiC1J70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 05:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43986 "EHLO
+        id S240124AbiC1KEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 06:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236910AbiC1J7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 05:59:24 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EF653B40;
-        Mon, 28 Mar 2022 02:57:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=zDjy6QdYMZfzrDBM8z3vmKyXyiyg4NDUsUB16DZQfq4=;
-        t=1648461464; x=1649671064; b=UH6b4NIvopRVAzMa3bCp21YnfgYRvz2wKKPlyNtOm/5l7Bx
-        zidQmCp78kWhq94JmnVBI4Sjp6hftur7hpIxHYsyfot3b240KdM+iIJnJR2yfvzumMWj4tTQT551K
-        tT7Uxyzq/GxMKif6riOAe9s1pJV1ZEL0hLA4ewpRwWP8x99T1GPTK4JEpw+KB5FbRAv/XT4BR+Eh0
-        sQlsS4TIoJ+FIo35KVxww8Ur2b4T4XSOxFbk+T2DirF2EPh7w4DQUfgMUivjYUd8Z/ULRi8ykQCkN
-        uY/+VEnymDcNX6av1ziQYFxMIZ2NmjBYbQWUhRpx586dwvvL0sb2pTaKWWw4KwKA==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nYm7v-001X9R-7G;
-        Mon, 28 Mar 2022 11:57:31 +0200
-Message-ID: <ab02e1298955d6f535928e2c34079973e656e3b8.camel@sipsolutions.net>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Halil Pasic <pasic@linux.ibm.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Maxime Bizon <mbizon@freebox.fr>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>
-Date:   Mon, 28 Mar 2022 11:57:30 +0200
-In-Reply-To: <bf9a4949635c01c5dec53b0e873eccec4e2b0d33.camel@sipsolutions.net>
-References: <1812355.tdWV9SEqCh@natalenko.name>
-         <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
-         <20220324055732.GB12078@lst.de> <4386660.LvFx2qVVIh@natalenko.name>
-         <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com> <878rsza0ih.fsf@toke.dk>
-         <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
-         <20220324163132.GB26098@lst.de>
-         <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com> <871qyr9t4e.fsf@toke.dk>
-         <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-         <31434708dcad126a8334c99ee056dcce93e507f1.camel@freebox.fr>
-         <CAHk-=wippum+MksdY7ixMfa3i1sZ+nxYPWLLpVMNyXCgmiHbBQ@mail.gmail.com>
-         <298f4f9ccad7c3308d3a1fd8b4b4740571305204.camel@sipsolutions.net>
-         <CAHk-=whXAan2ExANMryPSFaBWeyzikPi+fPUseMoVhQAxR7cEA@mail.gmail.com>
-         <e42e4c8bf35b62c671ec20ec6c21a43216e7daa6.camel@sipsolutions.net>
-         <20220327051502.63fde20a.pasic@linux.ibm.com>
-         <f94c4fc26251262de0ecab003c74833617c1b305.camel@sipsolutions.net>
-         <bf9a4949635c01c5dec53b0e873eccec4e2b0d33.camel@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        with ESMTP id S234956AbiC1KEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 06:04:08 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E13B3617E;
+        Mon, 28 Mar 2022 03:02:28 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22S8IlB0012577;
+        Mon, 28 Mar 2022 10:02:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=q7DKSfasEVPvSYM40bnl4m17qtlsj/d7/x0iS7yhgVM=;
+ b=WIRcp7WXvk7bj1xbyns44rngDNo34KJU0iSr2UMN59exIAeTnXMn6ebSf8KrSRpGYfLr
+ A/+hLZc5rldisNsjUHlQ6YIqMSnSHwFhprv1GOaPQ+FDyW91X8Wm+Qv6zAFK2GVtQzYx
+ K8UHDWlEUGZ1bne/OQlcZ+VidKPWknEfpfqYbHoc6Nl2+DYxlPbh5dZgDbL0+eFK9Cgj
+ WOx95jLC26m3sjteurUhoFMtW2/26OrunyYoifnC6jme5vHWQmYbpPkGWdZZUJwZq1HJ
+ +ahSLEn3cERaiwacNPumedfWxdgG+2cA/o/64/dMhWaj6VTxpaobws/m99Ulq6xpa/Y4 kg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f39d91vmb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 10:02:20 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22S8Iuxa012800;
+        Mon, 28 Mar 2022 10:02:20 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3f39d91vkr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 10:02:20 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22S9xU56021154;
+        Mon, 28 Mar 2022 10:02:18 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3f1tf9bnsd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Mar 2022 10:02:17 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22SA2Fdx11338116
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Mar 2022 10:02:15 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7EE2AA4040;
+        Mon, 28 Mar 2022 10:02:15 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1C04CA4051;
+        Mon, 28 Mar 2022 10:02:15 +0000 (GMT)
+Received: from [9.171.53.124] (unknown [9.171.53.124])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 28 Mar 2022 10:02:15 +0000 (GMT)
+Message-ID: <81aba614-6f6a-1601-6ed9-a2939696a460@linux.ibm.com>
+Date:   Mon, 28 Mar 2022 12:02:14 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] net/smc: Send out the remaining data in sndbuf before
+ close
+Content-Language: en-US
+To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
+        kuba@kernel.org, dust.li@linux.alibaba.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1648447836-111521-1-git-send-email-guwen@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <1648447836-111521-1-git-send-email-guwen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: LohlJVzBZu0MSkw_ddSDna2PqUUqfvoq
+X-Proofpoint-GUID: GB44lFKqKkIBYsWh3ok9JzJk8Xfa8JED
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-28_03,2022-03-28_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
+ spamscore=0 clxscore=1011 mlxscore=0 lowpriorityscore=0 malwarescore=0
+ impostorscore=0 suspectscore=0 priorityscore=1501 adultscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203280059
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-03-28 at 11:50 +0200, Johannes Berg wrote:
-> No I worded that badly - the direction isn't useless, but thinking of it
-> in terms of a buffer property rather than data movement is inaccurate.
-> So then if we need something else to indicate how data was expected to
-> be moved, the direction argument becomes useless, since it's not a
-> buffer property but rather a temporal thing on a specific place that
-> expected certain data movement.
+On 28/03/2022 08:10, Wen Gu wrote:
+> The current autocork algorithms will delay the data transmission
+> in BH context to smc_release_cb() when sock_lock is hold by user.
 > 
+> So there is a possibility that when connection is being actively
+> closed (sock_lock is hold by user now), some corked data still
+> remains in sndbuf, waiting to be sent by smc_release_cb(). This
+> will cause:
+> 
+> - smc_close_stream_wait(), which is called under the sock_lock,
+>   has a high probability of timeout because data transmission is
+>   delayed until sock_lock is released.
+> 
+> - Unexpected data sends may happen after connction closed and use
+>   the rtoken which has been deleted by remote peer through
+>   LLC_DELETE_RKEY messages.
+> 
+> So this patch will try to send out the remaining corked data in
+> sndbuf before active close process, to ensure data integrity and
+> avoid unexpected data transmission after close.
+> 
+> Reported-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+> Fixes: 6b88af839d20 ("net/smc: don't send in the BH context if sock_owned_by_user")
+> Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+> ---
 
-Yeah, umm. I should've read the whole thread of the weekend first, sorry
-for the noise.
+Thank you,
 
-johannes
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
