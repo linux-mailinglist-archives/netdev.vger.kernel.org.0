@@ -2,72 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 889C04EA389
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 01:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E9264EA39C
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 01:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbiC1XK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 19:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
+        id S230341AbiC1X0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 19:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230389AbiC1XK4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 19:10:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047561BE8B
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 16:09:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A46E5B81168
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 23:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326F9C340ED;
-        Mon, 28 Mar 2022 23:09:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648508951;
-        bh=dOxZZzewi+vuAFMRxsLSWbMrW/i33LCrweLLhobXukU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s3np0eCJb0wveTvU+wSSX60hRGkxCecCxPbY5yWyJP/GFWK+Jc12N2Ti66Q6AuZzr
-         DecfET9gkDQDa9uj1qUEHfHq8htilJvj7oB5X6nmfPYs2NFY7gSe/+vqFpKv/OtX6c
-         xm5rPbdAMtajvBxN8ORhP3fK4SzzEmNqpyQNGNOvfrm+lSVM/btPHaONfhAX7sOdgW
-         4387o1B8J4kLCqOOYuHaLcgdfwge81jc2/ZcC7d2XSiMdHE+k/RijiXIEDjeasPSuS
-         jLfxQwNtTcimY0e7MN/0DO0y26KpgvCxOdrWLK6xUPn/M3/CUokh//WsqKGl6JADcp
-         R8T3LyFb2CDCA==
-Date:   Mon, 28 Mar 2022 16:09:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        kernel@pengutronix.de, NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: [PATCH net-next] net: fec: Do proper error checking for
- enet_out clk
-Message-ID: <20220328160910.3eb8fb87@kernel.org>
-In-Reply-To: <20220325165543.33963-1-u.kleine-koenig@pengutronix.de>
-References: <20220325165543.33963-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S230240AbiC1X0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 19:26:52 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F0FDF07;
+        Mon, 28 Mar 2022 16:25:09 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so445627wmp.5;
+        Mon, 28 Mar 2022 16:25:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W2+QnfDLI9bZuB4ejF4uihDFHRYkKKFrKgLbbWsABqo=;
+        b=Cizk17/06JtJdVHd89UnYX6XuyelMuYjGc/F0qXSEg5VR3tOMHrG1aUjESEEm62VGy
+         9ofWuXHOhFbIZI5/SvKK+eCJcOs7REHjmpXmq6Ylfo6yaYHyxnZTKRgab2Q1y7ZmSRB/
+         XC46fCJxrNxB51030MdX3qTU/vLGd2duELlHoVlIDa8xywy579m5caUWJGR7c9QPzTa7
+         oJVoJ0I09JDl3ohxL9YQC5bwexPlFN3TM8z44mTiLnGEm9l6eMV+GldjoDM3uPsLpA6M
+         Ft13BmrkoNby4riW0U5KyGurYCLDH3gRDDsmq7IzWBzAjMY7hyRTUR7/ry3B5R/obTFp
+         ZYAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W2+QnfDLI9bZuB4ejF4uihDFHRYkKKFrKgLbbWsABqo=;
+        b=0+ULnt9hqRr4FzHkkZUMB1evkOggb8DIMEvtNvqid9NuCjW+GaZaCp/YSEESFL4+B/
+         /+X3mUv3ZJmEbZeOKkY0xLI1xv02eWpKYcnvEcXbn+i3r7rkNDni/n4PzufDbmKnEhu5
+         W6cXMjrH1FTH5K1m3Kl+ExhG04cEfZKe4HoKCvtSK9vY+li3bj09H3O7+FOkyqe9wl7S
+         lZoAj2/bZwe8DOktSs651QfmYWpaqGQduFRTR7WEFjSENhOt9T1hu4MRD99RWMq9i4ak
+         nfcVJQFiCHUbtqrBMRKx8X9xq0ajyLLVrpLh0IulvhzdtUbEdWi+oMpFxTiD7gLWjKwC
+         NXxw==
+X-Gm-Message-State: AOAM532HAjJVyqBuGYX+d1BrGRqbhodsNAbKeJAr3Pz7oM1oqnfnCOHn
+        Qgor7dMOzV+pkDZLChyglzz9dZnAbO2Dhw==
+X-Google-Smtp-Source: ABdhPJyzqO0kh01/y3eCfZMQUE4yOSBWUcPimLlPZrb+yjgeieDaDEQFBuncHUjuEd5Dsj65Cya78g==
+X-Received: by 2002:a7b:c452:0:b0:38c:9146:569 with SMTP id l18-20020a7bc452000000b0038c91460569mr2285041wmi.201.1648509907358;
+        Mon, 28 Mar 2022 16:25:07 -0700 (PDT)
+Received: from alaa-emad ([41.45.69.52])
+        by smtp.gmail.com with ESMTPSA id i10-20020a0560001aca00b00203daf3759asm13945792wry.68.2022.03.28.16.25.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 16:25:07 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     outreachy@lists.linux.dev
+Cc:     toke@toke.dk, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH] First Patch: Add Printk to pci.c
+Date:   Tue, 29 Mar 2022 01:24:49 +0200
+Message-Id: <20220328232449.132550-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Mar 2022 17:55:43 +0100 Uwe Kleine-K=C3=B6nig wrote:
-> An error code returned by devm_clk_get() might have other meanings than
-> "This clock doesn't exist". So use devm_clk_get_optional() and handle
-> all remaining errors as fatal.
->=20
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-> ---
-> Hello,
->=20
-> this isn't urgent and doesn't fix a problem I encountered, just noticed
-> this patch opportunity while looking up something different in the
-> driver.
+This patch for adding Printk line to ath9k probe function as a task
+for Outreachy internship
 
-Would you mind reposting after the merge window?=20
-We keep net-next closed until -rc1 is cut.
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+---
+ drivers/net/wireless/ath/ath9k/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/ath/ath9k/pci.c b/drivers/net/wireless/ath/ath9k/pci.c
+index a074e23013c5..e16bdf343a2f 100644
+--- a/drivers/net/wireless/ath/ath9k/pci.c
++++ b/drivers/net/wireless/ath/ath9k/pci.c
+@@ -892,6 +892,7 @@ static int ath_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	int ret = 0;
+ 	char hw_name[64];
+ 	int msi_enabled = 0;
++	printk(KERN_DEBUG "I can modify the Linux kernel!\n");
+ 
+ 	if (pcim_enable_device(pdev))
+ 		return -EIO;
+-- 
+2.35.1
+
