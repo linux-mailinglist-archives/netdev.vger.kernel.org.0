@@ -2,194 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42A314E8FDE
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 10:14:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 365EB4E8FE6
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 10:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239194AbiC1IQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 04:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        id S239225AbiC1IRS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Mar 2022 04:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239196AbiC1IQ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 04:16:28 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206F013D28;
-        Mon, 28 Mar 2022 01:14:48 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22S7BEZA029994;
-        Mon, 28 Mar 2022 08:14:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Tvax1EpreYhpSfGqFLZ2dyca4slyRY3u7iC0J43xZ18=;
- b=QQDEE2DFuyt7Dc4tZ78i2j/CX7au4PNpsk0ustjSrEZKHD2jZ7gJkjFvBxTqGcmHVbuq
- D9eDT3yxf5veIJ2X4+XQgPP2e0t4HuTCjLSiHj8S60t67dAojCNsVEpnX7IvdwchklYS
- yJkaQKbKnZgqtE97MDoZVJw2Crjoz33erMS9qAUGm/QpGE9ytisPbUH122cPB0GU4KAX
- n2sj6sZPazMIqtRZ07PT5mR8P6WRKu9I+GNv0iNo9P/ose2MKn86IIlVjUPImAfY6SEO
- aybN/tyrD0DmIU/Ezaj32FYuIm4xDOycFJUT4ZX3VaClwVPDNa45D807yb0xsPNcdB60 Mw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f2c8j4wvv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Mar 2022 08:14:31 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22S8B9ap029891;
-        Mon, 28 Mar 2022 08:14:30 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f2c8j4wvf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Mar 2022 08:14:30 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22S8DV3h021725;
-        Mon, 28 Mar 2022 08:14:28 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04ams.nl.ibm.com with ESMTP id 3f1tf8uf5j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Mar 2022 08:14:28 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22S82VUf30802332
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Mar 2022 08:02:31 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 85CBAAE04D;
-        Mon, 28 Mar 2022 08:14:25 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 730D4AE051;
-        Mon, 28 Mar 2022 08:14:25 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Mon, 28 Mar 2022 08:14:25 +0000 (GMT)
-Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55271)
-        id 315EEE1BD2; Mon, 28 Mar 2022 10:14:25 +0200 (CEST)
-From:   Alexandra Winter <wintera@linux.ibm.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S239218AbiC1IRR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 04:17:17 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 966A32458E
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 01:15:36 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-82-73TuQx5vMi6TZZlGtDoZUA-1; Mon, 28 Mar 2022 09:15:33 +0100
+X-MC-Unique: 73TuQx5vMi6TZZlGtDoZUA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Mon, 28 Mar 2022 09:15:29 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Mon, 28 Mar 2022 09:15:29 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+CC:     Robin Murphy <robin.murphy@arm.com>,
+        =?iso-8859-1?Q?Toke_H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        "Marek Szyprowski" <m.szyprowski@samsung.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>
-Subject: [PATCH net-next 1/1] veth: Support bonding events
-Date:   Mon, 28 Mar 2022 10:14:17 +0200
-Message-Id: <20220328081417.1427666-2-wintera@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220328081417.1427666-1-wintera@linux.ibm.com>
-References: <20220328081417.1427666-1-wintera@linux.ibm.com>
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Olha Cherevyk <olha.cherevyk@gmail.com>,
+        iommu <iommu@lists.linux-foundation.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable <stable@vger.kernel.org>
+Subject: RE: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Thread-Topic: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
+ ath9k-based AP
+Thread-Index: AQHYQm5IK/9JYQDqEEKfLChLw6SC36zUb2Ng
+Date:   Mon, 28 Mar 2022 08:15:29 +0000
+Message-ID: <eb33d98e65104d98abf9bd752787a9ea@AcuMS.aculab.com>
+References: <1812355.tdWV9SEqCh@natalenko.name>
+ <CAHk-=wiwz+Z2MaP44h086jeniG-OpK3c=FywLsCwXV7Crvadrg@mail.gmail.com>
+ <27b5a287-7a33-9a8b-ad6d-04746735fb0c@arm.com>
+ <CAHk-=wip7TCD_+2STTepuEZvGMg6wcz+o=kyFUvHjuKziTMixw@mail.gmail.com>
+ <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
+ <20220324190216.0efa067f.pasic@linux.ibm.com> <20220325163204.GB16426@lst.de>
+ <87y20x7vaz.fsf@toke.dk> <e077b229-c92b-c9a6-3581-61329c4b4a4b@arm.com>
+ <CAHk-=wgKF5GfLXyVGDQDifh0MpMccDdmBvJBG3dt2+idCa5DzQ@mail.gmail.com>
+ <20220328063723.GA29405@lst.de>
+In-Reply-To: <20220328063723.GA29405@lst.de>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: D-ZF31Sj1Vsc8mD97dlpkO5ZYUFUrJEO
-X-Proofpoint-GUID: 4Dpg5lSqhK-lkYs8H_4jUIHwrKI_0UZ7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-28_02,2022-03-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 malwarescore=0 suspectscore=0 spamscore=0 clxscore=1015
- mlxlogscore=999 impostorscore=0 mlxscore=0 phishscore=0 priorityscore=1501
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203280046
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bonding drivers generate specific events during failover that trigger
-switch updates.  When a veth device is attached to a bridge with a
-bond interface, we want external switches to learn about the veth
-devices as well.
+From: Christoph Hellwig
+> Sent: 28 March 2022 07:37
+> 
+> On Fri, Mar 25, 2022 at 11:46:09AM -0700, Linus Torvalds wrote:
+> > I think my list of three different sync cases (not just two! It's not
+> > just about whether to sync for the CPU or the device, it's also about
+> > what direction the data itself is taking) is correct.
+> >
+> > But maybe I'm wrong.
+> 
+> At the high level you are correct.  It is all about which direction
+> the data is taking.  That is the direction argument that all the
+> map/unmap/sync call take.  The sync calls then just toggle the ownership.
+> You seem to hate that ownership concept, but I don't see how things
+> could work without that ownership concept as we're going to be in
+> trouble without having that.  And yes, a peek operation could work in
+> some cases, but it would have to be at the cache line granularity.
 
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
----
- drivers/net/veth.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+I don't think it is really 'ownership' but more about who has
+write access.
+Only one side can have write access (to a cache line [1]) at any
+one time.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index d29fb9759cc9..9019c9852daf 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -1579,6 +1579,57 @@ static void veth_setup(struct net_device *dev)
- 	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
- }
- 
-+static bool _is_veth(const struct net_device *dev)
-+{
-+	return (dev->netdev_ops->ndo_open == veth_open);
-+}
-+
-+static void veth_notify_peer(unsigned long event, const struct net_device *dev)
-+{
-+	struct net_device *peer;
-+	struct veth_priv *priv;
-+
-+	priv = netdev_priv(dev);
-+	peer = rtnl_dereference(priv->peer);
-+	/* avoid re-bounce between 2 bridges */
-+	if (!netif_is_bridge_port(peer))
-+		call_netdevice_notifiers(event, peer);
-+}
-+
-+/* Called under rtnl_lock */
-+static int veth_device_event(struct notifier_block *unused,
-+			     unsigned long event, void *ptr)
-+{
-+	struct net_device *dev, *lower;
-+	struct list_head *iter;
-+
-+	dev = netdev_notifier_info_to_dev(ptr);
-+
-+	switch (event) {
-+	case NETDEV_NOTIFY_PEERS:
-+	case NETDEV_BONDING_FAILOVER:
-+	case NETDEV_RESEND_IGMP:
-+		/* propagate to peer of a bridge attached veth */
-+		if (netif_is_bridge_master(dev)) {
-+			iter = &dev->adj_list.lower;
-+			lower = netdev_next_lower_dev_rcu(dev, &iter);
-+			while (lower) {
-+				if (_is_veth(lower))
-+					veth_notify_peer(event, lower);
-+				lower = netdev_next_lower_dev_rcu(dev, &iter);
-+			}
-+		}
-+		break;
-+	default:
-+		break;
-+	}
-+	return NOTIFY_DONE;
-+}
-+
-+static struct notifier_block veth_notifier_block __read_mostly = {
-+		.notifier_call  = veth_device_event,
-+};
-+
- /*
-  * netlink interface
-  */
-@@ -1824,12 +1875,14 @@ static struct rtnl_link_ops veth_link_ops = {
- 
- static __init int veth_init(void)
- {
-+	register_netdevice_notifier(&veth_notifier_block);
- 	return rtnl_link_register(&veth_link_ops);
- }
- 
- static __exit void veth_exit(void)
- {
- 	rtnl_link_unregister(&veth_link_ops);
-+	unregister_netdevice_notifier(&veth_notifier_block);
- }
- 
- module_init(veth_init);
--- 
-2.32.0
+Read access is different.
+You need a 'synchronise' action to pick up newly written data.
+This might be a data copy, cache flush or cache invalidate.
+It only need affect the area that needs to be read - not
+full buffer.
+Partial cache flush/invalidate will almost certainly speed
+up receipt of short network packets that are copied into a
+new skb - leaving the old one mapped for another receive.
+
+[1] The cache line size might be a property of the device
+and dma subsystem, not just the cpu.
+I have used hardware when the effective size was 1kB.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
