@@ -2,62 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D52EA4E96A4
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:31:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 971FD4E96BC
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242507AbiC1MdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 08:33:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        id S241218AbiC1Mgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 08:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242545AbiC1MdF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:33:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BD135AA1;
-        Mon, 28 Mar 2022 05:31:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BC688B80DFE;
-        Mon, 28 Mar 2022 12:31:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A869FC340EC;
-        Mon, 28 Mar 2022 12:31:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648470682;
-        bh=fLGdb7dSfAqcoc7SmA0DtwuG5S8J1UMKX6NM0JYvlbE=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=vR3sm0Sym9PNeV1iKQGwMQbPO6yRDwohIBCSBdBAAXuDDO0SWpja6OgX6EnOvgTmq
-         TjnzAmmgRqAI7VMMqH2O7CUJ6XEWGQoPVF1AN2lYHSalQOuTT+xH3TeXiapzkBoDDY
-         tTzTYQ5GBWa2GALcTzd9hSykzmqjjHuEIfoQNXYeYukvQqZVWjJgo1IrRVnWgagObl
-         g/dwjiafO/fytUgqLw8IWTrjQWjo/zqFAaNAJAQ8gjKtytzwyaZGjuidRKQhih/yde
-         bDhRRLmxOXxLsSy40enpsfgnUm8nwGiwmrDs+aoLJB2mBmG7Pk8oHcDE3szRC3iHWp
-         ESPsCuNOlpy8A==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Benjamin =?utf-8?Q?St=C3=BCrz?= <benni@stuerz.xyz>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-acpi@vger.kernel.org, devel@acpica.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-input@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-media@vger.kernel.org,
-        wcn36xx@lists.infradead.org, linux-wireless@vger.kernel.org,
-        linux-pci@vger.kernel.org
-Subject: Re: [PATCH 00/22] Replace comments with C99 initializers
-References: <20220326165909.506926-1-benni@stuerz.xyz>
-        <8f9271b6-0381-70a9-f0c2-595b2235866a@stuerz.xyz>
-        <87fsn2zaix.fsf@kernel.org>
-        <cc104272-d79a-41e1-f4de-cb78fb073991@stuerz.xyz>
-Date:   Mon, 28 Mar 2022 15:31:14 +0300
-In-Reply-To: <cc104272-d79a-41e1-f4de-cb78fb073991@stuerz.xyz> ("Benjamin
-        \=\?utf-8\?Q\?St\=C3\=BCrz\=22's\?\= message of "Mon, 28 Mar 2022 13:51:42 +0200")
-Message-ID: <87bkxqz2b1.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S233890AbiC1Mgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:36:47 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08163643B
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:35:07 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id w4so14637062ply.13
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:35:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tmswMDps1ywZiXtPbHvuyFB9pUA9D/JCoJ8KtD2p8NY=;
+        b=k6kHxjfSdtLA1q9vGwHChBfYcsiSDvGLz1vO5swrltnQ4KZkh529jbi7dGLJeb0X5x
+         57Z12cHKQE03Xb8GmVGYGr6MfszM6Gg8olsZ/WQeQZpOMyObw9LuDL4xyXor6aBVZw8B
+         JsWJ+TR+tLu2eDvEKM8TG+W2idwn74Y41BdqdBnCk3tSOgbz3aGpvaZNwIV24HmuFljr
+         4ce/pVSc00ZOXZK6mPZldajweqoCZuEhuqBybmTtNXofJNa69gi1J6vzb/PKkEXxreDz
+         s4piqLjTQepFlEbC+kiBoRjHmwCBTGWfZ6yvmT0om7Ufn/KgN6AniwdUSYjTL0WGX87X
+         ENOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tmswMDps1ywZiXtPbHvuyFB9pUA9D/JCoJ8KtD2p8NY=;
+        b=pv3xtFwh7DqJDfOwyo9zKMHjYjxmt3ZRaXMR2vSt1Z4pPrVdhFD/kcopx6o2R5o5xv
+         eYc/WQbxL5t48rEBo+/lwznN4rWdWfcTsWWUBcyKUxDEwqiAErm7nbQmdRSAeM0T8fx1
+         PfEIhqfj1Krmqo9ulYjtYKFuHP11Yai7A+SswV24VCvAot+cILe5dwY+T2aUhJMnfWkv
+         R1AmUlUjBqhiuo0cUsHhznkvKh+hZDohlPhavPXiwBYVRpzrPNKRDWL6q+jTHazs/lzt
+         ijE068N8N6Mg97BfZzy5OJvFTNHwfMjCKcnj6nPoh+Gzwq5l/LMYhHshmXrxvWndb8pL
+         focA==
+X-Gm-Message-State: AOAM532jJ4/TcWoWFUCP/6lY3vB6KEKk5vIy0wBqlEYpvWodyExk4lBO
+        TqGnYfQ1WnbeU3ZPSpnrZQPfsA==
+X-Google-Smtp-Source: ABdhPJyM5z7w60kSuEMNprE4M2nsF1pBug3mz2WMhZUHkwXPJeWQcyYnQCZQjdchcEONqIGYSpgkoQ==
+X-Received: by 2002:a17:90a:a018:b0:1c6:5dac:3da with SMTP id q24-20020a17090aa01800b001c65dac03damr29012038pjp.195.1648470906480;
+        Mon, 28 Mar 2022 05:35:06 -0700 (PDT)
+Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id h12-20020a056a00170c00b004fab8f3244esm16314597pfc.28.2022.03.28.05.35.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:35:06 -0700 (PDT)
+From:   Andy Chiu <andy.chiu@sifive.com>
+To:     radhey.shyam.pandey@xilinx.com, robert.hancock@calian.com,
+        michal.simek@xilinx.com, andrew@lunn.ch
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, linux@armlinux.org.uk, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, robh@kernel.org,
+        Andy Chiu <andy.chiu@sifive.com>
+Subject: [PATCH v6 net 0/4] Fix broken link on Xilinx's AXI Ethernet in SGMII mode
+Date:   Mon, 28 Mar 2022 20:32:34 +0800
+Message-Id: <20220328123238.2569322-1-andy.chiu@sifive.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,60 +70,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Benjamin St=C3=BCrz <benni@stuerz.xyz> writes:
+The Ethernet driver use phy-handle to reference the PCS/PMA PHY. This
+could be a problem if one wants to configure an external PHY via phylink,
+since it use the same phandle to get the PHY. To fix this, introduce a
+dedicated pcs-handle to point to the PCS/PMA PHY and deprecate the use
+of pointing it with phy-handle. A similar use case of pcs-handle can be
+seen on dpaa2 as well.
 
-> On 28.03.22 11:33, Kalle Valo wrote:
->> Benjamin St=C3=BCrz <benni@stuerz.xyz> writes:
->>=20
->>> This patch series replaces comments with C99's designated initializers
->>> in a few places. It also adds some enum initializers. This is my first
->>> time contributing to the Linux kernel, therefore I'm probably doing a
->>> lot of things the wrong way. I'm sorry for that.
->>=20
->> Just a small tip: If you are new, start with something small and learn
->> from that. Don't do a controversial big patchset spanning multiple
->> subsystems, that's the hard way to learn things. First submit one patch
->> at a time to one subsystem and gain understanding of the process that
->> way.
->
-> I actually thought this would be such simple thing.
+--- patch v5 ---
+ - Re-applying the v4 patch on the net tree.
+ - Describes the pcs-handle DT binding at ethernet-controller level.
+--- patch v6 ---
+ - Remove "preferrably" to clearify usage of pcs_handle.
 
-If there are 22 patches and a dozen different subsystems it's far from
-simple, as you noticed from your replies :)
+Andy Chiu (4):
+  net: axienet: setup mdio unconditionally
+  net: axienet: factor out phy_node in struct axienet_local
+  dt-bindings: net: add pcs-handle attribute
+  net: axiemac: use a phandle to reference pcs_phy
 
-> Do you know of any good thing where to start? I already looked into
-> drivers/staging/*/TODO and didn't found something for me personally.
+ .../bindings/net/ethernet-controller.yaml     |  6 ++++
+ .../bindings/net/xilinx_axienet.txt           |  8 ++++-
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |  2 --
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 33 ++++++++++---------
+ 4 files changed, 31 insertions(+), 18 deletions(-)
 
-I work in wireless and one my annoyance is use of BUG_ON() in wireless
-drivers. There just isn't a good reason to crash the whole system when
-there's a bug in a wireless driver or firmware. You can get list like
-this:
+-- 
+2.34.1
 
-git grep BUG_ON drivers/net/wireless/ | grep -v BUILD_BUG_ON
-
-It might not be always trivial to fix BUG_ON() usage, so it would be a
-good challenge as well. See the wiki link below how to submit wireless
-patches. But just send a one patch first, don't work for several hours
-and then submit a big set of patches.
-
-We also might have a todo list somewhere in the wiki, but don't know how
-to up-to-date it is.
-
-> Should I drop this patchset and start with something different?=20
-
-Like Mauro suggested, splitting the patchset per subsystem is a very
-good idea. And first try out with one subsystem, and after seeing how it
-goes (if they are accepted or rejected), decide if you send more patches
-to other subsystems.
-
-> If yes, what would the proper way to drop it? Just announcing, that
-> this is going nowhere in a separate patch?
-
-Replying to Mauro's email and telling your intentions is a good way to
-inform everyone.
-
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
