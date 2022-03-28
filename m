@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8590E4E945A
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 13:26:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA7F34E949A
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 13:29:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241001AbiC1L1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 07:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
+        id S241396AbiC1La4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 07:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241029AbiC1L0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 07:26:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF43860DF;
-        Mon, 28 Mar 2022 04:23:38 -0700 (PDT)
+        with ESMTP id S241394AbiC1La2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 07:30:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1311956219;
+        Mon, 28 Mar 2022 04:24:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 437E0B81072;
-        Mon, 28 Mar 2022 11:23:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D94A8C340F3;
-        Mon, 28 Mar 2022 11:23:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2FBF611D0;
+        Mon, 28 Mar 2022 11:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D593CC36AE2;
+        Mon, 28 Mar 2022 11:24:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648466609;
-        bh=A/hAMMRh3XJNdD9x1AAtbacK618VtXEYBp3Ix1ZXMfo=;
+        s=k20201202; t=1648466648;
+        bh=gwJ5FR9DtZIsA2hPSe/5+mSIlwSULFPHfwLGfoecJLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UxjltfWH0myQA4zj1M/htqy76iLly77Hpe9cjblBeLQofx0Z2jSXxP0TOi3pgXSZq
-         DcsqqFN2SmLDgVMJF5j2x5Z3ZNv1XwAGQSVfbAhTVs2C5Q9b7H2TpWxSbxVNVcZo3N
-         kVEovffO4G8EOPKTxarOTUX2jRVZ9TQ2Nw3DKQu1tFt8VPp/JUSpFHp6ja9Gs3TnFt
-         e9iH1QeBH9CTzeehax7bBEDc9LsfWIWJVHAdVnLEomX5O5nNoAohoTED6DgZyVY7Eo
-         1csnqaZiuqx2DRIWiF3/5KTUldGHyvNQQR3lFhQXDWvAJzL7D/fXC/ziOiyEGHiuIL
-         MGR6VKsHyS1hQ==
+        b=kJ15vx0otjlnstt1LvyXh0M0Y8xAq5C1h+uJ1bvmC4kDSCqFeYYY0sszJJC6heQYH
+         j/JQMVq8Q5uODC+vG9UvK2h2Yliucj4i8eLUVYHaS0a4SDlu1+MF+t2LT5QU/fV4PS
+         pl8drrw8dyoLXAMjEL9BeUVf/VgzwzUL9N6scM2QughNvHyJ+Pv5KSHdye0GHLIJ5+
+         Gc4XLww1xH0rXj70HOnosXM0GtiTvQgPyZipWIUEKj8XjCc/bM/IvHdrOFUpmFra8r
+         31oR+YWanfC9ksYPdK/HjKK4E/OwFTNRFLPL734NrS9vytAgHK8K59XGEVMve9YiSI
+         7dbC8A8q64EUA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
@@ -38,12 +38,12 @@ Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
         Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
         ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 15/21] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
-Date:   Mon, 28 Mar 2022 07:22:48 -0400
-Message-Id: <20220328112254.1556286-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 12/16] lib/raid6/test/Makefile: Use $(pound) instead of \# for Make 4.3
+Date:   Mon, 28 Mar 2022 07:23:41 -0400
+Message-Id: <20220328112345.1556601-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220328112254.1556286-1-sashal@kernel.org>
-References: <20220328112254.1556286-1-sashal@kernel.org>
+In-Reply-To: <20220328112345.1556601-1-sashal@kernel.org>
+References: <20220328112345.1556601-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
@@ -112,7 +112,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/lib/raid6/test/Makefile b/lib/raid6/test/Makefile
-index a4c7cd74cff5..4fb7700a741b 100644
+index b9e6c3648be1..98b9fd0354dd 100644
 --- a/lib/raid6/test/Makefile
 +++ b/lib/raid6/test/Makefile
 @@ -4,6 +4,8 @@
@@ -124,7 +124,7 @@ index a4c7cd74cff5..4fb7700a741b 100644
  CC	 = gcc
  OPTFLAGS = -O2			# Adjust as desired
  CFLAGS	 = -I.. -I ../../../include -g $(OPTFLAGS)
-@@ -42,7 +44,7 @@ else ifeq ($(HAS_NEON),yes)
+@@ -47,7 +49,7 @@ else ifeq ($(HAS_NEON),yes)
          OBJS   += neon.o neon1.o neon2.o neon4.o neon8.o recov_neon.o recov_neon_inner.o
          CFLAGS += -DCONFIG_KERNEL_MODE_NEON=1
  else
