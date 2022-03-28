@@ -2,201 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE764E9AC3
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 17:13:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C0524E9ACC
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 17:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244404AbiC1POq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 11:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38196 "EHLO
+        id S235039AbiC1PR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 11:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243663AbiC1POi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 11:14:38 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6331A60CD2;
-        Mon, 28 Mar 2022 08:12:51 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id c10so10943159ejs.13;
-        Mon, 28 Mar 2022 08:12:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=8j5QTAZfLhwmkKFIt9nilSI/3dPPPzi4f58TnsoEgH8=;
-        b=ealUty7SO2YHat48Wm0vOdR5RY6b0HiVR7jHHq4iBQQaNKsQTtA4vPGJ5uiWtqs2If
-         yzDF3I6kdy3oTdpQGXIkUVfr0PgXbigd2ujGC87qw6gPuiAyRYFuL3JJPAV6wcILXLZ1
-         xCkH+DtVJwDLGeDAFHev9lUp1BL7McWCvgh6PJpi/L0ZAEE4YJGcc6j6AiVOczLMwVC6
-         5rZS7mSzEUGPMSo6CrMK8mMTj1v4MzwdtpDBHxubyIgfEMms5epwnzaoudrkL3aCCD+s
-         B9uSyrwZwthd7ysvD/pVUucT2EdUVVEl8K+9AgMCpEgE6c0MYUpZOLxVT4IOPMpQhk42
-         UoVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=8j5QTAZfLhwmkKFIt9nilSI/3dPPPzi4f58TnsoEgH8=;
-        b=Fr+F0H7qlrMk5vK7FEtJmgqlsuvpYDvisZyGJRHx0GClVkHMq/eeqZGb27Gah7Q0IL
-         XOjsY1C3KDKANL1qxLwta8mLzZ7v/eqMHquGPFJRiHgc4BFDc5BxcO1bLfgUzwsiLTeT
-         Bk/4dOvmNSFRPJPl+QdJ/b1zqR6IxgGy8iqaH+x9D1GjNwZiV2hyMvCiQr7dykxkyhkR
-         QMrfjUTF5HM7SQAfkuMlkIgdpNuDsPC63sKkJFJ1YXK39zq3tZc0IqheRN4vJIXEpAuw
-         M3iSs4UTBtw4yHzH4DhWKhsbvCelqp1e90xJX95vKtBwUOUJ9MhEWMYWJ7W8rx1d+0RH
-         0Vag==
-X-Gm-Message-State: AOAM5331Gr3yB/Yjr76OSXWkFAVAfaLXeeAX655Z1kop3JhYy+DjqVtG
-        Y0v9ofEHCSJ1abWiKoWqGJQ=
-X-Google-Smtp-Source: ABdhPJz6aam8vyQ9xQvfqTbz/cqdVoF1/67xHSYTTq/diC1MSZQ/h+uG6EMOYu4P0YDSO6KktLMqhA==
-X-Received: by 2002:a17:907:1c9e:b0:6e0:2fed:869a with SMTP id nb30-20020a1709071c9e00b006e02fed869amr28390275ejc.122.1648480369669;
-        Mon, 28 Mar 2022 08:12:49 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id d1-20020a50fe81000000b004197f2ecdc2sm7100904edt.89.2022.03.28.08.12.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 08:12:49 -0700 (PDT)
-Date:   Mon, 28 Mar 2022 18:12:47 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 2/4] net: switchdev: add support for
- offloading of fdb locked flag
-Message-ID: <20220328151247.hgub3vuzqbrl6mis@skbuf>
-References: <20220324142749.la5til4ys6zva4uf@skbuf>
- <86czia1ned.fsf@gmail.com>
- <20220325132102.bss26plrk4sifby2@skbuf>
- <86fsn6uoqz.fsf@gmail.com>
- <20220325140003.a4w4hysqbzmrcxbq@skbuf>
- <86tubmt408.fsf@gmail.com>
- <20220325203057.vrw5nbwqctluc6u3@skbuf>
- <86ee2m8r2e.fsf@gmail.com>
- <20220328084828.ergz2h64p7ugebwl@skbuf>
- <86h77ijudc.fsf@gmail.com>
+        with ESMTP id S230330AbiC1PR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 11:17:26 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A0C1AF13
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 08:15:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=AqExq93rXlXw4LuP4dJw/8jliMif9kaaCtXeUlixSjs=; b=fRxhEYuZgtn9iZXa4rmObogMxO
+        OSxuzo3H3+mx+70fAUKykgU/GuuvaeKqh8OpT3rN7sF7v5+JejmjaOWaTmTgm4VM00+PjyqY0kg3B
+        4GHF8z1fjGL+L8N8xdLh0BD1WZ7oPAnrNrBNvTalSyPkSAVozbX+a1o/xOHs5HN2MYdc=;
+Received: from p200300daa70ef200457252b09d12924e.dip0.t-ipconnect.de ([2003:da:a70e:f200:4572:52b0:9d12:924e] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nYr5q-0006mk-MC; Mon, 28 Mar 2022 17:15:42 +0200
+Message-ID: <6d85d6a5-190e-2dfd-88f9-f09899c98ee7@nbd.name>
+Date:   Mon, 28 Mar 2022 17:15:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <86h77ijudc.fsf@gmail.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Content-Language: en-US
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>, netdev@vger.kernel.org
+References: <20220210142401.4912-1-nbd@nbd.name>
+ <20220210142401.4912-2-nbd@nbd.name>
+ <bc499a39-64b9-ceb4-f36f-21dd74d6272d@nvidia.com>
+ <e8f1e8f5-8417-84a8-61c3-793fa7803ac6@nbd.name>
+ <0b4318af-4c12-bd5a-ae32-165c70af65b2@nvidia.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC 2/2] net: bridge: add a software fast-path implementation
+In-Reply-To: <0b4318af-4c12-bd5a-ae32-165c70af65b2@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 11:31:43AM +0200, Hans Schultz wrote:
-> On mån, mar 28, 2022 at 11:48, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > On Mon, Mar 28, 2022 at 09:38:33AM +0200, Hans Schultz wrote:
-> >> On fre, mar 25, 2022 at 22:30, Vladimir Oltean <olteanv@gmail.com> wrote:
-> >> > On Fri, Mar 25, 2022 at 05:01:59PM +0100, Hans Schultz wrote:
-> >> >> > An attacker sweeping through the 2^47 source MAC address range is a
-> >> >> > problem regardless of the implementations proposed so far, no?
-> >> >> 
-> >> >> The idea is to have a count on the number of locked entries in both the
-> >> >> ATU and the FDB, so that a limit on entries can be enforced.
-> >> >
-> >> > I can agree with that.
-> >> >
-> >> > Note that as far as I understand regular 802.1X, these locked FDB
-> >> > entries are just bloatware if you don't need MAC authentication bypass,
-> >> > because the source port is already locked, so it drops all traffic from
-> >> > an unknown MAC SA except for the link-local packets necessary to run
-> >> > EAPOL, which are trapped to the CPU.
-> >> 
-> >> 802.1X and MAC Auth can be completely seperated by hostapd listning
-> >> directly on the locked port interface before entering the bridge.
-> >
-> > I don't understand this, sorry. What do you mean "before entering the
-> > bridge"?
-> >
-> RAW socket on network slave device.
 
-But as far as the port and its driver are concerned, there is a lot of
-unnecessary functionality going on in the background if you don't need
-MAC authentication bypass. All non-EAPOL packets could be unauthorized
-without CPU intervention by simply not enabling CPU-assisted secure
-learning in the first place. You might consider cutting off some of that
-overhead by making user space opt into secure learning.
+Hi Nik,
 
-> >> > So maybe user space should opt into the MAC authentication bypass
-> >> > process, really, since that requires secure CPU-assisted learning, and
-> >> > regular 802.1X doesn't. It's a real additional burden that shouldn't be
-> >> > ignored or enabled by default.
-> >> >
-> >> >> > If unlimited growth of the mv88e6xxx locked ATU entry cache is a
-> >> >> > concern (which it is), we could limit its size, and when we purge a
-> >> >> > cached entry in software is also when we could emit a
-> >> >> > SWITCHDEV_FDB_DEL_TO_BRIDGE for it, right?
-> >> >> 
-> >> >> I think the best would be dynamic entries in both the ATU and the FDB
-> >> >> for locked entries.
-> >> >
-> >> > Making locked (DPV=0) ATU entries be dynamic (age out) makes sense.
-> >> > Since you set the IgnoreWrongData for source ports, you suppress ATU
-> >> > interrupts for this MAC SA, which in turn means that a station which is
-> >> > unauthorized on port A can never redeem itself when it migrates to port B,
-> >> > for which it does have an authorization, since software never receives
-> >> > any notice that it has moved to a new port.
-> >> >
-> >> > But making the locked bridge FDB entry be dynamic, why does it matter?
-> >> > I'm not seeing this through. To denote that it can migrate, or to denote
-> >> > that it can age out? These locked FDB entries are 'extern_learn', so
-> >> > they aren't aged out by the bridge anyway, they are aged out by whomever
-> >> > added them => in our case the SWITCHDEV_FDB_DEL_TO_BRIDGE that I mentioned.
-> >> >
-> >> I think the FDB and the ATU should be as much in sync as possible, and
-> >> the FDB definitely should not keep stale entries that only get removed
-> >> by link down. The SWITCHDEV_FDB_DEL_TO_BRIDGE route would requre an
-> >> interrupt when a entry ages out in the ATU, but we know that that cannot
-> >> happen with DPV=0. Thus the need to add dynamic entries with
-> >> SWITCHDEV_FDB_ADD_TO_BRIDGE. 
-> >
-> > So what is your suggestion exactly? You want the driver to notify the
-> > locked FDB entry via FDB_ADD_TO_BRIDGE with the dynamic flag, and then
-> > rely on the bridge's software ageing timer to delete it? How does that
-> > deletion propagate back to the driver then? I'm unclear on the ownership
-> > model you propose.
-> >
-> 
-> As the FDB and the ATU will age out the entry with the same timeout,
-> they will stay relatively in sync compared to the situation where the
-> switchcore driver will not be able to notify the bridge that a zero DPV
-> entry has aged out as it has no port association.
+I'd like to follow up on our discussion regarding bridge offloading.
+I managed to come up with a user space + eBPF implementation that 
+replaces this code and shows mostly the same performance gain as my 
+previous kernel space implementation.
 
-So if the DPV=0 ATU entry doesn't get refreshed when a packet hits it
-(even to get dropped), then I suppose the drift between software and
-hardware ageing timers could be kept more or less under control.
+At first I tried to use generic XDP, but after getting it working, 
+performance was pretty bad (due to headroom issues) and I was told that 
+this is by design and nobody should use it in production.
 
-But you still need to change switchdev and the bridge driver to support
-this pattern, and you need to make a compelling case for it, because the
-lack of a FDB_DEL_TO_BRIDGE notifier _is_ a concern in the general case.
+Then I reworked the code to use tc classifier instead and it worked much 
+better.
 
-And if you say "well, you know, the reason why I don't need to emit the
-FDB_DEL_TO_BRIDGE is because I lied about the FDB entry's port association
-in the first place (during FDB_ADD_TO_BRIDGE), it really is associated
-with no port rather than with the port I said, just go with it", well,
-that might not be the strongest argument for a new kind of externally
-learned FDB entry. Anyway I'll defer to bridge and switchdev maintainers.
+It's not fully ready yet, I need to add some more tests for incompatible 
+features, but I'm getting there...
+The code is here: https://github.com/nbd168/bridger
 
-> >> >> How the two are kept in sync is another question, but if there is a
-> >> >> switchcore, it will be the 'master', so I don't think the bridge
-> >> >> module will need to tell the switchcore to remove entries in that
-> >> >> case. Or?
-> >> >
-> >> > The bridge will certainly not *need* to tell the switch to delete a
-> >> > locked FDB entry, but it certainly *can* (and this is in fact part of
-> >> > the authorization process, replace an ATU entry with DPV=0 with an ATU
-> >> > entry with DPV=BIT(port)).
-> >> 
-> >> Yes you are right, but I was implicitly only regarding internal
-> >> mechanisms in the 'bridge + switchcore', and not userspace netlink
-> >> commands.
-> >> >
-> >> > I feel as if I'm missing the essence of your reply.
+There's one thing I haven't been able to figure out yet: What's the 
+proper way to keep bridge fdb entries alive from user space without 
+modifying them in any other way?
+
+- Felix
