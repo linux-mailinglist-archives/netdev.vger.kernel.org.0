@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2724E8D8D
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 07:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 006B94E8D91
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 07:48:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238172AbiC1Ftp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 01:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38590 "EHLO
+        id S238181AbiC1FuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 01:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235040AbiC1Fto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 01:49:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C3950078;
-        Sun, 27 Mar 2022 22:48:04 -0700 (PDT)
+        with ESMTP id S235040AbiC1FuK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 01:50:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B582412A94;
+        Sun, 27 Mar 2022 22:48:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6388B80E48;
-        Mon, 28 Mar 2022 05:48:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF70C340F0;
-        Mon, 28 Mar 2022 05:47:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 314846109A;
+        Mon, 28 Mar 2022 05:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C6AC340F0;
+        Mon, 28 Mar 2022 05:48:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648446481;
-        bh=7WvjipyGg6RsfucDyVPM5ZDCMQ7EW5OtT8Dh7ipOWPw=;
+        s=k20201202; t=1648446508;
+        bh=LQyxRKXMf0S7uzGj5hH8/MvLm79Jjubtz0m602VOG1Y=;
         h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=IF2sIOU2jtJMxOIsuPM+6fW5O0Z0j++wP7ng9+hOlOYtjoqfxlcdG9CEkR1x0mml0
-         lnn7+EqcftVG33r+qMfQFOPl0B7zIX1tQ+mAHREfw/19fdYElXMa8SFUsJwEW8QpKk
-         eX84n5PZAvm3ZdiIbESKll2qdycWZClAR/sIXfCmXk4Hf509Mi8INzCV/P53qk5Suj
-         G3xnb3lGMgu4GD8tW111FxcBWWbp1kp8s/zTOEeQex7SqTI7oK6XEAbZ4ww3CbI8RX
-         +OlRFTSBA2WwWz9tIt9SwRs2PgNpGkxXoPjKA54CpYR7pkfsE3Lw13BkFBEKsCXyb2
-         0MaJqyQ6JXyBQ==
+        b=r5X52gFgn7hx5pBW0q/WF5RxNd/bFfG97hhie/kXFd6DHGiu014p/NEc7mw71W4xZ
+         JJpY+PSzyAACVYpBT6O0ZzdFiKjp6QJrXwz+v0jZ7x8AJTX6/l/NDBnYq1sqlVgnP4
+         TC9jttkCIwV4kZjwHq751BRBgg7/+OxOYMBKlQ/1/VEqBv9F3R4vDNzdzejBiC9izJ
+         MwyCxqyS/J6At+JIUj9cKkOJws2Airt7fxk70wDV4zRR3FrKmDl6N3EgrhD7z/mJZs
+         ndT9+LTH0vJ2Dvn9wSN5uSjcwCDucJNGGZLWHffCIeuhJtuxVUhgOof8UH0DuiljxA
+         Bgz69gFqxOmfw==
 From:   Kalle Valo <kvalo@kernel.org>
 To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -39,14 +39,13 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Jakub Kicinski <kuba@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] iwlwifi: fw: Replace zero-length arrays with flexible-array members
-References: <20220216195015.GA904148@embeddedor>
-        <202202161235.2FB20E6A5@keescook>
-        <20220326003843.GA2602091@embeddedor>
-Date:   Mon, 28 Mar 2022 08:47:55 +0300
-In-Reply-To: <20220326003843.GA2602091@embeddedor> (Gustavo A. R. Silva's
-        message of "Fri, 25 Mar 2022 19:38:43 -0500")
-Message-ID: <871qym1vck.fsf@kernel.org>
+Subject: Re: [PATCH][next] iwlwifi: mei: Replace zero-length array with flexible-array member
+References: <20220216195030.GA904170@embeddedor>
+        <202202161235.F3A134A9@keescook> <20220326004137.GB2602091@embeddedor>
+Date:   Mon, 28 Mar 2022 08:48:24 +0300
+In-Reply-To: <20220326004137.GB2602091@embeddedor> (Gustavo A. R. Silva's
+        message of "Fri, 25 Mar 2022 19:41:37 -0500")
+Message-ID: <87wngezkyf.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -63,8 +62,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 "Gustavo A. R. Silva" <gustavoars@kernel.org> writes:
 
-> On Wed, Feb 16, 2022 at 12:35:14PM -0800, Kees Cook wrote:
->> On Wed, Feb 16, 2022 at 01:50:15PM -0600, Gustavo A. R. Silva wrote:
+> On Wed, Feb 16, 2022 at 12:35:22PM -0800, Kees Cook wrote:
+>> On Wed, Feb 16, 2022 at 01:50:30PM -0600, Gustavo A. R. Silva wrote:
 >> > There is a regular need in the kernel to provide a way to declare
 >> > having a dynamically sized set of trailing elements in a structure.
 >> > Kernel code should always use =E2=80=9Cflexible array members=E2=80=9D=
@@ -88,11 +87,7 @@ gth-and-one-element-arrays
 >
 > ...I can take this in my -next tree in the meantime.
 
-Like we have discussed before, please don't take any wireless patches to
-your tree. The conflicts just cause more work of us.
-
-I assigned this patch to me on patchwork and I'm planning to take it to
-wireless-next once it opens. Luca, ack?
+I'll take this. Luca, ack?
 
 --=20
 https://patchwork.kernel.org/project/linux-wireless/list/
