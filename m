@@ -2,200 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C74E44E962C
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F8174E9637
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240864AbiC1MFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 08:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
+        id S242276AbiC1MIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 08:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236940AbiC1MFd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:05:33 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A711C10D;
-        Mon, 28 Mar 2022 05:03:51 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KRrvV0xw9z9sSS;
-        Mon, 28 Mar 2022 14:03:50 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id mfpM4CKHYgi1; Mon, 28 Mar 2022 14:03:50 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KRrvV02fJz9sS2;
-        Mon, 28 Mar 2022 14:03:50 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E1AE78B774;
-        Mon, 28 Mar 2022 14:03:49 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id MgrrJHZN3a_P; Mon, 28 Mar 2022 14:03:49 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id B6F0F8B763;
-        Mon, 28 Mar 2022 14:03:49 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 22SC3Zcv101576
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 28 Mar 2022 14:03:35 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 22SC3Zt6101574;
-        Mon, 28 Mar 2022 14:03:35 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Paolo Abeni <pabeni@redhat.com>,
-        "Toke Hoiland-Jorgensen" <toke@toke.dk>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        cake@lists.bufferbloat.net
-Subject: [PATCH net-next] sch_cake: Take into account guideline DEF/DGSIC/36 from French Administration
-Date:   Mon, 28 Mar 2022 14:03:24 +0200
-Message-Id: <356a242a964fabbdf876a18c7640eb6ead6d0e6b.1648468695.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S236940AbiC1MIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:08:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5262F02E;
+        Mon, 28 Mar 2022 05:07:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B651261386;
+        Mon, 28 Mar 2022 12:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB604C004DD;
+        Mon, 28 Mar 2022 12:06:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648469224;
+        bh=tE6ioofk+pBW2MT07IEZlFDaMsj/QAWNPh7LO+tEgRY=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=SNBp87/b9ghn6N66Qiw+pC44k2wkbqkuWOtkrnabNs3b+dpmzNteG8aCrh0Nefk16
+         W9SGaIyDxUNy9Ai3OvzygFgeCC0ID9u0ww0fVlfx7AJwQrjYzvriQcFbdtLQPUO/Hx
+         tt8JrGbwpuEBBjZWjo/Pk9oYqU7a32+7BBqqZ034F/xwUi4FKRZB3/jWRRen2xbgm8
+         PD4BleRvyw8JMy86JdPmgr5fneoYPT0uIu2WWZ2TBstcxYCqQ5Tu+4gUtW/TLfg5gC
+         op/UBrH5it2hyjGXiexwdkZjBk+X3wzxDQ4GWY3KOrOh1J/G1OX1DVV22TIPLJ95bT
+         LOCFHGhpSVGvA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648469002; l=3970; s=20211009; h=from:subject:message-id; bh=75ZCbmpZ80bUhHxXSdf4GpKIzWiERVR/QGymj1/HGQo=; b=Fs903hJX2Cs+qgU3qX+Py8DrjakQWxDT+D60UGyUYwRrYfyRDj6afp/qaD/70uRZ0cKSYgmx1xjq A93LoYRrC5XR7J3/rP/1hI5OaB7/kpadZQBoW5pbBonw7UUV37nW
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Subject: Re: [PATCH 20/22] wireless: Replace comments with C99 initializers
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220326165909.506926-20-benni@stuerz.xyz>
+References: <20220326165909.506926-20-benni@stuerz.xyz>
+To:     =?utf-8?q?Benjamin_St=C3=BCrz?= <benni@stuerz.xyz>
+Cc:     andrew@lunn.ch, sebastian.hesselbarth@gmail.com,
+        gregory.clement@bootlin.com, linux@armlinux.org.uk,
+        linux@simtec.co.uk, krzk@kernel.org, alim.akhtar@samsung.com,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, robert.moore@intel.com,
+        rafael.j.wysocki@intel.com, lenb@kernel.org, 3chas3@gmail.com,
+        laforge@gnumonks.org, arnd@arndb.de, gregkh@linuxfoundation.org,
+        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
+        rric@kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl,
+        mike.marciniszyn@cornelisnetworks.com,
+        dennis.dalessandro@cornelisnetworks.com, jgg@ziepe.ca,
+        pali@kernel.org, dmitry.torokhov@gmail.com, isdn@linux-pingi.de,
+        benh@kernel.crashing.org, fbarrat@linux.ibm.com, ajd@linux.ibm.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        nico@fluxnic.net, loic.poulain@linaro.org, pkshih@realtek.com,
+        bhelgaas@google.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-acpi@vger.kernel.org,
+        devel@acpica.org, linux-atm-general@lists.sourceforge.net,
+        netdev@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-input@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-media@vger.kernel.org, wcn36xx@lists.infradead.org,
+        linux-wireless@vger.kernel.org, linux-pci@vger.kernel.org,
+        =?utf-8?q?Benjamin_St=C3=BCrz?= <benni@stuerz.xyz>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <164846920750.11945.16978682699891961444.kvalo@kernel.org>
+Date:   Mon, 28 Mar 2022 12:06:51 +0000 (UTC)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-French Administration has written a guideline that defines additional
-DSCP values for use in its networks.
+Benjamin Stürz <benni@stuerz.xyz> wrote:
 
-Add new CAKE diffserv tables to take those new values into account
-and add CONFIG_NET_SCH_CAKE_DGSIC to select those tables instead of
-the default ones.
+> This replaces comments with C99's designated
+> initializers because the kernel supports them now.
+> 
+> Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
 
-The document is available at
-https://www.bo.sga.defense.gouv.fr/texte/signe/264219/N%C2%B0%2036/DEF/DGSIC.pdf
-or https://www.bo.sga.defense.gouv.fr/texte/264219/N%C2%B0%2036/DEF/DGSIC.html
+The title prefix should be "ray_cs: ".
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- net/sched/Kconfig    | 11 +++++++++++
- net/sched/sch_cake.c | 42 +++++++++++++++++++++++++++++++++++++++---
- 2 files changed, 50 insertions(+), 3 deletions(-)
+Patch set to Changes Requested.
 
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index 1e8ab4749c6c..b99f247404e0 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -331,6 +331,17 @@ config NET_SCH_CAKE
- 
- 	  If unsure, say N.
- 
-+config NET_SCH_CAKE_DGSIC
-+	bool "CAKE: Follow French Administration's guideline DEF/DGSIC/36"
-+	depends on NET_SCH_CAKE
-+	help
-+	  Say Y here if you want to use the Common Applications Kept Enhanced
-+	  (CAKE) queue management algorithm in an environment that requires to
-+	  take into account additional DSCP values defined by the French
-+	  Administration in the guideline document identified DEF/DGSIC/36,
-+	  available at
-+	  https://www.bo.sga.defense.gouv.fr/texte/signe/264219/N%C2%B0%2036/DEF/DGSIC.pdf
-+
- config NET_SCH_FQ
- 	tristate "Fair Queue"
- 	help
-diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index a43a58a73d09..3d9af3a68c05 100644
---- a/net/sched/sch_cake.c
-+++ b/net/sched/sch_cake.c
-@@ -322,6 +322,17 @@ static const u8 diffserv8[] = {
- 	7, 2, 2, 2, 2, 2, 2, 2,
- };
- 
-+static const u8 diffserv8_dgsic[] = {
-+	2, 0, 1, 2, 4, 2, 2, 2,
-+	1, 1, 1, 2, 1, 1, 1, 2,
-+	5, 4, 4, 2, 4, 4, 4, 2,
-+	3, 3, 3, 2, 3, 3, 3, 2,
-+	6, 3, 3, 2, 3, 3, 3, 2,
-+	6, 6, 6, 2, 6, 6, 6, 2,
-+	7, 2, 2, 2, 2, 2, 2, 2,
-+	7, 2, 2, 2, 2, 2, 2, 2,
-+};
-+
- static const u8 diffserv4[] = {
- 	0, 1, 0, 0, 2, 0, 0, 0,
- 	1, 0, 0, 0, 0, 0, 0, 0,
-@@ -333,6 +344,17 @@ static const u8 diffserv4[] = {
- 	3, 0, 0, 0, 0, 0, 0, 0,
- };
- 
-+static const u8 diffserv4_dgsic[] = {
-+	0, 1, 0, 0, 2, 0, 0, 0,
-+	1, 0, 0, 0, 0, 0, 0, 0,
-+	2, 2, 2, 0, 2, 2, 2, 0,
-+	2, 2, 2, 0, 2, 2, 2, 0,
-+	3, 2, 2, 0, 2, 2, 2, 0,
-+	3, 3, 3, 0, 3, 3, 3, 0,
-+	3, 0, 0, 0, 0, 0, 0, 0,
-+	3, 0, 0, 0, 0, 0, 0, 0,
-+};
-+
- static const u8 diffserv3[] = {
- 	0, 1, 0, 0, 2, 0, 0, 0,
- 	1, 0, 0, 0, 0, 0, 0, 0,
-@@ -344,6 +366,17 @@ static const u8 diffserv3[] = {
- 	2, 0, 0, 0, 0, 0, 0, 0,
- };
- 
-+static const u8 diffserv3_dgsic[] = {
-+	0, 1, 0, 0, 2, 0, 0, 0,
-+	1, 0, 0, 0, 0, 0, 0, 0,
-+	0, 0, 0, 0, 0, 0, 0, 0,
-+	0, 0, 0, 0, 0, 0, 0, 0,
-+	0, 0, 0, 0, 0, 0, 0, 0,
-+	0, 2, 2, 0, 2, 2, 2, 0,
-+	2, 0, 0, 0, 0, 0, 0, 0,
-+	2, 0, 0, 0, 0, 0, 0, 0,
-+};
-+
- static const u8 besteffort[] = {
- 	0, 0, 0, 0, 0, 0, 0, 0,
- 	0, 0, 0, 0, 0, 0, 0, 0,
-@@ -2409,7 +2442,8 @@ static int cake_config_diffserv8(struct Qdisc *sch)
- 	q->tin_cnt = 8;
- 
- 	/* codepoint to class mapping */
--	q->tin_index = diffserv8;
-+	q->tin_index = IS_ENABLED(CONFIG_NET_SCH_CAKE_DGSIC) ? diffserv8_dgsic :
-+							       diffserv8;
- 	q->tin_order = normal_order;
- 
- 	/* class characteristics */
-@@ -2452,7 +2486,8 @@ static int cake_config_diffserv4(struct Qdisc *sch)
- 	q->tin_cnt = 4;
- 
- 	/* codepoint to class mapping */
--	q->tin_index = diffserv4;
-+	q->tin_index = IS_ENABLED(CONFIG_NET_SCH_CAKE_DGSIC) ? diffserv4_dgsic :
-+							       diffserv4;
- 	q->tin_order = bulk_order;
- 
- 	/* class characteristics */
-@@ -2489,7 +2524,8 @@ static int cake_config_diffserv3(struct Qdisc *sch)
- 	q->tin_cnt = 3;
- 
- 	/* codepoint to class mapping */
--	q->tin_index = diffserv3;
-+	q->tin_index = IS_ENABLED(CONFIG_NET_SCH_CAKE_DGSIC) ? diffserv3_dgsic :
-+							       diffserv3;
- 	q->tin_order = bulk_order;
- 
- 	/* class characteristics */
 -- 
-2.35.1
+https://patchwork.kernel.org/project/linux-wireless/patch/20220326165909.506926-20-benni@stuerz.xyz/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
