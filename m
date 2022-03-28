@@ -2,117 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F41B4E9624
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEA84E9629
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 14:02:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242169AbiC1MER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 08:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
+        id S242267AbiC1MEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 08:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235781AbiC1MEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:04:16 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E34AA184;
-        Mon, 28 Mar 2022 05:02:36 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22SBGVe1003281;
-        Mon, 28 Mar 2022 12:02:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=eopDlAerto5cu8t7VL8uSZexV6d47sbjv0WpEVVN2rU=;
- b=Cu5VpJUCNGXzVkcSJxYEJwsCik8ePrSlSlPkWaTPJPiteXSvT692JkTW4vkesEpt/Qrh
- pVwIjXv9/WVCfu6htCYTDqN8BMKJInzIHP6NKsXB6bfk5cxulFVuVdSm0quOhHuphxOX
- dUCcmP3dZy/ntPuyCvjV4wRYHU7yu+OQsNTfIzSNrUEn2jp2gujrepHGsIpimgNHwCrB
- +aS9cWislnobScISShwC5c2D1YX9IvaYwMojGU4MlWJB4bobg0bAZ7TcNBcN3QLtNVFY
- Z1XjfektwqWVmCFPy0WYSudFWon8dmZDBG6PcqRy4TtxqFrzRBDBU1xdu5UWikEjnVv1 jw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f3c0f8wk0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Mar 2022 12:02:13 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22SBqrwq021727;
-        Mon, 28 Mar 2022 12:02:12 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f3c0f8wj2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Mar 2022 12:02:12 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22SBrN3m021407;
-        Mon, 28 Mar 2022 12:02:10 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3f1tf8ua8m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Mar 2022 12:02:10 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22SC273W35651888
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Mar 2022 12:02:08 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D1CDB52067;
-        Mon, 28 Mar 2022 12:02:07 +0000 (GMT)
-Received: from li-e979b1cc-23ba-11b2-a85c-dfd230f6cf82 (unknown [9.171.73.54])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with SMTP id 037DC5204F;
-        Mon, 28 Mar 2022 12:02:06 +0000 (GMT)
-Date:   Mon, 28 Mar 2022 14:02:04 +0200
-From:   Halil Pasic <pasic@linux.ibm.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@toke.dk>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Maxime Bizon <mbizon@freebox.fr>,
-        Oleksandr Natalenko <oleksandr@natalenko.name>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Olha Cherevyk <olha.cherevyk@gmail.com>,
-        iommu <iommu@lists.linux-foundation.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [REGRESSION] Recent swiotlb DMA_FROM_DEVICE fixes break
- ath9k-based AP
-Message-ID: <20220328140205.59c2c1b8.pasic@linux.ibm.com>
-In-Reply-To: <CAHk-=whK3z5O4G55cOb2JYgwisb4cpDK=qhM=0CfmCC8PD+xMQ@mail.gmail.com>
-References: <1812355.tdWV9SEqCh@natalenko.name>
-        <f88ca616-96d1-82dc-1bc8-b17480e937dd@arm.com>
-        <20220324055732.GB12078@lst.de>
-        <4386660.LvFx2qVVIh@natalenko.name>
-        <81ffc753-72aa-6327-b87b-3f11915f2549@arm.com>
-        <878rsza0ih.fsf@toke.dk>
-        <4be26f5d8725cdb016c6fdd9d05cfeb69cdd9e09.camel@freebox.fr>
-        <20220324163132.GB26098@lst.de>
-        <d8a1cbf4-a521-78ec-1560-28d855e0913e@arm.com>
-        <871qyr9t4e.fsf@toke.dk>
-        <CAHk-=whUQCCaQXJt3KUeQ8mtnLeVXEScNXCp+_DYh2SNY7EcEA@mail.gmail.com>
-        <20220327054848.1a545b12.pasic@linux.ibm.com>
-        <CAHk-=whUJ=tMEgP3KiWwk0pzmHn+1QORUu50syE+zOGk4UnFog@mail.gmail.com>
-        <CAHk-=wgUx5CVF_1aEkhhEiRGXHgKzUdKiyctBKcHAxkxPpbiaw@mail.gmail.com>
-        <20220328015211.296739a4.pasic@linux.ibm.com>
-        <CAHk-=whK3z5O4G55cOb2JYgwisb4cpDK=qhM=0CfmCC8PD+xMQ@mail.gmail.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        with ESMTP id S242218AbiC1MEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 08:04:22 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAE6DFEA
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:02:41 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id x34so16603738ede.8
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 05:02:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=u9gMefs9D4sXYrqNr7PYUc9+3nwjTh6EgKXpSLB3o0I=;
+        b=uQ0mS6YUcbQd5D3VeXPWtaJrr1jPLq8djaTCYYTHmnvijDovdCue70fZltIEmy+awS
+         2/nXdb4C3OiPRWiYWecR3+6s45+pHocRm0i33bNpE8ISYskfZ9AgjPBBumgwmPme1Agw
+         SaulRP4/+X0l1WyMfbE3pDK7pPl5K4pOn3w8uv580e0zaQgBxSjUKmIuhwfkt1vzq+JG
+         4lfA96TXeuiTNmmXRNPFQR1ujp2qHp4yAgwb5D4HUm3mT34e4FXNFtTbo7GQ+d6BzFF6
+         YabEUae9zAuhGwsf8F+OSpFshX/83DmIb+V11KzYVy2hIWMOCY5c2IvFznOld8Bra6Gp
+         E9LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=u9gMefs9D4sXYrqNr7PYUc9+3nwjTh6EgKXpSLB3o0I=;
+        b=qosfq9ZBmh1wFxU4DEEW3QM57tFYfNHBiGNA3lsTd8X1OihBYNXCWEe0F4dLbNjVkU
+         kE/Ql3FVgYkkt4AcAOyOqexI5H6ZdSuK3tSQMS32iNu8fhaP4JGNE3qBf/22zAI0auzI
+         XUauXlHRClA/tiIGczgZUYyS6dTP/IgFuWaGM32wQ0DE+M8A6WXQwMF9EaBettcch/CK
+         vYeeChkdTBV1eiP6d3zu+IX/Z/AjWBAGwQztyCu3XMoWorYjOWnv4x1rrHyTUZo9xbC3
+         CNXvTSLXL/Or0Yax9y9VRQ/SxDDmPWGEVOqkx4szhxwVjS+1RQgxtRO1dW7onSbJj/Vq
+         iYeg==
+X-Gm-Message-State: AOAM531ICB76BxkojoPkDHF9PY3SkXpTuBUF+yG3qzYKROiHp+NBeXsZ
+        GAbXm1MTX65bSnjaw8jvMqlI7Q==
+X-Google-Smtp-Source: ABdhPJyIq3ZREWefYDa6IXpBpbYtJB6NEmv4R7CFSE2Y/3cI6x4PoXkwUHDLE+MdDlLzNkLCqSqReA==
+X-Received: by 2002:aa7:d311:0:b0:419:443b:6222 with SMTP id p17-20020aa7d311000000b00419443b6222mr15689099edq.161.1648468959688;
+        Mon, 28 Mar 2022 05:02:39 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id n20-20020a17090695d400b006e0b0022b29sm3856223ejy.186.2022.03.28.05.02.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 05:02:39 -0700 (PDT)
+Date:   Mon, 28 Mar 2022 13:02:14 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Alexander Duyck <alexanderduyck@fb.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] skbuff: disable coalescing for page_pool recycling
+Message-ID: <YkGjxox4gsJrWvJT@myrica>
+References: <20220324172913.26293-1-jean-philippe@linaro.org>
+ <6dca1c23-e72e-7580-31ba-0ef1dfe745ad@huawei.com>
+ <SA1PR15MB5137A34F08A624A565150338BD1A9@SA1PR15MB5137.namprd15.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: qM3F7YJf-cGX00jEe2OWQrGFmuf7JALY
-X-Proofpoint-GUID: -noAAuTabGO02OaibSytSTpo2UpQgv16
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-28_04,2022-03-28_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
- impostorscore=0 priorityscore=1501 suspectscore=0 lowpriorityscore=0
- mlxlogscore=999 adultscore=0 mlxscore=0 spamscore=0 bulkscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203280069
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SA1PR15MB5137A34F08A624A565150338BD1A9@SA1PR15MB5137.namprd15.prod.outlook.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -121,70 +76,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 27 Mar 2022 17:30:01 -0700
-Linus Torvalds <torvalds@linux-foundation.org> wrote:
-
-> On Sun, Mar 27, 2022 at 4:52 PM Halil Pasic <pasic@linux.ibm.com> wrote:
-> >
-> > I have no intention of pursuing this.  When fixing the information leak,
-> > I happened to realize, that a somewhat similar situation can emerge when
-> > mappings are reused. It seemed like an easy fix, so I asked the swiotlb
-> > maintainers, and they agreed. It ain't my field of expertise, and the
-> > drivers I'm interested in don't need this functionality.  
+On Fri, Mar 25, 2022 at 02:50:46AM +0000, Alexander Duyck wrote:
+> > >     The problem is here: both SKB1 and SKB2 point to PAGE2 but SKB1 does
+> > >     not actually hold a reference to PAGE2.
+> > 
+> > it seems the SKB1 *does* hold a reference to PAGE2 by calling
+> > __skb_frag_ref(), which increments the page->_refcount instead of
+> > incrementing pp_frag_count, as skb_cloned(SKB3) is true and
+> > __skb_frag_ref() does not handle page pool
+> > case:
+> > 
+> > INVALID URI REMOVED
+> > rc1/source/net/core/skbuff.c*L5308__;Iw!!Bt8RZUm9aw!u944ZiA7uzBuFvccr
+> > rtR1xvondLNnkMf5xzM8xbbkosow-v5t-XdZJd6bMsByMx2Kw$
 > 
-> Ok.
+> I'm confused here as well. I don't see a path where you can take ownership of the page without taking a reference.
 > 
-> That said, I think you are putting yourself down when you said in an
-> earlier email that you aren't veryt knowledgeable in this area.
+> Specifically the skb_head_is_locked() won't let you steal the head if the skb is cloned. And then for the frags they have an additional reference taken if the skb is cloned.
 > 
-> I think the fact that you *did* think of this other similar situation
-> is actually very interesting, and it's something people probably
-> _haven't_ been thinking about.
+> >  Without coalescing, when
+> > >     releasing both SKB2 and SKB3, a single reference to PAGE2 would be
+> > >     dropped. Now when releasing SKB1 and SKB2, two references to PAGE2
+> > >     will be dropped, resulting in underflow.
+> > >
+> > >  (3c) Drop SKB2:
+> > >
+> > >       af_packet_rcv(SKB2)
+> > >         consume_skb(SKB2)
+> > >           skb_release_data(SKB2)                // drops second dataref
+> > >             page_pool_return_skb_page(PAGE2)    // drops one pp_frag_count
+> > >
+> > >                       SKB1 _____ PAGE1
+> > >                            \____
+> > >                                  PAGE2
+> > >                                  /
+> > >                 RX_BD3 _________/
+> > >
+> > > (4) Userspace calls recvmsg()
+> > >     Copies SKB1 and releases it. Since SKB3 was coalesced with SKB1, we
+> > >     release the SKB3 page as well:
+> > >
+> > >     tcp_eat_recv_skb(SKB1)
+> > >       skb_release_data(SKB1)
+> > >         page_pool_return_skb_page(PAGE1)
+> > >         page_pool_return_skb_page(PAGE2)        // drops second
+> > pp_frag_count
+> > >
+> > > (5) PAGE2 is freed, but the third RX descriptor was still using it!
+> > >     In our case this causes IOMMU faults, but it would silently corrupt
+> > >     memory if the IOMMU was disabled.
+> 
+> I think I see the problem. It is when you get into steps 4 and 5 that you are actually hitting the issue. When you coalesced the page you ended up switching the page from a page pool page to a reference counted page, but it is being stored in a page pool skb. That is the issue. Basically if the skb is a pp_recycle skb we should be incrementing the frag count, not the reference count.
+> So essentially the logic should be that if to->pp_recycle is set but from is cloned then you need to return false. The problem isn't that they are both pp_recycle skbs, it is that the from was cloned and we are trying to merge that into a pp_recycle skb by adding to the reference count of the pages.
 
-Thank you!
+I agree with this, the problem is switching from a page_pool frag refcount
+to a page refcount. I suppose we could change __skb_frag_ref() to increase
+the pp_frag_count but that's probably best left as future improvement, I
+don't want to break more than I fix here. I'll send a v2 with a check on
+(cloned(from) && from->pp_recycle)
+
+Thanks,
+Jean
 
 > 
-> So I think your first commit fixes the straightforward and common case
-> where you do that "map / partial dma / unmap" case.
-> 
-> And that straightforward case is probably all that the disk IO case
-> ever really triggers, which is presumably why those "drivers I'm
-> interested in don't need this functionality" don't need anything else?
-> 
-
-I agree.
-
-> And yes, your second commit didn't work, but hey, whatever. The whole
-> "multiple operations on the same double buffering allocation"
-> situation is something I don't think people have necessarily thought
-> about enough.
-> 
-> And by that I don't mean you. I mean very much the whole history of
-> our dma mapping code.
-> 
-
-I agree. We are in the process of catching up! :) My idea was to aid
-a process, as a relatively naive pair of eyes: somebody didn't read any
-data sheets describing non-cache-coherent DMA, and never programmed
-a DMA. It is a fairly common problem, that for the very knowledgeable
-certain things seem obvious, self-explanatory or trivial, but for the
-less knowledgeable the are not. And knowledge can create bias.
-
-> I then get opinionated and probably too forceful, but please don't
-> take it as being about you - it's about just my frustration with that
-> code - and if it comes off too negative then please accept my
-> apologies.
-
-I have to admit, I did feel a little uncomfortable, and I did look for
-an exit strategy. I do believe, that people in your position do have to
-occasionally get forceful, and even abrasive to maintain efficiency. I
-try to not ignore the social aspect of things, but I do get carried away
-occasionally.
-
-Your last especially paragraph is very encouraging and welcome. Thank
-you!
-
-Regards,
-Halil
-
-[..]
+> > > A proper implementation would probably take another reference from the
+> > > page_pool at step (3b), but that seems too complicated for a fix. Keep
+> > > it simple for now, prevent coalescing for page_pool users.
