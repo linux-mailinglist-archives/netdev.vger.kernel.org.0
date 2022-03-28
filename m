@@ -2,158 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48AA64E9C3A
-	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 18:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4169B4E9CD1
+	for <lists+netdev@lfdr.de>; Mon, 28 Mar 2022 18:52:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239191AbiC1QaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 12:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54786 "EHLO
+        id S242731AbiC1QwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 12:52:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237909AbiC1QaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 12:30:22 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DCC252B4;
-        Mon, 28 Mar 2022 09:28:40 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id C440120002;
-        Mon, 28 Mar 2022 16:28:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648484918;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I9mphLePkyzcwWDEKfwyuK7DKAmWX/IQH0d4nKJH7Jc=;
-        b=c9KYBvr0N0fJscZkPK4gP1ShzZxXWmHnHCEwLXObLj4VjZahBEqVqMiEXef/SQnx1N3RzS
-        B+JO8aMrSHYjPAYTnBpjod5mpHC5fME0h0GSRAX2R6CBbFIGuX3DTBcTtfRhtOt/1UalGZ
-        YSI8LmIzkoZXgu63wDMpgiTIkqy+j5lIXGniZde4RvgSes2UedEDLkWx2R/FdqMfBb1w4g
-        68lwDmDhfYvlKG+uhGX7ehhs9NSGi2f02xEePjTu83xMNLUhJeUOk7lJjdduMg29Zv0m1+
-        bljE9+wRipTU3xYLn3cLGHd3jPrGJkfm66nH6Hq/qTpMbftS2SlMrAaTaX3ckA==
-Date:   Mon, 28 Mar 2022 18:28:35 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v4 07/11] net: ieee802154: at86rf230: Provide
- meaningful error codes when possible
-Message-ID: <20220328182835.3e3e1030@xps13>
-In-Reply-To: <CAB_54W5A1xmHO-YrWS3+RD0N_66mzkDpPYjosHU3vHgn1zmONg@mail.gmail.com>
-References: <20220318185644.517164-1-miquel.raynal@bootlin.com>
-        <20220318185644.517164-8-miquel.raynal@bootlin.com>
-        <CAB_54W5A1xmHO-YrWS3+RD0N_66mzkDpPYjosHU3vHgn1zmONg@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S236419AbiC1QwL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 12:52:11 -0400
+X-Greylist: delayed 1264 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Mar 2022 09:50:30 PDT
+Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8529D434BE
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 09:50:29 -0700 (PDT)
+Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 2A04A4A244
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 11:29:20 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id YsF6nmAuQXvvJYsF6nzWjF; Mon, 28 Mar 2022 11:29:20 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ravsT/aucKnVvzJpwttquM0/aEFh0FetHl00O2h6aXw=; b=xjQx8mzlpwruVmELyTRwD22SWX
+        kE/e3LznR+m0Or0Nb7PZ7nns/mYp12f7xAyY0VLe/P2ZoUhENAbhbNDmr9XrdC7f7jydWJz2XegyI
+        ub9qpi2oAwbgnhxNHfp+ptZHItnYLoDwaU3Fj6t87naGkABB8saz7f9p4UDnWWP0drZxMBg1IWub5
+        WtYGFj7gO13wOP1p3OwFGHomD9uX+AhwUoRnSF4pBLXMT+tl+fBg4mp7vxuv9u27Jl9cHMZEsDSP4
+        FqjLL2+JaHF8DKpw9y1o4h3X9d8ozgyHgJq9Io/l1DBwADJ+dwY6fA0mto8wiT6qkO7rABuPtNvwW
+        IsDyTWGw==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54530)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nYsF5-001eOc-VK; Mon, 28 Mar 2022 16:29:20 +0000
+Message-ID: <d589a8e5-c297-b03a-41f8-8bb573ec9824@roeck-us.net>
+Date:   Mon, 28 Mar 2022 09:29:18 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,LOTS_OF_MONEY,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 1/2] hwmon: introduce hwmon_sanitize_name()
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
+        Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220328115226.3042322-1-michael@walle.cc>
+ <20220328115226.3042322-2-michael@walle.cc>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220328115226.3042322-2-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nYsF5-001eOc-VK
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54530
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 14
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+On 3/28/22 04:52, Michael Walle wrote:
+> More and more drivers will check for bad characters in the hwmon name
+> and all are using the same code snippet. Consolidate that code by adding
+> a new hwmon_sanitize_name() function.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>   drivers/hwmon/intel-m10-bmc-hwmon.c |  5 +----
+>   include/linux/hwmon.h               | 16 ++++++++++++++++
 
-alex.aring@gmail.com wrote on Sun, 27 Mar 2022 11:46:12 -0400:
-
-> Hi,
->=20
-> On Fri, Mar 18, 2022 at 2:56 PM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > Either the spi operation failed, or the offloaded transmit operation
-> > failed and returned a TRAC value. Use this value when available or use
-> > the default "SYSTEM_ERROR" otherwise, in order to propagate one step
-> > above the error.
-> >
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  drivers/net/ieee802154/at86rf230.c | 25 +++++++++++++++++++++++--
-> >  1 file changed, 23 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee80215=
-4/at86rf230.c
-> > index d3cf6d23b57e..34d199f597c9 100644
-> > --- a/drivers/net/ieee802154/at86rf230.c
-> > +++ b/drivers/net/ieee802154/at86rf230.c
-> > @@ -358,7 +358,23 @@ static inline void
-> >  at86rf230_async_error(struct at86rf230_local *lp,
-> >                       struct at86rf230_state_change *ctx, int rc)
-> >  {
-> > -       dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
-> > +       int reason;
-> > +
-> > +       switch (rc) { =20
->=20
-> I think there was a miscommunication last time, this rc variable is
-> not a trac register value, it is a linux errno. Also the error here
-> has nothing to do with a trac error. A trac error is the result of the
-> offloaded transmit functionality on the transceiver, here we dealing
-> about bus communication errors produced by the spi subsystem. What we
-> need is to report it to the softmac layer as "IEEE802154_SYSTEM_ERROR"
-> (as we decided that this is a user specific error and can be returned
-> by the transceiver for non 802.15.4 "error" return code.
->=20
-> > +       case TRAC_CHANNEL_ACCESS_FAILURE:
-> > +               reason =3D IEEE802154_CHANNEL_ACCESS_FAILURE;
-> > +               break;
-> > +       case TRAC_NO_ACK:
-> > +               reason =3D IEEE802154_NO_ACK;
-> > +               break;
-> > +       default:
-> > +               reason =3D IEEE802154_SYSTEM_ERROR;
-
-I went for the solution: if it is a bus error, I return SYSTEM ERROR,
-otherwise I return a trac error.
-
-> > +       }
-> > +
-> > +       if (rc < 0)
-> > +               dev_err(&lp->spi->dev, "spi_async error %d\n", rc);
-> > +       else
-> > +               dev_err(&lp->spi->dev, "xceiver error %d\n", reason);
-> >
-> >         at86rf230_async_state_change(lp, ctx, STATE_FORCE_TRX_OFF,
-> >                                      at86rf230_async_error_recover);
-> > @@ -666,10 +682,15 @@ at86rf230_tx_trac_check(void *context)
-> >         case TRAC_SUCCESS:
-> >         case TRAC_SUCCESS_DATA_PENDING:
-> >                 at86rf230_async_state_change(lp, ctx, STATE_TX_ON, at86=
-rf230_tx_on);
-> > +               return;
-> > +       case TRAC_CHANNEL_ACCESS_FAILURE:
-> > +       case TRAC_NO_ACK:
-> >                 break;
-> >         default:
-> > -               at86rf230_async_error(lp, ctx, -EIO);
-> > +               trac =3D TRAC_INVALID;
-> >         }
-> > +
-> > +       at86rf230_async_error(lp, ctx, trac); =20
->=20
-> That makes no sense, at86rf230_async_error() is not a trac error
-> handling, it is a bus error handling. As noted above. With this change
-> you mix bus errors and trac errors (which are not bus errors). If
-> there are no bus errors then trac should be evaluated and should
-> either deliver some 802.15.4 $SUCCESS_CODE or $ERROR_CODE to the
-> softmac stack, which is xmit_complete() or xmit_error().
-
-There is no specific path for bus errors, everything is supposedly
-asynchronous and all the function return void. In both cases I need to
-free the skb. So I am questioning myself about the right solution (need
-to think further...)
+Separate patches please, and the new function needs to be documented
+in Documentation/hwmon/hwmon-kernel-api.rst.
 
 Thanks,
-Miqu=C3=A8l
+Guenter
+
+>   2 files changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/hwmon/intel-m10-bmc-hwmon.c b/drivers/hwmon/intel-m10-bmc-hwmon.c
+> index 7a08e4c44a4b..e6e55fc30153 100644
+> --- a/drivers/hwmon/intel-m10-bmc-hwmon.c
+> +++ b/drivers/hwmon/intel-m10-bmc-hwmon.c
+> @@ -515,7 +515,6 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+>   	struct intel_m10bmc *m10bmc = dev_get_drvdata(pdev->dev.parent);
+>   	struct device *hwmon_dev, *dev = &pdev->dev;
+>   	struct m10bmc_hwmon *hw;
+> -	int i;
+>   
+>   	hw = devm_kzalloc(dev, sizeof(*hw), GFP_KERNEL);
+>   	if (!hw)
+> @@ -532,9 +531,7 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
+>   	if (!hw->hw_name)
+>   		return -ENOMEM;
+>   
+> -	for (i = 0; hw->hw_name[i]; i++)
+> -		if (hwmon_is_bad_char(hw->hw_name[i]))
+> -			hw->hw_name[i] = '_';
+> +	hwmon_sanitize_name(hw->hw_name);
+>   
+>   	hwmon_dev = devm_hwmon_device_register_with_info(dev, hw->hw_name,
+>   							 hw, &hw->chip, NULL);
+> diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
+> index eba380b76d15..210b8c0b2827 100644
+> --- a/include/linux/hwmon.h
+> +++ b/include/linux/hwmon.h
+> @@ -484,4 +484,20 @@ static inline bool hwmon_is_bad_char(const char ch)
+>   	}
+>   }
+>   
+> +/**
+> + * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
+> + * @name: NUL-terminated name
+> + *
+> + * Invalid characters in the name will be overwritten in-place by an
+> + * underscore.
+> + */
+> +static inline void hwmon_sanitize_name(char *name)
+> +{
+> +	while (*name) {
+> +		if (hwmon_is_bad_char(*name))
+> +			*name = '_';
+> +		name++;
+> +	};
+> +}
+> +
+>   #endif
+
