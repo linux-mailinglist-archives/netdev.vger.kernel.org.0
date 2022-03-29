@@ -2,76 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB2A4EACC4
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 14:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1651C4EACB7
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 13:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiC2MBu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 08:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44518 "EHLO
+        id S236114AbiC2L7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 07:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232480AbiC2MBt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 08:01:49 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C7860D2;
-        Tue, 29 Mar 2022 05:00:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648555206; x=1680091206;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=W97RVxU6FU90i0ZBblRp2YTYj4F8zwDfNEJUFaHimOo=;
-  b=Ety0D08o2tcaUYk42I5sF+JjazLsmlty2GVvu+VqZ65OSfGpllfr/TCH
-   h1cRiWEL83YjYGbpdQlaR09p3FPQqgxjUKj/q1pZBUSCQpORvs9CrRPQt
-   WXhmt/kswSTvP52dQPIdFGS8o5nHxJ/2bSR09nUMs8N+YAjEwi+40mhNA
-   B8AhuswPCckgyd+/qF3VSg5as0GYHVt+7v16JYF2MUN+KFDpklOth8228
-   S7cHZYrcO61l7S8rW1gLCmaEDB7xKcQyvtVQmggu5/b0ey3UyP5dPKcjW
-   aqFlkc0OYXjVCgfYSY0qth2tJ7JPK9wqGJtF7feXZ1oYgGTZffkivK6kr
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="284130650"
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="284130650"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2022 05:00:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,220,1643702400"; 
-   d="scan'208";a="604737288"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Mar 2022 05:00:01 -0700
-Date:   Tue, 29 Mar 2022 14:00:01 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Ivan Vecera <ivecera@redhat.com>
-Cc:     netdev@vger.kernel.org, poros@redhat.com, mschmidt@redhat.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
-Subject: Re: [PATCH net] ice: Fix logic of getting XSK pool associated with
- Tx queue
-Message-ID: <YkL0wfgyCq5s8vdu@boxer>
-References: <20220329102752.1481125-1-ivecera@redhat.com>
+        with ESMTP id S231537AbiC2L7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 07:59:31 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269AF241B66;
+        Tue, 29 Mar 2022 04:57:49 -0700 (PDT)
+Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSSjk4mzGzcbPH;
+        Tue, 29 Mar 2022 19:57:30 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 29 Mar 2022 19:57:47 +0800
+Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
+ (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
+ 2022 19:57:46 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <Jason@zx2c4.com>, <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <wireguard@lists.zx2c4.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
+Subject: [PATCH net] wireguard: socket: fix memory leak in send6()
+Date:   Tue, 29 Mar 2022 20:15:52 +0800
+Message-ID: <20220329121552.661647-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220329102752.1481125-1-ivecera@redhat.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,58 +49,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 12:27:51PM +0200, Ivan Vecera wrote:
-> Function ice_tx_xsk_pool() used to get XSK buffer pool associated
-> with XDP Tx queue returns NULL when number of ordinary Tx queues
-> is not equal to num_possible_cpus().
-> 
-> The function computes XDP Tx queue ID as an expression
-> `ring->q_index - vsi->num_xdp_txq` but this is wrong because
-> XDP Tx queues are placed after ordinary ones so the correct
-> formula is `ring->q_index - vsi->alloc_txq`.
-> 
-> Prior commit 792b2086584f ("ice: fix vsi->txq_map sizing") number
-> of XDP Tx queues was equal to number of ordinary Tx queues so
-> the bug in mentioned function was hidden.
-> 
-> Reproducer:
-> host# ethtool -L ens7f0 combined 1
-> host# ./xdpsock -i ens7f0 -q 0 -t -N
-> samples/bpf/xdpsock_user.c:kick_tx:794: errno: 6/"No such device or address"
-> 
->  sock0@ens7f0:0 txonly xdp-drv
->                 pps         pkts        0.00
-> rx              0           0
-> tx              0           0
-> 
-> Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
-> Fixes: 792b2086584f ("ice: fix vsi->txq_map sizing")
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+I got a memory leak report:
 
-Thanks for this fix! I did exactly the same patch yesterday and it's
-already applied to bpf tree:
+unreferenced object 0xffff8881191fc040 (size 232):
+  comm "kworker/u17:0", pid 23193, jiffies 4295238848 (age 3464.870s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814c3ef4>] slab_post_alloc_hook+0x84/0x3b0
+    [<ffffffff814c8977>] kmem_cache_alloc_node+0x167/0x340
+    [<ffffffff832974fb>] __alloc_skb+0x1db/0x200
+    [<ffffffff82612b5d>] wg_socket_send_buffer_to_peer+0x3d/0xc0
+    [<ffffffff8260e94a>] wg_packet_send_handshake_initiation+0xfa/0x110
+    [<ffffffff8260ec81>] wg_packet_handshake_send_worker+0x21/0x30
+    [<ffffffff8119c558>] process_one_work+0x2e8/0x770
+    [<ffffffff8119ca2a>] worker_thread+0x4a/0x4b0
+    [<ffffffff811a88e0>] kthread+0x120/0x160
+    [<ffffffff8100242f>] ret_from_fork+0x1f/0x30
 
-https://lore.kernel.org/bpf/20220328142123.170157-5-maciej.fijalkowski@intel.com/T/#u
+In function wg_socket_send_buffer_as_reply_to_skb() or
+wg_socket_send_buffer_to_peer(), the semantics of send6()
+is required to free skb. But when CONFIG_IPV6 is disable,
+kfree_skb() is missing. This patch adds it to fix this bug.
 
-Maciej
+Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/wireguard/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> ---
->  drivers/net/ethernet/intel/ice/ice.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-> index b0b27bfcd7a2..d4f1874df7d0 100644
-> --- a/drivers/net/ethernet/intel/ice/ice.h
-> +++ b/drivers/net/ethernet/intel/ice/ice.h
-> @@ -710,7 +710,7 @@ static inline struct xsk_buff_pool *ice_tx_xsk_pool(struct ice_tx_ring *ring)
->  	struct ice_vsi *vsi = ring->vsi;
->  	u16 qid;
->  
-> -	qid = ring->q_index - vsi->num_xdp_txq;
-> +	qid = ring->q_index - vsi->alloc_txq;
->  
->  	if (!ice_is_xdp_ena_vsi(vsi) || !test_bit(qid, vsi->af_xdp_zc_qps))
->  		return NULL;
-> -- 
-> 2.34.1
-> 
+diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+index 6f07b949cb81..467eef0e563b 100644
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -160,6 +160,7 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
+ 	rcu_read_unlock_bh();
+ 	return ret;
+ #else
++	kfree_skb(skb);
+ 	return -EAFNOSUPPORT;
+ #endif
+ }
+-- 
+2.25.1
+
