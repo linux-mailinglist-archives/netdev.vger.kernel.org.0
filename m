@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 040154EB63D
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 00:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9213F4EB670
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 01:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237604AbiC2W6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 18:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
+        id S237266AbiC2XDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 19:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238783AbiC2W55 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 18:57:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E8C1FF218;
-        Tue, 29 Mar 2022 15:56:13 -0700 (PDT)
+        with ESMTP id S240323AbiC2XDX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 19:03:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31422765BE;
+        Tue, 29 Mar 2022 16:01:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D620B81AC0;
-        Tue, 29 Mar 2022 22:56:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4853BC340ED;
-        Tue, 29 Mar 2022 22:56:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B795360B15;
+        Tue, 29 Mar 2022 23:01:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92AABC340ED;
+        Tue, 29 Mar 2022 23:01:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648594570;
-        bh=ksuq1R8pSpjJONhoUKRGAf+f3bC+JKVtq1dWnWz3wNU=;
+        s=k20201202; t=1648594899;
+        bh=M4ahqdUbNWZpu1zTE+ecLAol/Y3a7KqezwczG/uULOk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IEEH07hp4AwMgoIeNeOBPvNW99HUs9/erJvbuIyH0Ken+cf7aXHjsNJyR/OtWd+++
-         b3/ySZiyOwGfBRKFOMhL5CHvzf7LvKjEM0TK/gEcIoFjQud5xxHFYX1ioBnnBxyLzd
-         wLmn/5MOszcCuBmiZH/1lJxSk2EZvaHhB+qe0ctvk1WkmPKSfFEKALd84XvbzwTUUh
-         MhyKVApRE87yj53FaptWGgbmwuCPcM7AVzOdPuNDiR42Cy1o9loL3/wnhI43zZTjcs
-         oXW7iHXWfLqPdS1ixDyIV+3IoD/bmzGa4dxe9eKQebH31MOnccUbKpHKQlX2wTve8p
-         dh6GFb5/MuFCw==
-Date:   Tue, 29 Mar 2022 15:56:09 -0700
+        b=f+mm77ouLiZBy2ItFKplfL6uqyJ3Xq6THOxS2sIVYbuj9wVH8YyV67MSW35GGgL+n
+         DjwxNulZuP4nFyW7LcdSmmMeFHzN/TqK6pCvutyV2M4EIE8MzNcX3eaGT2qglgZXHy
+         oEhLaFt1PeKJYmrncUzypm0/i+ue7r8DVdbHz2wMszBxDKhBKyrg1p2VBhlKUvgmZZ
+         n4rSV/F5K7P71TZ7j2kglQ+l+teFX3zbYwTqZaqKVdkAE8PJJfUjRcc68QaCn4Xc/I
+         kUw7reKurJkdW37dBs+0TEC3be5tWZUrKCVpY0tr1AL3hgyt4xcJoM7GkWqNQFxDpQ
+         JaUkejUExDjmw==
+Date:   Tue, 29 Mar 2022 16:01:37 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     andrew@lunn.ch
-Cc:     Andy Chiu <andy.chiu@sifive.com>, radhey.shyam.pandey@xilinx.com,
-        robert.hancock@calian.com, michal.simek@xilinx.com,
-        davem@davemloft.net, pabeni@redhat.com, robh+dt@kernel.org,
-        linux@armlinux.org.uk, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, robh@kernel.org,
-        Greentime Hu <greentime.hu@sifive.com>
-Subject: Re: [PATCH v7 net 4/4] net: axiemac: use a phandle to reference
- pcs_phy
-Message-ID: <20220329155609.674caa9c@kernel.org>
-In-Reply-To: <20220329024921.2739338-5-andy.chiu@sifive.com>
-References: <20220329024921.2739338-1-andy.chiu@sifive.com>
-        <20220329024921.2739338-5-andy.chiu@sifive.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH v2] net, uapi: remove inclusion of arpa/inet.h
+Message-ID: <20220329160137.0708b1ef@kernel.org>
+In-Reply-To: <20220329223956.486608-1-ndesaulniers@google.com>
+References: <CAKwvOdmYzH91bzNus+RcZGSgCQGY8UKt0-2JvtqQAh=w+CeiuQ@mail.gmail.com>
+        <20220329223956.486608-1-ndesaulniers@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,25 +59,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Mar 2022 10:49:21 +0800 Andy Chiu wrote:
-> In some SGMII use cases where both a fixed link external PHY and the
-> internal PCS/PMA PHY need to be configured, we should explicitly use a
-> phandle "pcs-phy" to get the reference to the PCS/PMA PHY. Otherwise, the
-> driver would use "phy-handle" in the DT as the reference to both the
-> external and the internal PCS/PMA PHY.
+On Tue, 29 Mar 2022 15:39:56 -0700 Nick Desaulniers wrote:
+> Testing out CONFIG_UAPI_HEADER_TEST=y with a prebuilt Bionic sysroot
+> from Android's SDK, I encountered an error:
 > 
-> In other cases where the core is connected to a SFP cage, we could still
-> point phy-handle to the intenal PCS/PMA PHY, and let the driver connect
-> to the SFP module, if exist, via phylink.
+>   HDRTEST usr/include/linux/fsi.h
+> In file included from <built-in>:1:
+> In file included from ./usr/include/linux/tipc_config.h:46:
+> prebuilts/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arpa/inet.h:39:1:
+> error: unknown type name 'in_addr_t'
+> in_addr_t inet_addr(const char* __s);
+> ^
 > 
-> Fixes: 1a02556086fc (net: axienet: Properly handle PCS/PMA PHY for 1000BaseX mode)
-> Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
-> Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
-> Reviewed-by: Robert Hancock <robert.hancock@calian.com>
+> This is because Bionic has a bug in its inclusion chain. I sent a patch
+> to fix that, but looking closer at include/uapi/linux/tipc_config.h,
+> there's a comment that it includes arpa/inet.h for ntohs;
+> but ntohs is not defined in any UAPI header. For now, reuse the
+> definitions from include/linux/byteorder/generic.h, since the various
+> conversion functions do exist in UAPI headers:
+> include/uapi/linux/byteorder/big_endian.h
+> include/uapi/linux/byteorder/little_endian.h
+> 
+> Link: https://android-review.googlesource.com/c/platform/bionic/+/2048127
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> ---
+>  include/uapi/linux/tipc_config.h | 32 ++++++++++++++++----------------
+>  1 file changed, 16 insertions(+), 16 deletions(-)
+> 
+> diff --git a/include/uapi/linux/tipc_config.h b/include/uapi/linux/tipc_config.h
+> index 4dfc05651c98..2c494b7ae008 100644
+> --- a/include/uapi/linux/tipc_config.h
+> +++ b/include/uapi/linux/tipc_config.h
+> @@ -43,10 +43,6 @@
+>  #include <linux/tipc.h>
+>  #include <asm/byteorder.h>
+>  
+> -#ifndef __KERNEL__
+> -#include <arpa/inet.h> /* for ntohs etc. */
+> -#endif
 
-I'm not sure if this is a fix or adding support for a new configuration.
-Andrew, WDYT?
+Hm, how do we know no user space depends on this include?
 
-If it really is a fix and needs to be backported we should take patch 2
-out of this series, and post it separately later. Refactoring does not
-belong in stable trees.
+If nobody screams at us we can try, but then it needs to go into -next,
+and net-next is closed ATM, you'll need to repost once the merge window
+is over.
+
+>  /*
+>   * Configuration
+>   *
+> @@ -257,6 +253,10 @@ struct tlv_desc {
+>  #define TLV_SPACE(datalen) (TLV_ALIGN(TLV_LENGTH(datalen)))
+>  #define TLV_DATA(tlv) ((void *)((char *)(tlv) + TLV_LENGTH(0)))
+>  
+> +#define __htonl(x) __cpu_to_be32(x)
+> +#define __htons(x) __cpu_to_be16(x)
+> +#define __ntohs(x) __be16_to_cpu(x)
+> +
+>  static inline int TLV_OK(const void *tlv, __u16 space)
+>  {
+>  	/*
+> @@ -269,33 +269,33 @@ static inline int TLV_OK(const void *tlv, __u16 space)
+>  	 */
+>  
+>  	return (space >= TLV_SPACE(0)) &&
+> -		(ntohs(((struct tlv_desc *)tlv)->tlv_len) <= space);
+> +		(__ntohs(((struct tlv_desc *)tlv)->tlv_len) <= space);
+
+Also why add the defines / macros? 
+We could switch to __cpu_to_be16() etc. directly, it seems.
