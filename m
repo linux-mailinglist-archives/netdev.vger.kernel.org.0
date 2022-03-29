@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27B994EA54E
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 04:36:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5344EA56D
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 04:48:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbiC2Cii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 22:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52880 "EHLO
+        id S231228AbiC2Ct6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 22:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230478AbiC2Cib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 22:38:31 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F632467DD;
-        Mon, 28 Mar 2022 19:36:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648521409; x=1680057409;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LNHgqLDR8PycGfDeEiYuRN193gJyruOeIO57tRrWPxs=;
-  b=QtNizHn0ORe+GwXpIORa1Os+CFrzOaLghkdtU30LxgQ+ss28GI+Sm3hz
-   hVEkkyZWNh8BE/b72RuS8fvWh1NBtL2BfMAsykGLz2oWiXCLMxcE0Vwgi
-   Xbl+b3hkwJx+UCIRMHZig4FbAFcYUzYXDOdFZ2vcag0B5el/SN9ZsoWV3
-   TCTPTB+nYksrI5KfK67elg75DdrzS8jkL2EjhkW0Yn2TbydDuQTmAGCom
-   c+1E/rJpZwlpSPmXlNOT17dct0MhSKFJzfQtMYXEQNVXKNuNgX3DUcQq6
-   EqCmi/+CoixIxr14WtqiDfg2cNqhwJfu6ll8H2xt1prCWlrjXbmj4aJjA
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="239077896"
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="239077896"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 19:36:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="518615068"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 28 Mar 2022 19:36:43 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nZ1is-0002Xv-FZ; Tue, 29 Mar 2022 02:36:42 +0000
-Date:   Tue, 29 Mar 2022 10:35:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>, corbet@lwn.net,
-        viro@zeniv.linux.org.uk, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kpsingh@kernel.org, shuah@kernel.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        zohar@linux.ibm.com
-Cc:     kbuild-all@lists.01.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: Re: [PATCH 14/18] bpf-preload: Switch to new preload registration
- method
-Message-ID: <202203291042.8dll5BFm-lkp@intel.com>
-References: <20220328175033.2437312-15-roberto.sassu@huawei.com>
+        with ESMTP id S231208AbiC2Ct5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 22:49:57 -0400
+Received: from smtp.tom.com (smtprz02.163.net [106.3.154.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3F5545AD9
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 19:48:11 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by vip-app02.163.net (Postfix) with ESMTP id 9A135440101
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 10:48:10 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1648522090; bh=UxIN0gCQWDCPxHwAlV5GfBTdHsvgwdbGdcBxlAMphuU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TItiNbo1FHWTYF+aGHjG2PeBXJVFxoU2jVRHsyUMg/kPJ2x8yB1ebm9pb6/xp86fj
+         etIEqkvkNdXiMFTXAvfMwxUMwQvqNLnWnz8ZNm2b11sDMXedjU8um8sTg/GRD9It+f
+         O2GIZs/I1+A3LttPkHVOsD1noHItP7I14fhjWI0Y=
+Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
+          by localhost (TOM SMTP Server) with SMTP ID -2056858277
+          for <netdev@vger.kernel.org>;
+          Tue, 29 Mar 2022 10:48:10 +0800 (CST)
+X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
+        t=1648522090; bh=UxIN0gCQWDCPxHwAlV5GfBTdHsvgwdbGdcBxlAMphuU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TItiNbo1FHWTYF+aGHjG2PeBXJVFxoU2jVRHsyUMg/kPJ2x8yB1ebm9pb6/xp86fj
+         etIEqkvkNdXiMFTXAvfMwxUMwQvqNLnWnz8ZNm2b11sDMXedjU8um8sTg/GRD9It+f
+         O2GIZs/I1+A3LttPkHVOsD1noHItP7I14fhjWI0Y=
+Received: from localhost (unknown [101.93.196.13])
+        by antispamvip.163.net (Postfix) with ESMTPA id E79AA15411AE;
+        Tue, 29 Mar 2022 10:48:06 +0800 (CST)
+Date:   Tue, 29 Mar 2022 10:48:06 +0800
+From:   Mingbao Sun <sunmingbao@tom.com>
+To:     Sagi Grimberg <sagi@grimberg.me>
+Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
+        libin.zhang@dell.com, ao.sun@dell.com
+Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
+ congestion-control
+Message-ID: <20220329104806.00000126@tom.com>
+In-Reply-To: <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
+References: <20220311103414.8255-1-sunmingbao@tom.com>
+        <20220311103414.8255-2-sunmingbao@tom.com>
+        <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
+        <20220325201123.00002f28@tom.com>
+        <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328175033.2437312-15-roberto.sassu@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Roberto,
+> As I said, TCP can be tuned in various ways, congestion being just one
+> of them. I'm sure you can find a workload where rmem/wmem will make
+> a difference.
 
-Thank you for the patch! Yet something to improve:
+agree.
+but the difference for the knob of rmem/wmem is:
+we could enlarge rmem/wmem for NVMe/TCP via sysctl,
+and it would not bring downside to any other sockets whose
+rmem/wmem are not explicitly specified.
 
-[auto build test ERROR on bpf-next/master]
-[also build test ERROR on linus/master next-20220328]
-[cannot apply to bpf/master v5.17]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> In addition, based on my knowledge, application specific TCP level
+> tuning (like congestion) is not really a common thing to do. So why in
+> nvme-tcp?
+>=20
+> So to me at least, it is not clear why we should add it to the driver.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: i386-randconfig-c001 (https://download.01.org/0day-ci/archive/20220329/202203291042.8dll5BFm-lkp@intel.com/config)
-compiler: gcc-9 (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/2e0e81b0296abc384efb2a73520ce03c2a5344ea
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
-        git checkout 2e0e81b0296abc384efb2a73520ce03c2a5344ea
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+As mentioned in the commit message, though we can specify the
+congestion-control of NVMe_over_TCP via sysctl or writing
+'/proc/sys/net/ipv4/tcp_congestion_control', but this also
+changes the congestion-control of all the future TCP sockets on
+the same host that have not been explicitly assigned the
+congestion-control, thus bringing potential impaction on their
+performance.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+For example:
 
-All errors (new ones prefixed by >>):
+A server in a data-center with the following 2 NICs:
 
->> kernel/bpf/inode.c:25:37: error: 'CONFIG_BPF_PRELOAD_LIST' undeclared here (not in a function)
-      25 | static char *bpf_preload_list_str = CONFIG_BPF_PRELOAD_LIST;
-         |                                     ^~~~~~~~~~~~~~~~~~~~~~~
+    - NIC_fron-end, for interacting with clients through WAN
+      (high latency, ms-level)
 
+    - NIC_back-end, for interacting with NVMe/TCP target through LAN
+      (low latency, ECN-enabled, ideal for dctcp)
 
-vim +/CONFIG_BPF_PRELOAD_LIST +25 kernel/bpf/inode.c
+This server interacts with clients (handling requests) via the fron-end
+network and accesses the NVMe/TCP storage via the back-end network.
+This is a normal use case, right?
 
-    24	
-  > 25	static char *bpf_preload_list_str = CONFIG_BPF_PRELOAD_LIST;
-    26	
+For the client devices, we can=E2=80=99t determine their congestion-control.
+But normally it=E2=80=99s cubic by default (per the CONFIG_DEFAULT_TCP_CONG=
+).
+So if we change the default congestion control on the server to dctcp
+on behalf of the NVMe/TCP traffic of the LAN side, it could at the
+same time change the congestion-control of the front-end sockets
+to dctcp while the congestion-control of the client-side is cubic.
+So this is an unexpected scenario.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+In addition, distributed storage products like the following also have
+the above problem:
+
+    - The product consists of a cluster of servers.
+
+    - Each server serves clients via its front-end NIC
+     (WAN, high latency).
+
+    - All servers interact with each other via NVMe/TCP via back-end NIC
+     (LAN, low latency, ECN-enabled, ideal for dctcp).
