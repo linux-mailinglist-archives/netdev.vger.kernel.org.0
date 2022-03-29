@@ -2,112 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A75E4EB478
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 22:11:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A4304EB4C4
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 22:41:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiC2UMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 16:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
+        id S231697AbiC2UnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 16:43:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbiC2UMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 16:12:48 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA677B717B;
-        Tue, 29 Mar 2022 13:11:03 -0700 (PDT)
-Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 5FB5F20DEDDC;
-        Tue, 29 Mar 2022 13:11:03 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5FB5F20DEDDC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1648584663;
-        bh=zHcnNu/YGM+GoY1MvB/irgfNbLk1NiTLk3aItql2YyU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Un4xZKfi9rZzz+TfjZAPywux3T4fExp4njC9SgfKhsQS6ouP5UbORmGW0HkUeIQGh
-         QScxNRWUEcZprvu1GRQxysuUy5knLLxuMC8+0ei98M07NjpUe42vA7TPlCd6l7kNci
-         LpvIu65Q80sgfP+wsp2k+WJsGRtAkX3G5gKXPrfo=
-Date:   Tue, 29 Mar 2022 13:10:57 -0700
-From:   Beau Belgrave <beaub@linux.microsoft.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
- created events
-Message-ID: <20220329201057.GA2549@kbox>
-References: <20220329181935.2183-1-beaub@linux.microsoft.com>
- <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
+        with ESMTP id S231495AbiC2UnL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 16:43:11 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6BE91568;
+        Tue, 29 Mar 2022 13:41:27 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-de48295467so20053062fac.2;
+        Tue, 29 Mar 2022 13:41:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ybAutaE4u/WcyTvDzQs8SWO5MsLDIDzeRNgubexXSOA=;
+        b=5TSQC/Rxp8jDXVjqhjU8DgmB7A9hoo1Z8S3lWbhx+wGhE9OrtRLDnq5T9PtkL2QCpe
+         o0Zdd2t9785jjIJhllRbbd8NCF8YCW6U9pMT2pF+ZyIFpKALiVpyYQ8FAUZmIJi48r95
+         BolqkPakc8wowhHwwIWAPZ2Um5e/e0A0J4qHuPiiKwxHK4P0fn0OH4isxQRFAm4WA0zQ
+         Cu9a7wiMzW1V+JqgQJ5OPMRrp8aXrO7gN9rKRJv4LXFI3rEKb2PA4d+WYt56TPd3oNy5
+         enr/tACALoHG5MoYEet/yd8NAwYB9NLTp3Zy5Y4dx1ESjUDEvmPSAvyHPLoigRLaW+J4
+         YgYA==
+X-Gm-Message-State: AOAM533N5eNMxv7RXhw2VtHrYWu5UYiDWz0/oHPyztV/iKYT6mEhjzC6
+        TzIQMj77ucr2aTvXWKt2Zg==
+X-Google-Smtp-Source: ABdhPJxCAfS2SSvn7/HeTaJBn883Rg1EFxXqfORszuMJNVWm5thVyrdSCYtafvPt4wNV4Rb2Nnsq2A==
+X-Received: by 2002:a05:6870:4727:b0:de:193b:cb9c with SMTP id b39-20020a056870472700b000de193bcb9cmr574815oaq.212.1648586487235;
+        Tue, 29 Mar 2022 13:41:27 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id j25-20020a4ad199000000b003171dfeb5bfsm8810519oor.15.2022.03.29.13.41.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Mar 2022 13:41:26 -0700 (PDT)
+Received: (nullmailer pid 1232706 invoked by uid 1000);
+        Tue, 29 Mar 2022 20:41:24 -0000
+Date:   Tue, 29 Mar 2022 15:41:24 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
+        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        devicetree@vger.kernel.org, pabeni@redhat.com
+Subject: Re: [RFC PATCH v11 net-next 01/10] dt-bindings: net: make
+ internal-delay-ps based on phy-mode
+Message-ID: <YkNu9D24qu+tIP/n@robh.at.kernel.org>
+References: <20220325165341.791013-1-prasanna.vengateshan@microchip.com>
+ <20220325165341.791013-2-prasanna.vengateshan@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220325165341.791013-2-prasanna.vengateshan@microchip.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 12:50:40PM -0700, Alexei Starovoitov wrote:
-> On Tue, Mar 29, 2022 at 11:19 AM Beau Belgrave
-> <beaub@linux.microsoft.com> wrote:
-> >
-> > Send user_event data to attached eBPF programs for user_event based perf
-> > events.
-> >
-> > Add BPF_ITER flag to allow user_event data to have a zero copy path into
-> > eBPF programs if required.
-> >
-> > Update documentation to describe new flags and structures for eBPF
-> > integration.
-> >
-> > Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+On Fri, Mar 25, 2022 at 10:23:32PM +0530, Prasanna Vengateshan wrote:
+> *-internal-delay-ps properties would be applicable only for RGMII interface
+> modes.
 > 
-> The commit describes _what_ it does, but says nothing about _why_.
-> At present I see no use out of bpf and user_events connection.
-> The whole user_events feature looks redundant to me.
-> We have uprobes and usdt. It doesn't look to me that
-> user_events provide anything new that wasn't available earlier.
+> It is changed as per the request,
+> https://lore.kernel.org/netdev/d8e5f6a8-a7e1-dabd-f4b4-ea8ea21d0a1d@gmail.com/
+> 
+> Ran dt_binding_check to confirm nothing is broken.
+> 
+> Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  .../bindings/net/ethernet-controller.yaml     | 37 +++++++++++++------
+>  1 file changed, 25 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> index 34c5463abcec..dc86a6479a86 100644
+> --- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> +++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+> @@ -123,12 +123,6 @@ properties:
+>        and is useful for determining certain configuration settings
+>        such as flow control thresholds.
+>  
+> -  rx-internal-delay-ps:
+> -    description: |
+> -      RGMII Receive Clock Delay defined in pico seconds.
+> -      This is used for controllers that have configurable RX internal delays.
+> -      If this property is present then the MAC applies the RX delay.
+> -
+>    sfp:
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>      description:
+> @@ -140,12 +134,6 @@ properties:
+>        The size of the controller\'s transmit fifo in bytes. This
+>        is used for components that can have configurable fifo sizes.
+>  
+> -  tx-internal-delay-ps:
+> -    description: |
+> -      RGMII Transmit Clock Delay defined in pico seconds.
+> -      This is used for controllers that have configurable TX internal delays.
+> -      If this property is present then the MAC applies the TX delay.
+> -
+>    managed:
+>      description:
+>        Specifies the PHY management type. If auto is set and fixed-link
+> @@ -222,6 +210,31 @@ properties:
+>            required:
+>              - speed
+>  
+> +allOf:
+> +  - if:
+> +      properties:
+> +        phy-mode:
+> +          contains:
+> +            enum:
+> +              - rgmii
+> +              - rgmii-rxid
+> +              - rgmii-txid
+> +              - rgmii-id
+> +            then:
 
-A lot of the why, in general, for user_events is covered in the first
-change in the series.
-Link: https://lore.kernel.org/all/20220118204326.2169-1-beaub@linux.microsoft.com/
+Did you test this?
 
-The why was also covered in Linux Plumbers Conference 2021 within the
-tracing microconference.
+The 'then' has no effect. It's at the wrong indentation. It should be 
+the same as 'if'.
 
-An example of why we want user_events:
-Managed code running that emits data out via Open Telemetry.
-Since it's managed there isn't a stub location to patch, it moves.
-We watch the Open Telemetry spans in an eBPF program, when a span takes
-too long we collect stack data and perform other actions.
-With user_events and perf we can monitor the entire system from the root
-container without having to have relay agents within each
-cgroup/namespace taking up resources.
-We do not need to enter each cgroup mnt space and determine the correct
-patch location or the right version of each binary for processes that
-use user_events.
-
-An example of why we want eBPF integration:
-We also have scenarios where we are live decoding the data quickly.
-Having user_data fed directly to eBPF lets us cast the data coming in to
-a struct and decode very very quickly to determine if something is
-wrong.
-We can take that data quickly and put it into maps to perform further
-aggregation as required.
-We have scenarios that have "skid" problems, where we need to grab
-further data exactly when the process that had the problem was running.
-eBPF lets us do all of this that we cannot easily do otherwise.
-
-Another benefit from user_events is the tracing is much faster than
-uprobes or others using int 3 traps. This is critical to us to enable on
-production systems.
-
-Thanks,
--Beau
+> +              properties:
+> +                rx-internal-delay-ps:
+> +                  description:
+> +                    RGMII Receive Clock Delay defined in pico seconds.This is
+> +                    used for controllers that have configurable RX internal
+> +                    delays. If this property is present then the MAC applies
+> +                    the RX delay.
+> +                tx-internal-delay-ps:
+> +                  description:
+> +                    RGMII Transmit Clock Delay defined in pico seconds.This is
+> +                    used for controllers that have configurable TX internal
+> +                    delays. If this property is present then the MAC applies
+> +                    the TX delay.
+> +
+>  additionalProperties: true
+>  
+>  ...
+> -- 
+> 2.30.2
+> 
+> 
