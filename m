@@ -2,74 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AABB14EA436
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 02:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA51C4EA464
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 03:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbiC2Ag7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 20:36:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
+        id S229529AbiC2BEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 21:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiC2Ag6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 20:36:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD01B1F42E3;
-        Mon, 28 Mar 2022 17:35:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FB4461163;
-        Tue, 29 Mar 2022 00:35:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B2777C3410F;
-        Tue, 29 Mar 2022 00:35:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648514115;
-        bh=SIkznNoc/nbX2BbwK39sAMdXvHH8pG+PpdJYKoTB3iQ=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ig9X0nFdBc6u3mVF39/fysmvHZTWpwZjYroo5Nz69Sat4vlUx7/G3D/JTu/fmQ6bf
-         EcAnmMjtgUNc1XaW6BPyZOGJT0jRCrgnuDXvIUgPRGQx26bu2rymG8YY1PAxPhiCHW
-         z1axzTrunpszs7kHfTF6UNeX8hqFE/Vdzru1HosGHKyEFVzpgs3sXGZukivYPNXGl0
-         foymL3MMfSK3GMgbokVYRl14ygVDdgI89g0R505CcwY0mdIPp807p+8B1IQQ3TN9a0
-         AtaVUvcWgQSSLvqy8IUgcdwpE4s57UG1K4vxUQz2O0dlS1nol7VEot6yfcEYbiLSGI
-         mcbWL5xSn0iNA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 970C6EAC081;
-        Tue, 29 Mar 2022 00:35:15 +0000 (UTC)
-Subject: Re: [GIT PULL] Networking mid-5.18-merge-window tactical update
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220329000014.1509077-1-kuba@kernel.org>
-References: <20220329000014.1509077-1-kuba@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220329000014.1509077-1-kuba@kernel.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc0
-X-PR-Tracked-Commit-Id: 20695e9a9fd39103d1b0669470ae74030b7aa196
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d717e4cae0fe77e10a27e8545a967b8c379873ac
-Message-Id: <164851411561.5550.4995181865247418429.pr-tracker-bot@kernel.org>
-Date:   Tue, 29 Mar 2022 00:35:15 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229468AbiC2BEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 21:04:49 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A7423FF3E;
+        Mon, 28 Mar 2022 18:03:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=37hzCSIvKGbXFplPDb1/ys0jyRxiUWlgsZrjWpWDyNI=; b=MZnRhKz4gyBTAHWjjd7Fi5ILTN
+        rPFOKDE8YKQ8WYHuDrfWcs2Km2QrOXh4Mte2QMlyH3Slx9U3jyF7vxSj7p84j/2N19BUlWJky/6gC
+        rhpgClEWn5PIpHjYKWQHzYCxEHJ9cE6R/ZxTvclTHGiHEvCcwWanxkSqOuUk1yGBXR2k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nZ0G4-00D5dA-6I; Tue, 29 Mar 2022 03:02:52 +0200
+Date:   Tue, 29 Mar 2022 03:02:52 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net] net: lan966x: fix kernel oops on ioctl when I/F
+ is down
+Message-ID: <YkJavKgcDJUh1pLu@lunn.ch>
+References: <20220328220350.3118969-1-michael@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328220350.3118969-1-michael@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Mon, 28 Mar 2022 17:00:14 -0700:
+On Tue, Mar 29, 2022 at 12:03:50AM +0200, Michael Walle wrote:
+> ioctls handled by phy_mii_ioctl() will cause a kernel oops when the
+> interface is down. Fix it by making sure there is a PHY attached.
+> 
+> Fixes: 735fec995b21 ("net: lan966x: Implement SIOCSHWTSTAMP and SIOCGHWTSTAMP")
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc0
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d717e4cae0fe77e10a27e8545a967b8c379873ac
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+    Andrew
