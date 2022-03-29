@@ -2,87 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4653E4EABF1
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 13:07:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AF074EAC7D
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 13:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235563AbiC2LJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 07:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39790 "EHLO
+        id S235972AbiC2Ll5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 07:41:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235574AbiC2LJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 07:09:24 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D10426111
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 04:07:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:
-        To:Subject:From:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=8+EqvbVPtbotNhOJ0MCxh7WIRaXyoKSxSE3flw8UaRQ=; b=ef3V8Sxr9LPxFWSCYeeiGbc73J
-        QY0H5mi3REW5XO7q+M+lqxENY+9RpaXC03l8nV2GUttX6PNHh4ewOwvPQmIpMFQF1GSkpdOQDlxwT
-        gbiN6xnXlV2VCsZhn0QGKMdkmkkzDUfp9U/5YDkI4+qFPgYg37IX2QCkCId2HmIwF+D4=;
-Received: from p200300daa70ef200e986bd084db59d32.dip0.t-ipconnect.de ([2003:da:a70e:f200:e986:bd08:4db5:9d32] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nZ9hJ-0003Dg-LF; Tue, 29 Mar 2022 13:07:37 +0200
-Message-ID: <928253ff-7254-b8bb-20a7-ec12ad82e14d@nbd.name>
-Date:   Tue, 29 Mar 2022 13:07:37 +0200
+        with ESMTP id S235250AbiC2Ll4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 07:41:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C2A201B5;
+        Tue, 29 Mar 2022 04:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3C30B81739;
+        Tue, 29 Mar 2022 11:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6CD66C340F0;
+        Tue, 29 Mar 2022 11:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648554011;
+        bh=k0MUrQArqRvaVJ8NEHp+nxibDAS10ufLqavY82Lc0gQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZSTqfU9eYWBNmk7yzTCteLGBqaDfjyBiUQQloDsGXKNbguNJqmUgiE/0RvlEmG68N
+         hjTxpIyvtvdqn+ly2RXLHAVTEP2rNplZWSDBPfzeWnYbth2LF7zU2aDbXXJI0k9HWh
+         so/mDrek8Q5QiwE6kaC/20DvE97+yfdbJRsrZS97mwHX4Wp4Keuvzigf6w1DIM1LIF
+         AcIrO32nyH+ASJhssI3YsGI9TP2bsLTmQ8n/B1gJMfvDFi90BHXJn7kfNATuJ4E2/7
+         GT7OQlDFzrRA8VogVsX5tu37Lr90aJ63eaOxbviCa2HslhXWjpqqOPRym4244wBpsz
+         3gxDU5AGJ3yMg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4E675EAC081;
+        Tue, 29 Mar 2022 11:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [RFC 2/2] net: bridge: add a software fast-path implementation
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-References: <20220210142401.4912-1-nbd@nbd.name>
- <20220210142401.4912-2-nbd@nbd.name>
- <bc499a39-64b9-ceb4-f36f-21dd74d6272d@nvidia.com>
- <e8f1e8f5-8417-84a8-61c3-793fa7803ac6@nbd.name>
- <0b4318af-4c12-bd5a-ae32-165c70af65b2@nvidia.com>
- <6d85d6a5-190e-2dfd-88f9-f09899c98ee7@nbd.name>
- <8bd7362f-0a23-e11c-445b-1e61d08bb70a@blackwall.org>
-Content-Language: en-US
-In-Reply-To: <8bd7362f-0a23-e11c-445b-1e61d08bb70a@blackwall.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] Bluetooth: fix dangling sco_conn and use-after-free in
+ sco_sock_timeout
+From:   patchwork-bot+bluetooth@kernel.org
+Message-Id: <164855401131.3735.13754664491252004228.git-patchwork-notify@kernel.org>
+Date:   Tue, 29 Mar 2022 11:40:11 +0000
+References: <20220326070853.v2.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+In-Reply-To: <20220326070853.v2.1.I67f8ad854ac2f48701902bfb34d6e2070011b779@changeid>
+To:     Ying Hsu <yinghsu@chromium.org>
+Cc:     marcel@holtmann.org, chromeos-bluetooth-upstreaming@chromium.org,
+        syzbot+2bef95d3ab4daa10155b@syzkaller.appspotmail.com,
+        josephsih@chromium.org, davem@davemloft.net,
+        desmondcheongzx@gmail.com, kuba@kernel.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-On 28.03.22 20:20, Nikolay Aleksandrov wrote:
-> On 28/03/2022 18:15, Felix Fietkau wrote:
->> 
->> Hi Nik,
->> 
->> I'd like to follow up on our discussion regarding bridge offloading.
->> I managed to come up with a user space + eBPF implementation that replaces this code and shows mostly the same performance gain as my previous kernel space implementation.
->> 
->> At first I tried to use generic XDP, but after getting it working, performance was pretty bad (due to headroom issues) and I was told that this is by design and nobody should use it in production.
->> 
->> Then I reworked the code to use tc classifier instead and it worked much better.
->> 
->> It's not fully ready yet, I need to add some more tests for incompatible features, but I'm getting there...
->> The code is here: https://github.com/nbd168/bridger
->> 
->> There's one thing I haven't been able to figure out yet: What's the proper way to keep bridge fdb entries alive from user space without modifying them in any other way?
->> 
->> - Felix
+This patch was applied to bluetooth/bluetooth-next.git (master)
+by Marcel Holtmann <marcel@holtmann.org>:
+
+On Sat, 26 Mar 2022 07:09:28 +0000 you wrote:
+> Connecting the same socket twice consecutively in sco_sock_connect()
+> could lead to a race condition where two sco_conn objects are created
+> but only one is associated with the socket. If the socket is closed
+> before the SCO connection is established, the timer associated with the
+> dangling sco_conn object won't be canceled. As the sock object is being
+> freed, the use-after-free problem happens when the timer callback
+> function sco_sock_timeout() accesses the socket. Here's the call trace:
 > 
-> Hi Felix,
-> That's very nice! Interesting work. One way it's usually done is through periodic NTF_USE (refresh),
-> another would be to mark them externally learned and delete them yourself (user-space aging).
-> It really depends on the exact semantics you'd like.
-I will try NTF_USE, thanks. I really just want to keep the bridge fdb 
-entries alive while there is activity on the offloaded flows.
+> [...]
 
-- Felix
+Here is the summary with links:
+  - [v2] Bluetooth: fix dangling sco_conn and use-after-free in sco_sock_timeout
+    https://git.kernel.org/bluetooth/bluetooth-next/c/300cf0bfb43e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
