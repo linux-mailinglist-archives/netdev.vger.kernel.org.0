@@ -2,94 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE3144EA874
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 09:22:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F934EA8B0
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 09:49:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233345AbiC2HYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 03:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        id S233524AbiC2Hr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 03:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233343AbiC2HYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 03:24:19 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0244724316E;
-        Tue, 29 Mar 2022 00:22:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1648538556; x=1680074556;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ISy1PdTNl86QIZVHuPS0xM2PPd3z/iaIEXnSylN2poQ=;
-  b=BFDbO9wk58ZQt/RAyv9+XjXntuRqhm5LJMbc2Ukz+KMLwe4HRowg6Wrz
-   kv92ieX7ysjTUsXEg3ELFkXerQHRqajG+DIU/7EAicM9xEKvfIV/2ZNYv
-   5yQXViOAVj7oGqFUO2zn3eE8C8gOQbHsA7yA4s/SJI3tCFGUOfNeG/fPy
-   U=;
-X-IronPort-AV: E=Sophos;i="5.90,219,1643673600"; 
-   d="scan'208";a="188496438"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-28a78e3f.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 29 Mar 2022 07:22:34 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-28a78e3f.us-west-2.amazon.com (Postfix) with ESMTPS id A1E24A2761;
-        Tue, 29 Mar 2022 07:22:33 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 29 Mar 2022 07:22:30 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.160.180) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.32; Tue, 29 Mar 2022 07:22:26 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <kuba@kernel.org>
-CC:     <andrew@lunn.ch>, <bpf@vger.kernel.org>, <corbet@lwn.net>,
-        <davem@davemloft.net>, <f.fainelli@gmail.com>,
-        <kuniyu@amazon.co.jp>, <linux-doc@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH net 00/13] docs: update and move the netdev-FAQ
-Date:   Tue, 29 Mar 2022 16:22:23 +0900
-Message-ID: <20220329072223.6733-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220328215247.69d31c4a@kernel.org>
-References: <20220328215247.69d31c4a@kernel.org>
+        with ESMTP id S231801AbiC2Hr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 03:47:58 -0400
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FCEA1C391B;
+        Tue, 29 Mar 2022 00:46:16 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id w4so23468477wrg.12;
+        Tue, 29 Mar 2022 00:46:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rpBdm54k3hpAJiNzkv6c+hlup42nSLv/yZ6rcxWnLSY=;
+        b=IdMBuD8LnI+HL0crshDcWtnEpvBH7IbiTq0zCsQrOULxe99rzlzFZxLf1eX0sicliE
+         L1+UiKY9WqdoYXA816Qhk2TZlZloTiyTU3aN7OJ2Fb9oIvjvjf+csLe+UexLybd9LKkX
+         23kCiy/oewvkaN/d2BYogD6eMgG3gO/oAdBAnqzgmVleuQkGzqetIqQvLJnuQq06isu9
+         ATT3817ZPs/rXNAl7eQS1vO5dm+rBVlUdKSZek6oQ+FhMyOxI6K2Op2NPs1VSqtKjJon
+         BBF6Yj3/+FV0yK6D+7wHvU7e7/KTn6PoA2bjJtmhoovNSs25D16kPynFgKAKIpJQ7Wxs
+         wy8A==
+X-Gm-Message-State: AOAM532QI+WzGX4CLpBdbHUtJbPZaV/vRKmgMpVezp0h0Wlq16CGul8e
+        wYFbEbCeITH/OFcCjJnjfYo=
+X-Google-Smtp-Source: ABdhPJyfRXcJMYQfm/T0Xmp6DW40AVrN8t6gvbYC575ZZz3IPPUDF/qI9Epa4K9hd3rOOQQW3cNbmw==
+X-Received: by 2002:a05:6000:12c3:b0:203:e0e0:7d18 with SMTP id l3-20020a05600012c300b00203e0e07d18mr28850582wrx.46.1648539972774;
+        Tue, 29 Mar 2022 00:46:12 -0700 (PDT)
+Received: from [192.168.64.180] (bzq-219-42-90.isdn.bezeqint.net. [62.219.42.90])
+        by smtp.gmail.com with ESMTPSA id p30-20020a05600c1d9e00b0038cc9d6ff0bsm1527133wms.33.2022.03.29.00.46.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Mar 2022 00:46:12 -0700 (PDT)
+Message-ID: <15f24dcd-9a62-8bab-271c-baa9cc693d8d@grimberg.me>
+Date:   Tue, 29 Mar 2022 10:46:08 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
+ congestion-control
+Content-Language: en-US
+To:     Mingbao Sun <sunmingbao@tom.com>
+Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
+        libin.zhang@dell.com, ao.sun@dell.com
+References: <20220311103414.8255-1-sunmingbao@tom.com>
+ <20220311103414.8255-2-sunmingbao@tom.com>
+ <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
+ <20220325201123.00002f28@tom.com>
+ <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
+ <20220329104806.00000126@tom.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+In-Reply-To: <20220329104806.00000126@tom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.160.180]
-X-ClientProxiedBy: EX13D22UWC004.ant.amazon.com (10.43.162.198) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Jakub Kicinski <kuba@kernel.org>
-Date:   Mon, 28 Mar 2022 21:52:47 -0700
-> On Tue, 29 Mar 2022 13:38:08 +0900 Kuniyuki Iwashima wrote:
-> > From:   Jakub Kicinski <kuba@kernel.org>
-> > Date:   Sat, 26 Mar 2022 19:53:47 -0700
-> > > A section of documentation for tree-specific process quirks had
-> > > been created a while back. There's only one tree in it, so far,
-> > > the tip tree, but the contents seem to answer similar questions
-> > > as we answer in the netdev-FAQ. Move the netdev-FAQ.
-> > > 
-> > > Take this opportunity to touch up and update a few sections.  
-> > 
-> > Thanks for update!
-> > 
-> > I would like to clarify one thing about this website.
-> > 
-> >   http://vger.kernel.org/~davem/net-next.html
-> > 
-> > I often check this before submitting patches.  I like this much, but it
-> > seems not working properly for now.  Is this no longer maintained or by
-> > coincidence this time?  If I could help something, please let me know :)
+
+>> As I said, TCP can be tuned in various ways, congestion being just one
+>> of them. I'm sure you can find a workload where rmem/wmem will make
+>> a difference.
 > 
-> Sorry about that, DaveM has been traveling during this merge window. 
-> He said he'll fix it soon.
+> agree.
+> but the difference for the knob of rmem/wmem is:
+> we could enlarge rmem/wmem for NVMe/TCP via sysctl,
+> and it would not bring downside to any other sockets whose
+> rmem/wmem are not explicitly specified.
 
-Ah, sorry for noise, and thank you!
+It can most certainly affect them, positively or negatively, depends
+on the use-case.
 
-Have a nice trip, DaveM!
+>> In addition, based on my knowledge, application specific TCP level
+>> tuning (like congestion) is not really a common thing to do. So why in
+>> nvme-tcp?
+>>
+>> So to me at least, it is not clear why we should add it to the driver.
+> 
+> As mentioned in the commit message, though we can specify the
+> congestion-control of NVMe_over_TCP via sysctl or writing
+> '/proc/sys/net/ipv4/tcp_congestion_control', but this also
+> changes the congestion-control of all the future TCP sockets on
+> the same host that have not been explicitly assigned the
+> congestion-control, thus bringing potential impaction on their
+> performance.
+> 
+> For example:
+> 
+> A server in a data-center with the following 2 NICs:
+> 
+>      - NIC_fron-end, for interacting with clients through WAN
+>        (high latency, ms-level)
+> 
+>      - NIC_back-end, for interacting with NVMe/TCP target through LAN
+>        (low latency, ECN-enabled, ideal for dctcp)
+> 
+> This server interacts with clients (handling requests) via the fron-end
+> network and accesses the NVMe/TCP storage via the back-end network.
+> This is a normal use case, right?
+> 
+> For the client devices, we can’t determine their congestion-control.
+> But normally it’s cubic by default (per the CONFIG_DEFAULT_TCP_CONG).
+> So if we change the default congestion control on the server to dctcp
+> on behalf of the NVMe/TCP traffic of the LAN side, it could at the
+> same time change the congestion-control of the front-end sockets
+> to dctcp while the congestion-control of the client-side is cubic.
+> So this is an unexpected scenario.
+> 
+> In addition, distributed storage products like the following also have
+> the above problem:
+> 
+>      - The product consists of a cluster of servers.
+> 
+>      - Each server serves clients via its front-end NIC
+>       (WAN, high latency).
+> 
+>      - All servers interact with each other via NVMe/TCP via back-end NIC
+>       (LAN, low latency, ECN-enabled, ideal for dctcp).
+
+Separate networks are still not application (nvme-tcp) specific and as
+mentioned, we have a way to control that. IMO, this still does not
+qualify as solid justification to add this to nvme-tcp.
+
+What do others think?
