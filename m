@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1757A4EA6FD
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 07:09:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BD554EA780
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 07:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbiC2FKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 01:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56994 "EHLO
+        id S232168AbiC2FtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 01:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232328AbiC2FKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 01:10:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E999DFBF;
-        Mon, 28 Mar 2022 22:08:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02D77B8162D;
-        Tue, 29 Mar 2022 05:08:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 665D9C341C8;
-        Tue, 29 Mar 2022 05:08:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648530531;
-        bh=2YxArUmIWaOSW8xvnD05K2Cti8aP5kMcCVg4EdTgu0c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pxf/RUzLwXsaXlXkIRk0FNUd9DT1+PangUM392QOoMKI3ZezE4bpcKaV9i2i2zI7/
-         dn6KLOlqCUb/+LAjS1AZxWgZg9+Cjtzv5x6dmWLs/qp3fWHxhV9tXGdVjh5NwQXNKf
-         a4Vc4+Ba/d7VFSO6381HOralhVLE7jVf+W5sdDSmV6QfezcI3qotjSj1tsVLZq0v/p
-         XUQxD4WDxTZE4DRFiLVvv80FQKC7DIOyzlmmi3CqfS1PsUM2OBkz9LzNqZJUDG2qwj
-         cD2TiyqqlYmTj5ZdHLwsq0DzvDroD9QNu+OTrtUF/Xl0VUMqrNaAShFXv2c5jHLtrJ
-         5WlUpCGeyEYAA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com, corbet@lwn.net,
-        bpf@vger.kernel.org, linux-doc@vger.kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net v2 14/14] docs: netdev: move the netdev-FAQ to the process pages
-Date:   Mon, 28 Mar 2022 22:08:30 -0700
-Message-Id: <20220329050830.2755213-15-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220329050830.2755213-1-kuba@kernel.org>
-References: <20220329050830.2755213-1-kuba@kernel.org>
+        with ESMTP id S230134AbiC2FtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 01:49:10 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2259329A7
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 22:47:17 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nZ4hH-0007yN-PW; Tue, 29 Mar 2022 07:47:15 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nZ4hD-003jKy-B6; Tue, 29 Mar 2022 07:47:14 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nZ4hF-00CVon-BF; Tue, 29 Mar 2022 07:47:13 +0200
+Date:   Tue, 29 Mar 2022 07:47:10 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>, kernel@pengutronix.de,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next] net: fec: Do proper error checking for enet_out
+ clk
+Message-ID: <20220329054710.rw75gc74wunsf7ms@pengutronix.de>
+References: <20220325165543.33963-1-u.kleine-koenig@pengutronix.de>
+ <20220328160910.3eb8fb87@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="hcqgpzllmsexx23b"
+Content-Disposition: inline
+In-Reply-To: <20220328160910.3eb8fb87@kernel.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -54,77 +55,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The documentation for the tip tree is really in quite a similar
-spirit to the netdev-FAQ. Move the netdev-FAQ to the process docs
-as well.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- Documentation/bpf/bpf_devel_QA.rst                             | 2 +-
- Documentation/networking/index.rst                             | 3 ++-
- Documentation/process/maintainer-handbooks.rst                 | 1 +
- .../netdev-FAQ.rst => process/maintainer-netdev.rst}           | 0
- MAINTAINERS                                                    | 1 +
- 5 files changed, 5 insertions(+), 2 deletions(-)
- rename Documentation/{networking/netdev-FAQ.rst => process/maintainer-netdev.rst} (100%)
+--hcqgpzllmsexx23b
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/bpf/bpf_devel_QA.rst b/Documentation/bpf/bpf_devel_QA.rst
-index 253496af8fef..761474bd7fe6 100644
---- a/Documentation/bpf/bpf_devel_QA.rst
-+++ b/Documentation/bpf/bpf_devel_QA.rst
-@@ -658,7 +658,7 @@ Otherwise, you can use ``bpf`` target. Additionally, you *must* use bpf target
- 
- .. Links
- .. _Documentation/process/: https://www.kernel.org/doc/html/latest/process/
--.. _netdev-FAQ: ../networking/netdev-FAQ.rst
-+.. _netdev-FAQ: Documentation/process/maintainer-netdev.rst
- .. _selftests:
-    https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/testing/selftests/bpf/
- .. _Documentation/dev-tools/kselftest.rst:
-diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
-index ce017136ab05..72cf33579b78 100644
---- a/Documentation/networking/index.rst
-+++ b/Documentation/networking/index.rst
-@@ -1,12 +1,13 @@
- Linux Networking Documentation
- ==============================
- 
-+Refer to :ref:`netdev-FAQ` for a guide on netdev development process specifics.
-+
- Contents:
- 
- .. toctree::
-    :maxdepth: 2
- 
--   netdev-FAQ
-    af_xdp
-    bareudp
-    batman-adv
-diff --git a/Documentation/process/maintainer-handbooks.rst b/Documentation/process/maintainer-handbooks.rst
-index 6af1abb0da48..d783060b4cc6 100644
---- a/Documentation/process/maintainer-handbooks.rst
-+++ b/Documentation/process/maintainer-handbooks.rst
-@@ -16,3 +16,4 @@ which is supplementary to the general development process handbook
-    :maxdepth: 2
- 
-    maintainer-tip
-+   maintainer-netdev
-diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/process/maintainer-netdev.rst
-similarity index 100%
-rename from Documentation/networking/netdev-FAQ.rst
-rename to Documentation/process/maintainer-netdev.rst
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 91c04cb65247..fc1ee838d103 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13499,6 +13499,7 @@ B:	mailto:netdev@vger.kernel.org
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
- F:	Documentation/networking/
-+F:	Documentation/process/maintainer-netdev.rst
- F:	include/linux/in.h
- F:	include/linux/net.h
- F:	include/linux/netdevice.h
--- 
-2.34.1
+On Mon, Mar 28, 2022 at 04:09:10PM -0700, Jakub Kicinski wrote:
+> On Fri, 25 Mar 2022 17:55:43 +0100 Uwe Kleine-K=F6nig wrote:
+> > An error code returned by devm_clk_get() might have other meanings than
+> > "This clock doesn't exist". So use devm_clk_get_optional() and handle
+> > all remaining errors as fatal.
+> >=20
+> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> > Hello,
+> >=20
+> > this isn't urgent and doesn't fix a problem I encountered, just noticed
+> > this patch opportunity while looking up something different in the
+> > driver.
+>=20
+> Would you mind reposting after the merge window?=20
+> We keep net-next closed until -rc1 is cut.
 
+I somehow expected there is an implicit queue of patches that is
+processed once net-next opens again. But sure, will resend after -rc1.
+
+Best regards
+Uwe
+
+--hcqgpzllmsexx23b
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJCnVoACgkQwfwUeK3K
+7Ak3YQf6AkxfmRR5IN+h75es0GvSoXTPgX9o1kJGtpLDx0J9MDMYCrUY1lSrY9zQ
+TlISlu0mI2cAt5oyYIvbWg4Aj/BbJJ+Q8YEuA4AmsmKx7YBWKGDDKUYFwgpKQBWm
+yFFVFG9/JPbKXmA9kVIIpTe7uarFWxIE+lwkwrCsyUXEk7DX/PB9fjCZworrKFr6
+/lt+JJH8ZfYNHcpTV9bpJsDORwmDuc+EoBC88sRT9mjlx+h1DITmnmtmm7+w3S8M
+HeAREzmao8DHR6TwqQQ33Het4OqoXu5+zFUwG1GguhaZcvAZoIsxwjHX/xFmc18T
++GwqeklgEtrbZsfSVWLBiDALp2UdSQ==
+=xiXf
+-----END PGP SIGNATURE-----
+
+--hcqgpzllmsexx23b--
