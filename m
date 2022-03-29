@@ -2,88 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E96934EAA67
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 11:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEBF24EAB37
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 12:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234614AbiC2JVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 05:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
+        id S235147AbiC2KaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 06:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiC2JVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 05:21:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BDB22511;
-        Tue, 29 Mar 2022 02:20:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S235140AbiC2KaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 06:30:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA1792F5
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 03:28:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648549707;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zmJQKkRz56fnzS0EeDC+7f1ewdiGvau6reWa8+hsBMg=;
+        b=G4OBnnSKbY6n9htL7GZlMBWnvMbl49AewT2cIFzMugLTLxk7aq6Fu2TwEid1tThRFTKUH2
+        vfhHPa+TtO3Hj4/RSAISwEyOkdA3JrKsWviNn0SQJm/eV9hU55lRXRLl8lw/6ugcyjSSIp
+        rBI1NSmUeQSWMBoQ815mtScl8+6mS6g=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-611--T5A9IpuMiKk7GarukZLEA-1; Tue, 29 Mar 2022 06:28:22 -0400
+X-MC-Unique: -T5A9IpuMiKk7GarukZLEA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82AF760C68;
-        Tue, 29 Mar 2022 09:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E5033C34110;
-        Tue, 29 Mar 2022 09:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648545610;
-        bh=3+Xxf4ZeoxhFAkn2U86wP3Y1R0YdU8rlp9MCz1wnac0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rePH5s5VcHiHzuQV0oKPU7SSBxNgDrHMWIjcruEE3u947kchNkIl91n/99/oET0dN
-         YRaTWsbyP8U7C9Sf5B6N+wFJ8iRhf7zjQL8UepZ3uxSqNC0SJFoLGqijnjN9UgzmwO
-         u6RoCEzA5VHrL20ODxHJr1116CTVxxT/7qXypC1WgeKN7pkvGz84zUFkl4M6vy7l/l
-         QyffH3sTv2h9CU87dYmHeJyt6ILb7q9dGfewOb/hy9jCDbifqBFknooKgEgSKTsKCS
-         NqVvordxRkWD+rE7HbBGm2+zRYLqzpDth+AyQ4Gs1mlDfZudGFxhY3osYTUU+f9SM1
-         iOE3NkccYW9RA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CF22FF03848;
-        Tue, 29 Mar 2022 09:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B8BBC802E5B;
+        Tue, 29 Mar 2022 10:28:21 +0000 (UTC)
+Received: from ceranb.redhat.com (unknown [10.40.192.65])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0F3C114582EE;
+        Tue, 29 Mar 2022 10:27:53 +0000 (UTC)
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     poros@redhat.com, mschmidt@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        linux-kernel@vger.kernel.org (open list),
+        bpf@vger.kernel.org (open list:XDP (eXpress Data Path))
+Subject: [PATCH net] ice: Fix logic of getting XSK pool associated with Tx queue
+Date:   Tue, 29 Mar 2022 12:27:51 +0200
+Message-Id: <20220329102752.1481125-1-ivecera@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] net: lan966x: fix kernel oops on ioctl when I/F is
- down
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164854561084.720.4654566732650137898.git-patchwork-notify@kernel.org>
-Date:   Tue, 29 Mar 2022 09:20:10 +0000
-References: <20220328220350.3118969-1-michael@walle.cc>
-In-Reply-To: <20220328220350.3118969-1-michael@walle.cc>
-To:     Michael Walle <michael@walle.cc>
-Cc:     horatiu.vultur@microchip.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Function ice_tx_xsk_pool() used to get XSK buffer pool associated
+with XDP Tx queue returns NULL when number of ordinary Tx queues
+is not equal to num_possible_cpus().
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+The function computes XDP Tx queue ID as an expression
+`ring->q_index - vsi->num_xdp_txq` but this is wrong because
+XDP Tx queues are placed after ordinary ones so the correct
+formula is `ring->q_index - vsi->alloc_txq`.
 
-On Tue, 29 Mar 2022 00:03:50 +0200 you wrote:
-> ioctls handled by phy_mii_ioctl() will cause a kernel oops when the
-> interface is down. Fix it by making sure there is a PHY attached.
-> 
-> Fixes: 735fec995b21 ("net: lan966x: Implement SIOCSHWTSTAMP and SIOCGHWTSTAMP")
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
-> changes since v1:
->  - reword commit message
->  - test for the presence of phydev instead of the interface state
->  - move the test just before phy_mii_ioctl()
-> 
-> [...]
+Prior commit 792b2086584f ("ice: fix vsi->txq_map sizing") number
+of XDP Tx queues was equal to number of ordinary Tx queues so
+the bug in mentioned function was hidden.
 
-Here is the summary with links:
-  - [v2,net] net: lan966x: fix kernel oops on ioctl when I/F is down
-    https://git.kernel.org/netdev/net/c/ad7da1ce5749
+Reproducer:
+host# ethtool -L ens7f0 combined 1
+host# ./xdpsock -i ens7f0 -q 0 -t -N
+samples/bpf/xdpsock_user.c:kick_tx:794: errno: 6/"No such device or address"
 
-You are awesome, thank you!
+ sock0@ens7f0:0 txonly xdp-drv
+                pps         pkts        0.00
+rx              0           0
+tx              0           0
+
+Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
+Fixes: 792b2086584f ("ice: fix vsi->txq_map sizing")
+Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+---
+ drivers/net/ethernet/intel/ice/ice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
+index b0b27bfcd7a2..d4f1874df7d0 100644
+--- a/drivers/net/ethernet/intel/ice/ice.h
++++ b/drivers/net/ethernet/intel/ice/ice.h
+@@ -710,7 +710,7 @@ static inline struct xsk_buff_pool *ice_tx_xsk_pool(struct ice_tx_ring *ring)
+ 	struct ice_vsi *vsi = ring->vsi;
+ 	u16 qid;
+ 
+-	qid = ring->q_index - vsi->num_xdp_txq;
++	qid = ring->q_index - vsi->alloc_txq;
+ 
+ 	if (!ice_is_xdp_ena_vsi(vsi) || !test_bit(qid, vsi->af_xdp_zc_qps))
+ 		return NULL;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
