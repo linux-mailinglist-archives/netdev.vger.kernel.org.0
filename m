@@ -2,52 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20D1D4EAE86
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 15:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB07E4EAED7
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 15:52:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234405AbiC2Nca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 09:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55140 "EHLO
+        id S237551AbiC2Nyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 09:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbiC2Nc3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 09:32:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9B02DD72
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 06:30:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46798B81756
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 13:30:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45B22C3410F;
-        Tue, 29 Mar 2022 13:30:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1648560643;
-        bh=hmHBWKHVme3R9M2FfdHc5uogPNVFO7+CIYu09mPq/j4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d8XHlAcY/KSciSkrL1HBODzUdMs6uGL6kkRgIicmwBDns072nYOEzm3wzZvGA4Of7
-         7YQmDu/Pn5PtaGvvjt6fCYwB6ifDHDh8nyuaAYWJ1yqLn9S2kCFbboFdxU+/sUAIdS
-         S7irkFh2e5TgdpE/P74docTPWgn0MZ7mLd21JiZQ=
-Date:   Tue, 29 Mar 2022 15:30:40 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Antonio Quartulli <antonio@openvpn.net>
-Cc:     Xin Long <lucien.xin@gmail.com>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCHv5 net-next 1/2] udp: call udp_encap_enable for v6 sockets
- when enabling encap
-Message-ID: <YkMKAGujYMNOJMU6@kroah.com>
-References: <cover.1612342376.git.lucien.xin@gmail.com>
- <fc62f5e225f83d128ea5222cc752cb1c38c92304.1612342376.git.lucien.xin@gmail.com>
- <3842df54-8323-e6e7-9a06-de1e78e099ae@openvpn.net>
+        with ESMTP id S237212AbiC2Nyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 09:54:36 -0400
+Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D9A1B6092
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 06:52:53 -0700 (PDT)
+Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 1CF1E7CF832
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 08:52:53 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id ZCHEnPr699AGSZCHEnBpRn; Tue, 29 Mar 2022 08:52:53 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=R8VF1083Jml6bSlqQeVvGDZxIbXB4VClUDd8cNl8HqA=; b=ycg/a9dlJnrsrXw2QIi/hOynJz
+        YapMKagNgi0vMp0GKaSr32e2PIXcmtWBEGCIkRUbEDIFRzkBAbqKOr9vwcCt/gwl2/RmYmxlbDwkc
+        9irvStDtwQR1PmxXGudquz6OypiepTQyImdwe86pa2qNZ+RBuuzFhvfjW8UYrAbVPqd0T9MNXdgU2
+        GsCNUaso2xsF8byuJGCZZ8Fu7zTMQHxp0LxKZ+T7dZRFOegM8Xv9lhn0dn2oyMuj+gfN5KuX2d71l
+        /zHjs+zTOn4H2vXsh38qxOjPkyq6NOLnzP08v7IukXPeYIKRnd3vSoZ22hmGWKFxT6imnN4wfFsHq
+        9C00d64A==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54542)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nZCHD-00353G-Re; Tue, 29 Mar 2022 13:52:51 +0000
+Message-ID: <ad6373ce-ad60-e54c-139c-b4b807f3531c@roeck-us.net>
+Date:   Tue, 29 Mar 2022 06:52:50 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3842df54-8323-e6e7-9a06-de1e78e099ae@openvpn.net>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Xu Yilun <yilun.xu@intel.com>,
+        Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20220328115226.3042322-1-michael@walle.cc>
+ <YkGwjjUz+421O2E1@lunn.ch>
+ <ab64105b-c48d-cdf2-598a-3e0a2e261b27@roeck-us.net>
+ <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v1 0/2] hwmon: introduce hwmon_sanitize()
+In-Reply-To: <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nZCHD-00353G-Re
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54542
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 7
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,35 +89,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 03:24:49PM +0200, Antonio Quartulli wrote:
-> Hi all,
+On 3/28/22 15:50, Michael Walle wrote:
+> Am 2022-03-28 18:27, schrieb Guenter Roeck:
+>> On 3/28/22 05:56, Andrew Lunn wrote:
+>>>> I'm not sure how to handle this correctly, as this touches both the
+>>>> network tree and the hwmon tree. Also, the GPY PHY temperature senors
+>>>> driver would use it.
+>>>
+>>> There are a few options:
+>>>
+>>> 1) Get the hwmon_sanitize_name() merged into hwmon, ask for a stable
+>>> branch, and get it merged into netdev net-next.
+>>>
+>>> 2) Have the hwmon maintainers ACK the change and agree that it can be
+>>> merged via netdev.
+>>>
+>>> Probably the second option is easiest, and since it is not touching
+>>> the core of hwmon, it is unlikely to cause merge conflicts.
+>>>
+>>
+>> No, it isn't the easiest solution because it also modifies a hwmon
+>> driver to use it.
 > 
-> On 03/02/2021 09:54, Xin Long wrote:
-> > When enabling encap for a ipv6 socket without udp_encap_needed_key
-> > increased, UDP GRO won't work for v4 mapped v6 address packets as
-> > sk will be NULL in udp4_gro_receive().
-> > 
-> > This patch is to enable it by increasing udp_encap_needed_key for
-> > v6 sockets in udp_tunnel_encap_enable(), and correspondingly
-> > decrease udp_encap_needed_key in udpv6_destroy_sock().
-> > 
-> 
-> This is a non-negligible issue that other users (in or out of tree) may hit
-> as well.
-> 
-> At OpenVPN we are developing a kernel device driver that has the same
-> problem as UDP GRO. So far the only workaround is to let users upgrade to
-> v5.12+.
-> 
-> I would like to propose to take this patch in stable releases.
-> Greg, is this an option?
-> 
-> Commit in the linux kernel is:
-> a4a600dd301ccde6ea239804ec1f19364a39d643
+> So that leaves us with option 1? The next version will contain the
+> additional patch which moves the hwmon_is_bad_char() from the include
+> to the core and make it private. That will then need an immutable
+> branch from netdev to get merged back into hwmon before that patch
+> can be applied, right?
 
+We can not control if someone else starts using the function before
+it is removed. As pointed out, the immutable branch needs to be from hwmon,
+and the patch to make hwmon_is_bad_char private can only be applied
+after all of its users are gone from the mainline kernel.
 
-What stable tree(s) should this apply to, and where have you tested it?
+I would actually suggest to allocate the new string as part of the
+function and have it return a pointer to a new string. Something like
+	char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+and
+         char *hwmon_sanitize_name(const char *name);
 
-thanks,
+because the string duplication is also part of all calling code.
 
-greg k-h
+Guenter
