@@ -2,95 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1651C4EACB7
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 13:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C39D4EAD12
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 14:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236114AbiC2L7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 07:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        id S236264AbiC2M0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 08:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231537AbiC2L7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 07:59:31 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269AF241B66;
-        Tue, 29 Mar 2022 04:57:49 -0700 (PDT)
-Received: from kwepemi100018.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KSSjk4mzGzcbPH;
-        Tue, 29 Mar 2022 19:57:30 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- kwepemi100018.china.huawei.com (7.221.188.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 29 Mar 2022 19:57:47 +0800
-Received: from huawei.com (10.175.104.82) by kwepemm600001.china.huawei.com
- (7.193.23.3) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Tue, 29 Mar
- 2022 19:57:46 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <Jason@zx2c4.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <wireguard@lists.zx2c4.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <wanghai38@huawei.com>
-Subject: [PATCH net] wireguard: socket: fix memory leak in send6()
-Date:   Tue, 29 Mar 2022 20:15:52 +0800
-Message-ID: <20220329121552.661647-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S236263AbiC2M0F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 08:26:05 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664FB4D9C4
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 05:24:23 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id m184so18873533vsm.12
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 05:24:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=v/yvavUyPwGerxMA/IE+Pbrkfw+f2eQSM7TzLTQJVSI=;
+        b=mg0Faty7SLNLy5pOndArGMSje8ncEjvDB/wYdFffN3XRrnXRyObK4XQB5tiE4+t0Ej
+         N3mF5HhhSD10C6UXgU/WOOA1Glj8brndU+4+CNXtdEelJaoeAwZgXCwI5OSsNloJGcRt
+         ezyDy5fXLTnsj1f4KArL15hTcmML4WD5W6/eZdZw6/d9/1uzzv3fHVQFA4OqO1rCN5QP
+         8dgiGEc5p5wu0Zw3Er5qAu7dkj7mlza804aM7VAWatk596ehAe9Cm1sQUG1Wayfy8PMC
+         HLixWKgnnlO/x1HJAJ/N7e2tMtHFIIbBy9UQadM16ZhZJyQcvupbdVKRAjjDJkk0sRnD
+         Euyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=v/yvavUyPwGerxMA/IE+Pbrkfw+f2eQSM7TzLTQJVSI=;
+        b=e/YrA7pqg4LYGBdUx6HPXFsYA/h7nIe3TKXRakqFuBBb9ynJ7d98IzMv8J704GBpBp
+         UmYMrpUeb3+Pl0Ul2M8HGIAVXInremo0gvLWgP9JOQYj7KIMtmhyNNNYaImIgMz9MkYl
+         QG5dj+iHEiKMB0Ca7kLUTbTvKFvWVGLyF/O9xwYLzcspmiSHuKUlyNFkFDhqiGkIhqwo
+         /7EunW8PmFUlfnnKN+yuB0eOD6+aJqwMroLdSORJZ0oHogTitRfo7buQb+gTcNSqYlfT
+         UppfIu5I6GqTlJMBz/fwmTRjVB937uQ+EA9Z+50f0/O9NHUz33aO03oF9VR63j2nlRIz
+         ePNg==
+X-Gm-Message-State: AOAM533YNDix0BMM1p7lGGAJtYLMcGDSsOSfJ0qADPNKGokLc4Tz1b2F
+        SqfuwiXvSl1XQclt7XUQeLW5PpJlqrE9sMH1Ou4=
+X-Google-Smtp-Source: ABdhPJxahA43grWYXuPwEATomnfAA1eslpqwsaenN2xutRkXzqCOBcRMkJ8cxUTRqahVRBmZoPLF0P+D4qhShLfKjsw=
+X-Received: by 2002:a05:6102:6d2:b0:325:bbf5:5e73 with SMTP id
+ m18-20020a05610206d200b00325bbf55e73mr5056326vsg.85.1648556661779; Tue, 29
+ Mar 2022 05:24:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a59:93d1:0:b0:2a3:2686:e231 with HTTP; Tue, 29 Mar 2022
+ 05:24:21 -0700 (PDT)
+Reply-To: wwheadoffic@gmail.com
+From:   "wwheadoffic@gmail.com" <bankdirector001@gmail.com>
+Date:   Tue, 29 Mar 2022 12:24:21 +0000
+Message-ID: <CACOECaw2fU35=PHrb3hoZFsGTjoReTEUwtdLZ+cxDXSQFfqL=Q@mail.gmail.com>
+Subject: hello
+To:     bankdirector001@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.7 required=5.0 tests=BAYES_05,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,
+        NAME_EMAIL_DIFF,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a memory leak report:
+--=20
+ Irod=C3=A1nk el=C3=A9rhet=C5=91s=C3=A9ge: 2554 Road Of Kpalime Face Pharma=
+cy Bet, Lome, Gulf.
 
-unreferenced object 0xffff8881191fc040 (size 232):
-  comm "kworker/u17:0", pid 23193, jiffies 4295238848 (age 3464.870s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffff814c3ef4>] slab_post_alloc_hook+0x84/0x3b0
-    [<ffffffff814c8977>] kmem_cache_alloc_node+0x167/0x340
-    [<ffffffff832974fb>] __alloc_skb+0x1db/0x200
-    [<ffffffff82612b5d>] wg_socket_send_buffer_to_peer+0x3d/0xc0
-    [<ffffffff8260e94a>] wg_packet_send_handshake_initiation+0xfa/0x110
-    [<ffffffff8260ec81>] wg_packet_handshake_send_worker+0x21/0x30
-    [<ffffffff8119c558>] process_one_work+0x2e8/0x770
-    [<ffffffff8119ca2a>] worker_thread+0x4a/0x4b0
-    [<ffffffff811a88e0>] kthread+0x120/0x160
-    [<ffffffff8100242f>] ret_from_fork+0x1f/0x30
+Ez a WU bank igazgat=C3=B3ja =C3=A9rtes=C3=ADti =C3=96nt arr=C3=B3l, hogy a=
+ Nemzetk=C3=B6zi
+Valutaalap (IMF) 850 000,00 USD k=C3=A1rt=C3=A9r=C3=ADt=C3=A9st fizet =C3=
+=96nnek, mert
+megtal=C3=A1lta az =C3=96n e-mail c=C3=ADm=C3=A9t a csal=C3=A1s =C3=A1ldoza=
+tainak list=C3=A1j=C3=A1n. Hajland=C3=B3
+vagy venni ezt az alapot vagy sem?
 
-In function wg_socket_send_buffer_as_reply_to_skb() or
-wg_socket_send_buffer_to_peer(), the semantics of send6()
-is required to free skb. But when CONFIG_IPV6 is disable,
-kfree_skb() is missing. This patch adds it to fix this bug.
+V=C3=A1rjuk s=C3=BCrg=C5=91s h=C3=ADr=C3=A9t.
 
-Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/wireguard/socket.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-index 6f07b949cb81..467eef0e563b 100644
---- a/drivers/net/wireguard/socket.c
-+++ b/drivers/net/wireguard/socket.c
-@@ -160,6 +160,7 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
- 	rcu_read_unlock_bh();
- 	return ret;
- #else
-+	kfree_skb(skb);
- 	return -EAFNOSUPPORT;
- #endif
- }
--- 
-2.25.1
-
+Tisztelettel
+  Tony Albert
+  BANKIGAZGAT=C3=93
