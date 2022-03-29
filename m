@@ -2,66 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A204EA7A3
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 08:04:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 766374EA7D7
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 08:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232846AbiC2GF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 02:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
+        id S233020AbiC2G2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 02:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231264AbiC2GF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 02:05:57 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E5C340EE;
-        Mon, 28 Mar 2022 23:04:15 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id e5so16706109pls.4;
-        Mon, 28 Mar 2022 23:04:15 -0700 (PDT)
+        with ESMTP id S232190AbiC2G2q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 02:28:46 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E081312658B;
+        Mon, 28 Mar 2022 23:27:03 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id lr4so24523198ejb.11;
+        Mon, 28 Mar 2022 23:27:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cHaiaQIME2TQ3hPRlAjtXhCt8wua+8gQtHxEI6CbZtk=;
-        b=Q4mO8z5cfhWgW9a6f2LL2NdkpUte+YKVoSjBJv9J/xTs8ZRrAm2+i+vRdgJDSh6CJk
-         iWz6YMWkqaQ7cxwhD5VIX8pM7nj0qyhjEEahdWXkZNRIME0Pz85tMF6lst9EcOwebnVe
-         DsmYeshd6Cw6Mg7bH2kki8e+K4gdU7WfMpGzp8Aj22ZHLqIrTMurjN+EhPwylEiD9rFV
-         DqPjW0NYg1YTVJwsZ7BzQZz/PdtlBagrv+38g1V0sC9tclEH2fvmRTqDIYiKct0hhGxe
-         rQnd2HyNjgE/ctnDNurQ4gStlxo3lgKcdA/mXPxfaUQeSYyeGwNovOi1oUJbq26dkBeW
-         TQ1g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PtQAn5ODW65E3XLXykBMTJorCx3aj9bBwnMut4CnKzE=;
+        b=ZUoGPspv30c62ejTIsHtO5ZU1YfnvxyTw761ZSkw7PAIRbpiJyrNqhceHlBCzOT+ox
+         HNWeKQKTBU15DuAJMio+EmNi2QAvOQZ16uKDq3NqqS03R8RYh76TTIZx+QWkgv3ziwqk
+         5qh3YiHuMWSLWlsBEXjENws+rU7ziUv14tTcHAkdmWYYaipBcmSfvKI0DcGFbQuK8oUz
+         4MM9nNmbmf9d6I4FN7o6iLW0yXts/wwobEhhXi+Gbjo04d4bySLbsTrAXuCdYbOvfLtZ
+         QToVKRvVLo/BxILbZFFdUcrdV3Xbf23s/aJ4ZanSwjpl879tz0LOV1pzk5GkRL/D53bj
+         6fBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cHaiaQIME2TQ3hPRlAjtXhCt8wua+8gQtHxEI6CbZtk=;
-        b=bd/xVQ9EcOspEPh/HGG3C7sFqEK16k2vj5zBaatrmU2+egyvsIasX+NAbgdvYR/zf6
-         KAW9i7cRmQRwhNnPdaLaSIR9Wccq3mF6XPcn1+4IMAMDCICOyFMtOhbcv4C6brMCS/Sz
-         SXimrBeyRcSqyQcXBrT+cqIMb/UEsnWFyKwNIMLxgTpMbLKvX535dcw78f9E5QYFo2Yl
-         j2RsOn6x//LnjoT1ccf21TT4dFtCWonwJh/OI7rpkU3dUj+4GxFu2tv4IPjXj8PGzTCs
-         0Nixml3TR+FE0FOmEuLJQDQ3G2ECeC4ngR1wCmdJBXVyPhgQNUVhIU7fVAUh/bPjPYnA
-         u8QA==
-X-Gm-Message-State: AOAM533+V1h0aAGnswIo11Rk/OXSkIpSCeF9Z1YT4m0yvkqmWD+txnvm
-        taqcx0jLxxzNvII6fn6/+5A=
-X-Google-Smtp-Source: ABdhPJwpc1mBqz646V7xYK+gns4cYmtoPl5rD1zPom/CyRatt2rrPPiNVAL9QwwnI20vHF/KYoHbsA==
-X-Received: by 2002:a17:903:249:b0:153:857c:a1fe with SMTP id j9-20020a170903024900b00153857ca1femr29078333plh.44.1648533855368;
-        Mon, 28 Mar 2022 23:04:15 -0700 (PDT)
-Received: from localhost.localdomain (192.243.120.99.16clouds.com. [192.243.120.99])
-        by smtp.gmail.com with ESMTPSA id mi18-20020a17090b4b5200b001c9a9b60489sm1415677pjb.7.2022.03.28.23.04.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Mar 2022 23:04:14 -0700 (PDT)
-From:   davidcomponentone@gmail.com
-To:     keescook@chromium.org
-Cc:     davidcomponentone@gmail.com, luto@amacapital.net, wad@chromium.org,
-        shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yang Guang <yang.guang5@zte.com.cn>
-Subject: [PATCH] selftests/seccomp: Add SKIP for failed unshare()
-Date:   Tue, 29 Mar 2022 14:03:59 +0800
-Message-Id: <d623360ac7fdc3d8e1a8bc34e018f1aba6bd7e73.1648516943.git.yang.guang5@zte.com.cn>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PtQAn5ODW65E3XLXykBMTJorCx3aj9bBwnMut4CnKzE=;
+        b=z4leYPTIr9YBdAZIMtPbuH/DNFAbkImvZahrTU3LOClaMsm+tK4Yr1aiiYJsWxfft5
+         w/X/sq3Jfa3PQ9T36sIHzYIl4Khbl45XE7VcM11EYwg2o2QpMi7x/Jd0gL0Osnpqgx3y
+         CbB0dJDpy8QvmuRV250XhaXuLGfOY0Fg68BzpBnSWyScGuHgMtMfSBewljtITa/dol/o
+         DSSZdDHTFOhWp/yEPhtMVIkLqwgCaSCRgEBy1XihBg7thpy2uLFzDRtlMm7xW0VN96WP
+         /aDelXZ8zE64chrsoR3EARczhB09v9X50l4SYzp67ni0vmKbj0+LkGvOXUg8LuHwtTv2
+         7/Yg==
+X-Gm-Message-State: AOAM532eGERR/cwUpCJDffTGvv2+lzUYi8SVq6c493lM9TU/nSA3HSZZ
+        d8X6KWHf7FSL97ZwgNYdTvQWb4jUVKtx6G19t7E=
+X-Google-Smtp-Source: ABdhPJwv7EAbqlOaqfycWFHp6OI01iRpwa1pCm+J5g9v0BWWkcm6DC7nqihg73CpuPCKnajtzH/L2Bf3AFCe7hdHXJE=
+X-Received: by 2002:a17:907:3f8d:b0:6e1:238f:19a0 with SMTP id
+ hr13-20020a1709073f8d00b006e1238f19a0mr6762884ejc.439.1648535222371; Mon, 28
+ Mar 2022 23:27:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220328042737.118812-1-imagedong@tencent.com> <20220328192103.4df73760@kernel.org>
+In-Reply-To: <20220328192103.4df73760@kernel.org>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Tue, 29 Mar 2022 14:26:51 +0800
+Message-ID: <CADxym3aO7SxDaSU1EChqCg3ySRpbuQjqMfaxYYUoPV8h5xBwaQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 0/4] net: icmp: add skb drop reasons to icmp
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, xeb@mail.ru,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Eric Dumazet <edumazet@google.com>, Martin Lau <kafai@fb.com>,
+        Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Hao Peng <flyingpeng@tencent.com>,
+        Mengen Sun <mengensun@tencent.com>, dongli.zhang@oracle.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Biao Jiang <benbjiang@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,34 +78,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+On Tue, Mar 29, 2022 at 10:21 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 28 Mar 2022 12:27:33 +0800 menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()"),
+> > we added the support of reporting the reasons of skb drops to kfree_skb
+> > tracepoint. And in this series patches, reasons for skb drops are added
+> > to ICMP protocol.
+>
+> # Form letter - net-next is closed
 
-Running the seccomp tests under the kernel with "defconfig"
-shouldn't fail. Because the CONFIG_USER_NS is not support
-in "defconfig". So skip this test case is better.
+Okay......Is there anywhere to see if net-next is closed? This link saying
+it's open:
 
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
----
- tools/testing/selftests/seccomp/seccomp_bpf.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+http://vger.kernel.org/~davem/net-next.html
 
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index 313bb0cbfb1e..e9a61cb2eb88 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -3742,7 +3742,10 @@ TEST(user_notification_fault_recv)
- 	struct seccomp_notif req = {};
- 	struct seccomp_notif_resp resp = {};
- 
--	ASSERT_EQ(unshare(CLONE_NEWUSER), 0);
-+	ASSERT_EQ(unshare(CLONE_NEWUSER), 0) {
-+		if (errno == EINVAL)
-+			SKIP(return, "kernel missing CLONE_NEWUSER support");
-+	}
- 
- 	listener = user_notif_syscall(__NR_getppid,
- 				      SECCOMP_FILTER_FLAG_NEW_LISTENER);
--- 
-2.30.2
-
+>
+> We have already sent the networking pull request for 5.18
+> and therefore net-next is closed for new drivers, features,
+> code refactoring and optimizations. We are currently accepting
+> bug fixes only.
+>
+> Please repost when net-next reopens after 5.18-rc1 is cut.
+>
+> RFC patches sent for review only are obviously welcome at any time.
