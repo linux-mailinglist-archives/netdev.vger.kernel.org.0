@@ -2,57 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7D834EA511
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 04:18:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F7BD4EA519
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 04:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbiC2CTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 22:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
+        id S230332AbiC2CWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 22:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiC2CTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 22:19:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FBC1B84FE;
-        Mon, 28 Mar 2022 19:17:56 -0700 (PDT)
+        with ESMTP id S230299AbiC2CV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 22:21:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3258E26AE5;
+        Mon, 28 Mar 2022 19:20:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B878612D8;
-        Tue, 29 Mar 2022 02:17:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C682CC340EC;
-        Tue, 29 Mar 2022 02:17:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB0F8B8162F;
+        Tue, 29 Mar 2022 02:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8B621C34113;
+        Tue, 29 Mar 2022 02:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648520275;
-        bh=x6LGrekP+vzDseqjbaDHBzEuyMampza0o4ZGpkRkiAE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=l36SLPy15kB/fZ1ZD5S9OBSjzyvVgoU266cA1YELubgImIwZKpfhabut5SEqcv7/y
-         Kl9WqbXDFIZxtrts7T5DzMjVOYSRYSqisqXC/Ee4JJmyCsIqUSGx3EE8xPBHeBILIs
-         ENLY1J/d4boH2QLgkUyHWLUVrY7SB6Pk4LmGx6s2QVSqfV8H3vtImGFxSrU5ekEe0S
-         JBp6xbKXYnoOMfYZrXObTxxitNK4CbnPNTudCdbCV71cdPFDp7GjFBqSr33vb6S4Fk
-         1tiqzBvn7Si/ohMO2eRXpIBkcXCUYuXlv/BPcuSNr5h/ubvmXfMa0PHaFy/VxWhEnF
-         t2rF52GXlvBTA==
-Date:   Mon, 28 Mar 2022 19:17:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexandra Winter <wintera@linux.ibm.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>
-Subject: Re: [PATCH net-next 1/1] veth: Support bonding events
-Message-ID: <20220328191753.33b1910e@kernel.org>
-In-Reply-To: <20220328081417.1427666-2-wintera@linux.ibm.com>
-References: <20220328081417.1427666-1-wintera@linux.ibm.com>
-        <20220328081417.1427666-2-wintera@linux.ibm.com>
+        s=k20201202; t=1648520412;
+        bh=8fxg5u3kbhVueeYO/75ErWyDpQVNBnBleAF1IIgrgzw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ELDFwev/Q8s6EDp+eQMyRennek1eJAcHptKSMuWlyWFTx5KNHKZWp6+LR3Z9RD1RZ
+         TDk2ECEOFnHf9JCnMiBN98dYBqvuYmzC2o9r43Ac7iPXAU/SK7r+MjPjblaXhOR6Pn
+         5zCWHw4/DTcgPL36Y73uFmUhX6DWrCbP0L4/Vg2bTFjxus7bh8lwHP9MqnWcKKb2y3
+         N9kE2ldrnN8XvVBHP8Yo9zQGunwr5obdDzKIyJvsawqgWCamRPOyGsBZWc5GpzPA2X
+         BTHZbaw7lddK81BsTzGu6wVsJK8IF9mZLhgGZdtq73He+qzyCOqGq2ohyFLoBPfRSR
+         3qEBEd11Q6ceA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73A6EF03849;
+        Tue, 29 Mar 2022 02:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] bpftool: Fix generated code in codegen_asserts
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164852041246.3757.13606158297445686435.git-patchwork-notify@kernel.org>
+Date:   Tue, 29 Mar 2022 02:20:12 +0000
+References: <20220328083703.2880079-1-jolsa@kernel.org>
+In-Reply-To: <20220328083703.2880079-1-jolsa@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        delyank@fb.com, acme@redhat.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@chromium.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -63,15 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Mar 2022 10:14:17 +0200 Alexandra Winter wrote:
-> +static bool _is_veth(const struct net_device *dev)
+Hello:
 
-netif_is_veth()?
+This patch was applied to bpf/bpf.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-> +{
-> +	return (dev->netdev_ops->ndo_open == veth_open);
+On Mon, 28 Mar 2022 10:37:03 +0200 you wrote:
+> Arnaldo reported perf compilation fail with:
+> 
+>   $ make -k BUILD_BPF_SKEL=1 CORESIGHT=1 PYTHON=python3
+>   ...
+>   In file included from util/bpf_counter.c:28:
+>   /tmp/build/perf//util/bpf_skel/bperf_leader.skel.h: In function ‘bperf_leader_bpf__assert’:
+>   /tmp/build/perf//util/bpf_skel/bperf_leader.skel.h:351:51: error: unused parameter ‘s’ [-Werror=unused-parameter]
+>     351 | bperf_leader_bpf__assert(struct bperf_leader_bpf *s)
+>         |                          ~~~~~~~~~~~~~~~~~~~~~~~~~^
+>   cc1: all warnings being treated as errors
+> 
+> [...]
 
-Why compare ndo_open and not entire netdev_ops or rtnl_link_ops?
+Here is the summary with links:
+  - bpftool: Fix generated code in codegen_asserts
+    https://git.kernel.org/bpf/bpf/c/ef8a257b4e49
 
-> +}
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
