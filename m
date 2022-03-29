@@ -2,46 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A56C4EB436
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 21:46:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9353D4EB43E
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 21:47:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241023AbiC2TrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 15:47:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47560 "EHLO
+        id S241030AbiC2TtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 15:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240356AbiC2TrU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 15:47:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7DE3B7C6A;
-        Tue, 29 Mar 2022 12:45:36 -0700 (PDT)
+        with ESMTP id S232733AbiC2TtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 15:49:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443F2B8237;
+        Tue, 29 Mar 2022 12:47:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CC5361698;
-        Tue, 29 Mar 2022 19:45:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B267C340F2;
-        Tue, 29 Mar 2022 19:45:34 +0000 (UTC)
-Date:   Tue, 29 Mar 2022 15:45:32 -0400
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D38F76168D;
+        Tue, 29 Mar 2022 19:47:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38971C340ED;
+        Tue, 29 Mar 2022 19:47:28 +0000 (UTC)
+Date:   Tue, 29 Mar 2022 15:47:26 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Beau Belgrave <beaub@microsoft.com>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+Cc:     Beau Belgrave <beaub@linux.microsoft.com>,
         Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: Comments on new user events ABI
-Message-ID: <20220329154532.4833d16d@gandalf.local.home>
-In-Reply-To: <CAADnVQK=GCuhTHz=iwv0r7Y37gYvt_UBzkfFJmNT+uR0z+7Myw@mail.gmail.com>
-References: <2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com>
-        <20220329002935.2869-1-beaub@linux.microsoft.com>
-        <1014535694.197402.1648570634323.JavaMail.zimbra@efficios.com>
-        <CAADnVQK=GCuhTHz=iwv0r7Y37gYvt_UBzkfFJmNT+uR0z+7Myw@mail.gmail.com>
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: Re: [PATCH] tracing/user_events: Remove eBPF interfaces
+Message-ID: <20220329154726.30c187df@gandalf.local.home>
+In-Reply-To: <CAADnVQKG0LxsUMFGsFSEA4AqpSa8Kqg5HpUfKzPo9Ze463UDgw@mail.gmail.com>
+References: <20220329173051.10087-1-beaub@linux.microsoft.com>
+        <CAADnVQKG0LxsUMFGsFSEA4AqpSa8Kqg5HpUfKzPo9Ze463UDgw@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -55,28 +49,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Mar 2022 09:25:52 -0700
+On Tue, 29 Mar 2022 11:19:05 -0700
 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-> Thanks for flagging.
+> On Tue, Mar 29, 2022 at 10:30 AM Beau Belgrave
+> <beaub@linux.microsoft.com> wrote:
+> >
+> > Remove eBPF interfaces within user_events to ensure they are fully
+> > reviewed.
+> >
+> > Link: https://lore.kernel.org/all/20220329165718.GA10381@kbox/
+> >
+> > Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>  
 > 
-> Whoever added this user_bpf* stuff please remove it immediately.
-> It was never reviewed by bpf maintainers.
-
-Heh, now you know how the x86 maintainers feel ;-)
-
+> Thanks for the quick revert.
 > 
-> It's a hard Nack to add a bpf interface to user_events.
+> Steven,
+> 
+> since you've applied the initial set please take this one and
+> send pull req to Linus asap.
+> 
 
-Agreed, I'm thinking of marking the entire thing as broken such that it can
-be worked on a bit more without a total revert (but still remove the BPF
-portion on your request).
+Relax Alexei,
 
-Beau, I agree with Mathieu, I don't think it's a good idea to expose the
-"ftrace/perf/etc" users. The only thing that the application needs is a bit
-to say "call the write now". And let the work be done within the kernel.
-I think a single bit may be better, that way you can have many more events
-on a page, and since they do not get modified often, it will be in hot
-cache and fast.
+I'll send it to Linus after it goes through my testing process with all my
+other patches in queue. An ABI is only defined by the main release "5.18"
+and not the rc releases (like 5.18-rc1). But it will definitely be gone
+before rc2.
 
 -- Steve
+
