@@ -2,153 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 373B54EB573
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 23:50:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0393D4EB58F
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 00:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235289AbiC2VwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 17:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35986 "EHLO
+        id S235809AbiC2WHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 18:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235237AbiC2VwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 17:52:01 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F088349FB4
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 14:50:17 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id k21so32614462lfe.4
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 14:50:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=elHZ1U/qS9oyBczDEnD06JHYMXv++A28wW+dRPj5/FM=;
-        b=ryRiYFpZ6FEavElDmV9F83jE3e7+WBpmTPOwMsmM+2pEW2CXbS0c2URzQRsIPvfnFr
-         st43gfbtB4fFbdbek/AuyB/ld1I6f/Uht+A2fqI0f/FMuXp8JyCtjGs3NQu/FY+zGWl9
-         dtYp3QnGwOyiP/2sGCWavH0J2QUYoIQq/CC5Tqoeu4YR4o8Fes833oPdCH3ItbKTJvjS
-         t5W5aWzUeES07e7omeMN+C6Ec0AuYtX5UH2qMuqh0RP2Z1cT04Q7/cN0UtrfTgeX2Zep
-         c6dvv6DratwUyKfl7NH1TFOfu96dqwarzbrWCyfWMKpM86EdnhekKMUzXBb3m71cKJUF
-         8lhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=elHZ1U/qS9oyBczDEnD06JHYMXv++A28wW+dRPj5/FM=;
-        b=ughGmYTCN6rylTde6IHp5hRA/T4WcrDbW3n5fm94gcjGRIdua7+MBDRb+h6uGLEMF3
-         fOVUAOEJNauuqKMXO56+RcJTtJv1sG7CvCG//SRgENWzVEGTVrym0ndXbERRGjLE2UQV
-         UtmTJCZRUTym2zvGfjsp/zyxIZ8r+FwZImX9FdVtoCUXerYbzIRJdnHAiO2fYZFUTCFz
-         qIVjj73ZCZPll7fLyhVwDddPhcsOJgpLEGvhrWNSJG2TXA1uGij7fIrpNNOPYHrmKlTr
-         jVVUewgBzE6r9Z/z4BA99a+oV+/5d5v9T7UwnrwIlJwRBAt5Dv6lStV3Cp0FJta8t+fK
-         mHNg==
-X-Gm-Message-State: AOAM533JKZuinN3uiyNQBaBEJH+RsFBRXEaEVvyFrXVEYnwAA6gsYlWL
-        0o/I9GzZtr8MqyttrFrqB7wpa2Tx+cMVOGUt1xVfFQ==
-X-Google-Smtp-Source: ABdhPJxTdyoaC2t6velSBqAvFoUcLvu+5+4F2Ly0GJIzOM07bL7lKXFQh14MMsleCXEMKa4HrqDwdZn04b3VJCrgpF4=
-X-Received: by 2002:a19:651d:0:b0:44a:b88a:b0b1 with SMTP id
- z29-20020a19651d000000b0044ab88ab0b1mr1360217lfb.380.1648590615853; Tue, 29
- Mar 2022 14:50:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220329212946.2861648-1-ndesaulniers@google.com>
-In-Reply-To: <20220329212946.2861648-1-ndesaulniers@google.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 29 Mar 2022 14:50:04 -0700
-Message-ID: <CAKwvOdmsnVsW46pTZYCNu-bx5c-aJ8ARMCOsYeMmQHpAw3PtPg@mail.gmail.com>
-Subject: Re: [PATCH] net, uapi: remove inclusion of arpa/inet.h
-To:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232491AbiC2WHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 18:07:41 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4655AB91A7;
+        Tue, 29 Mar 2022 15:05:56 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id BED6AC009; Wed, 30 Mar 2022 00:05:51 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648591551; bh=JcJk3NcTD//GtEmRNH6tsnNKdy80/1cNJm+0T/WWJ8c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pOV3Gwq+eOiks8TWwwlwywD+gD20R4AbvcuzbhwJidUGyqanwA1Szjbm8NgvytQfu
+         ej0/TTJw1e9oRoNxycVRY6SIXcir7efBWBABJbkTeMuIXSr6va9QnHgo3ZJwjoNcYo
+         qWtvmMZbunPnB9X0n6wXrDBPxR6O9eyC1rOsxBPj6Krq5ISNXPHk/0cZzD7g/Es9ZH
+         0gjgzSFrvMGZvxB4LsZU6Nc+MSwQhskUBwd+86793V5XWY5lJnGDM4jQyPs73ajjAm
+         N0v/K2uJ+dKsHkp0MVGrCRwr8wamUd9Ix1/s4o8EYublcd2vRvSAzviMBgYY5fLBtj
+         moS0cQ9NAFrDQ==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SORTED_RECIPS,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 35B23C009;
+        Wed, 30 Mar 2022 00:05:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648591550; bh=JcJk3NcTD//GtEmRNH6tsnNKdy80/1cNJm+0T/WWJ8c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FGPoWDZymW6j4tZG8qP9yEZVT7iCrkF6UEcCEVorRqoJI6bDk/IHQ0/GgVYlslC0z
+         vq+IjwE3X1k1tB/IP2MewdtHgipfLOy8XTlxid8S8c/1uFHcA60qcevYGYR494WQ2r
+         f43qACTF3gtUi+6SfOaImRF5ROBP22Zq0kzwUJH/rTmgvDSUb6hTMUhXXe4xJecj2Y
+         Vp4WkzvzeYzNttGTlbegzcHDA2eU+TRMhJNdzWwA8o2zoveUKRPaGKRdmFiB6WObfJ
+         qlKs9pDmrT7HCv8y1ojlgFCS6GUjvFALE2FPclFYL+M0mN1UaZS2aSWdpo86+Dzoub
+         NZStCyIOfvpWQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 98330da0;
+        Tue, 29 Mar 2022 22:05:43 +0000 (UTC)
+Date:   Wed, 30 Mar 2022 07:05:28 +0900
+From:   asmadeus@codewreck.org
+To:     syzbot <syzbot+bde0f89deacca7c765b8@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, ericvh@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux_oss@crudebyte.com,
+        lucho@ionkov.net, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [syzbot] possible deadlock in p9_write_work
+Message-ID: <YkOCqJ4WDObmaAcn@codewreck.org>
+References: <0000000000009523b605db620972@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0000000000009523b605db620972@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 2:29 PM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> Testing out CONFIG_UAPI_HEADER_TEST=y with a prebuilt Bionic sysroot
-> from Android's SDK, I encountered an error:
->
->   HDRTEST usr/include/linux/fsi.h
-> In file included from <built-in>:1:
-> In file included from ./usr/include/linux/tipc_config.h:46:
-> prebuilts/ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/arpa/inet.h:39:1:
-> error: unknown type name 'in_addr_t'
-> in_addr_t inet_addr(const char* __s);
-> ^
+syzbot wrote on Tue, Mar 29, 2022 at 02:23:17PM -0700:
+> ======================================================
+> WARNING: possible circular locking dependency detected
+> 5.17.0-next-20220328-syzkaller #0 Not tainted
+> ------------------------------------------------------
+> kworker/1:1/26 is trying to acquire lock:
+> ffff88807eece460 (sb_writers#3){.+.+}-{0:0}, at: p9_fd_write net/9p/trans_fd.c:428 [inline]
+> ffff88807eece460 (sb_writers#3){.+.+}-{0:0}, at: p9_write_work+0x25e/0xca0 net/9p/trans_fd.c:479
+> 
+> but task is already holding lock:
+> ffffc90000a1fda8 ((work_completion)(&m->wq)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+> 
+> which lock already depends on the new lock.
+> 
+> 
+> the existing dependency chain (in reverse order) is:
+> 
+> -> #3 ((work_completion)(&m->wq)){+.+.}-{0:0}:
+>        process_one_work+0x905/0x1610 kernel/workqueue.c:2265
+>        worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+>        kthread+0x2e9/0x3a0 kernel/kthread.c:376
+>        ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+> 
+> -> #2 ((wq_completion)events){+.+.}-{0:0}:
+>        flush_workqueue+0x164/0x1440 kernel/workqueue.c:2831
+>        flush_scheduled_work include/linux/workqueue.h:583 [inline]
+>        ext4_put_super+0x99/0x1150 fs/ext4/super.c:1202
+>        generic_shutdown_super+0x14c/0x400 fs/super.c:462
+>        kill_block_super+0x97/0xf0 fs/super.c:1394
+>        deactivate_locked_super+0x94/0x160 fs/super.c:332
+>        deactivate_super+0xad/0xd0 fs/super.c:363
+>        cleanup_mnt+0x3a2/0x540 fs/namespace.c:1186
+>        task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+>        resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+>        exit_to_user_mode_loop kernel/entry/common.c:183 [inline]
+>        exit_to_user_mode_prepare+0x23c/0x250 kernel/entry/common.c:215
+>        __syscall_exit_to_user_mode_work kernel/entry/common.c:297 [inline]
+>        syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:308
+>        do_syscall_64+0x42/0x80 arch/x86/entry/common.c:86
+>        entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> -> #1 (&type->s_umount_key#32){++++}-{3:3}:
+>        down_read+0x98/0x440 kernel/locking/rwsem.c:1461
+>        iterate_supers+0xdb/0x290 fs/super.c:692
+>        drop_caches_sysctl_handler+0xdb/0x110 fs/drop_caches.c:62
+>        proc_sys_call_handler+0x4a1/0x6e0 fs/proc/proc_sysctl.c:604
+>        call_write_iter include/linux/fs.h:2080 [inline]
+>        do_iter_readv_writev+0x3d1/0x640 fs/read_write.c:726
+>        do_iter_write+0x182/0x700 fs/read_write.c:852
+>        vfs_iter_write+0x70/0xa0 fs/read_write.c:893
+>        iter_file_splice_write+0x723/0xc70 fs/splice.c:689
+>        do_splice_from fs/splice.c:767 [inline]
+>        direct_splice_actor+0x110/0x180 fs/splice.c:936
+>        splice_direct_to_actor+0x34b/0x8c0 fs/splice.c:891
+>        do_splice_direct+0x1a7/0x270 fs/splice.c:979
+>        do_sendfile+0xae0/0x1240 fs/read_write.c:1246
+>        __do_sys_sendfile64 fs/read_write.c:1305 [inline]
+>        __se_sys_sendfile64 fs/read_write.c:1297 [inline]
+>        __x64_sys_sendfile64+0x149/0x210 fs/read_write.c:1297
+>        do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>        do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+>        entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> -> #0 (sb_writers#3){.+.+}-{0:0}:
+>        check_prev_add kernel/locking/lockdep.c:3096 [inline]
+>        check_prevs_add kernel/locking/lockdep.c:3219 [inline]
+>        validate_chain kernel/locking/lockdep.c:3834 [inline]
+>        __lock_acquire+0x2ac6/0x56c0 kernel/locking/lockdep.c:5060
+>        lock_acquire kernel/locking/lockdep.c:5672 [inline]
+>        lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5637
+>        percpu_down_read include/linux/percpu-rwsem.h:51 [inline]
+>        __sb_start_write include/linux/fs.h:1728 [inline]
+>        sb_start_write include/linux/fs.h:1798 [inline]
+>        file_start_write include/linux/fs.h:2815 [inline]
+>        kernel_write fs/read_write.c:564 [inline]
+>        kernel_write+0x2ac/0x540 fs/read_write.c:555
+>        p9_fd_write net/9p/trans_fd.c:428 [inline]
+>        p9_write_work+0x25e/0xca0 net/9p/trans_fd.c:479
+>        process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+>        worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+>        kthread+0x2e9/0x3a0 kernel/kthread.c:376
+>        ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
 
-Oh, this might not quite be the correct fix for this particular issue.
 
-Cherry picking this diff back into my Android kernel tree, I now observe:
-  HDRTEST usr/include/linux/tipc_config.h
-In file included from <built-in>:1:
-./usr/include/linux/tipc_config.h:268:4: error: implicit declaration
-of function 'ntohs' [-Werror,-Wimplicit-function-declaration]
-                (ntohs(((struct tlv_desc *)tlv)->tlv_len) <= space);
-                 ^
+So p9_write_work cannot write because there's.. a backing ext4 umount (I
+assume it's been mounted with trans fd with an ext4 file) and a
+drop_caches stuck in parallel, and we just got caught in the crossfire ?
 
-Is there more than one byteorder.h? Oh, I see what I did; ntohs is defined in
-linux/byteorder/generic.h
-not
-usr/include/asm/byteorder.h
-Sorry, I saw `byteorder` and mixed up the path with the filename.
+I'm not sure why it got stuck there but that doesn't look like anything
+we can do about it, using trans fd with filesystem backed files isn't a
+usage we care about in the first place, maybe there's a way to refuse
+these and only keep sockets but I don't really see the point of
+artificially limiting the interface (unless using a 9p mount with a file
+could have security implications I don't see)
 
-So rather than just remove the latter, I should additionally be adding
-the former. Though that then produces
-
-common/include/linux/byteorder/generic.h:146:9: error: implicit
-declaration of function '__cpu_to_le16'
-[-Werror,-Wimplicit-function-declaration]
-        *var = cpu_to_le16(le16_to_cpu(*var) + val);
-               ^
-
-Oh?
-
->
-> This is because Bionic has a bug in its inclusion chain. I sent a patch
-> to fix that, but looking closer at include/uapi/linux/tipc_config.h,
-> there's a comment that it includes arpa/inet.h for ntohs; but ntohs is
-> already defined in include/linux/byteorder/generic.h which is already
-> included in include/uapi/linux/tipc_config.h. There are no __KERNEL__
-> guards on include/linux/byteorder/generic.h's definition of ntohs. So
-> besides fixing Bionic, it looks like we can additionally remove this
-> unnecessary header inclusion.
->
-> Link: https://android-review.googlesource.com/c/platform/bionic/+/2048127
-> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
-> ---
->  include/uapi/linux/tipc_config.h | 4 ----
->  1 file changed, 4 deletions(-)
->
-> diff --git a/include/uapi/linux/tipc_config.h b/include/uapi/linux/tipc_config.h
-> index 4dfc05651c98..b38374d5f192 100644
-> --- a/include/uapi/linux/tipc_config.h
-> +++ b/include/uapi/linux/tipc_config.h
-> @@ -43,10 +43,6 @@
->  #include <linux/tipc.h>
->  #include <asm/byteorder.h>
->
-> -#ifndef __KERNEL__
-> -#include <arpa/inet.h> /* for ntohs etc. */
-> -#endif
-> -
->  /*
->   * Configuration
->   *
->
-> base-commit: 5efabdadcf4a5b9a37847ecc85ba71cf2eff0fcf
-> prerequisite-patch-id: 0c2abf2af8051f4b37a70ef11b7d2fc2a3ec7181
-> --
-> 2.35.1.1021.g381101b075-goog
->
-
-
+wontfix/dontcare for me,
 -- 
-Thanks,
-~Nick Desaulniers
+Dominique
