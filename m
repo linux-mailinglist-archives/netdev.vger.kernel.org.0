@@ -2,128 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18BC44EA64C
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 06:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 195154EA69F
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 06:34:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbiC2EKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 00:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
+        id S232085AbiC2Efk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 00:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231919AbiC2EKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 00:10:43 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825141DA4A;
-        Mon, 28 Mar 2022 21:09:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648526940; x=1680062940;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=II+YlVdtYYb+Q/uCpREGOhsf8Od4153BKeY2Dz+3nsc=;
-  b=MAshLrMYSKt/K6fiqPK3zP/azTgXW9UNShqvleeRW7kb1o6jM5wtgQXS
-   Ch2eqc37Zm8o1y8WWKNKL+udLBPCLsYcCxbKfL/2ZSOkZ1k1UYlqJTHMx
-   oeWdgTJak1cXc5Vs/RyEZcphYPkWR0WS8q0hLRb0iinDNSZV25252KtS9
-   47dakaw/QhSueFdwgrR9vXXY69u8aYwQEjZHSDNrx3QS9zvMbJNKHom+2
-   ksDD+EPSx6L8uJY+fBw0fDkXaGZIXbYHmHifiU0bgy85D/ylH3EV0MBk/
-   QacIY1D/DbGeOwcLYQJpf+J1SiUjBlqf5YvAG0cJsBe8AcGFp49kYVgAE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10300"; a="284051281"
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="284051281"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2022 21:09:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,219,1643702400"; 
-   d="scan'208";a="585427795"
-Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 28 Mar 2022 21:08:54 -0700
-Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nZ3A6-0002d5-7k; Tue, 29 Mar 2022 04:08:54 +0000
-Date:   Tue, 29 Mar 2022 12:08:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>, corbet@lwn.net,
-        viro@zeniv.linux.org.uk, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kpsingh@kernel.org, shuah@kernel.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        zohar@linux.ibm.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: Re: [PATCH 16/18] bpf-preload: Do kernel mount to ensure that pinned
- objects don't disappear
-Message-ID: <202203291256.TUOyKEtD-lkp@intel.com>
-References: <20220328175033.2437312-17-roberto.sassu@huawei.com>
+        with ESMTP id S231463AbiC2Efj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 00:35:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA08164F9;
+        Mon, 28 Mar 2022 21:33:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F70F613EF;
+        Tue, 29 Mar 2022 04:33:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7621C2BBE4;
+        Tue, 29 Mar 2022 04:33:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648528435;
+        bh=5dIB0sxX2lYZvf6q2/JasfE5c9SjoX2u6XVBPnKxdEE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tTUVZy56vvtMa/80ckzceNeLXsipjdpOiYLG5fITqgQ3K11etN6s4by/QIvF9syPp
+         FOW/sA3pq9+VoOfdXnlpx/+d5brcX4a4z4xmk0RQ4Sm2Hnon0ns61vCT/gD30jqZsE
+         KMpeM4EdAf/WMXC6oOI+r9Ij5P+hbKv+kKUCloyoYS4Embeb5qJCDzY06woXIuPZdD
+         DWSRmY6207Gpegb2jdRBex4HVqJcbgY4k4o30SHIi3849cJ2OvfVROguiO+owU3r5U
+         2BQwPcjnOk+ITrZ8ku/sp2rUH6s6+fSdaf3LgTgOQUX8pRGyVx93VwZQ6voKzatxrU
+         HoqRTrUXlMn+g==
+Date:   Mon, 28 Mar 2022 21:33:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mingbao Sun <sunmingbao@tom.com>
+Cc:     Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
+        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
+        libin.zhang@dell.com, ao.sun@dell.com
+Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
+ congestion-control
+Message-ID: <20220328213353.4aca75bd@kernel.org>
+In-Reply-To: <20220329104806.00000126@tom.com>
+References: <20220311103414.8255-1-sunmingbao@tom.com>
+        <20220311103414.8255-2-sunmingbao@tom.com>
+        <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
+        <20220325201123.00002f28@tom.com>
+        <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
+        <20220329104806.00000126@tom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328175033.2437312-17-roberto.sassu@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Roberto,
+On Tue, 29 Mar 2022 10:48:06 +0800 Mingbao Sun wrote:
+> A server in a data-center with the following 2 NICs:
+>=20
+>     - NIC_fron-end, for interacting with clients through WAN
+>       (high latency, ms-level)
+>=20
+>     - NIC_back-end, for interacting with NVMe/TCP target through LAN
+>       (low latency, ECN-enabled, ideal for dctcp)
+>=20
+> This server interacts with clients (handling requests) via the fron-end
+> network and accesses the NVMe/TCP storage via the back-end network.
+> This is a normal use case, right?
 
-Thank you for the patch! Yet something to improve:
+Well, if you have clearly separated networks you can set the congestion
+control algorithm per route, right? man ip-route, search congctl.
 
-[auto build test ERROR on bpf-next/master]
-[also build test ERROR on linus/master next-20220328]
-[cannot apply to bpf/master v5.17]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> For the client devices, we can=E2=80=99t determine their congestion-contr=
+ol.
+> But normally it=E2=80=99s cubic by default (per the CONFIG_DEFAULT_TCP_CO=
+NG).
+> So if we change the default congestion control on the server to dctcp
+> on behalf of the NVMe/TCP traffic of the LAN side, it could at the
+> same time change the congestion-control of the front-end sockets
+> to dctcp while the congestion-control of the client-side is cubic.
+> So this is an unexpected scenario.
+>=20
+> In addition, distributed storage products like the following also have
+> the above problem:
+>=20
+>     - The product consists of a cluster of servers.
+>=20
+>     - Each server serves clients via its front-end NIC
+>      (WAN, high latency).
+>=20
+>     - All servers interact with each other via NVMe/TCP via back-end NIC
+>      (LAN, low latency, ECN-enabled, ideal for dctcp).
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: hexagon-randconfig-r041-20220328 (https://download.01.org/0day-ci/archive/20220329/202203291256.TUOyKEtD-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 0f6d9501cf49ce02937099350d08f20c4af86f3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/eddbb1ec1e92ba00c4acc9f123769265e17e8e40
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Roberto-Sassu/bpf-Secure-and-authenticated-preloading-of-eBPF-programs/20220329-015829
-        git checkout eddbb1ec1e92ba00c4acc9f123769265e17e8e40
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   kernel/bpf/inode.c:25:37: error: use of undeclared identifier 'CONFIG_BPF_PRELOAD_LIST'
-   static char *bpf_preload_list_str = CONFIG_BPF_PRELOAD_LIST;
-                                       ^
->> kernel/bpf/inode.c:1026:13: error: redefinition of 'mount_bpffs'
-   void __init mount_bpffs(void)
-               ^
-   include/linux/bpf.h:1146:27: note: previous definition is here
-   static inline void __init mount_bpffs(void)
-                             ^
-   2 errors generated.
-
-
-vim +/mount_bpffs +1026 kernel/bpf/inode.c
-
-  1025	
-> 1026	void __init mount_bpffs(void)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
