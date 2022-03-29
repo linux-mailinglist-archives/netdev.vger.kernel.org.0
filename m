@@ -2,132 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB07E4EAED7
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 15:52:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24AE54EAEDD
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 15:54:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237551AbiC2Nyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 09:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
+        id S236202AbiC2Nzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 09:55:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237212AbiC2Nyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 09:54:36 -0400
-Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D9A1B6092
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 06:52:53 -0700 (PDT)
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 1CF1E7CF832
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 08:52:53 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id ZCHEnPr699AGSZCHEnBpRn; Tue, 29 Mar 2022 08:52:53 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=R8VF1083Jml6bSlqQeVvGDZxIbXB4VClUDd8cNl8HqA=; b=ycg/a9dlJnrsrXw2QIi/hOynJz
-        YapMKagNgi0vMp0GKaSr32e2PIXcmtWBEGCIkRUbEDIFRzkBAbqKOr9vwcCt/gwl2/RmYmxlbDwkc
-        9irvStDtwQR1PmxXGudquz6OypiepTQyImdwe86pa2qNZ+RBuuzFhvfjW8UYrAbVPqd0T9MNXdgU2
-        GsCNUaso2xsF8byuJGCZZ8Fu7zTMQHxp0LxKZ+T7dZRFOegM8Xv9lhn0dn2oyMuj+gfN5KuX2d71l
-        /zHjs+zTOn4H2vXsh38qxOjPkyq6NOLnzP08v7IukXPeYIKRnd3vSoZ22hmGWKFxT6imnN4wfFsHq
-        9C00d64A==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54542)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nZCHD-00353G-Re; Tue, 29 Mar 2022 13:52:51 +0000
-Message-ID: <ad6373ce-ad60-e54c-139c-b4b807f3531c@roeck-us.net>
-Date:   Tue, 29 Mar 2022 06:52:50 -0700
+        with ESMTP id S237560AbiC2Nzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 09:55:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E5D9A1C4047
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 06:53:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648562039;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=un9l7/a+uEq1XogerESBiAijCYeuvtYw94AitMUuZ+M=;
+        b=fPUvgNUwLrOSiLmVWDTVqcD9dU7FKviKusnj/0NwwFK9KXK2UHV+C0lE34MePBfhOpFDHp
+        NYo+ym1CihBsxSfmiKNWJHHypEY/Rsxkm3yHvM3IIIH0iCW7Vs0aP6QmQaYB6rcUl3SE3G
+        GZOkEG0FbcO388Bw+8830mdB8okfWhc=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-240-EiivdvnCNemUn-EubCKAyg-1; Tue, 29 Mar 2022 09:53:57 -0400
+X-MC-Unique: EiivdvnCNemUn-EubCKAyg-1
+Received: by mail-pf1-f198.google.com with SMTP id b7-20020aa79507000000b004fa88200f15so10231658pfp.14
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 06:53:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=un9l7/a+uEq1XogerESBiAijCYeuvtYw94AitMUuZ+M=;
+        b=vGRNhLSqqlQQtwMI9NC1n81Z9X97sObuuN+kiSQCqaqHlmnfkRc2M0h0/lH09Y2k96
+         BuaOWl/7j2Um0kDpzzXdMIJHF47vtoTaGNa4i3g8/7fdzL1Wr60BA/8XDFNhXr7PkUy0
+         IIJ3Jfa6PcPLh7tboHdIDL/9aCJ4skoWgvXbf4rwITQbkV4aLbdCE+OrqoAZXzGABNZ8
+         vSk79CMWbMl4HNyDYNtQneNlW8BXDXWhLSid3glrJpo43fyxO8hfj3JO9JAUzz+BCU7Q
+         UIgcAG5pNYegltJAK1FlWZnHcyRDhIv7XrLuWphFQwsFUJcL9eqspx10Pb6wdp/nufoZ
+         rD+A==
+X-Gm-Message-State: AOAM533O7aeGfeVDQ/9ton8IO7u5IuFMTv7dXPyQdrO5tRrNpXkKjCpg
+        cWO4B/2Sjt/ChTrGz+fXnFALnYUs0L4bN3JuLojtVvI+zUO0pGDyI70wB60Xrfa/nkUXZ7Sof/n
+        WzsAGggZohFuIrttLBjEnZW+d+MiMHFBS
+X-Received: by 2002:a63:6c0a:0:b0:398:6bd2:a16a with SMTP id h10-20020a636c0a000000b003986bd2a16amr2123310pgc.191.1648562033317;
+        Tue, 29 Mar 2022 06:53:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyGa8CCAa74guVnbIRav3BJCOquPXCu+LU4JQHK3SKWdmRtYE+byETFimsO7Lw1QDDW65u4gI5INxlQXDHGp68=
+X-Received: by 2002:a63:6c0a:0:b0:398:6bd2:a16a with SMTP id
+ h10-20020a636c0a000000b003986bd2a16amr2123264pgc.191.1648562032802; Tue, 29
+ Mar 2022 06:53:52 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Xu Yilun <yilun.xu@intel.com>,
-        Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20220328115226.3042322-1-michael@walle.cc>
- <YkGwjjUz+421O2E1@lunn.ch>
- <ab64105b-c48d-cdf2-598a-3e0a2e261b27@roeck-us.net>
- <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v1 0/2] hwmon: introduce hwmon_sanitize()
-In-Reply-To: <e87c3ab2a0c188dced27bf83fc444c40@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nZCHD-00353G-Re
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54542
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 7
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+References: <20220318161528.1531164-1-benjamin.tissoires@redhat.com>
+ <20220318161528.1531164-7-benjamin.tissoires@redhat.com> <CAADnVQLvhWxEtHETg0tasJ7Fp5JHNRYWdjhnxi1y1gBpXS=bvQ@mail.gmail.com>
+ <CAO-hwJJXR3jtAvLF1phUa5pKZzVkDxAAHO5+7R50hL-fVhDYyA@mail.gmail.com>
+ <CAEf4BzYVu9JVJvKZK3S9HGwpyPiWrwKPGsTz3wXC_+vmRYGdNw@mail.gmail.com>
+ <CAO-hwJKPxKCzxCKGpH85j5VG3bQk+7axDYpxYoy-12yL7AQj2w@mail.gmail.com> <CAEf4BzZA7Wmg=N42ib_r9Jm8THXuGGR3CPgTqMyw9n2=gd_+Kg@mail.gmail.com>
+In-Reply-To: <CAEf4BzZA7Wmg=N42ib_r9Jm8THXuGGR3CPgTqMyw9n2=gd_+Kg@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Tue, 29 Mar 2022 15:53:41 +0200
+Message-ID: <CAO-hwJKnnVkJPG6wtLJ6t7ojv5=vS0NGt14un6+nRmxzj+xifw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 06/17] HID: allow to change the report
+ descriptor from an eBPF program
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/28/22 15:50, Michael Walle wrote:
-> Am 2022-03-28 18:27, schrieb Guenter Roeck:
->> On 3/28/22 05:56, Andrew Lunn wrote:
->>>> I'm not sure how to handle this correctly, as this touches both the
->>>> network tree and the hwmon tree. Also, the GPY PHY temperature senors
->>>> driver would use it.
->>>
->>> There are a few options:
->>>
->>> 1) Get the hwmon_sanitize_name() merged into hwmon, ask for a stable
->>> branch, and get it merged into netdev net-next.
->>>
->>> 2) Have the hwmon maintainers ACK the change and agree that it can be
->>> merged via netdev.
->>>
->>> Probably the second option is easiest, and since it is not touching
->>> the core of hwmon, it is unlikely to cause merge conflicts.
->>>
->>
->> No, it isn't the easiest solution because it also modifies a hwmon
->> driver to use it.
-> 
-> So that leaves us with option 1? The next version will contain the
-> additional patch which moves the hwmon_is_bad_char() from the include
-> to the core and make it private. That will then need an immutable
-> branch from netdev to get merged back into hwmon before that patch
-> can be applied, right?
+On Mon, Mar 28, 2022 at 11:35 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Sun, Mar 27, 2022 at 11:57 PM Benjamin Tissoires
+> <benjamin.tissoires@redhat.com> wrote:
+> >
+> > On Fri, Mar 25, 2022 at 6:00 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Wed, Mar 23, 2022 at 9:08 AM Benjamin Tissoires
+> > > <benjamin.tissoires@redhat.com> wrote:
+> > > >
+> > > > Hi Alexei,
+> > > >
+> > > > On Tue, Mar 22, 2022 at 11:51 PM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > On Fri, Mar 18, 2022 at 9:16 AM Benjamin Tissoires
+> > > > > <benjamin.tissoires@redhat.com> wrote:
+> > > > > >
+> > > > > > +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
+> > > > > > +{
+> > > > > > +       int ret;
+> > > > > > +       struct hid_bpf_ctx_kern ctx = {
+> > > > > > +               .type = HID_BPF_RDESC_FIXUP,
+> > > > > > +               .hdev = hdev,
+> > > > > > +               .size = *size,
+> > > > > > +       };
+> > > > > > +
+> > > > > > +       if (bpf_hid_link_empty(&hdev->bpf, BPF_HID_ATTACH_RDESC_FIXUP))
+> > > > > > +               goto ignore_bpf;
+> > > > > > +
+> > > > > > +       ctx.data = kmemdup(rdesc, HID_MAX_DESCRIPTOR_SIZE, GFP_KERNEL);
+> > > > > > +       if (!ctx.data)
+> > > > > > +               goto ignore_bpf;
+> > > > > > +
+> > > > > > +       ctx.allocated_size = HID_MAX_DESCRIPTOR_SIZE;
+> > > > > > +
+> > > > > > +       ret = hid_bpf_run_progs(hdev, &ctx);
+> > > > > > +       if (ret)
+> > > > > > +               goto ignore_bpf;
+> > > > > > +
+> > > > > > +       if (ctx.size > ctx.allocated_size)
+> > > > > > +               goto ignore_bpf;
+> > > > > > +
+> > > > > > +       *size = ctx.size;
+> > > > > > +
+> > > > > > +       if (*size) {
+> > > > > > +               rdesc = krealloc(ctx.data, *size, GFP_KERNEL);
+> > > > > > +       } else {
+> > > > > > +               rdesc = NULL;
+> > > > > > +               kfree(ctx.data);
+> > > > > > +       }
+> > > > > > +
+> > > > > > +       return rdesc;
+> > > > > > +
+> > > > > > + ignore_bpf:
+> > > > > > +       kfree(ctx.data);
+> > > > > > +       return kmemdup(rdesc, *size, GFP_KERNEL);
+> > > > > > +}
+> > > > > > +
+> > > > > >  int __init hid_bpf_module_init(void)
+> > > > > >  {
+> > > > > >         struct bpf_hid_hooks hooks = {
+> > > > > >                 .hdev_from_fd = hid_bpf_fd_to_hdev,
+> > > > > >                 .pre_link_attach = hid_bpf_pre_link_attach,
+> > > > > > +               .post_link_attach = hid_bpf_post_link_attach,
+> > > > > >                 .array_detach = hid_bpf_array_detach,
+> > > > > >         };
+> > > > > >
+> > > > > > diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+> > > > > > index 937fab7eb9c6..3182c39db006 100644
+> > > > > > --- a/drivers/hid/hid-core.c
+> > > > > > +++ b/drivers/hid/hid-core.c
+> > > > > > @@ -1213,7 +1213,8 @@ int hid_open_report(struct hid_device *device)
+> > > > > >                 return -ENODEV;
+> > > > > >         size = device->dev_rsize;
+> > > > > >
+> > > > > > -       buf = kmemdup(start, size, GFP_KERNEL);
+> > > > > > +       /* hid_bpf_report_fixup() ensures we work on a copy of rdesc */
+> > > > > > +       buf = hid_bpf_report_fixup(device, start, &size);
+> > > > >
+> > > > > Looking at this patch and the majority of other patches...
+> > > > > the code is doing a lot of work to connect HID side with bpf.
+> > > > > At the same time the evolution of the patch series suggests
+> > > > > that these hook points are not quite stable. More hooks and
+> > > > > helpers are being added.
+> > > > > It tells us that it's way too early to introduce a stable
+> > > > > interface between HID and bpf.
+> > > >
+> > > > I understand that you might be under the impression that the interface
+> > > > is changing a lot, but this is mostly due to my poor knowledge of all
+> > > > the arcanes of eBPF.
+> > > > The overall way HID-BPF works is to work on a single array, and we
+> > > > should pretty much be sorted out. There are a couple of helpers to be
+> > > > able to communicate with the device, but the API has been stable in
+> > > > the kernel for those for quite some time now.
+> > > >
+> > > > The variations in the hooks is mostly because I don't know what is the
+> > > > best representation we can use in eBPF for those, and the review
+> > > > process is changing that.
+> > >
+> > > I think such a big feature as this one, especially that most BPF folks
+> > > are (probably) not familiar with the HID subsystem in the kernel,
+> > > would benefit from a bit of live discussion during BPF office hours.
+> > > Do you think you can give a short overview of what you are trying to
+> > > achieve with some background context on HID specifics at one of the
+> > > next BPF office hours? We have a meeting scheduled every week on
+> > > Thursday, 9am Pacific time. But people need to put their topic onto
+> > > the agenda, otherwise the meeting is cancelled. See [0] for
+> > > spreadsheet and links to Zoom meeting, agenda, etc.
+> >
+> > This sounds like a good idea. I just added my topic on the agenda and
+> > will prepare some slides.
+> >
+>
+> Great! Unfortunately I personally have a conflict this week and won't
+> be able to attend, so I'll have to catch up somehow through word of
+> mouth :( Next week's BPF office hours would be best, but I don't want
+> to delay discussions just because of me.
 
-We can not control if someone else starts using the function before
-it is removed. As pointed out, the immutable branch needs to be from hwmon,
-and the patch to make hwmon_is_bad_char private can only be applied
-after all of its users are gone from the mainline kernel.
+OK. FWIW, I'll have slides publicly available once I'll do a final
+roundup on them. Hopefully that will give you enough context on HID to
+understand the problem.
+If there are too many conflicts we can surely delay by a week, but I
+would rather have the discussion happening sooner :/
 
-I would actually suggest to allocate the new string as part of the
-function and have it return a pointer to a new string. Something like
-	char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
-and
-         char *hwmon_sanitize_name(const char *name);
+Cheers,
+Benjamin
 
-because the string duplication is also part of all calling code.
+> >
+> > >
+> > >   [0] https://docs.google.com/spreadsheets/d/1LfrDXZ9-fdhvPEp_LHkxAMYyxxpwBXjywWa0AejEveU
+> > >
+> > > [...]
+> > >
+> >
+>
 
-Guenter
