@@ -2,83 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DA114EA8FD
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 10:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA114EA903
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 10:11:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233752AbiC2IL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 04:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51234 "EHLO
+        id S233800AbiC2IMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 04:12:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232285AbiC2ILy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 04:11:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38CD921C
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 01:10:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S233781AbiC2IMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 04:12:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1463325C64
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 01:11:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648541466;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=X90O0KMU6UscdyhiWc2/dl9YEQfIncEUdXcssr5AopY=;
+        b=FkSH70ORXB/2BMl5bUw7zzCEoxvMCSXObU98uniK+OrKrZ2JDQwS6iPtZc788NEh5wQlPw
+        Nsbgga7AK1HxZmvA7RKRAZ5Ci0AtJSlF6r7MGc486fr6jHS1S32aH0jVw+zPuwV5OcXu2P
+        ynN2842Bsd6qwdaSdbtXfYTkT8PMhgM=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-460-xdy0N1zHOPWgSOw0cHkbog-1; Tue, 29 Mar 2022 04:11:03 -0400
+X-MC-Unique: xdy0N1zHOPWgSOw0cHkbog-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AC6961585
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 08:10:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F3973C340ED;
-        Tue, 29 Mar 2022 08:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648541411;
-        bh=bFSVhu30c9b1vmimtffMtnmpyHlAlWD3EY5mbJTkcNM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=p3YkxHGhJpVD0kq+1a7oHBvb5h9MKqmKPiHasvpG59PNH9LdEAyPF+OIYAfiEHOBh
-         urvjvC+oVQBrfjSUlN/z7w2lcFv6SnkAqynPeQEKD7t3qMaSbKXKrx5VA/Ic6jQYWO
-         hS1tYFQ0DqBq0etlP2DnaZtajRiVNnINELmRgrLcqkDRoXHxv7TKPaRwffxL33ItDT
-         Igo785QxOqw4DnC9MiqiNr3ceY5qzmPxkxN+c2xAHVeVkeO7ZolhKj5Uj53S9SpKEp
-         g7RT8NoY5ujvICSNTDcxl50zuw9ol/6zZ9qyiO6FYscbkGFQ7E+HH5NUMjdBG5EyAu
-         TZd6PFyheQJPA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7702F03848;
-        Tue, 29 Mar 2022 08:10:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9597A3817487;
+        Tue, 29 Mar 2022 08:11:03 +0000 (UTC)
+Received: from astarta.redhat.com (unknown [10.39.194.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 74FAD141DEC7;
+        Tue, 29 Mar 2022 08:11:02 +0000 (UTC)
+From:   Yauheni Kaliuta <ykaliuta@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, jolsa@kernel.org,
+        Yauheni Kaliuta <ykaliuta@redhat.com>
+Subject: [PATCH bpf-next] bpf: test_offload.py: skip base maps without names
+Date:   Tue, 29 Mar 2022 11:11:00 +0300
+Message-Id: <20220329081100.9705-1-ykaliuta@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] openvswitch: Fixed nd target mask field in the flow dump.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164854141087.9717.16731647759253990005.git-patchwork-notify@kernel.org>
-Date:   Tue, 29 Mar 2022 08:10:10 +0000
-References: <20220328054148.3057-1-martinvarghesenokia@gmail.com>
-In-Reply-To: <20220328054148.3057-1-martinvarghesenokia@gmail.com>
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        martin.varghese@nokia.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The test fails:
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+  # ./test_offload.py
+  ...
+  Test bpftool bound info reporting (own ns)...
+  FAIL: 3 BPF maps loaded, expected 2
+    File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 1177, in <module>
+      check_dev_info(False, "")
+    File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 645, in check_dev_info
+      maps = bpftool_map_list(expected=2, ns=ns)
+    File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 190, in bpftool_map_list
+      fail(True, "%d BPF maps loaded, expected %d" %
+    File "/root/bpf-next/tools/testing/selftests/bpf/./test_offload.py", line 86, in fail
+      tb = "".join(traceback.extract_stack().format())
 
-On Mon, 28 Mar 2022 11:11:48 +0530 you wrote:
-> From: Martin Varghese <martin.varghese@nokia.com>
-> 
-> IPv6 nd target mask was not getting populated in flow dump.
-> 
-> In the function __ovs_nla_put_key the icmp code mask field was checked
-> instead of icmp code key field to classify the flow as neighbour discovery.
-> 
-> [...]
+Some base maps do not have names and they cannot be added due to
+compatibility with older kernels, see
+https://lore.kernel.org/bpf/CAEf4BzY66WPKQbDe74AKZ6nFtZjq5e+G3Ji2egcVytB9R6_sGQ@mail.gmail.com/
 
-Here is the summary with links:
-  - [net] openvswitch: Fixed nd target mask field in the flow dump.
-    https://git.kernel.org/netdev/net/c/f19c44452b58
+So, just skip the unnamed maps.
 
-You are awesome, thank you!
+Signed-off-by: Yauheni Kaliuta <ykaliuta@redhat.com>
+---
+ tools/testing/selftests/bpf/test_offload.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/test_offload.py b/tools/testing/selftests/bpf/test_offload.py
+index edaffd43da83..6cd6ef9fc20b 100755
+--- a/tools/testing/selftests/bpf/test_offload.py
++++ b/tools/testing/selftests/bpf/test_offload.py
+@@ -184,7 +184,7 @@ def bpftool_prog_list(expected=None, ns=""):
+ def bpftool_map_list(expected=None, ns=""):
+     _, maps = bpftool("map show", JSON=True, ns=ns, fail=True)
+     # Remove the base maps
+-    maps = [m for m in maps if m not in base_maps and m.get('name') not in base_map_names]
++    maps = [m for m in maps if m not in base_maps and m.get('name') and m.get('name') not in base_map_names]
+     if expected is not None:
+         if len(maps) != expected:
+             fail(True, "%d BPF maps loaded, expected %d" %
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
