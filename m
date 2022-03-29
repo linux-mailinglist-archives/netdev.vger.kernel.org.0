@@ -2,131 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5344EA56D
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 04:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA304EA57D
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 04:51:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231228AbiC2Ct6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Mar 2022 22:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
+        id S231266AbiC2CxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Mar 2022 22:53:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiC2Ct5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 22:49:57 -0400
-Received: from smtp.tom.com (smtprz02.163.net [106.3.154.235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3F5545AD9
-        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 19:48:11 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 9A135440101
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 10:48:10 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648522090; bh=UxIN0gCQWDCPxHwAlV5GfBTdHsvgwdbGdcBxlAMphuU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TItiNbo1FHWTYF+aGHjG2PeBXJVFxoU2jVRHsyUMg/kPJ2x8yB1ebm9pb6/xp86fj
-         etIEqkvkNdXiMFTXAvfMwxUMwQvqNLnWnz8ZNm2b11sDMXedjU8um8sTg/GRD9It+f
-         O2GIZs/I1+A3LttPkHVOsD1noHItP7I14fhjWI0Y=
-Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID -2056858277
-          for <netdev@vger.kernel.org>;
-          Tue, 29 Mar 2022 10:48:10 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648522090; bh=UxIN0gCQWDCPxHwAlV5GfBTdHsvgwdbGdcBxlAMphuU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TItiNbo1FHWTYF+aGHjG2PeBXJVFxoU2jVRHsyUMg/kPJ2x8yB1ebm9pb6/xp86fj
-         etIEqkvkNdXiMFTXAvfMwxUMwQvqNLnWnz8ZNm2b11sDMXedjU8um8sTg/GRD9It+f
-         O2GIZs/I1+A3LttPkHVOsD1noHItP7I14fhjWI0Y=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id E79AA15411AE;
-        Tue, 29 Mar 2022 10:48:06 +0800 (CST)
-Date:   Tue, 29 Mar 2022 10:48:06 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Sagi Grimberg <sagi@grimberg.me>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
- congestion-control
-Message-ID: <20220329104806.00000126@tom.com>
-In-Reply-To: <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
-References: <20220311103414.8255-1-sunmingbao@tom.com>
-        <20220311103414.8255-2-sunmingbao@tom.com>
-        <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
-        <20220325201123.00002f28@tom.com>
-        <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        with ESMTP id S230475AbiC2CxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Mar 2022 22:53:16 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFFF1B30BD
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 19:51:34 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id b15so14637745pfm.5
+        for <netdev@vger.kernel.org>; Mon, 28 Mar 2022 19:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u2HTizkCJuXJ03mQ/U2QTBOmCXttnZ8qvqDtLWSDfbI=;
+        b=aW/KmZgmPudQ45/FDIsfnesPJq6KJpZiHzEaktEktsOA9iujonrv39xeKmIo7Q5clE
+         JStRgYE68Ahq+i3Ep+bYIH9VDufHoZZYJapD7Vg/0QEg3LaHnA5IYbsi9P+z/qerEJ6o
+         XSx5wAiK46qlzH8jJvVO0Qr6nfHRFRYdbr8R6EfvdOTjUjH9CUBZFjeRWYE8YwH9N+c5
+         PlQVHBu7Rd+6doY65/rW2MaaWPRJMlEbvbrp6hQpiJfNc7qulq0w4jqEEwUGpsyuYKro
+         LVjAkIJUhxMh7mnNm62pIzX6s+KDXb20igIsyTlfK8s522vrKfW01ojueEE5ar/XTxuY
+         MZZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u2HTizkCJuXJ03mQ/U2QTBOmCXttnZ8qvqDtLWSDfbI=;
+        b=08mnbUzGOsYI2Tyvst7KRqoDlERF7iDJsuolkbmY61j9VeQhV6RxV+zRVTzS3XlspB
+         b3qg/aty2nO6rOCri6tNgXpLa+wPDo3s+8xToFQLT0MOfbhHoNJor66UrtoJ46fttr1k
+         qkEskLmtKw5tLFEygJzQO7L48+Th+yJ6D/3KQlX9j7A8lvY8FwyG3iTaA1akNedpZBbr
+         fbvuskYk94f4kIKPNTfpQA6j4k+49jSwXbAH/csEtkoB0tmu6zQZIiC1Z7ImCzs77sff
+         QTZmFGp5L4x1XuH2DT9654QajO/GsU2YF4PDd1YrRjx2BEyLGOLIfvJINKO21QdBCgES
+         H/xQ==
+X-Gm-Message-State: AOAM53377mVahwxOntv1KIZbPd4M/yFg+RkVjN/pEYn9bnNDzrEdVRkW
+        y0H2b1RJtl0Cm0FbS1ijZgs+rw==
+X-Google-Smtp-Source: ABdhPJzIlLZjCyUlnIl8RV5iat1BLKtNnFXi9mip9/4Vw79Fsch9eHT0egEOKBxM9RNOxO7Q9dmUBQ==
+X-Received: by 2002:a05:6a00:24d2:b0:4fb:1b6d:ee7d with SMTP id d18-20020a056a0024d200b004fb1b6dee7dmr17414606pfv.36.1648522293605;
+        Mon, 28 Mar 2022 19:51:33 -0700 (PDT)
+Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id f14-20020a63380e000000b0038253c4d5casm14136053pga.36.2022.03.28.19.51.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Mar 2022 19:51:33 -0700 (PDT)
+From:   Andy Chiu <andy.chiu@sifive.com>
+To:     kuba@kernel.org, radhey.shyam.pandey@xilinx.com,
+        robert.hancock@calian.com, michal.simek@xilinx.com, andrew@lunn.ch
+Cc:     davem@davemloft.net, pabeni@redhat.com, robh+dt@kernel.org,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, robh@kernel.org,
+        Andy Chiu <andy.chiu@sifive.com>
+Subject: [PATCH v7 net 0/4] Fix broken link on Xilinx's AXI Ethernet in SGMII mode
+Date:   Tue, 29 Mar 2022 10:49:17 +0800
+Message-Id: <20220329024921.2739338-1-andy.chiu@sifive.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> As I said, TCP can be tuned in various ways, congestion being just one
-> of them. I'm sure you can find a workload where rmem/wmem will make
-> a difference.
+The Ethernet driver use phy-handle to reference the PCS/PMA PHY. This
+could be a problem if one wants to configure an external PHY via phylink,
+since it use the same phandle to get the PHY. To fix this, introduce a
+dedicated pcs-handle to point to the PCS/PMA PHY and deprecate the use
+of pointing it with phy-handle. A similar use case of pcs-handle can be
+seen on dpaa2 as well.
 
-agree.
-but the difference for the knob of rmem/wmem is:
-we could enlarge rmem/wmem for NVMe/TCP via sysctl,
-and it would not bring downside to any other sockets whose
-rmem/wmem are not explicitly specified.
+--- patch v5 ---
+ - Re-apply the v4 patch on the net tree.
+ - Describe the pcs-handle DT binding at ethernet-controller level.
+--- patch v6 ---
+ - Remove "preferrably" to clearify usage of pcs_handle.
+--- patch v7 ---
+ - Rebase the patch on latest net/master
 
-> In addition, based on my knowledge, application specific TCP level
-> tuning (like congestion) is not really a common thing to do. So why in
-> nvme-tcp?
->=20
-> So to me at least, it is not clear why we should add it to the driver.
+Andy Chiu (4):
+  net: axienet: setup mdio unconditionally
+  net: axienet: factor out phy_node in struct axienet_local
+  dt-bindings: net: add pcs-handle attribute
+  net: axiemac: use a phandle to reference pcs_phy
 
-As mentioned in the commit message, though we can specify the
-congestion-control of NVMe_over_TCP via sysctl or writing
-'/proc/sys/net/ipv4/tcp_congestion_control', but this also
-changes the congestion-control of all the future TCP sockets on
-the same host that have not been explicitly assigned the
-congestion-control, thus bringing potential impaction on their
-performance.
+ .../bindings/net/ethernet-controller.yaml     |  6 ++++
+ .../bindings/net/xilinx_axienet.txt           |  8 ++++-
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |  2 --
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 33 ++++++++++---------
+ 4 files changed, 31 insertions(+), 18 deletions(-)
 
-For example:
+-- 
+2.34.1
 
-A server in a data-center with the following 2 NICs:
-
-    - NIC_fron-end, for interacting with clients through WAN
-      (high latency, ms-level)
-
-    - NIC_back-end, for interacting with NVMe/TCP target through LAN
-      (low latency, ECN-enabled, ideal for dctcp)
-
-This server interacts with clients (handling requests) via the fron-end
-network and accesses the NVMe/TCP storage via the back-end network.
-This is a normal use case, right?
-
-For the client devices, we can=E2=80=99t determine their congestion-control.
-But normally it=E2=80=99s cubic by default (per the CONFIG_DEFAULT_TCP_CONG=
-).
-So if we change the default congestion control on the server to dctcp
-on behalf of the NVMe/TCP traffic of the LAN side, it could at the
-same time change the congestion-control of the front-end sockets
-to dctcp while the congestion-control of the client-side is cubic.
-So this is an unexpected scenario.
-
-In addition, distributed storage products like the following also have
-the above problem:
-
-    - The product consists of a cluster of servers.
-
-    - Each server serves clients via its front-end NIC
-     (WAN, high latency).
-
-    - All servers interact with each other via NVMe/TCP via back-end NIC
-     (LAN, low latency, ECN-enabled, ideal for dctcp).
