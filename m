@@ -2,73 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEBF24EAB37
-	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 12:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4653E4EABF1
+	for <lists+netdev@lfdr.de>; Tue, 29 Mar 2022 13:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235147AbiC2KaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 06:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41198 "EHLO
+        id S235563AbiC2LJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 07:09:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235140AbiC2KaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 06:30:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA1792F5
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 03:28:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648549707;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=zmJQKkRz56fnzS0EeDC+7f1ewdiGvau6reWa8+hsBMg=;
-        b=G4OBnnSKbY6n9htL7GZlMBWnvMbl49AewT2cIFzMugLTLxk7aq6Fu2TwEid1tThRFTKUH2
-        vfhHPa+TtO3Hj4/RSAISwEyOkdA3JrKsWviNn0SQJm/eV9hU55lRXRLl8lw/6ugcyjSSIp
-        rBI1NSmUeQSWMBoQ815mtScl8+6mS6g=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-611--T5A9IpuMiKk7GarukZLEA-1; Tue, 29 Mar 2022 06:28:22 -0400
-X-MC-Unique: -T5A9IpuMiKk7GarukZLEA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B8BBC802E5B;
-        Tue, 29 Mar 2022 10:28:21 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.40.192.65])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0F3C114582EE;
-        Tue, 29 Mar 2022 10:27:53 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     poros@redhat.com, mschmidt@redhat.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        linux-kernel@vger.kernel.org (open list),
-        bpf@vger.kernel.org (open list:XDP (eXpress Data Path))
-Subject: [PATCH net] ice: Fix logic of getting XSK pool associated with Tx queue
-Date:   Tue, 29 Mar 2022 12:27:51 +0200
-Message-Id: <20220329102752.1481125-1-ivecera@redhat.com>
+        with ESMTP id S235574AbiC2LJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 07:09:24 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D10426111
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 04:07:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:
+        To:Subject:From:MIME-Version:Date:Message-ID:Sender:Reply-To:Cc:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=8+EqvbVPtbotNhOJ0MCxh7WIRaXyoKSxSE3flw8UaRQ=; b=ef3V8Sxr9LPxFWSCYeeiGbc73J
+        QY0H5mi3REW5XO7q+M+lqxENY+9RpaXC03l8nV2GUttX6PNHh4ewOwvPQmIpMFQF1GSkpdOQDlxwT
+        gbiN6xnXlV2VCsZhn0QGKMdkmkkzDUfp9U/5YDkI4+qFPgYg37IX2QCkCId2HmIwF+D4=;
+Received: from p200300daa70ef200e986bd084db59d32.dip0.t-ipconnect.de ([2003:da:a70e:f200:e986:bd08:4db5:9d32] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nZ9hJ-0003Dg-LF; Tue, 29 Mar 2022 13:07:37 +0200
+Message-ID: <928253ff-7254-b8bb-20a7-ec12ad82e14d@nbd.name>
+Date:   Tue, 29 Mar 2022 13:07:37 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC 2/2] net: bridge: add a software fast-path implementation
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+References: <20220210142401.4912-1-nbd@nbd.name>
+ <20220210142401.4912-2-nbd@nbd.name>
+ <bc499a39-64b9-ceb4-f36f-21dd74d6272d@nvidia.com>
+ <e8f1e8f5-8417-84a8-61c3-793fa7803ac6@nbd.name>
+ <0b4318af-4c12-bd5a-ae32-165c70af65b2@nvidia.com>
+ <6d85d6a5-190e-2dfd-88f9-f09899c98ee7@nbd.name>
+ <8bd7362f-0a23-e11c-445b-1e61d08bb70a@blackwall.org>
+Content-Language: en-US
+In-Reply-To: <8bd7362f-0a23-e11c-445b-1e61d08bb70a@blackwall.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,49 +57,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Function ice_tx_xsk_pool() used to get XSK buffer pool associated
-with XDP Tx queue returns NULL when number of ordinary Tx queues
-is not equal to num_possible_cpus().
 
-The function computes XDP Tx queue ID as an expression
-`ring->q_index - vsi->num_xdp_txq` but this is wrong because
-XDP Tx queues are placed after ordinary ones so the correct
-formula is `ring->q_index - vsi->alloc_txq`.
+On 28.03.22 20:20, Nikolay Aleksandrov wrote:
+> On 28/03/2022 18:15, Felix Fietkau wrote:
+>> 
+>> Hi Nik,
+>> 
+>> I'd like to follow up on our discussion regarding bridge offloading.
+>> I managed to come up with a user space + eBPF implementation that replaces this code and shows mostly the same performance gain as my previous kernel space implementation.
+>> 
+>> At first I tried to use generic XDP, but after getting it working, performance was pretty bad (due to headroom issues) and I was told that this is by design and nobody should use it in production.
+>> 
+>> Then I reworked the code to use tc classifier instead and it worked much better.
+>> 
+>> It's not fully ready yet, I need to add some more tests for incompatible features, but I'm getting there...
+>> The code is here: https://github.com/nbd168/bridger
+>> 
+>> There's one thing I haven't been able to figure out yet: What's the proper way to keep bridge fdb entries alive from user space without modifying them in any other way?
+>> 
+>> - Felix
+> 
+> Hi Felix,
+> That's very nice! Interesting work. One way it's usually done is through periodic NTF_USE (refresh),
+> another would be to mark them externally learned and delete them yourself (user-space aging).
+> It really depends on the exact semantics you'd like.
+I will try NTF_USE, thanks. I really just want to keep the bridge fdb 
+entries alive while there is activity on the offloaded flows.
 
-Prior commit 792b2086584f ("ice: fix vsi->txq_map sizing") number
-of XDP Tx queues was equal to number of ordinary Tx queues so
-the bug in mentioned function was hidden.
-
-Reproducer:
-host# ethtool -L ens7f0 combined 1
-host# ./xdpsock -i ens7f0 -q 0 -t -N
-samples/bpf/xdpsock_user.c:kick_tx:794: errno: 6/"No such device or address"
-
- sock0@ens7f0:0 txonly xdp-drv
-                pps         pkts        0.00
-rx              0           0
-tx              0           0
-
-Fixes: 2d4238f55697 ("ice: Add support for AF_XDP")
-Fixes: 792b2086584f ("ice: fix vsi->txq_map sizing")
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- drivers/net/ethernet/intel/ice/ice.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index b0b27bfcd7a2..d4f1874df7d0 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -710,7 +710,7 @@ static inline struct xsk_buff_pool *ice_tx_xsk_pool(struct ice_tx_ring *ring)
- 	struct ice_vsi *vsi = ring->vsi;
- 	u16 qid;
- 
--	qid = ring->q_index - vsi->num_xdp_txq;
-+	qid = ring->q_index - vsi->alloc_txq;
- 
- 	if (!ice_is_xdp_ena_vsi(vsi) || !test_bit(qid, vsi->af_xdp_zc_qps))
- 		return NULL;
--- 
-2.34.1
+- Felix
 
