@@ -2,363 +2,493 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E6E4EC78C
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 16:56:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6BE74EC795
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 16:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347567AbiC3O6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 10:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47410 "EHLO
+        id S1347634AbiC3O7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 10:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344103AbiC3O6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 10:58:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91EC41015
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 07:56:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648652193;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=51rZIuCEQ86hv/OQgOn8FfXQK8pkiQqNdNplPiBUWHk=;
-        b=dSomugj7efjsrIqytsofgv/FDm3ub06QCGxxv39afKgBjG9O82P8w5c4yLMOaUxFY6tdjf
-        /LFACOxftZZwXJsa9g7eDaTO/4pk2wa8K2C4Eg1ZL048m7L5kcFjD5HaV62FDVav7PPAQV
-        eKvOKweCQQx7CXn3sj2ABTf7nEvt2u0=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-671-2wKRjANuMUisVG_GTddqDw-1; Wed, 30 Mar 2022 10:56:32 -0400
-X-MC-Unique: 2wKRjANuMUisVG_GTddqDw-1
-Received: by mail-qv1-f72.google.com with SMTP id ke13-20020a056214300d00b00443901b0386so904340qvb.14
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 07:56:32 -0700 (PDT)
+        with ESMTP id S1343640AbiC3O7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 10:59:30 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F991015;
+        Wed, 30 Mar 2022 07:57:44 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id t21so17417236oie.11;
+        Wed, 30 Mar 2022 07:57:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=51rZIuCEQ86hv/OQgOn8FfXQK8pkiQqNdNplPiBUWHk=;
-        b=I+pYW1WdI2PiqEfVbZwOHj43xC2znQCleBi569SexAZmumeg9w/BJoSQKqxO4Mb35u
-         iz/eBBklUp3XLGJqINNeo42TExR+kYRN0NU11lQsBFQHSj+2SnwEZFUcbzY9sseMbxNl
-         KKntw4CoM9BDaDquthRreylvkwz7MtfsEnhw77UgNWh7OfeUWw0y1xSGSnu9bBnA/rcx
-         l99nlxuGYfZhTCmvrNzrhK89iijhTNfdM+OGMICRfCXtvXhEv5xwdwrsxr/nURv4muUW
-         n4KcFca2cUNC2S3tzEBVUmc2ilmkCwP4D2Cdw2bwSNuIHCno+QZDjnAJl83j6VJ5oPkM
-         MtyA==
-X-Gm-Message-State: AOAM532FPm4LklTuJiRpqNKqORjvoU8w+9b9uzgm2yLkiez+0qobQcTX
-        MHyi471Tfjkn5MSou8kNLg4ew9fbCrSU9jh0ljbfXkwbNgBjkAjMDETCXk873uHEcnlEUN0JFar
-        WEeVX6E7qoBtLeiAC
-X-Received: by 2002:ac8:4417:0:b0:2e1:a82c:1a6f with SMTP id j23-20020ac84417000000b002e1a82c1a6fmr33226481qtn.375.1648652191553;
-        Wed, 30 Mar 2022 07:56:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwE0G7dAUmx5tFrJAQgrw7PhjfnuImzUiQanEz4R3ogQWDdO8J1cp1tK+Q6hVnCBX+HiD2jJA==
-X-Received: by 2002:ac8:4417:0:b0:2e1:a82c:1a6f with SMTP id j23-20020ac84417000000b002e1a82c1a6fmr33226448qtn.375.1648652191183;
-        Wed, 30 Mar 2022 07:56:31 -0700 (PDT)
-Received: from [192.168.98.18] ([107.15.110.69])
-        by smtp.gmail.com with ESMTPSA id w8-20020a05622a134800b002eb8401862bsm8036849qtk.34.2022.03.30.07.56.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 07:56:30 -0700 (PDT)
-Message-ID: <bb66fc08-9f23-2f68-c0aa-1fbe06bb81c5@redhat.com>
-Date:   Wed, 30 Mar 2022 10:56:28 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH net-next] bond: add mac filter option for balance-xor
-Content-Language: en-US
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     netdev@vger.kernel.org, Long Xin <lxin@redhat.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
+        bh=DSfEQO0bCh0nDyQ9qhTmTRZQ1X0//dQhKQ3Dpna4X7w=;
+        b=apgefiBLZueeB+TeXoh1goNUq1RZFdl5UjdIR6wqBEzihXfTowz3xkafZxlaAoBsOD
+         9S2Wcu+lMHllbyJ30iPlgmkZmSBWQSYlL7dNzG4xX4xn74swzT2SIJoVS8opxzM/IIby
+         d/mvWkpet3TH57VHcoVD+mQkdu8i+ZfyXCkHBsWaAnVN9PdKiwkfUoyJXQgeaz5m/3bs
+         DfcFah2Apu+VlGIfi0AiszaL0gGJKg+UXm3/n/T/BgUjFbk1T2ciNpI0AKzQZU1O8eS+
+         r8klJs07i7tnv8c/l4DwKAypTBhAWp2kgqnWxA1Cc+HfhmYIYQ4Bh7qlJQcwO5JpWNPV
+         S9Tw==
+X-Gm-Message-State: AOAM530FGAiNhuQ5GytfhgLsh1ungLQW4vMl2O4LXahW6cG43cwp6L8k
+        FTYNlgFG8x5oo9XJJzNDWw==
+X-Google-Smtp-Source: ABdhPJyO9caym3ecNNjX3Xmni63Dn2eyM3izo3ssn+B5dwefmSlxCHWIHvCvO0bc2Q7tk5DfdVMbqg==
+X-Received: by 2002:aca:d04:0:b0:2ef:8b45:d235 with SMTP id 4-20020aca0d04000000b002ef8b45d235mr2040850oin.253.1648652263839;
+        Wed, 30 Mar 2022 07:57:43 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id 1-20020a056870128100b000db2a59f643sm9910278oal.42.2022.03.30.07.57.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 07:57:42 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <b03f0896e1a0b65cc1b278aecc9d080b2ec9d8a6.1648136359.git.jtoppins@redhat.com>
- <12686.1648169401@famine>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <12686.1648169401@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Mark Brown <broonie@kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Dmitry Osipenko <digetx@gmail.com>, linux-iio@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
+        linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: [PATCH] dt-bindings: Fix incomplete if/then/else schemas
+Date:   Wed, 30 Mar 2022 09:57:41 -0500
+Message-Id: <20220330145741.3044896-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/24/22 20:50, Jay Vosburgh wrote:
-> 	Considering this as an RFC given that net-next is closed...
-> 	
-> Jonathan Toppins <jtoppins@redhat.com> wrote:
-> 
->> Attempt to replicate the OvS SLB Bonding[1] feature by preventing
->> duplicate frame delivery on a bond whos members are connected to
->> physically different switches.
->>
->> Combining this feature with vlan+srcmac hash policy allows a user to
->> create an access network without the need to use expensive switches that
->> support features like Cisco's VCP.
-> 
-> 	Could you describe this use case / implementation in a bit more
-> detail?  I.e., how exactly that configuration works.  I don't think this
-> patch is replicating everything in the OVS SLB documentation.
-> 
+A recent review highlighted that the json-schema meta-schema allows any
+combination of if/then/else schema keywords even though if, then or else
+by themselves makes little sense. With an added meta-schema to only
+allow valid combinations, there's a handful of schemas found which need
+fixing in a variety of ways. Incorrect indentation is the most common
+issue.
 
-The original ask was to provide OvS SLB like functionality in Linux's 
-bonding as they wanted to move away from OvS. This does not try and 
-implement OvS SLB in its entirety as that would require implementing 
-bonding in the Linux bridging code. Instead we implemented a MAC filter 
-that prevents duplicate frame delivery when handling BUM traffic. We 
-currently do not handle individual vlans.
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Georgi Djakov <djakov@kernel.org>
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Kishon Vijay Abraham I <kishon@ti.com>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: Dmitry Osipenko <digetx@gmail.com>
+Cc: linux-iio@vger.kernel.org
+Cc: alsa-devel@alsa-project.org
+Cc: linux-mmc@vger.kernel.org
+Cc: linux-tegra@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-phy@lists.infradead.org
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/iio/adc/adi,ad7476.yaml          |  1 +
+ .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  8 +-
+ .../bindings/iio/dac/adi,ad5360.yaml          |  6 +-
+ .../bindings/interconnect/qcom,rpm.yaml       | 84 +++++++++----------
+ .../bindings/mmc/nvidia,tegra20-sdhci.yaml    |  2 +
+ .../bindings/net/ti,davinci-mdio.yaml         |  1 +
+ .../bindings/phy/nvidia,tegra20-usb-phy.yaml  | 20 ++---
+ .../bindings/phy/qcom,usb-hs-phy.yaml         | 36 ++++----
+ .../bindings/regulator/fixed-regulator.yaml   | 34 ++++----
+ .../bindings/sound/st,stm32-sai.yaml          |  6 +-
+ .../devicetree/bindings/sram/sram.yaml        | 16 ++--
+ 11 files changed, 108 insertions(+), 106 deletions(-)
 
-This is trying to solve for the logical network of the form:
-
-                        lk1    +---+
-              +-+        +-----|sw1|
-h1 --linkH1--|b|        |     +---+
-...          |r|--bond1-+       |lk3
-hN --linkHN--|1|        |     +---+
-              +-+        +-----|sw2|
-                        lk2    +---+
-
-Where h1...hN are hosts connected to a Linux bridge, br1, with bond1 and 
-its associated links, lk1 & lk2, provide egress/ingress. One can assume 
-bond1, br1, and hosts h1...hN are all contained in a single box and 
-h1...hN are virtual machines or containers and lk1 & lk2 provide 
-redundant connections to the data center. The requirement is to use all 
-bandwidth when the system is functioning normally. Sw1 & Sw2 are 
-physical switches that do not implement any advanced L2 management 
-features such as MLAG, Cisco's VPC, or LACP. Link 3, lk3, provides a 
-switch interconnect to provide layer 2 connectivity in the event a link 
-or switch fails.
-
->> [1] https://docs.openvswitch.org/en/latest/topics/bonding/#slb-bonding
->> >> diff --git a/drivers/net/bonding/bond_mac_filter.c 
-b/drivers/net/bonding/bond_mac_filter.c
->> new file mode 100644
->> index 000000000000..a16a1a000f05
->> --- /dev/null
->> +++ b/drivers/net/bonding/bond_mac_filter.c
->> @@ -0,0 +1,222 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Filter received frames based on MAC addresses "behind" the bond.
->> + */
->> +
->> +#include "bonding_priv.h"
->> +
->> +/* -------------- Cache Management -------------- */
-> 
-> 	I don't think this header adds anything, given that there's not
-> really a lot in the section.
-
-ok can remove.
-
-> 
->> +static struct kmem_cache *bond_mac_cache __read_mostly;
->> +
->> +int __init bond_mac_cache_init(void)
->> +{
->> +	bond_mac_cache = kmem_cache_create("bond_mac_cache",
->> +					   sizeof(struct bond_mac_cache_entry),
->> +					   0, SLAB_HWCACHE_ALIGN, NULL);
->> +	if (!bond_mac_cache)
->> +		return -ENOMEM;
->> +	return 0;
->> +}
->> +
->> +void bond_mac_cache_destroy(void)
->> +{
->> +	kmem_cache_destroy(bond_mac_cache);
->> +}
-> 
-> 	There are a lot of the above sort of wrapper functions that are
-> only ever called once.  Some of these, e.g., mac_delete, below, I agree
-> with, as the call site is nested fairly deep and the function is
-> non-trivial; or, mac_delete_rcu, which is used as a callback.
-> 
-> 	The above two, though, I don't see a justification for, along
-> with hold_time and maybe a couple others, below.  In my opinion,
-> over-abstracting these trivial things with one call site makes the code
-> harder to follow.
-> 
-
-ok can remove.
-
->> +
->> +static inline unsigned long hold_time(const struct bonding *bond)
->> +{
->> +	return msecs_to_jiffies(5000);
->> +}
-> 
-> 	This shouldn't be a magic number, and if it's an important
-> timeout, should it be configurable?
-> 
-
-This is the MAC entry age-out time much like Linux bridge 
-"br->ageing_time". We didn't find a need to modify the age-out time 
-currently, if you think another bond parameter is needed to make this 
-configurable I can add it.
-
->> +int bond_mac_hash_init(struct bonding *bond)
->> +{
->> +	int rc;
-> 
-> 	As a point of style, (almost) everywhere else in bonding uses
-> "ret" for a return value.  The exceptions are largely my doing, but,
-> still, it'd be nice to be mostly consistent in nomenclature.
-> 
-
-ok.
-
->> +
->> +int bond_mac_insert(struct bonding *bond, const u8 *addr)
->> +{
->> +	struct bond_mac_cache_entry *entry;
->> +	int rc = 0;
->> +
->> +	if (!is_valid_ether_addr(addr))
->> +		return -EINVAL;
->> +
->> +	rcu_read_lock();
->> +	entry = mac_find(bond, addr);
->> +	if (entry) {
->> +		unsigned long flags;
->> +
->> +		spin_lock_irqsave(&entry->lock, flags);
->> +		if (!test_bit(BOND_MAC_DEAD, &entry->flags)) {
->> +			mac_update(entry);
->> +			spin_unlock_irqrestore(&entry->lock, flags);
->> +			goto out;
->> +		}
->> +		spin_unlock_irqrestore(&entry->lock, flags);
-> 
-> 	This seems really expensive, as it will add a spin_lock_irqsave
-> round trip for almost every packet transmitted when mac_filter is
-> enabled (as this will be called by bond_xmit_3ad_xor_slave_get).
-> 
-
-It is, if you have a suggestion to make it less expensive I would like 
-to hear ideas on this. On bond transmit the bond needs to see if a new 
-MAC source is talking, if it is not new we just need to update the 
-ageout time (mac_update). If the MAC is new we need to add a new entry 
-to the filter table. The lock is per-entry so it is not blocking every 
-entry update just the one we are dealing with right now.
-
->> +	}
->> +
->> +	rc = mac_create(bond, addr);
->> +
->> +out:
->> +	rcu_read_unlock();
->> +	return rc;
->> +}
->> +
->> +int bond_xor_recv(const struct sk_buff *skb, struct bonding *bond,
->> +		  struct slave *slave)
->> +{
->> +	const struct ethhdr *mac_hdr;
->> +	struct bond_mac_cache_entry *entry;
->> +	int rc = RX_HANDLER_PASS;
->> +
->> +	mac_hdr = (struct ethhdr *)skb_mac_header(skb);
->> +	rcu_read_lock();
->> +	if (is_multicast_ether_addr(mac_hdr->h_dest) &&
->> +	    slave != rcu_dereference(bond->curr_active_slave)) {
->> +		rc = RX_HANDLER_CONSUMED;
->> +		goto out;
->> +	}
->> +
->> +	entry = mac_find(bond, mac_hdr->h_source);
->> +	if (entry) {
->> +		unsigned long flags;
->> +		bool expired;
->> +
->> +		spin_lock_irqsave(&entry->lock, flags);
->> +		expired = has_expired(bond, entry);
->> +		spin_unlock_irqrestore(&entry->lock, flags);
->> +		if (!expired)
->> +			rc = RX_HANDLER_CONSUMED;
->> +	}
-> 
-> 	As above, really expensive, except for incoming packets here
-> (since this is called as the recv_probe).
-> 
-
-By incoming packets do you mean packets received by the bond? If so not 
-sure I understand the comment. On the receive side this will be run for 
-every frame handled by the bond and the lock will only be taken if an 
-entry is found for the source MAC.
-
->> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
->> index 15eddca7b4b6..f5a8a50e9116 100644
->> --- a/drivers/net/bonding/bond_main.c
->> +++ b/drivers/net/bonding/bond_main.c
->> @@ -1549,6 +1549,10 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
->> 		return RX_HANDLER_EXACT;
->> 	}
->>
->> +	/* this function should not rely on the recv_probe to set ret
->> +	 * correctly
->> +	 */
->> +	ret = RX_HANDLER_ANOTHER;
-> 
-> 	This change is overriding the return from a recv_probe added by
-> this patch (bond_xor_recv can return RX_HANDLER_PASS).  Why?
-> 
-> 	Also, I don't agree with the comment; the recv_probe return
-> value by design affects the return value from bond_handle_frame.
-> 
-
-Had to go back and look at why this was added, I don't see a need for it 
-now so will remove.
-
->>
->> static const struct bond_opt_value bond_mode_tbl[] = {
->> @@ -226,6 +229,12 @@ static const struct bond_opt_value bond_missed_max_tbl[] = {
->> 	{ NULL,		-1,	0},
->> };
->>
->> +static const struct bond_opt_value bond_mac_filter_tbl[] = {
->> +	{ "off",	0,	BOND_VALFLAG_MIN | BOND_VALFLAG_DEFAULT},
->> +	{ "maxval",	18,	BOND_VALFLAG_MAX},
-> 
-> 	What's the magic number 18?
-
-It is simply the maximum number the option can be set to as I thought 
-2^18 was more than enough entries in the hash table.
-
->> /* Searches for an option by name */
->> @@ -1035,6 +1053,44 @@ static int bond_option_use_carrier_set(struct bonding *bond,
->> 	return 0;
->> }
->>
->> +static int bond_option_mac_filter_set(struct bonding *bond,
->> +				      const struct bond_opt_value *newval)
->> +{
->> +	int rc = 0;
->> +	u8 prev = bond->params.mac_filter;
->> +
->> +	if (newval->value && bond->params.arp_interval) {
->> +		netdev_err(bond->dev, "ARP monitoring cannot be used with MAC Filtering.\n");
->> +		rc = -EPERM;
->> +		goto err;
->> +	}
-> 
-> 	What happens if a user (a) switches to ARP monitor with
-> arp_validate in balance-xor mode after mac_filter is enabled, or, (b)
-> changes the mode to something other than balance-xor with mac_filter
-> enabled (both by changing the configuration in real time)?
-
-For (a) the arp config handlers will need to be modified to account for 
-this. I assume they will take the same approach as with mii vs arp monitor.
-
-For (b) the sites that test for bond->params.mac_filter will need to be 
-logically anded with bond->params.mode == BOND_MODE_XOR.
-
-Thank you for the comments.
-
--Jon
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
+index cf711082ad7d..666414a9c0de 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
+@@ -98,6 +98,7 @@ allOf:
+               - ti,adc121s
+               - ti,ads7866
+               - ti,ads7868
++    then:
+       required:
+         - vcc-supply
+   # Devices with a vref
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+index 7c260f209687..912372706280 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+@@ -174,7 +174,7 @@ patternProperties:
+               contains:
+                 const: st,stm32-dfsdm-adc
+ 
+-      - then:
++        then:
+           properties:
+             st,adc-channels:
+               minItems: 1
+@@ -206,7 +206,7 @@ patternProperties:
+               contains:
+                 const: st,stm32-dfsdm-dmic
+ 
+-      - then:
++        then:
+           properties:
+             st,adc-channels:
+               maxItems: 1
+@@ -254,7 +254,7 @@ allOf:
+           contains:
+             const: st,stm32h7-dfsdm
+ 
+-  - then:
++    then:
+       patternProperties:
+         "^filter@[0-9]+$":
+           properties:
+@@ -269,7 +269,7 @@ allOf:
+           contains:
+             const: st,stm32mp1-dfsdm
+ 
+-  - then:
++    then:
+       patternProperties:
+         "^filter@[0-9]+$":
+           properties:
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
+index 0d8fb56f4b09..65f86f26947c 100644
+--- a/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
+@@ -59,9 +59,9 @@ allOf:
+           contains:
+             enum:
+               - adi,ad5371
+-      then:
+-        required:
+-          - vref2-supply
++    then:
++      required:
++        - vref2-supply
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml
+index 89853b482513..8a676fef8c1d 100644
+--- a/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml
++++ b/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml
+@@ -93,48 +93,48 @@ allOf:
+               - qcom,sdm660-gnoc
+               - qcom,sdm660-snoc
+ 
+-      then:
+-        properties:
+-          clock-names:
+-            items:
+-              - const: bus
+-              - const: bus_a
+-
+-          clocks:
+-            items:
+-              - description: Bus Clock
+-              - description: Bus A Clock
+-
+-        # Child node's properties
+-        patternProperties:
+-          '^interconnect-[a-z0-9]+$':
+-            type: object
+-            description:
+-              snoc-mm is a child of snoc, sharing snoc's register address space.
+-
+-            properties:
+-              compatible:
+-                enum:
+-                  - qcom,msm8939-snoc-mm
+-
+-              '#interconnect-cells':
+-                const: 1
+-
+-              clock-names:
+-                items:
+-                  - const: bus
+-                  - const: bus_a
+-
+-              clocks:
+-                items:
+-                  - description: Bus Clock
+-                  - description: Bus A Clock
+-
+-            required:
+-              - compatible
+-              - '#interconnect-cells'
+-              - clock-names
+-              - clocks
++    then:
++      properties:
++        clock-names:
++          items:
++            - const: bus
++            - const: bus_a
++
++        clocks:
++          items:
++            - description: Bus Clock
++            - description: Bus A Clock
++
++      # Child node's properties
++      patternProperties:
++        '^interconnect-[a-z0-9]+$':
++          type: object
++          description:
++            snoc-mm is a child of snoc, sharing snoc's register address space.
++
++          properties:
++            compatible:
++              enum:
++                - qcom,msm8939-snoc-mm
++
++            '#interconnect-cells':
++              const: 1
++
++            clock-names:
++              items:
++                - const: bus
++                - const: bus_a
++
++            clocks:
++              items:
++                - description: Bus Clock
++                - description: Bus A Clock
++
++          required:
++            - compatible
++            - '#interconnect-cells'
++            - clock-names
++            - clocks
+ 
+   - if:
+       properties:
+diff --git a/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml b/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
+index ce64b3498378..f3f4d5b02744 100644
+--- a/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
++++ b/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
+@@ -197,6 +197,8 @@ allOf:
+               - nvidia,tegra30-sdhci
+               - nvidia,tegra114-sdhci
+               - nvidia,tegra124-sdhci
++    then:
++      properties:
+         clocks:
+           items:
+             - description: module clock
+diff --git a/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml b/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
+index dbfca5ee9139..6f44f9516c36 100644
+--- a/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
++++ b/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
+@@ -56,6 +56,7 @@ if:
+     compatible:
+       contains:
+         const: ti,davinci_mdio
++then:
+   required:
+     - bus_freq
+ 
+diff --git a/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml b/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml
+index dfde0eaf66e1..d61585c96e31 100644
+--- a/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml
+@@ -275,17 +275,17 @@ allOf:
+           - nvidia,hssquelch-level
+           - nvidia,hsdiscon-level
+ 
+-        else:
+-          properties:
+-            clocks:
+-              maxItems: 4
++      else:
++        properties:
++          clocks:
++            maxItems: 4
+ 
+-            clock-names:
+-              items:
+-                - const: reg
+-                - const: pll_u
+-                - const: timer
+-                - const: utmi-pads
++          clock-names:
++            items:
++              - const: reg
++              - const: pll_u
++              - const: timer
++              - const: utmi-pads
+ 
+   - if:
+       properties:
+diff --git a/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml
+index e23e5590eaa3..49f4aff93d62 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml
+@@ -14,24 +14,24 @@ if:
+     compatible:
+       contains:
+         const: qcom,usb-hs-phy-apq8064
+-  then:
+-    properties:
+-      resets:
+-        maxItems: 1
+-
+-      reset-names:
+-        const: por
+-
+-  else:
+-    properties:
+-      resets:
+-        minItems: 2
+-        maxItems: 2
+-
+-      reset-names:
+-        items:
+-          - const: phy
+-          - const: por
++then:
++  properties:
++    resets:
++      maxItems: 1
++
++    reset-names:
++      const: por
++
++else:
++  properties:
++    resets:
++      minItems: 2
++      maxItems: 2
++
++    reset-names:
++      items:
++        - const: phy
++        - const: por
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
+index 9b131c6facbc..84eeaef179a5 100644
+--- a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
+@@ -18,23 +18,23 @@ description:
+ 
+ allOf:
+   - $ref: "regulator.yaml#"
+-
+-if:
+-  properties:
+-    compatible:
+-      contains:
+-        const: regulator-fixed-clock
+-  required:
+-    - clocks
+-else:
+-  if:
+-    properties:
+-      compatible:
+-        contains:
+-          const: regulator-fixed-domain
+-    required:
+-      - power-domains
+-      - required-opps
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: regulator-fixed-clock
++    then:
++      required:
++        - clocks
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: regulator-fixed-domain
++    then:
++      required:
++        - power-domains
++        - required-opps
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml b/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
+index b3dbcba33e41..fe2e15504ebc 100644
+--- a/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
++++ b/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
+@@ -136,8 +136,7 @@ allOf:
+         compatible:
+           contains:
+             const: st,stm32f4-sai
+-
+-  - then:
++    then:
+       properties:
+         clocks:
+           items:
+@@ -148,8 +147,7 @@ allOf:
+           items:
+             - const: x8k
+             - const: x11k
+-
+-  - else:
++    else:
+       properties:
+         clocks:
+           items:
+diff --git a/Documentation/devicetree/bindings/sram/sram.yaml b/Documentation/devicetree/bindings/sram/sram.yaml
+index 668a9a41a775..993430be355b 100644
+--- a/Documentation/devicetree/bindings/sram/sram.yaml
++++ b/Documentation/devicetree/bindings/sram/sram.yaml
+@@ -136,14 +136,14 @@ required:
+   - reg
+ 
+ if:
+-  properties:
+-    compatible:
+-      contains:
+-        enum:
+-          - qcom,rpm-msg-ram
+-          - rockchip,rk3288-pmu-sram
+-
+-else:
++  not:
++    properties:
++      compatible:
++        contains:
++          enum:
++            - qcom,rpm-msg-ram
++            - rockchip,rk3288-pmu-sram
++then:
+   required:
+     - "#address-cells"
+     - "#size-cells"
+-- 
+2.32.0
 
