@@ -2,86 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E4D4EB7BD
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 03:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C574EB7C2
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 03:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238251AbiC3BWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 21:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
+        id S241569AbiC3BYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 21:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234408AbiC3BWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 21:22:13 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC71247392
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 18:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=6HO2dPm8/i9IO45pfY78cuDTC3sIxZcmrZ4/o0PUVaY=; b=FPuaF7Z5EIyZBYdSrgcftx5bNb
-        aX1ZGGtLMqZbbfj6qXPDZg28vYVZucl8RBYUajF3skUK7mw0jmlf3AFFxcp080GRSBfNMJbc9PPbs
-        L/h3HCya6na+KeCo+EpRe/yEK+BB8Yt3+gJer2ijyV9GrPIX6S2HRikyHSazw191IYjEm0fwuhvkv
-        DKAhfjAKdsbbdlBNsjVSTcGi1Hn+MKRVYeEyNJD0VmWnmsWRMauI8aY6K1KUwFv6u4ez0qoy/pYHn
-        N9zZIZ9Hs7etcQwRt63pj+Uo9EKb/mNcuYIYKtmCrrYZQyGKtO9igFs3Qf815nCDzBoXmkGTSZ7MR
-        HCl3PWJA==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nZN0c-00Du9E-DF; Wed, 30 Mar 2022 01:20:26 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH] net: sparx5: uses, depends on BRIDGE or !BRIDGE
-Date:   Tue, 29 Mar 2022 18:20:25 -0700
-Message-Id: <20220330012025.29560-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S241538AbiC3BYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 21:24:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78692498A4
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 18:22:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 59B8E612BB
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 01:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5278EC2BBE4;
+        Wed, 30 Mar 2022 01:22:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648603366;
+        bh=qkbwxBx91eDVzMek4FIxYU6sCiDh7QR0YBT2U2UzKkI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RWghizTD0pdDJ9JCUVdA/SDGsC29RsM95DmM/hjAGi4+AaYuwLjh2svGwAIcCSDyl
+         knrxkfVRZqHjlaeUb+R8bXPrCCfVXg5LD+Bs/9ZgPN9PhXZ6hboAfriJLmzWUbDbJc
+         tAR3iM0ggyXK3OgZzyfytWHqiPa/oCZ57Gn1Ahk3+Acgh9BhV9OLUrxNpJbychaXge
+         I14RJwh2iKaW4mZr6oTdH6eg3oyBdHC9dUekyZ/2jINHH3PnEEWrMsIh91+cmXdD1D
+         i6b8r9Zj3FntEOgigdjgYjTyVofp14lHWsHON7YvgAnEUK7DhlNx1nHEaAZK99T6T/
+         JhF8EXhf54GcA==
+Date:   Tue, 29 Mar 2022 18:22:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     jmaloy@redhat.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        tipc-discussion@lists.sourceforge.net,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        tuong.t.lien@dektech.com.au, maloy@donjonn.com, xinl@redhat.com,
+        ying.xue@windriver.com, parthasarathy.bhuvaragan@gmail.com
+Subject: Re: [net-next] tipc: clarify meaning of 'inactive' field in struct
+ tipc_subscription
+Message-ID: <20220329182245.0127ccbc@kernel.org>
+In-Reply-To: <20220329173218.1737499-1-jmaloy@redhat.com>
+References: <20220329173218.1737499-1-jmaloy@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix build errors when BRIDGE=m and SPARX5_SWITCH=y:
+On Tue, 29 Mar 2022 13:32:18 -0400 jmaloy@redhat.com wrote:
+> From: Jon Maloy <jmaloy@redhat.com>
+> 
+> struct tipc_subscription has a boolean field 'inactive' which purpose
+> is not immediately obvious. When the subscription timer expires we are
+> still in interrupt context, and cannot easily just delete the
+> subscription. We therefore delay that action until the expiration
+> event has reached the work queue context where it is being sent to the
+> user. However, in the meantime other events may occur, which must be
+> suppressed to avoid any unexpected behavior.
+> 
+> We now clarify this with renaming the field and adding a comment.
+> 
+> Signed-off-by: Jon Maloy <jmaloy@redhat.com>
 
-riscv64-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.o: in function `.L305':
-sparx5_switchdev.c:(.text+0xdb0): undefined reference to `br_vlan_enabled'
-riscv64-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.o: in function `.L283':
-sparx5_switchdev.c:(.text+0xee0): undefined reference to `br_vlan_enabled'
+# Form letter - net-next is closed
 
-Fixes: 3cfa11bac9bb ("net: sparx5: add the basic sparx5 driver")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc: Lars Povlsen <lars.povlsen@microchip.com>
-Cc: Steen Hegelund <Steen.Hegelund@microchip.com>
-Cc: UNGLinuxDriver@microchip.com
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
----
- drivers/net/ethernet/microchip/sparx5/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+We have already sent the networking pull request for 5.18
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
 
---- linux-next-20220329.orig/drivers/net/ethernet/microchip/sparx5/Kconfig
-+++ linux-next-20220329/drivers/net/ethernet/microchip/sparx5/Kconfig
-@@ -5,6 +5,7 @@ config SPARX5_SWITCH
- 	depends on OF
- 	depends on ARCH_SPARX5 || COMPILE_TEST
- 	depends on PTP_1588_CLOCK_OPTIONAL
-+	depends on BRIDGE || BRIDGE=n
- 	select PHYLINK
- 	select PHY_SPARX5_SERDES
- 	select RESET_CONTROLLER
+Please repost when net-next reopens after 5.18-rc1 is cut.
+
+RFC patches sent for review only are obviously welcome at any time.
