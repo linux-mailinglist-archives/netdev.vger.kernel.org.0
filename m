@@ -2,198 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2345B4EB907
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 05:47:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE5074EB90C
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 05:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242399AbiC3Dsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 23:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
+        id S242415AbiC3Dt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 23:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242395AbiC3Dsi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 23:48:38 -0400
-X-Greylist: delayed 127138 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 29 Mar 2022 20:46:54 PDT
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.147.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFDC4C7B9
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 20:46:52 -0700 (PDT)
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id AC1DB9109
-        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 22:46:51 -0500 (CDT)
-Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
-        by cmsmtp with SMTP
-        id ZPIJnQNObXvvJZPIJnbOIB; Tue, 29 Mar 2022 22:46:51 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=D64CVYRUZxQ9kdAIABEkTcGSNTJSs+DSr+nWgsftIBM=; b=bq8i4zAOHXSwkZb1jiPeckomHP
-        hvE+k+q8kv5Djmhq6buFrE7vBmmEorlfg1oXDXe+dbtyk2TQhyzMFRMzxy1aYwz+3LRNhfS1Dk3VA
-        ELxmR2cSVY1inn3v3JkepJwpr8/1sag+orTsmTzuvVIDKxD+4bU/Cy+oaS9be2adB3vEfAQQhJANx
-        l6mUs1qZDY67NXPYk+ZxU0hmmZcD9VpK5nmmCTLIg0ES2bOrYyO9nSxkuHgLvmbh30+7oYpeIKUlD
-        SwMWy5Z9Fu4Z1f7X7csquMA4kHsT09sxhPv+Xsmy640sNUFnG4Yc9eFD+lAaA7Qv9H5oN1e3/nygo
-        PRqaRYnQ==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54550)
-        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@roeck-us.net>)
-        id 1nZPII-003TiD-TC; Wed, 30 Mar 2022 03:46:50 +0000
-Message-ID: <fa1f64d2-32a1-b8f9-0929-093fbd45d219@roeck-us.net>
-Date:   Tue, 29 Mar 2022 20:46:48 -0700
+        with ESMTP id S241098AbiC3Dt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 23:49:58 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77324B82
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 20:48:14 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2e5827a76f4so204589897b3.6
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 20:48:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OLJhu1X5FtoQkwHn6+oh/mMllWrHxAekfRIfQBt2vdU=;
+        b=eoJh77BxtbynP4AkXAv2COxjAUwLCayLNehSxMrAC80VGyDfodWC6PqB3mduSktWQw
+         luB/XUQxChj5dMkxweIz9+O5P+qjrUcmdN9jILUkCkEXTEzIrNXX2kWkp2sHZ/pixNcD
+         IpPmdDSM2L989f+igazLU+YN4mDLmhECsxjxN5ZoH3MVf7NGTQwAA8oRKqzjXqt5tp1q
+         LzJnDL4R/hJOG+IYRs0sSVzKyVvmmtvEoSS+kJt/cm6Zb7DB2vsN1O/BhbCz/o2cVQM5
+         2AN+gyz/93tpgEgCuPlJUgDhbsN0vE2aicuF8q+gIhoD1/wDyUmsOb46PtKqlGa0/S3W
+         /q3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OLJhu1X5FtoQkwHn6+oh/mMllWrHxAekfRIfQBt2vdU=;
+        b=evWJ9VUVnCbc/kpO3guTpXFjTP6U/+bvNrCtkl03f7NNxD1fNi/kA7jYJQSdg41a05
+         f/pkYvWOmZpfjs1mCHAMCG8lvL6jyWhco3Xf6PQ9OclyDpucobHSN2n8rKv8PaqQyMqR
+         5D7DxWrOifm44DpAQpU6ivcqkE4Oc4OAF5eK3+aSTvDSIxyhQ9lzFaJ2DtD44XdMXSoK
+         41/McXNu8llKnwBnWG4JsklmGUJuVz616vyYQ0lZo6NwwVrSNEOC+0Uvwc9eif5TNeJy
+         7HeuS6myNQYUHEztDT05lazlKZBeqYriJk/gzmGw4H8OUIkeirtygE2/iUjKktWDleH+
+         GrfQ==
+X-Gm-Message-State: AOAM531t5NxjHaTMpIPIQ3rXgVOP9qrRPHfdJBdbsULLjm6hRL/eHIsx
+        JAhVT4O37c8oxn32mgiA/ABwvi0OuWS2lWcndQr/8g==
+X-Google-Smtp-Source: ABdhPJzUK1dnT4fhGNhf0xAhwoBubVCTiyRw90BHPhcENfOcoWZmyERNv82c3rWyYBb+/UGbza+R0/za9HNU4r+kk2I=
+X-Received: by 2002:a81:1693:0:b0:2e5:874a:c060 with SMTP id
+ 141-20020a811693000000b002e5874ac060mr34180512yww.489.1648612093325; Tue, 29
+ Mar 2022 20:48:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Michael Walle' <michael@walle.cc>,
-        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20220329160730.3265481-1-michael@walle.cc>
- <20220329160730.3265481-2-michael@walle.cc>
- <16d8b45eba7b44e78fa8205e6666f2bd@AcuMS.aculab.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
-In-Reply-To: <16d8b45eba7b44e78fa8205e6666f2bd@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1nZPII-003TiD-TC
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54550
-X-Source-Auth: linux@roeck-us.net
-X-Email-Count: 1
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
+In-Reply-To: <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 29 Mar 2022 20:48:02 -0700
+Message-ID: <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
+To:     Jaco Kroon <jaco@uls.co.za>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/29/22 19:57, David Laight wrote:
-> From: Michael Walle
->> Sent: 29 March 2022 17:07
->>
->> More and more drivers will check for bad characters in the hwmon name
->> and all are using the same code snippet. Consolidate that code by adding
->> a new hwmon_sanitize_name() function.
-> 
-> I'm assuming these 'bad' hwmon names come from userspace?
-> Like ethernet interface names??
-> 
-> Is silently changing the name of the hwmon entries the right
-> thing to do at all?
-> 
-> What happens if the user tries to create both "foo_bar" and "foo-bar"?
-> I'm sure that is going to go horribly wrong somewhere.
-> 
-> It would certainly make sense to have a function to verify the name
-> is actually valid.
-> Then bad names can be rejected earlier on.
-> 
-> I'm also intrigued about the list of invalid characters:
-> 
-> +static bool hwmon_is_bad_char(const char ch)
-> +{
-> +	switch (ch) {
-> +	case '-':
-> +	case '*':
-> +	case ' ':
-> +	case '\t':
-> +	case '\n':
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> 
-> If '\t' and '\n' are invalid why are all the other control characters
-> allowed?
-> I'm guessing '*' is disallowed because it is the shell wildcard?
-> So what about '?'.
-> Then I'd expect '/' to be invalid - but that isn't checked.
-> Never mind all the values 0x80 to 0xff - they are probably worse
-> than whitespace.
-> 
-> OTOH why are any characters invalid at all - except '/'?
-> 
+On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
+>
+> Hi Neal,
+>
+> > Thanks for the report!  I have CC-ed the netdev list, since it is
+> > probably a better forum for this discussion.
+> Awesome thank you.
+> >
+> > Can you please attach (or link to) a tcpdump raw .pcap file  (produced
+> > with the -w flag)? There are a number of tools that will make this
+> > easier to visualize and analyze if we can see the raw .pcap file. You
+> > may want to anonymize the trace and/or capture just headers, etc (for
+> > example, the -s flag can control how much of each packet tcpdump
+> > grabs).
+>
+> Attached.
+>
+> The traffic itself should be mostly encrypted but stripped with -s100
+> anyway.  At this point SACK was still on.
+>
+> I don't know how, or why, but this relates to TFO.  After sending report
+> on a hunch (based on comparing the exim logs of a successful delivery
+> compared to a non-successful) and the only difference was that the
+> non-working was stating:
+>
+> TFO mode sendto, no data: EINPROGRESS
+>
+> and then specifically:
+>
+> TCP_FASTOPEN tcpi_unacked 2
+>
+> The working connections never had the latter line in the output.
+>
+> The moment I set sysctl -w net.ipv4.tcp_fastopen=0 (default is 1) I've
+> managed to flood out about 1200 emails to google in a matter of no more
+> than 15 minutes.
+>
+> In the kernel sources:  git log v5.8..v5.17 net/
+>
+> And searching for TFO only gives so many possible commits that broke
+> this, just looking at changelogs I'm not sure if any of them are
+> relevant.  I'm guessing the issue possibly relates to congestion
+> control, as such this is probably the most relevant:
+>
+> commit be5d1b61a2ad28c7e57fe8bfa277373e8ecffcdc
+> Author: Nguyen Dinh Phi <phind.uet@gmail.com>
+> Date:   Tue Jul 6 07:19:12 2021 +0800
+>
+>     tcp: fix tcp_init_transfer() to not reset icsk_ca_initialized
+>
+> Just looking at the diff it removes a icsk->icsk_ca_initialized = 0; -
+> the only other place this gets set to 0 is in tcp_disconnect() ... and
+> to 1 in tcp_init_congestion_control() - so I think we might have an
+> uninitialized variable here ... then again tcp_init_socket mentions
+> explicitly that sk_alloc set lots of stuff to 0 - still bugs me that the
+> original commit (8919a9b31eb4) felt the need to set an explicit 0 in
+> tcp_init_transfer().
 
-The name is supposed to reflect a driver name. Usually driver names
-are not defined by userspace but by driver authors. The name is used
-by libsensors to distinguish a driver from its instantiation.
-libsensors uses wildcards in /etc/sensors3.conf. Duplicate names
-are expected; there can be many instances of the same driver in
-the system. For example, on the system I am typing this on, I have:
+I do not think this commit is related to the issue you have.
 
-/sys/class/hwmon/hwmon0/name:nvme
-/sys/class/hwmon/hwmon1/name:nvme
-/sys/class/hwmon/hwmon2/name:nouveau
-/sys/class/hwmon/hwmon3/name:nct6797
-/sys/class/hwmon/hwmon4/name:jc42
-/sys/class/hwmon/hwmon5/name:jc42
-/sys/class/hwmon/hwmon6/name:jc42
-/sys/class/hwmon/hwmon7/name:jc42
-/sys/class/hwmon/hwmon8/name:k10temp
+I guess you could try a revert ?
 
-hwmon_is_bad_char() filters out characters which interfere with
-libsensor's view of driver instances and the configuration data
-in /etc/sensors3.conf. For example, again on my system, the
-"sensors" command reports the following jc42 and nvme sensors.
+Then, if you think old linux versions were ok, start a bisection ?
 
-jc42-i2c-0-1a
-jc42-i2c-0-18
-jc42-i2c-0-1b
-jc42-i2c-0-19
-nvme-pci-0100
-nvme-pci-2500
+Thank you.
 
-In /etc/sensors3.conf, there might be entries for "jc42-*" or "nvme-*".
-I don't think libsensors cares if a driver is named "this/is/my/driver".
-That driver would then, assuming it is an i2c driver, show up
-with the sensors command as "this/is/my/driver-i2c-0-25" or similar.
-If it is named "this%is%my%driver", it would be something like
-"this%is%my%driver-i2c-0-25". And so on. We can not permit "jc-42"
-because libsensors would not be able to parse something like
-"jc-42-*" or "jc-42-i2c-*".
+(I do not see why a successful TFO would lead to a freeze after ~70 KB
+of data has been sent)
 
-Taking your example, if driver authors implement two drivers, one
-named foo-bar and the other foo_bar, it would be the driver authors'
-responsibility to provide valid driver names to the hwmon subsystem,
-whatever those names might be. If both end up named "foo_bar" and can
-as result not be distinguished from each other by libsensors,
-or a user of the "sensors" command, that would be entirely the
-responsibility of the driver authors. The only involvement of the
-hwmon subsystem - and that is optional - would be to provide means
-to the drivers to help them ensure that the names are valid, but
-not that they are unique.
-
-If there is ever a driver with a driver name that interferes with
-libsensors' ability to distinguish the driver name from interface/port
-information, we'll be happy to add the offending character(s)
-to hwmon_is_bad_char(). Until then, being picky doesn't really
-add any value and appears pointless.
-
-Thanks,
-Guenter
+>
+> >
+> > Can you please share the exact kernel version of the client machine?
+> Our side (client) is 5.17.1 (side that initiates TCP/IP connection), I
+> obviously can't comment for the Google side (server).
+> > Also, can you please summarize/clarify whether you think the client,
+> > server, or both are misbehaving?
+>
+> client is re-transmitting frames for which it has already received an
+> ACK from the server.  In pcap from frames 105 onwards one can start
+> seeing retransmits, then first "spurious retransmission" as wireshark
+> labels it from frames 122 onwards.
+>
+> Kind Regards,
+> Jaco
