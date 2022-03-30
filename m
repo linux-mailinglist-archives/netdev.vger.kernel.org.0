@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A32844ECD71
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 21:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E76F4ECD7D
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 21:47:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230159AbiC3Tqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 15:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S230407AbiC3Tse (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 15:48:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230200AbiC3Tqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 15:46:33 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019E345ACE;
-        Wed, 30 Mar 2022 12:44:48 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id w127so23108425oig.10;
-        Wed, 30 Mar 2022 12:44:47 -0700 (PDT)
+        with ESMTP id S230379AbiC3Tsd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 15:48:33 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 461AB49F1E
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 12:46:48 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id w7so17082712pfu.11
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 12:46:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pjsBmPs0l7j1oUF7fQlTyFt6udSAgSvZHxxIq2cVxVg=;
-        b=Zt4ic2/4eeolmTp4xGdY9jHR/mQgUvWijyD+B+gLTfsJCCCL0zQrmj+4j06n/1Bh5V
-         g8anomcJ6tn0vjOc2BOWbTCQWpWy5D6W1mfbvRYh7373rCMGNWEfzqS7eOA94yfbwm0g
-         471O836OZ0+0HZuufHFroyXZ+RKLDl+XTxot7W6EzqqOB93iy4CHt5057Ui7sxtZP4kv
-         X1h+C6WUKF2bGrdMovw4K/9/QPHA1wJfKLE3UydAPNsCpnAp0UrfTNSAqEqsl8SGvaF1
-         F9SUjDOh5aVvKa2efUdn0vDCDM7vZUt/veQG5L9DWlZdbiNQL3jyvEJdjuATEqvxXVHP
-         E/kg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9oNPqzSJlTVFGUAf0xlf3A7Vhhnbt51vMN/ORAdSjEU=;
+        b=cNK5ttBlNs03e4VVEMHozz0MCjkGeiMcTOZ8RmteN2H7tLkyFvVsziI8Gvc8RKDsDG
+         lDvSRHxZf1XjCv1GXk2sFUwSBEhIIEMOF28/Z6ppWC9wED/aClq5/5rAu2lSOf1ttebO
+         s0h3pj8CfA/c1E9TsMSxNk6NV1GiLVgwEMciGk4EnqKub+KIqw7dfQ1cDckeiBa+otNo
+         FlgYNMyR1dE8x6WzKx6IK66ByGTgmMPIBVXumLUbm+KdZ71A0weKBhUzkKJ7kzzEeJ97
+         ei1GkPYIZpOVwuqORtMkdU/a9ypBKBfB33BEd4V6DAR8xk6LbbxLss+ZbE77yNMN0pa/
+         LQ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pjsBmPs0l7j1oUF7fQlTyFt6udSAgSvZHxxIq2cVxVg=;
-        b=BTlcBdmGqe0g23RDZMbEhWOHalo4reAOUMsxbT2AOa/SGxtWwxUF+bUTjYYFKQ3+7n
-         Siy+V8Ok3mDLm6Q0JCx1gUudNV8TM3G7c4HZGqCI+dlfCID6JMGmB6vFDOkEX4DdAOov
-         MlYBrVqgPTFFZNC+YrdKjPeNRlGvolIzJTmNyVLrV67l/bUfd6mr7aXIVKqIcdn1tkZK
-         uKOk5CZ2jwpT/Jde7dWLibmu9Y6fvka9FW+taP643sP+mIbQZ+4CoRqGRsiASRJJ94jZ
-         /MXzqiS11qaFDKgsTHZalbJZx5BAa+IZNL7epQ4uAvtiRWWADSJFj741aha+Pb+PuZ65
-         /lYQ==
-X-Gm-Message-State: AOAM532SN7GL5MljxK2dASp0ZecrSHKk0Ewz2ZB36V4I42xdYhsn3mL4
-        dAlhebl+Mh80bpcnmV5QC2k=
-X-Google-Smtp-Source: ABdhPJwpUA6Xgeh21wKg5aXRvuZvLzMGjvZRstSWL74fU0t8W0tlmCya43yH85/KKmVPloLzuby3jw==
-X-Received: by 2002:aca:34d6:0:b0:2ef:93b1:27d6 with SMTP id b205-20020aca34d6000000b002ef93b127d6mr788090oia.255.1648669487094;
-        Wed, 30 Mar 2022 12:44:47 -0700 (PDT)
-Received: from t14s.localdomain ([177.220.174.113])
-        by smtp.gmail.com with ESMTPSA id d3-20020a9d2903000000b005cda765f578sm10850188otb.0.2022.03.30.12.44.46
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9oNPqzSJlTVFGUAf0xlf3A7Vhhnbt51vMN/ORAdSjEU=;
+        b=cV7oHM7TE/X8ou4kqLNQU/c/o1awriuPc1tse0O8szd9T5KmeRiCrxogTmZhACOzRz
+         0bCw+/wpj6WhKfRwUe7dh8kL9DExV3LYArw9LTJzaaPTQZ/YwWQcP4JLJmXf+ljjAugq
+         ZyviSpq+ABgU7itOiq1fG4SC6HBIKcdQYG5+9+2JUI4YJB+UQaqSLfTLYS6VoKI2BBJS
+         flgOjWBQxjJYdUEkI4tXZaI0JN5nD6UVPTrhDmp+IVWckuQ77yOUX+NkcbwWseXmz+04
+         Fr6l2wr3V4T1N24yo/OqxIzPXutph7TwoASYi3FOsKERHGcOM/DN+4o53g6ZaEsKeq2V
+         9aEw==
+X-Gm-Message-State: AOAM532ti2mPGn2XcZOncnypV59zPCeUqzRZZP97sFBJ6GazxyiYGwpm
+        J5Ti8FwwbHWX2gXspnRDndM=
+X-Google-Smtp-Source: ABdhPJzZ3RmvdxnL1xD95WCQs9cAbeSosygVWm4UmTVnLVOq4UuP8+62BtseYQcj0tI/LkMzqXLbBg==
+X-Received: by 2002:a05:6a00:2148:b0:4fa:92f2:bae3 with SMTP id o8-20020a056a00214800b004fa92f2bae3mr1071085pfk.69.1648669607621;
+        Wed, 30 Mar 2022 12:46:47 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:e48a:4a29:56a5:672a])
+        by smtp.gmail.com with ESMTPSA id p128-20020a625b86000000b004fa666a1327sm23779700pfb.102.2022.03.30.12.46.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 12:44:46 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id CCB421D618F; Wed, 30 Mar 2022 16:44:44 -0300 (-03)
-Date:   Wed, 30 Mar 2022 16:44:44 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Wed, 30 Mar 2022 12:46:47 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 net] sctp: count singleton chunks in assoc user stats
-Message-ID: <YkSzLJ72M5f5EL2L@t14s.localdomain>
-References: <0dfee8c9d17c20f9a87c39dbc57f635d998b08d2.1648609552.git.jamie.bainbridge@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] vxlan: do not feed vxlan_vnifilter_dump_dev with non vxlan devices
+Date:   Wed, 30 Mar 2022 12:46:43 -0700
+Message-Id: <20220330194643.2706132-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0dfee8c9d17c20f9a87c39dbc57f635d998b08d2.1648609552.git.jamie.bainbridge@gmail.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -75,46 +72,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 01:06:02PM +1000, Jamie Bainbridge wrote:
-> Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
-> COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
-> counter available to the assoc owner.
-> 
-> These are all control chunks so they should be counted as such.
-> 
-> Add counting of singleton chunks so they are properly accounted for.
-> 
-> Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
-> Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
-> ---
->  net/sctp/outqueue.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
-> index a18609f608fb786b2532a4febbd72a9737ab906c..bed34918b41f24810677adc0cd4fbd0859396a02 100644
-> --- a/net/sctp/outqueue.c
-> +++ b/net/sctp/outqueue.c
-> @@ -914,6 +914,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
->  				ctx->asoc->base.sk->sk_err = -error;
->  				return;
->  			}
-> +			ctx->asoc->stats.octrlchunks++;
->  			break;
->  
->  		case SCTP_CID_ABORT:
-> @@ -939,6 +940,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
->  		case SCTP_CID_HEARTBEAT:
->  			if (chunk->pmtu_probe) {
->  				sctp_packet_singleton(ctx->transport, chunk, ctx->gfp);
-> +				ctx->asoc->stats.octrlchunks++;
+From: Eric Dumazet <edumazet@google.com>
 
-sctp_packet_singleton can fail. It shouldn't be propagated to the
-socket but octrlchunks shouldn't be incremented then. Not too diferent
-from the one above.
+vxlan_vnifilter_dump_dev() assumes it is called only
+for vxlan devices. Make sure it is the case.
 
->  				break;
->  			}
->  			fallthrough;
-> -- 
-> 2.35.1
-> 
+BUG: KASAN: slab-out-of-bounds in vxlan_vnifilter_dump_dev+0x9a0/0xb40 drivers/net/vxlan/vxlan_vnifilter.c:349
+Read of size 4 at addr ffff888060d1ce70 by task syz-executor.3/17662
+
+CPU: 0 PID: 17662 Comm: syz-executor.3 Tainted: G        W         5.17.0-syzkaller-12888-g77c9387c0c5b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ vxlan_vnifilter_dump_dev+0x9a0/0xb40 drivers/net/vxlan/vxlan_vnifilter.c:349
+ vxlan_vnifilter_dump+0x3ff/0x650 drivers/net/vxlan/vxlan_vnifilter.c:428
+ netlink_dump+0x4b5/0xb70 net/netlink/af_netlink.c:2270
+ __netlink_dump_start+0x647/0x900 net/netlink/af_netlink.c:2375
+ netlink_dump_start include/linux/netlink.h:245 [inline]
+ rtnetlink_rcv_msg+0x70c/0xb80 net/core/rtnetlink.c:5953
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2496
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x543/0x7f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ ____sys_sendmsg+0x6e2/0x800 net/socket.c:2413
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2467
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2496
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f87b8e89049
+
+Fixes: f9c4bb0b245c ("vxlan: vni filtering support on collect metadata device")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ drivers/net/vxlan/vxlan_vnifilter.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/vxlan/vxlan_vnifilter.c b/drivers/net/vxlan/vxlan_vnifilter.c
+index 9f28d0b6a6b26690fec5379956d75b988ea07a36..3e04af4c5daa10f5bebf68f7b33876fe9b09fea9 100644
+--- a/drivers/net/vxlan/vxlan_vnifilter.c
++++ b/drivers/net/vxlan/vxlan_vnifilter.c
+@@ -425,6 +425,12 @@ static int vxlan_vnifilter_dump(struct sk_buff *skb, struct netlink_callback *cb
+ 			err = -ENODEV;
+ 			goto out_err;
+ 		}
++		if (!netif_is_vxlan(dev)) {
++			NL_SET_ERR_MSG(cb->extack,
++				       "The device is not a vxlan device");
++			err = -EINVAL;
++			goto out_err;
++		}
+ 		err = vxlan_vnifilter_dump_dev(dev, skb, cb);
+ 		/* if the dump completed without an error we return 0 here */
+ 		if (err != -EMSGSIZE)
+-- 
+2.35.1.1021.g381101b075-goog
+
