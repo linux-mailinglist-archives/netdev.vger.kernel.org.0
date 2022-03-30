@@ -2,108 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB2804EC58C
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 15:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0287A4EC5A5
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 15:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345904AbiC3NZD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 09:25:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
+        id S1346057AbiC3Nb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 09:31:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345896AbiC3NZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 09:25:00 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82F112616;
-        Wed, 30 Mar 2022 06:23:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=3r7vBX0LriRKdIQzmN7YVXyZS3866KYwIxb7pHXFPXE=;
-        t=1648646593; x=1649856193; b=QgNwkqmK8xzVDDhWqOvhgFiWz8LKnlceg0gGbIHT92J2evT
-        Itx/rXW0rskJS/l/4yZsRw6+JegfIivDKc1l8x8FFuX089kbxdCR7ZkViF59onBWtVCrQnPM0o2DU
-        N2f2MauI6v5g9I/WVhNFhF4eXfh27VfSN5GmWaZ+dT1SZEbxOeMexV225uwfJaM9N4my4HLh6qo/8
-        g8Sj9GvegJSAeUcW9Zeo59QoX+X6WA/H22pLeAsQb8H16iPhj0O4LNg7EJQCXxda5tOsvaFBsZFKM
-        JgmigR/W5GIzUncvy309gYpbdshEPx+/3csDopt7xcC6fJjMc/vBqf5yYlpjBlbw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nZYHz-002SJl-Ac;
-        Wed, 30 Mar 2022 15:23:07 +0200
-Message-ID: <892635fbacdc171baba2cba1b501f30b6a4faeca.camel@sipsolutions.net>
-Subject: Re: UBSAN: invalid-load in net/mac80211/status.c:1164:21
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        'Linux Kernel' <linux-kernel@vger.kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kurt Cancemi <kurt@x64architecture.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Date:   Wed, 30 Mar 2022 15:23:06 +0200
-In-Reply-To: <395d9e22-8b28-087a-5c5d-61a43db527ac@gmail.com>
-References: <395d9e22-8b28-087a-5c5d-61a43db527ac@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        with ESMTP id S1346036AbiC3Nb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 09:31:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6A62126E;
+        Wed, 30 Mar 2022 06:30:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BCEF60F1F;
+        Wed, 30 Mar 2022 13:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 94F2EC34112;
+        Wed, 30 Mar 2022 13:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648647011;
+        bh=cU8FjeWxOjskSz09ATG64xR2J22qjPfKR5JAlqWFTsU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=oIazSJ8dJkTweVSaLD7gv52wfnAvgvMuz1q8BPkHFCO0roeMMghRjdBSgte27H1iO
+         e/2VMnIw3AY/86nhOPPmWKEzPffyyeidH6grDO99f7YnyW3OQpMp7P1vvGJEIaDqaG
+         GZtcTuSZnes1DtTe33oLC8HnFlPFTOo+AQB7D5Dak4do8vuyeZDWtGOjzTmsG2pCNN
+         fw7d2MU90Hib43+nKL6Os1iemRSqoS3V6WBIV84lo92nIiAmRJYEKMrf5nkmYlhL/u
+         /IR0TA12HQolm1HwmlRlAVzqzMnvWcmKZsBYXhCu3hgkKiJVsyRC2YRkQwPZcwQj//
+         a6TbmvGDnkRRg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7624FF0384B;
+        Wed, 30 Mar 2022 13:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] bpf: Fix sparse warnings in kprobe_multi_resolve_syms
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164864701147.1602.6890084343658807023.git-patchwork-notify@kernel.org>
+Date:   Wed, 30 Mar 2022 13:30:11 +0000
+References: <20220330110510.398558-1-jolsa@kernel.org>
+In-Reply-To: <20220330110510.398558-1-jolsa@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-03-30 at 18:49 +0700, Bagas Sanjaya wrote:
+Hello:
+
+This patch was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Wed, 30 Mar 2022 13:05:10 +0200 you wrote:
+> Adding missing __user tags to fix sparse warnings:
 > 
-> [ 1152.928312] UBSAN: invalid-load in net/mac80211/status.c:1164:21
-> [ 1152.928318] load of value 255 is not a valid value for type '_Bool'
+> kernel/trace/bpf_trace.c:2370:34: warning: incorrect type in argument 2 (different address spaces)
+> kernel/trace/bpf_trace.c:2370:34:    expected void const [noderef] __user *from
+> kernel/trace/bpf_trace.c:2370:34:    got void const *usyms
+> kernel/trace/bpf_trace.c:2376:51: warning: incorrect type in argument 2 (different address spaces)
+> kernel/trace/bpf_trace.c:2376:51:    expected char const [noderef] __user *src
+> kernel/trace/bpf_trace.c:2376:51:    got char const *
+> kernel/trace/bpf_trace.c:2443:49: warning: incorrect type in argument 1 (different address spaces)
+> kernel/trace/bpf_trace.c:2443:49:    expected void const *usyms
+> kernel/trace/bpf_trace.c:2443:49:    got void [noderef] __user *[assigned] usyms
+> 
+> [...]
+
+Here is the summary with links:
+  - bpf: Fix sparse warnings in kprobe_multi_resolve_syms
+    https://git.kernel.org/bpf/bpf/c/d31e0386a2f1
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-That's loading status->is_valid_ack_signal, it seems.
-
-Note how that's in a union, shadowed by the 0x00ff0000'00000000 byte of
-the control.vif pointer (if I'm counting bytes correctly). That's kind
-of expected to be 0xff.
-
-> [ 1152.928323] CPU: 1 PID: 857 Comm: rs:main Q:Reg Not tainted 5.17.1-kernelorg-stable-generic #1
-> [ 1152.928329] Hardware name: Acer Aspire E5-571/EA50_HB   , BIOS V1.04 05/06/2014
-> [ 1152.928331] Call Trace:
-> [ 1152.928334]  <TASK>
-> [ 1152.928338]  dump_stack_lvl+0x4c/0x63
-> [ 1152.928350]  dump_stack+0x10/0x12
-> [ 1152.928354]  ubsan_epilogue+0x9/0x45
-> [ 1152.928359]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
-> [ 1152.928365]  ieee80211_tx_status_ext.cold+0xa3/0xb8 [mac80211]
-> [ 1152.928467]  ieee80211_tx_status+0x7d/0xa0 [mac80211]
-> [ 1152.928535]  ath_txq_unlock_complete+0x15c/0x170 [ath9k]
-> [ 1152.928553]  ath_tx_edma_tasklet+0xe5/0x4c0 [ath9k]
-> [ 1152.928567]  ath9k_tasklet+0x14e/0x280 [ath9k]
-
-Which sort of means that ath9k isn't setting up the status area
-correctly?
-
-> The bisection process, starting from v5.17 (the first tag with the warning),
-> found first 'oops' commit at 837d9e49402eaf (net: phy: marvell: Fix invalid
-> comparison in the resume and suspend functions, 2022-03-12). However, since
-> the commit didn't touch net/mac80211/status.c, it wasn't the root cause
-> commit.
-
-Well you'd look for something in ath9k, I guess. But you didn't limit
-the bisect, so not sure why it went off into the weeds. Maybe you got
-one of them wrong.
-
-> The latest commit that touch the file in question is commit
-> ea5907db2a9ccf (mac80211: fix struct ieee80211_tx_info size, 2022-02-02).
-
-That's after 5.17 though, and it replaced the bool by just a flag.
-
-
-Seems to me ath9k should use something like
-ieee80211_tx_info_clear_status() or do the memset by itself? This bug
-would now not be reported, but it might report the flag erroneously.
-
-johannes
