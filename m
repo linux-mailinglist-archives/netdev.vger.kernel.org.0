@@ -2,152 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82C7B4EC970
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 630454EC97D
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348699AbiC3QSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 12:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        id S1348722AbiC3QTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 12:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348693AbiC3QSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:18:31 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32A7BF4C
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:16:45 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id c62so25034279edf.5
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wvcJ0kbG7fzM0+XeGFxiUHTL6MCcu+q18zHDXJW5yos=;
-        b=DjzmS7pHnROcTaKdexi/iWo7fVkbtNGhniTdoIGJ0t6qo7krnmU2sgexTjdJvC0z8y
-         kR9K2KlD1of3sFw17MvPvqgpwI+z8Zbx+GFSq6QmSoldGQ/WKYQkVOy2UTTAx+uSGOFI
-         D4cnj/jWykSuQOwsfmK9EkXpR9QT+YjNvckx/QUvPFKdShah1RihkENhXzsHx7ehcuYx
-         bBm2U3UyLgT2Mp6hdfiRyYdf911KmccuCZVZmrbHwtGU7M9UisqoS0RLHuNDXVOK/8R6
-         gLF94hUr2XzDwT6NLBQCHF1OCxrzqJsCOZX8Pewl1qrdQYK1EP1yNO5ztv12mYLCqSSz
-         NeNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wvcJ0kbG7fzM0+XeGFxiUHTL6MCcu+q18zHDXJW5yos=;
-        b=G1JosiWeFdiX1p/OBOEsQfyy9Nbp+lqWdFDw7ZqVjmG6M/VTGQNVxi9JVmarpUpu66
-         70YsEGOJAkPCprFdGI+qG5mAy2LjvNCT57QzI+g2hVM1aq8bGuETiPN/gbri+Rr3uWdq
-         siaslJMoJpBTcyHrcd9dNPujd1HVAKOamK1M1+INoud9bCC4fIHAVzISFXds0Jd6qZOZ
-         4lzdm7YPg1X9z3QIlzsAJ0xeODYrR4IQM4uwXwPZfsq5i6XkSLDL0QONcRNFqOHcmiri
-         cMsFby7MecOD3l8N7B5hTinPIAT1pP+l3KyqztlMnBRAXfHWUd/yaoFWL/ambd38QlMe
-         3xCw==
-X-Gm-Message-State: AOAM531q5q8lGB3u2HA3m7X6mDuxIIodxiSCIOxHAxNM9FG62V4NRT0F
-        U6LBZNGxoI/+pjr6F9kwYJagfQ==
-X-Google-Smtp-Source: ABdhPJxMITlVLc8sl/rkLI5lhAQ5Q2nKl8IYXlMnrU0zdcE+tZuRD5hV1Tp7GtKBZwXieqZQNauPOA==
-X-Received: by 2002:a05:6402:51d2:b0:419:7d2e:9d0 with SMTP id r18-20020a05640251d200b004197d2e09d0mr11567529edd.82.1648657004239;
-        Wed, 30 Mar 2022 09:16:44 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id i4-20020a17090685c400b006e0c04f8702sm6051063ejy.123.2022.03.30.09.16.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Mar 2022 09:16:43 -0700 (PDT)
-Message-ID: <c512e765-f411-9305-013b-471a07e7f3ff@blackwall.org>
-Date:   Wed, 30 Mar 2022 19:16:42 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH net-next v2] veth: Support bonding events
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Alexandra Winter <wintera@linux.ibm.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1348719AbiC3QTP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:19:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FECBC02;
+        Wed, 30 Mar 2022 09:17:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B909161773;
+        Wed, 30 Mar 2022 16:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1E24C340EC;
+        Wed, 30 Mar 2022 16:17:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648657048;
+        bh=Q+USGHsR1S1m9ZvzFcgjt7zp0ViNdGcvN3RiBCTFNSM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=O8S0hjOfWVpcL2d8Ii4T6o+AuXfYtsfA5ix/uX/rPyjwS9bxhfO1i86FHjIdh+puv
+         I/W7n5WESGfHjS6nF6gp5uPbz0DSJdmTwsJmdaL3RDAl0eVJBdNT4exUa1F1pmWqy/
+         L5TsjMqr9tZXP8WmWGuRJBh+7CyOBurO/HruWy2Zqf2pbxXdUFXjOULx0WFZpkDRTD
+         QVfwF0fhifJNU26ElPMrsxlNMoMiEQy7tfASjXepRDVYCV/+WyR1iuE1rYjYLwRcTQ
+         3WMZtglRmT0m/phSC+R4aYQMOKh4xxVnG0cpZxbkZbFGBsB3JmOU/q0kciwlqmv+sV
+         2kaKH/mpSSGAA==
+Date:   Wed, 30 Mar 2022 17:17:19 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        bridge@lists.linux-foundation.org,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>
-References: <20220329114052.237572-1-wintera@linux.ibm.com>
- <20220329175421.4a6325d9@kernel.org>
- <d2e45c4a-ed34-10d3-58cd-01b1c19bd004@blackwall.org>
- <c1ec0612-063b-dbfa-e10a-986786178c93@linux.ibm.com>
- <20220330085154.34440715@kernel.org>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220330085154.34440715@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Dmitry Osipenko <digetx@gmail.com>, linux-iio@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
+        linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: Fix incomplete if/then/else schemas
+Message-ID: <YkSCj1wT8E/uAdbU@sirena.org.uk>
+References: <20220330145741.3044896-1-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="TNgjpwjwvAc49yPZ"
+Content-Disposition: inline
+In-Reply-To: <20220330145741.3044896-1-robh@kernel.org>
+X-Cookie: Two is company, three is an orgy.
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/03/2022 18:51, Jakub Kicinski wrote:
-> On Wed, 30 Mar 2022 13:14:12 +0200 Alexandra Winter wrote:
->>>> This patch in no way addresses (2). But then, again, if we put 
->>>> a macvlan on top of a bridge master it will shotgun its GARPS all 
->>>> the same. So it's not like veth would be special in that regard.
->>>>
->>>> Nik, what am I missing?
->>>
->>> If we're talking about macvlan -> bridge -> bond then the bond flap's
->>> notify peers shouldn't reach the macvlan.
-> 
-> Hm, right. I'm missing a step in my understanding. As you say bridge
-> does not seem to be re-broadcasting the event to its master. So how
-> does Alexandra catch this kind of an event? :S
-> 
-> 	case NETDEV_NOTIFY_PEERS:
-> 		/* propagate to peer of a bridge attached veth */
-> 		if (netif_is_bridge_master(dev)) {  
-> 
-> IIUC bond will notify with dev == bond netdev. Where is the event with
-> dev == br generated?
-> 
 
-Good question. :)
+--TNgjpwjwvAc49yPZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->>> Generally broadcast traffic
->>> is quite expensive for the bridge, I have patches that improve on the
->>> technical side (consider ports only for the same bcast domain), but you also
->>> wouldn't want unnecessary bcast packets being sent around. :)
->>> There are setups with tens of bond devices and propagating that to all would be
->>> very expensive, but most of all unnecessary. It would also hurt setups with
->>> a lot of vlan devices on the bridge. There are setups with hundreds of vlans
->>> and hundreds of macvlans on top, propagating it up would send it to all of
->>> them and that wouldn't scale at all, these mostly have IP addresses too.
-> 
-> Ack.
-> 
->>> Perhaps we can enable propagation on a per-port or per-bridge basis, then we
->>> can avoid these walks. That is, make it opt-in.
-> 
-> Maybe opt-out? But assuming the event is only generated on
-> active/backup switch over - when would it be okay to ignore
-> the notification?
-> 
+On Wed, Mar 30, 2022 at 09:57:41AM -0500, Rob Herring wrote:
+> A recent review highlighted that the json-schema meta-schema allows any
+> combination of if/then/else schema keywords even though if, then or else
+> by themselves makes little sense. With an added meta-schema to only
+> allow valid combinations, there's a handful of schemas found which need
+> fixing in a variety of ways. Incorrect indentation is the most common
+> issue.
 
-Let me just clarify, so I'm sure I've not misunderstood you. Do you mean opt-out as in
-make it default on? IMO that would be a problem, large scale setups would suddenly
-start propagating it to upper devices which would cause a lot of unnecessary bcast.
-I meant enable it only if needed, and only on specific ports (second part is not
-necessary, could be global, I think it's ok either way). I don't think any setup
-which has many upper vlans/macvlans would ever enable this.
+Acked-by: Mark Brown <broonie@kernel.org>
 
->>>>> It also seems difficult to avoid re-bouncing the notifier.  
->>>>
->>>> syzbot will make short work of this patch, I think the potential
->>>> for infinite loops has to be addressed somehow. IIUC this is the 
->>>> first instance of forwarding those notifiers to a peer rather
->>>> than within a upper <> lower device hierarchy which is a DAG.  
->>
->> My concern was about the Hangbin's alternative proposal to notify all
->> bridge ports. I hope in my porposal I was able to avoid infinite loops.
-> 
-> Possibly I'm confused as to where the notification for bridge master
-> gets sent..
+--TNgjpwjwvAc49yPZ
+Content-Type: application/pgp-signature; name="signature.asc"
 
-IIUC it bypasses the bridge and sends a notify peers for the veth peer so it would
-generate a grat arp (inetdev_event -> NETDEV_NOTIFY_PEERS).
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJEgo4ACgkQJNaLcl1U
+h9CMwQf/f8YiUiMex+FwfC/kdvXglTNhRApaQRU6OtuSmz5UEnBb6O6YMmQLA4q4
+P3oQ1eCCQFXxr8+P7iqLuM+N4MRXPNabE1q82boC3jBah9e8mvDKJtNZJlz/kRXD
+QazSWyj0T9UQpnveVimQMjtE/So0MgZSI/KLiB/hjhG+5Be3Gq5Da9HfdMFwvtA1
+nrqW5IcduprA2fSUgucuUddybp9AoCJr+cvoFPx3Zw/1Nnjb/7xWP6TYeh2EpRCp
+4z1q0JIEFpwa0vCan+4S1IF9eUjHLTmhnUt3yWgERmRNK7t9GKrhobfSAuK8pmky
+vpPGzlJMA9MiagHlb4EugpvmhYzNuQ==
+=41nO
+-----END PGP SIGNATURE-----
+
+--TNgjpwjwvAc49yPZ--
