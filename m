@@ -2,97 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D538D4EBF75
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 13:02:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F0E4EBF7A
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 13:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245717AbiC3LDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 07:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58668 "EHLO
+        id S245734AbiC3LEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 07:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245736AbiC3LDj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 07:03:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA8326C2C2;
-        Wed, 30 Mar 2022 04:01:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S245723AbiC3LED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 07:04:03 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59005C5584;
+        Wed, 30 Mar 2022 04:02:18 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF798B81C27;
-        Wed, 30 Mar 2022 11:01:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FB6C340F3;
-        Wed, 30 Mar 2022 11:01:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648638110;
-        bh=gRh7a2BgCxKwCeVP5kBE5nBoHRn+C0n8pARpFClb7lQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WY7KW85Y2qFWDx4IbqQU+VuevwpOmv44CqfPSUv7DR3MtCbY+k8/Z9YTV2WLzPI8L
-         esmVPq9ixBeb7fUC9W50wQw0LKT7T1upySft8Fw8s1G5eueRuikinYYymYnT6ckZ9d
-         LUKCQIwO+0kW3G7NVpdC7tsvzGdNfy4GSMGGYySJGi/b9xq4u4SMsZ/j/Rry3FVfL0
-         RhQrDueZqK9zEfxQRQIyqa+Dfs+Geg2MJYg7iQ1yz9dglKNSNKhVdUf3K0M/XUDQim
-         r7LzyCD5yJhlzAew9Mf+XR7MnN8MbDsgui5r8opgwRBLMCm6bH+3dk98Q1biB31/9O
-         Q9fyFwmHxFQhA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
-        Shannon Nelson <shannon.nelson@oracle.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH net] ixgbe: ensure IPsec VF<->PF compatibility
-Date:   Wed, 30 Mar 2022 14:01:44 +0300
-Message-Id: <3702fad8a016170947da5f3c521a9251cf0f4a22.1648637865.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DCD822223B;
+        Wed, 30 Mar 2022 13:02:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1648638136;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=aLnrtpnRAiL6v+cP9y7rKdCDomkZu1ScIOGwNkz3rpE=;
+        b=e83Xv7idZD4OnNsV+VrMu6XrTQuf5d3s1LWZQAj6+tGeCCObB8yIO+5KJrUlrfkpi0yXtj
+        LN63YG92vbxwjwG6je2p84wy6hPi7DTSmkcpNZsD5gw8m9kRr4J40YAbO0KUI2cousBH+P
+        5EWhEx5xvgguXDL6kJzbrmnhqoUYA5Y=
+From:   Michael Walle <michael@walle.cc>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: [PATCH RFC net-next] net: lan966x: make PHY reset support optional
+Date:   Wed, 30 Mar 2022 13:02:10 +0200
+Message-Id: <20220330110210.3374165-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+The PHY subsystem as well as the MIIM mdio driver (in case of the
+integrated PHYs) will already take care of the resets of any external
+and internal PHY. There is no need for this reset anymore, so mark it
+optionally to be backwards compatible.
 
-The VF driver can forward any IPsec flags and such makes the function
-is not extendable and prone to backward/forward incompatibility.
-
-If new software runs on VF, it won't know that PF configured something
-completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
-
-Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
-There is no simple fix for this VF/PF incompatibility as long as FW
-doesn't filter/decline unsupported options when convey mailbox from VF
-to PF.
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-index e596e1a9fc75..236f244e3f65 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
-@@ -903,7 +903,9 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
- 	/* Tx IPsec offload doesn't seem to work on this
- 	 * device, so block these requests for now.
- 	 */
--	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
-+	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
-+	if (!(sam->flags & XFRM_OFFLOAD_INBOUND) ||
-+	    sam->flags & ~XFRM_OFFLOAD_INBOUND) {
- 		err = -EOPNOTSUPP;
- 		goto err_out;
- 	}
+Horatiu, what do you think, should it be removed altogether? There is
+no user for that in mainline and I don't know about downstream but the
+reset driver doesn't really work (as it also resets the GPIO/SGPIO)
+and conceptionally the property is on the wrong DT node. All of the
+drawbacks should have been addressed by my patches for the miim [1]
+and the pinctrl driver [2].
+
+[1] https://lore.kernel.org/netdev/20220318201324.1647416-1-michael@walle.cc/
+[2] https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
+
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 1f8c67f0261b..0765064d2845 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -916,7 +916,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
+ 		return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
+ 				     "Could not obtain switch reset");
+ 
+-	phy_reset = devm_reset_control_get_shared(lan966x->dev, "phy");
++	phy_reset = devm_reset_control_get_optional_shared(lan966x->dev, "phy");
+ 	if (IS_ERR(phy_reset))
+ 		return dev_err_probe(lan966x->dev, PTR_ERR(phy_reset),
+ 				     "Could not obtain phy reset\n");
 -- 
-2.35.1
+2.30.2
 
