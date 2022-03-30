@@ -2,52 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B20E44EC939
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1090D4EC942
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:07:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348608AbiC3QGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 12:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
+        id S1348622AbiC3QI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 12:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348621AbiC3QGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:06:22 -0400
-Received: from bagheera.iewc.co.za (bagheera.iewc.co.za [IPv6:2c0f:f720:0:3:be30:5bff:feec:6f99])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C7023D77F;
-        Wed, 30 Mar 2022 09:04:33 -0700 (PDT)
-Received: from [165.16.203.119] (helo=tauri.local.uls.co.za)
-        by bagheera.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1nZaYE-0007la-NE; Wed, 30 Mar 2022 17:48:02 +0200
-Received: from [192.168.42.207]
-        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
-        (envelope-from <jaco@uls.co.za>)
-        id 1nZZoV-00018E-Pe; Wed, 30 Mar 2022 17:00:47 +0200
-Message-ID: <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
-Date:   Wed, 30 Mar 2022 17:00:47 +0200
+        with ESMTP id S1348701AbiC3QIX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:08:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1829C23D76F;
+        Wed, 30 Mar 2022 09:06:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8F096179B;
+        Wed, 30 Mar 2022 16:06:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0998EC340F2;
+        Wed, 30 Mar 2022 16:06:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648656397;
+        bh=BL5gp9g+4lOt7MP6OWX+etUWh+Qufqk3KhmvfKjHLxk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Zfn2Non3kSBEOnWTt9QLvhBkXdnDzBo9T2WjnFMkn+SdwNlxjoQZnB9KhDABI5xVw
+         vzWkoSatYmuHh/Du7CZbHr5rzuMBCF9e6Z9y/jOuAUfQ8pAzRT1h4CCt/omVnCs1Tg
+         15E224Sw//26e/uTpGetvwFxid8Oav+ifLLxZsEyi/abUc6j+sDASk1ScVmVTJBr52
+         PIOBRoWVz9f3IwdQLebvwdgLW8bXZ/KJF/CbzHpCeMUkmrdSRW+SZMmUDMZ+T3CmZU
+         Cq9C9E7iDyEvwWFFlCJJCVAcxzFJk1G3MUrYhqRpP3/XRhTTQrLqtxKdI3iUcQCMgX
+         Hf4ww8yfhcFhQ==
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-2e5827a76f4so224484207b3.6;
+        Wed, 30 Mar 2022 09:06:36 -0700 (PDT)
+X-Gm-Message-State: AOAM533ap4cN1WUXYknJTU8UMmrHmHY+MlkA5ArGC/VrAfM4lSPhenGO
+        RcC4CTj9m9vCGMBU9HRMElNBr8h9e+0QLZj7474=
+X-Google-Smtp-Source: ABdhPJy5KgTK+8wsBvhFLFAPMB5Ayg3DaKACrUkQv9LgK9deowojuaZwPLhTmK6zbZsaPVCnURBd8T1vtv61DqwtabA=
+X-Received: by 2002:a81:13c4:0:b0:2e6:bdb4:6d9f with SMTP id
+ 187-20020a8113c4000000b002e6bdb46d9fmr333573ywt.211.1648656396060; Wed, 30
+ Mar 2022 09:06:36 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
- connections
-Content-Language: en-GB
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-References: <E1nZMdl-0006nG-0J@plastiekpoot>
- <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
- <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
- <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
- <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
-From:   Jaco Kroon <jaco@uls.co.za>
-Organization: Ultimate Linux Solutions (Pty) Ltd
-In-Reply-To: <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+References: <20220329181935.2183-1-beaub@linux.microsoft.com>
+ <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
+ <20220329201057.GA2549@kbox> <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
+ <20220329231137.GA3357@kbox>
+In-Reply-To: <20220329231137.GA3357@kbox>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 30 Mar 2022 09:06:24 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW4WH4Hn+DaQZui5au=ueG1G5zGYiOACfKm9imG2kGA+KA@mail.gmail.com>
+Message-ID: <CAPhsuW4WH4Hn+DaQZui5au=ueG1G5zGYiOACfKm9imG2kGA+KA@mail.gmail.com>
+Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
+ created events
+To:     Beau Belgrave <beaub@linux.microsoft.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -56,97 +71,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 2022/03/30 15:56, Neal Cardwell wrote:
-> On Wed, Mar 30, 2022 at 2:22 AM Jaco Kroon <jaco@uls.co.za> wrote:
->> Hi Eric,
->>
->> On 2022/03/30 05:48, Eric Dumazet wrote:
->>> On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
->>>
->>> I do not think this commit is related to the issue you have.
->>>
->>> I guess you could try a revert ?
->>>
->>> Then, if you think old linux versions were ok, start a bisection ?
->> That'll be interesting, will see if I can reproduce on a non-production
->> host.
->>> Thank you.
->>>
->>> (I do not see why a successful TFO would lead to a freeze after ~70 KB
->>> of data has been sent)
->> I do actually agree with this in that it makes no sense, but disabling
->> TFO definitely resolved the issue for us.
->>
->> Kind Regards,
->> Jaco
-> Thanks for the pcap trace! That's a pretty strange trace. I agree with
-> Eric's theory that this looks like one or more bugs in a firewall,
-> middlebox, or netfilter rule. From the trace it looks like the buggy
-> component is sometimes dropping packets and sometimes corrupting them
-> so that the client's TCP stack ignores them.
-The capture was taken on the client.  So the only firewall there is
-iptables, and I redirected all -j DROP statements to a L_DROP chain
-which did a -j LOG prior to -j DROP - didn't pick up any drops here.
+On Tue, Mar 29, 2022 at 4:11 PM Beau Belgrave <beaub@linux.microsoft.com> wrote:
 >
-> Interestingly, in that trace the client SYN has a TFO option and
-> cookie, but no data in the SYN.
+> On Tue, Mar 29, 2022 at 03:31:31PM -0700, Alexei Starovoitov wrote:
+> > On Tue, Mar 29, 2022 at 1:11 PM Beau Belgrave <beaub@linux.microsoft.com> wrote:
+> > >
+> > > On Tue, Mar 29, 2022 at 12:50:40PM -0700, Alexei Starovoitov wrote:
+> > > > On Tue, Mar 29, 2022 at 11:19 AM Beau Belgrave
+> > > > <beaub@linux.microsoft.com> wrote:
+> > > > >
+> > > > > Send user_event data to attached eBPF programs for user_event based perf
+> > > > > events.
+> > > > >
+> > > > > Add BPF_ITER flag to allow user_event data to have a zero copy path into
+> > > > > eBPF programs if required.
+> > > > >
+> > > > > Update documentation to describe new flags and structures for eBPF
+> > > > > integration.
+> > > > >
+> > > > > Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+> > > >
+> > > > The commit describes _what_ it does, but says nothing about _why_.
+> > > > At present I see no use out of bpf and user_events connection.
+> > > > The whole user_events feature looks redundant to me.
+> > > > We have uprobes and usdt. It doesn't look to me that
+> > > > user_events provide anything new that wasn't available earlier.
+> > >
+> > > A lot of the why, in general, for user_events is covered in the first
+> > > change in the series.
+> > > Link: https://lore.kernel.org/all/20220118204326.2169-1-beaub@linux.microsoft.com/
+> > >
+> > > The why was also covered in Linux Plumbers Conference 2021 within the
+> > > tracing microconference.
+> > >
+> > > An example of why we want user_events:
+> > > Managed code running that emits data out via Open Telemetry.
+> > > Since it's managed there isn't a stub location to patch, it moves.
+> > > We watch the Open Telemetry spans in an eBPF program, when a span takes
+> > > too long we collect stack data and perform other actions.
+> > > With user_events and perf we can monitor the entire system from the root
+> > > container without having to have relay agents within each
+> > > cgroup/namespace taking up resources.
+> > > We do not need to enter each cgroup mnt space and determine the correct
+> > > patch location or the right version of each binary for processes that
+> > > use user_events.
+> > >
+> > > An example of why we want eBPF integration:
+> > > We also have scenarios where we are live decoding the data quickly.
+> > > Having user_data fed directly to eBPF lets us cast the data coming in to
+> > > a struct and decode very very quickly to determine if something is
+> > > wrong.
+> > > We can take that data quickly and put it into maps to perform further
+> > > aggregation as required.
+> > > We have scenarios that have "skid" problems, where we need to grab
+> > > further data exactly when the process that had the problem was running.
+> > > eBPF lets us do all of this that we cannot easily do otherwise.
+> > >
+> > > Another benefit from user_events is the tracing is much faster than
+> > > uprobes or others using int 3 traps. This is critical to us to enable on
+> > > production systems.
+> >
+> > None of it makes sense to me.
+>
+> Sorry.
+>
+> > To take advantage of user_events user space has to be modified
+> > and writev syscalls inserted.
+>
+> Yes, both user_events and lttng require user space modifications to do
+> tracing correctly. The syscall overheads are real, and the cost depends
+> on the mitigations around spectre/meltdown.
+>
+> > This is not cheap and I cannot see a production system using this interface.
+>
+> But you are fine with uprobe costs? uprobes appear to be much more costly
+> than a syscall approach on the hardware I've run on.
 
-So this allows the SMTP server which in the conversation speaks first to
-identify itself to respond with data in the SYN (not sure that was
-actually happening but if I recall I did see it send data prior to
-receiving the final ACK on the handshake.
+Can we achieve the same/similar performance with sys_bpf(BPF_PROG_RUN)?
+
+Thanks,
+Song
 
 >
-> The last packet that looks sane/normal is the ACK from the SMTP server
-> that looks like:
+> > All you did is a poor man version of lttng that doesn't rely
+> > on such heavy instrumentation.
 >
-> 00:00:00.000010 IP6 2a00:1450:4013:c16::1a.25 >
-> 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 66263 win
-> 774 <nop,nop,TS val 1206544341 ecr 331189186>
+> Well I am a frugal person. :)
 >
-> That's the first ACK that crosses past 2^16. Maybe that is a
-> coincidence, or maybe not. Perhaps the buggy firewall/middlebox/etc is
-
-I believe it should be because we literally had this on every single
-connection going out to Google's SMTP ... probably 1/100 connections
-managed to deliver an email over the connection.  Then again ... 64KB
-isn't that much ...
-
-When you state sane/normal, do you mean there is fault with the other
-frames that could not be explained by packet loss in one or both of the
-directions?
-
-> confused by the TFO option, corrupts its state, and thereafter behaves
-> incorrectly past the first 64 KBytes of data from the client.
-
-Only firewalls we've got are netfilter based, and these packets all
-passed through the dedicated firewalls at least by the time they reach
-here.  No middleboxes on our end, and if this was Google's side there
-would be crazy noise be heard, not just me.  I think the trigger is
-packet loss between us (as indicated we know they have link congestion
-issues in JHB area, it took us the better part of two weeks to get the
-first line tech on their side to just query the internal teams and
-probably another week to get the response acknowledging this -
-mybroadband.co.za has an article about other local ISPs also complaining).
-
+> This work has solved some critical issues we've been having, and I would
+> appreciate a review of the code if possible.
 >
-> In addition to checking for checksum failures, mentioned by Eric, you
-> could look for PAWS failures, something like:
->
->   nstat -az | egrep  -i 'TcpInCsumError|PAWS'
-
-TcpInCsumErrors                 0                  0.0
-TcpExtPAWSActive                0                  0.0
-TcpExtPAWSEstab                 90092              0.0
-TcpExtTCPACKSkippedPAWS         81317              0.0
-
-Not sure what these mean, but i should probably investigate, the latter
-two are definitely incrementing.
-
-Appreciate the feedback and for looking at the traces.
-
-Kind Regards,
-Jaco
-
+> Thanks,
+> -Beau
