@@ -2,173 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE7AE4EC994
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B8F04EC9AF
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:31:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348748AbiC3QVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 12:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57762 "EHLO
+        id S1348814AbiC3QdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 12:33:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244332AbiC3QVv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:21:51 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D1370071
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:20:05 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2eafabbc80aso9204997b3.11
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:20:05 -0700 (PDT)
+        with ESMTP id S1348813AbiC3QdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:33:11 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A767915281A
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:31:24 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso528414pjh.3
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:31:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9p+YHMoXEn+djDAlzGnVfVmbj4X4YfKf8Wmoz4SPcpc=;
-        b=Peg1mhc2WUFxEIV29jkkJDS6FeBV6QamEm7Arg1/cxqLNw9sUaPwgYuhCOq9NsRLOR
-         vCdXGzvuUEHr6U+tQ6DrV66RGnkXnMKyiumUCdaLZRAZIPL/tEWvcJh+oVb97xPmQnL/
-         PoFoz8e0ftaQ0+zaIYqTFiFwFzjRV96x2Df0dzRvz3Dj0TbWZnCGShDoOfg8b7ykX4jU
-         /0VVb/90IHWVXPa2F91J3ZnFQ2VAtMsbEQpQEOQPF7khv35jbKM9Jz8NO9V20QwoHjn+
-         3h2iR/jeIr8c1mHR0FDpxpT1+WrOWedtoJRzcUE5vpw1nStrZN4lq7zLNuGr54QTDfJb
-         2nsg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=qe6kVerZP6CX+iitrVtMkhPZt28vfozdtBBaPzKko38=;
+        b=ZTrnuv/xZEvTfQVtSPetagjo5WJ5NW2kRByThdOXfGMtsmaMDqzu9U4FbxWXZHHbfJ
+         fxHvxlLl3Ii1XAsWCErDS0epCswa0HK+jszcTvZ+VE6Frd9UqBX3Ei0SgI8ULH5TSdUb
+         qDJkRgkRwdrAz3ANGPBU0MND19+y7CLtE9U4zY5O0NYRj04q5kvHzldjHw2U1e+R3r/n
+         Zfpk9DOFOYaX/Rd85lbwGMXzcsZlV6QXflL5882Xx9vSEw6QwxEq5mxW8mZ/RzdBQr7N
+         2QxtvSUffhdw+Ql/CMlbsb11xx6BBNYoXylx02DRczfLUPvz7TqCKwfebFPIfCNr1NbG
+         AWQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9p+YHMoXEn+djDAlzGnVfVmbj4X4YfKf8Wmoz4SPcpc=;
-        b=EX+Q75VPDncEFDXLGUgRclHELXg8cCdnTza6VeL/kLxeymVAEVj4FhAA8eWAJODSCj
-         lmnNDZ+L/M7KvUn8NojtTRqGbBhlrTB1kFb7x8UJggg5MuU/qNN0/qOjYenQiLTMi0Cv
-         fo3LsUlXcvWZZ4HktAam4JhC5IYlq4srtyEqzC7t2gcvM7+2CIRKcEkCNXzP755k3foy
-         Dsyfzoto+qBH4Jz81y18JBb3X4+Yoev2OQeuf1zkdzWKRMWsq5FNHKU/ZpvQGjosyqC2
-         MR/rwDxqkDZOQPK0eO+9/rJ33XCEdzu7rZqm1SQFXr03SmIUP5+AZy4YbOzMgi1K76J9
-         zuMQ==
-X-Gm-Message-State: AOAM530uf0xvCF0AQHpzjH5bypbi/Z0SfjBZgOzR/wiU7KAsqw1/S7rm
-        pgwEPRmT2YLvKt8m0OIbHbiF8Zh8VWQYNhAczODM/w==
-X-Google-Smtp-Source: ABdhPJw4sJV2PZijTEqCfgQ5qhx6OrerSNXZ76CSL8noTScZod11Zs3XGI5ClTvblmBf3XU5Z6sEJHmccjUzel8jCwQ=
-X-Received: by 2002:a81:4f87:0:b0:2e5:dc8f:b4e with SMTP id
- d129-20020a814f87000000b002e5dc8f0b4emr372460ywb.467.1648657204857; Wed, 30
- Mar 2022 09:20:04 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qe6kVerZP6CX+iitrVtMkhPZt28vfozdtBBaPzKko38=;
+        b=YYM94Q2NNILIruZuqInw8ZCbj8EPRPbSGa/1ShbD2m0mDxciQDHgZRig3BMouQHi4J
+         nqfe+hV4cyNVfT58UUGSxSFfMw+PzEiqYnSJEOSFmmh+1btpq/WcGw3qGtAV40RteBgw
+         JwR0YDqT9wzVGHz44Dv4QKVdbEyYmBaSz0jzkDwJQ1/CwCnvS6Xo34x8nQsgiV35GZil
+         3hVZCO81092AcwlmlXnX3y4mQBA7ouA2lJJEWkVqZF3EICMTWFpcvlP0L3mQhse6Cqa5
+         VMWnr0N1sW8OuGzgYXT5okNis05cwhIYskEbF+h4pf7pGrGqUnNnHttC6e+kl4hVSGWw
+         e+HQ==
+X-Gm-Message-State: AOAM5326gC/bogQ1ASif3lftmaLUq1nSbnh0OJEhRD563qDiFfkYlm15
+        jpRQfI9CivXhcKJ39d/WXHjuR42PYnqFFw==
+X-Google-Smtp-Source: ABdhPJxj45nDX91pFc9IrGmKWf6W0H0Wl8Qb8w3H+ArDiR/iuz/NvZKL/r1NUiNa0K+h8r32EyICMg==
+X-Received: by 2002:a17:90b:1b52:b0:1c6:b689:813d with SMTP id nv18-20020a17090b1b5200b001c6b689813dmr272439pjb.186.1648657884152;
+        Wed, 30 Mar 2022 09:31:24 -0700 (PDT)
+Received: from [192.168.0.4] ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id 75-20020a62144e000000b004fae56c42a0sm23015209pfu.211.2022.03.30.09.31.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 09:31:23 -0700 (PDT)
+Message-ID: <8a7b260a-4012-f73e-84e6-c449a73ed0ff@gmail.com>
+Date:   Thu, 31 Mar 2022 01:31:19 +0900
 MIME-Version: 1.0
-References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
- <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
- <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za> <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
- <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
-In-Reply-To: <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 30 Mar 2022 09:19:53 -0700
-Message-ID: <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
-To:     Jaco Kroon <jaco@uls.co.za>
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] net: sfc: add missing xdp queue reinitialization
+Content-Language: en-US
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, ecree.xilinx@gmail.com,
+        habetsm.xilinx@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        cmclachlan@solarflare.com
+References: <20220330161019.5367-1-ap420073@gmail.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+In-Reply-To: <20220330161019.5367-1-ap420073@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 9:04 AM Jaco Kroon <jaco@uls.co.za> wrote:
->
-> Hi,
->
-> On 2022/03/30 15:56, Neal Cardwell wrote:
-> > On Wed, Mar 30, 2022 at 2:22 AM Jaco Kroon <jaco@uls.co.za> wrote:
-> >> Hi Eric,
-> >>
-> >> On 2022/03/30 05:48, Eric Dumazet wrote:
-> >>> On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
-> >>>
-> >>> I do not think this commit is related to the issue you have.
-> >>>
-> >>> I guess you could try a revert ?
-> >>>
-> >>> Then, if you think old linux versions were ok, start a bisection ?
-> >> That'll be interesting, will see if I can reproduce on a non-production
-> >> host.
-> >>> Thank you.
-> >>>
-> >>> (I do not see why a successful TFO would lead to a freeze after ~70 KB
-> >>> of data has been sent)
-> >> I do actually agree with this in that it makes no sense, but disabling
-> >> TFO definitely resolved the issue for us.
-> >>
-> >> Kind Regards,
-> >> Jaco
-> > Thanks for the pcap trace! That's a pretty strange trace. I agree with
-> > Eric's theory that this looks like one or more bugs in a firewall,
-> > middlebox, or netfilter rule. From the trace it looks like the buggy
-> > component is sometimes dropping packets and sometimes corrupting them
-> > so that the client's TCP stack ignores them.
-> The capture was taken on the client.  So the only firewall there is
-> iptables, and I redirected all -j DROP statements to a L_DROP chain
-> which did a -j LOG prior to -j DROP - didn't pick up any drops here.
-> >
-> > Interestingly, in that trace the client SYN has a TFO option and
-> > cookie, but no data in the SYN.
->
-> So this allows the SMTP server which in the conversation speaks first to
-> identify itself to respond with data in the SYN (not sure that was
-> actually happening but if I recall I did see it send data prior to
-> receiving the final ACK on the handshake.
->
-> >
-> > The last packet that looks sane/normal is the ACK from the SMTP server
-> > that looks like:
-> >
-> > 00:00:00.000010 IP6 2a00:1450:4013:c16::1a.25 >
-> > 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 66263 win
-> > 774 <nop,nop,TS val 1206544341 ecr 331189186>
-> >
-> > That's the first ACK that crosses past 2^16. Maybe that is a
-> > coincidence, or maybe not. Perhaps the buggy firewall/middlebox/etc is
->
-> I believe it should be because we literally had this on every single
-> connection going out to Google's SMTP ... probably 1/100 connections
-> managed to deliver an email over the connection.  Then again ... 64KB
-> isn't that much ...
->
-> When you state sane/normal, do you mean there is fault with the other
-> frames that could not be explained by packet loss in one or both of the
-> directions?
->
-> > confused by the TFO option, corrupts its state, and thereafter behaves
-> > incorrectly past the first 64 KBytes of data from the client.
->
-> Only firewalls we've got are netfilter based, and these packets all
-> passed through the dedicated firewalls at least by the time they reach
-> here.  No middleboxes on our end, and if this was Google's side there
-> would be crazy noise be heard, not just me.  I think the trigger is
-> packet loss between us (as indicated we know they have link congestion
-> issues in JHB area, it took us the better part of two weeks to get the
-> first line tech on their side to just query the internal teams and
-> probably another week to get the response acknowledging this -
-> mybroadband.co.za has an article about other local ISPs also complaining).
->
-> >
-> > In addition to checking for checksum failures, mentioned by Eric, you
-> > could look for PAWS failures, something like:
-> >
-> >   nstat -az | egrep  -i 'TcpInCsumError|PAWS'
->
-> TcpInCsumErrors                 0                  0.0
-> TcpExtPAWSActive                0                  0.0
-> TcpExtPAWSEstab                 90092              0.0
-> TcpExtTCPACKSkippedPAWS         81317              0.0
->
-> Not sure what these mean, but i should probably investigate, the latter
-> two are definitely incrementing.
->
-> Appreciate the feedback and for looking at the traces.
->
 
-Your pcap does not show any obvious PAWS issues.
 
-If the host is lightly loaded you could try while the connection is
-attempted/frozen
+On 3/31/22 01:10, Taehee Yoo wrote:
+> After rx/tx ring buffer size is changed, kernel panic occurs when
+> it acts XDP_TX or XDP_REDIRECT.
+> 
+> When tx/rx ring buffer size is changed(ethtool -G), sfc driver
+> reallocates and reinitializes rx and tx queues and their buffers
+> (tx_queue->buffer).
+> But it misses reinitializing xdp queues and buffers.
+> So, while it is acting XDP_TX or XDP_REDIRECT, it uses the uninitialized
+> tx_queue->buffer.
+> 
+> A new function efx_set_xdp_channels() is separated from efx_set_channels()
+> to handle only xdp queues.
+> 
+> Splat looks like:
+>     BUG: kernel NULL pointer dereference, address: 000000000000002a
+>     #PF: supervisor write access in kernel mode
+>     #PF: error_code(0x0002) - not-present page
+>     PGD 0 P4D 0
+>     Oops: 0002 [#4] PREEMPT SMP NOPTI
+>     RIP: 0010:efx_tx_map_chunk+0x54/0x90 [sfc]
+>     CPU: 2 PID: 0 Comm: swapper/2 Tainted: G      D           5.17.0+ #55 e8beeee8289528f11357029357cf
+>     Code: 48 8b 8d a8 01 00 00 48 8d 14 52 4c 8d 2c d0 44 89 e0 48 85 c9 74 0e 44 89 e2 4c 89 f6 48 80
+>     RSP: 0018:ffff92f121e45c60 EFLAGS: 00010297
+>     RIP: 0010:efx_tx_map_chunk+0x54/0x90 [sfc]
+>     RAX: 0000000000000040 RBX: ffff92ea506895c0 RCX: ffffffffc0330870
+>     RDX: 0000000000000001 RSI: 00000001139b10ce RDI: ffff92ea506895c0
+>     RBP: ffffffffc0358a80 R08: 00000001139b110d R09: 0000000000000000
+>     R10: 0000000000000001 R11: ffff92ea414c0088 R12: 0000000000000040
+>     R13: 0000000000000018 R14: 00000001139b10ce R15: ffff92ea506895c0
+>     FS:  0000000000000000(0000) GS:ffff92f121ec0000(0000) knlGS:0000000000000000
+>     CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>     Code: 48 8b 8d a8 01 00 00 48 8d 14 52 4c 8d 2c d0 44 89 e0 48 85 c9 74 0e 44 89 e2 4c 89 f6 48 80
+>     CR2: 000000000000002a CR3: 00000003e6810004 CR4: 00000000007706e0
+>     RSP: 0018:ffff92f121e85c60 EFLAGS: 00010297
+>     PKRU: 55555554
+>     RAX: 0000000000000040 RBX: ffff92ea50689700 RCX: ffffffffc0330870
+>     RDX: 0000000000000001 RSI: 00000001145a90ce RDI: ffff92ea50689700
+>     RBP: ffffffffc0358a80 R08: 00000001145a910d R09: 0000000000000000
+>     R10: 0000000000000001 R11: ffff92ea414c0088 R12: 0000000000000040
+>     R13: 0000000000000018 R14: 00000001145a90ce R15: ffff92ea50689700
+>     FS:  0000000000000000(0000) GS:ffff92f121e80000(0000) knlGS:0000000000000000
+>     CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>     CR2: 000000000000002a CR3: 00000003e6810005 CR4: 00000000007706e0
+>     PKRU: 55555554
+>     Call Trace:
+>      <IRQ>
+>      efx_xdp_tx_buffers+0x12b/0x3d0 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+>      __efx_rx_packet+0x5c3/0x930 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+>      efx_rx_packet+0x28c/0x2e0 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+>      efx_ef10_ev_process+0x5f8/0xf40 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+>      ? enqueue_task_fair+0x95/0x550
+>      efx_poll+0xc4/0x360 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+> 
+> Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
+>   drivers/net/ethernet/sfc/efx_channels.c | 147 +++++++++++++-----------
+>   1 file changed, 82 insertions(+), 65 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+> index d6fdcdc530ca..271f3bdfc141 100644
+> --- a/drivers/net/ethernet/sfc/efx_channels.c
+> +++ b/drivers/net/ethernet/sfc/efx_channels.c
+> @@ -789,6 +789,86 @@ void efx_remove_channels(struct efx_nic *efx)
+>   	kfree(efx->xdp_tx_queues);
+>   }
+>   
+> +static inline int efx_set_xdp_tx_queue(struct efx_nic *efx,
 
-perf record -a -g -e skb:kfree_skb sleep 30
-perf script  (or perf report)
+I will send v2 patch to remove this inline keywork.
+
+> +				       int xdp_queue_number,
+> +				       struct efx_tx_queue *tx_queue)
+> +{
+
