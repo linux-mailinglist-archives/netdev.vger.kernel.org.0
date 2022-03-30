@@ -2,148 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E26874EC66A
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 16:22:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6954F4EC672
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 16:24:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346762AbiC3OYO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 10:24:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
+        id S1346786AbiC3OZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 10:25:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346758AbiC3OYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 10:24:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4C1920594A
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 07:22:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648650144;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=V8lwe1nJ277ErLzO2JvOAl8qLHlH5LlGzwKHRcvdCBU=;
-        b=aBP1RazWPdzzHAztzePZ1V1geEEmSJgZ3FIxoN16uR6LW5SVOYNBxvuIWxE8LR9pDY9asd
-        U9ZY4jypCkCddOnGQwg1/ZcQMmGcjapTg+P7VtvKmFrTIWjXj9Bzq6/I/+zcGqvezay+PO
-        iSF28+cr7Owh3MSqEuQMHJ5zDPxyu4E=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-100-5Y00R3zkPfq4RQIRR8_cwg-1; Wed, 30 Mar 2022 10:22:21 -0400
-X-MC-Unique: 5Y00R3zkPfq4RQIRR8_cwg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 919DA381749F;
-        Wed, 30 Mar 2022 14:22:20 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 77553C1D38B;
-        Wed, 30 Mar 2022 14:22:17 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: fix some null-ptr-deref bugs in server_key.c
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, dhowells@redhat.com,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 30 Mar 2022 15:22:14 +0100
-Message-ID: <164865013439.2941502.8966285221215590921.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        with ESMTP id S1346792AbiC3OZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 10:25:12 -0400
+Received: from gateway24.websitewelcome.com (gateway24.websitewelcome.com [192.185.50.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28F3205BDC
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 07:23:26 -0700 (PDT)
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 0F0FB5B88B7
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:23:25 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id ZZEKnItACb6UBZZEKnMkww; Wed, 30 Mar 2022 09:23:25 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Z+bIz9+dq3nQBsL1agtcS4DmcA/Nw5QI0/tqVKvaifg=; b=TAmA30h2ztJwuOkkbQI6/GJWvG
+        u+bhCgdv2vG6ZvQY1NptupTAonDS2Ye5tA8Z+ObNokWMwLIAjs5zrCTKUWnjFlXJ6Gf+a4loIPxb8
+        vkucgzRBajBpiLEth5uVDWCXSTJeIgrN52Kn4N8IdcYyyvn19w2QxnNK8tAOjyQp0spZXDHF2mu02
+        dGqkNLKbCNyqvijb0LI10q5DZcI80Neiq++ZIrvrKMKB1SU3N3purLRsmuAvYnhAssWo9aHcCpfs1
+        uTg2KVBFxrEUD+2t5okTKLVydtTVZmNx0T6nB5WuDveoRg7RETDjz5eoKIf+pfvW8qj+MA6cexSwK
+        CXdNH4Pg==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54566)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nZZEK-002NjM-7j; Wed, 30 Mar 2022 14:23:24 +0000
+Message-ID: <75093b82-4625-d806-a4ea-372b74e60c3b@roeck-us.net>
+Date:   Wed, 30 Mar 2022 07:23:22 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
+        Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220329160730.3265481-1-michael@walle.cc>
+ <20220329160730.3265481-2-michael@walle.cc>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+In-Reply-To: <20220329160730.3265481-2-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nZZEK-002NjM-7j
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54566
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 6
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaolong Huang <butterflyhuangxx@gmail.com>
+On 3/29/22 09:07, Michael Walle wrote:
+> More and more drivers will check for bad characters in the hwmon name
+> and all are using the same code snippet. Consolidate that code by adding
+> a new hwmon_sanitize_name() function.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>   Documentation/hwmon/hwmon-kernel-api.rst |  9 ++++-
+>   drivers/hwmon/hwmon.c                    | 49 ++++++++++++++++++++++++
+>   include/linux/hwmon.h                    |  3 ++
+>   3 files changed, 60 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+> index c41eb6108103..12f4a9bcef04 100644
+> --- a/Documentation/hwmon/hwmon-kernel-api.rst
+> +++ b/Documentation/hwmon/hwmon-kernel-api.rst
+> @@ -50,6 +50,10 @@ register/unregister functions::
+>   
+>     void devm_hwmon_device_unregister(struct device *dev);
+>   
+> +  char *hwmon_sanitize_name(const char *name);
+> +
+> +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+> +
+>   hwmon_device_register_with_groups registers a hardware monitoring device.
+>   The first parameter of this function is a pointer to the parent device.
+>   The name parameter is a pointer to the hwmon device name. The registration
+> @@ -93,7 +97,10 @@ removal would be too late.
+>   
+>   All supported hwmon device registration functions only accept valid device
+>   names. Device names including invalid characters (whitespace, '*', or '-')
+> -will be rejected. The 'name' parameter is mandatory.
+> +will be rejected. The 'name' parameter is mandatory. Before calling a
+> +register function you should either use hwmon_sanitize_name or
+> +devm_hwmon_sanitize_name to replace any invalid characters with an
+> +underscore.
 
-Some function calls are not implemented in rxrpc_no_security, there are
-preparse_server_key, free_preparse_server_key and destroy_server_key.
-When rxrpc security type is rxrpc_no_security, user can easily trigger a
-null-ptr-deref bug via ioctl. So judgment should be added to prevent it
+That needs more details and deserves its own paragraph. Calling one of
+the functions is only necessary if the original name does or can include
+unsupported characters; an unconditional "should" is therefore a bit
+strong. Also, it is important to mention that the function duplicates
+the name, and that it is the responsibility of the caller to release
+the name if hwmon_sanitize_name() was called and the device is removed.
 
-The crash log:
-user@syzkaller:~$ ./rxrpc_preparse_s
-[   37.956878][T15626] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[   37.957645][T15626] #PF: supervisor instruction fetch in kernel mode
-[   37.958229][T15626] #PF: error_code(0x0010) - not-present page
-[   37.958762][T15626] PGD 4aadf067 P4D 4aadf067 PUD 4aade067 PMD 0
-[   37.959321][T15626] Oops: 0010 [#1] PREEMPT SMP
-[   37.959739][T15626] CPU: 0 PID: 15626 Comm: rxrpc_preparse_ Not tainted 5.17.0-01442-gb47d5a4f6b8d #43
-[   37.960588][T15626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1 04/01/2014
-[   37.961474][T15626] RIP: 0010:0x0
-[   37.961787][T15626] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
-[   37.962480][T15626] RSP: 0018:ffffc9000d9abdc0 EFLAGS: 00010286
-[   37.963018][T15626] RAX: ffffffff84335200 RBX: ffff888012a1ce80 RCX: 0000000000000000
-[   37.963727][T15626] RDX: 0000000000000000 RSI: ffffffff84a736dc RDI: ffffc9000d9abe48
-[   37.964425][T15626] RBP: ffffc9000d9abe48 R08: 0000000000000000 R09: 0000000000000002
-[   37.965118][T15626] R10: 000000000000000a R11: f000000000000000 R12: ffff888013145680
-[   37.965836][T15626] R13: 0000000000000000 R14: ffffffffffffffec R15: ffff8880432aba80
-[   37.966441][T15626] FS:  00007f2177907700(0000) GS:ffff88803ec00000(0000) knlGS:0000000000000000
-[   37.966979][T15626] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   37.967384][T15626] CR2: ffffffffffffffd6 CR3: 000000004aaf1000 CR4: 00000000000006f0
-[   37.967864][T15626] Call Trace:
-[   37.968062][T15626]  <TASK>
-[   37.968240][T15626]  rxrpc_preparse_s+0x59/0x90
-[   37.968541][T15626]  key_create_or_update+0x174/0x510
-[   37.968863][T15626]  __x64_sys_add_key+0x139/0x1d0
-[   37.969165][T15626]  do_syscall_64+0x35/0xb0
-[   37.969451][T15626]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   37.969824][T15626] RIP: 0033:0x43a1f9
-
-Signed-off-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
-Tested-by: Xiaolong Huang <butterflyhuangxx@gmail.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-Acked-by: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2022-March/005069.html
----
-
- net/rxrpc/server_key.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/net/rxrpc/server_key.c b/net/rxrpc/server_key.c
-index ead3471307ee..ee269e0e6ee8 100644
---- a/net/rxrpc/server_key.c
-+++ b/net/rxrpc/server_key.c
-@@ -84,6 +84,9 @@ static int rxrpc_preparse_s(struct key_preparsed_payload *prep)
- 
- 	prep->payload.data[1] = (struct rxrpc_security *)sec;
- 
-+	if (!sec->preparse_server_key)
-+		return -EINVAL;
-+
- 	return sec->preparse_server_key(prep);
- }
- 
-@@ -91,7 +94,7 @@ static void rxrpc_free_preparse_s(struct key_preparsed_payload *prep)
- {
- 	const struct rxrpc_security *sec = prep->payload.data[1];
- 
--	if (sec)
-+	if (sec && sec->free_preparse_server_key)
- 		sec->free_preparse_server_key(prep);
- }
- 
-@@ -99,7 +102,7 @@ static void rxrpc_destroy_s(struct key *key)
- {
- 	const struct rxrpc_security *sec = key->payload.data[1];
- 
--	if (sec)
-+	if (sec && sec->destroy_server_key)
- 		sec->destroy_server_key(key);
- }
- 
-
-
+Thanks,
+Guenter
