@@ -2,180 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF1CC4EC7B4
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 17:04:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A25464EC7BE
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 17:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347791AbiC3PGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 11:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
+        id S1343578AbiC3PHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 11:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347772AbiC3PGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 11:06:00 -0400
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859C75219;
-        Wed, 30 Mar 2022 08:04:14 -0700 (PDT)
-Received: by mail-ot1-f49.google.com with SMTP id i23-20020a9d6117000000b005cb58c354e6so15083754otj.10;
-        Wed, 30 Mar 2022 08:04:14 -0700 (PDT)
+        with ESMTP id S244979AbiC3PHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 11:07:30 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489AA92310
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 08:05:44 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bh17so2643205ejb.8
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 08:05:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5XJS3AHalnFG3qpQL3QQEmH7km/Ll7WArQGG8lqamhI=;
+        b=MP4D16s2s4uLcTI2+53g8Vb+VmeKdC1eIzKxJEPJ5IgN2yJbJJjn18hOBSO4o1+YSv
+         HLuWckW7N9WgNKV4iVuGolWK8zSCHSk1De5wEySX+p5nGLh1bIAVspzOJbG7gmrlvQja
+         SfOmm0hoMRN4NC7hhn93RIVrDuGl5XfIZMXVnVNfGuU//AtcA3YrC0Fx/NJBe8QHdbw2
+         XOZXsSRqENZlgx42/8JOH1Pit7ZuK4OYgaci6CiqBYWErD1fdngbAOFrthr1cUxyeuyM
+         SL8iWcQD15xENq1AsnUo71kjhjCczekqzyS7fP2dXpfrlrdJIci0yVP9hcH/klGQJwYY
+         n33Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a0Qx16jN1XmN4Y2BBIC8WZKR/lqJ3CCvy460j4hfpJU=;
-        b=3pZvNGKpXmGd8MmuIG0vUmJ/PY0eUewq4tpTqMN57oPl+XLuu9EREsOx00MblhFyur
-         MYwHUU7oXc4CvIE4iFOMTBW2HfkiiSBaSmX97Z3IGpzii9xZgHONscasPij5H5FeaeCF
-         CR3/XF+5P7OEXHeT+Bx/h2Z89flcEngbEth8aQFyrgy/SOmhn1F8gLPFHebGW0PvKvl9
-         YtTD1ttarUrqf3NjeCigziwmqQIqZWLsdY+OcADx08jxzTBzklAmidK1pZ22O2x4Rqfc
-         bKtl7BeDwADSdqwZEyYQP3BbkY9Jx0TNk3gdDOv9Wh4qK0edfAbvLez5umuCrL3w4zN3
-         jUgQ==
-X-Gm-Message-State: AOAM531l2A5rjo7mN5FjZDloEfI6OEINf2QrzJyzyacjuuJYw2IVr8FP
-        6GdrgaezKKbmMQYWAFLPuQ==
-X-Google-Smtp-Source: ABdhPJw4BtyiHMI8Rkn8KkRu0zRrS/KBtlV7cGVu+PN3sHJ9/fQoVaJv4gJd0mwesxt2MLGtea2lyA==
-X-Received: by 2002:a05:6830:2055:b0:5b2:5659:542f with SMTP id f21-20020a056830205500b005b25659542fmr3433041otp.189.1648652653992;
-        Wed, 30 Mar 2022 08:04:13 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id u2-20020a056870304200b000ddb1828e3csm9878600oau.19.2022.03.30.08.04.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 08:04:12 -0700 (PDT)
-Received: (nullmailer pid 3056199 invoked by uid 1000);
-        Wed, 30 Mar 2022 15:04:11 -0000
-Date:   Wed, 30 Mar 2022 10:04:11 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: update Krzysztof Kozlowski's email
-Message-ID: <YkRxa1yweG7ace6r@robh.at.kernel.org>
-References: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org>
- <20220330074016.12896-2-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5XJS3AHalnFG3qpQL3QQEmH7km/Ll7WArQGG8lqamhI=;
+        b=h2bHeXxcwsQWhoIU9gdW0823sYGNSDkiHukQ2sjzHxXvf56un4WDJpKpKn5NqBMHRq
+         kHCwRmHh+orh4FPhbHDK0v6EEg1Y7E1vcabv+hQI7o87djSeBmycO54I5L2gSw2cF+Rg
+         5LfnKe6POGLfMtDNNKaptM27oZgKSoqUgVFsN80BX36kSSIIFPBYgEdEyAHvbThFqLMh
+         fkS06rbVyWZ2XaUZITeuAqFf9fQ+SuLw+j5OjfEHTEKccjQsppKwfScjOA5yTHY6S6u1
+         QcF2u10C3czvOYHhNxZ18RbJKzTZbCQ03vYRUnZohxJOtJuqQcQFuAeHCpDrCJbtgwNo
+         hIaw==
+X-Gm-Message-State: AOAM531t05JsMelKLQ+tGm3a2HVlWaVAIWAmQv7Mlu2gavc6Z5K2kJ1/
+        eim3PLKsM5WKXdZQPGluf29mPb6pZm+CQClOtGFU03ljPUc=
+X-Google-Smtp-Source: ABdhPJzGlHzPgfn2gG+acSXk08LcJ76XV8C0nME2tb6s5nybGT0w+VNRA9F/HgsbmgTD1ypkb0H2TE6oGQVUPH1HnnE=
+X-Received: by 2002:a17:907:2d88:b0:6e4:9a7f:9175 with SMTP id
+ gt8-20020a1709072d8800b006e49a7f9175mr1922223ejc.584.1648652742587; Wed, 30
+ Mar 2022 08:05:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330074016.12896-2-krzysztof.kozlowski@linaro.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20220328132258.78307-1-jean-philippe@linaro.org>
+ <2de8c5818582bd9dfe0406541e3326c2bed0b6f2.camel@gmail.com> <YkRP7XwvdgFbvGsk@myrica>
+In-Reply-To: <YkRP7XwvdgFbvGsk@myrica>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 30 Mar 2022 08:05:30 -0700
+Message-ID: <CAKgT0UeaCq-Xtpy44huJoT69fNczOrODYCgshcHZQes1fVHWFQ@mail.gmail.com>
+Subject: Re: [PATCH net v2] skbuff: disable coalescing for page_pool fragment recycling
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>, hawk@kernel.org,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 09:40:15AM +0200, Krzysztof Kozlowski wrote:
-> From: Krzysztof Kozlowski <krzk@kernel.org>
-> 
-> Krzysztof Kozlowski's @canonical.com email stopped working, so switch to
-> generic @kernel.org account for all Devicetree bindings.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  .../devicetree/bindings/clock/samsung,exynos-audss-clock.yaml   | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos-clock.yaml         | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos-ext-clock.yaml     | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos4412-isp-clock.yaml | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos5260-clock.yaml     | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos5410-clock.yaml     | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos5433-clock.yaml     | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos7-clock.yaml        | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos7885-clock.yaml     | 2 +-
->  .../devicetree/bindings/clock/samsung,exynos850-clock.yaml      | 2 +-
->  Documentation/devicetree/bindings/clock/samsung,s2mps11.yaml    | 2 +-
->  .../devicetree/bindings/clock/samsung,s5pv210-audss-clock.yaml  | 2 +-
->  .../devicetree/bindings/clock/samsung,s5pv210-clock.yaml        | 2 +-
->  .../devicetree/bindings/devfreq/event/samsung,exynos-nocp.yaml  | 2 +-
->  .../devicetree/bindings/devfreq/event/samsung,exynos-ppmu.yaml  | 2 +-
->  .../bindings/display/samsung/samsung,exynos-hdmi-ddc.yaml       | 2 +-
->  .../bindings/display/samsung/samsung,exynos-hdmi.yaml           | 2 +-
->  .../bindings/display/samsung/samsung,exynos-mixer.yaml          | 2 +-
->  .../bindings/display/samsung/samsung,exynos5433-decon.yaml      | 2 +-
->  .../bindings/display/samsung/samsung,exynos5433-mic.yaml        | 2 +-
->  .../bindings/display/samsung/samsung,exynos7-decon.yaml         | 2 +-
->  .../devicetree/bindings/display/samsung/samsung,fimd.yaml       | 2 +-
->  Documentation/devicetree/bindings/extcon/maxim,max77843.yaml    | 2 +-
->  Documentation/devicetree/bindings/hwmon/lltc,ltc4151.yaml       | 2 +-
->  Documentation/devicetree/bindings/hwmon/microchip,mcp3021.yaml  | 2 +-
->  Documentation/devicetree/bindings/hwmon/sensirion,sht15.yaml    | 2 +-
->  Documentation/devicetree/bindings/hwmon/ti,tmp102.yaml          | 2 +-
->  Documentation/devicetree/bindings/hwmon/ti,tmp108.yaml          | 2 +-
->  Documentation/devicetree/bindings/i2c/i2c-exynos5.yaml          | 2 +-
->  Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml  | 2 +-
->  .../interrupt-controller/samsung,exynos4210-combiner.yaml       | 2 +-
->  Documentation/devicetree/bindings/leds/maxim,max77693.yaml      | 2 +-
->  .../devicetree/bindings/memory-controllers/brcm,dpfe-cpu.yaml   | 2 +-
->  .../bindings/memory-controllers/ddr/jedec,lpddr2-timings.yaml   | 2 +-
->  .../bindings/memory-controllers/ddr/jedec,lpddr2.yaml           | 2 +-
->  .../bindings/memory-controllers/ddr/jedec,lpddr3-timings.yaml   | 2 +-
->  .../bindings/memory-controllers/ddr/jedec,lpddr3.yaml           | 2 +-
->  .../memory-controllers/marvell,mvebu-sdram-controller.yaml      | 2 +-
->  .../bindings/memory-controllers/qca,ath79-ddr-controller.yaml   | 2 +-
->  .../bindings/memory-controllers/renesas,h8300-bsc.yaml          | 2 +-
->  .../bindings/memory-controllers/samsung,exynos5422-dmc.yaml     | 2 +-
->  .../bindings/memory-controllers/synopsys,ddrc-ecc.yaml          | 2 +-
->  .../devicetree/bindings/memory-controllers/ti,da8xx-ddrctl.yaml | 2 +-
->  Documentation/devicetree/bindings/mfd/maxim,max14577.yaml       | 2 +-
->  Documentation/devicetree/bindings/mfd/maxim,max77686.yaml       | 2 +-
->  Documentation/devicetree/bindings/mfd/maxim,max77693.yaml       | 2 +-
->  Documentation/devicetree/bindings/mfd/maxim,max77802.yaml       | 2 +-
->  Documentation/devicetree/bindings/mfd/maxim,max77843.yaml       | 2 +-
->  .../devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml       | 2 +-
->  Documentation/devicetree/bindings/mfd/samsung,s2mpa01.yaml      | 2 +-
->  Documentation/devicetree/bindings/mfd/samsung,s2mps11.yaml      | 2 +-
->  Documentation/devicetree/bindings/mfd/samsung,s5m8767.yaml      | 2 +-
->  Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml      | 2 +-
->  Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml          | 2 +-
->  Documentation/devicetree/bindings/net/nfc/nxp,pn532.yaml        | 2 +-
->  Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml        | 2 +-
->  Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml        | 2 +-
->  Documentation/devicetree/bindings/net/nfc/st,st21nfca.yaml      | 2 +-
->  Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml        | 2 +-
->  Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml      | 2 +-
->  Documentation/devicetree/bindings/phy/samsung,dp-video-phy.yaml | 2 +-
->  .../devicetree/bindings/phy/samsung,exynos-hdmi-phy.yaml        | 2 +-
->  .../devicetree/bindings/phy/samsung,exynos5250-sata-phy.yaml    | 2 +-
->  .../devicetree/bindings/phy/samsung,mipi-video-phy.yaml         | 2 +-
->  Documentation/devicetree/bindings/phy/samsung,usb2-phy.yaml     | 2 +-
->  Documentation/devicetree/bindings/phy/samsung,usb3-drd-phy.yaml | 2 +-
->  .../devicetree/bindings/pinctrl/samsung,pinctrl-gpio-bank.yaml  | 2 +-
->  .../devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml   | 2 +-
->  .../bindings/pinctrl/samsung,pinctrl-wakeup-interrupt.yaml      | 2 +-
->  Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml  | 2 +-
->  .../devicetree/bindings/power/supply/maxim,max14577.yaml        | 2 +-
->  .../devicetree/bindings/power/supply/maxim,max77693.yaml        | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max14577.yaml | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max77686.yaml | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max77693.yaml | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max77802.yaml | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max77843.yaml | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max8952.yaml  | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max8973.yaml  | 2 +-
->  Documentation/devicetree/bindings/regulator/maxim,max8997.yaml  | 2 +-
->  .../devicetree/bindings/regulator/samsung,s2mpa01.yaml          | 2 +-
->  .../devicetree/bindings/regulator/samsung,s2mps11.yaml          | 2 +-
->  .../devicetree/bindings/regulator/samsung,s2mps13.yaml          | 2 +-
->  .../devicetree/bindings/regulator/samsung,s2mps14.yaml          | 2 +-
->  .../devicetree/bindings/regulator/samsung,s2mps15.yaml          | 2 +-
->  .../devicetree/bindings/regulator/samsung,s2mpu02.yaml          | 2 +-
->  .../devicetree/bindings/regulator/samsung,s5m8767.yaml          | 2 +-
->  .../devicetree/bindings/rng/samsung,exynos5250-trng.yaml        | 2 +-
->  Documentation/devicetree/bindings/rng/timeriomem_rng.yaml       | 2 +-
->  Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml   | 2 +-
->  Documentation/devicetree/bindings/sound/samsung,arndale.yaml    | 2 +-
->  Documentation/devicetree/bindings/sound/samsung,smdk5250.yaml   | 2 +-
->  Documentation/devicetree/bindings/sound/samsung,snow.yaml       | 2 +-
->  Documentation/devicetree/bindings/sound/samsung,tm2.yaml        | 2 +-
->  .../devicetree/bindings/spi/samsung,spi-peripheral-props.yaml   | 2 +-
->  Documentation/devicetree/bindings/spi/samsung,spi.yaml          | 2 +-
->  .../devicetree/bindings/thermal/samsung,exynos-thermal.yaml     | 2 +-
->  Documentation/devicetree/bindings/usb/samsung,exynos-dwc3.yaml  | 2 +-
->  Documentation/devicetree/bindings/usb/samsung,exynos-usb2.yaml  | 2 +-
->  99 files changed, 99 insertions(+), 99 deletions(-)
+On Wed, Mar 30, 2022 at 5:41 AM Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
+>
+> On Mon, Mar 28, 2022 at 08:03:46AM -0700, Alexander H Duyck wrote:
+> > >  (3b) Now while handling TCP, coalesce SKB3 with SKB1:
+> > >
+> > >       tcp_v4_rcv(SKB3)
+> > >         tcp_try_coalesce(to=SKB1, from=SKB3)    // succeeds
+> > >         kfree_skb_partial(SKB3)
+> > >           skb_release_data(SKB3)                // drops one dataref
+> > >
+> > >                       SKB1 _____ PAGE1
+> > >                            \____
+> > >                       SKB2 _____ PAGE2
+> > >                                  /
+> > >                 RX_BD3 _________/
+> > >
+> > >     In tcp_try_coalesce(), __skb_frag_ref() takes a page reference to
+> > >     PAGE2, where it should instead have increased the page_pool frag
+> > >     reference, pp_frag_count. Without coalescing, when releasing both
+> > >     SKB2 and SKB3, a single reference to PAGE2 would be dropped. Now
+> > >     when releasing SKB1 and SKB2, two references to PAGE2 will be
+> > >     dropped, resulting in underflow.
+> > >
+> > >  (3c) Drop SKB2:
+> > >
+> > >       af_packet_rcv(SKB2)
+> > >         consume_skb(SKB2)
+> > >           skb_release_data(SKB2)                // drops second dataref
+> > >             page_pool_return_skb_page(PAGE2)    // drops one pp_frag_count
+> > >
+> > >                       SKB1 _____ PAGE1
+> > >                            \____
+> > >                                  PAGE2
+> > >                                  /
+> > >                 RX_BD3 _________/
+> > >
+> > > (4) Userspace calls recvmsg()
+> > >     Copies SKB1 and releases it. Since SKB3 was coalesced with SKB1, we
+> > >     release the SKB3 page as well:
+> > >
+> > >     tcp_eat_recv_skb(SKB1)
+> > >       skb_release_data(SKB1)
+> > >         page_pool_return_skb_page(PAGE1)
+> > >         page_pool_return_skb_page(PAGE2)        // drops second pp_frag_count
+> > >
+> > > (5) PAGE2 is freed, but the third RX descriptor was still using it!
+> > >     In our case this causes IOMMU faults, but it would silently corrupt
+> > >     memory if the IOMMU was disabled.
+> > >
+> > > Prevent coalescing the SKB if it may hold shared page_pool fragment
+> > > references.
+> > >
+> > > Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
+> > > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > ---
+> > >  net/core/skbuff.c | 7 +++++++
+> > >  1 file changed, 7 insertions(+)
+> > >
+> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > index 10bde7c6db44..56b45b9f0b4d 100644
+> > > --- a/net/core/skbuff.c
+> > > +++ b/net/core/skbuff.c
+> > > @@ -5276,6 +5276,13 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+> > >     if (skb_cloned(to))
+> > >             return false;
+> > >
+> > > +   /* We don't support taking page_pool frag references at the moment.
+> > > +    * If the SKB is cloned and could have page_pool frag references, don't
+> > > +    * coalesce it.
+> > > +    */
+> > > +   if (skb_cloned(from) && from->pp_recycle)
+> > > +           return false;
+> > > +
+> > >     /* The page pool signature of struct page will eventually figure out
+> > >      * which pages can be recycled or not but for now let's prohibit slab
+> > >      * allocated and page_pool allocated SKBs from being coalesced.
+> >
+> >
+> > This is close but not quite. Actually now that I think about it we can
+> > probably alter the block below rather than adding a new one.
+> >
+> > The issue is we want only reference counted pages in standard skbs, and
+> > pp_frag_count pages in pp_recycle skbs. So we already had logic along
+> > the lines of:
+> >       if (to->pp_recycle != from->pp_recycle)
+> >               return false;
+> >
+> > I would say we need to change that because from->pp_recycle is the
+> > piece that is probably too simplistic. Basically we will get a page
+> > pool page if from->pp_recycle && !skb_cloned(from). So we can probably
+> > just tweak the check below to be something along the lines of:
+> >       if (to->pp_recycle != (from->pp_recycle && !skb_cloned(from)))
+> >               return false;
+>
+> Just to confirm this is fine: the behavior now changes for
+> to->pp_recycle == 0, from->pp_recycle == 1 and skb_cloned(from) == 1
+> In this case we now coalesce and take a page ref. So the page has two refs
+> and two pp_frag_count. (3c) drops one pp_frag_count. If there wasn't
+> another RX desc holding a pp_frag_count (ie. no step (5)), that would also
+> drop a page ref, but since 'to' SKB is holding a second page ref the page
+> is not recycled. That reference gets dropped at (4) and the page is freed
+> there.  With step (5), the page would get recycled into page_pool, but
+> without (5) the page is discarded.
+>
+> I guess it works, just want to make sure that it's OK to mix page_pool
+> pp_frag_count and normal reference counting at the same time.
+>
+> Thanks,
+> Jean
 
-Acked-by: Rob Herring <robh@kernel.org>
-
-Arnd suggested 5.19, but this one needs to be 5.18.
-
-Rob
+The key thing is that we don't want to mix and match them within an
+skb. This logic really isn't too different from what we do in
+pskb_expand_head if the skb is cloned. Basically what we are doing is
+transitioning "from" pages from page pool pages to reference counted
+pages in the case that the skb is cloned and then placing them in a
+skb that does page reference counting.
