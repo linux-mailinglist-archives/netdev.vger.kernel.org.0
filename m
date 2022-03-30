@@ -2,112 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5E54ECC80
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 20:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9470F4ECC44
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 20:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350070AbiC3Si7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 14:38:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44026 "EHLO
+        id S1344175AbiC3Sai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 14:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350056AbiC3SZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 14:25:15 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C649CF14;
-        Wed, 30 Mar 2022 11:22:43 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id h23-20020a17090a051700b001c9c1dd3acbso906841pjh.3;
-        Wed, 30 Mar 2022 11:22:43 -0700 (PDT)
+        with ESMTP id S1348282AbiC3SaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 14:30:20 -0400
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218425131F
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 11:27:21 -0700 (PDT)
+Received: by mail-qt1-x832.google.com with SMTP id a11so18846066qtb.12
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 11:27:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+CAeQ6WbO75b05CAGgEyrOcN/e8ROoiFTSHaPW0jBEU=;
-        b=W9mnOdTJXi67DDGPDvM/CI7eE6yWDHJKjY77YMX5aYlBYvnffHWK17C8Cb1lUi3X1A
-         /e4/iaifYgfXWjdsta3C3K8yoO090sUdApnAaAyf8mEADC6v2dOia2eMoQvZ0Ht2e30s
-         BcCn00DtCu5QXB9vb2NCfra9khR8kcoZvht/Nawa9CwDcaHjSXxPuxnd8CUROC5c+pXC
-         ImusgsO9px5vn0X+ZswQgxp9rdFYInYG5F5DpwBAnP7Py++PEjxDFRy9JeaYOSbxYw2s
-         UGLeAPZkDrc6LVYWcbzWq7Ad0OtZdYSZXxScLaP2LrAIEoitWcnYweUky1uT+YHJ4V2E
-         5jYw==
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=BUnAD3xqyyj2lm0zvOZVtbyxWcA123m5vBtT7P90vEA=;
+        b=JW+5s7bUj9KB0zf0oZh99bi1gein2jJpXYYfym23ruDlSgvUk2mAIt9NNySIMdUAPm
+         PCPn5SG5GhQKwKt00L++KWXn/OCEgRDsM+krPOtik2V7j90A2vJCv+KH/tZitx/O2Epl
+         dWLytGzBybA7DEZtOseV+Xhk18zqvezjA5BS/6kK5SxPFxSxdotftSUe87sBWc5WZcRD
+         NM8YcEKFz7+NZ9U9TbqujqNMjdi2O8Ay6sKx1Tk6936cv1m2EKmdDnFJKI7RdiMYwm2W
+         oHTzRBm586mppEgdWglRXgQX/hUMD7y9C8goTZ3Ya640ZpoA4xqs5ok9QRevjg6WIqR9
+         mv/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+CAeQ6WbO75b05CAGgEyrOcN/e8ROoiFTSHaPW0jBEU=;
-        b=hGoPIQIl4zRvNbNwadMIwgckx62Umad3L7S/2n0jfeevt4oum4ugXioipAZEwFfSJG
-         o5dsPwlJTGwrsBhO3arlJn1XSn7jZacc3+uCWGsLvR/4yIhri68+hc88gooSSz2oVulJ
-         vH63xUieGbV9HqKf9Q/sovVNP7QoWIzz+EdabWACuKFiat38mWzMciSNyToeSEpergpT
-         Ob8C//hm5+Oa//7voT4zx2SrX203iE2KcU3I/vdptgnJ6fMvKrOcMv/gy2gU1kegpPDi
-         NJjJzjZtiS8VrWIMH1h3h3ZBMUH/8JVnYqr7mq60gbneshylYurNVVVMjCGPusefs+nP
-         8dOw==
-X-Gm-Message-State: AOAM531o3THBaGslMLS8XTDMrDLe5ReQXwKN2mGi5YFmbXXpIL9yKcm8
-        xyJH/zef0xtAS2IkE1hjJvnTEbeeCw+yetucsWjm5Ptw
-X-Google-Smtp-Source: ABdhPJyYxmyaH69ztISMlFUIhBXJ6kSvz8m/+MHArZXryyDLLdkJ7zwHk5XRiWm72rVNX35roncs4phtAedywt9F07c=
-X-Received: by 2002:a17:902:ba83:b0:154:727e:5fc5 with SMTP id
- k3-20020a170902ba8300b00154727e5fc5mr633290pls.55.1648664563315; Wed, 30 Mar
- 2022 11:22:43 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=BUnAD3xqyyj2lm0zvOZVtbyxWcA123m5vBtT7P90vEA=;
+        b=71bfJJnsJv0ATjEHKr5KZx/FlS0lDft6IVlyZyocxcuVsbw/DVnN9HTF99s+jlnOoy
+         je35qQqAOODMBaiM5OLY28BuNPVoHiMweLcsTIIkstLsKE2PzTM5G76Wk1wwJ3sJ8Gqg
+         qFQhNhXK6HMRoHHgvyxHHqW2faRzC28O9OeCFnGSQfehtPlIj6fFiBTKGoShcjxScpBe
+         1IHY9jKS1/Hg9nYygWW756RmqBa6ND2eUWTdiW3TpNtzCtkiZluVhkN2MqoySa0sPLLB
+         MDTTKxvmsrgcZRpOTmAoe0iv9XaEkk/dSGTjOK2ZPMlKNaYT5n7anNmCXHxlVVZKPXSi
+         OGww==
+X-Gm-Message-State: AOAM532sZg5E6+GCaCK1o4l4g/pWptNhYnugWxMTKNjF15dafkDBrzlC
+        rfOXR6/SuiiLX92JjGRKosCyigu6q3q6AuMGveM=
+X-Google-Smtp-Source: ABdhPJx14RVf8lfif2dLHPUQTIsBpKLB0UV07msTJZoWkcDUUqdYke6L9Rw/99WvnxalTwHmdu5BduIpUEw4OEjhMNU=
+X-Received: by 2002:ac8:5c84:0:b0:2e1:eede:8b1b with SMTP id
+ r4-20020ac85c84000000b002e1eede8b1bmr865368qta.228.1648664839687; Wed, 30 Mar
+ 2022 11:27:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220329181935.2183-1-beaub@linux.microsoft.com>
- <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
- <20220329201057.GA2549@kbox> <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
- <20220329231137.GA3357@kbox> <CAPhsuW4WH4Hn+DaQZui5au=ueG1G5zGYiOACfKm9imG2kGA+KA@mail.gmail.com>
- <20220330163411.GA1812@kbox>
-In-Reply-To: <20220330163411.GA1812@kbox>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 30 Mar 2022 11:22:32 -0700
-Message-ID: <CAADnVQKQw+K2CoCW-nA=bngKtjP495wpB1yhEXNjKg4wSeXAWg@mail.gmail.com>
-Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
- created events
-To:     Beau Belgrave <beaub@linux.microsoft.com>
-Cc:     Song Liu <song@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Reply-To: isabellasayouba0@gmail.com
+Sender: stjohncatholic155@gmail.com
+Received: by 2002:ac8:57c3:0:0:0:0:0 with HTTP; Wed, 30 Mar 2022 11:27:19
+ -0700 (PDT)
+From:   Mrs Isabella Sayouba <isabellasayouba0@gmail.com>
+Date:   Wed, 30 Mar 2022 18:27:19 +0000
+X-Google-Sender-Auth: jm-9Xm1ITkqfzdIvYLQaCbzWo78
+Message-ID: <CAHjLdGdFTZPUuqAVkV7JYu14f7RQ=SOMeJJP=1hqT_Bs-QJg9w@mail.gmail.com>
+Subject: =?UTF-8?B?44GC44GE44GV44Gk44CC?=
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=1.8 required=5.0 tests=BAYES_60,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 9:34 AM Beau Belgrave <beaub@linux.microsoft.com> wrote:
-> > >
-> > > But you are fine with uprobe costs? uprobes appear to be much more costly
-> > > than a syscall approach on the hardware I've run on.
-
-Care to share the numbers?
-uprobe over USDT is a single trap.
-Not much slower compared to syscall with kpti.
-
-> >
-> > Can we achieve the same/similar performance with sys_bpf(BPF_PROG_RUN)?
-> >
->
-> I think so, the tough part is how do you let the user-space know which
-> program is attached to run? In the current code this is done by the BPF
-> program attaching to the event via perf and we run the one there if
-> any when data is emitted out via write calls.
->
-> I would want to make sure that operators can decide where the user-space
-> data goes (perf/ftrace/eBPF) after the code has been written. With the
-> current code this is done via the tracepoint callbacks that perf/ftrace
-> hook up when operators enable recording via perf, tracefs, libbpf, etc.
->
-> We have managed code (C#/Java) where we cannot utilize stubs or traps
-> easily due to code movement. So we are limited in how we can approach
-> this problem. Having the interface be mmap/write has enabled this
-> for us, since it's easy to interact with in most languages and gives us
-> lifetime management of the trace objects between user-space and the
-> kernel.
-
-Then you should probably invest into making USDT work inside
-java applications instead of reinventing the wheel.
-
-As an alternative you can do a dummy write or any other syscall
-and attach bpf on the kernel side.
-No kernel changes are necessary.
+44GC44GE44GV44Gk44CCDQoNCua2meOCkua1geOBl+OBquOBjOOCieOBk+OBruODoeODvOODq+OC
+kuabuOOBhOOBpuOBhOOBvuOBmeOAguengeOBruebruOBq+OBr+Wkp+OBjeOBquaCsuOBl+OBv+OB
+jOOBguOCiuOBvuOBmeOAguengeOBruWQjeWJjeOBr+OCpOOCtuODmeODqeODu+OCteODqOOCpuOD
+kOOBleOCk+OBp+OBmeOAguODgeODpeODi+OCuOOCouWHuui6q+OBp+OAgeODluODq+OCreODiuOD
+leOCoeOCveOBrueXhemZouOBi+OCiemAo+e1oeOCkuWPluOCiuOBvuOBmeOAguengeOBr+OBguOB
+quOBn+OBq+W/g+OCkumWi+OBhOOBpuaEn+WLleOBl+OBn+OBruOBp+OAgeOBguOBquOBn+OBq+ip
+seOBmeS7peWkluOBq+mBuOaKnuiCouOBr+OBguOCiuOBvuOBm+OCk+OAguengeOBr+OAgTIwMTHl
+ubTjgavkuqHjgY/jgarjgovliY3jgavjg5bjg6vjgq3jg4rjg5XjgqHjgr3jga7jg4Hjg6Xjg4vj
+grjjgqLlpKfkvb/jgag55bm06ZaT5YON44GE44Gm44GE44GfU2F5b3ViYUJyb3du5rCP44Go57WQ
+5ama44GX44G+44GX44Gf44CC5a2Q5L6b44Gq44GX44GnMTHlubTplpPntZDlqZrjgZfjgZ/jgIIN
+Cg0K5b2844Gv44Gf44Gj44GfNeaXpemWk+e2muOBhOOBn+efreOBhOeXheawl+OBruW+jOOBp+at
+u+OBq+OBvuOBl+OBn+OAguW9vOOBruatu+W+jOOAgeengeOBr+WGjeWpmuOBl+OBquOBhOOBk+OB
+qOOBq+axuuOCgeOBvuOBl+OBn+OAguS6oeOBj+OBquOBo+OBn+Wkq+OBjOeUn+OBjeOBpuOBhOOB
+n+OBqOOBjeOAgeW9vOOBr+e3j+mhjTg1MOS4h+ODieODq+OCkumgkOOBkeOBvuOBl+OBn+OAgg0K
+77yIODAw5LiHNTAwMOODieODq++8ieilv+OCouODleODquOCq+OBruODluODq+OCreODiuODleOC
+oeOCveOBrummlumDveODr+OCrOODieOCpeOCsOODvOOBrumKgOihjOOBp+OAguePvuWcqOOAgeOB
+k+OBruOBiumHkeOBr+OBvuOBoOmKgOihjOOBq+OBguOCiuOBvuOBmeOAguW9vOOBr+OBk+OBruOB
+iumHkeOCkuODluODq+OCreODiuODleOCoeOCveOBrumJsealreOBi+OCieOBrumHkeOBrui8uOWH
+uuOBq+WIqeeUqOOBp+OBjeOCi+OCiOOBhuOBq+OBl+OBvuOBl+OBn+OAgg0KDQrmnIDov5HjgIHn
+p4Hjga7ljLvogIXjga/np4HjgYznmYzjgajohLPljZLkuK3jga7llY/poYzjga7jgZ/jgoHjgas3
+44O25pyI6ZaT44Gv57aa44GL44Gq44GE44Gg44KN44GG44Go56eB44Gr6KiA44GE44G+44GX44Gf
+44CC56eB44KS5pyA44KC5oKp44G+44Gb44Gm44GE44KL44Gu44Gv6ISz5Y2S5Lit44Gu55eF5rCX
+44Gn44GZ44CC56eB44Gu54q25oWL44KS55+l44Gj44Gf44Gu44Gn44CB56eB44Gv44GT44Gu44GK
+6YeR44KS44GC44Gq44Gf44Gr5rih44GX44Gm44CB5oG144G+44KM44Gq44GE5Lq644CF44Gu5LiW
+6Kmx44KS44GZ44KL44GT44Go44Gr44GX44G+44GX44Gf44CC44GC44Gq44Gf44Gv44GT44Gu44GK
+6YeR44KS56eB44GM44GT44GT44Gn5oyH56S644GZ44KL5pa55rOV44Gn5Yip55So44GZ44KL44Gn
+44GX44KH44GG44CC56eB44Gv44GC44Gq44Gf44Gr44GC44Gq44Gf44Gu5YCL5Lq655qE44Gq5L2/
+55So44Gu44Gf44KB44Gr57eP44GK6YeR44GuMzDjg5Hjg7zjgrvjg7Pjg4jjgpLlj5bjgaPjgabm
+rLLjgZfjgYTjgafjgZnjgILjgYrph5Hjga43MO+8heOBr+engeOBruWQjeWJjeOBp+WtpOWFkOmZ
+ouOCkuW7uuOBpuOAgemAmuOCiuOBruiyp+OBl+OBhOS6uuOAheOCkuWKqeOBkeOCi+OBn+OCgeOB
+q+S9v+OBhuOBp+OBl+OCh+OBhuOAguengeOBr+WtpOWFkOOBqOOBl+OBpuiCsuOBoeOBvuOBl+OB
+n+OBjOOAgeelnuOBruWutuOCkue2reaMgeOBmeOCi+OBn+OCgeOBoOOBkeOBq+OAgeWutuaXj+OB
+q+OBr+iqsOOCguOBhOOBvuOBm+OCk+OAguOBk+OBrueXheawl+OBjOengeOCkuOBqOOBpuOCguiL
+puOBl+OCgeOBn+OBruOBp+OAgeelnuOBjOengeOBrue9quOCkui1puOBl+OAgealveWckuOBp+en
+geOBrumtguOCkuWPl+OBkeWFpeOCjOOCi+OCiOOBhuOBq+OBk+OCjOOCkuOBl+OBpuOBhOOCi+OB
+ruOBp+OBmeOAgg0KDQrov5Tkv6HjgpLlj5fjgZHlj5bjgormrKHnrKzjgIHjg5bjg6vjgq3jg4rj
+g5XjgqHjgr3jga7pioDooYzjga7pgKPntaHlhYjjgpLjgYrnn6XjgonjgZvjgZfjgb7jgZnjgILj
+gb7jgZ/jgIHpioDooYzjga7nj77lnKjjga7lj5flj5bkurrjgafjgYLjgovjgZPjgajjgpLoqLzm
+mI7jgZnjgovmqKnpmZDmm7jjgpLnmbrooYzjgZnjgovjgojjgYbpioDooYzplbfjgavmjIfnpLrj
+gZfjgb7jgZnjgILnp4HjgYzjgZPjgZPjgafov7DjgbnjgZ/jgojjgYbjgavjgYLjgarjgZ/jgYzj
+gZ3jgozjgavlv5zjgZjjgabooYzli5XjgZnjgovjgZPjgajjgpLnp4Hjgavkv53oqLzjgZfjgabj
+gY/jgaDjgZXjgYTjgIINCg0K44Kk44K244OZ44Op44O744K144Oo44Km44OQ5aSr5Lq644GL44KJ
+44CCDQo=
