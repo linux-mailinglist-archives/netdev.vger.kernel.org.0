@@ -2,86 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1DC4EC4C2
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 14:43:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 902A04EC4C9
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 14:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345118AbiC3Mpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 08:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
+        id S236650AbiC3Mqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 08:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345617AbiC3Mp3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 08:45:29 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CDDDE09E;
-        Wed, 30 Mar 2022 05:39:31 -0700 (PDT)
-Received: from mail-wr1-f52.google.com ([209.85.221.52]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N7QM9-1o5ovQ2itB-017lGA; Wed, 30 Mar 2022 14:39:17 +0200
-Received: by mail-wr1-f52.google.com with SMTP id u3so29132293wrg.3;
-        Wed, 30 Mar 2022 05:39:17 -0700 (PDT)
-X-Gm-Message-State: AOAM531sPV1KzqPCMshJxghwfovqDHM0NHU7gxPLY+1i2/ebjvrZpNni
-        npNOE7s4ARcxXfstJQYY8ZL6j/s0BuO9+u4ltbs=
-X-Google-Smtp-Source: ABdhPJxd37z3iG058b579CB0d3NUHesbaO46TxDB9z29hKBcw+jTvNoOe7ONXZ919cmcCM5Yjl3fkFPpxL4e20NcvX8=
-X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id
- x5-20020a5d6505000000b002059a98e184mr31849599wru.317.1648643957284; Wed, 30
- Mar 2022 05:39:17 -0700 (PDT)
+        with ESMTP id S1345436AbiC3MqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 08:46:21 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74496C93F
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 05:41:43 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id u3so29141926wrg.3
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 05:41:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ntNw1/K6MzgroAQUZycU3BVrpDXQ208LuoqMSrH8JKU=;
+        b=h5F3LVbj+xzXh9NZGsFmCvF9woGph5wtXj5/CPNvsahEeaH75KhEWJiULV/gjqs1tQ
+         HbYwFzeNj05fUmoL+twz4e5AJDLM0g1G9gJC0xD1ULBMPH5dA4P8HduRmw21TG7JM2W7
+         J1h+8JjyJAGBtl2Uieg1RgiYUD+NKCHiYk1Jfuq+LFABveZ+aEtjJNSbeXA0Ocb75ldq
+         XzvbRpS4N0rBsWNz4BOSsTFVTlrCsHEaWag1QK1L8JuKKhEX8DhKNGx+F8YDMEWDxCpt
+         t0N9SXR/sYCNtWxq2hzX7mmpmT2RfMT9kOI2JuZ2/9oztozcM4SZl6XWKADUvJ647PjN
+         VmVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ntNw1/K6MzgroAQUZycU3BVrpDXQ208LuoqMSrH8JKU=;
+        b=XQYioLsXbNypACmkP84ZSb73Kq74autoE+pq2OtJ55NQyRVDqB9Ppzny0HkosHMZeR
+         DYVA25MMv7R1ytgLsDz0zi2hty7d5Wnk1I5cDZwZNzb6OCy0a6qhmspAFKTR800EBMQO
+         gdgmw7SPdw8Kk+kYHdhZlEvYehCPTNZn4mRz/sA1WyHji/fQw4ZY0ops7RJS6i31/x3+
+         CNDxnZUg+hnml4uaVfm7cbAlI9/8ujC3bm+NWKqWeUqXegr7CWJxVI5FzT3cgkptTmrn
+         eEJxRRRA1KyVMushHew40neZVZP9nPVYDu2a1smPvT8LUlhJ7RjNzx34u2bJ8EaaMd+N
+         cZLQ==
+X-Gm-Message-State: AOAM531QPV+pS0OfKzYZ7drxbpVYWh7Jq231FNiWPuGEwZJlPHLjQkyL
+        XOYiJmvqaHR3E3cpYOIDxoXqSA==
+X-Google-Smtp-Source: ABdhPJwR9SzzRqEnJ2hXX5XoFqkbE0jg/8d2+sCsSD2JlQ9n//OBzVKq8ca0/ehZClZ4SO/5WisyEg==
+X-Received: by 2002:a05:6000:ca:b0:203:dbf3:8f8a with SMTP id q10-20020a05600000ca00b00203dbf38f8amr36588860wrx.10.1648644102441;
+        Wed, 30 Mar 2022 05:41:42 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
+        by smtp.gmail.com with ESMTPSA id a4-20020a05600c348400b0038cd743830esm4681557wmq.29.2022.03.30.05.41.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 05:41:42 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 13:41:17 +0100
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     Alexander H Duyck <alexander.duyck@gmail.com>
+Cc:     ilias.apalodimas@linaro.org, hawk@kernel.org,
+        alexanderduyck@fb.com, linyunsheng@huawei.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net v2] skbuff: disable coalescing for page_pool fragment
+ recycling
+Message-ID: <YkRP7XwvdgFbvGsk@myrica>
+References: <20220328132258.78307-1-jean-philippe@linaro.org>
+ <2de8c5818582bd9dfe0406541e3326c2bed0b6f2.camel@gmail.com>
 MIME-Version: 1.0
-References: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org> <20220330074016.12896-3-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220330074016.12896-3-krzysztof.kozlowski@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 30 Mar 2022 14:39:01 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3a4CqYgKzvusHW4ZXF7dmTjOdzq1-RoXqpnvicH1hxmw@mail.gmail.com>
-Message-ID: <CAK8P3a3a4CqYgKzvusHW4ZXF7dmTjOdzq1-RoXqpnvicH1hxmw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] MAINTAINERS: update Krzysztof Kozlowski's email to Linaro
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nfc@lists.01.org, Networking <netdev@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:g7bW1TlYfy/Va9UPxcKRLWPMu9Pu4pj+gdgaactc3MYU8lzYpwX
- DTJEJVlNwiCr+CXbE6zLapXE191Zg8nfhY93tyiQfAY6gN0SgbDtwKc5r1b04LBXW6C8Djg
- 2TcifUip3IATzFlLdUdCdxPxnHNAWWI9FXjGYrzBRB8zPRNW5jYEOfy+qgBr3pfmMIFLo+b
- vFdJbqDEQw8P+pGa25IsQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:LGBTjLORL3c=:wSs/A9iws+khjz1N14El4I
- ZzDdQz5th9S/3m7grUPqDsbFONCNMBjy+9agHUE62PDNVLLemLUWgiwJD8mDwN4m+OmcGvYtt
- AxbZoq2FifLZXr/MUNBcw7WsyB+XJcta4IL2AC9EYRzuEYl3u9exsBk914VoFKy5q76BtgbRF
- JQq9oyo4SJFlMZJisQzl4ZcvkqyS4rVK4kXTpPads6rU2Ru2j2icO5thmWo7PP6phTuLtBOvC
- uQyd0YKi/E3lz5rYyQbORlDCVc6S2UrMzD+r/ylJJ6rNM/36eMV7EENon3efBBhWc4bxZ/wrT
- 8ZZUfxxi2CsyPz4Y/gNKO0yCrS5BVUxrZeZjmibcvHjLfYRGk+n+8fOzhe8ti7QMV/oV0Vzq0
- pp3YvOmf5GdRj2osglCfdp5zbaz0UiexJwwq2mjkAzHBryepMego6eWUD/2ywYG52tKbr20gQ
- 8Vq9oHHcipAJmK/NUc86ukBy8Hk4vyGzdLE+ws5LRx4bRcKKlrXrzkfqNXA/lvVkVRCAcy9+c
- Di92Xpj7mgYwIy2mXthtGTM0sFmY9BSvWAtwZPrZibf0D6Z1eZ2GXPgaA9bKdT82E0W/jaH1C
- 1EnIweybyd07nSHQuLtK6urxyvDx94Pa/qWgU0lNw+Vudyh6btEPw/WcDEiPqyL2iJFAJC++J
- +C8F0rivv3p4P/H8Qv6rwP30BnmBfpk03eY8LI8pCWxG0coTIo9T6EcGZdeCAstOL5xlvdVPh
- EcRXu4b2e0az0nkFTAhNHJgoEWQOqK9vDSBO6UguYGjhNu2R25ZgBXIJRUUHFhIevzJ/MuNSU
- ed+3SJk7/o/ubqri9plJobPUi0Ehh+C8WiiTr0HvFsdb4Akjp8=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2de8c5818582bd9dfe0406541e3326c2bed0b6f2.camel@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 9:40 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> From: Krzysztof Kozlowski <krzk@kernel.org>
->
-> Use Krzysztof Kozlowski's @linaro.org account in maintainer entries.
->
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+On Mon, Mar 28, 2022 at 08:03:46AM -0700, Alexander H Duyck wrote:
+> >  (3b) Now while handling TCP, coalesce SKB3 with SKB1:
+> > 
+> >       tcp_v4_rcv(SKB3)
+> >         tcp_try_coalesce(to=SKB1, from=SKB3)    // succeeds
+> >         kfree_skb_partial(SKB3)
+> >           skb_release_data(SKB3)                // drops one dataref
+> > 
+> >                       SKB1 _____ PAGE1
+> >                            \____
+> >                       SKB2 _____ PAGE2
+> >                                  /
+> >                 RX_BD3 _________/
+> > 
+> >     In tcp_try_coalesce(), __skb_frag_ref() takes a page reference to
+> >     PAGE2, where it should instead have increased the page_pool frag
+> >     reference, pp_frag_count. Without coalescing, when releasing both
+> >     SKB2 and SKB3, a single reference to PAGE2 would be dropped. Now
+> >     when releasing SKB1 and SKB2, two references to PAGE2 will be
+> >     dropped, resulting in underflow.
+> > 
+> >  (3c) Drop SKB2:
+> > 
+> >       af_packet_rcv(SKB2)
+> >         consume_skb(SKB2)
+> >           skb_release_data(SKB2)                // drops second dataref
+> >             page_pool_return_skb_page(PAGE2)    // drops one pp_frag_count
+> > 
+> >                       SKB1 _____ PAGE1
+> >                            \____
+> >                                  PAGE2
+> >                                  /
+> >                 RX_BD3 _________/
+> > 
+> > (4) Userspace calls recvmsg()
+> >     Copies SKB1 and releases it. Since SKB3 was coalesced with SKB1, we
+> >     release the SKB3 page as well:
+> > 
+> >     tcp_eat_recv_skb(SKB1)
+> >       skb_release_data(SKB1)
+> >         page_pool_return_skb_page(PAGE1)
+> >         page_pool_return_skb_page(PAGE2)        // drops second pp_frag_count
+> > 
+> > (5) PAGE2 is freed, but the third RX descriptor was still using it!
+> >     In our case this causes IOMMU faults, but it would silently corrupt
+> >     memory if the IOMMU was disabled.
+> > 
+> > Prevent coalescing the SKB if it may hold shared page_pool fragment
+> > references.
+> > 
+> > Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > ---
+> >  net/core/skbuff.c | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> > 
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 10bde7c6db44..56b45b9f0b4d 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -5276,6 +5276,13 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
+> >  	if (skb_cloned(to))
+> >  		return false;
+> >  
+> > +	/* We don't support taking page_pool frag references at the moment.
+> > +	 * If the SKB is cloned and could have page_pool frag references, don't
+> > +	 * coalesce it.
+> > +	 */
+> > +	if (skb_cloned(from) && from->pp_recycle)
+> > +		return false;
+> > +
+> >  	/* The page pool signature of struct page will eventually figure out
+> >  	 * which pages can be recycled or not but for now let's prohibit slab
+> >  	 * allocated and page_pool allocated SKBs from being coalesced.
+> 
+> 
+> This is close but not quite. Actually now that I think about it we can
+> probably alter the block below rather than adding a new one.
+> 
+> The issue is we want only reference counted pages in standard skbs, and
+> pp_frag_count pages in pp_recycle skbs. So we already had logic along
+> the lines of:
+> 	if (to->pp_recycle != from->pp_recycle)
+> 		return false;
+> 
+> I would say we need to change that because from->pp_recycle is the
+> piece that is probably too simplistic. Basically we will get a page
+> pool page if from->pp_recycle && !skb_cloned(from). So we can probably
+> just tweak the check below to be something along the lines of:
+> 	if (to->pp_recycle != (from->pp_recycle && !skb_cloned(from)))
+> 		return false;
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+Just to confirm this is fine: the behavior now changes for
+to->pp_recycle == 0, from->pp_recycle == 1 and skb_cloned(from) == 1
+In this case we now coalesce and take a page ref. So the page has two refs
+and two pp_frag_count. (3c) drops one pp_frag_count. If there wasn't
+another RX desc holding a pp_frag_count (ie. no step (5)), that would also
+drop a page ref, but since 'to' SKB is holding a second page ref the page
+is not recycled. That reference gets dropped at (4) and the page is freed
+there.  With step (5), the page would get recycled into page_pool, but
+without (5) the page is discarded.
 
-I usually merge maintainer file changes as bugfixes to avoid losing emails.
-In this case, I suppose it's not urgent though because both emails keep
-working, so I'd suggest putting this one in your normal 'soc' branch for 5.19.
+I guess it works, just want to make sure that it's OK to mix page_pool
+pp_frag_count and normal reference counting at the same time.
 
-      Arnd
+Thanks,
+Jean
+
+> 
+> That should actually increase the number of cases where we can
+> correctly coalesce frames while also addressing the issue you
+> discovered as it will only merge cloned skbs into standard skbs instead
+> of page pool ones.
+> 
