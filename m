@@ -2,140 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE374ECE07
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 22:41:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93E9F4ECE1D
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 22:41:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351025AbiC3UfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 16:35:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
+        id S1351048AbiC3UgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 16:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351002AbiC3UfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 16:35:22 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF646473
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 13:33:31 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id bg10so43865011ejb.4
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 13:33:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=eT9vDzjHW/FfFjL/ybLsrFbYukyfSiHXua+06jvkaok=;
-        b=SdK00kOdGLMNpNRGXAKju/gX1QDNAxsedO8Be9oSjbeBiwJWwYWruJXp8dtzLVugP3
-         vuYNQaCh0a4Rq/W1vHeldoAF3IxsvczavxPaduQY4P8bN3ABDk6BCcpde6cMMRO5CW5o
-         M6uB0iP9zpzxHLJSgaOXRS/lxEZyFbDsNKhvtp20e0wh2fBGfRbzQCk94jQjACvz7svJ
-         T6i3RTcWzrCg7ur65S7teGHwdVOM4AYnp0E91DhTZVIyoTI5N8WNy2DyOOuZCq8xrPdy
-         RcyWIZM54Wd9HRIjCmfnsCFk7OXzRxHhwv6JzXooB9ZnxkGv/jBnauBsQouqdFstugTL
-         mURA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=eT9vDzjHW/FfFjL/ybLsrFbYukyfSiHXua+06jvkaok=;
-        b=DpA41XI/HJuadJTIUixBUrVAN2MO2IWUEP71X2dqeO9ygOyR7meiivtOJd5bCKV5CP
-         gbGKIVGNloLeQ0KTKVlmJosj+amgO/B9b7vSzfRZdZ8h6jlQn0o95CbDFpQVD5gLZqIy
-         xnjzx7xJ/PEAdTlmKXmh1BbrWufj8q4AYH2qBJYhJQPW9XbbvxoMqfVNrm3h4I8dr1KK
-         p3p2QDol6JaN/XoJ1VGwZc1fAO9JmTqUH9onILjcKQRJ3cN3p0Vhi9ED0haRCBTJ+NVK
-         X7IEnejyo/vvKfIffPkVnYscBkpUrtakV4uQXyE0/zNygxPnhpBkBHSCXW2aDaT2qmjd
-         6p4g==
-X-Gm-Message-State: AOAM53136XCRehwsWUcRvIl4yWr4L9gckPyWfPCfGiDMaw252Eb0mC49
-        GHSMwkZ8EjY5a78nPPiSXAU+XrRtCq5lJkOrV20=
-X-Google-Smtp-Source: ABdhPJxQu+j0gzlsyl6qstIUfJJpxFEVJeyEgyZ7fwX3PXwXznQbMiWdMgLheok+0hjEE2jW6cOZ2+h35MGNtYrdr1k=
-X-Received: by 2002:a17:907:c0c:b0:6d1:8c46:6415 with SMTP id
- ga12-20020a1709070c0c00b006d18c466415mr1609240ejc.326.1648672409944; Wed, 30
- Mar 2022 13:33:29 -0700 (PDT)
+        with ESMTP id S1351073AbiC3Uf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 16:35:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149112DCD;
+        Wed, 30 Mar 2022 13:34:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6C38B81E45;
+        Wed, 30 Mar 2022 20:34:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BCB6C340EE;
+        Wed, 30 Mar 2022 20:34:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648672445;
+        bh=hcdqaYSmSK2xXJZLV14LMkx9on5I7W9ImHA2gJ/i8S0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JWOPoKGznYgqYwkfYqPe8bAxr3mfP5Kly/Cxz8mbCMKB8G7nyc4UVSw5OYo2m4ZyH
+         vO9UTy7wOXOCvzMzw4Am3snOkNnbFurqfvD4Vj+1jAb2vQp9HyvQWOd8Zo93GYAePC
+         d6Qw6HfxG1q9G+4iAv8GSYY/R7AqEVIK/QXG5SNwLNVl37nsgLoaJl9W0mprbj1B6N
+         h6sZYvLqqVL4sXbmOwo4uhTJmQgBT1UzlIz3q6TRwgBRGd1bXri0ZGtoHaXT9lk4yg
+         6IyhQ5yDgD426wEDldEUkfLoIPoj7z85DrBNhxHvUVEbAxXEdi7dFDdlvLv8v2Y+1Y
+         tLK1VsJdqlwkw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 7FF5440407; Wed, 30 Mar 2022 17:34:02 -0300 (-03)
+Date:   Wed, 30 Mar 2022 17:34:02 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 3/6] perf cpumap: Add is_subset function
+Message-ID: <YkS+ukZgXrn63X7f@kernel.org>
+References: <20220328232648.2127340-1-irogers@google.com>
+ <20220328232648.2127340-4-irogers@google.com>
 MIME-Version: 1.0
-From:   Duke Abbaddon <duke.abbaddon@gmail.com>
-Date:   Wed, 30 Mar 2022 21:33:25 +0100
-Message-ID: <CAHpNFcPdVQ3N+SH6uJM5mhDcT-D_x1=8HJzTuEOjNrLpicWHHw@mail.gmail.com>
-Subject: #CryptoFASTintFL Polynomial ROOFLINING : In terms of Entropy pool Int
- & Timer collections Polynomial is a Cryptologic_Functiontion & should be A :
- Rooflined B : Streamlined & C : In Crypto_hash_function.h https://lkml.org/lkml/2022/3/30/1313
-To:     submissions@vialicensing.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220328232648.2127340-4-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Polynomial ROOFLINING : #CryptoFASTintFL
+Em Mon, Mar 28, 2022 at 04:26:45PM -0700, Ian Rogers escreveu:
+> Returns true if the second argument is a subset of the first.
 
-In terms of Entropy pool Int & Timer collections Polynomial is a
-Cryptologic_Functiontion & should be A : Rooflined B : Streamlined & C
-: In Crypto_hash_function.h
+Thanks, applied.
 
-https://lkml.org/lkml/2022/3/30/1313
+- Arnaldo
 
-**Reference**
+ 
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/lib/perf/cpumap.c                  | 20 ++++++++++++++++++++
+>  tools/lib/perf/include/internal/cpumap.h |  1 +
+>  2 files changed, 21 insertions(+)
+> 
+> diff --git a/tools/lib/perf/cpumap.c b/tools/lib/perf/cpumap.c
+> index ee66760f1e63..23701024e0c0 100644
+> --- a/tools/lib/perf/cpumap.c
+> +++ b/tools/lib/perf/cpumap.c
+> @@ -319,6 +319,26 @@ struct perf_cpu perf_cpu_map__max(struct perf_cpu_map *map)
+>  	return map->nr > 0 ? map->map[map->nr - 1] : result;
+>  }
+>  
+> +/** Is 'b' a subset of 'a'. */
+> +bool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu_map *b)
+> +{
+> +	if (a == b || !b)
+> +		return true;
+> +	if (!a || b->nr > a->nr)
+> +		return false;
+> +
+> +	for (int i = 0, j = 0; i < a->nr; i++) {
+> +		if (a->map[i].cpu > b->map[j].cpu)
+> +			return false;
+> +		if (a->map[i].cpu == b->map[j].cpu) {
+> +			j++;
+> +			if (j == b->nr)
+> +				return true;
+> +		}
+> +	}
+> +	return false;
+> +}
+> +
+>  /*
+>   * Merge two cpumaps
+>   *
+> diff --git a/tools/lib/perf/include/internal/cpumap.h b/tools/lib/perf/include/internal/cpumap.h
+> index 1973a18c096b..35dd29642296 100644
+> --- a/tools/lib/perf/include/internal/cpumap.h
+> +++ b/tools/lib/perf/include/internal/cpumap.h
+> @@ -25,5 +25,6 @@ struct perf_cpu_map {
+>  #endif
+>  
+>  int perf_cpu_map__idx(const struct perf_cpu_map *cpus, struct perf_cpu cpu);
+> +bool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu_map *b);
+>  
+>  #endif /* __LIBPERF_INTERNAL_CPUMAP_H */
+> -- 
+> 2.35.1.1021.g381101b075-goog
 
-Multi Bit load operations for bitmap,Texture & Other tasks +ON+HighLowOP (c)RS
-May take higher or lower bit depth & precisions: Rupert S 2021
+-- 
 
-MultiBit Serial & Parallel execution conversion inline of N*Bit -+
-
-2 16 Bit loads is 32Bit but takes 2 cycles...
-
-16 Bit loads with 32 Bit Stores & Math unit:
-
-Operation 1
-
-16Bit , 16Bit , 16Bit , 16Bit Operation
-    \         /    \         /
-           Inline Store
-     32Bit Store 32Bit Store
-           64Bit Store
-       \     /
-32Bit ADD/DIV x 2 or 64Bit ADD/DIV x1
-
-Operation 2
-
-32Bit ADD/DIV x 2 or 64Bit ADD/DIV x1
-          \            /
-          4x 16Bit Store
-
-4 x 16Bit Operation
-
-MultiBit Serial & Parallel execution conversion inline of N*Bit -+
-
-In the case of ADD -+ Signed for example:(c)RS
-Plus & - Lines ADD or Subtract (Signed, Bit Depth Irrelevant)
-
-Multiples of 16Bit works in place of 32Bit or 64Bit
-
-V1: 16Bit Values composing a total 128Bit number
-V2: 16Bit Values composing a total 128Bit number - (Value less than V1)
-V3: Result
-NBit: Bit Depth
-
-4x16Bit operations in the same cycle >
-If Value = 16Bit = Store
-If Value = V3=Bit = Store * NBit
-
-Stored 128Bit RAM or if remainder = less > 4x16Bit -1-1-1 ; 16Bit Value Store
-
-*
-
-*RAND OP Ubuntu
-
-https://pollinate.n-helix.com/
-
-(Rn1 *<>/ Rn2 *<>/ Rn3)
-
--+
-VAR(+-) Var = Rn1 +- Rn8
-
-(Rn5 *<>/ Rn6 *<>/ Rn7)
-
-4 Samples over N * Sample 1 to 4
-
-Input into pool 1 Low half -+
-Input into pool 1 High half -+
-
-*RAND OP Recycle It
-
-*
-
-(c)RS https://bit.ly/DJ_EQ
+- Arnaldo
