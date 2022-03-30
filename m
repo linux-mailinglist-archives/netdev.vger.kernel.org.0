@@ -2,133 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 711964ECD18
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 21:16:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2633F4ECD1D
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 21:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350779AbiC3TSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 15:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
+        id S1350774AbiC3TSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 15:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350980AbiC3TR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 15:17:56 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 387A25575C;
+        with ESMTP id S1351124AbiC3TSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 15:18:16 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4123E0F0
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 12:16:09 -0700 (PDT)
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 52D073F8D5
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 19:16:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1648667761;
+        bh=e5dkA3qH+uuDiLClm1Oo80cVgcvwun8I0S6yuR2jxQk=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=iQ7W6OMgZtu6n1x/COyYQIbMLN+F7uc4lcz4Lz1vibHByGCxltMxn5OoDyUAjhrQX
+         4V9rhblz2IHwsOqjth5i0ncyjwLH/YXGpccWgZKi7OmtrOTjDuigWQ9MI1YpUCd1LC
+         iuVme6tPje+eHkpGIKzVtLtoGcsFUHNfjGe67gUSZMYh9JZrR0Pxgpka3q5VYSIYF4
+         kfDDuqSy2env8GEPreJHqMsLAfiu21jm8Ye2a2HFS40r5YPc2vGuIl+gjy7oLZ45zW
+         g9bOKykv2LJCEpjgieSXp6opvf+wRbSn5TIgYWtQ0RumnJPCUtPgY2WS+ch7Yi81DW
+         pqB3hBI65PwzA==
+Received: by mail-pg1-f197.google.com with SMTP id y9-20020a655b09000000b0038633e7d703so9941073pgq.9
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 12:16:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=e5dkA3qH+uuDiLClm1Oo80cVgcvwun8I0S6yuR2jxQk=;
+        b=AIAUsrW4kZhetkaToEVifmcdJbyFKUxqGVy+FlLI9wNgn0le2C3Pmcj+GkL/8TsFt0
+         pDWixoffP9mCLXM9HcgYFF82JV1phdabSeBu9Dk22M43kXxSD6w9GCDpWBz9WtYpwRPq
+         8H+PDJADoLlvlVMaFtjh0TfueCrN/K3WhRDa1Gs3+VfQ2tqtTVI+aYCCc3yRGe7H/d15
+         5+54sbLhQD19AtcjbidBb61ALwKV1PCznH9463Ok2GB21BbVYA3huWCtOZwd1vlU714n
+         tTm+FuUgQAm3JyCJWV9oWoQ3BFDeUsm3MbICutKhVeyh2ZFaLKorXTXP5ymv+FD6VkVB
+         ZL0g==
+X-Gm-Message-State: AOAM530Xb8elWYkW2nfpg/EXshDBsI1Fwey948vJMOzylNrCWqSExjH5
+        iV5PmH9jimM2SUOXOTU9tfFKRMsvjyISJ1UxW+GOo9qnYXeLEpz/zl93/b0/x4Xu1vYXsZYNuWO
+        RhzqtDpEc/JSckvyYzL3kSvbV1uyCrTTFeQ==
+X-Received: by 2002:a17:903:32c9:b0:154:3a2d:fa89 with SMTP id i9-20020a17090332c900b001543a2dfa89mr1164466plr.3.1648667759767;
+        Wed, 30 Mar 2022 12:15:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwuVXX8rsNuKbWFBBGlsKxIr2dCQWz3o3SW1jmYCbMByPw9AKu7v0w2adSLgy27rxhwPA+bmQ==
+X-Received: by 2002:a17:903:32c9:b0:154:3a2d:fa89 with SMTP id i9-20020a17090332c900b001543a2dfa89mr1164429plr.3.1648667759379;
+        Wed, 30 Mar 2022 12:15:59 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id a7-20020aa79707000000b004fb17ad3aefsm19702135pfg.108.2022.03.30.12.15.58
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
         Wed, 30 Mar 2022 12:15:58 -0700 (PDT)
-Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 93FC920B96D4;
-        Wed, 30 Mar 2022 12:15:57 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 93FC920B96D4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1648667757;
-        bh=OeZ8/SZ1GczHo9IGsLxSD9nnX7NFl5IGvTh0bc7L8RI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZisbqAIrDvBTni1uhnIdYvN6r90QUT5ABHvlHtIIFu2VOX6OYb63rx0Hd6IRq7SX0
-         1Ch9+QPGwTsMAvI0Keq1IqVVusqn/tYFV+ZzTAM/k3oxbq0D4Z7VoBTUz8bY1cPjAd
-         l1D99Qe4+iRuqMru7NvStSeINgcgQuENqO+aduEo=
-Date:   Wed, 30 Mar 2022 12:15:51 -0700
-From:   Beau Belgrave <beaub@linux.microsoft.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Song Liu <song@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
- created events
-Message-ID: <20220330191551.GA2377@kbox>
-References: <20220329181935.2183-1-beaub@linux.microsoft.com>
- <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
- <20220329201057.GA2549@kbox>
- <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
- <20220329231137.GA3357@kbox>
- <CAPhsuW4WH4Hn+DaQZui5au=ueG1G5zGYiOACfKm9imG2kGA+KA@mail.gmail.com>
- <20220330163411.GA1812@kbox>
- <CAADnVQKQw+K2CoCW-nA=bngKtjP495wpB1yhEXNjKg4wSeXAWg@mail.gmail.com>
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 378D160DD1; Wed, 30 Mar 2022 12:15:58 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 2FD1CA0B18;
+        Wed, 30 Mar 2022 12:15:58 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+cc:     Nikolay Aleksandrov <razor@blackwall.org>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        bridge@lists.linux-foundation.org,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next v2] veth: Support bonding events
+In-reply-to: <20220330101256.53f6ef48@kernel.org>
+References: <20220329114052.237572-1-wintera@linux.ibm.com> <20220329175421.4a6325d9@kernel.org> <d2e45c4a-ed34-10d3-58cd-01b1c19bd004@blackwall.org> <c1ec0612-063b-dbfa-e10a-986786178c93@linux.ibm.com> <20220330085154.34440715@kernel.org> <c512e765-f411-9305-013b-471a07e7f3ff@blackwall.org> <20220330101256.53f6ef48@kernel.org>
+Comments: In-reply-to Jakub Kicinski <kuba@kernel.org>
+   message dated "Wed, 30 Mar 2022 10:12:56 -0700."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQKQw+K2CoCW-nA=bngKtjP495wpB1yhEXNjKg4wSeXAWg@mail.gmail.com>
-X-Spam-Status: No, score=-19.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2599.1648667758.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 30 Mar 2022 12:15:58 -0700
+Message-ID: <2600.1648667758@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 11:22:32AM -0700, Alexei Starovoitov wrote:
-> On Wed, Mar 30, 2022 at 9:34 AM Beau Belgrave <beaub@linux.microsoft.com> wrote:
-> > > >
-> > > > But you are fine with uprobe costs? uprobes appear to be much more costly
-> > > > than a syscall approach on the hardware I've run on.
-> 
-> Care to share the numbers?
-> uprobe over USDT is a single trap.
-> Not much slower compared to syscall with kpti.
-> 
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Sure, these are the numbers we have from a production device.
+>On Wed, 30 Mar 2022 19:16:42 +0300 Nikolay Aleksandrov wrote:
+>> > Maybe opt-out? But assuming the event is only generated on
+>> > active/backup switch over - when would it be okay to ignore
+>> > the notification?
+>> =
 
-They are captured via perf via PERF_COUNT_HW_CPU_CYCLES.
-It's running a 20K loop emitting 4 bytes of data out.
-Each 4 byte event time is recorded via perf.
-At the end we have the total time and the max seen.
+>> Let me just clarify, so I'm sure I've not misunderstood you. Do you mea=
+n opt-out as in
+>> make it default on? IMO that would be a problem, large scale setups wou=
+ld suddenly
+>> start propagating it to upper devices which would cause a lot of unnece=
+ssary bcast.
+>> I meant enable it only if needed, and only on specific ports (second pa=
+rt is not
+>> necessary, could be global, I think it's ok either way). I don't think =
+any setup
+>> which has many upper vlans/macvlans would ever enable this.
+>
+>That may be. I don't have a good understanding of scenarios in which
+>GARP is required and where it's not :) Goes without saying but the
+>default should follow the more common scenario.
 
-null numbers represent a 20K loop with just perf start/stop ioctl costs.
+	At least from the bonding failover persective, the GARP is
+needed when there's a visible topology change (so peers learn the new
+path), a change in MAC address, or both.  I don't think it's possible to
+determine from bonding which topology changes are visible, so any
+failover gets a GARP.  The original intent as best I recall was to cover
+IP addresses configured on the bond itself or on VLANs above the bond.
 
-null: min=2863, avg=2953, max=30815
-uprobe: min=10994, avg=11376, max=146682
-uevent: min=7043, avg=7320, max=95396
-lttng: min=6270, avg=6508, max=41951
+	If I understand the original problem description correctly, the
+bonding failover causes the connectivity issue because the network
+segments beyond the bond interfaces don't share forwarding information
+(i.e., they are completely independent).  The peer (end station or
+switch) at the far end of those network segments (where they converge)
+is unable to directly see that the "to bond eth0" port went down, and
+has no way to know that anything is awry, and thus won't find the new
+path until an ARP or forwarding entry for "veth_a2" (from the original
+diagram) times out at the peer out in the network.
 
-These costs include the data getting into a buffer, so they represent
-what we would see in production vs the trap cost alone. For uprobe this
-means we created a uprobe and attached it via tracefs to get the above
-numbers.
+>> >> My concern was about the Hangbin's alternative proposal to notify al=
+l
+>> >> bridge ports. I hope in my porposal I was able to avoid infinite loo=
+ps.  =
 
-There also seems to be some thinking around this as well from Song Liu.
-Link: https://lore.kernel.org/lkml/20200801084721.1812607-1-songliubraving@fb.com/
+>> > =
 
-From the link:
-1. User programs are faster. The new selftest added in 5/5, shows that a
-   simple uprobe program takes 1400 nanoseconds, while user program only
-      takes 300 nanoseconds.
+>> > Possibly I'm confused as to where the notification for bridge master
+>> > gets sent..  =
 
-> > >
-> > > Can we achieve the same/similar performance with sys_bpf(BPF_PROG_RUN)?
-> > >
-> >
-> > I think so, the tough part is how do you let the user-space know which
-> > program is attached to run? In the current code this is done by the BPF
-> > program attaching to the event via perf and we run the one there if
-> > any when data is emitted out via write calls.
-> >
-> > I would want to make sure that operators can decide where the user-space
-> > data goes (perf/ftrace/eBPF) after the code has been written. With the
-> > current code this is done via the tracepoint callbacks that perf/ftrace
-> > hook up when operators enable recording via perf, tracefs, libbpf, etc.
-> >
-> > We have managed code (C#/Java) where we cannot utilize stubs or traps
-> > easily due to code movement. So we are limited in how we can approach
-> > this problem. Having the interface be mmap/write has enabled this
-> > for us, since it's easy to interact with in most languages and gives us
-> > lifetime management of the trace objects between user-space and the
-> > kernel.
-> 
-> Then you should probably invest into making USDT work inside
-> java applications instead of reinventing the wheel.
-> 
-> As an alternative you can do a dummy write or any other syscall
-> and attach bpf on the kernel side.
-> No kernel changes are necessary.
+>> =
 
-We only want syscall/tracing overheads for the specific events that are
-hooked. I don't see how we could hook up a dummy write that is unique
-per-event without having a way to know when the event is being traced.
+>> IIUC it bypasses the bridge and sends a notify peers for the veth peer =
+so it would
+>> generate a grat arp (inetdev_event -> NETDEV_NOTIFY_PEERS).
+>
+>Ack, I was basically repeating the question of where does =
 
-Thanks,
--Beau
+>the notification with dev =3D=3D br get generated.
+>
+>There is a protection in this patch to make sure the other =
+
+>end of the veth is not plugged into a bridge (i.e. is not
+>a bridge port) but there can be a macvlan on top of that
+>veth that is part of a bridge, so IIUC that check is either
+>insufficient or unnecessary.
+
+	I'm a bit concerned this is becoming a interface plumbing
+topology change whack-a-mole.
+
+	In the above, what if the veth is plugged into a bridge, and
+there's a end station on that bridge?  If it's bridges all the way down,
+where does the need for some kind of TCN mechanism stop?
+
+	Or instead of a veth it's an physical network hop (perhaps a
+tunnel; something through which notifiers do not propagate) to another
+host with another bridge, then what?
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
