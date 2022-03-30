@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13FDA4EB9C4
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 06:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C97F94EBA1C
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 07:23:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242653AbiC3EyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 00:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
+        id S242942AbiC3FYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 01:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236198AbiC3EyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 00:54:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EAD2611F;
-        Tue, 29 Mar 2022 21:52:25 -0700 (PDT)
+        with ESMTP id S238534AbiC3FYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 01:24:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D21015B987;
+        Tue, 29 Mar 2022 22:22:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B373EB81AD6;
-        Wed, 30 Mar 2022 04:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B26C340F0;
-        Wed, 30 Mar 2022 04:52:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6256615AE;
+        Wed, 30 Mar 2022 05:22:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0277EC340EE;
+        Wed, 30 Mar 2022 05:22:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648615942;
-        bh=Wmf2JqqUAbQnmapSolDt4dEa/qXQcPvYulQCKcKukOA=;
+        s=k20201202; t=1648617767;
+        bh=MJKsvBQ12FvT30/ZTbEHl9aaaA+42sFCmsreyXrBKNU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gQoxN+GFfSmm3IQqm9ovjeluzZGbILS4q5UUt7bqfGyydSsemBtcfQluf2a/h7tj5
-         9K45R9Km0B4Vr3eDPBBLo56uibNMdlTjx6AxJUkeMwJ+OvQ9xkqSzlT0mHqV3TNmbp
-         jnCEj++LgaAQl3e+2IvUvfi4I1xjZu09jFmI88QavTnfKwpgaXthgpLRvWJqR1Xp7q
-         E1JOuefndgHGsphvAwT3IfPjATdTRGHQTyqEmxGhKuVYL4O5YzfsdacdMyqZgtmrTE
-         ZssiFGOkX0U5UzHE8xboidfIuAtO8Pz0Q/bXakhoVu9TnmdT75sd5L794pmPucInGv
-         3NGLASNpLNxdA==
-Date:   Wed, 30 Mar 2022 13:52:17 +0900
+        b=SkYLQIsd5AJBx8xrtUVjID4Oq1RzFIK8qF9u/qC5hFgyXu2iCId0g1UTHzKxfoiZ5
+         vL/Epu+gIdPE/+SI1yVd/zXG9MIsH0HZhqeDWhhN4+y55VRYzQ/bpUC0Q5Z7C/ygH2
+         u0oeSOd8JoPAUpxImH90Ebp2UvLNIScEscJyJ83FtpvKt6MVWoyRbbn9K6zvVlU/tg
+         MrT5eatFKJtSOoUuaSvevnjoHQ9sfTtB40TUsP6vCJsmnFHFbag5ucifIVa+9hGlrU
+         Td0rNb/5s4zgOwkKwcK0klZOwROG5tBcTuXboZ8gVfE2pEcXceP25Hk91Ix6q2L0Gy
+         9kj445xnIAR0Q==
+Date:   Wed, 30 Mar 2022 14:22:42 +0900
 From:   Masami Hiramatsu <mhiramat@kernel.org>
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
+Cc:     Beau Belgrave <beaub@linux.microsoft.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Subject: Re: pull-request: bpf 2022-03-29
-Message-Id: <20220330135217.b6d0433831f2b3fa420458ae@kernel.org>
-In-Reply-To: <CAADnVQJNS_U97aqaNxtAhuvZCK6oiDA-tDoAEyDMYnCBbfaZkg@mail.gmail.com>
-References: <20220329234924.39053-1-alexei.starovoitov@gmail.com>
-        <20220329184123.59cfad63@kernel.org>
-        <CAADnVQJNS_U97aqaNxtAhuvZCK6oiDA-tDoAEyDMYnCBbfaZkg@mail.gmail.com>
+        linux-arch <linux-arch@vger.kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
+ created events
+Message-Id: <20220330142242.87b8b84ff922ef3688559b61@kernel.org>
+In-Reply-To: <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
+References: <20220329181935.2183-1-beaub@linux.microsoft.com>
+        <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
+        <20220329201057.GA2549@kbox>
+        <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
 X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Mime-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,52 +64,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Mar 2022 18:51:22 -0700
+On Tue, 29 Mar 2022 15:31:31 -0700
 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-> On Tue, Mar 29, 2022 at 6:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, Mar 29, 2022 at 1:11 PM Beau Belgrave <beaub@linux.microsoft.com> wrote:
 > >
-> > On Tue, 29 Mar 2022 16:49:24 -0700 Alexei Starovoitov wrote:
-> > > Hi David, hi Jakub,
+> > On Tue, Mar 29, 2022 at 12:50:40PM -0700, Alexei Starovoitov wrote:
+> > > On Tue, Mar 29, 2022 at 11:19 AM Beau Belgrave
+> > > <beaub@linux.microsoft.com> wrote:
+> > > >
+> > > > Send user_event data to attached eBPF programs for user_event based perf
+> > > > events.
+> > > >
+> > > > Add BPF_ITER flag to allow user_event data to have a zero copy path into
+> > > > eBPF programs if required.
+> > > >
+> > > > Update documentation to describe new flags and structures for eBPF
+> > > > integration.
+> > > >
+> > > > Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
 > > >
-> > > The following pull-request contains BPF updates for your *net* tree.
-> > >
-> > > We've added 16 non-merge commits during the last 1 day(s) which contain
-> > > a total of 24 files changed, 354 insertions(+), 187 deletions(-).
-> > >
-> > > The main changes are:
-> > >
-> > > 1) x86 specific bits of fprobe/rethook, from Masami and Peter.
-> > >
-> > > 2) ice/xsk fixes, from Maciej and Magnus.
-> > >
-> > > 3) Various small fixes, from Andrii, Yonghong, Geliang and others.
+> > > The commit describes _what_ it does, but says nothing about _why_.
+> > > At present I see no use out of bpf and user_events connection.
+> > > The whole user_events feature looks redundant to me.
+> > > We have uprobes and usdt. It doesn't look to me that
+> > > user_events provide anything new that wasn't available earlier.
 > >
-> > There are some new sparse warnings here that look semi-legit.
-> > As in harmless but not erroneous.
+> > A lot of the why, in general, for user_events is covered in the first
+> > change in the series.
+> > Link: https://lore.kernel.org/all/20220118204326.2169-1-beaub@linux.microsoft.com/
+> >
+> > The why was also covered in Linux Plumbers Conference 2021 within the
+> > tracing microconference.
+> >
+> > An example of why we want user_events:
+> > Managed code running that emits data out via Open Telemetry.
+> > Since it's managed there isn't a stub location to patch, it moves.
+> > We watch the Open Telemetry spans in an eBPF program, when a span takes
+> > too long we collect stack data and perform other actions.
+> > With user_events and perf we can monitor the entire system from the root
+> > container without having to have relay agents within each
+> > cgroup/namespace taking up resources.
+> > We do not need to enter each cgroup mnt space and determine the correct
+> > patch location or the right version of each binary for processes that
+> > use user_events.
+> >
+> > An example of why we want eBPF integration:
+> > We also have scenarios where we are live decoding the data quickly.
+> > Having user_data fed directly to eBPF lets us cast the data coming in to
+> > a struct and decode very very quickly to determine if something is
+> > wrong.
+> > We can take that data quickly and put it into maps to perform further
+> > aggregation as required.
+> > We have scenarios that have "skid" problems, where we need to grab
+> > further data exactly when the process that had the problem was running.
+> > eBPF lets us do all of this that we cannot easily do otherwise.
+> >
+> > Another benefit from user_events is the tracing is much faster than
+> > uprobes or others using int 3 traps. This is critical to us to enable on
+> > production systems.
 > 
-> Both are new warnings and not due to these patches, right?
-> 
-> > kernel/trace/rethook.c:68:9: error: incompatible types in comparison expression (different address spaces):
-> > kernel/trace/rethook.c:68:9:    void ( [noderef] __rcu * )( ... )
-> > kernel/trace/rethook.c:68:9:    void ( * )( ... )
-> >
-> > 66 void rethook_free(struct rethook *rh)
-> > 67 {
-> > 68         rcu_assign_pointer(rh->handler, NULL);
-> > 69
-> > 70         call_rcu(&rh->rcu, rethook_free_rcu);
-> > 71 }
-> >
-> > Looks like this should be a WRITE_ONCE() ?
-> 
-> Masami, please take a look.
+> None of it makes sense to me.
+> To take advantage of user_events user space has to be modified
+> and writev syscalls inserted.
 
-Yeah, I think we should make this rcu pointer (and read side must use rcu_dereference())
-because this rh->handler becomes the key to disable this rethook.
-Let me fix that.
+That can be done by introducing new user SDT macros, which currently
+expected to use uprobes (thus it just introduces a list of probe
+address and semaphore in a section). But we can provide another
+implementation for lighter user-events.
 
-Thanks,
+> This is not cheap and I cannot see a production system using this interface.
+
+I agree this point. At least this needs to be paired with user-space
+library so that the applications can use it. But I also think that
+new feature is not always requires an actual production system which
+relays on that, since that means such production system must use
+out-of-tree custom kernel. That should be avoided from the upstream-first
+policy viewpoint. (However, I would like to know the actual use case.)
+
+> All you did is a poor man version of lttng that doesn't rely
+> on such heavy instrumentation.
+
+Isn't it reasonable to avoid using heavy instrumentation? :-)
+
+Thank you,
 
 -- 
 Masami Hiramatsu <mhiramat@kernel.org>
