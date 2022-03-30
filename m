@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF2094ECB7C
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 20:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 466B64ECB7D
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 20:12:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349790AbiC3SNf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 14:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43406 "EHLO
+        id S234313AbiC3SOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 14:14:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349934AbiC3SNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 14:13:08 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2040.outbound.protection.outlook.com [40.107.223.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAA262B1B9;
-        Wed, 30 Mar 2022 11:11:22 -0700 (PDT)
+        with ESMTP id S1349874AbiC3SN6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 14:13:58 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2049.outbound.protection.outlook.com [40.107.243.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199EF3ED16;
+        Wed, 30 Mar 2022 11:12:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=auTgLIy6xJ7qU6Q8VcqdEXsXj/rc58VS4RHzLmc6MoY=;
- b=ip0IZPojn2dtoPlf3ehPCrWAH4vlOSnEMU1m9MIqUSxHhXzjTlKCXPi0x4tD954ZY4VPJz2xbeAWnGg0pntmDb/1wPobUoon1ilM+dCcdOcq+iy6dKUZRgHR6dlyLGbobQRagcgdnbgrAElrS3OUPbhoPvl+dtmxGen7QYdieOI=
-Received: from DM6PR11CA0048.namprd11.prod.outlook.com (2603:10b6:5:14c::25)
- by BN8PR02MB5731.namprd02.prod.outlook.com (2603:10b6:408:b4::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.16; Wed, 30 Mar
- 2022 18:11:20 +0000
-Received: from DM3NAM02FT039.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:14c:cafe::29) by DM6PR11CA0048.outlook.office365.com
- (2603:10b6:5:14c::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
- Transport; Wed, 30 Mar 2022 18:11:20 +0000
+ bh=9zenqFNVZNHbyE8ohECsWWLdJRxtHCCmc/O9Ihzlzv8=;
+ b=G/4+WxeKQRqNw/gRwcxQoWxjhBaexVySCdGpDoV+kxkdwE9uuViAaQ62hEaURI1jYt8cAT+7SFgf/D8JQrgnwQAKTUyYsdFi1Z7m4A9nDMSckKxp+7Dz41v0GbhZc8bJ9j5qd+113K8jk85YG8CpSPM5ccAipSMD75Dss7evwpc=
+Received: from SN4PR0201CA0053.namprd02.prod.outlook.com
+ (2603:10b6:803:20::15) by DM6PR02MB6138.namprd02.prod.outlook.com
+ (2603:10b6:5:1fd::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.19; Wed, 30 Mar
+ 2022 18:12:10 +0000
+Received: from SN1NAM02FT0031.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:803:20:cafe::bf) by SN4PR0201CA0053.outlook.office365.com
+ (2603:10b6:803:20::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18 via Frontend
+ Transport; Wed, 30 Mar 2022 18:12:10 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.83.241.18)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
@@ -38,48 +38,48 @@ Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  helo=mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;
 Received: from
  mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net
- (20.83.241.18) by DM3NAM02FT039.mail.protection.outlook.com (10.13.5.22) with
- Microsoft SMTP Server (version=TLS1_2,
+ (20.83.241.18) by SN1NAM02FT0031.mail.protection.outlook.com (10.97.4.64)
+ with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.19 via Frontend
- Transport; Wed, 30 Mar 2022 18:11:20 +0000
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2102.outbound.protection.outlook.com [104.47.55.102])
-        by mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net (Postfix) with ESMTPS id EE6F041D82;
-        Wed, 30 Mar 2022 18:11:19 +0000 (UTC)
+ Transport; Wed, 30 Mar 2022 18:12:10 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2176.outbound.protection.outlook.com [104.47.59.176])
+        by mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net (Postfix) with ESMTPS id 934FB41D82;
+        Wed, 30 Mar 2022 18:12:09 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JSaJSsO1NPydwDpfZ6y79ZvfQGGVCRhWVoB1COMqL2N0JBeJbrFJFOqnUfQyDOnux7huhXCUgu+snfqEjzWBUseNnb+hESnXzbn1KN9ZgRFr9ONK+4DVvV12/D89zkXg4tVFHm4zH5+wHQr/0PnTeTA7AQ0mM5TT7YuKuVKaisfY253oMIx5r/NHTXHpPf5GIcis+2qwAFOMLQg+EDsfn5xfes7jb3u43aFCiEtoGjPqhhbcoDXO55sms2BVWa8sE1p6vI6pUuPieT5+2gOOdR3bCbmnrK8Xm30me6iDfmkEv2uEzR2Upbh396nJlojfSPAgREM38IhaMvTBcTiY1g==
+ b=newGDtDHY66MugRK+uw95QIcKbNjzY4/a20ENx0q/r3i8zk70taQlwSFTD4gPZaEAFr6x9IC+fvHkbyGrqqqC3IWr4VjNc8dRGr7ACOpj8tFMebAZXrqAf+BScjfc1RrY3zDJkTyIMvGXkACm04r5DRUtTvQzKVFdUddzO49hfxfaRs+dcGT6ieViEVzmTZbRqaI86wOwmue/cSvj0IweT59N+xBw1wCI4Jd1LR+G6n1DVHcUiLAK89inFtlRismN/vP7OcPhzmKZ+2C+pbgxvNE7fpIe6zRApphFYGMUSXeZMHLZCwQgCr7kWP2kh+IOo0GuvKT1E1Rp3ID8Bv6Bw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=auTgLIy6xJ7qU6Q8VcqdEXsXj/rc58VS4RHzLmc6MoY=;
- b=c88XS67p6ZCrFIKUzxg4MsDqpb94qnJp5xsZXfV4HAHRgtc0JAd4deRLpSo0SlHOCitzBPsVHqNxi+gRIj5hSNQ7kjXHsW4j3DphdnGVITRKBWvKpd1sviCsGsxEwwp8r+Hx9vVvM1Fn88F99WrQIPeG2Z0E1M9ByiuU1F2eKN+o3KPndJ4QZx7J7ZNPEMD6yBezTWMrbWRkcDNxF4JGCjGSXQ6St0rIdQ5CCI3Hczc2cFYOAAuMMd3REscl7xKCZGbK3pZMoZ7cZfaDo+P2PGLTIqotALWj/ZzUKkMtgdeQv4ZbJuYT5dFBW+AkWwd1KzxZnLg8sI5wue0jwCcCqA==
+ bh=9zenqFNVZNHbyE8ohECsWWLdJRxtHCCmc/O9Ihzlzv8=;
+ b=hwimoE+I1ntzHEZaYZDCzlk3wKmt9LOwR9r8n4reebB4DP8Anl0qIgqGsEh1DvpwnGbn+cqRW4j1I4KpZkOcVL8zWMKTnT4Q3P7uIsRNbGWF9ib5bE+NRuiZ7n6bHw+PLvA5Kx4ZRgP+8cuBTSWkKa1+3hbB+8yWQLsHvEopPR792XbAFv0FQOxA1oLRho6DEchLoKCkyTWTwz6rOj451vfU5BlXFEc2SsxXtak4Qru011EhgaFKs134Fx4FCyVqec3PFYeWQB3PyUO9+n4zN3d+o2oKeTF5VMVK6BlSOK9wzAH6kOARXdQGGziA7e1wPux3qXvREFAEiHcM/5D44A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
  dkim=none (message not signed); arc=none
-Received: from DS7PR03CA0296.namprd03.prod.outlook.com (2603:10b6:5:3ad::31)
- by SA0PR02MB7131.namprd02.prod.outlook.com (2603:10b6:806:da::6) with
+Received: from BN0PR04CA0107.namprd04.prod.outlook.com (2603:10b6:408:ec::22)
+ by CH0PR02MB7914.namprd02.prod.outlook.com (2603:10b6:610:113::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.16; Wed, 30 Mar
- 2022 18:11:18 +0000
-Received: from DM3NAM02FT011.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:3ad:cafe::db) by DS7PR03CA0296.outlook.office365.com
- (2603:10b6:5:3ad::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5102.18; Wed, 30 Mar
+ 2022 18:12:08 +0000
+Received: from BN1NAM02FT061.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:ec:cafe::1) by BN0PR04CA0107.outlook.office365.com
+ (2603:10b6:408:ec::22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
- Transport; Wed, 30 Mar 2022 18:11:18 +0000
+ Transport; Wed, 30 Mar 2022 18:12:08 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT011.mail.protection.outlook.com (10.13.5.26) with Microsoft SMTP
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT061.mail.protection.outlook.com (10.13.3.184) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5123.19 via Frontend Transport; Wed, 30 Mar 2022 18:11:18 +0000
+ 15.20.5123.19 via Frontend Transport; Wed, 30 Mar 2022 18:12:07 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Wed, 30 Mar 2022 11:11:17 -0700
+ 15.1.2176.14; Wed, 30 Mar 2022 11:11:59 -0700
 Received: from smtp.xilinx.com (172.19.127.96) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Wed, 30 Mar 2022 11:11:17 -0700
+ 15.1.2176.14 via Frontend Transport; Wed, 30 Mar 2022 11:11:59 -0700
 Envelope-to: mst@redhat.com,
  jasowang@redhat.com,
  kvm@vger.kernel.org,
@@ -103,7 +103,7 @@ Envelope-to: mst@redhat.com,
 Received: from [10.170.66.102] (port=44662 helo=xndengvm004102.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <gautam.dawar@xilinx.com>)
-        id 1nZcmq-000CCQ-HB; Wed, 30 Mar 2022 11:11:17 -0700
+        id 1nZcnW-000CCQ-G0; Wed, 30 Mar 2022 11:11:58 -0700
 From:   Gautam Dawar <gautam.dawar@xilinx.com>
 To:     "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>, <kvm@vger.kernel.org>,
@@ -124,9 +124,9 @@ CC:     <martinh@xilinx.com>, <hanand@xilinx.com>, <martinpo@xilinx.com>,
         Longpeng <longpeng2@huawei.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH v2 07/19] vdpa: introduce config operations for associating ASID to a virtqueue group
-Date:   Wed, 30 Mar 2022 23:33:47 +0530
-Message-ID: <20220330180436.24644-8-gdawar@xilinx.com>
+Subject: [PATCH v2 08/19] vhost_iotlb: split out IOTLB initialization
+Date:   Wed, 30 Mar 2022 23:33:48 +0530
+Message-ID: <20220330180436.24644-9-gdawar@xilinx.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20220330180436.24644-1-gdawar@xilinx.com>
 References: <20220330180436.24644-1-gdawar@xilinx.com>
@@ -134,31 +134,31 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 1
-X-MS-Office365-Filtering-Correlation-Id: 78991ad0-12c7-4e76-b9b2-08da1278b147
-X-MS-TrafficTypeDiagnostic: SA0PR02MB7131:EE_|DM3NAM02FT039:EE_|BN8PR02MB5731:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR02MB5731ACDEF413895F8A94AD4BB11F9@BN8PR02MB5731.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 15c36d53-040e-445a-28cb-08da1278cee1
+X-MS-TrafficTypeDiagnostic: CH0PR02MB7914:EE_|SN1NAM02FT0031:EE_|DM6PR02MB6138:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR02MB6138D0FEBFFBB4EF6F04AF95B11F9@DM6PR02MB6138.namprd02.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: ziaREvisbsWZJxOhgmAwDW80WaXpOdR2e4DTtb4bo5mryPO+dJOc6R78f1+x+sRESbEk39U6UnhoHJUGhJeGws6KD/nXl8u5p22jlyIg18Q48QGUt7W9nokr7ODXH8gBR7DYwz58wMHTyNH7vC7DqYWxoSfPj4WE2FCNwXmlXyB7jM9JKOc+NHE6l0ef/21TMULUI15euYn1ZSx5bWb4uj1eI4WQ6p9c8FRClSoVqCaWGOrdsoYhvgbctaY8kSL5SqchBbO46B9GS4Rswn8sVjsjIXnmvzLS3mQCO8hTqpcLy6UxPjbAyR39LtZLw7QRSef+C2OziYkzEJcrusQ0u6G12TCOaHqFr95GhlaV8fz5gGRu6x1CYR//zhP8aYvVbU4PdI1POVXlp6u4kpANGSjMBFOlAursY47RnoIr82Boj+ljlUd6FmrGvBOfB/MVuzI0bK3X6IWkt30q2dLCSp1bWBx9GCc5fqOALV7yjlA4J9ExYlP30htwb5Pmo3YNJjBGvU8nb5EPopZwfCBMbHkZ/yVVrDmpKxaEKNXNQDD8onbrRo+K0qWNUoEVI/pUl6LUPVQE48yUGUCEjCn/LfxWv/Lx6nRVtIjbdoMnn3rxTIrKNbnzZCY81Nt8IQbXew5MuH5wk2IMjGF+K8mGQZbvyxfskaHYWx+geMqjxYqdOLr+gvb+uXbRJEAM6HZFwLaLJHsGiRN4+5bmKW5Obg==
-X-Forefront-Antispam-Report-Untrusted: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(1076003)(8936002)(336012)(7416002)(186003)(70206006)(508600001)(36860700001)(4326008)(47076005)(70586007)(83380400001)(426003)(2616005)(36756003)(8676002)(26005)(82310400004)(5660300002)(6666004)(7696005)(2906002)(110136005)(7636003)(316002)(54906003)(356005)(9786002)(40460700003)(44832011)(102446001);DIR:OUT;SFP:1101;
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR02MB7131
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: DM3NAM02FT039.eop-nam02.prod.protection.outlook.com
+X-Microsoft-Antispam-Message-Info-Original: u43bh7yShunAU5HQboxzlx2dVYriSG0NcP8YFj/c2GvXvp3hV27MI1jIETX6ofrDW0RYoPxy3AC+uUFfdlp66BK6dQ7WpzZKkTNSPbLDelC9xTX1yiq9vJFZgl+kxcZeXmETfXgWCc1vx69ZQeVrzA/+d0+l244Ra3ctgt6Cl45rAxob8VmcEZlIzyIsMSeBL2fzfoQXi6OW5EYipL/nV9a+phyVYqBmmeiSnyqJSfXVhGE+mzC13cPpgQi/odjTasYz+ihSUupf3nL75Ldfe4b3NhNNFJlETl5rTXlLD/sLm/FiSecjJRevaU5KpKduG48Owpj3qZmYrzmdQAzkQhSDHx2zaZt8dczkKA+9QLhfa6IDQq9mFGK7yyS4VXim9+GGWbXZMDYpDXMgKXKAA1ufH+bz83/aXe1qY+DgCG2YK0cWoybYHo+ubZZwrjCocEwklLY+WKi7xuO6Qp6mhYKaRISlB84Zn32aJ2CclaevGmZ/qI99TdXB74UdggN+56wbNzOwOmfLV7CzX42VwYba4xmhdAiJ3OSEcOoJHSDQXPK0GXHBoHuMUua7ZeWMEOQdHUfktymmKQSSQnBw8eH2JD72fj0MfVH5OgYVKztea0zVmKh05BQw+AJI5b3b9dUuRgadfMMLlWWWDmWkMqltLK5x8evWOhaszuPbPTWFySIhpSsJffbz+43dWn91brW+grFNVQ5CAyeIWVaP59FxTq5pBvh3F1gL1hBEoAM=
+X-Forefront-Antispam-Report-Untrusted: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(110136005)(2906002)(8936002)(70206006)(7416002)(4326008)(7636003)(356005)(186003)(2616005)(26005)(7696005)(316002)(70586007)(8676002)(336012)(6666004)(83380400001)(54906003)(44832011)(1076003)(426003)(508600001)(36860700001)(9786002)(40460700003)(47076005)(5660300002)(82310400004)(36756003)(102446001)(21314003);DIR:OUT;SFP:1101;
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR02MB7914
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: SN1NAM02FT0031.eop-nam02.prod.protection.outlook.com
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs: dbad219a-5622-47fa-4b79-08da1278b019
+X-MS-Office365-Filtering-Correlation-Id-Prvs: c9e7c293-0860-4ce9-8466-08da1278cd80
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: I261KkhLjzjz9xFujQhMWrlzZ9LVqCCxHu1tSrfn/Kn5mHRc31+m8xn99HXj7wS/552IZxzqtKE5uzNHWsD+bvJmgLLBO1GGLbq1Z8o3oMuUmB/SQ1fnvB9GddHzUyImYjtNOA5qVbghzmKRfyH6HVh9gaOAwuDG2L/rsU4ddD7HxmDnmwllx/KMPaoDL3+6JPhiKHmBTdY4aikEYn1gTkQMx7ct+a1X14DuJZOB+RDw16LDGPJVneq7Ehe5uswrRHahWS8wre9lIikO8+Ua49xCk4nAHPvjMs11S0B0hQGGHEhc1IbEaFvV0mgAZzfIQ7BXauo9UDtoWUn7oGN/wtUuQ8TRb/kZCIPb+NCNm2jJ0OdDJ+YQNLgh6IfZtZexxnwd64bQazW21jA2cO6eznSQo1pyH6yr9upfXYswXI8/nstDTSIUgNb9n353ackOBjbZN9zvT5C+5BcS1yA2Kv4ifW+1ea8vhmwpyTfINic6qHsh6vp0T1JkoWRKYTN3OApzjcuJMup3ZqTifyTPg17+cZNGk04tSxDwNs7qOG24tfiywc34belfecgquCuk6Eun3DZwBdEGC9rYbooCj6UGVHOAPa6l9gfvhtP7wP/WUgpYxsk8qlnqWk9dMT7qBZhp3+vaebkFhF6+JpgY+vHuYDNgpuag7h88DZFDm42/m+HlHy1EwBiv0Id3Fo+a7GetmhCEd+4R3tMqgpmztJ7ure4dH3Pl2kR4DKScRMg0aIwQhGtFmje0PK9Z3FXt
-X-Forefront-Antispam-Report: CIP:20.83.241.18;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(2616005)(508600001)(1076003)(70206006)(81166007)(8676002)(316002)(336012)(426003)(26005)(186003)(6666004)(7696005)(36860700001)(4326008)(82310400004)(83380400001)(40460700003)(47076005)(110136005)(2906002)(54906003)(9786002)(7416002)(44832011)(8936002)(36756003)(5660300002)(102446001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ZWyGcwfKu95775rnYbkFzY6oQwXpePX26fLN6WrzR/uqLwS7q4EwQQ6o/SzZYctWO6kf3gLNBt0nCrOcoVLnXbhrxfYgPD6jRSUOKe/rCn+Btr62JpbXdL2+T46rwtwVvVKEpR/vVK472H/ylLmUOA++TjQdOQp0HZzHvpIf1Cr2nmbg2uAnh2rDUjv1rRProvZ3InFaze7AU8GFHkJqlB0t3d4SrwLaQdbEYiTqjtPPAO1B7dgD00Np5oj69KKZp0pjFzNhAJ5J1qxqD8d/4iEmXLOmhqMbR/tEY35pHWN6OBCxs+uznNGZ0bl+Fg0YX6gE6CkzkB/7RzVtuY538o04DCHqTeo2Fo5czXiG0yShcyZULY8VGfAwJhX9QCeSyZogBH9RUEiRCTVGZTc8DI9P4eyDrA2or7XdQwMEb1BIp/zHlCxNn4rnw1xi3pYDAEjBEY/u7aHPl5ZJwh3satAnw8FQoAMuApdyL1iBbyTsNSdCnmXbQ8BOGNeiNagYdLlSwz7xJ7C5AqH9f0xMVkiet1p+UolXGoCf8GzefT0tAEi1y6NGnkhMXN6dyMZjo4LhzYIJ/zwL+mvhbEE1uRUyWFLd16H/aw3+IHXRwIhFumxcRCvGKQw+RE1RICuOg1YaAfIB73+YljaMrtJx9mFKYopyg975ICOB059i33usSiRIWNdSqs8hgrtBii1PgfK/0I3vQPMXj4PPwv/TwEEfXQVfYMS7NU7kK+ulfzLQ+ieQPNTEjanRU3e7Lksg64kDpdSlmn+12CVUWLVB1w==
+X-Forefront-Antispam-Report: CIP:20.83.241.18;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(44832011)(82310400004)(36756003)(1076003)(336012)(426003)(54906003)(26005)(70206006)(8676002)(40460700003)(81166007)(4326008)(110136005)(6666004)(2616005)(186003)(7696005)(8936002)(9786002)(83380400001)(7416002)(36860700001)(5660300002)(47076005)(508600001)(2906002)(316002)(102446001)(21314003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 18:11:20.4896
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2022 18:12:10.1178
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 78991ad0-12c7-4e76-b9b2-08da1278b147
+X-MS-Exchange-CrossTenant-Network-Message-Id: 15c36d53-040e-445a-28cb-08da1278cee1
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[20.83.241.18];Helo=[mailrelay000000.14r1f435wfvunndds3vy4cdalc.xx.internal.cloudapp.net]
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-DM3NAM02FT039.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: TreatMessagesAsInternal-SN1NAM02FT0031.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR02MB5731
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6138
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -168,41 +168,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch introduces a new bus operation to allow the vDPA bus driver
-to associate an ASID to a virtqueue group.
+This patch splits out IOTLB initialization to make sure it could be
+reused by external modules.
 
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 ---
- include/linux/vdpa.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/vhost/iotlb.c       | 23 ++++++++++++++++++-----
+ include/linux/vhost_iotlb.h |  2 ++
+ 2 files changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 7ab0e29ae466..f4d8c916e0d8 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -240,6 +240,12 @@ struct vdpa_map_file {
-  *				@vdev: vdpa device
-  *				Returns the iova range supported by
-  *				the device.
-+ * @set_group_asid:		Set address space identifier for a
-+ *				virtqueue group
-+ *				@vdev: vdpa device
-+ *				@group: virtqueue group
-+ *				@asid: address space id for this group
-+ *				Returns integer: success (0) or error (< 0)
-  * @set_map:			Set device memory mapping (optional)
-  *				Needed for device that using device
-  *				specific DMA translation (on-chip IOMMU)
-@@ -322,6 +328,8 @@ struct vdpa_config_ops {
- 		       u64 iova, u64 size, u64 pa, u32 perm, void *opaque);
- 	int (*dma_unmap)(struct vdpa_device *vdev, unsigned int asid,
- 			 u64 iova, u64 size);
-+	int (*set_group_asid)(struct vdpa_device *vdev, unsigned int group,
-+			      unsigned int asid);
+diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
+index 5829cf2d0552..ea61330a3431 100644
+--- a/drivers/vhost/iotlb.c
++++ b/drivers/vhost/iotlb.c
+@@ -125,6 +125,23 @@ void vhost_iotlb_del_range(struct vhost_iotlb *iotlb, u64 start, u64 last)
+ }
+ EXPORT_SYMBOL_GPL(vhost_iotlb_del_range);
  
- 	/* Free device resources */
- 	void (*free)(struct vdpa_device *vdev);
++/**
++ * vhost_iotlb_init - initialize a vhost IOTLB
++ * @iotlb: the IOTLB that needs to be initialized
++ * @limit: maximum number of IOTLB entries
++ * @flags: VHOST_IOTLB_FLAG_XXX
++ */
++void vhost_iotlb_init(struct vhost_iotlb *iotlb, unsigned int limit,
++		      unsigned int flags)
++{
++	iotlb->root = RB_ROOT_CACHED;
++	iotlb->limit = limit;
++	iotlb->nmaps = 0;
++	iotlb->flags = flags;
++	INIT_LIST_HEAD(&iotlb->list);
++}
++EXPORT_SYMBOL_GPL(vhost_iotlb_init);
++
+ /**
+  * vhost_iotlb_alloc - add a new vhost IOTLB
+  * @limit: maximum number of IOTLB entries
+@@ -139,11 +156,7 @@ struct vhost_iotlb *vhost_iotlb_alloc(unsigned int limit, unsigned int flags)
+ 	if (!iotlb)
+ 		return NULL;
+ 
+-	iotlb->root = RB_ROOT_CACHED;
+-	iotlb->limit = limit;
+-	iotlb->nmaps = 0;
+-	iotlb->flags = flags;
+-	INIT_LIST_HEAD(&iotlb->list);
++	vhost_iotlb_init(iotlb, limit, flags);
+ 
+ 	return iotlb;
+ }
+diff --git a/include/linux/vhost_iotlb.h b/include/linux/vhost_iotlb.h
+index 2d0e2f52f938..e79a40838998 100644
+--- a/include/linux/vhost_iotlb.h
++++ b/include/linux/vhost_iotlb.h
+@@ -36,6 +36,8 @@ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb, u64 start, u64 last,
+ 			  u64 addr, unsigned int perm);
+ void vhost_iotlb_del_range(struct vhost_iotlb *iotlb, u64 start, u64 last);
+ 
++void vhost_iotlb_init(struct vhost_iotlb *iotlb, unsigned int limit,
++		      unsigned int flags);
+ struct vhost_iotlb *vhost_iotlb_alloc(unsigned int limit, unsigned int flags);
+ void vhost_iotlb_free(struct vhost_iotlb *iotlb);
+ void vhost_iotlb_reset(struct vhost_iotlb *iotlb);
 -- 
 2.30.1
 
