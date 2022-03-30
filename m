@@ -2,78 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AF6A4EBCD5
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 10:38:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B71624EBCC9
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 10:33:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244395AbiC3IkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 04:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
+        id S244374AbiC3Ie4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 04:34:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235006AbiC3IkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 04:40:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6B93ABE21
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 01:38:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648629512;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bzS4bqzaOxuZfQIkqpt655mQSjWQT1LHlpgKAIFezfk=;
-        b=I95rdoLFg4j5tZLHKQsTWXvthutVvS4b59GHR+ruZx1CfMzhiXoayGlMORhJKOV3z28lJr
-        1G95JAwMNS1pnI9qUTGCa8So2E7bJDFkfgECjm+/tkCeA1evivb+BT9AovP+vKCd6UNAxx
-        e8ffSoawc2Ebwz4YR2lAfuq5dcCDLBs=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-VKG7TQaFOViU4oQ-DJwA5w-1; Wed, 30 Mar 2022 04:38:31 -0400
-X-MC-Unique: VKG7TQaFOViU4oQ-DJwA5w-1
-Received: by mail-lj1-f197.google.com with SMTP id 21-20020a2e1455000000b0024ace13ce62so4136122lju.3
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 01:38:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bzS4bqzaOxuZfQIkqpt655mQSjWQT1LHlpgKAIFezfk=;
-        b=xCozqJpYkydWgVmm10WGv9FV0nImJBJb0WwMlPjuGTBySHKk2s3j7EDUuZwD1RhZZl
-         35fFUjp/Q/lF7J+BP0xT+zoOJVkPy8CRG+BjS2mZMYrW/6tl/OcAYVrOwgS9lUWG1LBj
-         d08XDCfzj31/+9o7M2SjF26EnSJqndn03kdlIbw5QEyLCtQnv3JDmCLuIqUubXAaZ0Ev
-         6F9ALIbqCLCDOO+U3kc0DtDP/Z+HuPjWyD5Bd80y7h6LSzYBBRcs5NEceCd5qwSv8uqp
-         FInN+FTZW48TdTGkjUcsWTBRIrouvvlOgT6FGzSBUx2ZRN1yAdldtT42+yQ3e4vTHbtZ
-         QGzQ==
-X-Gm-Message-State: AOAM530daml49hIZ5G5izYoSfvjk/hURW9/Fku6dsyQsio2F6DFwxduy
-        ilHcSdUvqr1IFHjeFqKDzDHwhIP3ddgVU/UePC1fvtI3fQtkwbUGp/abnKXFzQNszcOmMtWXFrV
-        VnQR6L73G/jFCmZXBhfCOilJYG7jpz6EM
-X-Received: by 2002:a05:651c:b0c:b0:247:e4b7:d4a0 with SMTP id b12-20020a05651c0b0c00b00247e4b7d4a0mr5872392ljr.177.1648629509501;
-        Wed, 30 Mar 2022 01:38:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyIPbYjEeHmjbGHJuP7G8/hPMIgwTlai10LTpW4LfE/TTf2L5sMsD52LohP2OT9kKgyXmx5YOKVinJp+YoaSOM=
-X-Received: by 2002:a05:651c:b0c:b0:247:e4b7:d4a0 with SMTP id
- b12-20020a05651c0b0c00b00247e4b7d4a0mr5872383ljr.177.1648629509284; Wed, 30
- Mar 2022 01:38:29 -0700 (PDT)
+        with ESMTP id S242851AbiC3Ie4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 04:34:56 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C3BC7672;
+        Wed, 30 Mar 2022 01:33:10 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KT0773HJkz1GDBr;
+        Wed, 30 Mar 2022 16:32:51 +0800 (CST)
+Received: from localhost.localdomain (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 16:33:08 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
+        <daniel@iogearbox.net>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <vakul.garg@nxp.com>, <davejwatson@fb.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net] net/tls: fix slab-out-of-bounds bug in decrypt_internal
+Date:   Wed, 30 Mar 2022 16:50:09 +0800
+Message-ID: <20220330085009.1011614-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220224110402.108161-1-xuanzhuo@linux.alibaba.com>
- <20220330023258-mutt-send-email-mst@kernel.org> <CACGkMEvESXv9PfMF9riPraX59j0BiLPfTgxuFVw1x0HWwjtYVQ@mail.gmail.com>
- <1648623508.9711535-4-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1648623508.9711535-4-xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 30 Mar 2022 16:38:18 +0800
-Message-ID: <CACGkMEvE_wUNa=DgumVErTjp5gF4QRMDn6eP7UbDpSfSJSBy2Q@mail.gmail.com>
-Subject: Re: [PATCH v2 0/9] virtio: support advance DMA
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,76 +47,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 2:59 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
->
-> On Wed, 30 Mar 2022 14:56:17 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > On Wed, Mar 30, 2022 at 2:34 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Thu, Feb 24, 2022 at 07:03:53PM +0800, Xuan Zhuo wrote:
-> > > > virtqueue_add() only supports virtual addresses, dma is completed in
-> > > > virtqueue_add().
-> > > >
-> > > > In some scenarios (such as the AF_XDP scenario), DMA is completed in advance, so
-> > > > it is necessary for us to support passing the DMA address to virtqueue_add().
-> > >
-> > > I picked up a couple of patches. Others are waiting for some acks
-> > > (Jason?) and improved commit logs for documentation.
-> >
-> > I will review them.
->
-> hi, the core code of premapped, I will merge it into 'virtio pci support
-> VIRTIO_F_RING_RESET' because this function will be used when reusing the buffer
-> after resize.
+The memory size of tls_ctx->rx.iv for AES128-CCM is 12 setting in
+tls_set_sw_offload(). The return value of crypto_aead_ivsize()
+for "ccm(aes)" is 16. So memcpy() require 16 bytes from 12 bytes
+memory space will trigger slab-out-of-bounds bug as following:
 
-I still prefer not to do that.
+==================================================================
+BUG: KASAN: slab-out-of-bounds in decrypt_internal+0x385/0xc40 [tls]
+Read of size 16 at addr ffff888114e84e60 by task tls/10911
 
-We can make rest work for resize first and add pre mapping on top. It
-will simplify the review.
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x34/0x44
+ print_report.cold+0x5e/0x5db
+ ? decrypt_internal+0x385/0xc40 [tls]
+ kasan_report+0xab/0x120
+ ? decrypt_internal+0x385/0xc40 [tls]
+ kasan_check_range+0xf9/0x1e0
+ memcpy+0x20/0x60
+ decrypt_internal+0x385/0xc40 [tls]
+ ? tls_get_rec+0x2e0/0x2e0 [tls]
+ ? process_rx_list+0x1a5/0x420 [tls]
+ ? tls_setup_from_iter.constprop.0+0x2e0/0x2e0 [tls]
+ decrypt_skb_update+0x9d/0x400 [tls]
+ tls_sw_recvmsg+0x3c8/0xb50 [tls]
 
-Thanks
+Allocated by task 10911:
+ kasan_save_stack+0x1e/0x40
+ __kasan_kmalloc+0x81/0xa0
+ tls_set_sw_offload+0x2eb/0xa20 [tls]
+ tls_setsockopt+0x68c/0x700 [tls]
+ __sys_setsockopt+0xfe/0x1b0
 
->
-> Thanks.
->
->
-> >
-> > Thanks
-> >
-> > >
-> > > Thanks!
-> > >
-> > > > v2:
-> > > >     1. rename predma -> premapped
-> > > >     2. virtio net xdp tx use virtio dma api
-> > > >
-> > > > v1:
-> > > >    1. All sgs requested at one time are required to be unified PREDMA, and several
-> > > >       of them are not supported to be PREDMA
-> > > >    2. virtio_dma_map() is removed from this patch set and will be submitted
-> > > >       together with the next time AF_XDP supports virtio dma
-> > > >    3. Added patch #2 #3 to remove the check for flags when performing unmap
-> > > >       indirect desc
-> > > >
-> > > > Xuan Zhuo (9):
-> > > >   virtio_ring: rename vring_unmap_state_packed() to
-> > > >     vring_unmap_extra_packed()
-> > > >   virtio_ring: remove flags check for unmap split indirect desc
-> > > >   virtio_ring: remove flags check for unmap packed indirect desc
-> > > >   virtio_ring: virtqueue_add() support premapped
-> > > >   virtio_ring: split: virtqueue_add_split() support premapped
-> > > >   virtio_ring: packed: virtqueue_add_packed() support premapped
-> > > >   virtio_ring: add api virtio_dma_map() for advance dma
-> > > >   virtio_ring: introduce virtqueue_add_outbuf_premapped()
-> > > >   virtio_net: xdp xmit use virtio dma api
-> > > >
-> > > >  drivers/net/virtio_net.c     |  42 +++++-
-> > > >  drivers/virtio/virtio_ring.c | 280 ++++++++++++++++++++++++++---------
-> > > >  include/linux/virtio.h       |  12 ++
-> > > >  3 files changed, 254 insertions(+), 80 deletions(-)
-> > > >
-> > > > --
-> > > > 2.31.0
-> > >
-> >
->
+Reserve MAX_IV_SIZE memory space for iv to be compatible with all
+ciphers. And do iv and salt copy like done in tls_do_encryption().
+
+Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ net/tls/tls_sw.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 0024a692f0f8..6b858f995b23 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1456,7 +1456,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	aead_size = sizeof(*aead_req) + crypto_aead_reqsize(ctx->aead_recv);
+ 	mem_size = aead_size + (nsg * sizeof(struct scatterlist));
+ 	mem_size = mem_size + prot->aad_size;
+-	mem_size = mem_size + crypto_aead_ivsize(ctx->aead_recv);
++	mem_size = mem_size + MAX_IV_SIZE;
+ 
+ 	/* Allocate a single block of memory which contains
+ 	 * aead_req || sgin[] || sgout[] || aad || iv.
+@@ -1493,12 +1493,8 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 		kfree(mem);
+ 		return err;
+ 	}
+-	if (prot->version == TLS_1_3_VERSION ||
+-	    prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
+-		memcpy(iv + iv_offset, tls_ctx->rx.iv,
+-		       crypto_aead_ivsize(ctx->aead_recv));
+-	else
+-		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
++	memcpy(iv + iv_offset, tls_ctx->rx.iv,
++	       prot->iv_size + prot->salt_size);
+ 
+ 	xor_iv_with_seq(prot, iv + iv_offset, tls_ctx->rx.rec_seq);
+ 
+-- 
+2.25.1
 
