@@ -2,236 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68E364ECEFD
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 23:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 404EE4ECF11
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 23:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351320AbiC3VqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 17:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43472 "EHLO
+        id S1351357AbiC3Vty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 17:49:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351321AbiC3VqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 17:46:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B69F2B859;
-        Wed, 30 Mar 2022 14:44:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55FB76171B;
-        Wed, 30 Mar 2022 21:44:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0C3C34110;
-        Wed, 30 Mar 2022 21:44:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648676656;
-        bh=aM5mAmK19Mmcbly0+Z8gAQpXnfdX++fFzWKDjWvJamA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YVms58oeRQIRHD+lDm8U3Fj7oDVn8CVdEfQPPGYYU+ckHpeztbY2KwDnPChZouShA
-         2qLDA3HcY9KngfFQeVSIStt+7fG6GyMlkiQ5zTZQnxd6Qz8VBToY3c4djMrxe1iT9F
-         84ts3qlMLatnOyh6sIy2p5sw2Gx1OwEylvyL58V31YurGyAvQDv2lPqkHQKhUq0qjZ
-         QCyVRCxfPd8ZMprBCTrST0fL2EzWA2yxY0uVCzsY9Uim5UZDyhydAie2C828cDibAi
-         laIZnPzNWtUUpZs6TQx5DogiLpNC/QRLykiIK5ro96lAlN0B7CbkIcxuRLEu69IGyr
-         x61KZ7RCmF8sw==
-Received: by mail-oi1-f181.google.com with SMTP id e189so23436624oia.8;
-        Wed, 30 Mar 2022 14:44:16 -0700 (PDT)
-X-Gm-Message-State: AOAM533wVN7wmNRoHfg6/dKEvqY6REE5GwjdkxuOq9qhkn6M/kj54RCF
-        jZDtezAloHi5gPNyb9tzIHLGYskvDcuOb1juIZQ=
-X-Google-Smtp-Source: ABdhPJy9FW8z4Z13CGtrAM0Geq+heEQplHHsw3+w6FJjJlrct7i2m/ObXAxCutmtNa0cX1vpgYEaEymrnGT3HsYk52g=
-X-Received: by 2002:aca:674c:0:b0:2d9:c460:707c with SMTP id
- b12-20020aca674c000000b002d9c460707cmr1139478oiy.126.1648676655872; Wed, 30
- Mar 2022 14:44:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220330085009.1011614-1-william.xuanziyang@huawei.com>
- <20220330093925.2d8ee6ca@kernel.org> <20220330132406.633c2da8@kernel.org>
-In-Reply-To: <20220330132406.633c2da8@kernel.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Wed, 30 Mar 2022 23:44:04 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHnfOOGR-kDrxXot6JX=ShzKnkoyJjk5ev7Yxew8ogR+A@mail.gmail.com>
-Message-ID: <CAMj1kXHnfOOGR-kDrxXot6JX=ShzKnkoyJjk5ev7Yxew8ogR+A@mail.gmail.com>
-Subject: Re: [PATCH net] net/tls: fix slab-out-of-bounds bug in decrypt_internal
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Biggers <ebiggers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ziyang Xuan <william.xuanziyang@huawei.com>, borisp@nvidia.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, vakul.garg@nxp.com, davejwatson@fb.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1348397AbiC3Vtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 17:49:52 -0400
+X-Greylist: delayed 85333 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 30 Mar 2022 14:48:06 PDT
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57269517EF;
+        Wed, 30 Mar 2022 14:48:06 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id CE268C01F; Wed, 30 Mar 2022 23:48:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648676884; bh=JBKLv303K90QCwUMTooNfskYmIZP7k25TQ0ASMcQRSI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZyDuY9EHxC6b3cGDP2eO51iv4iFDbwJIXPW0OiAiHDP3E8AJWLvulUcCrbd2aAagO
+         SdxLv88pAZKEi3cNsC09XHBPJguOTD36TRHJHbs6bCQlNmK0pgrREeTIaYWJEYfKon
+         n9m1EaODjoXeSmW0IO2yq4rDR4fNHV3RV6KB+ctyNuWroTw/8mdcxvQp6UXvODxLsa
+         w7UYDNoipv+bYpb9NMxEX+NNLYLlIwp1OFmF9Mm6bmYwXBbGO6wzKLG0/UMioVpeH9
+         sBN42Tq71Lvvca7RPtggzjQBSX3mTXrx3VdlAmWzbvgSImItPQX7bhmz7nDPUpmnIQ
+         QPxqovfxMjZzw==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 1F6EAC009;
+        Wed, 30 Mar 2022 23:47:59 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648676883; bh=JBKLv303K90QCwUMTooNfskYmIZP7k25TQ0ASMcQRSI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GIKyUZbIYuq5PoIeC4yUO63eTSwhcmASKxRBPNeHzfpNz5tN1WuQ4e3ooMhrhjpFd
+         bc+C1ya1dMT0Wp9gmjKiEsmT8lmem9rYf+hPuuRfq1HmNQ1wW1aVCfrHke2mxHYRn/
+         lutBfosOyCD1a++oHT4focbwJpEkMFVnLifT0vJrv8DxN2Tl3RGK4BXU4jXsZp01M7
+         noStU+yX+fmrzThCpFFrxLrbFdMZi2yR12iBst8eOVccrFgeweIB0O9G02nPTl2xDk
+         F6vKjNyKtX239KbthfMXLpobOTSHEIL6KvAPPN1e2OXxcoc/e9gnHwFY3Dwato5Ae7
+         jL1YX4yt5FqGQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id e5f1e8fa;
+        Wed, 30 Mar 2022 21:47:56 +0000 (UTC)
+Date:   Thu, 31 Mar 2022 06:47:41 +0900
+From:   asmadeus@codewreck.org
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie
+ detected)
+Message-ID: <YkTP/Talsy3KQBbf@codewreck.org>
+References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
+ <2582025.XdajAv7fHn@silver>
+ <Yj8WkjT+MsdFIfwr@codewreck.org>
+ <3791738.ukkqOL8KQD@silver>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <3791738.ukkqOL8KQD@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Mar 2022 at 22:24, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 30 Mar 2022 09:39:25 -0700 Jakub Kicinski wrote:
-> > On Wed, 30 Mar 2022 16:50:09 +0800 Ziyang Xuan wrote:
-> > > The memory size of tls_ctx->rx.iv for AES128-CCM is 12 setting in
-> > > tls_set_sw_offload(). The return value of crypto_aead_ivsize()
-> > > for "ccm(aes)" is 16. So memcpy() require 16 bytes from 12 bytes
-> > > memory space will trigger slab-out-of-bounds bug as following:
-> > >
-> > > ==================================================================
-> > > BUG: KASAN: slab-out-of-bounds in decrypt_internal+0x385/0xc40 [tls]
-> > > Read of size 16 at addr ffff888114e84e60 by task tls/10911
-> > >
-> > > Call Trace:
-> > >  <TASK>
-> > >  dump_stack_lvl+0x34/0x44
-> > >  print_report.cold+0x5e/0x5db
-> > >  ? decrypt_internal+0x385/0xc40 [tls]
-> > >  kasan_report+0xab/0x120
-> > >  ? decrypt_internal+0x385/0xc40 [tls]
-> > >  kasan_check_range+0xf9/0x1e0
-> > >  memcpy+0x20/0x60
-> > >  decrypt_internal+0x385/0xc40 [tls]
-> > >  ? tls_get_rec+0x2e0/0x2e0 [tls]
-> > >  ? process_rx_list+0x1a5/0x420 [tls]
-> > >  ? tls_setup_from_iter.constprop.0+0x2e0/0x2e0 [tls]
-> > >  decrypt_skb_update+0x9d/0x400 [tls]
-> > >  tls_sw_recvmsg+0x3c8/0xb50 [tls]
-> > >
-> > > Allocated by task 10911:
-> > >  kasan_save_stack+0x1e/0x40
-> > >  __kasan_kmalloc+0x81/0xa0
-> > >  tls_set_sw_offload+0x2eb/0xa20 [tls]
-> > >  tls_setsockopt+0x68c/0x700 [tls]
-> > >  __sys_setsockopt+0xfe/0x1b0
-> >
-> > Interesting, are you running on non-x86 platform or with some crypto
-> > accelerator? I wonder why we're not hitting it with KASAN and the
-> > selftest we have.
->
-> I take that back, I can repro on x86 and 5.17, not sure why we're only
-> discovering this now.
->
-> Noob question for crypto folks, ivsize for AES CCM is reported
-> as 16, but the real nonce size is 13 for TLS (q == 2, n == 13
-> using NIST's variable names AFAICT). Are we required to zero out
-> the rest of the buffer?
->
+Thanks Christian!
 
-Looking at crypto/ccm.c and the arm64 accelerated implementation, it
-appears the driver takes care of this: the first byte of the IV (q in
-your example, but L in the crypto code) is the number of bytes minus
-one that will be used for the counter, which starts at 0x1 for the CTR
-cipher stream generation but is reset to 0x0 to encrypt the
-authentication tag. Both drivers do a memset() to zero the last q+1
-bytes of the IV.
+Christian Schoenebeck wrote on Wed, Mar 30, 2022 at 02:21:16PM +0200:
+> Case  Linux kernel version           .config  msize    cache  duration  host cpu  errors/warnings
+> 
+> A)    5.17.0+[2] + msize patches[1]  debug    4186112  mmap   20m 40s   ~80%      none
+> B)    5.17.0+[2] + msize patches[1]  debug    4186112  loose  31m 28s   ~35%      several errors (compilation completed)
+> C)    5.17.0+[2] + msize patches[1]  debug    507904   mmap   20m 25s   ~84%      none
+> D)    5.17.0+[2] + msize patches[1]  debug    507904   loose  31m 2s    ~33%      several errors (compilation completed)
+> E)    5.17.0+[2]                     debug    512000   mmap   23m 45s   ~75%      none
+> F)    5.17.0+[2]                     debug    512000   loose  32m 6s    ~31%      several errors (compilation completed)
+> G)    5.17.0+[2]                     release  512000   mmap   23m 18s   ~76%      none
+> H)    5.17.0+[2]                     release  512000   loose  32m 33s   ~31%      several errors (compilation completed)
+> I)    5.17.0+[2] + msize patches[1]  release  4186112  mmap   20m 30s   ~83%      none
+> J)    5.17.0+[2] + msize patches[1]  release  4186112  loose  31m 21s   ~31%      several errors (compilation completed)
+> K)    5.10.84                        release  512000   mmap   39m 20s   ~80%      none
+> L)    5.10.84                        release  512000   loose  13m 40s   ~55%      none
 
-> In particular I think I've seen transient crypto failures with
-> SM4 CCM in the past and zeroing the tail of the iv buffer seems
-> to make the tests pass reliably.
->
+ow.
 
-Yes, that seems like a bug, although there is only a single
-implementation of the combined SM4-CCM transform in the tree, and
-generic SM4 in C would be combined with the CCM chaining mode driver,
-which is also used for generic AES.
+> Disclaimer: I have not looked into the fs-cache sources yet, so I am not sure,
+> but my first impression is that probably something got broken with recent
+> fs-cache changes (see column errors, especially in comparison to case L) which
+> did not generate any errors)? And also note the huge build duration 
+> differences, especially in comparison to case L), so fs-cache (cache=loose)
+> also got significantly slower while cache=mmap OTOH became significantly
+> faster?
+
+Yes, that's a big regression; I didn't do any performance benchmark with
+the new patches as I didn't think it'd matter but I obviously should
+have.
+
+There is one thing I must check: I know new kernels will be writing in
+4k chunks and that is going to be very slow until the netfs write
+helpers are finished, but I thought the old code did the same.
+If the old code had bigger writes that performance will probably come
+back.
+Otherwise there's some other error like not reusing cached content we
+should use.
 
 
-> > > Reserve MAX_IV_SIZE memory space for iv to be compatible with all
-> > > ciphers. And do iv and salt copy like done in tls_do_encryption().
-> > >
-> > > Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
-> > > Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> > > ---
-> > >  net/tls/tls_sw.c | 10 +++-------
-> > >  1 file changed, 3 insertions(+), 7 deletions(-)
-> > >
-> > > diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> > > index 0024a692f0f8..6b858f995b23 100644
-> > > --- a/net/tls/tls_sw.c
-> > > +++ b/net/tls/tls_sw.c
-> > > @@ -1456,7 +1456,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
-> > >     aead_size = sizeof(*aead_req) + crypto_aead_reqsize(ctx->aead_recv);
-> > >     mem_size = aead_size + (nsg * sizeof(struct scatterlist));
-> > >     mem_size = mem_size + prot->aad_size;
-> > > -   mem_size = mem_size + crypto_aead_ivsize(ctx->aead_recv);
-> > > +   mem_size = mem_size + MAX_IV_SIZE;
-> >
-> > This change is not strictly required for the patch, right?
-> > Can we drop it, and perhaps send as an optimization separately later?
-> >
-> > >     /* Allocate a single block of memory which contains
-> > >      * aead_req || sgin[] || sgout[] || aad || iv.
-> > > @@ -1493,12 +1493,8 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
-> > >             kfree(mem);
-> > >             return err;
-> > >     }
-> > > -   if (prot->version == TLS_1_3_VERSION ||
-> > > -       prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
-> > > -           memcpy(iv + iv_offset, tls_ctx->rx.iv,
-> > > -                  crypto_aead_ivsize(ctx->aead_recv));
-> > > -   else
-> > > -           memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
-> > > +   memcpy(iv + iv_offset, tls_ctx->rx.iv,
-> > > +          prot->iv_size + prot->salt_size);
-> >
-> > If the IV really is 16B then we're passing 4 bytes of uninitialized
-> > data at the end of the buffer, right?
-> >
-> > >     xor_iv_with_seq(prot, iv + iv_offset, tls_ctx->rx.rec_seq);
->
-> FWIW this is the fix I tested:
->
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 0024a692f0f8..dbc6bce01898 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -1473,6 +1473,8 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
->         aad = (u8 *)(sgout + n_sgout);
->         iv = aad + prot->aad_size;
->
-> +       /* Prepare IV */
-> +       memset(iv, 0, crypto_aead_ivsize(ctx->aead_recv));
->         /* For CCM based ciphers, first byte of nonce+iv is a constant */
->         switch (prot->cipher_type) {
->         case TLS_CIPHER_AES_CCM_128:
-> @@ -1485,21 +1487,20 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
->                 break;
->         }
->
-> -       /* Prepare IV */
-> -       err = skb_copy_bits(skb, rxm->offset + TLS_HEADER_SIZE,
-> -                           iv + iv_offset + prot->salt_size,
-> -                           prot->iv_size);
-> -       if (err < 0) {
-> -               kfree(mem);
-> -               return err;
-> -       }
->         if (prot->version == TLS_1_3_VERSION ||
-> -           prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
-> +           prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305) {
->                 memcpy(iv + iv_offset, tls_ctx->rx.iv,
-> -                      crypto_aead_ivsize(ctx->aead_recv));
-> -       else
-> +                      prot->iv_size + prot->salt_size);
-> +       } else {
-> +               err = skb_copy_bits(skb, rxm->offset + TLS_HEADER_SIZE,
-> +                                   iv + iv_offset + prot->salt_size,
-> +                                   prot->iv_size);
-> +               if (err < 0) {
-> +                       kfree(mem);
-> +                       return err;
-> +               }
->                 memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
-> -
-> +       }
->         xor_iv_with_seq(prot, iv + iv_offset, tls_ctx->rx.rec_seq);
->
->         /* Prepare AAD */
-> --
-> 2.34.1
->
->
+> About the errors: I actually already see errors with cache=loose and recent
+> kernel version just when booting the guest OS. For these tests I chose some
+> sources which allowed me to complete the build to capture some benchmark as
+> well, I got some "soft" errors with those, but the build completed at least.
+> I had other sources OTOH which did not complete though and aborted with
+> certain invalid file descriptor errors, which I obviously could not use for
+> those benchmarks here.
+
+That's less surprising, the change was really huge. I'm annoyed because
+I did test part of a parallel linux kernel compilation with
+cache=fscache without noticing a problem :/
+
+I'll try to reproduce this weekend-ish.
+> > Christian Schoenebeck wrote on Sat, Mar 26, 2022 at 01:36:31PM +0100:
+> > hm, fscache code shouldn't be used for cache=mmap, I'm surprised you can
+> > hit this...
+> 
+> I assume that you mean that 9p driver does not explicitly ask for fs-cache
+> being used for mmap. I see that 9p uses the kernel's generalized mmap
+> implementation:
+> 
+> https://github.com/torvalds/linux/blob/d888c83fcec75194a8a48ccd283953bdba7b2550/fs/9p/vfs_file.c#L481
+> 
+> I haven't dived further into this, but the kernel has to use some kind of
+> filesystem cache anyway to provide the mmap functionality, so I guess it makes
+> sense that I got those warning messages from the FS-Cache subsystem?
+
+It uses the generic mmap which has vfs caching, but definitely not
+fs-cache.
+fs-cache adds more hooks for cachefilesd (writing file contents to disk
+for bigger cache) and things like that cache=loose/mmap shouldn't be
+caring about. cache=loose actually just disables some key parts so I'm
+not surprised it shares bugs with the new code, but cache=mmap is really
+independant and I need to trace where these come from...
+
+> With QEMU >= 5.2 you should see the following QEMU warning with your reproducer:
+> 
+> "
+> qemu-system-x86_64: warning: 9p: Multiple devices detected in same VirtFS
+> export, which might lead to file ID collisions and severe misbehaviours on
+> guest! You should either use a separate export for each device shared from
+> host or use virtfs option 'multidevs=remap'!
+> "
+
+oh, I wasn't aware of the new option. Good job there!
+
+It's the easiest way to reproduce but there are also harder to fix
+collisions, file systems only guarantee unicity for (fsid,inode
+number,version) which is usually bigger than 128 bits (although version
+is often 0), but version isn't exposed to userspace easily...
+What we'd want for unicity is handle from e.g. name_to_handle_at but
+that'd add overhead, wouldn't fit in qid path and not all fs are capable
+of providing one... The 9p protocol just doesn't want bigger handles
+than qid path.
+
+
+
+And, err, looking at the qemu code
+
+  qidp->version = stbuf->st_mtime ^ (stbuf->st_size << 8);
+
+so the qid is treated as "data version",
+but on kernel side we've treated it as inode version (i_version, see
+include/linux/iversion.h)
+
+(v9fs_test_inode_dotl checks the version is the same when comparing two
+inodes) so it will incorrectly identify two identical inodes as
+different.
+That will cause problems...
+Since you'll be faster than me could you try keeping it at 0 there?
+
+I see fscache also uses the qid version as 'auxilliary data', but I'm
+not sure what this is used for -- if it's a data version like thing then
+it will also at least invalidate the cache content all the time.
+
+
+Note there also is a data_version thing in the protocol in the response
+to getattr, which the protocol side of 9p in linux digilently fills in
+st_data_version, but we never use it that I can see.
+This is probably what 9p meant to fill, and fscache should rely on to
+detect file changes if that helps.
+
+
+I'm sorry I didn't see this sooner....
+
+> > If you have some kind of reproducer of invalid filedescriptor or similar
+> > errors I'd be happy to dig a bit more, I don't particularly like all
+> > aspect of our cache model but it's not good if it corrupts things.
+> 
+> Maybe you can reproduce this with the root fs setup [4] described above? As I
+> said, I immediately get errors when guest OS is booting. So I don't have to
+> run something fancy to get errors with cache=loose & recent kernel.
+
+Yes, this is much worse than I had first assumed when you first brought
+it up, I'll definitely set some time aside to investigate.
+
+-- 
+Dominique
