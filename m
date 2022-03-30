@@ -2,157 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB7374EC5E9
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 15:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EC344EC60D
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 15:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346299AbiC3NsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 09:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
+        id S1346443AbiC3N6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 09:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241785AbiC3NsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 09:48:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8846EA27E0
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 06:46:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648647988;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eLaIWlVraYrzqJO20OFbs4aqtDs0LbbZo1X56L7veGw=;
-        b=VN7BmB8UpzzktEljPsAxZVUjXLJocd+CuyPskIKsqYE1+/b25wIN1MMxmQL2HJ2erPhEX5
-        pEGMOTognU+ttcbcZNw9B5PXyFXnqYeaxKhE0nwZ/lbRFQJTmL4RLJnexOaeRvAdCimmNG
-        3Tg6I7zwfOcK5AIxtdnte0AhiSKida4=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-197-bgyvHyauOnKezI5QJN2dTw-1; Wed, 30 Mar 2022 09:46:27 -0400
-X-MC-Unique: bgyvHyauOnKezI5QJN2dTw-1
-Received: by mail-ej1-f70.google.com with SMTP id do20-20020a170906c11400b006e0de97a0e9so4801354ejc.19
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 06:46:26 -0700 (PDT)
+        with ESMTP id S1346436AbiC3N6s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 09:58:48 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910667DE3E
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 06:57:02 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id j21so18096415qta.0
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 06:57:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DfvJTlEY8U7rra0eOB4jSr3teV5G1+HBXZRLoOcm1Ys=;
+        b=mjLfZ6UICPE4iHot6Ft1DhBnopoHKAN0JBk1FOc/MuPwOrJy1Stvy0GVGi0Q+fR9tq
+         07OwRKo2kChON44WIX85CxEk/g6ZXG6ugpSeA/+PvwJBfkIBhqZTxe2iE0aZRwhQOZi9
+         6l5apirhR8yrtb1BoRb8k4D71+N6Phgx6DI7JunT45g/p6e0hUmrYmGBoQbKUQ7s9rPp
+         lNcRjJ/7ZBoRdUBdgdR2B2aqjROeAlOandhaySdcqZOXnyUtCpiGLhVzLuEzMJ2lbmPN
+         FmqOhL7OrvpaJJvHXmK5jdSL3kd/T37DY6545pdWqa/iB7yqIPHiWraSy/OLiQ8cZRdK
+         bQKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=eLaIWlVraYrzqJO20OFbs4aqtDs0LbbZo1X56L7veGw=;
-        b=M4RFvDjCSnVtnxg+oiMCRrAN0QPupNKyGJlPnhcUhdfl1mIjl6GkvtxWk32/jo0SC4
-         VwMUyv3Wa0yt0zzyIdbKYHvedqtqsqeQ5QuZcPh/dU+dF+0qOzMW7s8vaxOgt734/DGZ
-         Sz6GLkQEUIliM3YisulyNg66CHWTIdNrYDFh3Zr76hkIflJwbwD7V1Vf6pGq8cgliXEu
-         wfYAJ3/JxjMSV1Iry5PHCvXU71UJ21tBJ6Ijq9QTLHK1wPSW8Hnjg6ONGTY4E2qWNnHD
-         fayLsFf+tH6yp2mJ7YvBk6CsPWMAxlNrQeUSk6APjrD7WN1hVzT75+eVja1xEm3luYwt
-         KgfA==
-X-Gm-Message-State: AOAM532tVQhwESN/6gUE2Cs66Y6EK7SQXfIzTirL2k7NicN62ORCthYR
-        HQDShj4UGylH8J3eDgINFXnonXygO3Q3Zceu7At6CJ5sc/iJGN4JHRjLFYa0Kd2JhmQO05ScS8g
-        ct3tcBkil/mMkgwZ/
-X-Received: by 2002:a17:907:3e94:b0:6d1:d64e:3141 with SMTP id hs20-20020a1709073e9400b006d1d64e3141mr38837472ejc.213.1648647983280;
-        Wed, 30 Mar 2022 06:46:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzwZ63UhP/cjX55N9lQpIVsi+7QnOIup8W+4kphWmkl+wmSx/opVSXEvOLQomDj9Q5DThyhIw==
-X-Received: by 2002:a17:907:3e94:b0:6d1:d64e:3141 with SMTP id hs20-20020a1709073e9400b006d1d64e3141mr38837371ejc.213.1648647982108;
-        Wed, 30 Mar 2022 06:46:22 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id jg22-20020a170907971600b006df9ff416ccsm8073801ejc.137.2022.03.30.06.46.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 06:46:21 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E1D9A240E87; Wed, 30 Mar 2022 15:46:20 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        'Linux Kernel' <linux-kernel@vger.kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kurt Cancemi <kurt@x64architecture.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: UBSAN: invalid-load in net/mac80211/status.c:1164:21
-In-Reply-To: <892635fbacdc171baba2cba1b501f30b6a4faeca.camel@sipsolutions.net>
-References: <395d9e22-8b28-087a-5c5d-61a43db527ac@gmail.com>
- <892635fbacdc171baba2cba1b501f30b6a4faeca.camel@sipsolutions.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 30 Mar 2022 15:46:20 +0200
-Message-ID: <87bkxn4kpf.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DfvJTlEY8U7rra0eOB4jSr3teV5G1+HBXZRLoOcm1Ys=;
+        b=ITAqzCqv59FjFQ5Ux9ScXPSpmzPzrIVQ2nZ8zTcNP48cKn0bk0vhKCLUqeJbkIHqw1
+         +I6llSCIEOrHpHLFoShWYQ4QkM47vfYjW+QIhxYMRdvMoMWP0WVdCp81lskR5yGwiuwU
+         rw/eMwtoVVnQlQObpk61bJ5ZhTpQfS6XGWdZnJVUAoIbp5dhV554v3nzIYMtAsdDbzM7
+         3gPvB4r04sPsGZSJ42zVFotbqTZWnKnZ0cnRTO3SQKBa0bvC/66xjWOdhBwdt/sWPi6C
+         p4BMpbF6Ub/WuMaHyJ/L9xijBG+Hh2iDM0j+eC8BiUc92WHw6BsoBMB83AvRcoDP1ycj
+         EvLA==
+X-Gm-Message-State: AOAM532FYPgYSKXBjh1QW1Cwe5G/M0z2scRd/Mv0geVF0dD0wlnZxfyb
+        Ag7+TfpHsdZ4rfgTBRABH+fjOppB8O7K9lFZbMhhZg==
+X-Google-Smtp-Source: ABdhPJwhihrh627ejTmkR2/dwhhgRa9NCHMkD2bfquh9shcIyQ2M+CtQmIYPEpKXvc/K90YI61NwYWoUqc7IeP//fxs=
+X-Received: by 2002:a05:622a:1743:b0:2e1:f657:a415 with SMTP id
+ l3-20020a05622a174300b002e1f657a415mr32924295qtk.7.1648648621483; Wed, 30 Mar
+ 2022 06:57:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
+In-Reply-To: <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 30 Mar 2022 09:56:45 -0400
+Message-ID: <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
+To:     Jaco Kroon <jaco@uls.co.za>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johannes Berg <johannes@sipsolutions.net> writes:
+On Wed, Mar 30, 2022 at 2:22 AM Jaco Kroon <jaco@uls.co.za> wrote:
+>
+> Hi Eric,
+>
+> On 2022/03/30 05:48, Eric Dumazet wrote:
+> > On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
+> >
+> > I do not think this commit is related to the issue you have.
+> >
+> > I guess you could try a revert ?
+> >
+> > Then, if you think old linux versions were ok, start a bisection ?
+> That'll be interesting, will see if I can reproduce on a non-production
+> host.
+> >
+> > Thank you.
+> >
+> > (I do not see why a successful TFO would lead to a freeze after ~70 KB
+> > of data has been sent)
+>
+> I do actually agree with this in that it makes no sense, but disabling
+> TFO definitely resolved the issue for us.
+>
+> Kind Regards,
+> Jaco
 
-> On Wed, 2022-03-30 at 18:49 +0700, Bagas Sanjaya wrote:
->> 
->> [ 1152.928312] UBSAN: invalid-load in net/mac80211/status.c:1164:21
->> [ 1152.928318] load of value 255 is not a valid value for type '_Bool'
->
->
-> That's loading status->is_valid_ack_signal, it seems.
->
-> Note how that's in a union, shadowed by the 0x00ff0000'00000000 byte of
-> the control.vif pointer (if I'm counting bytes correctly). That's kind
-> of expected to be 0xff.
->
->> [ 1152.928323] CPU: 1 PID: 857 Comm: rs:main Q:Reg Not tainted 5.17.1-kernelorg-stable-generic #1
->> [ 1152.928329] Hardware name: Acer Aspire E5-571/EA50_HB   , BIOS V1.04 05/06/2014
->> [ 1152.928331] Call Trace:
->> [ 1152.928334]  <TASK>
->> [ 1152.928338]  dump_stack_lvl+0x4c/0x63
->> [ 1152.928350]  dump_stack+0x10/0x12
->> [ 1152.928354]  ubsan_epilogue+0x9/0x45
->> [ 1152.928359]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
->> [ 1152.928365]  ieee80211_tx_status_ext.cold+0xa3/0xb8 [mac80211]
->> [ 1152.928467]  ieee80211_tx_status+0x7d/0xa0 [mac80211]
->> [ 1152.928535]  ath_txq_unlock_complete+0x15c/0x170 [ath9k]
->> [ 1152.928553]  ath_tx_edma_tasklet+0xe5/0x4c0 [ath9k]
->> [ 1152.928567]  ath9k_tasklet+0x14e/0x280 [ath9k]
->
-> Which sort of means that ath9k isn't setting up the status area
-> correctly?
+Thanks for the pcap trace! That's a pretty strange trace. I agree with
+Eric's theory that this looks like one or more bugs in a firewall,
+middlebox, or netfilter rule. From the trace it looks like the buggy
+component is sometimes dropping packets and sometimes corrupting them
+so that the client's TCP stack ignores them.
 
-Yeah, it seems to be only setting fields individually, so AFAICT it's
-skipping 'antenna' and 'flags' in info->status.
+Interestingly, in that trace the client SYN has a TFO option and
+cookie, but no data in the SYN.
 
->> The bisection process, starting from v5.17 (the first tag with the warning),
->> found first 'oops' commit at 837d9e49402eaf (net: phy: marvell: Fix invalid
->> comparison in the resume and suspend functions, 2022-03-12). However, since
->> the commit didn't touch net/mac80211/status.c, it wasn't the root cause
->> commit.
->
-> Well you'd look for something in ath9k, I guess. But you didn't limit
-> the bisect, so not sure why it went off into the weeds. Maybe you got
-> one of them wrong.
->
->> The latest commit that touch the file in question is commit
->> ea5907db2a9ccf (mac80211: fix struct ieee80211_tx_info size, 2022-02-02).
->
-> That's after 5.17 though, and it replaced the bool by just a flag.
->
->
-> Seems to me ath9k should use something like
-> ieee80211_tx_info_clear_status() or do the memset by itself? This bug
-> would now not be reported, but it might report the flag erroneously.
+The last packet that looks sane/normal is the ACK from the SMTP server
+that looks like:
 
-So something like the below, maybe?
+00:00:00.000010 IP6 2a00:1450:4013:c16::1a.25 >
+2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 66263 win
+774 <nop,nop,TS val 1206544341 ecr 331189186>
 
--Toke
+That's the first ACK that crosses past 2^16. Maybe that is a
+coincidence, or maybe not. Perhaps the buggy firewall/middlebox/etc is
+confused by the TFO option, corrupts its state, and thereafter behaves
+incorrectly past the first 64 KBytes of data from the client.
 
-diff --git a/drivers/net/wireless/ath/ath9k/xmit.c b/drivers/net/wireless/ath/ath9k/xmit.c
-index d0caf1de2bde..425fe0df7d62 100644
---- a/drivers/net/wireless/ath/ath9k/xmit.c
-+++ b/drivers/net/wireless/ath/ath9k/xmit.c
-@@ -2553,6 +2553,8 @@ static void ath_tx_rc_status(struct ath_softc *sc, struct ath_buf *bf,
-        struct ath_hw *ah = sc->sc_ah;
-        u8 i, tx_rateindex;
- 
-+       ieee80211_tx_info_clear_status(tx_info);
-+
-        if (txok)
-                tx_info->status.ack_signal = ts->ts_rssi;
- 
+In addition to checking for checksum failures, mentioned by Eric, you
+could look for PAWS failures, something like:
 
+  nstat -az | egrep  -i 'TcpInCsumError|PAWS'
+
+best,
+neal
