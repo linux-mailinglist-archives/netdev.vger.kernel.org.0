@@ -2,105 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 304B34EBBBC
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 09:31:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E314EBBE0
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 09:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243870AbiC3HdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 03:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
+        id S243879AbiC3Hjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 03:39:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243859AbiC3HdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 03:33:09 -0400
-Received: from smtp.tom.com (smtprz01.163.net [106.3.154.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BFF51EF5FD
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 00:31:23 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 83AAE440106
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 15:31:22 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648625482; bh=NMMsM4W1Upu0QGhDq7i8xxMqcVrHRP8FulbAb4qUKvI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hbVMlh7XfTsiDdj94uG8cIhXl/9cUyFgR+HtJyvNuLJuQNb0fMrZWgsU0eBS6c9aW
-         IeoJFAwtvc1BquvpxwxpwnOX9Uc5czwdjZQUBCi0MsD8ZGeXVQjVFTpzEI3DSJmHKE
-         yFiTNquf3QT+9lgAFekEp/TaV/RaRPiDv8G7cE+Y=
-Received: from localhost (HELO smtp.tom.com) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID 945234129
-          for <netdev@vger.kernel.org>;
-          Wed, 30 Mar 2022 15:31:22 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648625482; bh=NMMsM4W1Upu0QGhDq7i8xxMqcVrHRP8FulbAb4qUKvI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hbVMlh7XfTsiDdj94uG8cIhXl/9cUyFgR+HtJyvNuLJuQNb0fMrZWgsU0eBS6c9aW
-         IeoJFAwtvc1BquvpxwxpwnOX9Uc5czwdjZQUBCi0MsD8ZGeXVQjVFTpzEI3DSJmHKE
-         yFiTNquf3QT+9lgAFekEp/TaV/RaRPiDv8G7cE+Y=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id 1C5AB154209E;
-        Wed, 30 Mar 2022 15:31:19 +0800 (CST)
-Date:   Wed, 30 Mar 2022 15:31:17 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
- congestion-control
-Message-ID: <20220330153117.00002565@tom.com>
-In-Reply-To: <20220328213353.4aca75bd@kernel.org>
-References: <20220311103414.8255-1-sunmingbao@tom.com>
-        <20220311103414.8255-2-sunmingbao@tom.com>
-        <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
-        <20220325201123.00002f28@tom.com>
-        <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
-        <20220329104806.00000126@tom.com>
-        <20220328213353.4aca75bd@kernel.org>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        with ESMTP id S242842AbiC3Hjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 03:39:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BC0DFA2
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 00:37:55 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nZSte-0004cO-Sb; Wed, 30 Mar 2022 09:37:38 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-5314-bece-822a-622d.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:5314:bece:822a:622d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 585F256C47;
+        Wed, 30 Mar 2022 07:37:36 +0000 (UTC)
+Date:   Wed, 30 Mar 2022 09:37:35 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     "Zhang, Qiang1" <qiang1.zhang@intel.com>
+Cc:     syzbot <syzbot+4d0ae90a195b269f102d@syzkaller.appspotmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "pfink@christ-es.de" <pfink@christ-es.de>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        "wg@grandegger.com" <wg@grandegger.com>
+Subject: Re: [syzbot] memory leak in gs_usb_probe
+Message-ID: <20220330073735.tqfmyfgzyfbqmkpn@pengutronix.de>
+References: <000000000000bd6ee505db5cfec6@google.com>
+ <PH0PR11MB5880D90EDFAA0A190D927914DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="u2qbbpeazfhzmyv4"
+Content-Disposition: inline
+In-Reply-To: <PH0PR11MB5880D90EDFAA0A190D927914DA1F9@PH0PR11MB5880.namprd11.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 28 Mar 2022 21:33:53 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
 
-> On Tue, 29 Mar 2022 10:48:06 +0800 Mingbao Sun wrote:
-> > A server in a data-center with the following 2 NICs:
-> >=20
-> >     - NIC_fron-end, for interacting with clients through WAN
-> >       (high latency, ms-level)
-> >=20
-> >     - NIC_back-end, for interacting with NVMe/TCP target through LAN
-> >       (low latency, ECN-enabled, ideal for dctcp)
-> >=20
-> > This server interacts with clients (handling requests) via the fron-end
-> > network and accesses the NVMe/TCP storage via the back-end network.
-> > This is a normal use case, right? =20
+--u2qbbpeazfhzmyv4
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 30.03.2022 01:57:08, Zhang, Qiang1 wrote:
+> Hello,
 >=20
-> Well, if you have clearly separated networks you can set the congestion
-> control algorithm per route, right? man ip-route, search congctl.
+> syzbot found the following issue on:
+>=20
+> HEAD commit:    52deda9551a0 Merge branch 'akpm' (patches from Andrew)
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D12b472dd700000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D9ca2a67ddb200=
+27f
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3D4d0ae90a195b269=
+f102d
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binuti=
+ls for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D12e96e1d700=
+000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D12f8b513700000
+>=20
+> IMPORTANT: if you fix the issue, please add the following tag to the comm=
+it:
+> Reported-by: syzbot+4d0ae90a195b269f102d@syzkaller.appspotmail.com
 
-Cool, many thanks for the education.
+[...]
 
-I verified this approach, and it did work well.
-And I furtherly found the commit
-=E2=80=98net: tcp: add per route congestion control=E2=80=99 which just
-addresses the requirement of this scenario (separated network).
+> diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
+> index 67408e316062..5234cfff84b8 100644
+> --- a/drivers/net/can/usb/gs_usb.c
+> +++ b/drivers/net/can/usb/gs_usb.c
+> @@ -1092,6 +1092,7 @@ static struct gs_can *gs_make_candev(unsigned int c=
+hannel,
+>                 dev->data_bt_const.brp_inc =3D le32_to_cpu(bt_const_exten=
+ded->dbrp_inc);
+>=20
+>                 dev->can.data_bittiming_const =3D &dev->data_bt_const;
+> +               kfree(bt_const_extended);
+>         }
+>=20
+>         SET_NETDEV_DEV(netdev, &intf->dev);
 
-So with this approach, the requirements of our use case are
-roughly satisfied.
+I have already send a similar fix:
 
-Thanks again ^_^
+| https://lore.kernel.org/all/20220329193450.659726-1-mkl@pengutronix.de
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--u2qbbpeazfhzmyv4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJECL0ACgkQrX5LkNig
+010Jigf/UYHDKXYUu5jFycIr7rrBq8r5VIcDaqmDlplnJPSKchZQPkm8fh90b2yu
+jOzjOuWc7KPzuG6RQczoTAKnFP7kZDaCyTEnsIsoE9sdOmN/mpriPLADvRVt24Xq
+mdGz3n5YeqEjaX6Sc4qXOK2NuzDljYia+rN29+2hiTAehZ/ozKk+L4FDbOTqdA0+
+p7onZyyAK1o9Gd0dj6oJ8uNXLuItZQpo+NiUZgfaHgbbcBNhjySxCiB/XPx1TkCw
+bh3EVHr76BVZ/81Vi2boNxNOLNSrVpe7PKPLf5VRVR/yED/9GVopYwiWJWT9TW28
+yj1X0NbloZxb4RBfmBy2pnMwPe1J3g==
+=wJB8
+-----END PGP SIGNATURE-----
+
+--u2qbbpeazfhzmyv4--
