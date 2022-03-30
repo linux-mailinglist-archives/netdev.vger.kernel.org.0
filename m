@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C6964EC9C2
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D53584EC9C5
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348856AbiC3QiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 12:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
+        id S1348878AbiC3QjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 12:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244806AbiC3Qhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:37:53 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E407C144B60;
-        Wed, 30 Mar 2022 09:36:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ALx8ARvWqSkByuqgzD/rMzGpI9BdpJ6pBXa8AsrOFxA=; b=CPOWA5ININhL05ojuoEkeHuNuU
-        cEYdETw3a70DK4U5wPGl/VU6HrTn5oSnArEajcgUdD95uZocLCIH7GoST3wO003+MKkteqnbbt8yV
-        M8YICMTPZVMA9KycIEPLqaex+E5KTmCB9jRVFaLKWcz0FU0vnlxdz5gKMdRm1k6+wXR0+L4ZLyMXj
-        Xuy+Whmv1WAfdIs6LPV90DtIUPjGfMfMoV1slspt9E1vU47LKB0frosFMy+4Ojos9b2JMLbvhe864
-        H64Amy5UHljCpMHv8oCGdWZrlDzydn8ViTS4pE8LCx6IjDDUCNfADHrRWrprz7aJuNuSeMj3sxueK
-        M7IQo0GA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58022)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nZbId-0003Su-LW; Wed, 30 Mar 2022 17:35:59 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nZbIc-0006m8-9u; Wed, 30 Mar 2022 17:35:58 +0100
-Date:   Wed, 30 Mar 2022 17:35:58 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH net-next] dt-bindings: net: convert sff,sfp to dtschema
-Message-ID: <YkSG7oBcDe6lTCOO@shell.armlinux.org.uk>
-References: <20220315123315.233963-1-ioana.ciornei@nxp.com>
- <6f4f2e6f-3aee-3424-43bc-c60ef7c0218c@canonical.com>
- <20220315190733.lal7c2xkaez6fz2v@skbuf>
- <deed2e82-0d93-38d9-f7a2-4137fa0180e6@canonical.com>
- <20220316101854.imevzoqk6oashrgg@skbuf>
- <YkR8tTWabfTRLarB@shell.armlinux.org.uk>
- <CAL_JsqKFbU6VyLu+as_bZxWsfHRf5mJGeExjZ2ZJQqOcJchC+g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqKFbU6VyLu+as_bZxWsfHRf5mJGeExjZ2ZJQqOcJchC+g@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        with ESMTP id S236846AbiC3QjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:39:01 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B91C197AC3;
+        Wed, 30 Mar 2022 09:37:15 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id s8so19197285pfk.12;
+        Wed, 30 Mar 2022 09:37:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=ncCMERzhXgEwa8YpsHvGRoleMf6RuPaWT+VsO4MzRgU=;
+        b=h5fB5kqw7kgZZ7GiiqhNgopBgU3OVifclVBFYjbjk/fF+JUwmyGztrIpstEhHgDW7G
+         DDVDY/eqLsaMAWgYG1HvJ6MSMpwLmmI8R1+GDdNNRk6H1xGOjjNqlZHlmLtu1nBEroki
+         7BKd2UF/nOqMNhJ0qSifuYSP5ASJ0e9GbvRbduWaZMoYSRrEWzZmcxd67V7xXNAq+l9q
+         6XdLq/VwNZaql8Pw+d6XGtTG8tkbYyrz5LEaobUjeLRMd/M842YWWZgoobhf2vwAGv86
+         fl9RkvZwvSLbfOvyoGXmkBkosj7DOd5dEBNGUu7Ll15TG2yK6RqRBscNXLa7RgRAbQ6y
+         aL2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ncCMERzhXgEwa8YpsHvGRoleMf6RuPaWT+VsO4MzRgU=;
+        b=tRLivL8GGgp00OJbcGpMd/g07yGuc7ZSfW85a4Ba4bXi3OyYIwdYiiX6BrKqm6sY2B
+         neUYAUiC5BSX7vNw+LWlEx0HMxLEBjP/6wHduLPJrLCTYcqTea247K5jJufJh6BJKh6z
+         FL5YWVwAVMvhj3pItbYyNYrYkb8mNrdI59BqmbiJ4jhZkZvBp7vwwcaRiwNLJ6M8lBgq
+         nnt5Vya7P9QZgodReKzSBVDBEfsYdVt1EI4WwGqdzsgskhtM6mv/3cCM1M9GFmfRYtT1
+         Id4EzmFtcOMZnTCax1ZVYA5d3zPKUck90p0jfeQNa1/YVqqFBJyn8dMT2skAysl5lEgX
+         XrLw==
+X-Gm-Message-State: AOAM531ExNL2XrnNyArSySUxi9ooJZ3ePgBH/I5uDC9N/R3fAc3k7yMP
+        Rt/c1OsTuSraeB0VgtQwdUg=
+X-Google-Smtp-Source: ABdhPJxVHXRIUEJEE/QCW1WbPe8hN9HKop9wh5Lfe9nswdo6G3RkkQq025wlJnoHNeNzjXFPOuBQqw==
+X-Received: by 2002:a65:6e0f:0:b0:382:2f78:4369 with SMTP id bd15-20020a656e0f000000b003822f784369mr6849189pgb.406.1648658234761;
+        Wed, 30 Mar 2022 09:37:14 -0700 (PDT)
+Received: from localhost.localdomain ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id m18-20020a639412000000b003820bd9f2f2sm20119791pge.53.2022.03.30.09.37.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 09:37:14 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com,
+        cmclachlan@solarflare.com
+Cc:     ap420073@gmail.com
+Subject: [PATCH net v2] net: sfc: add missing xdp queue reinitialization
+Date:   Wed, 30 Mar 2022 16:37:03 +0000
+Message-Id: <20220330163703.25086-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,93 +66,256 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 11:09:42AM -0500, Rob Herring wrote:
-> On Wed, Mar 30, 2022 at 10:52 AM Russell King (Oracle)
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Wed, Mar 16, 2022 at 10:18:55AM +0000, Ioana Ciornei wrote:
-> > > On Wed, Mar 16, 2022 at 09:23:45AM +0100, Krzysztof Kozlowski wrote:
-> > > > On 15/03/2022 20:07, Ioana Ciornei wrote:
-> > > > > On Tue, Mar 15, 2022 at 07:21:59PM +0100, Krzysztof Kozlowski wrote:
-> > > > >> On 15/03/2022 13:33, Ioana Ciornei wrote:
-> > > > >>> Convert the sff,sfp.txt bindings to the DT schema format.
-> > > > >>>
-> > > > >>> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> > > > >>> ---
-> > > > >
-> > > > > (..)
-> > > > >
-> > > > >>> +maintainers:
-> > > > >>> +  - Russell King <linux@armlinux.org.uk>
-> > > > >>> +
-> > > > >>> +properties:
-> > > > >>> +  compatible:
-> > > > >>> +    enum:
-> > > > >>> +      - sff,sfp  # for SFP modules
-> > > > >>> +      - sff,sff  # for soldered down SFF modules
-> > > > >>> +
-> > > > >>> +  i2c-bus:
-> > > > >>
-> > > > >> Thanks for the conversion.
-> > > > >>
-> > > > >> You need here a type because this does not look like standard property.
-> > > > >
-> > > > > Ok.
-> > > > >
-> > > > >>
-> > > > >>> +    description:
-> > > > >>> +      phandle of an I2C bus controller for the SFP two wire serial
-> > > > >>> +
-> > > > >>> +  maximum-power-milliwatt:
-> > > > >>> +    maxItems: 1
-> > > > >>> +    description:
-> > > > >>> +      Maximum module power consumption Specifies the maximum power consumption
-> > > > >>> +      allowable by a module in the slot, in milli-Watts. Presently, modules can
-> > > > >>> +      be up to 1W, 1.5W or 2W.
-> > > > >>> +
-> > > > >>> +patternProperties:
-> > > > >>> +  "mod-def0-gpio(s)?":
-> > > > >>
-> > > > >> This should be just "mod-def0-gpios", no need for pattern. The same in
-> > > > >> all other places.
-> > > > >>
-> > > > >
-> > > > > The GPIO subsystem accepts both suffixes: "gpio" and "gpios", see
-> > > > > gpio_suffixes[]. If I just use "mod-def0-gpios" multiple DT files will
-> > > > > fail the check because they are using the "gpio" suffix.
-> > > > >
-> > > > > Why isn't this pattern acceptable?
-> > > >
-> > > > Because original bindings required gpios, so DTS are wrong, and the
-> > > > pattern makes it difficult to grep and read such simple property.
-> > > >
-> > > > The DTSes which do not follow bindings should be corrected.
-> > > >
-> > >
-> > > Russell, do you have any thoughts on this?
-> > > I am asking this because you were the one that added the "-gpios" suffix
-> > > in the dtbinding and the "-gpio" usage in the DT files so I wouldn't
-> > > want this to diverge from your thinking.
-> > >
-> > > Do you have a preference?
-> >
-> > SFP support predated (in my tree) the deprecation of the -gpio suffix,
-> > and despite the SFP binding doc being sent for review, it didn't get
-> > reviewed so the issue was never picked up.
-> 
-> Really?
-> 
-> https://lore.kernel.org/all/CAL_JsqL_7gG8FSEJDXu=37DFpHjfLhQuUhPFRKcScYTzM4cNyg@mail.gmail.com/
+After rx/tx ring buffer size is changed, kernel panic occurs when
+it acts XDP_TX or XDP_REDIRECT.
 
-Yes. I said "in my tree" not "in Linus' tree". It dates from shortly
-after the first SolidRun Clearfog arrived here, first set of patches
-were based on v4.3-rc2.
+When tx/rx ring buffer size is changed(ethtool -G), sfc driver
+reallocates and reinitializes rx and tx queues and their buffer
+(tx_queue->buffer).
+But it misses reinitializing xdp queues(efx->xdp_tx_queues).
+So, while it is acting XDP_TX or XDP_REDIRECT, it uses the uninitialized
+tx_queue->buffer.
 
-Remember, when development eventually gets submitted as patches, even
-if there are no changes, if the patches are then applied, they get the
-date of the _email_ not of their creation, and there can be several
-years between creation and submission.
+A new function efx_set_xdp_channels() is separated from efx_set_channels()
+to handle only xdp queues.
 
+Splat looks like:
+   BUG: kernel NULL pointer dereference, address: 000000000000002a
+   #PF: supervisor write access in kernel mode
+   #PF: error_code(0x0002) - not-present page
+   PGD 0 P4D 0
+   Oops: 0002 [#4] PREEMPT SMP NOPTI
+   RIP: 0010:efx_tx_map_chunk+0x54/0x90 [sfc]
+   CPU: 2 PID: 0 Comm: swapper/2 Tainted: G      D           5.17.0+ #55 e8beeee8289528f11357029357cf
+   Code: 48 8b 8d a8 01 00 00 48 8d 14 52 4c 8d 2c d0 44 89 e0 48 85 c9 74 0e 44 89 e2 4c 89 f6 48 80
+   RSP: 0018:ffff92f121e45c60 EFLAGS: 00010297
+   RIP: 0010:efx_tx_map_chunk+0x54/0x90 [sfc]
+   RAX: 0000000000000040 RBX: ffff92ea506895c0 RCX: ffffffffc0330870
+   RDX: 0000000000000001 RSI: 00000001139b10ce RDI: ffff92ea506895c0
+   RBP: ffffffffc0358a80 R08: 00000001139b110d R09: 0000000000000000
+   R10: 0000000000000001 R11: ffff92ea414c0088 R12: 0000000000000040
+   R13: 0000000000000018 R14: 00000001139b10ce R15: ffff92ea506895c0
+   FS:  0000000000000000(0000) GS:ffff92f121ec0000(0000) knlGS:0000000000000000
+   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+   Code: 48 8b 8d a8 01 00 00 48 8d 14 52 4c 8d 2c d0 44 89 e0 48 85 c9 74 0e 44 89 e2 4c 89 f6 48 80
+   CR2: 000000000000002a CR3: 00000003e6810004 CR4: 00000000007706e0
+   RSP: 0018:ffff92f121e85c60 EFLAGS: 00010297
+   PKRU: 55555554
+   RAX: 0000000000000040 RBX: ffff92ea50689700 RCX: ffffffffc0330870
+   RDX: 0000000000000001 RSI: 00000001145a90ce RDI: ffff92ea50689700
+   RBP: ffffffffc0358a80 R08: 00000001145a910d R09: 0000000000000000
+   R10: 0000000000000001 R11: ffff92ea414c0088 R12: 0000000000000040
+   R13: 0000000000000018 R14: 00000001145a90ce R15: ffff92ea50689700
+   FS:  0000000000000000(0000) GS:ffff92f121e80000(0000) knlGS:0000000000000000
+   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+   CR2: 000000000000002a CR3: 00000003e6810005 CR4: 00000000007706e0
+   PKRU: 55555554
+   Call Trace:
+    <IRQ>
+    efx_xdp_tx_buffers+0x12b/0x3d0 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+    __efx_rx_packet+0x5c3/0x930 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+    efx_rx_packet+0x28c/0x2e0 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+    efx_ef10_ev_process+0x5f8/0xf40 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+    ? enqueue_task_fair+0x95/0x550
+    efx_poll+0xc4/0x360 [sfc 84c94b8e32d44d296c17e10a634d3ad454de4ba5]
+
+Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+
+v2: Do not use inline in .c file
+
+ drivers/net/ethernet/sfc/efx_channels.c | 146 +++++++++++++-----------
+ 1 file changed, 81 insertions(+), 65 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+index d6fdcdc530ca..b29ca69aeca5 100644
+--- a/drivers/net/ethernet/sfc/efx_channels.c
++++ b/drivers/net/ethernet/sfc/efx_channels.c
+@@ -789,6 +789,85 @@ void efx_remove_channels(struct efx_nic *efx)
+ 	kfree(efx->xdp_tx_queues);
+ }
+ 
++static int efx_set_xdp_tx_queue(struct efx_nic *efx, int xdp_queue_number,
++				struct efx_tx_queue *tx_queue)
++{
++	if (xdp_queue_number >= efx->xdp_tx_queue_count)
++		return -EINVAL;
++
++	netif_dbg(efx, drv, efx->net_dev,
++		  "Channel %u TXQ %u is XDP %u, HW %u\n",
++		  tx_queue->channel->channel, tx_queue->label,
++		  xdp_queue_number, tx_queue->queue);
++	efx->xdp_tx_queues[xdp_queue_number] = tx_queue;
++	return 0;
++}
++
++static void efx_set_xdp_channels(struct efx_nic *efx)
++{
++	struct efx_tx_queue *tx_queue;
++	struct efx_channel *channel;
++	unsigned int next_queue = 0;
++	int xdp_queue_number = 0;
++	int rc;
++
++	/* We need to mark which channels really have RX and TX
++	 * queues, and adjust the TX queue numbers if we have separate
++	 * RX-only and TX-only channels.
++	 */
++	efx_for_each_channel(channel, efx) {
++		if (channel->channel < efx->tx_channel_offset)
++			continue;
++
++		if (efx_channel_is_xdp_tx(channel)) {
++			efx_for_each_channel_tx_queue(tx_queue, channel) {
++				tx_queue->queue = next_queue++;
++				rc = efx_set_xdp_tx_queue(efx, xdp_queue_number,
++							  tx_queue);
++				if (rc == 0)
++					xdp_queue_number++;
++			}
++		} else {
++			efx_for_each_channel_tx_queue(tx_queue, channel) {
++				tx_queue->queue = next_queue++;
++				netif_dbg(efx, drv, efx->net_dev,
++					  "Channel %u TXQ %u is HW %u\n",
++					  channel->channel, tx_queue->label,
++					  tx_queue->queue);
++			}
++
++			/* If XDP is borrowing queues from net stack, it must
++			 * use the queue with no csum offload, which is the
++			 * first one of the channel
++			 * (note: tx_queue_by_type is not initialized yet)
++			 */
++			if (efx->xdp_txq_queues_mode ==
++			    EFX_XDP_TX_QUEUES_BORROWED) {
++				tx_queue = &channel->tx_queue[0];
++				rc = efx_set_xdp_tx_queue(efx, xdp_queue_number,
++							  tx_queue);
++				if (rc == 0)
++					xdp_queue_number++;
++			}
++		}
++	}
++	WARN_ON(efx->xdp_txq_queues_mode == EFX_XDP_TX_QUEUES_DEDICATED &&
++		xdp_queue_number != efx->xdp_tx_queue_count);
++	WARN_ON(efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DEDICATED &&
++		xdp_queue_number > efx->xdp_tx_queue_count);
++
++	/* If we have more CPUs than assigned XDP TX queues, assign the already
++	 * existing queues to the exceeding CPUs
++	 */
++	next_queue = 0;
++	while (xdp_queue_number < efx->xdp_tx_queue_count) {
++		tx_queue = efx->xdp_tx_queues[next_queue++];
++		rc = efx_set_xdp_tx_queue(efx, xdp_queue_number, tx_queue);
++		if (rc == 0)
++			xdp_queue_number++;
++	}
++}
++
+ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
+ {
+ 	struct efx_channel *other_channel[EFX_MAX_CHANNELS], *channel;
+@@ -860,6 +939,7 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
+ 		efx_init_napi_channel(efx->channel[i]);
+ 	}
+ 
++	efx_set_xdp_channels(efx);
+ out:
+ 	/* Destroy unused channel structures */
+ 	for (i = 0; i < efx->n_channels; i++) {
+@@ -892,26 +972,9 @@ int efx_realloc_channels(struct efx_nic *efx, u32 rxq_entries, u32 txq_entries)
+ 	goto out;
+ }
+ 
+-static inline int
+-efx_set_xdp_tx_queue(struct efx_nic *efx, int xdp_queue_number,
+-		     struct efx_tx_queue *tx_queue)
+-{
+-	if (xdp_queue_number >= efx->xdp_tx_queue_count)
+-		return -EINVAL;
+-
+-	netif_dbg(efx, drv, efx->net_dev, "Channel %u TXQ %u is XDP %u, HW %u\n",
+-		  tx_queue->channel->channel, tx_queue->label,
+-		  xdp_queue_number, tx_queue->queue);
+-	efx->xdp_tx_queues[xdp_queue_number] = tx_queue;
+-	return 0;
+-}
+-
+ int efx_set_channels(struct efx_nic *efx)
+ {
+-	struct efx_tx_queue *tx_queue;
+ 	struct efx_channel *channel;
+-	unsigned int next_queue = 0;
+-	int xdp_queue_number;
+ 	int rc;
+ 
+ 	efx->tx_channel_offset =
+@@ -929,61 +992,14 @@ int efx_set_channels(struct efx_nic *efx)
+ 			return -ENOMEM;
+ 	}
+ 
+-	/* We need to mark which channels really have RX and TX
+-	 * queues, and adjust the TX queue numbers if we have separate
+-	 * RX-only and TX-only channels.
+-	 */
+-	xdp_queue_number = 0;
+ 	efx_for_each_channel(channel, efx) {
+ 		if (channel->channel < efx->n_rx_channels)
+ 			channel->rx_queue.core_index = channel->channel;
+ 		else
+ 			channel->rx_queue.core_index = -1;
+-
+-		if (channel->channel >= efx->tx_channel_offset) {
+-			if (efx_channel_is_xdp_tx(channel)) {
+-				efx_for_each_channel_tx_queue(tx_queue, channel) {
+-					tx_queue->queue = next_queue++;
+-					rc = efx_set_xdp_tx_queue(efx, xdp_queue_number, tx_queue);
+-					if (rc == 0)
+-						xdp_queue_number++;
+-				}
+-			} else {
+-				efx_for_each_channel_tx_queue(tx_queue, channel) {
+-					tx_queue->queue = next_queue++;
+-					netif_dbg(efx, drv, efx->net_dev, "Channel %u TXQ %u is HW %u\n",
+-						  channel->channel, tx_queue->label,
+-						  tx_queue->queue);
+-				}
+-
+-				/* If XDP is borrowing queues from net stack, it must use the queue
+-				 * with no csum offload, which is the first one of the channel
+-				 * (note: channel->tx_queue_by_type is not initialized yet)
+-				 */
+-				if (efx->xdp_txq_queues_mode == EFX_XDP_TX_QUEUES_BORROWED) {
+-					tx_queue = &channel->tx_queue[0];
+-					rc = efx_set_xdp_tx_queue(efx, xdp_queue_number, tx_queue);
+-					if (rc == 0)
+-						xdp_queue_number++;
+-				}
+-			}
+-		}
+ 	}
+-	WARN_ON(efx->xdp_txq_queues_mode == EFX_XDP_TX_QUEUES_DEDICATED &&
+-		xdp_queue_number != efx->xdp_tx_queue_count);
+-	WARN_ON(efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DEDICATED &&
+-		xdp_queue_number > efx->xdp_tx_queue_count);
+ 
+-	/* If we have more CPUs than assigned XDP TX queues, assign the already
+-	 * existing queues to the exceeding CPUs
+-	 */
+-	next_queue = 0;
+-	while (xdp_queue_number < efx->xdp_tx_queue_count) {
+-		tx_queue = efx->xdp_tx_queues[next_queue++];
+-		rc = efx_set_xdp_tx_queue(efx, xdp_queue_number, tx_queue);
+-		if (rc == 0)
+-			xdp_queue_number++;
+-	}
++	efx_set_xdp_channels(efx);
+ 
+ 	rc = netif_set_real_num_tx_queues(efx->net_dev, efx->n_tx_channels);
+ 	if (rc)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.17.1
+
