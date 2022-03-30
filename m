@@ -2,53 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6A4B4EC9CC
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F3284EC9E9
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:47:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348883AbiC3QlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 12:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45820 "EHLO
+        id S1348961AbiC3Qqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 12:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348880AbiC3QlQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:41:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7847A5574F;
-        Wed, 30 Mar 2022 09:39:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20947B81D6E;
-        Wed, 30 Mar 2022 16:39:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6689DC340EC;
-        Wed, 30 Mar 2022 16:39:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648658366;
-        bh=BeSm0k0eIvg+IdQoJLQTmbtEwddZsmDSoeDqhzoge1o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PRsZkNn4eZcZKLrY55cFovgREtH2qxrBKTXbhobYJuWiAc/gX6Wku763F4obQ9BAz
-         w8tnshA8dU+NYkSdF63PQBg7Q6aytF/YkGYnWAvAzH/L09r1ZlQ9Tlj62RCl0zyNbH
-         4xNQ2+KvMJywLq1Td6X27rdYf59pjfY1mnXpDgpiS7mhHF1uUwSgp48cWTjgyigEXf
-         FWFat3wxCXVH5Gb4GzIzPixKEauJRwx4We3AsUld48xgk5ixjujLmk0X1MZxp1+FBl
-         InmEQ9e9GzgJdeMHpnLaYOXPtaqtqhPlO6zYdQnWO25GXrsK3R/pnWvBqnFLNJcr3M
-         evHN2pF54ShNA==
-Date:   Wed, 30 Mar 2022 09:39:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>
-Cc:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <vakul.garg@nxp.com>,
-        <davejwatson@fb.com>, <linux-kernel@vger.kernel.org>,
-        Vadim Fedorenko <vfedorenko@novek.ru>
-Subject: Re: [PATCH net] net/tls: fix slab-out-of-bounds bug in
- decrypt_internal
-Message-ID: <20220330093925.2d8ee6ca@kernel.org>
-In-Reply-To: <20220330085009.1011614-1-william.xuanziyang@huawei.com>
-References: <20220330085009.1011614-1-william.xuanziyang@huawei.com>
+        with ESMTP id S1348977AbiC3Qqc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:46:32 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42311E3E29
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:44:45 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id bg10so42695515ejb.4
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 09:44:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=yHBfMl6iM7258r0O2Jco9pafktxB1pt6+1WqgBzk+vg=;
+        b=KLyLdtoSrb3fmaMJiq0IipYP8LMdhy6mILKXf36PQRWK5lDC7m6Tb2FhMsjzrPHtJt
+         UvI8C8XDTcE5qrh1h1bncRLDNRnYOso8de8xGpuuhnsXE13LDOZjgPaVJJNQj84fiGXI
+         5dQFIk8CLxRRJjk7ngUuZPx13i9vpUcixttW3CzcnvlwrLZRS2SLTXTSfpZKWJ8Cw4vL
+         +9uubnbTntHsZIBPRPNpMmsNbguw6kcswbWpc6KNZ9UmrBXIBJDMgiZFiMWnEgQy5Qx/
+         pReB7fiyXYmWm6yGOoy1lCCtUJ79qTZd4pwWOL6C0RR29CiKxOYy5Y+Ye3AKycvTbBIN
+         iOJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=yHBfMl6iM7258r0O2Jco9pafktxB1pt6+1WqgBzk+vg=;
+        b=F2y4VrKZ4Opl37XN6qxePb0LfrdZaMo7R7REN9mL6z+48LM15NK1yL26nb1ehGVzmp
+         k/3tbqoPlfgAlOk0JZlR9q9uU1wnh5ExY144NrQxB/1GAjs1dceVoo8POMtzkdSc5oLx
+         meV+oeU6ZwerQb0DMzIcZaovYV9cqZgIfQONTpUSj74L3FZ5rtw+xI81s+KYel2ctwKw
+         I0UmpSWJA9P1RW4YOwpzMiFIb+HAz6OqReyYA+ZlMOJUH88RNlYiOl14iI3/5gzSQrJz
+         gKGzJYDl+AtjmHv+1f+4956LMyg+Ol6pDbsxH1QmWOQ8N4hYrbdEWAyCIHUF05Os0Gqr
+         Nqqw==
+X-Gm-Message-State: AOAM533TXA7kZ8Igo+dVaR9SZ56VLMC/16ZYllNM9JJakhm0N6JkPIDG
+        Hc0LlwgAbmjRn0BImQgSYa9PAA==
+X-Google-Smtp-Source: ABdhPJywV3uexnsqSnhWXlwW2C6kDd0vY5WPPQ+rsQ3XzeorjnRj1l22TFs3ki+OTaR+h4z7XUNuKw==
+X-Received: by 2002:a17:906:32d0:b0:6ce:e1cf:3f2e with SMTP id k16-20020a17090632d000b006cee1cf3f2emr449876ejk.214.1648658683796;
+        Wed, 30 Mar 2022 09:44:43 -0700 (PDT)
+Received: from [192.168.0.164] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id l2-20020a1709060cc200b006d3d91e88c7sm8492441ejh.214.2022.03.30.09.44.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 30 Mar 2022 09:44:43 -0700 (PDT)
+Message-ID: <064271f4-d775-279c-0aa2-c9e23194bc61@linaro.org>
+Date:   Wed, 30 Mar 2022 18:44:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next] dt-bindings: net: convert sff,sfp to dtschema
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+References: <20220315123315.233963-1-ioana.ciornei@nxp.com>
+ <6f4f2e6f-3aee-3424-43bc-c60ef7c0218c@canonical.com>
+ <20220315190733.lal7c2xkaez6fz2v@skbuf>
+ <deed2e82-0d93-38d9-f7a2-4137fa0180e6@canonical.com>
+ <20220316101854.imevzoqk6oashrgg@skbuf>
+ <b45dabe9-e8b6-4061-1356-4e5e6406591b@canonical.com>
+ <YkR9NKec1YR7VGOy@shell.armlinux.org.uk>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YkR9NKec1YR7VGOy@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,84 +84,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Mar 2022 16:50:09 +0800 Ziyang Xuan wrote:
-> The memory size of tls_ctx->rx.iv for AES128-CCM is 12 setting in
-> tls_set_sw_offload(). The return value of crypto_aead_ivsize()
-> for "ccm(aes)" is 16. So memcpy() require 16 bytes from 12 bytes
-> memory space will trigger slab-out-of-bounds bug as following:
+On 30/03/2022 17:54, Russell King (Oracle) wrote:
+>>
+>> These are different. This is an example how to model the input clock to
+>> the device being described in the bindings. This is not an example how
+>> to use the clock provider, like you created here. The input clock
+>> sometimes is defined in Exynos clock controller, sometimes outside. The
+>> example there shows the second case - when it has to come outside. It's
+>> not showing the usage of clocks provided by this device, but I agree
+>> that it also might be trivial and obvious. If you think it is obvious,
+>> feel free to comment/send a patch.
 > 
-> ==================================================================
-> BUG: KASAN: slab-out-of-bounds in decrypt_internal+0x385/0xc40 [tls]
-> Read of size 16 at addr ffff888114e84e60 by task tls/10911
+> Why is whether something is an input or output relevant? One can quite
+> rightly argue that SFPs are both input and output. :)
 > 
-> Call Trace:
->  <TASK>
->  dump_stack_lvl+0x34/0x44
->  print_report.cold+0x5e/0x5db
->  ? decrypt_internal+0x385/0xc40 [tls]
->  kasan_report+0xab/0x120
->  ? decrypt_internal+0x385/0xc40 [tls]
->  kasan_check_range+0xf9/0x1e0
->  memcpy+0x20/0x60
->  decrypt_internal+0x385/0xc40 [tls]
->  ? tls_get_rec+0x2e0/0x2e0 [tls]
->  ? process_rx_list+0x1a5/0x420 [tls]
->  ? tls_setup_from_iter.constprop.0+0x2e0/0x2e0 [tls]
->  decrypt_skb_update+0x9d/0x400 [tls]
->  tls_sw_recvmsg+0x3c8/0xb50 [tls]
-> 
-> Allocated by task 10911:
->  kasan_save_stack+0x1e/0x40
->  __kasan_kmalloc+0x81/0xa0
->  tls_set_sw_offload+0x2eb/0xa20 [tls]
->  tls_setsockopt+0x68c/0x700 [tls]
->  __sys_setsockopt+0xfe/0x1b0
 
-Interesting, are you running on non-x86 platform or with some crypto
-accelerator? I wonder why we're not hitting it with KASAN and the
-selftest we have.
+I don't mind removing that example. Input - in the case of these
+bindings - is quite specific. Output is opposite, not specific and can
+vary, you can enable/disable, change frequency.
 
-> Reserve MAX_IV_SIZE memory space for iv to be compatible with all
-> ciphers. And do iv and salt copy like done in tls_do_encryption().
-> 
-> Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> ---
->  net/tls/tls_sw.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
-> 
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 0024a692f0f8..6b858f995b23 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -1456,7 +1456,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
->  	aead_size = sizeof(*aead_req) + crypto_aead_reqsize(ctx->aead_recv);
->  	mem_size = aead_size + (nsg * sizeof(struct scatterlist));
->  	mem_size = mem_size + prot->aad_size;
-> -	mem_size = mem_size + crypto_aead_ivsize(ctx->aead_recv);
-> +	mem_size = mem_size + MAX_IV_SIZE;
+Discussion was two weeks ago, so all emails will bounce. :)
 
-This change is not strictly required for the patch, right?
-Can we drop it, and perhaps send as an optimization separately later?
-
->  	/* Allocate a single block of memory which contains
->  	 * aead_req || sgin[] || sgout[] || aad || iv.
-> @@ -1493,12 +1493,8 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
->  		kfree(mem);
->  		return err;
->  	}
-> -	if (prot->version == TLS_1_3_VERSION ||
-> -	    prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
-> -		memcpy(iv + iv_offset, tls_ctx->rx.iv,
-> -		       crypto_aead_ivsize(ctx->aead_recv));
-> -	else
-> -		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
-> +	memcpy(iv + iv_offset, tls_ctx->rx.iv,
-> +	       prot->iv_size + prot->salt_size);
-
-If the IV really is 16B then we're passing 4 bytes of uninitialized
-data at the end of the buffer, right?
-
->  	xor_iv_with_seq(prot, iv + iv_offset, tls_ctx->rx.rec_seq);
->  
-
+Best regards,
+Krzysztof
