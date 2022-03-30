@@ -2,68 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 902A04EC4C9
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 14:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B1F4EC525
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 15:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236650AbiC3Mqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 08:46:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
+        id S1345659AbiC3NGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 09:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345436AbiC3MqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 08:46:21 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74496C93F
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 05:41:43 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id u3so29141926wrg.3
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 05:41:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ntNw1/K6MzgroAQUZycU3BVrpDXQ208LuoqMSrH8JKU=;
-        b=h5F3LVbj+xzXh9NZGsFmCvF9woGph5wtXj5/CPNvsahEeaH75KhEWJiULV/gjqs1tQ
-         HbYwFzeNj05fUmoL+twz4e5AJDLM0g1G9gJC0xD1ULBMPH5dA4P8HduRmw21TG7JM2W7
-         J1h+8JjyJAGBtl2Uieg1RgiYUD+NKCHiYk1Jfuq+LFABveZ+aEtjJNSbeXA0Ocb75ldq
-         XzvbRpS4N0rBsWNz4BOSsTFVTlrCsHEaWag1QK1L8JuKKhEX8DhKNGx+F8YDMEWDxCpt
-         t0N9SXR/sYCNtWxq2hzX7mmpmT2RfMT9kOI2JuZ2/9oztozcM4SZl6XWKADUvJ647PjN
-         VmVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ntNw1/K6MzgroAQUZycU3BVrpDXQ208LuoqMSrH8JKU=;
-        b=XQYioLsXbNypACmkP84ZSb73Kq74autoE+pq2OtJ55NQyRVDqB9Ppzny0HkosHMZeR
-         DYVA25MMv7R1ytgLsDz0zi2hty7d5Wnk1I5cDZwZNzb6OCy0a6qhmspAFKTR800EBMQO
-         gdgmw7SPdw8Kk+kYHdhZlEvYehCPTNZn4mRz/sA1WyHji/fQw4ZY0ops7RJS6i31/x3+
-         CNDxnZUg+hnml4uaVfm7cbAlI9/8ujC3bm+NWKqWeUqXegr7CWJxVI5FzT3cgkptTmrn
-         eEJxRRRA1KyVMushHew40neZVZP9nPVYDu2a1smPvT8LUlhJ7RjNzx34u2bJ8EaaMd+N
-         cZLQ==
-X-Gm-Message-State: AOAM531QPV+pS0OfKzYZ7drxbpVYWh7Jq231FNiWPuGEwZJlPHLjQkyL
-        XOYiJmvqaHR3E3cpYOIDxoXqSA==
-X-Google-Smtp-Source: ABdhPJwR9SzzRqEnJ2hXX5XoFqkbE0jg/8d2+sCsSD2JlQ9n//OBzVKq8ca0/ehZClZ4SO/5WisyEg==
-X-Received: by 2002:a05:6000:ca:b0:203:dbf3:8f8a with SMTP id q10-20020a05600000ca00b00203dbf38f8amr36588860wrx.10.1648644102441;
-        Wed, 30 Mar 2022 05:41:42 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id a4-20020a05600c348400b0038cd743830esm4681557wmq.29.2022.03.30.05.41.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 05:41:42 -0700 (PDT)
-Date:   Wed, 30 Mar 2022 13:41:17 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Alexander H Duyck <alexander.duyck@gmail.com>
-Cc:     ilias.apalodimas@linaro.org, hawk@kernel.org,
-        alexanderduyck@fb.com, linyunsheng@huawei.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] skbuff: disable coalescing for page_pool fragment
- recycling
-Message-ID: <YkRP7XwvdgFbvGsk@myrica>
-References: <20220328132258.78307-1-jean-philippe@linaro.org>
- <2de8c5818582bd9dfe0406541e3326c2bed0b6f2.camel@gmail.com>
+        with ESMTP id S244903AbiC3NGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 09:06:02 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51619C38;
+        Wed, 30 Mar 2022 06:04:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=cHMQ7
+        WoXLVIhypyQ8WPqd9becVvlyEmkctQb5Tr1eQI=; b=O4IaNn5MPK/T1jNqaCPNM
+        eaVN9jS9V+B2IAhGgbis5fIRI25CB4e/JpPhqGURryeaDRdsOnCXxR059vFzbjxp
+        Y21Np5mdm/Cbx/ns4aUCTpLkYpvBup8ZrkhfDh9u9P7axmJlHSSQwBwK2iyJrNP0
+        q19KKrvur7N2YRjnhm6GiM=
+Received: from localhost.localdomain (unknown [101.86.110.112])
+        by smtp8 (Coremail) with SMTP id DMCowAAH01QUVURi01bAAA--.22186S2;
+        Wed, 30 Mar 2022 21:03:17 +0800 (CST)
+From:   jackygam2001 <jacky_gam_2001@163.com>
+To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, rostedt@goodmis.org, mingo@redhat.com,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ping.gan@dell.com, jackygam2001 <jacky_gam_2001@163.com>
+Subject: [PATCH] tcp: Add tracepoint for tcp_set_ca_state
+Date:   Wed, 30 Mar 2022 21:01:28 +0800
+Message-Id: <20220330130128.10256-1-jacky_gam_2001@163.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2de8c5818582bd9dfe0406541e3326c2bed0b6f2.camel@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMCowAAH01QUVURi01bAAA--.22186S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxAw4UXFWDCr47Zw13Xw1fWFg_yoWrAr15pF
+        1DAr1Sg3y5Jryagas3Jry8twnxW348ur1agry7Ww1ak3ZFqF1rtF1ktryjyayYvrWFy39x
+        Wa129r1rGa17Zr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pE380ZUUUUU=
+X-Originating-IP: [101.86.110.112]
+X-CM-SenderInfo: 5mdfy55bjdzsisqqiqqrwthudrp/xS2BdBXTKVgi1YcKDwAAs2
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -72,117 +53,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 08:03:46AM -0700, Alexander H Duyck wrote:
-> >  (3b) Now while handling TCP, coalesce SKB3 with SKB1:
-> > 
-> >       tcp_v4_rcv(SKB3)
-> >         tcp_try_coalesce(to=SKB1, from=SKB3)    // succeeds
-> >         kfree_skb_partial(SKB3)
-> >           skb_release_data(SKB3)                // drops one dataref
-> > 
-> >                       SKB1 _____ PAGE1
-> >                            \____
-> >                       SKB2 _____ PAGE2
-> >                                  /
-> >                 RX_BD3 _________/
-> > 
-> >     In tcp_try_coalesce(), __skb_frag_ref() takes a page reference to
-> >     PAGE2, where it should instead have increased the page_pool frag
-> >     reference, pp_frag_count. Without coalescing, when releasing both
-> >     SKB2 and SKB3, a single reference to PAGE2 would be dropped. Now
-> >     when releasing SKB1 and SKB2, two references to PAGE2 will be
-> >     dropped, resulting in underflow.
-> > 
-> >  (3c) Drop SKB2:
-> > 
-> >       af_packet_rcv(SKB2)
-> >         consume_skb(SKB2)
-> >           skb_release_data(SKB2)                // drops second dataref
-> >             page_pool_return_skb_page(PAGE2)    // drops one pp_frag_count
-> > 
-> >                       SKB1 _____ PAGE1
-> >                            \____
-> >                                  PAGE2
-> >                                  /
-> >                 RX_BD3 _________/
-> > 
-> > (4) Userspace calls recvmsg()
-> >     Copies SKB1 and releases it. Since SKB3 was coalesced with SKB1, we
-> >     release the SKB3 page as well:
-> > 
-> >     tcp_eat_recv_skb(SKB1)
-> >       skb_release_data(SKB1)
-> >         page_pool_return_skb_page(PAGE1)
-> >         page_pool_return_skb_page(PAGE2)        // drops second pp_frag_count
-> > 
-> > (5) PAGE2 is freed, but the third RX descriptor was still using it!
-> >     In our case this causes IOMMU faults, but it would silently corrupt
-> >     memory if the IOMMU was disabled.
-> > 
-> > Prevent coalescing the SKB if it may hold shared page_pool fragment
-> > references.
-> > 
-> > Fixes: 53e0961da1c7 ("page_pool: add frag page recycling support in page pool")
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > ---
-> >  net/core/skbuff.c | 7 +++++++
-> >  1 file changed, 7 insertions(+)
-> > 
-> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > index 10bde7c6db44..56b45b9f0b4d 100644
-> > --- a/net/core/skbuff.c
-> > +++ b/net/core/skbuff.c
-> > @@ -5276,6 +5276,13 @@ bool skb_try_coalesce(struct sk_buff *to, struct sk_buff *from,
-> >  	if (skb_cloned(to))
-> >  		return false;
-> >  
-> > +	/* We don't support taking page_pool frag references at the moment.
-> > +	 * If the SKB is cloned and could have page_pool frag references, don't
-> > +	 * coalesce it.
-> > +	 */
-> > +	if (skb_cloned(from) && from->pp_recycle)
-> > +		return false;
-> > +
-> >  	/* The page pool signature of struct page will eventually figure out
-> >  	 * which pages can be recycled or not but for now let's prohibit slab
-> >  	 * allocated and page_pool allocated SKBs from being coalesced.
-> 
-> 
-> This is close but not quite. Actually now that I think about it we can
-> probably alter the block below rather than adding a new one.
-> 
-> The issue is we want only reference counted pages in standard skbs, and
-> pp_frag_count pages in pp_recycle skbs. So we already had logic along
-> the lines of:
-> 	if (to->pp_recycle != from->pp_recycle)
-> 		return false;
-> 
-> I would say we need to change that because from->pp_recycle is the
-> piece that is probably too simplistic. Basically we will get a page
-> pool page if from->pp_recycle && !skb_cloned(from). So we can probably
-> just tweak the check below to be something along the lines of:
-> 	if (to->pp_recycle != (from->pp_recycle && !skb_cloned(from)))
-> 		return false;
+The congestion status of a tcp flow may be updated since there
+is congestion between tcp sender and receiver. It makes sense for
+adding tracepoint for congestion status update function to evaluate
+the performance of network and congestion algorithm.
 
-Just to confirm this is fine: the behavior now changes for
-to->pp_recycle == 0, from->pp_recycle == 1 and skb_cloned(from) == 1
-In this case we now coalesce and take a page ref. So the page has two refs
-and two pp_frag_count. (3c) drops one pp_frag_count. If there wasn't
-another RX desc holding a pp_frag_count (ie. no step (5)), that would also
-drop a page ref, but since 'to' SKB is holding a second page ref the page
-is not recycled. That reference gets dropped at (4) and the page is freed
-there.  With step (5), the page would get recycled into page_pool, but
-without (5) the page is discarded.
+Link: https://github.com/iovisor/bcc/pull/3899
 
-I guess it works, just want to make sure that it's OK to mix page_pool
-pp_frag_count and normal reference counting at the same time.
+Signed-off-by: jackygam2001 <jacky_gam_2001@163.com>
+---
+ include/net/tcp.h          | 12 +++---------
+ include/trace/events/tcp.h | 45 +++++++++++++++++++++++++++++++++++++++++++++
+ net/ipv4/tcp_cong.c        | 12 ++++++++++++
+ 3 files changed, 60 insertions(+), 9 deletions(-)
 
-Thanks,
-Jean
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 70ca4a5e330a..9a3786f33798 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1139,15 +1139,6 @@ static inline bool tcp_ca_needs_ecn(const struct sock *sk)
+ 	return icsk->icsk_ca_ops->flags & TCP_CONG_NEEDS_ECN;
+ }
+ 
+-static inline void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
+-{
+-	struct inet_connection_sock *icsk = inet_csk(sk);
+-
+-	if (icsk->icsk_ca_ops->set_state)
+-		icsk->icsk_ca_ops->set_state(sk, ca_state);
+-	icsk->icsk_ca_state = ca_state;
+-}
+-
+ static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
+ {
+ 	const struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -1156,6 +1147,9 @@ static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
+ 		icsk->icsk_ca_ops->cwnd_event(sk, event);
+ }
+ 
++/* From tcp_cong.c */
++void tcp_set_ca_state(struct sock *sk, const u8 ca_state);
++
+ /* From tcp_rate.c */
+ void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb);
+ void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
+diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
+index 521059d8dc0a..69a68b01c1de 100644
+--- a/include/trace/events/tcp.h
++++ b/include/trace/events/tcp.h
+@@ -371,6 +371,51 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
+ 	TP_ARGS(skb)
+ );
+ 
++TRACE_EVENT(tcp_cong_state_set,
++
++	TP_PROTO(struct sock *sk, const u8 ca_state),
++
++	TP_ARGS(sk, ca_state),
++
++	TP_STRUCT__entry(
++		__field(const void *, skaddr)
++		__field(__u16, sport)
++		__field(__u16, dport)
++		__array(__u8, saddr, 4)
++		__array(__u8, daddr, 4)
++		__array(__u8, saddr_v6, 16)
++		__array(__u8, daddr_v6, 16)
++		__field(__u8, cong_state)
++	),
++
++	TP_fast_assign(
++		struct inet_sock *inet = inet_sk(sk);
++		__be32 *p32;
++
++		__entry->skaddr = sk;
++
++		__entry->sport = ntohs(inet->inet_sport);
++		__entry->dport = ntohs(inet->inet_dport);
++
++		p32 = (__be32 *) __entry->saddr;
++		*p32 = inet->inet_saddr;
++
++		p32 = (__be32 *) __entry->daddr;
++		*p32 =  inet->inet_daddr;
++
++		TP_STORE_ADDRS(__entry, inet->inet_saddr, inet->inet_daddr,
++			   sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
++
++		__entry->cong_state = ca_state;
++	),
++
++	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c cong_state=%u",
++		  __entry->sport, __entry->dport,
++		  __entry->saddr, __entry->daddr,
++		  __entry->saddr_v6, __entry->daddr_v6,
++		  __entry->cong_state)
++);
++
+ #endif /* _TRACE_TCP_H */
+ 
+ /* This part must be outside protection */
+diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
+index dc95572163df..98b48bdb8be7 100644
+--- a/net/ipv4/tcp_cong.c
++++ b/net/ipv4/tcp_cong.c
+@@ -16,6 +16,7 @@
+ #include <linux/gfp.h>
+ #include <linux/jhash.h>
+ #include <net/tcp.h>
++#include <trace/events/tcp.h>
+ 
+ static DEFINE_SPINLOCK(tcp_cong_list_lock);
+ static LIST_HEAD(tcp_cong_list);
+@@ -33,6 +34,17 @@ struct tcp_congestion_ops *tcp_ca_find(const char *name)
+ 	return NULL;
+ }
+ 
++void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
++{
++	struct inet_connection_sock *icsk = inet_csk(sk);
++
++	trace_tcp_cong_state_set(sk, ca_state);
++
++	if (icsk->icsk_ca_ops->set_state)
++		icsk->icsk_ca_ops->set_state(sk, ca_state);
++	icsk->icsk_ca_state = ca_state;
++}
++
+ /* Must be called with rcu lock held */
+ static struct tcp_congestion_ops *tcp_ca_find_autoload(struct net *net,
+ 						       const char *name)
+-- 
+2.15.0
 
-> 
-> That should actually increase the number of cases where we can
-> correctly coalesce frames while also addressing the issue you
-> discovered as it will only merge cloned skbs into standard skbs instead
-> of page pool ones.
-> 
