@@ -2,154 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF8314EC8F0
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 17:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B20E44EC939
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 18:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348461AbiC3P6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 11:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50964 "EHLO
+        id S1348608AbiC3QGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 12:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241644AbiC3P6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 11:58:15 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D96143493;
-        Wed, 30 Mar 2022 08:56:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QVeN0auyUiJb+oPCLrhnqYApa9hLfR51AifRS96qyh8=; b=z0M5RGNg0QaNm7qNLwTvSeAEr9
-        /ORNy7ohb5E6SKwIQplVtUNHEPuQWmrTinhBWFKoL4oHRlSzOlx4kL4+JquNM5RjqaNKfHkwd0vXn
-        YKo32xIGmn7I7HVUFMdJ6fQ2TQxGa7z86wj1ZDY/C/1TdrCAZCkTG36OdwnXvACc1htRft0Gf+sie
-        E78nywZnnttlchz2Ag0pL3QnyEu8G5RI4l0QBpSKPTEALACMLdmYRKhpAtKRq+hkxuCd3G+Fh8B/Z
-        N/2eh5ucj1k2roGIutOdHvaDgv36VUI/OYKUScXgGXSeDnvtchdNVrHrlo2uaG5nscuqTnLF3bSJ/
-        HbBDjGvw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58008)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        with ESMTP id S1348621AbiC3QGW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 12:06:22 -0400
+Received: from bagheera.iewc.co.za (bagheera.iewc.co.za [IPv6:2c0f:f720:0:3:be30:5bff:feec:6f99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C7023D77F;
+        Wed, 30 Mar 2022 09:04:33 -0700 (PDT)
+Received: from [165.16.203.119] (helo=tauri.local.uls.co.za)
+        by bagheera.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nZagM-0003P4-If; Wed, 30 Mar 2022 16:56:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nZagK-0006jQ-J4; Wed, 30 Mar 2022 16:56:24 +0100
-Date:   Wed, 30 Mar 2022 16:56:24 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH net-next] dt-bindings: net: convert sff,sfp to dtschema
-Message-ID: <YkR9qNGhF2ufXmFg@shell.armlinux.org.uk>
-References: <20220315123315.233963-1-ioana.ciornei@nxp.com>
- <6f4f2e6f-3aee-3424-43bc-c60ef7c0218c@canonical.com>
- <20220315190733.lal7c2xkaez6fz2v@skbuf>
- <deed2e82-0d93-38d9-f7a2-4137fa0180e6@canonical.com>
- <20220316101854.imevzoqk6oashrgg@skbuf>
- <b45dabe9-e8b6-4061-1356-4e5e6406591b@canonical.com>
- <YkR9NKec1YR7VGOy@shell.armlinux.org.uk>
+        (envelope-from <jaco@uls.co.za>)
+        id 1nZaYE-0007la-NE; Wed, 30 Mar 2022 17:48:02 +0200
+Received: from [192.168.42.207]
+        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
+        (envelope-from <jaco@uls.co.za>)
+        id 1nZZoV-00018E-Pe; Wed, 30 Mar 2022 17:00:47 +0200
+Message-ID: <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
+Date:   Wed, 30 Mar 2022 17:00:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkR9NKec1YR7VGOy@shell.armlinux.org.uk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
+ connections
+Content-Language: en-GB
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+References: <E1nZMdl-0006nG-0J@plastiekpoot>
+ <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
+ <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
+ <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+From:   Jaco Kroon <jaco@uls.co.za>
+Organization: Ultimate Linux Solutions (Pty) Ltd
+In-Reply-To: <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Usefully, Krzysztof Kozlowski's email bounces for me.
+Hi,
 
-On Wed, Mar 30, 2022 at 04:54:28PM +0100, Russell King (Oracle) wrote:
-> On Wed, Mar 16, 2022 at 01:04:21PM +0100, Krzysztof Kozlowski wrote:
-> > On 16/03/2022 11:18, Ioana Ciornei wrote:
-> > >>>
-> > >>> It's related since it shows a generic usage pattern of the sfp node.
-> > >>> I wouldn't just remove it since it's just adds context to the example
-> > >>> not doing any harm.
-> > >>
-> > >> Usage (consumer) is not related to these bindings. The bindings for this
-> > >> phy/mac should show the usage of sfp, but not the provider bindings.
-> > >>
-> > >> The bindings of each clock provider do not contain examples for clock
-> > >> consumer. Same for regulator, pinctrl, power domains, interconnect and
-> > >> every other component. It would be a lot of code duplication to include
-> > >> consumers in each provider. Instead, we out the example of consumer in
-> > >> the consumer bindings.
-> > >>
-> > >> The harm is - duplicated code and one more example which can be done
-> > >> wrong (like here node name not conforming to DT spec).
-> > > 
-> > > I suppose you refer to "sfp-eth3" which you suggested here to be just
-> > > "sfp". 
-> > 
-> > I refer now to "cps_emac3" which uses specific name instead of generic
-> > and underscore instead of hyphen (although underscore is actually listed
-> > as allowed in DT spec, dtc will complain about it).
-> > 
-> > >In an example, that's totally acceptable but on boards there can
-> > > be multiple SFPs which would mean that there would be multiple sfp
-> > > nodes. We have to discern somehow between them. Adding a unit name would
-> > > not be optimal since there is no "reg" property to go with it.
-> > 
-> > The common practice is adding a numbering suffix.
-> > 
-> > > 
-> > > So "sfp-eth3" or variants I think are necessary even though not
-> > > conforming to the DT spec.
-> > > 
-> > >>
-> > >> If you insist to keep it, please share why these bindings are special,
-> > >> different than all other bindings I mentioned above.
-> > > 
-> > > If it's that unheard of to have a somewhat complete example why are
-> > > there multiple dtschema files submitted even by yourself with this same
-> > > setup?
-> > 
-> > I am also learning and I wished many of my mistakes of early DT bindings
-> > conversion were spotted. Especially my early bindings... but even now I
-> > keep making mistakes. Human thing. :)
-> > 
-> > I converted quite a lot of bindings, so can you point to such examples
-> > of my schema which includes consumer example in a provider bindings? If
-> > you find such, please send a patch removing trivial code.
-> > 
-> > 
-> > > As an example for a consumer device being listed in the provider yaml
-> > > file is 'gpio-pca95xx.yaml'
-> > 
-> > Indeed, this is trivial and useless code which I kept from conversion,
-> > should be removed.
-> > 
-> > >
-> >  and for the reverse (provider described in
-> > > the consumer) I can list 'samsung,s5pv210-clock.yaml',
-> > > 'samsung,exynos5260-clock.yaml' etc.
-> > 
-> > These are different. This is an example how to model the input clock to
-> > the device being described in the bindings. This is not an example how
-> > to use the clock provider, like you created here. The input clock
-> > sometimes is defined in Exynos clock controller, sometimes outside. The
-> > example there shows the second case - when it has to come outside. It's
-> > not showing the usage of clocks provided by this device, but I agree
-> > that it also might be trivial and obvious. If you think it is obvious,
-> > feel free to comment/send a patch.
-> 
-> Why is whether something is an input or output relevant? One can quite
-> rightly argue that SFPs are both input and output. :)
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On 2022/03/30 15:56, Neal Cardwell wrote:
+> On Wed, Mar 30, 2022 at 2:22 AM Jaco Kroon <jaco@uls.co.za> wrote:
+>> Hi Eric,
+>>
+>> On 2022/03/30 05:48, Eric Dumazet wrote:
+>>> On Tue, Mar 29, 2022 at 7:58 PM Jaco Kroon <jaco@uls.co.za> wrote:
+>>>
+>>> I do not think this commit is related to the issue you have.
+>>>
+>>> I guess you could try a revert ?
+>>>
+>>> Then, if you think old linux versions were ok, start a bisection ?
+>> That'll be interesting, will see if I can reproduce on a non-production
+>> host.
+>>> Thank you.
+>>>
+>>> (I do not see why a successful TFO would lead to a freeze after ~70 KB
+>>> of data has been sent)
+>> I do actually agree with this in that it makes no sense, but disabling
+>> TFO definitely resolved the issue for us.
+>>
+>> Kind Regards,
+>> Jaco
+> Thanks for the pcap trace! That's a pretty strange trace. I agree with
+> Eric's theory that this looks like one or more bugs in a firewall,
+> middlebox, or netfilter rule. From the trace it looks like the buggy
+> component is sometimes dropping packets and sometimes corrupting them
+> so that the client's TCP stack ignores them.
+The capture was taken on the client.  So the only firewall there is
+iptables, and I redirected all -j DROP statements to a L_DROP chain
+which did a -j LOG prior to -j DROP - didn't pick up any drops here.
+>
+> Interestingly, in that trace the client SYN has a TFO option and
+> cookie, but no data in the SYN.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+So this allows the SMTP server which in the conversation speaks first to
+identify itself to respond with data in the SYN (not sure that was
+actually happening but if I recall I did see it send data prior to
+receiving the final ACK on the handshake.
+
+>
+> The last packet that looks sane/normal is the ACK from the SMTP server
+> that looks like:
+>
+> 00:00:00.000010 IP6 2a00:1450:4013:c16::1a.25 >
+> 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 66263 win
+> 774 <nop,nop,TS val 1206544341 ecr 331189186>
+>
+> That's the first ACK that crosses past 2^16. Maybe that is a
+> coincidence, or maybe not. Perhaps the buggy firewall/middlebox/etc is
+
+I believe it should be because we literally had this on every single
+connection going out to Google's SMTP ... probably 1/100 connections
+managed to deliver an email over the connection.  Then again ... 64KB
+isn't that much ...
+
+When you state sane/normal, do you mean there is fault with the other
+frames that could not be explained by packet loss in one or both of the
+directions?
+
+> confused by the TFO option, corrupts its state, and thereafter behaves
+> incorrectly past the first 64 KBytes of data from the client.
+
+Only firewalls we've got are netfilter based, and these packets all
+passed through the dedicated firewalls at least by the time they reach
+here.  No middleboxes on our end, and if this was Google's side there
+would be crazy noise be heard, not just me.  I think the trigger is
+packet loss between us (as indicated we know they have link congestion
+issues in JHB area, it took us the better part of two weeks to get the
+first line tech on their side to just query the internal teams and
+probably another week to get the response acknowledging this -
+mybroadband.co.za has an article about other local ISPs also complaining).
+
+>
+> In addition to checking for checksum failures, mentioned by Eric, you
+> could look for PAWS failures, something like:
+>
+>   nstat -az | egrep  -i 'TcpInCsumError|PAWS'
+
+TcpInCsumErrors                 0                  0.0
+TcpExtPAWSActive                0                  0.0
+TcpExtPAWSEstab                 90092              0.0
+TcpExtTCPACKSkippedPAWS         81317              0.0
+
+Not sure what these mean, but i should probably investigate, the latter
+two are definitely incrementing.
+
+Appreciate the feedback and for looking at the traces.
+
+Kind Regards,
+Jaco
+
