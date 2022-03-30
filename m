@@ -2,67 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D814EB742
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 01:55:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 544374EB74C
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 02:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241344AbiC2X4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 19:56:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58732 "EHLO
+        id S241354AbiC3ACO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 20:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241293AbiC2X4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 19:56:34 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19790BF59;
-        Tue, 29 Mar 2022 16:54:50 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id s11so17265326pfu.13;
-        Tue, 29 Mar 2022 16:54:50 -0700 (PDT)
+        with ESMTP id S241229AbiC3ACN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 20:02:13 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C2F31DF6;
+        Tue, 29 Mar 2022 17:00:28 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id h18so8949398ila.12;
+        Tue, 29 Mar 2022 17:00:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LHFIzlMHcD6qDSToyvl5dbn+nrgausa4lYRWBBJH19I=;
-        b=p9di60D48ivYtNgPnBsoYU638rald7+YwO7G9bXpnCNkl5b2QhXxBuTBqdgauIvS3r
-         89gnjBFR5nK3jUvuVPKaNxcolrTNT1gDlxTNfIQU9okqUmBA3gw3swPqNHe5VL2jVdVZ
-         yLUfDE4ETCu4ROdmeBkJZcm7xtGFQbYcJAhBDtQGoSDYNFKh1I7HOskXhmtsbdSzTa/m
-         GTCAy6rLqrzOGu8Y9gCb3SgBDBNi8IO9Do4jY/Pp7Em5w+AQlRbrqGjS/Srusq5LMPhc
-         C6iFpIEEQ/Og8OZlXeE++4RyuAMfPhZItMuHjbYK1KuOAc2wrkzhRdX2KdeAwDKdu0rg
-         CW7A==
+        bh=E1v5f1E9kvbnqUPclDJ+akYUY/vb4yMCVQhMsqWJs1c=;
+        b=bWWd75gWJ5E8DO17wGle5WOjbDzx7V3zlVD5csBF2nW3SOWZaYdjy2JUZzYC9aSl5c
+         1OFldu8MD0ETKjaa9qZuVdNWSLScfiKdEImGV288rnWArBTD7KkeD3RTyipoRuShO/l9
+         9BbnFy451kzzjq+R9UY6bYjhufasNOEusVKxwiZerBWN+K8FySnw6Kt+iYbeERtEeHLw
+         jt7/OxUys0CEGMTtg4Q4DJozsC1Z1E+ploJH5XhHa/zX0W1vh/ewRC2pK7yGikdVq88b
+         mI+SnjqKUCC13tw/ND7YvaQPX8cLGpTHpcjnxwBaTdFae3YewRNQ/VgexjBKGxhjoCw5
+         00ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LHFIzlMHcD6qDSToyvl5dbn+nrgausa4lYRWBBJH19I=;
-        b=MKoJalFrkjV0TmWxwa5JfszBCIMVYKgDVc0Xy3/DtFzJ0cyCevpwUleHbw73qlCP9E
-         ssMIAdhAIDu8Rv0f+B2cXIGqLxqsRuAGUnCkRC1Lo3KPe+L5RgaS+KQLGsCYqbUFqojQ
-         um++ZpZ1vfSizTJHyGXNstgTEwYv/0x1NnTCPvV7Xm2F/2xMoIaurw/kuulu0oYUoVhr
-         xSN3OUJohuAT1WWES9PTKMFr7jTzfARAvjw3DUddYwFlgjCahLSFmNjPDzQ71OCTmg7R
-         VsV39iDqAo4NgbbVp7ZnyTfttK1Or9OUSHshj8gDYp+yNoAD0q3eC4NVZ5ebb2fLknlS
-         tn0g==
-X-Gm-Message-State: AOAM533O8gYpi4SOcuZau4WahHAGedp2oDL2jxDmGFwDn/r9SPatxpj7
-        2llH2ifaa4AQz2qNA7U7jS1dmYkiBdslOAUNAuk=
-X-Google-Smtp-Source: ABdhPJx1EjSr4a8bjD+W/X5zUF4e6t2htlaLzYE+lDOnWUbSx2ZNCz200Jnr8Z2IHVB2lx+hAbbjyXca3/XDr6FkAuE=
-X-Received: by 2002:a05:6a00:995:b0:4fb:607d:444c with SMTP id
- u21-20020a056a00099500b004fb607d444cmr11351045pfg.69.1648598089571; Tue, 29
- Mar 2022 16:54:49 -0700 (PDT)
+        bh=E1v5f1E9kvbnqUPclDJ+akYUY/vb4yMCVQhMsqWJs1c=;
+        b=xo4uUD4/B9e0zM85nassuDCw2+35Hy/eIK8Y+ZlItS9ZrSvcKx/ENANh69ASYciXbe
+         U/bZxOZNO+La0R6jKT3SUWEJYrX/ej5/k8NzGDXZ1TXxwN/Glxi6QvxN39CV+t2kdjQA
+         dg+az3nAOI5cyaDC3kFGIwnUNTsE76vtZ+2C2AsCmGDeIxZZ4nmYZwLaydfn5zM43CyD
+         Mzmwp/kCxQqduDzYLrlNa5YpwbELjnT6X+2npCHeLTJadtEN6/b3wBsQrqxybyWXB0VY
+         raR/lNSnM2cNrBl6hamwAPftGuGfj9AgxsOnw++bgwBqugK5Rw5LKghDmP811/xIxmTV
+         FtoA==
+X-Gm-Message-State: AOAM532pkwQ9RzWqx2amxhEkR4a4e+3dAxDRXEQA6k2qqz7flhn7JHdq
+        xG4rDx9DCJlS5Ex0PoOdly+A9YegRut9pggdnlQ=
+X-Google-Smtp-Source: ABdhPJz1dDQaqFlJ/u1RxLgl6EXdzIECRfFWeX47SxiJp8S3wQiTd7fF7rwxu7aNyUx8VLewyhvpSDEa9B+V/XADzGk=
+X-Received: by 2002:a05:6e02:1a8f:b0:2c9:da3d:e970 with SMTP id
+ k15-20020a056e021a8f00b002c9da3de970mr1979386ilv.239.1648598427044; Tue, 29
+ Mar 2022 17:00:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220329181935.2183-1-beaub@linux.microsoft.com>
- <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
- <20220329201057.GA2549@kbox> <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
- <20220329231137.GA3357@kbox>
-In-Reply-To: <20220329231137.GA3357@kbox>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 29 Mar 2022 16:54:38 -0700
-Message-ID: <CAADnVQKCuK0GmRbOJjyce4Hwiq0ieqthVdnqdPbHT_qKqV5rzw@mail.gmail.com>
-Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
- created events
-To:     Beau Belgrave <beaub@linux.microsoft.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+References: <20220329231854.3188647-1-song@kernel.org>
+In-Reply-To: <20220329231854.3188647-1-song@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 29 Mar 2022 17:00:16 -0700
+Message-ID: <CAEf4BzZCLwzrZPTOBEg88i1Tki6uPL73ujSE-SCSSU16HENUHA@mail.gmail.com>
+Subject: Re: [PATCH bpf] tools/runqslower: fix handle__sched_switch for
+ updated tp sched_switch
+To:     Song Liu <song@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -74,89 +69,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 29, 2022 at 4:11 PM Beau Belgrave <beaub@linux.microsoft.com> wrote:
+On Tue, Mar 29, 2022 at 4:19 PM Song Liu <song@kernel.org> wrote:
 >
-> On Tue, Mar 29, 2022 at 03:31:31PM -0700, Alexei Starovoitov wrote:
-> > On Tue, Mar 29, 2022 at 1:11 PM Beau Belgrave <beaub@linux.microsoft.com> wrote:
-> > >
-> > > On Tue, Mar 29, 2022 at 12:50:40PM -0700, Alexei Starovoitov wrote:
-> > > > On Tue, Mar 29, 2022 at 11:19 AM Beau Belgrave
-> > > > <beaub@linux.microsoft.com> wrote:
-> > > > >
-> > > > > Send user_event data to attached eBPF programs for user_event based perf
-> > > > > events.
-> > > > >
-> > > > > Add BPF_ITER flag to allow user_event data to have a zero copy path into
-> > > > > eBPF programs if required.
-> > > > >
-> > > > > Update documentation to describe new flags and structures for eBPF
-> > > > > integration.
-> > > > >
-> > > > > Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
-> > > >
-> > > > The commit describes _what_ it does, but says nothing about _why_.
-> > > > At present I see no use out of bpf and user_events connection.
-> > > > The whole user_events feature looks redundant to me.
-> > > > We have uprobes and usdt. It doesn't look to me that
-> > > > user_events provide anything new that wasn't available earlier.
-> > >
-> > > A lot of the why, in general, for user_events is covered in the first
-> > > change in the series.
-> > > Link: https://lore.kernel.org/all/20220118204326.2169-1-beaub@linux.microsoft.com/
-> > >
-> > > The why was also covered in Linux Plumbers Conference 2021 within the
-> > > tracing microconference.
-> > >
-> > > An example of why we want user_events:
-> > > Managed code running that emits data out via Open Telemetry.
-> > > Since it's managed there isn't a stub location to patch, it moves.
-> > > We watch the Open Telemetry spans in an eBPF program, when a span takes
-> > > too long we collect stack data and perform other actions.
-> > > With user_events and perf we can monitor the entire system from the root
-> > > container without having to have relay agents within each
-> > > cgroup/namespace taking up resources.
-> > > We do not need to enter each cgroup mnt space and determine the correct
-> > > patch location or the right version of each binary for processes that
-> > > use user_events.
-> > >
-> > > An example of why we want eBPF integration:
-> > > We also have scenarios where we are live decoding the data quickly.
-> > > Having user_data fed directly to eBPF lets us cast the data coming in to
-> > > a struct and decode very very quickly to determine if something is
-> > > wrong.
-> > > We can take that data quickly and put it into maps to perform further
-> > > aggregation as required.
-> > > We have scenarios that have "skid" problems, where we need to grab
-> > > further data exactly when the process that had the problem was running.
-> > > eBPF lets us do all of this that we cannot easily do otherwise.
-> > >
-> > > Another benefit from user_events is the tracing is much faster than
-> > > uprobes or others using int 3 traps. This is critical to us to enable on
-> > > production systems.
-> >
-> > None of it makes sense to me.
+> TP_PROTO of sched_switch is updated with a new arg prev_state, which
+> causes runqslower load failure:
 >
-> Sorry.
+> libbpf: prog 'handle__sched_switch': BPF program load failed: Permission denied
+> libbpf: prog 'handle__sched_switch': -- BEGIN PROG LOAD LOG --
+> R1 type=ctx expected=fp
+> 0: R1=ctx(off=0,imm=0) R10=fp0
+> ; int handle__sched_switch(u64 *ctx)
+> 0: (bf) r7 = r1                       ; R1=ctx(off=0,imm=0) R7_w=ctx(off=0,imm=0)
+> ; struct task_struct *next = (struct task_struct *)ctx[2];
+> 1: (79) r6 = *(u64 *)(r7 +16)
+> func 'sched_switch' arg2 has btf_id 186 type STRUCT 'task_struct'
+> 2: R6_w=ptr_task_struct(off=0,imm=0) R7_w=ctx(off=0,imm=0)
+> ; struct task_struct *prev = (struct task_struct *)ctx[1];
+> 2: (79) r2 = *(u64 *)(r7 +8)          ; R2_w=scalar() R7_w=ctx(off=0,imm=0)
+> 3: (b7) r1 = 0                        ; R1_w=0
+> ; struct runq_event event = {};
+> 4: (7b) *(u64 *)(r10 -8) = r1         ; R1_w=P0 R10=fp0 fp-8_w=00000000
+> 5: (7b) *(u64 *)(r10 -16) = r1        ; R1_w=P0 R10=fp0 fp-16_w=00000000
+> 6: (7b) *(u64 *)(r10 -24) = r1        ; R1_w=P0 R10=fp0 fp-24_w=00000000
+> 7: (7b) *(u64 *)(r10 -32) = r1        ; R1_w=P0 R10=fp0 fp-32_w=00000000
+> ; if (prev->__state == TASK_RUNNING)
+> 8: (61) r1 = *(u32 *)(r2 +24)
+> R2 invalid mem access 'scalar'
+> processed 9 insns (limit 1000000) max_states_per_insn 0 total_states 0 peak_states 0 mark_read 0
+> -- END PROG LOAD LOG --
+> libbpf: failed to load program 'handle__sched_switch'
+> libbpf: failed to load object 'runqslower_bpf'
+> libbpf: failed to load BPF skeleton 'runqslower_bpf': -13
+> failed to load BPF object: -13
 >
-> > To take advantage of user_events user space has to be modified
-> > and writev syscalls inserted.
+> Update runqslower to fix this issue. Also, as we are on this, use BPF_PROG
+> in runqslower for cleaner code.
 >
-> Yes, both user_events and lttng require user space modifications to do
-> tracing correctly. The syscall overheads are real, and the cost depends
-> on the mitigations around spectre/meltdown.
+> Fixes: fa2c3254d7cf ("sched/tracing: Don't re-read p->state when emitting sched_switch event")
+> Signed-off-by: Song Liu <song@kernel.org>
+> ---
+>  tools/bpf/runqslower/runqslower.bpf.c | 19 +++++--------------
+>  1 file changed, 5 insertions(+), 14 deletions(-)
 >
-> > This is not cheap and I cannot see a production system using this interface.
->
-> But you are fine with uprobe costs? uprobes appear to be much more costly
-> than a syscall approach on the hardware I've run on.
->
-> > All you did is a poor man version of lttng that doesn't rely
-> > on such heavy instrumentation.
->
-> Well I am a frugal person. :)
->
-> This work has solved some critical issues we've been having, and I would
-> appreciate a review of the code if possible.
 
-It's a NACK to connect bpf and user_events.
-I would remove user_events from the kernel too.
+It would be much less disruptive if that prev_state was added after
+"next", but oh well...
+
+But anyways, let's handle this in a way that can handle both old
+kernels and new ones and do the same change in libbpf-tool's
+runqslower ([0]). Can you please follow up there as well?
+
+
+We can use BPF CO-RE to detect which order of arguments running kernel
+has by checking prev_state field existence in struct
+trace_event_raw_sched_switch. Can you please try that? Use
+bpf_core_field_exists() for that.
+
+
+  [0] https://github.com/iovisor/bcc/blob/master/libbpf-tools/runqslower.bpf.c
+
+
+> diff --git a/tools/bpf/runqslower/runqslower.bpf.c b/tools/bpf/runqslower/runqslower.bpf.c
+> index 9a5c1f008fe6..30e491d8308f 100644
+> --- a/tools/bpf/runqslower/runqslower.bpf.c
+> +++ b/tools/bpf/runqslower/runqslower.bpf.c
+> @@ -2,6 +2,7 @@
+>  // Copyright (c) 2019 Facebook
+>  #include "vmlinux.h"
+>  #include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+>  #include "runqslower.h"
+>
+>  #define TASK_RUNNING 0
+> @@ -43,31 +44,21 @@ static int trace_enqueue(struct task_struct *t)
+>  }
+>
+>  SEC("tp_btf/sched_wakeup")
+> -int handle__sched_wakeup(u64 *ctx)
+> +int BPF_PROG(handle__sched_wakeup, struct task_struct *p)
+>  {
+> -       /* TP_PROTO(struct task_struct *p) */
+> -       struct task_struct *p = (void *)ctx[0];
+> -
+>         return trace_enqueue(p);
+>  }
+>
+>  SEC("tp_btf/sched_wakeup_new")
+> -int handle__sched_wakeup_new(u64 *ctx)
+> +int BPF_PROG(handle__sched_wakeup_new, struct task_struct *p)
+>  {
+> -       /* TP_PROTO(struct task_struct *p) */
+> -       struct task_struct *p = (void *)ctx[0];
+> -
+>         return trace_enqueue(p);
+>  }
+>
+>  SEC("tp_btf/sched_switch")
+> -int handle__sched_switch(u64 *ctx)
+> +int BPF_PROG(handle__sched_switch, bool preempt, unsigned long prev_state,
+> +            struct task_struct *prev, struct task_struct *next)
+>  {
+> -       /* TP_PROTO(bool preempt, struct task_struct *prev,
+> -        *          struct task_struct *next)
+> -        */
+> -       struct task_struct *prev = (struct task_struct *)ctx[1];
+> -       struct task_struct *next = (struct task_struct *)ctx[2];
+>         struct runq_event event = {};
+>         u64 *tsp, delta_us;
+>         long state;
+> --
+> 2.30.2
+>
