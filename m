@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 389F64EB995
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 06:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7A754EB996
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 06:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242590AbiC3E1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 00:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39474 "EHLO
+        id S242592AbiC3E1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 00:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242526AbiC3E1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 00:27:03 -0400
+        with ESMTP id S242535AbiC3E1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 00:27:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948D4DF77;
-        Tue, 29 Mar 2022 21:25:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2DADFEE;
+        Tue, 29 Mar 2022 21:25:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A49CB81B37;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7A89B81B3E;
         Wed, 30 Mar 2022 04:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E3A8C34113;
-        Wed, 30 Mar 2022 04:25:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155BDC340F2;
+        Wed, 30 Mar 2022 04:25:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648614315;
-        bh=vdjnHae9b0yzMsExMtKNC+WLL55dm1Lg2N7VoIhWL24=;
+        s=k20201202; t=1648614316;
+        bh=Sllik6iaE1cFnQrEoRqBsr3czJlnZUnNA2SzJ7V4NuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mTZKm4E8m33oHKpcKq7YJWQyiuUk3Jg8Wh1nkdORLbAzaSYkoe3W9+ofBksvmsr1v
-         Efo823GVm4kHVuXHNv8YPJuwges2bN/XsGmR9gLj0uQY8/eS7IEZFw1PHpkWxZL7Jy
-         deqZnwwOtOTxIhntyVYE+RNzLpJvr2jMIu2oXJZgjyD/ZWz3Ed7DUa2LVorBMD7uuL
-         5nZ3yNQLujZr6FV0et69NPdeiD4J3ZS3goiXAOUK66tEMFtSuzJ+bAKP58QrRZw/VV
-         0YiY014VRDr3+PJwyZT4iM1L1WYyAmQEcLlJ4CAcMdjACa0iBCEbwufLrLN3NRCTx1
-         4WQhPhw2g7j7Q==
+        b=as41uzSoty88duMR3fFhyTHJE9rK2pjXJj2+tJ8sNPltO82uEfjew3y/3Ms6V8z8p
+         06iz4waRAfpwx9/z6MCzmI3t+/2r+GiDgtHQsnprRXCOvN/78jVCismJl3vZgf+VHJ
+         /5H2/OK6zHePq7M26ITm8tgBqhP8SHJhxigvOKp03BERXs6Cmk5g6iwZ8Lyqgii/3n
+         qCjUM8YHPspmbJOx4DBw93Az/KgXhOKgkTHq0oCKQKHqpEZWBcm4hYfHpFbyuFSkHN
+         FRf3/OX7GxpA+JYFMk1abjUWzkEuAackYi8MXFXil/TxhVOZTPhilk8E5sHJqv/mm9
+         mVqqocCUzTTLg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, pabeni@redhat.com, corbet@lwn.net,
         bpf@vger.kernel.org, linux-doc@vger.kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net v3 08/14] docs: netdev: rephrase the 'should I update patchwork' question
-Date:   Tue, 29 Mar 2022 21:24:59 -0700
-Message-Id: <20220330042505.2902770-9-kuba@kernel.org>
+Subject: [PATCH net v3 09/14] docs: netdev: add a question about re-posting frequency
+Date:   Tue, 29 Mar 2022 21:25:00 -0700
+Message-Id: <20220330042505.2902770-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220330042505.2902770-1-kuba@kernel.org>
 References: <20220330042505.2902770-1-kuba@kernel.org>
@@ -54,32 +54,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the question shorter and adjust the start of the answer accordingly.
+We have to tell people to stop reposting to often lately,
+or not to repost while the discussion is ongoing.
+Document this.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- Documentation/networking/netdev-FAQ.rst | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ Documentation/networking/netdev-FAQ.rst | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
-index 00ac300ebe6a..9c455d08510d 100644
+index 9c455d08510d..f8b89dc81cab 100644
 --- a/Documentation/networking/netdev-FAQ.rst
 +++ b/Documentation/networking/netdev-FAQ.rst
-@@ -125,9 +125,11 @@ Asking the maintainer for status updates on your
- patch is a good way to ensure your patch is ignored or pushed to the
- bottom of the priority list.
+@@ -140,6 +140,17 @@ No, please resend the entire patch series and make sure you do number your
+ patches such that it is clear this is the latest and greatest set of patches
+ that can be applied.
  
--I submitted multiple versions of the patch series. Should I directly update patchwork for the previous versions of these patch series?
----------------------------------------------------------------------------------------------------------------------------------------
--No, please don't interfere with the patch status on patchwork, leave
-+Should I directly update patchwork state of my own patches?
-+-----------------------------------------------------------
-+It may be tempting to help the maintainers and update the state of your
-+own patches when you post a new version or spot a bug. Please do not do that.
-+Interfering with the patch status on patchwork will only cause confusion. Leave
- it to the maintainer to figure out what is the most recent and current
- version that should be applied. If there is any doubt, the maintainer
- will reply and ask what should be done.
++I have received review feedback, when should I post a revised version of the patches?
++-------------------------------------------------------------------------------------
++Allow at least 24 hours to pass between postings. This will ensure reviewers
++from all geographical locations have a chance to chime in. Do not wait
++too long (weeks) between postings either as it will make it harder for reviewers
++to recall all the context.
++
++Make sure you address all the feedback in your new posting. Do not post a new
++version of the code if the discussion about the previous version is still
++ongoing, unless directly instructed by a reviewer.
++
+ I submitted multiple versions of a patch series and it looks like a version other than the last one has been accepted, what should I do?
+ ----------------------------------------------------------------------------------------------------------------------------------------
+ There is no revert possible, once it is pushed out, it stays like that.
 -- 
 2.34.1
 
