@@ -2,99 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C782A4ECA55
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 19:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E17D4ECA83
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 19:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349190AbiC3ROq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 13:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35292 "EHLO
+        id S1349250AbiC3R01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 13:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244733AbiC3ROp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 13:14:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C8559392;
-        Wed, 30 Mar 2022 10:13:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EF74B81D6E;
-        Wed, 30 Mar 2022 17:12:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAF6C340EC;
-        Wed, 30 Mar 2022 17:12:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648660377;
-        bh=NIslaD6hR1K1hA7T5NIGktk7gAw8SD895+5pJcEGgq0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dQ1LDkKRmaafeVvWPpJTSn+pFHzwoYqAt2Wmvqu6sDtftkrF2t/MbhU+mN1l6IhP+
-         I+lGp2xSM8UPqHBDfy1fbINTv4SYhA0Jx4hxe+jfFyyD12kKRZ5yC+uLvxzgn72huS
-         znvN6VEsDUHpVMPnPKbfhvOSlatJHmtARI/0AML0g7nWN6RMBQLyckUXqHLP8c3yKX
-         DQ0udvf17rUYDmWiXmPGY+sBAIwB/uwk0lEvyYnNg031j+V8iNEwZtsEVv/JhF5iJv
-         EWAZIhh3h3vTZQYY+vgEI1od2OetFelV0j3RpvZ7ltUc2v7W8aAXV5QZcRZI194YFf
-         j6sQAp2gDdlwg==
-Date:   Wed, 30 Mar 2022 10:12:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     Alexandra Winter <wintera@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        bridge@lists.linux-foundation.org,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>
-Subject: Re: [PATCH net-next v2] veth: Support bonding events
-Message-ID: <20220330101256.53f6ef48@kernel.org>
-In-Reply-To: <c512e765-f411-9305-013b-471a07e7f3ff@blackwall.org>
-References: <20220329114052.237572-1-wintera@linux.ibm.com>
-        <20220329175421.4a6325d9@kernel.org>
-        <d2e45c4a-ed34-10d3-58cd-01b1c19bd004@blackwall.org>
-        <c1ec0612-063b-dbfa-e10a-986786178c93@linux.ibm.com>
-        <20220330085154.34440715@kernel.org>
-        <c512e765-f411-9305-013b-471a07e7f3ff@blackwall.org>
+        with ESMTP id S1344997AbiC3R0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 13:26:23 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09CB46651
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 10:24:34 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id lr4so34482924ejb.11
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 10:24:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=52Imdz9LTLLhUAe2riVstsfW97W1L5sckaV7qKMt/gE=;
+        b=l+fChiN/G7QlB0oP01+Qvg5n5Ivu04cIWjsZIJDHCAcAOowQHZBUfyXqWtNbKfoctd
+         tI9MsRnfMsA5a/bt9kA8OweCNbYK9uCCoYB2iOo8oJUh/m0PBdtFz/OSSpwtM2GvX7hw
+         ne6ogZkk4x02sOwgvRtmFej18zmBPs6dfmtrhrXn50wY8+juokugVQrFjcYX8N0R2cbs
+         EKn8GJ07g34TG8wZMREN9U9vZ+DwcthhcAXZ1TqmbRCkLu9WuBcyMVgiKvxajaUkjfKU
+         KQan/xSyrU4VCWGtwKEjD2fOb4KB6tr6YwZRX7Jp1F1vRShu+Xrkao87TnNL5XqkBjD7
+         0hQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=52Imdz9LTLLhUAe2riVstsfW97W1L5sckaV7qKMt/gE=;
+        b=diLv5b+V2eJwFLsVZ37pNOXfbuykAB2fipxDpTH+8uhByjdQFmeRUQA1pfz9nPisir
+         fU5XPta7IqYQDuupFufXI8LMXRUfluvDJsw6IDNR/cKZc9RiLw9kdzF1Apj7XeXwd8Fb
+         HSmaCn2DuBWtM3iQZVCMs5SVzxfsyHc0PSTVwdIdywiBB9C7KTaoHasJU6lqUaW21mcj
+         zjsDkD4mFcqEkwNRz3AMbDO1rBLE6K1ezhg8hoaMfA362e35EiP817j3EoUCbyu7FWON
+         cZGd2wjrlpkN6mL9YGGldB5JzWFaiAy5DnWJXfnI8MJzvJXH6Mgm3i1nYAhpSlMCgOh3
+         7s9w==
+X-Gm-Message-State: AOAM530UK1mLz3WL0DP6uN2RPnNsISBCeSafcZ9zl3+HSFJKR7OWG29g
+        UM7TNOkL7sLtKtcgsa5RkyC6AwGjFbwUTk48Q0w=
+X-Google-Smtp-Source: ABdhPJzdotyfYEAOnFIQXJXfHJENMHvyzErr97xPrz2X3rh73YDVaJp31DFaANMjEXAYXXKM3nycU5bR0lgRC0OBSdY=
+X-Received: by 2002:a17:906:1e94:b0:6cc:4382:f12e with SMTP id
+ e20-20020a1709061e9400b006cc4382f12emr649377ejj.482.1648661073115; Wed, 30
+ Mar 2022 10:24:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+From:   Duke Abbaddon <duke.abbaddon@gmail.com>
+Date:   Wed, 30 Mar 2022 18:24:26 +0100
+Message-ID: <CAHpNFcPOyrPjxSVahyJr=ntrn-XGnzwc1K=aGWHX3pvePr-mCg@mail.gmail.com>
+Subject: TOP BOOSTER Cloud Enemy(tm) Provided by potentially DLSS Cloud Founder
+To:     submissions@vialicensing.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Mar 2022 19:16:42 +0300 Nikolay Aleksandrov wrote:
-> > Maybe opt-out? But assuming the event is only generated on
-> > active/backup switch over - when would it be okay to ignore
-> > the notification?
-> 
-> Let me just clarify, so I'm sure I've not misunderstood you. Do you mean opt-out as in
-> make it default on? IMO that would be a problem, large scale setups would suddenly
-> start propagating it to upper devices which would cause a lot of unnecessary bcast.
-> I meant enable it only if needed, and only on specific ports (second part is not
-> necessary, could be global, I think it's ok either way). I don't think any setup
-> which has many upper vlans/macvlans would ever enable this.
+TOP BOOSTER Cloud Enemy(tm) Provided by potentially DLSS Cloud Founder :
 
-That may be. I don't have a good understanding of scenarios in which
-GARP is required and where it's not :) Goes without saying but the
-default should follow the more common scenario.
+We cannot all Buy a founders GPU But we can all use your Founders
+Edition low price Cloud plugin for MMO & Online activated play Gaming
+:
+Cloud Enemy(tm) - TENSOR CORE + TOPS + We cannot all buy your cloud
+GPU Founders edition...
 
-> >> My concern was about the Hangbin's alternative proposal to notify all
-> >> bridge ports. I hope in my porposal I was able to avoid infinite loops.  
-> > 
-> > Possibly I'm confused as to where the notification for bridge master
-> > gets sent..  
-> 
-> IIUC it bypasses the bridge and sends a notify peers for the veth peer so it would
-> generate a grat arp (inetdev_event -> NETDEV_NOTIFY_PEERS).
+for reasons that AMD & NVidia and ARM & Intel do not directly buy a
+RTX3080TI Founders edition :p ^^ but we can all use your :
 
-Ack, I was basically repeating the question of where does 
-the notification with dev == br get generated.
+Cloud Enemy(tm):(c)RS TENSOR CORE : All GPU of note have TOPS and
+obviously we all specialise <3
 
-There is a protection in this patch to make sure the other 
-end of the veth is not plugged into a bridge (i.e. is not
-a bridge port) but there can be a macvlan on top of that
-veth that is part of a bridge, so IIUC that check is either
-insufficient or unnecessary.
+My proposal is simple : All special console MMO need a 370 Tensore
+core server side :
+
+Enemy, Friend,Pet, Emoti play(tm)
+
+(read at the bottom of the post please, Bear in mind this does not
+mean NVidia is the best at RayTracing..
+But it does mean we can truly afford to activate the full benefits of
+having ML TOPS..
+Mobile phones often only have 4 TOPS or even 2! at the most 10 and
+specialists like IPhone 20>30
+
+But could all afford a small compliment to the Founders Cloud in that
+ML is dealt with for the entire MMO by the cloud; That way no one
+needs to know that ..
+
+GPU RTP (Complex 3D RTP, Simple message, local cache, Monster cloud
+render + local)(c)RSExists specifically for You the client:
+
+NVidiaMicrosoft..
+Google
+Apple
+AMD
+Cloud gaming and service providers
+
+Linux VM
+Windows VM
+Mac VM
+
+Cloud Machine learning at GPU specialist clouds is of very high
+potency & potential,
+But for a 1$ a week subscription game like Quake? very hard at large cost!
+
+(c)Rupert S https://science.n-helix.com
+
+Cloud Enemy(tm)
+
+Core strategic advice & adaptable SVM CPU <> GPU
+
+SVM/Int List:
+Hard mode: Smaller refinement
+Advance Hard mode: Micro model save, Micro model regression
+
+Advance BattleMode: Hard mode: Micro model save, Varied challenge
+(small regression),Indirect reference chat
+Advance BattleMode: Hard mode: Micro model save, Varied challenge
+(small regression),Indirect reference chat,Personal chat
+Advance BattleMode: Hard mode:RND resurgence, Micro model save, Varied
+challenge (small regression),Indirect reference chat,Personal chat
+
+(c)RS
+
+Machine learning,
+The Advanced SVM feature Set & Development
+
+CPU lead Advanced SVM/ML potential
+GPU refinement & memory Expansion/Expression/Development
+
+SVM/ML Logic for:
+Shaders,
+Tessellation,
+Compression,
+PML Vector Ray-Tracing
+
+Sharpening Image Enhancement:
+
+(S=C2=B2ecRETA=C2=B2i)(tm)
+Reactive Image Enhancement : ML VSR : Super Sampling Resolution
+Enhancement with Tessellated Precision & Anti-Aliasing Ai (S=C2=B2ecRETA=C2=
+=B2i)
++ (SSAA)
+Color Dynamic Range Quantification, Mesh Tessellation, Smoothing & Interpol=
+ation
+Finally MIP-MAP optimised sampling with size/distance, dynamic cache
+compression.
+
+Machine learning,
+The Advanced SVM feature Set & New developments..TPU <> GDev,AMD
+
+Extended support for ML means dynamic INT4/8/16/Float types and dot
+product instructions execution.
+GPU/CPU/Feature-set/SVM
+
+Dual compute unit exposure of additional mixed-precision dot-product
+modes in the ALUs,
+Primarily for accelerating machine learning inference,
+A mixed-precision FMA dot2 will compute two half-precision
+multiplications and then add the results to a single-precision
+accumulator. For even greater throughput,
+
+Some ALUs will support 8-bit integer dot4 operations and 4-bit dot8 operati=
+ons,
+All of which use 32-bit accumulators to avoid any overflows."
+
+Core-ML runs on all 3 hardware parts: CPU, GPU, Neural Engine ASIC;SVM.
+The developer doesn=E2=80=99t specify; The software middle-ware chooses whi=
+ch
+part to run ML models,
+
+(c)RS
+
+Submissions for review
+
+RS
+
+https://drive.google.com/drive/folders/1X5fUvsXkvBU6td78uq3EdEUJ_S6iUplA?us=
+p=3Dsharing
+
+https://lore.kernel.org/lkml/20220329164117.1449-1-mario.limonciello@amd.co=
+m/
+
+https://www.phoronix.com/scan.php?page=3Dnews_item&px=3DAMD-PSP-Sysfs-Expos=
+e
+
+https://lkml.org/lkml/2022/3/30/1005
