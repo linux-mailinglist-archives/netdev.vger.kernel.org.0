@@ -2,212 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E408D4EC5B5
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 15:34:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0782F4EC5D3
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 15:41:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236449AbiC3Nfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 09:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
+        id S1346227AbiC3NnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 09:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237223AbiC3Nfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 09:35:40 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5732612ABF;
-        Wed, 30 Mar 2022 06:33:55 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 1316A21603;
-        Wed, 30 Mar 2022 13:33:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1648647234; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        with ESMTP id S1346174AbiC3Nmu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 09:42:50 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAC442253D;
+        Wed, 30 Mar 2022 06:41:03 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 15:40:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1648647661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=JZ7etbOkud23rePgYHX93VM2Npayks8E311gepaCXY8=;
-        b=WpI/P3lwWz2bV3KFAUbTx0kz/vfwAV0U3f6iBQK1XjHMl8LXl4vOQYhPUvrL8MrCzkfgD7
-        MEQWIsGbyrQaHo8iX5NkpvPZHn4rXD89G6gSTIfbJLGtt8yC106/LGheJT0WpM/TEgjyZj
-        yu2ij34aoVAdBsVxonQlWow8zrQ2Btw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1648647234;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        bh=URUSnCfet5e8NJSvpD2xln45464mTe5fGEeiA24K6+I=;
+        b=CMTqNe0Ft63H1B1W2ZKhVzkk8skP0+B/bwHc/fHamUvnXGPAXecVuz6bp/pIwiJvRGXQfX
+        5ovppTkkCG+SxexafagScZsN3Odewj/zkqS/OGxS7FIRnzuryp2Wi+2hnVA+CeuVYCLZZj
+        WJAXrmvvNlcc03Jj5NnWJqaR3c/1VDn70EuOxspydTTaKxHJnWNgn2TZIdlOKg1svWpAMn
+        IJTK8/FUa0+C2HjqSCdYYkKQ8514GrElYBWW/oRGuNRh2coIxlx+CM7GOSKRkQXSPHCzd3
+        V/SbKP9b6qYM6tCo6EibQLGJanYPUWBZ2N3LPtNlWNd65h+JyGY3dBMEtw5PZQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1648647661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=JZ7etbOkud23rePgYHX93VM2Npayks8E311gepaCXY8=;
-        b=Dj4Od0Ng8MqvY192E61SBMgtpwD6sjqpn+eheGNsS/vwgu8+LIwt970QapimTNpxsw82xp
-        mCASVJH5OkqnCrBA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 561EE13AF3;
-        Wed, 30 Mar 2022 13:33:53 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id o57tEUFcRGK1WQAAMHmgww
-        (envelope-from <dkirjanov@suse.de>); Wed, 30 Mar 2022 13:33:53 +0000
-Message-ID: <9f7a92f5-5674-5c9f-e5ec-4a68ec8cb0d1@suse.de>
-Date:   Wed, 30 Mar 2022 16:33:48 +0300
+        bh=URUSnCfet5e8NJSvpD2xln45464mTe5fGEeiA24K6+I=;
+        b=LCrs2EK7xnDDzGIlyUzmvDbTXueTgY6RJHkf7LeQutVECEzdxpLKK5UJoDfCtrr43NcPrj
+        h0uAKrrrChlv0pDg==
+From:   Anna-Maria Behnsen <anna-maria@linutronix.de>
+To:     Artem Savkov <asavkov@redhat.com>
+cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] timer: add a function to adjust timeouts to be
+ upper bound
+In-Reply-To: <20220330082046.3512424-2-asavkov@redhat.com>
+Message-ID: <alpine.DEB.2.21.2203301514570.4409@somnus>
+References: <87zglcfmcv.ffs@tglx> <20220330082046.3512424-1-asavkov@redhat.com> <20220330082046.3512424-2-asavkov@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] tcp: Add tracepoint for tcp_set_ca_state
-Content-Language: ru
-To:     jackygam2001 <jacky_gam_2001@163.com>, edumazet@google.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        rostedt@goodmis.org, mingo@redhat.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ping.gan@dell.com
-References: <20220330130128.10256-1-jacky_gam_2001@163.com>
-From:   Denis Kirjanov <dkirjanov@suse.de>
-In-Reply-To: <20220330130128.10256-1-jacky_gam_2001@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 30 Mar 2022, Artem Savkov wrote:
 
+> Current timer wheel implementation is optimized for performance and
+> energy usage but lacks in precision. This, normally, is not a problem as
+> most timers that use timer wheel are used for timeouts and thus rarely
+> expire, instead they often get canceled or modified before expiration.
+> Even when they don't, expiring a bit late is not an issue for timeout
+> timers.
+> 
+> TCP keepalive timer is a special case, it's aim is to prevent timeouts,
+> so triggering earlier rather than later is desired behavior. In a
+> reported case the user had a 3600s keepalive timer for preventing firewall
+> disconnects (on a 3650s interval). They observed keepalive timers coming
+> in up to four minutes late, causing unexpected disconnects.
+> 
+> This commit adds upper_bound_timeout() function that takes a relative
+> timeout and adjusts it based on timer wheel granularity so that supplied
+> value effectively becomes an upper bound for the timer.
+> 
 
-3/30/22 16:01, jackygam2001 пишет:
-> The congestion status of a tcp flow may be updated since there
-> is congestion between tcp sender and receiver. It makes sense for
-> adding tracepoint for congestion status update function to evaluate
-> the performance of network and congestion algorithm.
-> 
-> Link: https://github.com/iovisor/bcc/pull/3899
-> 
-> Signed-off-by: jackygam2001 <jacky_gam_2001@163.com>
-Please use net-next prefix and use your real name in SOB
+I think there is a problem with this approach. Please correct me, if I'm
+wrong. The timer wheel index and level calculation depends on
+timer_base::clk. The timeout/delta which is used for this calculation is
+relative to timer_base::clk (delta = expires - base::clk). timer_base::clk
+is not updated in sync with jiffies. It is forwarded before a new timer is
+queued. It is possible, that timer_base::clk is behind jiffies after
+forwarding because of a not yet expired timer.
 
-> ---
->   include/net/tcp.h          | 12 +++---------
->   include/trace/events/tcp.h | 45 +++++++++++++++++++++++++++++++++++++++++++++
->   net/ipv4/tcp_cong.c        | 12 ++++++++++++
->   3 files changed, 60 insertions(+), 9 deletions(-)
-> 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 70ca4a5e330a..9a3786f33798 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -1139,15 +1139,6 @@ static inline bool tcp_ca_needs_ecn(const struct sock *sk)
->   	return icsk->icsk_ca_ops->flags & TCP_CONG_NEEDS_ECN;
->   }
->   
-> -static inline void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
-> -{
-> -	struct inet_connection_sock *icsk = inet_csk(sk);
-> -
-> -	if (icsk->icsk_ca_ops->set_state)
-> -		icsk->icsk_ca_ops->set_state(sk, ca_state);
-> -	icsk->icsk_ca_state = ca_state;
-> -}
-> -
->   static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
->   {
->   	const struct inet_connection_sock *icsk = inet_csk(sk);
-> @@ -1156,6 +1147,9 @@ static inline void tcp_ca_event(struct sock *sk, const enum tcp_ca_event event)
->   		icsk->icsk_ca_ops->cwnd_event(sk, event);
->   }
->   
-> +/* From tcp_cong.c */
-> +void tcp_set_ca_state(struct sock *sk, const u8 ca_state);
-> +
->   /* From tcp_rate.c */
->   void tcp_rate_skb_sent(struct sock *sk, struct sk_buff *skb);
->   void tcp_rate_skb_delivered(struct sock *sk, struct sk_buff *skb,
-> diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-> index 521059d8dc0a..69a68b01c1de 100644
-> --- a/include/trace/events/tcp.h
-> +++ b/include/trace/events/tcp.h
-> @@ -371,6 +371,51 @@ DEFINE_EVENT(tcp_event_skb, tcp_bad_csum,
->   	TP_ARGS(skb)
->   );
->   
-> +TRACE_EVENT(tcp_cong_state_set,
-> +
-> +	TP_PROTO(struct sock *sk, const u8 ca_state),
-> +
-> +	TP_ARGS(sk, ca_state),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(const void *, skaddr)
-> +		__field(__u16, sport)
-> +		__field(__u16, dport)
-> +		__array(__u8, saddr, 4)
-> +		__array(__u8, daddr, 4)
-> +		__array(__u8, saddr_v6, 16)
-> +		__array(__u8, daddr_v6, 16)
-> +		__field(__u8, cong_state)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		struct inet_sock *inet = inet_sk(sk);
-> +		__be32 *p32;
-> +
-> +		__entry->skaddr = sk;
-> +
-> +		__entry->sport = ntohs(inet->inet_sport);
-> +		__entry->dport = ntohs(inet->inet_dport);
-> +
-> +		p32 = (__be32 *) __entry->saddr;
-> +		*p32 = inet->inet_saddr;
-> +
-> +		p32 = (__be32 *) __entry->daddr;
-> +		*p32 =  inet->inet_daddr;
-> +
-> +		TP_STORE_ADDRS(__entry, inet->inet_saddr, inet->inet_daddr,
-> +			   sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
-> +
-> +		__entry->cong_state = ca_state;
-> +	),
-> +
-> +	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c cong_state=%u",
-> +		  __entry->sport, __entry->dport,
-> +		  __entry->saddr, __entry->daddr,
-> +		  __entry->saddr_v6, __entry->daddr_v6,
-> +		  __entry->cong_state)
-> +);
-> +
->   #endif /* _TRACE_TCP_H */
->   
->   /* This part must be outside protection */
-> diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-> index dc95572163df..98b48bdb8be7 100644
-> --- a/net/ipv4/tcp_cong.c
-> +++ b/net/ipv4/tcp_cong.c
-> @@ -16,6 +16,7 @@
->   #include <linux/gfp.h>
->   #include <linux/jhash.h>
->   #include <net/tcp.h>
-> +#include <trace/events/tcp.h>
->   
->   static DEFINE_SPINLOCK(tcp_cong_list_lock);
->   static LIST_HEAD(tcp_cong_list);
-> @@ -33,6 +34,17 @@ struct tcp_congestion_ops *tcp_ca_find(const char *name)
->   	return NULL;
->   }
->   
-> +void tcp_set_ca_state(struct sock *sk, const u8 ca_state)
-> +{
-> +	struct inet_connection_sock *icsk = inet_csk(sk);
-> +
-> +	trace_tcp_cong_state_set(sk, ca_state);
-> +
-> +	if (icsk->icsk_ca_ops->set_state)
-> +		icsk->icsk_ca_ops->set_state(sk, ca_state);
-> +	icsk->icsk_ca_state = ca_state;
-> +}
-> +
->   /* Must be called with rcu lock held */
->   static struct tcp_congestion_ops *tcp_ca_find_autoload(struct net *net,
->   						       const char *name)
+When calculating the level/index with a relative timeout, there is no
+guarantee that the result is the same when actual enqueueing the timer with
+expiry = jiffies + timeout .
+
+Thanks,
+
+	Anna-Maria
+
