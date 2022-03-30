@@ -2,110 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E01164EBB5B
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 09:00:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B4F4EBB6F
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 09:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243527AbiC3HBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 03:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
+        id S243608AbiC3HHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 03:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241845AbiC3HBi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 03:01:38 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C7CDF483;
-        Tue, 29 Mar 2022 23:59:51 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V8cbEuS_1648623587;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V8cbEuS_1648623587)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 30 Mar 2022 14:59:48 +0800
-Message-ID: <1648623508.9711535-4-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v2 0/9] virtio: support advance DMA
-Date:   Wed, 30 Mar 2022 14:58:28 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-References: <20220224110402.108161-1-xuanzhuo@linux.alibaba.com>
- <20220330023258-mutt-send-email-mst@kernel.org>
- <CACGkMEvESXv9PfMF9riPraX59j0BiLPfTgxuFVw1x0HWwjtYVQ@mail.gmail.com>
-In-Reply-To: <CACGkMEvESXv9PfMF9riPraX59j0BiLPfTgxuFVw1x0HWwjtYVQ@mail.gmail.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S239173AbiC3HHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 03:07:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1E2E389F;
+        Wed, 30 Mar 2022 00:05:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 293B46174C;
+        Wed, 30 Mar 2022 07:05:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EFC4C340EC;
+        Wed, 30 Mar 2022 07:05:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648623916;
+        bh=VWuNt9MMq30h518JglbsrFsfm2iHhJHX8QEEqDJ+oME=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=EEQYNvd7HoxsnIJuJj4H9DDPPJw2JEsCNS6GFlZEn9LkdTPgiyZ7ihwosYWPXjeS1
+         fWpWJ9CiJPKAesSLVuH/qdtaVNtyj7xBUrUahqcPowCDnHWLVhR2NK89uEGQ6llA+P
+         S+QHC30b4jEj3+hTDge/rbUlVzoIdrWi2z91MEyUM5MnuDwU4UIpEpAWHbbwlyKEXB
+         bHMOw6HV1twNGFX9HPwBTneXccWdQ8fjmRYNzP9vqIMUbkfpUY1MdpIxRMY4FS2g5m
+         hLrtTFB80UJiiPhWyexHSnv+NXqQZhwHAcVf/2uCiyOjPRUu42vBXm5ft5afiiT2zV
+         gsKxmRlY2gxXA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>
+Cc:     Benjamin =?utf-8?Q?St=C3=BCrz?= <benni@stuerz.xyz>,
+        <loic.poulain@linaro.org>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <pabeni@redhat.com>,
+        <wcn36xx@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 19/22 v2] wcn36xx: Improve readability of wcn36xx_caps_name
+References: <20220326165909.506926-1-benni@stuerz.xyz>
+        <20220326165909.506926-19-benni@stuerz.xyz>
+        <f0ebc901-051a-c7fe-ca5a-bc798e7c31e7@quicinc.com>
+        <720e4d68-683a-f729-f452-4a9e52a3c6fa@stuerz.xyz>
+        <ff1ecd47-d42a-fa91-5c5c-e23ac183f525@quicinc.com>
+Date:   Wed, 30 Mar 2022 10:05:10 +0300
+In-Reply-To: <ff1ecd47-d42a-fa91-5c5c-e23ac183f525@quicinc.com> (Jeff
+        Johnson's message of "Mon, 28 Mar 2022 13:23:06 -0700")
+Message-ID: <87y20rx6mx.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Mar 2022 14:56:17 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Wed, Mar 30, 2022 at 2:34 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Thu, Feb 24, 2022 at 07:03:53PM +0800, Xuan Zhuo wrote:
-> > > virtqueue_add() only supports virtual addresses, dma is completed in
-> > > virtqueue_add().
-> > >
-> > > In some scenarios (such as the AF_XDP scenario), DMA is completed in advance, so
-> > > it is necessary for us to support passing the DMA address to virtqueue_add().
-> >
-> > I picked up a couple of patches. Others are waiting for some acks
-> > (Jason?) and improved commit logs for documentation.
->
-> I will review them.
+Jeff Johnson <quic_jjohnson@quicinc.com> writes:
 
-hi, the core code of premapped, I will merge it into 'virtio pci support
-VIRTIO_F_RING_RESET' because this function will be used when reusing the buffer
-after resize.
-
-Thanks.
-
-
+> (apologies for top-posting)
+> When you submit new patches you should not do so as a reply, but
+> instead as a new thread with a new version number.
 >
-> Thanks
+> And since multiple folks have suggested that you submit on a
+> per-subsystem basis I suggest that you re-send this as a singleton
+> just to wcn36xx@lists.infradead.org and linux-wireless@vger.kernel.org
+> along with the associated maintainers.
 >
-> >
-> > Thanks!
-> >
-> > > v2:
-> > >     1. rename predma -> premapped
-> > >     2. virtio net xdp tx use virtio dma api
-> > >
-> > > v1:
-> > >    1. All sgs requested at one time are required to be unified PREDMA, and several
-> > >       of them are not supported to be PREDMA
-> > >    2. virtio_dma_map() is removed from this patch set and will be submitted
-> > >       together with the next time AF_XDP supports virtio dma
-> > >    3. Added patch #2 #3 to remove the check for flags when performing unmap
-> > >       indirect desc
-> > >
-> > > Xuan Zhuo (9):
-> > >   virtio_ring: rename vring_unmap_state_packed() to
-> > >     vring_unmap_extra_packed()
-> > >   virtio_ring: remove flags check for unmap split indirect desc
-> > >   virtio_ring: remove flags check for unmap packed indirect desc
-> > >   virtio_ring: virtqueue_add() support premapped
-> > >   virtio_ring: split: virtqueue_add_split() support premapped
-> > >   virtio_ring: packed: virtqueue_add_packed() support premapped
-> > >   virtio_ring: add api virtio_dma_map() for advance dma
-> > >   virtio_ring: introduce virtqueue_add_outbuf_premapped()
-> > >   virtio_net: xdp xmit use virtio dma api
-> > >
-> > >  drivers/net/virtio_net.c     |  42 +++++-
-> > >  drivers/virtio/virtio_ring.c | 280 ++++++++++++++++++++++++++---------
-> > >  include/linux/virtio.h       |  12 ++
-> > >  3 files changed, 254 insertions(+), 80 deletions(-)
-> > >
-> > > --
-> > > 2.31.0
-> >
->
+> So I believe [PATCH v3] wcn36xx:... would be the correct subject, but
+> I'm sure Kalle will let us know otherwise
+
+You are correct. Also I strongly recommend using git send-email instead
+of Mozilla. Patch handling is automated using patchwork and git, so
+submitting patches manually is error prone. See our wiki for more:
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#format_issues
+
+Also I recommend reading the whole wiki page in detail, that way common
+errors can be avoided and we all can save time :)
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
