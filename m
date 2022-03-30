@@ -2,138 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC58D4EB86E
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 04:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 913C74EB874
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 04:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242084AbiC3Cqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 22:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
+        id S242097AbiC3CtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 22:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239261AbiC3Cqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 22:46:30 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFCB522DC;
-        Tue, 29 Mar 2022 19:44:45 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id 0AB755C00E9;
-        Tue, 29 Mar 2022 22:44:45 -0400 (EDT)
-Received: from imap49 ([10.202.2.99])
-  by compute5.internal (MEProxy); Tue, 29 Mar 2022 22:44:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=pWGqz/nqqothglGzobmCKu7DG/1JSXSUyXe/q5
-        An9Zg=; b=QDpbEUH9w2Ecd0+KdNb9tLPfzPhaYPagfT4adhaVXXddbzLg79KxN7
-        GUa2fqs+x7His5EBPNdafnOj72BsMwx/DmxUveTtWnf7KwgVLULXu33TTgX7fKtO
-        BANpVt91XwpV4u+N5wRDzctEKp+TdI0GYVhPUoU3jrBArwYu9ZJMMsplG7xEDsAA
-        4InE2O0ulPiU1N39HhCelO2l9Oe1eDV1ZBnNXdqfAV7nipi166meViUAPORD1uw7
-        wRQ6SpurVUU2sUjtAxU9OeeZiQbVogCE/n9TfjM4lHmL1FJXQ73VMeZiZwZFkpNH
-        JtGTdPK2JgDcDH3GoYB+P2SnFO9snLRg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=pWGqz/nqqothglGzo
-        bmCKu7DG/1JSXSUyXe/q5An9Zg=; b=jW//zp40NLZ3YKumvewgmK+Vj7WIeziA7
-        sAyoGV78rGq46afqbqBeB6Xv+EtD/FAYWFWT/H+HlBNfNimq9eUGZ0TWOwPLAMsX
-        nu/yTpU7L0qZYWcpqHsMAIpz8d26uO4HMb1Kt4gBzbqI1VBsRUI3i5L3cNAr7BmU
-        w0BL/tY541uVGR2xwM9DwnGCtgxK8ZxJ4YOKZHT2cnP5LX71i6VXcy64S2Zn6NsO
-        uDezzzgcUsspl7xE+oEb7H4vOmaKED+e5Ry0zjmF3XooimU+9mCWih61M+aZSe31
-        c4k5Xwkt6qnulTKD+QoDvydEWi41pzfZPqEEL7h63JojCjo7vDH1Q==
-X-ME-Sender: <xms:HMRDYhzh0T1XezhrvifAHHQfwzdFYDhbBMKJI4WfOmpVCdeEoPFb7w>
-    <xme:HMRDYhQdYvhinWi7fGKXhohm43yBesFTCjzBefB_S-AFIvwsx4DMpm_kPSFN7XZ3z
-    uDpCqa2VpOgJIlKaw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeiuddgiedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
-    rhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecuggftrf
-    grthhtvghrnhephefhfeekgfekudevheffheeihedujeefjeevjeefudfgfeeutdeuvdeh
-    hfevueffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    eprghnughrvgifsegrjhdrihgurdgruh
-X-ME-Proxy: <xmx:HMRDYrWxtgV-KcAQ8jnfMzUeVuhbjp7xH1-qtw8YBiJkXQhfPxSHag>
-    <xmx:HMRDYji0MaBmJToABMobp0w4ra_jbrBMqEPtH7QonZM7IoH65Qni8g>
-    <xmx:HMRDYjDQ98zUNkD_m-VF7CpB0qjZ2sfNBpi_72XrSH7w790m4AFiwg>
-    <xmx:HcRDYvtSfNYU-QqciXVTT8xfpuicNJ2cHHrYDo8MiwpQmMzKzyR8zg>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 32214F6043F; Tue, 29 Mar 2022 22:44:44 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4911-g925b585eab-fm-20220323.003-g925b585e
-Mime-Version: 1.0
-Message-Id: <489d851e-be29-44a3-bf56-78be33d585f2@www.fastmail.com>
-In-Reply-To: <20220329161949.19762-1-potin.lai@quantatw.com>
-References: <20220329161949.19762-1-potin.lai@quantatw.com>
-Date:   Wed, 30 Mar 2022 13:14:22 +1030
-From:   "Andrew Jeffery" <andrew@aj.id.au>
-To:     "Potin Lai" <potin.lai@quantatw.com>,
-        "Andrew Lunn" <andrew@lunn.ch>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        "David Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, "Joel Stanley" <joel@jms.id.au>
-Cc:     "Patrick Williams" <patrick@stwcx.xyz>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: mdio: aspeed: Add Clause 45 support
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S236386AbiC3CtN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 22:49:13 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C7B170D9A;
+        Tue, 29 Mar 2022 19:47:29 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id p21so9349232ioj.4;
+        Tue, 29 Mar 2022 19:47:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fxX+o/81/OXOghFHUsKldyF1Yt6ZGrPzRcjfze93Ug8=;
+        b=I50Dwlel4eUuBfPwkQYokzgXMlBuBvsxy0eJwTShQjHrG8ytWKzUMfdmgUPXCZC3Ks
+         BlQJV5A8XqWHcL6YxaTVduDYhHp5/uLx8mKwqBTS0jjiBcGrQGLmfyVEyn+DwM2w9JE+
+         xNVbriEUNr9F7iSBn3s9gAGUTVEheHRcrgPkC46+Yies7fkmAbxqeL5+7o+D0v5KWvvN
+         yPZ8ue79KPz6/vvIusBCD6ie72QLpezPWd6HyB5qUEzklRrojuJsDMt7dwkuimXnuKhH
+         SGy7/NEH+gBBpo55AWILmOBqQpMIfakIvFMTAAuWIPHXiFh+SwlXHajomb0mCdMoi0KG
+         sj0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fxX+o/81/OXOghFHUsKldyF1Yt6ZGrPzRcjfze93Ug8=;
+        b=uJrZ8gIA3BrD1WD6hgczSnnprsTVTf9V+U+6SQ90DMjRaDmyPxH91J8BmKP1yWAzwn
+         b2+ROSokH+kxH8ECkXmn42w5YoOIQZVE5L+S8T7rRyopCXfBeHPJus+rv5LQEjF3wMx8
+         2L+XgP5nKmgTEwQozoFLDcvcs5qKnWvVpy3xmIonfUowwl0kD8BQ16DBcr2zdZU2Qitd
+         JYn1G+EJlB9tBCCpbUwn3qXXiEeiSS7eX4zqIVcf7CI+ADk5pmoCKwFWq9nNXhz/7mWD
+         SMdnOkqVKRRdS2LNrKpn4h6d2h7Fp0JJxBgyuHvKvd8ZMljS05Vclc3ovQqTzMAfq2Gu
+         5QiA==
+X-Gm-Message-State: AOAM5302PhHjcymd5ljDa+GyzdnvlHPI52R8meZIxUdDrfahzC7N0toc
+        /86vgtLwnIJPLpdsBkKPlpuhRNIywQBEtBFf388=
+X-Google-Smtp-Source: ABdhPJy/MG6DWIdi4YUIC/fT9Q68sZv06a/En/8B7aBeMS8udfkxnhujC03fUJ6sEj2g9FF06TczE21+1qevTG4crI4=
+X-Received: by 2002:a05:6638:2105:b0:323:68db:2e4e with SMTP id
+ n5-20020a056638210500b0032368db2e4emr8002688jaj.234.1648608447592; Tue, 29
+ Mar 2022 19:47:27 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220329231854.3188647-1-song@kernel.org> <CAEf4BzZCLwzrZPTOBEg88i1Tki6uPL73ujSE-SCSSU16HENUHA@mail.gmail.com>
+ <53E87B8F-6BB1-42AB-965B-096C86236926@fb.com>
+In-Reply-To: <53E87B8F-6BB1-42AB-965B-096C86236926@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 29 Mar 2022 19:47:16 -0700
+Message-ID: <CAEf4BzbVqM_akAGsHkf4QJdwcA2M-Lg6MF6xLu72rRS8gUjPKw@mail.gmail.com>
+Subject: Re: [PATCH bpf] tools/runqslower: fix handle__sched_switch for
+ updated tp sched_switch
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Valentin Schneider <valentin.schneider@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On Wed, 30 Mar 2022, at 02:49, Potin Lai wrote:
-> Add Clause 45 support for Aspeed mdio driver.
+On Tue, Mar 29, 2022 at 5:39 PM Song Liu <songliubraving@fb.com> wrote:
 >
-> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
-> ---
->  drivers/net/mdio/mdio-aspeed.c | 122 ++++++++++++++++++++++++---------
->  1 file changed, 88 insertions(+), 34 deletions(-)
 >
-> diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
-> index e2273588c75b..aa2b678b2381 100644
-> --- a/drivers/net/mdio/mdio-aspeed.c
-> +++ b/drivers/net/mdio/mdio-aspeed.c
-> @@ -21,6 +21,10 @@
->  #define   ASPEED_MDIO_CTRL_OP		GENMASK(27, 26)
->  #define     MDIO_C22_OP_WRITE		0b01
->  #define     MDIO_C22_OP_READ		0b10
-> +#define     MDIO_C45_OP_ADDR		0b00
-> +#define     MDIO_C45_OP_WRITE		0b01
-> +#define     MDIO_C45_OP_PREAD		0b10
-> +#define     MDIO_C45_OP_READ		0b11
->  #define   ASPEED_MDIO_CTRL_PHYAD	GENMASK(25, 21)
->  #define   ASPEED_MDIO_CTRL_REGAD	GENMASK(20, 16)
->  #define   ASPEED_MDIO_CTRL_MIIWDATA	GENMASK(15, 0)
-> @@ -39,34 +43,35 @@ struct aspeed_mdio {
->  	void __iomem *base;
->  };
-> 
-> -static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
-> +static int aspeed_mdio_ctrl_reg(struct mii_bus *bus, u8 st, u8 op, u8 phyad,
+>
+> > On Mar 29, 2022, at 5:00 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Tue, Mar 29, 2022 at 4:19 PM Song Liu <song@kernel.org> wrote:
+> >>
+> >> TP_PROTO of sched_switch is updated with a new arg prev_state, which
+> >> causes runqslower load failure:
+> >>
+> >> libbpf: prog 'handle__sched_switch': BPF program load failed: Permission denied
+> >> libbpf: prog 'handle__sched_switch': -- BEGIN PROG LOAD LOG --
+> >> R1 type=ctx expected=fp
+> >> 0: R1=ctx(off=0,imm=0) R10=fp0
+> >> ; int handle__sched_switch(u64 *ctx)
+> >> 0: (bf) r7 = r1                       ; R1=ctx(off=0,imm=0) R7_w=ctx(off=0,imm=0)
+> >> ; struct task_struct *next = (struct task_struct *)ctx[2];
+> >> 1: (79) r6 = *(u64 *)(r7 +16)
+> >> func 'sched_switch' arg2 has btf_id 186 type STRUCT 'task_struct'
+> >> 2: R6_w=ptr_task_struct(off=0,imm=0) R7_w=ctx(off=0,imm=0)
+> >> ; struct task_struct *prev = (struct task_struct *)ctx[1];
+> >> 2: (79) r2 = *(u64 *)(r7 +8)          ; R2_w=scalar() R7_w=ctx(off=0,imm=0)
+> >> 3: (b7) r1 = 0                        ; R1_w=0
+> >> ; struct runq_event event = {};
+> >> 4: (7b) *(u64 *)(r10 -8) = r1         ; R1_w=P0 R10=fp0 fp-8_w=00000000
+> >> 5: (7b) *(u64 *)(r10 -16) = r1        ; R1_w=P0 R10=fp0 fp-16_w=00000000
+> >> 6: (7b) *(u64 *)(r10 -24) = r1        ; R1_w=P0 R10=fp0 fp-24_w=00000000
+> >> 7: (7b) *(u64 *)(r10 -32) = r1        ; R1_w=P0 R10=fp0 fp-32_w=00000000
+> >> ; if (prev->__state == TASK_RUNNING)
+> >> 8: (61) r1 = *(u32 *)(r2 +24)
+> >> R2 invalid mem access 'scalar'
+> >> processed 9 insns (limit 1000000) max_states_per_insn 0 total_states 0 peak_states 0 mark_read 0
+> >> -- END PROG LOAD LOG --
+> >> libbpf: failed to load program 'handle__sched_switch'
+> >> libbpf: failed to load object 'runqslower_bpf'
+> >> libbpf: failed to load BPF skeleton 'runqslower_bpf': -13
+> >> failed to load BPF object: -13
+> >>
+> >> Update runqslower to fix this issue. Also, as we are on this, use BPF_PROG
+> >> in runqslower for cleaner code.
+> >>
+> >> Fixes: fa2c3254d7cf ("sched/tracing: Don't re-read p->state when emitting sched_switch event")
+> >> Signed-off-by: Song Liu <song@kernel.org>
+> >> ---
+> >> tools/bpf/runqslower/runqslower.bpf.c | 19 +++++--------------
+> >> 1 file changed, 5 insertions(+), 14 deletions(-)
+> >>
+> >
+> > It would be much less disruptive if that prev_state was added after
+> > "next", but oh well...
+>
+> Maybe we should change that.
+>
+> +Valentin and Steven, how about we change the order with the attached
+> diff (not the original patch in this thread, but the one at the end of
+> this email)?
+>
+> >
+> > But anyways, let's handle this in a way that can handle both old
+> > kernels and new ones and do the same change in libbpf-tool's
+> > runqslower ([0]). Can you please follow up there as well?
+>
+> Yeah, I will also fix that one.
 
-It's a bit of a nit-pick, but this function name talks about something
-it impacts rather than something it does. What do you think of
-`aspeed_mdio_op()`?
+Thanks!
 
-Less of a nitpick, this patch does three things:
+>
+> >
+> >
+> > We can use BPF CO-RE to detect which order of arguments running kernel
+> > has by checking prev_state field existence in struct
+> > trace_event_raw_sched_switch. Can you please try that? Use
+> > bpf_core_field_exists() for that.
+>
+> Do you mean something like
+>
+> if (bpf_core_field_exists(ctx->prev_state))
+>     /* use ctx[2] and ctx[3] */
+> else
+>     /* use ctx[1] and ctx[2] */
 
-1. Distills the aspeed_mdio_ctrl_reg() function from from the
-   aspeed_mdio_{read,write}() functions
+yep, that's what I meant, except you don't have ctx->prev_state, you have to do:
 
-2. Introduces the additional function indirection for C22 vs C45 reads
+if (bpf_core_field_exists(((struct trace_event_raw_sched_switch
+*)0)->prev_state))
 
-3. Adds the C45 support.
+>
+> ? I think we will need BTF for the arguments, which doesn't exist yet.
+> Did I miss something?
 
-I think it'd be easier to review if it was broken into three separate
-patches along the lines of the above. I'm finding the hunks hard to
-concentrate on as they are.
+Probably :) struct trace_event_raw_sched_switch is in vmlinux.h
+already for non-raw sched:sched_switch tracepoint. We just use that
+type information for feature probing. From BPF verifier's perspective,
+ctx[1] or ctx[2] will have proper BTF information (task_struct) during
+program validation.
 
-Andrew
+>
+> I was thinking about adding something like struct tp_sched_switch_args
+> for all the raw tracepoints, but haven't got time to look into how.
+>
+> Thanks,
+> Song
+>
+> >
+> >
+> >  [0] https://github.com/iovisor/bcc/blob/master/libbpf-tools/runqslower.bpf.c
+> >
+> >
+> >> diff --git a/tools/bpf/runqslower/runqslower.bpf.c b/tools/bpf/runqslower/runqslower.bpf.c
+> >> index 9a5c1f008fe6..30e491d8308f 100644
+> >> --- a/tools/bpf/runqslower/runqslower.bpf.c
+> >> +++ b/tools/bpf/runqslower/runqslower.bpf.c
+> >> @@ -2,6 +2,7 @@
+> >> // Copyright (c) 2019 Facebook
+> >> #include "vmlinux.h"
+> >> #include <bpf/bpf_helpers.h>
+> >> +#include <bpf/bpf_tracing.h>
+> >> #include "runqslower.h"
+> >>
+
+[...]
