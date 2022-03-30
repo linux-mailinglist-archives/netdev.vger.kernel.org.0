@@ -2,241 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ECB14ECA88
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 19:25:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 135204ECAA5
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 19:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349270AbiC3R0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 13:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
+        id S1349297AbiC3Rau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 13:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349252AbiC3R0a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 13:26:30 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8482E5FD6
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 10:24:42 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id pv16so42963265ejb.0
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 10:24:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=U2xWSUScXkI45pg1q8y4+hkage1RhlH6yEvmueXn3YA=;
-        b=U1+9v6UYmACR6tG0ba8bax6lpwCM+0gFM73DcjFnnBUKKZ6ecJn7HohHHzjH4gRGua
-         xtxoH4tbtAnpg8s5JSKuVLnOu3Y029LYQVs9mGMmHpaXlRtTim0MpIfTvdtoIHCQ6dhE
-         r1fnFct6dyh/RWm92vEWmdaVe8bCAAr/+X2Ge1OmXJb4PBgSRBHdKt+d7F58rWu8hNjq
-         208/X0VJHLhHfst3I/fyUWOPIKvkTyLKn9EiMedPcEn/Y+NX9R/NeLkK70eoG0bNsMlG
-         t/paI8k6ju/sw8L/aX6XfZbyoxJWmK+wNiXFRRRPxgptYqSEnApy26aApv0e3sAqXCSJ
-         5auQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=U2xWSUScXkI45pg1q8y4+hkage1RhlH6yEvmueXn3YA=;
-        b=7Zg1YTt8+3KLWJ1AAwVp4fdkcUMeVaZ8S8okymKjKjcFrmLu4XCcKRnTiyZOyJl4NG
-         mqLTS7JDQ3GPi8NSni5TNcXDsC2DpP1k+0jdKSIomX/W6NRWccJh2x/MhvT4fDuf5GSA
-         vO7btkTJo/StK8FZven9WVVOTbiW1By9lf3U0eN0jU8IEsEJKNt6yPc0hk0X4EcjZA/r
-         W0kiRB4DbXGWArT9+E+1nWx5ndPGoEDYRl2ZoS3LC+J1D2WQstgX11iQWCCGvDL+TYaB
-         oMvVQP1CA3ZnqeVzDP2GT7igmm7dGkM92RsQUATrOvvrWvrnT2K/biZV0+lf8M++Z5p8
-         peIA==
-X-Gm-Message-State: AOAM532CUQkMaE+vGD/3/9TYACn20O8hUyArlERlCCNor7qVFowwOjuK
-        NHDHojtwZgdXbQbfWk/RUDyMnYk30svNhUFsfmY=
-X-Google-Smtp-Source: ABdhPJyzsFWhLPEX8HB6dHjAkg3i8edNoqOYrP11QZF1eMMeG53s1ocWdC5Hagxsn+744gQnKuXt8jzsbbxr7yCGDGc=
-X-Received: by 2002:a17:906:d555:b0:6db:148e:5cc with SMTP id
- cr21-20020a170906d55500b006db148e05ccmr614989ejc.63.1648661080924; Wed, 30
- Mar 2022 10:24:40 -0700 (PDT)
+        with ESMTP id S1345444AbiC3Ras (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 13:30:48 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39DA316;
+        Wed, 30 Mar 2022 10:29:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648661342; x=1680197342;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=aJZOacJmddI8NzrwdYi2cDhGbh7fF8GgDM5M84REwIQ=;
+  b=QNR2q5C9V4vgBrpEXTYF0cadgkegzdYt9EsScI/GHZacjRpebPVWOjx2
+   /TkDANMR1h6rSla0wfWhQ4g2H8Ou69SchlxmnbytqBS75YT6ftNOTCwJ5
+   0sCRbwRordwUTJpPobq8UVIL49McLAXjo4L6tZ4Fg+nyhxotV9yTPuQqQ
+   wxJytIVnhTldzhxjXFpoB3K/u5SAOkhbTsFYTlOd7JtuRpYAtkd4JMqHK
+   FQsy3KfCGmRJ5aHbwpsC0vlBG2vvuVLsWu6NLpUYxoJXF1Xi8TQF2cveY
+   gCYCw/WI3Mg0z2Z3bQjmySc5nXn0X2wTiU91bcMHZz8NZx5LyfpgBhjBU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="346037544"
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="346037544"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 10:28:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
+   d="scan'208";a="521989708"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga006.jf.intel.com with ESMTP; 30 Mar 2022 10:28:58 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 30 Mar 2022 10:28:58 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 30 Mar 2022 10:28:58 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Wed, 30 Mar 2022 10:28:58 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.108)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Wed, 30 Mar 2022 10:28:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kuRFidMLESiKHAyW6K9Bm77NbmKWdDDIeZA2LeFlmrliZUaTsybh6NPgZWCKissTAN1FdO/HCGoDetiA9+CyzTZzh6Qv1iOk3WJnwvYbz7/a6HRCdCU3KOkUOI/8p5EAcLeWQwFhW6tDDTHuBXGgbJ6AuNk/+i+uWdB63CMC5X1NxPg6Dsde4x9nf1vquADMxt3eq08jlcZSb8SP9esdHJHN0w5WbIhq8C1A1Dj1or5C+P18aBkgKqWyhUIOD3xGfXrE352IwB2irqjtjhNGGbQJBOaAE/z7FlOhf/GHzcwtedZNL+xPykH5g59NRK9ctzHNDFi98U2ADBpJJ7fF1A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cSn7UvMwyMaWLZayJLgicN2sdwYHrw0LXwynAS37rGk=;
+ b=Wbjkqiah8DAZHnDwTVZp1M/FpYMBY1jLiGbA+p6Hrg0YFUXBXMg6O6wmelVAL/ovF4XXsi6T9i5yaxgVkf/TWiR8aKIcd7HFuPr5tm7hsUkT+ehvCvWkDj+UqawdXLQyVC53uB9vu3Sz1DKeDIL5yCYk4gubn34xWebrk74zdcm0OSttniOmBPK/GPn2COchzTKnfiO2jx2qKJb+R9pzo9UQ6SKjwS21ZPckmb09GEWMnhjKUO4V6SCSkLGXI6O3DLmsyMPgOPxPeZ+EhDGycJWeSz8IvaDenfDGxzMKFP9+NJl4bw/S+Q3kwYcNdA/ifnlf6//5KZThIab2Ry69GQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com (2603:10b6:8:38::14) by
+ SA0PR11MB4606.namprd11.prod.outlook.com (2603:10b6:806:71::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5123.20; Wed, 30 Mar 2022 17:28:53 +0000
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::c445:1c7b:8914:7968]) by DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::c445:1c7b:8914:7968%5]) with mapi id 15.20.5102.023; Wed, 30 Mar 2022
+ 17:28:53 +0000
+From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
+To:     "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Subject: RE: [Intel-wired-lan] [PATCH intel-next] ice: introduce common helper
+ for retrieving VSI by vsi_num
+Thread-Topic: [Intel-wired-lan] [PATCH intel-next] ice: introduce common
+ helper for retrieving VSI by vsi_num
+Thread-Index: AQHYP3VOgwOM7LgCeku9d6pJ3hP7IazYOEXw
+Date:   Wed, 30 Mar 2022 17:28:53 +0000
+Message-ID: <DM8PR11MB56216945A750624D043AF8EAAB1F9@DM8PR11MB5621.namprd11.prod.outlook.com>
+References: <20220324114907.73459-1-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220324114907.73459-1-maciej.fijalkowski@intel.com>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1ef1bd64-ce2f-49c4-7aa2-08da1272c30f
+x-ms-traffictypediagnostic: SA0PR11MB4606:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <SA0PR11MB46068C6162DF5AC20E47093FAB1F9@SA0PR11MB4606.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pnvalnbTWIcYmok5yih3XwtQZp3NYnDY6fLT9Ha+QwC+NE4s0vDAoxQQGVKa0fs3TiMb/FYgeYVzpjOdIrmDE4QV0e2fg60X7Wdf4ntE5kvyv5gwYUAsG08eBUjhk2IsDJB6pkSBR1Pn9xxaL+30PeEv6mmy70fWyFRBp31rw+cDFRVkkj1yUGch0jxhL1kTYzn8m7Ds19cGti7MJs5mG3yM0S69IjcFn/YK6q+P2jT9xVrFZZtpSWHc4PYvCKpG1tEjWSvh3XntvBulNfQUYeU3gym80QfvOmW5M17ribDkuY2aXXKackxqFB+DIPnpdCmhZmnQ5xNLtGPOmrhnInRBw9E4BS+/tEa4xl5W5qtBz+Sdwh0oI5OzhP/xnvOYa1+3XJhIb62ee3xquKK52lr0yGRC/bc6d4gMqhWG1xdNwjpRG5UYboZTzKlTfTFkPN4mKmJLC0PlwnzJqTVu8R6Iiw3qjmLJ/AeKC/l0sJKjipgAcuVQdBS2+czjkFNVk0btmSZGNXftF1KLGCzHPruV8due37Vv6069rkUUm/tqrgLbKtO2IUayrtSy/u4PLQ/dFD0+GV2giz8sho6YzQCwdDwgFnTUunDEXpZoIdcqMkBXuOQLjsjScZ/0LuLPQy0HBzAPFv7kz213ppJ9pKov0ZVqsTiNmliy+WxfHTo9tY7C5abSlu0lebiIxCoG9g7jy1lEESGcYhQ8yFmDjg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5621.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(5660300002)(2906002)(52536014)(38100700002)(82960400001)(83380400001)(122000001)(8936002)(33656002)(38070700005)(66446008)(66476007)(71200400001)(107886003)(8676002)(64756008)(4326008)(26005)(186003)(110136005)(86362001)(54906003)(66556008)(66946007)(76116006)(53546011)(508600001)(55016003)(316002)(9686003)(7696005)(6506007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Gw1x3UKWimS1lcqYvmIQBo9Hw1hfCxUymumu8zUOT9r3g79eqhq+qOLA3xe3?=
+ =?us-ascii?Q?iefGQ52wWqGLKrIB5txBGLSmndh6PJBYbfb9QeIqAqCRC0fLGHefQ33QFIEN?=
+ =?us-ascii?Q?xcjCQVMYH012JZ6rbVBd9XEB4eMN9kRLtb9p+EikpglxknyoASPMkYNQxFSs?=
+ =?us-ascii?Q?6+HWawVbrFUuez8z5TWfCu0R5tUmEtkPg5tcW6uVdjjnig1/aSO6ZXCH9j6E?=
+ =?us-ascii?Q?a/Nzbgh15z15Thh6JXKSCIFQ24l7+FVw5C0niqWBY2iJvyjt/BKtkXX2/PgD?=
+ =?us-ascii?Q?Rp9D/UPilVOxYP1Urk52usjJkB1hjVAa3mqu+9lXoSepE+rMyomB2cwGTqlN?=
+ =?us-ascii?Q?jus5xqif3IG/3RBYZSzHgiAZ7epCq7IuoqQptYUIymovHXV5veqLOyK93W2c?=
+ =?us-ascii?Q?q8Ftc7NRASkGTZGp5VYguHFxs7VMHu/3nUI80zGrgh+z/J7HG7CUb5impooe?=
+ =?us-ascii?Q?nAADrVzYBE1Sm7QCiPmYdLIgvBHUD7qVaIz60Oqz+978IvL0uGzI8WxXZb8O?=
+ =?us-ascii?Q?WqfoXBrUmnAq/rKyXCGAlS4spuC0vwk3iKSb+EqkmP2JRJsyrDQhh4apuIKz?=
+ =?us-ascii?Q?mmpW14A18L9DLZo70CTuJSkysDpiKecQtvIdWJkS5363FViZh7q6fYtfaV/P?=
+ =?us-ascii?Q?E122Roxk+8NpLJNONbZVabtMjQQVdflcunnouqsA37LsMK2e0nZrcoWqKRBT?=
+ =?us-ascii?Q?D0Re7NljXfIywzpQERTCqOkc9K0nHRFpfDs5vIvL4OHZ9bgML1nkIkSS75WC?=
+ =?us-ascii?Q?p1594m89Xd6ZDSRDoesC69X9IIGhwzWsqyhUZfXd3dmsBxjiIY09YfNojaPE?=
+ =?us-ascii?Q?lR1iyeSIyruCPvA5DQNzVBbEB14d0rg3HlG+uhDd2I+2F3es2v4JcXxG5rGJ?=
+ =?us-ascii?Q?8YKszBTUQNncIN5sVMPzg6vYfBCwZyUdzH74bK/DWvDKzq2BPzas7Zc3gKnM?=
+ =?us-ascii?Q?o7dEPEvyd1guyxjRd36VeKbSkbyVRgrdq7WsNdIaK2IXoxrh9630+2/Z2pkO?=
+ =?us-ascii?Q?J0tGdygmzGtKM3kFUbHTXLXAoSeKlx5s1U9JXCPZKzdnOYIk6fbY8J69zHZm?=
+ =?us-ascii?Q?i3inJlvh9GTgyJ6WX+07AOMxGCZjbB7eHbrjrfdAZfBcQwjMWgPKf6AIG9Oo?=
+ =?us-ascii?Q?STl+1kgmY/4lgwF4NOgpTFVcM803G4iT7B26jYSv+BSAAv5NmbJztAKW75Ez?=
+ =?us-ascii?Q?JP3ai377h8B+Ihq0y607ao1CabTdRNJFT1eBguj3yYnrL5BwD/C3O1bHSGUE?=
+ =?us-ascii?Q?t7hGWx4/UtixUNKPnslGQ4yxgqH7Jm+4aUliqsKfQ61NEVzmiim9r7ksk1n3?=
+ =?us-ascii?Q?oQM4edi3GHAks7nmGPcO8lEjD5NmhsmF6fT6Ibgz7JVld8YZsdvMKcJavnUf?=
+ =?us-ascii?Q?42FFFCVk/PJYlCeiyHk2u06uJVApnQLpevF/I26wEHf27oexLmiEWdG2UNVY?=
+ =?us-ascii?Q?NH9alFFedeIhs8JguqWE92KuxDCcZ4rqWONIvGgU2v8eIkAxB9uTAAJihnrh?=
+ =?us-ascii?Q?Qd3dksrfB4KdpDmrFtWep101F+Zz4ASv6xWWvVzOJ1Fp3wMx6LqF4kmQ3sRW?=
+ =?us-ascii?Q?iTNNm8fWidMI0e79n1XVkZqAFovn2uu2z9w3WbGZjLOoGJL8Cz2cj05tbQLq?=
+ =?us-ascii?Q?5gKzFokr8y2MPUPbf9qsB+tLwW5mKhZO3qTWnQzp+NpmKcrPLuqsSvZ6iazB?=
+ =?us-ascii?Q?p/nDlw2aK1qVR+ZEAo7z+j4FXh5KJlJ0ld16nXSaZcvk7pX/NtR9G3lenzIT?=
+ =?us-ascii?Q?Q09pfUDwXtvMe1ZLADaX/Qs88epR80E=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-From:   Duke Abbaddon <duke.abbaddon@gmail.com>
-Date:   Wed, 30 Mar 2022 18:24:36 +0100
-Message-ID: <CAHpNFcNkhGE2yE9ttiPVd_8be3b_V2r2D==OJCS9Z=xYNy9hxA@mail.gmail.com>
-Subject: Matrix processors & how to use them, Both Mac, Intel, AMD & NV Want
- to make heavy use of , But how to utilize them : RS https://www.phoronix.com/vr.php?view=31014
-To:     submissions@vialicensing.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5621.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ef1bd64-ce2f-49c4-7aa2-08da1272c30f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2022 17:28:53.3396
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +82ZetUKtiq1MqiB6NqnNx9qzUjK1ZY11o+BfozKMMGZml73vOY6in3Vj34J42q7x5zQELly5avkh1wvMhUDVKdHyd5wblPa2T0xFfquGf8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4606
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Matrix processors & how to use them, Both Mac, Intel, AMD & NV Want to
-make heavy use of , But how to utilize them : RS
-https://www.phoronix.com/vr.php?view=31014
 
-Multi Operation Maths - CPU,GPU Computation (c)RS
 
-Kind of an F16 operation & Integer 16 or Int8 if you need it, With
-careful management and special libraries ..
-Capable of speeding up PC,Mac & Consoles :HPC:
-Requires specially compiled libraries so compiled codes can be managed
-& roll ops assessed.
-
-Performing multiple 4,8,16,32 operations on a 64Bit integer core (The example)
-
-
-Rules:
-
-All operations need to be by the same multiplication
-
-Rolls usable to convert value for example Mul & Division
-
-For example :
-
-451 722 551 834 x 6
-
-In the case of non base factor roll numbers
-
-We have to fraction the difference between the value and our base roll number,
-
-10 for example and 6, So the maths is convoluted & may not be worth it,
-
-Could do 6 + rolls & then -Rolls
-
-On a 10 processor the first factor would be 10x because we could
-compensate by placement
-
-But we still need space to expand the result to the right or left
-
-0451072205510834 x 10 =
-
-4510722055108340
-
-or 4510 roll -12
-7220 roll -8
-5510 roll -4
-8340 no roll
-
-Converting base 10 to & from hex may make sense
-
-Depending on the cost of roll; This operation may be worth it!
-
-This operation is in Base 10 & 8Bit makes more sense mostly for common
-operations in hex..
-
-But 8 is not a very big number for larger maths & 16Bit makes more
-sense; Because it has a larger number.
-
-Performing numeric expansion:
-consoles in particular and FPU where expansion is required for
-emergence mathematics
-
-Performing numeric expansion for circumstances where we require larger
-numbers for example:
-
-To fill the 187 FPU buffer..
-
-To do that we will roll to the left & expand the number, although we
-may need multiple operations..
-
-Like i say : Roll + or Roll -
-
-1447000
--Roll 3 = 1447
-or
-+Roll 3 = 1447000000
-
-That way we can potentially exceed the Bit Depth 32Bit for example.
-
-Rupert S https://science.n-helix.com
-
-https://science.n-helix.com/2021/02/multi-operation-maths.html
-
-https://science.n-helix.com/2018/01/integer-floats-with-remainder-theory.html
-
-*****
-
-Packed F16C & F16 Values in use on CPU & GPU - RS.txt
-
-F16C & F16 : lower precision values that are usable to optimise GPU &
-CPU operation that involve; Less Detailed values like Hashes or game
-data Metadata or Machine Learning : RS
-
-Firstly the F16C is the FX 8320E supported instruction so the CPU can
-potentially use packed F16 Float instructions directly from the CPU,
-As quoted F16 carefully managed produces a pipeline that is 100% F16..
-
-Packed F16 instructions use 2 data sets per 32Bit storage register...
-
-Data is converted if the array of instructions includes F32 & commonly
-all F16 should be present first; Before group conversion or
-alternatively...
-
-Allocating an additional 16Bits of data for example 0000x4 or subtle
-variance data that allows unique renders... Such as a chaos key or
-Entropy / RNG Random data...
-
-Potentially allocating a static key in the form of AES Output from
-base pair F16c Value...
-
-The additional data make potentially each game player render unique!
-
-Fast Conversion Proposals include:
-
-Unique per player additional data (AES Key conversion for example, Or
-DES; DES Produces smaller faster values)
-
-Static key, Sorted by data type (Base on player profile or Game map)
-
-Dynamic Key
-
-0000 or empty buffer hash
-
-Side by Side : Wide format texture = 2xF16 Value on same 32Bit Value
-Top & Bottom : F16 Double layered format texture = 2xF16 Value on same
-32Bit Value
-
-Yes transparency for alien skin can use : Top & Bottom F16 layered texture
-Machines also; Or even 4 layers for a truly special effect.
-
-Combine both methodology and crypto hash with one or more layer of
-BumpMap RayTracing SiMD
-
-SiMD is also 16Bit compatible so no conversion required.
-
-Weather & clouds are examples perfect for light fast loads over
-massive GPU Arrays.
-
-F16 are also theoretically ideal for 16Bit audio if using SiMD..
-
-In the case of AVX probably worth using dynamic key conversion..
-A Dynamic Remainder key that allows lower bits to interpolate Sound data.
-
-Other object sources such as render can potentially use the F16 system to..
-Interpolate or Tessellate bits on shift from F16 to F32 on final plane
-write to frame buffer..
-The memory required would be the buffer & not the source process..
-
-An example is to replace the bits missing from F16 in F32/F64 with
-tessellation shaping and sharpening code; Dynamically relative to
-performance of the GPU/CPU...
-F16 values obviously transfer from GPU to CPU fast & CPU to GPU..
-
-Image enhancement is also possible with a bitshift stack buffer that
-passes additional data to the missing bits..
-For example pre processed micro BumpMapping or Compute shading
-process; That will pull the bits in.. Under the F16 data
-453000.172000 > 453545.172711 bit swap.. could be complex!
-Done with a cache? Entirely possible with united cache L3
-
-DLSS & Dynamic sharpen & Smooth/Filter enhanced virtual resolution ..
-Can significantly enhance the process..
-Of dynamic buffer pipelining to render path. (on requirement benefit)
-
-(c)Rupert S https://science.n-helix.com/2019/06/vulkan-stack.html
-
-https://gpuopen.com/learn/first-steps-implementing-fp16/
-
-*****
-
-Submissions for review
-
-RS
-
-https://drive.google.com/drive/folders/1X5fUvsXkvBU6td78uq3EdEUJ_S6iUplA?usp=sharing
-
-https://lore.kernel.org/lkml/20220329164117.1449-1-mario.limonciello@amd.com/
-
-https://www.phoronix.com/scan.php?page=news_item&px=AMD-PSP-Sysfs-Expose
-
-https://lkml.org/lkml/2022/3/30/1005
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Maciej Fijalkowski
+> Sent: Thursday, March 24, 2022 12:49 PM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: netdev@vger.kernel.org; kuba@kernel.org; bpf@vger.kernel.org;
+> pabeni@redhat.com; davem@davemloft.net; Karlsson, Magnus
+> <magnus.karlsson@intel.com>
+> Subject: [Intel-wired-lan] [PATCH intel-next] ice: introduce common helpe=
+r
+> for retrieving VSI by vsi_num
+>=20
+> Both ice_idc.c and ice_virtchnl.c carry their own implementation of a hel=
+per
+> function that is looking for a given VSI based on provided vsi_num. Their
+> functionality is the same, so let's introduce the common function in ice.=
+h that
+> both of the mentioned sites will use.
+>=20
+> This is a strictly cleanup thing, no functionality is changed.
+>=20
+> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice.h          | 15 +++++++++++++
+>  drivers/net/ethernet/intel/ice/ice_idc.c      | 15 -------------
+>  drivers/net/ethernet/intel/ice/ice_virtchnl.c | 22 ++-----------------
+>  3 files changed, 17 insertions(+), 35 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/ice/ice.h
+> b/drivers/net/ethernet/intel/ice/ice.h
+> index e9aa1fb43c3a..a541446b96e8 100644
+> --- a/drivers/net/ethernet/intel/ice/ice.h
+> +++ b/drivers/net/ethernet/intel/ice/ice.h
+
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
