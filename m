@@ -2,140 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CCFC4EBD58
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 11:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C134EBD53
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 11:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244645AbiC3JND (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 05:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57166 "EHLO
+        id S244628AbiC3JMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 05:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238507AbiC3JNC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 05:13:02 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD01F2013EA;
-        Wed, 30 Mar 2022 02:11:16 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V8d5iwz_1648631473;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V8d5iwz_1648631473)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 30 Mar 2022 17:11:14 +0800
-Message-ID: <1648631012.1186295-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v2 0/9] virtio: support advance DMA
-Date:   Wed, 30 Mar 2022 17:03:32 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
+        with ESMTP id S244627AbiC3JMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 05:12:14 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8DF1DBABA;
+        Wed, 30 Mar 2022 02:10:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648631428; x=1680167428;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=oVBDcKhQPIannLiyreJRo3QEwR2EwOYqp0Enn3LLlPU=;
+  b=Yr1ZIyRQv0GdOE2Bd2km1ts9AU+eBiPh/HTyO7JrJ7bOzgCTNw9+tqza
+   QjqQ/LKwAes0s+EGDbM5xIerfhsp0+IIAo2et+J3A4M0GMCh9lUcgBjNP
+   pOXAFf3WaJE27akbXyandOOh8AM+/NGmQcKOpKUrZ9mjBCzLYMGZc9Gty
+   jVCzGvX8rtjCg+7GrXGHmk9V1ZpFFJL+cND9D3fvn0q4iP73LktSEPN8+
+   azLLSEL5qqNPajLqxar5lLxVwb62T7nRG5mx7I/mZSFfcoJawl66xr5Mi
+   b3IfHsqyKYDtCJRN/tV14IwEzL9vo0WCBxyDvZKt5shuvn7jaFU8Tx0gC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="258323052"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="258323052"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 02:10:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="787940080"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by fmsmga006.fm.intel.com with ESMTP; 30 Mar 2022 02:10:08 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 22U9A6qw001631;
+        Wed, 30 Mar 2022 10:10:06 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Wojciech Drewek <wojciech.drewek@intel.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Marcin Szycik <marcin.szycik@linux.intel.com>,
+        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-References: <20220224110402.108161-1-xuanzhuo@linux.alibaba.com>
- <20220330023258-mutt-send-email-mst@kernel.org>
- <CACGkMEvESXv9PfMF9riPraX59j0BiLPfTgxuFVw1x0HWwjtYVQ@mail.gmail.com>
- <1648623508.9711535-4-xuanzhuo@linux.alibaba.com>
- <CACGkMEvE_wUNa=DgumVErTjp5gF4QRMDn6eP7UbDpSfSJSBy2Q@mail.gmail.com>
-In-Reply-To: <CACGkMEvE_wUNa=DgumVErTjp5gF4QRMDn6eP7UbDpSfSJSBy2Q@mail.gmail.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 net-next 5/5] ice: switch: convert packet template match code to rodata
+Date:   Wed, 30 Mar 2022 11:07:34 +0200
+Message-Id: <20220330090734.2725099-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <PH0PR11MB5782637EA9771D3ED4E56012FD1E9@PH0PR11MB5782.namprd11.prod.outlook.com>
+References: <20220321105954.843154-1-alexandr.lobakin@intel.com> <20220321105954.843154-6-alexandr.lobakin@intel.com> <PH0PR11MB5782637EA9771D3ED4E56012FD1E9@PH0PR11MB5782.namprd11.prod.outlook.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Mar 2022 16:38:18 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Wed, Mar 30, 2022 at 2:59 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+From: Wojciech Drewek <wojciech.drewek@intel.com>
+Date: Tue, 29 Mar 2022 15:12:44 +0000
+
+> Hi Alex,
+> 
+> > -----Original Message-----
+> > From: Lobakin, Alexandr <alexandr.lobakin@intel.com>
+> > Sent: poniedzialek, 21 marca 2022 12:00
+> > To: intel-wired-lan@lists.osuosl.org
+> > Cc: Lobakin, Alexandr <alexandr.lobakin@intel.com>; Fijalkowski, Maciej <maciej.fijalkowski@intel.com>; Michal Swiatkowski
+> > <michal.swiatkowski@linux.intel.com>; Drewek, Wojciech <wojciech.drewek@intel.com>; Marcin Szycik
+> > <marcin.szycik@linux.intel.com>; Szapar-Mudlaw, Martyna <martyna.szapar-mudlaw@intel.com>; David S. Miller
+> > <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>; netdev@vger.kernel.org; linux-
+> > kernel@vger.kernel.org
+> > Subject: [PATCH v4 net-next 5/5] ice: switch: convert packet template match code to rodata
 > >
-> > On Wed, 30 Mar 2022 14:56:17 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> > > On Wed, Mar 30, 2022 at 2:34 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Thu, Feb 24, 2022 at 07:03:53PM +0800, Xuan Zhuo wrote:
-> > > > > virtqueue_add() only supports virtual addresses, dma is completed in
-> > > > > virtqueue_add().
-> > > > >
-> > > > > In some scenarios (such as the AF_XDP scenario), DMA is completed in advance, so
-> > > > > it is necessary for us to support passing the DMA address to virtqueue_add().
-> > > >
-> > > > I picked up a couple of patches. Others are waiting for some acks
-> > > > (Jason?) and improved commit logs for documentation.
-> > >
-> > > I will review them.
+> > Trade text size for rodata size and replace tons of nested if-elses
+> > to the const mask match based structs. The almost entire
+> > ice_find_dummy_packet() now becomes just one plain while-increment
+> > loop. The order in ice_dummy_pkt_profiles[] should be same with the
+> > if-elses order previously, as masks become less and less strict
+> > through the array to follow the original code flow.
+> > Apart from removing 80 locs of 4-level if-elses, it brings a solid
+> > text size optimization:
 > >
-> > hi, the core code of premapped, I will merge it into 'virtio pci support
-> > VIRTIO_F_RING_RESET' because this function will be used when reusing the buffer
-> > after resize.
->
-> I still prefer not to do that.
->
-> We can make rest work for resize first and add pre mapping on top. It
-> will simplify the review.
-
-Yes, I am also worried about the review problem, the number of my local resize
-patch has reached 44 (including reuse bufs).
-
-hi, Michael, can we implement resize on top of v8 first? (drop unused bufs directly)
-
-Then we implement premmapd and reuse the bufs after resize.
-
-We need to get the address (DMA address) and len from the reset ring and submit
-it to the new vq through virtqueue_add(). So let virtqueue_add() support
-premapped first.
-
-Thanks.
-
-
->
-> Thanks
->
+> > add/remove: 0/1 grow/shrink: 1/1 up/down: 2/-1058 (-1056)
+> > Function                                     old     new   delta
+> > ice_fill_adv_dummy_packet                    289     291      +2
+> > ice_adv_add_update_vsi_list                  201       -    -201
+> > ice_add_adv_rule                            2950    2093    -857
+> > Total: Before=414512, After=413456, chg -0.25%
+> > add/remove: 53/52 grow/shrink: 0/0 up/down: 4660/-3988 (672)
+> > RO Data                                      old     new   delta
+> > ice_dummy_pkt_profiles                         -     672    +672
+> > Total: Before=37895, After=38567, chg +1.77%
 > >
-> > Thanks.
-> >
-> >
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > > Thanks!
-> > > >
-> > > > > v2:
-> > > > >     1. rename predma -> premapped
-> > > > >     2. virtio net xdp tx use virtio dma api
-> > > > >
-> > > > > v1:
-> > > > >    1. All sgs requested at one time are required to be unified PREDMA, and several
-> > > > >       of them are not supported to be PREDMA
-> > > > >    2. virtio_dma_map() is removed from this patch set and will be submitted
-> > > > >       together with the next time AF_XDP supports virtio dma
-> > > > >    3. Added patch #2 #3 to remove the check for flags when performing unmap
-> > > > >       indirect desc
-> > > > >
-> > > > > Xuan Zhuo (9):
-> > > > >   virtio_ring: rename vring_unmap_state_packed() to
-> > > > >     vring_unmap_extra_packed()
-> > > > >   virtio_ring: remove flags check for unmap split indirect desc
-> > > > >   virtio_ring: remove flags check for unmap packed indirect desc
-> > > > >   virtio_ring: virtqueue_add() support premapped
-> > > > >   virtio_ring: split: virtqueue_add_split() support premapped
-> > > > >   virtio_ring: packed: virtqueue_add_packed() support premapped
-> > > > >   virtio_ring: add api virtio_dma_map() for advance dma
-> > > > >   virtio_ring: introduce virtqueue_add_outbuf_premapped()
-> > > > >   virtio_net: xdp xmit use virtio dma api
-> > > > >
-> > > > >  drivers/net/virtio_net.c     |  42 +++++-
-> > > > >  drivers/virtio/virtio_ring.c | 280 ++++++++++++++++++++++++++---------
-> > > > >  include/linux/virtio.h       |  12 ++
-> > > > >  3 files changed, 254 insertions(+), 80 deletions(-)
-> > > > >
-> > > > > --
-> > > > > 2.31.0
-> > > >
-> > >
-> >
->
+> > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> > Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+> > Tested-by: Marcin Szycik <marcin.szycik@linux.intel.com>
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice_switch.c | 215 ++++++++++----------
+> >  1 file changed, 108 insertions(+), 107 deletions(-)
+
+--- 8< ---
+
+> > +	ICE_PKT_PROFILE(vlan_udp, ICE_PKT_INNER_UDP | ICE_PKT_VLAN),
+> > +	ICE_PKT_PROFILE(udp, ICE_PKT_INNER_UDP),
+> > +	ICE_PKT_PROFILE(vlan_tcp_ipv6, ICE_PKT_INNER_IPV6 | ICE_PKT_VLAN),
+> > +	ICE_PKT_PROFILE(tcp_ipv6, ICE_PKT_INNER_IPV6),
+> 
+> I think that in both "vlan_tcp_ipv6" and "tcp_ipv6" we should use ICE_PKT_OUTER_IPV6 instead
+> of ICE_PKT_INNER_IPV6. We are not dealing with tunnels in those cases so inner addresses are 
+> incorrect here.
+
+Oh, some copy'n'paste braino indeed.
+I'll send a fixup to Tony in a moment.
+
+> 
+> Thanks,
+> Wojtek
+
+Great catch, thanks for noticing!
+
+> 
+> > +	ICE_PKT_PROFILE(vlan_tcp, ICE_PKT_VLAN),
+> > +	ICE_PKT_PROFILE(tcp, 0),
+> > +};
+
+--- 8< ---
+
+> > --
+> > 2.35.1
+
+Al
