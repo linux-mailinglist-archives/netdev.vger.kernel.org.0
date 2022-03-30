@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A69D4EB7F8
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 03:49:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9222A4EB7FB
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 03:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241725AbiC3Bva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Mar 2022 21:51:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
+        id S241732AbiC3BxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Mar 2022 21:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233672AbiC3Bva (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 21:51:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8E61163;
-        Tue, 29 Mar 2022 18:49:46 -0700 (PDT)
+        with ESMTP id S233672AbiC3BxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Mar 2022 21:53:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED843EAB9
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 18:51:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7137C61328;
-        Wed, 30 Mar 2022 01:49:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED46C340ED;
-        Wed, 30 Mar 2022 01:49:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA5BBB818FD
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 01:51:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E26FC340ED;
+        Wed, 30 Mar 2022 01:51:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648604985;
-        bh=pD+OuaMoyfzVLYMupUlBOgRVp5jcLwA38LsyPhemrK8=;
+        s=k20201202; t=1648605078;
+        bh=uPVPTPqQ+zjGcNlvIVQgAcOHL8ZFkPOnSUmQa1IAbc8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iglSqGD6EWjp7mKzN6Ig6XQWmJm63/XyohPc923H5i2f2lUkRfz3OAw8awG4p4i39
-         0b93687qZXqRrlZEicL7XfHVlCKzP0wWYXGXiOSrf3BUm1CZH8H6B2q+ymmXiSX4lL
-         xa463FEIDr140chqc2UrimsJRCHM9bU+Jgai8RH9FmYTNmcRT10kWBpbNUbfXAFGmx
-         NsJKqVhhtiTfx8ysuFdxWTn0zz/9YxxZCx+La5EgPjwHV+mXhf8zV76rfn2pmiQTu9
-         +5T1IYlh1PlQ8Y1kj+mKW+kQCjiju4Bt5GitX12kRH9/S/jNT7yCgJY6CjCeSrD43k
-         F30tTeEbjOwww==
-Date:   Tue, 29 Mar 2022 18:49:44 -0700
+        b=euEDuvVmQ+NysAcpunoPlA4u5Lj99bpDC2rHg8SeBEttV29jpVA7yNy0GcIDBFYrZ
+         WPUewfyVqc521SS1ubdvvYF6d292X/cncpMCzQKYS4fygPZ4suk093Du92+EXUd0Nm
+         uez0iwNY0sP15O5QAMd2wpTFQ63vRB7IgChDUukBooxWVFnX1A3hY+nbXrinzNZ3UM
+         +s+uzxUsbX7MJYzaiMBmDJ4WuNKEUffMtmRuZBKsMq8nXxou8CKV/T04cuZxBGg0MX
+         XPuL+jSu0nguYK6hrTyO+Rfo/4ZsgTQY9Sr5yBRTfF2LSOysU5JD1ZqhVRkCoDf60a
+         BvsXfn2ECcK0w==
+Date:   Tue, 29 Mar 2022 18:51:16 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, patches@lists.linux.dev,
+        kernel test robot <lkp@intel.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net] sctp: count singleton chunks in assoc user stats
-Message-ID: <20220329184944.2cfac27b@kernel.org>
-In-Reply-To: <c2abe2f2ba779cbb453e65a7ddae1654baa17623.1648595611.git.jamie.bainbridge@gmail.com>
-References: <c2abe2f2ba779cbb453e65a7ddae1654baa17623.1648595611.git.jamie.bainbridge@gmail.com>
+        Paolo Abeni <pabeni@redhat.com>, bjarni.jonasson@microchip.com,
+        p.zabel@pengutronix.de
+Subject: Re: [PATCH] net: sparx5: uses, depends on BRIDGE or !BRIDGE
+Message-ID: <20220329185116.24c44f2f@kernel.org>
+In-Reply-To: <20220330012025.29560-1-rdunlap@infradead.org>
+References: <20220330012025.29560-1-rdunlap@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,12 +60,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Mar 2022 09:13:42 +1000 Jamie Bainbridge wrote:
-> Fixes: 196d67593439 ("sctp: Add support to per-association
-> statistics via a new SCTP_GET_ASSOC_STATS call")
+On Tue, 29 Mar 2022 18:20:25 -0700 Randy Dunlap wrote:
+> Fix build errors when BRIDGE=m and SPARX5_SWITCH=y:
 > 
-> Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
+> riscv64-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.o: in function `.L305':
+> sparx5_switchdev.c:(.text+0xdb0): undefined reference to `br_vlan_enabled'
+> riscv64-linux-ld: drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.o: in function `.L283':
+> sparx5_switchdev.c:(.text+0xee0): undefined reference to `br_vlan_enabled'
+> 
+> Fixes: 3cfa11bac9bb ("net: sparx5: add the basic sparx5 driver")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Cc: Lars Povlsen <lars.povlsen@microchip.com>
+> Cc: Steen Hegelund <Steen.Hegelund@microchip.com>
+> Cc: UNGLinuxDriver@microchip.com
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
 
-The Fixes tag should not be line-wrapped, and there should be no
-empty line before the Fixes tag and the sign-off (or between any 
-tags, really). Please fix and repost once more.
+Gotta CC all the authors of the change under Fixes, please.
+Adding them now.
+
+> --- linux-next-20220329.orig/drivers/net/ethernet/microchip/sparx5/Kconfig
+> +++ linux-next-20220329/drivers/net/ethernet/microchip/sparx5/Kconfig
+> @@ -5,6 +5,7 @@ config SPARX5_SWITCH
+>  	depends on OF
+>  	depends on ARCH_SPARX5 || COMPILE_TEST
+>  	depends on PTP_1588_CLOCK_OPTIONAL
+> +	depends on BRIDGE || BRIDGE=n
+>  	select PHYLINK
+>  	select PHY_SPARX5_SERDES
+>  	select RESET_CONTROLLER
+
