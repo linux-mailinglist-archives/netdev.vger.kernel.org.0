@@ -2,113 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6368B4EBC4A
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 10:05:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5213E4EBC58
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 10:07:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244082AbiC3IGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 04:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
+        id S244024AbiC3IH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 04:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244083AbiC3IGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 04:06:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A8B2E9CD;
-        Wed, 30 Mar 2022 01:04:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99850617A1;
-        Wed, 30 Mar 2022 08:04:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B84A9C340EC;
-        Wed, 30 Mar 2022 08:04:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648627496;
-        bh=X2bDIF4+6RoRWE7V+BZ5WnKiuW2qsYmv5VPe4pG97RQ=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=k0NUmR6IxSwYvdeVTcqOAAdN72x6x3B6QaDWf+PPeUPMoeX2bMpcRkNgse6S9FO37
-         6cgcTO8hQZ40B95bdMI5np+rp37HjpVDhpDXc8OJtiszoid04W9zR/qD5/jLt8Bo7s
-         vdxxlUs5bkplk7s1q7N6UvdNksXBGsdrFFWo1OcGAHb3Y1cFMvRCFHgY3PQJCPbUiR
-         N8cdPZBdijt1tPQoq3gvIkNgpnUeNDcix3M4pPVheOEvBxZ71nafAc9IM89nt/0Som
-         q0YBn1+uy+MLZE/0NzUWcztqMmyGb+gKDELTArBfeTQQzBHkz9K3wgxlKHh74lYTJu
-         7dhSFqRQSSEJg==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v4] wcn36xx: Implement tx_rate reporting
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220325224212.159690-1-egagnon@squareup.com>
-References: <20220325224212.159690-1-egagnon@squareup.com>
-To:     Edmond Gagnon <egagnon@squareup.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Edmond Gagnon <egagnon@squareup.com>,
-        Benjamin Li <benl@squareup.com>,
+        with ESMTP id S241258AbiC3IHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 04:07:24 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FFE72E9CB;
+        Wed, 30 Mar 2022 01:05:39 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id c62so23430083edf.5;
+        Wed, 30 Mar 2022 01:05:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1z8TXXlpQVL9z0uA0npERoI26EWiwefnwRh9sArmtDg=;
+        b=QTl3olxcdGTfJRZrWGfnvnk+cryD1ju4eE/Cxzef4pPJ1rcc0waLGYenCL3KYstawU
+         DHU0HklHprALU5xVCeBO0RT4i4flr2xiU9CJjEKs4Z4Xr6nT1DVvuz++EsREJsqN9wD9
+         TtWt2QcwH9GqSozzOqsM7vnlzFd79YGkjGIVgKA6ekDC079Qke+Jh1u5JtAJgHmxuiYt
+         Uk+YlhEDfEEIGvytEL1rb68/fKtl/hYxwAQDlsK51Iaw2zSNXC5k3bzoAibTFy7FxDRD
+         TS63FnMAPUu1+udXKo6JJF2GJTaWWxSXU6I7Znd4l5X37A/6OhlMKHWkSA3aAidAO8b5
+         z/pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1z8TXXlpQVL9z0uA0npERoI26EWiwefnwRh9sArmtDg=;
+        b=k+KM+Wf852Qk8tzUajMrm6wHr4prDiPtjFmBG1I/buYG0kFbCEMql/8cgmGSdSmtkX
+         VlKffV7kjh6k8oa+yBujNgld5eXKk8mkObWy/dfZoe8IE60HH1jR2eMRyKawDmQ2M5t+
+         69Aq+f02dcLH8xlfmpkZ4Uxi3mgzgK1xDiFTYSGbIW29IIFRH5JwxSbPYUKZWt8cSV5o
+         kpYo/VIt+XJgt5PpS1Jebtr5E+8E/6rwgXt4kVFlyGUF4biSPgxSG6MSalVvNimGlTbx
+         OE+sN0MjGqi18wWhWfLYkoHz4wMc9N4R5CcutqkSEcMLbe3oNv+QYVr3suUQ0eIni/Uy
+         fd3g==
+X-Gm-Message-State: AOAM530yl7MA+SoemM/0KKucKLerOFVtHbusUNXG7ysBVou4mtLKSPmo
+        DbFle2eu0AF1SwQhWmyqJC0=
+X-Google-Smtp-Source: ABdhPJz/BdmBZOR0CjSQeGjeouiadC8MbKNFeqvsfrfpl7n40Ww37DauJQvbl3KFqiuBZ93syscnBQ==
+X-Received: by 2002:a05:6402:3452:b0:418:f963:42a3 with SMTP id l18-20020a056402345200b00418f96342a3mr9374579edc.12.1648627537655;
+        Wed, 30 Mar 2022 01:05:37 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id z21-20020a1709063a1500b006da6436819dsm7961129eje.173.2022.03.30.01.05.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Mar 2022 01:05:37 -0700 (PDT)
+Date:   Wed, 30 Mar 2022 10:05:34 +0200
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164862749156.10264.5966997435195917442.kvalo@kernel.org>
-Date:   Wed, 30 Mar 2022 08:04:53 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Subject: Re: pull-request: bpf 2022-03-29
+Message-ID: <YkQPTlN5VMeRg5zZ@krava>
+References: <20220329234924.39053-1-alexei.starovoitov@gmail.com>
+ <20220329184123.59cfad63@kernel.org>
+ <CAADnVQJNS_U97aqaNxtAhuvZCK6oiDA-tDoAEyDMYnCBbfaZkg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQJNS_U97aqaNxtAhuvZCK6oiDA-tDoAEyDMYnCBbfaZkg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Edmond Gagnon <egagnon@squareup.com> wrote:
+On Tue, Mar 29, 2022 at 06:51:22PM -0700, Alexei Starovoitov wrote:
+> On Tue, Mar 29, 2022 at 6:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Tue, 29 Mar 2022 16:49:24 -0700 Alexei Starovoitov wrote:
+> > > Hi David, hi Jakub,
+> > >
+> > > The following pull-request contains BPF updates for your *net* tree.
+> > >
+> > > We've added 16 non-merge commits during the last 1 day(s) which contain
+> > > a total of 24 files changed, 354 insertions(+), 187 deletions(-).
+> > >
+> > > The main changes are:
+> > >
+> > > 1) x86 specific bits of fprobe/rethook, from Masami and Peter.
+> > >
+> > > 2) ice/xsk fixes, from Maciej and Magnus.
+> > >
+> > > 3) Various small fixes, from Andrii, Yonghong, Geliang and others.
+> >
+> > There are some new sparse warnings here that look semi-legit.
+> > As in harmless but not erroneous.
+> 
+> Both are new warnings and not due to these patches, right?
+> 
+> > kernel/trace/rethook.c:68:9: error: incompatible types in comparison expression (different address spaces):
+> > kernel/trace/rethook.c:68:9:    void ( [noderef] __rcu * )( ... )
+> > kernel/trace/rethook.c:68:9:    void ( * )( ... )
+> >
+> > 66 void rethook_free(struct rethook *rh)
+> > 67 {
+> > 68         rcu_assign_pointer(rh->handler, NULL);
+> > 69
+> > 70         call_rcu(&rh->rcu, rethook_free_rcu);
+> > 71 }
+> >
+> > Looks like this should be a WRITE_ONCE() ?
+> 
+> Masami, please take a look.
+> 
+> > And the __user annotations in bpf_trace.c are still not right,
+> > first arg of kprobe_multi_resolve_syms() should __user:
+> >
+> > kernel/trace/bpf_trace.c:2370:34: warning: incorrect type in argument 2 (different address spaces)
+> > kernel/trace/bpf_trace.c:2370:34:    expected void const [noderef] __user *from
+> > kernel/trace/bpf_trace.c:2370:34:    got void const *usyms
+> > kernel/trace/bpf_trace.c:2376:51: warning: incorrect type in argument 2 (different address spaces)
+> > kernel/trace/bpf_trace.c:2376:51:    expected char const [noderef] __user *src
+> > kernel/trace/bpf_trace.c:2376:51:    got char const *
+> > kernel/trace/bpf_trace.c:2443:49: warning: incorrect type in argument 1 (different address spaces)
+> > kernel/trace/bpf_trace.c:2443:49:    expected void const *usyms
+> > kernel/trace/bpf_trace.c:2443:49:    got void [noderef] __user *[assigned] usyms
+> 
+> This one is known. Still waiting for the fix from Jiri.
 
-> Currently, the driver reports a tx_rate of 6.0 MBit/s no matter the true
-> rate:
-> 
-> root@linaro-developer:~# iw wlan0 link
-> Connected to 6c:f3:7f:eb:9b:92 (on wlan0)
->         SSID: SQ-DEVICETEST
->         freq: 5200
->         RX: 4141 bytes (32 packets)
->         TX: 2082 bytes (15 packets)
->         signal: -77 dBm
->         rx bitrate: 135.0 MBit/s MCS 6 40MHz short GI
->         tx bitrate: 6.0 MBit/s
-> 
->         bss flags:      short-slot-time
->         dtim period:    1
->         beacon int:     100
-> 
-> This patch requests HAL_GLOBAL_CLASS_A_STATS_INFO via a hal_get_stats
-> firmware message and reports it via ieee80211_ops::sta_statistics.
-> 
-> root@linaro-developer:~# iw wlan0 link
-> Connected to 6c:f3:7f:eb:73:b2 (on wlan0)
->         SSID: SQ-DEVICETEST
->         freq: 5700
->         RX: 26788094 bytes (19859 packets)
->         TX: 1101376 bytes (12119 packets)
->         signal: -75 dBm
->         rx bitrate: 135.0 MBit/s MCS 6 40MHz short GI
->         tx bitrate: 108.0 MBit/s VHT-MCS 5 40MHz VHT-NSS 1
-> 
->         bss flags:      short-slot-time
->         dtim period:    1
->         beacon int:     100
-> 
-> Tested on MSM8939 with WCN3680B running firmware CNSS-PR-2-0-1-2-c1-00083,
-> and verified by sniffing frames over the air with Wireshark to ensure the
-> MCS indices match.
-> 
-> Signed-off-by: Edmond Gagnon <egagnon@squareup.com>
-> Reviewed-by: Benjamin Li <benl@squareup.com>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+right, I replied that for some reason I can't see these warnings
+with 'make C=2' and latest sparse.. how do you run that?
 
-Patch applied to ath-next branch of ath.git, thanks.
+if patch below fixes it for you, I can send formal patch quickly
 
-1216c4d30723 wcn36xx: Implement tx_rate reporting
+jirka
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220325224212.159690-1-egagnon@squareup.com/
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+---
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index d8553f46caa2..7fa2ebc07f60 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -2349,11 +2349,11 @@ kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+ }
+ 
+ static int
+-kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
++kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
+ 			  unsigned long *addrs)
+ {
+ 	unsigned long addr, size;
+-	const char __user **syms;
++	const char **syms;
+ 	int err = -ENOMEM;
+ 	unsigned int i;
+ 	char *func;
