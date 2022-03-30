@@ -2,152 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C97F94EBA1C
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 07:23:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83CCE4EBA7F
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 07:56:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242942AbiC3FYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 01:24:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
+        id S243089AbiC3F5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 01:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238534AbiC3FYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 01:24:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D21015B987;
-        Tue, 29 Mar 2022 22:22:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E6256615AE;
-        Wed, 30 Mar 2022 05:22:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0277EC340EE;
-        Wed, 30 Mar 2022 05:22:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648617767;
-        bh=MJKsvBQ12FvT30/ZTbEHl9aaaA+42sFCmsreyXrBKNU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SkYLQIsd5AJBx8xrtUVjID4Oq1RzFIK8qF9u/qC5hFgyXu2iCId0g1UTHzKxfoiZ5
-         vL/Epu+gIdPE/+SI1yVd/zXG9MIsH0HZhqeDWhhN4+y55VRYzQ/bpUC0Q5Z7C/ygH2
-         u0oeSOd8JoPAUpxImH90Ebp2UvLNIScEscJyJ83FtpvKt6MVWoyRbbn9K6zvVlU/tg
-         MrT5eatFKJtSOoUuaSvevnjoHQ9sfTtB40TUsP6vCJsmnFHFbag5ucifIVa+9hGlrU
-         Td0rNb/5s4zgOwkKwcK0klZOwROG5tBcTuXboZ8gVfE2pEcXceP25Hk91Ix6q2L0Gy
-         9kj445xnIAR0Q==
-Date:   Wed, 30 Mar 2022 14:22:42 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Beau Belgrave <beaub@linux.microsoft.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Subject: Re: [PATCH] tracing/user_events: Add eBPF interface for user_event
- created events
-Message-Id: <20220330142242.87b8b84ff922ef3688559b61@kernel.org>
-In-Reply-To: <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
-References: <20220329181935.2183-1-beaub@linux.microsoft.com>
-        <CAADnVQ+XpoCjL-rSz2hj05L21s8NtMJuWYC14b9Mvk7XE5KT_g@mail.gmail.com>
-        <20220329201057.GA2549@kbox>
-        <CAADnVQ+gm4yU9S6y+oeR3TNj82kKX0gk4ey9gVnKXKWy1Js4-A@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        with ESMTP id S243085AbiC3F5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 01:57:36 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B511B787
+        for <netdev@vger.kernel.org>; Tue, 29 Mar 2022 22:55:50 -0700 (PDT)
+Received: from kwepemi100017.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KSwc05svLzgYD4;
+        Wed, 30 Mar 2022 13:54:08 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ kwepemi100017.china.huawei.com (7.221.188.163) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 30 Mar 2022 13:55:47 +0800
+Received: from [127.0.0.1] (10.67.101.149) by kwepemm600017.china.huawei.com
+ (7.193.23.234) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 30 Mar
+ 2022 13:55:47 +0800
+Subject: Re: [RFCv3 PATCH net-next 1/2] net-next: ethtool: extend ringparam
+ set/get APIs for tx_push
+To:     Jakub Kicinski <kuba@kernel.org>
+References: <20220329091913.17869-1-wangjie125@huawei.com>
+ <20220329091913.17869-2-wangjie125@huawei.com>
+ <20220329162057.7bba69cd@kernel.org>
+CC:     <mkubecek@suse.cz>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <huangguangbin2@huawei.com>,
+        <lipeng321@huawei.com>, <shenjian15@huawei.com>,
+        <moyufeng@huawei.com>, <linyunsheng@huawei.com>,
+        <salil.mehta@huawei.com>, <chenhao288@hisilicon.com>
+From:   "wangjie (L)" <wangjie125@huawei.com>
+Message-ID: <98b746da-44c4-a132-3231-1f42885f941f@huawei.com>
+Date:   Wed, 30 Mar 2022 13:55:46 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
+MIME-Version: 1.0
+In-Reply-To: <20220329162057.7bba69cd@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.67.101.149]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Mar 2022 15:31:31 -0700
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-> On Tue, Mar 29, 2022 at 1:11 PM Beau Belgrave <beaub@linux.microsoft.com> wrote:
-> >
-> > On Tue, Mar 29, 2022 at 12:50:40PM -0700, Alexei Starovoitov wrote:
-> > > On Tue, Mar 29, 2022 at 11:19 AM Beau Belgrave
-> > > <beaub@linux.microsoft.com> wrote:
-> > > >
-> > > > Send user_event data to attached eBPF programs for user_event based perf
-> > > > events.
-> > > >
-> > > > Add BPF_ITER flag to allow user_event data to have a zero copy path into
-> > > > eBPF programs if required.
-> > > >
-> > > > Update documentation to describe new flags and structures for eBPF
-> > > > integration.
-> > > >
-> > > > Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
-> > >
-> > > The commit describes _what_ it does, but says nothing about _why_.
-> > > At present I see no use out of bpf and user_events connection.
-> > > The whole user_events feature looks redundant to me.
-> > > We have uprobes and usdt. It doesn't look to me that
-> > > user_events provide anything new that wasn't available earlier.
-> >
-> > A lot of the why, in general, for user_events is covered in the first
-> > change in the series.
-> > Link: https://lore.kernel.org/all/20220118204326.2169-1-beaub@linux.microsoft.com/
-> >
-> > The why was also covered in Linux Plumbers Conference 2021 within the
-> > tracing microconference.
-> >
-> > An example of why we want user_events:
-> > Managed code running that emits data out via Open Telemetry.
-> > Since it's managed there isn't a stub location to patch, it moves.
-> > We watch the Open Telemetry spans in an eBPF program, when a span takes
-> > too long we collect stack data and perform other actions.
-> > With user_events and perf we can monitor the entire system from the root
-> > container without having to have relay agents within each
-> > cgroup/namespace taking up resources.
-> > We do not need to enter each cgroup mnt space and determine the correct
-> > patch location or the right version of each binary for processes that
-> > use user_events.
-> >
-> > An example of why we want eBPF integration:
-> > We also have scenarios where we are live decoding the data quickly.
-> > Having user_data fed directly to eBPF lets us cast the data coming in to
-> > a struct and decode very very quickly to determine if something is
-> > wrong.
-> > We can take that data quickly and put it into maps to perform further
-> > aggregation as required.
-> > We have scenarios that have "skid" problems, where we need to grab
-> > further data exactly when the process that had the problem was running.
-> > eBPF lets us do all of this that we cannot easily do otherwise.
-> >
-> > Another benefit from user_events is the tracing is much faster than
-> > uprobes or others using int 3 traps. This is critical to us to enable on
-> > production systems.
-> 
-> None of it makes sense to me.
-> To take advantage of user_events user space has to be modified
-> and writev syscalls inserted.
 
-That can be done by introducing new user SDT macros, which currently
-expected to use uprobes (thus it just introduces a list of probe
-address and semaphore in a section). But we can provide another
-implementation for lighter user-events.
+On 2022/3/30 7:20, Jakub Kicinski wrote:
+> On Tue, 29 Mar 2022 17:19:12 +0800 Jie Wang wrote:
+>> diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+>> index 24d9be69065d..424159027309 100644
+>> --- a/Documentation/networking/ethtool-netlink.rst
+>> +++ b/Documentation/networking/ethtool-netlink.rst
+>> @@ -862,6 +862,7 @@ Kernel response contents:
+>>    ``ETHTOOL_A_RINGS_RX_BUF_LEN``        u32     size of buffers on the ring
+>>    ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT``    u8      TCP header / data split
+>>    ``ETHTOOL_A_RINGS_CQE_SIZE``          u32     Size of TX/RX CQE
+>> +  ``ETHTOOL_A_RINGS_TX_PUSH``           u8      flag of TX Push mode
+>>    ====================================  ======  ===========================
+>>
+>>  ``ETHTOOL_A_RINGS_TCP_DATA_SPLIT`` indicates whether the device is usable with
+>> @@ -887,6 +888,7 @@ Request contents:
+>>    ``ETHTOOL_A_RINGS_TX``                u32     size of TX ring
+>>    ``ETHTOOL_A_RINGS_RX_BUF_LEN``        u32     size of buffers on the ring
+>>    ``ETHTOOL_A_RINGS_CQE_SIZE``          u32     Size of TX/RX CQE
+>> +  ``ETHTOOL_A_RINGS_TX_PUSH``           u8      flag of TX Push mode
+>>    ====================================  ======  ===========================
+>>
+>>  Kernel checks that requested ring sizes do not exceed limits reported by
+>
+> You need to also describe what it does. Do you have a user manual
+> or some form of feature documentation that could be used as a starting
+> point. We're happy to help with the wording and grammar but you need
+> to give us a description of the feature so we're not guessing.
+yes, I have some feature focumentations. I will add this part in next 
+version.
+>
+> .
+>
 
-> This is not cheap and I cannot see a production system using this interface.
-
-I agree this point. At least this needs to be paired with user-space
-library so that the applications can use it. But I also think that
-new feature is not always requires an actual production system which
-relays on that, since that means such production system must use
-out-of-tree custom kernel. That should be avoided from the upstream-first
-policy viewpoint. (However, I would like to know the actual use case.)
-
-> All you did is a poor man version of lttng that doesn't rely
-> on such heavy instrumentation.
-
-Isn't it reasonable to avoid using heavy instrumentation? :-)
-
-Thank you,
-
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
