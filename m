@@ -2,90 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F0E4EBF7A
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 13:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A50F94EBF88
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 13:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245734AbiC3LEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 07:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60494 "EHLO
+        id S1343502AbiC3LHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 07:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245723AbiC3LED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 07:04:03 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59005C5584;
-        Wed, 30 Mar 2022 04:02:18 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S1343490AbiC3LHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 07:07:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BDCBC80;
+        Wed, 30 Mar 2022 04:05:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id DCD822223B;
-        Wed, 30 Mar 2022 13:02:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648638136;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=aLnrtpnRAiL6v+cP9y7rKdCDomkZu1ScIOGwNkz3rpE=;
-        b=e83Xv7idZD4OnNsV+VrMu6XrTQuf5d3s1LWZQAj6+tGeCCObB8yIO+5KJrUlrfkpi0yXtj
-        LN63YG92vbxwjwG6je2p84wy6hPi7DTSmkcpNZsD5gw8m9kRr4J40YAbO0KUI2cousBH+P
-        5EWhEx5xvgguXDL6kJzbrmnhqoUYA5Y=
-From:   Michael Walle <michael@walle.cc>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next] net: lan966x: make PHY reset support optional
-Date:   Wed, 30 Mar 2022 13:02:10 +0200
-Message-Id: <20220330110210.3374165-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73E2AB81BC1;
+        Wed, 30 Mar 2022 11:05:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D86BC340F2;
+        Wed, 30 Mar 2022 11:05:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648638321;
+        bh=mzw5GB4F/8hbvfnhA4i+A4Z4haC4e6zVkzrfHcj0Aco=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ulpZ1ak6zfVfsIekorftkORWKmQO+JErManDDmrK2O0/w3mH9mb6ARH2asrb+Ck+u
+         6DrfF4ICRJPJzVtqBVlOFe6PqUuYA2Hab0YVO7Ya/mbTaMHQmkQR2QJrFAV1XUSrwj
+         S6FuuMidErHmFeS4qIqteVA1CcBOCqFMcWhvbzsEJBIvgakdBwupaDTwuu9zQrg0Yc
+         xqldfbSGMhmz5qt65UPppT2CHPZdIjGWTzt2TErFcAoiDoFEPSVZWhqgwMUzPuo3px
+         SAYd9NZ6D4VavYbTa+c+Xp6LwJBwL/xz/z3BMX0xpegkszd1TWuoxU5aJ/6nbFRVvw
+         lX20gG7Y6uYqg==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH] bpf: Fix sparse warnings in kprobe_multi_resolve_syms
+Date:   Wed, 30 Mar 2022 13:05:10 +0200
+Message-Id: <20220330110510.398558-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The PHY subsystem as well as the MIIM mdio driver (in case of the
-integrated PHYs) will already take care of the resets of any external
-and internal PHY. There is no need for this reset anymore, so mark it
-optionally to be backwards compatible.
+Adding missing __user tags to fix sparse warnings:
 
-Signed-off-by: Michael Walle <michael@walle.cc>
+kernel/trace/bpf_trace.c:2370:34: warning: incorrect type in argument 2 (different address spaces)
+kernel/trace/bpf_trace.c:2370:34:    expected void const [noderef] __user *from
+kernel/trace/bpf_trace.c:2370:34:    got void const *usyms
+kernel/trace/bpf_trace.c:2376:51: warning: incorrect type in argument 2 (different address spaces)
+kernel/trace/bpf_trace.c:2376:51:    expected char const [noderef] __user *src
+kernel/trace/bpf_trace.c:2376:51:    got char const *
+kernel/trace/bpf_trace.c:2443:49: warning: incorrect type in argument 1 (different address spaces)
+kernel/trace/bpf_trace.c:2443:49:    expected void const *usyms
+kernel/trace/bpf_trace.c:2443:49:    got void [noderef] __user *[assigned] usyms
+
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 0dcac2725406 ("bpf: Add multi kprobe link")
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
+ kernel/trace/bpf_trace.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Horatiu, what do you think, should it be removed altogether? There is
-no user for that in mainline and I don't know about downstream but the
-reset driver doesn't really work (as it also resets the GPIO/SGPIO)
-and conceptionally the property is on the wrong DT node. All of the
-drawbacks should have been addressed by my patches for the miim [1]
-and the pinctrl driver [2].
-
-[1] https://lore.kernel.org/netdev/20220318201324.1647416-1-michael@walle.cc/
-[2] https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
-
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 1f8c67f0261b..0765064d2845 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -916,7 +916,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
- 		return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
- 				     "Could not obtain switch reset");
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 7fa2ebc07f60..d8553f46caa2 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -2349,11 +2349,11 @@ kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+ }
  
--	phy_reset = devm_reset_control_get_shared(lan966x->dev, "phy");
-+	phy_reset = devm_reset_control_get_optional_shared(lan966x->dev, "phy");
- 	if (IS_ERR(phy_reset))
- 		return dev_err_probe(lan966x->dev, PTR_ERR(phy_reset),
- 				     "Could not obtain phy reset\n");
+ static int
+-kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
++kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
+ 			  unsigned long *addrs)
+ {
+ 	unsigned long addr, size;
+-	const char **syms;
++	const char __user **syms;
+ 	int err = -ENOMEM;
+ 	unsigned int i;
+ 	char *func;
 -- 
-2.30.2
+2.35.1
 
