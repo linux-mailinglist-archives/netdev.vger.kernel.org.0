@@ -2,493 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6BE74EC795
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 16:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF1CC4EC7B4
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 17:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347634AbiC3O7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 10:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52284 "EHLO
+        id S1347791AbiC3PGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 11:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343640AbiC3O7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 10:59:30 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F991015;
-        Wed, 30 Mar 2022 07:57:44 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id t21so17417236oie.11;
-        Wed, 30 Mar 2022 07:57:44 -0700 (PDT)
+        with ESMTP id S1347772AbiC3PGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 11:06:00 -0400
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C859C75219;
+        Wed, 30 Mar 2022 08:04:14 -0700 (PDT)
+Received: by mail-ot1-f49.google.com with SMTP id i23-20020a9d6117000000b005cb58c354e6so15083754otj.10;
+        Wed, 30 Mar 2022 08:04:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DSfEQO0bCh0nDyQ9qhTmTRZQ1X0//dQhKQ3Dpna4X7w=;
-        b=apgefiBLZueeB+TeXoh1goNUq1RZFdl5UjdIR6wqBEzihXfTowz3xkafZxlaAoBsOD
-         9S2Wcu+lMHllbyJ30iPlgmkZmSBWQSYlL7dNzG4xX4xn74swzT2SIJoVS8opxzM/IIby
-         d/mvWkpet3TH57VHcoVD+mQkdu8i+ZfyXCkHBsWaAnVN9PdKiwkfUoyJXQgeaz5m/3bs
-         DfcFah2Apu+VlGIfi0AiszaL0gGJKg+UXm3/n/T/BgUjFbk1T2ciNpI0AKzQZU1O8eS+
-         r8klJs07i7tnv8c/l4DwKAypTBhAWp2kgqnWxA1Cc+HfhmYIYQ4Bh7qlJQcwO5JpWNPV
-         S9Tw==
-X-Gm-Message-State: AOAM530FGAiNhuQ5GytfhgLsh1ungLQW4vMl2O4LXahW6cG43cwp6L8k
-        FTYNlgFG8x5oo9XJJzNDWw==
-X-Google-Smtp-Source: ABdhPJyO9caym3ecNNjX3Xmni63Dn2eyM3izo3ssn+B5dwefmSlxCHWIHvCvO0bc2Q7tk5DfdVMbqg==
-X-Received: by 2002:aca:d04:0:b0:2ef:8b45:d235 with SMTP id 4-20020aca0d04000000b002ef8b45d235mr2040850oin.253.1648652263839;
-        Wed, 30 Mar 2022 07:57:43 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id 1-20020a056870128100b000db2a59f643sm9910278oal.42.2022.03.30.07.57.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=a0Qx16jN1XmN4Y2BBIC8WZKR/lqJ3CCvy460j4hfpJU=;
+        b=3pZvNGKpXmGd8MmuIG0vUmJ/PY0eUewq4tpTqMN57oPl+XLuu9EREsOx00MblhFyur
+         MYwHUU7oXc4CvIE4iFOMTBW2HfkiiSBaSmX97Z3IGpzii9xZgHONscasPij5H5FeaeCF
+         CR3/XF+5P7OEXHeT+Bx/h2Z89flcEngbEth8aQFyrgy/SOmhn1F8gLPFHebGW0PvKvl9
+         YtTD1ttarUrqf3NjeCigziwmqQIqZWLsdY+OcADx08jxzTBzklAmidK1pZ22O2x4Rqfc
+         bKtl7BeDwADSdqwZEyYQP3BbkY9Jx0TNk3gdDOv9Wh4qK0edfAbvLez5umuCrL3w4zN3
+         jUgQ==
+X-Gm-Message-State: AOAM531l2A5rjo7mN5FjZDloEfI6OEINf2QrzJyzyacjuuJYw2IVr8FP
+        6GdrgaezKKbmMQYWAFLPuQ==
+X-Google-Smtp-Source: ABdhPJw4BtyiHMI8Rkn8KkRu0zRrS/KBtlV7cGVu+PN3sHJ9/fQoVaJv4gJd0mwesxt2MLGtea2lyA==
+X-Received: by 2002:a05:6830:2055:b0:5b2:5659:542f with SMTP id f21-20020a056830205500b005b25659542fmr3433041otp.189.1648652653992;
+        Wed, 30 Mar 2022 08:04:13 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id u2-20020a056870304200b000ddb1828e3csm9878600oau.19.2022.03.30.08.04.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Mar 2022 07:57:42 -0700 (PDT)
+        Wed, 30 Mar 2022 08:04:12 -0700 (PDT)
+Received: (nullmailer pid 3056199 invoked by uid 1000);
+        Wed, 30 Mar 2022 15:04:11 -0000
+Date:   Wed, 30 Mar 2022 10:04:11 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Dmitry Osipenko <digetx@gmail.com>, linux-iio@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
-        linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
-        linux-phy@lists.infradead.org
-Subject: [PATCH] dt-bindings: Fix incomplete if/then/else schemas
-Date:   Wed, 30 Mar 2022 09:57:41 -0500
-Message-Id: <20220330145741.3044896-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: update Krzysztof Kozlowski's email
+Message-ID: <YkRxa1yweG7ace6r@robh.at.kernel.org>
+References: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org>
+ <20220330074016.12896-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330074016.12896-2-krzysztof.kozlowski@linaro.org>
 X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
         FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A recent review highlighted that the json-schema meta-schema allows any
-combination of if/then/else schema keywords even though if, then or else
-by themselves makes little sense. With an added meta-schema to only
-allow valid combinations, there's a handful of schemas found which need
-fixing in a variety of ways. Incorrect indentation is the most common
-issue.
+On Wed, Mar 30, 2022 at 09:40:15AM +0200, Krzysztof Kozlowski wrote:
+> From: Krzysztof Kozlowski <krzk@kernel.org>
+> 
+> Krzysztof Kozlowski's @canonical.com email stopped working, so switch to
+> generic @kernel.org account for all Devicetree bindings.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>  .../devicetree/bindings/clock/samsung,exynos-audss-clock.yaml   | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos-clock.yaml         | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos-ext-clock.yaml     | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos4412-isp-clock.yaml | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos5260-clock.yaml     | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos5410-clock.yaml     | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos5433-clock.yaml     | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos7-clock.yaml        | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos7885-clock.yaml     | 2 +-
+>  .../devicetree/bindings/clock/samsung,exynos850-clock.yaml      | 2 +-
+>  Documentation/devicetree/bindings/clock/samsung,s2mps11.yaml    | 2 +-
+>  .../devicetree/bindings/clock/samsung,s5pv210-audss-clock.yaml  | 2 +-
+>  .../devicetree/bindings/clock/samsung,s5pv210-clock.yaml        | 2 +-
+>  .../devicetree/bindings/devfreq/event/samsung,exynos-nocp.yaml  | 2 +-
+>  .../devicetree/bindings/devfreq/event/samsung,exynos-ppmu.yaml  | 2 +-
+>  .../bindings/display/samsung/samsung,exynos-hdmi-ddc.yaml       | 2 +-
+>  .../bindings/display/samsung/samsung,exynos-hdmi.yaml           | 2 +-
+>  .../bindings/display/samsung/samsung,exynos-mixer.yaml          | 2 +-
+>  .../bindings/display/samsung/samsung,exynos5433-decon.yaml      | 2 +-
+>  .../bindings/display/samsung/samsung,exynos5433-mic.yaml        | 2 +-
+>  .../bindings/display/samsung/samsung,exynos7-decon.yaml         | 2 +-
+>  .../devicetree/bindings/display/samsung/samsung,fimd.yaml       | 2 +-
+>  Documentation/devicetree/bindings/extcon/maxim,max77843.yaml    | 2 +-
+>  Documentation/devicetree/bindings/hwmon/lltc,ltc4151.yaml       | 2 +-
+>  Documentation/devicetree/bindings/hwmon/microchip,mcp3021.yaml  | 2 +-
+>  Documentation/devicetree/bindings/hwmon/sensirion,sht15.yaml    | 2 +-
+>  Documentation/devicetree/bindings/hwmon/ti,tmp102.yaml          | 2 +-
+>  Documentation/devicetree/bindings/hwmon/ti,tmp108.yaml          | 2 +-
+>  Documentation/devicetree/bindings/i2c/i2c-exynos5.yaml          | 2 +-
+>  Documentation/devicetree/bindings/i2c/samsung,s3c2410-i2c.yaml  | 2 +-
+>  .../interrupt-controller/samsung,exynos4210-combiner.yaml       | 2 +-
+>  Documentation/devicetree/bindings/leds/maxim,max77693.yaml      | 2 +-
+>  .../devicetree/bindings/memory-controllers/brcm,dpfe-cpu.yaml   | 2 +-
+>  .../bindings/memory-controllers/ddr/jedec,lpddr2-timings.yaml   | 2 +-
+>  .../bindings/memory-controllers/ddr/jedec,lpddr2.yaml           | 2 +-
+>  .../bindings/memory-controllers/ddr/jedec,lpddr3-timings.yaml   | 2 +-
+>  .../bindings/memory-controllers/ddr/jedec,lpddr3.yaml           | 2 +-
+>  .../memory-controllers/marvell,mvebu-sdram-controller.yaml      | 2 +-
+>  .../bindings/memory-controllers/qca,ath79-ddr-controller.yaml   | 2 +-
+>  .../bindings/memory-controllers/renesas,h8300-bsc.yaml          | 2 +-
+>  .../bindings/memory-controllers/samsung,exynos5422-dmc.yaml     | 2 +-
+>  .../bindings/memory-controllers/synopsys,ddrc-ecc.yaml          | 2 +-
+>  .../devicetree/bindings/memory-controllers/ti,da8xx-ddrctl.yaml | 2 +-
+>  Documentation/devicetree/bindings/mfd/maxim,max14577.yaml       | 2 +-
+>  Documentation/devicetree/bindings/mfd/maxim,max77686.yaml       | 2 +-
+>  Documentation/devicetree/bindings/mfd/maxim,max77693.yaml       | 2 +-
+>  Documentation/devicetree/bindings/mfd/maxim,max77802.yaml       | 2 +-
+>  Documentation/devicetree/bindings/mfd/maxim,max77843.yaml       | 2 +-
+>  .../devicetree/bindings/mfd/samsung,exynos5433-lpass.yaml       | 2 +-
+>  Documentation/devicetree/bindings/mfd/samsung,s2mpa01.yaml      | 2 +-
+>  Documentation/devicetree/bindings/mfd/samsung,s2mps11.yaml      | 2 +-
+>  Documentation/devicetree/bindings/mfd/samsung,s5m8767.yaml      | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml      | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/nxp,nci.yaml          | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/nxp,pn532.yaml        | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/nxp,pn544.yaml        | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml        | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/st,st21nfca.yaml      | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml        | 2 +-
+>  Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml      | 2 +-
+>  Documentation/devicetree/bindings/phy/samsung,dp-video-phy.yaml | 2 +-
+>  .../devicetree/bindings/phy/samsung,exynos-hdmi-phy.yaml        | 2 +-
+>  .../devicetree/bindings/phy/samsung,exynos5250-sata-phy.yaml    | 2 +-
+>  .../devicetree/bindings/phy/samsung,mipi-video-phy.yaml         | 2 +-
+>  Documentation/devicetree/bindings/phy/samsung,usb2-phy.yaml     | 2 +-
+>  Documentation/devicetree/bindings/phy/samsung,usb3-drd-phy.yaml | 2 +-
+>  .../devicetree/bindings/pinctrl/samsung,pinctrl-gpio-bank.yaml  | 2 +-
+>  .../devicetree/bindings/pinctrl/samsung,pinctrl-pins-cfg.yaml   | 2 +-
+>  .../bindings/pinctrl/samsung,pinctrl-wakeup-interrupt.yaml      | 2 +-
+>  Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml  | 2 +-
+>  .../devicetree/bindings/power/supply/maxim,max14577.yaml        | 2 +-
+>  .../devicetree/bindings/power/supply/maxim,max77693.yaml        | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max14577.yaml | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max77686.yaml | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max77693.yaml | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max77802.yaml | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max77843.yaml | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max8952.yaml  | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max8973.yaml  | 2 +-
+>  Documentation/devicetree/bindings/regulator/maxim,max8997.yaml  | 2 +-
+>  .../devicetree/bindings/regulator/samsung,s2mpa01.yaml          | 2 +-
+>  .../devicetree/bindings/regulator/samsung,s2mps11.yaml          | 2 +-
+>  .../devicetree/bindings/regulator/samsung,s2mps13.yaml          | 2 +-
+>  .../devicetree/bindings/regulator/samsung,s2mps14.yaml          | 2 +-
+>  .../devicetree/bindings/regulator/samsung,s2mps15.yaml          | 2 +-
+>  .../devicetree/bindings/regulator/samsung,s2mpu02.yaml          | 2 +-
+>  .../devicetree/bindings/regulator/samsung,s5m8767.yaml          | 2 +-
+>  .../devicetree/bindings/rng/samsung,exynos5250-trng.yaml        | 2 +-
+>  Documentation/devicetree/bindings/rng/timeriomem_rng.yaml       | 2 +-
+>  Documentation/devicetree/bindings/soc/samsung/exynos-usi.yaml   | 2 +-
+>  Documentation/devicetree/bindings/sound/samsung,arndale.yaml    | 2 +-
+>  Documentation/devicetree/bindings/sound/samsung,smdk5250.yaml   | 2 +-
+>  Documentation/devicetree/bindings/sound/samsung,snow.yaml       | 2 +-
+>  Documentation/devicetree/bindings/sound/samsung,tm2.yaml        | 2 +-
+>  .../devicetree/bindings/spi/samsung,spi-peripheral-props.yaml   | 2 +-
+>  Documentation/devicetree/bindings/spi/samsung,spi.yaml          | 2 +-
+>  .../devicetree/bindings/thermal/samsung,exynos-thermal.yaml     | 2 +-
+>  Documentation/devicetree/bindings/usb/samsung,exynos-dwc3.yaml  | 2 +-
+>  Documentation/devicetree/bindings/usb/samsung,exynos-usb2.yaml  | 2 +-
+>  99 files changed, 99 insertions(+), 99 deletions(-)
 
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-Cc: Olivier Moysan <olivier.moysan@foss.st.com>
-Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Georgi Djakov <djakov@kernel.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Thierry Reding <thierry.reding@gmail.com>
-Cc: Jonathan Hunter <jonathanh@nvidia.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Kishon Vijay Abraham I <kishon@ti.com>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-Cc: Dmitry Osipenko <digetx@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Cc: alsa-devel@alsa-project.org
-Cc: linux-mmc@vger.kernel.org
-Cc: linux-tegra@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-phy@lists.infradead.org
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../bindings/iio/adc/adi,ad7476.yaml          |  1 +
- .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  8 +-
- .../bindings/iio/dac/adi,ad5360.yaml          |  6 +-
- .../bindings/interconnect/qcom,rpm.yaml       | 84 +++++++++----------
- .../bindings/mmc/nvidia,tegra20-sdhci.yaml    |  2 +
- .../bindings/net/ti,davinci-mdio.yaml         |  1 +
- .../bindings/phy/nvidia,tegra20-usb-phy.yaml  | 20 ++---
- .../bindings/phy/qcom,usb-hs-phy.yaml         | 36 ++++----
- .../bindings/regulator/fixed-regulator.yaml   | 34 ++++----
- .../bindings/sound/st,stm32-sai.yaml          |  6 +-
- .../devicetree/bindings/sram/sram.yaml        | 16 ++--
- 11 files changed, 108 insertions(+), 106 deletions(-)
+Acked-by: Rob Herring <robh@kernel.org>
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
-index cf711082ad7d..666414a9c0de 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
-@@ -98,6 +98,7 @@ allOf:
-               - ti,adc121s
-               - ti,ads7866
-               - ti,ads7868
-+    then:
-       required:
-         - vcc-supply
-   # Devices with a vref
-diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-index 7c260f209687..912372706280 100644
---- a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-@@ -174,7 +174,7 @@ patternProperties:
-               contains:
-                 const: st,stm32-dfsdm-adc
- 
--      - then:
-+        then:
-           properties:
-             st,adc-channels:
-               minItems: 1
-@@ -206,7 +206,7 @@ patternProperties:
-               contains:
-                 const: st,stm32-dfsdm-dmic
- 
--      - then:
-+        then:
-           properties:
-             st,adc-channels:
-               maxItems: 1
-@@ -254,7 +254,7 @@ allOf:
-           contains:
-             const: st,stm32h7-dfsdm
- 
--  - then:
-+    then:
-       patternProperties:
-         "^filter@[0-9]+$":
-           properties:
-@@ -269,7 +269,7 @@ allOf:
-           contains:
-             const: st,stm32mp1-dfsdm
- 
--  - then:
-+    then:
-       patternProperties:
-         "^filter@[0-9]+$":
-           properties:
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
-index 0d8fb56f4b09..65f86f26947c 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
-@@ -59,9 +59,9 @@ allOf:
-           contains:
-             enum:
-               - adi,ad5371
--      then:
--        required:
--          - vref2-supply
-+    then:
-+      required:
-+        - vref2-supply
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml b/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml
-index 89853b482513..8a676fef8c1d 100644
---- a/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml
-+++ b/Documentation/devicetree/bindings/interconnect/qcom,rpm.yaml
-@@ -93,48 +93,48 @@ allOf:
-               - qcom,sdm660-gnoc
-               - qcom,sdm660-snoc
- 
--      then:
--        properties:
--          clock-names:
--            items:
--              - const: bus
--              - const: bus_a
--
--          clocks:
--            items:
--              - description: Bus Clock
--              - description: Bus A Clock
--
--        # Child node's properties
--        patternProperties:
--          '^interconnect-[a-z0-9]+$':
--            type: object
--            description:
--              snoc-mm is a child of snoc, sharing snoc's register address space.
--
--            properties:
--              compatible:
--                enum:
--                  - qcom,msm8939-snoc-mm
--
--              '#interconnect-cells':
--                const: 1
--
--              clock-names:
--                items:
--                  - const: bus
--                  - const: bus_a
--
--              clocks:
--                items:
--                  - description: Bus Clock
--                  - description: Bus A Clock
--
--            required:
--              - compatible
--              - '#interconnect-cells'
--              - clock-names
--              - clocks
-+    then:
-+      properties:
-+        clock-names:
-+          items:
-+            - const: bus
-+            - const: bus_a
-+
-+        clocks:
-+          items:
-+            - description: Bus Clock
-+            - description: Bus A Clock
-+
-+      # Child node's properties
-+      patternProperties:
-+        '^interconnect-[a-z0-9]+$':
-+          type: object
-+          description:
-+            snoc-mm is a child of snoc, sharing snoc's register address space.
-+
-+          properties:
-+            compatible:
-+              enum:
-+                - qcom,msm8939-snoc-mm
-+
-+            '#interconnect-cells':
-+              const: 1
-+
-+            clock-names:
-+              items:
-+                - const: bus
-+                - const: bus_a
-+
-+            clocks:
-+              items:
-+                - description: Bus Clock
-+                - description: Bus A Clock
-+
-+          required:
-+            - compatible
-+            - '#interconnect-cells'
-+            - clock-names
-+            - clocks
- 
-   - if:
-       properties:
-diff --git a/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml b/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
-index ce64b3498378..f3f4d5b02744 100644
---- a/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
-+++ b/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
-@@ -197,6 +197,8 @@ allOf:
-               - nvidia,tegra30-sdhci
-               - nvidia,tegra114-sdhci
-               - nvidia,tegra124-sdhci
-+    then:
-+      properties:
-         clocks:
-           items:
-             - description: module clock
-diff --git a/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml b/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
-index dbfca5ee9139..6f44f9516c36 100644
---- a/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
-@@ -56,6 +56,7 @@ if:
-     compatible:
-       contains:
-         const: ti,davinci_mdio
-+then:
-   required:
-     - bus_freq
- 
-diff --git a/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml b/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml
-index dfde0eaf66e1..d61585c96e31 100644
---- a/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/nvidia,tegra20-usb-phy.yaml
-@@ -275,17 +275,17 @@ allOf:
-           - nvidia,hssquelch-level
-           - nvidia,hsdiscon-level
- 
--        else:
--          properties:
--            clocks:
--              maxItems: 4
-+      else:
-+        properties:
-+          clocks:
-+            maxItems: 4
- 
--            clock-names:
--              items:
--                - const: reg
--                - const: pll_u
--                - const: timer
--                - const: utmi-pads
-+          clock-names:
-+            items:
-+              - const: reg
-+              - const: pll_u
-+              - const: timer
-+              - const: utmi-pads
- 
-   - if:
-       properties:
-diff --git a/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml
-index e23e5590eaa3..49f4aff93d62 100644
---- a/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,usb-hs-phy.yaml
-@@ -14,24 +14,24 @@ if:
-     compatible:
-       contains:
-         const: qcom,usb-hs-phy-apq8064
--  then:
--    properties:
--      resets:
--        maxItems: 1
--
--      reset-names:
--        const: por
--
--  else:
--    properties:
--      resets:
--        minItems: 2
--        maxItems: 2
--
--      reset-names:
--        items:
--          - const: phy
--          - const: por
-+then:
-+  properties:
-+    resets:
-+      maxItems: 1
-+
-+    reset-names:
-+      const: por
-+
-+else:
-+  properties:
-+    resets:
-+      minItems: 2
-+      maxItems: 2
-+
-+    reset-names:
-+      items:
-+        - const: phy
-+        - const: por
- 
- properties:
-   compatible:
-diff --git a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-index 9b131c6facbc..84eeaef179a5 100644
---- a/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/fixed-regulator.yaml
-@@ -18,23 +18,23 @@ description:
- 
- allOf:
-   - $ref: "regulator.yaml#"
--
--if:
--  properties:
--    compatible:
--      contains:
--        const: regulator-fixed-clock
--  required:
--    - clocks
--else:
--  if:
--    properties:
--      compatible:
--        contains:
--          const: regulator-fixed-domain
--    required:
--      - power-domains
--      - required-opps
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: regulator-fixed-clock
-+    then:
-+      required:
-+        - clocks
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: regulator-fixed-domain
-+    then:
-+      required:
-+        - power-domains
-+        - required-opps
- 
- properties:
-   compatible:
-diff --git a/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml b/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
-index b3dbcba33e41..fe2e15504ebc 100644
---- a/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
-+++ b/Documentation/devicetree/bindings/sound/st,stm32-sai.yaml
-@@ -136,8 +136,7 @@ allOf:
-         compatible:
-           contains:
-             const: st,stm32f4-sai
--
--  - then:
-+    then:
-       properties:
-         clocks:
-           items:
-@@ -148,8 +147,7 @@ allOf:
-           items:
-             - const: x8k
-             - const: x11k
--
--  - else:
-+    else:
-       properties:
-         clocks:
-           items:
-diff --git a/Documentation/devicetree/bindings/sram/sram.yaml b/Documentation/devicetree/bindings/sram/sram.yaml
-index 668a9a41a775..993430be355b 100644
---- a/Documentation/devicetree/bindings/sram/sram.yaml
-+++ b/Documentation/devicetree/bindings/sram/sram.yaml
-@@ -136,14 +136,14 @@ required:
-   - reg
- 
- if:
--  properties:
--    compatible:
--      contains:
--        enum:
--          - qcom,rpm-msg-ram
--          - rockchip,rk3288-pmu-sram
--
--else:
-+  not:
-+    properties:
-+      compatible:
-+        contains:
-+          enum:
-+            - qcom,rpm-msg-ram
-+            - rockchip,rk3288-pmu-sram
-+then:
-   required:
-     - "#address-cells"
-     - "#size-cells"
--- 
-2.32.0
+Arnd suggested 5.19, but this one needs to be 5.18.
 
+Rob
