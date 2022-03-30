@@ -2,121 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 011034EC75C
-	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 16:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 878E14EC7A6
+	for <lists+netdev@lfdr.de>; Wed, 30 Mar 2022 16:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347334AbiC3OwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Mar 2022 10:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49822 "EHLO
+        id S1347689AbiC3PAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Mar 2022 11:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347266AbiC3Ovy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 10:51:54 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 186DF275E2
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 07:50:07 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-136-sIRC0DlJN0S4pc-bPv8wSQ-1; Wed, 30 Mar 2022 15:50:04 +0100
-X-MC-Unique: sIRC0DlJN0S4pc-bPv8wSQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Wed, 30 Mar 2022 15:50:02 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Wed, 30 Mar 2022 15:50:02 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Guenter Roeck' <linux@roeck-us.net>,
-        Michael Walle <michael@walle.cc>,
-        "Xu Yilun" <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>, Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S244697AbiC3PAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Mar 2022 11:00:40 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8976434;
+        Wed, 30 Mar 2022 07:58:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648652335; x=1680188335;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LGbzP3xToIyBP1rsfYxryrKuymJX1Ma/5d6WvH8bQgg=;
+  b=ltR2Hb3UzFADOEWfsrf8Wvr//Fuf9Dcidst4Ozfi0iRCjQG4bP64GxKY
+   JmNjJEQrnDNQrLOkJv5AUFAuj6IZdyER0qLZe5m9uZsYLZWzEf/PM60ae
+   wU4BYaU28zMTNJmrWGfg+MXxABGlyVp1chHq+9vN/T+TzEYUBzt3tt6Iw
+   p30HWtRGSaNLviqj+vbG9chzYNuAUpDeM23YRAp8sfS7tK0QbUmx0Ysp4
+   /9jTHucDfKAU5/+fDI1H03vYM6vA8+0O7JdeUEcb8R2f7zWYQG7v2zrAD
+   XTwRXx3gzIJJaUIpecYMpyGO50W3H4eu2ubqjWZdGRRjrWtSzGxGD8NNi
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10301"; a="241717829"
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="241717829"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 07:58:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,222,1643702400"; 
+   d="scan'208";a="565574065"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.135])
+  by orsmga008.jf.intel.com with ESMTP; 30 Mar 2022 07:58:50 -0700
+Date:   Wed, 30 Mar 2022 22:51:37 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     Michael Walle <michael@walle.cc>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
-Thread-Topic: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
-Thread-Index: AQHYREG1rIB0cQMH/kajVzJ0H3I8wazYAMOg
-Date:   Wed, 30 Mar 2022 14:50:02 +0000
-Message-ID: <02545bf1c21b45f78eba5e8b37951748@AcuMS.aculab.com>
+Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+Message-ID: <20220330145137.GA214615@yilunxu-OptiPlex-7050>
 References: <20220329160730.3265481-1-michael@walle.cc>
  <20220329160730.3265481-2-michael@walle.cc>
- <75093b82-4625-d806-a4ea-372b74e60c3b@roeck-us.net>
-In-Reply-To: <75093b82-4625-d806-a4ea-372b74e60c3b@roeck-us.net>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+ <20220330065047.GA212503@yilunxu-OptiPlex-7050>
+ <5029cf18c9df4fab96af13c857d2e0ef@AcuMS.aculab.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5029cf18c9df4fab96af13c857d2e0ef@AcuMS.aculab.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogR3VlbnRlciBSb2Vjaw0KPiBTZW50OiAzMCBNYXJjaCAyMDIyIDE1OjIzDQo+IE9uIDMv
-MjkvMjIgMDk6MDcsIE1pY2hhZWwgV2FsbGUgd3JvdGU6DQo+ID4gTW9yZSBhbmQgbW9yZSBkcml2
-ZXJzIHdpbGwgY2hlY2sgZm9yIGJhZCBjaGFyYWN0ZXJzIGluIHRoZSBod21vbiBuYW1lDQo+ID4g
-YW5kIGFsbCBhcmUgdXNpbmcgdGhlIHNhbWUgY29kZSBzbmlwcGV0LiBDb25zb2xpZGF0ZSB0aGF0
-IGNvZGUgYnkgYWRkaW5nDQo+ID4gYSBuZXcgaHdtb25fc2FuaXRpemVfbmFtZSgpIGZ1bmN0aW9u
-Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogTWljaGFlbCBXYWxsZSA8bWljaGFlbEB3YWxsZS5j
-Yz4NCj4gPiAtLS0NCj4gPiAgIERvY3VtZW50YXRpb24vaHdtb24vaHdtb24ta2VybmVsLWFwaS5y
-c3QgfCAgOSArKysrLQ0KPiA+ICAgZHJpdmVycy9od21vbi9od21vbi5jICAgICAgICAgICAgICAg
-ICAgICB8IDQ5ICsrKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ICAgaW5jbHVkZS9saW51eC9o
-d21vbi5oICAgICAgICAgICAgICAgICAgICB8ICAzICsrDQo+ID4gICAzIGZpbGVzIGNoYW5nZWQs
-IDYwIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9E
-b2N1bWVudGF0aW9uL2h3bW9uL2h3bW9uLWtlcm5lbC1hcGkucnN0IGIvRG9jdW1lbnRhdGlvbi9o
-d21vbi9od21vbi1rZXJuZWwtYXBpLnJzdA0KPiA+IGluZGV4IGM0MWViNjEwODEwMy4uMTJmNGE5
-YmNlZjA0IDEwMDY0NA0KPiA+IC0tLSBhL0RvY3VtZW50YXRpb24vaHdtb24vaHdtb24ta2VybmVs
-LWFwaS5yc3QNCj4gPiArKysgYi9Eb2N1bWVudGF0aW9uL2h3bW9uL2h3bW9uLWtlcm5lbC1hcGku
-cnN0DQo+ID4gQEAgLTUwLDYgKzUwLDEwIEBAIHJlZ2lzdGVyL3VucmVnaXN0ZXIgZnVuY3Rpb25z
-OjoNCj4gPg0KPiA+ICAgICB2b2lkIGRldm1faHdtb25fZGV2aWNlX3VucmVnaXN0ZXIoc3RydWN0
-IGRldmljZSAqZGV2KTsNCj4gPg0KPiA+ICsgIGNoYXIgKmh3bW9uX3Nhbml0aXplX25hbWUoY29u
-c3QgY2hhciAqbmFtZSk7DQo+ID4gKw0KPiA+ICsgIGNoYXIgKmRldm1faHdtb25fc2FuaXRpemVf
-bmFtZShzdHJ1Y3QgZGV2aWNlICpkZXYsIGNvbnN0IGNoYXIgKm5hbWUpOw0KPiA+ICsNCj4gPiAg
-IGh3bW9uX2RldmljZV9yZWdpc3Rlcl93aXRoX2dyb3VwcyByZWdpc3RlcnMgYSBoYXJkd2FyZSBt
-b25pdG9yaW5nIGRldmljZS4NCj4gPiAgIFRoZSBmaXJzdCBwYXJhbWV0ZXIgb2YgdGhpcyBmdW5j
-dGlvbiBpcyBhIHBvaW50ZXIgdG8gdGhlIHBhcmVudCBkZXZpY2UuDQo+ID4gICBUaGUgbmFtZSBw
-YXJhbWV0ZXIgaXMgYSBwb2ludGVyIHRvIHRoZSBod21vbiBkZXZpY2UgbmFtZS4gVGhlIHJlZ2lz
-dHJhdGlvbg0KPiA+IEBAIC05Myw3ICs5NywxMCBAQCByZW1vdmFsIHdvdWxkIGJlIHRvbyBsYXRl
-Lg0KPiA+DQo+ID4gICBBbGwgc3VwcG9ydGVkIGh3bW9uIGRldmljZSByZWdpc3RyYXRpb24gZnVu
-Y3Rpb25zIG9ubHkgYWNjZXB0IHZhbGlkIGRldmljZQ0KPiA+ICAgbmFtZXMuIERldmljZSBuYW1l
-cyBpbmNsdWRpbmcgaW52YWxpZCBjaGFyYWN0ZXJzICh3aGl0ZXNwYWNlLCAnKicsIG9yICctJykN
-Cj4gPiAtd2lsbCBiZSByZWplY3RlZC4gVGhlICduYW1lJyBwYXJhbWV0ZXIgaXMgbWFuZGF0b3J5
-Lg0KPiA+ICt3aWxsIGJlIHJlamVjdGVkLiBUaGUgJ25hbWUnIHBhcmFtZXRlciBpcyBtYW5kYXRv
-cnkuIEJlZm9yZSBjYWxsaW5nIGENCj4gPiArcmVnaXN0ZXIgZnVuY3Rpb24geW91IHNob3VsZCBl
-aXRoZXIgdXNlIGh3bW9uX3Nhbml0aXplX25hbWUgb3INCj4gPiArZGV2bV9od21vbl9zYW5pdGl6
-ZV9uYW1lIHRvIHJlcGxhY2UgYW55IGludmFsaWQgY2hhcmFjdGVycyB3aXRoIGFuDQo+ID4gK3Vu
-ZGVyc2NvcmUuDQo+IA0KPiBUaGF0IG5lZWRzIG1vcmUgZGV0YWlscyBhbmQgZGVzZXJ2ZXMgaXRz
-IG93biBwYXJhZ3JhcGguIENhbGxpbmcgb25lIG9mDQo+IHRoZSBmdW5jdGlvbnMgaXMgb25seSBu
-ZWNlc3NhcnkgaWYgdGhlIG9yaWdpbmFsIG5hbWUgZG9lcyBvciBjYW4gaW5jbHVkZQ0KPiB1bnN1
-cHBvcnRlZCBjaGFyYWN0ZXJzOyBhbiB1bmNvbmRpdGlvbmFsICJzaG91bGQiIGlzIHRoZXJlZm9y
-ZSBhIGJpdA0KPiBzdHJvbmcuIEFsc28sIGl0IGlzIGltcG9ydGFudCB0byBtZW50aW9uIHRoYXQg
-dGhlIGZ1bmN0aW9uIGR1cGxpY2F0ZXMNCj4gdGhlIG5hbWUsIGFuZCB0aGF0IGl0IGlzIHRoZSBy
-ZXNwb25zaWJpbGl0eSBvZiB0aGUgY2FsbGVyIHRvIHJlbGVhc2UNCj4gdGhlIG5hbWUgaWYgaHdt
-b25fc2FuaXRpemVfbmFtZSgpIHdhcyBjYWxsZWQgYW5kIHRoZSBkZXZpY2UgaXMgcmVtb3ZlZC4N
-Cg0KTW9yZSB3b3JyeWluZywgYW5kIG5vdCBkb2N1bWVudGVkLCBpcyB0aGF0IHRoZSBidWZmZXIg
-J25hbWUnIHBvaW50cw0KdG8gbXVzdCBwZXJzaXN0Lg0KDQpJU1RNIHRoYXQgdGhlIGttYWxsb2Mo
-KSBpbiBfX2h3bW9uX2RldmljZV9yZWdpc3RlcigpIHNob3VsZCBpbmNsdWRlDQpzcGFjZSBmb3Ig
-YSBjb3B5IG9mIHRoZSBuYW1lLg0KSXQgY2FuIHRoZW4gZG8gd2hhdCBpdCB3aWxsIHdpdGggd2hh
-dGV2ZXIgaXMgcGFzc2VkIGluLg0KDQpPaCB5ZXMsIGl0IGhhcyBteSAnZmF2b3VyaXRlIGNvbnN0
-cnVjdCc6ICBpZiAoIXN0cmxlbihuYW1lKSkgLi4uDQood2VsbCBzdHJbc3RybGVuKHN0cildID0g
-MCBhbHNvIGhhcHBlbnMhKQ0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2Vz
-aWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVL
-DQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Wed, Mar 30, 2022 at 10:11:39AM +0000, David Laight wrote:
+> From: Xu Yilun
+> > Sent: 30 March 2022 07:51
+> > 
+> > On Tue, Mar 29, 2022 at 06:07:26PM +0200, Michael Walle wrote:
+> > > More and more drivers will check for bad characters in the hwmon name
+> > > and all are using the same code snippet. Consolidate that code by adding
+> > > a new hwmon_sanitize_name() function.
+> > >
+> > > Signed-off-by: Michael Walle <michael@walle.cc>
+> > > ---
+> > >  Documentation/hwmon/hwmon-kernel-api.rst |  9 ++++-
+> > >  drivers/hwmon/hwmon.c                    | 49 ++++++++++++++++++++++++
+> > >  include/linux/hwmon.h                    |  3 ++
+> > >  3 files changed, 60 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+> > > index c41eb6108103..12f4a9bcef04 100644
+> > > --- a/Documentation/hwmon/hwmon-kernel-api.rst
+> > > +++ b/Documentation/hwmon/hwmon-kernel-api.rst
+> > > @@ -50,6 +50,10 @@ register/unregister functions::
+> > >
+> > >    void devm_hwmon_device_unregister(struct device *dev);
+> > >
+> > > +  char *hwmon_sanitize_name(const char *name);
+> > > +
+> > > +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+> > > +
+> > >  hwmon_device_register_with_groups registers a hardware monitoring device.
+> > >  The first parameter of this function is a pointer to the parent device.
+> > >  The name parameter is a pointer to the hwmon device name. The registration
+> > > @@ -93,7 +97,10 @@ removal would be too late.
+> > >
+> > >  All supported hwmon device registration functions only accept valid device
+> > >  names. Device names including invalid characters (whitespace, '*', or '-')
+> > > -will be rejected. The 'name' parameter is mandatory.
+> > > +will be rejected. The 'name' parameter is mandatory. Before calling a
+> > > +register function you should either use hwmon_sanitize_name or
+> > > +devm_hwmon_sanitize_name to replace any invalid characters with an
+> > 
+> > I suggest                   to duplicate the name and replace ...
+> 
+> You are now going to get code that passed in NULL when the kmalloc() fails.
+> If 'sanitizing' the name is the correct thing to do then sanitize it
+> when the copy is made into the allocated structure.
 
+Then the driver is unaware of the name change, which makes more
+confusing.
+
+> (I'm assuming that the 'const char *name' parameter doesn't have to
+> be persistent - that would be another bug just waiting to happen.)
+
+The hwmon core does require a persistent "name" parameter now. No name
+copy is made when hwmon dev register.
+
+> 
+> Seems really pointless to be do a kmalloc() just to pass a string
+> into a function.
+
+Maybe we should not force a kmalloc() when the sanitizing is needed, let
+the driver decide whether to duplicate the string or not.
+
+Thanks,
+Yilun
+
+> 
+> 	David
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
