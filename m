@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B07FE4ED6D1
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF604ED6CB
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233881AbiCaJ2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 05:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
+        id S233895AbiCaJ27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 05:28:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233874AbiCaJ2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:28:52 -0400
+        with ESMTP id S233879AbiCaJ2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:28:54 -0400
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFBD21FDFFF;
-        Thu, 31 Mar 2022 02:27:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41811FDFF5;
+        Thu, 31 Mar 2022 02:27:05 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3EABFE000A;
-        Thu, 31 Mar 2022 09:27:02 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7ECE2E000F;
+        Thu, 31 Mar 2022 09:27:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648718823;
+        t=1648718824;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=T2SAnDYRLKVywNOeBXc/6UH8ACkBgPoznG9i7b/FYe8=;
-        b=KA9NzZ4AxKHzsT8w4D5p/XfRp+qbxvC4Z5E4LZjJj2at4otRL2rG39ivBs9vvte+62lhhT
-        v+C5ucCgtDvdqH8fZI7IM+P+SMIe490JBke9c++lumBISF8Chw9IFlFevbhPHllS7Oq4rY
-        aD08QthH9ldkb0yaj7/ZEUMCJcGelr4YA8xWqf91n1JIXXKA2tu6wIvLuG0vbWHFHGFhwA
-        8w9MesAbeKbmItJDHPqZ6j9rZ+armNuQBp+Sz/EM6HvQeHge7FwwMJ6k82aTokbHkA1n3f
-        YxOh/y8hdNrfR5P3W+rDaGr9Tl7HhKdvv2aW66c/tmekJVsJIbEhIrh8q3qcDA==
+        bh=GPSyndh1tTrFYZd2ommChHstRrAw7UFBSUMhhD8Cfhk=;
+        b=nmi9SS0ACqmwBMQWOjv1cnd0gcBFi3hcogsH29t4nMKKyTJIZU4Jhjy4e629RQNL5dnzb9
+        qa4hSmKnpyWzV+XanyAAkXoz4pumAhkA+yI1/EMrhj4c//MpgFoi98ISc5FRyv24qe5GrD
+        oX2kzntEeZkZ64J0Me6LNqx8AWPtBpXn/gXKIEfDeqXyKMxtyy2SGroHQh+u40MPEzyLiY
+        nSnUQmtfiYGOs2aF0aakMe1bAXwVTEyV5I/jV2GXVcHUqQQgYM6Hwnng+JxyYnLywQ3DuW
+        VkaCje+UIJglSTbDtoGmudJcC/h+bijKgyJG4L1zI5o4lpzaMK+FeWKsAN/edw==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -42,9 +42,9 @@ Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
         Allan Nielsen <allan.nielsen@microchip.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [RFC PATCH net-next v2 02/11] net: mdio: fwnode: remove legacy compatible checking for phy child
-Date:   Thu, 31 Mar 2022 11:25:24 +0200
-Message-Id: <20220331092533.348626-3-clement.leger@bootlin.com>
+Subject: [RFC PATCH net-next v2 03/11] net: mdio: fwnode: remove legacy phy scanning
+Date:   Thu, 31 Mar 2022 11:25:25 +0200
+Message-Id: <20220331092533.348626-4-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220331092533.348626-1-clement.leger@bootlin.com>
 References: <20220331092533.348626-1-clement.leger@bootlin.com>
@@ -61,65 +61,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove legacy checking for specific phy compatibles.
+When 'reg' property is missing from child MDIO nodes, an automatic scan
+is done to find phy devices that are present on the bus. Since the
+'reg' property is marked as required in the mdio.yaml bindings, remove
+this legacy scan mechanism.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/mdio/fwnode_mdio.c | 29 -----------------------------
- 1 file changed, 29 deletions(-)
+ drivers/net/mdio/fwnode_mdio.c | 39 +---------------------------------
+ 1 file changed, 1 insertion(+), 38 deletions(-)
 
 diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index a5a6fd9ebd94..17585c5b34bb 100644
+index 17585c5b34bb..38c873c49ecf 100644
 --- a/drivers/net/mdio/fwnode_mdio.c
 +++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -176,33 +176,11 @@ static int of_mdiobus_register_device(struct mii_bus *mdio,
- 	return 0;
- }
+@@ -217,7 +217,6 @@ EXPORT_SYMBOL(fwnode_mdiobus_child_is_phy);
+ int fwnode_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
+ {
+ 	struct device_node *child;
+-	bool scanphys = false;
+ 	int addr, rc;
  
--/* The following is a list of PHY compatible strings which appear in
-- * some DTBs. The compatible string is never matched against a PHY
-- * driver, so is pointless. We only expect devices which are not PHYs
-- * to have a compatible string, so they can be matched to an MDIO
-- * driver.  Encourage users to upgrade their DT blobs to remove these.
-- */
--static const struct of_device_id whitelist_phys[] = {
--	{ .compatible = "brcm,40nm-ephy" },
--	{ .compatible = "broadcom,bcm5241" },
--	{ .compatible = "marvell,88E1111", },
--	{ .compatible = "marvell,88e1116", },
--	{ .compatible = "marvell,88e1118", },
--	{ .compatible = "marvell,88e1145", },
--	{ .compatible = "marvell,88e1149r", },
--	{ .compatible = "marvell,88e1310", },
--	{ .compatible = "marvell,88E1510", },
--	{ .compatible = "marvell,88E1514", },
--	{ .compatible = "moxa,moxart-rtl8201cp", },
--	{}
--};
+ 	if (!np)
+@@ -247,10 +246,8 @@ int fwnode_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
+ 	/* Loop over the child nodes and register a phy_device for each phy */
+ 	for_each_available_child_of_node(np, child) {
+ 		addr = of_mdio_parse_addr(&mdio->dev, child);
+-		if (addr < 0) {
+-			scanphys = true;
++		if (addr < 0)
+ 			continue;
+-		}
+ 
+ 		if (of_mdiobus_child_is_phy(child))
+ 			rc = fwnode_mdiobus_register_phy(mdio,
+@@ -267,40 +264,6 @@ int fwnode_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
+ 			goto unregister;
+ 	}
+ 
+-	if (!scanphys)
+-		return 0;
 -
- /*
-  * Return true if the child node is for a phy. It must either:
-  * o Compatible string of "ethernet-phy-idX.X"
-  * o Compatible string of "ethernet-phy-ieee802.3-c45"
-  * o Compatible string of "ethernet-phy-ieee802.3-c22"
-- * o In the white list above (and issue a warning)
-  * o No compatibility string
-  *
-  * A device which is not a phy is expected to have a compatible string
-@@ -221,13 +199,6 @@ bool fwnode_mdiobus_child_is_phy(struct device_node *child)
- 	if (of_device_is_compatible(child, "ethernet-phy-ieee802.3-c22"))
- 		return true;
- 
--	if (of_match_node(whitelist_phys, child)) {
--		pr_warn(FW_WARN
--			"%pOF: Whitelisted compatible string. Please remove\n",
--			child);
--		return true;
+-	/* auto scan for PHYs with empty reg property */
+-	for_each_available_child_of_node(np, child) {
+-		/* Skip PHYs with reg property set */
+-		if (of_find_property(child, "reg", NULL))
+-			continue;
+-
+-		for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
+-			/* skip already registered PHYs */
+-			if (mdiobus_is_registered_device(mdio, addr))
+-				continue;
+-
+-			/* be noisy to encourage people to set reg property */
+-			dev_info(&mdio->dev, "scan phy %pOFn at address %i\n",
+-				 child, addr);
+-
+-			if (of_mdiobus_child_is_phy(child)) {
+-				/* -ENODEV is the return code that PHYLIB has
+-				 * standardized on to indicate that bus
+-				 * scanning should continue.
+-				 */
+-				rc = fwnode_mdiobus_register_phy(mdio,
+-								 of_fwnode_handle(child),
+-								 addr);
+-				if (!rc)
+-					break;
+-				if (rc != -ENODEV)
+-					goto unregister;
+-			}
+-		}
 -	}
 -
- 	if (!of_find_property(child, "compatible", NULL))
- 		return true;
+ 	return 0;
  
+ unregister:
 -- 
 2.34.1
 
