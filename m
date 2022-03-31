@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCD574ED6C6
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB004ED6CF
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233921AbiCaJ3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 05:29:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
+        id S233915AbiCaJ3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 05:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233894AbiCaJ25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:28:57 -0400
+        with ESMTP id S233912AbiCaJ26 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:28:58 -0400
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09331FDFFA;
-        Thu, 31 Mar 2022 02:27:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644C71FE54A;
+        Thu, 31 Mar 2022 02:27:11 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 19EC3E0004;
-        Thu, 31 Mar 2022 09:27:07 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id AC3EAE000F;
+        Thu, 31 Mar 2022 09:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648718828;
+        t=1648718829;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/U4ywy2HHlrXB5mkjwH0y2BuGQP4lKAiCmY1p7B8gk4=;
-        b=j2twj0+ThaBbKyaGJJifzdDEBKrLwMnTa+omXGQgZVfvZ8LkJjvJdA59TAZq+6ILjxzwCS
-        FzIEh0/OMQxHOiQxwt9/wumisvXwivDklpWIsnKuHaa7Z6MmDVNxSJHbtcvcTSO3nk4dna
-        sl30G5tEee4jV5Ev1Y0fiCcTpZjR45ZB2zWgGRayy+D/kaLch/odoSKVGnl9skBVivyMZ8
-        HMQQBsTlJVoQvBHnaJxlQnhyuJEzZ7DQQ4Icv+2y/cOzk9YzuHtJqIt0iT1WowD36V+QKm
-        MS6ikvXkZJFpOm1HRRYBBvsbfsVMSfKSl3i0Mgljy8oEuL/RhQjKpLzrCrJ7SQ==
+        bh=BuDSDO88o7atqIGVoL9C6aHASrXbNomtgMOGVQ4YA10=;
+        b=mMLR39R09x84Dw/csEYTSKv3YuLZaAyi0yFRHTEWxtBobiMdoNEJ04YeiDEIL4Tutvd39P
+        hiRVP6TM0TYZ/N3616CQ2tTSI/4Y/UhtozuuYnuDd0gYQQI6DGsROc6t+WjijCq8a8bmpv
+        g4WbtFNVsDWd0Xit8n/pYwozGOWyLMI+kq7dn9Prm2E4IXScwG0ZJVYB0d6Z8gynh/kymV
+        6sG5HBxb5rhR1RKEXpQpKK30Qmh8dFlgFeuQYWAbDUf2SdZeRx/pN+OIxJzOQgAhicLYzF
+        c1bpd5CRqhuc+XuEVBDfBIjwS14URCZzWe/EAjPyd8ux6W73fXQJVru4xFY4Mg==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -42,9 +42,9 @@ Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
         Allan Nielsen <allan.nielsen@microchip.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [RFC PATCH net-next v2 06/11] net: mdio: of: wrap fwnode_mdio_parse_addr() in of_mdio_parse_addr()
-Date:   Thu, 31 Mar 2022 11:25:28 +0200
-Message-Id: <20220331092533.348626-7-clement.leger@bootlin.com>
+Subject: [RFC PATCH net-next v2 07/11] net: mdio: fwnode: avoid calling of_* functions with non OF nodes
+Date:   Thu, 31 Mar 2022 11:25:29 +0200
+Message-Id: <20220331092533.348626-8-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220331092533.348626-1-clement.leger@bootlin.com>
 References: <20220331092533.348626-1-clement.leger@bootlin.com>
@@ -60,68 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since function fwnode_mdio_parse_addr() returns the same value that is
-done by of_mdio_parse_addr() and has the same behavior, wrap the first
-one. The function was switched as non static in of_mdio.c to avoid
-including fwnode_mdio.h in of_mdio.h.
+Without this check, of_parse_phandle_with_fixed_args() will be called
+with whatever the type of the node. Use !is_of_node() which will work
+for all node types supported by the fwnode API (ACPI, software nodes).
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/mdio/of_mdio.c |  6 ++++++
- include/linux/of_mdio.h    | 23 +----------------------
- 2 files changed, 7 insertions(+), 22 deletions(-)
+ drivers/net/mdio/fwnode_mdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
-index 9e3c815a070f..b8fc1245048e 100644
---- a/drivers/net/mdio/of_mdio.c
-+++ b/drivers/net/mdio/of_mdio.c
-@@ -26,6 +26,12 @@
- MODULE_AUTHOR("Grant Likely <grant.likely@secretlab.ca>");
- MODULE_LICENSE("GPL");
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 319cccd0edeb..26aeb248e3b9 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -23,7 +23,7 @@ fwnode_find_mii_timestamper(struct fwnode_handle *fwnode)
+ 	struct of_phandle_args arg;
+ 	int err;
  
-+int of_mdio_parse_addr(struct device *dev, const struct device_node *np)
-+{
-+	return fwnode_mdio_parse_addr(dev, of_fwnode_handle(np));
-+}
-+EXPORT_SYMBOL(of_mdio_parse_addr);
-+
- /* Extract the clause 22 phy ID from the compatible string of the form
-  * ethernet-phy-idAAAA.BBBB */
- static int of_get_phy_id(struct device_node *device, u32 *phy_id)
-diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
-index da633d34ab86..1de67a1e5cd7 100644
---- a/include/linux/of_mdio.h
-+++ b/include/linux/of_mdio.h
-@@ -33,28 +33,7 @@ void of_phy_deregister_fixed_link(struct device_node *np);
- bool of_phy_is_fixed_link(struct device_node *np);
- int of_mdiobus_phy_device_register(struct mii_bus *mdio, struct phy_device *phy,
- 				   struct device_node *child, u32 addr);
--
--static inline int of_mdio_parse_addr(struct device *dev,
--				     const struct device_node *np)
--{
--	u32 addr;
--	int ret;
--
--	ret = of_property_read_u32(np, "reg", &addr);
--	if (ret < 0) {
--		dev_err(dev, "%s has invalid PHY address\n", np->full_name);
--		return ret;
--	}
--
--	/* A PHY must have a reg property in the range [0-31] */
--	if (addr >= PHY_MAX_ADDR) {
--		dev_err(dev, "%s PHY address %i is too large\n",
--			np->full_name, addr);
--		return -EINVAL;
--	}
--
--	return addr;
--}
-+int of_mdio_parse_addr(struct device *dev, const struct device_node *np);
+-	if (is_acpi_node(fwnode))
++	if (!is_of_node(fwnode))
+ 		return NULL;
  
- #else /* CONFIG_OF_MDIO */
- static inline bool of_mdiobus_child_is_phy(struct device_node *child)
+ 	err = of_parse_phandle_with_fixed_args(to_of_node(fwnode),
 -- 
 2.34.1
 
