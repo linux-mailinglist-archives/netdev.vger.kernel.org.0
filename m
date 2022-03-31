@@ -2,142 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF6EE4EE2A8
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 22:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7FA4EE2B6
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 22:35:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241429AbiCaUcY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 16:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52316 "EHLO
+        id S241468AbiCaUg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 16:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241432AbiCaUcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 16:32:21 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CCD55482
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 13:30:33 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id yy13so1731804ejb.2
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 13:30:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=WnVDLK0fuVXet24goRyLeC09oaPRTS1cEiuOv9qpnzg=;
-        b=xz4HmeCzQcf0bKScHWhvla+V2E7vgHeOrWNrab8oEGJzRpkOogwYZLg8l4nYxn7PGI
-         DnSi7BcukvWTBLE1pQB9Al6zKPKetCxY1DMQ6jIlZNyQGsZlA+3jLPbZ97e20sb/L6k/
-         jru7po9wvWWn2ZtoPjQoAkNlyURKBUV9JRU8R9qubnXxwjbbhkLVg0YUUl3VhKebG4zg
-         5WLG1S4pyKhOY9Z/wRIFD0gr/ZGaoLsYa1JAF8LgBG4Xe7folO0xkJoq+BXzt9gX4zd+
-         j7HgDQSgbhnStRnEGu26upop8BWlyGxOqyLzZNdKPTqj/un11jX7rsTJM6d2WH1MtZkD
-         X7UQ==
+        with ESMTP id S241456AbiCaUgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 16:36:54 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F27AD4470;
+        Thu, 31 Mar 2022 13:35:03 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-deb9295679so529437fac.6;
+        Thu, 31 Mar 2022 13:35:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=WnVDLK0fuVXet24goRyLeC09oaPRTS1cEiuOv9qpnzg=;
-        b=LLZmVwibE49/p0Q0E14cGaELApUklzFi0BstL9EznUW5++3ooxWx5BFFX/Y+12jKz9
-         4t4uKvbTvKYW0/AFO2QtsIEzuwTadKO5+Xhz535dB+k+LgHu7xFp8q1XkoGLUuQh+c2C
-         bzmdX5A4xf2wMlYrZK3/YSqvcCPNfdxK8o6ndyhgj3whmu7P3o/xF+0fWCnrNsYMWLyV
-         A6pcIJdBkjo2QVAHSByZkNPfRLgDhCPSKxvBdWvKrZjZtYC3NMQSqLpUAJRy1FQfOn5u
-         o6qmz0fIqBITLFS73kXdDKelDW3ucT+h/4o4rA+OWLt42OBlZ7aYmywUayEgdCJ+2Jza
-         aqHg==
-X-Gm-Message-State: AOAM531zeGCCsc460ncCm1I28Iu0+NjTAXfUgwCkwnqhFa36wM5x6UrJ
-        Q4yjEHgYKFRm270KgfSQCAA6qHPJpGabgthJ
-X-Google-Smtp-Source: ABdhPJzk1sADuDWf1mqltBlOA78Rm21xqsC7es/F5+4JjOUvGFm54/gqgEdhlOupkBs1Tk1QLX6phg==
-X-Received: by 2002:a17:907:3e82:b0:6e1:3fe3:9b14 with SMTP id hs2-20020a1709073e8200b006e13fe39b14mr6437585ejc.561.1648758632084;
-        Thu, 31 Mar 2022 13:30:32 -0700 (PDT)
-Received: from [192.168.0.168] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id tc19-20020a1709078d1300b006e0649189b0sm169808ejc.68.2022.03.31.13.30.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 13:30:31 -0700 (PDT)
-Message-ID: <3d4159d6-112a-7818-8192-7197dcfca894@linaro.org>
-Date:   Thu, 31 Mar 2022 22:30:30 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RFC net-next 2/3] dt-bindings: net: mscc-miim: add clock
- and clock-frequency
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Michael Walle <michael@walle.cc>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7o8q97xCtSsryTgEf+sdFsnMX0/U036sQhYghPoefl4=;
+        b=iPJMIel6KouTEDry7C1kbBk8yMK/XG0f8n5a/xdpTicgN470n1MAIZqq0O9XIQkTQT
+         1iAELBGJ99xBVFuBGbsK66w77QlYA4Y9z7bSbwe064IL8vRgvZQGNIJOgb8klFDl6yyb
+         mOTYM2AgQPuSVzZ0xUp2PqQIGS2vA9vKOIKyuLChLPNuVD2d6h297HDDKQy/4P+BDFyA
+         VG8AbLUNJK1Nr0BKgwjIuypNESUa7lk7vmMryzHIdlI6sY9ljUtvrxBCA7f+oC07LQSF
+         Qs3PqTOguNnRiVdnhVMTWUcZXWhU8sJ5a5FIKPQCLvWnl3ZMEQG6C0We+GGB/XGJEPWR
+         P2/Q==
+X-Gm-Message-State: AOAM532BTv+JLmhPhYRdJu1nFGVk2U16AQRXbCyCqXhV/q7iFgS1ZSWI
+        WVaDs2lxCAejO6OyUHA4LQ==
+X-Google-Smtp-Source: ABdhPJyOtg9v8M3rgMoWnDenrT80lRaoyYQt7XKsnQHhmcrqEG9E/JNZKDO/sxj1EcCQH8b9oxX0lA==
+X-Received: by 2002:a05:6870:79d:b0:da:56e3:fe99 with SMTP id en29-20020a056870079d00b000da56e3fe99mr3441337oab.95.1648758902507;
+        Thu, 31 Mar 2022 13:35:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r35-20020a056870582300b000df0dc42ff5sm219227oap.0.2022.03.31.13.34.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 13:35:00 -0700 (PDT)
+Received: (nullmailer pid 1446207 invoked by uid 1000);
+        Thu, 31 Mar 2022 20:34:59 -0000
+Date:   Thu, 31 Mar 2022 15:34:59 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, alsa-devel@alsa-project.org,
+        Georgi Djakov <djakov@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220331151440.3643482-1-michael@walle.cc>
- <20220331151440.3643482-2-michael@walle.cc>
- <dfb10165-1987-84ae-d48a-dfb6b897e0a3@linaro.org> <YkYMIequbfAsELnf@lunn.ch>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YkYMIequbfAsELnf@lunn.ch>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Brown <broonie@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-tegra@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Subject: Re: [PATCH] dt-bindings: Fix incomplete if/then/else schemas
+Message-ID: <YkYQc/r8P5LYI6dt@robh.at.kernel.org>
+References: <20220330145741.3044896-1-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220330145741.3044896-1-robh@kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/03/2022 22:16, Andrew Lunn wrote:
-> On Thu, Mar 31, 2022 at 10:05:48PM +0200, Krzysztof Kozlowski wrote:
->> On 31/03/2022 17:14, Michael Walle wrote:
->>> Add the (optional) clock input of the MDIO controller and indicate that
->>> the common clock-frequency property is supported. The driver can use it
->>> to set the desired MDIO bus frequency.
->>>
->>> Signed-off-by: Michael Walle <michael@walle.cc>
->>> ---
->>>  Documentation/devicetree/bindings/net/mscc,miim.yaml | 5 +++++
->>>  1 file changed, 5 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
->>> index b52bf1732755..e9e8ddcdade9 100644
->>> --- a/Documentation/devicetree/bindings/net/mscc,miim.yaml
->>> +++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
->>> @@ -32,6 +32,11 @@ properties:
->>>  
->>>    interrupts: true
->>>  
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  clock-frequency: true
->>
->> This looks unusual clock-frequency is usually for clock providers but
->> this is a consumer, so it is not a common frequency here. You mention
->> that "driver can use it", so it's not a hardware description but some
->> feature for the driver. We have this already - use assigned-clock* in
->> your DTS.
+On Wed, 30 Mar 2022 09:57:41 -0500, Rob Herring wrote:
+> A recent review highlighted that the json-schema meta-schema allows any
+> combination of if/then/else schema keywords even though if, then or else
+> by themselves makes little sense. With an added meta-schema to only
+> allow valid combinations, there's a handful of schemas found which need
+> fixing in a variety of ways. Incorrect indentation is the most common
+> issue.
 > 
-> Please see
-> 
-> Documentation/devicetree/bindings/net/mdio.yaml
-> 
->   clock-frequency:
->     description:
->       Desired MDIO bus clock frequency in Hz. Values greater than IEEE 802.3
->       defined 2.5MHz should only be used when all devices on the bus support
->       the given clock speed.
-> 
-> The MDIO bus master provides the MDIO bus clock, so in a sense, the
-> device is a provider. although it does also make use of the clock
-> itself. It is a hardware description, because the users of the bus
-> make use of the clock, i.e. the PHY devices on the bus.
-> 
-> It is also identical to i2c bus masters
-> Documentation/devicetree/bindings/i2c/i2c.txt says:
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
+> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
+> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Georgi Djakov <djakov@kernel.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+> Cc: Dmitry Osipenko <digetx@gmail.com>
+> Cc: linux-iio@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: linux-tegra@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-phy@lists.infradead.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/iio/adc/adi,ad7476.yaml          |  1 +
+>  .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  8 +-
+>  .../bindings/iio/dac/adi,ad5360.yaml          |  6 +-
+>  .../bindings/interconnect/qcom,rpm.yaml       | 84 +++++++++----------
+>  .../bindings/mmc/nvidia,tegra20-sdhci.yaml    |  2 +
+>  .../bindings/net/ti,davinci-mdio.yaml         |  1 +
+>  .../bindings/phy/nvidia,tegra20-usb-phy.yaml  | 20 ++---
+>  .../bindings/phy/qcom,usb-hs-phy.yaml         | 36 ++++----
+>  .../bindings/regulator/fixed-regulator.yaml   | 34 ++++----
+>  .../bindings/sound/st,stm32-sai.yaml          |  6 +-
+>  .../devicetree/bindings/sram/sram.yaml        | 16 ++--
+>  11 files changed, 108 insertions(+), 106 deletions(-)
 > 
 
-Thanks, it's good. Indeed buses also use this property.
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
+Applied, thanks!
