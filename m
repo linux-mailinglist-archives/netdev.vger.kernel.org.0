@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00FC44ED62F
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 10:49:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A96BB4ED62E
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 10:49:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233276AbiCaIvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 04:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
+        id S233287AbiCaIvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 04:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233274AbiCaIvM (ORCPT
+        with ESMTP id S233284AbiCaIvM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 04:51:12 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF45C2BC2
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CA225C2
         for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 01:49:23 -0700 (PDT)
-Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KTcPn6qNhzgYDY;
-        Thu, 31 Mar 2022 16:47:41 +0800 (CST)
+Received: from kwepemi500017.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KTcM12nfqzBrry;
+        Thu, 31 Mar 2022 16:45:17 +0800 (CST)
 Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
+ kwepemi500017.china.huawei.com (7.221.188.110) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.21; Thu, 31 Mar 2022 16:49:21 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 31 Mar 2022 16:49:20 +0800
+ 15.1.2308.21; Thu, 31 Mar 2022 16:49:21 +0800
 From:   Jie Wang <wangjie125@huawei.com>
 To:     <mkubecek@suse.cz>, <davem@davemloft.net>, <kuba@kernel.org>,
         <wangjie125@huawei.com>
@@ -32,9 +32,9 @@ CC:     <netdev@vger.kernel.org>, <huangguangbin2@huawei.com>,
         <lipeng321@huawei.com>, <shenjian15@huawei.com>,
         <moyufeng@huawei.com>, <linyunsheng@huawei.com>,
         <salil.mehta@huawei.com>, <chenhao288@hisilicon.com>
-Subject: [RFCv4 PATCH net-next 2/3] net-next: ethtool: move checks before rtnl_lock() in ethnl_set_rings
-Date:   Thu, 31 Mar 2022 16:43:41 +0800
-Message-ID: <20220331084342.27043-3-wangjie125@huawei.com>
+Subject: [RFCv4 PATCH net-next 3/3] net-next: hn3: add tx push support in hns3 ring param process
+Date:   Thu, 31 Mar 2022 16:43:42 +0800
+Message-ID: <20220331084342.27043-4-wangjie125@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220331084342.27043-1-wangjie125@huawei.com>
 References: <20220331084342.27043-1-wangjie125@huawei.com>
@@ -54,73 +54,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently these two checks in ethnl_set_rings are added after rtnl_lock()
-which will do useless works if the request is invalid.
-
-So this patch moves these checks before the rtnl_lock() to avoid these
-costs.
+This patch adds tx push param to hns3 ring param and adapts the set and get
+API of ring params. So users can set it by cmd ethtool -G and get it by cmd
+ethtool -g.
 
 Signed-off-by: Jie Wang <wangjie125@huawei.com>
 ---
- net/ethtool/rings.c | 38 ++++++++++++++++++++------------------
- 1 file changed, 20 insertions(+), 18 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 33 ++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/net/ethtool/rings.c b/net/ethtool/rings.c
-index 9ed60c507d97..46415d8fc256 100644
---- a/net/ethtool/rings.c
-+++ b/net/ethtool/rings.c
-@@ -152,6 +152,26 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
- 	if (!ops->get_ringparam || !ops->set_ringparam)
- 		goto out_dev;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 6469238ae090..b3d6ed4a0165 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -664,6 +664,8 @@ static void hns3_get_ringparam(struct net_device *netdev,
+ 	param->tx_pending = priv->ring[0].desc_num;
+ 	param->rx_pending = priv->ring[rx_queue_index].desc_num;
+ 	kernel_param->rx_buf_len = priv->ring[rx_queue_index].buf_size;
++	kernel_param->tx_push = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE,
++					 &priv->state);
+ }
  
-+	if (tb[ETHTOOL_A_RINGS_RX_BUF_LEN] &&
-+	    nla_get_u32(tb[ETHTOOL_A_RINGS_RX_BUF_LEN]) != 0 &&
-+	    !(ops->supported_ring_params & ETHTOOL_RING_USE_RX_BUF_LEN)) {
-+		ret = -EOPNOTSUPP;
-+		NL_SET_ERR_MSG_ATTR(info->extack,
-+				    tb[ETHTOOL_A_RINGS_RX_BUF_LEN],
-+				    "setting rx buf len not supported");
-+		goto out_dev;
-+	}
-+
-+	if (tb[ETHTOOL_A_RINGS_CQE_SIZE] &&
-+	    nla_get_u32(tb[ETHTOOL_A_RINGS_CQE_SIZE]) &&
-+	    !(ops->supported_ring_params & ETHTOOL_RING_USE_CQE_SIZE)) {
-+		ret = -EOPNOTSUPP;
-+		NL_SET_ERR_MSG_ATTR(info->extack,
-+				    tb[ETHTOOL_A_RINGS_CQE_SIZE],
-+				    "setting cqe size not supported");
-+		goto out_dev;
-+	}
-+
- 	if (tb[ETHTOOL_A_RINGS_TX_PUSH] &&
- 	    !(ops->supported_ring_params & ETHTOOL_RING_USE_TX_PUSH)) {
- 		ret = -EOPNOTSUPP;
-@@ -201,24 +221,6 @@ int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info)
- 		goto out_ops;
- 	}
+ static void hns3_get_pauseparam(struct net_device *netdev,
+@@ -1114,6 +1116,30 @@ static int hns3_change_rx_buf_len(struct net_device *ndev, u32 rx_buf_len)
+ 	return 0;
+ }
  
--	if (kernel_ringparam.rx_buf_len != 0 &&
--	    !(ops->supported_ring_params & ETHTOOL_RING_USE_RX_BUF_LEN)) {
--		ret = -EOPNOTSUPP;
--		NL_SET_ERR_MSG_ATTR(info->extack,
--				    tb[ETHTOOL_A_RINGS_RX_BUF_LEN],
--				    "setting rx buf len not supported");
--		goto out_ops;
--	}
--
--	if (kernel_ringparam.cqe_size &&
--	    !(ops->supported_ring_params & ETHTOOL_RING_USE_CQE_SIZE)) {
--		ret = -EOPNOTSUPP;
--		NL_SET_ERR_MSG_ATTR(info->extack,
--				    tb[ETHTOOL_A_RINGS_CQE_SIZE],
--				    "setting cqe size not supported");
--		goto out_ops;
--	}
--
- 	ret = dev->ethtool_ops->set_ringparam(dev, &ringparam,
- 					      &kernel_ringparam, info->extack);
- 	if (ret < 0)
++static int hns3_set_tx_push(struct net_device *netdev, u32 tx_push)
++{
++	struct hns3_nic_priv *priv = netdev_priv(netdev);
++	struct hnae3_handle *h = hns3_get_handle(netdev);
++	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(h->pdev);
++	u32 old_state = test_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
++
++	if (!test_bit(HNAE3_DEV_SUPPORT_TX_PUSH_B, ae_dev->caps) && tx_push)
++		return -EOPNOTSUPP;
++
++	if (tx_push == old_state)
++		return 0;
++
++	netdev_dbg(netdev, "Changing tx push from %s to %s\n",
++		   old_state ? "on" : "off", tx_push ? "on" : "off");
++
++	if (tx_push)
++		set_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
++	else
++		clear_bit(HNS3_NIC_STATE_TX_PUSH_ENABLE, &priv->state);
++
++	return 0;
++}
++
+ static int hns3_set_ringparam(struct net_device *ndev,
+ 			      struct ethtool_ringparam *param,
+ 			      struct kernel_ethtool_ringparam *kernel_param,
+@@ -1133,6 +1159,10 @@ static int hns3_set_ringparam(struct net_device *ndev,
+ 	if (ret)
+ 		return ret;
+ 
++	ret = hns3_set_tx_push(ndev, kernel_param->tx_push);
++	if (ret)
++		return ret;
++
+ 	/* Hardware requires that its descriptors must be multiple of eight */
+ 	new_tx_desc_num = ALIGN(param->tx_pending, HNS3_RING_BD_MULTIPLE);
+ 	new_rx_desc_num = ALIGN(param->rx_pending, HNS3_RING_BD_MULTIPLE);
+@@ -1849,7 +1879,8 @@ static int hns3_set_tunable(struct net_device *netdev,
+ 				 ETHTOOL_COALESCE_MAX_FRAMES |		\
+ 				 ETHTOOL_COALESCE_USE_CQE)
+ 
+-#define HNS3_ETHTOOL_RING	ETHTOOL_RING_USE_RX_BUF_LEN
++#define HNS3_ETHTOOL_RING	(ETHTOOL_RING_USE_RX_BUF_LEN |		\
++				 ETHTOOL_RING_USE_TX_PUSH)
+ 
+ static int hns3_get_ts_info(struct net_device *netdev,
+ 			    struct ethtool_ts_info *info)
 -- 
 2.33.0
 
