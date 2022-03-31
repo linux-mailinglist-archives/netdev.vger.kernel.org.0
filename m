@@ -2,61 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C46714ED9CA
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 14:45:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10EC74EDA45
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 15:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236265AbiCaMqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 08:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        id S236633AbiCaNND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 09:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236261AbiCaMqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 08:46:31 -0400
-Received: from olfflo.fourcot.fr (fourcot.fr [217.70.191.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAE6210471
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 05:44:43 -0700 (PDT)
-From:   Florent Fourcot <florent.fourcot@wifirst.fr>
-To:     netdev@vger.kernel.org
-Cc:     Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Brian Baboch <brian.baboch@wifirst.fr>
-Subject: [PATCH net-next] rtnetlink: enable alt_ifname for setlink/newlink
-Date:   Thu, 31 Mar 2022 14:37:28 +0200
-Message-Id: <20220331123728.7267-1-florent.fourcot@wifirst.fr>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S234280AbiCaNNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 09:13:02 -0400
+X-Greylist: delayed 757 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 06:11:14 PDT
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318DB20DB09
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 06:11:13 -0700 (PDT)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9f:8600:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 22VCwErm206850
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Thu, 31 Mar 2022 13:58:16 +0100
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9f:8602:8cd5:a7b0:d07:d516])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 22VCwC1b3975823
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Thu, 31 Mar 2022 14:58:13 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1648731494; bh=3qad0vu847N501JVj+B9zfqjiTiuw/ACV2x6SxDvb2M=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=Z3DvLyPGhXpJCOh58KXP7rFdbDdw8HiozWFs+fYFn8M1SYJG4TV2gRAl5a4JH3Hvc
+         wNiZBwjXwjqUdnf8vvvB0pLSh8ECgbd0QDLLmJF1xZppE0ovaJ0uvEq+bk/rucMnIF
+         OrkQrrBCVPXZWHdS5pm8OwWCxXFXNNLbasYwjtHs=
+Received: (nullmailer pid 178357 invoked by uid 1000);
+        Thu, 31 Mar 2022 12:58:12 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Qing Wang <wangqing@vivo.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: remove duplicate assignment
+Organization: m
+References: <1648728494-37344-1-git-send-email-wangqing@vivo.com>
+Date:   Thu, 31 Mar 2022 14:58:12 +0200
+In-Reply-To: <1648728494-37344-1-git-send-email-wangqing@vivo.com> (Qing
+        Wang's message of "Thu, 31 Mar 2022 05:08:14 -0700")
+Message-ID: <87sfqygty3.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.5 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-buffer is always valid when called by setlink/newlink,
-but contains only empty string when IFLA_IFNAME is not given. So
-IFLA_ALT_IFNAME is always ignored
+Qing Wang <wangqing@vivo.com> writes:
 
-Fixes: 76c9ac0ee878 ("net: rtnetlink: add possibility to use alternative names as message handle")
-Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
-Signed-off-by: Brian Baboch <brian.baboch@wifirst.fr>
----
- net/core/rtnetlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> netdev_alloc_skb() has assigned ssi->netdev to skb->dev if successed,
+> no need to repeat assignment.
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 3313419bbcba..613065a53b34 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2979,7 +2979,7 @@ static struct net_device *rtnl_dev_get(struct net *net,
- {
- 	char buffer[ALTIFNAMSIZ];
- 
--	if (!ifname) {
-+	if (!ifname || !ifname[0]) {
- 		ifname = buffer;
- 		if (ifname_attr)
- 			nla_strscpy(ifname, ifname_attr, IFNAMSIZ);
--- 
-2.30.2
+Thanks.
 
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
