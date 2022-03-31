@@ -2,161 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6814ED2BB
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 06:35:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78CF64ED2C5
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 06:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbiCaEMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 00:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
+        id S229764AbiCaEI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 00:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229925AbiCaEM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 00:12:27 -0400
-Received: from smtprz01.163.net (smtprz01.163.net [106.3.154.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB1AA15471B
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 20:52:51 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 77B8F440104
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 11:26:19 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648697179; bh=21CqgYe68EqtmuAUXMw5t7Y6CsanGtFEcTU3Jo5xixQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vmGe8eDSSC4A7UgWYEejv4W5WicbEobzSCZVE2A9OlBkJm9MExfDiF+j2F6vaVieX
-         dxvWpoPs4nQpQN7rDt/VfShB5YBiCbnK3lzhsQBBb4zGAIzMZL19KwE32aPgzBoUvY
-         rJcy6N+oR5UPyaf/xa5qI2auGIOZ4pjbMfBnFr3o=
-Received: from localhost (HELO smtprz01.163.net) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID 1503310895
-          for <netdev@vger.kernel.org>;
-          Thu, 31 Mar 2022 11:26:19 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648697179; bh=21CqgYe68EqtmuAUXMw5t7Y6CsanGtFEcTU3Jo5xixQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vmGe8eDSSC4A7UgWYEejv4W5WicbEobzSCZVE2A9OlBkJm9MExfDiF+j2F6vaVieX
-         dxvWpoPs4nQpQN7rDt/VfShB5YBiCbnK3lzhsQBBb4zGAIzMZL19KwE32aPgzBoUvY
-         rJcy6N+oR5UPyaf/xa5qI2auGIOZ4pjbMfBnFr3o=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id 0C94D15411C6;
-        Thu, 31 Mar 2022 11:26:14 +0800 (CST)
-Date:   Thu, 31 Mar 2022 11:26:13 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Sagi Grimberg <sagi@grimberg.me>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
- congestion-control
-Message-ID: <20220331112613.0000063e@tom.com>
-In-Reply-To: <15f24dcd-9a62-8bab-271c-baa9cc693d8d@grimberg.me>
-References: <20220311103414.8255-1-sunmingbao@tom.com>
- <20220311103414.8255-2-sunmingbao@tom.com>
- <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
- <20220325201123.00002f28@tom.com>
- <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
- <20220329104806.00000126@tom.com>
- <15f24dcd-9a62-8bab-271c-baa9cc693d8d@grimberg.me>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        with ESMTP id S229596AbiCaEIU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 00:08:20 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF79B2405B2
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 20:57:11 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id dr20so45381334ejc.6
+        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 20:57:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=DQEdIqJQMT2DTXxNnryD3JrAvawMTCRUVp7h3+Y4I58=;
+        b=cc2rALVw1jxOK2Gb8L0J6Mph69Y5VA57JZQiuXcdW5z3m5d/DZa8hjTvhe9AMJD+oR
+         sZWBxGtudQhCDz36qcCCNXc3ZsuQhTI5QG975d+QEmIL1cXJrOcVg13mjtJE8BHQS/S4
+         iIpcrSGJc0jxFV9wD+VDOhUyo6n2rNmRzTngyO4v1oH9t0lTZGBvhB7L8IY+4CzZD6+5
+         M4FqiJvek0gzYy5Td1KrRIVZHZrS0to+wXWFHnEmd210xrZ0KyIsMVxwUnRTdhYssOXv
+         tEb6TOB/UOHofzCf3ePHP/RV74cESHbxnUZZk4LeNqIi36k63llzvcvq1RWBRsRe+fH3
+         8SsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=DQEdIqJQMT2DTXxNnryD3JrAvawMTCRUVp7h3+Y4I58=;
+        b=TeL+90qS+zRCKh7bFeVOzAcWXDDtmvq8wKlAiETV0DeJejNbMNTud7PlGvph7cqBTm
+         CykRHEreluNnP3yuY6GjD6uFM0GqsqCb6jlk/VkrbuAGfMKKWrl1cMaEQOVd+az3fuG/
+         NWI/hIKW/xpxAYGmffsskv4yYEulXYEwWVx2RwLSkrYTfhT4szhUU2G7teeNH8PmD+NA
+         dTyLsLEuV2oRVIa7TSdYeWf1DEOIxQNJmQ50U/jBjlw2tv1CrML09Zc6xbvoi7Ymf2t4
+         MBN4tZKdHnDQX+IZcUYuOIE8WMFZyr0mpgrcEPQ2/0Y3BMmcPkbCSFxmFAbTHE7PMpUY
+         VOVg==
+X-Gm-Message-State: AOAM530h3Ai+iRTK2jkKsPIpcLby6nvZF3cr/9Qi02OPrjyqGEPB4n3/
+        KDbwhAiQMY+CJNq2lx0MhKK8R+ZYFm2zznz4qnQ=
+X-Google-Smtp-Source: ABdhPJy14q49ndRpft22Zxx3hmPk1d7rlxFG+MTHM3G13eqOKVC53V7KmYGrVmRIuAapJFVzhRur/hctam12CatbZ+4=
+X-Received: by 2002:a17:907:980d:b0:6d6:f910:513a with SMTP id
+ ji13-20020a170907980d00b006d6f910513amr2951893ejc.643.1648699030251; Wed, 30
+ Mar 2022 20:57:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+From:   Duke Abbaddon <duke.abbaddon@gmail.com>
+Date:   Thu, 31 Mar 2022 04:57:06 +0100
+Message-ID: <CAHpNFcPLqwMyzHt9F5WTGSHr8goaFcczEHS5YL7uajnhe3EwZw@mail.gmail.com>
+Subject: Fast AMD, MIPS & RISC Instruction guidance in reference to https://lkml.org/lkml/2022/3/30/1565
+To:     support.android@sfr.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Mar 2022 10:46:08 +0300
-Sagi Grimberg <sagi@grimberg.me> wrote:
+RISC Instructions : What do they all mean ? Todays manuel BLTU
 
-> >> As I said, TCP can be tuned in various ways, congestion being just one
-> >> of them. I'm sure you can find a workload where rmem/wmem will make
-> >> a difference. =20
-> >=20
-> > agree.
-> > but the difference for the knob of rmem/wmem is:
-> > we could enlarge rmem/wmem for NVMe/TCP via sysctl,
-> > and it would not bring downside to any other sockets whose
-> > rmem/wmem are not explicitly specified. =20
->=20
-> It can most certainly affect them, positively or negatively, depends
-> on the use-case.
+signed magnitude (BLT/BGE) or unsigned magnitude (BLTU/ BGEU) =E2=80=A2 12-=
+bit
+immediate encodes branch target address as a signed o=EF=AC=80set from PC, =
+in
+units of 16-bits (i.e., shiR leR by 1 then add to
 
-Agree.
-Your saying is rigorous.
+https://passlab.github.io/CSE564/notes/lecture08_RISCV_Impl.pdf
 
-> >> In addition, based on my knowledge, application specific TCP level
-> >> tuning (like congestion) is not really a common thing to do. So why in
-> >> nvme-tcp?
-> >>
-> >> So to me at least, it is not clear why we should add it to the driver.=
- =20
-> >=20
-> > As mentioned in the commit message, though we can specify the
-> > congestion-control of NVMe_over_TCP via sysctl or writing
-> > '/proc/sys/net/ipv4/tcp_congestion_control', but this also
-> > changes the congestion-control of all the future TCP sockets on
-> > the same host that have not been explicitly assigned the
-> > congestion-control, thus bringing potential impaction on their
-> > performance.
-> >=20
-> > For example:
-> >=20
-> > A server in a data-center with the following 2 NICs:
-> >=20
-> >      - NIC_fron-end, for interacting with clients through WAN
-> >        (high latency, ms-level)
-> >=20
-> >      - NIC_back-end, for interacting with NVMe/TCP target through LAN
-> >        (low latency, ECN-enabled, ideal for dctcp)
-> >=20
-> > This server interacts with clients (handling requests) via the fron-end
-> > network and accesses the NVMe/TCP storage via the back-end network.
-> > This is a normal use case, right?
-> >=20
-> > For the client devices, we can=E2=80=99t determine their congestion-con=
-trol.
-> > But normally it=E2=80=99s cubic by default (per the CONFIG_DEFAULT_TCP_=
-CONG).
-> > So if we change the default congestion control on the server to dctcp
-> > on behalf of the NVMe/TCP traffic of the LAN side, it could at the
-> > same time change the congestion-control of the front-end sockets
-> > to dctcp while the congestion-control of the client-side is cubic.
-> > So this is an unexpected scenario.
-> >=20
-> > In addition, distributed storage products like the following also have
-> > the above problem:
-> >=20
-> >      - The product consists of a cluster of servers.
-> >=20
-> >      - Each server serves clients via its front-end NIC
-> >       (WAN, high latency).
-> >=20
-> >      - All servers interact with each other via NVMe/TCP via back-end N=
-IC
-> >       (LAN, low latency, ECN-enabled, ideal for dctcp). =20
->=20
-> Separate networks are still not application (nvme-tcp) specific and as
-> mentioned, we have a way to control that. IMO, this still does not
-> qualify as solid justification to add this to nvme-tcp.
->=20
-> What do others think?
+#CryptoFASTintFL Polynomial ROOFLINING : In terms of Entropy pool Int
+& Timer collections Polynomial is a Cryptologic_Functiontion & should
+be A : Rooflined B : Streamlined & C : In Crypto_hash_function.h
+https://lkml.org/lkml/2022/3/30/1313
 
-Well, per the fact that the approach (=E2=80=98ip route =E2=80=A6=E2=80=99)=
- proposed
-by Jakub could largely fit the per link requirement on
-congestion-control, so the usefulness of this patchset is really
-not so significant.
+https://lkml.org/lkml/2022/3/30/1565
 
-So here I terminate all the threads of this patchset.
+Coding folder:
+https://bit.ly/VESA_BT
 
-At last, many thanks to all of you for reviewing this patchset.
+Rupert S
+*****
+
+Polynomial ROOFLINING : #CryptoFASTintFL
+
+In terms of Entropy pool Int & Timer collections Polynomial is a
+Cryptologic_Functiontion & should be A : Rooflined B : Streamlined & C
+: In Crypto_hash_function.h
+
+https://lkml.org/lkml/2022/3/30/1313
+
+**Reference**
+
+Multi Bit load operations for bitmap,Texture & Other tasks +ON+HighLowOP (c=
+)RS
+May take higher or lower bit depth & precisions: Rupert S 2021
+
+MultiBit Serial & Parallel execution conversion inline of N*Bit -+
+
+2 16 Bit loads is 32Bit but takes 2 cycles...
+
+16 Bit loads with 32 Bit Stores & Math unit:
+
+Operation 1
+
+16Bit , 16Bit , 16Bit , 16Bit Operation
+    \         /    \         /
+           Inline Store
+     32Bit Store 32Bit Store
+           64Bit Store
+       \     /
+32Bit ADD/DIV x 2 or 64Bit ADD/DIV x1
+
+Operation 2
+
+32Bit ADD/DIV x 2 or 64Bit ADD/DIV x1
+          \            /
+          4x 16Bit Store
+
+4 x 16Bit Operation
+
+MultiBit Serial & Parallel execution conversion inline of N*Bit -+
+
+In the case of ADD -+ Signed for example:(c)RS
+Plus & - Lines ADD or Subtract (Signed, Bit Depth Irrelevant)
+
+Multiples of 16Bit works in place of 32Bit or 64Bit
+
+V1: 16Bit Values composing a total 128Bit number
+V2: 16Bit Values composing a total 128Bit number - (Value less than V1)
+V3: Result
+NBit: Bit Depth
+
+4x16Bit operations in the same cycle >
+If Value =3D 16Bit =3D Store
+If Value =3D V3=3DBit =3D Store * NBit
+
+Stored 128Bit RAM or if remainder =3D less > 4x16Bit -1-1-1 ; 16Bit Value S=
+tore
+
+*
+
+*RAND OP Ubuntu
+
+https://pollinate.n-helix.com/
+
+(Rn1 *<>/ Rn2 *<>/ Rn3)
+
+-+
+VAR(+-) Var =3D Rn1 +- Rn8
+
+(Rn5 *<>/ Rn6 *<>/ Rn7)
+
+4 Samples over N * Sample 1 to 4
+
+Input into pool 1 Low half -+
+Input into pool 1 High half -+
+
+*RAND OP Recycle It
+
+*
+
+(c)RS https://bit.ly/DJ_EQ
