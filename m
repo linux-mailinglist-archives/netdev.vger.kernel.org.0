@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F1C4ED6C7
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91EE44ED6CE
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:27:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233888AbiCaJ24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 05:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36894 "EHLO
+        id S233871AbiCaJ2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 05:28:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233875AbiCaJ2w (ORCPT
+        with ESMTP id S233872AbiCaJ2w (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:28:52 -0400
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CA81FD2DB;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868211FDFF0;
         Thu, 31 Mar 2022 02:27:03 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 73BDAE000C;
-        Thu, 31 Mar 2022 09:26:58 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id EB727E0004;
+        Thu, 31 Mar 2022 09:27:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1648718820;
+        t=1648718822;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JPFMHm+ZBOSm/fAX3EE1F6G0rslnhJUgGBWnwLqpeX0=;
-        b=KCqHNRicjeZ2NlZgMKTmuLvwh0jQrJPxDiK3BUuWWy73As0xw/jQdRtI39me3D+674t+S/
-        LqYDrEzwYHlM0UCIXps7k3dsxfYLhZJjRJk3E7v27A0XoKWxw7d/2BRry413WELeENaodC
-        2YQZi2mhFqPf/JAJIGGsqecWe55syxDJ0tlcwr7IvcpgbLEX94eJ0LrrRGRI/n6lT5XqZO
-        LwPPrlWzfYxspwykHG4oVL+WP1diOY85HfusUo2/jrKlenTwVMcrsl3+mugcCF9IOaSjgk
-        W+0rCeK0NIjyoVO1uKL6KPhX5YsrfnMquT7Smm6s7tMuKWJ11E+Cf7JHmdIB/w==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nRN8rAoSulvBgbxXwy3jJyKItub0BlzV5SCreqaglg8=;
+        b=TGBtJqjSaZbGSLLF2cTEmZtPnb7adUzM9yyG3Ii/aztqT7y3//d3bRp2fW/a5MKW1gWvJ/
+        Pses9BikYicUPSwkDbCnZwyLeHO1tfKYGqya+6k7XXt40o45v07CtkEQSbqi6Z6G9ryUix
+        b2w/2SFiqosscTMMN1/SxXorQMKHCT4/LaiOJHmree1JDzkK4hOybnpDX9f56bxeqC3d8/
+        ucrukzyKPXH66AaNd2xr15TnpQDnXIp9gEJo2pn+ZBIr8HviGv7fxxmLcDrPeGLxpF0er8
+        o84mpRscTF032uKwQG2U7iza0CbuUQ5pj2YL0nWSVj/3uX1C9Ls5O0/hQ84zwQ==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -41,10 +42,12 @@ Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
         Allan Nielsen <allan.nielsen@microchip.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
-Subject: [RFC PATCH net-next v2 00/11] add fwnode based mdiobus registration
-Date:   Thu, 31 Mar 2022 11:25:22 +0200
-Message-Id: <20220331092533.348626-1-clement.leger@bootlin.com>
+Subject: [RFC PATCH net-next v2 01/11] net: mdio: fwnode: import of_mdiobus_register() and needed functions
+Date:   Thu, 31 Mar 2022 11:25:23 +0200
+Message-Id: <20220331092533.348626-2-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220331092533.348626-1-clement.leger@bootlin.com>
+References: <20220331092533.348626-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -58,77 +61,232 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to allow the mdiobus to be used completely with fwnode and
-continue to add fwnode support. This series adds
-fwnode_mdiobus_register() which allows to register a MDIO bus with a
-fwnode_handle. This support also works with device-tree and thus allows
-to integrate of_mdobus_register on top of fwnode support.
+Import of_mdiobus_register and needed functions to allow visualizing a
+pretty diff of the modifications that are going to be done for fwnode
+support. While importing, did a few modifications to ensure it compiles
+correctly:
+- Renamed of_mdiobus_register() to fwnode_mdiobus_register()
+- Renamed of_mdiobus_child_is_phy() to fwnode_mdiobus_child_is_phy()
+- Call fwnode_get_phy_id() instead of of_get_phy_id() which is already
+  a wrapper ended up calling fwnode_get_phy_id().
 
-ACPI acpi_mdiobus_register() function seems similar enough with
-fwnode_mdiobus_register() to be integrated into that later one and thus
-remove ACPI specific registration, keeping only the fwnode one for all
-types of node. I'm not able to test that specific part so I did not do
-it in this series.
-
-This series is a subset of the one that was first submitted as a larger
-series to add swnode support [1]. In this one, it will be focused on
-fwnode support only since it seems to have reach a consensus that
-adding fwnode to subsystems makes sense.
-
-Additional information:
-
-The device I'm trying to support is a PCIe card that uses a lan9662
-SoC. This card is meant to be used an ethernet switch with 2 x RJ45
-ports and 2 x 10G SFPs. The lan966x SoCs can be used in two different
-ways:
-
- - It can run Linux by itself, on ARM64 cores included in the SoC. This
-   use-case of the lan966x is currently being upstreamed, using a
-   traditional Device Tree representation of the lan996x HW blocks [1]
-   A number of drivers for the different IPs of the SoC have already
-   been merged in upstream Linux.
-
- - It can be used as a PCIe endpoint, connected to a separate platform
-   that acts as the PCIe root complex. In this case, all the devices
-   that are embedded on this SoC are exposed through PCIe BARs and the
-   ARM64 cores of the SoC are not used. Since this is a PCIe card, it
-   can be plugged on any platform, of any architecture supporting PCIe.
-
-The goal if this work is to allow OF based drivers to be reused with
-software nodes by supporting fwnode in multiple subsystems.
-
-[1] https://lore.kernel.org/netdev/YhPSkz8+BIcdb72R@smile.fi.intel.com/T/
-
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
+ drivers/net/mdio/fwnode_mdio.c | 195 +++++++++++++++++++++++++++++++++
+ 1 file changed, 195 insertions(+)
 
-Changes in V2:
-- Split legacy phy compatible checking in of as preliminary work
-- Fix missing static inline in fwnode_mdio.h file
-- Split fwnode conversion into multiple patches
-- Split OF conversion in multiple patches
-- Remove legacy OF handling from fwnode_mdiobus_* variants
-- Switch to RFC since net-next is closed
-
-Clément Léger (11):
-  net: mdio: fwnode: import of_mdiobus_register() and needed functions
-  net: mdio: fwnode: remove legacy compatible checking for phy child
-  net: mdio: fwnode: remove legacy phy scanning
-  net: mdio: fwnode: convert fwnode_mdiobus_register() for fwnode
-  net: mdio: fwnode: add fwnode_mdiobus_register()
-  net: mdio: of: wrap fwnode_mdio_parse_addr() in of_mdio_parse_addr()
-  net: mdio: fwnode: avoid calling of_* functions with non OF nodes
-  net: mdio: fwnode: allow phy device registration with non OF nodes
-  net: mdio: of: use fwnode_mdiobus_child_is_phy()
-  net: mdio: of: use fwnode_mdiobus_register() in of_mdiobus_register()
-  net: mdio: mscc-miim: use fwnode_mdiobus_register()
-
- drivers/net/mdio/fwnode_mdio.c    | 157 +++++++++++++++++++++++++++++-
- drivers/net/mdio/mdio-mscc-miim.c |   4 +-
- drivers/net/mdio/of_mdio.c        | 100 +------------------
- include/linux/fwnode_mdio.h       |  28 +++++-
- include/linux/of_mdio.h           |  23 +----
- 5 files changed, 188 insertions(+), 124 deletions(-)
-
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 1becb1a731f6..a5a6fd9ebd94 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -9,8 +9,11 @@
+ #include <linux/acpi.h>
+ #include <linux/fwnode_mdio.h>
+ #include <linux/of.h>
++#include <linux/of_mdio.h>
+ #include <linux/phy.h>
+ 
++#define DEFAULT_GPIO_RESET_DELAY	10	/* in microseconds */
++
+ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
+ MODULE_LICENSE("GPL");
+ 
+@@ -142,3 +145,195 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	return 0;
+ }
+ EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
++
++static int of_mdiobus_register_device(struct mii_bus *mdio,
++				      struct device_node *child, u32 addr)
++{
++	struct fwnode_handle *fwnode = of_fwnode_handle(child);
++	struct mdio_device *mdiodev;
++	int rc;
++
++	mdiodev = mdio_device_create(mdio, addr);
++	if (IS_ERR(mdiodev))
++		return PTR_ERR(mdiodev);
++
++	/* Associate the OF node with the device structure so it
++	 * can be looked up later.
++	 */
++	fwnode_handle_get(fwnode);
++	device_set_node(&mdiodev->dev, fwnode);
++
++	/* All data is now stored in the mdiodev struct; register it. */
++	rc = mdio_device_register(mdiodev);
++	if (rc) {
++		mdio_device_free(mdiodev);
++		of_node_put(child);
++		return rc;
++	}
++
++	dev_dbg(&mdio->dev, "registered mdio device %pOFn at address %i\n",
++		child, addr);
++	return 0;
++}
++
++/* The following is a list of PHY compatible strings which appear in
++ * some DTBs. The compatible string is never matched against a PHY
++ * driver, so is pointless. We only expect devices which are not PHYs
++ * to have a compatible string, so they can be matched to an MDIO
++ * driver.  Encourage users to upgrade their DT blobs to remove these.
++ */
++static const struct of_device_id whitelist_phys[] = {
++	{ .compatible = "brcm,40nm-ephy" },
++	{ .compatible = "broadcom,bcm5241" },
++	{ .compatible = "marvell,88E1111", },
++	{ .compatible = "marvell,88e1116", },
++	{ .compatible = "marvell,88e1118", },
++	{ .compatible = "marvell,88e1145", },
++	{ .compatible = "marvell,88e1149r", },
++	{ .compatible = "marvell,88e1310", },
++	{ .compatible = "marvell,88E1510", },
++	{ .compatible = "marvell,88E1514", },
++	{ .compatible = "moxa,moxart-rtl8201cp", },
++	{}
++};
++
++/*
++ * Return true if the child node is for a phy. It must either:
++ * o Compatible string of "ethernet-phy-idX.X"
++ * o Compatible string of "ethernet-phy-ieee802.3-c45"
++ * o Compatible string of "ethernet-phy-ieee802.3-c22"
++ * o In the white list above (and issue a warning)
++ * o No compatibility string
++ *
++ * A device which is not a phy is expected to have a compatible string
++ * indicating what sort of device it is.
++ */
++bool fwnode_mdiobus_child_is_phy(struct device_node *child)
++{
++	u32 phy_id;
++
++	if (of_get_phy_id(child, &phy_id) != -EINVAL)
++		return true;
++
++	if (of_device_is_compatible(child, "ethernet-phy-ieee802.3-c45"))
++		return true;
++
++	if (of_device_is_compatible(child, "ethernet-phy-ieee802.3-c22"))
++		return true;
++
++	if (of_match_node(whitelist_phys, child)) {
++		pr_warn(FW_WARN
++			"%pOF: Whitelisted compatible string. Please remove\n",
++			child);
++		return true;
++	}
++
++	if (!of_find_property(child, "compatible", NULL))
++		return true;
++
++	return false;
++}
++EXPORT_SYMBOL(fwnode_mdiobus_child_is_phy);
++
++/**
++ * of_mdiobus_register - Register mii_bus and create PHYs from the device tree
++ * @mdio: pointer to mii_bus structure
++ * @np: pointer to device_node of MDIO bus.
++ *
++ * This function registers the mii_bus structure and registers a phy_device
++ * for each child node of @np.
++ */
++int fwnode_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
++{
++	struct device_node *child;
++	bool scanphys = false;
++	int addr, rc;
++
++	if (!np)
++		return mdiobus_register(mdio);
++
++	/* Do not continue if the node is disabled */
++	if (!of_device_is_available(np))
++		return -ENODEV;
++
++	/* Mask out all PHYs from auto probing.  Instead the PHYs listed in
++	 * the device tree are populated after the bus has been registered */
++	mdio->phy_mask = ~0;
++
++	device_set_node(&mdio->dev, of_fwnode_handle(np));
++
++	/* Get bus level PHY reset GPIO details */
++	mdio->reset_delay_us = DEFAULT_GPIO_RESET_DELAY;
++	of_property_read_u32(np, "reset-delay-us", &mdio->reset_delay_us);
++	mdio->reset_post_delay_us = 0;
++	of_property_read_u32(np, "reset-post-delay-us", &mdio->reset_post_delay_us);
++
++	/* Register the MDIO bus */
++	rc = mdiobus_register(mdio);
++	if (rc)
++		return rc;
++
++	/* Loop over the child nodes and register a phy_device for each phy */
++	for_each_available_child_of_node(np, child) {
++		addr = of_mdio_parse_addr(&mdio->dev, child);
++		if (addr < 0) {
++			scanphys = true;
++			continue;
++		}
++
++		if (of_mdiobus_child_is_phy(child))
++			rc = fwnode_mdiobus_register_phy(mdio,
++							 of_fwnode_handle(child),
++							 addr);
++		else
++			rc = of_mdiobus_register_device(mdio, child, addr);
++
++		if (rc == -ENODEV)
++			dev_err(&mdio->dev,
++				"MDIO device at address %d is missing.\n",
++				addr);
++		else if (rc)
++			goto unregister;
++	}
++
++	if (!scanphys)
++		return 0;
++
++	/* auto scan for PHYs with empty reg property */
++	for_each_available_child_of_node(np, child) {
++		/* Skip PHYs with reg property set */
++		if (of_find_property(child, "reg", NULL))
++			continue;
++
++		for (addr = 0; addr < PHY_MAX_ADDR; addr++) {
++			/* skip already registered PHYs */
++			if (mdiobus_is_registered_device(mdio, addr))
++				continue;
++
++			/* be noisy to encourage people to set reg property */
++			dev_info(&mdio->dev, "scan phy %pOFn at address %i\n",
++				 child, addr);
++
++			if (of_mdiobus_child_is_phy(child)) {
++				/* -ENODEV is the return code that PHYLIB has
++				 * standardized on to indicate that bus
++				 * scanning should continue.
++				 */
++				rc = fwnode_mdiobus_register_phy(mdio,
++								 of_fwnode_handle(child),
++								 addr);
++				if (!rc)
++					break;
++				if (rc != -ENODEV)
++					goto unregister;
++			}
++		}
++	}
++
++	return 0;
++
++unregister:
++	mdiobus_unregister(mdio);
++	return rc;
++}
++EXPORT_SYMBOL(fwnode_mdiobus_register);
 -- 
 2.34.1
 
