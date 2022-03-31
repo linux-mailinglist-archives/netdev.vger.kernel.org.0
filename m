@@ -2,84 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D45F4EDEA1
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 18:20:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8AB4EDECC
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 18:27:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239821AbiCaQWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 12:22:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59386 "EHLO
+        id S239944AbiCaQ1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 12:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239827AbiCaQWA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 12:22:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A892F1F160D;
-        Thu, 31 Mar 2022 09:20:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S239934AbiCaQ12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 12:27:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E4BE5FF35
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648743940;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4cL6sv+iE7W1OShvGrAaZLqndqMYHrw6Rc98Wbo8jy4=;
+        b=HwsK3ekq/z06gvKNxoMFisLu026vG9baIAZW8xhnsRHjBijJlcO/nieJBJy3mae+AeAskA
+        Ivj2EGcQqsQBKrnwEAiMbM/5rELMyuQwtixkONAyElNyR1TeKjbXsl5wcTeYmmqC9apYNt
+        XJE6ES82PuXMSr5+e1j/agM67RFzLEE=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-248-Wwj2N_UgOa6qR4XEzVvqJw-1; Thu, 31 Mar 2022 12:25:39 -0400
+X-MC-Unique: Wwj2N_UgOa6qR4XEzVvqJw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D352B8218B;
-        Thu, 31 Mar 2022 16:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A114C34115;
-        Thu, 31 Mar 2022 16:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648743611;
-        bh=XFXyNvd+Yayjca0tiSjpJKTNqxkgdTSAUId3UouoIhw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VYUN2rRKIYMFvKHb5tXUpAp0200pdHcrEt01wZ0IRo4vg0DZS6iY9S8wGdiFYxfbA
-         yrMctfzTeSLcT8QgUU2Qkju3str+kHXteF4JsF0O39KhjETDVfAdrHJejyeYUxQiin
-         G938iOyBLZ30eORAG/xdsbJz1xU2LeBqc59ZmUH3wWMtLNVX00tR0haaJGnhV4YKJv
-         FwENV0WCohIlpFKF+6jGhLz2U7GeHHbirsFkjzmOVO6dVKp2/wg4dmrcyLPCP4GXTu
-         mG+I3CZ/dYb/W4CHlPzKbiTYqYVAvniRerKivEPfMxVVdwdvlGIx8+QVM7mEW4zvFk
-         a1UccVWkyh09A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 09C21F0384B;
-        Thu, 31 Mar 2022 16:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AA82D185A79C;
+        Thu, 31 Mar 2022 16:25:38 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1521D2026D65;
+        Thu, 31 Mar 2022 16:25:37 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220331083446.1d833d78@kernel.org>
+References: <20220331083446.1d833d78@kernel.org> <3097539.1648715523@warthog.procyon.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     dhowells@redhat.com, davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: Could you update the http://vger.kernel.org/~davem/net-next.html url?
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] openvswitch: Add recirc_id to recirc warning
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164874361103.27032.11108416383428430823.git-patchwork-notify@kernel.org>
-Date:   Thu, 31 Mar 2022 16:20:11 +0000
-References: <20220330194244.3476544-1-stgraber@ubuntu.com>
-In-Reply-To: <20220330194244.3476544-1-stgraber@ubuntu.com>
-To:     =?utf-8?q?St=C3=A9phane_Graber_=3Cstgraber=40ubuntu=2Ecom=3E?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, frode.nordahl@canonical.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3260215.1648743937.1@warthog.procyon.org.uk>
+Date:   Thu, 31 Mar 2022 17:25:37 +0100
+Message-ID: <3260216.1648743937@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 30 Mar 2022 15:42:45 -0400 you wrote:
-> When hitting the recirculation limit, the kernel would currently log
-> something like this:
+> >       http://vger.kernel.org/~davem/net-next.html
+> > 
+> > but the URL no longer points anywhere useful.  Could you update that?
 > 
-> [   58.586597] openvswitch: ovs-system: deferred action limit reached, drop recirc action
-> 
-> Which isn't all that useful to debug as we only have the interface name
-> to go on but can't track it down to a specific flow.
-> 
-> [...]
+> It should display an image of a door sign saying "open" or "closed".
+> What do you see?
 
-Here is the summary with links:
-  - openvswitch: Add recirc_id to recirc warning
-    https://git.kernel.org/netdev/net/c/ea07af2e71cd
+A door sign saying "Sorry we're closed".  That would seem to indicate that the
+URL is essentially defunct.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+David
 
