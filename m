@@ -2,141 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EFC24ED6C3
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FC114ED6F4
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:31:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231597AbiCaJ21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 05:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34648 "EHLO
+        id S233266AbiCaJcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 05:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232615AbiCaJ20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:28:26 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4E71FDFE7;
-        Thu, 31 Mar 2022 02:26:39 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id p15so46767194ejc.7;
-        Thu, 31 Mar 2022 02:26:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=BQzqug6TtJon58Y75oLbeWdZudSqnMYJcFPXb4iBlFM=;
-        b=RlKkxDZ70JBAkNTyPnOmO2IvQitrUXmpPnHUjAl1X+RgZ2E0E5pAlt37R+CO+yVU6h
-         YuPM/Thd5c9b8PPpMXlIkT4L1vyo2u5dWryt14VnD0U+OpabTSX26POTY5nM0i5iC07t
-         F/dLI6CVKSPNHYQUm8MhnUbeucrduAE2MEp0RYa+UxA5VdPmhbUBrHSc9GowDatGv9na
-         0OIa8gYw6iAvacFzrGFuygF9+R3oVaACUExHX1pdTZQmYYiV9Ii9H+dQHVDDVmySH5P8
-         SAvjinnyqlmdwl9Xt90plyNjgKo3tfFDFdXSJyJuQLPinVVBi+31/X1BIhaMLNFj/UUn
-         0wJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=BQzqug6TtJon58Y75oLbeWdZudSqnMYJcFPXb4iBlFM=;
-        b=Dy8LUGyOF2Z0adRqBcVT4HK5FCAhjw9ZCY5orFtSHrS2SguZdXVpNyCO0CMn1YX9bb
-         cS4DYmFoDVA0C9/xRths9bp7/pOUkeV5zaEerSViMPnIj7oWrMj4MRTjsFmOMRJDMt0R
-         P1BTnntneJlDKxzuMcJcRHHpqIfru3iwn/SiNm6GsRfXkdbnl+J8it6qtkbUpmPy4LmL
-         vgyP4Y84Cp2JMShTiTK8ZwEfN8P/MSkz/ob1TS4kDDH0kRQZqHWs4MYxSwgg0LYxsUcU
-         lOZpLN8ByhCVuT+ry00NwWpGVvp7/152MlK81GE+P8lSC9dM5BJzj6UW2Ie6D+yYjXde
-         57wQ==
-X-Gm-Message-State: AOAM531NUmDJi7sYqgpoLMuKy5zldV6Xy0Qm8vqFA8aeEQJJsjWgqpK2
-        u625G0oAJzKc2cXw779ymL7/zxO3gyU+3g==
-X-Google-Smtp-Source: ABdhPJwnRuwMDTXeNBMaZuBHYcEVJ1bB/yBLYHXEvwulY4XOI28kspERTlLsQ8Sfr7h8qT1wkVOxSw==
-X-Received: by 2002:a17:906:144e:b0:6ce:6126:6a6d with SMTP id q14-20020a170906144e00b006ce61266a6dmr4070102ejc.662.1648718797808;
-        Thu, 31 Mar 2022 02:26:37 -0700 (PDT)
-Received: from smtpclient.apple (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.gmail.com with ESMTPSA id y26-20020a1709063a9a00b006e0c272e263sm6764346ejd.71.2022.03.31.02.26.36
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Mar 2022 02:26:37 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [PATCH] taprio: replace usage of found with dedicated list
- iterator variable
-From:   Jakob Koschel <jakobkoschel@gmail.com>
-In-Reply-To: <87fsmz3uc6.fsf@intel.com>
-Date:   Thu, 31 Mar 2022 11:26:36 +0200
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <A19238DC-24F8-4BD9-A6FA-C8019596F4A6@gmail.com>
-References: <20220324072607.63594-1-jakobkoschel@gmail.com>
- <87fsmz3uc6.fsf@intel.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233161AbiCaJcE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:32:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6831B1959C4;
+        Thu, 31 Mar 2022 02:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 124E8B82014;
+        Thu, 31 Mar 2022 09:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B949EC340F3;
+        Thu, 31 Mar 2022 09:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648719014;
+        bh=FvvM5BIaN0Tlqtjuez0sKOLUrS6aTrHpEXTSTkI/TxI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hqWejYGFzcPZcPvr1BiLXs6bjSUkth294jBUvBLcYg465Slf6qfU5GWPkDwPcO2bu
+         2BAbO1I2j75tAf8lgctfbR+QT87PtAnc6C2F6/C2uodCjOOH9FEPvOjTf4D93/LCL7
+         312wL6NBCTST7kAHJ33ZVo8XiXz9syo+p2VSbzxAiMFXwvH/9cljE8upKECmDcT1tX
+         3+OVfhOtuWjNCgtX81hm1w8Fk6vgnuymLNItt7X3urZYX1CGb6ukrHBGX4x/KfK7n7
+         H03k1m3lPWgmniO5Ke2p4omTGqwgHZwMz9vd+yN4HYq12ei6CPieXtEQs3PcBolOZW
+         rDN5CVj5oYMeg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9D967F03848;
+        Thu, 31 Mar 2022 09:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v3 00/14] docs: update and move the netdev-FAQ
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164871901464.21222.10495458574563491451.git-patchwork-notify@kernel.org>
+Date:   Thu, 31 Mar 2022 09:30:14 +0000
+References: <20220330042505.2902770-1-kuba@kernel.org>
+In-Reply-To: <20220330042505.2902770-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
+        corbet@lwn.net, bpf@vger.kernel.org, linux-doc@vger.kernel.org,
+        andrew@lunn.ch, f.fainelli@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This series was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-> On 31. Mar 2022, at 01:15, Vinicius Costa Gomes =
-<vinicius.gomes@intel.com> wrote:
->=20
-> Hi,
->=20
-> Jakob Koschel <jakobkoschel@gmail.com> writes:
->=20
->> To move the list iterator variable into the list_for_each_entry_*()
->> macro in the future it should be avoided to use the list iterator
->> variable after the loop body.
->>=20
->> To *never* use the list iterator variable after the loop it was
->> concluded to use a separate iterator variable instead of a
->> found boolean [1].
->>=20
->> This removes the need to use a found variable and simply checking if
->> the variable was set, can determine if the break/goto was hit.
->>=20
->> Link: =
-https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXPwr9Y7k9=
-sA6cWXJ6w@mail.gmail.com/
->> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
->> ---
->=20
-> Code wise, patch look good.
->=20
-> Just some commit style/meta comments:
-> - I think that it would make more sense that these were two separate
-> patches, but I haven't been following the fallout of the discussion
-> above to know what other folks are doing;
+On Tue, 29 Mar 2022 21:24:51 -0700 you wrote:
+> A section of documentation for tree-specific process quirks had
+> been created a while back. There's only one tree in it, so far,
+> the tip tree, but the contents seem to answer similar questions
+> as we answer in the netdev-FAQ. Move the netdev-FAQ.
+> 
+> Take this opportunity to touch up and update a few sections.
+> 
+> [...]
 
-Thanks for the input, I'll split them up.
+Here is the summary with links:
+  - [net,v3,01/14] docs: netdev: replace references to old archives
+    https://git.kernel.org/netdev/net/c/50386f7526dd
+  - [net,v3,02/14] docs: netdev: minor reword
+    https://git.kernel.org/netdev/net/c/30cddd30532a
+  - [net,v3,03/14] docs: netdev: move the patch marking section up
+    https://git.kernel.org/netdev/net/c/c82d90b14f6c
+  - [net,v3,04/14] docs: netdev: turn the net-next closed into a Warning
+    https://git.kernel.org/netdev/net/c/2fd4c50dbff1
+  - [net,v3,05/14] docs: netdev: note that RFC postings are allowed any time
+    https://git.kernel.org/netdev/net/c/0e242e3fb7a7
+  - [net,v3,06/14] docs: netdev: shorten the name and mention msgid for patch status
+    https://git.kernel.org/netdev/net/c/5d84921ac750
+  - [net,v3,07/14] docs: netdev: rephrase the 'Under review' question
+    https://git.kernel.org/netdev/net/c/8f785c1bb84f
+  - [net,v3,08/14] docs: netdev: rephrase the 'should I update patchwork' question
+    https://git.kernel.org/netdev/net/c/724c1a7443c5
+  - [net,v3,09/14] docs: netdev: add a question about re-posting frequency
+    https://git.kernel.org/netdev/net/c/b8ba106378a0
+  - [net,v3,10/14] docs: netdev: make the testing requirement more stringent
+    https://git.kernel.org/netdev/net/c/3eca381457ca
+  - [net,v3,11/14] docs: netdev: add missing back ticks
+    https://git.kernel.org/netdev/net/c/a30059731877
+  - [net,v3,12/14] docs: netdev: call out the merge window in tag checking
+    https://git.kernel.org/netdev/net/c/99eba4e5cbd4
+  - [net,v3,13/14] docs: netdev: broaden the new vs old code formatting guidelines
+    https://git.kernel.org/netdev/net/c/08767a26f095
+  - [net,v3,14/14] docs: netdev: move the netdev-FAQ to the process pages
+    https://git.kernel.org/netdev/net/c/8df0136376dc
 
-> - Please use '[PATCH net-next]' in the subject prefix of your =
-patch(es)
-> when you next propose this (net-next is closed for new submissions for
-> now, it should open again in a few days);
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I'll include that prefix, thanks.
-
-Paolo Abeni [CC'd] suggested to bundle all net-next patches in one =
-series [1].
-If that's the general desire I'm happy to do that.
-
-
-[1] =
-https://lore.kernel.org/linux-kernel/7393b673c626fd75f2b4f8509faa5459254fb=
-87c.camel@redhat.com/
-
->=20
->=20
-> Cheers,
-> --=20
-> Vinicius
 
