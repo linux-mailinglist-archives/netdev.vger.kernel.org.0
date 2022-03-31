@@ -2,149 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F08F44EDE67
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 18:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB364EDE7E
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 18:15:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239656AbiCaQJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 12:09:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        id S239706AbiCaQQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 12:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbiCaQJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 12:09:18 -0400
-Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC7A1F0CB9;
-        Thu, 31 Mar 2022 09:07:30 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 6DF133D4E12;
-        Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id JRYGslxfhPRR; Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 18AAA3D4E11;
-        Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 18AAA3D4E11
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1648742849;
-        bh=jx6gZg83afo7MOp42wOlJpwj/Jm9YIc4UWICwF/Z2j0=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=MxoPp8bKKDLmzIwiElUJrkDBFIkC/Tr0HvvD/oqo2jBdk4bEwG8EXtSenwTDFjJnn
-         SOPpEU3sM57D0c1BOOeqkYki945UhL/vwX6bo8ovSg2g9M6HHA+yzOBFktuPqXiA0Q
-         ahD2cyihm7uLzv9aQrAgu+MGPgF/lJ3UcxlVgAcVYSh9sRRVVQwvvI55Yspx+kxZUx
-         C8oWwwpyDltHmDupteLWI4LIkO7VCDtHeL7X0goq1o9D39Hx1DM5Fhu+ovdF/EUtih
-         hYhofjbzJ6Bi6Lmwl2d4BAhA/EOJz28Z9Mu/OufavmNCTE3rcLZ+2yEX/Ro0AUZmSS
-         7CP/ZgMXQ1J6w==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id NP21fSpX9mGH; Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 0588F3D4AEE;
-        Thu, 31 Mar 2022 12:07:29 -0400 (EDT)
-Date:   Thu, 31 Mar 2022 12:07:28 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     rostedt <rostedt@goodmis.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        ndesaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Message-ID: <602770698.200731.1648742848915.JavaMail.zimbra@efficios.com>
-In-Reply-To: <20220331081337.07ddf251@gandalf.local.home>
-References: <20220330201755.29319-1-mathieu.desnoyers@efficios.com> <20220330162152.17b1b660@gandalf.local.home> <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com> <20220331081337.07ddf251@gandalf.local.home>
-Subject: Re: [PATCH] tracing: do not export user_events uapi
+        with ESMTP id S239707AbiCaQQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 12:16:38 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F3855201
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:14:50 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id h19so57933pfv.1
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:14:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nzdRKNhSadAGU2/1+9CJCIsH9iz4xNg93BLTCvdABBQ=;
+        b=kwvMVzfuXIcvvzsQ/j5YgQYI3vhnY5RbNuMVIycbxZO4sjXpzZJouBZuCvbw4DeauP
+         K7Q5Aqxhf1nkdiGW4OKzEmdc6mjnqw9vNNc9z1wnxpGnRMbC6BkFvRSwC7bM203EX+Oj
+         Q0Nr/zawkq2K+Ido40uBOgDhiPJRfoukYC1EHWwPTXOFg1o7dHzYJBbpp5B3RhqBd8LS
+         yC+P5kAlRxsAWWCN4qfzD7OnSa/V1o3zhQ5KciZnlXMp5LuD+VRML3bul4UH20JxzSnq
+         CvhVLb1Z2jfAlNt4eStGNyG38Q3m76jUjBgkphuY/5mZOOVKTp2RAVw3Wx1kMUfF6h/Z
+         d0ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nzdRKNhSadAGU2/1+9CJCIsH9iz4xNg93BLTCvdABBQ=;
+        b=wskJBROq1o6qyhMEpNIWV9yAi+FjaFnb0gEN7BE+tSjwrcTcGCA4b6en6ez8KnyhmS
+         /6qnRM6+BJdnXae/szZHO/EOS/G6swxZqSwOT2jpnviq6ZqDC/W5V8XFD+IxQvO305FY
+         2zN1lrc4RQbGrU9EGCPeSYWEubWNSdDesu5j85CyQiANLYaw64NVLWextw3wxSSpKJx5
+         JzQ8lp1Pgao0h07oAufA7SpNAGMnVKrj7wZhcsEYA6DNlCpCJ26VEjhobI4DdPOasM2L
+         GtTdg0qBPjuCgOILOiWSJlFPM/zd/9/RaHSAuEUt2Oxun9KsD6hJ8wQmCkGp5SW8DtTN
+         M/Mg==
+X-Gm-Message-State: AOAM531kyS6ck5gDJ6xw8nPCO0TBVajBL/IgjhK4vNJnEgfwOI8pBnH9
+        76uzYo8hzaSn1ml6noESoTauUA==
+X-Google-Smtp-Source: ABdhPJyNOuupobAksijWayq6Ffs/N+B1zxVK8M2fdvImwOFpb2TCmYL3X8fCPVrhWr8LX0wNMT9cNw==
+X-Received: by 2002:a05:6a00:440c:b0:4fa:da3f:251c with SMTP id br12-20020a056a00440c00b004fada3f251cmr6303682pfb.73.1648743290114;
+        Thu, 31 Mar 2022 09:14:50 -0700 (PDT)
+Received: from [192.168.0.2] ([50.53.169.105])
+        by smtp.gmail.com with ESMTPSA id 124-20020a621682000000b004f6a2e59a4dsm27306697pfw.121.2022.03.31.09.14.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 09:14:49 -0700 (PDT)
+Message-ID: <b498023a-08d8-eda6-abfc-4339fe82522a@pensando.io>
+Date:   Thu, 31 Mar 2022 09:14:47 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: [PATCH net v1] ixgbe: ensure IPsec VF<->PF compatibility
+Content-Language: en-US
+To:     Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        intel-wired-lan@lists.osuosl.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Shannon Nelson <shannon.nelson@oracle.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+References: <737616899df2a482e4ec35aa4056c9ac608d2f50.1648714609.git.leonro@nvidia.com>
+From:   Shannon Nelson <snelson@pensando.io>
+In-Reply-To: <737616899df2a482e4ec35aa4056c9ac608d2f50.1648714609.git.leonro@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF98 (Linux)/8.8.15_GA_4232)
-Thread-Topic: tracing: do not export user_events uapi
-Thread-Index: soUfjk+gMtJ4HZ3jFxLYOaG8qofUxg==
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On Mar 31, 2022, at 8:13 AM, rostedt rostedt@goodmis.org wrote:
-
-> On Thu, 31 Mar 2022 16:29:30 +0900
-> Masahiro Yamada <masahiroy@kernel.org> wrote:
-> 
->> Well, the intended usage of no-export-headers is to
->> cater to the UAPI supported by only some architectures.
->> We have kvm(_para).h here because not all architectures
->> support kvm.
->> 
->> If you do not want to export the UAPI,
->> you should not put it in include/uapi/.
->> 
->> After the API is finalized, you can move it to
->> include/uapi.
-> 
-> So a little bit of background. I and a few others thought it was done, and
-> pushed it to Linus. Then when it made it into his tree (and mentioned on
-> LWN) it got a wider audience that had concerns. After they brought up those
-> concerns, we agreed that this needs a bit more work. I was hoping not to do
-> a full revert and simply marked the change for broken so that it can be
-> worked on upstream with the wider audience. Linus appears to be fine with
-> this approach, as he helped me with my "mark for BROKEN" patch.
-> 
-> Mathieu's concern is that this header file could be used in older distros
-> with newer kernels that have it implemented and added this to keep out of
-> those older distros.
-> 
-> The options to make Mathieu sleep better at night are:
-> 
-> 1) this patch
-> 
-> 2) move this file out of uapi.
-
-I would be fine with this approach as well. This is simple enough:
-
-git mv include/uapi/linux/user_events.h include/linux/
-
-and:
-
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index 8b3d241a31c2..823d7b09dcba 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -18,7 +18,7 @@
- #include <linux/tracefs.h>
- #include <linux/types.h>
- #include <linux/uaccess.h>
--#include <uapi/linux/user_events.h>
-+#include <linux/user_events.h>
- #include "trace.h"
- #include "trace_dynevent.h"
-
-Including <linux/user_events.h> will continue to work even when the header is
-moved to uapi in the future.
-
-Thanks,
-
-Mathieu
+On 3/31/22 1:20 AM, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> The VF driver can forward any IPsec flags and such makes the function
+> is not extendable and prone to backward/forward incompatibility.
+>
+> If new software runs on VF, it won't know that PF configured something
+> completely different as it "knows" only XFRM_OFFLOAD_INBOUND flag.
+>
+> Fixes: eda0333ac293 ("ixgbe: add VF IPsec management")
+> Reviewed-by: Raed Salem <raeds@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>a
 
 
-> 
-> 3) revert the entire thing.
-> 
-> I really do not want to do #3 but I am willing to do 1 or 2.
-> 
-> -- Steve
+Thanks!
 
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+Reviewed-by: Shannon Nelson <snelson@pensando.io>
+
+
+> ---
+> Chaagelog:
+> v1:
+>   * Replaced bits arithmetic with more simple expression
+> v0: https://lore.kernel.org/all/3702fad8a016170947da5f3c521a9251cf0f4a22.1648637865.git.leonro@nvidia.com
+> ---
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+> index e596e1a9fc75..69d11ff7677d 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+> @@ -903,7 +903,8 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+>   	/* Tx IPsec offload doesn't seem to work on this
+>   	 * device, so block these requests for now.
+>   	 */
+> -	if (!(sam->flags & XFRM_OFFLOAD_INBOUND)) {
+> +	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
+> +	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
+>   		err = -EOPNOTSUPP;
+>   		goto err_out;
+>   	}
+
