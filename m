@@ -2,79 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB0E4ED4AF
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 09:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E624ED4C1
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 09:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231611AbiCaHQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 03:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
+        id S232014AbiCaH3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 03:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232014AbiCaHQK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 03:16:10 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793341C9B51;
-        Thu, 31 Mar 2022 00:12:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Cftje8rQgS4kiDHkpH8Em2qt4GFjMGVk4OywwnZsT04=; b=ssEaxSvrpdL50MKhgA/GLcEdZz
-        i9m33P4y2/jk8y2I+ZL/elPceIuEkXA45RCJWN2KjxG9mRjZdJEWo5KxtSZKCtqdqr+bJ6cuLQyLx
-        CDsD/PeJ316Q+x8leqTfW4Z6s3jwQzC6UXvfTfnA9joUyWfUiRqolCSc1R3nrYXV2GIU6lohQpgzw
-        I44ZNFkMqJLHtpEx3bYmUGX08DrMgSsJLL8ZTLU3ZeDVmVIhif+8NkU92cRiSa4uyS5eM2d/3vsSc
-        9/bKLjQHacLGo6bsKXPWHznODqpyla/o/Y2B3CaNoCo1QQk7IKfBeO9SD07zpTdNP4pl47EUusC+T
-        srf56/xQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58042)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nZoyt-0004LR-Vq; Thu, 31 Mar 2022 08:12:31 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nZoyn-0007QN-D8; Thu, 31 Mar 2022 08:12:25 +0100
-Date:   Thu, 31 Mar 2022 08:12:25 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Dylan Hung <dylan_hung@aspeedtech.com>
-Cc:     robh+dt@kernel.org, joel@jms.id.au, andrew@aj.id.au,
-        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, BMC-SW@aspeedtech.com
-Subject: Re: [PATCH v3 2/3] net: mdio: add reset control for Aspeed MDIO
-Message-ID: <YkVUWV0czTzo6MrJ@shell.armlinux.org.uk>
-References: <20220325041451.894-1-dylan_hung@aspeedtech.com>
- <20220325041451.894-3-dylan_hung@aspeedtech.com>
+        with ESMTP id S230421AbiCaH3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 03:29:03 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F05C6811
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 00:27:16 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id yy13so46226945ejb.2
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 00:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hvu8rz9cP/tdlkhq2cwevWc78KdfThG0T1nMSudnVUM=;
+        b=Eht3iYGjLrVYj2cUzLhGdgq3Hvac9n33VlylDxub/hl9SxSRzrlAD8p1+xkslR9G6k
+         F2B7kuAGM81YXqf/WyCABQ3YpQ+vHJLBPbME5uSJWXUtM6P+MFaa9zvWtQ7HJsetD/vN
+         p0ZXJl1AO/Asl1s8040N9fbB0AN2uFn6FUpNEWqfIri+i/89TYL7V/Jnbdj+8bjYAgXq
+         99sQzvviPmf0CtroamWAZNiAAvHYqNMzRFjpWIjMBKnhjrQKzpufHXu4axEH1FK+JF/s
+         eHRORXodoLevbBIxzzGENbrseEGb39TZ6ZBPtJNK8u/v/rxtJPGwED43EOTiHD1UjW96
+         1gIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hvu8rz9cP/tdlkhq2cwevWc78KdfThG0T1nMSudnVUM=;
+        b=5KFNyW2pyS9va3w8DSZGu8gVik+1y5RsHgzIJxUWyIazP8iSRfXSDPmm1QahBPOlNE
+         zHJr3KjlqDP6CEnHlhMO5/T6Tq0ejqxR+bquzx5sKLF9LRQcePQiNvioM8Sf2FBP8lpA
+         0W19/XVMnnOJlMJpub8TWMQk/flOM62Ib+hLShVWGTM5i+zxs6beodHqlTYz6mMyTBRc
+         1JILIcb9J6iDlWjQ08RtLLp88Rn2ULFQ3dS0ZLWvuMdncMWwF73uSIPoWcQrutK9zDaP
+         2KrUOQsGju7rAip2bbJeciIVmH6NKyVyPZx5YQmJSXVA2I/6XLoxmsqfZKw+9gpOBvnJ
+         tUDQ==
+X-Gm-Message-State: AOAM532mfhnY1z8SMbQkWAh1CaQetEf6OSh/h7BaeV6lrIdgRTmEaasv
+        ZU8CQ+ByOTjr2qsZnTqLOCU=
+X-Google-Smtp-Source: ABdhPJyRCXknoyfRhafTqNkGopGMivYbxYOT/1I+vNXwsUKUqSM57l4EDPrkXbvzBBfgrlu8i1O7Ag==
+X-Received: by 2002:a17:907:3f07:b0:6e0:2fa0:2482 with SMTP id hq7-20020a1709073f0700b006e02fa02482mr3686050ejc.766.1648711634893;
+        Thu, 31 Mar 2022 00:27:14 -0700 (PDT)
+Received: from localhost.localdomain ([213.57.189.88])
+        by smtp.gmail.com with ESMTPSA id g21-20020a056402115500b00413c824e422sm10751887edw.72.2022.03.31.00.27.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 00:27:14 -0700 (PDT)
+From:   Eyal Birger <eyal.birger@gmail.com>
+To:     dsahern@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, andrea.mayer@uniroma2.it
+Cc:     netdev@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>
+Subject: [PATCH net] vrf: fix packet sniffing for traffic originating from ip tunnels
+Date:   Thu, 31 Mar 2022 10:26:43 +0300
+Message-Id: <20220331072643.3026742-1-eyal.birger@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220325041451.894-3-dylan_hung@aspeedtech.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+in commit 048939088220
+("vrf: add mac header for tunneled packets when sniffer is attached")
+an Ethernet header was cooked for traffic originating from tunnel devices.
 
-On Fri, Mar 25, 2022 at 12:14:50PM +0800, Dylan Hung wrote:
-> Add reset assertion/deassertion for Aspeed MDIO.  There are 4 MDIO
-> controllers embedded in Aspeed AST2600 SOC and share one reset control
-> register SCU50[3].  To work with old DT blobs which don't have the reset
-> property, devm_reset_control_get_optional_shared is used in this change.
-> 
-> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-> Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+However, the header is added based on whether the mac_header is unset
+and ignores cases where the device doesn't expose a mac header to upper
+layers, such as in ip tunnels like ipip and gre.
 
-Should this really be specific to one driver rather than being handled
-in the core mdio code?
+Traffic originating from such devices still appears garbled when capturing
+on the vrf device.
 
+Fix by observing whether the original device exposes a header to upper
+layers, similar to the logic done in af_packet.
+
+In addition, skb->mac_len needs to be adjusted after adding the Ethernet
+header for the skb_push/pull() surrounding dev_queue_xmit_nit() to work
+on these packets.
+
+Fixes: 048939088220 ("vrf: add mac header for tunneled packets when sniffer is attached")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+---
+ drivers/net/vrf.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 85e362461d71..cfc30ce4c6e1 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -1265,6 +1265,7 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
+ 	eth = (struct ethhdr *)skb->data;
+ 
+ 	skb_reset_mac_header(skb);
++	skb_reset_mac_len(skb);
+ 
+ 	/* we set the ethernet destination and the source addresses to the
+ 	 * address of the VRF device.
+@@ -1294,9 +1295,9 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
+  */
+ static int vrf_add_mac_header_if_unset(struct sk_buff *skb,
+ 				       struct net_device *vrf_dev,
+-				       u16 proto)
++				       u16 proto, struct net_device *orig_dev)
+ {
+-	if (skb_mac_header_was_set(skb))
++	if (skb_mac_header_was_set(skb) && dev_has_header(orig_dev))
+ 		return 0;
+ 
+ 	return vrf_prepare_mac_header(skb, vrf_dev, proto);
+@@ -1402,6 +1403,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ 
+ 	/* if packet is NDISC then keep the ingress interface */
+ 	if (!is_ndisc) {
++		struct net_device *orig_dev = skb->dev;
++
+ 		vrf_rx_stats(vrf_dev, skb->len);
+ 		skb->dev = vrf_dev;
+ 		skb->skb_iif = vrf_dev->ifindex;
+@@ -1410,7 +1413,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ 			int err;
+ 
+ 			err = vrf_add_mac_header_if_unset(skb, vrf_dev,
+-							  ETH_P_IPV6);
++							  ETH_P_IPV6,
++							  orig_dev);
+ 			if (likely(!err)) {
+ 				skb_push(skb, skb->mac_len);
+ 				dev_queue_xmit_nit(skb, vrf_dev);
+@@ -1440,6 +1444,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
+ 				  struct sk_buff *skb)
+ {
++	struct net_device *orig_dev = skb->dev;
++
+ 	skb->dev = vrf_dev;
+ 	skb->skb_iif = vrf_dev->ifindex;
+ 	IPCB(skb)->flags |= IPSKB_L3SLAVE;
+@@ -1460,7 +1466,8 @@ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
+ 	if (!list_empty(&vrf_dev->ptype_all)) {
+ 		int err;
+ 
+-		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP);
++		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP,
++						  orig_dev);
+ 		if (likely(!err)) {
+ 			skb_push(skb, skb->mac_len);
+ 			dev_queue_xmit_nit(skb, vrf_dev);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
