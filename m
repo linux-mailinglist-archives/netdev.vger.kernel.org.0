@@ -2,106 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47FA94ED416
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 08:46:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE47A4ED424
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 08:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231363AbiCaGsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 02:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
+        id S231411AbiCaGwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 02:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231409AbiCaGsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 02:48:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E0212BFA1;
-        Wed, 30 Mar 2022 23:46:14 -0700 (PDT)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22V6Zngp026272;
-        Thu, 31 Mar 2022 06:46:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=j3tfj7O2wEheyep15OrUZJlIY48tSkzjLa7LTRYCpAw=;
- b=nhG62outzBcPT7IugEs9Khr6d8HoeWCnOcomCrBrcztuIMuawMzgCGq37kOHWO1Z707V
- annu2TfPJcpfDFiuh8i64PKr2EVF5yIq19WMvgB9/z/5lqE889OIx3BWY1SvaQ7zvspz
- 5BZcsIfHxECf4cQd0A32S6FbbtaOPA4h6Uu/L+UZA2yHk0hA+Ftv2elzqkYdpHqI28En
- TsaTOfA9nOrewbLAJX5nPVyoshHiOOspNZUurd7E/LJeBo/C1cLJTz/JcBBYi089CvzI
- 3Vr8jepNshZniKLWlXUAWDZ4UPqHNy0ra/18FdlCMmtHZLsGEGIzQFSY/7N4bEiQROYj yw== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3f56h38wan-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 06:46:06 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22V6cfXK012256;
-        Thu, 31 Mar 2022 06:46:04 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06fra.de.ibm.com with ESMTP id 3f1t3j0mnj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 06:46:03 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22V6k1Yd36110786
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 31 Mar 2022 06:46:01 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9A0E2AE051;
-        Thu, 31 Mar 2022 06:46:01 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3A714AE056;
-        Thu, 31 Mar 2022 06:46:01 +0000 (GMT)
-Received: from [9.171.10.81] (unknown [9.171.10.81])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 31 Mar 2022 06:46:01 +0000 (GMT)
-Message-ID: <0a252813-e954-518f-a969-67960a9af00c@linux.ibm.com>
-Date:   Thu, 31 Mar 2022 08:46:03 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [syzbot] general protection fault in smc_pnet_add (2)
-Content-Language: en-US
-To:     syzbot <syzbot+03e3e228510223dabd34@syzkaller.appspotmail.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-References: <000000000000c6056605db790400@google.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <000000000000c6056605db790400@google.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: dsxAZLH2k7hmmhjqC9uZ6LWPnmyA4F_e
-X-Proofpoint-ORIG-GUID: dsxAZLH2k7hmmhjqC9uZ6LWPnmyA4F_e
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S230115AbiCaGwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 02:52:05 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B585345798;
+        Wed, 30 Mar 2022 23:50:18 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KTYny1lD0z1GDHG;
+        Thu, 31 Mar 2022 14:49:58 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 31 Mar 2022 14:50:16 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
+        <daniel@iogearbox.net>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     <vakul.garg@nxp.com>, <davejwatson@fb.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net v2] net/tls: fix slab-out-of-bounds bug in decrypt_internal
+Date:   Thu, 31 Mar 2022 15:04:28 +0800
+Message-ID: <20220331070428.36111-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.9.5
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-31_02,2022-03-30_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- phishscore=0 adultscore=0 clxscore=1011 bulkscore=0 spamscore=0
- mlxlogscore=834 suspectscore=0 malwarescore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203310037
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H5,
-        RCVD_IN_MSPIKE_WL,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/03/2022 02:48, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    d82a6c5ef9dc net: prestera: acl: make read-only array clie..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13862081700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=cce8a73d5200f3c0
-> dashboard link: https://syzkaller.appspot.com/bug?extid=03e3e228510223dabd34
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=167da879700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12bb0fe1700000
+The memory size of tls_ctx->rx.iv for AES128-CCM is 12 setting in
+tls_set_sw_offload(). The return value of crypto_aead_ivsize()
+for "ccm(aes)" is 16. So memcpy() require 16 bytes from 12 bytes
+memory space will trigger slab-out-of-bounds bug as following:
 
+==================================================================
+BUG: KASAN: slab-out-of-bounds in decrypt_internal+0x385/0xc40 [tls]
+Read of size 16 at addr ffff888114e84e60 by task tls/10911
 
-dev.parent is not checked properly before dev_name() is called, I will provide a fix for this.
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x34/0x44
+ print_report.cold+0x5e/0x5db
+ ? decrypt_internal+0x385/0xc40 [tls]
+ kasan_report+0xab/0x120
+ ? decrypt_internal+0x385/0xc40 [tls]
+ kasan_check_range+0xf9/0x1e0
+ memcpy+0x20/0x60
+ decrypt_internal+0x385/0xc40 [tls]
+ ? tls_get_rec+0x2e0/0x2e0 [tls]
+ ? process_rx_list+0x1a5/0x420 [tls]
+ ? tls_setup_from_iter.constprop.0+0x2e0/0x2e0 [tls]
+ decrypt_skb_update+0x9d/0x400 [tls]
+ tls_sw_recvmsg+0x3c8/0xb50 [tls]
+
+Allocated by task 10911:
+ kasan_save_stack+0x1e/0x40
+ __kasan_kmalloc+0x81/0xa0
+ tls_set_sw_offload+0x2eb/0xa20 [tls]
+ tls_setsockopt+0x68c/0x700 [tls]
+ __sys_setsockopt+0xfe/0x1b0
+
+Replace the crypto_aead_ivsize() with prot->iv_size + prot->salt_size
+when memcpy() iv value in TLS_1_3_VERSION scenario.
+
+Fixes: f295b3ae9f59 ("net/tls: Add support of AES128-CCM based ciphers")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+
+v1->v2:
+  - Remove not-required modification.
+---
+ net/tls/tls_sw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index 0024a692f0f8..a8976ef95528 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -1496,7 +1496,7 @@ static int decrypt_internal(struct sock *sk, struct sk_buff *skb,
+ 	if (prot->version == TLS_1_3_VERSION ||
+ 	    prot->cipher_type == TLS_CIPHER_CHACHA20_POLY1305)
+ 		memcpy(iv + iv_offset, tls_ctx->rx.iv,
+-		       crypto_aead_ivsize(ctx->aead_recv));
++		       prot->iv_size + prot->salt_size);
+ 	else
+ 		memcpy(iv + iv_offset, tls_ctx->rx.iv, prot->salt_size);
+ 
+-- 
+2.25.1
+
