@@ -2,78 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B0A4ED59C
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 10:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6AEE4ED595
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 10:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232796AbiCaIaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 04:30:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
+        id S232112AbiCaI3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 04:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbiCaIaH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 04:30:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E33B1CAF10
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 01:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648715298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yWnBV75IVBvHsDRdv1eIvwYgM5PPl5byFU3eX43vCM0=;
-        b=cmUbGlEatpdjVW/kRimymZoPR2VNjc6oYl/zrxtyWigtADu3r3MlHsmwfRlL8R9KL7Y1vS
-        IRNKlHcU1tSliZ2A7B7CGYDlVV4SAGb6fRKaZ9BAS29c/H27L2O5x8l58zPLyDtennAKBu
-        VczYlqGw00LculRgCt9TaIjwVJGFfxI=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-537-0zDjdO66MpKbcpi_p5y0PA-1; Thu, 31 Mar 2022 04:28:17 -0400
-X-MC-Unique: 0zDjdO66MpKbcpi_p5y0PA-1
-Received: by mail-ed1-f69.google.com with SMTP id w8-20020a50d788000000b00418e6810364so14368024edi.13
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 01:28:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yWnBV75IVBvHsDRdv1eIvwYgM5PPl5byFU3eX43vCM0=;
-        b=B4XUO5VEQplvekEQnXoPa+AkvNBsvVIvH1ia1We6iLwG0RzhFsVPomH2926BqjR/fT
-         sA6V5QDCncWwMNJflnxPcmISSEu6tO7IpWGC2uaUmuQ1QMP2LdFVVF56hSVbNAnWFMKc
-         szVXy81XEa6iAX2uDXmQKNSV0JG3WzyFypwlR/AAsMTduV88xye3VuclyNVlxYpo+Weg
-         crJuc0zhr29VXaTEZ3Cp6WqjnkzjY3rd/h/Ctpn/Rn4iWXkk3gyGd20OFr7pcWl8nXa4
-         jJ9GwuPXBASqTNQULJkl+460CAaFvp163tI6HsvVxPe22tXO0ZkFaNBOpZ6J6y4lf9aV
-         UY7w==
-X-Gm-Message-State: AOAM533sWvBUqcH70v2BUYmJvLS8wJT+EV+QdvWNgt/TQH8xZgmxNyxC
-        bFZzi8oTdKxOxD/2i4WFr9M06Vg7y8kFeqBcwwf3N3U0QS2OLXZpaScGpNRKg+oITJXN2J1wFih
-        zdoxEmQqzIaHTTgmv
-X-Received: by 2002:a17:907:6e04:b0:6e0:736b:d786 with SMTP id sd4-20020a1709076e0400b006e0736bd786mr3896934ejc.667.1648715295238;
-        Thu, 31 Mar 2022 01:28:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwaCi4x7tompAGyNTLCxoxrJWXg1Zwm7R8yDmM3eFPIPwcZfzA65avpZMuaetGN0CCUHQ+R0w==
-X-Received: by 2002:a17:907:6e04:b0:6e0:736b:d786 with SMTP id sd4-20020a1709076e0400b006e0736bd786mr3896908ejc.667.1648715294991;
-        Thu, 31 Mar 2022 01:28:14 -0700 (PDT)
-Received: from [10.39.192.162] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id s24-20020a1709066c9800b006e490a8cf71sm1421208ejr.4.2022.03.31.01.28.14
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Mar 2022 01:28:14 -0700 (PDT)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     =?utf-8?q?St=C3=A9phane?= Graber <stgraber@ubuntu.com>
-Cc:     netdev@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org,
-        Frode Nordahl <frode.nordahl@canonical.com>
-Subject: Re: [PATCH] openvswitch: Add recirc_id to recirc warning
-Date:   Thu, 31 Mar 2022 10:28:13 +0200
-X-Mailer: MailMate (1.14r5882)
-Message-ID: <1D0EA638-3067-4F74-8E94-3D766D262B39@redhat.com>
-In-Reply-To: <20220330194244.3476544-1-stgraber@ubuntu.com>
-References: <20220330194244.3476544-1-stgraber@ubuntu.com>
+        with ESMTP id S231841AbiCaI3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 04:29:20 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C194E1C8878;
+        Thu, 31 Mar 2022 01:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1648715253; x=1680251253;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lx3Akt2XgQBGgPwZQOjCdTFVnMM6p3ONMYke/VZbCfA=;
+  b=HR5H6cPT+Kqa1+nVNR7G8b7V4QwWosY+3s95dleERfEpnycYP5NDqgsa
+   RWBJ5PU8R78FlkKnKqdHrJAJYoiH2JE/LtdJ4Nrj/Tk8aQahqLTxWYToH
+   PKhheuuq1zvicq+M+3ACMaIPCuSvPoS2oR189M4fMh+T5BPI7q5pJVyF9
+   WucuSZ8dP0LQ2jKkt0px0LaM+ZEBK19h+1Bj+fwh4ZW63VjwS7wDJHV0H
+   sHHJdtd83x5bowtx9R4yF3HDDbUKYKwK6DTKkXrJ2HShEzXtvoP2z41nM
+   eyneGgbf2S6TWH3lj3YP46fPpO4zdKwAQWzRtDdhn/UXAcvLfJbfzLwXu
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,224,1643698800"; 
+   d="scan'208";a="158789272"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Mar 2022 01:27:32 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 31 Mar 2022 01:27:31 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 31 Mar 2022 01:27:31 -0700
+Date:   Thu, 31 Mar 2022 10:30:38 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        "Philipp Zabel" <p.zabel@pengutronix.de>,
+        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH RFC net-next] net: lan966x: make PHY reset support
+ optional
+Message-ID: <20220331083038.eorhpmhydadujfft@soft-dev3-1.localhost>
+References: <20220330110210.3374165-1-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220330110210.3374165-1-michael@walle.cc>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,59 +63,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The 03/30/2022 13:02, Michael Walle wrote:
 
+Hi Michael,
 
-On 30 Mar 2022, at 21:42, St=C3=A9phane Graber wrote:
-
-> When hitting the recirculation limit, the kernel would currently log
-> something like this:
->
-> [   58.586597] openvswitch: ovs-system: deferred action limit reached, =
-drop recirc action
->
-> Which isn't all that useful to debug as we only have the interface name=
-
-> to go on but can't track it down to a specific flow.
->
-> With this change, we now instead get:
->
-> [   58.586597] openvswitch: ovs-system: deferred action limit reached, =
-drop recirc action (recirc_id=3D0x9e)
->
-> Which can now be correlated with the flow entries from OVS.
->
-> Suggested-by: Frode Nordahl <frode.nordahl@canonical.com>
-> Signed-off-by: St=C3=A9phane Graber <stgraber@ubuntu.com>
-> Tested-by: Stephane Graber <stgraber@ubuntu.com>
+> 
+> The PHY subsystem as well as the MIIM mdio driver (in case of the
+> integrated PHYs) will already take care of the resets of any external
+> and internal PHY. There is no need for this reset anymore, so mark it
+> optionally to be backwards compatible.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
+> 
+> Horatiu, what do you think, should it be removed altogether? 
 
-This change looks good to me, and it makes debugging easier.
+I think it is OK to remove it altogether. If you get both [1] and [2]
+in.
 
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
+> There is
+> no user for that in mainline and I don't know about downstream but the
+> reset driver doesn't really work (as it also resets the GPIO/SGPIO)
 
->  net/openvswitch/actions.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> index 780d9e2246f3..7056cb1b8ba0 100644
-> --- a/net/openvswitch/actions.c
-> +++ b/net/openvswitch/actions.c
-> @@ -1539,8 +1539,8 @@ static int clone_execute(struct datapath *dp, str=
-uct sk_buff *skb,
->  				pr_warn("%s: deferred action limit reached, drop sample action\n",=
+Yes because I didn't manage to send yet those patches. But if your get
+yours in that is fine for me.
+My problem was, if after the probe of the MDIO controller it was probed
+the SGPIO then the PHYs will be in reset because the SGPIO was resetting
+the swich. But you put the reset of the swich on the pinctrl which will
+be probed before the MDIO, so that should be fine.
 
->  					ovs_dp_name(dp));
->  			} else {  /* Recirc action */
-> -				pr_warn("%s: deferred action limit reached, drop recirc action\n",=
+> and conceptionally the property is on the wrong DT node. All of the
+> drawbacks should have been addressed by my patches for the miim [1]
+> and the pinctrl driver [2].
+> 
+> [1] https://lore.kernel.org/netdev/20220318201324.1647416-1-michael@walle.cc/
+> [2] https://lore.kernel.org/linux-gpio/20220313154640.63813-1-michael@walle.cc/
+> 
+>  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> index 1f8c67f0261b..0765064d2845 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+> @@ -916,7 +916,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
+>                 return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
+>                                      "Could not obtain switch reset");
+> 
+> -       phy_reset = devm_reset_control_get_shared(lan966x->dev, "phy");
+> +       phy_reset = devm_reset_control_get_optional_shared(lan966x->dev, "phy");
+>         if (IS_ERR(phy_reset))
+>                 return dev_err_probe(lan966x->dev, PTR_ERR(phy_reset),
+>                                      "Could not obtain phy reset\n");
+> --
+> 2.30.2
+> 
 
-> -					ovs_dp_name(dp));
-> +				pr_warn("%s: deferred action limit reached, drop recirc action (re=
-circ_id=3D%#x)\n",
-> +					ovs_dp_name(dp), recirc_id);
->  			}
->  		}
->  	}
-> -- =
-
-> 2.34.1
-
+-- 
+/Horatiu
