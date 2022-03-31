@@ -2,161 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 864F84ED2A8
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 06:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC7BA4ED2F4
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 06:36:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiCaERN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 00:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
+        id S229998AbiCaEaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 00:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbiCaERE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 00:17:04 -0400
-Received: from smtprz01.163.net (smtprz01.163.net [106.3.154.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9EFB72A4FAA
-        for <netdev@vger.kernel.org>; Wed, 30 Mar 2022 21:01:27 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by vip-app02.163.net (Postfix) with ESMTP id 4264C440115
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 12:01:27 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648699287; bh=21CqgYe68EqtmuAUXMw5t7Y6CsanGtFEcTU3Jo5xixQ=;
+        with ESMTP id S231183AbiCaEaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 00:30:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77AA647AF6;
+        Wed, 30 Mar 2022 21:27:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0998AB81B7F;
+        Thu, 31 Mar 2022 02:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE3CC3410F;
+        Thu, 31 Mar 2022 02:52:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648695150;
+        bh=8Jk5jUus/4t4unRblybctLktYNOTa1roSvaFfciGgN8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V5T6/CZ8iA3uITlo9fpHPU/G3BAcsBHkiI1BPFxQLWx3lzGfRrWxm2TrAMhtqIufw
-         NPYcSjkXQuMOk11GPGbfo+fAIc5mMcqO/vf+W+i1VdZk7EAz8kxovkNR+PfmnA0yMp
-         VGnhMxHzzeLo0dWKknZoi5XNtpHUZQjTXEdgVSsI=
-Received: from localhost (HELO smtprz01.163.net) ([127.0.0.1])
-          by localhost (TOM SMTP Server) with SMTP ID 1292013744
-          for <netdev@vger.kernel.org>;
-          Thu, 31 Mar 2022 12:01:27 +0800 (CST)
-X-Virus-Scanned: Debian amavisd-new at mxtest.tom.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tom.com; s=mail;
-        t=1648699287; bh=21CqgYe68EqtmuAUXMw5t7Y6CsanGtFEcTU3Jo5xixQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V5T6/CZ8iA3uITlo9fpHPU/G3BAcsBHkiI1BPFxQLWx3lzGfRrWxm2TrAMhtqIufw
-         NPYcSjkXQuMOk11GPGbfo+fAIc5mMcqO/vf+W+i1VdZk7EAz8kxovkNR+PfmnA0yMp
-         VGnhMxHzzeLo0dWKknZoi5XNtpHUZQjTXEdgVSsI=
-Received: from localhost (unknown [101.93.196.13])
-        by antispamvip.163.net (Postfix) with ESMTPA id BB2B61542837;
-        Wed, 30 Mar 2022 18:27:48 +0800 (CST)
-Date:   Wed, 30 Mar 2022 18:27:48 +0800
-From:   Mingbao Sun <sunmingbao@tom.com>
-To:     Sagi Grimberg <sagi@grimberg.me>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tyler.sun@dell.com, ping.gan@dell.com, yanxiu.cai@dell.com,
-        libin.zhang@dell.com, ao.sun@dell.com
-Subject: Re: [PATCH v2 2/3] nvme-tcp: support specifying the
- congestion-control
-Message-ID: <20220330182748.00003901@tom.com>
-In-Reply-To: <15f24dcd-9a62-8bab-271c-baa9cc693d8d@grimberg.me>
-References: <20220311103414.8255-1-sunmingbao@tom.com>
- <20220311103414.8255-2-sunmingbao@tom.com>
- <7121e4be-0e25-dd5f-9d29-0fb02cdbe8de@grimberg.me>
- <20220325201123.00002f28@tom.com>
- <b7b5106a-9c0d-db49-00ab-234756955de8@grimberg.me>
- <20220329104806.00000126@tom.com>
- <15f24dcd-9a62-8bab-271c-baa9cc693d8d@grimberg.me>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+        b=nEqe6kqiUSIi2rXW5OV/rN4vS6HFQLcjj9RPpWMrqWUnO9hw6RxRCDw5RIcHqgRoo
+         MK/LI9QuD8mSeRkozHMjzuZlfzATnFnoOEgAvYXD7OH+Nqmx8i1el445KwyvXTQfZZ
+         8uVUMyCy4i3IUmmn8WQDVfK7YoBYV998+FE50kVs8NvZ7pEjkqt4+1cBJHFaPCx7ce
+         fdAQ1SmRD6j8STJujPQJ0X2mKvtPugwCJCfbBCD1AYWM6brf4OsOsavvqW1Sxl2pNI
+         wUtatK5zjm1IzFg5a35Kibe13GQnmTBboUykhIjAGa2Vu08ENY8hrYJD/FFyRVsQrU
+         YOBDRiX3jk93Q==
+Date:   Wed, 30 Mar 2022 19:52:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>, <borisp@nvidia.com>,
+        <john.fastabend@gmail.com>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <vakul.garg@nxp.com>,
+        <davejwatson@fb.com>, <linux-kernel@vger.kernel.org>,
+        Vadim Fedorenko <vfedorenko@novek.ru>,
+        <linux-crypto@vger.kernel.org>
+Subject: Re: [PATCH net] net/tls: fix slab-out-of-bounds bug in
+ decrypt_internal
+Message-ID: <20220330195228.21616546@kernel.org>
+In-Reply-To: <d7f55e84-ae87-ffd1-a488-a7bf6e65f3b1@huawei.com>
+References: <20220330085009.1011614-1-william.xuanziyang@huawei.com>
+        <20220330093925.2d8ee6ca@kernel.org>
+        <20220330132406.633c2da8@kernel.org>
+        <d7f55e84-ae87-ffd1-a488-a7bf6e65f3b1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
-        DKIM_INVALID,DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Mar 2022 10:46:08 +0300
-Sagi Grimberg <sagi@grimberg.me> wrote:
+On Thu, 31 Mar 2022 10:35:41 +0800 Ziyang Xuan (William) wrote:
+> I am thinking about is skb_copy_bits() necessary in non-TLS_1_3_VERSION
+> and non-TLS_CIPHER_CHACHA20_POLY1305 scenarios?
 
-> >> As I said, TCP can be tuned in various ways, congestion being just one
-> >> of them. I'm sure you can find a workload where rmem/wmem will make
-> >> a difference. =20
-> >=20
-> > agree.
-> > but the difference for the knob of rmem/wmem is:
-> > we could enlarge rmem/wmem for NVMe/TCP via sysctl,
-> > and it would not bring downside to any other sockets whose
-> > rmem/wmem are not explicitly specified. =20
->=20
-> It can most certainly affect them, positively or negatively, depends
-> on the use-case.
+It's not necessary there, but we should not make that change be part of
+the fix, the fix should be minimal. I'll send a separate patch to move
+the skb_copy_bits() call later on.
 
-Agree.
-Your saying is rigorous.
+I think for the fix all you should do is replace the
+	crypto_aead_ivsize(ctx->aead_recv));
+line with
+	prot->iv_size + prot->salt_size);
 
-> >> In addition, based on my knowledge, application specific TCP level
-> >> tuning (like congestion) is not really a common thing to do. So why in
-> >> nvme-tcp?
-> >>
-> >> So to me at least, it is not clear why we should add it to the driver.=
- =20
-> >=20
-> > As mentioned in the commit message, though we can specify the
-> > congestion-control of NVMe_over_TCP via sysctl or writing
-> > '/proc/sys/net/ipv4/tcp_congestion_control', but this also
-> > changes the congestion-control of all the future TCP sockets on
-> > the same host that have not been explicitly assigned the
-> > congestion-control, thus bringing potential impaction on their
-> > performance.
-> >=20
-> > For example:
-> >=20
-> > A server in a data-center with the following 2 NICs:
-> >=20
-> >      - NIC_fron-end, for interacting with clients through WAN
-> >        (high latency, ms-level)
-> >=20
-> >      - NIC_back-end, for interacting with NVMe/TCP target through LAN
-> >        (low latency, ECN-enabled, ideal for dctcp)
-> >=20
-> > This server interacts with clients (handling requests) via the fron-end
-> > network and accesses the NVMe/TCP storage via the back-end network.
-> > This is a normal use case, right?
-> >=20
-> > For the client devices, we can=E2=80=99t determine their congestion-con=
-trol.
-> > But normally it=E2=80=99s cubic by default (per the CONFIG_DEFAULT_TCP_=
-CONG).
-> > So if we change the default congestion control on the server to dctcp
-> > on behalf of the NVMe/TCP traffic of the LAN side, it could at the
-> > same time change the congestion-control of the front-end sockets
-> > to dctcp while the congestion-control of the client-side is cubic.
-> > So this is an unexpected scenario.
-> >=20
-> > In addition, distributed storage products like the following also have
-> > the above problem:
-> >=20
-> >      - The product consists of a cluster of servers.
-> >=20
-> >      - Each server serves clients via its front-end NIC
-> >       (WAN, high latency).
-> >=20
-> >      - All servers interact with each other via NVMe/TCP via back-end N=
-IC
-> >       (LAN, low latency, ECN-enabled, ideal for dctcp). =20
->=20
-> Separate networks are still not application (nvme-tcp) specific and as
-> mentioned, we have a way to control that. IMO, this still does not
-> qualify as solid justification to add this to nvme-tcp.
->=20
-> What do others think?
+> If the inital iv+salt negotiated configuration for tx/rx offload is right
+> and reliable, what is the reason why we have to extract the iv value from
+> received skb instead if using the negotiated iv value? Does it can be
+> modified or just follow spec that versions below TLS_1_3_VERSION?
 
-Well, per the fact that the approach (=E2=80=98ip route =E2=80=A6=E2=80=99)=
- proposed
-by Jakub could largely fit the per link requirement on
-congestion-control, so the usefulness of this patchset is really
-not so significant.
-
-So here I terminate all the threads of this patchset.
-
-At last, many thanks to all of you for reviewing this patchset.
+TLS 1.3 does not send the nonce as part of the record. Instead 
+the record number is always used as nonce in crypto.
