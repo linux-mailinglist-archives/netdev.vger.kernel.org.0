@@ -2,86 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF3CF4EDC93
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 17:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C313B4EDCB5
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 17:22:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238148AbiCaPUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 11:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52774 "EHLO
+        id S238186AbiCaPXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 11:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232629AbiCaPUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 11:20:01 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C51C220B23;
-        Thu, 31 Mar 2022 08:18:14 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 0F5EE22239;
-        Thu, 31 Mar 2022 17:18:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648739893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8Kc6voaVT0wBbGgckX1LSOGvhb3m0uQ57t2GbwUzI8o=;
-        b=rMXJB/PGKE2jWLKL6XnO7Zk3OaHQ12CN2WFl0ciM/P4VJl+IlrKW9REGBJQyVwahpZmKLf
-        0QTrpdmCAl3rc0EoYebHtHrcn+pGpZBjOR5Cjr1dsgkXsUJwk7OlCij0sqirFPpMAujmW+
-        xs07enw0CrAn2ZsA8jKbFnpBwIKblmI=
+        with ESMTP id S238170AbiCaPXo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 11:23:44 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D6F220FD9;
+        Thu, 31 Mar 2022 08:21:55 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1nZwcP-000211-AT; Thu, 31 Mar 2022 17:21:49 +0200
+Date:   Thu, 31 Mar 2022 17:21:49 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Vincent Pelletier <plr.vincent@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH net 2/5] netfilter: conntrack: sanitize table size
+ default settings
+Message-ID: <20220331152149.GA5024@breakpoint.cc>
+References: <20210903163020.13741-1-pablo@netfilter.org>
+ <20210903163020.13741-3-pablo@netfilter.org>
+ <20220331145909.085a0f30@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 31 Mar 2022 17:18:12 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC net-next 1/3] dt-bindings: net: convert mscc-miim to
- YAML format
-In-Reply-To: <20220331151440.3643482-1-michael@walle.cc>
-References: <20220331151440.3643482-1-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <86d28971a11f08a9b402d81d485fb95b@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220331145909.085a0f30@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[Forgot the cover letter]
+Vincent Pelletier <plr.vincent@gmail.com> wrote:
+> On Fri,  3 Sep 2021 18:30:17 +0200, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > From: Florian Westphal <fw@strlen.de>
+> > 
+> > conntrack has two distinct table size settings:
+> > nf_conntrack_max and nf_conntrack_buckets.
+> > 
+> > The former limits how many conntrack objects are allowed to exist
+> > in each namespace.
+> > 
+> > The second sets the size of the hashtable.
+> > 
+> > As all entries are inserted twice (once for original direction, once for
+> > reply), there should be at least twice as many buckets in the table than
+> > the maximum number of conntrack objects that can exist at the same time.
+> > 
+> > Change the default multiplier to 1 and increase the chosen bucket sizes.
+> > This results in the same nf_conntrack_max settings as before but reduces
+> > the average bucket list length.
+> [...]
+> >  		nf_conntrack_htable_size
+> >  			= (((nr_pages << PAGE_SHIFT) / 16384)
+> >  			   / sizeof(struct hlist_head));
+> > -		if (nr_pages > (4 * (1024 * 1024 * 1024 / PAGE_SIZE)))
+> > -			nf_conntrack_htable_size = 65536;
+> > +		if (BITS_PER_LONG >= 64 &&
+> > +		    nr_pages > (4 * (1024 * 1024 * 1024 / PAGE_SIZE)))
+> > +			nf_conntrack_htable_size = 262144;
+> >  		else if (nr_pages > (1024 * 1024 * 1024 / PAGE_SIZE))
+> > -			nf_conntrack_htable_size = 16384;
+> [...]
+> > +			nf_conntrack_htable_size = 65536;
+> 
+> With this formula, there seems to be a discontinuity between the
+> proportional and fixed regimes:
+> 64bits: 4GB/16k/8 = 32k, which gets bumped to 256k
+> 32bits: 1GB/16k/4 = 16k, which gets bumped to 64k
+> 
+> Is this intentional ?
 
-Subject: [PATCH RFC net-next 0/3] net: phy: mscc-miim: add MDIO bus
-  frequency support
+There is no science here.  This tries to pick a sane default setting,
+thats all. Its not possible to pick one that works for everyone and everything.
 
-Introduce MDIO bus frequency support. This way the board can have a
-faster (or maybe slower) bus frequency than the hardware default.
+32bit kernel can't access more than 1GB so I did not want to
+increase that too much.
 
-Michael Walle (3):
-   dt-bindings: net: convert mscc-miim to YAML format
-   dt-bindings: net: mscc-miim: add clock and clock-frequency
-   net: phy: mscc-miim: add support to set MDIO bus frequency
-
-  .../devicetree/bindings/net/mscc,miim.yaml    | 60 +++++++++++++++++++
-  .../devicetree/bindings/net/mscc-miim.txt     | 26 --------
-  drivers/net/mdio/mdio-mscc-miim.c             | 52 +++++++++++++++-
-  3 files changed, 110 insertions(+), 28 deletions(-)
-  create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
-  delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
-
--- 
-2.30.2
+These are default settings, users should be free to pick any value they
+like/need.
