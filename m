@@ -2,77 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCB74EDE9B
+	by mail.lfdr.de (Postfix) with ESMTP id D61EB4EDE9C
 	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 18:19:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239804AbiCaQV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 12:21:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
+        id S239812AbiCaQVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 12:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236949AbiCaQV2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 12:21:28 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4866F5575B
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:19:41 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id i4so503410wrb.5
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:19:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:from:to:subject
-         :content-transfer-encoding;
-        bh=7p6hqD+u5H3FTZ/1NFMMfJSrultHsKQZRe7c2mrNd2I=;
-        b=e/XRh479sb3Psbz0wdu2RmfvXxEcuGe7fVDrLky3lqIznblds2mJpTrgc+lJEiXHJu
-         Md7Dn6kcZNI/taRV0L4BfGCSl+gL2Vvnyi28K7JFhi92G2nRxiKwrnR0sKIyR37L05kR
-         R04KWQqKY1dfxKcvUZghQp8pME6yB9114lbzwnWXqLa91Qsyj6ZIaokGAq6NV7402oct
-         aOaSyXaA2mSy5xmhFfNeanQdY7QUd3glNcjRQ+MySWMTz5NDurmkl2+hIFIz5bEc40UT
-         kDvSW+tn9GVvNFR7dim6xNLHlaCLTF4VCc7QtRcns5SXBkGyXvSdCHV8/eU9slHJlhkn
-         LoJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:from:to:subject
-         :content-transfer-encoding;
-        bh=7p6hqD+u5H3FTZ/1NFMMfJSrultHsKQZRe7c2mrNd2I=;
-        b=dExoQzRUbEWB484BYwxcOqFwAzgWgz3J0Y+4QCOEHQqWtoWQRwCqnPYKcrLJyNZIr+
-         S7C8PeN23TqZem14FoD7Y6aRfZAiAXWoklbAavcEGvDjexPiDCaVp3NNF2aLcWrud+A4
-         N7UYER9JU9Blh2sbTRRup8n5jzbCvI4GhwQQYmSc9TuFo5Vh+xC2qu7MhKrhe2peEFcu
-         UGYTPF2gAghURlEMaHIncu4SX3ZWOcE8HPTXMu5NPj7MFd/sAeqqi9SowkBs0lyOYEc2
-         pMxIdf4MPnMRwcghbfZzAteHxPuhUtHOU8R+PsLbAjgHBMk8EB/OFNIOjtdSzcY1Y7jM
-         ziZg==
-X-Gm-Message-State: AOAM530ituaz5UhrcVdaFOlZowwAHTrGkPABMx27OZDCW0Oo56q+qxOs
-        WJBZkdoEE4x5bUVbHOwk8wDxf8rQwnqVZw==
-X-Google-Smtp-Source: ABdhPJxCiF0mTnspMKSUX8+USD7lSCGQjMbYrXXWdKyAv50CJLtw2Rvx1APd8qEpaN5P4R98Eu+tPQ==
-X-Received: by 2002:a5d:4ec7:0:b0:203:de83:6f44 with SMTP id s7-20020a5d4ec7000000b00203de836f44mr4713108wrv.56.1648743579670;
-        Thu, 31 Mar 2022 09:19:39 -0700 (PDT)
-Received: from DESKTOP-R5VBAL5 ([39.53.224.185])
-        by smtp.gmail.com with ESMTPSA id p16-20020a5d6390000000b00203ffebddf3sm27232459wru.99.2022.03.31.09.19.38
-        for <netdev@vger.kernel.org>
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Thu, 31 Mar 2022 09:19:39 -0700 (PDT)
-Message-ID: <6245d49b.1c69fb81.8b2bb.ba83@mx.google.com>
-Date:   Thu, 31 Mar 2022 09:19:39 -0700 (PDT)
-X-Google-Original-Date: 31 Mar 2022 12:19:38 -0400
+        with ESMTP id S239801AbiCaQVb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 12:21:31 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECECF146B44
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648743584; x=1680279584;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8ybBqSlbDL92l8jv990A4w9Ek43M1WaWaynKSy4y9eQ=;
+  b=ObA5gJukN0CvLL5DVYGfFV1CCmw96Tq1TBO/SwOcwlZ67AM8iVlvRQQa
+   FhhfqfoipdcE2XSmaKA7jUoRinqN4ZR0LRPsQIRTavfUWfK5H69wIodXx
+   0V2m9iU5LtZEP674Gd1w65Re5zHWm1BntKtMIuk/hkGnGIVxRgqkx7c+o
+   /aN0zMtS1BdswviKXn38L7gpywenl+SAdnvnGFAtCDg4XzEZ4iZ+/AtjV
+   ZT0mqKgqAB0NdD1tH20Bp/k6Mzxcc0TILE7pO9FOiDsedeVEEhTQqMG5g
+   8+Uq1TnVQUyW6WTNQTEg3jJV0M8yNIB7cPIcTNDtHTSgbrraZ2sW0a85J
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="260067487"
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="260067487"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:19:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
+   d="scan'208";a="522407013"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga006.jf.intel.com with ESMTP; 31 Mar 2022 09:19:39 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     alice.michael@intel.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net 0/3] ice-fixups
+Date:   Thu, 31 Mar 2022 09:20:05 -0700
+Message-Id: <20220331162008.1891935-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-From:   ulyssesdreamlandestimation@gmail.com
-To:     netdev@vger.kernel.org
-Subject: Estimating Services
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,=0D=0A=0D=0AWe provide estimation & quantities takeoff service=
-s. We are providing 98-100 accuracy in our estimates and take-off=
-s. Please tell us if you need any estimating services regarding y=
-our projects.=0D=0A=0D=0ASend over the plans and mention the exac=
-t scope of work and shortly we will get back with a proposal on w=
-hich our charges and turnaround time will be mentioned=0D=0A=0D=0A=
-You may ask for sample estimates and take-offs. Thanks.=0D=0A=0D=0A=
-Kind Regards=0D=0AUlysses Kraft=0D=0ADreamland Estimation, LLC
+This series handles a handful of cleanups for the ice
+driver.  Ivan fixed a problem on the VSI during a release,
+fixing a MAC address setting, and a broken IFF_ALLMULTI
+handling.
+
+Ivan Vecera:
+  ice: Clear default forwarding VSI during VSI release
+  ice: Fix MAC address setting
+  ice: Fix broken IFF_ALLMULTI handling
+
+ drivers/net/ethernet/intel/ice/ice.h      |   1 -
+ drivers/net/ethernet/intel/ice/ice_fltr.c |  44 +++++++-
+ drivers/net/ethernet/intel/ice/ice_lib.c  |   2 +
+ drivers/net/ethernet/intel/ice/ice_main.c | 121 +++++++++++++++-------
+ 4 files changed, 128 insertions(+), 40 deletions(-)
+
+-- 
+2.31.1
 
