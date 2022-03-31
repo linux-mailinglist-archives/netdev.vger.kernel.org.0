@@ -2,47 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4AA94EDBA8
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 16:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B5B14EDBAE
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 16:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237524AbiCaO2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 10:28:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
+        id S237547AbiCaOaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 10:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237498AbiCaO2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 10:28:47 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8304521D7DB;
-        Thu, 31 Mar 2022 07:26:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WKvQhSKFWoLuajjNgA2S2UoVge0oH0PP/Mwfs4RXClE=; b=jzBurfDBkkToDK1iyryqp7VWYE
-        Ob6XrfgyRh4mOaGjCq1TfDZfuQErBgibwFYs/zu03ViVwDFYuysvQBO2Vy9NvFODJjP7XVVsL5I6D
-        XbmhJBOq9qBRqOKPaXwZ7kxb68r0ZJE5v7BYywMWA9etAS2FOIO/mRV0GjNF5nYUfkTk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nZvl9-00DTZc-5k; Thu, 31 Mar 2022 16:26:47 +0200
-Date:   Thu, 31 Mar 2022 16:26:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "huangguangbin (A)" <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, o.rempel@pengutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lipeng321@huawei.com, chenhao288@hisilicon.com
-Subject: Re: [PATCH] net: phy: genphy_loopback: fix loopback failed when
- speed is unknown
-Message-ID: <YkW6J9rM6O/cb/lv@lunn.ch>
-References: <20220331114819.14929-1-huangguangbin2@huawei.com>
- <YkWdTpCsO8JhiSaT@lunn.ch>
- <130bb780-0dc1-3819-8f6d-f2daf4d9ece9@huawei.com>
+        with ESMTP id S237548AbiCaOaK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 10:30:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF2BB4BFDF
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 07:28:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648736900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rerbpDqpUKtFLQla8//GkeQbIxlwX2DmPOc0DYBJFEo=;
+        b=LhEeL90dFB9CClazgX3zsU1U5s7gJjmnCb7eJiBaTcNj98anGk0xj95/tTXa2qCxDS1B1R
+        eM8ZrKRfQ2uoOCqw7I4bJtA8uZOQnAPc5lIBPmR2gypQygyv1XrF6twi9njDTPyzxZvU2O
+        F01FQogcul6mer35tNGJhZlYd/2SEAI=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-480-IG2Ouwb3PRmEHoPt0kCShQ-1; Thu, 31 Mar 2022 10:28:18 -0400
+X-MC-Unique: IG2Ouwb3PRmEHoPt0kCShQ-1
+Received: by mail-wm1-f69.google.com with SMTP id n19-20020a7bcbd3000000b0038c94b86258so1224429wmi.2
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 07:28:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=rerbpDqpUKtFLQla8//GkeQbIxlwX2DmPOc0DYBJFEo=;
+        b=XTWwYd7rV//7mVE8HBWEzKB9di62SSFr+nLR1L+vQ7Cn6JZ1Gzpw+9OLvb7AK/Yy8b
+         FT5GEaTHDMNxv2Nv+vus2E43kI8V9zx0KSoKGmxf3Dneja1PwRMVUVm7F7laIjHOb4ML
+         P29xan1HzFac4a42xGM/CewcaHmcpfnlWOKDvQh2ihWtUaiWy7N/iPQGRJ6kO/d+lgHg
+         1RFXo34U6BI60jeR+4yvaQt9gtVpM+YCT0cExTfSRm6QrP7OTrdZyuatoo+E4ypIht5a
+         SsZ6PvzqCCUFM9OwZ8nakXE65cZzSB6Lu1zOpRiN/In1QgkPez/yWbZP6/e0+KQ0dX2R
+         22cg==
+X-Gm-Message-State: AOAM532eoiCchgNUH3yr7s+I2itkaPYIJkM5NszDyvk0QvG5sJcI0u7U
+        +4DRNm/JC0RAKveGo1AoRsYdd3693P3fjEex+1rYhefF1yza6YcKInCC5fSec+GWaZJ7SpeDq85
+        YHAjK57DgcoyaUg4/
+X-Received: by 2002:a05:600c:3511:b0:38c:d035:cddb with SMTP id h17-20020a05600c351100b0038cd035cddbmr4956801wmq.74.1648736896976;
+        Thu, 31 Mar 2022 07:28:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwioXJeQ7LueaCVhNXFGZxilHyx9T4pfG1BWSs78svKYnYqLgVd2D5QBzbRmgdM7ZuCiG/jsg==
+X-Received: by 2002:a05:600c:3511:b0:38c:d035:cddb with SMTP id h17-20020a05600c351100b0038cd035cddbmr4956782wmq.74.1648736896716;
+        Thu, 31 Mar 2022 07:28:16 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-243-142.dyn.eolo.it. [146.241.243.142])
+        by smtp.gmail.com with ESMTPSA id o10-20020a5d47ca000000b00203fb25165esm23932923wrc.6.2022.03.31.07.28.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Mar 2022 07:28:16 -0700 (PDT)
+Message-ID: <c80aa031a57d1d4a98dc3fbc98863d35e5fc9b58.camel@redhat.com>
+Subject: Re: [PATCH net] tipc: use a write lock for keepalive_intv instead
+ of a read lock
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Niels Dossche <dossche.niels@gmail.com>,
+        tipc-discussion@lists.sourceforge.net
+Cc:     netdev@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hoang Le <hoang.h.le@dektech.com.au>
+Date:   Thu, 31 Mar 2022 16:28:15 +0200
+In-Reply-To: <20220329161213.93576-1-dossche.niels@gmail.com>
+References: <20220329161213.93576-1-dossche.niels@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <130bb780-0dc1-3819-8f6d-f2daf4d9ece9@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,56 +82,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> In this case, as speed and duplex both are unknown, ctl is just set to 0x4000.
-> However, the follow code sets mask to ~0 for function phy_modify():
-> int genphy_loopback(struct phy_device *phydev, bool enable)
-> {
-> 	if (enable) {
-> 		...
-> 		phy_modify(phydev, MII_BMCR, ~0, ctl);
-> 		...
-> }
-> so all other bits of BMCR will be cleared and just set bit 14, I use phy trace to
-> prove that:
+On Tue, 2022-03-29 at 18:12 +0200, Niels Dossche wrote:
+> Currently, n->keepalive_intv is written to while n is locked by a read
+> lock instead of a write lock. This seems to me to break the atomicity
+> against other readers.
+> Change this to a write lock instead to solve the issue.
 > 
-> $ cat /sys/kernel/debug/tracing/trace
-> # tracer: nop
-> #
-> # entries-in-buffer/entries-written: 923/923   #P:128
-> #
-> #                                _-----=> irqs-off/BH-disabled
-> #                               / _----=> need-resched
-> #                              | / _---=> hardirq/softirq
-> #                              || / _--=> preempt-depth
-> #                              ||| / _-=> migrate-disable
-> #                              |||| /     delay
-> #           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
-> #              | |         |   |||||     |         |
->   kworker/u257:2-694     [015] .....   209.263912: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
->   kworker/u257:2-694     [015] .....   209.263951: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x7989
->   kworker/u257:2-694     [015] .....   209.263990: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x7989
->   kworker/u257:2-694     [015] .....   209.264028: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x09 val:0x0200
->   kworker/u257:2-694     [015] .....   209.264067: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x0a val:0x0000
->          ethtool-1148    [007] .....   209.665693: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
->          ethtool-1148    [007] .....   209.665706: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x1840
->          ethtool-1148    [007] .....   210.588139: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1840
->          ethtool-1148    [007] .....   210.588152: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x1040
->          ethtool-1148    [007] .....   210.615900: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
->          ethtool-1148    [007] .....   210.615912: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x4000 //here just set bit 14
+> Note:
+> I am currently working on a static analyser to detect missing locks
+> using type-based static analysis as my master's thesis
+> in order to obtain my master's degree.
+> If you would like to have more details, please let me know.
+> This was a reported case. I manually verified the report by looking
+> at the code, so that I do not send wrong information or patches.
+> After concluding that this seems to be a true positive, I created
+> this patch. I have both compile-tested this patch and runtime-tested
+> this patch on x86_64. The effect on a running system could be a
+> potential race condition in exceptional cases.
+> This issue was found on Linux v5.17.
 > 
-> So phy speed will be set to 10M in this case, if previous speed of
-> device before going down is 10M, loopback test is pass. Only
-> previous speed is 100M or 1000M, loopback test is failed.
+> Fixes: f5d6c3e5a359 ("tipc: fix node keep alive interval calculation")
+> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+> ---
+>  net/tipc/node.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/tipc/node.c b/net/tipc/node.c
+> index 6ef95ce565bd..da867ddb93f5 100644
+> --- a/net/tipc/node.c
+> +++ b/net/tipc/node.c
+> @@ -806,9 +806,9 @@ static void tipc_node_timeout(struct timer_list *t)
+>  	/* Initial node interval to value larger (10 seconds), then it will be
+>  	 * recalculated with link lowest tolerance
+>  	 */
+> -	tipc_node_read_lock(n);
+> +	tipc_node_write_lock(n);
 
-O.K. So it should be set into 10M half duplex. But why does this cause
-it not to loopback packets? Does the PHY you are using not actually
-support 10 Half? Why does it need to be the same speed as when the
-link was up? And why does it actually set LSTATUS indicating there is
-link?
+I agree with Hoang, this should be safe even without write lock, as
+tipc_node_timeout() is the only function modifying keepalive_intv, and
+such function is invoked only by a timer, so we are guaranteeded there
+are no possible concurrent updates...
 
-Is this a generic problem, all PHYs are like this, or is this specific
-to the PHY you are using? Maybe this PHY needs its own loopback
-function because it does something odd?
+>  	n->keepalive_intv = 10000;
+> -	tipc_node_read_unlock(n);
+> +	tipc_node_write_unlock(n);
+>  	for (bearer_id = 0; remains && (bearer_id < MAX_BEARERS); bearer_id++) {
+>  		tipc_node_read_lock(n);
 
-   Andrew
+...otherwise we have a similar issue here: a few line below
+keepalive_intv is updated via tipc_node_calculate_timer(), still under
+the read lock
+
+Thanks!
+
+Paolo
 
