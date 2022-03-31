@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A52E4EDE99
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 18:19:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 076EA4EDE9A
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 18:19:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239802AbiCaQVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 12:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
+        id S239811AbiCaQVe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 12:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239810AbiCaQVc (ORCPT
+        with ESMTP id S239806AbiCaQVc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 12:21:32 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375DF1F124B
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:19:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E441D7D8C
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 09:19:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648743585; x=1680279585;
+  t=1648743584; x=1680279584;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VETUEL0gX3kmVN0c5bd2ZxTxB5uxWjhvLZWFrVeQtvY=;
-  b=ObXxQcdV1t2yBAEMmxvy3xlayjvoDGTuZCLWV/4m5Du2ByqPF2ldUvvf
-   wWc1Rn0LNt6e99ajOFqbd5gGtH7m9KMr/KsVxrMYkeYRGP5+fuXASiMi1
-   ExaczZNMEoNHc3/QeFLLGF9rfTpNtAyZ607QCAVAI634DkNE8aN+nTyRb
-   //JpKovDZTm9CPFNRF1+sJTMGnuTSv5JC34Du/3CBxaZOE1OjG3huHd0q
-   dMAujwpZh1bc2JKo2GGydnGv5jQ6gQoVh76oB7x6nkQIdwoR7cz68u4AM
-   SIN+v7+liXbqfv8IRJdoWKRck6+UTH3Hk+0mp16JuG/jHzCvlFrN6Cib5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="260067488"
+  bh=wBC+3w3qdluWkfwRayQGecQUr9JtO5jfLXgiuORAXm4=;
+  b=gQbxcsH53z1YGBKIJaICjrUIBESL8IDqPCwLN7f3SIGSlNqHM1BoXmUy
+   1eI2Fcut3YU8VqDT2+7lkLT7LgBIGgggPzQ4IvWLVSP2HY2eMnPQhLdss
+   2FggCd5/hBBxSALv8igsVWV890E/wJ9aO5ZRhxVsczZXlOkX/wfm03VlY
+   h/OU7s9g0NXDBiNqYM5sZgjob2I8T/USD8Qbv76kk79KZYgTaeiC186mS
+   NXGszNLvae0LvF1sPlFDuVyI7op55sfFyuSuh85aJHn3Md3bdMSv92VHI
+   DbWC92RTkNaw4fP4F3joaodkTDVZ1T5Laey46NRhrloJLwZdLhenpgqfB
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="260067491"
 X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="260067488"
+   d="scan'208";a="260067491"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Mar 2022 09:19:40 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,225,1643702400"; 
-   d="scan'208";a="522407016"
+   d="scan'208";a="522407019"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga006.jf.intel.com with ESMTP; 31 Mar 2022 09:19:39 -0700
+  by orsmga006.jf.intel.com with ESMTP; 31 Mar 2022 09:19:40 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     alice.michael@intel.com, davem@davemloft.net, kuba@kernel.org,
         pabeni@redhat.com
 Cc:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH net 1/3] ice: Clear default forwarding VSI during VSI release
-Date:   Thu, 31 Mar 2022 09:20:06 -0700
-Message-Id: <20220331162008.1891935-2-anthony.l.nguyen@intel.com>
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH net 2/3] ice: Fix MAC address setting
+Date:   Thu, 31 Mar 2022 09:20:07 -0700
+Message-Id: <20220331162008.1891935-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220331162008.1891935-1-anthony.l.nguyen@intel.com>
 References: <20220331162008.1891935-1-anthony.l.nguyen@intel.com>
@@ -63,57 +63,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ivan Vecera <ivecera@redhat.com>
 
-VSI is set as default forwarding one when promisc mode is set for
-PF interface, when PF is switched to switchdev mode or when VF
-driver asks to enable allmulticast or promisc mode for the VF
-interface (when vf-true-promisc-support priv flag is off).
-The third case is buggy because in that case VSI associated with
-VF remains as default one after VF removal.
+Commit 2ccc1c1ccc671b ("ice: Remove excess error variables") merged
+the usage of 'status' and 'err' variables into single one in
+function ice_set_mac_address(). Unfortunately this causes
+a regression when call of ice_fltr_add_mac() returns -EEXIST because
+this return value does not indicate an error in this case but
+value of 'err' remains to be -EEXIST till the end of the function
+and is returned to caller.
 
-Reproducer:
-1. Create VF
-   echo 1 > sys/class/net/ens7f0/device/sriov_numvfs
-2. Enable allmulticast or promisc mode on VF
-   ip link set ens7f0v0 allmulticast on
-   ip link set ens7f0v0 promisc on
-3. Delete VF
-   echo 0 > sys/class/net/ens7f0/device/sriov_numvfs
-4. Try to enable promisc mode on PF
-   ip link set ens7f0 promisc on
+Prior mentioned commit this does not happen because return value of
+ice_fltr_add_mac() was stored to 'status' variable first and
+if it was -EEXIST then 'err' remains to be zero.
 
-Although it looks that promisc mode on PF is enabled the opposite
-is true because ice_vsi_sync_fltr() responsible for IFF_PROMISC
-handling first checks if any other VSI is set as default forwarding
-one and if so the function does not do anything. At this point
-it is not possible to enable promisc mode on PF without re-probe
-device.
+Fix the problem by reset 'err' to zero when ice_fltr_add_mac()
+returns -EEXIST.
 
-To resolve the issue this patch clear default forwarding VSI
-during ice_vsi_release() when the VSI to be released is the default
-one.
-
-Fixes: 01b5e89aab49 ("ice: Add VF promiscuous support")
+Fixes: 2ccc1c1ccc671b ("ice: Remove excess error variables")
 Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Acked-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 Signed-off-by: Alice Michael <alice.michael@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_lib.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_main.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index b897926f817d..6d6233204388 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2983,6 +2983,8 @@ int ice_vsi_release(struct ice_vsi *vsi)
- 		}
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 8181688c897b..1f944b3bd795 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -5477,16 +5477,19 @@ static int ice_set_mac_address(struct net_device *netdev, void *pi)
  
-+	if (ice_is_vsi_dflt_vsi(pf->first_sw, vsi))
-+		ice_clear_dflt_vsi(pf->first_sw);
- 	ice_fltr_remove_all(vsi);
- 	ice_rm_vsi_lan_cfg(vsi->port_info, vsi->idx);
- 	err = ice_rm_vsi_rdma_cfg(vsi->port_info, vsi->idx);
+ 	/* Add filter for new MAC. If filter exists, return success */
+ 	err = ice_fltr_add_mac(vsi, mac, ICE_FWD_TO_VSI);
+-	if (err == -EEXIST)
++	if (err == -EEXIST) {
+ 		/* Although this MAC filter is already present in hardware it's
+ 		 * possible in some cases (e.g. bonding) that dev_addr was
+ 		 * modified outside of the driver and needs to be restored back
+ 		 * to this value.
+ 		 */
+ 		netdev_dbg(netdev, "filter for MAC %pM already exists\n", mac);
+-	else if (err)
++
++		return 0;
++	} else if (err) {
+ 		/* error if the new filter addition failed */
+ 		err = -EADDRNOTAVAIL;
++	}
+ 
+ err_update_filters:
+ 	if (err) {
 -- 
 2.31.1
 
