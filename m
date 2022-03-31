@@ -2,108 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F734ED502
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 09:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 097DA4ED52F
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 10:06:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230427AbiCaHu4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 03:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39430 "EHLO
+        id S231458AbiCaIIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 04:08:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiCaHuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 03:50:54 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCAAEB7E9
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 00:49:07 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2e6650cde1bso244239047b3.12
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 00:49:07 -0700 (PDT)
+        with ESMTP id S232589AbiCaIIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 04:08:12 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60FEFD16
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 01:06:23 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id p15so40047743lfk.8
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 01:06:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VMe7G7k2F3sJkaSPUU9OrwOFeasEXkAartozpYsWHIc=;
-        b=DxzC7NLOdCvcI2Y6Jkn7NtrjSTk/HjFQ5Xoc+vrI1kB+adkprJc036rzhEcY7WIsb4
-         hi6VZZ41bmjouckANvMCufUEo9vlehxdqn+3bgc2SyyUQWyntDDxBggQ22Tn22tsTq0u
-         RswaETTPPBGNkDOFF6cAE+nsIDQg8cQKSQge3IFXm5blV8hxJw2Eg2YFNto1XLqC5s9c
-         bEzWJam1SuIWN+0KSl9Qgcmn+hHK/Fp5JrNZMY6LYrR2oKsP/e168fjnqAGYixSMP340
-         jlv98Y8dweJgi8sEeL1SJX1b2LL8VEuDYSx10oZ0Uir7rrQeBm0+JVkcNScDUx8Oxd8w
-         HKIA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=GiOKcvxrYk9kL4NA4yphL6GBfyykUgWRL0QO9jrahHo=;
+        b=HFMuBfL4jMEbjxUUEO9YGtY/S3V9zi2P44ncaeJr7U+c5D2X+rPK8XNWwDeVlO4m7a
+         80keey6zI85P+8yaqzo9laMaeq57mKwPaUeJOb5fVZyWpJulyg9CzfLl0oX3kRdU1kHD
+         PHE7YTMTSShS+Zfth6ywrdM7z6aZaHp9a1mr8vF1xh/iZ4aIxORuDWqLQEJbvONtWtxP
+         SAoUga0zxRq2FI+7QJGctmnWhnI09/8lcYbtzK/QoctBpow/zaPQE0dOdmM0GXn95lLs
+         r4llWgcq5UnHr91fvD6XLGTnhaes75Rb7QFC8gDt/E86tIOwFBb+QjTAqe9X1C90BXzt
+         2xig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VMe7G7k2F3sJkaSPUU9OrwOFeasEXkAartozpYsWHIc=;
-        b=r5XwT7G+uFpYgGQTwzpg89fzeYQp7MB10Lt2DTBi5P9kl5xwu4JdU/vQmtkRVnG9MO
-         F/gAzgoiikA+6aUT83i6ncPK5+9RqSzeQyY58PQmZA4GgPM6Lffs4FgwhgBH+WRfkjly
-         pk4UFjTMijajZpoMoJQmA2BCgoRgl/NJ0YfgjYiA3eUBdh3lwqthb4fdK5nxh29pow0w
-         hI4zPWtXBtpam36l8z+vnjtleHn5dX9Jxi0IU8AIky01wj79BmdBmgrIOXavA364P9Vl
-         ZljfYyI+nlc+n6gb59vUGE+6rXTncW2B7SXlP5TcPyvBkTDLcxY4kA+iEdFfDFmblB8D
-         OsLg==
-X-Gm-Message-State: AOAM530s60lIrXXi+VyL3Qf3MZs/ngGgQI+2tvzk9HG2UmuPHGLbGsjg
-        ihXxPuJflheunrUjBeA+gPJpf7TK6iMxkJOSMf0ynxbcBipVYY2Z
-X-Google-Smtp-Source: ABdhPJwm1aZ7lVTNgZks7FI5cru3hzVpoo623xthni2Gg4cDDSwbU6DVUUuvFoJCZFISyNoBIH7VYUNZV2+9SgkMfcU=
-X-Received: by 2002:a81:591:0:b0:2e5:cdb0:9363 with SMTP id
- 139-20020a810591000000b002e5cdb09363mr3788408ywf.265.1648712947039; Thu, 31
- Mar 2022 00:49:07 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GiOKcvxrYk9kL4NA4yphL6GBfyykUgWRL0QO9jrahHo=;
+        b=bxftKuLSkiXs1i1e80lFxKL/wwGM6Nupt/S0bXv0zKskyusxJ0l95AvP5acOgqxg1s
+         BDa7clUPzDUtsAwDfXLKMc5Z7LU+GrvbOYnB49k7CoUJflnSPfink9W3zY3BK8chtfvI
+         o8gtl2Rbjg4W/pT8/4rRTWHFz2IVAG3YGkiCTBmaGIDFz8ITj24SNx0At/uKJDk0o2QJ
+         dd/GKiqo/YckpkBLHbHTQTdEXCKMp9qLVXnkwhjC+pbnHvlCB1D/a+imdiCAPC1gInD5
+         iJ4Dxnsiq+Fy+jryuDl5aHOvU65u7rgVvDjqsV+BA5HkR5auJCMvgLQSczIgvE2Vpm7I
+         Kmzg==
+X-Gm-Message-State: AOAM532lcM2t6ctebx1pcoX6LAc72I88zWP1yRvlTC01HhrYe/sm0Kha
+        JL5ocybjz50unhi5ieTLlT4gyXi6qV/C2w==
+X-Google-Smtp-Source: ABdhPJxOkOCGWQvWV4+V8ayILHJZEEh20drbo2/GN7jU8iESBEeIHWgjaL5DN049HW+s210mSrh60Q==
+X-Received: by 2002:a05:6512:3a83:b0:44a:5878:24d6 with SMTP id q3-20020a0565123a8300b0044a587824d6mr9640107lfu.426.1648713981919;
+        Thu, 31 Mar 2022 01:06:21 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
+        by smtp.gmail.com with ESMTPSA id q10-20020a196e4a000000b0044ac90ec3fcsm239561lfk.79.2022.03.31.01.06.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Mar 2022 01:06:21 -0700 (PDT)
+Message-ID: <744ca0a6-95a3-cc81-5b09-ff417ffde401@gmail.com>
+Date:   Thu, 31 Mar 2022 10:06:20 +0200
 MIME-Version: 1.0
-References: <CA+G9fYsntwPrwk39VfsAjRwoSNnb3nX8kCEUa=Gxit7_pfD6bg@mail.gmail.com>
- <8c81e8ad-6741-b5ed-cf0a-5a302d51d40a@linuxfoundation.org>
- <20220325161203.7000698c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <08c5c6f3-e340-eaee-b725-9ec1a4988b84@linuxfoundation.org>
- <CA+G9fYsjP2+20YLbKTFU-4_v+VLq6MfaagjERL9PWETs+sX8Zg@mail.gmail.com> <20220329102649.507bbf2a@kernel.org>
-In-Reply-To: <20220329102649.507bbf2a@kernel.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 31 Mar 2022 13:18:56 +0530
-Message-ID: <CA+G9fYsX=NfUoSXHGEqo_pPqrZ7dxt8+iiQMiAm4dEemNtwq1g@mail.gmail.com>
-Subject: Re: kselftest: net: tls: hangs
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [RFC PATCH net-next 0/2] net: tc: dsa: Implement offload of
+ matchall for bridged DSA ports
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, lkft-triage@lists.linaro.org,
-        Netdev" <netdev@vger.kernel.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tobias Waldekranz <tobias@waldekranz.com>
+References: <20220330113116.3166219-1-mattias.forsblad@gmail.com>
+ <20220330120919.ibmwui3jwfexjes4@skbuf>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <20220330120919.ibmwui3jwfexjes4@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+On 2022-03-30 14:09, Vladimir Oltean wrote:
+> On Wed, Mar 30, 2022 at 01:31:14PM +0200, Mattias Forsblad wrote:
+>> Greetings,
+>>
+>> This series implements offloading of tc matchall filter to HW
+>> for bridged DSA ports.
+>>
+>> Background
+>> When using a non-VLAN filtering bridge we want to be able to drop
+>> traffic directed to the CPU port so that the CPU doesn't get unnecessary loaded.
+>> This is specially important when we have disabled learning on user ports.
+>>
+>> A sample configuration could be something like this:
+>>
+>>        br0
+>>       /   \
+>>    swp0   swp1
+>>
+>> ip link add dev br0 type bridge stp_state 0 vlan_filtering 0
+>> ip link set swp0 master br0
+>> ip link set swp1 master br0
+>> ip link set swp0 type bridge_slave learning off
+>> ip link set swp1 type bridge_slave learning off
+>> ip link set swp0 up
+>> ip link set swp1 up
+>> ip link set br0 up
+>>
+>> After discussions here: https://lore.kernel.org/netdev/YjMo9xyoycXgSWXS@shredder/
+>> it was advised to use tc to set an ingress filter that could then
+>> be offloaded to HW, like so:
+>>
+>> tc qdisc add dev br0 clsact
+>> tc filter add dev br0 ingress pref 1 proto all matchall action drop
+>>
+>> Limitations
+>> If there is tc rules on a bridge and all the ports leave the bridge
+>> and then joins the bridge again, the indirect framwork doesn't seem
+>> to reoffload them at join. The tc rules need to be torn down and
+>> re-added.
+>>
+>> The first part of this serie uses the flow indirect framework to
+>> setup monitoring of tc qdisc and filters added to a bridge.
+>> The second part offloads the matchall filter to HW for Marvell
+>> switches.
+>>
+>> Mattias Forsblad (2):
+>>   net: tc: dsa: Add the matchall filter with drop action for bridged DSA ports.
+>>   net: dsa: Implement tc offloading for drop target.
+>>
+>>  drivers/net/dsa/mv88e6xxx/chip.c |  23 +++-
+>>  include/net/dsa.h                |  13 ++
+>>  net/dsa/dsa2.c                   |   5 +
+>>  net/dsa/dsa_priv.h               |   3 +
+>>  net/dsa/port.c                   |   1 +
+>>  net/dsa/slave.c                  | 217 ++++++++++++++++++++++++++++++-
+>>  6 files changed, 258 insertions(+), 4 deletions(-)
+>>
+>> -- 
+>> 2.25.1
+>>
+> 
+> Have you considered point b of my argument here?
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220317065031.3830481-5-mattias.forsblad@gmail.com/#24782383
+> 
+> To make that argument even clearer, the following script produces:
+> 
+> #!/bin/bash
+> 
+> ip netns add ns0
+> ip netns add ns1
+> ip link add veth0 type veth peer name veth1
+> ip link add veth2 type veth peer name veth3
+> ip link add br0 type bridge && ip link set br0 up
+> ip link set veth0 netns ns0
+> ip link set veth3 netns ns1
+> ip -n ns0 addr add 192.168.100.1/24 dev veth0 && ip -n ns0 link set veth0 up
+> ip -n ns1 addr add 192.168.100.2/24 dev veth3 && ip -n ns1 link set veth3 up
+> ip addr add 192.168.100.3/24 dev br0
+> ip link set veth1 master br0 && ip link set veth1 up
+> ip link set veth2 master br0 && ip link set veth2 up
+> tc qdisc add dev br0 clsact
+> tc filter add dev br0 ingress matchall action drop
+> echo "Pinging another bridge port" && ip netns exec ns0 ping -c 3 192.168.100.2
+> echo "Pinging the bridge" && ip netns exec ns0 ping -c 3 192.168.100.3
+> ip netns del ns0
+> ip netns del ns1
+> ip link del br0
+> 
+> [ 1857.000393] br0: port 1(veth1) entered blocking state
+> [ 1857.005537] br0: port 1(veth1) entered disabled state
+> [ 1857.011433] device veth1 entered promiscuous mode
+> [ 1857.047291] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+> [ 1857.054019] br0: port 1(veth1) entered blocking state
+> [ 1857.059205] br0: port 1(veth1) entered forwarding state
+> [ 1857.064791] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
+> [ 1857.124507] br0: port 2(veth2) entered blocking state
+> [ 1857.129658] br0: port 2(veth2) entered disabled state
+> [ 1857.135585] device veth2 entered promiscuous mode
+> [ 1857.209748] br0: port 2(veth2) entered blocking state
+> [ 1857.214900] br0: port 2(veth2) entered forwarding state
+> [ 1857.220680] IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+> Pinging another bridge port
+> PING 192.168.100.2 (192.168.100.2) 56(84) bytes of data.
+> 64 bytes from 192.168.100.2: icmp_seq=1 ttl=64 time=0.508 ms
+> 64 bytes from 192.168.100.2: icmp_seq=2 ttl=64 time=0.222 ms
+> 64 bytes from 192.168.100.2: icmp_seq=3 ttl=64 time=0.405 ms
+> 
+> --- 192.168.100.2 ping statistics ---
+> 3 packets transmitted, 3 received, 0% packet loss, time 2051ms
+> rtt min/avg/max/mdev = 0.222/0.378/0.508/0.118 ms
+> Pinging the bridge
+> PING 192.168.100.3 (192.168.100.3) 56(84) bytes of data.
+> ^C
+> --- 192.168.100.3 ping statistics ---
+> 3 packets transmitted, 0 received, 100% packet loss, time 2040ms
+> 
+> filter protocol all pref 49152 matchall chain 0
+> filter protocol all pref 49152 matchall chain 0 handle 0x1
+>   not_in_hw
+>         action order 1: gact action drop
+>          random type none pass val 0
+>          index 1 ref 1 bind 1 installed 12 sec used 6 sec
+>         Action statistics:
+>         Sent 936 bytes 16 pkt (dropped 16, overlimits 0 requeues 0)
+>         backlog 0b 0p requeues 0
+> 
+> [ 1870.189158] br0: port 1(veth1) entered disabled state
+> [ 1870.204061] device veth1 left promiscuous mode
+> [ 1870.208751] br0: port 1(veth1) entered disabled state
+> [ 1870.232677] device veth2 left promiscuous mode
+> [ 1870.237814] br0: port 2(veth2) entered disabled state
+> 
+> Now imagine that veth0 is a DSA switch interface which monitors and
+> offloads the drop rule. How could it distinguish between pinging veth3
+> and pinging br0, so as to comply with software semantics?
 
-> Can you check where the process is stuck and it's state?
-> /proc/$pid/stack and run that thru scripts/decode_stacktrace
->
+Hi Vladimir,
+thanks for your comments. The patch series takes in account that a foreign
+interface is bridged and doesn't offload the rule in this case (dsa_slave_check_offload).
 
-Steps to reproduce:
-          - cd /opt/kselftests/default-in-kernel/net
-          - ./tls &
-          - tests_pid=$!
-          - echo $tests_pid
-          - sleep 90
-          - cat /proc/$tests_pid/stack | tee tests_pid_stack.log
-          - cat tests_pid_stack.log
-
-[<0>] do_wait+0x191/0x3a0
-[<0>] kernel_wait4+0xaf/0x160
-[<0>] __do_sys_wait4+0x85/0x90
-[<0>] __x64_sys_wait4+0x1c/0x20
-[<0>] do_syscall_64+0x5c/0x80
-[<0>] entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Detail test log can be found here in this link [1]
-
-I do not see any output from
-./scripts/decode_stacktrace.sh  stack-dump.txt
-
-
-- Naresh
-
-[1] https://lkft.validation.linaro.org/scheduler/job/4812800#L2256
+Regarding your previous comment point b. Tobias could see some problems
+with that approach. I'd think he will comment on that.
