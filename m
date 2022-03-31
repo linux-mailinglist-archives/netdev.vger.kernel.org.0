@@ -2,157 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E624ED4C1
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 09:27:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B9B4ED4E7
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 09:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232014AbiCaH3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 03:29:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
+        id S232299AbiCaHky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 03:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiCaH3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 03:29:03 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87F05C6811
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 00:27:16 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id yy13so46226945ejb.2
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 00:27:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hvu8rz9cP/tdlkhq2cwevWc78KdfThG0T1nMSudnVUM=;
-        b=Eht3iYGjLrVYj2cUzLhGdgq3Hvac9n33VlylDxub/hl9SxSRzrlAD8p1+xkslR9G6k
-         F2B7kuAGM81YXqf/WyCABQ3YpQ+vHJLBPbME5uSJWXUtM6P+MFaa9zvWtQ7HJsetD/vN
-         p0ZXJl1AO/Asl1s8040N9fbB0AN2uFn6FUpNEWqfIri+i/89TYL7V/Jnbdj+8bjYAgXq
-         99sQzvviPmf0CtroamWAZNiAAvHYqNMzRFjpWIjMBKnhjrQKzpufHXu4axEH1FK+JF/s
-         eHRORXodoLevbBIxzzGENbrseEGb39TZ6ZBPtJNK8u/v/rxtJPGwED43EOTiHD1UjW96
-         1gIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hvu8rz9cP/tdlkhq2cwevWc78KdfThG0T1nMSudnVUM=;
-        b=5KFNyW2pyS9va3w8DSZGu8gVik+1y5RsHgzIJxUWyIazP8iSRfXSDPmm1QahBPOlNE
-         zHJr3KjlqDP6CEnHlhMO5/T6Tq0ejqxR+bquzx5sKLF9LRQcePQiNvioM8Sf2FBP8lpA
-         0W19/XVMnnOJlMJpub8TWMQk/flOM62Ib+hLShVWGTM5i+zxs6beodHqlTYz6mMyTBRc
-         1JILIcb9J6iDlWjQ08RtLLp88Rn2ULFQ3dS0ZLWvuMdncMWwF73uSIPoWcQrutK9zDaP
-         2KrUOQsGju7rAip2bbJeciIVmH6NKyVyPZx5YQmJSXVA2I/6XLoxmsqfZKw+9gpOBvnJ
-         tUDQ==
-X-Gm-Message-State: AOAM532mfhnY1z8SMbQkWAh1CaQetEf6OSh/h7BaeV6lrIdgRTmEaasv
-        ZU8CQ+ByOTjr2qsZnTqLOCU=
-X-Google-Smtp-Source: ABdhPJyRCXknoyfRhafTqNkGopGMivYbxYOT/1I+vNXwsUKUqSM57l4EDPrkXbvzBBfgrlu8i1O7Ag==
-X-Received: by 2002:a17:907:3f07:b0:6e0:2fa0:2482 with SMTP id hq7-20020a1709073f0700b006e02fa02482mr3686050ejc.766.1648711634893;
-        Thu, 31 Mar 2022 00:27:14 -0700 (PDT)
-Received: from localhost.localdomain ([213.57.189.88])
-        by smtp.gmail.com with ESMTPSA id g21-20020a056402115500b00413c824e422sm10751887edw.72.2022.03.31.00.27.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 00:27:14 -0700 (PDT)
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     dsahern@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, andrea.mayer@uniroma2.it
-Cc:     netdev@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>
-Subject: [PATCH net] vrf: fix packet sniffing for traffic originating from ip tunnels
-Date:   Thu, 31 Mar 2022 10:26:43 +0300
-Message-Id: <20220331072643.3026742-1-eyal.birger@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231534AbiCaHkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 03:40:52 -0400
+X-Greylist: delayed 244 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 31 Mar 2022 00:39:05 PDT
+Received: from condef-04.nifty.com (condef-04.nifty.com [202.248.20.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225371F1D33;
+        Thu, 31 Mar 2022 00:39:04 -0700 (PDT)
+Received: from conssluserg-02.nifty.com ([10.126.8.81])by condef-04.nifty.com with ESMTP id 22V7Uagg003081;
+        Thu, 31 Mar 2022 16:30:36 +0900
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 22V7UGG0029675;
+        Thu, 31 Mar 2022 16:30:16 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 22V7UGG0029675
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1648711817;
+        bh=9Htjky9XkVnyUWia+NbkPjjSVOOOk9oXjJ0/73vR0WE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=09j5XpbnARkHo1663RYGjwTfTBie0lA6g7DBnrSnRwJB/vkVDQBEJ1Tc08L22nx6Q
+         KuZksZsWTQW4Km9WjQSm4ThFKU6eCc4c8yDaNwx/mmVPH6E18M00WxIdU1pcnS7PcZ
+         VdGaWBPoM8XFvo+PvG0E5CziaPO+nHGQwz8OxS48uSULGDoN/5br05H4R2x6fMembO
+         I1iJY+SB4ICnalDIfkFFQ3fy3rKgjT4heOuIqj14Q6P2K1ao1LiEB8EWBr5+J7/ryS
+         qdGiTO56TWr9c0t4xa4c6aAEM4mVeKIoBR1e5snLBY0TRcODSmCmDORA6gvTWFDGEG
+         TrLUpGhQOSxFw==
+X-Nifty-SrcIP: [209.85.214.177]
+Received: by mail-pl1-f177.google.com with SMTP id x2so22632292plm.7;
+        Thu, 31 Mar 2022 00:30:16 -0700 (PDT)
+X-Gm-Message-State: AOAM531n4e5f9Bpi0v/t6Gz6VS4aPojPRmF+cRMFYi7z6khmIkt8WefZ
+        fKrH7EtwpW8tyJVo8KzhulhA9XlufutR/IOA0BQ=
+X-Google-Smtp-Source: ABdhPJxUYlg8xglwS7unqeL3Qg1V0KxRq8m3F9e9rDzp88ArQtlOndUIMBaAh9o1sujNi92PFsOKGmNv02Edcu1ePLA=
+X-Received: by 2002:a17:90b:4d01:b0:1c9:ec79:1b35 with SMTP id
+ mw1-20020a17090b4d0100b001c9ec791b35mr4459174pjb.77.1648711815860; Thu, 31
+ Mar 2022 00:30:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220330201755.29319-1-mathieu.desnoyers@efficios.com> <20220330162152.17b1b660@gandalf.local.home>
+In-Reply-To: <20220330162152.17b1b660@gandalf.local.home>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 31 Mar 2022 16:29:30 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com>
+Message-ID: <CAK7LNATm5FjZsXL6aKUMhXwQAqTuO9+LmAk3LGjpAib7NZBDmg@mail.gmail.com>
+Subject: Re: [PATCH] tracing: do not export user_events uapi
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Beau Belgrave <beaub@linux.microsoft.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,
+        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-in commit 048939088220
-("vrf: add mac header for tunneled packets when sniffer is attached")
-an Ethernet header was cooked for traffic originating from tunnel devices.
+On Thu, Mar 31, 2022 at 5:21 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+>
+> Adding the build maintainers.
+>
+> -- Steve
+>
+> On Wed, 30 Mar 2022 16:17:55 -0400
+> Mathieu Desnoyers <mathieu.desnoyers@efficios.com> wrote:
+>
+> > In addition to mark the USER_EVENTS feature BROKEN until all interested
+> > parties figure out the user-space API, do not install the uapi header.
+> >
+> > This prevents situations where a non-final uapi header would end up
+> > being installed into a distribution image and used to build user-space
+> > programs that would then run against newer kernels that will implement
+> > user events with a different ABI.
+> >
+> > Link: https://lore.kernel.org/all/20220330155835.5e1f6669@gandalf.local.home
+> >
+> > Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+> > ---
+> >  include/uapi/Kbuild | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/include/uapi/Kbuild b/include/uapi/Kbuild
+> > index 61ee6e59c930..425ea8769ddc 100644
+> > --- a/include/uapi/Kbuild
+> > +++ b/include/uapi/Kbuild
+> > @@ -12,3 +12,6 @@ ifeq ($(wildcard $(objtree)/arch/$(SRCARCH)/include/generated/uapi/asm/kvm_para.
+> >  no-export-headers += linux/kvm_para.h
+> >  endif
+> >  endif
+> > +
+> > +# API is not finalized
+> > +no-export-headers += linux/user_events.h
+>
 
-However, the header is added based on whether the mac_header is unset
-and ignores cases where the device doesn't expose a mac header to upper
-layers, such as in ip tunnels like ipip and gre.
 
-Traffic originating from such devices still appears garbled when capturing
-on the vrf device.
+Well, the intended usage of no-export-headers is to
+cater to the UAPI supported by only some architectures.
+We have kvm(_para).h here because not all architectures
+support kvm.
 
-Fix by observing whether the original device exposes a header to upper
-layers, similar to the logic done in af_packet.
+If you do not want to export the UAPI,
+you should not put it in include/uapi/.
 
-In addition, skb->mac_len needs to be adjusted after adding the Ethernet
-header for the skb_push/pull() surrounding dev_queue_xmit_nit() to work
-on these packets.
+After the API is finalized, you can move it to
+include/uapi.
 
-Fixes: 048939088220 ("vrf: add mac header for tunneled packets when sniffer is attached")
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
----
- drivers/net/vrf.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 85e362461d71..cfc30ce4c6e1 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1265,6 +1265,7 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
- 	eth = (struct ethhdr *)skb->data;
- 
- 	skb_reset_mac_header(skb);
-+	skb_reset_mac_len(skb);
- 
- 	/* we set the ethernet destination and the source addresses to the
- 	 * address of the VRF device.
-@@ -1294,9 +1295,9 @@ static int vrf_prepare_mac_header(struct sk_buff *skb,
-  */
- static int vrf_add_mac_header_if_unset(struct sk_buff *skb,
- 				       struct net_device *vrf_dev,
--				       u16 proto)
-+				       u16 proto, struct net_device *orig_dev)
- {
--	if (skb_mac_header_was_set(skb))
-+	if (skb_mac_header_was_set(skb) && dev_has_header(orig_dev))
- 		return 0;
- 
- 	return vrf_prepare_mac_header(skb, vrf_dev, proto);
-@@ -1402,6 +1403,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 
- 	/* if packet is NDISC then keep the ingress interface */
- 	if (!is_ndisc) {
-+		struct net_device *orig_dev = skb->dev;
-+
- 		vrf_rx_stats(vrf_dev, skb->len);
- 		skb->dev = vrf_dev;
- 		skb->skb_iif = vrf_dev->ifindex;
-@@ -1410,7 +1413,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- 			int err;
- 
- 			err = vrf_add_mac_header_if_unset(skb, vrf_dev,
--							  ETH_P_IPV6);
-+							  ETH_P_IPV6,
-+							  orig_dev);
- 			if (likely(!err)) {
- 				skb_push(skb, skb->mac_len);
- 				dev_queue_xmit_nit(skb, vrf_dev);
-@@ -1440,6 +1444,8 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
- static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
- 				  struct sk_buff *skb)
- {
-+	struct net_device *orig_dev = skb->dev;
-+
- 	skb->dev = vrf_dev;
- 	skb->skb_iif = vrf_dev->ifindex;
- 	IPCB(skb)->flags |= IPSKB_L3SLAVE;
-@@ -1460,7 +1466,8 @@ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
- 	if (!list_empty(&vrf_dev->ptype_all)) {
- 		int err;
- 
--		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP);
-+		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP,
-+						  orig_dev);
- 		if (likely(!err)) {
- 			skb_push(skb, skb->mac_len);
- 			dev_queue_xmit_nit(skb, vrf_dev);
 -- 
-2.25.1
-
+Best Regards
+Masahiro Yamada
