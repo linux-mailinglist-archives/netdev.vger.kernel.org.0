@@ -2,109 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FC114ED6F4
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94A984ED6FA
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 11:31:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233266AbiCaJcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 05:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
+        id S233948AbiCaJcg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 05:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233161AbiCaJcE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:32:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6831B1959C4;
-        Thu, 31 Mar 2022 02:30:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S233979AbiCaJce (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 05:32:34 -0400
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3281AAA72
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 02:30:45 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 124E8B82014;
-        Thu, 31 Mar 2022 09:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B949EC340F3;
-        Thu, 31 Mar 2022 09:30:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648719014;
-        bh=FvvM5BIaN0Tlqtjuez0sKOLUrS6aTrHpEXTSTkI/TxI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hqWejYGFzcPZcPvr1BiLXs6bjSUkth294jBUvBLcYg465Slf6qfU5GWPkDwPcO2bu
-         2BAbO1I2j75tAf8lgctfbR+QT87PtAnc6C2F6/C2uodCjOOH9FEPvOjTf4D93/LCL7
-         312wL6NBCTST7kAHJ33ZVo8XiXz9syo+p2VSbzxAiMFXwvH/9cljE8upKECmDcT1tX
-         3+OVfhOtuWjNCgtX81hm1w8Fk6vgnuymLNItt7X3urZYX1CGb6ukrHBGX4x/KfK7n7
-         H03k1m3lPWgmniO5Ke2p4omTGqwgHZwMz9vd+yN4HYq12ei6CPieXtEQs3PcBolOZW
-         rDN5CVj5oYMeg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9D967F03848;
-        Thu, 31 Mar 2022 09:30:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 0907A2804CB46;
+        Thu, 31 Mar 2022 11:30:41 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id F153E32A73; Thu, 31 Mar 2022 11:30:40 +0200 (CEST)
+Date:   Thu, 31 Mar 2022 11:30:40 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: ordering of call to unbind() in usbnet_disconnect
+Message-ID: <20220331093040.GA20035@wunner.de>
+References: <20220315083234.GA27883@wunner.de>
+ <20220315113841.GA22337@pengutronix.de>
+ <YjCUgCNHw6BUqJxr@lunn.ch>
+ <20220321100226.GA19177@wunner.de>
+ <Yjh5Qz8XX1ltiRUM@lunn.ch>
+ <20220326123929.GB31022@wunner.de>
+ <Yj8L2Jl0yyHIyW1m@lunn.ch>
+ <20220326130430.GD31022@wunner.de>
+ <20220327083702.GC27264@pengutronix.de>
+ <37ff78db-8de5-56c0-3da2-9effc17b4e41@suse.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 00/14] docs: update and move the netdev-FAQ
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164871901464.21222.10495458574563491451.git-patchwork-notify@kernel.org>
-Date:   Thu, 31 Mar 2022 09:30:14 +0000
-References: <20220330042505.2902770-1-kuba@kernel.org>
-In-Reply-To: <20220330042505.2902770-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, bpf@vger.kernel.org, linux-doc@vger.kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <37ff78db-8de5-56c0-3da2-9effc17b4e41@suse.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Tue, 29 Mar 2022 21:24:51 -0700 you wrote:
-> A section of documentation for tree-specific process quirks had
-> been created a while back. There's only one tree in it, so far,
-> the tip tree, but the contents seem to answer similar questions
-> as we answer in the netdev-FAQ. Move the netdev-FAQ.
+On Thu, Mar 31, 2022 at 11:20:50AM +0200, Oliver Neukum wrote:
+> I am afraid, putting my
+> maintainer's hat on, I have to point on that we have a stable tree for
+> which we will need some solution.
 > 
-> Take this opportunity to touch up and update a few sections.
+> Nor can usbnet exclusively cater to device that expose their PHY
+> over MDIO. (or at all really). Intuitively I must say that exactly reversing
+> the order of probe() in disconnect() is kind of the default.
+> If there is a need to deviate from that, of course we will acomodate that,
+> but making this the exclusive order is another matter.
 > 
-> [...]
+> I really get that you want to discuss this matter exhaustively, but we
+> need to
+> come to some kind of conclusion.
 
-Here is the summary with links:
-  - [net,v3,01/14] docs: netdev: replace references to old archives
-    https://git.kernel.org/netdev/net/c/50386f7526dd
-  - [net,v3,02/14] docs: netdev: minor reword
-    https://git.kernel.org/netdev/net/c/30cddd30532a
-  - [net,v3,03/14] docs: netdev: move the patch marking section up
-    https://git.kernel.org/netdev/net/c/c82d90b14f6c
-  - [net,v3,04/14] docs: netdev: turn the net-next closed into a Warning
-    https://git.kernel.org/netdev/net/c/2fd4c50dbff1
-  - [net,v3,05/14] docs: netdev: note that RFC postings are allowed any time
-    https://git.kernel.org/netdev/net/c/0e242e3fb7a7
-  - [net,v3,06/14] docs: netdev: shorten the name and mention msgid for patch status
-    https://git.kernel.org/netdev/net/c/5d84921ac750
-  - [net,v3,07/14] docs: netdev: rephrase the 'Under review' question
-    https://git.kernel.org/netdev/net/c/8f785c1bb84f
-  - [net,v3,08/14] docs: netdev: rephrase the 'should I update patchwork' question
-    https://git.kernel.org/netdev/net/c/724c1a7443c5
-  - [net,v3,09/14] docs: netdev: add a question about re-posting frequency
-    https://git.kernel.org/netdev/net/c/b8ba106378a0
-  - [net,v3,10/14] docs: netdev: make the testing requirement more stringent
-    https://git.kernel.org/netdev/net/c/3eca381457ca
-  - [net,v3,11/14] docs: netdev: add missing back ticks
-    https://git.kernel.org/netdev/net/c/a30059731877
-  - [net,v3,12/14] docs: netdev: call out the merge window in tag checking
-    https://git.kernel.org/netdev/net/c/99eba4e5cbd4
-  - [net,v3,13/14] docs: netdev: broaden the new vs old code formatting guidelines
-    https://git.kernel.org/netdev/net/c/08767a26f095
-  - [net,v3,14/14] docs: netdev: move the netdev-FAQ to the process pages
-    https://git.kernel.org/netdev/net/c/8df0136376dc
+I propose the below patch.  If you could provide more details on the
+regressions you've reported (+ ideally bugzilla links), I'll be happy
+to include them in the commit message.  Thanks!
 
-You are awesome, thank you!
+-- >8 --
+Subject: [PATCH] usbnet: Run unregister_netdev() before unbind() again
+
+Oliver says he got bug reports that commit 2c9d6c2b871d ("usbnet: run
+unbind() before unregister_netdev()") is causing regressions.
+
+The commit made binding and unbinding of USB Ethernet asymmetrical:
+Before, usbnet_probe() first invoked the ->bind() callback and then
+register_netdev().  usbnet_disconnect() mirrored that by first invoking
+unregister_netdev() and then ->unbind().
+
+Since the commit, the order in usbnet_disconnect() is reversed and no
+longer mirrors usbnet_probe().
+
+One consequence is that a PHY disconnected (and stopped) in ->unbind()
+is afterwards stopped once more by unregister_netdev() as it closes the
+netdev before unregistering.  That necessitates a contortion in ->stop()
+because the PHY may only be stopped if it hasn't already been
+disconnected.
+
+Reverting the commit allows making the call to phy_stop() unconditional
+in ->stop() and also fixes the issues reported by Oliver.
+
+Fixes: 2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()")
+Link: https://lore.kernel.org/netdev/62b944a1-0df2-6e81-397c-6bf9dea266ef@suse.com/
+Reported-by: Oliver Neukum <oneukum@suse.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: stable@vger.kernel.org # v5.14+
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Martyn Welch <martyn.welch@collabora.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/usb/asix_devices.c | 6 +-----
+ drivers/net/usb/smsc95xx.c     | 3 +--
+ drivers/net/usb/usbnet.c       | 6 +++---
+ 3 files changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 4514d35..7d569f0 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -794,11 +794,7 @@ static int ax88772_stop(struct usbnet *dev)
+ {
+ 	struct asix_common_private *priv = dev->driver_priv;
+ 
+-	/* On unplugged USB, we will get MDIO communication errors and the
+-	 * PHY will be set in to PHY_HALTED state.
+-	 */
+-	if (priv->phydev->state != PHY_HALTED)
+-		phy_stop(priv->phydev);
++	phy_stop(priv->phydev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 193635e..3dc6df6 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1280,8 +1280,7 @@ static int smsc95xx_start_phy(struct usbnet *dev)
+ 
+ static int smsc95xx_stop(struct usbnet *dev)
+ {
+-	if (dev->net->phydev)
+-		phy_stop(dev->net->phydev);
++	phy_stop(dev->net->phydev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 9a6450f..e8b4a93 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1616,9 +1616,6 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 		   xdev->bus->bus_name, xdev->devpath,
+ 		   dev->driver_info->description);
+ 
+-	if (dev->driver_info->unbind)
+-		dev->driver_info->unbind(dev, intf);
+-
+ 	net = dev->net;
+ 	unregister_netdev (net);
+ 
+@@ -1626,6 +1623,9 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 
+ 	usb_scuttle_anchored_urbs(&dev->deferred);
+ 
++	if (dev->driver_info->unbind)
++		dev->driver_info->unbind (dev, intf);
++
+ 	usb_kill_urb(dev->interrupt);
+ 	usb_free_urb(dev->interrupt);
+ 	kfree(dev->padding_pkt);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
