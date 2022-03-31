@@ -2,73 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C7A44EDF63
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 19:09:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7524EDF6F
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 19:14:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240497AbiCaRKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 13:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54292 "EHLO
+        id S233807AbiCaRPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 13:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240498AbiCaRKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 13:10:08 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D245DA07
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 10:08:18 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id p15so660459ejc.7
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 10:08:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=kEqVFaQNVsirI19BzOWunmIWYpJUmcbYWL8iEQUsWPQ=;
-        b=YzXEakKa9RntpJcjDKxIzuhwh1c/WC9cXqvtM8JcjpKzKUIGosE6f8TFF3rr+o4TzG
-         y39yX9VOjnrK+FGfJxk39L5L9ePAWqPrSFE5KHai7sIzySNKqeNaTY2sgcqXzTAqGvPm
-         3cHmmlkB6ks9VSHjSx0+Mkr6Q6d/nQVIXtI9Smd3aRXBrgoVtr9qDVgzWFZHLP81vvxM
-         lg3gajYoJnRe6neA0cl1wjXQ94g1qln68LKFBKRyaI8ZDE68RYGszL0fEgH2cvDO1oka
-         nm5edvnYiMw6GCHHQZie9Ev9ULe0p34YDC3l+zHD0a6dLEzhqz+Qgqm1qTFUsgR1T+Wd
-         36OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kEqVFaQNVsirI19BzOWunmIWYpJUmcbYWL8iEQUsWPQ=;
-        b=xpCLFyt7ZUvHhEmSSuFbBCCtqbLNwcSTvWLaheIQ1m1vrR3lDLR1QE7PT/zt51jFsY
-         r/LlnD5o6mX5pg1ULlMT0bYYwbNygwcBR/TxTO8r/yw/EKcmSnLpVNp2ZcoPN02RJgMw
-         iXoqtHaWa1ftpxCSD3x3ANLstCBN/f/7aRnsNe5/JgSt0b8YhuTnXhHw/sIC02HK7J43
-         8+Fqm/wENQPT6GWpykHq8ZYd7QvUiGtpPgW9XvLkR6F6woPWNaUN0r4olcKWQJW7P0yB
-         4eiJIu5OFnEolbIiHPGpbKS3LbwDx6zVIHyhV0z1E6q1SbKT0DnhPWqP1j8xZlnlquir
-         7Kug==
-X-Gm-Message-State: AOAM532qYvHGU8+sU6I6FOXekQgQckheVPGr2z7PZwFU34/hXMdwhQnZ
-        yDRX4K7rq5TLgsD8ZhWAUho93A==
-X-Google-Smtp-Source: ABdhPJwPbLh5zS5vCrMs/t4eUy9456kE1Rj1C5TKr5bJKpEs1nTB5UEyCthua6vli7lcaN0oHpCaMg==
-X-Received: by 2002:a17:907:7899:b0:6e0:f285:a860 with SMTP id ku25-20020a170907789900b006e0f285a860mr5756132ejc.261.1648746496580;
-        Thu, 31 Mar 2022 10:08:16 -0700 (PDT)
-Received: from [192.168.0.167] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id jg15-20020a170907970f00b006e0466dcc42sm9622686ejc.134.2022.03.31.10.08.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Mar 2022 10:08:16 -0700 (PDT)
-Message-ID: <25555081-ed80-bbca-b53a-c46a798d3f4d@linaro.org>
-Date:   Thu, 31 Mar 2022 19:08:14 +0200
+        with ESMTP id S233991AbiCaRPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 13:15:15 -0400
+Received: from gateway22.websitewelcome.com (gateway22.websitewelcome.com [192.185.46.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1139B87
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 10:13:26 -0700 (PDT)
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id 00C2D203E8
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 12:13:26 -0500 (CDT)
+Received: from 162-215-252-75.unifiedlayer.com ([208.91.199.152])
+        by cmsmtp with SMTP
+        id ZyKTnFpUrRnrrZyKTnNzHB; Thu, 31 Mar 2022 12:11:25 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:Subject:From:References:Cc:To:MIME-Version:Date:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=aI+bV8VGhtRiaWJK4Xog9eYqwu1fuRPuRDubJJk73ag=; b=c0sezV+TbXC1QwszWGrATQAgiE
+        0jgkWUUd6BbxqDO+EjXgTMimyq86tP0QHgrkwh/fdgv2dcoCizLW9iQY3UjATcpTyQGemT1pF/nnX
+        tbRNrf86txWyX+N4V/p5CVbqCC0ShTYTKybgmUM18V2HM3cUIOpmHsTs28WbH8IFCv4KEkYOUlJZf
+        RdRTlWgP6Ouq75QBvgVEZuftBnRcyOa3uTIweNHxc866NyynaZOJZYEg3GCDT27yQyHipY/pR5jWM
+        +xFR+50w4G4UxqwHji7U57A8oTvRngZH8DD9sf46URRBQbi+iRz/h4RRPZYRhlJmTQ4xGihNjlE/W
+        IWfLcSrw==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:54590)
+        by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@roeck-us.net>)
+        id 1nZyKS-002ePL-N9; Thu, 31 Mar 2022 17:11:24 +0000
+Message-ID: <68f0b4b6-59ed-34ac-bc69-810668a979de@roeck-us.net>
+Date:   Thu, 31 Mar 2022 10:11:22 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v1 1/3] dt-bindings: net: convert emac_rockchip.txt to
- YAML
 Content-Language: en-US
-To:     Johan Jonker <jbx6244@gmail.com>, heiko@sntech.de
-Cc:     robh+dt@kernel.org, krzk+dt@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220331161459.16499-1-jbx6244@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220331161459.16499-1-jbx6244@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Michael Walle <michael@walle.cc>
+Cc:     Xu Yilun <yilun.xu@intel.com>,
+        David Laight <David.Laight@aculab.com>,
+        Tom Rix <trix@redhat.com>, Jean Delvare <jdelvare@suse.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20220329160730.3265481-1-michael@walle.cc>
+ <20220329160730.3265481-2-michael@walle.cc>
+ <20220330065047.GA212503@yilunxu-OptiPlex-7050>
+ <5029cf18c9df4fab96af13c857d2e0ef@AcuMS.aculab.com>
+ <20220330145137.GA214615@yilunxu-OptiPlex-7050>
+ <4973276f-ed1e-c4ed-18f9-e8078c13f81a@roeck-us.net>
+ <YkW+kWXrkAttCbsm@shell.armlinux.org.uk>
+ <7b3edeabb66e50825cc42ca1edf86bb7@walle.cc>
+ <YkXBgTXRIFpE+YDL@shell.armlinux.org.uk>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v2 1/5] hwmon: introduce hwmon_sanitize_name()
+In-Reply-To: <YkXBgTXRIFpE+YDL@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1nZyKS-002ePL-N9
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:54590
+X-Source-Auth: linux@roeck-us.net
+X-Email-Count: 1
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_PASS,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,158 +96,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/03/2022 18:14, Johan Jonker wrote:
-> Convert emac_rockchip.txt to YAML.
+On 3/31/22 07:58, Russell King (Oracle) wrote:
+> On Thu, Mar 31, 2022 at 04:51:47PM +0200, Michael Walle wrote:
+>> Am 2022-03-31 16:45, schrieb Russell King (Oracle):
+>>> On Wed, Mar 30, 2022 at 08:23:35AM -0700, Guenter Roeck wrote:
+>>>> Michael, let's just drop the changes outside drivers/hwmon from
+>>>> the series, and let's keep hwmon_is_bad_char() in the include file.
+>>>> Let's just document it, explaining its use case.
+>>>
+>>> Why? There hasn't been any objection to the change. All the discussion
+>>> seems to be around the new function (this patch) rather than the actual
+>>> conversions in drivers.
+>>>
+>>> I'm entirely in favour of cleaning this up - it irks me that we're doing
+>>> exactly the same cleanup everywhere we have a hwmon.
+>>>
+>>> At the very least, I would be completely in favour of keeping the
+>>> changes in the sfp and phy code.
+>>
+>> FWIW, my plan was to send the hwmon patches first, by then my other
+>> series (the polynomial_calc() one) will also be ready to be picked.
+>> Then I'd ask Guenter for a stable branch with these two series which
+>> hopefully get merged into net-next. Then I can repost the missing
+>> patches on net-next along with the new sensors support for the GPY
+>> and LAN8814 PHYs.
 > 
-> Changes against original bindings:
->   Add mdio sub node.
-
-I see you replaced phy phandle with mdio node, but is it supported by
-the driver? arc_emac_probe() seems to look for "phy".
-
+> Okay, that's fine. It just sounded like the conversion of other drivers
+> outside drivers/hwmon was being dropped.
 > 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
->  .../devicetree/bindings/net/emac_rockchip.txt |  52 --------
->  .../bindings/net/emac_rockchip.yaml           | 112 ++++++++++++++++++
->  2 files changed, 112 insertions(+), 52 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/emac_rockchip.txt
->  create mode 100644 Documentation/devicetree/bindings/net/emac_rockchip.yaml
 
-rockchip,emac.yaml
+Not dropped, just disconnected. From hwmon perspective, we want a certain
+set of characters to be dropped or replaced. Also, from hwmon perspective,
+it makes sense to have the helper function allocate the replacement data.
+There was disagreement about which characters should be replaced, and if
+the helper function should allocate the replacement string or not.
+I have no intention to change the set of characters without good reason,
+and I feel quite strongly about allocating the replacement in the helper
+function. Since potential callers don't _have_ to use the helper and don't
+_have_ to provide valid names (and are responsible for the consequences),
+I would like that discussion to be separate from hwmon changes.
 
+> Note that there's another "sanitisation" of hwmon names in
+> drivers/net/phy/marvell.c - that converts any non-alnum character to
+> an underscore. Not sure why the different approach was chosen there.
 > 
-> diff --git a/Documentation/devicetree/bindings/net/emac_rockchip.txt b/Documentation/devicetree/bindings/net/emac_rockchip.txt
-> deleted file mode 100644
-> index 05bd7dafc..000000000
-> --- a/Documentation/devicetree/bindings/net/emac_rockchip.txt
-> +++ /dev/null
-> @@ -1,52 +0,0 @@
-> -* ARC EMAC 10/100 Ethernet platform driver for Rockchip RK3036/RK3066/RK3188 SoCs
-> -
-> -Required properties:
-> -- compatible: should be "rockchip,<name>-emac"
-> -   "rockchip,rk3036-emac": found on RK3036 SoCs
-> -   "rockchip,rk3066-emac": found on RK3066 SoCs
-> -   "rockchip,rk3188-emac": found on RK3188 SoCs
-> -- reg: Address and length of the register set for the device
-> -- interrupts: Should contain the EMAC interrupts
-> -- rockchip,grf: phandle to the syscon grf used to control speed and mode
-> -  for emac.
-> -- phy: see ethernet.txt file in the same directory.
-> -- phy-mode: see ethernet.txt file in the same directory.
-> -
-> -Optional properties:
-> -- phy-supply: phandle to a regulator if the PHY needs one
-> -
-> -Clock handling:
-> -- clocks: Must contain an entry for each entry in clock-names.
-> -- clock-names: Shall be "hclk" for the host clock needed to calculate and set
-> -  polling period of EMAC and "macref" for the reference clock needed to transfer
-> -  data to and from the phy.
-> -
-> -Child nodes of the driver are the individual PHY devices connected to the
-> -MDIO bus. They must have a "reg" property given the PHY address on the MDIO bus.
-> -
-> -Examples:
-> -
-> -ethernet@10204000 {
-> -	compatible = "rockchip,rk3188-emac";
-> -	reg = <0xc0fc2000 0x3c>;
-> -	interrupts = <6>;
-> -	mac-address = [ 00 11 22 33 44 55 ];
-> -
-> -	clocks = <&cru HCLK_EMAC>, <&cru SCLK_MAC>;
-> -	clock-names = "hclk", "macref";
-> -
-> -	pinctrl-names = "default";
-> -	pinctrl-0 = <&emac_xfer>, <&emac_mdio>, <&phy_int>;
-> -
-> -	rockchip,grf = <&grf>;
-> -
-> -	phy = <&phy0>;
-> -	phy-mode = "rmii";
-> -	phy-supply = <&vcc_rmii>;
-> -
-> -	#address-cells = <1>;
-> -	#size-cells = <0>;
-> -	phy0: ethernet-phy@0 {
-> -	      reg = <1>;
-> -	};
-> -};
-> diff --git a/Documentation/devicetree/bindings/net/emac_rockchip.yaml b/Documentation/devicetree/bindings/net/emac_rockchip.yaml
-> new file mode 100644
-> index 000000000..03173fa7b
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/emac_rockchip.yaml
-> @@ -0,0 +1,112 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/emac_rockchip.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Rockchip RK3036/RK3066/RK3188 Ethernet Media Access Controller (EMAC)
-> +
-> +maintainers:
-> +  - Heiko Stuebner <heiko@sntech.de>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - rockchip,rk3036-emac
-> +      - rockchip,rk3066-emac
-> +      - rockchip,rk3188-emac
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    minItems: 2
-> +    items:
-> +      - description: host clock
-> +      - description: reference clock
-> +      - description: mac TX/RX clock
-> +
-> +  clock-names:
-> +    minItems: 2
-> +    items:
-> +      - const: hclk
-> +      - const: macref
-> +      - const: macclk
 
-This is also a change, mention it briefly in the commit msg.
+It actually drops non-alphanumeric characters. The name is derived
+from the phy device name, which I think is derived from the name field
+in struct phy_driver. That includes spaces and '(', ')'. I honestly
+have no idea what libsensors would do with '(' and ')'. Either case,
+even if that would create a hiccup in libsensors and we would add
+'(' and ')' to the 'forbidden' list of characters, the fact that the
+code doesn't replace but drop non-alphanumeric characters means
+it won't be able to use a helper anyway since that would result
+in a hwmon 'name' attribute change and thus not be backward
+compatible. Besides, "Marvell_88E1111__Finisar_" would look a bit
+odd anyway, and "Marvell88E1111Finisar" may be at least slightly
+better.
 
-> +
-> +  rockchip,grf:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Phandle to the syscon GRF used to control speed and mode for the EMAC.
-> +
-> +  phy-supply:
-> +    description:
-> +      Phandle to a regulator if the PHY needs one.
-> +
-> +  mdio:
-> +    $ref: mdio.yaml#
-> +    unevaluatedProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +  - rockchip,grf
-
-phy-handle and phy-mode. Probably mdio as well?
-
-> +
-> +allOf:
-> +  - $ref: "ethernet-controller.yaml#"
-
-Best regards,
-Krzysztof
+Guenter
