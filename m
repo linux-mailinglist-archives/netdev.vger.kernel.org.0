@@ -2,317 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 719024ED94F
-	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 14:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F29124ED958
+	for <lists+netdev@lfdr.de>; Thu, 31 Mar 2022 14:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235712AbiCaMJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 08:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
+        id S235789AbiCaMKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 08:10:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233258AbiCaMJX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 08:09:23 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCED01FE567;
-        Thu, 31 Mar 2022 05:07:35 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 22V9d183016846;
-        Thu, 31 Mar 2022 12:07:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=gRPtGdpAZ/q0V+YfyGFvf0Q6ubH5G8jmX+S9U6IIRIg=;
- b=QIi1x0fPC7PoYfUGPu4udKItoBiAgAYM/PDRb6o0UCZUKEgcr1wUkXl/ugIFTIBjxpSb
- m0sq8fl2JUSNthlLAqb2upCrujVX/Okm94Febz5wBwp82Cs7Mr1vT7rV6yADWHscKnNt
- 9MRkGIWX0x+/RK8QVXympUtUQME78S6QOcpSSAD56oM3rAEfCrkIfkPNcA4finnri/Yw
- jUU2QTWQ2IIMiI52x5BZLZVGFCRY6cu7AdXYOzgruUb3jkl4yrI+owceN3CrKT+GZ0Zm
- Lv6w4ULQTLquS1bfXTkVn1NIyhy07XbLXAJ8xvcIV6DnYLz5gKbJvCqJBBHGblJaNGRg Pw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f57tnwq3b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 12:07:26 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 22VC2KU0014441;
-        Thu, 31 Mar 2022 12:07:26 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3f57tnwq2j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 12:07:26 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 22VBvhDk026585;
-        Thu, 31 Mar 2022 12:07:24 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3f1tf9jqe0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Mar 2022 12:07:23 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22VC7L1T19595674
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 31 Mar 2022 12:07:21 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 828BB42045;
-        Thu, 31 Mar 2022 12:07:21 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DDA2942042;
-        Thu, 31 Mar 2022 12:07:20 +0000 (GMT)
-Received: from [9.145.190.237] (unknown [9.145.190.237])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 31 Mar 2022 12:07:20 +0000 (GMT)
-Message-ID: <1845d832-e36c-fff1-0ea6-1d7aa290919f@linux.ibm.com>
-Date:   Thu, 31 Mar 2022 14:07:20 +0200
+        with ESMTP id S234164AbiCaMKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 08:10:16 -0400
+Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2125.outbound.protection.outlook.com [40.107.255.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2A4457A1;
+        Thu, 31 Mar 2022 05:08:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ILWegTR6TPmRUBhvTaTqOYc9lCCWZhyWGQJ5/ItWle3IDaFrpj8gX+wm5v2hfNIXWI0CzjRwnC4x4clpK0foHZqjUcDiy8zG2k8g0CRxqKxaXU/el4ie8vCVpHkmsjmIlIBORIcbxUCDuA0iQ8H4SUjqMglQjRLcKl1z+AZ9yWvG9H+iQFydEIAxS9RpsTtqqg0jmD5Ooci4QAim7RNY8bg8Nr8GzdzjKnZI5AfpP8A3Wp+5tsnpHDL81VnZ9V4Dt5xmQqhFAd5aXgOAzAInafiGhz35Wj3oitGU3ZbbRyxJ9UYnNl7oHeIeSS8+VReoyVT0Pwki47ysFnrAmYCLfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TX+KffmLSdKcObPxPYq4w7P09k+IE3x2sUc4hdGshqQ=;
+ b=GuZoEpBzBc0FBPnfiEAQLq/s+Gyq01AV1MdBIxiRewdcvzF1+m5T8CL18fE8ypPJ/L59x4f9j87W7iN74wfWpnif99lXlkWSkvTfSQxL0cet2X2qRWYPGgqfaT2dbM/9L/HYPOFrlNn/ajNnxzy3DZjFkKmfbwFTcaa2vc2DAEjcVcRIy//ThTSglSDaNd129Y7T4FoAKMdEsvIQ7wa7HkjUiGgbwVdj33bSCryqA1jy+R203AnW2s0Yi8rYcH8BFtsITdFoJVcbAjyWtO2Z+ZFbprCidY7NLUXWyqd27KRLbDNLC5/t6NoHX/48aUe322omrgXbhyDRwoCtps+D9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
+ s=selector2-vivo0-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TX+KffmLSdKcObPxPYq4w7P09k+IE3x2sUc4hdGshqQ=;
+ b=ZFQwa3QbV60lXrZIpaNPuE5TF7JcE/GALocUTMVdTzuNqJO9scTQJnTpNLFYzmVSkDDuBY+9qwwdOuuoxX4w10nLalem4KReI+BGRDopMZskKySmRGzu6PIyijrMHnScDCmsldmjmk3PHBDuYltWYt8QloHiTUeC8+IRGRzsjrg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
+ by SI2PR06MB3882.apcprd06.prod.outlook.com (2603:1096:4:ea::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.23; Thu, 31 Mar
+ 2022 12:08:26 +0000
+Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::6c6e:d8af:2d3c:3507]) by SL2PR06MB3082.apcprd06.prod.outlook.com
+ ([fe80::6c6e:d8af:2d3c:3507%7]) with mapi id 15.20.5123.021; Thu, 31 Mar 2022
+ 12:08:26 +0000
+From:   Qing Wang <wangqing@vivo.com>
+To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Wang Qing <wangqing@vivo.com>
+Subject: [PATCH] net: usb: remove duplicate assignment
+Date:   Thu, 31 Mar 2022 05:08:14 -0700
+Message-Id: <1648728494-37344-1-git-send-email-wangqing@vivo.com>
+X-Mailer: git-send-email 2.7.4
+Content-Type: text/plain
+X-ClientProxiedBy: HK2PR0302CA0015.apcprd03.prod.outlook.com
+ (2603:1096:202::25) To SL2PR06MB3082.apcprd06.prod.outlook.com
+ (2603:1096:100:37::17)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH net-next v2] veth: Support bonding events
-Content-Language: en-US
-To:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        bridge@lists.linux-foundation.org,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-References: <20220329114052.237572-1-wintera@linux.ibm.com>
- <20220329175421.4a6325d9@kernel.org>
- <d2e45c4a-ed34-10d3-58cd-01b1c19bd004@blackwall.org>
- <c1ec0612-063b-dbfa-e10a-986786178c93@linux.ibm.com>
- <20220330085154.34440715@kernel.org>
- <c512e765-f411-9305-013b-471a07e7f3ff@blackwall.org>
- <20220330101256.53f6ef48@kernel.org> <2600.1648667758@famine>
- <fa420a98-fb7b-a56b-7e13-2fa55b6ff6a9@linux.ibm.com>
- <cf713c75-718e-6705-fc9d-6844372348d2@blackwall.org>
-From:   Alexandra Winter <wintera@linux.ibm.com>
-In-Reply-To: <cf713c75-718e-6705-fc9d-6844372348d2@blackwall.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Jk8GBhxOGd4DCMK45juIeQbB2sj2SGdv
-X-Proofpoint-ORIG-GUID: doJLC2TJjhO-l6jWj2x5CiOTsf8qoJoU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-31_04,2022-03-31_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
- priorityscore=1501 adultscore=0 phishscore=0 lowpriorityscore=0
- mlxlogscore=999 bulkscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203310068
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3ca93b6d-9dd5-4733-be2c-08da130f2969
+X-MS-TrafficTypeDiagnostic: SI2PR06MB3882:EE_
+X-Microsoft-Antispam-PRVS: <SI2PR06MB388241FB7B9BD044C135A77DBDE19@SI2PR06MB3882.apcprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: S78W7rLJySBjEE8Hm4GTL3ceZXHrvem2s5ADiOuB3Dec0eiBQ/KraJcAyx2l4ZctF8TW9RujuIex/or8UbLrmnyX5+Rk6UXanxOIgxeEDPR0KTUBnHHbWpUuwScMJeH2NZGMh99+KKdcHkI3pH4VeSedV1S018T8AUinxc2t9DT7NVFGxofbYLox8+T+tJXNVtjkYHKjgCCdlBnv73i6wpUz5TohcoIS0klCJy7m3fRVD4iK658TrLzHPugbCc5e0V/R+XDdIellXzV2dW68psPD74u8aUAqFxIbG3+nrQiFhIxVqUEJl0KW2pnjeMQ20GNJXxzhfT8dK4YIrqUyW0DPQzD9fVW0YoAdyMlpaGjRcy1ZAv/E/GmKVpF6R2Xy9JMMO+E2gTottluyFlfwJrYYbxHkmWkJuJMd6T/C3PID61xrLGeVhDWzc3gTxooUjiRz7LnxDPvyzSHbpLDqQX84y2D0aB0dQVFlR+37t9J56g7AzkzyEXWRmRk7r5AKX0Sr64VjzJx03p6ldsi6s5AoRiCnADJW5xwTZkWlrvCKVCYfDl91B5gmjoXkZLrqmY2rMNhuOwXvDEyGBNMiOI9xp6ZR4hmTtiy9DNDCCXYkt06jNVdYO2dwjs6RUjXgifHMAAzg6yS7ULZkxgXeUVQguAubujca6s/RBUDZI2coVI10JUXZAu32qkCxVE9i10uyyaDu1a45RFKz3PaGPw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(38350700002)(38100700002)(86362001)(316002)(8936002)(4326008)(66946007)(66556008)(66476007)(8676002)(107886003)(2616005)(26005)(186003)(83380400001)(6666004)(508600001)(6486002)(6512007)(52116002)(6506007)(36756003)(4744005)(2906002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YdrdCsSs4XVb7vacb9JYdxbiMlLPd4cXEBAYMbhkayzdvKbcbVQNDY+HgEC6?=
+ =?us-ascii?Q?EDk+ScVMWXdclXxAcvpM+NYQcs2z12bIvZ14xPx6mKIOomfUhOKz5yegx+XY?=
+ =?us-ascii?Q?nhigxSLNbVUVSwS0BwtXeYCnWbI53VRXnm9QuCNNHZX4E6lfKcprJG6zXfsD?=
+ =?us-ascii?Q?M8rwSSMQ39cDfQf8x9diKNLHmE/X7KYJqYmlIFXYzNmKKVgrNdgihARD3Ojt?=
+ =?us-ascii?Q?t7H/0kLor3YmuT/VbiPKNaZuifvGQHM35Ykn61RaoACn44fTeqmNv6VJZuTg?=
+ =?us-ascii?Q?Oc3zKe+IDFdQVGflWEFGtdktmNQE9nxU2moBRTD34To31hXS5xgYea5Qe+9R?=
+ =?us-ascii?Q?9kLTSuQg5o+jKzYeaGBQYtX3uJevVpIaCJN/Dqi0LDrKo/WXv6Q48WGA5jbr?=
+ =?us-ascii?Q?7p43ek7gGWREMUF9vgLKJP9rij3ZoRBGevai5sD8Hpb24E7Dv4Ea8VV/ZeP5?=
+ =?us-ascii?Q?s0Ld6Z1nnpkeOP4VSBlIMjTKaIrZNGrFXwQfpCn2Rynitil0PoAmgHuv+w6x?=
+ =?us-ascii?Q?jBNZydJIGjbyZvXeLWjfwA3nTE6Dr3ToDRIEW0IsNmgQQ9Bxq8cftR1wyCD2?=
+ =?us-ascii?Q?S1IbBJVlG2OubOy8s6cblsEhQe6H4vdf9W0yAi2pkR6O1pvFZCCQWlZgmv29?=
+ =?us-ascii?Q?N84z9GIlpiUFdOJ1jpbnCzYtdp1XAJh6ZwaFk1o7E+izOHqg9T6LYkJeFGDf?=
+ =?us-ascii?Q?5bEYwsj9ARwrl4RIxCmHqGqzrhW5HxPRnO3R2MbJPfgqdmsBm4R5tJrnPOeN?=
+ =?us-ascii?Q?8+frMxv1spntesFMsRnGaiSJyAeotsVac3iQdy2GV7iJzftW2CRSlPgn+4Es?=
+ =?us-ascii?Q?YYBzHMz3WPW4RwtD7PPnn8EbBaghkwVDrQ8WV+199iS6+nQJq8A+wN22atkU?=
+ =?us-ascii?Q?lkxXXZ9/WqTMFCIBIJnTdqoKPQVfH4F9/O4bf+jmR53gOazp99ZRHzBrSvCR?=
+ =?us-ascii?Q?TbG9Gahysd5c4ThRwD1JVYvLzE0/B0oiBTR1RqWj7FbgHtX+ZZ4SGa8+c5mu?=
+ =?us-ascii?Q?ieLM29qvWoh6Ki8CTI9IKjUTrqB1MPzuK/qLoODk02kwoOW/r6+o1TVBwqw+?=
+ =?us-ascii?Q?w8DhClgoClHYG712JFh+b64bJPyPW5whjN7TxO9sk3L5fp6rpnmF/gIpHWjM?=
+ =?us-ascii?Q?Z5jP98MIDT1IwNTGIwwMiexANpciPgziMGT8WSA5XFyGpoc4FEtalDpaLPUU?=
+ =?us-ascii?Q?UHwFLRo6X2jgy2lD5l6dPpGUt0QAYY4Hk0KWanZG7KisI9d5ity8QnRHA2wK?=
+ =?us-ascii?Q?K8oXwGd9bGO3/gGpndF3fE54mAlrcW+Cq4pNK3HcPtumO/oBJiA41tESYcCK?=
+ =?us-ascii?Q?JP3G+zJsKtf6rxsZzR+Tg0KhPeaMj1sxdDzyWQfXGbwMZZ5j0qq1f2nv+2q+?=
+ =?us-ascii?Q?o36H2uQqD2XFkK0B5is5X/N5Ztn7vSXOc4T7vNo9oGpw+V6EYDIn3b6jyYnY?=
+ =?us-ascii?Q?V/8l5uptE9gvL6YRxubwcRQgjsbV1tkUfA9BQx8pNadC9I1fN2PwYqbrHmGW?=
+ =?us-ascii?Q?XClllfhfW9gklNbBRtwJMLIal+1GSYXk9padhnh3HdsSUspIfEWjIUjaMSX2?=
+ =?us-ascii?Q?n0lxKohLla36GroE7nvno/fyO1MFNjytJBOlsiTX4iEmSiUjyFjLLeO+fnYt?=
+ =?us-ascii?Q?x+5mucChBHWKTUaU5AszhZQ8RCTBWtrnNjYs6nv5B5LWp4R4WxijO3ZIS6Kp?=
+ =?us-ascii?Q?yPO55ETNX8lVTQkzODYybXnvsuQPVbzD6H+UbCkC7yt1MDs2WJ1ONjcPaeF0?=
+ =?us-ascii?Q?FbK/8j01XA=3D=3D?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ca93b6d-9dd5-4733-be2c-08da130f2969
+X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2022 12:08:26.7985
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: w3jelA6Xs0GYiWKeByODVUDoB1g5sRFbxs0ffbswnER2nwm7nJcxt+HsjxM9toO0PrxzJrY+q4PnR0yt5c3qQA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SI2PR06MB3882
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Wang Qing <wangqing@vivo.com>
 
+netdev_alloc_skb() has assigned ssi->netdev to skb->dev if successed,
+no need to repeat assignment.
 
-On 31.03.22 12:33, Nikolay Aleksandrov wrote:
-> On 31/03/2022 12:59, Alexandra Winter wrote:
->> On Tue, 29 Mar 2022 13:40:52 +0200 Alexandra Winter wrote:
->>> Bonding drivers generate specific events during failover that trigger
->>> switch updates.  When a veth device is attached to a bridge with a
->>> bond interface, we want external switches to learn about the veth
->>> devices as well.
->>>
->>> Example:
->>>
->>> 	| veth_a2   |  veth_b2  |  veth_c2 |
->>> 	------o-----------o----------o------
->>> 	       \	  |	    /
->>> 		o	  o	   o
->>> 	      veth_a1  veth_b1  veth_c1
->>> 	      -------------------------
->>> 	      |        bridge         |
->>> 	      -------------------------
->>> 			bond0
->>> 			/  \
->>> 		     eth0  eth1
->>>
->>> In case of failover from eth0 to eth1, the netdev_notifier needs to be
->>> propagated, so e.g. veth_a2 can re-announce its MAC address to the
->>> external hardware attached to eth1.
->>
->> On 30.03.22 21:15, Jay Vosburgh wrote:
->>> Jakub Kicinski <kuba@kernel.org> wrote:
->>>
->>>> On Wed, 30 Mar 2022 19:16:42 +0300 Nikolay Aleksandrov wrote:
->>>>>> Maybe opt-out? But assuming the event is only generated on
->>>>>> active/backup switch over - when would it be okay to ignore
->>>>>> the notification?
->>>>>
->>>>> Let me just clarify, so I'm sure I've not misunderstood you. Do you mean opt-out as in
->>>>> make it default on? IMO that would be a problem, large scale setups would suddenly
->>>>> start propagating it to upper devices which would cause a lot of unnecessary bcast.
->>>>> I meant enable it only if needed, and only on specific ports (second part is not
->>>>> necessary, could be global, I think it's ok either way). I don't think any setup
->>>>> which has many upper vlans/macvlans would ever enable this.
->>>>
->>>> That may be. I don't have a good understanding of scenarios in which
->>>> GARP is required and where it's not :) Goes without saying but the
->>>> default should follow the more common scenario.
->>>
->>> 	At least from the bonding failover persective, the GARP is
->>> needed when there's a visible topology change (so peers learn the new
->>> path), a change in MAC address, or both.  I don't think it's possible to
->>> determine from bonding which topology changes are visible, so any
->>> failover gets a GARP.  The original intent as best I recall was to cover
->>> IP addresses configured on the bond itself or on VLANs above the bond.
->>>
->>> 	If I understand the original problem description correctly, the
->>> bonding failover causes the connectivity issue because the network
->>> segments beyond the bond interfaces don't share forwarding information
->>> (i.e., they are completely independent).  The peer (end station or
->>> switch) at the far end of those network segments (where they converge)
->>> is unable to directly see that the "to bond eth0" port went down, and
->>> has no way to know that anything is awry, and thus won't find the new
->>> path until an ARP or forwarding entry for "veth_a2" (from the original
->>> diagram) times out at the peer out in the network.
->>>
->>>>>>> My concern was about the Hangbin's alternative proposal to notify all
->>>>>>> bridge ports. I hope in my porposal I was able to avoid infinite loops.  
->>>>>>
->>>>>> Possibly I'm confused as to where the notification for bridge master
->>>>>> gets sent..  
->>>>>
->>>>> IIUC it bypasses the bridge and sends a notify peers for the veth peer so it would
->>>>> generate a grat arp (inetdev_event -> NETDEV_NOTIFY_PEERS).
->>>>
->>>> Ack, I was basically repeating the question of where does 
->>>> the notification with dev == br get generated.
->>>>
->>>> There is a protection in this patch to make sure the other 
->>>> end of the veth is not plugged into a bridge (i.e. is not
->>>> a bridge port) but there can be a macvlan on top of that
->>>> veth that is part of a bridge, so IIUC that check is either
->>>> insufficient or unnecessary.
->>>
->>> 	I'm a bit concerned this is becoming a interface plumbing
->>> topology change whack-a-mole.
->>>
->>> 	In the above, what if the veth is plugged into a bridge, and
->>> there's a end station on that bridge?  If it's bridges all the way down,
->>> where does the need for some kind of TCN mechanism stop?
->>>
->>> 	Or instead of a veth it's an physical network hop (perhaps a
->>> tunnel; something through which notifiers do not propagate) to another
->>> host with another bridge, then what?
->>>
->>> 	-J
->>>
->>> ---
->>> 	-Jay Vosburgh, jay.vosburgh@canonical.com
->>
->> I see 3 technologies that are used for network virtualization in combination with bond for redundancy
->> (and I may miss some):
->> (1) MACVTAP/MACVLAN over bond:
->> MACVLAN propagates notifiers from bond to endpoints (same as VLAN)
->> (drivers/net/macvlan.c:
->> 	case NETDEV_NOTIFY_PEERS:
->> 	case NETDEV_BONDING_FAILOVER:
->> 	case NETDEV_RESEND_IGMP:
->> 		/* Propagate to all vlans */
->> 		list_for_each_entry(vlan, &port->vlans, list)
->> 			call_netdevice_notifiers(event, vlan->dev);
->> 	})
->> (2) OpenVSwitch:
->> OVS seems to have its own bond implementation, but sends out reverse Arp on active-backup failover
->> (3) User defined bridge over bond:
->> propagates notifiers to the bridge device itself, but not to the devices attached to bridge ports.
->> (net/bridge/br.c:
->> 	case NETDEV_RESEND_IGMP:
->> 		/* Propagate to master device */
->> 		call_netdevice_notifiers(event, br->dev);)
->>
->> Active-backup may not be the best bonding mode, but it is a simple way to achieve redundancy and I've seen it being used.
->> I don't see a usecase for MACVLAN over bridge over bond (?)
-> 
-> If you're talking about this particular case (network virtualization) - sure. But macvlans over bridges
-> are heavily used in Cumulus Linux and large scale setups. For example VRRP is implemented using macvlan
-> devices. Any notification that propagates to the bridge and reaches these would cause a storm of broadcasts
-> being sent down which would not scale and is extremely undesirable in general.
-> 
->> The external HW network does not need to be updated about the instances that are conencted via tunnel,
->> so I don't see an issue there.
->>
->> I had this idea how to solve the failover issue it for veth pairs attached to the user defined bridge.
->> Does this need to be configurable? How? Per veth pair?
-> 
-> That is not what I meant (if you were referring to my comment), I meant if it gets implemented in the
-> bridge and it starts propagating the notify peers notifier - that _must_ be configurable.
-> 
->>
->> Of course a more general solution how bridge over bond could handle notifications, would be great,
->> but I'm running out of ideas. So I thought I'd address veth first.
->> Your help and ideas are highly appreciated, thank you.
-> 
-> I'm curious why it must be done in the kernel altogether? This can obviously be solved in user-space
-> by sending grat arps towards flapped por for fdbs on other ports (e.g. veths) based on a netlink notification.
-> In fact based on your description propagating NETDEV_NOTIFY_PEERS to bridge ports wouldn't help
-> because in that case the remote peer veth will not generate a grat arp. The notification will
-> get propagated only to local veth (bridge port), or the bridge itself depending on implementation.
-> 
-> So from bridge perspective, if you decide to pursue a kernel solution, I think you'll need
-> a new bridge port option which acts on NOTIFY_PEERS and generates a grat arp for all fdbs
-> on the port where it is enabled to the port which generated the NOTIFY_PEERS. Note that is
-> also fragile as I'm sure some stacked device config would not work, so I want to re-iterate
-> how much easier it is to solve it in user-space which has better visibility and you can
-> change much faster to accommodate new use cases.
-> 
-> To illustrate: bond
->                    \ 
->                     bridge
->                    /
->                veth0
->                  |
->                veth1
-> 
-> When bond generates NOTIFY_PEERS, and you have this new option enabled on veth0 then
-> the bridge should generate grat arps for all fdbs on veth0 towards bond so the new
-> path would learn them. Note that is very dangerous as veth1 can generate thousands
-> of fdbs and you can potentially DDoS the whole network, so again I'd advise to do
-> this in user-space where you can better control it.
-> 
-> W.r.t to this patch, I think it will also work and will cause a single grat arp which
-> is ok. Just need to make sure loops are not possible, for example I think you can loop
-> your implementation by the following config (untested theory):
-> bond
->     \
->      bridge 
->    \          \
-> veth2.10       veth0 - veth1
->       \                \
->        \                veth1.10 (vlan)
->         \                \
->          \                bridge2
->           \              /
->            veth2 - veth3
-> 
-> 
-> 1. bond generates NOTIFY_PEERS
-> 2. bridge propagates to veth1 (through veth0 port)
-> 3. veth1 propagates to its vlan (veth1.10)
-> 4. bridge2 sees veth1.10 NOTIFY_PEERS and propagates to veth2 (through veth3 port)
-> 5. veth2 propagates to its vlan (veth2.10)
-> 6. veth2.10 propagates it back to bridge
-> <loop>
-> 
-> I'm sure similar setup, and maybe even simpler, can be constructed with other devices
-> which can propagate or generate NOTIFY_PEERS.
-> 
-> Cheers,
->  Nik
-> 
-Thank you very much Nik for your advice and your thourough explanations.
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+---
+ drivers/net/usb/qmi_wwan.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-I think I could prevent the loop you describe above. But I agree that propagating
-notifications through veth is more risky, because there is no upper-lower relationship.
-Is there interest in a v3 of my patch, where I would also incorporate Jakub's comments?
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 3353e76..17cf0d1
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -190,7 +190,6 @@ static int qmimux_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		skbn = netdev_alloc_skb(net, pkt_len + LL_MAX_HEADER);
+ 		if (!skbn)
+ 			return 0;
+-		skbn->dev = net;
+ 
+ 		switch (skb->data[offset + qmimux_hdr_sz] & 0xf0) {
+ 		case 0x40:
+-- 
+2.7.4
 
-Otherwise I would next explore a user-space solution like Nik proposed.
-
-Thank you all very much
-Alexandra
