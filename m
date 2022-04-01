@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B66E34EF3B3
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:27:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C49634EF35F
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:20:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244504AbiDAOwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55850 "EHLO
+        id S1349308AbiDAOxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349443AbiDAOp5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:45:57 -0400
+        with ESMTP id S1349513AbiDAOqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:46:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B719729B7F1;
-        Fri,  1 Apr 2022 07:36:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D6329C953;
+        Fri,  1 Apr 2022 07:36:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28F88B82518;
-        Fri,  1 Apr 2022 14:35:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 673F9C2BBE4;
-        Fri,  1 Apr 2022 14:35:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F352B8251D;
+        Fri,  1 Apr 2022 14:35:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A5DAC2BBE4;
+        Fri,  1 Apr 2022 14:35:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823726;
-        bh=4e8UqcVtt2bDl/TcYTWbp0P7wBjX17psqcDRy4Jt0OE=;
+        s=k20201202; t=1648823730;
+        bh=RZ5MzN15iUd+U++gU+5YPigZbBU8LavD9EctC8smRGA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PVXh5rLA34WHCJFd72sEetXfE+zOwa2ROZa7dRvbXcsiqXLvyU2mxAwkm4mBrAWTQ
-         PsWIWWfpcsB46NBgjezTDv5bs+DL0LQfMXCeQvXpgvdS9GW3/TU8Ho8OSG9X7iuXlU
-         PG2VnNrKFBIWdDjqFeyS5Juc26RIfxXRd0sP0FgCk1WaNZdj0gHFQMps5dwV6ucgxR
-         CbLjYnIN3GLhzLktd3NA/4xvpNnVENzexkMoA54ihQ3FllJ7wNi9pAk3Jv5CmmZRiS
-         ggyEPwhe82qEURl5uDX7UnryQbsw0v3S+MHqFg40oB8G3nOG6EUUg1mkJce9syf8Qv
-         jYw5w8qpIX76A==
+        b=gn32J1xGWXtfIRPq9bUNlhf/l6btv6+gsz6WXga9LysNrKnjWgO8MV8q9rEsp1X7w
+         +H7O7FCiGyP0V93I5EjhM6YlBK1XAXiu/VypF87mxQBZT4rBPdivoLnHN0cscs9wwM
+         Xjx2erV4VVluy/8osjI+icY5GfSi4tJNyVqnm3OXPuU27wg+JMkoNmG8FDoBwPeiSr
+         snBz6GcSySClgo5MUSqUKHV4/LrBFasu1Fs4afT+L2wyMbtdusI8SHf+2GsDBo+m4N
+         NuTEV3txkSKXbPLEz3aJgH7Y5zczKaWY6YgUuk5xGYONYDOB9mza34MoYYn/3hAg60
+         mWHwGE9b9CaWw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Ilan Peer <ilan.peer@intel.com>,
@@ -40,9 +40,9 @@ Cc:     Ilan Peer <ilan.peer@intel.com>,
         johannes.berg@intel.com, ayala.beker@intel.com,
         avraham.stern@intel.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 053/109] iwlwifi: mvm: Correctly set fragmented EBS
-Date:   Fri,  1 Apr 2022 10:32:00 -0400
-Message-Id: <20220401143256.1950537-53-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 054/109] iwlwifi: mvm: Passively scan non PSC channels only when requested so
+Date:   Fri,  1 Apr 2022 10:32:01 -0400
+Message-Id: <20220401143256.1950537-54-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -62,38 +62,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit d8d4dd26b9e0469baf5017f0544d852fd4e3fb6d ]
+[ Upstream commit 9966904e9472703a05861f343157cd78f47514fd ]
 
-Currently, fragmented EBS was set for a channel only if the 'hb_type'
-was set to fragmented or balanced scan. However, 'hb_type' is set only
-in case of CDB, and thus fragmented EBS is never set for a channel for
-non-CDB devices. Fix it.
+Non PSC channels should generally be scanned based on information about
+collocated APs obtained during scan on legacy bands, and otherwise
+should not be scanned unless specifically requested so (as there are
+relatively many non PSC channels, scanning them passively is time consuming
+and interferes with regular data traffic).
+
+Thus, modify the scan logic to avoid passively scanning PSC channels
+if there is no information about collocated APs and the scan is not
+a passive scan.
 
 Signed-off-by: Ilan Peer <ilan.peer@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220204122220.a6165ac9b9d5.I654eafa62fd647030ae6d4f07f32c96c3171decb@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20220204122220.457da4cc95eb.Ic98472bab5f5475f1e102547644caaae89ce4c4a@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 42 ++++++++++++++-----
+ 1 file changed, 32 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-index 960b21719b80..e3eefc55beaf 100644
+index e3eefc55beaf..212e558b9aa0 100644
 --- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
 +++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1890,7 +1890,10 @@ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
- 			IWL_SCAN_CHANNEL_FLAG_CACHE_ADD;
+@@ -1733,27 +1733,37 @@ iwl_mvm_umac_scan_fill_6g_chan_list(struct iwl_mvm *mvm,
+ }
  
- 	/* set fragmented ebs for fragmented scan on HB channels */
--	if (iwl_mvm_is_scan_fragmented(params->hb_type))
-+	if ((!iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->type)) ||
-+	    (iwl_mvm_is_cdb_supported(mvm) &&
-+	     iwl_mvm_is_scan_fragmented(params->hb_type)))
- 		flags |= IWL_SCAN_CHANNEL_FLAG_EBS_FRAG;
+ /* TODO: this function can be merged with iwl_mvm_scan_umac_fill_ch_p_v6 */
+-static void
+-iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
++static u32
++iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm *mvm,
++				     struct iwl_mvm_scan_params *params,
+ 				     u32 n_channels,
+ 				     struct iwl_scan_probe_params_v4 *pp,
+ 				     struct iwl_scan_channel_params_v6 *cp,
+ 				     enum nl80211_iftype vif_type)
+ {
+-	struct iwl_scan_channel_cfg_umac *channel_cfg = cp->channel_config;
+ 	int i;
+ 	struct cfg80211_scan_6ghz_params *scan_6ghz_params =
+ 		params->scan_6ghz_params;
++	u32 ch_cnt;
  
- 	return flags;
+-	for (i = 0; i < params->n_channels; i++) {
++	for (i = 0, ch_cnt = 0; i < params->n_channels; i++) {
+ 		struct iwl_scan_channel_cfg_umac *cfg =
+-			&cp->channel_config[i];
++			&cp->channel_config[ch_cnt];
+ 
+ 		u32 s_ssid_bitmap = 0, bssid_bitmap = 0, flags = 0;
+ 		u8 j, k, s_max = 0, b_max = 0, n_used_bssid_entries;
+ 		bool force_passive, found = false, allow_passive = true,
+ 		     unsolicited_probe_on_chan = false, psc_no_listen = false;
+ 
++		/*
++		 * Avoid performing passive scan on non PSC channels unless the
++		 * scan is specifically a passive scan, i.e., no SSIDs
++		 * configured in the scan command.
++		 */
++		if (!cfg80211_channel_is_psc(params->channels[i]) &&
++		    !params->n_6ghz_params && params->n_ssids)
++			continue;
++
+ 		cfg->v1.channel_num = params->channels[i]->hw_value;
+ 		cfg->v2.band = 2;
+ 		cfg->v2.iter_count = 1;
+@@ -1872,8 +1882,16 @@ iwl_mvm_umac_scan_cfg_channels_v6_6g(struct iwl_mvm_scan_params *params,
+ 		    (!flags && !cfg80211_channel_is_psc(params->channels[i])))
+ 			flags |= IWL_UHB_CHAN_CFG_FLAG_FORCE_PASSIVE;
+ 
+-		channel_cfg[i].flags |= cpu_to_le32(flags);
++		cfg->flags |= cpu_to_le32(flags);
++		ch_cnt++;
+ 	}
++
++	if (params->n_channels > ch_cnt)
++		IWL_DEBUG_SCAN(mvm,
++			       "6GHz: reducing number channels: (%u->%u)\n",
++			       params->n_channels, ch_cnt);
++
++	return ch_cnt;
+ }
+ 
+ static u8 iwl_mvm_scan_umac_chan_flags_v2(struct iwl_mvm *mvm,
+@@ -2414,10 +2432,14 @@ static int iwl_mvm_scan_umac_v14(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
+ 	if (ret)
+ 		return ret;
+ 
+-	iwl_mvm_umac_scan_cfg_channels_v6_6g(params,
+-					     params->n_channels,
+-					     pb, cp, vif->type);
+-	cp->count = params->n_channels;
++	cp->count = iwl_mvm_umac_scan_cfg_channels_v6_6g(mvm, params,
++							 params->n_channels,
++							 pb, cp, vif->type);
++	if (!cp->count) {
++		mvm->scan_uid_status[uid] = 0;
++		return -EINVAL;
++	}
++
+ 	if (!params->n_ssids ||
+ 	    (params->n_ssids == 1 && !params->ssids[0].ssid_len))
+ 		cp->flags |= IWL_SCAN_CHANNEL_FLAG_6G_PSC_NO_FILTER;
 -- 
 2.34.1
 
