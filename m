@@ -2,88 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C704EE5D6
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 03:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90A184EE5F3
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 04:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243869AbiDABzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Mar 2022 21:55:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44412 "EHLO
+        id S243997AbiDACRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Mar 2022 22:17:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233627AbiDABza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 21:55:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC52190B4D
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 18:53:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9AA76B82330
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 01:53:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8F6DC340F0;
-        Fri,  1 Apr 2022 01:53:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648778018;
-        bh=SwLUjluPBxgTPt6SbAvhhtI+EBfSOUIjsKZh4LXqAiA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CWvRPB9G0QVmzxFpXBxhopEhFRO9+TSV3FuEu6lzTz6/HpQwbJt8gtmfNsfkgzwnj
-         csl48xO1WkniZAjAKmGIINkPmNouvS0ajiNylzIdqNrRgm/eXwqDFPMugbhZKB4DJe
-         U88xkgK7L6Q1PBcA/No7uTmgpCu3PoWsxHohtud8iStam0KVEv009NNFIrJqS6v1YL
-         hEKYh1GtdnwInGugZOCxh8oF8VzfSX0Bj/sT0K/BgBxbA5qEEnKeYNXtw9PQJ1mrjt
-         eL+DwfU0doUQ8+/H/Fcm1ajRlLd3Q0gKJCcMzzy+VWmsBirCc4YPa/rmp+KR846Iw+
-         BRgCvx6404Z7A==
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com
-Cc:     oliver.sang@intel.com, David Ahern <dsahern@kernel.org>
-Subject: [PATCH net] xfrm: Pass flowi_oif or l3mdev as oif to xfrm_dst_lookup
-Date:   Thu, 31 Mar 2022 19:53:34 -0600
-Message-Id: <20220401015334.40252-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        with ESMTP id S238832AbiDACRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Mar 2022 22:17:54 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E803422451A;
+        Thu, 31 Mar 2022 19:16:04 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 1 Apr 2022
+ 10:15:57 +0800
+Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
+ (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Fri, 1 Apr
+ 2022 10:15:56 +0800
+From:   Haowen Bai <baihaowen@meizu.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+CC:     Haowen Bai <baihaowen@meizu.com>,
+        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] selftests/bpf: Return true/false (not 1/0) from bool functions
+Date:   Fri, 1 Apr 2022 10:15:54 +0800
+Message-ID: <1648779354-14700-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [172.16.137.70]
+X-ClientProxiedBy: IT-EXMB-1-124.meizu.com (172.16.1.124) To
+ IT-EXMB-1-125.meizu.com (172.16.1.125)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit referenced in the Fixes tag no longer changes the
-flow oif to the l3mdev ifindex. A xfrm use case was expecting
-the flowi_oif to be the VRF if relevant and the change broke
-that test. Update xfrm_bundle_create to pass oif if set and any
-potential flowi_l3mdev if oif is not set.
+Return boolean values ("true" or "false") instead of 1 or 0 from bool
+functions.  This fixes the following warnings from coccicheck:
 
-Fixes: 40867d74c374 ("net: Add l3mdev index to flow struct and avoid oif reset for port devices")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: David Ahern <dsahern@kernel.org>
+./tools/testing/selftests/bpf/progs/test_xdp_noinline.c:567:9-10: WARNING:
+return of 0/1 in function 'get_packet_dst' with return type bool
+./tools/testing/selftests/bpf/progs/test_l4lb_noinline.c:221:9-10: WARNING:
+return of 0/1 in function 'get_packet_dst' with return type bool
+
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
- net/xfrm/xfrm_policy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/progs/test_l4lb_noinline.c |  2 +-
+ tools/testing/selftests/bpf/progs/test_xdp_noinline.c  | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 19aa994f5d2c..00bd0ecff5a1 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2593,12 +2593,14 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
+diff --git a/tools/testing/selftests/bpf/progs/test_l4lb_noinline.c b/tools/testing/selftests/bpf/progs/test_l4lb_noinline.c
+index 19e4d20..c8bc0c6 100644
+--- a/tools/testing/selftests/bpf/progs/test_l4lb_noinline.c
++++ b/tools/testing/selftests/bpf/progs/test_l4lb_noinline.c
+@@ -218,7 +218,7 @@ static __noinline bool get_packet_dst(struct real_definition **real,
  
- 		if (xfrm[i]->props.mode != XFRM_MODE_TRANSPORT) {
- 			__u32 mark = 0;
-+			int oif;
+ 	if (hash != 0x358459b7 /* jhash of ipv4 packet */  &&
+ 	    hash != 0x2f4bc6bb /* jhash of ipv6 packet */)
+-		return 0;
++		return false;
  
- 			if (xfrm[i]->props.smark.v || xfrm[i]->props.smark.m)
- 				mark = xfrm_smark_get(fl->flowi_mark, xfrm[i]);
+ 	real_pos = bpf_map_lookup_elem(&ch_rings, &key);
+ 	if (!real_pos)
+diff --git a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+index 596c4e7..125d872 100644
+--- a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
++++ b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+@@ -564,22 +564,22 @@ static bool get_packet_dst(struct real_definition **real,
+ 	hash = get_packet_hash(pckt, hash_16bytes);
+ 	if (hash != 0x358459b7 /* jhash of ipv4 packet */  &&
+ 	    hash != 0x2f4bc6bb /* jhash of ipv6 packet */)
+-		return 0;
++		return false;
+ 	key = 2 * vip_info->vip_num + hash % 2;
+ 	real_pos = bpf_map_lookup_elem(&ch_rings, &key);
+ 	if (!real_pos)
+-		return 0;
++		return false;
+ 	key = *real_pos;
+ 	*real = bpf_map_lookup_elem(&reals, &key);
+ 	if (!(*real))
+-		return 0;
++		return false;
+ 	if (!(vip_info->flags & (1 << 1))) {
+ 		__u32 conn_rate_key = 512 + 2;
+ 		struct lb_stats *conn_rate_stats =
+ 		    bpf_map_lookup_elem(&stats, &conn_rate_key);
  
- 			family = xfrm[i]->props.family;
--			dst = xfrm_dst_lookup(xfrm[i], tos, fl->flowi_oif,
-+			oif = fl->flowi_oif ? : fl->flowi_l3mdev;
-+			dst = xfrm_dst_lookup(xfrm[i], tos, oif,
- 					      &saddr, &daddr, family, mark);
- 			err = PTR_ERR(dst);
- 			if (IS_ERR(dst))
+ 		if (!conn_rate_stats)
+-			return 1;
++			return true;
+ 		cur_time = bpf_ktime_get_ns();
+ 		if ((cur_time - conn_rate_stats->v2) >> 32 > 0xffFFFF) {
+ 			conn_rate_stats->v1 = 1;
+@@ -587,14 +587,14 @@ static bool get_packet_dst(struct real_definition **real,
+ 		} else {
+ 			conn_rate_stats->v1 += 1;
+ 			if (conn_rate_stats->v1 >= 1)
+-				return 1;
++				return true;
+ 		}
+ 		if (pckt->flow.proto == IPPROTO_UDP)
+ 			new_dst_lru.atime = cur_time;
+ 		new_dst_lru.pos = key;
+ 		bpf_map_update_elem(lru_map, &pckt->flow, &new_dst_lru, 0);
+ 	}
+-	return 1;
++	return true;
+ }
+ 
+ __attribute__ ((noinline))
 -- 
-2.24.3 (Apple Git-128)
+2.7.4
 
