@@ -2,45 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20AAE4EF668
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4339C4EF671
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350658AbiDAPeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58586 "EHLO
+        id S1350864AbiDAPer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349376AbiDAOzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:55:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5E7DEF5;
-        Fri,  1 Apr 2022 07:43:31 -0700 (PDT)
+        with ESMTP id S1345602AbiDAOze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:55:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190B060CC9;
+        Fri,  1 Apr 2022 07:43:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE7A960AC0;
-        Fri,  1 Apr 2022 14:43:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07899C34112;
-        Fri,  1 Apr 2022 14:43:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA1AEB823EB;
+        Fri,  1 Apr 2022 14:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1351C340EE;
+        Fri,  1 Apr 2022 14:43:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824210;
-        bh=/xf+Dt2tqRoMQshrvA6hyfbbPrGmGqKFLtdlyAD5x74=;
+        s=k20201202; t=1648824226;
+        bh=LSzVRn0NDfhPSMCSW4F1VVYlmUgrs7tEe750gpeqMOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hOKMyqbE7ErRaTkIGloVb/GGh6SzUFdAJ9jFo3y4g6Q6U53Rr/LupfC9u9tDPntSP
-         XElP7LqZDHnwbWZa6Z8QeFuIyfbmQrGztZptFXBKgOm96lFMEMqBM3O9+27gbVo+mV
-         U9M1tqBJCI3MdzgcTCjwoSxvaHljHGy55mQV1/HSls3IH6REXgFwS21MKcZoAjKfcN
-         z5Vr+A/WODpSXmfGB0ReAy0FDzeM5wcgxy7kuoFRRVy67xtHzmV8bwOG5UtS4qFI/l
-         hKMMEBbibAq+z4uJVxwBO837q77cVJ029y1Sga3czOtL/Bl02dAmexAbeEaX5Twvni
-         hnmCwP0wMspBQ==
+        b=ddy5brxVmk4E0iIcdxzLkArG1ZV86eSiO+DiNgmfspO6qP2o2jfAczO7LUEKED+QZ
+         UQadmcfgaW39i5s+uI05duO/bMvn+4bvzTuMYSWAMBeR/LwX9jncx/ahIIyI697LTr
+         cNTUmOIVFG8kwzSnhDNpkCkffEpLrcWEuMaV+MdryXi6sEUxx2nrKv0HnFCRMpbl90
+         xkVu+3prTsv7xSchz7Ar+GHeBZ26mBxUqRDONzo2ONU84m7G+MBBOq3iGoshbYLpio
+         Jiy90UIBxAb/6D55Gw0GvTMBMbBU+4C9NPwm8o9DsLTA0oZE/eilCVBsM41ElQ/Tkl
+         xZz+o2pXhuPHg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ido Schimmel <idosch@nvidia.com>, Wang Hai <wanghai38@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 29/65] ipv4: Invalidate neighbour for broadcast address upon address addition
-Date:   Fri,  1 Apr 2022 10:41:30 -0400
-Message-Id: <20220401144206.1953700-29-sashal@kernel.org>
+Cc:     Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, xing.song@mediatek.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 38/65] mt76: mt7615: Fix assigning negative values to unsigned variable
+Date:   Fri,  1 Apr 2022 10:41:39 -0400
+Message-Id: <20220401144206.1953700-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -58,115 +62,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit 0c51e12e218f20b7d976158fdc18019627326f7a ]
+[ Upstream commit 9273ffcc9a11942bd586bb42584337ef3962b692 ]
 
-In case user space sends a packet destined to a broadcast address when a
-matching broadcast route is not configured, the kernel will create a
-unicast neighbour entry that will never be resolved [1].
+Smatch reports the following:
+drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
+mt7615_mac_adjust_sensitivity() warn: assigning (-110) to unsigned
+variable 'def_th'
+drivers/net/wireless/mediatek/mt76/mt7615/mac.c:1865
+mt7615_mac_adjust_sensitivity() warn: assigning (-98) to unsigned
+variable 'def_th'
 
-When the broadcast route is configured, the unicast neighbour entry will
-not be invalidated and continue to linger, resulting in packets being
-dropped.
-
-Solve this by invalidating unresolved neighbour entries for broadcast
-addresses after routes for these addresses are internally configured by
-the kernel. This allows the kernel to create a broadcast neighbour entry
-following the next route lookup.
-
-Another possible solution that is more generic but also more complex is
-to have the ARP code register a listener to the FIB notification chain
-and invalidate matching neighbour entries upon the addition of broadcast
-routes.
-
-It is also possible to wave off the issue as a user space problem, but
-it seems a bit excessive to expect user space to be that intimately
-familiar with the inner workings of the FIB/neighbour kernel code.
-
-[1] https://lore.kernel.org/netdev/55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com/
-
-Reported-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/arp.h       | 1 +
- net/ipv4/arp.c          | 9 +++++++--
- net/ipv4/fib_frontend.c | 5 ++++-
- 3 files changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/arp.h b/include/net/arp.h
-index 4950191f6b2b..4a23a97195f3 100644
---- a/include/net/arp.h
-+++ b/include/net/arp.h
-@@ -71,6 +71,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
- 	      const unsigned char *src_hw, const unsigned char *th);
- int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
- void arp_ifdown(struct net_device *dev);
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force);
- 
- struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
- 			   struct net_device *dev, __be32 src_ip,
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 922dd73e5740..83a47998c4b1 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1116,13 +1116,18 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
- 	return err;
- }
- 
--static int arp_invalidate(struct net_device *dev, __be32 ip)
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
- {
- 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
- 	int err = -ENXIO;
- 	struct neigh_table *tbl = &arp_tbl;
- 
- 	if (neigh) {
-+		if ((neigh->nud_state & NUD_VALID) && !force) {
-+			neigh_release(neigh);
-+			return 0;
-+		}
-+
- 		if (neigh->nud_state & ~NUD_NOARP)
- 			err = neigh_update(neigh, NULL, NUD_FAILED,
- 					   NEIGH_UPDATE_F_OVERRIDE|
-@@ -1169,7 +1174,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
- 		if (!dev)
- 			return -EINVAL;
- 	}
--	return arp_invalidate(dev, ip);
-+	return arp_invalidate(dev, ip, true);
- }
- 
- /*
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 917ea953dfad..0df4594b49c7 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1112,9 +1112,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 		return;
- 
- 	/* Add broadcast address, if it is explicitly assigned. */
--	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
-+	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
- 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
- 			  prim, 0);
-+		arp_invalidate(dev, ifa->ifa_broadcast, false);
-+	}
- 
- 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
- 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
-@@ -1130,6 +1132,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 				  prim, 0);
- 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
- 				  32, prim, 0);
-+			arp_invalidate(dev, prefix | ~mask, false);
- 		}
- 	}
- }
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 424be103093c..1465a92ea3fc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -1626,7 +1626,7 @@ mt7615_mac_adjust_sensitivity(struct mt7615_phy *phy,
+ 	struct mt7615_dev *dev = phy->dev;
+ 	int false_cca = ofdm ? phy->false_cca_ofdm : phy->false_cca_cck;
+ 	bool ext_phy = phy != &dev->phy;
+-	u16 def_th = ofdm ? -98 : -110;
++	s16 def_th = ofdm ? -98 : -110;
+ 	bool update = false;
+ 	s8 *sensitivity;
+ 	int signal;
 -- 
 2.34.1
 
