@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C234EF64F
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4106C4EF62F
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349974AbiDAPdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
+        id S1348297AbiDAPbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350290AbiDAO7b (ORCPT
+        with ESMTP id S1350296AbiDAO7b (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:59:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0905A5AB;
-        Fri,  1 Apr 2022 07:47:04 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE945A5B0;
+        Fri,  1 Apr 2022 07:47:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DA4E60C9B;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A74860C8F;
+        Fri,  1 Apr 2022 14:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77DD1C340EE;
         Fri,  1 Apr 2022 14:47:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDBE1C340F2;
-        Fri,  1 Apr 2022 14:47:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824424;
-        bh=o+7RtOAzw3MPllZo4DGSW0jE1UcPV0EGFxFBqFLNLsU=;
+        s=k20201202; t=1648824425;
+        bh=WAN2rQy9BGW6UjTvakL2rtQ+2UfsPaSLsKd0wonl1pg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m3oDw+x2Bi9x8Su+zBweJRpRpRnV89KYFq9AjFItiGLCfzjN1XW8yM8F611r5gX4K
-         WXWNAcpcK6IYAsXxHaWnZpHD7wDNTII3nlrB1LXa1yCVddog645uDlDVQKfbHuon45
-         kjJ/pz0RmNN3tgFWqCDhKvenjuSZ98sCocJbufc+i/r+dZm2T3QNPLs/vsxlDmuyQp
-         R2tq1L0G4HEIj4RZk/Zkg6TO2Q+FZq4Ev1yLbcmUmxOlWh0RrTawxENmad1Kw86f1P
-         IdEIk4NgflPMUbINmrYHrshuihSk3H8plz7s/xk4sM64ptnqdG3liz7EbuHju7HE8A
-         y9ZCWsJ7CFdjg==
+        b=pRpcoCsTH8KxY97JUlwTuAidNmLuAP8zv8A7cNP9GbkVlCzTqB+xJaUdhmCUJhapu
+         ZFlmpBzVZEhSEN7mqt33n7RKS/nkPt3PX/kuE0E8anNGs+EJG7eMuaiqx1cZ7MXe27
+         GVh39UzVGZLP5E02grLy6pKwZ43QCI3sZXHw6B1ah5PoparyNTa78ddZRw2HokVM45
+         uXHzIDzamaSkpY1V8niHxRT8Ptrbw/9C8hNU/+1VGQA21pYPfTcBXjK1C07l6gTy7Q
+         pF86v5aCD0AXZXVA/zIFGLekpU2KANirCd7TqwiCF8B+iqgOz4AALUMoiJkFDIy71N
+         DkyQpYbl/hZ2w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Eckelmann <sven@narfation.org>,
-        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Colin Winegarden <colin.winegarden@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
         pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 20/29] macvtap: advertise link netns via netlink
-Date:   Fri,  1 Apr 2022 10:46:03 -0400
-Message-Id: <20220401144612.1955177-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 21/29] bnxt_en: Eliminate unintended link toggle during FW reset
+Date:   Fri,  1 Apr 2022 10:46:04 -0400
+Message-Id: <20220401144612.1955177-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
 References: <20220401144612.1955177-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,63 +59,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Michael Chan <michael.chan@broadcom.com>
 
-[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
+[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
 
-Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-added to rtnetlink messages. This fixes iproute2 which otherwise resolved
-the link interface to an interface in the wrong namespace.
+If the flow control settings have been changed, a subsequent FW reset
+may cause the ethernet link to toggle unnecessarily.  This link toggle
+will increase the down time by a few seconds.
 
-Test commands:
+The problem is caused by bnxt_update_phy_setting() detecting a false
+mismatch in the flow control settings between the stored software
+settings and the current FW settings after the FW reset.  This mismatch
+is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
+inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
+bit should not be added to link_info->req_flow_ctrl.
 
-  ip netns add nst
-  ip link add dummy0 type dummy
-  ip link add link macvtap0 link dummy0 type macvtap
-  ip link set macvtap0 netns nst
-  ip -netns nst link show macvtap0
-
-Before:
-
-  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
-
-After:
-
-  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
-      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-
-Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvtap.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
-index 9a10029caf83..085f1648a8a6 100644
---- a/drivers/net/macvtap.c
-+++ b/drivers/net/macvtap.c
-@@ -132,11 +132,17 @@ static void macvtap_setup(struct net_device *dev)
- 	dev->tx_queue_len = TUN_READQ_SIZE;
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index e75a47a9f511..deba77670b1c 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -1377,9 +1377,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+ 		}
  
-+static struct net *macvtap_link_net(const struct net_device *dev)
-+{
-+	return dev_net(macvlan_dev_real_dev(dev));
-+}
-+
- static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
- 	.kind		= "macvtap",
- 	.setup		= macvtap_setup,
- 	.newlink	= macvtap_newlink,
- 	.dellink	= macvtap_dellink,
-+	.get_link_net	= macvtap_link_net,
- 	.priv_size      = sizeof(struct macvtap_dev),
- };
- 
+ 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
+-		if (bp->hwrm_spec_code >= 0x10201)
+-			link_info->req_flow_ctrl =
+-				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
++		link_info->req_flow_ctrl = 0;
+ 	} else {
+ 		/* when transition from auto pause to force pause,
+ 		 * force a link change
 -- 
 2.34.1
 
