@@ -2,188 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E6D4EFA4E
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 21:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AB134EFA58
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 21:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347075AbiDATOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 15:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
+        id S1351560AbiDATZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 15:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236407AbiDATOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 15:14:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174E6617D;
-        Fri,  1 Apr 2022 12:12:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S234406AbiDATZ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 15:25:29 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4919D60A8B
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 12:23:37 -0700 (PDT)
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB536B82604;
-        Fri,  1 Apr 2022 19:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C023C340F3;
-        Fri,  1 Apr 2022 19:12:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648840359;
-        bh=YApioM8rRksuAEkG5aeY8aT6WHhUt0SJ/cvtvDy3mIQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Mq9ioClIwWzL8dm0dnfl9fxy3t4LppiDFcfjh+24Q3lbf5r5aI+7zIrT8zfKATY/q
-         nHZaT8suCYmK5RCUOlW0HGDkK1Gpifed4aFZVab0KxfKzX/wsA0Dq9JTKIBXeCV+nh
-         FxuJ6zg82piHE1mdtgXYUyUpzImSADdk7KMl4aktptJcxUDYyCQTO+UfjnIqJ9E7aw
-         NoO1GVnHIfT2tOSDLmQ6pK6M2bqd6lE9lx5sTGPiXQQK1/NcwxCYqxxgz7gXgzMz55
-         GS4yfivU4CP7GzH//pqv3av34vTRFUdxXzAbfn8HgNMFMldQr2J67V1qtKQ0WOo1RB
-         FtnUqAt+slLDg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 5EE5040407; Fri,  1 Apr 2022 16:12:36 -0300 (-03)
-Date:   Fri, 1 Apr 2022 16:12:36 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        German Gomez <german.gomez@arm.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 5/6] perf cpumap: Add intersect function.
-Message-ID: <YkdOpJDnknrOPq2t@kernel.org>
-References: <20220328232648.2127340-1-irogers@google.com>
- <20220328232648.2127340-6-irogers@google.com>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 5A5333F814
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 19:23:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1648841011;
+        bh=ay5vnR1FzgYbrJ3fVkSq0cJeptmHke/9bnDckfAaX/o=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=a3IGVwOsC1J80HcKYGwK6xCWbyCPXeQ8OhHJIjqpUfXzFEMorzmew7+P/KwWQAP7V
+         vwmjTzakuQdE27OYYepkcHxRp38WbRxvuSGP9ujaJO+97oy/AXx/xDoZ1vtW+mr2Ja
+         w2FQMmCqKkIA26DLtRdF1Bf0lDKpqt38JblAtpLP8z3EWhCyfri7EhgHhYMdEyCZQ8
+         SluuErcq62wRP7FleMiQZTEso1gPTg9KygibSyledL8mNC0o+ZeTz4Gm6M3VaLVFdm
+         iF/2/27yrYN1r1XVcbqc2fbvAXmb/WCeJ+x8gHrt7Pnx9nIuJdPOIKBp1BvVI3D0ak
+         NQZf1DP1npIuw==
+Received: by mail-pg1-f199.google.com with SMTP id r19-20020a635d13000000b00398cdd429f8so2105272pgb.9
+        for <netdev@vger.kernel.org>; Fri, 01 Apr 2022 12:23:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ay5vnR1FzgYbrJ3fVkSq0cJeptmHke/9bnDckfAaX/o=;
+        b=q5aCo28lhNutE5kZ6FZN68XrMf+1D8SwQ/DFMPJjCJ8YadB3RdyUWvDBybzymI8ISM
+         Zi1Q8DbW9yjH44bZ1NEf6CimmUB8PANzlLQnKHYZWUrAXKdF8ohFg1Dg7DwsOIKnwsmB
+         d/aRsgincI4kXOudmgwEOfoJpidSBCsNt8o70nJkTgkjI/7ewQ3hC/xYP0zTbYvo7U7h
+         SRM0Zt2+S7e4HL1V2YoP3Q6gHtYCwre3luX6gX6u2Kt6yDDEve4rv2+IIy9Q0z13Ot3d
+         1LDbP1hXBIbW/xqiAjMaKzxJLYGx2G59IzikvGk0NTXlDmEUd8YKVrSJaPI5e1JrBL3k
+         idGg==
+X-Gm-Message-State: AOAM533S+cRbgWRif7lyxbLd6+eO0+ctJSSePYA9qmPDsWV+1G9ZXRf7
+        DZ9FTZtOIeN223A04Wp7Zo3zgkEK6Aae7ywhneRnGpP1deAc7NUUaH9QYMDs+PjLtXTRhZk4F1W
+        /keenA3BY2MbsPPHv8Cp8xok2O7D1KJ3tKg==
+X-Received: by 2002:a17:90b:2502:b0:1c6:d783:6e76 with SMTP id ns2-20020a17090b250200b001c6d7836e76mr13563509pjb.158.1648841009193;
+        Fri, 01 Apr 2022 12:23:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyWu4ERuNPbVHVxEdRpUveht1sZeHrPOxeFBGCqUoQpU1ZtjtBIRI2kg4sRtWOVVVbNq5mfzQ==
+X-Received: by 2002:a17:90b:2502:b0:1c6:d783:6e76 with SMTP id ns2-20020a17090b250200b001c6d7836e76mr13563497pjb.158.1648841008912;
+        Fri, 01 Apr 2022 12:23:28 -0700 (PDT)
+Received: from [192.168.1.3] ([69.163.84.166])
+        by smtp.gmail.com with ESMTPSA id me5-20020a17090b17c500b001c63699ff60sm15103659pjb.57.2022.04.01.12.23.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 12:23:28 -0700 (PDT)
+Message-ID: <b8ebba84-62cb-b1fb-d6f7-1d6b6682da45@canonical.com>
+Date:   Fri, 1 Apr 2022 13:23:26 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328232648.2127340-6-irogers@google.com>
-X-Url:  http://acmel.wordpress.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net] qed: fix ethtool register dump
+Content-Language: en-US
+To:     Manish Chopra <manishc@marvell.com>, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, aelior@marvell.com, palok@marvell.com,
+        pkushwaha@marvell.com, stable@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+References: <20220401185304.3316-1-manishc@marvell.com>
+From:   Tim Gardner <tim.gardner@canonical.com>
+In-Reply-To: <20220401185304.3316-1-manishc@marvell.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Mon, Mar 28, 2022 at 04:26:47PM -0700, Ian Rogers escreveu:
-> The merge function gives the union of two cpu maps. Add an intersect
-> function which will be used in the next change.
 
-So I really don't think intersect() shouldn't modify the contents of any
-of its arguments, at most return one of them with a bumped refcount, as
-an optimization.
 
-The merge() operation is different in the sense that one expects that
-one of the operands will be inserted into the other, and even then it
-would be better to have a clearer semantic, i.e. merge(a, b) should mean
-get the contents of b and insert into a.
-
-Since we're talking about CPUs, it doesn't make sense to have a CPU
-multiple times in the cpu_map, so we eliminate duplicates while doing
-it.
-
-Also perhaps the merge() operation should not even change any of the
-operands, but instead return a new cpuset if one of the operands isn't
-contained in the other, in which case a bump in the reference count of
-the superset would be a valid optimization.
-
-But that boat has departed already, i.e. perf_cpu_map__merge() is
-already an exported libperf API, sigh.
-
-This is something we're exporting, so I think this warrants further
-discussion, even with a fix depending on the merge of this new API.
-
-- Arnaldo
- 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/lib/perf/cpumap.c              | 38 ++++++++++++++++++++++++++++
->  tools/lib/perf/include/perf/cpumap.h |  2 ++
->  2 files changed, 40 insertions(+)
+On 4/1/22 12:53, Manish Chopra wrote:
+> To fix a coverity complain, commit d5ac07dfbd2b
+> ("qed: Initialize debug string array") removed "sw-platform"
+> (one of the common global parameters) from the dump as this
+> was used in the dump with an uninitialized string, however
+> it did not reduce the number of common global parameters
+> which caused the incorrect (unable to parse) register dump
 > 
-> diff --git a/tools/lib/perf/cpumap.c b/tools/lib/perf/cpumap.c
-> index 384d5e076ee4..60cccd05f243 100644
-> --- a/tools/lib/perf/cpumap.c
-> +++ b/tools/lib/perf/cpumap.c
-> @@ -390,3 +390,41 @@ struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
->  	perf_cpu_map__put(orig);
->  	return merged;
->  }
-> +
-> +struct perf_cpu_map *perf_cpu_map__intersect(struct perf_cpu_map *orig,
-> +					     struct perf_cpu_map *other)
-> +{
-> +	struct perf_cpu *tmp_cpus;
-> +	int tmp_len;
-> +	int i, j, k;
-> +	struct perf_cpu_map *merged = NULL;
-> +
-> +	if (perf_cpu_map__is_subset(other, orig))
-> +		return orig;
-> +	if (perf_cpu_map__is_subset(orig, other)) {
-> +		perf_cpu_map__put(orig);
-> +		return perf_cpu_map__get(other);
-> +	}
-> +
-> +	tmp_len = max(orig->nr, other->nr);
-> +	tmp_cpus = malloc(tmp_len * sizeof(struct perf_cpu));
-> +	if (!tmp_cpus)
-> +		return NULL;
-> +
-> +	i = j = k = 0;
-> +	while (i < orig->nr && j < other->nr) {
-> +		if (orig->map[i].cpu < other->map[j].cpu)
-> +			i++;
-> +		else if (orig->map[i].cpu > other->map[j].cpu)
-> +			j++;
-> +		else {
-> +			j++;
-> +			tmp_cpus[k++] = orig->map[i++];
-> +		}
-> +	}
-> +	if (k)
-> +		merged = cpu_map__trim_new(k, tmp_cpus);
-> +	free(tmp_cpus);
-> +	perf_cpu_map__put(orig);
-> +	return merged;
-> +}
-> diff --git a/tools/lib/perf/include/perf/cpumap.h b/tools/lib/perf/include/perf/cpumap.h
-> index 4a2edbdb5e2b..a2a7216c0b78 100644
-> --- a/tools/lib/perf/include/perf/cpumap.h
-> +++ b/tools/lib/perf/include/perf/cpumap.h
-> @@ -19,6 +19,8 @@ LIBPERF_API struct perf_cpu_map *perf_cpu_map__read(FILE *file);
->  LIBPERF_API struct perf_cpu_map *perf_cpu_map__get(struct perf_cpu_map *map);
->  LIBPERF_API struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
->  						     struct perf_cpu_map *other);
-> +LIBPERF_API struct perf_cpu_map *perf_cpu_map__intersect(struct perf_cpu_map *orig,
-> +							 struct perf_cpu_map *other);
->  LIBPERF_API void perf_cpu_map__put(struct perf_cpu_map *map);
->  LIBPERF_API struct perf_cpu perf_cpu_map__cpu(const struct perf_cpu_map *cpus, int idx);
->  LIBPERF_API int perf_cpu_map__nr(const struct perf_cpu_map *cpus);
-> -- 
-> 2.35.1.1021.g381101b075-goog
+> this patch fixes it with reducing NUM_COMMON_GLOBAL_PARAMS
+> bye one.
+> 
+> Cc: stable@vger.kernel.org
+> Cc: Tim Gardner <tim.gardner@canonical.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Fixes: d5ac07dfbd2b ("qed: Initialize debug string array")
+> Signed-off-by: Prabhakar Kushwaha <pkushwaha@marvell.com>
+> Signed-off-by: Alok Prasad <palok@marvell.com>
+> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> Signed-off-by: Manish Chopra <manishc@marvell.com>
+> ---
+>   drivers/net/ethernet/qlogic/qed/qed_debug.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_debug.c b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+> index e3edca187ddf..5250d1d1e49c 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_debug.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_debug.c
+> @@ -489,7 +489,7 @@ struct split_type_defs {
+>   
+>   #define STATIC_DEBUG_LINE_DWORDS	9
+>   
+> -#define NUM_COMMON_GLOBAL_PARAMS	11
+> +#define NUM_COMMON_GLOBAL_PARAMS	10
+>   
+>   #define MAX_RECURSION_DEPTH		10
+>   
 
+Looks good to me.
+
+Reviewed-by: Tim Gardner <tim.gardner@canonical.com>
+
+rtg
 -- 
-
-- Arnaldo
+-----------
+Tim Gardner
+Canonical, Inc
