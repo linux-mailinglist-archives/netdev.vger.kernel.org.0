@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08DE44EF661
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C513E4EF66B
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350453AbiDAPeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
+        id S1350717AbiDAPe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:34:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349536AbiDAO4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:56:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F3514D78E;
-        Fri,  1 Apr 2022 07:44:30 -0700 (PDT)
+        with ESMTP id S1349608AbiDAO5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:57:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E22D514DFDD;
+        Fri,  1 Apr 2022 07:44:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BC4D3CE2588;
-        Fri,  1 Apr 2022 14:44:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8E75C2BBE4;
-        Fri,  1 Apr 2022 14:44:25 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 60D9DCE2586;
+        Fri,  1 Apr 2022 14:44:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5F7EC34112;
+        Fri,  1 Apr 2022 14:44:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824267;
-        bh=RHkjZ/ykG3AVJbGV6ZXCEx5WIuzehh5fbGHFjHEsLow=;
+        s=k20201202; t=1648824268;
+        bh=7xvtjIYKvCOq1DgobQy5RPLDfFKfoEXvSj4vPHbv+5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d1r2iZo+cHcveVW88ZGYWyzm92BXbKpZ5gX5iC/H/4GhHCFkgeC7UHWFwHnM/m/s9
-         ZKXwu4maujMFsZRaUPGOIxDwHz8ZGNgdeddYTqY1rkVsjNZqSFY0BA0ZHAzSzS3vxt
-         D/0xy6rxBjNnuDy1ulv8OZ314znPMPtoErPxH+KloWwhYBd0IT1+/zdphtjGRVx0Gy
-         nPg32p/EmdCnWf5DmzUAD6sDkmXGTcB3pyjQBDtPlpgezd1PwCUnsH39+y3WmTJaBF
-         fTlDjla+g6lvePx9nz7pgzK40Jqz821ELLJAc4S1ApOfRnRWKIyCG8zGkUlJ4Rrp8O
-         gav44YiWQChNA==
+        b=mKJ5xpdzuoG4Qv2ptjHJq9yWRSDxi4pbbI7VUqvXm1lrj8U4XMb7SvI1cqvUAzpNu
+         18tmb8CV4Eq0B0GiojJYBGxzeOEMgpI2d08TtrKC87W+Fz+ZxydEL31nzap+DC97NV
+         Fe5C/cjR7mG0z7jjVWGHiXtxgZLFK/ngsjI82he1T1EQ3qHaWQVUBDJzCPOXYdJ6t8
+         3ZEqQrnV1q1rriNqhAmemwBYGrVWdPK2BEMn3scqMoQbmW3DKFZYYYuLI6c9fnGVqr
+         1Lh9zAxR/DxuxL0v1d8J1653C8BqNwMU5lP1/GivGHR3r/YKe5Mtc3ssfmWaZqRHfG
+         uTfF3SNhtx09A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        George Shuklin <george.shuklin@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
-        edumazet@google.com, yajun.deng@linux.dev, johannes.berg@intel.com,
-        cong.wang@bytedance.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 56/65] net: limit altnames to 64k total
-Date:   Fri,  1 Apr 2022 10:41:57 -0400
-Message-Id: <20220401144206.1953700-56-sashal@kernel.org>
+Cc:     Michael Walle <michael@walle.cc>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 57/65] net: sfp: add 2500base-X quirk for Lantech SFP module
+Date:   Fri,  1 Apr 2022 10:41:58 -0400
+Message-Id: <20220401144206.1953700-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -60,55 +57,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Michael Walle <michael@walle.cc>
 
-[ Upstream commit 155fb43b70b5fce341347a77d1af2765d1e8fbb8 ]
+[ Upstream commit 00eec9fe4f3b9588b4bfa8ef9dd0aae96407d5d7 ]
 
-Property list (altname is a link "property") is wrapped
-in a nlattr. nlattrs length is 16bit so practically
-speaking the list of properties can't be longer than
-that, otherwise user space would have to interpret
-broken netlink messages.
+The Lantech 8330-262D-E module is 2500base-X capable, but it reports the
+nominal bitrate as 2500MBd instead of 3125MBd. Add a quirk for the
+module.
 
-Prevent the problem from occurring by checking the length
-of the property list before adding new entries.
+The following in an EEPROM dump of such a SFP with the serial number
+redacted:
 
-Reported-by: George Shuklin <george.shuklin@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+00: 03 04 07 00 00 00 01 20 40 0c 05 01 19 00 00 00    ???...? @????...
+10: 1e 0f 00 00 4c 61 6e 74 65 63 68 20 20 20 20 20    ??..Lantech
+20: 20 20 20 20 00 00 00 00 38 33 33 30 2d 32 36 32        ....8330-262
+30: 44 2d 45 20 20 20 20 20 56 31 2e 30 03 52 00 cb    D-E     V1.0?R.?
+40: 00 1a 00 00 46 43 XX XX XX XX XX XX XX XX XX XX    .?..FCXXXXXXXXXX
+50: 20 20 20 20 32 32 30 32 31 34 20 20 68 b0 01 98        220214  h???
+60: 45 58 54 52 45 4d 45 4c 59 20 43 4f 4d 50 41 54    EXTREMELY COMPAT
+70: 49 42 4c 45 20 20 20 20 20 20 20 20 20 20 20 20    IBLE
+
+Signed-off-by: Michael Walle <michael@walle.cc>
+Link: https://lore.kernel.org/r/20220312205014.4154907-1-michael@walle.cc
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/rtnetlink.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/phy/sfp-bus.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 77b3d9cc08a1..873081cda950 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3626,12 +3626,23 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
- 			   bool *changed, struct netlink_ext_ack *extack)
- {
- 	char *alt_ifname;
-+	size_t size;
- 	int err;
- 
- 	err = nla_validate(attr, attr->nla_len, IFLA_MAX, ifla_policy, extack);
- 	if (err)
- 		return err;
- 
-+	if (cmd == RTM_NEWLINKPROP) {
-+		size = rtnl_prop_list_size(dev);
-+		size += nla_total_size(ALTIFNAMSIZ);
-+		if (size >= U16_MAX) {
-+			NL_SET_ERR_MSG(extack,
-+				       "effective property list too long");
-+			return -EINVAL;
-+		}
-+	}
-+
- 	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
- 	if (!alt_ifname)
- 		return -ENOMEM;
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index a05d8372669c..850915a37f4c 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -74,6 +74,12 @@ static const struct sfp_quirk sfp_quirks[] = {
+ 		.vendor = "HUAWEI",
+ 		.part = "MA5671A",
+ 		.modes = sfp_quirk_2500basex,
++	}, {
++		// Lantech 8330-262D-E can operate at 2500base-X, but
++		// incorrectly report 2500MBd NRZ in their EEPROM
++		.vendor = "Lantech",
++		.part = "8330-262D-E",
++		.modes = sfp_quirk_2500basex,
+ 	}, {
+ 		.vendor = "UBNT",
+ 		.part = "UF-INSTANT",
 -- 
 2.34.1
 
