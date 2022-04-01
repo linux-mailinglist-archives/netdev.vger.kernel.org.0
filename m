@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ADEA4EF0E6
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBAC34EF0CF
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347882AbiDAOgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
+        id S1348004AbiDAOgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347633AbiDAOdP (ORCPT
+        with ESMTP id S1347638AbiDAOdP (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6622F25664E;
-        Fri,  1 Apr 2022 07:30:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0638258FDE;
+        Fri,  1 Apr 2022 07:30:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D636B8240E;
-        Fri,  1 Apr 2022 14:30:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D23BC36AF8;
-        Fri,  1 Apr 2022 14:30:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 802FAB82500;
+        Fri,  1 Apr 2022 14:30:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9A13C36AE2;
+        Fri,  1 Apr 2022 14:30:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823418;
-        bh=fClYw0h0vjp076jfaNI0Hj1eCWF7x7bOsKy8xtc1bWY=;
+        s=k20201202; t=1648823420;
+        bh=4TM1wtHMHWiJixswzsOH0WgzU0dcCN1z4qTkFA7BIr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YTN7GacEnXpcROdzZf+e2Cc9r8fgr+BbqEfy2dQRMqpNUfRo9xPB0KLYXqWOynsLA
-         5syYGH/pGx7PfaRmOWqSkXT+AZoxsRgNBSugkLmUBvW1cOr3555EKd/NpZNrx7178A
-         j2GLnLAGziM+ViOJdVQ9owm2/rwo5JCCbrOwIXX4dkhfmlBA3LE+Wygoo196lArg3+
-         a4kydj68wtsoPr4/gINqRc0QXbRbfH+1vvgvbuMnWYVr7QbDkv6LiksGxFvqplRz+j
-         21XaIUZKddBN678baG6AoyfCsfXRXcSsZKt5RbAhVYU/h8dmKOKyp5Kf/Gfp3gVJMV
-         JxMkP0J1JYocA==
+        b=Z9hJMtVfScEpJy6qM/u+LYJqCGEWSEMeYhVpORnQXToXqfYHQOwom51ADo0sMXgcx
+         qntm39cNyL9XP2jhms08VZ/ElqE6LglVUG2T+/hNA/CuK/XsNzEv10TZOL4jbw6bU3
+         9Pb8Ak0O1wqostpWv8kFEvq32qTwhZ26BNRNVs5xQxKOC1fxLeXW0kh64XPv7cs1UZ
+         Qy/LfJ+56lN/qgsLFLLghtHAcm8Yi7m6DSN1GHOMh6LXh49e1t4a3H44DLP7xgNQ00
+         4YXl0babZiCOO1ze4Sa2kRyD0fv6wPJcgniyVjqciclndKnKbHn3qqGzs1ZGQ2CKOt
+         KfOgg+DeGm5QQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Kosina <jkosina@suse.cz>, Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+Cc:     Baochen Qiang <quic_bqiang@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
         davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 085/149] rtw89: fix RCU usage in rtw89_core_txq_push()
-Date:   Fri,  1 Apr 2022 10:24:32 -0400
-Message-Id: <20220401142536.1948161-85-sashal@kernel.org>
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 086/149] ath11k: Fix frames flush failure caused by deadlock
+Date:   Fri,  1 Apr 2022 10:24:33 -0400
+Message-Id: <20220401142536.1948161-86-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -57,114 +59,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Kosina <jkosina@suse.cz>
+From: Baochen Qiang <quic_bqiang@quicinc.com>
 
-[ Upstream commit f3d825a35920714fb7f73e4d4f36ea2328860660 ]
+[ Upstream commit 261b07519518bd14cb168b287b17e1d195f8d0c8 ]
 
-ieee80211_tx_h_select_key() is performing a series of RCU dereferences,
-but rtw89_core_txq_push() is calling it (via ieee80211_tx_dequeue_ni())
-without RCU read-side lock held; fix that.
+We are seeing below warnings:
 
-This addresses the splat below.
+kernel: [25393.301506] ath11k_pci 0000:01:00.0: failed to flush mgmt transmit queue 0
+kernel: [25398.421509] ath11k_pci 0000:01:00.0: failed to flush mgmt transmit queue 0
+kernel: [25398.421831] ath11k_pci 0000:01:00.0: dropping mgmt frame for vdev 0, is_started 0
 
- =============================
- WARNING: suspicious RCU usage
- 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
- -----------------------------
- net/mac80211/tx.c:593 suspicious rcu_dereference_check() usage!
+this means ath11k fails to flush mgmt. frames because wmi_mgmt_tx_work
+has no chance to run in 5 seconds.
 
- other info that might help us debug this:
+By setting /proc/sys/kernel/hung_task_timeout_secs to 20 and increasing
+ATH11K_FLUSH_TIMEOUT to 50 we get below warnings:
 
- rcu_scheduler_active = 2, debug_locks = 1
- 2 locks held by kworker/u33:0/184:
-  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
-  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
+kernel: [  120.763160] INFO: task wpa_supplicant:924 blocked for more than 20 seconds.
+kernel: [  120.763169]       Not tainted 5.10.90 #12
+kernel: [  120.763177] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kernel: [  120.763186] task:wpa_supplicant  state:D stack:    0 pid:  924 ppid:     1 flags:0x000043a0
+kernel: [  120.763201] Call Trace:
+kernel: [  120.763214]  __schedule+0x785/0x12fa
+kernel: [  120.763224]  ? lockdep_hardirqs_on_prepare+0xe2/0x1bb
+kernel: [  120.763242]  schedule+0x7e/0xa1
+kernel: [  120.763253]  schedule_timeout+0x98/0xfe
+kernel: [  120.763266]  ? run_local_timers+0x4a/0x4a
+kernel: [  120.763291]  ath11k_mac_flush_tx_complete+0x197/0x2b1 [ath11k 13c3a9bf37790f4ac8103b3decf7ab4008ac314a]
+kernel: [  120.763306]  ? init_wait_entry+0x2e/0x2e
+kernel: [  120.763343]  __ieee80211_flush_queues+0x167/0x21f [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763378]  __ieee80211_recalc_idle+0x105/0x125 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763411]  ieee80211_recalc_idle+0x14/0x27 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763441]  ieee80211_free_chanctx+0x77/0xa2 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763473]  __ieee80211_vif_release_channel+0x100/0x131 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763540]  ieee80211_vif_release_channel+0x66/0x81 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763572]  ieee80211_destroy_auth_data+0xa3/0xe6 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763612]  ieee80211_mgd_deauth+0x178/0x29b [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.763654]  cfg80211_mlme_deauth+0x1a8/0x22c [cfg80211 8945aa5bc2af5f6972336665d8ad6f9c191ad5be]
+kernel: [  120.763697]  nl80211_deauthenticate+0xfa/0x123 [cfg80211 8945aa5bc2af5f6972336665d8ad6f9c191ad5be]
+kernel: [  120.763715]  genl_rcv_msg+0x392/0x3c2
+kernel: [  120.763750]  ? nl80211_associate+0x432/0x432 [cfg80211 8945aa5bc2af5f6972336665d8ad6f9c191ad5be]
+kernel: [  120.763782]  ? nl80211_associate+0x432/0x432 [cfg80211 8945aa5bc2af5f6972336665d8ad6f9c191ad5be]
+kernel: [  120.763802]  ? genl_rcv+0x36/0x36
+kernel: [  120.763814]  netlink_rcv_skb+0x89/0xf7
+kernel: [  120.763829]  genl_rcv+0x28/0x36
+kernel: [  120.763840]  netlink_unicast+0x179/0x24b
+kernel: [  120.763854]  netlink_sendmsg+0x393/0x401
+kernel: [  120.763872]  sock_sendmsg+0x72/0x76
+kernel: [  120.763886]  ____sys_sendmsg+0x170/0x1e6
+kernel: [  120.763897]  ? copy_msghdr_from_user+0x7a/0xa2
+kernel: [  120.763914]  ___sys_sendmsg+0x95/0xd1
+kernel: [  120.763940]  __sys_sendmsg+0x85/0xbf
+kernel: [  120.763956]  do_syscall_64+0x43/0x55
+kernel: [  120.763966]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+kernel: [  120.763977] RIP: 0033:0x79089f3fcc83
+kernel: [  120.763986] RSP: 002b:00007ffe604f0508 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+kernel: [  120.763997] RAX: ffffffffffffffda RBX: 000059b40e987690 RCX: 000079089f3fcc83
+kernel: [  120.764006] RDX: 0000000000000000 RSI: 00007ffe604f0558 RDI: 0000000000000009
+kernel: [  120.764014] RBP: 00007ffe604f0540 R08: 0000000000000004 R09: 0000000000400000
+kernel: [  120.764023] R10: 00007ffe604f0638 R11: 0000000000000246 R12: 000059b40ea04980
+kernel: [  120.764032] R13: 00007ffe604f0638 R14: 000059b40e98c360 R15: 00007ffe604f0558
+...
+kernel: [  120.765230] INFO: task kworker/u32:26:4239 blocked for more than 20 seconds.
+kernel: [  120.765238]       Not tainted 5.10.90 #12
+kernel: [  120.765245] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+kernel: [  120.765253] task:kworker/u32:26  state:D stack:    0 pid: 4239 ppid:     2 flags:0x00004080
+kernel: [  120.765284] Workqueue: phy0 ieee80211_iface_work [mac80211]
+kernel: [  120.765295] Call Trace:
+kernel: [  120.765306]  __schedule+0x785/0x12fa
+kernel: [  120.765316]  ? find_held_lock+0x3d/0xb2
+kernel: [  120.765331]  schedule+0x7e/0xa1
+kernel: [  120.765340]  schedule_preempt_disabled+0x15/0x1e
+kernel: [  120.765349]  __mutex_lock_common+0x561/0xc0d
+kernel: [  120.765375]  ? ieee80211_sta_work+0x3e/0x1232 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.765390]  mutex_lock_nested+0x20/0x26
+kernel: [  120.765416]  ieee80211_sta_work+0x3e/0x1232 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.765430]  ? skb_dequeue+0x54/0x5e
+kernel: [  120.765456]  ? ieee80211_iface_work+0x7b/0x339 [mac80211 335da900954f1c5ea7f1613d92088ce83342042c]
+kernel: [  120.765485]  process_one_work+0x270/0x504
+kernel: [  120.765501]  worker_thread+0x215/0x376
+kernel: [  120.765514]  kthread+0x159/0x168
+kernel: [  120.765526]  ? pr_cont_work+0x5b/0x5b
+kernel: [  120.765536]  ? kthread_blkcg+0x31/0x31
+kernel: [  120.765550]  ret_from_fork+0x22/0x30
+...
+kernel: [  120.765867] Showing all locks held in the system:
+...
+kernel: [  120.766164] 5 locks held by wpa_supplicant/924:
+kernel: [  120.766172]  #0: ffffffffb1e63eb0 (cb_lock){++++}-{3:3}, at: genl_rcv+0x19/0x36
+kernel: [  120.766197]  #1: ffffffffb1e5b1c8 (rtnl_mutex){+.+.}-{3:3}, at: nl80211_pre_doit+0x2a/0x15c [cfg80211]
+kernel: [  120.766238]  #2: ffff99f08347cd08 (&wdev->mtx){+.+.}-{3:3}, at: nl80211_deauthenticate+0xde/0x123 [cfg80211]
+kernel: [  120.766279]  #3: ffff99f09df12a48 (&local->mtx){+.+.}-{3:3}, at: ieee80211_destroy_auth_data+0x9b/0xe6 [mac80211]
+kernel: [  120.766321]  #4: ffff99f09df12ce0 (&local->chanctx_mtx){+.+.}-{3:3}, at: ieee80211_vif_release_channel+0x5e/0x81 [mac80211]
+...
+kernel: [  120.766585] 3 locks held by kworker/u32:26/4239:
+kernel: [  120.766593]  #0: ffff99f04458f948 ((wq_completion)phy0){+.+.}-{0:0}, at: process_one_work+0x19a/0x504
+kernel: [  120.766621]  #1: ffffbad54b3cfe50 ((work_completion)(&sdata->work)){+.+.}-{0:0}, at: process_one_work+0x1c0/0x504
+kernel: [  120.766649]  #2: ffff99f08347cd08 (&wdev->mtx){+.+.}-{3:3}, at: ieee80211_sta_work+0x3e/0x1232 [mac80211]
 
- stack backtrace:
- CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
- Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
- Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x58/0x71
-  ieee80211_tx_h_select_key+0x2c0/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
-  process_one_work+0x2d8/0x660
-  worker_thread+0x39/0x3e0
-  ? process_one_work+0x660/0x660
-  kthread+0xe5/0x110
-  ? kthread_complete_and_exit+0x20/0x20
-  ret_from_fork+0x22/0x30
-  </TASK>
+With above info the issue is clear: First wmi_mgmt_tx_work is inserted
+to local->workqueue after sdata->work inserted, then wpa_supplicant
+acquires wdev->mtx in nl80211_deauthenticate and finally calls
+ath11k_mac_op_flush where it waits all mgmt. frames to be sent out by
+wmi_mgmt_tx_work. Meanwhile, sdata->work is blocked by wdev->mtx in
+ieee80211_sta_work, as a result wmi_mgmt_tx_work has no chance to run.
 
- =============================
- WARNING: suspicious RCU usage
- 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
- -----------------------------
- net/mac80211/tx.c:607 suspicious rcu_dereference_check() usage!
+Change to use ab->workqueue instead of local->workqueue to fix this issue.
 
- other info that might help us debug this:
-
- rcu_scheduler_active = 2, debug_locks = 1
- 2 locks held by kworker/u33:0/184:
-  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
-  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
-
- stack backtrace:
- CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
- Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
- Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x58/0x71
-  ieee80211_tx_h_select_key+0x464/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
-  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
-  process_one_work+0x2d8/0x660
-  worker_thread+0x39/0x3e0
-  ? process_one_work+0x660/0x660
-  kthread+0xe5/0x110
-  ? kthread_complete_and_exit+0x20/0x20
-  ret_from_fork+0x22/0x30
-  </TASK>
-
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Acked-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/nycvar.YFH.7.76.2202152037000.11721@cbobk.fhfr.pm
+Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220217084545.18844-1-quic_bqiang@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
-index a0737eea9f81..9632e7f218dd 100644
---- a/drivers/net/wireless/realtek/rtw89/core.c
-+++ b/drivers/net/wireless/realtek/rtw89/core.c
-@@ -1509,11 +1509,12 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
- 	unsigned long i;
- 	int ret;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 07f499d5ec92..36be4ec969ad 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -5566,7 +5566,7 @@ static int ath11k_mac_mgmt_tx(struct ath11k *ar, struct sk_buff *skb,
  
-+	rcu_read_lock();
- 	for (i = 0; i < frame_cnt; i++) {
- 		skb = ieee80211_tx_dequeue_ni(rtwdev->hw, txq);
- 		if (!skb) {
- 			rtw89_debug(rtwdev, RTW89_DBG_TXRX, "dequeue a NULL skb\n");
--			return;
-+			goto out;
- 		}
- 		rtw89_core_txq_check_agg(rtwdev, rtwtxq, skb);
- 		ret = rtw89_core_tx_write(rtwdev, vif, sta, skb, NULL);
-@@ -1523,6 +1524,8 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
- 			break;
- 		}
- 	}
-+out:
-+	rcu_read_unlock();
+ 	skb_queue_tail(q, skb);
+ 	atomic_inc(&ar->num_pending_mgmt_tx);
+-	ieee80211_queue_work(ar->hw, &ar->wmi_mgmt_tx_work);
++	queue_work(ar->ab->workqueue, &ar->wmi_mgmt_tx_work);
+ 
+ 	return 0;
  }
- 
- static u32 rtw89_check_and_reclaim_tx_resource(struct rtw89_dev *rtwdev, u8 tid)
 -- 
 2.34.1
 
