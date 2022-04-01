@@ -2,46 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B5F14EF11E
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ADEA4EF0E6
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347962AbiDAOgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
+        id S1347882AbiDAOgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347610AbiDAOdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF81E258443;
-        Fri,  1 Apr 2022 07:30:12 -0700 (PDT)
+        with ESMTP id S1347633AbiDAOdP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6622F25664E;
+        Fri,  1 Apr 2022 07:30:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50795B8250D;
-        Fri,  1 Apr 2022 14:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963D3C36AEB;
-        Fri,  1 Apr 2022 14:30:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D636B8240E;
+        Fri,  1 Apr 2022 14:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D23BC36AF8;
+        Fri,  1 Apr 2022 14:30:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823409;
-        bh=7neBOU9oE4j7aDMHTncJJ/MR1ImcyVePGzhQPKR9npo=;
+        s=k20201202; t=1648823418;
+        bh=fClYw0h0vjp076jfaNI0Hj1eCWF7x7bOsKy8xtc1bWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C7yB3HYwTvOY33K6S4iObLbxcYH2JGZJr0KWRPs31s105PixkTxtefHTv/mSyBzxB
-         +SrrZCOwFgo4ZGyr7EkaG74DjcYbroJcnNoP4MNibX8bV/jRqvzMKb7Xsji8HhW4La
-         6Se4PxbBS0aKhVZpBAdwWldzBVPnwVv9LWL54sKsltpt6mlAAezX8aZ1Uvvl6og79d
-         2q9mKeEmKGrNBzlaEMagfbzhgyA/Tvs+20CCWT8oZNLsWS/vyt3ju6Ug8B0WnzXO/q
-         iC/CK8TFf1EyrPOUlRtR3H7KOl8H0ewcZUNhBJ6ROC/Csu+7AqxZrOTbRVrRdCJIHo
-         PfNsN7RnI46Ug==
+        b=YTN7GacEnXpcROdzZf+e2Cc9r8fgr+BbqEfy2dQRMqpNUfRo9xPB0KLYXqWOynsLA
+         5syYGH/pGx7PfaRmOWqSkXT+AZoxsRgNBSugkLmUBvW1cOr3555EKd/NpZNrx7178A
+         j2GLnLAGziM+ViOJdVQ9owm2/rwo5JCCbrOwIXX4dkhfmlBA3LE+Wygoo196lArg3+
+         a4kydj68wtsoPr4/gINqRc0QXbRbfH+1vvgvbuMnWYVr7QbDkv6LiksGxFvqplRz+j
+         21XaIUZKddBN678baG6AoyfCsfXRXcSsZKt5RbAhVYU/h8dmKOKyp5Kf/Gfp3gVJMV
+         JxMkP0J1JYocA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 082/149] ipv6: annotate some data-races around sk->sk_prot
-Date:   Fri,  1 Apr 2022 10:24:29 -0400
-Message-Id: <20220401142536.1948161-82-sashal@kernel.org>
+Cc:     Jiri Kosina <jkosina@suse.cz>, Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 085/149] rtw89: fix RCU usage in rtw89_core_txq_push()
+Date:   Fri,  1 Apr 2022 10:24:32 -0400
+Message-Id: <20220401142536.1948161-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -59,168 +57,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jiri Kosina <jkosina@suse.cz>
 
-[ Upstream commit 086d49058cd8471046ae9927524708820f5fd1c7 ]
+[ Upstream commit f3d825a35920714fb7f73e4d4f36ea2328860660 ]
 
-IPv6 has this hack changing sk->sk_prot when an IPv6 socket
-is 'converted' to an IPv4 one with IPV6_ADDRFORM option.
+ieee80211_tx_h_select_key() is performing a series of RCU dereferences,
+but rtw89_core_txq_push() is calling it (via ieee80211_tx_dequeue_ni())
+without RCU read-side lock held; fix that.
 
-This operation is only performed for TCP and UDP, knowing
-their 'struct proto' for the two network families are populated
-in the same way, and can not disappear while a reader
-might use and dereference sk->sk_prot.
+This addresses the splat below.
 
-If we think about it all reads of sk->sk_prot while
-either socket lock or RTNL is not acquired should be using READ_ONCE().
+ =============================
+ WARNING: suspicious RCU usage
+ 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
+ -----------------------------
+ net/mac80211/tx.c:593 suspicious rcu_dereference_check() usage!
 
-Also note that other layers like MPTCP, XFRM, CHELSIO_TLS also
-write over sk->sk_prot.
+ other info that might help us debug this:
 
-BUG: KCSAN: data-race in inet6_recvmsg / ipv6_setsockopt
+ rcu_scheduler_active = 2, debug_locks = 1
+ 2 locks held by kworker/u33:0/184:
+  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
+  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
 
-write to 0xffff8881386f7aa8 of 8 bytes by task 26932 on cpu 0:
- do_ipv6_setsockopt net/ipv6/ipv6_sockglue.c:492 [inline]
- ipv6_setsockopt+0x3758/0x3910 net/ipv6/ipv6_sockglue.c:1019
- udpv6_setsockopt+0x85/0x90 net/ipv6/udp.c:1649
- sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3489
- __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
- __do_sys_setsockopt net/socket.c:2191 [inline]
- __se_sys_setsockopt net/socket.c:2188 [inline]
- __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+ stack backtrace:
+ CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
+ Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
+ Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x58/0x71
+  ieee80211_tx_h_select_key+0x2c0/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
+  process_one_work+0x2d8/0x660
+  worker_thread+0x39/0x3e0
+  ? process_one_work+0x660/0x660
+  kthread+0xe5/0x110
+  ? kthread_complete_and_exit+0x20/0x20
+  ret_from_fork+0x22/0x30
+  </TASK>
 
-read to 0xffff8881386f7aa8 of 8 bytes by task 26911 on cpu 1:
- inet6_recvmsg+0x7a/0x210 net/ipv6/af_inet6.c:659
- ____sys_recvmsg+0x16c/0x320
- ___sys_recvmsg net/socket.c:2674 [inline]
- do_recvmmsg+0x3f5/0xae0 net/socket.c:2768
- __sys_recvmmsg net/socket.c:2847 [inline]
- __do_sys_recvmmsg net/socket.c:2870 [inline]
- __se_sys_recvmmsg net/socket.c:2863 [inline]
- __x64_sys_recvmmsg+0xde/0x160 net/socket.c:2863
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+ =============================
+ WARNING: suspicious RCU usage
+ 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
+ -----------------------------
+ net/mac80211/tx.c:607 suspicious rcu_dereference_check() usage!
 
-value changed: 0xffffffff85e0e980 -> 0xffffffff85e01580
+ other info that might help us debug this:
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 26911 Comm: syz-executor.3 Not tainted 5.17.0-rc2-syzkaller-00316-g0457e5153e0e-dirty #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+ rcu_scheduler_active = 2, debug_locks = 1
+ 2 locks held by kworker/u33:0/184:
+  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
+  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
 
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+ stack backtrace:
+ CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
+ Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
+ Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x58/0x71
+  ieee80211_tx_h_select_key+0x464/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
+  process_one_work+0x2d8/0x660
+  worker_thread+0x39/0x3e0
+  ? process_one_work+0x660/0x660
+  kthread+0xe5/0x110
+  ? kthread_complete_and_exit+0x20/0x20
+  ret_from_fork+0x22/0x30
+  </TASK>
+
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/nycvar.YFH.7.76.2202152037000.11721@cbobk.fhfr.pm
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/af_inet6.c      | 24 ++++++++++++++++++------
- net/ipv6/ipv6_sockglue.c |  6 ++++--
- 2 files changed, 22 insertions(+), 8 deletions(-)
+ drivers/net/wireless/realtek/rtw89/core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 8fe7900f1949..7d7b7523d126 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -441,11 +441,14 @@ int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- {
- 	struct sock *sk = sock->sk;
- 	u32 flags = BIND_WITH_LOCK;
-+	const struct proto *prot;
- 	int err = 0;
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index a0737eea9f81..9632e7f218dd 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -1509,11 +1509,12 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
+ 	unsigned long i;
+ 	int ret;
  
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
- 	/* If the socket has its own bind function then use it. */
--	if (sk->sk_prot->bind)
--		return sk->sk_prot->bind(sk, uaddr, addr_len);
-+	if (prot->bind)
-+		return prot->bind(sk, uaddr, addr_len);
- 
- 	if (addr_len < SIN6_LEN_RFC2133)
- 		return -EINVAL;
-@@ -555,6 +558,7 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	void __user *argp = (void __user *)arg;
- 	struct sock *sk = sock->sk;
- 	struct net *net = sock_net(sk);
-+	const struct proto *prot;
- 
- 	switch (cmd) {
- 	case SIOCADDRT:
-@@ -572,9 +576,11 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 	case SIOCSIFDSTADDR:
- 		return addrconf_set_dstaddr(net, argp);
- 	default:
--		if (!sk->sk_prot->ioctl)
-+		/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+		prot = READ_ONCE(sk->sk_prot);
-+		if (!prot->ioctl)
- 			return -ENOIOCTLCMD;
--		return sk->sk_prot->ioctl(sk, cmd, arg);
-+		return prot->ioctl(sk, cmd, arg);
++	rcu_read_lock();
+ 	for (i = 0; i < frame_cnt; i++) {
+ 		skb = ieee80211_tx_dequeue_ni(rtwdev->hw, txq);
+ 		if (!skb) {
+ 			rtw89_debug(rtwdev, RTW89_DBG_TXRX, "dequeue a NULL skb\n");
+-			return;
++			goto out;
+ 		}
+ 		rtw89_core_txq_check_agg(rtwdev, rtwtxq, skb);
+ 		ret = rtw89_core_tx_write(rtwdev, vif, sta, skb, NULL);
+@@ -1523,6 +1524,8 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
+ 			break;
+ 		}
  	}
- 	/*NOTREACHED*/
- 	return 0;
-@@ -636,11 +642,14 @@ INDIRECT_CALLABLE_DECLARE(int udpv6_sendmsg(struct sock *, struct msghdr *,
- int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 
- 	if (unlikely(inet_send_prepare(sk)))
- 		return -EAGAIN;
- 
--	return INDIRECT_CALL_2(sk->sk_prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+	return INDIRECT_CALL_2(prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
- 			       sk, msg, size);
++out:
++	rcu_read_unlock();
  }
  
-@@ -650,13 +659,16 @@ int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		  int flags)
- {
- 	struct sock *sk = sock->sk;
-+	const struct proto *prot;
- 	int addr_len = 0;
- 	int err;
- 
- 	if (likely(!(flags & MSG_ERRQUEUE)))
- 		sock_rps_record_flow(sk);
- 
--	err = INDIRECT_CALL_2(sk->sk_prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
-+	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
-+	prot = READ_ONCE(sk->sk_prot);
-+	err = INDIRECT_CALL_2(prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
- 			      sk, msg, size, flags & MSG_DONTWAIT,
- 			      flags & ~MSG_DONTWAIT, &addr_len);
- 	if (err >= 0)
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index a733803a710c..222f6bf220ba 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -475,7 +475,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, &tcp_prot, 1);
- 
--				sk->sk_prot = &tcp_prot;
-+				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				WRITE_ONCE(sk->sk_prot, &tcp_prot);
- 				icsk->icsk_af_ops = &ipv4_specific;
- 				sk->sk_socket->ops = &inet_stream_ops;
- 				sk->sk_family = PF_INET;
-@@ -489,7 +490,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
- 				sock_prot_inuse_add(net, sk->sk_prot, -1);
- 				sock_prot_inuse_add(net, prot, 1);
- 
--				sk->sk_prot = prot;
-+				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
-+				WRITE_ONCE(sk->sk_prot, prot);
- 				sk->sk_socket->ops = &inet_dgram_ops;
- 				sk->sk_family = PF_INET;
- 			}
+ static u32 rtw89_check_and_reclaim_tx_resource(struct rtw89_dev *rtwdev, u8 tid)
 -- 
 2.34.1
 
