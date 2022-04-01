@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9194EEFC3
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:28:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DADE4EEFF3
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347156AbiDAOaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
+        id S1347209AbiDAOaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347167AbiDAO3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:29:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EDF289580;
-        Fri,  1 Apr 2022 07:27:12 -0700 (PDT)
+        with ESMTP id S1347211AbiDAO3x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:29:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09E228A03B;
+        Fri,  1 Apr 2022 07:27:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58287B8240F;
-        Fri,  1 Apr 2022 14:27:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77DFC34111;
-        Fri,  1 Apr 2022 14:27:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69E1161C27;
+        Fri,  1 Apr 2022 14:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 643BFC36AE5;
+        Fri,  1 Apr 2022 14:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823230;
-        bh=9HPQ1yBP34PJp4l7O2fDVsXAP3wYuOWAlQbA2g0q+EI=;
+        s=k20201202; t=1648823240;
+        bh=XBEpcDax8qRSbttUHaQbFXCkJGe2sYnlZAoXEQznmhU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UOemKmKPoXES6Q1TqXbEeEKa+mTGhybIUm9/sJnXDPcNfWQk0izG+9u8n5Ovc6xdX
-         aX7z2BWiO+8/G9eJeneLI9q4luM3FaZNVyHbSfvTVwXiX/h+xiu9l56noApRTrTycb
-         nY2MMtZA53nX88aU4K125hyCyxkO9dwYWZX58AzPpRxkPDNdsKQ+4/du5AooPbAMW5
-         sP/vyQQExLBrYdUyg2heQEDxaT3KvZB+llI8LwTuCQIqoOBZiH6XJ3qlIgVglDpruF
-         +Bb800Bem4/SUd4sH+mbU3KLcJZ8DKkfaB9jtP3KIb4LhE59Dbe/q8DT1ws+FJuAtx
-         /3nWjffSOV3qQ==
+        b=AU857SNVSTqtQYkpGqJDRJCeT/Qwpdn7uO5aVW52ZUY1yOCllDVpUAkB9uah8VGX8
+         EoLsR3I8DhBVNgHd6PWl41JYDHZl1eLryyJ/F6cihTwBz61TKWOtTFD9ch6P9N17iE
+         nqq3Luo2bhxpZvQZADGUqkTPAiidTKceJVbUZCK33zLMV6nzWZV0YXx6MHUTObmGfM
+         EKd1tWSSIU1GhjJ9Tbde8QqEpc3ywS5BvSVwLWhpyELkUZGGUTp7CKH5X8Jm2gX1ua
+         vnqKy07kyGbKt8V6A8O+HRGNzaXvskq6AhztHOTHVhZNZqEDxVjmVnSaGlc5DEJHGS
+         jzw3evTGLbj7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 025/149] mlxsw: spectrum: Guard against invalid local ports
-Date:   Fri,  1 Apr 2022 10:23:32 -0400
-Message-Id: <20220401142536.1948161-25-sashal@kernel.org>
+Cc:     Venkateswara Naralasetty <quic_vnaralas@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 029/149] ath11k: fix kernel panic during unload/load ath11k modules
+Date:   Fri,  1 Apr 2022 10:23:36 -0400
+Message-Id: <20220401142536.1948161-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -57,112 +59,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
 
-[ Upstream commit bcdfd615f83b4bd04678109bf18022d1476e4bbf ]
+[ Upstream commit 22b59cb965f79ee1accf83172441c9ca0ecb632a ]
 
-When processing events generated by the device's firmware, the driver
-protects itself from events reported for non-existent local ports, but
-not for the CPU port (local port 0), which exists, but does not have all
-the fields as any local port.
+Call netif_napi_del() from ath11k_ahb_free_ext_irq() to fix
+the following kernel panic when unload/load ath11k modules
+for few iterations.
 
-This can result in a NULL pointer dereference when trying access
-'struct mlxsw_sp_port' fields which are not initialized for CPU port.
+[  971.201365] Unable to handle kernel paging request at virtual address 6d97a208
+[  971.204227] pgd = 594c2919
+[  971.211478] [6d97a208] *pgd=00000000
+[  971.214120] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[  971.412024] CPU: 2 PID: 4435 Comm: insmod Not tainted 5.4.89 #0
+[  971.434256] Hardware name: Generic DT based system
+[  971.440165] PC is at napi_by_id+0x10/0x40
+[  971.445019] LR is at netif_napi_add+0x160/0x1dc
 
-Commit 63b08b1f6834 ("mlxsw: spectrum: Protect driver from buggy firmware")
-already handled such issue by bailing early when processing a PUDE event
-reported for the CPU port.
+[  971.743127] (napi_by_id) from [<807d89a0>] (netif_napi_add+0x160/0x1dc)
+[  971.751295] (netif_napi_add) from [<7f1209ac>] (ath11k_ahb_config_irq+0xf8/0x414 [ath11k_ahb])
+[  971.759164] (ath11k_ahb_config_irq [ath11k_ahb]) from [<7f12135c>] (ath11k_ahb_probe+0x40c/0x51c [ath11k_ahb])
+[  971.768567] (ath11k_ahb_probe [ath11k_ahb]) from [<80666864>] (platform_drv_probe+0x48/0x94)
+[  971.779670] (platform_drv_probe) from [<80664718>] (really_probe+0x1c8/0x450)
+[  971.789389] (really_probe) from [<80664cc4>] (driver_probe_device+0x15c/0x1b8)
+[  971.797547] (driver_probe_device) from [<80664f60>] (device_driver_attach+0x44/0x60)
+[  971.805795] (device_driver_attach) from [<806650a0>] (__driver_attach+0x124/0x140)
+[  971.814822] (__driver_attach) from [<80662adc>] (bus_for_each_dev+0x58/0xa4)
+[  971.823328] (bus_for_each_dev) from [<80663a2c>] (bus_add_driver+0xf0/0x1e8)
+[  971.831662] (bus_add_driver) from [<806658a4>] (driver_register+0xa8/0xf0)
+[  971.839822] (driver_register) from [<8030269c>] (do_one_initcall+0x78/0x1ac)
+[  971.847638] (do_one_initcall) from [<80392524>] (do_init_module+0x54/0x200)
+[  971.855968] (do_init_module) from [<803945b0>] (load_module+0x1e30/0x1ffc)
+[  971.864126] (load_module) from [<803948b0>] (sys_init_module+0x134/0x17c)
+[  971.871852] (sys_init_module) from [<80301000>] (ret_fast_syscall+0x0/0x50)
 
-Generalize the approach by moving the check to a common function and
-making use of it in all relevant places.
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.6.0.1-00760-QCAHKSWPL_SILICONZ-1
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Venkateswara Naralasetty <quic_vnaralas@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1642583973-21599-1-git-send-email-quic_vnaralas@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c           | 4 +---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.h           | 7 +++++++
- drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c       | 3 +--
- drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c | 3 +--
- 4 files changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/wireless/ath/ath11k/ahb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index aa411dec62f0..eb1319d63613 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -2148,13 +2148,11 @@ static void mlxsw_sp_pude_event_func(const struct mlxsw_reg_info *reg,
- 	struct mlxsw_sp *mlxsw_sp = priv;
- 	struct mlxsw_sp_port *mlxsw_sp_port;
- 	enum mlxsw_reg_pude_oper_status status;
--	unsigned int max_ports;
- 	u16 local_port;
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index 3fb0aa000825..24bd0520926b 100644
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -391,6 +391,8 @@ static void ath11k_ahb_free_ext_irq(struct ath11k_base *ab)
  
--	max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
- 	local_port = mlxsw_reg_pude_local_port_get(pude_pl);
- 
--	if (WARN_ON_ONCE(!local_port || local_port >= max_ports))
-+	if (WARN_ON_ONCE(!mlxsw_sp_local_port_is_valid(mlxsw_sp, local_port)))
- 		return;
- 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 	if (!mlxsw_sp_port)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index bb2442e1f705..30942b6ffcf9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -481,6 +481,13 @@ int
- mlxsw_sp_port_vlan_classification_set(struct mlxsw_sp_port *mlxsw_sp_port,
- 				      bool is_8021ad_tagged,
- 				      bool is_8021q_tagged);
-+static inline bool
-+mlxsw_sp_local_port_is_valid(struct mlxsw_sp *mlxsw_sp, u16 local_port)
-+{
-+	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
+ 		for (j = 0; j < irq_grp->num_irq; j++)
+ 			free_irq(ab->irq_num[irq_grp->irqs[j]], irq_grp);
 +
-+	return local_port < max_ports && local_port;
-+}
++		netif_napi_del(&irq_grp->napi);
+ 	}
+ }
  
- /* spectrum_buffers.c */
- struct mlxsw_sp_hdroom_prio {
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-index 0ff163fbc775..35422e64d89f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
-@@ -568,12 +568,11 @@ void mlxsw_sp1_ptp_got_timestamp(struct mlxsw_sp *mlxsw_sp, bool ingress,
- 				 u8 domain_number, u16 sequence_id,
- 				 u64 timestamp)
- {
--	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
- 	struct mlxsw_sp_port *mlxsw_sp_port;
- 	struct mlxsw_sp1_ptp_key key;
- 	u8 types;
- 
--	if (WARN_ON_ONCE(local_port >= max_ports))
-+	if (WARN_ON_ONCE(!mlxsw_sp_local_port_is_valid(mlxsw_sp, local_port)))
- 		return;
- 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 	if (!mlxsw_sp_port)
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-index 65c1724c63b0..bffdb41fc4ed 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_switchdev.c
-@@ -2616,7 +2616,6 @@ static void mlxsw_sp_fdb_notify_mac_process(struct mlxsw_sp *mlxsw_sp,
- 					    char *sfn_pl, int rec_index,
- 					    bool adding)
- {
--	unsigned int max_ports = mlxsw_core_max_ports(mlxsw_sp->core);
- 	struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan;
- 	struct mlxsw_sp_bridge_device *bridge_device;
- 	struct mlxsw_sp_bridge_port *bridge_port;
-@@ -2630,7 +2629,7 @@ static void mlxsw_sp_fdb_notify_mac_process(struct mlxsw_sp *mlxsw_sp,
- 
- 	mlxsw_reg_sfn_mac_unpack(sfn_pl, rec_index, mac, &fid, &local_port);
- 
--	if (WARN_ON_ONCE(local_port >= max_ports))
-+	if (WARN_ON_ONCE(!mlxsw_sp_local_port_is_valid(mlxsw_sp, local_port)))
- 		return;
- 	mlxsw_sp_port = mlxsw_sp->ports[local_port];
- 	if (!mlxsw_sp_port) {
 -- 
 2.34.1
 
