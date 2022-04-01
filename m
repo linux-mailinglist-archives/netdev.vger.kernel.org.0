@@ -2,53 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB4124EEC92
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 13:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B80D4EEC9F
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 13:54:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345629AbiDALv4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 07:51:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
+        id S1345660AbiDAL4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 07:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233328AbiDALvx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 07:51:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED651D41AB;
-        Fri,  1 Apr 2022 04:50:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 726DCB8245D;
-        Fri,  1 Apr 2022 11:50:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FAC4C340F2;
-        Fri,  1 Apr 2022 11:49:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648813801;
-        bh=C/02jTqmwSqYIvFHv2RbQpqDzMIMbFGpjQRlMdl2u54=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=XXJS0n7HzVeqDVF5ECjjBjNYktLSK1xu6m6Zjsz33TuFNkNHG4YOj3ATPfJgQ80pN
-         n1soOay+IknNxdXT6E96AFTAOPh/Ed+MJzITeA5AlxjCK32kU4JROU5jMeO6vyfPjv
-         swKahUPRA65Gu90P8MlawrSrcsmfSvKS0oReFrAVQn7rDBTmyepSdz2S0Ok4LxXu3X
-         Y8yWu7v3OL4GpGqi5w3jIyeMKW0Yp37xa6Y1rlJEpTNwtiDzneed3wT1yLzFUXwngb
-         091aacvx2KReFKtH+qK0exu4lj6zDfJt/vi2BGuVFrwukGOAnX5lOXnuLf5Anjyrx2
-         Q/OFLnNGrPhJQ==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S239256AbiDAL4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 07:56:30 -0400
+Received: from uriel.iewc.co.za (uriel.iewc.co.za [IPv6:2c0f:f720:0:3:d6ae:52ff:feb8:f27b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E94D1D67ED;
+        Fri,  1 Apr 2022 04:54:41 -0700 (PDT)
+Received: from [2c0f:f720:fe16:c400::1] (helo=tauri.local.uls.co.za)
+        by uriel.iewc.co.za with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <jaco@uls.co.za>)
+        id 1naFrQ-0006sK-4N; Fri, 01 Apr 2022 13:54:36 +0200
+Received: from [192.168.42.201]
+        by tauri.local.uls.co.za with esmtp (Exim 4.94.2)
+        (envelope-from <jaco@uls.co.za>)
+        id 1naFrN-0001RS-PG; Fri, 01 Apr 2022 13:54:33 +0200
+Message-ID: <7d08dcfd-6ba0-f972-cee3-4fa0eff8c855@uls.co.za>
+Date:   Fri, 1 Apr 2022 13:54:33 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] wcn36xx: Improve readability of wcn36xx_caps_name
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220328212912.283393-1-benni@stuerz.xyz>
-References: <20220328212912.283393-1-benni@stuerz.xyz>
-To:     =?utf-8?q?Benjamin_St=C3=BCrz?= <benni@stuerz.xyz>
-Cc:     loic.poulain@linaro.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?utf-8?q?Benjamin_St?= =?utf-8?q?=C3=BCrz?= <benni@stuerz.xyz>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164881379683.6665.4776663816367931792.kvalo@kernel.org>
-Date:   Fri,  1 Apr 2022 11:49:58 +0000 (UTC)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
+ connections
+Content-Language: en-GB
+To:     Florian Westphal <fw@strlen.de>, Eric Dumazet <edumazet@google.com>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+References: <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za>
+ <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za>
+ <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+ <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
+ <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
+ <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
+ <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
+ <CANn89i+KsjGUppc3D8KLa4XUd-dzS3A+yDxbv2bRkDEkziS1qw@mail.gmail.com>
+ <20220401001531.GB9545@breakpoint.cc>
+From:   Jaco Kroon <jaco@uls.co.za>
+Organization: Ultimate Linux Solutions (Pty) Ltd
+In-Reply-To: <20220401001531.GB9545@breakpoint.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,20 +61,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Benjamin Stürz <benni@stuerz.xyz> wrote:
+Hi,
 
-> Use macros to force strict ordering of the elements.
-> 
-> Signed-off-by: Benjamin Stürz <benni@stuerz.xyz>
-> Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+On 2022/04/01 02:15, Florian Westphal wrote:
 
-Patch applied to ath-next branch of ath.git, thanks.
+Incidently, I always find your initials to be interesting considering
+(as far as I know) you work on netfilter firewall.
 
-9149a94adad2 wcn36xx: Improve readability of wcn36xx_caps_name
+> Eric Dumazet <edumazet@google.com> wrote:
+>> Next step would be to attempt removing _all_ firewalls, especially not
+>> common setups like yours.
+>>
+>> conntrack had a bug preventing TFO deployment for a while, because
+>> many boxes kept buggy kernel versions for years.
+>>
+>> 356d7d88e088687b6578ca64601b0a2c9d145296 netfilter: nf_conntrack: fix
+>> tcp_in_window for Fast Open
+> Jaco could also try with
+> net.netfilter.nf_conntrack_tcp_be_liberal=1
+>
+> and, if that helps, with liberal=0 and
+> sysctl net.netfilter.nf_conntrack_log_invalid=6
+>
+> (check dmesg/syslog/nflog).
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220328212912.283393-1-benni@stuerz.xyz/
+Our core firewalls already had nf_conntrack_tcp_be_liberal for other
+reasons (asymmetric routing combined with conntrackd left-over if I
+recall), so maybe that's why it got through there ... don't exactly want
+to just flip that setting though, is there a way to log if it would have
+dropped anything, without actually dropping it (yet)?
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Will do this first, first need to confirm that I can reproduce in a dev
+environment.
+
+Kind Regards,
+Jaco
+
 
