@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FD434EF640
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 310084EF673
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348257AbiDAPcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55848 "EHLO
+        id S1350884AbiDAPet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349960AbiDAO61 (ORCPT
+        with ESMTP id S1349961AbiDAO61 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:58:27 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D006170DBA;
-        Fri,  1 Apr 2022 07:45:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADCE91753BF;
+        Fri,  1 Apr 2022 07:45:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0AC54CE2580;
-        Fri,  1 Apr 2022 14:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BCE4C2BBE4;
-        Fri,  1 Apr 2022 14:45:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 499D760BC2;
+        Fri,  1 Apr 2022 14:45:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44B8C34111;
+        Fri,  1 Apr 2022 14:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824332;
-        bh=XCSQX8WQjXiXJZ5xL6UXOgj8u/7rIRyS3/P24UyWvm0=;
+        s=k20201202; t=1648824339;
+        bh=5ctcsf1H1Wj6BrGtRe9obFjz7c8kVAlzBvY/kcXosyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qKnyUBQaQRdx0tEqHyXs2y6wp+DbSrm4GeiaBwPo1HwAP9tzWWCwmlaiyShsBOdZG
-         ATY56amIuSMmpplezz3h1P7lkBACvKJqW2Q2N9adj0aMaHUpWH3CogwloCiPlNK4pa
-         UEUZ8GjRcC4jiEKS4S5xhH+WYgRNPSwepiNJsop9EJkaEY2j/xsGd02+UdnlxPYJUx
-         St0RRLun0CIHvFCukJCLNaW/t5buJIqp9tA407PekhjUg0krVrRPVneVHJNmI5DWMd
-         3y8J39QxBs3JQsERZ29x7tXAzuO1MqzVdaKP0XZjb1iDjdqV4mUYAWPYmA9o095ePI
-         xhgxJ7ucDgKag==
+        b=N1/2x+11aQGdDc1dOV03TFV0TgECbGqhDTUeIre86k17ea1C4jjjnTa7EcL/3LBxi
+         gNMLSkD8iI98DfS+E5pZJ+Gi3tqDGjTigDKhsJCFmvoqSf3Mz2LSPpXdqXJyyS5O/j
+         XMp2LwEkaeKjYO0Qit5bzEOsjCODFWDev4tPlbY1V0o9m9dsuRQW6NOWeT76y47jrP
+         ksnOFdVr9I6zLaE9VNcD70oCuY0BdJNwkesvnQsgKZ+mzZ2EsTkNGtWG/9ZJPGC0Yk
+         xixLaYTfsJOLePmaNu7uNd8twWEk0TtIK3xtEqDRsHeOheLcK1QkL4yZ+iKPRWvRL5
+         w9h54Ccj10Sgw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ido Schimmel <idosch@nvidia.com>, Wang Hai <wanghai38@huawei.com>,
+Cc:     Dust Li <dust.li@linux.alibaba.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/37] ipv4: Invalidate neighbour for broadcast address upon address addition
-Date:   Fri,  1 Apr 2022 10:44:27 -0400
-Message-Id: <20220401144446.1954694-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 23/37] net/smc: correct settings of RMB window update limit
+Date:   Fri,  1 Apr 2022 10:44:32 -0400
+Message-Id: <20220401144446.1954694-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
 References: <20220401144446.1954694-1-sashal@kernel.org>
@@ -58,115 +58,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Dust Li <dust.li@linux.alibaba.com>
 
-[ Upstream commit 0c51e12e218f20b7d976158fdc18019627326f7a ]
+[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
 
-In case user space sends a packet destined to a broadcast address when a
-matching broadcast route is not configured, the kernel will create a
-unicast neighbour entry that will never be resolved [1].
+rmbe_update_limit is used to limit announcing receive
+window updating too frequently. RFC7609 request a minimal
+increase in the window size of 10% of the receive buffer
+space. But current implementation used:
 
-When the broadcast route is configured, the unicast neighbour entry will
-not be invalidated and continue to linger, resulting in packets being
-dropped.
+  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
 
-Solve this by invalidating unresolved neighbour entries for broadcast
-addresses after routes for these addresses are internally configured by
-the kernel. This allows the kernel to create a broadcast neighbour entry
-following the next route lookup.
+and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
+always less then 10% of the receive buffer space.
 
-Another possible solution that is more generic but also more complex is
-to have the ARP code register a listener to the FIB notification chain
-and invalidate matching neighbour entries upon the addition of broadcast
-routes.
+This causes the receiver always sending CDC message to
+update its consumer cursor when it consumes more then 2K
+of data. And as a result, we may encounter something like
+"TCP silly window syndrome" when sending 2.5~8K message.
 
-It is also possible to wave off the issue as a user space problem, but
-it seems a bit excessive to expect user space to be that intimately
-familiar with the inner workings of the FIB/neighbour kernel code.
+This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
 
-[1] https://lore.kernel.org/netdev/55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com/
+With this patch and SMC autocorking enabled, qperf 2K/4K/8K
+tcp_bw test shows 45%/75%/40% increase in throughput respectively.
 
-Reported-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/arp.h       | 1 +
- net/ipv4/arp.c          | 9 +++++++--
- net/ipv4/fib_frontend.c | 5 ++++-
- 3 files changed, 12 insertions(+), 3 deletions(-)
+ net/smc/smc_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/arp.h b/include/net/arp.h
-index 4950191f6b2b..4a23a97195f3 100644
---- a/include/net/arp.h
-+++ b/include/net/arp.h
-@@ -71,6 +71,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
- 	      const unsigned char *src_hw, const unsigned char *th);
- int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
- void arp_ifdown(struct net_device *dev);
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force);
- 
- struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
- 			   struct net_device *dev, __be32 src_ip,
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 7b951992c372..b8fe943ae89d 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1116,13 +1116,18 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
- 	return err;
- }
- 
--static int arp_invalidate(struct net_device *dev, __be32 ip)
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 12672019f76c..66cdfd5725ac 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -734,7 +734,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+  */
+ static inline int smc_rmb_wnd_update_limit(int rmbe_size)
  {
- 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
- 	int err = -ENXIO;
- 	struct neigh_table *tbl = &arp_tbl;
- 
- 	if (neigh) {
-+		if ((neigh->nud_state & NUD_VALID) && !force) {
-+			neigh_release(neigh);
-+			return 0;
-+		}
-+
- 		if (neigh->nud_state & ~NUD_NOARP)
- 			err = neigh_update(neigh, NULL, NUD_FAILED,
- 					   NEIGH_UPDATE_F_OVERRIDE|
-@@ -1169,7 +1174,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
- 		if (!dev)
- 			return -EINVAL;
- 	}
--	return arp_invalidate(dev, ip);
-+	return arp_invalidate(dev, ip, true);
+-	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
++	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
  }
  
- /*
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index a95102fe6637..ef3e7a3e3a29 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1122,9 +1122,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 		return;
- 
- 	/* Add broadcast address, if it is explicitly assigned. */
--	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
-+	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
- 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
- 			  prim, 0);
-+		arp_invalidate(dev, ifa->ifa_broadcast, false);
-+	}
- 
- 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
- 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
-@@ -1140,6 +1142,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 				  prim, 0);
- 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
- 				  32, prim, 0);
-+			arp_invalidate(dev, prefix | ~mask, false);
- 		}
- 	}
- }
+ static struct smc_buf_desc *smcr_new_buf_create(struct smc_link_group *lgr,
 -- 
 2.34.1
 
