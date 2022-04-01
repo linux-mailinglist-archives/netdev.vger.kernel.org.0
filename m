@@ -2,106 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 915724EE846
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 08:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95B804EE898
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 08:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245423AbiDAGgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 02:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
+        id S237187AbiDAGov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 02:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245445AbiDAGgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 02:36:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0306158549
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 23:34:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648794880;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=hp4E3bTHEjuyTCPAc1mCFKq3Aifz4Jdz9FaGKbFLuNA=;
-        b=aJARE3N1clEWd1MUXhNZJbRoGBgwiQVSJSnDN78smY1I4/W6cy/HLqfaUw74XTUc/gEiVh
-        ZlQpI1HQTbIgg5bxZVw9FRwtNlQBFv6Qk8LM/sKOxlLzh92h7W8zR1pnDxJepJUif6B5aK
-        +MSkdXA2tYkcr4yyNRXuIQcL/Kn+q0A=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-21-2_AR3ezXPYqYctN7hFWfnw-1; Fri, 01 Apr 2022 02:34:39 -0400
-X-MC-Unique: 2_AR3ezXPYqYctN7hFWfnw-1
-Received: by mail-pg1-f200.google.com with SMTP id t24-20020a632258000000b003988eed18b2so1157664pgm.22
-        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 23:34:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hp4E3bTHEjuyTCPAc1mCFKq3Aifz4Jdz9FaGKbFLuNA=;
-        b=3TmMzvgobgi/DFHz0fuNOzm3vJnU9gYYVt8imalxuGaQClypkRr32otmZ+nt+6Xtuk
-         4D+Kj2zDjPhXopvC4yiVwHkmRjuqrKB/TMVN4gdTSX1oFuvpy7g5v6p9B99OOnoN/a2R
-         oU43o+aouYZvYfVaxNKXvSQJX/24uJAMkmm/i2az91mhyeiNahUuox81v5fpGb4QPkkQ
-         75AwB2oyxSHeI0p+w8C6ovMLYhfFhniuSBNgFkcXoZHarOJzRKkNUGWWdF6iaFguXv+G
-         ck3QqOxxkz2AHShHL0iLVybJ5pivL1t6tYAblgJVYhBWfCWCSbdAWQFoFgQfJgOvPWra
-         Pv/Q==
-X-Gm-Message-State: AOAM5318uVTUHFClN5Ti8+l++a9iEroGObz69ExmhzvaqZxJOXxllY/6
-        di/m0z5X098S+sp90rLuX4kPPyTVP2LqEnETrz0gRhLbWoB4FukbS6eNIRVWpl1gVPIm4TVr7W5
-        ZFHlBSthfit5+iU8HJJqTN+vZ+DBa6DQcmkUfSPqNjsSmdbPZlSjXYu2Rpdh71dBVi0bP
-X-Received: by 2002:a17:90a:930b:b0:1bf:ac1f:6585 with SMTP id p11-20020a17090a930b00b001bfac1f6585mr10014904pjo.88.1648794878283;
-        Thu, 31 Mar 2022 23:34:38 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwMDvGiSVaLbGdW3eGb2Jpau6ASKm54lT3s5IsGzidPQnr4bHQ9OWh0d9cLmz1UgsVz1pe47A==
-X-Received: by 2002:a17:90a:930b:b0:1bf:ac1f:6585 with SMTP id p11-20020a17090a930b00b001bfac1f6585mr10014878pjo.88.1648794877933;
-        Thu, 31 Mar 2022 23:34:37 -0700 (PDT)
-Received: from fedora19.redhat.com (2403-5804-6c4-aa-7079-8927-5a0f-bb55.ip6.aussiebb.net. [2403:5804:6c4:aa:7079:8927:5a0f:bb55])
-        by smtp.gmail.com with ESMTPSA id pj9-20020a17090b4f4900b001c744034e7csm12675749pjb.2.2022.03.31.23.34.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Mar 2022 23:34:37 -0700 (PDT)
-From:   Ian Wienand <iwienand@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Ian Wienand <iwienand@redhat.com>
-Subject: [PATCH] net/ethernet : set default assignment identifier to NET_NAME_ENUM
-Date:   Fri,  1 Apr 2022 17:34:30 +1100
-Message-Id: <20220401063430.1189533-1-iwienand@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1343993AbiDAGnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 02:43:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7412195D97
+        for <netdev@vger.kernel.org>; Thu, 31 Mar 2022 23:40:13 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1naAx7-0000ea-3L; Fri, 01 Apr 2022 08:40:09 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1naAx4-0004ye-Vn; Fri, 01 Apr 2022 08:40:06 +0200
+Date:   Fri, 1 Apr 2022 08:40:06 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "huangguangbin (A)" <huangguangbin2@huawei.com>,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com
+Subject: Re: [PATCH] net: phy: genphy_loopback: fix loopback failed when
+ speed is unknown
+Message-ID: <20220401064006.GB4449@pengutronix.de>
+References: <20220331114819.14929-1-huangguangbin2@huawei.com>
+ <YkWdTpCsO8JhiSaT@lunn.ch>
+ <130bb780-0dc1-3819-8f6d-f2daf4d9ece9@huawei.com>
+ <YkW6J9rM6O/cb/lv@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YkW6J9rM6O/cb/lv@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:36:47 up 1 day, 19:06, 41 users,  load average: 0.05, 0.08, 0.07
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As noted in the original commit 685343fc3ba6 ("net: add
-name_assign_type netdev attribute")
+On Thu, Mar 31, 2022 at 04:26:47PM +0200, Andrew Lunn wrote:
+> > In this case, as speed and duplex both are unknown, ctl is just set to 0x4000.
+> > However, the follow code sets mask to ~0 for function phy_modify():
+> > int genphy_loopback(struct phy_device *phydev, bool enable)
+> > {
+> > 	if (enable) {
+> > 		...
+> > 		phy_modify(phydev, MII_BMCR, ~0, ctl);
+> > 		...
+> > }
+> > so all other bits of BMCR will be cleared and just set bit 14, I use phy trace to
+> > prove that:
+> > 
+> > $ cat /sys/kernel/debug/tracing/trace
+> > # tracer: nop
+> > #
+> > # entries-in-buffer/entries-written: 923/923   #P:128
+> > #
+> > #                                _-----=> irqs-off/BH-disabled
+> > #                               / _----=> need-resched
+> > #                              | / _---=> hardirq/softirq
+> > #                              || / _--=> preempt-depth
+> > #                              ||| / _-=> migrate-disable
+> > #                              |||| /     delay
+> > #           TASK-PID     CPU#  |||||  TIMESTAMP  FUNCTION
+> > #              | |         |   |||||     |         |
+> >   kworker/u257:2-694     [015] .....   209.263912: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+> >   kworker/u257:2-694     [015] .....   209.263951: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x7989
+> >   kworker/u257:2-694     [015] .....   209.263990: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x01 val:0x7989
+> >   kworker/u257:2-694     [015] .....   209.264028: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x09 val:0x0200
+> >   kworker/u257:2-694     [015] .....   209.264067: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x0a val:0x0000
+> >          ethtool-1148    [007] .....   209.665693: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+> >          ethtool-1148    [007] .....   209.665706: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x1840
+> >          ethtool-1148    [007] .....   210.588139: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1840
+> >          ethtool-1148    [007] .....   210.588152: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x1040
+> >          ethtool-1148    [007] .....   210.615900: mdio_access: mii-0000:bd:00.1 read  phy:0x03 reg:0x00 val:0x1040
+> >          ethtool-1148    [007] .....   210.615912: mdio_access: mii-0000:bd:00.1 write phy:0x03 reg:0x00 val:0x4000 //here just set bit 14
+> > 
+> > So phy speed will be set to 10M in this case, if previous speed of
+> > device before going down is 10M, loopback test is pass. Only
+> > previous speed is 100M or 1000M, loopback test is failed.
+> 
+> O.K. So it should be set into 10M half duplex. But why does this cause
+> it not to loopback packets? Does the PHY you are using not actually
+> support 10 Half? Why does it need to be the same speed as when the
+> link was up? And why does it actually set LSTATUS indicating there is
+> link?
+> 
+> Is this a generic problem, all PHYs are like this, or is this specific
+> to the PHY you are using? Maybe this PHY needs its own loopback
+> function because it does something odd?
 
-  ... when the kernel has given the interface a name using global
-  device enumeration based on order of discovery (ethX, wlanY, etc)
-  ... are labelled NET_NAME_ENUM.
+It looks for me like attempt to fix loopback test for setup without active
+link partner. Correct?
 
-That describes this case, so set the default for the devices here to
-NET_NAME_ENUM to better help userspace tools to know if they might
-like to rename them.
-
-Signed-off-by: Ian Wienand <iwienand@redhat.com>
----
- net/ethernet/eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-index ebcc812735a4..62b89d6f54fd 100644
---- a/net/ethernet/eth.c
-+++ b/net/ethernet/eth.c
-@@ -391,7 +391,7 @@ EXPORT_SYMBOL(ether_setup);
- struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
- 				      unsigned int rxqs)
- {
--	return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_UNKNOWN,
-+	return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_ENUM,
- 				ether_setup, txqs, rxqs);
- }
- EXPORT_SYMBOL(alloc_etherdev_mqs);
+Regards,
+Oleksij
 -- 
-2.35.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
