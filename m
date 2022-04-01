@@ -2,127 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E22244EEC01
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 13:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AAD74EEC0E
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 13:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345369AbiDALIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 07:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
+        id S1345351AbiDALMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 07:12:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345335AbiDALIA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 07:08:00 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA23226FA;
-        Fri,  1 Apr 2022 04:06:10 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id p26-20020a05600c1d9a00b0038ccbff1951so3178244wms.1;
-        Fri, 01 Apr 2022 04:06:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=wImnV8rTdUbT+D4vFE47rEe27B+UpCvY+mZ1m0Esjpw=;
-        b=SGRTN4hQcmzee66KzYgXLOXEaj1FTFXG6HIDWSLepMIAPz7BkPD+hYMXBfb8YpeKf+
-         RTY3K6ZSHCJv9YDtJm4IHqotp0+FVAjkB5fnC3FjHrdIHjJ1e86QmCXuztqAhZsdq+dY
-         q7BvS73d9J++UH2r5HF/FR88RGLwDIwPF+ZS2cl5G/vhiuFw5ewI5zYkYv2pxuJ1uV28
-         non3US7tD64QzAnuUnjBNRyifIcCyCHItav150T58irYBDYwVQAb5grkCgBDSRsMfD9+
-         3+Ffl5AMuN2vl7VW312/nNLxEYEcFJu7WlKw44f94+xbmWOXa7BXsAF7ECuCjDkFKcwD
-         IZfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=wImnV8rTdUbT+D4vFE47rEe27B+UpCvY+mZ1m0Esjpw=;
-        b=B+3mmWWPIULt5ifVZ6bBwj+XLPsq9lmnFq7PRDefLGtflcGojWbG7CB9mefRIn21FT
-         DBr7QRgt/NK8wTataeGmxQKh5rTMAGgE1NNZKKqGxB2buuRe9MIMNba0hx2N2qwsGDW3
-         6HYd6cRpdxzs+DVlUDEZj+yqJ34lcY+ln33MK1ywTLRVLcXIxQ5VMv7vC2LlwiusLyXF
-         XA2gWTs6idl7roLrR6NX5oFvdW2YqxppxA3rdoC30L3otRbFoDT8TRLNavG5MGcUnGLP
-         Rh/mSKaUaDjWjnZRpbdySrVPyztbA+rGrRrNfVKJPu1MCyGL9pE2XIJj7Qg5z3N6qf/U
-         GfkQ==
-X-Gm-Message-State: AOAM532hTPdnBlqr5ssFLQ945Wtc+SBvw/UFr9OHtiz/bgnjcb+2yd1m
-        KXXiZpVx6lD25wn4FSMC2sA=
-X-Google-Smtp-Source: ABdhPJx8XEBs4xl1nwghvJKsDKaG5UrHLt5e+PVdTit6UZP2JqHDc6JWsZvsHE5Euw38Uqx/7Lo6QA==
-X-Received: by 2002:a05:600c:4110:b0:38c:ba41:9fb with SMTP id j16-20020a05600c411000b0038cba4109fbmr8277399wmi.47.1648811169186;
-        Fri, 01 Apr 2022 04:06:09 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id p8-20020a5d4e08000000b002054b5437f2sm1743650wrt.115.2022.04.01.04.06.08
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 01 Apr 2022 04:06:08 -0700 (PDT)
-Date:   Fri, 1 Apr 2022 12:06:06 +0100
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        ecree.xilinx@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        hawk@kernel.org, john.fastabend@gmail.com, habetsm.xilinx@gmail.com
-Subject: Re: [PATCH net v2] net: sfc: add missing xdp queue reinitialization
-Message-ID: <20220401110606.whyr5hnesb4ya67q@gmail.com>
-Mail-Followup-To: Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, ecree.xilinx@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net, hawk@kernel.org, john.fastabend@gmail.com
-References: <20220330163703.25086-1-ap420073@gmail.com>
+        with ESMTP id S1345353AbiDALMF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 07:12:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92C9274292
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 04:10:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51E27618C8
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 11:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A8D93C340F3;
+        Fri,  1 Apr 2022 11:10:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648811412;
+        bh=QJzm2D321NMHRB8NQM3xVtBMZHXj4I0xti6eCeZ8w54=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QGTFZ8YsMKz4n8JDtceKtb6ImJ/kjqggEoo3FDs70ZGjKkUpz4LzJqG/iRjU6osKl
+         7SY/Ga/jHceA+2Mpzlee938abf8S6nHC+9b0lmV31wID4cg/AZEcuGWVYEctriH7pw
+         yw+fPdsdfqD5JPpuua6f7F4+rqqS4TUniWHDPG3sBithjMFnW9yeQOOHg7PHcXsc4+
+         pZiB6fH5OMKRkKpd/Wt2Ng13IFGDwk/WwtPeIKjtmPkXilJT7DM89mXslaf+sFH7Gt
+         GeMx0G0UDGZc6Kavm8M1lxC8GpH4D+/VMzEBLyos6RMEjWgx4PdtUeHChY7k/w8RGd
+         ebRjPW0/32nGg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8CEE0E6BBCA;
+        Fri,  1 Apr 2022 11:10:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220330163703.25086-1-ap420073@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3] MCTP fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164881141257.17879.16170877282046103440.git-patchwork-notify@kernel.org>
+Date:   Fri, 01 Apr 2022 11:10:12 +0000
+References: <20220401024844.1578937-1-matt@codeconstruct.com.au>
+In-Reply-To: <20220401024844.1578937-1-matt@codeconstruct.com.au>
+To:     Matt Johnston <matt@codeconstruct.com.au>
+Cc:     netdev@vger.kernel.org, mjrinal@g.clemson.edu,
+        jk@codeconstruct.com.au, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Taehee,
+Hello:
 
-Thanks for looking into this. Unfortunately efx_realloc_channels()
-has turned out to be quite fragile over the years, so I'm
-keen to remove it in stead of patching it up all the time.
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Could you try the patch below please?
-If it works ok for you as well we'll be able to remove
-efx_realloc_channels(). The added advantage of this approach
-is that the netdev notifiers get informed of the change.
+On Fri,  1 Apr 2022 10:48:41 +0800 you wrote:
+> Hi,
+> 
+> The following are fixes for the mctp core and mctp-i2c driver.
+> 
+> Thanks,
+> Matt
+> 
+> [...]
 
-Regards,
-Martin Habets <habetsm.xilinx@gmail.com>
+Here is the summary with links:
+  - [net,1/3] mctp: Fix check for dev_hard_header() result
+    https://git.kernel.org/netdev/net/c/60be976ac451
+  - [net,2/3] mctp i2c: correct mctp_i2c_header_create result
+    https://git.kernel.org/netdev/net/c/8ce40a2fd350
+  - [net,3/3] mctp: Use output netdev to allocate skb headroom
+    https://git.kernel.org/netdev/net/c/4a9dda1c1da6
 
----
- drivers/net/ethernet/sfc/ethtool.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
-index 48506373721a..8cfbe61737bb 100644
---- a/drivers/net/ethernet/sfc/ethtool.c
-+++ b/drivers/net/ethernet/sfc/ethtool.c
-@@ -179,6 +179,7 @@ efx_ethtool_set_ringparam(struct net_device *net_dev,
- {
- 	struct efx_nic *efx = netdev_priv(net_dev);
- 	u32 txq_entries;
-+	int rc = 0;
- 
- 	if (ring->rx_mini_pending || ring->rx_jumbo_pending ||
- 	    ring->rx_pending > EFX_MAX_DMAQ_SIZE ||
-@@ -198,7 +199,17 @@ efx_ethtool_set_ringparam(struct net_device *net_dev,
- 			   "increasing TX queue size to minimum of %u\n",
- 			   txq_entries);
- 
--	return efx_realloc_channels(efx, ring->rx_pending, txq_entries);
-+	/* Apply the new settings */
-+	efx->rxq_entries = ring->rx_pending;
-+	efx->txq_entries = ring->tx_pending;
-+
-+	/* Update the datapath with the new settings if the interface is up */
-+	if (!efx_check_disabled(efx) && netif_running(efx->net_dev)) {
-+		dev_close(net_dev);
-+		rc = dev_open(net_dev, NULL);
-+	}
-+
-+	return rc;
- }
- 
- static void efx_ethtool_get_wol(struct net_device *net_dev,
+
