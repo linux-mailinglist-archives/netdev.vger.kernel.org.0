@@ -2,65 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D964EED6A
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 14:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C06944EED84
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 14:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345957AbiDAMtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 08:49:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
+        id S1346003AbiDAM4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 08:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241268AbiDAMtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 08:49:20 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6109C275CB3;
-        Fri,  1 Apr 2022 05:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=7/dgYS3syf6e4WPl///U0c97rXJHaQqG2eY4h+0hNxo=; b=BKO58wco6pKyLJVYezIMPxtzbV
-        sodqClEKA6JJURGlafZl2fOhdngvW8YH2EpR/J2cYq3Q+V8pcCFpURcC1dLV/SMhlIH1LsJQ4hZ8Y
-        /j8Auzt7dPhodgVsH7CZPvnPVWU/ymofy0RAQ8LBN9kOyrUNeZOOei6lANPfIOPVfST4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1naGgb-00Dff8-QJ; Fri, 01 Apr 2022 14:47:29 +0200
-Date:   Fri, 1 Apr 2022 14:47:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, Divya.Koppera@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, richardcochran@gmail.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net 3/3] net: phy: micrel: Remove DT option
- lan8814,ignore-ts
-Message-ID: <Ykb0YfymcwnPtrxL@lunn.ch>
-References: <20220401094805.3343464-1-horatiu.vultur@microchip.com>
- <20220401094805.3343464-4-horatiu.vultur@microchip.com>
+        with ESMTP id S1345997AbiDAM4u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 08:56:50 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA56E6150
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 05:55:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648817700; x=1680353700;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NIxxOF4X+NBZXmFKmeG0AwAoyQKtEKclmBIOxgqHrFk=;
+  b=jAv9qcAYBOWi/fBSAYvlFQU3OlKAQVgnSXFHz469to8c78JgpjDTTGIz
+   36QeSHxxfAGdjCp4Gl18RlThH6qylCbYcBwf9cOCBS76CmEKbO4/qi6bS
+   ub6oEPCuiA0sKYfTPQccevgel6ATaLF4o5m3h7IM5C3jdnAx/MEo23rtW
+   sy0lraI+G0TAIYXxP2lpBiOCEcnuKH0baqs6ErO89i1NdEWsN457xHOn0
+   eqO0AyMnzkwFpGU6UKPm8iKzX3SnJ5HUgTz8Erkd14xI2GHcCHBHHfQnJ
+   jKYKSY/h+J+0cNmrn97SbpyQpj1IM/PbjctQ474LBaElaVvbpSmq7PEhg
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10303"; a="257710466"
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="257710466"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 05:55:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,227,1643702400"; 
+   d="scan'208";a="547791709"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga007.jf.intel.com with ESMTP; 01 Apr 2022 05:54:57 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        kuba@kernel.org, davem@davemloft.net, magnus.karlsson@intel.com,
+        alexandr.lobakin@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Grzegorz Nitka <grzegorz.nitka@intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@intel.com>
+Subject: [PATCH intel-net] ice: allow creating VFs for !CONFIG_NET_SWITCHDEV
+Date:   Fri,  1 Apr 2022 14:54:38 +0200
+Message-Id: <20220401125438.292649-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220401094805.3343464-4-horatiu.vultur@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 11:48:05AM +0200, Horatiu Vultur wrote:
-> When the PHY and the MAC are capable of doing timestamping, the PHY has
-> priority. Therefore the DT option lan8814,ignore-ts was added such that
-> the PHY will not expose a PHC so then the timestamping was done in the
-> MAC. This is not the correct approach of doing it, therefore remove
-> this.
-> 
-> Fixes: ece19502834d84 ("net: phy: micrel: 1588 support for LAN8814 phy")
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Currently for !CONFIG_NET_SWITCHDEV kernel builds it is not possible to
+create VFs properly as call to ice_eswitch_configure() returns
+-EOPNOTSUPP for us. This is because CONFIG_ICE_SWITCHDEV depends on
+CONFIG_NET_SWITCHDEV.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Change the ice_eswitch_configure() implementation for
+!CONFIG_ICE_SWITCHDEV to return 0 instead -EOPNOTSUPP and let
+ice_ena_vfs() finish its work properly.
 
-    Andrew
+CC: Grzegorz Nitka <grzegorz.nitka@intel.com>
+Fixes: 1a1c40df2e80 ("ice: set and release switchdev environment")
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_eswitch.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_eswitch.h b/drivers/net/ethernet/intel/ice/ice_eswitch.h
+index bd58d9d2e565..6a413331572b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_eswitch.h
++++ b/drivers/net/ethernet/intel/ice/ice_eswitch.h
+@@ -52,7 +52,7 @@ static inline void ice_eswitch_update_repr(struct ice_vsi *vsi) { }
+ 
+ static inline int ice_eswitch_configure(struct ice_pf *pf)
+ {
+-	return -EOPNOTSUPP;
++	return 0;
+ }
+ 
+ static inline int ice_eswitch_rebuild(struct ice_pf *pf)
+-- 
+2.27.0
+
