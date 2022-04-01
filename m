@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 118B34EF23D
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25B194EF2FE
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348952AbiDAOxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60590 "EHLO
+        id S1348623AbiDAOyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352371AbiDAOuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD172B2B5B;
-        Fri,  1 Apr 2022 07:41:34 -0700 (PDT)
+        with ESMTP id S1352316AbiDAOuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:50:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF0C1F047B;
+        Fri,  1 Apr 2022 07:41:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14CFD611C4;
-        Fri,  1 Apr 2022 14:40:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 711BEC36AEC;
-        Fri,  1 Apr 2022 14:40:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA25E611E6;
+        Fri,  1 Apr 2022 14:40:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FC94C36AE2;
+        Fri,  1 Apr 2022 14:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824049;
-        bh=GtGEHyCq6iT+G8LTa1QP4bDbH2jB17E5HjEoP4Oz/Yw=;
+        s=k20201202; t=1648824052;
+        bh=kjuBNnbI+Yjinw7VoawrZRPNdjU4KrvX+KNkVbNlDjM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pAL5Xt3IVR/dGTziiLWHvODdo3rNmOBdW9Xj5UyI3hYEqJDMwTzaGUmog8ig0U2OT
-         pgHKwsidBFgZCbI5th4P7pV6QxLHd7cFCuteRIIqfpsCW2k2mg1EVZ0tVKDmyh4Fw7
-         +1PletNnit09FzIMP4Rjz3Sc9rTwgXIgBqDeJnTIl6YKxL0e6laZiuMOGTKPpVl6SK
-         OsDSQgGiCRzmWY+KsKFhQiYALp+++KPhxlUcFkf8Xiaj+vWCkEnIgszattQRWt90AD
-         Cj/HepzG1FrrgFs0JnG7y9iYBjXqT7c2VD7O3j33p2Jjk+BMG7tT4k1aSnVLCaWilZ
-         d2AY4hFpEktRg==
+        b=ndIYvCFF8XIh3Av4BW94dXtU8fn9ImUsPusjldoFdlA3r/kERzA+dNu7UqmsYGlWS
+         T050VNikV9uJz/Z0chOPngKV6Jilwf7jn91zr6t2Of2Y/UzK4UtFlJ+3vFhtZ6KJah
+         g5Z/jFPUpazBJ0djW+bOBVUt9Cr/VrbOZfMcSekHgoHEAB+ivrMBx/B+CFIVlgvVGx
+         IBVQ0UD2MtsJgjbmKkNUoDpi4qPfO1XJa/m2mQr7e6CzfxnEmcf76jWAt7oCRp150W
+         Y1qV9JHkSRUZoFtHTGiVe1gqqAlrO/2M1x3pPPtyx7cx4lL6mgAg9gSY4mkJMVWwao
+         Qg7RhXvJguknA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dust Li <dust.li@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 65/98] net/smc: correct settings of RMB window update limit
-Date:   Fri,  1 Apr 2022 10:37:09 -0400
-Message-Id: <20220401143742.1952163-65-sashal@kernel.org>
+Cc:     Sven Eckelmann <sven@narfation.org>,
+        =?UTF-8?q?Leonardo=20M=C3=B6rlein?= <freifunk@irrelefant.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 67/98] macvtap: advertise link netns via netlink
+Date:   Fri,  1 Apr 2022 10:37:11 -0400
+Message-Id: <20220401143742.1952163-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143742.1952163-1-sashal@kernel.org>
 References: <20220401143742.1952163-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,50 +59,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dust Li <dust.li@linux.alibaba.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 6bf536eb5c8ca011d1ff57b5c5f7c57ceac06a37 ]
+[ Upstream commit a02192151b7dbf855084c38dca380d77c7658353 ]
 
-rmbe_update_limit is used to limit announcing receive
-window updating too frequently. RFC7609 request a minimal
-increase in the window size of 10% of the receive buffer
-space. But current implementation used:
+Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
+added to rtnetlink messages. This fixes iproute2 which otherwise resolved
+the link interface to an interface in the wrong namespace.
 
-  min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2)
+Test commands:
 
-and SOCK_MIN_SNDBUF / 2 == 2304 Bytes, which is almost
-always less then 10% of the receive buffer space.
+  ip netns add nst
+  ip link add dummy0 type dummy
+  ip link add link macvtap0 link dummy0 type macvtap
+  ip link set macvtap0 netns nst
+  ip -netns nst link show macvtap0
 
-This causes the receiver always sending CDC message to
-update its consumer cursor when it consumes more then 2K
-of data. And as a result, we may encounter something like
-"TCP silly window syndrome" when sending 2.5~8K message.
+Before:
 
-This patch fixes this using max(rmbe_size / 10, SOCK_MIN_SNDBUF / 2).
+  10: macvtap0@gre0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff
 
-With this patch and SMC autocorking enabled, qperf 2K/4K/8K
-tcp_bw test shows 45%/75%/40% increase in throughput respectively.
+After:
 
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+  10: macvtap0@if2: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 500
+      link/ether 5e:8f:ae:1d:60:50 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+
+Reported-by: Leonardo Mörlein <freifunk@irrelefant.net>
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Link: https://lore.kernel.org/r/20220228003240.1337426-1-sven@narfation.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/smc_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/macvtap.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index dee336eef6d2..7401ec67ebcf 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1822,7 +1822,7 @@ static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
-  */
- static inline int smc_rmb_wnd_update_limit(int rmbe_size)
- {
--	return min_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
-+	return max_t(int, rmbe_size / 10, SOCK_MIN_SNDBUF / 2);
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 694e2f5dbbe5..39801c31e507 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -133,11 +133,17 @@ static void macvtap_setup(struct net_device *dev)
+ 	dev->tx_queue_len = TUN_READQ_SIZE;
  }
  
- /* map an rmb buf to a link */
++static struct net *macvtap_link_net(const struct net_device *dev)
++{
++	return dev_net(macvlan_dev_real_dev(dev));
++}
++
+ static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
+ 	.kind		= "macvtap",
+ 	.setup		= macvtap_setup,
+ 	.newlink	= macvtap_newlink,
+ 	.dellink	= macvtap_dellink,
++	.get_link_net	= macvtap_link_net,
+ 	.priv_size      = sizeof(struct macvtap_dev),
+ };
+ 
 -- 
 2.34.1
 
