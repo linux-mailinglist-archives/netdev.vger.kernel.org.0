@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB884EF1BE
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:40:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AD494EF48A
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348030AbiDAOlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
+        id S1348207AbiDAOve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347775AbiDAOlZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:41:25 -0400
+        with ESMTP id S1348423AbiDAOnR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:43:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BC329089A;
-        Fri,  1 Apr 2022 07:34:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C507C295265;
+        Fri,  1 Apr 2022 07:34:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7406CB82511;
-        Fri,  1 Apr 2022 14:34:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF12C3410F;
-        Fri,  1 Apr 2022 14:33:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60D72B82520;
+        Fri,  1 Apr 2022 14:34:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 450DEC36AE2;
+        Fri,  1 Apr 2022 14:34:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823641;
-        bh=5je8xdC2bPCBaWmhDNpUXYOAhxre1L33fd58POxSqQA=;
+        s=k20201202; t=1648823655;
+        bh=jxBC/NZl6SdyvjGxkAjx5Hzor1wxP2AEE/3/XiHN6gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o0UqQJ7WPEa4B1uEEZTAlNoDVXYNA42A+u4STjNNx5YNACEksDVRhDAjQSS2Xl3Sy
-         pGNKc/QxpKoBpVqr4qW07a0upmSoDXbJMwfoFZ215Ya8ja4BvnAWvhjDEPVBPp4uYs
-         0qWAHqaVqkmUctpY4JznhPPqlfChWQDhTjoJAik/zEmPJTVbPJNiHRRpNio3YfWALc
-         I6B5D6wExmQ2JsOCoKej5m3QI1H69g/XBSM7/zC7dQLIeqO03weTI5Z60UCE/tapmY
-         9AFjmBdRlrCJY+gclVDA6G5XadhysOSMxTi23wusdOhnbPYmKsaxeyl8Au6ewHwzBp
-         3nzeA4OrPkYBw==
+        b=ub813pWdbvjV7h8WF8PbWh6HJGaeQHeyTltPT/t4YBYKg12QyXdJc6cOjWo20/ofg
+         GW5/8enmlCKQftS91Y1Zy5XtKcowcdgoFM6u3Gb6N9vTMkSZYxLzT2LH//IZcuwkPk
+         ANeE5kOH0xbHd1mS+/jV3Jr9SoRF2WPDCJPEyfsNmsh43OQYZNfhFK6sCKPQLVxHQy
+         2yqFfxVEVXZ/+rfL4iqjBc2PTM/BQUkrqHBh6UNsVyEnK6hLIfIVNcoBKl+bsM0nGX
+         aah2r9OurI0LKptnyp+CJz3pMnbCRKo78ffQyMWVM8w6kFKKUIo5F7omYchl51qLy/
+         YNEkY03RAykww==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 024/109] bpf: Make dst_port field in struct bpf_sock 16-bit wide
-Date:   Fri,  1 Apr 2022 10:31:31 -0400
-Message-Id: <20220401143256.1950537-24-sashal@kernel.org>
+Cc:     Ben Greear <greearb@candelatech.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>, lorenzo.bianconi83@gmail.com,
+        ryder.lee@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        sean.wang@mediatek.com, johannes.berg@intel.com,
+        deren.wu@mediatek.com, YN.Chen@mediatek.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 029/109] mt76: mt7921: fix crash when startup fails.
+Date:   Fri,  1 Apr 2022 10:31:36 -0400
+Message-Id: <20220401143256.1950537-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -59,92 +62,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit 4421a582718ab81608d8486734c18083b822390d ]
+[ Upstream commit 827e7799c61b978fbc2cc9dac66cb62401b2b3f0 ]
 
-Menglong Dong reports that the documentation for the dst_port field in
-struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
-field is a zero-padded 16-bit integer in network byte order. The value
-appears to the BPF user as if laid out in memory as so:
+If the nic fails to start, it is possible that the
+reset_work has already been scheduled.  Ensure the
+work item is canceled so we do not have use-after-free
+crash in case cleanup is called before the work item
+is executed.
 
-  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
-                                      + 8  <port LSB>
-                                      +16  0x00
-                                      +24  0x00
+This fixes crash on my x86_64 apu2 when mt7921k radio
+fails to work.  Radio still fails, but OS does not
+crash.
 
-32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
-the offset into the field is 0.
-
-32-bit wide loads from dst_port are especially confusing. The loaded value,
-after converting to host byte order with bpf_ntohl(dst_port), contains the
-port number in the upper 16-bits.
-
-Remove the confusion by splitting the field into two 16-bit fields. For
-backward compatibility, allow 32-bit wide loads from offsetof(struct
-bpf_sock, dst_port).
-
-While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
-
-Reported-by: Menglong Dong <imagedong@tencent.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Link: https://lore.kernel.org/r/20220130115518.213259-2-jakub@cloudflare.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/bpf.h |  3 ++-
- net/core/filter.c        | 10 +++++++++-
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b12cfceddb6e..3840308a81ef 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5414,7 +5414,8 @@ struct bpf_sock {
- 	__u32 src_ip4;
- 	__u32 src_ip6[4];
- 	__u32 src_port;		/* host byte order */
--	__u32 dst_port;		/* network byte order */
-+	__be16 dst_port;	/* network byte order */
-+	__u16 :16;		/* zero padding */
- 	__u32 dst_ip4;
- 	__u32 dst_ip6[4];
- 	__u32 state;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index d4cdf11656b3..4721ed65bcc5 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7975,6 +7975,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 			      struct bpf_insn_access_aux *info)
- {
- 	const int size_default = sizeof(__u32);
-+	int field_size;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index 8c55562c1a8d..b3bd090a13f4 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -260,6 +260,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
  
- 	if (off < 0 || off >= sizeof(struct bpf_sock))
- 		return false;
-@@ -7986,7 +7987,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case offsetof(struct bpf_sock, family):
- 	case offsetof(struct bpf_sock, type):
- 	case offsetof(struct bpf_sock, protocol):
--	case offsetof(struct bpf_sock, dst_port):
- 	case offsetof(struct bpf_sock, src_port):
- 	case offsetof(struct bpf_sock, rx_queue_mapping):
- 	case bpf_ctx_range(struct bpf_sock, src_ip4):
-@@ -7995,6 +7995,14 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
- 		bpf_ctx_record_field_size(info, size_default);
- 		return bpf_ctx_narrow_access_ok(off, size, size_default);
-+	case bpf_ctx_range(struct bpf_sock, dst_port):
-+		field_size = size == size_default ?
-+			size_default : sizeof_field(struct bpf_sock, dst_port);
-+		bpf_ctx_record_field_size(info, field_size);
-+		return bpf_ctx_narrow_access_ok(off, size, field_size);
-+	case offsetofend(struct bpf_sock, dst_port) ...
-+	     offsetof(struct bpf_sock, dst_ip4) - 1:
-+		return false;
- 	}
+ 	cancel_delayed_work_sync(&dev->pm.ps_work);
+ 	cancel_work_sync(&dev->pm.wake_work);
++	cancel_work_sync(&dev->reset_work);
+ 	mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
  
- 	return size == size_default;
+ 	mt7921_mutex_acquire(dev);
 -- 
 2.34.1
 
