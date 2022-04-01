@@ -2,46 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1CE14EF659
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AEB54EF63B
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350293AbiDAPdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
+        id S1344817AbiDAPbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346908AbiDAOxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:53:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1FE2B51AC;
-        Fri,  1 Apr 2022 07:42:42 -0700 (PDT)
+        with ESMTP id S1346432AbiDAOx4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:53:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752542B5ACE;
+        Fri,  1 Apr 2022 07:42:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F140560A53;
-        Fri,  1 Apr 2022 14:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00E61C3410F;
-        Fri,  1 Apr 2022 14:42:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3111EB82504;
+        Fri,  1 Apr 2022 14:42:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 557CCC2BBE4;
+        Fri,  1 Apr 2022 14:42:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824161;
-        bh=OZy9dv5isNlN3HZp52aRawqCq6r3c3JsOGv1dvnIUdk=;
+        s=k20201202; t=1648824171;
+        bh=ZPRDkc1kCRCDXeYCrIOvP8qDwUgvwNontCric9MwptY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+Zt4sQ6Q7GB0sP6hBWwGcmfXPfhx+cIEF+gdb4TPfjM8J0OjF+knqjLjYQsiNyVy
-         n+zlRnxLwrXASusOJBUVL+69dhsrynkVHlfLVk6T+z4s/D1Xb+cB3fxtxT+UfyqqOd
-         MQ07tcG5Kfzp7OoOlHQqPcvePKbR9v49IXFxUvk2NIEEGkGrlxaXg+qIVY2wiDiROI
-         mLVuGtDebwC8d7x+NJHrfsFzjrhvCFikkGtgNT/TpEKYasztTnElOtcU7BvETcSqP4
-         0G/jgHQ38nd1IbWKLr+ta01hI3AYUFnj01N9eDUSDBjfCG05a2sllGVtdlnzns+XLn
-         2iGFl5iwdWIKw==
+        b=rTc6XQ592P3lHp/blbOoZrNokVpDW6at27UKrTAvuWEDas6Ovao1LyTzAM+5XlDEG
+         qllNFKUYJnsG8zynLhsP37gNd/0dQ73E57AJ9tqrDBl4ypH4/+DG7hYD7+52+ruQ0U
+         DCfVeq214KkOXaP/oAuNPDNWEJzrPgq3EUQJgl32aaWTQbGfAs0la0homnfRcG1cK5
+         Ef/XPmCA0p8mLqRpQp9E6uqL5zFpgFuIAuB6f46cbxXFB42NOvSrqe9cMviBzSTorv
+         TNHxsJbD3i1f64AAsQrzpx64/fc1IKeykkGOWiVk8PK2nXi5DpjebKCM8xNHUCaY23
+         kroz4+qaEyuEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 11/65] bpf: Make dst_port field in struct bpf_sock 16-bit wide
-Date:   Fri,  1 Apr 2022 10:41:12 -0400
-Message-Id: <20220401144206.1953700-11-sashal@kernel.org>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 15/65] mt76: dma: initialize skip_unmap in mt76_dma_rx_fill
+Date:   Fri,  1 Apr 2022 10:41:16 -0400
+Message-Id: <20220401144206.1953700-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -59,92 +61,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Sitnicki <jakub@cloudflare.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 4421a582718ab81608d8486734c18083b822390d ]
+[ Upstream commit 577298ec55dfc8b9aece54520f0258c3f93a6573 ]
 
-Menglong Dong reports that the documentation for the dst_port field in
-struct bpf_sock is inaccurate and confusing. From the BPF program PoV, the
-field is a zero-padded 16-bit integer in network byte order. The value
-appears to the BPF user as if laid out in memory as so:
+Even if it is only a false-positive since skip_buf0/skip_buf1 are only
+used in mt76_dma_tx_cleanup_idx routine, initialize skip_unmap in
+mt76_dma_rx_fill in order to fix the following UBSAN report:
 
-  offsetof(struct bpf_sock, dst_port) + 0  <port MSB>
-                                      + 8  <port LSB>
-                                      +16  0x00
-                                      +24  0x00
+[   13.924906] UBSAN: invalid-load in linux-5.15.0/drivers/net/wireless/mediatek/mt76/dma.c:162:13
+[   13.924909] load of value 225 is not a valid value for type '_Bool'
+[   13.924912] CPU: 9 PID: 672 Comm: systemd-udevd Not tainted 5.15.0-18-generic #18-Ubuntu
+[   13.924914] Hardware name: LENOVO 21A0000CMX/21A0000CMX, BIOS R1MET43W (1.13 ) 11/05/2021
+[   13.924915] Call Trace:
+[   13.924917]  <TASK>
+[   13.924920]  show_stack+0x52/0x58
+[   13.924925]  dump_stack_lvl+0x4a/0x5f
+[   13.924931]  dump_stack+0x10/0x12
+[   13.924932]  ubsan_epilogue+0x9/0x45
+[   13.924934]  __ubsan_handle_load_invalid_value.cold+0x44/0x49
+[   13.924935]  ? __iommu_dma_map+0x84/0xf0
+[   13.924939]  mt76_dma_add_buf.constprop.0.cold+0x23/0x85 [mt76]
+[   13.924949]  mt76_dma_rx_fill.isra.0+0x102/0x1f0 [mt76]
+[   13.924954]  mt76_dma_init+0xc9/0x150 [mt76]
+[   13.924959]  ? mt7921_dma_enable+0x110/0x110 [mt7921e]
+[   13.924966]  mt7921_dma_init+0x1e3/0x260 [mt7921e]
+[   13.924970]  mt7921_register_device+0x29d/0x510 [mt7921e]
+[   13.924975]  mt7921_pci_probe.part.0+0x17f/0x1b0 [mt7921e]
+[   13.924980]  mt7921_pci_probe+0x43/0x60 [mt7921e]
+[   13.924984]  local_pci_probe+0x4b/0x90
+[   13.924987]  pci_device_probe+0x115/0x1f0
+[   13.924989]  really_probe+0x21e/0x420
+[   13.924992]  __driver_probe_device+0x115/0x190
+[   13.924994]  driver_probe_device+0x23/0xc0
+[   13.924996]  __driver_attach+0xbd/0x1d0
+[   13.924998]  ? __device_attach_driver+0x110/0x110
+[   13.924999]  bus_for_each_dev+0x7e/0xc0
+[   13.925001]  driver_attach+0x1e/0x20
+[   13.925003]  bus_add_driver+0x135/0x200
+[   13.925005]  driver_register+0x95/0xf0
+[   13.925008]  ? 0xffffffffc0766000
+[   13.925010]  __pci_register_driver+0x68/0x70
+[   13.925011]  mt7921_pci_driver_init+0x23/0x1000 [mt7921e]
+[   13.925015]  do_one_initcall+0x48/0x1d0
+[   13.925019]  ? kmem_cache_alloc_trace+0x19e/0x2e0
+[   13.925022]  do_init_module+0x62/0x280
+[   13.925025]  load_module+0xac9/0xbb0
+[   13.925027]  __do_sys_finit_module+0xbf/0x120
+[   13.925029]  __x64_sys_finit_module+0x18/0x20
+[   13.925030]  do_syscall_64+0x5c/0xc0
+[   13.925033]  ? do_syscall_64+0x69/0xc0
+[   13.925034]  ? sysvec_reschedule_ipi+0x78/0xe0
+[   13.925036]  ? asm_sysvec_reschedule_ipi+0xa/0x20
+[   13.925039]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   13.925040] RIP: 0033:0x7fbf2b90f94d
+[   13.925045] RSP: 002b:00007ffe2ec7e5d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
+[   13.925047] RAX: ffffffffffffffda RBX: 000056106b0634e0 RCX: 00007fbf2b90f94d
+[   13.925048] RDX: 0000000000000000 RSI: 00007fbf2baa3441 RDI: 0000000000000013
+[   13.925049] RBP: 0000000000020000 R08: 0000000000000000 R09: 0000000000000002
+[   13.925050] R10: 0000000000000013 R11: 0000000000000246 R12: 00007fbf2baa3441
+[   13.925051] R13: 000056106b062620 R14: 000056106b0610c0 R15: 000056106b0640d0
+[   13.925053]  </TASK>
 
-32-, 16-, and 8-bit wide loads from the field are all allowed, but only if
-the offset into the field is 0.
-
-32-bit wide loads from dst_port are especially confusing. The loaded value,
-after converting to host byte order with bpf_ntohl(dst_port), contains the
-port number in the upper 16-bits.
-
-Remove the confusion by splitting the field into two 16-bit fields. For
-backward compatibility, allow 32-bit wide loads from offsetof(struct
-bpf_sock, dst_port).
-
-While at it, allow loads 8-bit loads at offset [0] and [1] from dst_port.
-
-Reported-by: Menglong Dong <imagedong@tencent.com>
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-Link: https://lore.kernel.org/r/20220130115518.213259-2-jakub@cloudflare.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/bpf.h |  3 ++-
- net/core/filter.c        | 10 +++++++++-
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/dma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 762bf87c26a3..e25446519bcf 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -4180,7 +4180,8 @@ struct bpf_sock {
- 	__u32 src_ip4;
- 	__u32 src_ip6[4];
- 	__u32 src_port;		/* host byte order */
--	__u32 dst_port;		/* network byte order */
-+	__be16 dst_port;	/* network byte order */
-+	__u16 :16;		/* zero padding */
- 	__u32 dst_ip4;
- 	__u32 dst_ip6[4];
- 	__u32 state;
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 659a32802471..fe5e0ec5cd3e 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7709,6 +7709,7 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 			      struct bpf_insn_access_aux *info)
- {
- 	const int size_default = sizeof(__u32);
-+	int field_size;
+diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
+index 0fdfead45c77..f01b455783b2 100644
+--- a/drivers/net/wireless/mediatek/mt76/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/dma.c
+@@ -455,6 +455,7 @@ mt76_dma_rx_fill(struct mt76_dev *dev, struct mt76_queue *q)
  
- 	if (off < 0 || off >= sizeof(struct bpf_sock))
- 		return false;
-@@ -7720,7 +7721,6 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case offsetof(struct bpf_sock, family):
- 	case offsetof(struct bpf_sock, type):
- 	case offsetof(struct bpf_sock, protocol):
--	case offsetof(struct bpf_sock, dst_port):
- 	case offsetof(struct bpf_sock, src_port):
- 	case offsetof(struct bpf_sock, rx_queue_mapping):
- 	case bpf_ctx_range(struct bpf_sock, src_ip4):
-@@ -7729,6 +7729,14 @@ bool bpf_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 	case bpf_ctx_range_till(struct bpf_sock, dst_ip6[0], dst_ip6[3]):
- 		bpf_ctx_record_field_size(info, size_default);
- 		return bpf_ctx_narrow_access_ok(off, size, size_default);
-+	case bpf_ctx_range(struct bpf_sock, dst_port):
-+		field_size = size == size_default ?
-+			size_default : sizeof_field(struct bpf_sock, dst_port);
-+		bpf_ctx_record_field_size(info, field_size);
-+		return bpf_ctx_narrow_access_ok(off, size, field_size);
-+	case offsetofend(struct bpf_sock, dst_port) ...
-+	     offsetof(struct bpf_sock, dst_ip4) - 1:
-+		return false;
+ 		qbuf.addr = addr + offset;
+ 		qbuf.len = len - offset;
++		qbuf.skip_unmap = false;
+ 		mt76_dma_add_buf(dev, q, &qbuf, 1, 0, buf, NULL);
+ 		frames++;
  	}
- 
- 	return size == size_default;
 -- 
 2.34.1
 
