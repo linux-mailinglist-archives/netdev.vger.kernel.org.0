@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A2B4EF174
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:40:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B5F14EF11E
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347970AbiDAOgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
+        id S1347962AbiDAOgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347608AbiDAOdO (ORCPT
+        with ESMTP id S1347610AbiDAOdO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E349256640;
-        Fri,  1 Apr 2022 07:30:10 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF81E258443;
+        Fri,  1 Apr 2022 07:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D1F9B82515;
-        Fri,  1 Apr 2022 14:30:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFC0C2BBE4;
-        Fri,  1 Apr 2022 14:30:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50795B8250D;
+        Fri,  1 Apr 2022 14:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 963D3C36AEB;
+        Fri,  1 Apr 2022 14:30:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823408;
-        bh=y5iZjuzgrRz546+vtyJdXA0k4Yb5zv7HJ+OnbQJvTLw=;
+        s=k20201202; t=1648823409;
+        bh=7neBOU9oE4j7aDMHTncJJ/MR1ImcyVePGzhQPKR9npo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eL8iVazPQHmEFFsfaKckK3Sr5hbIB6ayDdY6vcHt8/6lffSYxPDcfg4GUUIMEJeCG
-         F68fMXGEPWXdj5h79xcz+o+XI0qX2VfjbKVbYe014a082etD0vIrIWS+eIu5sp2ggk
-         ZcWJP8LEnjb6xQNWqJZjQJKf/ll4Su4l974wDqPBPuRC/GDn19ySaSi8IpI1X2jsaY
-         +6H5RXYYRbCtAhv06JGi51/2XprfU6AF0FBPCJt2WT1yqHLZMy8dIO8LcGmbKal8m2
-         sAm8m1r7TVx+L9OZMQt/OjriDoOeyjV7+8hvUGiCDAr8OIp2LQ8+rm8Jl5x4dUfoVW
-         7EB3sp9DD4gEQ==
+        b=C7yB3HYwTvOY33K6S4iObLbxcYH2JGZJr0KWRPs31s105PixkTxtefHTv/mSyBzxB
+         +SrrZCOwFgo4ZGyr7EkaG74DjcYbroJcnNoP4MNibX8bV/jRqvzMKb7Xsji8HhW4La
+         6Se4PxbBS0aKhVZpBAdwWldzBVPnwVv9LWL54sKsltpt6mlAAezX8aZ1Uvvl6og79d
+         2q9mKeEmKGrNBzlaEMagfbzhgyA/Tvs+20CCWT8oZNLsWS/vyt3ju6Ug8B0WnzXO/q
+         iC/CK8TFf1EyrPOUlRtR3H7KOl8H0ewcZUNhBJ6ROC/Csu+7AqxZrOTbRVrRdCJIHo
+         PfNsN7RnI46Ug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        johannes.berg@intel.com, linux-wireless@vger.kernel.org,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 081/149] iwlwifi: mvm: move only to an enabled channel
-Date:   Fri,  1 Apr 2022 10:24:28 -0400
-Message-Id: <20220401142536.1948161-81-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 082/149] ipv6: annotate some data-races around sk->sk_prot
+Date:   Fri,  1 Apr 2022 10:24:29 -0400
+Message-Id: <20220401142536.1948161-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -59,78 +59,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit e04135c07755d001b5cde61048c69a7cc84bb94b ]
+[ Upstream commit 086d49058cd8471046ae9927524708820f5fd1c7 ]
 
-During disassociation we're decreasing the phy's ref count.
-If the ref count becomes 0, we're configuring the phy ctxt
-to the default channel (the lowest channel which the device
-can operate on). Currently we're not checking whether the
-the default channel is enabled or not. Fix it by configuring
-the phy ctxt to the lowest channel which is enabled.
+IPv6 has this hack changing sk->sk_prot when an IPv6 socket
+is 'converted' to an IPv4 one with IPV6_ADDRFORM option.
 
-Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220210181930.03f281b6a6bc.I5b63d43ec41996d599e6f37ec3f32e878b3e405e@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+This operation is only performed for TCP and UDP, knowing
+their 'struct proto' for the two network families are populated
+in the same way, and can not disappear while a reader
+might use and dereference sk->sk_prot.
+
+If we think about it all reads of sk->sk_prot while
+either socket lock or RTNL is not acquired should be using READ_ONCE().
+
+Also note that other layers like MPTCP, XFRM, CHELSIO_TLS also
+write over sk->sk_prot.
+
+BUG: KCSAN: data-race in inet6_recvmsg / ipv6_setsockopt
+
+write to 0xffff8881386f7aa8 of 8 bytes by task 26932 on cpu 0:
+ do_ipv6_setsockopt net/ipv6/ipv6_sockglue.c:492 [inline]
+ ipv6_setsockopt+0x3758/0x3910 net/ipv6/ipv6_sockglue.c:1019
+ udpv6_setsockopt+0x85/0x90 net/ipv6/udp.c:1649
+ sock_common_setsockopt+0x5d/0x70 net/core/sock.c:3489
+ __sys_setsockopt+0x209/0x2a0 net/socket.c:2180
+ __do_sys_setsockopt net/socket.c:2191 [inline]
+ __se_sys_setsockopt net/socket.c:2188 [inline]
+ __x64_sys_setsockopt+0x62/0x70 net/socket.c:2188
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffff8881386f7aa8 of 8 bytes by task 26911 on cpu 1:
+ inet6_recvmsg+0x7a/0x210 net/ipv6/af_inet6.c:659
+ ____sys_recvmsg+0x16c/0x320
+ ___sys_recvmsg net/socket.c:2674 [inline]
+ do_recvmmsg+0x3f5/0xae0 net/socket.c:2768
+ __sys_recvmmsg net/socket.c:2847 [inline]
+ __do_sys_recvmmsg net/socket.c:2870 [inline]
+ __se_sys_recvmmsg net/socket.c:2863 [inline]
+ __x64_sys_recvmmsg+0xde/0x160 net/socket.c:2863
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0xffffffff85e0e980 -> 0xffffffff85e01580
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 26911 Comm: syz-executor.3 Not tainted 5.17.0-rc2-syzkaller-00316-g0457e5153e0e-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 31 +++++++++++++------
- 1 file changed, 22 insertions(+), 9 deletions(-)
+ net/ipv6/af_inet6.c      | 24 ++++++++++++++++++------
+ net/ipv6/ipv6_sockglue.c |  6 ++++--
+ 2 files changed, 22 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-index 9af40b0fa37a..a6e6673bf4ee 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /*
-- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
-+ * Copyright (C) 2012-2014, 2018-2022 Intel Corporation
-  * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
-  * Copyright (C) 2017 Intel Deutschland GmbH
-  */
-@@ -349,18 +349,31 @@ void iwl_mvm_phy_ctxt_unref(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt)
- 	 * otherwise we might not be able to reuse this phy.
- 	 */
- 	if (ctxt->ref == 0) {
--		struct ieee80211_channel *chan;
-+		struct ieee80211_channel *chan = NULL;
- 		struct cfg80211_chan_def chandef;
--		struct ieee80211_supported_band *sband = NULL;
--		enum nl80211_band band = NL80211_BAND_2GHZ;
-+		struct ieee80211_supported_band *sband;
-+		enum nl80211_band band;
-+		int channel;
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 8fe7900f1949..7d7b7523d126 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -441,11 +441,14 @@ int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ {
+ 	struct sock *sk = sock->sk;
+ 	u32 flags = BIND_WITH_LOCK;
++	const struct proto *prot;
+ 	int err = 0;
  
--		while (!sband && band < NUM_NL80211_BANDS)
--			sband = mvm->hw->wiphy->bands[band++];
-+		for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
-+			sband = mvm->hw->wiphy->bands[band];
++	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++	prot = READ_ONCE(sk->sk_prot);
+ 	/* If the socket has its own bind function then use it. */
+-	if (sk->sk_prot->bind)
+-		return sk->sk_prot->bind(sk, uaddr, addr_len);
++	if (prot->bind)
++		return prot->bind(sk, uaddr, addr_len);
  
--		if (WARN_ON(!sband))
--			return;
-+			if (!sband)
-+				continue;
-+
-+			for (channel = 0; channel < sband->n_channels; channel++)
-+				if (!(sband->channels[channel].flags &
-+						IEEE80211_CHAN_DISABLED)) {
-+					chan = &sband->channels[channel];
-+					break;
-+				}
+ 	if (addr_len < SIN6_LEN_RFC2133)
+ 		return -EINVAL;
+@@ -555,6 +558,7 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+ 	void __user *argp = (void __user *)arg;
+ 	struct sock *sk = sock->sk;
+ 	struct net *net = sock_net(sk);
++	const struct proto *prot;
  
--		chan = &sband->channels[0];
-+			if (chan)
-+				break;
-+		}
-+
-+		if (WARN_ON(!chan))
-+			return;
+ 	switch (cmd) {
+ 	case SIOCADDRT:
+@@ -572,9 +576,11 @@ int inet6_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+ 	case SIOCSIFDSTADDR:
+ 		return addrconf_set_dstaddr(net, argp);
+ 	default:
+-		if (!sk->sk_prot->ioctl)
++		/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++		prot = READ_ONCE(sk->sk_prot);
++		if (!prot->ioctl)
+ 			return -ENOIOCTLCMD;
+-		return sk->sk_prot->ioctl(sk, cmd, arg);
++		return prot->ioctl(sk, cmd, arg);
+ 	}
+ 	/*NOTREACHED*/
+ 	return 0;
+@@ -636,11 +642,14 @@ INDIRECT_CALLABLE_DECLARE(int udpv6_sendmsg(struct sock *, struct msghdr *,
+ int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
+ {
+ 	struct sock *sk = sock->sk;
++	const struct proto *prot;
  
- 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
- 		iwl_mvm_phy_ctxt_changed(mvm, ctxt, &chandef, 1, 1);
+ 	if (unlikely(inet_send_prepare(sk)))
+ 		return -EAGAIN;
+ 
+-	return INDIRECT_CALL_2(sk->sk_prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
++	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++	prot = READ_ONCE(sk->sk_prot);
++	return INDIRECT_CALL_2(prot->sendmsg, tcp_sendmsg, udpv6_sendmsg,
+ 			       sk, msg, size);
+ }
+ 
+@@ -650,13 +659,16 @@ int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 		  int flags)
+ {
+ 	struct sock *sk = sock->sk;
++	const struct proto *prot;
+ 	int addr_len = 0;
+ 	int err;
+ 
+ 	if (likely(!(flags & MSG_ERRQUEUE)))
+ 		sock_rps_record_flow(sk);
+ 
+-	err = INDIRECT_CALL_2(sk->sk_prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
++	/* IPV6_ADDRFORM can change sk->sk_prot under us. */
++	prot = READ_ONCE(sk->sk_prot);
++	err = INDIRECT_CALL_2(prot->recvmsg, tcp_recvmsg, udpv6_recvmsg,
+ 			      sk, msg, size, flags & MSG_DONTWAIT,
+ 			      flags & ~MSG_DONTWAIT, &addr_len);
+ 	if (err >= 0)
+diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
+index a733803a710c..222f6bf220ba 100644
+--- a/net/ipv6/ipv6_sockglue.c
++++ b/net/ipv6/ipv6_sockglue.c
+@@ -475,7 +475,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 				sock_prot_inuse_add(net, sk->sk_prot, -1);
+ 				sock_prot_inuse_add(net, &tcp_prot, 1);
+ 
+-				sk->sk_prot = &tcp_prot;
++				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
++				WRITE_ONCE(sk->sk_prot, &tcp_prot);
+ 				icsk->icsk_af_ops = &ipv4_specific;
+ 				sk->sk_socket->ops = &inet_stream_ops;
+ 				sk->sk_family = PF_INET;
+@@ -489,7 +490,8 @@ static int do_ipv6_setsockopt(struct sock *sk, int level, int optname,
+ 				sock_prot_inuse_add(net, sk->sk_prot, -1);
+ 				sock_prot_inuse_add(net, prot, 1);
+ 
+-				sk->sk_prot = prot;
++				/* Paired with READ_ONCE(sk->sk_prot) in net/ipv6/af_inet6.c */
++				WRITE_ONCE(sk->sk_prot, prot);
+ 				sk->sk_socket->ops = &inet_dgram_ops;
+ 				sk->sk_family = PF_INET;
+ 			}
 -- 
 2.34.1
 
