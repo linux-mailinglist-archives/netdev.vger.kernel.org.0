@@ -2,70 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8E4F4EEAF2
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 12:05:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 629F04EEBB2
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 12:41:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344905AbiDAKHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 06:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51268 "EHLO
+        id S1344956AbiDAKmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 06:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344902AbiDAKHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 06:07:00 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62594173F58
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 03:05:11 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id m3so3908975lfj.11
-        for <netdev@vger.kernel.org>; Fri, 01 Apr 2022 03:05:11 -0700 (PDT)
+        with ESMTP id S1344948AbiDAKmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 06:42:45 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE20C103DA0;
+        Fri,  1 Apr 2022 03:40:55 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id a1so3591582wrh.10;
+        Fri, 01 Apr 2022 03:40:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kugPTravw/pWjMItvRqIfrO55/1h/afpYQ2vDHdA2dc=;
-        b=RyPCXTzyq9SWZ6h+cRcDbwfd6OjSZAkGqxxhCAfmyIbxx7RjG0FkkESQcXH738rULP
-         Qfv5ikG4gDeOuNIKQPskLK1wcz8Jai0v9Yn8AE6CJ1KqRM34A8OAsjdIbzO9pwZtuptg
-         v9d4UmNNc2lRv4R8iDa/nPa/fc1uWizvEok/2J705c+nedoai01UeCM/TAt10en8Z+AY
-         nbvFavbkrFJFOHiIsjf10QMoMTraAQKwyfZImgevqDqDeD62F3HWb0oxFUAnAyRDpk9D
-         W9Yoddm0tJ3B0Ft7CbKXKxh4QqWKjDU9a2ynGJiy2WfxoxLY2ZrQeb3cX+nZnOcAXzaz
-         1q+A==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=ZXjr35ZteUA9cEWV/UbslxEAKr8SJWVJnre3hF4Zsy8=;
+        b=pS02gleyzkk52m7GJzgAvR71BKhIiY3DOZA9DyxvHiaxSKl3OiXMoIzU9u8Jnx+HoJ
+         8BDlRnbTRE5pDnlCbRtoyTFQb8hd1l9m7hjoRr8E1dKYOHbDOUszeduAm9eVkgzl6g2j
+         8Ew7XzfyywsmEQ0zgQTaUMh0pempKiXYa36wciogXdpQQ9as9ZUBA0gMLsausv8wB10G
+         UC/RbBVHlZIahiSQ+t02ptZL9YSsd3RQfoQGFq4wuKzFD0zWZjgWKVEoIvJJT9CxNMYv
+         fLucQGIJW65EphtowK67ARL6RDwswTJi+vgTzzWqhKwvkjIpknUh4lfWXfGpZcmjMnor
+         PUFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kugPTravw/pWjMItvRqIfrO55/1h/afpYQ2vDHdA2dc=;
-        b=scfY642Pc0/ML1WJ6VIHlQVSbta9FBwixtW67CVw50KlFXfTuB7h5GVlyB8+OYje/Q
-         yz3+8HCWgx2j/f0lvxRKVWCPssyIzj+ADLGGJbQa8+WONLeCF6vQAfzcSTY27QtthJse
-         jcNiA0KqSpT08tRyR0LWTIo5zcoMj2zDSYcmztyWuLd5QWiLoNYNpL3f2JZWVdeE5KV5
-         YPTyamenBdEKRsbRSXl+SbdHGd1Xu8Vv4DuoVzJqAkAIQ6ugXJD1Es6xEk0qMUB92jJ7
-         +ltewB5R/+CzwNgwPt+4/X4d0bd7BhWOVF9xN1H6Z34bS4EAxBSYP7XZlmMv7Lw2cp9T
-         a+gA==
-X-Gm-Message-State: AOAM530h81FrQ1wuFCDZZgURQuUQ0pN2kCBWMyg6MdPEU19o73LgZMfN
-        2Z8oc8zeYizg2+8nyPvpehZ9/mlOMvWYZA==
-X-Google-Smtp-Source: ABdhPJzBGW5IdtXgGP0HgPvJiRf4YxJ8Vm2zwXF1+AUmW5fUleAJ9QCs9gVGOGd2qcazKv3RBqoaOg==
-X-Received: by 2002:a05:6512:1295:b0:44a:27fd:cd00 with SMTP id u21-20020a056512129500b0044a27fdcd00mr13061809lfs.196.1648807509396;
-        Fri, 01 Apr 2022 03:05:09 -0700 (PDT)
-Received: from wse-c0089.raspi.local (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id z17-20020a19e211000000b0044a1348fc87sm197903lfg.43.2022.04.01.03.05.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Apr 2022 03:05:08 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH v1 net-next 2/2] net: dsa: Implement tc offloading for drop target.
-Date:   Fri,  1 Apr 2022 12:04:18 +0200
-Message-Id: <20220401100418.3762272-3-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220401100418.3762272-1-mattias.forsblad@gmail.com>
-References: <20220401100418.3762272-1-mattias.forsblad@gmail.com>
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=ZXjr35ZteUA9cEWV/UbslxEAKr8SJWVJnre3hF4Zsy8=;
+        b=xvw5RVyEvTekoSYli9wkTpVRQFC3S/jUT+58zd/+Cz76Tqn+B6uwweBROlTXDmokvF
+         f16ak0VUWGSe6JbiFk6XPdZheKFlh2JQ9KVgraWCcV5nKDFjL8Lbl+SzO3HDDtEZqD3f
+         6IHc+5yNCXKBi4OBIaeWDwWD//ejvJDLrDfw/TmsfvmPFm+eREFZejQVmfXHqMHApIIq
+         YnxI78JmD3WZKs8FuG/ZCVVwmtJ533lr6h8bot7j1U4wumGOih5FMvp0lBHTx7c9WyZl
+         fKQDqgVj7H0X8qiYcIAlnxYJa1Fe8lVSo9cMO+buVoZVKdaQ/lod/5cE4Q0dr9Ub/Y9P
+         D9iA==
+X-Gm-Message-State: AOAM533TABDaEVr168b6hnG7p2g/wmHNdJmdyVpRaPdDPsb1qcyl8ySp
+        PX+y144lNFjXtnv+uEywZagJ6S2diGOqtZYm
+X-Google-Smtp-Source: ABdhPJwLvfh11SzHH2AVZnsm5e1A1We8PDM/qM/tKhCFQgTKooaSX3XUb//GflIVqmuUDHd7Br7C5A==
+X-Received: by 2002:a05:6000:186c:b0:205:3479:ad85 with SMTP id d12-20020a056000186c00b002053479ad85mr7434568wri.54.1648809654253;
+        Fri, 01 Apr 2022 03:40:54 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id j17-20020a05600c1c1100b0038e389ab62esm10053958wms.9.2022.04.01.03.40.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Apr 2022 03:40:53 -0700 (PDT)
+To:     pablo@netfilter.org
+Cc:     Network Development <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Subject: Conntrack offload and ingress_ifindex
+Message-ID: <e4ba278d-3308-ada8-d4ab-4d3a6c489216@gmail.com>
+Date:   Fri, 1 Apr 2022 11:40:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -76,62 +70,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to handle tc matchall drop HW offloading for Marvell
-switches.
+Pablo,
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+When developing a conntrack offload driver, I was quite surprised to find
+ that CT entries passed to the driver's flow-block callback (as registered
+ with nf_flow_table_offload_add_cb()) include a match on ingress_ifindex,
+ with mask 0xffffffff and key 0.  This is especially confusing as AIUI 0 is
+ not a valid ifindex.
+From reading the calling code, looking at git logs etc, I can't determine
+ the intended semantics of this match; could you clarify what (if anything)
+ drivers are expected to do with it?
+(Looking at other drivers it appears that e.g. mlx5e simply ignores it, as
+ its test for `key & mask` in mlx5_tc_ct_set_tuple_match() will be false.)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 64f4fdd02902..84e319520d36 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1436,7 +1436,7 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
- 	 * bridge group.
- 	 */
- 	dsa_switch_for_each_port(other_dp, ds)
--		if (other_dp->type == DSA_PORT_TYPE_CPU ||
-+		if ((other_dp->type == DSA_PORT_TYPE_CPU && dp->bridge->local_rcv_effective) ||
- 		    other_dp->type == DSA_PORT_TYPE_DSA ||
- 		    dsa_port_bridge_same(dp, other_dp))
- 			pvlan |= BIT(other_dp->index);
-@@ -6439,6 +6439,26 @@ static void mv88e6xxx_port_mirror_del(struct dsa_switch *ds, int port,
- 	mutex_unlock(&chip->reg_lock);
- }
- 
-+static int mv88e6xxx_bridge_local_rcv(struct dsa_switch *ds, int port,
-+				      struct dsa_mall_drop_tc_entry *drop)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	struct dsa_port *dp;
-+	int err;
-+
-+	dp = dsa_to_port(ds, port);
-+	if (!dp)
-+		return -EINVAL;
-+
-+	mutex_lock(&chip->reg_lock);
-+
-+	err = mv88e6xxx_bridge_map(chip, *dp->bridge);
-+
-+	mutex_unlock(&chip->reg_lock);
-+
-+	return err;
-+}
-+
- static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 					   struct switchdev_brport_flags flags,
- 					   struct netlink_ext_ack *extack)
-@@ -6837,6 +6857,7 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.port_mdb_del           = mv88e6xxx_port_mdb_del,
- 	.port_mirror_add	= mv88e6xxx_port_mirror_add,
- 	.port_mirror_del	= mv88e6xxx_port_mirror_del,
-+	.bridge_local_rcv	= mv88e6xxx_bridge_local_rcv,
- 	.crosschip_bridge_join	= mv88e6xxx_crosschip_bridge_join,
- 	.crosschip_bridge_leave	= mv88e6xxx_crosschip_bridge_leave,
- 	.port_hwtstamp_set	= mv88e6xxx_port_hwtstamp_set,
--- 
-2.25.1
-
+-ed
