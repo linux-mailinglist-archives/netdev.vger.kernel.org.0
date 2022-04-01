@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 438C84EF8DB
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 19:22:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94DD34EF8ED
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 19:26:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349873AbiDARY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 13:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
+        id S1350061AbiDAR1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 13:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349922AbiDARYY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 13:24:24 -0400
+        with ESMTP id S1350014AbiDAR1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 13:27:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EC7208C3C
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 10:22:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1071DDFEC
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 10:25:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FB88B82576
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 17:22:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5EB3C2BBE4;
-        Fri,  1 Apr 2022 17:22:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1B524B82580
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 17:25:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B083FC2BBE4;
+        Fri,  1 Apr 2022 17:25:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648833751;
-        bh=mTHMuWAj205cl8+NNwYr+ykZTytkBayxLRN6XLi8p4Q=;
+        s=k20201202; t=1648833950;
+        bh=dSPv0fqgphVXCzmTHDzcq9F20jbSIoGQ3mZ1f1H4Wmo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TSECY3/Ylt3UsOo7ei3U78n/JbGKGTto0bG5paWrBAuqhSarx2T615zv6Bt9CEYQI
-         orHgtDE4/lLQQczVwtmlBkaexfiATOYaYdnpe02wX8OSWqYitENT4Zn7dCKSPsAvkA
-         QviuAHq1HBNURuhut4zOUIXSpva28DcNo9M2nsfIjAi6cffUtnCpT5gCJbHGUPgU7M
-         vLXgP7uMPUEIyRVTe15JvxY01Bqzrb24uhvPW1i3x4ewVPOSlnTRCqoTGUGNtxyNFB
-         0xrLIcg7MfIBXygXbLRhXW53jTt/iw0DJDRjHT8r+Q5/PTQIznwucRrPi4CfJvw/hb
-         m22r5iOZmvwlA==
-Date:   Fri, 1 Apr 2022 10:22:30 -0700
+        b=cU5eD8xGL7QcD96KDZ908W8pLXuUOLP7Scz45qNnyNGP5N4KIJmnYJRbr8Py4SZ5w
+         dHdLmHVHY6uekTEsvtb6RoP+5N2Dj92KdIc3geq2rwQqjvprKYg+h07mFToYvUAJ5V
+         XOptzVE32g/FM1yvC2BTpxx2gnurBKjv9pOvPbOkpK/eLu4mOjrdzTpaGM3PQGJotk
+         /qUJ9G/TLlW9b+kmA2Gzk01yGpRRj6ZZ//PFdal4YK9rf8J9tiXAhof0aOptJvsm9C
+         +nzsVJrt19y4Pvv4JJ/2dSuqvpGujFGDoXs9UI1wWiJSHa52REmxzxV8VNu+ck2O8p
+         jpStMT5WpBesg==
+Date:   Fri, 1 Apr 2022 10:25:49 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com,
-        Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
-        <niklas.soderlund@corigine.com>,
-        Danie du Toit <danie.dutoit@corigine.com>
-Subject: Re: [PATCH net] nfp: do not use driver_data to index device info
-Message-ID: <20220401102230.2caab128@kernel.org>
-In-Reply-To: <20220401111936.92777-1-simon.horman@corigine.com>
-References: <20220401111936.92777-1-simon.horman@corigine.com>
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>
+Cc:     netdev@vger.kernel.org, Brian Baboch <brian.baboch@wifirst.fr>
+Subject: Re: [PATCH net-next] rtnetlink: return ENODEV when ifname does not
+ exist and group is given
+Message-ID: <20220401102549.059ba70a@kernel.org>
+In-Reply-To: <ba682166-956f-1eb7-1180-04b903234752@wifirst.fr>
+References: <20220331123502.6472-1-florent.fourcot@wifirst.fr>
+        <20220331203637.004709d4@kernel.org>
+        <ba682166-956f-1eb7-1180-04b903234752@wifirst.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,38 +55,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  1 Apr 2022 13:19:36 +0200 Simon Horman wrote:
-> From: Niklas S=C3=B6derlund <niklas.soderlund@corigine.com>
->=20
-> When adding support for multiple chips the struct pci_device_id
-> driver_data field was used to hold a index to lookup chip device
-> specific information from a table. This works but creates a regressions
-> for users who uses /sys/bus/pci/drivers/nfp_netvf/new_id.
->=20
-> For example, before the change writing "19ee 6003" to new_id was
-> sufficient=20
+On Fri, 1 Apr 2022 15:57:52 +0200 Florent Fourcot wrote:
+> > Would it be slightly cleaner to have a similar check in
+> > validate_linkmsg()? Something like:
+> > 
+> > 	if (!dev && !ifm->ifi_index && tb[IFLA_GROUP] &&
+> > 	    (tb[IFLA_IFNAME] || tb[IFLA_ALT_IFNAME]))  
+> 
+> 
+> That will add some complexity in validate_linkmsg, since we will need to 
+> check NLM_F_CREATE flag before (it's probably not an error when 
+> NLM_F_CREATE is set), and to give ifm as argument to check ifi_index.
+> 
+> I do not have a strong opinion on this topic, and if you think your idea 
+> is a better solution I can give a try in a v2.
 
-Can you explain the use case? I think this worked somewhat
-coincidentally. If we had entries that matched subvendor =3D 0
-subdevice =3D 0 it'd fail with EEXIST.
-
-> but after one needs to write enough fields to be able to also
-> match on the driver_data field, "19ee 6003 19ee ffffffff ffffffff 0 1".
->=20
-> The usage of driver_data field was only a convenience and in the belief
-> the driver_data field was private to the driver and not exposed in
-> anyway to users. Changing the device info lookup to a function that
-> translates from struct pci_device_id device field instead works just as
-> well and removes the user facing regression.
-
-I think you're trading a coincidental "feature" while breaking what
-new_id is actually supposed to be used for. Which is adding IDs.
-nfp_get_dev_info() you add only recognizes existing IDs.
-
-> As a bonus the enum and table with lookup information can be moved out
-> from a shared header file to the only file where it's used.
->=20
-> Reported-by: Danie du Toit <danie.dutoit@corigine.com>
-> Fixes: e900db704c8512bc ("nfp: parametrize QCP offset/size using dev_info=
-")
-> Signed-off-by: Niklas S=C3=B6derlund <niklas.soderlund@corigine.com>
+Okay, fair. Please repost on Monday, tho, net-next is currently closed
+(contrary to some status pages may be telling you...)
