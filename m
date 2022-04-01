@@ -2,46 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE3834EF261
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B8484EF25C
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348276AbiDAOwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60852 "EHLO
+        id S1347422AbiDAOwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349239AbiDAOpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:45:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E001FA62;
-        Fri,  1 Apr 2022 07:35:39 -0700 (PDT)
+        with ESMTP id S1349559AbiDAOqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:46:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810CD29C97A;
+        Fri,  1 Apr 2022 07:36:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 506EC60A53;
-        Fri,  1 Apr 2022 14:35:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 697BAC340EE;
-        Fri,  1 Apr 2022 14:35:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3355960A3C;
+        Fri,  1 Apr 2022 14:35:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D42C36AE2;
+        Fri,  1 Apr 2022 14:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823738;
-        bh=bRdx8OImyd8hpObz/0qEKfFH0PdnVpMb4ukSvdDBojU=;
+        s=k20201202; t=1648823744;
+        bh=PJeafsnUQnriLKTm/R8j1CwVfZCJuZ9TyKc2Zi2Znw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q5kz6w43u4NRu8jtjCZ+Bw/fQW3WQOb8P0lDWnNlpdTUsPlYHcozVb3lonVUfGKiN
-         qGQjGvobxN3XdMuKfbIwPksL/MtHxGZlUiJeRCMzWTfb2HYz1yN//99yMs3aDYQM5L
-         lq68113HPpCbLLFL8t6m+tlblXHNnIvr08Y2wVtRMyULwqPY8T7uQ6h2riKR6bDrqS
-         jgEWuDe+s1H6OwewJHCc71fUVaZjdBTZNUnqfcUebkCqEI0PgIm9OqDNNCBpsAUpTC
-         hLPFObg/viH393Jx00jZnk1FB2evCAmzYOKCgATBUJIxyHrxkLnL92/ngmV9BQ2HwV
-         EphG06SpTXncw==
+        b=XVFkL+J/BzntJznj7EZgNkjIrFd1Q+M2EvAORdtD/9saMBWSNGGTjqeuZV9SxixsX
+         kVpKDLTaJfOMrpFdLvLXNF5+PNNZqBKdZJk0CUNaQp4l7A8V9jAnq/YznuAoJR4fU6
+         5Xle3IFhza699/+BlChIEC60P+hQMb8aA3XqKTNI2d8NDZ68Hxk6rQJAUUphxPOiYR
+         pg6i7l4OZ7vCKAHjq4j+KNJS9yBHif0SG4vIrt9Gkyu0MDke24aFNcUr6rWMmLi6pn
+         jk9lB8pIODZFlioF3e262btGqDmL4jZ/mI01dyPyOIycU3P7p9gFnWEjjOYYRsn/Sh
+         ieFl10AwIddhQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+Cc:     Jiri Kosina <jkosina@suse.cz>, Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
         davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        johannes.berg@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 056/109] iwlwifi: mvm: move only to an enabled channel
-Date:   Fri,  1 Apr 2022 10:32:03 -0400
-Message-Id: <20220401143256.1950537-56-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 058/109] rtw89: fix RCU usage in rtw89_core_txq_push()
+Date:   Fri,  1 Apr 2022 10:32:05 -0400
+Message-Id: <20220401143256.1950537-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -59,78 +57,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+From: Jiri Kosina <jkosina@suse.cz>
 
-[ Upstream commit e04135c07755d001b5cde61048c69a7cc84bb94b ]
+[ Upstream commit f3d825a35920714fb7f73e4d4f36ea2328860660 ]
 
-During disassociation we're decreasing the phy's ref count.
-If the ref count becomes 0, we're configuring the phy ctxt
-to the default channel (the lowest channel which the device
-can operate on). Currently we're not checking whether the
-the default channel is enabled or not. Fix it by configuring
-the phy ctxt to the lowest channel which is enabled.
+ieee80211_tx_h_select_key() is performing a series of RCU dereferences,
+but rtw89_core_txq_push() is calling it (via ieee80211_tx_dequeue_ni())
+without RCU read-side lock held; fix that.
 
-Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220210181930.03f281b6a6bc.I5b63d43ec41996d599e6f37ec3f32e878b3e405e@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+This addresses the splat below.
+
+ =============================
+ WARNING: suspicious RCU usage
+ 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
+ -----------------------------
+ net/mac80211/tx.c:593 suspicious rcu_dereference_check() usage!
+
+ other info that might help us debug this:
+
+ rcu_scheduler_active = 2, debug_locks = 1
+ 2 locks held by kworker/u33:0/184:
+  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
+  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
+
+ stack backtrace:
+ CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
+ Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
+ Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x58/0x71
+  ieee80211_tx_h_select_key+0x2c0/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
+  process_one_work+0x2d8/0x660
+  worker_thread+0x39/0x3e0
+  ? process_one_work+0x660/0x660
+  kthread+0xe5/0x110
+  ? kthread_complete_and_exit+0x20/0x20
+  ret_from_fork+0x22/0x30
+  </TASK>
+
+ =============================
+ WARNING: suspicious RCU usage
+ 5.17.0-rc4-00003-gccad664b7f14 #3 Tainted: G            E
+ -----------------------------
+ net/mac80211/tx.c:607 suspicious rcu_dereference_check() usage!
+
+ other info that might help us debug this:
+
+ rcu_scheduler_active = 2, debug_locks = 1
+ 2 locks held by kworker/u33:0/184:
+  #0: ffff9c0b14811d38 ((wq_completion)rtw89_tx_wq){+.+.}-{0:0}, at: process_one_work+0x258/0x660
+  #1: ffffb97380cf3e78 ((work_completion)(&rtwdev->txq_work)){+.+.}-{0:0}, at: process_one_work+0x258/0x660
+
+ stack backtrace:
+ CPU: 8 PID: 184 Comm: kworker/u33:0 Tainted: G            E     5.17.0-rc4-00003-gccad664b7f14 #3 473b49ab0e7c2d6af2900c756bfd04efd7a9de13
+ Hardware name: LENOVO 20UJS2B905/20UJS2B905, BIOS R1CET63W(1.32 ) 04/09/2021
+ Workqueue: rtw89_tx_wq rtw89_core_txq_work [rtw89_core]
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x58/0x71
+  ieee80211_tx_h_select_key+0x464/0x530 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  ieee80211_tx_dequeue+0x1a7/0x1260 [mac80211 911c23e2351c0ae60b597a67b1204a5ea955e365]
+  rtw89_core_txq_work+0x1a6/0x420 [rtw89_core b39ba493f2e517ad75e0f8187ecc24edf58bbbea]
+  process_one_work+0x2d8/0x660
+  worker_thread+0x39/0x3e0
+  ? process_one_work+0x660/0x660
+  kthread+0xe5/0x110
+  ? kthread_complete_and_exit+0x20/0x20
+  ret_from_fork+0x22/0x30
+  </TASK>
+
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/nycvar.YFH.7.76.2202152037000.11721@cbobk.fhfr.pm
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 31 +++++++++++++------
- 1 file changed, 22 insertions(+), 9 deletions(-)
+ drivers/net/wireless/realtek/rtw89/core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-index 035336a9e755..6d82725cb87d 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /*
-- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
-+ * Copyright (C) 2012-2014, 2018-2022 Intel Corporation
-  * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
-  * Copyright (C) 2017 Intel Deutschland GmbH
-  */
-@@ -295,18 +295,31 @@ void iwl_mvm_phy_ctxt_unref(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt)
- 	 * otherwise we might not be able to reuse this phy.
- 	 */
- 	if (ctxt->ref == 0) {
--		struct ieee80211_channel *chan;
-+		struct ieee80211_channel *chan = NULL;
- 		struct cfg80211_chan_def chandef;
--		struct ieee80211_supported_band *sband = NULL;
--		enum nl80211_band band = NL80211_BAND_2GHZ;
-+		struct ieee80211_supported_band *sband;
-+		enum nl80211_band band;
-+		int channel;
+diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
+index d02ec5a735cb..9d9c0984903f 100644
+--- a/drivers/net/wireless/realtek/rtw89/core.c
++++ b/drivers/net/wireless/realtek/rtw89/core.c
+@@ -1501,11 +1501,12 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
+ 	unsigned long i;
+ 	int ret;
  
--		while (!sband && band < NUM_NL80211_BANDS)
--			sband = mvm->hw->wiphy->bands[band++];
-+		for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
-+			sband = mvm->hw->wiphy->bands[band];
- 
--		if (WARN_ON(!sband))
++	rcu_read_lock();
+ 	for (i = 0; i < frame_cnt; i++) {
+ 		skb = ieee80211_tx_dequeue_ni(rtwdev->hw, txq);
+ 		if (!skb) {
+ 			rtw89_debug(rtwdev, RTW89_DBG_TXRX, "dequeue a NULL skb\n");
 -			return;
-+			if (!sband)
-+				continue;
-+
-+			for (channel = 0; channel < sband->n_channels; channel++)
-+				if (!(sband->channels[channel].flags &
-+						IEEE80211_CHAN_DISABLED)) {
-+					chan = &sband->channels[channel];
-+					break;
-+				}
++			goto out;
+ 		}
+ 		rtw89_core_txq_check_agg(rtwdev, rtwtxq, skb);
+ 		ret = rtw89_core_tx_write(rtwdev, vif, sta, skb, NULL);
+@@ -1515,6 +1516,8 @@ static void rtw89_core_txq_push(struct rtw89_dev *rtwdev,
+ 			break;
+ 		}
+ 	}
++out:
++	rcu_read_unlock();
+ }
  
--		chan = &sband->channels[0];
-+			if (chan)
-+				break;
-+		}
-+
-+		if (WARN_ON(!chan))
-+			return;
- 
- 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
- 		iwl_mvm_phy_ctxt_changed(mvm, ctxt, &chandef, 1, 1);
+ static u32 rtw89_check_and_reclaim_tx_resource(struct rtw89_dev *rtwdev, u8 tid)
 -- 
 2.34.1
 
