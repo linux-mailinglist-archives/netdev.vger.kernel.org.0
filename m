@@ -2,50 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D6784EF0A9
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:38:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A98B4EF0B0
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:38:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347658AbiDAOgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:36:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S1347826AbiDAOgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348399AbiDAOeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:34:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728A2BC7;
-        Fri,  1 Apr 2022 07:32:30 -0700 (PDT)
+        with ESMTP id S1348409AbiDAOeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:34:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CA2BC7;
+        Fri,  1 Apr 2022 07:32:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27E94B8250D;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E23F261C1A;
+        Fri,  1 Apr 2022 14:32:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF3B9C34111;
         Fri,  1 Apr 2022 14:32:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A165BC340F2;
-        Fri,  1 Apr 2022 14:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823547;
-        bh=JUu1VZ2ZtuYvOXHjQxlxjlIy0uC2WzX5rrlXEFGLhO8=;
+        s=k20201202; t=1648823551;
+        bh=fp7jiniWyo2eC0F5ZPLfhtbsZIvtute4v9PstEC8ezg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H9Huu3i440CBVCRZDrYQJD6BDvrcRwdTOK6AAYWtiTHPiisgj2oiv7uvtDfqKgGDq
-         bxXnHa4Yr/QkqTijbrgfpxWCE1eXutCl94JH8F119ED8dUoj1SW1gE9JBJz2hYeaNz
-         OHejhSzYbQ5xbiq7BvVXSvhPJkEjqSgLICkdnyTFpxFbt1Aq8o9y/nvjTZZozfsWAu
-         BzCeSHQShF7Z/uq9fVnI1BDv3C9kC9e1JyJZJCcSlztrGDYvEP7QWy9NFp/cRWGXnb
-         B+r52/iW2bF++q9Ty2rs5AVghnjTqMTUhnbqQYoUm45O9pYl6U4MQEXOB4Y38zmR0f
-         c+JE+0QjLpRPQ==
+        b=mx3qMwlusCkBbNyipx5xOXvk/4iBNicQztlTLO52CU2ApIEYZdzMeElllc6/gRcvu
+         Bmeb4nc4AXy64TWBSl8UwWk01ZORn2hXx6+Ez/myRpTmi9L2zHGV/bj1ejs7HxelEp
+         KaOjpls3ACVptO8mx4RTR7hHEM7/knpasWy7KLObIgQAL/bc68XAIYsxnYJw5pRLVe
+         Gc1Uar/vD9rU3+o6nDtgvsD27gG0mY1OPsUri8NhoVhvMB1TPe5DbaIemnz9QZW7IK
+         IVLVY7HAof1USNL9SQgwukhXy8cYVeDx0crJgfJBBu/WwCH0+G4eE8RGrE+eYhixJU
+         2tVXAex3TAICQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Deren Wu <deren.wu@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 138/149] mt76: fix monitor mode crash with sdio driver
-Date:   Fri,  1 Apr 2022 10:25:25 -0400
-Message-Id: <20220401142536.1948161-138-sashal@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Emmanuel Grumbach <Emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 140/149] iwlwifi: mei: fix building iwlmei
+Date:   Fri,  1 Apr 2022 10:25:27 -0400
+Message-Id: <20220401142536.1948161-140-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -63,53 +59,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Deren Wu <deren.wu@mediatek.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 123bc712b1de0805f9d683687e17b1ec2aba0b68 ]
+[ Upstream commit 066291bec0c55315e568ead501bebdefcb8453d2 ]
 
-mt7921s driver may receive frames with fragment buffers. If there is a
-CTS packet received in monitor mode, the payload is 10 bytes only and
-need 6 bytes header padding after RXD buffer. However, only RXD in the
-first linear buffer, if we pull buffer size RXD-size+6 bytes with
-skb_pull(), that would trigger "BUG_ON(skb->len < skb->data_len)" in
-__skb_pull().
+Building iwlmei without CONFIG_CFG80211 causes a link-time warning:
 
-To avoid the nonlinear buffer issue, enlarge the RXD size from 128 to
-256 to make sure all MCU operation in linear buffer.
+ld.lld: error: undefined symbol: ieee80211_hdrlen
+>>> referenced by net.c
+>>>               net/wireless/intel/iwlwifi/mei/net.o:(iwl_mei_tx_copy_to_csme) in archive drivers/built-in.a
 
-[   52.007562] kernel BUG at include/linux/skbuff.h:2313!
-[   52.007578] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-[   52.007987] pc : skb_pull+0x48/0x4c
-[   52.008015] lr : mt7921_queue_rx_skb+0x494/0x890 [mt7921_common]
-[   52.008361] Call trace:
-[   52.008377]  skb_pull+0x48/0x4c
-[   52.008400]  mt76s_net_worker+0x134/0x1b0 [mt76_sdio 35339a92c6eb7d4bbcc806a1d22f56365565135c]
-[   52.008431]  __mt76_worker_fn+0xe8/0x170 [mt76 ef716597d11a77150bc07e3fdd68eeb0f9b56917]
-[   52.008449]  kthread+0x148/0x3ac
-[   52.008466]  ret_from_fork+0x10/0x30
+Add an explicit dependency to avoid this. In theory it should not
+be needed here, but it also seems pointless to allow IWLMEI
+for configurations without CFG80211.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Deren Wu <deren.wu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Emmanuel Grumbach <Emmanuel.grumbach@intel.com>
+Acked-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220316183617.1470631-1-arnd@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
-index 404c3d1a70d6..368a5c6455b1 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-@@ -19,7 +19,7 @@
+diff --git a/drivers/net/wireless/intel/iwlwifi/Kconfig b/drivers/net/wireless/intel/iwlwifi/Kconfig
+index 85e704283755..a647a406b87b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/Kconfig
++++ b/drivers/net/wireless/intel/iwlwifi/Kconfig
+@@ -139,6 +139,7 @@ config IWLMEI
+ 	tristate "Intel Management Engine communication over WLAN"
+ 	depends on INTEL_MEI
+ 	depends on PM
++	depends on CFG80211
+ 	help
+ 	  Enables the iwlmei kernel module.
  
- #define MT_MCU_RING_SIZE	32
- #define MT_RX_BUF_SIZE		2048
--#define MT_SKB_HEAD_LEN		128
-+#define MT_SKB_HEAD_LEN		256
- 
- #define MT_MAX_NON_AQL_PKT	16
- #define MT_TXQ_FREE_THR		32
 -- 
 2.34.1
 
