@@ -2,100 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEBC54EF9FF
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 20:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E47624EFA07
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 20:41:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351305AbiDASk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 14:40:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
+        id S1351332AbiDASmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 14:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351295AbiDASk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 14:40:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BDAE173B20;
-        Fri,  1 Apr 2022 11:39:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 989A761230;
-        Fri,  1 Apr 2022 18:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DEB4C34111;
-        Fri,  1 Apr 2022 18:39:05 +0000 (UTC)
-Date:   Fri, 1 Apr 2022 14:39:03 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        linux-trace-devel <linux-trace-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        ndesaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH] tracing: Move user_events.h temporarily out of include/uapi
-Message-ID: <20220401143903.188384f3@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S236447AbiDASms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 14:42:48 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA9541C9452;
+        Fri,  1 Apr 2022 11:40:58 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id e18so2597262ilr.2;
+        Fri, 01 Apr 2022 11:40:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WnSfOIIrQ569jvdkUOc3ipz9bsS0h+Elh+Wg1h7JaDM=;
+        b=btkJ3EZxQ+YOnXOWUVRCuNDLblYuGow2eu0es+XNgP14XxCgrHs7P5fh3N3r0bRIFb
+         KtLiNxsNcL3u8MzwUH4yo/g3qr+iotaQ5Bof18saQayBSPeH2sHlGePWe0BH2pT2eRWE
+         adTLRgDtMG86ZutUyp7VooLWA23OruWT2oD7uQWMA7kkTFTuSObyxilmk/Toz5m4moFD
+         liV6AjQ/xI+M7tTBUnkk99AARVHFr5o//28FXpJJgSFl8/mtBLhOagHv2c7RvAoHYz1p
+         axPhctOK+ZCArARUbULkx2JiBde245hEbSI91203vHC6nc2Gqisjjymi9q/vKCifV8HX
+         jBBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WnSfOIIrQ569jvdkUOc3ipz9bsS0h+Elh+Wg1h7JaDM=;
+        b=uV2k5Kmy8CSufxCLUIX37YcHbIYwVOKIWd/loloSH9e1ToSVs/6csvj0Cb+Y3ZUfHM
+         RQg4V6tlhIiTdj4cyhS9arl5qJn7zamMEAMFFwcM+kWDc+SZoOhYUndc0G0UgH3wUEnc
+         LvCp74a3FKvMUalZuO45kkcOFRwgBK31af7WEM7dlL0pn+4NNVbDMnV1i27vH2EKJvNt
+         jG6AwB+Jz/ChisRtDF6EcjjJC/RuhFjpl3rsYVoDLbSGmgxOh5hY/xRSpyNFn+Yjgwuy
+         JnPZ3vIwmX3eAmim3Mj9nI9RXWVZsKCN2AL8mER70cOxUna3yI/+sM20zcA3Vn1iKh33
+         uDaw==
+X-Gm-Message-State: AOAM5300g/1KYYa1cwste3E2p8PPsQatJ/shk0NS08KDA3L/215eNWU8
+        k4v9psYFURZdKkwsJAzauTl/8I7aMfiScEMLSRA=
+X-Google-Smtp-Source: ABdhPJzWePUsjnKnCYeo7uJLve9zX9a8s5tWYlQPfGXw8PuLzddIrsbbXhvr1+eNC6vb7nxPd/BBqFqE3KJV8ixUTQE=
+X-Received: by 2002:a05:6e02:1562:b0:2c9:cb97:9a4 with SMTP id
+ k2-20020a056e02156200b002c9cb9709a4mr518682ilu.71.1648838458296; Fri, 01 Apr
+ 2022 11:40:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220331154555.422506-1-milan@mdaverde.com> <20220331154555.422506-2-milan@mdaverde.com>
+ <f2f8634f-7921-dc7d-e5cb-571ea82f487d@isovalent.com>
+In-Reply-To: <f2f8634f-7921-dc7d-e5cb-571ea82f487d@isovalent.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 1 Apr 2022 11:40:47 -0700
+Message-ID: <CAEf4BzbYmOVRvCU-f6XbNJQb_ptM+BPjAcMD9XEN_wTKRHUWsg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf/bpftool: add syscall prog type
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Milan Landaverde <milan@mdaverde.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+On Fri, Apr 1, 2022 at 9:04 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2022-03-31 11:45 UTC-0400 ~ Milan Landaverde <milan@mdaverde.com>
+> > In addition to displaying the program type in bpftool prog show
+> > this enables us to be able to query bpf_prog_type_syscall
+> > availability through feature probe as well as see
+> > which helpers are available in those programs (such as
+> > bpf_sys_bpf and bpf_sys_close)
+> >
+> > Signed-off-by: Milan Landaverde <milan@mdaverde.com>
+> > ---
+> >  tools/bpf/bpftool/prog.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> > index bc4e05542c2b..8643b37d4e43 100644
+> > --- a/tools/bpf/bpftool/prog.c
+> > +++ b/tools/bpf/bpftool/prog.c
+> > @@ -68,6 +68,7 @@ const char * const prog_type_name[] = {
+> >       [BPF_PROG_TYPE_EXT]                     = "ext",
+> >       [BPF_PROG_TYPE_LSM]                     = "lsm",
+> >       [BPF_PROG_TYPE_SK_LOOKUP]               = "sk_lookup",
+> > +     [BPF_PROG_TYPE_SYSCALL]                 = "syscall",
+> >  };
+> >
+> >  const size_t prog_type_name_size = ARRAY_SIZE(prog_type_name);
+>
+> Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+>
+> Thanks! This one should have been caught by CI :/. Instead it complains
+> when you add it. This is because BPF_PROG_TYPE_SYSCALL in the UAPI
+> header has a comment next to it, and the regex used in
+> tools/testing/selftests/bpf/test_bpftool_synctypes.py to extract the
+> program types does not account for it. The fix should be:
+>
+> ------
+> diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> index 6bf21e47882a..cd239cbfd80c 100755
+> --- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> +++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
+> @@ -180,7 +180,7 @@ class FileExtractor(object):
+>          @enum_name: name of the enum to parse
+>          """
+>          start_marker = re.compile(f'enum {enum_name} {{\n')
+> -        pattern = re.compile('^\s*(BPF_\w+),?$')
+> +        pattern = re.compile('^\s*(BPF_\w+),?( /\* .* \*/)?$')
 
-While user_events API is under development and has been marked for broken
-to not let the API become fixed, move the header file out of the uapi
-directory. This is to prevent it from being installed, then later changed,
-and then have an old distro user space update with a new kernel, where
-applications see the user_events being available, but the old header is in
-place, and then they get compiled incorrectly.
+small nit: do you need those spaces inside /* and */? why make
+unnecessary assumptions about proper formatting? ;)
 
-Also, surround the include with CONFIG_COMPILE_TEST to the current
-location, but when the BROKEN tag is taken off, it will use the uapi
-directory, and fail to compile. This is a good way to remind us to move
-the header back.
-
-Link: https://lore.kernel.org/all/20220330155835.5e1f6669@gandalf.local.home
-Link: https://lkml.kernel.org/r/20220330201755.29319-1-mathieu.desnoyers@efficios.com
-
-Suggested-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- include/{uapi => }/linux/user_events.h | 0
- kernel/trace/trace_events_user.c       | 5 +++++
- 2 files changed, 5 insertions(+)
- rename include/{uapi => }/linux/user_events.h (100%)
-
-diff --git a/include/uapi/linux/user_events.h b/include/linux/user_events.h
-similarity index 100%
-rename from include/uapi/linux/user_events.h
-rename to include/linux/user_events.h
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index 846c27bc7aef..706e1686b5eb 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -18,7 +18,12 @@
- #include <linux/tracefs.h>
- #include <linux/types.h>
- #include <linux/uaccess.h>
-+/* Reminder to move to uapi when everything works */
-+#ifdef CONFIG_COMPILE_TEST
-+#include <linux/user_events.h>
-+#else
- #include <uapi/linux/user_events.h>
-+#endif
- #include "trace.h"
- #include "trace_dynevent.h"
- 
--- 
-2.35.1
-
+>          end_marker = re.compile('^};')
+>          parser = BlockParser(self.reader)
+>          parser.search_block(start_marker)
+> ------
+>
+> I can submit this separately as a patch.
+>
+> Quentin
