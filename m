@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F191A4EF454
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28E2B4EF49C
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240545AbiDAOws (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:52:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59620 "EHLO
+        id S243355AbiDAOyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350163AbiDAOrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:47:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED4692A1291;
-        Fri,  1 Apr 2022 07:37:16 -0700 (PDT)
+        with ESMTP id S1350190AbiDAOrS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:47:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AED92A12AF;
+        Fri,  1 Apr 2022 07:37:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19A8EB82511;
-        Fri,  1 Apr 2022 14:37:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B521C36AE9;
-        Fri,  1 Apr 2022 14:37:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 04497CE258A;
+        Fri,  1 Apr 2022 14:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 396FEC340EE;
+        Fri,  1 Apr 2022 14:37:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823828;
-        bh=3FgySLGZd2lZArBcZCCZLr0HckLaDAWd/MmLHujcab0=;
+        s=k20201202; t=1648823830;
+        bh=79s09JmfnRTspuMBLjDF/9qtIeFT50RzlTzUkGad3r4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hO6Q6dWV4bw6ovmIrJEpUfdECqIJwaWxsaxeYCitjp6qzosA1ql8Z71P5zNPLiN3B
-         3IZmrD0AEYVjgHrXwUB1p81g7BCisKZdgUAgwae0kkgOa2y2gbHDQe6lzImGaKusjE
-         H/qjVCusLwFaOCYCmPuAWetkEIlnht76n5oKufm+opHHt0fmalYAV7/6sDL2ppr0fk
-         rG9fa9BbfbpP+cpKPm1N9Zp5psHkUuq6FtyMiPwHfK3nHD11VhfKMsMglIaU2p2YYP
-         N4PJOfjGLXKjZFRCc86C6I+xfzP2iG5any5DOlJFJYTkX089ZkfTJtV1Nv/3etWOMC
-         9CguqaGKQSYig==
+        b=F1TnHsKqhX6rVSXoMWICZx9nWQLdbuN46dQp7UhA1bG02I2MyK8XsFhfUY6yVm3GF
+         RtC2Q8eCvHzq3WFCpJkFLMeh3I4Ajfoz5esej1Xbsqlq81ENSXdn7yRZ7UjywplBOH
+         EC1jJ2ChAAGA+4uInqMrFVtPYvfhQhJ4MNfHM5WDZNIh9tTvBvcFaI/DvpLwbnsui2
+         IcGvU2IvZt7NLhCJ5/MZaTfh4mmif3oyMQ+4wUoZR7OouTWyGQO8LgctgRKCJkr5AF
+         X4wMuQouk/GgTKn7N1ASe0S4jO+fk+AjRiqleAlZrRUYug0dGeQiKmp/O/7DjkxXYy
+         5MT/GTldzrstg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        George Shuklin <george.shuklin@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
+Cc:     Gal Pressman <gal@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        pabeni@redhat.com, idosch@nvidia.com, petrm@nvidia.com,
-        edumazet@google.com, yajun.deng@linux.dev, avagin@gmail.com,
-        cong.wang@bytedance.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 093/109] net: limit altnames to 64k total
-Date:   Fri,  1 Apr 2022 10:32:40 -0400
-Message-Id: <20220401143256.1950537-93-sashal@kernel.org>
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 094/109] net/mlx5e: Remove overzealous validations in netlink EEPROM query
+Date:   Fri,  1 Apr 2022 10:32:41 -0400
+Message-Id: <20220401143256.1950537-94-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -60,55 +59,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Gal Pressman <gal@nvidia.com>
 
-[ Upstream commit 155fb43b70b5fce341347a77d1af2765d1e8fbb8 ]
+[ Upstream commit 970adfb76095fa719778d70a6b86030d2feb88dd ]
 
-Property list (altname is a link "property") is wrapped
-in a nlattr. nlattrs length is 16bit so practically
-speaking the list of properties can't be longer than
-that, otherwise user space would have to interpret
-broken netlink messages.
+Unlike the legacy EEPROM callbacks, when using the netlink EEPROM query
+(get_module_eeprom_by_page) the driver should not try to validate the
+query parameters, but just perform the read requested by the userspace.
 
-Prevent the problem from occurring by checking the length
-of the property list before adding new entries.
+Recent discussion in the mailing list:
+https://lore.kernel.org/netdev/20220120093051.70845141@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net/
 
-Reported-by: George Shuklin <george.shuklin@gmail.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/rtnetlink.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -------------------
+ 1 file changed, 23 deletions(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 6a7883ec0489..ef56dc8d7c44 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3631,12 +3631,23 @@ static int rtnl_alt_ifname(int cmd, struct net_device *dev, struct nlattr *attr,
- 			   bool *changed, struct netlink_ext_ack *extack)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+index 7b16a1188aab..fd79860de723 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+@@ -433,35 +433,12 @@ int mlx5_query_module_eeprom_by_page(struct mlx5_core_dev *dev,
+ 				     struct mlx5_module_eeprom_query_params *params,
+ 				     u8 *data)
  {
- 	char *alt_ifname;
-+	size_t size;
+-	u8 module_id;
  	int err;
  
- 	err = nla_validate(attr, attr->nla_len, IFLA_MAX, ifla_policy, extack);
+ 	err = mlx5_query_module_num(dev, &params->module_number);
  	if (err)
  		return err;
  
-+	if (cmd == RTM_NEWLINKPROP) {
-+		size = rtnl_prop_list_size(dev);
-+		size += nla_total_size(ALTIFNAMSIZ);
-+		if (size >= U16_MAX) {
-+			NL_SET_ERR_MSG(extack,
-+				       "effective property list too long");
-+			return -EINVAL;
-+		}
-+	}
-+
- 	alt_ifname = nla_strdup(attr, GFP_KERNEL_ACCOUNT);
- 	if (!alt_ifname)
- 		return -ENOMEM;
+-	err = mlx5_query_module_id(dev, params->module_number, &module_id);
+-	if (err)
+-		return err;
+-
+-	switch (module_id) {
+-	case MLX5_MODULE_ID_SFP:
+-		if (params->page > 0)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_QSFP:
+-	case MLX5_MODULE_ID_QSFP28:
+-	case MLX5_MODULE_ID_QSFP_PLUS:
+-		if (params->page > 3)
+-			return -EINVAL;
+-		break;
+-	case MLX5_MODULE_ID_DSFP:
+-		break;
+-	default:
+-		mlx5_core_err(dev, "Module ID not recognized: 0x%x\n", module_id);
+-		return -EINVAL;
+-	}
+-
+ 	if (params->i2c_address != MLX5_I2C_ADDR_HIGH &&
+ 	    params->i2c_address != MLX5_I2C_ADDR_LOW) {
+ 		mlx5_core_err(dev, "I2C address not recognized: 0x%x\n", params->i2c_address);
 -- 
 2.34.1
 
