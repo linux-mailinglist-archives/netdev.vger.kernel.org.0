@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8C04EF103
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DBB14EF0E9
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347729AbiDAOfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:35:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
+        id S1347946AbiDAOgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348305AbiDAOdy (ORCPT
+        with ESMTP id S1348310AbiDAOdy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72968BF58;
-        Fri,  1 Apr 2022 07:32:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9CA1FA5E;
+        Fri,  1 Apr 2022 07:32:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20CD6B8240E;
-        Fri,  1 Apr 2022 14:32:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2472C2BBE4;
-        Fri,  1 Apr 2022 14:31:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D123B8250D;
+        Fri,  1 Apr 2022 14:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 880B1C340F2;
+        Fri,  1 Apr 2022 14:32:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823519;
-        bh=hffhfGZggXIZrzhWpnf/mKyIGXVLLu+mdlXrm1Va7YI=;
+        s=k20201202; t=1648823521;
+        bh=Txc91Sc7y22n4OIlr5P3dUwdGHeP5PieAR7WokxOg5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=im9ydIe5mdqov0JvAXgbmSQYLVx/xqUNe8hNGBl0xwNt5ZMaWut5es/20/9+EMXv8
-         oycBbbeqypj+FD46SlIEZQZxYJpZSZgQTQJUsG538H8uqnO292ZsTGs8kuhVwn5p1C
-         FbFj1E5BkrSI7ifTR6X9lRRE35YS6rawV2QR8rDooacv7vpi4ei2XrNheCOq32HTTh
-         tIwJqa2gsbggT0Q84PCbH+DFn/D11+oDseYy7uoQvxhKs980xarBI5Jo3qHPNi0Rwx
-         6dhjbFpHWTG5aVXmM0+Ttf6RTtqnJVlMPXIkUkBxDyhW4dVZDSluXkrBwC9qBHILUe
-         2n4TaZJCoC7fQ==
+        b=fxEWPG4JNZhz+VV/gbzmtPWuh6FiQj3s9Jv2rIpJwo2ytYw9DxtF9qVF8tQg4D1CM
+         k/lPnPlNZBxrs+NrXSfMCTLUDioQOAK/qgqd8D6FevKsRd/RM65fzyACX8WEi5EwsN
+         YNYqTn/qwfi7LmNk4M3NPbADp5Ai6VPQZNDbL7TxP24jGUuRxL578s/Thi5/Q6+26u
+         OgzbKzUmO0GtCD1TBt67lb0lF8UYYhn9kze9VcJX1stPyVQBJgiqOPb9rDfoNizBoj
+         qDMt0G64qHhnxEJDP7NP4MvJkLEgwC1+htfCdaUSFcW1EDdcZTrFdRVJWlhHCJqXjx
+         g2nfKqzBHjgDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 127/149] can: isotp: set default value for N_As to 50 micro seconds
-Date:   Fri,  1 Apr 2022 10:25:14 -0400
-Message-Id: <20220401142536.1948161-127-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 128/149] can: etas_es58x: es58x_fd_rx_event_msg(): initialize rx_event_msg before calling es58x_check_msg_len()
+Date:   Fri,  1 Apr 2022 10:25:15 -0400
+Message-Id: <20220401142536.1948161-128-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -58,136 +58,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-[ Upstream commit 530e0d46c61314c59ecfdb8d3bcb87edbc0f85d3 ]
+[ Upstream commit 7a8cd7c0ee823a1cc893ab3feaa23e4b602bfb9a ]
 
-The N_As value describes the time a CAN frame needs on the wire when
-transmitted by the CAN controller. Even very short CAN FD frames need
-arround 100 usecs (bitrate 1Mbit/s, data bitrate 8Mbit/s).
+Function es58x_fd_rx_event() invokes the es58x_check_msg_len() macro:
 
-Having N_As to be zero (the former default) leads to 'no CAN frame
-separation' when STmin is set to zero by the receiving node. This 'burst
-mode' should not be enabled by default as it could potentially dump a high
-number of CAN frames into the netdev queue from the soft hrtimer context.
-This does not affect the system stability but is just not nice and
-cooperative.
+| 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
 
-With this N_As/frame_txtime value the 'burst mode' is disabled by default.
+While doing so, it dereferences an uninitialized
+variable: *rx_event_msg.
 
-As user space applications usually do not set the frame_txtime element
-of struct can_isotp_options the new in-kernel default is very likely
-overwritten with zero when the sockopt() CAN_ISOTP_OPTS is invoked.
-To make sure that a N_As value of zero is only set intentional the
-value '0' is now interpreted as 'do not change the current value'.
-When a frame_txtime of zero is required for testing purposes this
-CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
+This is actually harmless because es58x_check_msg_len() only uses
+preprocessor macros (sizeof() and __stringify()) on
+*rx_event_msg. c.f. [1].
 
-Link: https://lore.kernel.org/all/20220309120416.83514-2-socketcan@hartkopp.net
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Nonetheless, this pattern is confusing so the lines are reordered to
+make sure that rx_event_msg is correctly initialized.
+
+This patch also fixes a false positive warning reported by cppcheck:
+
+| cppcheck possible warnings: (new ones prefixed by >>, may not be real problems)
+|
+|    In file included from drivers/net/can/usb/etas_es58x/es58x_fd.c:
+| >> drivers/net/can/usb/etas_es58x/es58x_fd.c:174:8: warning: Uninitialized variable: rx_event_msg [uninitvar]
+|     ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
+|           ^
+
+[1] https://elixir.bootlin.com/linux/v5.16/source/drivers/net/can/usb/etas_es58x/es58x_core.h#L467
+
+Link: https://lore.kernel.org/all/20220306101302.708783-1-mailhol.vincent@wanadoo.fr
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/can/isotp.h | 28 ++++++++++++++++++++++------
- net/can/isotp.c                | 12 +++++++++++-
- 2 files changed, 33 insertions(+), 7 deletions(-)
+ drivers/net/can/usb/etas_es58x/es58x_fd.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
-index c55935b64ccc..590f8aea2b6d 100644
---- a/include/uapi/linux/can/isotp.h
-+++ b/include/uapi/linux/can/isotp.h
-@@ -137,20 +137,16 @@ struct can_isotp_ll_options {
- #define CAN_ISOTP_WAIT_TX_DONE	0x400	/* wait for tx completion */
- #define CAN_ISOTP_SF_BROADCAST	0x800	/* 1-to-N functional addressing */
+diff --git a/drivers/net/can/usb/etas_es58x/es58x_fd.c b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+index ec87126e1a7d..8ccda748fd08 100644
+--- a/drivers/net/can/usb/etas_es58x/es58x_fd.c
++++ b/drivers/net/can/usb/etas_es58x/es58x_fd.c
+@@ -172,12 +172,11 @@ static int es58x_fd_rx_event_msg(struct net_device *netdev,
+ 	const struct es58x_fd_rx_event_msg *rx_event_msg;
+ 	int ret;
  
--/* default values */
-+/* protocol machine default values */
++	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
+ 	ret = es58x_check_msg_len(es58x_dev->dev, *rx_event_msg, msg_len);
+ 	if (ret)
+ 		return ret;
  
- #define CAN_ISOTP_DEFAULT_FLAGS		0
- #define CAN_ISOTP_DEFAULT_EXT_ADDRESS	0x00
- #define CAN_ISOTP_DEFAULT_PAD_CONTENT	0xCC /* prevent bit-stuffing */
--#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	0
-+#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	50000 /* 50 micro seconds */
- #define CAN_ISOTP_DEFAULT_RECV_BS	0
- #define CAN_ISOTP_DEFAULT_RECV_STMIN	0x00
- #define CAN_ISOTP_DEFAULT_RECV_WFTMAX	0
- 
--#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
--#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
--#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
+-	rx_event_msg = &es58x_fd_urb_cmd->rx_event_msg;
 -
- /*
-  * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
-  *
-@@ -162,4 +158,24 @@ struct can_isotp_ll_options {
-  * consistency and copied directly into the flow control (FC) frame.
-  */
- 
-+/* link layer default values => make use of Classical CAN frames */
-+
-+#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
-+#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
-+#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
-+
-+/*
-+ * The CAN_ISOTP_DEFAULT_FRAME_TXTIME has become a non-zero value as
-+ * it only makes sense for isotp implementation tests to run without
-+ * a N_As value. As user space applications usually do not set the
-+ * frame_txtime element of struct can_isotp_options the new in-kernel
-+ * default is very likely overwritten with zero when the sockopt()
-+ * CAN_ISOTP_OPTS is invoked.
-+ * To make sure that a N_As value of zero is only set intentional the
-+ * value '0' is now interpreted as 'do not change the current value'.
-+ * When a frame_txtime of zero is required for testing purposes this
-+ * CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
-+ */
-+#define CAN_ISOTP_FRAME_TXTIME_ZERO	0xFFFFFFFF
-+
- #endif /* !_UAPI_CAN_ISOTP_H */
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index d2a430b6a13b..ea8e932008a3 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -141,6 +141,7 @@ struct isotp_sock {
- 	struct can_isotp_options opt;
- 	struct can_isotp_fc_options rxfc, txfc;
- 	struct can_isotp_ll_options ll;
-+	u32 frame_txtime;
- 	u32 force_tx_stmin;
- 	u32 force_rx_stmin;
- 	struct tpcon rx, tx;
-@@ -360,7 +361,7 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
- 
- 		so->tx_gap = ktime_set(0, 0);
- 		/* add transmission time for CAN frame N_As */
--		so->tx_gap = ktime_add_ns(so->tx_gap, so->opt.frame_txtime);
-+		so->tx_gap = ktime_add_ns(so->tx_gap, so->frame_txtime);
- 		/* add waiting time for consecutive frames N_Cs */
- 		if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
- 			so->tx_gap = ktime_add_ns(so->tx_gap,
-@@ -1238,6 +1239,14 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
- 		/* no separate rx_ext_address is given => use ext_address */
- 		if (!(so->opt.flags & CAN_ISOTP_RX_EXT_ADDR))
- 			so->opt.rx_ext_address = so->opt.ext_address;
-+
-+		/* check for frame_txtime changes (0 => no changes) */
-+		if (so->opt.frame_txtime) {
-+			if (so->opt.frame_txtime == CAN_ISOTP_FRAME_TXTIME_ZERO)
-+				so->frame_txtime = 0;
-+			else
-+				so->frame_txtime = so->opt.frame_txtime;
-+		}
- 		break;
- 
- 	case CAN_ISOTP_RECV_FC:
-@@ -1439,6 +1448,7 @@ static int isotp_init(struct sock *sk)
- 	so->opt.rxpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
- 	so->opt.txpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
- 	so->opt.frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
-+	so->frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
- 	so->rxfc.bs = CAN_ISOTP_DEFAULT_RECV_BS;
- 	so->rxfc.stmin = CAN_ISOTP_DEFAULT_RECV_STMIN;
- 	so->rxfc.wftmax = CAN_ISOTP_DEFAULT_RECV_WFTMAX;
+ 	return es58x_rx_err_msg(netdev, rx_event_msg->error_code,
+ 				rx_event_msg->event_code,
+ 				get_unaligned_le64(&rx_event_msg->timestamp));
 -- 
 2.34.1
 
