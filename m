@@ -2,130 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 449DD4EF8AC
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 19:09:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 356F64EF8D4
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 19:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346648AbiDARLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 13:11:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        id S1349813AbiDARXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 13:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239345AbiDARLT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 13:11:19 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC912A248;
-        Fri,  1 Apr 2022 10:09:29 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id s72so2872381pgc.5;
-        Fri, 01 Apr 2022 10:09:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LImEOxfyIPGlQbCQpplXE60DtSoSNNxE1+4gEbrz2CE=;
-        b=cs2hIo1S07860WC/5XZ0dR/RsivlP0TwpIQKBXM2BF8Q+Dfl2P62mdz0Ota8I+e9AP
-         JaTwdeyGd/rvilDz/t2qLn4yYUmSb5kZFnt70yVrxS/cCFYlKiCL2QZAu3bVnPHkEEd4
-         vfKQ+Mns7K7AtAH8C6d74FxAYWIA9qp2I+snEEzOaHu5tXrHHrlEU2sowSJXA1Uq6thQ
-         toNlRAqYsmtX8ruR4IpP1hHYcKw182FKOz6dKZhFjU81ZFIABp7DCZfeOh5z0hpQXa/X
-         eKzvrHqo5I0KPIbJ5w8XhnVTp0HC87h2oujurqPx4O8fpKE+lSs+mtKhz7591GEkRgUQ
-         xOTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LImEOxfyIPGlQbCQpplXE60DtSoSNNxE1+4gEbrz2CE=;
-        b=ItFGK/8gE+7xat4friLhBKvUHG6J2I3hH6gGk37325MewvMsIhbqIDpGBw4xuAvhem
-         q/rcBqHGZOEhVK7xmlzQHWi1nT2CeKCXYrXrRei7QSFEiDO+jeeNp6Hs0sJt+TSGLdzL
-         t5VMMl17czvT/ED377OP2B7a7RAx4AkYtPCR/HNbgkEzqGsUeswC4KVNQjdpm66nX8Re
-         YtPpHv5HVnWxMY/e29QQ2zxaQW9G65bY+t5t1TrNx18mQwA/o2oGpadrRYVvkdC4q8TH
-         VCHrv9jvugGZ7GHDU5Qg3J8jyMJVQeUz5XUONdH+7nqZbRrncIalzMzKmAREg4jBUigs
-         rf4A==
-X-Gm-Message-State: AOAM531FYL66bGdUbxhFscIsOTUkp0u+CnxJ2GMlnZ5RkNn9WsZamb/c
-        cEdHozseweAW59OEEH3smOQ=
-X-Google-Smtp-Source: ABdhPJyTguw1YFMZTCc6C259mXYcn/eEEQuG6PzA3/XrlZClxztaNrfrUxhFbqJ1CDk7VdLpq8x+GA==
-X-Received: by 2002:a62:840b:0:b0:4fa:31ae:7739 with SMTP id k11-20020a62840b000000b004fa31ae7739mr11730077pfd.6.1648832969146;
-        Fri, 01 Apr 2022 10:09:29 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id bt18-20020a056a00439200b004faad3ae59esm3581968pfb.95.2022.04.01.10.09.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Apr 2022 10:09:28 -0700 (PDT)
-Message-ID: <5d9fed4f-ff87-cb14-3c7d-8899cb3e4370@gmail.com>
-Date:   Fri, 1 Apr 2022 10:09:26 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.2
-Subject: Re: [PATCH] net/ipv4: fix potential NULL dereference in
- sisfb_post_sis300()
-Content-Language: en-US
-To:     Haowen Bai <baihaowen@meizu.com>,
+        with ESMTP id S1346684AbiDARXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 13:23:24 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57725C6802;
+        Fri,  1 Apr 2022 10:21:34 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KVRmD6CK6z9sRy;
+        Fri,  1 Apr 2022 19:21:32 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id jbVSlQRXULot; Fri,  1 Apr 2022 19:21:32 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVRmD5KNpz9sRx;
+        Fri,  1 Apr 2022 19:21:32 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9DCC58B87E;
+        Fri,  1 Apr 2022 19:21:32 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id qxxWokbp_1NK; Fri,  1 Apr 2022 19:21:32 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.82])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 627D28B879;
+        Fri,  1 Apr 2022 19:21:32 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 231HLLgU665244
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 1 Apr 2022 19:21:21 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 231HLKuQ665243;
+        Fri, 1 Apr 2022 19:21:20 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1648785432-21824-1-git-send-email-baihaowen@meizu.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <1648785432-21824-1-git-send-email-baihaowen@meizu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org
+Subject: [PATCH] can: mscan: mpc5xxx_can: Prepare cleanup of powerpc's asm/prom.h
+Date:   Fri,  1 Apr 2022 19:21:20 +0200
+Message-Id: <878888f9057ad2f66ca0621a0007472bf57f3e3d.1648833432.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1648833678; l=793; s=20211009; h=from:subject:message-id; bh=wN1AI/efxwX2JMwnyMv+f+9NZroAJFq9kLdUnKthcbA=; b=+uATw/Pjef4T6dKlUAm/XTJNMGCVPgOoYMBC2S/vmnKO1hXK6jxKb26DEqJVWAKICKe5wuBPwVWH jCZgwEEuCWLNIh+k3Gb9M9wwTkFk6moMLh9dp2TfKWaXPqqSQzhj
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+powerpc's asm/prom.h brings some headers that it doesn't
+need itself.
 
-On 3/31/22 20:57, Haowen Bai wrote:
-> psin and psl could be null without checking null and return, so
-> we need to dereference after checking.
->
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-> ---
->   net/ipv4/igmp.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-> index 2ad3c7b..d400080 100644
-> --- a/net/ipv4/igmp.c
-> +++ b/net/ipv4/igmp.c
-> @@ -2569,7 +2569,7 @@ int ip_mc_msfget(struct sock *sk, struct ip_msfilter *msf,
->   	    copy_to_user(optval, msf, IP_MSFILTER_SIZE(0))) {
->   		return -EFAULT;
->   	}
-> -	if (len &&
-> +	if (len && psl &&
+In order to clean it up, first add missing headers in
+users of asm/prom.h
 
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ drivers/net/can/mscan/mpc5xxx_can.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-len can not be !0 here if len was 0
-
-psl = rtnl_dereference(pmc->sflist);
-
-if (!psl) {
-
-    count = 0;
-
-
-->len == 0
-
-
->   	    copy_to_user(&optval->imsf_slist_flex[0], psl->sl_addr, len))
->   		return -EFAULT;
->   	return 0;
-> @@ -2608,7 +2608,7 @@ int ip_mc_gsfget(struct sock *sk, struct group_filter *gsf,
->   	count = psl ? psl->sl_count : 0;
->   	copycount = count < gsf->gf_numsrc ? count : gsf->gf_numsrc;
->   	gsf->gf_numsrc = count;
-> -	for (i = 0; i < copycount; i++, p++) {
-> +	for (i = 0; i < copycount && psin && psl; i++, p++) {
->   		struct sockaddr_storage ss;
->   
->   		psin = (struct sockaddr_in *)&ss;
-
-
-Same here.
-
+diff --git a/drivers/net/can/mscan/mpc5xxx_can.c b/drivers/net/can/mscan/mpc5xxx_can.c
+index de4ddf79ba9b..65ba6697bd7d 100644
+--- a/drivers/net/can/mscan/mpc5xxx_can.c
++++ b/drivers/net/can/mscan/mpc5xxx_can.c
+@@ -14,6 +14,8 @@
+ #include <linux/platform_device.h>
+ #include <linux/netdevice.h>
+ #include <linux/can/dev.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+ #include <sysdev/fsl_soc.h>
+ #include <linux/clk.h>
+-- 
+2.35.1
 
