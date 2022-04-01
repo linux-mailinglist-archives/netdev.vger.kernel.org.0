@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20DBD4EFC1E
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 23:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD414EFC2D
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 23:33:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352146AbiDAVWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 17:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56960 "EHLO
+        id S1352768AbiDAVfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 17:35:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234925AbiDAVWb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 17:22:31 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8028C1A61F9
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 14:20:39 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id j8so3451552pll.11
-        for <netdev@vger.kernel.org>; Fri, 01 Apr 2022 14:20:39 -0700 (PDT)
+        with ESMTP id S1352081AbiDAVfT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 17:35:19 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0042BA
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 14:33:28 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id x2so3492563plm.7
+        for <netdev@vger.kernel.org>; Fri, 01 Apr 2022 14:33:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ARJke9nZG+KA8VPMsISAyE/VOgAvAqXDYBGJaZ7PwJ8=;
-        b=IoQ+IF9pZjOdaAlwkJjoyDj7+lMyZs+JDSBQ/f/zmQenv8LZcZg+67JU01CD7IjRA5
-         1ZeQta99Mcnx702ajs2EQ5D0ZhGBxlqPul0LrbJHAQoXQ4Zd7HJBv3qjc4eXXXzva3h2
-         b16zajdshzILmURKHLCwYwLxxeR6C6hjh3humefOsYMgK7DxgqmumqBeCsu3W6stCnnu
-         P9UIFB150FqbSk4y2lLf8NpLEaP9pbFaxaItPtQQUxgDzL3/2/i0rsSp7vOg+yOuIyXa
-         XC+92WVzoL+4ZX2gtjMODQ3vYZOsEv6pKoTLMTIcHhZZ/CJSyezo7QvPJ+46I6cshP+i
-         eXuQ==
+        bh=BPUOt269UZx0fP/hcR9t05VLgduxdLJMOsB45EbEuuM=;
+        b=TBnXvmiM1XKxbsASblG7IqI4HZnjRUmSQyliD72UlcrYAd7Ec2hH8DV26z3NYobNkc
+         /7B2cBARUlkAcsELj9vBUeqJm13FbqkQvw5JKG4xjrXnMQqDjXWpzUf2mPu585+SpIgZ
+         KXM43VPi+LKLbG3Y0RM4AasfwxxwIwJte4YyM3q1WRfWC0E8+ZyiiWypIX+7+gb1R3ZL
+         h5U/QWG+oZDE82ST6gr+Ie1WUkj7N0dKpsGcjSKaDDaXd69QlqBLEFouY7YHGfbn5Opy
+         eAlQMHuPGBOqZx8WUzETvPit6Yg1HjWyo6ldmBJ1AX60k1t08dAUOf9Nzu4gIi98gAlI
+         0Hrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ARJke9nZG+KA8VPMsISAyE/VOgAvAqXDYBGJaZ7PwJ8=;
-        b=3mpHXLkY58pH6e74NmH7wOT6iSztr6aPGVSTVi48GRWbxe+OSB+hMQcr8cxqj7KOPk
-         Hvy3X6tsqzFUpmSL8KlNr+CThkDf9jsAAxQ8CuEhhaQAndItbDsYLmYi/N4+omej/HQc
-         2w5Oq/M8E5TliHnN1bOpfT5v2qz1/VhD1PCgqTQuyoKKjzRK4JJLIvt9IqtjdmADPN83
-         oiJ17N08PabQ/s4SEBzwb+BNb923E099V5XUyhx5sKZ93u/XqBV+8njFsBQeG3KS4KSk
-         gEkSnGM8DooyvjzUO9NU8STtYVpvFaHoAUo0MCDyGR/v2Vbcf6AwcU7xX3o/xbynt+0Q
-         3Ayg==
-X-Gm-Message-State: AOAM533pmdTiEGUYAnDkIE/TnQzaJ8qhc9vdZrVdntuvHHZe2i3DzkNx
-        Q5ecuDEljEumlZCPExW/0PK31d+QuMk4gjPNgnUwBQ==
-X-Google-Smtp-Source: ABdhPJzkRMV+HQin5EQjw/rNb8X84/R0SpjwlSVAwYntQcfKZagwnekcysJAr6HB0PyKdXMBXYnecrXWulXDtgaGHLM=
-X-Received: by 2002:a17:902:cec2:b0:154:6df6:1e6a with SMTP id
- d2-20020a170902cec200b001546df61e6amr12477128plg.58.1648848038983; Fri, 01
- Apr 2022 14:20:38 -0700 (PDT)
+        bh=BPUOt269UZx0fP/hcR9t05VLgduxdLJMOsB45EbEuuM=;
+        b=aG9Ae2mHDJQnjykM3olry2zezUehUJ1FAAA71M+qN8v5Z6NcFUcJhS/FFZ3Fr6wWx3
+         lZoBViZrp/2bLOQAI12EREfI6Zy33XfnIcaB/BoheSF3ZhcRKcueKmhqQ/3kQS6Jq9l2
+         hXo5TQXcMisomTC1T1lsdvC/gpMX7SJbT9kaECw0MRO1DjNDhgpLIk88oVecz9rrmVtX
+         D9ZVlj4x8Sttwjeqbgd6ClWB0752Zu3PpvBTRysKp2/1q9QgqR6eczI41VhoiV5/DZyk
+         rtipA+Dr+1noZLY48ljXFBG2A1H/8VSKR8CT2M+g/lyXfbGztYa3DAV6RpQloujB4hA6
+         qdsA==
+X-Gm-Message-State: AOAM531ySMitWkscafGTIMwF9d3LM/oM1zPSRI5OUgbIWtUR5MFIodGf
+        ALvLi9v7frzpwpMtmb09Mjz4lLbk4rfcEj++8nisdQ==
+X-Google-Smtp-Source: ABdhPJw5Abq6FL4cAVZAWaHZLdJogCtOBAxKooOTnZofkq1g6qvBl7rvy5TJDGMaSIB7JzT6LFfGjVlYeROYkFJ8xlU=
+X-Received: by 2002:a17:90b:4a01:b0:1c9:a552:f487 with SMTP id
+ kk1-20020a17090b4a0100b001c9a552f487mr14253315pjb.68.1648848808052; Fri, 01
+ Apr 2022 14:33:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220331154555.422506-1-milan@mdaverde.com> <20220331154555.422506-2-milan@mdaverde.com>
- <f2f8634f-7921-dc7d-e5cb-571ea82f487d@isovalent.com> <CAEf4BzbYmOVRvCU-f6XbNJQb_ptM+BPjAcMD9XEN_wTKRHUWsg@mail.gmail.com>
-In-Reply-To: <CAEf4BzbYmOVRvCU-f6XbNJQb_ptM+BPjAcMD9XEN_wTKRHUWsg@mail.gmail.com>
+References: <20220331154555.422506-1-milan@mdaverde.com> <20220331154555.422506-4-milan@mdaverde.com>
+ <8457bd5f-0541-e128-b033-05131381c590@isovalent.com> <CAEf4BzaqqZ+bFamrTXSzjgXgAEkBpCTmCffNR-xb8SwN6TNaOw@mail.gmail.com>
+In-Reply-To: <CAEf4BzaqqZ+bFamrTXSzjgXgAEkBpCTmCffNR-xb8SwN6TNaOw@mail.gmail.com>
 From:   Quentin Monnet <quentin@isovalent.com>
-Date:   Fri, 1 Apr 2022 22:20:27 +0100
-Message-ID: <CACdoK4Koj0_OHtrorOXGVf1gAQOq6tcNQmCfAFLWSZadiJpnvQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf/bpftool: add syscall prog type
+Date:   Fri, 1 Apr 2022 22:33:16 +0100
+Message-ID: <CACdoK4JbhtOpQeGo+NUh5t3nQG8No8Di6ce-9gwgNw3az2Fu=A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/3] bpf/bpftool: handle libbpf_probe_prog_type errors
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Milan Landaverde <milan@mdaverde.com>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -75,58 +75,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 1 Apr 2022 at 19:40, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+On Fri, 1 Apr 2022 at 19:42, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
 >
-> On Fri, Apr 1, 2022 at 9:04 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> On Fri, Apr 1, 2022 at 9:05 AM Quentin Monnet <quentin@isovalent.com> wrote:
 > >
 > > 2022-03-31 11:45 UTC-0400 ~ Milan Landaverde <milan@mdaverde.com>
-> > > In addition to displaying the program type in bpftool prog show
-> > > this enables us to be able to query bpf_prog_type_syscall
-> > > availability through feature probe as well as see
-> > > which helpers are available in those programs (such as
-> > > bpf_sys_bpf and bpf_sys_close)
+> > > Previously [1], we were using bpf_probe_prog_type which returned a
+> > > bool, but the new libbpf_probe_bpf_prog_type can return a negative
+> > > error code on failure. This change decides for bpftool to declare
+> > > a program type is not available on probe failure.
+> > >
+> > > [1] https://lore.kernel.org/bpf/20220202225916.3313522-3-andrii@kernel.org/
 > > >
 > > > Signed-off-by: Milan Landaverde <milan@mdaverde.com>
 > > > ---
-> > >  tools/bpf/bpftool/prog.c | 1 +
-> > >  1 file changed, 1 insertion(+)
+> > >  tools/bpf/bpftool/feature.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
 > > >
-> > > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-> > > index bc4e05542c2b..8643b37d4e43 100644
-> > > --- a/tools/bpf/bpftool/prog.c
-> > > +++ b/tools/bpf/bpftool/prog.c
-> > > @@ -68,6 +68,7 @@ const char * const prog_type_name[] = {
-> > >       [BPF_PROG_TYPE_EXT]                     = "ext",
-> > >       [BPF_PROG_TYPE_LSM]                     = "lsm",
-> > >       [BPF_PROG_TYPE_SK_LOOKUP]               = "sk_lookup",
-> > > +     [BPF_PROG_TYPE_SYSCALL]                 = "syscall",
-> > >  };
+> > > diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
+> > > index c2f43a5d38e0..b2fbaa7a6b15 100644
+> > > --- a/tools/bpf/bpftool/feature.c
+> > > +++ b/tools/bpf/bpftool/feature.c
+> > > @@ -564,7 +564,7 @@ probe_prog_type(enum bpf_prog_type prog_type, bool *supported_types,
 > > >
-> > >  const size_t prog_type_name_size = ARRAY_SIZE(prog_type_name);
+> > >               res = probe_prog_type_ifindex(prog_type, ifindex);
+> > >       } else {
+> > > -             res = libbpf_probe_bpf_prog_type(prog_type, NULL);
+> > > +             res = libbpf_probe_bpf_prog_type(prog_type, NULL) > 0;
+> > >       }
+> > >
+> > >  #ifdef USE_LIBCAP
 > >
-> > Reviewed-by: Quentin Monnet <quentin@isovalent.com>
-> >
-> > Thanks! This one should have been caught by CI :/. Instead it complains
-> > when you add it. This is because BPF_PROG_TYPE_SYSCALL in the UAPI
-> > header has a comment next to it, and the regex used in
-> > tools/testing/selftests/bpf/test_bpftool_synctypes.py to extract the
-> > program types does not account for it. The fix should be:
-> >
-> > ------
-> > diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-> > b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-> > index 6bf21e47882a..cd239cbfd80c 100755
-> > --- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-> > +++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-> > @@ -180,7 +180,7 @@ class FileExtractor(object):
-> >          @enum_name: name of the enum to parse
-> >          """
-> >          start_marker = re.compile(f'enum {enum_name} {{\n')
-> > -        pattern = re.compile('^\s*(BPF_\w+),?$')
-> > +        pattern = re.compile('^\s*(BPF_\w+),?( /\* .* \*/)?$')
 >
-> small nit: do you need those spaces inside /* and */? why make
-> unnecessary assumptions about proper formatting? ;)
+> A completely unrelated question to you, Quentin. How hard is bpftool's
+> dependency on libcap? We've recently removed libcap from selftests, I
+> wonder if it would be possible to do that for bpftool as well to
+> reduce amount of shared libraries bpftool depends on.
 
-No I don't need the spaces, I'll remove them indeed, thanks. I'll send
-the patch next week.
+There's not a super-strong dependency on it. It's used in feature
+probing, for two things.
+
+First one is to be accurate when we check that the user has the right
+capabilities for probing efficiently the system. A workaround consists
+in checking that we run with uid=0 (root), although it's less
+accurate.
+
+Second thing is probing as an unprivileged user: if bpftool is run to
+probe as root but with the "unprivileged" keyword, libcap is used to
+drop the CAP_SYS_ADMIN and run the probes without it. I don't know if
+there's an easy alternative to libcap for that. Also I don't know how
+many people use this feature, but I remember that this was added
+because there was some demand at the time, so presumably there are
+users relying on this.
+
+This being said, libcap is optional for compiling bpftool, so you
+should be able to have it work just as well if the library is not
+available on the system? Basically you'd just lose the ability to
+probe as an unprivileged user. Do you need to remove the optional
+dependency completely?
+
+Quentin
+
+PS: Not directly related but since we're talking of libcap, we
+recently discovered that the lib is apparently changing errno when it
+maybe shouldn't and plays badly with batch mode:
+https://stackoverflow.com/questions/71608181/bpf-xdp-bpftool-batch-file-returns-error-reading-batch-file-failed-opera
