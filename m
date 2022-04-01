@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B714EEF4F
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:25:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA93D4EEF63
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:26:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346841AbiDAO1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        id S1346854AbiDAO1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346832AbiDAO1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:27:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59AD5147510;
-        Fri,  1 Apr 2022 07:25:43 -0700 (PDT)
+        with ESMTP id S1344970AbiDAO1h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:27:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B9C1753B6;
+        Fri,  1 Apr 2022 07:25:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB4BA61BCE;
+        by ams.source.kernel.org (Postfix) with ESMTPS id D737EB82500;
+        Fri,  1 Apr 2022 14:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC451C3410F;
         Fri,  1 Apr 2022 14:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEEA2C340F2;
-        Fri,  1 Apr 2022 14:25:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823142;
-        bh=gouVROA5DvaNV23cEyJOTX1H2nEAK67vhW8Pg5mWjpY=;
+        s=k20201202; t=1648823144;
+        bh=PmpcAz0joJF32WR/OWk4UTApxOmKC4DrG1TIBlMSJ1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hkVL15N5LSb8Y9Lxv1RJcj+yEGV+0+uGC1cLJkSZnyNcFIcFcwJkJBzlvRUEX8cQ3
-         NFW25q29R0xv5Bplff3qo0SF8xbh66gMVEqC9Erla0+vteC2eW2XYzjKFWenk3tBjX
-         959f5GKrey9FBeU+nhhZ7ChugnVH65BL5lQXU6nCakpb+NZE3nRlfubImZOAvOR356
-         XJ1pC+clMeNuw06MV41ykUHvxzINCHFGOgC9TgpjGAFCQ4f4xrHRANdmiPJbPS93Lr
-         HwW9QrdzuNAODaCUzIjasCJ00ORWWkxoziSwZeMtPHTFfCyrR2jWYYSobURQd/88pG
-         v2yNAvIkrT4bg==
+        b=nlKnG53mX1dw6S+dLDGwE1iReSewG/5rh8JZ2SvmyILN4mfYH1IwmFQyblXmz664H
+         ZiUf9x57c1IjIz6n5DEPtpUY5vG3d9i1Qnw2D481cTJufUfLrLyTBdsLOtKHfZ9vaw
+         /pjUEmsil4XrcBBjkHaRXTGXlxkTVggv6xhTOXWvUiEt6u6rjUSoM3oSFGVtsTOxDc
+         GznMRfPbTTSYNep3+sVkpbN2BW93/e2pAmmghRSWKcSFXZhGOKFvxF+3PHZhZr7bj6
+         8iEVsf85vn7mJLBaOTe4jSmqiStruAkZ2FZM/IkzwziOcrV46xc0jLXf163dkctiZk
+         5CST5222STAnA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 002/149] Bluetooth: hci_sync: Fix compilation warning
-Date:   Fri,  1 Apr 2022 10:23:09 -0400
-Message-Id: <20220401142536.1948161-2-sashal@kernel.org>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        mickflemm@gmail.com, mcgrof@kernel.org, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 003/149] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
+Date:   Fri,  1 Apr 2022 10:23:10 -0400
+Message-Id: <20220401142536.1948161-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,37 +60,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 89a0b8b98f49ae34886e67624208c2898e1e4d7f ]
+[ Upstream commit 564d4eceb97eaf381dd6ef6470b06377bb50c95a ]
 
-This fixes the following warning:
+The bug was found during fuzzing. Stacktrace locates it in
+ath5k_eeprom_convert_pcal_info_5111.
+When none of the curve is selected in the loop, idx can go
+up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
+pd = &chinfo[pier].pd_curves[idx];
 
-net/bluetooth/hci_sync.c:5143:5: warning: no previous prototype for
-‘hci_le_ext_create_conn_sync’ [-Wmissing-prototypes]
+There are many OOB writes using pd later in the code. So I
+added a sanity check for idx. Checks for other loops involving
+AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
+used outside the loops.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+The patch is NOT tested with real device.
+
+The following is the fuzzing report
+
+BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
+
+CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ __kasan_report.cold+0x37/0x7c
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ kasan_report+0xe/0x20
+ ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
+ ath5k_eeprom_init+0x2513/0x6290 [ath5k]
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? usleep_range+0xb8/0x100
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
+ ath5k_hw_init+0xb60/0x1970 [ath5k]
+ ath5k_init_ah+0x6fe/0x2530 [ath5k]
+ ? kasprintf+0xa6/0xe0
+ ? ath5k_stop+0x140/0x140 [ath5k]
+ ? _dev_notice+0xf6/0xf6
+ ? apic_timer_interrupt+0xa/0x20
+ ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ ? mutex_lock+0x89/0xd0
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ local_pci_probe+0xd3/0x160
+ pci_device_probe+0x23f/0x3e0
+ ? pci_device_remove+0x280/0x280
+ ? pci_device_remove+0x280/0x280
+ really_probe+0x209/0x5d0
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sync.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath5k/eeprom.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index ab9aa700b6b3..4426cc2aaf4a 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -5140,8 +5140,8 @@ static void set_ext_conn_params(struct hci_conn *conn,
- 	p->max_ce_len = cpu_to_le16(0x0000);
- }
+diff --git a/drivers/net/wireless/ath/ath5k/eeprom.c b/drivers/net/wireless/ath/ath5k/eeprom.c
+index 1fbc2c19848f..d444b3d70ba2 100644
+--- a/drivers/net/wireless/ath/ath5k/eeprom.c
++++ b/drivers/net/wireless/ath/ath5k/eeprom.c
+@@ -746,6 +746,9 @@ ath5k_eeprom_convert_pcal_info_5111(struct ath5k_hw *ah, int mode,
+ 			}
+ 		}
  
--int hci_le_ext_create_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
--				u8 own_addr_type)
-+static int hci_le_ext_create_conn_sync(struct hci_dev *hdev,
-+				       struct hci_conn *conn, u8 own_addr_type)
- {
- 	struct hci_cp_le_ext_create_conn *cp;
- 	struct hci_cp_le_ext_conn_param *p;
++		if (idx == AR5K_EEPROM_N_PD_CURVES)
++			goto err_out;
++
+ 		ee->ee_pd_gains[mode] = 1;
+ 
+ 		pd = &chinfo[pier].pd_curves[idx];
 -- 
 2.34.1
 
