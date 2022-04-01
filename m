@@ -2,188 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A8674EF63D
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97CCA4EF649
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346030AbiDAPbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57290 "EHLO
+        id S1349368AbiDAPcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350728AbiDAPA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 11:00:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 822E93BA4F;
-        Fri,  1 Apr 2022 07:49:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42E7BB8250F;
-        Fri,  1 Apr 2022 14:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A61DC34114;
-        Fri,  1 Apr 2022 14:49:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824542;
-        bh=rIvHxtySldOSeWF+66j94P3hjlzOzagHJheeXYZ9Y2M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tgSH7m1ldijPb+q5NCwn8ca4Fx07Z486aaaVxvFMPWc6v9/7DDMYCObhWL70P66MQ
-         NzPPk2Ezz6d3xphelsD/y7PWhDZoDJfFtem/V7YCl5L8lKdk3/9E+KJ9qUQWc6zU2k
-         kjvvjaPO9j4XEg6vLwhcQyScFidZD1EtIVuppq5Xs2H6uj6nqEJzqP068cyeC4CFKI
-         VwtgYHEaidMeQxBlVTwgL9tKn1q774dx1VfhhJl6vXVdvhfYfTAYoFRwtiIVCBA7qv
-         tksZMjj19PRI+e5Oe+b7dxhOGuG1H+BddLLb1va4EZbSgv2i1ns1CODhF2UF2boS2c
-         bFtN7MjDcFU1g==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        =?UTF-8?q?S=C3=B6nke=20Huster?= <soenke.huster@eknoes.de>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 15/16] Bluetooth: Fix use after free in hci_send_acl
-Date:   Fri,  1 Apr 2022 10:48:26 -0400
-Message-Id: <20220401144827.1955845-15-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144827.1955845-1-sashal@kernel.org>
-References: <20220401144827.1955845-1-sashal@kernel.org>
+        with ESMTP id S1351896AbiDAPDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 11:03:00 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA9324F2AB
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 07:50:23 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id v13so2282157qkv.3
+        for <netdev@vger.kernel.org>; Fri, 01 Apr 2022 07:50:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mebg0QeJQFAke9hx7Dqws17vyFhHRdF0ruAhkxiWa1M=;
+        b=sYxiOPCSK6W2fCmfUF0r1cRZ5v5Z97dlJOO7EeYYiZ5wU001BIl5HTd0lZAgcIJGn2
+         stul4gE6f6qnAo4Ufdrh6ezz9KC4pvSRbmeNxoC9AndIOC0yjRJgGISkDV4xe/PxPKwV
+         5WOHNtezVuzSEbok8BUiREOu1IIRTqRQb61Aj3bYNICDt90DFkjPjGN+WqayhYcrSBZn
+         HEwXEM76FKKSdgsiDpkQafiA5OfLQDQsVuOAAuqFJC4O3Zp14pNISEFucWG9nbIf9cqI
+         FOExxw0Pl4Z7dIet1gRst74mF2uroq2H1q9e8xeFcxInQjbVXpEtazC4vgNyWSVEREPT
+         fmjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mebg0QeJQFAke9hx7Dqws17vyFhHRdF0ruAhkxiWa1M=;
+        b=0VW4ZoBabsPSOKSXwiW7u0tFjmfLTwz4+4PVD46vpFEO8PbufbMF8NnttAUW2BcrPn
+         BVqSaPckZYMAbAhCMXYlqNsxkbKTEZnchnQmwqdSXk88p7lZCBJZ6rB/NdJN8Fd/vtyS
+         35SxOyi/TPcA7UBeK//6p74xZJVuhICMaQk4T4dIsCoBsiYhOn0CG0yZA/RwrStYQY5e
+         yL61Vxm4vzRhLF8Ufy0o0E0AGYPF+guDPa6HR20UrGPFmxwEJcLgezKlCZ8wZRXIt/n5
+         fLb2Uo7sVH8VLGAbgid29E38EQUstHzwtxdv0FqUdAz/l9optVwcuHJ2N8TKUq3jPvmx
+         HRNg==
+X-Gm-Message-State: AOAM531MM6XO8qBzjEfWFWy/vLLBLoLMK4j8Nz/QT0YJPiBDNCJtHNwu
+        AmUya2x9jWsLpKjCClY7qmbFV9U/GCVXEaMcTITgXhPjT9x12Q==
+X-Google-Smtp-Source: ABdhPJzWxpFhE6X+BpP5YPcHSooT6gqtulGJ4RS0ZEkk3jge4HuA/xUPnz0mgDmxPA84Ye94uaOinXL2Jt1AepsQ0K0=
+X-Received: by 2002:a05:620a:1424:b0:67d:2bc6:856b with SMTP id
+ k4-20020a05620a142400b0067d2bc6856bmr7025217qkj.434.1648824622224; Fri, 01
+ Apr 2022 07:50:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za> <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+ <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za> <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
+ <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com> <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
+In-Reply-To: <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 1 Apr 2022 10:50:05 -0400
+Message-ID: <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
+To:     Jaco Kroon <jaco@uls.co.za>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+On Thu, Mar 31, 2022 at 7:06 PM Jaco Kroon <jaco@uls.co.za> wrote:
+>
+> Hi Neal,
+>
+> This sniff was grabbed ON THE CLIENT HOST.  There is no middlebox or
+> anything between the sniffer and the client.  Only the firewall on the
+> host itself, where we've already establish the traffic is NOT DISCARDED
+> (at least not in filter/INPUT).
 
-[ Upstream commit f63d24baff787e13b723d86fe036f84bdbc35045 ]
+Yes, understood. Please excuse my general use of the term
+"firewalls/middleboxes" even where in some contexts it's clear the
+"middleboxes" aspect of that term could not apply. :-)
 
-This fixes the following trace caused by receiving
-HCI_EV_DISCONN_PHY_LINK_COMPLETE which does call hci_conn_del without
-first checking if conn->type is in fact AMP_LINK and in case it is
-do properly cleanup upper layers with hci_disconn_cfm:
+> Setup on our end:
+>
+> 2 x routers, usually each with a direct peering with Google (which is
+> being ignored at the moment so instead traffic is incoming via IPT over DD).
+>
+> Connected via switch to
+>
+> 2 x firewalls, of which ONE is active (they have different networks
+> behind them, and could be active / standby for different networks behind
+> them - avoiding active-active because conntrackd is causing more trouble
+> than it's worth), Linux hosts, using netfilter, has been operating for
+> years, no recent kernel upgrades.
+>
+> 4 x hosts in mail cluster, one of which you're looking at here.
+>
+> On 2022/03/31 17:41, Neal Cardwell wrote:
+> > On Wed, Mar 30, 2022 at 9:04 AM Jaco Kroon <jaco@uls.co.za> wrote:
+> > ...
+> >> When you state sane/normal, do you mean there is fault with the other
+> >> frames that could not be explained by packet loss in one or both of the
+> >> directions?
+> > Yes.
+> >
+> > (1) If you look at the attached trace time/sequence plots (from
+> > tcptrace and xplot.org) there are several behaviors that do not look
+> > like normal congestive packet loss:
+> OK.  I'm not 100% sure how these plots of yours work, but let's see if I
+> can follow your logic here - they mostly make sense.  A legend would
+> probably help.  As I understand the white dots are original transmits,
+> green is what has been ACKED.  R is retransmits ... what's the S?
 
- ==================================================================
-    BUG: KASAN: use-after-free in hci_send_acl+0xaba/0xc50
-    Read of size 8 at addr ffff88800e404818 by task bluetoothd/142
+"S" is "SACKed", or selectively acknowledged. The SACK blocks below
+the green ACK lines are DSACK blocks, for "Duplicate SACKs",
+indicating the receiver has already received that sequence range.
 
-    CPU: 0 PID: 142 Comm: bluetoothd Not tainted
-    5.17.0-rc5-00006-gda4022eeac1a #7
-    Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-    rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-    Call Trace:
-     <TASK>
-     dump_stack_lvl+0x45/0x59
-     print_address_description.constprop.0+0x1f/0x150
-     kasan_report.cold+0x7f/0x11b
-     hci_send_acl+0xaba/0xc50
-     l2cap_do_send+0x23f/0x3d0
-     l2cap_chan_send+0xc06/0x2cc0
-     l2cap_sock_sendmsg+0x201/0x2b0
-     sock_sendmsg+0xdc/0x110
-     sock_write_iter+0x20f/0x370
-     do_iter_readv_writev+0x343/0x690
-     do_iter_write+0x132/0x640
-     vfs_writev+0x198/0x570
-     do_writev+0x202/0x280
-     do_syscall_64+0x38/0x90
-     entry_SYSCALL_64_after_hwframe+0x44/0xae
-    RSP: 002b:00007ffce8a099b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
-    Code: 0f 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3
-    0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 14 00 00 00 0f 05
-    <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
-    RDX: 0000000000000001 RSI: 00007ffce8a099e0 RDI: 0000000000000015
-    RAX: ffffffffffffffda RBX: 00007ffce8a099e0 RCX: 00007f788fc3cf77
-    R10: 00007ffce8af7080 R11: 0000000000000246 R12: 000055e4ccf75580
-    RBP: 0000000000000015 R08: 0000000000000002 R09: 0000000000000001
-    </TASK>
-    R13: 000055e4ccf754a0 R14: 000055e4ccf75cd0 R15: 000055e4ccf4a6b0
+> What's the yellow line (I'm guessing receive window as advertised by the
+> server)?
 
-    Allocated by task 45:
-        kasan_save_stack+0x1e/0x40
-        __kasan_kmalloc+0x81/0xa0
-        hci_chan_create+0x9a/0x2f0
-        l2cap_conn_add.part.0+0x1a/0xdc0
-        l2cap_connect_cfm+0x236/0x1000
-        le_conn_complete_evt+0x15a7/0x1db0
-        hci_le_conn_complete_evt+0x226/0x2c0
-        hci_le_meta_evt+0x247/0x450
-        hci_event_packet+0x61b/0xe90
-        hci_rx_work+0x4d5/0xc50
-        process_one_work+0x8fb/0x15a0
-        worker_thread+0x576/0x1240
-        kthread+0x29d/0x340
-        ret_from_fork+0x1f/0x30
+Yes, the yellow line is the right edge of the receive window of the server.
 
-    Freed by task 45:
-        kasan_save_stack+0x1e/0x40
-        kasan_set_track+0x21/0x30
-        kasan_set_free_info+0x20/0x30
-        __kasan_slab_free+0xfb/0x130
-        kfree+0xac/0x350
-        hci_conn_cleanup+0x101/0x6a0
-        hci_conn_del+0x27e/0x6c0
-        hci_disconn_phylink_complete_evt+0xe0/0x120
-        hci_event_packet+0x812/0xe90
-        hci_rx_work+0x4d5/0xc50
-        process_one_work+0x8fb/0x15a0
-        worker_thread+0x576/0x1240
-        kthread+0x29d/0x340
-        ret_from_fork+0x1f/0x30
+> >   (a) Literally *all* original transmissions (white segments in the
+> > plot) of packets after client sequence 66263 appear lost (are not
+> > ACKed). Congestion generally does not behave like that. But broken
+> > firewalls/middleboxes do.
+> >        (See netdev-2022-03-29-tcp-disregarded-acks-zoomed-out.png )
+>
+> Agreed.  So could it be that something in the transit path towards
+> Google is actually dropping all of that?
 
-    The buggy address belongs to the object at ffff88800c0f0500
-    The buggy address is located 24 bytes inside of
-    which belongs to the cache kmalloc-128 of size 128
-    The buggy address belongs to the page:
-    128-byte region [ffff88800c0f0500, ffff88800c0f0580)
-    flags: 0x100000000000200(slab|node=0|zone=1)
-    page:00000000fe45cd86 refcount:1 mapcount:0
-    mapping:0000000000000000 index:0x0 pfn:0xc0f0
-    raw: 0000000000000000 0000000080100010 00000001ffffffff
-    0000000000000000
-    raw: 0100000000000200 ffffea00003a2c80 dead000000000004
-    ffff8880078418c0
-    page dumped because: kasan: bad access detected
-    ffff88800c0f0400: 00 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc
-    Memory state around the buggy address:
-    >ffff88800c0f0500: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-    ffff88800c0f0480: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    ffff88800c0f0580: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-                                ^
-    ==================================================================
-    ffff88800c0f0600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+It could be. Or it could be a firewall/middlebox.
 
-Reported-by: Sönke Huster <soenke.huster@eknoes.de>
-Tested-by: Sönke Huster <soenke.huster@eknoes.de>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/bluetooth/hci_event.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> As stated - I highly doubt this is on our network unless newer kernel
+> (on mail cluster) is doing stuff which is causing older netfilter to
+> drop perhaps?  But this doesn't explain why newer kernel retransmits
+> data for which it received an ACK.
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index cff87c465bcb..8face15b42d8 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4470,8 +4470,9 @@ static void hci_disconn_phylink_complete_evt(struct hci_dev *hdev,
- 	hci_dev_lock(hdev);
- 
- 	hcon = hci_conn_hash_lookup_handle(hdev, ev->phy_handle);
--	if (hcon) {
-+	if (hcon && hcon->type == AMP_LINK) {
- 		hcon->state = BT_CLOSED;
-+		hci_disconn_cfm(hcon, ev->reason);
- 		hci_conn_del(hcon);
- 	}
- 
--- 
-2.34.1
+Yes, I agree that the biggest problem to focus on is the TCP code in
+the kernel retransmitting data for which the NIC is receiving ACKs.
 
+> >
+> >   (b) When the client is retransmitting packets, only packets at
+> > exactly snd_una are ACKed. The packets beyond that point are always
+> > un-ACKed. Again sounds like a broken firewall/middlebox.
+> >        (See netdev-2022-03-29-tcp-disregarded-acks-zoomed-in.png )
+> No middlebox between packet sniffer and client ... client here is linux
+> 5.17.1.  Brings me back to the only thing that could be dropping the
+> traffic is netfilter on the host, or the kernel doesn't like something
+> about the ACK, or kernel is doing something else wrong as a result of
+> TFO.  I'm not sure which option I like less.  Unfortunately I also use
+> netfilter for redirecting traffic into haproxy here so can't exactly
+> just switch off netfilter.
+
+Given the most problematic aspect of the trace, where the client-side
+TCP connection is repeatedly retransmitting packets for which ACKs are
+arriving at the NIC (and captured by tcpdump), it seems some software
+in your kernel is dropping packets between the network device and the
+TCP layer. Given that you mention  "the only thing that could be
+dropping the traffic is netfilter on the host", it seems like the
+netfilter rules or software are buggy.
+
+A guess would be that the netfilter code is getting into a bad state
+due to the TFO behavior where there is a data packet arriving from the
+server immediately after the SYN/ACK and just before the client sends
+its first ACK:
+
+00:00:00.000000 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590 >
+2a00:1450:4013:c16::1a.25: S 3451342529:3451342529(0) win 62580 <mss
+8940,sackOK,TS val 331187616 ecr 0,nop,wscale 7,Unknown Option
+3472da7bfe84[|tcp]>
+
+00:00:00.164295 IP6 2a00:1450:4013:c16::1a.25 >
+2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: S. 2699962254:2699962254(0)
+ack 3451342530 win 65535 <mss 1440,sackOK,TS val 1206542770 ecr
+331187616,nop,wscale 8>
+
+# this one is perhaps confusing netfilter?:
+00:00:00.001641 IP6 2a00:1450:4013:c16::1a.25 >
+2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: P. 1:89(88) ack 1 win 256
+<nop,nop,TS val 1206542772 ecr 331187616>
+
+00:00:00.000035 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590 >
+2a00:1450:4013:c16::1a.25: . 1:1(0) ack 89 win 489 <nop,nop,TS val
+331187782 ecr 1206542772>
+
+00:00:00.000042 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590 >
+2a00:1450:4013:c16::1a.25: P. 1:24(23) ack 89 win 489 <nop,nop,TS val
+331187782 ecr 1206542772>
+
+Re "so can't exactly just switch off netfilter", are there any other
+counters or logs you can somehow check for netfilter drops?
+
+> >
+> >   (c) After the client receives the server's "ack 73403", the client
+> > ignores/drops all other incoming packets that show up in the trace.
+>
+> Agreed.  However, if I read your graph correctly, it gets an ACK for
+> frame X at ~3.8s into the connection, then for X+2 at 4s, but it keeps
+> retransmitting X+2, not X+1?
+
+At t=4s, as I discussed below there are two ACKs that arrive
+back-to-back, where the client TCP apparently processes the first but
+not the second. That's why it keeps retransmitting the packet beyond
+the first ACk but not beyond the second ACK.
+
+>
+> >
+> >        As Eric notes, this doesn't look like a PAWS issue. And it
+> > doesn't look like a checksum or sequence/ACK validation issue. The
+> > client starts ignoring ACKs between two ACKs that have correct
+> > checksums, valid ACK numbers, and valid (identical) sequence numbers
+> > and TS val and ecr values (here showing absolute sequence/ACK
+> > numbers):
+> I'm not familiar with PAWS here.  Assuming that the green line is ACKs,
+> then at around 4s we get an ACK that basically ACKs two frames in one
+> (which is fine from my understanding of TCP), and then the second of
+> these frames keeps getting retransmitted going forward, so it's almost
+> like the kernel ACKs the *first* of these two frames but not the second.
+
+Again, there are two ACKs, where the client TCP apparently processes
+the first but not the second, as discussed here:
+
+> >
+> >     (i) The client processes this ACK and uses it to advance snd_una:
+> >     17:46:49.889911 IP6 (flowlabel 0x97427, hlim 61, next-header TCP
+> > (6) payload length: 32) 2a00:1450:4013:c16::1a.25 >
+> > 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . cksum 0x7005 (correct)
+> > 2699968514:2699968514(0) ack 3451415932 win 830 <nop,nop,TS val
+> > 1206546583 ecr 331191428>
+>
+> >
+> >     (ii) The client ignores this ACK and all later ACKs:
+> >     17:46:49.889912 IP6 (flowlabel 0x97427, hlim 61, next-header TCP
+> > (6) payload length: 32) 2a00:1450:4013:c16::1a.25 >
+> > 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . cksum 0x6a66 (correct)
+> > 2699968514:2699968514(0) ack 3451417360 win 841 <nop,nop,TS val
+> > 1206546583 ecr 331191428>
+> >
+
+Here are those same two ACKs again, shown with absolute time and
+relative sequence numbers, to make them easier to parse:
+
+(i) The client processes this ACK and uses it to advance snd_una:
+17:46:49.889911 IP6 2a00:1450:4013:c16::1a.25 >
+2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 73403 win
+830 <nop,nop,TS val 1206546583 ecr 331191428>
+
+ (ii) The client ignores this ACK and all later ACKs:
+17:46:49.889912 IP6 2a00:1450:4013:c16::1a.25 >
+2c0f:f720:0:3:d6ae:52ff:feb8:f27b.48590: . 6260:6260(0) ack 74831 win
+841 <nop,nop,TS val 1206546583 ecr 331191428>
+
+
+neal
