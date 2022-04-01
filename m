@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 682B14EF105
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A21594EF0FD
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347772AbiDAOgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
+        id S1347628AbiDAOfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348265AbiDAOdw (ORCPT
+        with ESMTP id S1348264AbiDAOdw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E126E1EC98A;
-        Fri,  1 Apr 2022 07:31:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 221511EC997;
+        Fri,  1 Apr 2022 07:31:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98582B8240E;
-        Fri,  1 Apr 2022 14:31:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA206C34112;
-        Fri,  1 Apr 2022 14:31:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD7DB61CA5;
+        Fri,  1 Apr 2022 14:31:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEB45C340F2;
+        Fri,  1 Apr 2022 14:31:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823493;
-        bh=4C7wuGbnC0+bqhK2tuF7Am3Txo6v1rr+Jksty7oy9Sg=;
+        s=k20201202; t=1648823495;
+        bh=Y2Zxr5e0Iloj2IgaACLwbBRRdG5EG0uvi9BgSw9Din4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mXW6XX+mlDxlcDv05ER/if9HcpVgg7//1/mWoBkP2gilItMpQ42IbZmqVei9qLq4M
-         peL65XGWFNX1WD3Qe+KQAvORc7B5+ZfuGCNiRkLkNXoyGb3Z+NTkIgSSze/3jwxe6G
-         U6kr3OdMolTrjEtZpz6zQLlXwG7xdF+pSIN7aUxNjCBL1yA+tFOwpidiZUhuS3mtjB
-         vxzn8eMdfmCgBu5pxB2RIwyAutcqdT+hrWO90cQ3KfBhVDgZh+loAcEuMSP0c7NxgN
-         kk35QVs5nGcz0Ye9Xv1WKAh2Yl5tZaFDoxsPesshGxFq/4kZuHYMZUBZ5Kc6P1vNll
-         ict9efc+kh53g==
+        b=UAq3M69ANrte0WQmbU7fVpAHKI4ToiQfULF/vLbqQpAXMjThldGROsLZCVv0RVQn4
+         gjJeiAeEMHGHB2+MegngdZhmmIZt8Nmm0R+gFd1bL3LXXPbokWjx4WWKg86vgUwdSG
+         KCyG2oLqKM3V5kWBwJjrwb6Xwvi3nfqas4FOUg7IO68Ttj6AuZuUi7LjUldSUA30Ej
+         kFCPxcdBoy55LJM2L+eXBpuAtIRNl/lM8516SpV1lUA6MUspJWEnr4Wi+vx4/Aaa+Z
+         jZvuGrLojHALNBcDVJeWY3xok5AGrySHjSQX70bsS30vZyB0IQ8NWktTw398RetpmU
+         04DIXQnOlAlDw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+Cc:     "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
         Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
         luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
         pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 117/149] Bluetooth: Fix not checking for valid hdev on bt_dev_{info,warn,err,dbg}
-Date:   Fri,  1 Apr 2022 10:25:04 -0400
-Message-Id: <20220401142536.1948161-117-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 118/149] Bluetooth: use memset avoid memory leaks
+Date:   Fri,  1 Apr 2022 10:25:05 -0400
+Message-Id: <20220401142536.1948161-118-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -59,54 +60,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-[ Upstream commit 9b392e0e0b6d026da5a62bb79a08f32e27af858e ]
+[ Upstream commit d3715b2333e9a21692ba16ef8645eda584a9515d ]
 
-This fixes attemting to print hdev->name directly which causes them to
-print an error:
+Use memset to initialize structs to prevent memory leaks
+in l2cap_ecred_connect
 
-kernel: read_version:367: (efault): sock 000000006a3008f2
-
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/bluetooth.h | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ net/bluetooth/l2cap_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/bluetooth/bluetooth.h b/include/net/bluetooth/bluetooth.h
-index a647e5fabdbd..2aa5e95808a5 100644
---- a/include/net/bluetooth/bluetooth.h
-+++ b/include/net/bluetooth/bluetooth.h
-@@ -204,19 +204,21 @@ void bt_err_ratelimited(const char *fmt, ...);
- #define BT_DBG(fmt, ...)	pr_debug(fmt "\n", ##__VA_ARGS__)
- #endif
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index e817ff0607a0..8df99c07f272 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1436,6 +1436,7 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
  
-+#define bt_dev_name(hdev) ((hdev) ? (hdev)->name : "null")
-+
- #define bt_dev_info(hdev, fmt, ...)				\
--	BT_INFO("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_INFO("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_warn(hdev, fmt, ...)				\
--	BT_WARN("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_WARN("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_err(hdev, fmt, ...)				\
--	BT_ERR("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_ERR("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_dbg(hdev, fmt, ...)				\
--	BT_DBG("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	BT_DBG("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
+ 	l2cap_ecred_init(chan, 0);
  
- #define bt_dev_warn_ratelimited(hdev, fmt, ...)			\
--	bt_warn_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	bt_warn_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- #define bt_dev_err_ratelimited(hdev, fmt, ...)			\
--	bt_err_ratelimited("%s: " fmt, (hdev)->name, ##__VA_ARGS__)
-+	bt_err_ratelimited("%s: " fmt, bt_dev_name(hdev), ##__VA_ARGS__)
- 
- /* Connection and socket states */
- enum {
++	memset(&data, 0, sizeof(data));
+ 	data.pdu.req.psm     = chan->psm;
+ 	data.pdu.req.mtu     = cpu_to_le16(chan->imtu);
+ 	data.pdu.req.mps     = cpu_to_le16(chan->mps);
 -- 
 2.34.1
 
