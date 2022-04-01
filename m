@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D8BA4EF650
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 910A34EF667
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:54:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350057AbiDAPdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
+        id S1350573AbiDAPeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:34:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350061AbiDAO6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA04317F3ED;
-        Fri,  1 Apr 2022 07:46:04 -0700 (PDT)
+        with ESMTP id S1350115AbiDAO7D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:59:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73A446178;
+        Fri,  1 Apr 2022 07:46:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64B6B60A3C;
-        Fri,  1 Apr 2022 14:46:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F440C34112;
-        Fri,  1 Apr 2022 14:46:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EE5FB8240E;
+        Fri,  1 Apr 2022 14:46:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 632E4C34112;
+        Fri,  1 Apr 2022 14:46:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824363;
-        bh=8gh+4Mhbk2luWoalZsJvkPybHUn5HxFJvrvm+ZoaMyE=;
+        s=k20201202; t=1648824379;
+        bh=aDjIbtXpZcKp3KyrL3zGXS1AA90UMCdcBlY1qKml0nA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i3WSdn2uKmbffqlCgEQbrgFWX/F6mFC5070TQzyEtLY7MCiB0nM9eEg9uefsRKw/5
-         s6zeMzBZ+4u1ACLqQtrAmFZaUxKRodHH031tqVIK+tXxiIE2ysX2WA6ore0sPQAmpg
-         QpwOKChqgQJeYix1nBvXIXHNwVHS3P9MOvMv5DD0G7r8T59T5pKkrKoLt1By0qvKJQ
-         TqFweJe0XgjA0MT18zJQTxkQ5CnU5ZutHBBIUq3yt7WxXcO/zz8I8Fpg1ZXSfoSuLP
-         0VOHmSHlNVYrEODCxiuGJ2ABDsHrDPV9vXFG/cmUXpxhzUf0EYGvmn5EyMwJuDeV52
-         swKJDjJRW6V0Q==
+        b=gahP6JqWVhCC6Lq7WKQB5zx75IlYTwTbUciolP3dZ45M9XDb/4dBokvnFlCYA0eJi
+         2u2bgs7/8zotLaBNhTfwhVshkn9SIR4VZtCi2i7GL1kDCrlpZIPY/artPLLN2VK1GB
+         IqW9k3E/wc6PHtDY2g9n+JyOkowtKlwUWkYXvIMO/1+NcbyF8NkkqOQy8Bv5LKo74m
+         VqbBB0n848BcR+w6zisjPqJI+9k66DoIKIldNzXukM5n82VfQjkgWvKZAST/vzbvBz
+         AAGXItGNsfs4lHBSVMTYbnk2cJS91VYZgymm2Cc6NYGeWU3c6MIX/CS2UQXEr3nqhe
+         GCdEXusgCHK4Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 35/37] netlabel: fix out-of-bounds memory accesses
-Date:   Fri,  1 Apr 2022 10:44:44 -0400
-Message-Id: <20220401144446.1954694-35-sashal@kernel.org>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        mickflemm@gmail.com, mcgrof@kernel.org, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 02/29] ath5k: fix OOB in ath5k_eeprom_read_pcal_info_5111
+Date:   Fri,  1 Apr 2022 10:45:45 -0400
+Message-Id: <20220401144612.1955177-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144446.1954694-1-sashal@kernel.org>
-References: <20220401144446.1954694-1-sashal@kernel.org>
+In-Reply-To: <20220401144612.1955177-1-sashal@kernel.org>
+References: <20220401144612.1955177-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,68 +60,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit f22881de730ebd472e15bcc2c0d1d46e36a87b9c ]
+[ Upstream commit 564d4eceb97eaf381dd6ef6470b06377bb50c95a ]
 
-In calipso_map_cat_ntoh(), in the for loop, if the return value of
-netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when
-netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
-of bitmap[byte_offset] occurs.
+The bug was found during fuzzing. Stacktrace locates it in
+ath5k_eeprom_convert_pcal_info_5111.
+When none of the curve is selected in the loop, idx can go
+up to AR5K_EEPROM_N_PD_CURVES. The line makes pd out of bound.
+pd = &chinfo[pier].pd_curves[idx];
 
-The bug was found during fuzzing. The following is the fuzzing report
- BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
- Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
+There are many OOB writes using pd later in the code. So I
+added a sanity check for idx. Checks for other loops involving
+AR5K_EEPROM_N_PD_CURVES are not needed as the loop index is not
+used outside the loops.
 
- CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
- Hardware name: linux,dummy-virt (DT)
- Call trace:
-  dump_backtrace+0x21c/0x230
-  show_stack+0x1c/0x60
-  dump_stack_lvl+0x64/0x7c
-  print_address_description.constprop.0+0x70/0x2d0
-  __kasan_report+0x158/0x16c
-  kasan_report+0x74/0x120
-  __asan_load1+0x80/0xa0
-  netlbl_bitmap_walk+0x3c/0xd0
-  calipso_opt_getattr+0x1a8/0x230
-  calipso_sock_getattr+0x218/0x340
-  calipso_sock_getattr+0x44/0x60
-  netlbl_sock_getattr+0x44/0x80
-  selinux_netlbl_socket_setsockopt+0x138/0x170
-  selinux_socket_setsockopt+0x4c/0x60
-  security_socket_setsockopt+0x4c/0x90
-  __sys_setsockopt+0xbc/0x2b0
-  __arm64_sys_setsockopt+0x6c/0x84
-  invoke_syscall+0x64/0x190
-  el0_svc_common.constprop.0+0x88/0x200
-  do_el0_svc+0x88/0xa0
-  el0_svc+0x128/0x1b0
-  el0t_64_sync_handler+0x9c/0x120
-  el0t_64_sync+0x16c/0x170
+The patch is NOT tested with real device.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The following is the fuzzing report
+
+BUG: KASAN: slab-out-of-bounds in ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+Write of size 1 at addr ffff8880174a4d60 by task modprobe/214
+
+CPU: 0 PID: 214 Comm: modprobe Not tainted 5.6.0 #1
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ __kasan_report.cold+0x37/0x7c
+ ? ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ kasan_report+0xe/0x20
+ ath5k_eeprom_read_pcal_info_5111+0x126a/0x1390 [ath5k]
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? ath5k_pci_eeprom_read+0x228/0x3c0 [ath5k]
+ ath5k_eeprom_init+0x2513/0x6290 [ath5k]
+ ? ath5k_eeprom_init_11a_pcal_freq+0xbc0/0xbc0 [ath5k]
+ ? usleep_range+0xb8/0x100
+ ? apic_timer_interrupt+0xa/0x20
+ ? ath5k_eeprom_read_pcal_info_2413+0x2f20/0x2f20 [ath5k]
+ ath5k_hw_init+0xb60/0x1970 [ath5k]
+ ath5k_init_ah+0x6fe/0x2530 [ath5k]
+ ? kasprintf+0xa6/0xe0
+ ? ath5k_stop+0x140/0x140 [ath5k]
+ ? _dev_notice+0xf6/0xf6
+ ? apic_timer_interrupt+0xa/0x20
+ ath5k_pci_probe.cold+0x29a/0x3d6 [ath5k]
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ ? mutex_lock+0x89/0xd0
+ ? ath5k_pci_eeprom_read+0x3c0/0x3c0 [ath5k]
+ local_pci_probe+0xd3/0x160
+ pci_device_probe+0x23f/0x3e0
+ ? pci_device_remove+0x280/0x280
+ ? pci_device_remove+0x280/0x280
+ really_probe+0x209/0x5d0
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/YckvDdj3mtCkDRIt@a-10-27-26-18.dynapool.vpn.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netlabel/netlabel_kapi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/ath/ath5k/eeprom.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
-index 5e1239cef000..91b35b7c80d8 100644
---- a/net/netlabel/netlabel_kapi.c
-+++ b/net/netlabel/netlabel_kapi.c
-@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
- 	unsigned char bitmask;
- 	unsigned char byte;
+diff --git a/drivers/net/wireless/ath/ath5k/eeprom.c b/drivers/net/wireless/ath/ath5k/eeprom.c
+index 94d34ee02265..01163b333945 100644
+--- a/drivers/net/wireless/ath/ath5k/eeprom.c
++++ b/drivers/net/wireless/ath/ath5k/eeprom.c
+@@ -746,6 +746,9 @@ ath5k_eeprom_convert_pcal_info_5111(struct ath5k_hw *ah, int mode,
+ 			}
+ 		}
  
-+	if (offset >= bitmap_len)
-+		return -1;
- 	byte_offset = offset / 8;
- 	byte = bitmap[byte_offset];
- 	bit_spot = offset;
++		if (idx == AR5K_EEPROM_N_PD_CURVES)
++			goto err_out;
++
+ 		ee->ee_pd_gains[mode] = 1;
+ 
+ 		pd = &chinfo[pier].pd_curves[idx];
 -- 
 2.34.1
 
