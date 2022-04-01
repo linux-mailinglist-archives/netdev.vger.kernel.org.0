@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 012034EF62B
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C714EF677
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242127AbiDAPav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
+        id S1350938AbiDAPez (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243947AbiDAO4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:56:04 -0400
+        with ESMTP id S1349173AbiDAO43 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:56:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923D3C558B;
-        Fri,  1 Apr 2022 07:44:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76A3D5EBC;
+        Fri,  1 Apr 2022 07:44:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB1DA60BAF;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 479D560AC0;
+        Fri,  1 Apr 2022 14:44:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1533C3410F;
         Fri,  1 Apr 2022 14:44:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E41D5C34113;
-        Fri,  1 Apr 2022 14:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824241;
-        bh=Z34E3aJ2B7w4LgQQAjnx3XNpB3vym7f9a/TuaI151q4=;
+        s=k20201202; t=1648824242;
+        bh=+RxYCEjQQj8P+LMNvgfvSSh2+sfRo/9Kks0pUvW7OUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FR2ettCY7SEObQHmxXirS7p+GorYg/b3cCI6/8yMTWWzHYN6+iiMiJ3vssXS36Tp0
-         hWXgW/uMAh7HTWfyo41zTnucinPd3DcD/GE3i0YBtPwpsCAqPwk5u1k9v2D73oY3Vz
-         OT1vBDoueRKdyBdWaQZ3XUw49ya4TaRyWDnPhHN7Q8YmodRLLGvEX8DxPJDcRJivie
-         Z7ewjGX2koPQKVZhXiDd0lkdzcpheaLhqDLzAh3dx4i6uwV+uzcoqis4TxQp1TSvY1
-         nRAS/7JzMm9K/Vt7Ic29v156+jJvorZ7UAhIRqudz/hHO+gO++xaLDYAZC9nhLyZjj
-         V1IkJJJhUxxlA==
+        b=sAre0WQdtiSB363Te8QXXLWqc+1wEb3GRJzuJy1X9lyVvR031WoUdy2TxmV1UYAt5
+         y54TBI4B1ObmdrLldf6w2ztyXdTTZQqLHSyo6ulHSr8+su+FhF+SPHrRtqdu77uS94
+         as6FH5yLxIF7lyIPoQbfKwRKePLWTTABXm8uUX06Oz+YwUIDOnXzuwWiOS9fPRgH4d
+         VZHKToSQ2pjiVtAQrdvBTRhJu5xxfl9lKufd2Mch1KKgCoCmAniVq3qWC6C+XOADEr
+         51WDG4Dia/xFogrM3Fhaok9cuOHj989LK9EQ+h/h85P7ENQ5F86gxCKOBKXWCnR68B
+         zQLPduRZnP3jw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 47/65] Bluetooth: use memset avoid memory leaks
-Date:   Fri,  1 Apr 2022 10:41:48 -0400
-Message-Id: <20220401144206.1953700-47-sashal@kernel.org>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Colin Winegarden <colin.winegarden@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 48/65] bnxt_en: Eliminate unintended link toggle during FW reset
+Date:   Fri,  1 Apr 2022 10:41:49 -0400
+Message-Id: <20220401144206.1953700-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
 References: <20220401144206.1953700-1-sashal@kernel.org>
@@ -60,33 +59,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
+From: Michael Chan <michael.chan@broadcom.com>
 
-[ Upstream commit d3715b2333e9a21692ba16ef8645eda584a9515d ]
+[ Upstream commit 7c492a2530c1f05441da541307c2534230dfd59b ]
 
-Use memset to initialize structs to prevent memory leaks
-in l2cap_ecred_connect
+If the flow control settings have been changed, a subsequent FW reset
+may cause the ethernet link to toggle unnecessarily.  This link toggle
+will increase the down time by a few seconds.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+The problem is caused by bnxt_update_phy_setting() detecting a false
+mismatch in the flow control settings between the stored software
+settings and the current FW settings after the FW reset.  This mismatch
+is caused by the AUTONEG bit added to link_info->req_flow_ctrl in an
+inconsistent way in bnxt_set_pauseparam() in autoneg mode.  The AUTONEG
+bit should not be added to link_info->req_flow_ctrl.
+
+Reviewed-by: Colin Winegarden <colin.winegarden@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 0ddbc415ce15..012c1a0abda8 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1438,6 +1438,7 @@ static void l2cap_ecred_connect(struct l2cap_chan *chan)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 98087b278d1f..f8f775619520 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2041,9 +2041,7 @@ static int bnxt_set_pauseparam(struct net_device *dev,
+ 		}
  
- 	l2cap_ecred_init(chan, 0);
- 
-+	memset(&data, 0, sizeof(data));
- 	data.pdu.req.psm     = chan->psm;
- 	data.pdu.req.mtu     = cpu_to_le16(chan->imtu);
- 	data.pdu.req.mps     = cpu_to_le16(chan->mps);
+ 		link_info->autoneg |= BNXT_AUTONEG_FLOW_CTRL;
+-		if (bp->hwrm_spec_code >= 0x10201)
+-			link_info->req_flow_ctrl =
+-				PORT_PHY_CFG_REQ_AUTO_PAUSE_AUTONEG_PAUSE;
++		link_info->req_flow_ctrl = 0;
+ 	} else {
+ 		/* when transition from auto pause to force pause,
+ 		 * force a link change
 -- 
 2.34.1
 
