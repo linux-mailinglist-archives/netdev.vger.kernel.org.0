@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 366324EF143
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56A2B4EF174
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245027AbiDAOhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:37:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39122 "EHLO
+        id S1347970AbiDAOgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347599AbiDAOdO (ORCPT
+        with ESMTP id S1347608AbiDAOdO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B982527A4;
-        Fri,  1 Apr 2022 07:30:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E349256640;
+        Fri,  1 Apr 2022 07:30:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6263EB8250F;
-        Fri,  1 Apr 2022 14:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C6CC340EE;
-        Fri,  1 Apr 2022 14:30:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D1F9B82515;
+        Fri,  1 Apr 2022 14:30:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFC0C2BBE4;
+        Fri,  1 Apr 2022 14:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823404;
-        bh=2gEPtOAuUfvGBEqF0VRavifXUyCfId4Cs7T3tsXowZc=;
+        s=k20201202; t=1648823408;
+        bh=y5iZjuzgrRz546+vtyJdXA0k4Yb5zv7HJ+OnbQJvTLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ngPkhhR0cutA9L+7z4RS946R89Jh0Jn5bThT249f9JMaSJ7jKH+tYiPGv5j/DH1+t
-         hRWRsto1mGuneMUwSHRmiVaBoRhGqVW5nhrPlzI4iuYoR+4xcs8uzk2w0hHQimIKdB
-         pIXr52EXmRrmp/Wead3/GjBm8fIc8k4xfss21mFzRptUP6Hr1o+MH+R2xyroBgqzDU
-         2oM+IO3o0eIZmKyyCALxEFRvBqpiAYPRDle6C/dCz3LhIfSSNJjxfuwAyoJsaHSZZy
-         5hpyw1B2XJ7ELmtTYKD/kE3qll3LvUYq9/9x7NpbxyRDJtW6IEuFSbibUtMIYpPJIl
-         Wfpc+h2EZ6JiA==
+        b=eL8iVazPQHmEFFsfaKckK3Sr5hbIB6ayDdY6vcHt8/6lffSYxPDcfg4GUUIMEJeCG
+         F68fMXGEPWXdj5h79xcz+o+XI0qX2VfjbKVbYe014a082etD0vIrIWS+eIu5sp2ggk
+         ZcWJP8LEnjb6xQNWqJZjQJKf/ll4Su4l974wDqPBPuRC/GDn19ySaSi8IpI1X2jsaY
+         +6H5RXYYRbCtAhv06JGi51/2XprfU6AF0FBPCJt2WT1yqHLZMy8dIO8LcGmbKal8m2
+         sAm8m1r7TVx+L9OZMQt/OjriDoOeyjV7+8hvUGiCDAr8OIp2LQ8+rm8Jl5x4dUfoVW
+         7EB3sp9DD4gEQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
+Cc:     Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
         davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        mukesh.sisodiya@intel.com, johannes.berg@intel.com,
-        mordechay.goodstein@intel.com, linux-wireless@vger.kernel.org,
+        johannes.berg@intel.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 080/149] iwlwifi: fix small doc mistake for iwl_fw_ini_addr_val
-Date:   Fri,  1 Apr 2022 10:24:27 -0400
-Message-Id: <20220401142536.1948161-80-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 081/149] iwlwifi: mvm: move only to an enabled channel
+Date:   Fri,  1 Apr 2022 10:24:28 -0400
+Message-Id: <20220401142536.1948161-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -59,46 +59,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
 
-[ Upstream commit 3009c797c4b3840495e8f48d8d07f48d2ddfed80 ]
+[ Upstream commit e04135c07755d001b5cde61048c69a7cc84bb94b ]
 
-There was a small copy and paste mistake in the doc declaration of
-iwl_fw_ini_addr_val.  Fix it.
+During disassociation we're decreasing the phy's ref count.
+If the ref count becomes 0, we're configuring the phy ctxt
+to the default channel (the lowest channel which the device
+can operate on). Currently we're not checking whether the
+the default channel is enabled or not. Fix it by configuring
+the phy ctxt to the lowest channel which is enabled.
 
+Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20220205112029.aeec71c397b3.I0ba3234419eb8c8c7512a2ca531a6dbb55046cf7@changeid
+Link: https://lore.kernel.org/r/iwlwifi.20220210181930.03f281b6a6bc.I5b63d43ec41996d599e6f37ec3f32e878b3e405e@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 31 +++++++++++++------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-index 456b7eaac570..061fe6cc6cf5 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/api/dbg-tlv.h
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+index 9af40b0fa37a..a6e6673bf4ee 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
 @@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
  /*
-- * Copyright (C) 2018-2021 Intel Corporation
-+ * Copyright (C) 2018-2022 Intel Corporation
+- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
++ * Copyright (C) 2012-2014, 2018-2022 Intel Corporation
+  * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
+  * Copyright (C) 2017 Intel Deutschland GmbH
   */
- #ifndef __iwl_fw_dbg_tlv_h__
- #define __iwl_fw_dbg_tlv_h__
-@@ -249,11 +249,10 @@ struct iwl_fw_ini_hcmd_tlv {
- } __packed; /* FW_TLV_DEBUG_HCMD_API_S_VER_1 */
+@@ -349,18 +349,31 @@ void iwl_mvm_phy_ctxt_unref(struct iwl_mvm *mvm, struct iwl_mvm_phy_ctxt *ctxt)
+ 	 * otherwise we might not be able to reuse this phy.
+ 	 */
+ 	if (ctxt->ref == 0) {
+-		struct ieee80211_channel *chan;
++		struct ieee80211_channel *chan = NULL;
+ 		struct cfg80211_chan_def chandef;
+-		struct ieee80211_supported_band *sband = NULL;
+-		enum nl80211_band band = NL80211_BAND_2GHZ;
++		struct ieee80211_supported_band *sband;
++		enum nl80211_band band;
++		int channel;
  
- /**
--* struct iwl_fw_ini_conf_tlv - preset configuration TLV
-+* struct iwl_fw_ini_addr_val - Address and value to set it to
- *
- * @address: the base address
- * @value: value to set at address
--
- */
- struct iwl_fw_ini_addr_val {
- 	__le32 address;
+-		while (!sband && band < NUM_NL80211_BANDS)
+-			sband = mvm->hw->wiphy->bands[band++];
++		for (band = NL80211_BAND_2GHZ; band < NUM_NL80211_BANDS; band++) {
++			sband = mvm->hw->wiphy->bands[band];
+ 
+-		if (WARN_ON(!sband))
+-			return;
++			if (!sband)
++				continue;
++
++			for (channel = 0; channel < sband->n_channels; channel++)
++				if (!(sband->channels[channel].flags &
++						IEEE80211_CHAN_DISABLED)) {
++					chan = &sband->channels[channel];
++					break;
++				}
+ 
+-		chan = &sband->channels[0];
++			if (chan)
++				break;
++		}
++
++		if (WARN_ON(!chan))
++			return;
+ 
+ 		cfg80211_chandef_create(&chandef, chan, NL80211_CHAN_NO_HT);
+ 		iwl_mvm_phy_ctxt_changed(mvm, ctxt, &chandef, 1, 1);
 -- 
 2.34.1
 
