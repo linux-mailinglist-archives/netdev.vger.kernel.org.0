@@ -2,45 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A94F4EF4B5
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EDBA4EF4B7
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348305AbiDAOv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S242912AbiDAOxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:53:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349338AbiDAOpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:45:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D9029B114;
-        Fri,  1 Apr 2022 07:35:49 -0700 (PDT)
+        with ESMTP id S1349807AbiDAOqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:46:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0912929EE0C;
+        Fri,  1 Apr 2022 07:36:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A53D2B8240E;
-        Fri,  1 Apr 2022 14:35:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D857C340EE;
-        Fri,  1 Apr 2022 14:35:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C234360B8A;
+        Fri,  1 Apr 2022 14:36:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29766C2BBE4;
+        Fri,  1 Apr 2022 14:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823746;
-        bh=XiDbRpRqXbQPUNKnDQQ2gCdqVVLhPM/D2i/bwQl4Lko=;
+        s=k20201202; t=1648823766;
+        bh=zq+1QPbSekVzYFU/HR9QExlr4oS2/VMpbbXHvi4dsvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aXVOIszbeSeXUd0ivSQljTzwf9gpXXs6dYXahchlEza5xXaSpB0ynZq7RZtSbG6T7
-         HmFKU65MgIa/Ce6R/tcH23CZG03BEBpE1xcifLKA3Wf+/t3y2ejtQ1y5DkmGBjtjQI
-         R3qHMp6EmP9MvWOsJoenxYMM0U9JFRBPJ3fVVs2RXR5jVYbVuxXNaCc2oSPtiYfiff
-         cGQ/Lx7THcXSVU2I3JujZMQ8yv5JuDL90hiuH/8GZkzrBv25pQ/WFFPpMJHkAu+HOZ
-         Cvd+j5JuKIy2UnX47GT7Miy5zHxBzIKpLGIftEQmtj21PtNGVlBTpV+EPQpTmtX50w
-         e9ZgVwwtuODjQ==
+        b=jKiU8gUVHthbgpLbXtqI8ZH6Mj9hV7x22H1IZNSIs0Tylr2FRT3pyhb9wQeS10+xt
+         EWOEGq5CzRFfRXhrW6MJ6mrvoWzG8EbJcH48aibkmD0eclWg2aG1dZnHcLBCeJ3BR6
+         1tKTqFHxw34ShSdEkopX46rizJfQe7lVLAI5+yCvv8q6P1EjgSj8/n3rRFf/zgWQGR
+         jTZEYFyQV/drRKdK7YMQ8PBICdV/5dLeGEYizRzY2ytJV2JamczOoKC99TE23Oi2Pe
+         uMV5FKGJR4IokUNOQfVgzqle4Ar0iss9JSBf/bWpKXINc/0zE0KLncnYEpHez0CfnP
+         5DgWrCasU3O5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ido Schimmel <idosch@nvidia.com>, Wang Hai <wanghai38@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 059/109] ipv4: Invalidate neighbour for broadcast address upon address addition
-Date:   Fri,  1 Apr 2022 10:32:06 -0400
-Message-Id: <20220401143256.1950537-59-sashal@kernel.org>
+Cc:     Johan Almbladh <johan.almbladh@anyfinetworks.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, Bo.Jiao@mediatek.com,
+        sujuan.chen@mediatek.com, shayne.chen@mediatek.com,
+        greearb@candelatech.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 069/109] mt76: mt7915: fix injected MPDU transmission to not use HW A-MSDU
+Date:   Fri,  1 Apr 2022 10:32:16 -0400
+Message-Id: <20220401143256.1950537-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401143256.1950537-1-sashal@kernel.org>
 References: <20220401143256.1950537-1-sashal@kernel.org>
@@ -58,115 +62,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Johan Almbladh <johan.almbladh@anyfinetworks.com>
 
-[ Upstream commit 0c51e12e218f20b7d976158fdc18019627326f7a ]
+[ Upstream commit 28225a6ef80ebf46c46e5fbd5b1ee231a0b2b5b7 ]
 
-In case user space sends a packet destined to a broadcast address when a
-matching broadcast route is not configured, the kernel will create a
-unicast neighbour entry that will never be resolved [1].
+Before, the hardware would be allowed to transmit injected 802.11 MPDUs
+as A-MSDU. This resulted in corrupted frames being transmitted. Now,
+injected MPDUs are transmitted as-is, without A-MSDU.
 
-When the broadcast route is configured, the unicast neighbour entry will
-not be invalidated and continue to linger, resulting in packets being
-dropped.
+The fix was verified with frame injection on MT7915 hardware, both with
+and without the injected frame being encrypted.
 
-Solve this by invalidating unresolved neighbour entries for broadcast
-addresses after routes for these addresses are internally configured by
-the kernel. This allows the kernel to create a broadcast neighbour entry
-following the next route lookup.
+If the hardware cannot do A-MSDU aggregation on MPDUs, this problem
+would also be present in the TX path where mac80211 does the 802.11
+encapsulation. However, I have not observed any such problem when
+disabling IEEE80211_HW_SUPPORTS_TX_ENCAP_OFFLOAD to force that mode.
+Therefore this fix is isolated to injected frames only.
 
-Another possible solution that is more generic but also more complex is
-to have the ARP code register a listener to the FIB notification chain
-and invalidate matching neighbour entries upon the addition of broadcast
-routes.
+The same A-MSDU logic is also present in the mt7921 driver, so it is
+likely that this fix should be applied there too. I do not have access
+to mt7921 hardware so I have not been able to test that.
 
-It is also possible to wave off the issue as a user space problem, but
-it seems a bit excessive to expect user space to be that intimately
-familiar with the inner workings of the FIB/neighbour kernel code.
-
-[1] https://lore.kernel.org/netdev/55a04a8f-56f3-f73c-2aea-2195923f09d1@huawei.com/
-
-Reported-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Tested-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Johan Almbladh <johan.almbladh@anyfinetworks.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/arp.h       | 1 +
- net/ipv4/arp.c          | 9 +++++++--
- net/ipv4/fib_frontend.c | 5 ++++-
- 3 files changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/arp.h b/include/net/arp.h
-index 4950191f6b2b..4a23a97195f3 100644
---- a/include/net/arp.h
-+++ b/include/net/arp.h
-@@ -71,6 +71,7 @@ void arp_send(int type, int ptype, __be32 dest_ip,
- 	      const unsigned char *src_hw, const unsigned char *th);
- int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir);
- void arp_ifdown(struct net_device *dev);
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force);
- 
- struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
- 			   struct net_device *dev, __be32 src_ip,
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 857a144b1ea9..5ee382309a9d 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -1116,13 +1116,18 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
- 	return err;
- }
- 
--static int arp_invalidate(struct net_device *dev, __be32 ip)
-+int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
- {
- 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
- 	int err = -ENXIO;
- 	struct neigh_table *tbl = &arp_tbl;
- 
- 	if (neigh) {
-+		if ((neigh->nud_state & NUD_VALID) && !force) {
-+			neigh_release(neigh);
-+			return 0;
-+		}
-+
- 		if (neigh->nud_state & ~NUD_NOARP)
- 			err = neigh_update(neigh, NULL, NUD_FAILED,
- 					   NEIGH_UPDATE_F_OVERRIDE|
-@@ -1169,7 +1174,7 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
- 		if (!dev)
- 			return -EINVAL;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index 38d66411444a..93aa2242c0d9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -982,6 +982,7 @@ mt7915_mac_write_txwi_80211(struct mt7915_dev *dev, __le32 *txwi,
+ 		val = MT_TXD3_SN_VALID |
+ 		      FIELD_PREP(MT_TXD3_SEQ, IEEE80211_SEQ_TO_SN(seqno));
+ 		txwi[3] |= cpu_to_le32(val);
++		txwi[7] &= ~cpu_to_le32(MT_TXD7_HW_AMSDU);
  	}
--	return arp_invalidate(dev, ip);
-+	return arp_invalidate(dev, ip, true);
- }
  
- /*
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 4d61ddd8a0ec..1eb7795edb9d 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -1112,9 +1112,11 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 		return;
- 
- 	/* Add broadcast address, if it is explicitly assigned. */
--	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF))
-+	if (ifa->ifa_broadcast && ifa->ifa_broadcast != htonl(0xFFFFFFFF)) {
- 		fib_magic(RTM_NEWROUTE, RTN_BROADCAST, ifa->ifa_broadcast, 32,
- 			  prim, 0);
-+		arp_invalidate(dev, ifa->ifa_broadcast, false);
-+	}
- 
- 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
- 	    (prefix != addr || ifa->ifa_prefixlen < 32)) {
-@@ -1128,6 +1130,7 @@ void fib_add_ifaddr(struct in_ifaddr *ifa)
- 		if (ifa->ifa_prefixlen < 31) {
- 			fib_magic(RTM_NEWROUTE, RTN_BROADCAST, prefix | ~mask,
- 				  32, prim, 0);
-+			arp_invalidate(dev, prefix | ~mask, false);
- 		}
- 	}
- }
+ 	val = FIELD_PREP(MT_TXD7_TYPE, fc_type) |
 -- 
 2.34.1
 
