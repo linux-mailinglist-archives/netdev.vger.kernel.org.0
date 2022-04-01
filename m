@@ -2,101 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02EA34EFD05
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 01:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C38EB4EFD0D
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 01:21:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351852AbiDAXPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 19:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S1351767AbiDAXXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 19:23:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350461AbiDAXPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 19:15:09 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A02BEBA;
-        Fri,  1 Apr 2022 16:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1648854798; x=1680390798;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=t/uxrWafaSD5EnT5QwWMjaFa+/9c7ciaXbOG1s2P/OA=;
-  b=qpw3bnZHIqMksDumE/FzG29z4HPvjDVJnI0/68ECk2NExzlDhpbyHb8/
-   fJhN+vBFesB082aynXEwwmUKkZyuD16DBfgAEuVJnZfZssUxNmIirkCSF
-   5liMwz/3KCWGF3BRLHTJY9dD/IjKUYI3KcrYZe56OllSQqbTuIK5D0hLj
-   s=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 01 Apr 2022 16:13:18 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2022 16:13:18 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 1 Apr 2022 16:13:17 -0700
-Received: from [10.110.67.71] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 1 Apr 2022
- 16:13:16 -0700
-Message-ID: <275930a5-6f6e-4a93-6ac4-d5f99075d672@quicinc.com>
-Date:   Fri, 1 Apr 2022 16:13:15 -0700
+        with ESMTP id S237030AbiDAXXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 19:23:36 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 217C91DE6E1;
+        Fri,  1 Apr 2022 16:21:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=7zUs/qNT2jriBPmaPX+VR/hP3ePdEW3j+zJ1lrBhv2U=; b=Y0aotNsYajBWIFRTA30pR+9ETq
+        UWrogTJNLMvQ4YkAkVZ3tTzF5qf7W6wKAzch7Ylgkhyt75a78RsiAK1tIsn7UAXZWo+Zt+XcmFwiX
+        QoptVSwkObojIV90VdN8IN34aKKe4pXYce1+CugatrRa1GOGPVIvU+It4Z+iFMdwn9+0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1naQa7-00Dli0-VL; Sat, 02 Apr 2022 01:21:27 +0200
+Date:   Sat, 2 Apr 2022 01:21:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC net-next v2 3/3] net: phy: mscc-miim: add support to
+ set MDIO bus frequency
+Message-ID: <YkeI90mTMLjeGgnv@lunn.ch>
+References: <20220401215834.3757692-1-michael@walle.cc>
+ <20220401215834.3757692-4-michael@walle.cc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] ice: Fix memory leak in ice_get_orom_civd_data()
-Content-Language: en-US
-To:     Jianglei Nie <niejianglei2021@163.com>,
-        <jesse.brandeburg@intel.com>, <anthony.l.nguyen@intel.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220401080051.16846-1-niejianglei2021@163.com>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <20220401080051.16846-1-niejianglei2021@163.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220401215834.3757692-4-michael@walle.cc>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/1/2022 1:00 AM, Jianglei Nie wrote:
-> Line 637 allocates a memory chunk for orom_data by vzmalloc(). But
-
-References to lile numbers don't age very well.
-suggest you s/Line 637/ice_get_orom_civd_data()/
-
-> when ice_read_flash_module() fails, the allocated memory is not freed,
-> which will lead to a memory leak.
+On Fri, Apr 01, 2022 at 11:58:34PM +0200, Michael Walle wrote:
+> Until now, the MDIO bus will have the hardware default bus frequency.
+> Read the desired frequency of the bus from the device tree and configure
+> it.
 > 
-> We can fix it by freeing the orom_data when ce_read_flash_module() fails.
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-s/We can fix/Fix/
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-actual patch LGTM
-> 
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> ---
->   drivers/net/ethernet/intel/ice/ice_nvm.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-> index 4eb0599714f4..13cdb5ea594d 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-> @@ -641,6 +641,7 @@ ice_get_orom_civd_data(struct ice_hw *hw, enum ice_bank_select bank,
->   	status = ice_read_flash_module(hw, bank, ICE_SR_1ST_OROM_BANK_PTR, 0,
->   				       orom_data, hw->flash.banks.orom_size);
->   	if (status) {
-> +		vfree(orom_data);
->   		ice_debug(hw, ICE_DBG_NVM, "Unable to read Option ROM data\n");
->   		return status;
->   	}
-
+    Andrew
