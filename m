@@ -2,208 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BCB44EF90A
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 19:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FF4C4EF91F
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 19:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350206AbiDARj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 13:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
+        id S241139AbiDARpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 13:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350210AbiDARj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 13:39:27 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2959720DB07;
-        Fri,  1 Apr 2022 10:37:37 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4KVS6l5bgGz9sRy;
-        Fri,  1 Apr 2022 19:37:35 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id cMdvPpaRRqA1; Fri,  1 Apr 2022 19:37:35 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4KVS6l4grQz9sRx;
-        Fri,  1 Apr 2022 19:37:35 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8B90B8B87E;
-        Fri,  1 Apr 2022 19:37:35 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id R0zb54Fhn4rx; Fri,  1 Apr 2022 19:37:35 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.82])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 39C6C8B879;
-        Fri,  1 Apr 2022 19:37:35 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 231HbOLg665604
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 1 Apr 2022 19:37:24 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 231HbLoC665601;
-        Fri, 1 Apr 2022 19:37:21 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Douglas Miller <dougmill@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Thomas Falcon <tlfalcon@linux.ibm.com>,
-        Ishizaki Kou <kou.ishizaki@toshiba.co.jp>,
-        Geoff Levand <geoff@infradead.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next] net: ethernet: Prepare cleanup of powerpc's asm/prom.h
-Date:   Fri,  1 Apr 2022 19:37:21 +0200
-Message-Id: <b3e4ef935b0c20e0bf2054505c0f0a26f6e831bb.1648833425.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S236235AbiDARph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 13:45:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEE35FA0
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 10:43:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4D52B8256F
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 17:43:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 109C0C2BBE4;
+        Fri,  1 Apr 2022 17:43:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648835024;
+        bh=8vHIJXtXwlCs49dmEIpdeaxsxvA4jnpUkLE4y47ww6A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=k4Y4VFR2+LIeFCSouMgOsYd2dHAcg1GaP32oBkSpllS752G+aRGW+ML600QI5BGFC
+         FCif9+ZFHVYR/3hhQANEKMx8SoPQ0nLf/B3IgorZIPBatl9zLT6x7T9g0sS3WSqz+3
+         sIl1s6rQA+axsmutSTKroOJ5p2lDBQRaOHonKD51+WWljimB2tk1WjbJgxHVrzuGpu
+         wbGPZ+pa1wyLiU6v93PrqZjbgNdMzF91IipyyqyxiVg37UgLPbVrpz/DZzuCuSAy9G
+         xjI/BMk5ZKiXlwyTurEF/W2uIOX4r1QTMRpEhNmYOtg3WL6yGvqfY2sJ80DAw6pHQY
+         VptoOs1wED3Sg==
+Date:   Fri, 1 Apr 2022 10:43:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>
+Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
+        edumazet@google.com, Jiri Pirko <jiri@mellanox.com>,
+        Brian Baboch <brian.baboch@wifirst.fr>
+Subject: Re: [PATCH net v2] rtnetlink: enable alt_ifname for setlink/newlink
+Message-ID: <20220401104342.5df7349a@kernel.org>
+In-Reply-To: <20220401153939.19620-1-florent.fourcot@wifirst.fr>
+References: <20220401153939.19620-1-florent.fourcot@wifirst.fr>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1648834640; l=4676; s=20211009; h=from:subject:message-id; bh=jl6LYjsEx9n7ujbs28rxMUGTFS2Ufwsf4HrsXVi8cQ8=; b=fuzhCyZSyHHY+dL2GY4yBHOSeCS+NQUMtkR16HooOTRLCr39XiwP7UIWvtVRcN4kEX59Zxm6NbKm m22unQn0C5HZVso0lQcHGkpbZg4Us85A9mGfZlOro3rh4b5aee9/
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-powerpc's asm/prom.h brings some headers that it doesn't
-need itself.
+On Fri,  1 Apr 2022 17:39:39 +0200 Florent Fourcot wrote:
+> buffer called "ifname" given in function rtnl_dev_get
+> is always valid when called by setlink/newlink,
+> but contains only empty string when IFLA_IFNAME is not given. So
+> IFLA_ALT_IFNAME is always ignored
+> 
+> This patch fixes rtnl_dev_get function with a remove of ifname argument,
+> and move ifname copy in do_setlink when required
+> 
+> Changes in v2:
+>  * Remove ifname argument in rtnl_dev_get/do_setlink
+>    functions (simplify code)
+> 
+> Fixes: 76c9ac0ee878 ("net: rtnetlink: add possibility to use alternative names as message handle")
+> CC: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
+> Signed-off-by: Brian Baboch <brian.baboch@wifirst.fr>
 
-In order to clean it up, first add missing headers in
-users of asm/prom.h
+> @@ -3262,7 +3257,7 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
+>  
+>  	for_each_netdev_safe(net, dev, aux) {
+>  		if (dev->group == group) {
+> -			err = do_setlink(skb, dev, ifm, extack, tb, NULL, 0);
+> +			err = do_setlink(skb, dev, ifm, extack, tb, 0);
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- drivers/net/ethernet/apple/bmac.c                | 2 +-
- drivers/net/ethernet/apple/mace.c                | 2 +-
- drivers/net/ethernet/freescale/fec_mpc52xx.c     | 2 ++
- drivers/net/ethernet/freescale/fec_mpc52xx_phy.c | 1 +
- drivers/net/ethernet/ibm/ehea/ehea.h             | 1 +
- drivers/net/ethernet/ibm/ehea/ehea_main.c        | 2 ++
- drivers/net/ethernet/ibm/ibmvnic.c               | 1 +
- drivers/net/ethernet/sun/sungem.c                | 1 -
- drivers/net/ethernet/toshiba/spider_net.c        | 1 +
- 9 files changed, 10 insertions(+), 3 deletions(-)
+This part depends on your other change, right? Do you care about this
+getting into stable? Otherwise we can downgrade it from a fix to -next
+and merge after your other patch. It never worked so we can go either
+way on it being a fix. Actually leaning slightly towards it _not_ being
+a fix.
 
-diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
-index 4d2ba30c2fbd..3843e8fdcdde 100644
---- a/drivers/net/ethernet/apple/bmac.c
-+++ b/drivers/net/ethernet/apple/bmac.c
-@@ -25,7 +25,7 @@
- #include <linux/ethtool.h>
- #include <linux/slab.h>
- #include <linux/pgtable.h>
--#include <asm/prom.h>
-+
- #include <asm/dbdma.h>
- #include <asm/io.h>
- #include <asm/page.h>
-diff --git a/drivers/net/ethernet/apple/mace.c b/drivers/net/ethernet/apple/mace.c
-index 6f8c91eb1263..97f96d30d9b3 100644
---- a/drivers/net/ethernet/apple/mace.c
-+++ b/drivers/net/ethernet/apple/mace.c
-@@ -20,7 +20,7 @@
- #include <linux/bitrev.h>
- #include <linux/slab.h>
- #include <linux/pgtable.h>
--#include <asm/prom.h>
-+
- #include <asm/dbdma.h>
- #include <asm/io.h>
- #include <asm/macio.h>
-diff --git a/drivers/net/ethernet/freescale/fec_mpc52xx.c b/drivers/net/ethernet/freescale/fec_mpc52xx.c
-index be0bd4b44926..5ddb769bdfb4 100644
---- a/drivers/net/ethernet/freescale/fec_mpc52xx.c
-+++ b/drivers/net/ethernet/freescale/fec_mpc52xx.c
-@@ -29,7 +29,9 @@
- #include <linux/crc32.h>
- #include <linux/hardirq.h>
- #include <linux/delay.h>
-+#include <linux/of_address.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- #include <linux/of_mdio.h>
- #include <linux/of_net.h>
- #include <linux/of_platform.h>
-diff --git a/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c b/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c
-index b5497e308302..f85b5e81dfc1 100644
---- a/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c
-+++ b/drivers/net/ethernet/freescale/fec_mpc52xx_phy.c
-@@ -15,6 +15,7 @@
- #include <linux/phy.h>
- #include <linux/of_platform.h>
- #include <linux/slab.h>
-+#include <linux/of_address.h>
- #include <linux/of_mdio.h>
- #include <asm/io.h>
- #include <asm/mpc52xx.h>
-diff --git a/drivers/net/ethernet/ibm/ehea/ehea.h b/drivers/net/ethernet/ibm/ehea/ehea.h
-index b140835d4c23..208c440a602b 100644
---- a/drivers/net/ethernet/ibm/ehea/ehea.h
-+++ b/drivers/net/ethernet/ibm/ehea/ehea.h
-@@ -19,6 +19,7 @@
- #include <linux/ethtool.h>
- #include <linux/vmalloc.h>
- #include <linux/if_vlan.h>
-+#include <linux/platform_device.h>
- 
- #include <asm/ibmebus.h>
- #include <asm/io.h>
-diff --git a/drivers/net/ethernet/ibm/ehea/ehea_main.c b/drivers/net/ethernet/ibm/ehea/ehea_main.c
-index bad94e4d50f4..8ce3348edf08 100644
---- a/drivers/net/ethernet/ibm/ehea/ehea_main.c
-+++ b/drivers/net/ethernet/ibm/ehea/ehea_main.c
-@@ -29,6 +29,8 @@
- #include <asm/kexec.h>
- #include <linux/mutex.h>
- #include <linux/prefetch.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- 
- #include <net/ip.h>
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 77683909ca3d..309d97d28fb1 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -53,6 +53,7 @@
- #include <linux/ip.h>
- #include <linux/ipv6.h>
- #include <linux/irq.h>
-+#include <linux/irqdomain.h>
- #include <linux/kthread.h>
- #include <linux/seq_file.h>
- #include <linux/interrupt.h>
-diff --git a/drivers/net/ethernet/sun/sungem.c b/drivers/net/ethernet/sun/sungem.c
-index 036856102c50..45bd89153de2 100644
---- a/drivers/net/ethernet/sun/sungem.c
-+++ b/drivers/net/ethernet/sun/sungem.c
-@@ -52,7 +52,6 @@
- #endif
- 
- #ifdef CONFIG_PPC_PMAC
--#include <asm/prom.h>
- #include <asm/machdep.h>
- #include <asm/pmac_feature.h>
- #endif
-diff --git a/drivers/net/ethernet/toshiba/spider_net.c b/drivers/net/ethernet/toshiba/spider_net.c
-index f47b8358669d..eeee4f7ae444 100644
---- a/drivers/net/ethernet/toshiba/spider_net.c
-+++ b/drivers/net/ethernet/toshiba/spider_net.c
-@@ -35,6 +35,7 @@
- #include <linux/wait.h>
- #include <linux/workqueue.h>
- #include <linux/bitops.h>
-+#include <linux/of.h>
- #include <net/checksum.h>
- 
- #include "spider_net.h"
--- 
-2.35.1
+>  			if (err < 0)
+>  				return err;
+>  		}
+
+> @@ -3450,7 +3440,10 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  	if (!ops->alloc && !ops->setup)
+>  		return -EOPNOTSUPP;
+>  
+> -	if (!ifname[0]) {
+> +	if (tb[IFLA_IFNAME]) {
+> +		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
+> +	}
+> +	else {
+
+Formatting slightly off here, should be
+
+	} else {
+
+>  		snprintf(ifname, IFNAMSIZ, "%s%%d", ops->kind);
+>  		name_assign_type = NET_NAME_ENUM;
+>  	}
+> @@ -3622,8 +3615,7 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  	if (ifm->ifi_index > 0)
+>  		dev = __dev_get_by_index(tgt_net, ifm->ifi_index);
+>  	else if (tb[IFLA_IFNAME] || tb[IFLA_ALT_IFNAME])
+> -		dev = rtnl_dev_get(tgt_net, tb[IFLA_IFNAME],
+> -				   tb[IFLA_ALT_IFNAME], NULL);
+> +		dev = rtnl_dev_get(tgt_net, tb[IFLA_IFNAME], tb[IFLA_ALT_IFNAME]);
+
+How about we pass tb and extract IFLA_IFNAME and IFLA_ALT_IFNAME inside
+rtnl_dev_get()? All callers seem to pass the same args now.
+
+>  	else
+>  		goto out;
+>  
+
 
