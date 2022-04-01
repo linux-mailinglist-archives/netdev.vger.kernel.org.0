@@ -2,125 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7DDC4EF639
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 656CA4EF645
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 17:53:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242939AbiDAPbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 11:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
+        id S1348662AbiDAPcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 11:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349653AbiDAO5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:57:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11AF15040E;
-        Fri,  1 Apr 2022 07:44:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D5EB60AD8;
-        Fri,  1 Apr 2022 14:44:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99C81C34111;
-        Fri,  1 Apr 2022 14:44:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648824276;
-        bh=8gh+4Mhbk2luWoalZsJvkPybHUn5HxFJvrvm+ZoaMyE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ieWwYrO70pKY+GVO5kR07MJvhzp4AEhqWYyiKesyglHn7zrk0OPPmkIrWfkrrbnxe
-         OlGPW6aFZHdwXdA0v+X0UDNlMxoZkIdbEzW2Hn2Oiz9/TLehOm+efhNtu8idwopqWu
-         kiGFBfAVvo+CP6yFCptFOyC9X7Dhdu54aLKpY5M62BPsD/ZDkb2WhgBFas0XoVLt2B
-         lxWVGM6q6GlSk0EIU89q25qiVVJIZuqEL6HkUplVPUJctsTFCIv3B5hJsbf09q6cfR
-         4kAZOLiyKQapRQTAqrmTCtedXxN1xR8aLVPtIsTtvty1MtCdzkeeOT/En1Ym2Wiwkj
-         GgJPo1vaEGxOA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>, Hulk Robot <hulkci@huawei.com>,
-        Paul Moore <paul@paul-moore.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 62/65] netlabel: fix out-of-bounds memory accesses
-Date:   Fri,  1 Apr 2022 10:42:03 -0400
-Message-Id: <20220401144206.1953700-62-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220401144206.1953700-1-sashal@kernel.org>
-References: <20220401144206.1953700-1-sashal@kernel.org>
+        with ESMTP id S1349377AbiDAOzX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:55:23 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0308E25E9E;
+        Fri,  1 Apr 2022 07:43:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=b2CiO4L5LMsTPjyVGlh+eoZTqAHsqAzbmA0VJTGYz9o=; b=o6BUqL3qcos1U48U8sIZkxD6OH
+        YW8IGXnQorGS207zezKy4MeXATgJB4mmk/Z2/4hON2iGNgaBvIQqnMXHOp5QWoaI6LY8FMnh9fnYk
+        UrCSXHdy7RFQ1wxLt9GGZRWC0vKxHO/5LFF6DsGHA4uAI6pEOZkj4Wf/DDXdFu+JAwbq3GIqpKQIl
+        ul9BhwQ7ZuYl1fYhKTqHQKd9NApdCXPq+HwZU/uL8QdWrt1PImgbni7qrmxbrhdjcp4GuKniKZUnB
+        kAZ2Xb12OAQsWelmi73rYWpDAobSOHKhLItkhIxrRseDl3ygyokyVxhGXuT9nwWKU5db1gm9HjvgE
+        Avu36DhA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58082)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1naIUs-0006GG-6f; Fri, 01 Apr 2022 15:43:29 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1naIUo-0000H1-0J; Fri, 01 Apr 2022 15:43:26 +0100
+Date:   Fri, 1 Apr 2022 15:43:25 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hkallweit1@gmail.com,
+        Divya.Koppera@microchip.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, richardcochran@gmail.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net v2 0/3] net: phy: micrel: Remove latencies support
+ lan8814
+Message-ID: <YkcPja9WxzJ6eU5d@shell.armlinux.org.uk>
+References: <20220401110522.3418258-1-horatiu.vultur@microchip.com>
+ <Ykb2yoXHib6l9gkT@lunn.ch>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ykb2yoXHib6l9gkT@lunn.ch>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+On Fri, Apr 01, 2022 at 02:57:46PM +0200, Andrew Lunn wrote:
+> On Fri, Apr 01, 2022 at 01:05:19PM +0200, Horatiu Vultur wrote:
+> > Remove the latencies support both from the PHY driver and from the DT.
+> > The IP already has some default latencies values which can be used to get
+> > decent results. It has the following values(defined in ns):
+> > rx-1000mbit: 429
+> > tx-1000mbit: 201
+> > rx-100mbit:  2346
+> > tx-100mbit:  705
+> 
+> So one alternative option here is that ptp4l looks at
+> 
+> /sys/class/net/<ifname>/phydev/phy_id
 
-[ Upstream commit f22881de730ebd472e15bcc2c0d1d46e36a87b9c ]
+That doesn't work for Clause 45 PHYs, only Clause 22 PHYs. If we want
+userspace to know which PHY it is, we need a proper interface that
+exports all the 31 Clause 45 IDs (each mmd's registers 2/3) as well, as
+well as the Clause 45 package ID (registers 14/15).
 
-In calipso_map_cat_ntoh(), in the for loop, if the return value of
-netlbl_bitmap_walk() is equal to (net_clen_bits - 1), when
-netlbl_bitmap_walk() is called next time, out-of-bounds memory accesses
-of bitmap[byte_offset] occurs.
-
-The bug was found during fuzzing. The following is the fuzzing report
- BUG: KASAN: slab-out-of-bounds in netlbl_bitmap_walk+0x3c/0xd0
- Read of size 1 at addr ffffff8107bf6f70 by task err_OH/252
-
- CPU: 7 PID: 252 Comm: err_OH Not tainted 5.17.0-rc7+ #17
- Hardware name: linux,dummy-virt (DT)
- Call trace:
-  dump_backtrace+0x21c/0x230
-  show_stack+0x1c/0x60
-  dump_stack_lvl+0x64/0x7c
-  print_address_description.constprop.0+0x70/0x2d0
-  __kasan_report+0x158/0x16c
-  kasan_report+0x74/0x120
-  __asan_load1+0x80/0xa0
-  netlbl_bitmap_walk+0x3c/0xd0
-  calipso_opt_getattr+0x1a8/0x230
-  calipso_sock_getattr+0x218/0x340
-  calipso_sock_getattr+0x44/0x60
-  netlbl_sock_getattr+0x44/0x80
-  selinux_netlbl_socket_setsockopt+0x138/0x170
-  selinux_socket_setsockopt+0x4c/0x60
-  security_socket_setsockopt+0x4c/0x90
-  __sys_setsockopt+0xbc/0x2b0
-  __arm64_sys_setsockopt+0x6c/0x84
-  invoke_syscall+0x64/0x190
-  el0_svc_common.constprop.0+0x88/0x200
-  do_el0_svc+0x88/0xa0
-  el0_svc+0x128/0x1b0
-  el0t_64_sync_handler+0x9c/0x120
-  el0t_64_sync+0x16c/0x170
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Acked-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/netlabel/netlabel_kapi.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/netlabel/netlabel_kapi.c b/net/netlabel/netlabel_kapi.c
-index 5e1239cef000..91b35b7c80d8 100644
---- a/net/netlabel/netlabel_kapi.c
-+++ b/net/netlabel/netlabel_kapi.c
-@@ -885,6 +885,8 @@ int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
- 	unsigned char bitmask;
- 	unsigned char byte;
- 
-+	if (offset >= bitmap_len)
-+		return -1;
- 	byte_offset = offset / 8;
- 	byte = bitmap[byte_offset];
- 	bit_spot = offset;
 -- 
-2.34.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
