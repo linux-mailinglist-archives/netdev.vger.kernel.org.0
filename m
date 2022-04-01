@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89BF64EF14B
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:40:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE8C04EF103
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 16:39:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347737AbiDAOft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 10:35:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
+        id S1347729AbiDAOfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 10:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348300AbiDAOdy (ORCPT
+        with ESMTP id S1348305AbiDAOdy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 10:33:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23BD1BC7;
-        Fri,  1 Apr 2022 07:31:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72968BF58;
+        Fri,  1 Apr 2022 07:32:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C758CB82507;
-        Fri,  1 Apr 2022 14:31:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F9E6C340F2;
-        Fri,  1 Apr 2022 14:31:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20CD6B8240E;
+        Fri,  1 Apr 2022 14:32:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2472C2BBE4;
+        Fri,  1 Apr 2022 14:31:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648823512;
-        bh=779IwsmopQVzwMT4JAhiVrfy59820UbMAuQJyjmPsyc=;
+        s=k20201202; t=1648823519;
+        bh=hffhfGZggXIZrzhWpnf/mKyIGXVLLu+mdlXrm1Va7YI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aw2L5bwvrQpVeZa0+CLGgxdImC5HLV2ppl1CLnfAYHuAUiHdlay/uY/109sCGmsiF
-         krSIniGRAdk190hdDqvgClhVHbhAxv91B9R1Ge7zsfyXhcz0eN6HvT1S8gH+8sFWsh
-         j+VrDVjUiYe1cVMWy7F2JXxTFu/JK6dskfFxMquVhSNhdV2B70jEYZv195g9ckxJnF
-         xAHywSmfu+FNQAtmSTqJZ3fSjyyyAm1DrHLnESg/BHZj4vLO0yJyX/qWdxFjoAuvJI
-         FhgICMl/09H+23SVGbo5CxlRu6VrrPemKjupNRLxDtNXI/PcBEm3gZd/z4Qs8AZPRj
-         +sqfmv8424y2Q==
+        b=im9ydIe5mdqov0JvAXgbmSQYLVx/xqUNe8hNGBl0xwNt5ZMaWut5es/20/9+EMXv8
+         oycBbbeqypj+FD46SlIEZQZxYJpZSZgQTQJUsG538H8uqnO292ZsTGs8kuhVwn5p1C
+         FbFj1E5BkrSI7ifTR6X9lRRE35YS6rawV2QR8rDooacv7vpi4ei2XrNheCOq32HTTh
+         tIwJqa2gsbggT0Q84PCbH+DFn/D11+oDseYy7uoQvxhKs980xarBI5Jo3qHPNi0Rwx
+         6dhjbFpHWTG5aVXmM0+Ttf6RTtqnJVlMPXIkUkBxDyhW4dVZDSluXkrBwC9qBHILUe
+         2n4TaZJCoC7fQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        kernel test robot <lkp@intel.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, akpm@linux-foundation.org,
-        catalin.marinas@arm.com, anshuman.khandual@arm.com,
-        npiggin@gmail.com, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 123/149] powerpc/64e: Tie PPC_BOOK3E_64 to PPC_FSL_BOOK3E
-Date:   Fri,  1 Apr 2022 10:25:10 -0400
-Message-Id: <20220401142536.1948161-123-sashal@kernel.org>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 127/149] can: isotp: set default value for N_As to 50 micro seconds
+Date:   Fri,  1 Apr 2022 10:25:14 -0400
+Message-Id: <20220401142536.1948161-127-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220401142536.1948161-1-sashal@kernel.org>
 References: <20220401142536.1948161-1-sashal@kernel.org>
@@ -62,58 +58,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-[ Upstream commit 1a76e520ee1831a81dabf8a9a58c6453f700026e ]
+[ Upstream commit 530e0d46c61314c59ecfdb8d3bcb87edbc0f85d3 ]
 
-Since the IBM A2 CPU support was removed, see commit
-fb5a515704d7 ("powerpc: Remove platforms/wsp and associated pieces"),
-the only 64-bit Book3E CPUs we support are Freescale (NXP) ones.
+The N_As value describes the time a CAN frame needs on the wire when
+transmitted by the CAN controller. Even very short CAN FD frames need
+arround 100 usecs (bitrate 1Mbit/s, data bitrate 8Mbit/s).
 
-However our Kconfig still allows configurating a kernel that has 64-bit
-Book3E support, but no Freescale CPU support enabled. Such a kernel
-would never boot, it doesn't know about any CPUs.
+Having N_As to be zero (the former default) leads to 'no CAN frame
+separation' when STmin is set to zero by the receiving node. This 'burst
+mode' should not be enabled by default as it could potentially dump a high
+number of CAN frames into the netdev queue from the soft hrtimer context.
+This does not affect the system stability but is just not nice and
+cooperative.
 
-It also causes build errors, as reported by lkp, because
-PPC_BARRIER_NOSPEC is not enabled in such a configuration:
+With this N_As/frame_txtime value the 'burst mode' is disabled by default.
 
-  powerpc64-linux-ld: arch/powerpc/net/bpf_jit_comp64.o:(.toc+0x0):
-  undefined reference to `powerpc_security_features'
+As user space applications usually do not set the frame_txtime element
+of struct can_isotp_options the new in-kernel default is very likely
+overwritten with zero when the sockopt() CAN_ISOTP_OPTS is invoked.
+To make sure that a N_As value of zero is only set intentional the
+value '0' is now interpreted as 'do not change the current value'.
+When a frame_txtime of zero is required for testing purposes this
+CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
 
-To fix this, force PPC_FSL_BOOK3E to be selected whenever we are
-building a 64-bit Book3E kernel.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Suggested-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20220304061222.2478720-1-mpe@ellerman.id.au
+Link: https://lore.kernel.org/all/20220309120416.83514-2-socketcan@hartkopp.net
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/Kconfig.cputype | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/uapi/linux/can/isotp.h | 28 ++++++++++++++++++++++------
+ net/can/isotp.c                | 12 +++++++++++-
+ 2 files changed, 33 insertions(+), 7 deletions(-)
 
-diff --git a/arch/powerpc/platforms/Kconfig.cputype b/arch/powerpc/platforms/Kconfig.cputype
-index 87bc1929ee5a..e2e1fec91c6e 100644
---- a/arch/powerpc/platforms/Kconfig.cputype
-+++ b/arch/powerpc/platforms/Kconfig.cputype
-@@ -107,6 +107,7 @@ config PPC_BOOK3S_64
+diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
+index c55935b64ccc..590f8aea2b6d 100644
+--- a/include/uapi/linux/can/isotp.h
++++ b/include/uapi/linux/can/isotp.h
+@@ -137,20 +137,16 @@ struct can_isotp_ll_options {
+ #define CAN_ISOTP_WAIT_TX_DONE	0x400	/* wait for tx completion */
+ #define CAN_ISOTP_SF_BROADCAST	0x800	/* 1-to-N functional addressing */
  
- config PPC_BOOK3E_64
- 	bool "Embedded processors"
-+	select PPC_FSL_BOOK3E
- 	select PPC_FPU # Make it a choice ?
- 	select PPC_SMP_MUXED_IPI
- 	select PPC_DOORBELL
-@@ -295,7 +296,7 @@ config FSL_BOOKE
- config PPC_FSL_BOOK3E
- 	bool
- 	select ARCH_SUPPORTS_HUGETLBFS if PHYS_64BIT || PPC64
--	select FSL_EMB_PERFMON
-+	imply FSL_EMB_PERFMON
- 	select PPC_SMP_MUXED_IPI
- 	select PPC_DOORBELL
- 	select PPC_KUEP
+-/* default values */
++/* protocol machine default values */
+ 
+ #define CAN_ISOTP_DEFAULT_FLAGS		0
+ #define CAN_ISOTP_DEFAULT_EXT_ADDRESS	0x00
+ #define CAN_ISOTP_DEFAULT_PAD_CONTENT	0xCC /* prevent bit-stuffing */
+-#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	0
++#define CAN_ISOTP_DEFAULT_FRAME_TXTIME	50000 /* 50 micro seconds */
+ #define CAN_ISOTP_DEFAULT_RECV_BS	0
+ #define CAN_ISOTP_DEFAULT_RECV_STMIN	0x00
+ #define CAN_ISOTP_DEFAULT_RECV_WFTMAX	0
+ 
+-#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
+-#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
+-#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
+-
+ /*
+  * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
+  *
+@@ -162,4 +158,24 @@ struct can_isotp_ll_options {
+  * consistency and copied directly into the flow control (FC) frame.
+  */
+ 
++/* link layer default values => make use of Classical CAN frames */
++
++#define CAN_ISOTP_DEFAULT_LL_MTU	CAN_MTU
++#define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
++#define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
++
++/*
++ * The CAN_ISOTP_DEFAULT_FRAME_TXTIME has become a non-zero value as
++ * it only makes sense for isotp implementation tests to run without
++ * a N_As value. As user space applications usually do not set the
++ * frame_txtime element of struct can_isotp_options the new in-kernel
++ * default is very likely overwritten with zero when the sockopt()
++ * CAN_ISOTP_OPTS is invoked.
++ * To make sure that a N_As value of zero is only set intentional the
++ * value '0' is now interpreted as 'do not change the current value'.
++ * When a frame_txtime of zero is required for testing purposes this
++ * CAN_ISOTP_FRAME_TXTIME_ZERO u32 value has to be set in frame_txtime.
++ */
++#define CAN_ISOTP_FRAME_TXTIME_ZERO	0xFFFFFFFF
++
+ #endif /* !_UAPI_CAN_ISOTP_H */
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index d2a430b6a13b..ea8e932008a3 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -141,6 +141,7 @@ struct isotp_sock {
+ 	struct can_isotp_options opt;
+ 	struct can_isotp_fc_options rxfc, txfc;
+ 	struct can_isotp_ll_options ll;
++	u32 frame_txtime;
+ 	u32 force_tx_stmin;
+ 	u32 force_rx_stmin;
+ 	struct tpcon rx, tx;
+@@ -360,7 +361,7 @@ static int isotp_rcv_fc(struct isotp_sock *so, struct canfd_frame *cf, int ae)
+ 
+ 		so->tx_gap = ktime_set(0, 0);
+ 		/* add transmission time for CAN frame N_As */
+-		so->tx_gap = ktime_add_ns(so->tx_gap, so->opt.frame_txtime);
++		so->tx_gap = ktime_add_ns(so->tx_gap, so->frame_txtime);
+ 		/* add waiting time for consecutive frames N_Cs */
+ 		if (so->opt.flags & CAN_ISOTP_FORCE_TXSTMIN)
+ 			so->tx_gap = ktime_add_ns(so->tx_gap,
+@@ -1238,6 +1239,14 @@ static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
+ 		/* no separate rx_ext_address is given => use ext_address */
+ 		if (!(so->opt.flags & CAN_ISOTP_RX_EXT_ADDR))
+ 			so->opt.rx_ext_address = so->opt.ext_address;
++
++		/* check for frame_txtime changes (0 => no changes) */
++		if (so->opt.frame_txtime) {
++			if (so->opt.frame_txtime == CAN_ISOTP_FRAME_TXTIME_ZERO)
++				so->frame_txtime = 0;
++			else
++				so->frame_txtime = so->opt.frame_txtime;
++		}
+ 		break;
+ 
+ 	case CAN_ISOTP_RECV_FC:
+@@ -1439,6 +1448,7 @@ static int isotp_init(struct sock *sk)
+ 	so->opt.rxpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
+ 	so->opt.txpad_content = CAN_ISOTP_DEFAULT_PAD_CONTENT;
+ 	so->opt.frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
++	so->frame_txtime = CAN_ISOTP_DEFAULT_FRAME_TXTIME;
+ 	so->rxfc.bs = CAN_ISOTP_DEFAULT_RECV_BS;
+ 	so->rxfc.stmin = CAN_ISOTP_DEFAULT_RECV_STMIN;
+ 	so->rxfc.wftmax = CAN_ISOTP_DEFAULT_RECV_WFTMAX;
 -- 
 2.34.1
 
