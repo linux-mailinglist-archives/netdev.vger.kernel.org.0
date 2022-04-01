@@ -2,139 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD5D84EE9EF
-	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 10:47:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04A04EEA84
+	for <lists+netdev@lfdr.de>; Fri,  1 Apr 2022 11:36:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244654AbiDAIt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 04:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
+        id S1344630AbiDAJiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 05:38:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244221AbiDAIt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 04:49:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35A9D3CFCB
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 01:47:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648802857;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=37yAvQTIEV1IvNK0QI/IF+EVq5TLZBtgSkNUfD0vZVo=;
-        b=S2TTZGqeW2szXRCPL5VwjoG28KuX9qhhcvhqAmMbQXNbjoMnZvVqrIGFiLuFGag9qhpfo6
-        5WqW0SDUSJeqfUIk5+kuQ3AAImG5EYe84GMA8rdJ2jr0AlctCqc8wX2Uqsqmm2AI55D3Ti
-        YSvDPCXi7dUtLbrt7txlNfgKgoQCkII=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-622-cqP0x8lDMBuv4wQq1Nu4iA-1; Fri, 01 Apr 2022 04:47:33 -0400
-X-MC-Unique: cqP0x8lDMBuv4wQq1Nu4iA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B9C36101A52C;
-        Fri,  1 Apr 2022 08:47:32 +0000 (UTC)
-Received: from ceranb (unknown [10.40.192.123])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E73405E194A;
-        Fri,  1 Apr 2022 08:47:30 +0000 (UTC)
-Date:   Fri, 1 Apr 2022 10:47:30 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Brett Creeley <brett@pensando.io>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>, mschmidt <mschmidt@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        poros <poros@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [Intel-wired-lan] [PATCH net] ice: Fix incorrect locking in
- ice_vc_process_vf_msg()
-Message-ID: <20220401104730.44cd443e@ceranb>
-In-Reply-To: <CO1PR11MB5089888D13802251F6830A8ED6E19@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220331105005.2580771-1-ivecera@redhat.com>
-        <YkWpNVXYEBo/u3dm@boxer>
-        <YkWp5JJ9Sp6UCTw7@boxer>
-        <CAFWUkrTzE87bduD431nu11biHi78XFitUWQfiwcU6_4UPU9FBg@mail.gmail.com>
-        <CO1PR11MB5089888D13802251F6830A8ED6E19@CO1PR11MB5089.namprd11.prod.outlook.com>
+        with ESMTP id S1344628AbiDAJhv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 05:37:51 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD17E70076;
+        Fri,  1 Apr 2022 02:36:01 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id b15so2277241edn.4;
+        Fri, 01 Apr 2022 02:36:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8ChGEZUwxXxDaxj8jm+DIh6cj4fnGyQfICbK1J0+U1A=;
+        b=A79tAmggU6JmNIp++HoBgOXDsNrdEeRfooo06Q9jn6t8L6yNWZnqfVu1PaCIjTQoBp
+         DzwmeugkPVJRZB3qJkgXPzXTo3xHlzOKRIrBAugCtPH2OeMgiRwm5TjKvUeaoTdQ3/fW
+         SKsd6bEkme+qYIloK5jD6YrUvRkB0Znzh6P9jikVjiVPl0IC2dXD8oYs51Kdj/HOVA3l
+         WUXJYypZaYU+TL5i7lZSRGSjOjxdwARAyXfM1iOqUoNLuQFNCyHUjt8TAQAgU7z0Tn8a
+         OjZ0UwHV8RpxjHpeCh8gp7G1VNzAH8cFa5PhJJuXStogSZ5v5BBzL2PVWFyXJTNECFHr
+         W1/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8ChGEZUwxXxDaxj8jm+DIh6cj4fnGyQfICbK1J0+U1A=;
+        b=b+qpZEdmPFIW/JOmlyL7061oyG85WBQIAzJwSWaUmJYdkDfIn0FluzqVQoEb5nunOn
+         UaGbXe4DcfYsPnjua5qmfK8H589RKKicK+hid1kAGTSkEi/YMXeesaFnGlil6wq4gFIs
+         9FiVg5saI8P7gEvNz+v/tmmDq4GrOynhXnXVRZvq2zFUKyvADYtU1Qvev6N4QPbib+B3
+         0aIBZqS8tGrhoCb4+UP2chU5KkrGFSDOY3Pmuaieoy0AvfW7IJaipsskWtDN+L90JaF2
+         Te9G2QOYy1n7vces2SApXz3k68TuLiafp75ThLqWMLwwh4sLnJQYsmO2SXT+ZGLF9OVT
+         n4gA==
+X-Gm-Message-State: AOAM530h4N1v6EeQYDQFnwlKieRJZtTtv2k7wn46l0dVFczkGreMeL2H
+        exqiZIPWNI2fddThu4s6DcA=
+X-Google-Smtp-Source: ABdhPJzm8mxDWrntuztPp6BZheOhHfWdwWCsOOS/sgETBckm+VbxonZQWm4VIVX0DmXmctv3+WAfhg==
+X-Received: by 2002:a05:6402:2805:b0:41b:630b:de68 with SMTP id h5-20020a056402280500b0041b630bde68mr12946845ede.143.1648805760217;
+        Fri, 01 Apr 2022 02:36:00 -0700 (PDT)
+Received: from fedora.robimarko.hr ([88.207.4.27])
+        by smtp.googlemail.com with ESMTPSA id v17-20020a17090651d100b006dfa26428bcsm831460ejk.108.2022.04.01.02.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Apr 2022 02:35:59 -0700 (PDT)
+From:   Robert Marko <robimarko@gmail.com>
+To:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>
+Subject: [PATCH] ath11k: select QRTR for AHB as well
+Date:   Fri,  1 Apr 2022 11:35:54 +0200
+Message-Id: <20220401093554.360211-1-robimarko@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 31 Mar 2022 19:59:11 +0000
-"Keller, Jacob E" <jacob.e.keller@intel.com> wrote:
+Currently, ath11k only selects QRTR if ath11k PCI is selected, however
+AHB support requires QRTR, more precisely QRTR_SMD because it is using
+QMI as well which in turn uses QRTR.
 
-> > -----Original Message-----
-> > From: Brett Creeley <brett@pensando.io>
-> > Sent: Thursday, March 31, 2022 9:33 AM
-> > To: Fijalkowski, Maciej <maciej.fijalkowski@intel.com>
-> > Cc: ivecera <ivecera@redhat.com>; netdev@vger.kernel.org; moderated
-> > list:INTEL ETHERNET DRIVERS <intel-wired-lan@lists.osuosl.org>; mschmidt
-> > <mschmidt@redhat.com>; open list <linux-kernel@vger.kernel.org>; poros
-> > <poros@redhat.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
-> > <pabeni@redhat.com>; David S. Miller <davem@davemloft.net>; Keller, Jacob E
-> > <jacob.e.keller@intel.com>
-> > Subject: Re: [Intel-wired-lan] [PATCH net] ice: Fix incorrect locking in
-> > ice_vc_process_vf_msg()
-> > 
-> > On Thu, Mar 31, 2022 at 6:17 AM Maciej Fijalkowski
-> > <maciej.fijalkowski@intel.com> wrote:  
-> > >
-> > > On Thu, Mar 31, 2022 at 03:14:32PM +0200, Maciej Fijalkowski wrote:  
-> > > > On Thu, Mar 31, 2022 at 12:50:04PM +0200, Ivan Vecera wrote:  
-> > > > > Usage of mutex_trylock() in ice_vc_process_vf_msg() is incorrect
-> > > > > because message sent from VF is ignored and never processed.
-> > > > >
-> > > > > Use mutex_lock() instead to fix the issue. It is safe because this  
-> > > >
-> > > > We need to know what is *the* issue in the first place.
-> > > > Could you please provide more context what is being fixed to the readers
-> > > > that don't have an access to bugzilla?
-> > > >
-> > > > Specifically, what is the case that ignoring a particular message when
-> > > > mutex is already held is a broken behavior?  
-> > >
-> > > Uh oh, let's
-> > > CC: Brett Creeley <brett@pensando.io>  
-> >  
-> 
-> Thanks for responding, Brett! :)
->  
-> > My concern here is that we don't want to handle messages
-> > from the context of the "previous" VF configuration if that
-> > makes sense.
-> >   
-> 
-> Makes sense. Perhaps we need to do some sort of "clear the existing message queue" when we initiate a reset?
+Without QRTR_SMD AHB does not work, so select QRTR in ATH11K and then
+select QRTR_SMD for ATH11K_AHB and QRTR_MHI for ATH11K_PCI.
 
-I think this logic is already there... Function ice_reset_vf() (running under cfg_lock) sets default allowlist
-during reset (these are VIRTCHNL_OP_GET_VF_RESOURCES, VIRTCHNL_OP_VERSION, VIRTCHNL_OP_RESET_VF).
-Function ice_vc_process_vf_msg() currently processed message whether is allowed or not so any spurious messages
-there were sent by VF prior reset should be dropped already.
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
 
-> 
-> > It might be best to grab the cfg_lock before doing any
-> > message/VF validating in ice_vc_process_vf_msg() to
-> > make sure all of the checks are done under the cfg_lock.
-> >   
-> 
-> Yes that seems like it should be done.
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+---
+ drivers/net/wireless/ath/ath11k/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Yes, the mutex should be placed prior ice_vc_is_opcode_allowed() call to serialize accesses to allowlist.
-Will send v2.
-
-Thanks,
-Ivan
+diff --git a/drivers/net/wireless/ath/ath11k/Kconfig b/drivers/net/wireless/ath/ath11k/Kconfig
+index ad5cc6cac05b..b45baad184f6 100644
+--- a/drivers/net/wireless/ath/ath11k/Kconfig
++++ b/drivers/net/wireless/ath/ath11k/Kconfig
+@@ -5,6 +5,7 @@ config ATH11K
+ 	depends on CRYPTO_MICHAEL_MIC
+ 	select ATH_COMMON
+ 	select QCOM_QMI_HELPERS
++	select QRTR
+ 	help
+ 	  This module adds support for Qualcomm Technologies 802.11ax family of
+ 	  chipsets.
+@@ -15,6 +16,7 @@ config ATH11K_AHB
+ 	tristate "Atheros ath11k AHB support"
+ 	depends on ATH11K
+ 	depends on REMOTEPROC
++	select QRTR_SMD
+ 	help
+ 	  This module adds support for AHB bus
+ 
+@@ -22,7 +24,6 @@ config ATH11K_PCI
+ 	tristate "Atheros ath11k PCI support"
+ 	depends on ATH11K && PCI
+ 	select MHI_BUS
+-	select QRTR
+ 	select QRTR_MHI
+ 	help
+ 	  This module adds support for PCIE bus
+-- 
+2.35.1
 
