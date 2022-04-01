@@ -2,186 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12F7C4EFC7C
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 00:00:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D3184EFCA3
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 00:09:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353157AbiDAWBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 18:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53330 "EHLO
+        id S1353316AbiDAWLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 18:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353022AbiDAWAx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 18:00:53 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 713EE1C1EF2;
-        Fri,  1 Apr 2022 14:59:01 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S1353300AbiDAWLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 18:11:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F451760D4
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 15:09:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 61E142224D;
-        Fri,  1 Apr 2022 23:58:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1648850339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lXaKgxGNpuK0yYdrx+h4AvW9g4SuXjOi+hv1ZjALUpE=;
-        b=ulQqJeOZYsv6bAPWVqubJXZzXQ4y4NqiVoP4UsHY6wVZga68Bvt7r9aF48ks1z5mqfMJs7
-        2/K5jXv/+Z7ZwUfOX40jyv7dWtFfBF4B86hdSOU5XdAI4r3KaeGduuh4qP728ri/vbaU5p
-        XUK2p8JXs9ro+y9T+N6uVy5a095wAfE=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH RFC net-next v2 3/3] net: phy: mscc-miim: add support to set MDIO bus frequency
-Date:   Fri,  1 Apr 2022 23:58:34 +0200
-Message-Id: <20220401215834.3757692-4-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220401215834.3757692-1-michael@walle.cc>
-References: <20220401215834.3757692-1-michael@walle.cc>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56CA9B82547
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 22:09:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE173C2BBE4;
+        Fri,  1 Apr 2022 22:09:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648850950;
+        bh=pe0F+3q4wDE0gLwS78p5nBauckLwro9IWzL6HfAPVvQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CMdmANje3nBvLa3t+Lrq/XKksZiVH7lubbfxQGgz1+da5alI5wdZ0KfhWx30PbgfJ
+         CY6REZsFUVpmXOl8huoF2NJUKeYTmC1J27qsG/OhORvU97DQ1RU6OQEg/drsuRQuRA
+         vscaJ/2jF6CEp7V4OuURREDbSkRzTCXVQ2ig8IzWh5SbqRebO5IOEP4a7Z9tN2x8mA
+         77mO2NTL2KBUJKGwLDSKIoy6RJh0W1R5k1GfPg2ZlbFF2AJ74FmO2M9iEkjBlaO31w
+         w2vZepHz77ukhljQsN+HaM1mIoVgTiwB99zZkVqum5DFqI2m1L0sC+eOPv8E0OdWBs
+         WUSHAn1f+3qgQ==
+Date:   Fri, 1 Apr 2022 15:09:08 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>
+Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
+        edumazet@google.com, Jiri Pirko <jiri@mellanox.com>,
+        Brian Baboch <brian.baboch@wifirst.fr>
+Subject: Re: [PATCH net v2] rtnetlink: enable alt_ifname for setlink/newlink
+Message-ID: <20220401150908.356a0db3@kernel.org>
+In-Reply-To: <1250f3a0-9ed3-cfad-ba93-6b16cad5dcf5@wifirst.fr>
+References: <20220401153939.19620-1-florent.fourcot@wifirst.fr>
+        <20220401104342.5df7349a@kernel.org>
+        <1250f3a0-9ed3-cfad-ba93-6b16cad5dcf5@wifirst.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Until now, the MDIO bus will have the hardware default bus frequency.
-Read the desired frequency of the bus from the device tree and configure
-it.
+On Fri, 1 Apr 2022 23:02:39 +0200 Florent Fourcot wrote:
+> I don't really care about getting this into stable, so I will resubmit 
+> for net-next when opened.
+> Should I drop "Fixes" tag?
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/mdio/mdio-mscc-miim.c | 58 +++++++++++++++++++++++++++++--
- 1 file changed, 56 insertions(+), 2 deletions(-)
+Yup! No fixes tag if it's going in to net-next.
 
-diff --git a/drivers/net/mdio/mdio-mscc-miim.c b/drivers/net/mdio/mdio-mscc-miim.c
-index c9efcfa2a1ce..7fd979f68dc0 100644
---- a/drivers/net/mdio/mdio-mscc-miim.c
-+++ b/drivers/net/mdio/mdio-mscc-miim.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/bitops.h>
-+#include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
-@@ -30,6 +31,8 @@
- #define		MSCC_MIIM_CMD_VLD		BIT(31)
- #define MSCC_MIIM_REG_DATA		0xC
- #define		MSCC_MIIM_DATA_ERROR		(BIT(16) | BIT(17))
-+#define MSCC_MIIM_REG_CFG		0x10
-+#define		MSCC_MIIM_CFG_PRESCALE_MASK	GENMASK(7, 0)
- 
- #define MSCC_PHY_REG_PHY_CFG	0x0
- #define		PHY_CFG_PHY_ENA		(BIT(0) | BIT(1) | BIT(2) | BIT(3))
-@@ -50,6 +53,8 @@ struct mscc_miim_dev {
- 	int mii_status_offset;
- 	struct regmap *phy_regs;
- 	const struct mscc_miim_info *info;
-+	struct clk *clk;
-+	u32 bus_freq;
- };
- 
- /* When high resolution timers aren't built-in: we can't use usleep_range() as
-@@ -242,9 +247,32 @@ int mscc_miim_setup(struct device *dev, struct mii_bus **pbus, const char *name,
- }
- EXPORT_SYMBOL(mscc_miim_setup);
- 
-+static int mscc_miim_clk_set(struct mii_bus *bus)
-+{
-+	struct mscc_miim_dev *miim = bus->priv;
-+	unsigned long rate;
-+	u32 div;
-+
-+	/* Keep the current settings */
-+	if (!miim->bus_freq)
-+		return 0;
-+
-+	rate = clk_get_rate(miim->clk);
-+
-+	div = DIV_ROUND_UP(rate, 2 * miim->bus_freq) - 1;
-+	if (div == 0 || div & ~MSCC_MIIM_CFG_PRESCALE_MASK) {
-+		dev_err(&bus->dev, "Incorrect MDIO clock frequency\n");
-+		return -EINVAL;
-+	}
-+
-+	return regmap_update_bits(miim->regs, MSCC_MIIM_REG_CFG,
-+				  MSCC_MIIM_CFG_PRESCALE_MASK, div);
-+}
-+
- static int mscc_miim_probe(struct platform_device *pdev)
- {
- 	struct regmap *mii_regmap, *phy_regmap = NULL;
-+	struct device_node *np = pdev->dev.of_node;
- 	void __iomem *regs, *phy_regs;
- 	struct mscc_miim_dev *miim;
- 	struct resource *res;
-@@ -295,21 +323,47 @@ static int mscc_miim_probe(struct platform_device *pdev)
- 	if (!miim->info)
- 		return -EINVAL;
- 
--	ret = of_mdiobus_register(bus, pdev->dev.of_node);
-+	miim->clk = devm_clk_get_optional(&pdev->dev, NULL);
-+	if (IS_ERR(miim->clk))
-+		return PTR_ERR(miim->clk);
-+
-+	of_property_read_u32(np, "clock-frequency", &miim->bus_freq);
-+
-+	if (miim->bus_freq && !miim->clk) {
-+		dev_err(&pdev->dev,
-+			"cannot use clock-frequency without a clock\n");
-+		return -EINVAL;
-+	}
-+
-+	ret = clk_prepare_enable(miim->clk);
-+	if (ret)
-+		return ret;
-+
-+	ret = mscc_miim_clk_set(bus);
-+	if (ret)
-+		goto out_disable_clk;
-+
-+	ret = of_mdiobus_register(bus, np);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Cannot register MDIO bus (%d)\n", ret);
--		return ret;
-+		goto out_disable_clk;
- 	}
- 
- 	platform_set_drvdata(pdev, bus);
- 
- 	return 0;
-+
-+out_disable_clk:
-+	clk_disable_unprepare(miim->clk);
-+	return ret;
- }
- 
- static int mscc_miim_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
-+	struct mscc_miim_dev *miim = bus->priv;
- 
-+	clk_disable_unprepare(miim->clk);
- 	mdiobus_unregister(bus);
- 
- 	return 0;
--- 
-2.30.2
+> Alternatives ifname feature never worked for setlink/newlink,
+> but 76c9ac0ee878 claimed it was.
 
+I wonder what the story was there. I think it "works" in that ip link
+accept altnames, but IIUC that's because it does a get first and
+resolves the ifindex.
