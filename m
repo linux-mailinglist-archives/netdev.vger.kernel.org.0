@@ -2,115 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AA0B4EFEBE
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 07:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4693A4EFF34
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 08:55:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238343AbiDBFCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Apr 2022 01:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45256 "EHLO
+        id S238321AbiDBG5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Apr 2022 02:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231346AbiDBFC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 01:02:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FA717665D;
-        Fri,  1 Apr 2022 22:00:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S231932AbiDBG5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 02:57:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 316DA764B
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 23:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648882545;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BZ31gR6OuppI3OSuopIkD35xeUkys2Q81lOBmdyZewY=;
+        b=O6afqA7Bk+bL7xoiTZAVSNXr04XCDmNMPdeFAGrbTd1jBy+uyRTy+JqV1KTZiZKdoaOt/3
+        d6N3p1BNdwYHfwkT5losjQ4BA328sN+3KYqkCCdEvhKdiiEzsfYOsHXvw8nJO082gi8jwr
+        kDo09+7MO+0Pxe6afeW7ToMZYGjV/EQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-642-xa1AZ-w_N4ewJCFCvH6KgA-1; Sat, 02 Apr 2022 02:55:41 -0400
+X-MC-Unique: xa1AZ-w_N4ewJCFCvH6KgA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 664EA60B8D;
-        Sat,  2 Apr 2022 05:00:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBBFDC34112;
-        Sat,  2 Apr 2022 05:00:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648875636;
-        bh=Hz7kYmvNHLmUo+Fbdi0YWMcptfDXOGSuYlcfxuUkStc=;
-        h=References:In-Reply-To:Reply-To:From:Date:Subject:To:Cc:From;
-        b=lU0hiw/4HgFogs4Ag8R004CYeWmnJbioSL+0u13uzyw6ZsGgrruW/dybMTuqMZkmg
-         jmuLe0dIwFkdsYNbfryNalUZBA3dAa9ELbzvCHftsOKfQQGOH7xuaqlwNGZ0ewuIn/
-         Hb062xB37iPEQ63gB3HAEw3rqfRM3XZEziVXjAdrrgkwv0qfsGIBxLlCbb1g8QRaQZ
-         5cv3J4Hio5BlMUQ0FAQFxRIrILLqp/5kfKVU1/jp34lqIVuMWzGFldTxPawcUvvCET
-         hRJeH2Qz/YLGTeDTDomGhJNzeVSdlynNIyIWbCrvUtxg6WHfKhI0HHzoKgofa9t+lx
-         32pqv/RITubDA==
-Received: by mail-vs1-f54.google.com with SMTP id i10so4483142vsr.6;
-        Fri, 01 Apr 2022 22:00:36 -0700 (PDT)
-X-Gm-Message-State: AOAM532HSIwI/AikuvPYcJ+yX49OB13HL9G/FUyUVlNtu5cDuXrL1IjC
-        98SJ8xqOsQNXp3Zuc6YCD6N9Q+KFycGJggT6FaA=
-X-Google-Smtp-Source: ABdhPJycmGstAuCXAQsD2Nsc99K3qy+1EqIeB5p1HI2zgeQm3shBqWqwPW/yuzIYB8e5JHRRSrZwLuoSs2Jc5fvfGlc=
-X-Received: by 2002:a67:c383:0:b0:327:2c5:d483 with SMTP id
- s3-20020a67c383000000b0032702c5d483mr1957242vsj.42.1648875635613; Fri, 01 Apr
- 2022 22:00:35 -0700 (PDT)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACA5980A0AD;
+        Sat,  2 Apr 2022 06:55:40 +0000 (UTC)
+Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 172F720296A9;
+        Sat,  2 Apr 2022 06:55:33 +0000 (UTC)
+Date:   Sat, 2 Apr 2022 08:55:33 +0200
+From:   Artem Savkov <asavkov@redhat.com>
+To:     Anna-Maria Behnsen <anna-maria@linutronix.de>
+Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] timer: add a function to adjust timeouts to be
+ upper bound
+Message-ID: <YkfzZWs+Nj3hCvnE@sparkplug.usersys.redhat.com>
+References: <87zglcfmcv.ffs@tglx>
+ <20220330082046.3512424-1-asavkov@redhat.com>
+ <20220330082046.3512424-2-asavkov@redhat.com>
+ <alpine.DEB.2.21.2203301514570.4409@somnus>
 MIME-Version: 1.0
-References: <20220331184832.16316-1-wens@kernel.org> <20220401214158.7346bd62@kernel.org>
-In-Reply-To: <20220401214158.7346bd62@kernel.org>
-Reply-To: wens@kernel.org
-From:   Chen-Yu Tsai <wens@kernel.org>
-Date:   Sat, 2 Apr 2022 13:00:36 +0800
-X-Gmail-Original-Message-ID: <CAGb2v647CqCbd4ZK7OpbG0YihUjviUB-4cM4P5g0LFuQJbzoSA@mail.gmail.com>
-Message-ID: <CAGb2v647CqCbd4ZK7OpbG0YihUjviUB-4cM4P5g0LFuQJbzoSA@mail.gmail.com>
-Subject: Re: [PATCH RESEND2] net: stmmac: Fix unset max_speed difference
- between DT and non-DT platforms
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2203301514570.4409@somnus>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 2, 2022 at 12:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri,  1 Apr 2022 02:48:32 +0800 Chen-Yu Tsai wrote:
-> > From: Chen-Yu Tsai <wens@csie.org>
-> >
-> > In commit 9cbadf094d9d ("net: stmmac: support max-speed device tree
-> > property"), when DT platforms don't set "max-speed", max_speed is set to
-> > -1; for non-DT platforms, it stays the default 0.
-> >
-> > Prior to commit eeef2f6b9f6e ("net: stmmac: Start adding phylink support"),
-> > the check for a valid max_speed setting was to check if it was greater
-> > than zero. This commit got it right, but subsequent patches just checked
-> > for non-zero, which is incorrect for DT platforms.
-> >
-> > In commit 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
-> > the conversion switched completely to checking for non-zero value as a
-> > valid value, which caused 1000base-T to stop getting advertised by
-> > default.
-> >
-> > Instead of trying to fix all the checks, simply leave max_speed alone if
-> > DT property parsing fails.
-> >
-> > Fixes: 9cbadf094d9d ("net: stmmac: support max-speed device tree property")
-> > Fixes: 92c3807b9ac3 ("net: stmmac: convert to phylink_get_linkmodes()")
-> > Signed-off-by: Chen-Yu Tsai <wens@csie.org>
-> > Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> > ---
-> >
-> > Resend2: CC Srinivas at Linaro instead of ST. Collected Russell's ack.
-> > Resend: added Srinivas (author of first fixed commit) to CC list.
-> >
-> > This was first noticed on ROC-RK3399-PC, and also observed on ROC-RK3328-CC.
-> > The fix was tested on ROC-RK3328-CC and Libre Computer ALL-H5-ALL-CC.
->
-> This patch got marked Changes Requested in pw, but I can't see why,
-> so I went on a limb and applied it. LMK if that was a mistake,
-> otherwise its commit c21cabb0fd0b ("net: stmmac: Fix unset max_speed
-> difference between DT and non-DT platforms") in net.
+On Wed, Mar 30, 2022 at 03:40:55PM +0200, Anna-Maria Behnsen wrote:
+> On Wed, 30 Mar 2022, Artem Savkov wrote:
+> 
+> > Current timer wheel implementation is optimized for performance and
+> > energy usage but lacks in precision. This, normally, is not a problem as
+> > most timers that use timer wheel are used for timeouts and thus rarely
+> > expire, instead they often get canceled or modified before expiration.
+> > Even when they don't, expiring a bit late is not an issue for timeout
+> > timers.
+> > 
+> > TCP keepalive timer is a special case, it's aim is to prevent timeouts,
+> > so triggering earlier rather than later is desired behavior. In a
+> > reported case the user had a 3600s keepalive timer for preventing firewall
+> > disconnects (on a 3650s interval). They observed keepalive timers coming
+> > in up to four minutes late, causing unexpected disconnects.
+> > 
+> > This commit adds upper_bound_timeout() function that takes a relative
+> > timeout and adjusts it based on timer wheel granularity so that supplied
+> > value effectively becomes an upper bound for the timer.
+> > 
+> 
+> I think there is a problem with this approach. Please correct me, if I'm
+> wrong. The timer wheel index and level calculation depends on
+> timer_base::clk. The timeout/delta which is used for this calculation is
+> relative to timer_base::clk (delta = expires - base::clk). timer_base::clk
+> is not updated in sync with jiffies. It is forwarded before a new timer is
+> queued. It is possible, that timer_base::clk is behind jiffies after
+> forwarding because of a not yet expired timer.
+> 
+> When calculating the level/index with a relative timeout, there is no
+> guarantee that the result is the same when actual enqueueing the timer with
+> expiry = jiffies + timeout .
 
-I don't remember anyone asking for any changes.
+Yes, you are correct. This especially is a problem for timeouts placed
+just before LVL_START(x), which is a good chunk of cases. I don't think
+it is possible to get to timer_base clock without meddling with the
+hot-path.
 
-Thanks
-ChenYu
+Is it possible to determine the upper limit of error margin here? My
+assumption is it shouldn't be very big, so maybe it would be enough to
+account for this when adjusting timeout at the edge of a level.
+I know this doesn't sound good but I am running out of ideas here.
+
+-- 
+ Artem
+
