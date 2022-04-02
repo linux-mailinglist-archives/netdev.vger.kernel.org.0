@@ -2,63 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 384BC4EFF43
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 09:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7214EFF4E
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 09:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238530AbiDBHNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Apr 2022 03:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
+        id S238699AbiDBHbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Apr 2022 03:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiDBHNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 03:13:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8376D1EAD2
-        for <netdev@vger.kernel.org>; Sat,  2 Apr 2022 00:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648883475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MHkMY/gjWD4ayMgnmR9Ub7v0rfA5e49jqyy9dp2VcPM=;
-        b=NrJbxxE+E05yl0HjBD+hyc+aeM8tf7ruug5VY4PallJGo2nTyxSivuItcucWBoq8eo1Got
-        3q2q7XvP5G4fUULBbAXsPnJ1y6imPSlrBoYwF00ODzF94Vbvir93sz0ZajjcWwZPETnpU5
-        gAnKa/d+WoYUQx+dwxpsOT3Mi4l2DKg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-127-beyOVKkxMM66W9dohVyjag-1; Sat, 02 Apr 2022 03:11:12 -0400
-X-MC-Unique: beyOVKkxMM66W9dohVyjag-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 120A42A2AD45;
-        Sat,  2 Apr 2022 07:11:12 +0000 (UTC)
-Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 71F2840885AD;
-        Sat,  2 Apr 2022 07:11:09 +0000 (UTC)
-Date:   Sat, 2 Apr 2022 09:11:09 +0200
-From:   Artem Savkov <asavkov@redhat.com>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     0day robot <lkp@intel.com>, LKML <linux-kernel@vger.kernel.org>,
-        lkp@lists.01.org, netdev@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org,
-        Anna-Maria Gleixner <anna-maria@linutronix.de>,
-        dsahern@kernel.org
-Subject: Re: [net]  6ef3f95797:
- UBSAN:shift-out-of-bounds_in_kernel/time/timer.c
-Message-ID: <Ykf3DZ4VJQ0yLJss@sparkplug.usersys.redhat.com>
-References: <20220330082046.3512424-3-asavkov@redhat.com>
- <20220402030939.GA19395@xsang-OptiPlex-9020>
+        with ESMTP id S229714AbiDBHbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 03:31:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0BB173B2B;
+        Sat,  2 Apr 2022 00:29:09 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KVpXG040nzgYKZ;
+        Sat,  2 Apr 2022 15:27:25 +0800 (CST)
+Received: from huawei.com (10.67.174.197) by kwepemi500013.china.huawei.com
+ (7.221.188.120) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 2 Apr
+ 2022 15:29:06 +0800
+From:   Xu Kuohai <xukuohai@huawei.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Subject: [PATCH bpf-next v2] bpf, arm64: Sign return address for jited code
+Date:   Sat, 2 Apr 2022 03:39:42 -0400
+Message-ID: <20220402073942.3782529-1-xukuohai@huawei.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220402030939.GA19395@xsang-OptiPlex-9020>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.197]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,45 +55,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 02, 2022 at 11:09:40AM +0800, kernel test robot wrote:
-> 
-> 
-> Greeting,
-> 
-> FYI, we noticed the following commit (built with gcc-9):
-> 
-> commit: 6ef3f95797546781829db3bb6228c9990ba1d49f ("[PATCH v3 2/2] net: make tcp keepalive timer upper bound")
-> url: https://github.com/intel-lab-lkp/linux/commits/Artem-Savkov/timer-add-a-function-to-adjust-timeouts-to-be-upper-bound/20220330-172140
-> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git b166e52541f2357ce126a92ce1d9a580fdca719d
-> patch link: https://lore.kernel.org/netdev/20220330082046.3512424-3-asavkov@redhat.com
-> 
-> in testcase: kernel-selftests
-> version: kernel-selftests-x86_64-a17aac1b-1_20220328
-> with following parameters:
-> 
-> 	group: tc-testing
-> 	ucode: 0xec
-> 
-> test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
-> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
-> 
-> 
-> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 16G memory
-> 
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> 
-> 
-> 
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> 
-> 
-> [  158.913672][    C1] UBSAN: shift-out-of-bounds in kernel/time/timer.c:584:32
-> [  158.922603][    C1] shift exponent -3 is negative
+Sign return address for jited code when the kernel is built with pointer
+authentication enabled.
 
-This is caused by LVL_START(0). Levels 0 and 1 need to be handled
-separately to insure we don't end up with negative values.
+1. Sign LR with paciasp instruction before LR is pushed to stack. Since
+   paciasp acts like landing pads for function entry, no need to insert
+   bti instruction before paciasp.
 
+2. Authenticate LR with autiasp instruction after LR is poped from stack.
+
+For bpf tail call, the stack frame constructed by the caller is reused by
+the callee. That is, the stack frame is constructed by the caller and
+destructed by the callee. Thus LR is signed and pushed to the stack in the
+caller's prologue, and poped from the stack and authenticated in the
+callee's epilogue.
+
+For bpf2bpf call, the caller and callee construct their own stack frames,
+and sign and authenticate their own LRs.
+
+Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+---
+
+v1->v2:
+- Add bpf tail call and bpf2bpf call description to commit message
+- Rebased to bpf-next
+
+ arch/arm64/net/bpf_jit.h      |  3 +++
+ arch/arm64/net/bpf_jit_comp.c | 12 ++++++++++--
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
+index 3920213244f0..194c95ccc1cf 100644
+--- a/arch/arm64/net/bpf_jit.h
++++ b/arch/arm64/net/bpf_jit.h
+@@ -263,6 +263,9 @@
+ /* HINTs */
+ #define A64_HINT(x) aarch64_insn_gen_hint(x)
+ 
++#define A64_PACIASP A64_HINT(AARCH64_INSN_HINT_PACIASP)
++#define A64_AUTIASP A64_HINT(AARCH64_INSN_HINT_AUTIASP)
++
+ /* BTI */
+ #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
+ #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index 093fa9ea1083..8ab4035dea27 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -236,7 +236,8 @@ static bool is_lsi_offset(int offset, int scale)
+ }
+ 
+ /* Tail call offset to jump into */
+-#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL)
++#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
++	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+ #define PROLOGUE_OFFSET 9
+ #else
+ #define PROLOGUE_OFFSET 8
+@@ -278,8 +279,11 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+ 	 *
+ 	 */
+ 
++	/* Sign lr */
++	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
++		emit(A64_PACIASP, ctx);
+ 	/* BTI landing pad */
+-	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
++	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+ 		emit(A64_BTI_C, ctx);
+ 
+ 	/* Save FP and LR registers to stay align with ARM64 AAPCS */
+@@ -580,6 +584,10 @@ static void build_epilogue(struct jit_ctx *ctx)
+ 	/* Set return value */
+ 	emit(A64_MOV(1, A64_R(0), r0), ctx);
+ 
++	/* Authenticate lr */
++	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
++		emit(A64_AUTIASP, ctx);
++
+ 	emit(A64_RET(A64_LR), ctx);
+ }
+ 
 -- 
- Artem
+2.30.2
 
