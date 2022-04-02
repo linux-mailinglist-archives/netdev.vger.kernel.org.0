@@ -2,99 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 183964F046C
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 17:30:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C03344F049F
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 17:56:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355423AbiDBPcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Apr 2022 11:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        id S1357515AbiDBP56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Apr 2022 11:57:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232006AbiDBPcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 11:32:19 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F38123BC1;
-        Sat,  2 Apr 2022 08:30:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1648913416;
-        bh=lZSOBxnkYshkouLS0XGvOyWTUsSm5nmlSADx/QK6Sfw=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=kVQc5hIpXWsPIBo4CqyEoFtkrTTHR+l8ZKsnDBawQvRMO4d4OgLfptcilNjQPRmnP
-         aGj5zk6Jd8xd0un09eFMrNQpKa9YzJNTRldjakHpkqr+fCrGEx5+yoEGK4BafWBypY
-         i3kG9YNc2vhwGc7jleG6KxEMx+H3hSr7dsFSS9cA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.fritz.box ([62.216.209.166]) by mail.gmx.net
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1M6ll8-1neWn80Xq2-008JPY; Sat, 02 Apr 2022 17:30:16 +0200
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     linux-wireless@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S1357511AbiDBP55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 11:57:57 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5A517ABF
+        for <netdev@vger.kernel.org>; Sat,  2 Apr 2022 08:56:01 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id qh7so1659155ejb.11
+        for <netdev@vger.kernel.org>; Sat, 02 Apr 2022 08:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EuVHQKj00KiyE/jfkOjZYn3vY7PV3FTcEesPbvXU4jo=;
+        b=eiKtSHZaOzxi0xEi2h4siGI7VE6mBVjFN6OJR24q1WgvVZ6kSRaOUEDYuBaigafCPm
+         zJJwX0s57Try+onBevGkRSMSRmMjtD2jnHEnGMA7LKBMXjK7P3pPp92V5LzK7crnLpka
+         gNzmNC+uGs1cNb83fwTIhpyAsCze1i38mKbswtxQVju+eTgpR1OMheczD7S1Lro8XjKd
+         F1it+0NbsGC9TPrDGfdKtPmpX5XwS64ATtDTieFE40f87SbPMhMZnflYrRgzPXrgYuYH
+         ofePZTxy65EZlp8mPIp02snTHluS3UJDHZ/KiIN4N+GHk4Ab3R8TYdHC3M7KIdx3Z25h
+         xSiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EuVHQKj00KiyE/jfkOjZYn3vY7PV3FTcEesPbvXU4jo=;
+        b=RpY88TVlS35y7Mn6r8vaUChIsll0rUzDVu0U1MVwbqOfDPlCo4eJeATFUuwrD/0ifN
+         oPiekDealJfeUgDxjS4BBZRhtEmfe9lcmdq/kFuGhRiSnSwyCbNStDYMCEWc1pHhEzte
+         6BasWVjfmEzP2MycUu1uaQ3rBZOnorR6Evk3XV3T48GtnSRmUwg5JWlI8Hk+9/vHh8X2
+         ovIJpwznFTVociP5hKX/wGW5CMOC4yH4b+IU/jC3TEyNyPKKKaGhPRwKGgLVUTHXi35Z
+         mCAsOjccM31qIbks1/+2wFQxTZ4AEwZxYy2Cp8NK+CPNVmrt9xicqyzWlIFof9G4mJMp
+         t5TQ==
+X-Gm-Message-State: AOAM533k6sFXywzy5KnGbqELg31vGbzY2NvLwwX6dmLPuIkP0jfaM6bC
+        UdAwdW9PP8j2O5jQv5Mi+OagdQ==
+X-Google-Smtp-Source: ABdhPJxfLuqMATYwK9iSwU7NsddkjCUqupSmfKJN4fjzjdy/zsVfgOnyfdOxpAIE3kuLumpuxTC3uA==
+X-Received: by 2002:a17:907:1ca8:b0:6df:f192:cf4a with SMTP id nb40-20020a1709071ca800b006dff192cf4amr4469091ejc.620.1648914960455;
+        Sat, 02 Apr 2022 08:56:00 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id b12-20020a170906038c00b006e4e48969d2sm1479331eja.88.2022.04.02.08.55.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Apr 2022 08:55:59 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Manivannan Sadhasivam <mani@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 2/2] mac80211: minstrel_ht: fill all requested rates
-Date:   Sat,  2 Apr 2022 17:30:14 +0200
-Message-Id: <20220402153014.31332-2-ps.report@gmx.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220402153014.31332-1-ps.report@gmx.net>
-References: <20220402153014.31332-1-ps.report@gmx.net>
+        Paolo Abeni <pabeni@redhat.com>, Alex Elder <elder@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 1/2] dt-bindings: mailbox: qcom-ipcc: simplify the example
+Date:   Sat,  2 Apr 2022 17:55:50 +0200
+Message-Id: <20220402155551.16509-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:0wr3EzeN+lXmgwruwVbHbIItUpzgHp396SesflJa0YdqyVF7t9q
- AAfaD+Bqk5Z8ghMD22ji/bpePDOkXCm5iQpJqWksXImYnUzRj3IAFShCWrAk5OvIJiWvQYV
- omYoq8j7QN2w//ZnHY94nI4eiXh194ZMZ/01En5eiderY913paxogcTgjPukBO9nqPK6iGd
- Doyvjg7XAqbkVVFsgTaTg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dQFF1XUE+VA=:+9BjDVBnY0wpvaIt/MzbH9
- pmGlfNEofzMulJnqM4e7NunE/2BHfI4EF4+aFHgR9G6w0cdeTeOZEujNlRBfUn+aDwuyOSoZZ
- jSEfcVb+rjw779miOENlYOfJWH4c0n74Vq8eUyEoaX8ZhYkddxLQAtNsjZQKQedXJFZ/AnNvY
- vcIc0BScF7Mt99WUQ7DUXxzj39AGkyRveARAvot6Nt6U2zPCdmqR7rCsEhMzusqkb0FrxR4Xd
- knNEbGPFU/LzzkCsVtV5hnLaCYPvx4w8OLso8z7RHYqWQgpUVr35Erd5jOAYRDBgRA94GE97p
- qX4IC2VxUuOw9rSLJJ5ysCtmgqoZY/Vb7N0zaabHdpF5QqwlpEpxiddiYuvhJ2jQTTVnzIThd
- 8vjmbpcGEUIFGG6EoezQ0exDBoC6jSQVa+2kBixxluHZOBgscNqSKUPb2H3PRpXxAojc0tec7
- 2uZon9zKNlviNUkvq/hZnN91YmdbqsecbE4gewXwzLWyUjH8oaJtbD5KDXSNcxod6tBPcw0JA
- JAJZ8ioMVb/ngpRW/LxoVlXMRkDIxzQb1xVxFLkH5Pp8Cobent8dSVJNMPyHPN17Aw6YlaQXu
- vtHq8gP6fRrRVL1RreRGmaOsHIhA4T6kdSux9OgJphSYz0z6YFTPqCUYik8GCzV3Htf9a2dVV
- lKT40dR5lF+jOly03fVVpFm6M2zEtFZFyVyqKztM48IS5Jd8dVDzZI/dhLvdwmlJYzvxXM4vR
- QrTQriskVhB2IynDyi9D9vp8KUgHLTxjY9nm/mMGB3nP6k3RBjzUqWV0/8sWdDighPD8oF0ao
- Ile0c7EaWDFVijVLkVFDl/roacDv5IMoEpkYIJHxU1rMaR0h/oKu3G5gjSEXNZCJRLJcWZj5h
- o0zJhHNwtDZi6iCUS4W9kRu1Q0oHw0ymjcPMuySxvR5RlDXrZ0N8w9V+scOJdOh8bdjv7d3lw
- q/kVvZjFHx7S6uiPeJ79Iy3CKH+G3W7DPma/qWkVyzbpWFJcumcmXlE7Q05cds9XYjSShygtF
- Sxvn8N0FfBA/nP1mGJTOv7A3Gts/ikY4r1Kzocg/NhkVkodaSjrSSwIA3gscDrWaxz+5w6LOc
- 6Gh/cNOWpDAJr4=
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,MIME_BASE64_TEXT,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RmlsbCBhbGwgcmVxdWVzdGVkIHJhdGVzIChpbiBjYXNlIG9mIGF0aDlrIDQgcmF0ZSBzbG90cyBh
-cmUKYXZhaWxhYmxlLCBzbyBmaWxsIGFsbCA0IGluc3RlYWQgb2Ygb25seSAzKSwgaW1wcm92ZXMg
-dGhyb3VnaHB1dCBpbgpub2lzeSBlbnZpcm9ubWVudC4KClNpZ25lZC1vZmYtYnk6IFBldGVyIFNl
-aWRlcmVyIDxwcy5yZXBvcnRAZ214Lm5ldD4KLS0tCiBuZXQvbWFjODAyMTEvcmM4MDIxMV9taW5z
-dHJlbF9odC5jIHwgMTQgKysrKysrKy0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlv
-bnMoKyksIDcgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvbmV0L21hYzgwMjExL3JjODAyMTFf
-bWluc3RyZWxfaHQuYyBiL25ldC9tYWM4MDIxMS9yYzgwMjExX21pbnN0cmVsX2h0LmMKaW5kZXgg
-OWM2YWNlODU4MTA3Li5jZDZhMGYxNTM2ODggMTAwNjQ0Ci0tLSBhL25ldC9tYWM4MDIxMS9yYzgw
-MjExX21pbnN0cmVsX2h0LmMKKysrIGIvbmV0L21hYzgwMjExL3JjODAyMTFfbWluc3RyZWxfaHQu
-YwpAQCAtMTQzNiwxNyArMTQzNiwxNyBAQCBtaW5zdHJlbF9odF91cGRhdGVfcmF0ZXMoc3RydWN0
-IG1pbnN0cmVsX3ByaXYgKm1wLCBzdHJ1Y3QgbWluc3RyZWxfaHRfc3RhICptaSkKIAkvKiBTdGFy
-dCB3aXRoIG1heF90cF9yYXRlWzBdICovCiAJbWluc3RyZWxfaHRfc2V0X3JhdGUobXAsIG1pLCBy
-YXRlcywgaSsrLCBtaS0+bWF4X3RwX3JhdGVbMF0pOwogCi0JaWYgKG1wLT5ody0+bWF4X3JhdGVz
-ID49IDMpIHsKLQkJLyogQXQgbGVhc3QgMyB0eCByYXRlcyBzdXBwb3J0ZWQsIHVzZSBtYXhfdHBf
-cmF0ZVsxXSBuZXh0ICovCi0JCW1pbnN0cmVsX2h0X3NldF9yYXRlKG1wLCBtaSwgcmF0ZXMsIGkr
-KywgbWktPm1heF90cF9yYXRlWzFdKTsKLQl9CisJLyogRmlsbCB1cCByZW1haW5pbmcsIGtlZXAg
-b25lIGVudHJ5IGZvciBtYXhfcHJvYmVfcmF0ZSAqLworCWZvciAoOyBpIDwgKG1wLT5ody0+bWF4
-X3JhdGVzIC0gMSk7IGkrKykKKwkJbWluc3RyZWxfaHRfc2V0X3JhdGUobXAsIG1pLCByYXRlcywg
-aSwgbWktPm1heF90cF9yYXRlW2ldKTsKIAotCWlmIChtcC0+aHctPm1heF9yYXRlcyA+PSAyKSB7
-CisJaWYgKGkgPCBtcC0+aHctPm1heF9yYXRlcykKIAkJbWluc3RyZWxfaHRfc2V0X3JhdGUobXAs
-IG1pLCByYXRlcywgaSsrLCBtaS0+bWF4X3Byb2JfcmF0ZSk7Ci0JfQorCisJaWYgKGkgPCBJRUVF
-ODAyMTFfVFhfUkFURV9UQUJMRV9TSVpFKQorCQlyYXRlcy0+cmF0ZVtpXS5pZHggPSAtMTsKIAog
-CW1pLT5zdGEtPm1heF9yY19hbXNkdV9sZW4gPSBtaW5zdHJlbF9odF9nZXRfbWF4X2Ftc2R1X2xl
-bihtaSk7Ci0JcmF0ZXMtPnJhdGVbaV0uaWR4ID0gLTE7CiAJcmF0ZV9jb250cm9sX3NldF9yYXRl
-cyhtcC0+aHcsIG1pLT5zdGEsIHJhdGVzKTsKIH0KIAotLSAKMi4zNS4xCgo=
+Consumer examples in the bindings of resource providers are trivial,
+useless and duplicating code.  Additionally the incomplete qcom,smp2p
+example triggers DT schema warnings.
+
+Cleanup the example by removing the consumer part and fixing the
+indentation to DT schema convention.
+
+Reported-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../bindings/mailbox/qcom-ipcc.yaml           | 29 +++++++------------
+ 1 file changed, 10 insertions(+), 19 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+index 866efb278813..dfdc72345a2a 100644
+--- a/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
++++ b/Documentation/devicetree/bindings/mailbox/qcom-ipcc.yaml
+@@ -61,23 +61,14 @@ additionalProperties: false
+ 
+ examples:
+   - |
+-        #include <dt-bindings/interrupt-controller/arm-gic.h>
+-        #include <dt-bindings/mailbox/qcom-ipcc.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/mailbox/qcom-ipcc.h>
+ 
+-        mailbox@408000 {
+-                compatible = "qcom,sm8250-ipcc", "qcom,ipcc";
+-                reg = <0x408000 0x1000>;
+-                interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>;
+-                interrupt-controller;
+-                #interrupt-cells = <3>;
+-                #mbox-cells = <2>;
+-        };
+-
+-        smp2p-modem {
+-                compatible = "qcom,smp2p";
+-                interrupts-extended = <&ipcc_mproc IPCC_CLIENT_MPSS
+-                                IPCC_MPROC_SIGNAL_SMP2P IRQ_TYPE_EDGE_RISING>;
+-                mboxes = <&ipcc_mproc IPCC_CLIENT_MPSS IPCC_MPROC_SIGNAL_SMP2P>;
+-
+-                /* Other SMP2P fields */
+-        };
++    mailbox@408000 {
++        compatible = "qcom,sm8250-ipcc", "qcom,ipcc";
++        reg = <0x408000 0x1000>;
++        interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-controller;
++        #interrupt-cells = <3>;
++        #mbox-cells = <2>;
++    };
+-- 
+2.32.0
+
