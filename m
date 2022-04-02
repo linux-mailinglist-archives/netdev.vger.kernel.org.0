@@ -2,60 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3176E4EFD63
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 02:21:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 434744EFD67
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 02:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353469AbiDBAXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Apr 2022 20:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45888 "EHLO
+        id S1353532AbiDBAXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Apr 2022 20:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235596AbiDBAXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 20:23:14 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A671AC42A
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 17:21:23 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id t4so3561697pgc.1
-        for <netdev@vger.kernel.org>; Fri, 01 Apr 2022 17:21:23 -0700 (PDT)
+        with ESMTP id S237710AbiDBAXQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Apr 2022 20:23:16 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0851F1AC42C
+        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 17:21:24 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id e5so3787706pls.4
+        for <netdev@vger.kernel.org>; Fri, 01 Apr 2022 17:21:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=vDZbDqE4Ze6AaCp6rWdGSVAMmrIyAROqUO4yr/z2elY=;
-        b=bmQyrRgNUafVvqhnwNnuwTU8TEk3iEln1FmvHVh9x17PwFkp+pBQQcJ203C2R8PPBS
-         zVLDWQealgFQGZApFOFt1Y7+JFichUHYiQgnaEeuON44bwe/00MjyoxsfDIsCmr7Zrjj
-         RVe0AF6zhqe23SmEtAcSEl202f7gw+DhgxDg8=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=1CaNTaWcYpGFRBja4KUhAw6tzNKG58s97BBX+XuLKF4=;
+        b=Nf2KfWBkZip2AO5doZiGtf4DmEigfyrct7dobSai5n03psGDstEWZ2dlFGwPa1mo1E
+         dhkFNt9NdFdmLNUnL0KwER4e3PXy/KpRPaNRYssXDsRkvqgHYu2vJ6MS6OpcYszZnbL6
+         vtuI11MBxhvMHr7EEDDy4MIYGiNUPznD/9zew=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=vDZbDqE4Ze6AaCp6rWdGSVAMmrIyAROqUO4yr/z2elY=;
-        b=eIU/nDn5H24qUIH0ZCeQUH3Gsi6MFsRwAUkJBfbwNX7TA6D+jhDjIlCfIPGZYidxxM
-         FkARD2ClQ/aMmkhc35BrrlQllUJfb/oJYjI9c+pHXmcxgXLJUyDZDdin4M7SRs1D6Dgg
-         GFlnl5OGHiTPtCHJfwipHrO4K8EXocU3fmkHprFKoEq54bO9V9MU3EkSzA0A8lcEztvA
-         J7aIdmjjvel2v0pJB8UDQWsZCC8Q52QNmWm9MhyXKAEGBFbZuy/xE+h3pC6jgusOKf6P
-         QOGDNZ+em08hd0WvwZfQrkRQW8/G8+ATUM0NygromC5YOQfFP0b3Sx7UjBYufJePQQdS
-         VmhA==
-X-Gm-Message-State: AOAM531tPf7rEAwZHEXXRSdPJzOLxniueFWGpmVGba0/W0+PqH2cBPdT
-        mRCd32hW3/L5YTFghMKjXbHATGGWRl0BHg==
-X-Google-Smtp-Source: ABdhPJwgesfyFxiUN5sDS0DRwA62l7ktkhJAymWJE71lyN8k4MzZtqRl1ZGQug6E4mHOSntlPpZWkA==
-X-Received: by 2002:a63:7905:0:b0:386:33e4:f0eb with SMTP id u5-20020a637905000000b0038633e4f0ebmr16835906pgc.439.1648858882546;
-        Fri, 01 Apr 2022 17:21:22 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=1CaNTaWcYpGFRBja4KUhAw6tzNKG58s97BBX+XuLKF4=;
+        b=gGIhMBeFka6c05t4i75Z5nEKm9ABXN2aDm9mPCtIQkhBBopv0/ZikKtP56pDykK9DI
+         qIOQCsyplpYjb/ssJ/Jtxd6JajxXcO5XLUhJyZPk1yBimwWzdP/sSXN0C4Uvs4aopsXA
+         L0EtNUGwGbNXgy1CWK1WPnydCzoiofdMort6kgvTSDT7a9zAakDVT4K+VFDbPqoa0F5a
+         YE5dTgPYYeAkurvjc3sb2b0SZvWeY/IMOAv7MuKx9v3LMfYs4RoPDJVxpQMtx50HUACk
+         7hy3ABG5XvmwPdZYOo4lqxLyeZRN0VZ+9m3NfQdguo4HuFe8LBJZiLaZssM3Hw0vxi15
+         5p+g==
+X-Gm-Message-State: AOAM532fORFkuJSQFXz/cWVFqYzOWUSv/gUqPU4X90TKaonS+G+lL/hD
+        fh84JWcR6h7WmYPMGcDpPCECuE1Ab29m+Q==
+X-Google-Smtp-Source: ABdhPJwiQwH4Rdc+RGJGv1UIKT0HCsHEo/0YbS3o5z3n2dh6C2sjhrue5yBz8l2NRgLm9V8eCvfSgA==
+X-Received: by 2002:a17:90b:4c92:b0:1c7:a9a3:6274 with SMTP id my18-20020a17090b4c9200b001c7a9a36274mr14305734pjb.148.1648858883842;
+        Fri, 01 Apr 2022 17:21:23 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm4295050pfc.78.2022.04.01.17.21.21
+        by smtp.gmail.com with ESMTPSA id k10-20020a056a00168a00b004f7e2a550ccsm4295050pfc.78.2022.04.01.17.21.22
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 01 Apr 2022 17:21:22 -0700 (PDT)
+        Fri, 01 Apr 2022 17:21:23 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        bpf@vger.kernel.org
-Subject: [PATCH net 0/3] bnxt_en: XDP redirect fixes
-Date:   Fri,  1 Apr 2022 20:21:09 -0400
-Message-Id: <1648858872-14682-1-git-send-email-michael.chan@broadcom.com>
+        bpf@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>
+Subject: [PATCH net 1/3] bnxt_en: Synchronize tx when xdp redirects happen on same ring
+Date:   Fri,  1 Apr 2022 20:21:10 -0400
+Message-Id: <1648858872-14682-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1648858872-14682-1-git-send-email-michael.chan@broadcom.com>
+References: <1648858872-14682-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000045d0405dba0e01f"
-X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        boundary="0000000000001b164205dba0e0cc"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,34 +66,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000045d0405dba0e01f
+--0000000000001b164205dba0e0cc
 
-This series includes 3 fixes related to the XDP redirect code path in
-the driver.  The first one adds locking when the number of TX XDP rings
-is less than the number of CPUs.  The second one adjusts the maximum MTU
-that can support XDP with enough tail room in the buffer.  The 3rd one
-fixes a race condition between TX ring shutdown and the XDP redirect path.
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-Andy Gospodarek (1):
-  bnxt_en: reserve space inside receive page for skb_shared_info
+If there are more CPUs than the number of TX XDP rings, multiple XDP
+redirects can select the same TX ring based on the CPU on which
+XDP redirect is called.  Add locking when needed and use static
+key to decide whether to take the lock.
 
-Pavan Chebbi (1):
-  bnxt_en: Synchronize tx when xdp redirects happen on same ring
+Fixes: f18c2b77b2e4 ("bnxt_en: optimized XDP_REDIRECT support")
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 7 +++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     | 2 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 8 ++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h | 2 ++
+ 4 files changed, 19 insertions(+)
 
-Ray Jui (1):
-  bnxt_en: Prevent XDP redirect from running when stopping TX queue
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  7 +++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  5 ++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 14 ++++++++++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h |  2 ++
- 4 files changed, 25 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 1c28495875cf..874fad0a5cf8 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -3253,6 +3253,7 @@ static int bnxt_alloc_tx_rings(struct bnxt *bp)
+ 		}
+ 		qidx = bp->tc_to_qidx[j];
+ 		ring->queue_id = bp->q_info[qidx].queue_id;
++		spin_lock_init(&txr->xdp_tx_lock);
+ 		if (i < bp->tx_nr_rings_xdp)
+ 			continue;
+ 		if (i % bp->tx_nr_rings_per_tc == (bp->tx_nr_rings_per_tc - 1))
+@@ -10338,6 +10339,12 @@ static int __bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
+ 	if (irq_re_init)
+ 		udp_tunnel_nic_reset_ntf(bp->dev);
+ 
++	if (bp->tx_nr_rings_xdp < num_possible_cpus()) {
++		if (!static_key_enabled(&bnxt_xdp_locking_key))
++			static_branch_enable(&bnxt_xdp_locking_key);
++	} else if (static_key_enabled(&bnxt_xdp_locking_key)) {
++		static_branch_disable(&bnxt_xdp_locking_key);
++	}
+ 	set_bit(BNXT_STATE_OPEN, &bp->state);
+ 	bnxt_enable_int(bp);
+ 	/* Enable TX queues */
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 61aa3e8c5952..b4d3d051463b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -800,6 +800,8 @@ struct bnxt_tx_ring_info {
+ 	u32			dev_state;
+ 
+ 	struct bnxt_ring_struct	tx_ring_struct;
++	/* Synchronize simultaneous xdp_xmit on same ring */
++	spinlock_t		xdp_tx_lock;
+ };
+ 
+ #define BNXT_LEGACY_COAL_CMPL_PARAMS					\
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index 52fad0fdeacf..c0541ff00ac8 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -20,6 +20,8 @@
+ #include "bnxt.h"
+ #include "bnxt_xdp.h"
+ 
++DEFINE_STATIC_KEY_FALSE(bnxt_xdp_locking_key);
++
+ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
+ 				   struct bnxt_tx_ring_info *txr,
+ 				   dma_addr_t mapping, u32 len)
+@@ -227,6 +229,9 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
+ 	ring = smp_processor_id() % bp->tx_nr_rings_xdp;
+ 	txr = &bp->tx_ring[ring];
+ 
++	if (static_branch_unlikely(&bnxt_xdp_locking_key))
++		spin_lock(&txr->xdp_tx_lock);
++
+ 	for (i = 0; i < num_frames; i++) {
+ 		struct xdp_frame *xdp = frames[i];
+ 
+@@ -250,6 +255,9 @@ int bnxt_xdp_xmit(struct net_device *dev, int num_frames,
+ 		bnxt_db_write(bp, &txr->tx_db, txr->tx_prod);
+ 	}
+ 
++	if (static_branch_unlikely(&bnxt_xdp_locking_key))
++		spin_unlock(&txr->xdp_tx_lock);
++
+ 	return nxmit;
+ }
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
+index 0df40c3beb05..067bb5e821f5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.h
+@@ -10,6 +10,8 @@
+ #ifndef BNXT_XDP_H
+ #define BNXT_XDP_H
+ 
++DECLARE_STATIC_KEY_FALSE(bnxt_xdp_locking_key);
++
+ struct bnxt_sw_tx_bd *bnxt_xmit_bd(struct bnxt *bp,
+ 				   struct bnxt_tx_ring_info *txr,
+ 				   dma_addr_t mapping, u32 len);
 -- 
 2.18.1
 
 
---000000000000045d0405dba0e01f
+--0000000000001b164205dba0e0cc
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -161,13 +244,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIH5D7xTWUhQHJYL4ub6KwSG/HnGdaNpf
-bvRJSr6WfdE5MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQw
-MjAwMjEyM1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIN6/BgtgY4B1rQg2hKe+dwc9n80RMBCp
+OsVM5ZzOl+WVMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDQw
+MjAwMjEyNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDV9U3SpNJuC0XRJxWgnBzJS5n8S5QZxMclGO6Z+EwJ5d9xyN8A
-LbTNX32s1Il3y86M2TeX/+1gbpf+9zmpTk/un2uKoW61mq/nET0ZRCDSBwMY+tcKiTNrDFGCT0jr
-Z5ASpgmdViF3tn+Bn+3rKS63BDH7S266QxWXjLaXh6VukIzcj3JF3mjZk7JaqdT31KVTiC8fTWAE
-AYxM7l05SXVMp62teQTT164hYf/APtcacR5BBrly/bUXKTgnn+v651uMWjT2Z7z1KxlBO+Q8Yxyd
-1T7z5SemmGGn48kej+6haY5oXtQGJBT+YhsWArm9Cvq8wCHS6xGF5xOg9qedFZXC
---000000000000045d0405dba0e01f--
+ATANBgkqhkiG9w0BAQEFAASCAQBVCWdiTqJueb+Ktu+9nO1knuUNkuV9U93mIh2qt1XPr3tlszjG
+4zpHFOfF9GyBo2aFI3cxhJ+0BmE9zbQikmDYz6XslYie1xOn+RJXGWO4JWjTxKK8ZSyw3LLUbKaY
+W9ObW4CF4AM2oxGgFXgv1PflntSNQl83iLvGMsM6XRLbZx5MEkzYQlv+yW8NZJb802pvAy3ZwSzA
+ideJLUt4E9x8wQP81ByZRO4D6ywVKuKaGkvql/e56jCsyVGiBPQMVVtPLi1fmC/L9zZrI8elxVGk
+32cUQPi238Ka8f5PDJp5tw1MkEtqfOyy7jOMcnKPKgsY97FJ8/MPBaZVGUg6e1kT
+--0000000000001b164205dba0e0cc--
