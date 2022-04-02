@@ -2,170 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F6F14F0192
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 14:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DE844F0215
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 15:24:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344379AbiDBMpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Apr 2022 08:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
+        id S1350405AbiDBNZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Apr 2022 09:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354730AbiDBMpc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 08:45:32 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1CCB1E6;
-        Sat,  2 Apr 2022 05:43:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=TPbMn89W95XekkaeUK/Ktas9k26DVDMW/Vk7Hpxzhag=; b=pXWOGxcLBamEzUQP+Um1BO2qwi
-        MnxRdVIkPZGS3nOUBSWRV0PHmItx5sS/Bpp4Omb/PH0X74/OvM8mJ6IlJwyLPoUeljeWbyXa2L3Mt
-        gNjJYJc0aQHy4Q3/bq/9h4TPA03tmsqXtxAy9dyeCLdN0zsyZlnckZK60OjtFX4dWqGaNyepOJrOt
-        YHRsdmcPl6DN8IB2tnH7hCeCB7ct+fY4T7kziIOA4y9/EkunxJW833Q/WfRruLFR6ZAWEzFXzwxeb
-        N5Cj9/HQf86xUjTC+sPdT/E2sinV9oqra2plr5R/Yzy6nS+WppgaPOvqvtyujxv1GvhQfJ7Ysjs0a
-        5h/zM6clESJ6El37ClGg0R/w1AOjg50B4ZpQRDr52p1Y4qb9jc7lIqLiD2hk998T2r6D9lsaEoSx1
-        xoZKPaPBA2moFTCg5JdI2Ry+rdVWS0oj6JyqfYV9aF2PhYnZDLYLS+CecGAWR+dOnIn9fPRglDmgr
-        xRA2Sj+JRyhMLsnSyPxPiHu07IGFVn4OnMh4gP2mQSMmP4V0XIK55G/K+DTmF+XJSLDWeopbCfmLT
-        ce/2wZhczqKTliH2Ks5C0LBTYna3ouBFStSPiq6nw4KVT+sk7KotWBs8bkUiLYZaniwu/VZkSC9uj
-        JjPjCuQEZlhGfFQDV1yQD2QipiFpvZClTklDOweuw=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org
-Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        David Howells <dhowells@redhat.com>, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p fs-cache tests/benchmark (was: 9p fscache Duplicate cookie detected)
-Date:   Sat, 02 Apr 2022 14:43:27 +0200
-Message-ID: <2217691.DX9Dedu4HX@silver>
-In-Reply-To: <YkeGiLyO52etYhgb@codewreck.org>
-References: <CAAZOf26g-L2nSV-Siw6mwWQv1nv6on8c0fWqB4bKmX73QAFzow@mail.gmail.com>
- <1866935.Y7JIjT2MHT@silver> <YkeGiLyO52etYhgb@codewreck.org>
+        with ESMTP id S1355498AbiDBNWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 09:22:53 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EF251599
+        for <netdev@vger.kernel.org>; Sat,  2 Apr 2022 06:21:01 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id z33so5191133ybh.5
+        for <netdev@vger.kernel.org>; Sat, 02 Apr 2022 06:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=+pryMgvedYxgy8GBeOlmXDihk4D2QfhvARnToMn1fc4=;
+        b=YYYxKyvT22y+Chcbmr1N8qXLf+UaEKi0UI9eiJreOkQLS019qnKjBBjSm9Lm3Z2JSt
+         vfSZ3Gfex345jqMXBSoYLWrMzxrfl79ycIxGWA3oJf6m1MkKwbouVE7EPOAVLX9WbLCk
+         AK5iLw3UOtEgcQcqiTBSP2FqS5DfTauInkVwyRvXht/GYrrUghsGqcSZgnqB5CshswxI
+         3EjXZQJP+Gi0hAHEvZmJ5YZXnZ9tMdb8PSDa9J/EBTaM1oBHMKffr2cWcN6aoAoXU9fM
+         zYluCFUzQGQ5l+mpZIEEjH7Dqlaa8L7r18QhbqEpmj3aPNTM5oqD3U8xaaceI4zKLrW/
+         5jkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=+pryMgvedYxgy8GBeOlmXDihk4D2QfhvARnToMn1fc4=;
+        b=17dKtj6cUxU43bEayjlcmQCyNiEc152/ySPlJ0T6ujrjalSfSGQhAjX84IoArZhmwa
+         EOEMF7csczeoaa6v/5hs1IQeZLv1aaYQnEFjUY2Gn4iwxb5Oc0k6KKTNaEya66qWL2Sa
+         iPI3YYvyEuqbPuAq/o5daEg9s1Kz1ad/Fy88CxIa3m8Q2wTHuzO5MaO/u9xdnYkunO57
+         6dmwcS1AS4DJINVT2a7mStBjBuxO/SLsTeRpo6N1JQC5bJaSPbTKfCp/8U3IZ6gECOqY
+         JPLULgxSqptTDfjfgu6DPiP4KeukT0MqivcPStuoHSMFsjtiNL56iMcOh6Uvgv9K32+i
+         VDgA==
+X-Gm-Message-State: AOAM5332wSUbtGrNXHiCtzd9UV5FfFLlrzkd4D+cG/iXqokqk+4ecq4g
+        FySJirybGG/HLbMzutQaYMmMabIlAsvp3urLy2FquQ==
+X-Google-Smtp-Source: ABdhPJw4p/xmrTV8rn1WIatgiSN/dnGYijnkrqNgutdl39P8w6bOTPRkFlhgnyJM3efu3QXAhQifJGtkhFOOsczYtnw=
+X-Received: by 2002:a25:8382:0:b0:63d:6201:fa73 with SMTP id
+ t2-20020a258382000000b0063d6201fa73mr6901867ybk.55.1648905660742; Sat, 02 Apr
+ 2022 06:21:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <E1nZMdl-0006nG-0J@plastiekpoot> <CADVnQyn=A9EuTwxe-Bd9qgD24PLQ02YQy0_b7YWZj4_rqhWRVA@mail.gmail.com>
+ <eaf54cab-f852-1499-95e2-958af8be7085@uls.co.za> <CANn89iKHbmVYoBdo2pCQWTzB4eFBjqAMdFbqL5EKSFqgg3uAJQ@mail.gmail.com>
+ <10c1e561-8f01-784f-c4f4-a7c551de0644@uls.co.za> <CADVnQynf8f7SUtZ8iQi-fACYLpAyLqDKQVYKN-mkEgVtFUTVXQ@mail.gmail.com>
+ <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za> <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
+ <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
+ <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za> <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
+ <CADVnQy=GX0J_QbMJXogGzPwD=f0diKDDxLiHV0gzrb4bo=4FjA@mail.gmail.com> <429dd56b-8a6c-518f-ccb4-fa5beae30953@uls.co.za>
+In-Reply-To: <429dd56b-8a6c-518f-ccb4-fa5beae30953@uls.co.za>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sat, 2 Apr 2022 06:20:49 -0700
+Message-ID: <CANn89iKSFXBx9zYuBFH4-uS3UzAUW+fY7d5aiUkfOa1DdbHDxQ@mail.gmail.com>
+Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP connections
+To:     Jaco Kroon <jaco@uls.co.za>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sven Auhagen <sven.auhagen@voleatech.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Samstag, 2. April 2022 01:11:04 CEST asmadeus@codewreck.org wrote:
-> Christian Schoenebeck wrote on Fri, Apr 01, 2022 at 04:19:20PM +0200:
-> > 4. v9fs_qid_iget_dotl [fs/9p/vfs_inode_dotl.c, 133]:
-> > 	v9fs_cache_inode_get_cookie(inode);
-> > 	^--- Called independent of function argument "new"'s value here
-> > 	
-> >    https://github.com/torvalds/linux/blob/e8b767f5e04097aaedcd6e06e2270f9f
-> >    e5282696/fs/9p/vfs_inode_dotl.c#L133
-> uh, I'd have assumed either this call or the function to check
-> v9ses->cache, but it doesn't look like either do...
-> There's a nice compile-time static inline empty definition if FSCACHE is
-> not compiled in, but that should -also- be a check at runtime based on
-> the session struct.
-> 
-> For your remark vs. the 'new' argument, it does depend on it:
->  - new determines which check is used for iget5_locked.
-> In the 'new' case, v9fs_test_new_inode_dotl always returns 0 so we
-> always get a new inode.
->  - if iget5_locked found an existing inode (i_state & I_NEW false) we
-> return it.
+On Sat, Apr 2, 2022 at 1:42 AM Jaco Kroon <jaco@uls.co.za> wrote:
+>
+> Hi Neal,
+>
+> On 2022/04/01 17:39, Neal Cardwell wrote:
+> > On Tue, Mar 29, 2022 at 9:03 PM Jaco <jaco@uls.co.za> wrote:
+> > ...
+> >> Connection setup:
+> >>
+> >> 00:56:17.055481 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.59110 > 2a00:145=
+0:400c:c07::1b.25: Flags [S], seq 956633779, win 62580, options [mss 8940,n=
+op,nop,TS val 3687705482 ecr 0,nop,wscale 7,tfo  cookie f025dd84b6122510,no=
+p,nop], length 0
+> >>
+> >> 00:56:17.217747 IP6 2a00:1450:400c:c07::1b.25 > 2c0f:f720:0:3:d6ae:52f=
+f:feb8:f27b.59110: Flags [S.], seq 726465675, ack 956633780, win 65535, opt=
+ions [mss 1440,nop,nop,TS val 3477429218 ecr 3687705482,nop,wscale 8], leng=
+th 0
+> >>
+> >> 00:56:17.218628 IP6 2a00:1450:400c:c07::1b.25 > 2c0f:f720:0:3:d6ae:52f=
+f:feb8:f27b.59110: Flags [P.], seq 726465676:726465760, ack 956633780, win =
+256, options [nop,nop,TS val 3477429220 ecr 3687705482], length 84: SMTP: 2=
+20 mx.google.com ESMTP e16-20020a05600c4e5000b0038c77be9b2dsi226281wmq.72 -=
+ gsmtp
+> >>
+> >> 00:56:17.218663 IP6 2c0f:f720:0:3:d6ae:52ff:feb8:f27b.59110 > 2a00:145=
+0:400c:c07::1b.25: Flags [.], ack 726465760, win 489, options [nop,nop,TS v=
+al 3687705645 ecr 3477429220], length 0
+> >>
+> >> This is pretty normal, we advertise an MSS of 8940 and the return is 1=
+440, thus
+> >> we shouldn't send segments larger than that, and they "can't".  I need=
+ to
+> >> determine if this is some form of offloading or they really are sendin=
+g >1500
+> >> byte frames (which I know won't pass our firewalls without fragmentati=
+on so
+> >> probably some form of NIC offloading - which if it was active on older=
+ 5.8
+> >> kernels did not cause problems):
+> > Jaco, was there some previous kernel version on these client machines
+> > where this problem did not show up? Perhaps the v5.8 version you
+> > mention here? Can you please share the exact version number?
+> 5.8.14
+> >
+> > If so, a hypothesis would be:
+> >
+> > (1) There is a bug in netfilter's handling of TFO connections where
+> > the server sends a data packet after a TFO SYNACK, before the client
+> > ACKs anything (as we see in this trace).
+> >
+> > This bug is perhaps similar in character to the bug fixed by Yuchung's
+> > 2013 commit that Eric mentioned:
+> >
+> > 356d7d88e088687b6578ca64601b0a2c9d145296
+> > netfilter: nf_conntrack: fix tcp_in_window for Fast Open
+> >
+> > (2) With kernel v5.8, TFO blackhole detection detected that in your
+> > workload there were TFO connections that died due to apparent
+> > blackholing (like what's shown in the trace), and dynamically disabled
+> > TFO on your machines. This allowed mail traffic to flow, because the
+> > netfilter bug was no longer tickled. This worked around the netfilter
+> > bug.
+> >
+> > (3) You upgraded your client-side machine from v5.8 to v5.17, which
+> > has the following commit from v5.14, which disables TFO blackhole
+> > logic by default:
+> >   213ad73d0607 tcp: disable TFO blackhole logic by default
+> >
+> > (4) Due to (3), the blackhole detection logic was no longer operative,
+> > and when the netfilter bug blackholed the connection, TFO stayed
+> > enabled. This caused mail traffic to Google to stall.
+> >
+> > This hypothesis would explain why:
+> >   o disabling TFO fixes this problem
+> >   o you are seeing this with a newer kernel (and apparently not with a
+> > kernel before v5.14?)
+> Agreed.
+> >
+> > With this hypothesis, we need several pieces to trigger this:
+> >
+> > (a) client side software that tries TFO to a server that supports TFO
+> > (like the exim mail transfer agent you are using, connecting to
+> > Google)
+> >
+> > (b) a client-side Linux kernel running buggy netfilter code (you are
+> > running netfilter)
+> >
+> > (c) a client-side Linux kernel with TFO support but no blackhole
+> > detection logic active (e.g. v5.14 or later, like your v5.17.1)
+> >
+> > That's probably a rare combination, so would explain why we have not
+> > had this report before.
+> >
+> > Jaco, to provide some evidence for this hypothesis, can you please
+> > re-enable fastopen but also enable the TFO blackhole detection that
+> > was disabled in v5.14 (213ad73d0607), with something like:
+> >
+> >   sysctl -w net.ipv4.tcp_fastopen=3D1
+> >   sysctl -w tcp_fastopen_blackhole_timeout=3D3600
+>
+> Done.
+>
+> Including sysctl net.netfilter.nf_conntrack_log_invalid=3D6- which
+> generates lots of logs, something specific I should be looking for?  I
+> suspect these relate:
+>
+> [Sat Apr  2 10:31:53 2022] nf_ct_proto_6: SEQ is over the upper bound
+> (over the window of the receiver) IN=3D OUT=3Dbond0
+> SRC=3D2c0f:f720:0000:0003:d6ae:52ff:feb8:f27b
+> DST=3D2a00:1450:400c:0c08:0000:0000:0000:001a LEN=3D2928 TC=3D0 HOPLIMIT=
+=3D64
+> FLOWLBL=3D867133 PROTO=3DTCP SPT=3D48920 DPT=3D25 SEQ=3D2689938314 ACK=3D=
+4200412020
+> WINDOW=3D447 RES=3D0x00 ACK PSH URGP=3D0 OPT (0101080A2F36C1C120EDFB91) U=
+ID=3D8
+> GID=3D12
+> [Sat Apr  2 10:31:53 2022] nf_ct_proto_6: SEQ is over the upper bound
+> (over the window of the receiver) IN=3D OUT=3Dbond0
+> SRC=3D2c0f:f720:0000:0003:d6ae:52ff:feb8:f27b
+> DST=3D2a00:1450:400c:0c08:0000:0000:0000:001a LEN=3D2928 TC=3D0 HOPLIMIT=
+=3D64
+> FLOWLBL=3D867133 PROTO=3DTCP SPT=3D48920 DPT=3D25 SEQ=3D2689941170 ACK=3D=
+4200412020
+> WINDOW=3D447 RES=3D0x00 ACK PSH URGP=3D0 OPT (0101080A2F36C1C120EDFB91) U=
+ID=3D8
+> GID=3D12
+>
+> (There are many more of those, and the remote side is Google in this case=
+)
+>
 
-Yes, I saw that. This part so far is correct.
+Great. This confirms our suspicions.
 
-The only minor issue I see here from performance PoV: the test function passed
-(always returning zero) unnecessarily causes find_inode() to iterate over all
-inodes of the associated hash bucket:
+Please try the following patch that landed in 5.18-rc
 
-https://github.com/torvalds/linux/blob/88e6c0207623874922712e162e25d9dafd39661e/fs/inode.c#L912
+f2dd495a8d589371289981d5ed33e6873df94ecc netfilter: nf_conntrack_tcp:
+preserve liberal flag in tcp options
 
-IMO it would make sense introducing an official of what's called "identically
-zero function" in shared code space and let 9p use that official function
-instead. Then inode.c could simply compare the test function pointer and not
-bother to iterate over the entire list in such a case.
+CC netfilter folks.
 
->  - at this point we're allocating a new inode, so we should initialize
-> its cookie if it's on a fscache-enabled mount
-> 
-> So that part looks OK to me.
+Condition triggering the bug :
+   before(seq, sender->td_maxend + 1),
 
-Mmm, but you agree that it also does that for cache=mmap right now, right?
+I took a look at the code, and it is not clear if td_maxend is
+properly setup (or if td_scale is cleared at some point while it
+should not)
 
-> What isn't correct with qemu setting qid version is the non-new case's
-> v9fs_test_inode_dotl, it'll consider the inode to be new if version
-> changed so it would recreate new, different inodes with same inode
-> number/cookie and I was sure that was the problem, but it looks like
-> there's more to it from your reply below :(
+Alternatively, if conntracking does not know if the connection is
+using wscale (or what is the scale), the "before(seq,
+sender->td_maxend + 1),"
+should not be evaluated/used.
 
-Yes, it does not seem to be related, and I mean this part of the code has not
-changed for 11 years. So if that was the cause, then old kernels would suffer
-from the same issues, which does not seem to be the case.
+Also, I do not see where td_maxend is extended in tcp_init_sender()
 
-I would not say though that QEMU is necessarily wrong in filling in mtime for
-qid.version. The 9p spec just says:
+Probably wrong patch, just to point to the code I do not understand yet.
 
-"The version is a version number for a file; typically, it is incremented
-every time the file is modified."
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c
+b/net/netfilter/nf_conntrack_proto_tcp.c
+index 8ec55cd72572e0cca076631e2cc1c11f0c2b86f6..950082785d61b7a2768559c7500=
+d3aee3aaea7c2
+100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -456,9 +456,10 @@ static void tcp_init_sender(struct ip_ct_tcp_state *se=
+nder,
+        /* SYN-ACK in reply to a SYN
+         * or SYN from reply direction in simultaneous open.
+         */
+-       sender->td_end =3D
+-       sender->td_maxend =3D end;
+-       sender->td_maxwin =3D (win =3D=3D 0 ? 1 : win);
++       sender->td_end =3D end;
++       sender->td_maxwin =3D max(win, 1U);
++       /* WIN in SYN & SYNACK is not scaled */
++       sender->td_maxend =3D end + sender->td_maxwin;
 
-So yes, it does recommend sequential numbering, but OTOH does not require it.
-And implementing that would be expensive, because 9p server would need to
-maintain its own version for every single file. whereas using host
-filesystem's mtime is cheap.
-
-> >> Well, at least that one is an easy fix: we just don't need this.
-> >> It's the easiest way to reproduce but there are also harder to fix
-> >> collisions, file systems only guarantee unicity for (fsid,inode
-> >> number,version) which is usually bigger than 128 bits (although version
-> >> is often 0), but version isn't exposed to userspace easily...
-> >> What we'd want for unicity is handle from e.g. name_to_handle_at but
-> >> that'd add overhead, wouldn't fit in qid path and not all fs are capable
-> >> of providing one... The 9p protocol just doesn't want bigger handles
-> >> than qid path.
-> > 
-> > No bigger qid.path on 9p protocol level in future? Why?
-> 
-> I have no idea about the "9p protocol" as a standard, nor who decides
-> how that evolves -- I guess if we wanted to we could probably make a
-> 9p2022.L without concerting much around, but I have no plan to do
-> that... But if we do, I can probably add quite a few things to the
-> list of things that might need to change :)
-
-Yes, I agree, 9p protocol changes are a long-term thing which I don't want to
-hurry either. But I do think it makes sense to at least collect an informal
-list of ideas/features/issues that should be addressed in future, e.g. a wiki
-page. For now I am using the QEMU wiki for this:
-
-https://wiki.qemu.org/Documentation/9p#Protocol_Plans
-
-You can use that wiki page as well of course, or if somebody thinks there
-would be a better place, no problem for me either.
-
-> That being said, this particular change of qid format is rather
-> annoying. 9p2000.L basically just added new message types, so dissectors
-> such as wireshark could barge in the middle of the tcp flow and more or
-> less understand; modifying a basic type like this would require to
-> either catch the TVERSION message or make new message types for
-> everything that deals wth qids (auth/attach, walk, lopen, lcreate,
-> mknod, getattr, readdir, mkdir... that's quite a few)
-> 
-> So I think we're better off with the status quo here.
-
-Well, in a future protocol revision I would try to merge the individual 9p
-dialects as much as possible anyway and I would also release one document that
-covers all supported messages instead of requiring people to read 4+
-individual specs, which I don't find helpful. Most changes were just about
-data types, which could also be covered in a spec by just naming a message
-once, and listing the difference for individual 9p versions for that
-particular message.
-
-But again: no priority for me either ATM. There is still enough to do for
-fixing the implementations on server and client side for current 9p protocol
-versions.
-
-Best regards,
-Christian Schoenebeck
-
-
+        tcp_options(skb, dataoff, tcph, sender);
+        /* RFC 1323:
