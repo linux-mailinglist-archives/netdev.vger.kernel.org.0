@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3DBA4F02D0
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 15:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96AED4F03C3
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 16:06:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350646AbiDBNpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Apr 2022 09:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
+        id S232003AbiDBOH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Apr 2022 10:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232226AbiDBNpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 09:45:05 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47903CB01B;
-        Sat,  2 Apr 2022 06:43:14 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id p17so4665704plo.9;
-        Sat, 02 Apr 2022 06:43:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=N8etPJfuUrvLrKv9T6LO2m8SvHPCKKB3qu2VSt8v9nA=;
-        b=Qp3+sVxlu/4x2lmjo3UD6aZziSa9jal43jqrKm2zfWl/+omelI65Sp70InHvggNa1+
-         dGEAUUFAYSJWl4YNTFsF690kPBMgF0ljYslIfFYbuFzkUCtKqBZ13DVeSni8ev2KM45R
-         KBQ/QdEE/hnJvi+9Ecy2YihzUtvXtoLiIerIpsoA7MDGIEtjRwX9T7xa4Wh8ulgNKgwD
-         VstjGeu3kBWRLzOzoKKCX75uOS7Zlzl/Mz4Wv/Uijy5YP68V6ao1GXRsL9DTwA/meEP/
-         yo3kupGKARFrIoPAXsYystH/UCnUlHoguq8wqCBtV/V2GcALzMIxS5ihfP5cDKVjm61b
-         DHpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=N8etPJfuUrvLrKv9T6LO2m8SvHPCKKB3qu2VSt8v9nA=;
-        b=D2Yc/8pAR+qqjC2QAk0SmjMHs//KXhKoLrC/2966kZ8K3KyfMNMoa40b28PQp4lDQT
-         LfWhvVS25Cxe94U7+GR2Eaewx0NQZSZ6TxjIgsbDNJP2UUhGvETTqgmpeyPY7iFHwOdj
-         XVfmLfxj6M2K1WNFs3ktEbQT9Enm4rli0DVofgzhK4xzrk4+51JrSq55VVSHtCvQ1S/x
-         ZXmbw06RnaYacRUDvOkGNxWjUKpXYOWyyqu+hqH9GUX1RHXJm/IgIRVxAsryVs1AvZ2h
-         78Ey4INpcYwoZEvYOtHN37KCvuO8lr3ot0VdS9h1Ir8sH8B+CoSsZjSHWhn/eVxwkg9A
-         Dfrg==
-X-Gm-Message-State: AOAM530l55srcXsuJaCpqUZXXtM91/wr5lRot1KH4w0ZEVnB71JIKG8s
-        SBediYJ+UjaYEPJfRBRLoMk=
-X-Google-Smtp-Source: ABdhPJwvOBfL3ZRn/xSf/hbyHwVlboZe2IeZAwoTcZlIhaFsDkEQ/OYHNBO1xsJqjlDjHs0OZpXsNQ==
-X-Received: by 2002:a17:902:bd88:b0:14f:8ddf:e373 with SMTP id q8-20020a170902bd8800b0014f8ddfe373mr15196047pls.89.1648906993722;
-        Sat, 02 Apr 2022 06:43:13 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id j13-20020a056a00130d00b004f1025a4361sm6610999pfu.202.2022.04.02.06.43.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Apr 2022 06:43:12 -0700 (PDT)
-Date:   Sat, 2 Apr 2022 06:43:09 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, Divya.Koppera@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net v2 0/3] net: phy: micrel: Remove latencies support
- lan8814
-Message-ID: <20220402134309.GA19675@hoboy.vegasvil.org>
-References: <20220401110522.3418258-1-horatiu.vultur@microchip.com>
- <Ykb2yoXHib6l9gkT@lunn.ch>
- <20220401141120.imsolvsl2xpnnf4q@lx-anielsen>
- <YkcOjlR++GwLWyT5@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YkcOjlR++GwLWyT5@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230301AbiDBOHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 10:07:51 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C616FD6DD
+        for <netdev@vger.kernel.org>; Sat,  2 Apr 2022 07:05:59 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id A64FAC01F; Sat,  2 Apr 2022 16:05:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648908357; bh=QF/L8ZAU7j5y7JRj5btGXMpteEczUHnHYv99nubh5rY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Su+bW2Ho+2oWf869XR121/a7/9kR+aroOIlfBGj6Ptyrw3MdLxXkZSfgjzHHBrYmo
+         UWNPqzYiDq4mQSBzTo9VFUJ9UsE7e4I6Cj79+YZ0hRjLAdZETJmz1NoKrI1CTUPF8j
+         yHzyPIOuUmD34DQkE6gTbpDQqof+wmyeBlNESZrI6kJXvMIN6DBJLOsMT3onHQUxGl
+         itjN4atQiDOdZCeAOpeoshylfoqTSz6PlM6KmHzPnVdjTHxHi2UAQCcMcRYYPCdUCn
+         avgpL75lImUK/iNBYwBka3t8KjNJ6JZhwKTDCtIjrr633I2mQPvT3rJMe3CHIl43G7
+         FWawrLRdzs9pQ==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 9A39BC009;
+        Sat,  2 Apr 2022 16:05:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648908356; bh=QF/L8ZAU7j5y7JRj5btGXMpteEczUHnHYv99nubh5rY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p1+fZsSBMPo5YaUvR39ibrs5HezA1QFmBvNjfzOIIzFZEhuJGVz0wWtcc2+9BkY1O
+         i11i1quPvXJKpjuiqMOZNYT3ZRlreMQaaGbLXJQ7VGpwbCWcHHja8+VBIeVaWir7bE
+         hzwp+9lziS7wO2Og4ZGPe8bLkJozFHo9vmyoU/NQfGpztyA5ndM7BfLo8uRVWTwift
+         xbBDBZ55WY5Pa7rYDZKsvL+nxn4S1D5ARXbus4jAk30Zy9Z8jnN7/RjPbWYk8pim+T
+         DAuNkwRIhJo5NjegZ2AnC8TznPzzzqvz4LTbGRYcknbrnzvTJKdMyFzVvxZCz7dDWy
+         qYaqJZIyBlVrw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 4655c428;
+        Sat, 2 Apr 2022 14:05:51 +0000 (UTC)
+Date:   Sat, 2 Apr 2022 23:05:36 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>,
+        Nikolay Kichukov <nikolay@oldum.net>
+Subject: Re: [PATCH v4 12/12] net/9p: allocate appropriate reduced message
+ buffers
+Message-ID: <YkhYMFf63qnEhDd0@codewreck.org>
+References: <cover.1640870037.git.linux_oss@crudebyte.com>
+ <8c305df4646b65218978fc6474aa0f5f29b216a0.1640870037.git.linux_oss@crudebyte.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <8c305df4646b65218978fc6474aa0f5f29b216a0.1640870037.git.linux_oss@crudebyte.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 01, 2022 at 04:39:10PM +0200, Andrew Lunn wrote:
+Christian Schoenebeck wrote on Thu, Dec 30, 2021 at 02:23:18PM +0100:
+> So far 'msize' was simply used for all 9p message types, which is far
+> too much and slowed down performance tremendously with large values
+> for user configurable 'msize' option.
+> 
+> Let's stop this waste by using the new p9_msg_buf_size() function for
+> allocating more appropriate, smaller buffers according to what is
+> actually sent over the wire.
 
-> Are you also saying that ptp4l needs to read the values from the
-> driver, calculate the differ from the defaults, and then apply that
-> difference to the correction specified in the configuration file it
-> will apply in userspace?
+By the way, thinking of protocols earlier made me realize this won't
+work on RDMA transport...
 
-Personally I wouldn't bother with that.  At the end of day, users who
-care about sub-microsecond performance will need to calibrate their
-particular setup.  The output of the calibration will be the system
-delay asymmetry correction.  That number will be applied in ONE place,
-namely the user space PTP stack.  Breaking it up into little bits is
-just extra work for no benefit.
+unlike virtio/tcp/xen, RDMA doesn't "mailbox" messages: there's a pool
+of posted buffers, and once a message has been received it looks for the
+header in the received message and associates it with the matching
+request, but there's no guarantee a small message will use a small
+buffer...
 
-That is why I'm against any of this driver nonsense.  The only purpose
-of putting values in to the driver is to unpleasantly surprise the end
-users after kernel upgrade.
+This is also going to need some thought, perhaps just copying small
+buffers and recycling the buffer if a large one was used? but there
+might be a window with no buffer available and I'm not sure what'd
+happen, and don't have any RDMA hardware available to test this right
+now so this will be fun.
 
-If this driver defaults + run time query/setting stuff goes mainline,
-I'll never use it.
 
-> Does the PTP API enforce mutual exclusion for a device? Can there be
-> multiple applications running on an interface, some which assume the
-> hardware is configured to perform corrections and some which will
-> apply the correction in user space?
-
-There is no mutual exclusion at the kernel API.  The main hindrance is
-the SIOCSHWTSTAMP ioctl which is at the device level.  The setting
-applies system wide and is a root caps operation.  There is the "Get"
-variant that allows co-operation but does not enforce it.
-
-Thanks,
-Richard
+I'm not shooting this down (it's definitely interesting), but we might
+need to make it optional until someone with RDMA hardware can validate a
+solution.
+-- 
+Dominique
