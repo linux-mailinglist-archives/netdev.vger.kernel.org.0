@@ -2,112 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4693A4EFF34
-	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 08:55:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 384BC4EFF43
+	for <lists+netdev@lfdr.de>; Sat,  2 Apr 2022 09:11:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238321AbiDBG5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Apr 2022 02:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33302 "EHLO
+        id S238530AbiDBHNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Apr 2022 03:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231932AbiDBG5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 02:57:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 316DA764B
-        for <netdev@vger.kernel.org>; Fri,  1 Apr 2022 23:55:46 -0700 (PDT)
+        with ESMTP id S233786AbiDBHNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Apr 2022 03:13:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8376D1EAD2
+        for <netdev@vger.kernel.org>; Sat,  2 Apr 2022 00:11:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1648882545;
+        s=mimecast20190719; t=1648883475;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=BZ31gR6OuppI3OSuopIkD35xeUkys2Q81lOBmdyZewY=;
-        b=O6afqA7Bk+bL7xoiTZAVSNXr04XCDmNMPdeFAGrbTd1jBy+uyRTy+JqV1KTZiZKdoaOt/3
-        d6N3p1BNdwYHfwkT5losjQ4BA328sN+3KYqkCCdEvhKdiiEzsfYOsHXvw8nJO082gi8jwr
-        kDo09+7MO+0Pxe6afeW7ToMZYGjV/EQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=MHkMY/gjWD4ayMgnmR9Ub7v0rfA5e49jqyy9dp2VcPM=;
+        b=NrJbxxE+E05yl0HjBD+hyc+aeM8tf7ruug5VY4PallJGo2nTyxSivuItcucWBoq8eo1Got
+        3q2q7XvP5G4fUULBbAXsPnJ1y6imPSlrBoYwF00ODzF94Vbvir93sz0ZajjcWwZPETnpU5
+        gAnKa/d+WoYUQx+dwxpsOT3Mi4l2DKg=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-642-xa1AZ-w_N4ewJCFCvH6KgA-1; Sat, 02 Apr 2022 02:55:41 -0400
-X-MC-Unique: xa1AZ-w_N4ewJCFCvH6KgA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+ us-mta-127-beyOVKkxMM66W9dohVyjag-1; Sat, 02 Apr 2022 03:11:12 -0400
+X-MC-Unique: beyOVKkxMM66W9dohVyjag-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ACA5980A0AD;
-        Sat,  2 Apr 2022 06:55:40 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 120A42A2AD45;
+        Sat,  2 Apr 2022 07:11:12 +0000 (UTC)
 Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 172F720296A9;
-        Sat,  2 Apr 2022 06:55:33 +0000 (UTC)
-Date:   Sat, 2 Apr 2022 08:55:33 +0200
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 71F2840885AD;
+        Sat,  2 Apr 2022 07:11:09 +0000 (UTC)
+Date:   Sat, 2 Apr 2022 09:11:09 +0200
 From:   Artem Savkov <asavkov@redhat.com>
-To:     Anna-Maria Behnsen <anna-maria@linutronix.de>
-Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     0day robot <lkp@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+        lkp@lists.01.org, netdev@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
         Josh Poimboeuf <jpoimboe@redhat.com>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] timer: add a function to adjust timeouts to be
- upper bound
-Message-ID: <YkfzZWs+Nj3hCvnE@sparkplug.usersys.redhat.com>
-References: <87zglcfmcv.ffs@tglx>
- <20220330082046.3512424-1-asavkov@redhat.com>
- <20220330082046.3512424-2-asavkov@redhat.com>
- <alpine.DEB.2.21.2203301514570.4409@somnus>
+        yoshfuji@linux-ipv6.org,
+        Anna-Maria Gleixner <anna-maria@linutronix.de>,
+        dsahern@kernel.org
+Subject: Re: [net]  6ef3f95797:
+ UBSAN:shift-out-of-bounds_in_kernel/time/timer.c
+Message-ID: <Ykf3DZ4VJQ0yLJss@sparkplug.usersys.redhat.com>
+References: <20220330082046.3512424-3-asavkov@redhat.com>
+ <20220402030939.GA19395@xsang-OptiPlex-9020>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2203301514570.4409@somnus>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+In-Reply-To: <20220402030939.GA19395@xsang-OptiPlex-9020>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 30, 2022 at 03:40:55PM +0200, Anna-Maria Behnsen wrote:
-> On Wed, 30 Mar 2022, Artem Savkov wrote:
+On Sat, Apr 02, 2022 at 11:09:40AM +0800, kernel test robot wrote:
 > 
-> > Current timer wheel implementation is optimized for performance and
-> > energy usage but lacks in precision. This, normally, is not a problem as
-> > most timers that use timer wheel are used for timeouts and thus rarely
-> > expire, instead they often get canceled or modified before expiration.
-> > Even when they don't, expiring a bit late is not an issue for timeout
-> > timers.
-> > 
-> > TCP keepalive timer is a special case, it's aim is to prevent timeouts,
-> > so triggering earlier rather than later is desired behavior. In a
-> > reported case the user had a 3600s keepalive timer for preventing firewall
-> > disconnects (on a 3650s interval). They observed keepalive timers coming
-> > in up to four minutes late, causing unexpected disconnects.
-> > 
-> > This commit adds upper_bound_timeout() function that takes a relative
-> > timeout and adjusts it based on timer wheel granularity so that supplied
-> > value effectively becomes an upper bound for the timer.
-> > 
 > 
-> I think there is a problem with this approach. Please correct me, if I'm
-> wrong. The timer wheel index and level calculation depends on
-> timer_base::clk. The timeout/delta which is used for this calculation is
-> relative to timer_base::clk (delta = expires - base::clk). timer_base::clk
-> is not updated in sync with jiffies. It is forwarded before a new timer is
-> queued. It is possible, that timer_base::clk is behind jiffies after
-> forwarding because of a not yet expired timer.
+> Greeting,
 > 
-> When calculating the level/index with a relative timeout, there is no
-> guarantee that the result is the same when actual enqueueing the timer with
-> expiry = jiffies + timeout .
+> FYI, we noticed the following commit (built with gcc-9):
+> 
+> commit: 6ef3f95797546781829db3bb6228c9990ba1d49f ("[PATCH v3 2/2] net: make tcp keepalive timer upper bound")
+> url: https://github.com/intel-lab-lkp/linux/commits/Artem-Savkov/timer-add-a-function-to-adjust-timeouts-to-be-upper-bound/20220330-172140
+> base: https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git b166e52541f2357ce126a92ce1d9a580fdca719d
+> patch link: https://lore.kernel.org/netdev/20220330082046.3512424-3-asavkov@redhat.com
+> 
+> in testcase: kernel-selftests
+> version: kernel-selftests-x86_64-a17aac1b-1_20220328
+> with following parameters:
+> 
+> 	group: tc-testing
+> 	ucode: 0xec
+> 
+> test-description: The kernel contains a set of "self tests" under the tools/testing/selftests/ directory. These are intended to be small unit tests to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+> 
+> 
+> on test machine: 8 threads Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz with 16G memory
+> 
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> 
+> 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> 
+> 
+> [  158.913672][    C1] UBSAN: shift-out-of-bounds in kernel/time/timer.c:584:32
+> [  158.922603][    C1] shift exponent -3 is negative
 
-Yes, you are correct. This especially is a problem for timeouts placed
-just before LVL_START(x), which is a good chunk of cases. I don't think
-it is possible to get to timer_base clock without meddling with the
-hot-path.
-
-Is it possible to determine the upper limit of error margin here? My
-assumption is it shouldn't be very big, so maybe it would be enough to
-account for this when adjusting timeout at the edge of a level.
-I know this doesn't sound good but I am running out of ideas here.
+This is caused by LVL_START(0). Levels 0 and 1 need to be handled
+separately to insure we don't end up with negative values.
 
 -- 
  Artem
