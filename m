@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C63BB4F0BAD
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 19:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7D094F0BAA
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 19:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241715AbiDCR6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 13:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50376 "EHLO
+        id S240320AbiDCR6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 13:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359712AbiDCR6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 13:58:10 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C400838BC3
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 10:55:59 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id b24so8506174edu.10
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 10:55:59 -0700 (PDT)
+        with ESMTP id S240283AbiDCR6I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 13:58:08 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6D0387BF
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 10:56:01 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id q26so912869edc.7
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 10:56:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CnjlWhysPRTkp9rGG1iCRqY0fG2HcVGyZm/JObISTGY=;
-        b=n6YCJC+ds9WInEHMqk9oLdSQc5UklvQt/YcJ+q7x648AevVMkCt9YFktffj3h4N5o5
-         q4anA9THQBoXomnivcNLDwGe1Npxz4A3TwI9tFYctv3247FuoQAK3Y9acjOCZ6mQNmWH
-         xwqAQoDsqx4s6H5z6lGdrFfsSNNtxwFyKhOYXZm5iFhCuDkdmcFUfIa/BDHvyW1+C5Ec
-         mvnxSrs38k/KAOtPpR8cGTMZHyLorgi8oZSYu8SUi8vWPMoAIlvvJ0ePgRR0yLYOD2fi
-         oofxLccao8VyOlG1gT7TQOaCAHuZKez0SqSGkpisbslvGmbWn4gkH3BdWPMH2VD6Bwa5
-         GO7w==
+        bh=7dp4BMuH/kevxy3gi0HNX8htCjjZHnuqhGGK7or5vJ0=;
+        b=4KLmeYu6kd/5Xw5bDnz1/sBSctSQxxUKuuyzsK8PtagSbxupDBbno7UCdCfnwxWL/L
+         j6XDl/6iAnX0FkPqTe8XhO/wnISZZJigxsZUXEx++Lp8MJSa0574zjYK7pIfvH1BtJkQ
+         NhakpFrp19cb9fMeq3cQ6rGf1fN+zFtACxXkot7k6FXEBD35OuFU94xE9PKd0h+43xtn
+         Hh3w9ymtdQzV8eXNWRhtVrU1UP1dXRn6rbjxDJA4rdfDwp8bnO0itkpr5wZ97wgvRC81
+         3GE8Qxf6tUdisaS1UZKMWIaron2y4dEDaOHVytwO/z/MgijepCdAo1GndhsjUoLsTm/H
+         baiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CnjlWhysPRTkp9rGG1iCRqY0fG2HcVGyZm/JObISTGY=;
-        b=X/ve7eosdcD6Gcahygg1IkepoSwYmOuM6S8+ZOqaYXrq4z5VVyDj7AH2bu2dBapYHw
-         DMTNVa5BkU3KpyoOoI3b6p98tRYjqyMH9Xvk7b0WraaCUddw3HJ2cluqCsFOJkXDJ2wV
-         AeOs6mAUCRvvTqMXDFEnmh/rAOezDg/M8CF0pt9i8hOD4kWgvqxBsXx5R6JTPdjcknDH
-         tkda2hJPPIxG6POaBnXQBGEkfYh0JGc5VOI8Ify8jlmjxYPcLDpXZcglLKL6Orirq8Ct
-         gULL3/zyItKbk+y6c3T2JDhxcYHy6IZnTYFACB6qZ/OMGULIdL+P9pHho2ow15XskjEc
-         ZYJw==
-X-Gm-Message-State: AOAM530xafoVoyZtr3LPwbw5oFccn64GxUTMOrdr+LA4t4STCuW/Bmo7
-        npopvJ+DdB+xM9BIy6g1hHeHOaDGrLWQs6If
-X-Google-Smtp-Source: ABdhPJwZm/O/bExIo0jFIOMmGlwtJ3s/1KhTg+e3wdxGU5SCQiRKrIjmkIKeF+unv9VN0Blj3sLNcQ==
-X-Received: by 2002:a05:6402:1385:b0:413:2bc6:4400 with SMTP id b5-20020a056402138500b004132bc64400mr30288727edv.94.1649008558251;
-        Sun, 03 Apr 2022 10:55:58 -0700 (PDT)
+        bh=7dp4BMuH/kevxy3gi0HNX8htCjjZHnuqhGGK7or5vJ0=;
+        b=O+M0Y1jendvanHPYZtz2LrimFP9EsyqQeSNTGxsg4oDYZz+mqr8xWIMEdpPOF4wEQC
+         ZUw4qdC5kq2e3anajW0dWonCmRc4Dco1Kc0D0cVqmlWx09RCW0yEq4LB0YzD0jOGuyss
+         xN/FQaNKzwUdLtgEf6apTvPoVnK8mM+R8ISu8QVVvfDKc9aHsctrMimDnTwup/dRctKV
+         RKU3QVrDsrUb10RFdVp6vqSdjqqLac/Mfacy0eYwdjz2vZ9HTSUfeEU3qt3B1iYqcA6I
+         CniVB45xDMb+eui8tAJlqRPCrL5rUu/kDak7uwnMbCkGJymp+AM3nW4jjkjH48QVLaLL
+         e8TQ==
+X-Gm-Message-State: AOAM533vEFBX/nXYfizhOG/SeqOCMHYaTPW89ubYlSrM4xAMXslxbGhZ
+        YJB3VibabUcZoWq01Wp3BeyfIg==
+X-Google-Smtp-Source: ABdhPJxpf365ozrjkhxIl+5LJU8tkGJOcxqvHwg60ruunIkeLeOG9NkRcuEmnYokPBYhpvapMPi0xg==
+X-Received: by 2002:aa7:c88b:0:b0:41c:c3d6:ab95 with SMTP id p11-20020aa7c88b000000b0041cc3d6ab95mr2653000eds.141.1649008559856;
+        Sun, 03 Apr 2022 10:55:59 -0700 (PDT)
 Received: from hornet.engleder.at ([2001:871:23a:8366:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id q7-20020a170906540700b006d5eca5c9cfsm3451065ejo.191.2022.04.03.10.55.57
+        by smtp.gmail.com with ESMTPSA id q7-20020a170906540700b006d5eca5c9cfsm3451065ejo.191.2022.04.03.10.55.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 10:55:57 -0700 (PDT)
+        Sun, 03 Apr 2022 10:55:59 -0700 (PDT)
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     richardcochran@gmail.com, vinicius.gomes@intel.com,
         yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org
 Cc:     mlichvar@redhat.com, netdev@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v2 1/5] ptp: Add cycles support for virtual clocks
-Date:   Sun,  3 Apr 2022 19:55:40 +0200
-Message-Id: <20220403175544.26556-2-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v2 2/5] ptp: Request cycles for TX timestamp
+Date:   Sun,  3 Apr 2022 19:55:41 +0200
+Message-Id: <20220403175544.26556-3-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220403175544.26556-1-gerhard@engleder-embedded.com>
 References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
@@ -69,246 +69,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ptp vclocks require a free running time for their timecounter.
-Currently only a physical clock forced to free running is supported.
-If vclocks are used, then the physical clock cannot be synchronized
-anymore. The synchronized time is not available in hardware in this
-case. As a result, timed transmission with TAPRIO hardware support
-is not possible anymore.
+The free running cycle counter of physical clocks called cycles shall be
+used for hardware timestamps to enable synchronisation.
 
-If hardware would support a free running time additionally to the
-physical clock, then the physical clock does not need to be forced to
-free running. Thus, the physical clocks can still be synchronized
-while vclocks are in use.
-
-The physical clock could be used to synchronize the time domain of the
-TSN network and trigger TAPRIO. In parallel vclocks can be used to
-synchronize other time domains.
-
-Introduce support for a free running cycle counter called cycles to
-physical clocks. Rework ptp vclocks to use this free running cycle
-counter. Default implementation is based on time of physical clock.
-Thus, behavior of ptp vclocks based on physical clocks without free
-running cycle counter is identical to previous behavior.
+Introduce new flag SKBTX_HW_TSTAMP_USE_CYCLES, which signals driver to
+provide a TX timestamp based on cycles if cycles are supported.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/ptp/ptp_clock.c          | 31 +++++++++++++++++++++++++++----
- drivers/ptp/ptp_private.h        | 10 ++++++++++
- drivers/ptp/ptp_sysfs.c          | 10 ++++++----
- drivers/ptp/ptp_vclock.c         | 13 +++++--------
- include/linux/ptp_clock_kernel.h | 31 +++++++++++++++++++++++++++++++
- 5 files changed, 79 insertions(+), 16 deletions(-)
+ include/linux/skbuff.h |  3 +++
+ net/core/skbuff.c      |  2 ++
+ net/socket.c           | 11 ++++++++++-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
-index b6f2cfd15dd2..11b8190807c3 100644
---- a/drivers/ptp/ptp_clock.c
-+++ b/drivers/ptp/ptp_clock.c
-@@ -77,8 +77,8 @@ static int ptp_clock_settime(struct posix_clock *pc, const struct timespec64 *tp
- {
- 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 3a30cae8b0a5..aeb3ed4d6cf8 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -578,6 +578,9 @@ enum {
+ 	/* device driver is going to provide hardware time stamp */
+ 	SKBTX_IN_PROGRESS = 1 << 2,
  
--	if (ptp_vclock_in_use(ptp)) {
--		pr_err("ptp: virtual clock in use\n");
-+	if (ptp_clock_freerun(ptp)) {
-+		pr_err("ptp: physical clock is free running\n");
- 		return -EBUSY;
- 	}
- 
-@@ -103,8 +103,8 @@ static int ptp_clock_adjtime(struct posix_clock *pc, struct __kernel_timex *tx)
- 	struct ptp_clock_info *ops;
- 	int err = -EOPNOTSUPP;
- 
--	if (ptp_vclock_in_use(ptp)) {
--		pr_err("ptp: virtual clock in use\n");
-+	if (ptp_clock_freerun(ptp)) {
-+		pr_err("ptp: physical clock is free running\n");
- 		return -EBUSY;
- 	}
- 
-@@ -178,6 +178,14 @@ static void ptp_clock_release(struct device *dev)
- 	kfree(ptp);
- }
- 
-+static int ptp_getcycles64(struct ptp_clock_info *info, struct timespec64 *ts)
-+{
-+	if (info->getcyclesx64)
-+		return info->getcyclesx64(info, ts, NULL);
-+	else
-+		return info->gettime64(info, ts);
-+}
++	/* generate hardware time stamp based on cycles if supported */
++	SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
 +
- static void ptp_aux_kworker(struct kthread_work *work)
- {
- 	struct ptp_clock *ptp = container_of(work, struct ptp_clock,
-@@ -225,6 +233,21 @@ struct ptp_clock *ptp_clock_register(struct ptp_clock_info *info,
- 	mutex_init(&ptp->n_vclocks_mux);
- 	init_waitqueue_head(&ptp->tsev_wq);
+ 	/* generate wifi status information (where possible) */
+ 	SKBTX_WIFI_STATUS = 1 << 4,
  
-+	if (!ptp->info->getcycles64 && !ptp->info->getcyclesx64) {
-+		/* Free running cycle counter not supported, use time. */
-+		ptp->info->getcycles64 = ptp_getcycles64;
-+
-+		if (ptp->info->gettimex64)
-+			ptp->info->getcyclesx64 = ptp->info->gettimex64;
-+
-+		if (ptp->info->getcrosststamp)
-+			ptp->info->getcrosscycles = ptp->info->getcrosststamp;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 10bde7c6db44..c0f8f1341c3f 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4847,6 +4847,8 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+ 		skb_shinfo(skb)->tx_flags |= skb_shinfo(orig_skb)->tx_flags &
+ 					     SKBTX_ANY_TSTAMP;
+ 		skb_shinfo(skb)->tskey = skb_shinfo(orig_skb)->tskey;
 +	} else {
-+		ptp->has_cycles = true;
-+		if (!ptp->info->getcycles64 && ptp->info->getcyclesx64)
-+			ptp->info->getcycles64 = ptp_getcycles64;
-+	}
-+
- 	if (ptp->info->do_aux_work) {
- 		kthread_init_delayed_work(&ptp->aux_work, ptp_aux_kworker);
- 		ptp->kworker = kthread_create_worker(0, "ptp%d", ptp->index);
-diff --git a/drivers/ptp/ptp_private.h b/drivers/ptp/ptp_private.h
-index dba6be477067..ab47c10b3874 100644
---- a/drivers/ptp/ptp_private.h
-+++ b/drivers/ptp/ptp_private.h
-@@ -52,6 +52,7 @@ struct ptp_clock {
- 	int *vclock_index;
- 	struct mutex n_vclocks_mux; /* protect concurrent n_vclocks access */
- 	bool is_virtual_clock;
-+	bool has_cycles;
- };
- 
- #define info_to_vclock(d) container_of((d), struct ptp_vclock, info)
-@@ -96,6 +97,15 @@ static inline bool ptp_vclock_in_use(struct ptp_clock *ptp)
- 	return in_use;
- }
- 
-+/* Check if ptp clock shall be free running */
-+static inline bool ptp_clock_freerun(struct ptp_clock *ptp)
-+{
-+	if (ptp->has_cycles)
-+		return false;
-+
-+	return ptp_vclock_in_use(ptp);
-+}
-+
- extern struct class *ptp_class;
- 
- /*
-diff --git a/drivers/ptp/ptp_sysfs.c b/drivers/ptp/ptp_sysfs.c
-index 9233bfedeb17..414a70d32571 100644
---- a/drivers/ptp/ptp_sysfs.c
-+++ b/drivers/ptp/ptp_sysfs.c
-@@ -231,10 +231,12 @@ static ssize_t n_vclocks_store(struct device *dev,
- 			*(ptp->vclock_index + ptp->n_vclocks - i) = -1;
++		skb_shinfo(skb)->tx_flags &= ~SKBTX_HW_TSTAMP_USE_CYCLES;
  	}
  
--	if (num == 0)
--		dev_info(dev, "only physical clock in use now\n");
--	else
--		dev_info(dev, "guarantee physical clock free running\n");
-+	if (!ptp->has_cycles) {
-+		if (num == 0)
-+			dev_info(dev, "only physical clock in use now\n");
-+		else
-+			dev_info(dev, "guarantee physical clock free running\n");
+ 	if (hwtstamps)
+diff --git a/net/socket.c b/net/socket.c
+index 6887840682bb..03911a3d8b33 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -683,9 +683,18 @@ void __sock_tx_timestamp(__u16 tsflags, __u8 *tx_flags)
+ {
+ 	u8 flags = *tx_flags;
+ 
+-	if (tsflags & SOF_TIMESTAMPING_TX_HARDWARE)
++	if (tsflags & SOF_TIMESTAMPING_TX_HARDWARE) {
+ 		flags |= SKBTX_HW_TSTAMP;
+ 
++		/* PTP hardware clocks can provide a free running cycle counter
++		 * as a time base for virtual clocks. Tell driver to use the
++		 * free running cycle counter for timestamp if socket is bound
++		 * to virtual clock.
++		 */
++		if (tsflags & SOF_TIMESTAMPING_BIND_PHC)
++			flags |= SKBTX_HW_TSTAMP_USE_CYCLES;
 +	}
++
+ 	if (tsflags & SOF_TIMESTAMPING_TX_SOFTWARE)
+ 		flags |= SKBTX_SW_TSTAMP;
  
- 	ptp->n_vclocks = num;
- 	mutex_unlock(&ptp->n_vclocks_mux);
-diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
-index cb179a3ea508..3a095eab9cc5 100644
---- a/drivers/ptp/ptp_vclock.c
-+++ b/drivers/ptp/ptp_vclock.c
-@@ -68,7 +68,7 @@ static int ptp_vclock_gettimex(struct ptp_clock_info *ptp,
- 	int err;
- 	u64 ns;
- 
--	err = pptp->info->gettimex64(pptp->info, &pts, sts);
-+	err = pptp->info->getcyclesx64(pptp->info, &pts, sts);
- 	if (err)
- 		return err;
- 
-@@ -104,7 +104,7 @@ static int ptp_vclock_getcrosststamp(struct ptp_clock_info *ptp,
- 	int err;
- 	u64 ns;
- 
--	err = pptp->info->getcrosststamp(pptp->info, xtstamp);
-+	err = pptp->info->getcrosscycles(pptp->info, xtstamp);
- 	if (err)
- 		return err;
- 
-@@ -143,10 +143,7 @@ static u64 ptp_vclock_read(const struct cyclecounter *cc)
- 	struct ptp_clock *ptp = vclock->pclock;
- 	struct timespec64 ts = {};
- 
--	if (ptp->info->gettimex64)
--		ptp->info->gettimex64(ptp->info, &ts, NULL);
--	else
--		ptp->info->gettime64(ptp->info, &ts);
-+	ptp->info->getcycles64(ptp->info, &ts);
- 
- 	return timespec64_to_ns(&ts);
- }
-@@ -168,11 +165,11 @@ struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock)
- 
- 	vclock->pclock = pclock;
- 	vclock->info = ptp_vclock_info;
--	if (pclock->info->gettimex64)
-+	if (pclock->info->getcyclesx64)
- 		vclock->info.gettimex64 = ptp_vclock_gettimex;
- 	else
- 		vclock->info.gettime64 = ptp_vclock_gettime;
--	if (pclock->info->getcrosststamp)
-+	if (pclock->info->getcrosscycles)
- 		vclock->info.getcrosststamp = ptp_vclock_getcrosststamp;
- 	vclock->cc = ptp_vclock_cc;
- 
-diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
-index 554454cb8693..3ea7110a9d70 100644
---- a/include/linux/ptp_clock_kernel.h
-+++ b/include/linux/ptp_clock_kernel.h
-@@ -108,6 +108,32 @@ struct ptp_system_timestamp {
-  * @settime64:  Set the current time on the hardware clock.
-  *              parameter ts: Time value to set.
-  *
-+ * @getcycles64:  Reads the current free running cycle counter from the hardware
-+ *                clock.
-+ *                If @getcycles64 and @getcyclesx64 are not supported, then
-+ *                @gettime64 or @gettimex64 will be used as default
-+ *                implementation.
-+ *                parameter ts: Holds the result.
-+ *
-+ * @getcyclesx64:  Reads the current free running cycle counter from the
-+ *                 hardware clock and optionally also the system clock.
-+ *                 If @getcycles64 and @getcyclesx64 are not supported, then
-+ *                 @gettimex64 will be used as default implementation if
-+ *                 available.
-+ *                 parameter ts: Holds the PHC timestamp.
-+ *                 parameter sts: If not NULL, it holds a pair of timestamps
-+ *                 from the system clock. The first reading is made right before
-+ *                 reading the lowest bits of the PHC timestamp and the second
-+ *                 reading immediately follows that.
-+ *
-+ * @getcrosscycles:  Reads the current free running cycle counter from the
-+ *                   hardware clock and system clock simultaneously.
-+ *                   If @getcycles64 and @getcyclesx64 are not supported, then
-+ *                   @getcrosststamp will be used as default implementation if
-+ *                   available.
-+ *                   parameter cts: Contains timestamp (device,system) pair,
-+ *                   where system time is realtime and monotonic.
-+ *
-  * @enable:   Request driver to enable or disable an ancillary feature.
-  *            parameter request: Desired resource to enable or disable.
-  *            parameter on: Caller passes one to enable or zero to disable.
-@@ -155,6 +181,11 @@ struct ptp_clock_info {
- 	int (*getcrosststamp)(struct ptp_clock_info *ptp,
- 			      struct system_device_crosststamp *cts);
- 	int (*settime64)(struct ptp_clock_info *p, const struct timespec64 *ts);
-+	int (*getcycles64)(struct ptp_clock_info *ptp, struct timespec64 *ts);
-+	int (*getcyclesx64)(struct ptp_clock_info *ptp, struct timespec64 *ts,
-+			    struct ptp_system_timestamp *sts);
-+	int (*getcrosscycles)(struct ptp_clock_info *ptp,
-+			      struct system_device_crosststamp *cts);
- 	int (*enable)(struct ptp_clock_info *ptp,
- 		      struct ptp_clock_request *request, int on);
- 	int (*verify)(struct ptp_clock_info *ptp, unsigned int pin,
 -- 
 2.20.1
 
