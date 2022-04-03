@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7D524F0B08
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 18:00:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D939E4F0B38
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 18:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359315AbiDCQCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 12:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54870 "EHLO
+        id S239572AbiDCQ0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 12:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359307AbiDCQCc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 12:02:32 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A4F3980E;
-        Sun,  3 Apr 2022 09:00:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649001638; x=1680537638;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=qvHYdvxr81dj6BSTtdc044toQ4oANBTAS7xvEFGuayI=;
-  b=lgX3zuPsEyQ2cveb8kTh0NN+IR9or3qvf8xtw1YERTPWDrY7zaIvVuwp
-   wfZxaDWRVY8AhrST2o2Y/RhXm+0Bi2hIIW3S/F1p9ftMSq2tpC2t878hv
-   JC9/fXFMba13awo+JwrZ6CR1Hxl9O/1cME+kMoKgM3PLWtOZfYshCRSz5
-   MZQ9YfDCg/prYshujp4TjIcSJ6xE9c4yqfBJpVMmxDkWvLILfsAX++P0/
-   00OBhz1gZ2V75QuyI7IwPbC2LZyEzlFQmoHvdO2AZ+J6fWkoQP2Fw6cbM
-   Uwq0xVx3s8kVFYop/dz+H12RXjpz69rzU3UrTed+ZQaJPZUeDdU9VhlHX
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="260381423"
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="260381423"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 09:00:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
-   d="scan'208";a="607767948"
-Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 03 Apr 2022 09:00:33 -0700
-Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nb2eW-00014e-Ru;
-        Sun, 03 Apr 2022 16:00:32 +0000
-Date:   Sun, 3 Apr 2022 23:59:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bui Quang Minh <minhquangbui99@gmail.com>, cgroups@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Bui Quang Minh <minhquangbui99@gmail.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] cgroup: Kill the parent controller when its last child
- is killed
-Message-ID: <202204032330.l2wsF3mf-lkp@intel.com>
-References: <20220403135717.8294-1-minhquangbui99@gmail.com>
+        with ESMTP id S239092AbiDCQ0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 12:26:35 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FD61AF1A
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 09:24:40 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-de3ca1efbaso8031936fac.9
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 09:24:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tAyqInwpsg1/JMVsnBiyRKeJvStqf2kOGIackf9bZv0=;
+        b=aEu6vy0i9swT0ztZK911qaTKVWWy7ObJnWISsr3o0y5f53e1+v4QJvLfzKERW7oDYY
+         iS4EuvL66NlyLIMkPcdwjg9X4aYk84i3QtWiw/tJktcOgxDwuNY4/oG/ioUGjWaMZpKj
+         B0ZCDPeiWKfw0QYeWm6u/IJ+XsrDYGVMLLOECC5+kX8xK0omQRg+5S/WL36ZCgawAas5
+         lDV0SfXeZJvFLxsrMBl7i4Mvzu68ckv24CJSP0y39inrWJg7QSroyzMQZwwY62dmj069
+         tgn2zYWO9nMGgGSN5E4uus3Zr7FL499dFFr+r2VvrBT7H6lKQC51Q/e2skQtMG30525i
+         BpKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tAyqInwpsg1/JMVsnBiyRKeJvStqf2kOGIackf9bZv0=;
+        b=p2Hzrj0MpDwNDgsEUQbJxszFnBLLWys6SPUe4vLBMCkclroKA+u+qAIyBb6nUGh8N+
+         LIT5M6uJZoX7V5E+XHPSfB6u3m8+z2lX6B1MODBMO2QBoCGtPgfSBBifsqxDo2mlImT+
+         +wEaS+SFWFu7Uzh5RA+a2exbJ8r024WDyP91tu2OnD1N7V4Jh3lGwdIuRWTqd0P8GMPX
+         Sz+8qseH6syIM94Q9e5UYtzyRPyqG18TQbNDA6ky2+r9nypKOA5keppEHsvvDgHA2JDG
+         O2t7eHF7MhtfJ/lw5GRagNsg9jIX3G1makPlo9neoXJJCTXXH3j+ADjSpVZ+X2pI0k59
+         cfog==
+X-Gm-Message-State: AOAM530n1FBh+TufFH8S5KT614k5HFBd5fz51wBJwCizAXGhQx6jULzp
+        ZahJgMl6WFTSdc2zeWznwRo=
+X-Google-Smtp-Source: ABdhPJwYowlPAhXbdQNrfpEq5/3TwQ2LTv9IRnKjckOy67KJfdXUKmpI7SyLkk24w16KJs68HJrImQ==
+X-Received: by 2002:a05:6870:9611:b0:df:200f:a6dd with SMTP id d17-20020a056870961100b000df200fa6ddmr8736311oaq.299.1649003080090;
+        Sun, 03 Apr 2022 09:24:40 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.58])
+        by smtp.googlemail.com with ESMTPSA id m23-20020a4add17000000b0032489ab619esm3090868oou.45.2022.04.03.09.24.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Apr 2022 09:24:39 -0700 (PDT)
+Message-ID: <2bbfde7b-7b67-68fd-f62b-f9cd9b89d2ad@gmail.com>
+Date:   Sun, 3 Apr 2022 10:24:36 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220403135717.8294-1-minhquangbui99@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.7.0
+Subject: Re: Matching unbound sockets for VRF
+Content-Language: en-US
+To:     Stephen Suryaputra <ssuryaextr@gmail.com>
+Cc:     netdev@vger.kernel.org
+References: <20220324171930.GA21272@EXT-6P2T573.localdomain>
+ <7b5eb495-a3fe-843f-9020-0268fb681c72@gmail.com>
+ <YkBfQqz66FxYmGVV@ssuryadesk>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <YkBfQqz66FxYmGVV@ssuryadesk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,111 +74,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bui,
+On 3/27/22 6:57 AM, Stephen Suryaputra wrote:
+> 
+> The reproducer script is attached.
+> 
 
-Thank you for the patch! Yet something to improve:
+h0 has the mgmt vrf, the l3mdev settings yet is running the client in
+*default* vrf. Add 'ip vrf exec mgmt' before the 'nc' and it works.
 
-[auto build test ERROR on tj-cgroup/for-next]
-[also build test ERROR on v5.17 next-20220401]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Bui-Quang-Minh/cgroup-Kill-the-parent-controller-when-its-last-child-is-killed/20220403-215911
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-next
-config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220403/202204032330.l2wsF3mf-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-19) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/2bc22feae8a913c7f371bc79ef9967122d8d326c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Bui-Quang-Minh/cgroup-Kill-the-parent-controller-when-its-last-child-is-killed/20220403-215911
-        git checkout 2bc22feae8a913c7f371bc79ef9967122d8d326c
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   kernel/cgroup/cgroup.c: In function 'css_release_work_fn':
->> kernel/cgroup/cgroup.c:5169:52: error: 'struct cgroup_bpf' has no member named 'refcnt'
-    5169 |                 if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
-         |                                                    ^
-
-
-vim +5169 kernel/cgroup/cgroup.c
-
-  5148	
-  5149	static void css_release_work_fn(struct work_struct *work)
-  5150	{
-  5151		struct cgroup_subsys_state *css =
-  5152			container_of(work, struct cgroup_subsys_state, destroy_work);
-  5153		struct cgroup_subsys *ss = css->ss;
-  5154		struct cgroup *cgrp = css->cgroup;
-  5155		struct cgroup *parent = cgroup_parent(cgrp);
-  5156	
-  5157		mutex_lock(&cgroup_mutex);
-  5158	
-  5159		css->flags |= CSS_RELEASED;
-  5160		list_del_rcu(&css->sibling);
-  5161	
-  5162		/*
-  5163		 * If parent doesn't have any children, start killing it.
-  5164		 * And don't kill the default root.
-  5165		 */
-  5166		if (parent && list_empty(&parent->self.children) &&
-  5167		    parent != &cgrp_dfl_root.cgrp &&
-  5168		    !percpu_ref_is_dying(&parent->self.refcnt)) {
-> 5169			if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
-  5170				cgroup_bpf_offline(parent);
-  5171			percpu_ref_kill(&parent->self.refcnt);
-  5172		}
-  5173	
-  5174		if (ss) {
-  5175			/* css release path */
-  5176			if (!list_empty(&css->rstat_css_node)) {
-  5177				cgroup_rstat_flush(cgrp);
-  5178				list_del_rcu(&css->rstat_css_node);
-  5179			}
-  5180	
-  5181			cgroup_idr_replace(&ss->css_idr, NULL, css->id);
-  5182			if (ss->css_released)
-  5183				ss->css_released(css);
-  5184		} else {
-  5185			struct cgroup *tcgrp;
-  5186	
-  5187			/* cgroup release path */
-  5188			TRACE_CGROUP_PATH(release, cgrp);
-  5189	
-  5190			cgroup_rstat_flush(cgrp);
-  5191	
-  5192			spin_lock_irq(&css_set_lock);
-  5193			for (tcgrp = cgroup_parent(cgrp); tcgrp;
-  5194			     tcgrp = cgroup_parent(tcgrp))
-  5195				tcgrp->nr_dying_descendants--;
-  5196			spin_unlock_irq(&css_set_lock);
-  5197	
-  5198			/*
-  5199			 * There are two control paths which try to determine
-  5200			 * cgroup from dentry without going through kernfs -
-  5201			 * cgroupstats_build() and css_tryget_online_from_dir().
-  5202			 * Those are supported by RCU protecting clearing of
-  5203			 * cgrp->kn->priv backpointer.
-  5204			 */
-  5205			if (cgrp->kn)
-  5206				RCU_INIT_POINTER(*(void __rcu __force **)&cgrp->kn->priv,
-  5207						 NULL);
-  5208		}
-  5209	
-  5210		mutex_unlock(&cgroup_mutex);
-  5211	
-  5212		INIT_RCU_WORK(&css->destroy_rwork, css_free_rwork_fn);
-  5213		queue_rcu_work(cgroup_destroy_wq, &css->destroy_rwork);
-  5214	}
-  5215	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Are you saying that before Mike and Robert's changes you could get a
+client to run in default VRF and work over mgmt VRF? If so it required
+some ugly routing tricks (the last fib rule you installed) and is a bug
+relative to the VRF design.
