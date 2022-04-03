@@ -2,115 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9AFC4F0D09
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 01:48:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A684F0D0E
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 01:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376714AbiDCXt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 19:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44200 "EHLO
+        id S1376726AbiDCXwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 19:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376708AbiDCXt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 19:49:57 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4EBC31DC6;
-        Sun,  3 Apr 2022 16:48:01 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id b15so7403406pfm.5;
-        Sun, 03 Apr 2022 16:48:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jHih5qYud3gwpc0kA7gSc5BqdIQcNRcXvWHha6d+ce0=;
-        b=BR0rWxkyXqCP7l/hxG8IZYf+m0YGHDPslCSycero7GItNmX6XbmmpgFmbMCvyYUQG1
-         abPjh6QBjobeWr+4ZfybH7oMBPngEOx1+icNUPT942qz6jk8xdGoVPf5rapYW5cCNJl7
-         WVLItsUpmbL8WZ7bRZGZUDn5yv+wFImjYGJgaEVjaV1KVHW7Iv9z/cvJCjUqZH2Tt0aq
-         7+naqm9fGQBeAKaXcpR5bluoEIKwM5iMYUgFNoVVP8A4HZKGqKUXuwQFhe3rlgLha6U8
-         qAGU0PfhxZzbVOVNSS0S8kida6I35dg1IFK0bAPmBwQxguR0173BOZPrgk8fyhxSidQj
-         vSBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jHih5qYud3gwpc0kA7gSc5BqdIQcNRcXvWHha6d+ce0=;
-        b=OKfBLm/t1UnTYSnxQrqEWIfpvTP7Htb7DY8yJh1UzMfQAnUuNczOKz0V5HiBqEuAPt
-         TbmBE7uA9diPxNGZOcF/L+Ckp8+ZiuWCFkeO9cKmz8AXDxdFN9anEGqwiX4GmgQhcDNN
-         OgAtmi/7QtPYxbSC2+LjbCWcDPrcxAPRUE33nTRehqUlLUqBOe8VUc1nXJkBE/8SaV0y
-         Rgweuda8VeM6orB2qN5ZiMMbUl23hBWy2e2IkYCxsk2CQgscjHNQ03F73qSKVjwMNwZ8
-         fYhUxZGinjfLVl7gPNPz5DyGiCnJoc1pGjI48GrrL66GSgnnXLBSXtTE4hMkjMSzLAcw
-         wjlA==
-X-Gm-Message-State: AOAM531c8GLGqZOGdct+UzGXpY+Gfb5UhB3AIAiIY1+rxoW6JMwMjPe4
-        zWht7JJqsziFoJRiHmR2AHS28j6ISmu2Gg==
-X-Google-Smtp-Source: ABdhPJx3b1l0Y3DLl8daAMSMMuGia5ETy4HN5zpZE5n4aef18Uo4SCdWIkjHHJ2JrN2NirgFQmjx3Q==
-X-Received: by 2002:a63:7945:0:b0:398:19c4:14d3 with SMTP id u66-20020a637945000000b0039819c414d3mr23668846pgc.20.1649029681130;
-        Sun, 03 Apr 2022 16:48:01 -0700 (PDT)
-Received: from localhost.localdomain ([180.150.111.33])
-        by smtp.gmail.com with ESMTPSA id m21-20020a17090a7f9500b001c97c6bcaf4sm19102989pjl.39.2022.04.03.16.47.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 16:48:00 -0700 (PDT)
-From:   Jamie Bainbridge <jamie.bainbridge@gmail.com>
-To:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Jamie Bainbridge <jamie.bainbridge@gmail.com>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 net] sctp: count singleton chunks in assoc user stats
-Date:   Mon,  4 Apr 2022 09:47:48 +1000
-Message-Id: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1355215AbiDCXwI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 19:52:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0046127CD5;
+        Sun,  3 Apr 2022 16:50:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DF7860FCE;
+        Sun,  3 Apr 2022 23:50:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E34FAC340F3;
+        Sun,  3 Apr 2022 23:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649029812;
+        bh=qfZV7Dhd5nr5eNuhCIcYPdfMBnCJLTwYyEedtJhWN2o=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=L4HBaEIQFfvLJXN/ZxkXK2Rf8zxDebS9RNWIhuN4+HFiag1tO+zWkJKBMPvnhhDCq
+         fCwInqkEyPE9zYkffONY/sQ7GuknNb+VDMHif+DlWn5jbAMZGMoD+fQ4AQpO97k44R
+         voesww62SbeYKArTKvEGf7LfPo1swnvROPsQ4y3c7OfGr3rVA+Z3oyHHGjpUIRL5Uq
+         N2QrtBq5XO6jG4v+JXwGaS8mdgXx7tcotuvwcObPiz/hDVwOs2PaNWHyta9f+BO0oq
+         PEbXDQPUnkWUCxGuoxCsj6HMTz6Prdh0npBP4LWrplrPgUUN+ihfxIQL28eN33dbBq
+         6bL07M+WLKwuw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3DD6E85BCB;
+        Sun,  3 Apr 2022 23:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH] selftests/bpf: Return true/false (not 1/0) from bool
+ functions
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164902981179.6975.18361732639754204431.git-patchwork-notify@kernel.org>
+Date:   Sun, 03 Apr 2022 23:50:11 +0000
+References: <1648779354-14700-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1648779354-14700-1-git-send-email-baihaowen@meizu.com>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
-COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
-counter available to the assoc owner.
+Hello:
 
-These are all control chunks so they should be counted as such.
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
 
-Add counting of singleton chunks so they are properly accounted for.
+On Fri, 1 Apr 2022 10:15:54 +0800 you wrote:
+> Return boolean values ("true" or "false") instead of 1 or 0 from bool
+> functions.  This fixes the following warnings from coccicheck:
+> 
+> ./tools/testing/selftests/bpf/progs/test_xdp_noinline.c:567:9-10: WARNING:
+> return of 0/1 in function 'get_packet_dst' with return type bool
+> ./tools/testing/selftests/bpf/progs/test_l4lb_noinline.c:221:9-10: WARNING:
+> return of 0/1 in function 'get_packet_dst' with return type bool
+> 
+> [...]
 
-Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
-Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
----
- net/sctp/outqueue.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Here is the summary with links:
+  - selftests/bpf: Return true/false (not 1/0) from bool functions
+    https://git.kernel.org/bpf/bpf-next/c/f6d60facd9b6
 
-diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
-index a18609f608fb786b2532a4febbd72a9737ab906c..e213aaf45d67c61edbd22abc8be6cd4a197a9ed8 100644
---- a/net/sctp/outqueue.c
-+++ b/net/sctp/outqueue.c
-@@ -914,6 +914,7 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
- 				ctx->asoc->base.sk->sk_err = -error;
- 				return;
- 			}
-+			ctx->asoc->stats.octrlchunks++;
- 			break;
- 
- 		case SCTP_CID_ABORT:
-@@ -938,7 +939,10 @@ static void sctp_outq_flush_ctrl(struct sctp_flush_ctx *ctx)
- 
- 		case SCTP_CID_HEARTBEAT:
- 			if (chunk->pmtu_probe) {
--				sctp_packet_singleton(ctx->transport, chunk, ctx->gfp);
-+				error = sctp_packet_singleton(ctx->transport,
-+							      chunk, ctx->gfp);
-+				if (!error)
-+					ctx->asoc->stats.octrlchunks++;
- 				break;
- 			}
- 			fallthrough;
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
