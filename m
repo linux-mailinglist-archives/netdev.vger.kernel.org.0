@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEEF64F0996
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B6F94F099F
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358424AbiDCNKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 09:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53158 "EHLO
+        id S1358542AbiDCNK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 09:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235661AbiDCNKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:11 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B623227159
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:16 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id d29so4584454wra.10
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:16 -0700 (PDT)
+        with ESMTP id S1358421AbiDCNKP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:15 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9E72717D
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:18 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id d7so10623976wrb.7
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cAQX/zAboHQHlBe7X9iztRMX0Jxv73yIQeqQNfVA2p0=;
-        b=AQ2jgQ0nb1Ib0s7lPkTtMtx+3Rp9IttydMIpoldCY58nI37Nbin204jHnQp7xvtrNM
-         ILH+oBzSnzZYJDLBS+fUhJBE/ZZ7vUFgXkb2i0tmizSxNoa/D51WNd1LedCqfDicP0/I
-         IjW+X8ppLE3umvG12ypmzxfXE9LMv7NPdthKjn/B0h0DUFalqiruCvfUXVR6acGEGC3n
-         xnJp/piyRWbvSdh3qd60QCCuDrwWncczF669oYovMHnGXDF6gdiTfFIpEPjn5KWyViX6
-         4kf34R9MN1TQetGr5ANtiLHHQaNuWTbDvavsNlEXKIe98+Lc+3wDSxYco9Ua7JXo+SAY
-         Cfug==
+        bh=L1VtlVNeW0B4aRj8TAPTIudNNvRffgx/xr8HTpKXaaw=;
+        b=Z4s1dCHD1hvK9Sd6pD3i0LprmTCayrEFXW3HZU/mXPqtQ6SVOSyfVeyKm1WWgTnUaK
+         51a1RM+JVZQtg6Mj/wvGzLazNC/KqkzMDw5PSdxIZRy1387JRIY1KqL+HbYdqo245+1H
+         ou/SwpIaMuz5dz6JhHzMGua+hMKeKuMh7GABpeXAGqqJC6jIw4EhiSgrMOauOeSeFJdE
+         EcVX+NOlCJIQeycddwwfgS3T5nWE9cXARsoGgKBROHz3PyHNhN0QyUwUSvk+uij84AXD
+         2fdk66GmlfroSg219pIGVjkNN7Anx4T/r48bRkN/3rUZ/laPI3NEP9L3nivxRc5HgAyJ
+         IfgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cAQX/zAboHQHlBe7X9iztRMX0Jxv73yIQeqQNfVA2p0=;
-        b=P1kRM4fajSM2+CdrCE6I2DpC2K0WllgW0JeJCX0/QmnC2Opv/dsKghNp/oa91fPD+v
-         UQ68Uelw7wQOhY6UR8eOCYoRrZ1sjwLl8ovK7EGFiKdyEMCdoqm2K97VgLkHft6UZinK
-         aW0pThdmh1byM7U4tnvYj+oE+vCJ1OMHVvwZ+k+c/3NLR90SRys4coBId1gA/rxzwxpR
-         3VmdgS1+VruLBTOIqJwbDah70BodLaQKM0LS1T84w64lnvE+cD7oGjgtL645IPXESUI0
-         fg9kboF+XzuVkMUn81Avjrujsna+wGtW2QS3E7WCPhebVbcMAeqm8v+FL+mfzPOLROfB
-         ejzA==
-X-Gm-Message-State: AOAM530IlddgTYBvQfd3G4Y2bimvCPYHAf4GMBGc5gD5qMfP54ncav1a
-        J/6Z5e1tyxbsFtPCLH3JqYqIrquzKYY=
-X-Google-Smtp-Source: ABdhPJzGkedqER16IvxV5imy4bKWlJJ1o1BcyQ9HTZOwLBXDl7fzYcMqhVDcmSr2LCPHM/Wc/o97Ag==
-X-Received: by 2002:a5d:54ce:0:b0:205:133d:c152 with SMTP id x14-20020a5d54ce000000b00205133dc152mr13819458wrv.334.1648991295184;
-        Sun, 03 Apr 2022 06:08:15 -0700 (PDT)
+        bh=L1VtlVNeW0B4aRj8TAPTIudNNvRffgx/xr8HTpKXaaw=;
+        b=wuuPHgjSVbrHlsXbCbKrQ26RHW1I48fAm2EkmslGrQth1WV66WEI91rBRGreW8I7QY
+         UUoCqqVOpbLCz7/9EofwxBE70+lGEZk2Nv43Iy0KHjIHgpHITGuhceWk2X0MxnRsfklE
+         RA2l3IlKQlL1z4nddF9YrLaXd8Hq5BbRBZSVQcY7SYjyZSHrpIZckBWh7R5BM/dYJlEP
+         oOYnUSR+qg/fWTHbnxz5VovQ+VpncDXvCjSacnxPQTU+7GwcYh086TbJWUBR3wLOEKKk
+         19MIjxpXE0ad6cVCurvg4dLimLTZDv35vz0IuKNRM1tZFOEFXylDaQOs3vP3Kzfs8Zsb
+         vIHw==
+X-Gm-Message-State: AOAM5332X9WTT2aiVAUQ6cx4k4Vib/Zsc44VKKt0oWQ5YVz8v+Kccc2T
+        bSdmodbSFMWFWhPORRwzs9jOZKqMF6A=
+X-Google-Smtp-Source: ABdhPJy+5Z3aXlocAGQzHFLIjaxgUfMehYWi5J6671yK/q85NUAUAGGebtln9schsjaBw+LIa6dYmw==
+X-Received: by 2002:a05:6000:508:b0:1e4:a027:d147 with SMTP id a8-20020a056000050800b001e4a027d147mr13876685wrf.315.1648991296598;
+        Sun, 03 Apr 2022 06:08:16 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-233-133.dab.02.net. [82.132.233.133])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.14
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:08:14 -0700 (PDT)
+        Sun, 03 Apr 2022 06:08:16 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 04/27] skbuff: drop zero check from skb_zcopy_set
-Date:   Sun,  3 Apr 2022 14:06:16 +0100
-Message-Id: <e8ca5cebbee024a6158ca5d1c9cc65bc8971c987.1648981571.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 05/27] skbuff: drop null check from skb_zcopy
+Date:   Sun,  3 Apr 2022 14:06:17 +0100
+Message-Id: <62db530f5b9875c820c97d4b6b2f30b511d94468.1648981571.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648981570.git.asml.silence@gmail.com>
 References: <cover.1648981570.git.asml.silence@gmail.com>
@@ -71,58 +71,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only two skb_zcopy_set() callers may pass a null skb, so kill a null
-check from the function, which can't be easily compiled out and hand
-code where needed. This will also help with further patches.
+skb_zcopy() is used all around the networkong code including generic
+paths. Many callers pass only a non-null skb, so we can remove it from
+there and fix up several callers that would be affected. It removes
+extra checks from zerocopy paths but also sheds some bytes from the
+binary.
+
+   text    data     bss     dec     hex filename
+8521472       0       0 8521472  820700 arch/x86/boot/bzImage
+8521056       0       0 8521056  820560 arch/x86/boot/bzImage
+delta=416B
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
  include/linux/skbuff.h | 2 +-
- net/ipv4/ip_output.c   | 3 ++-
- net/ipv6/ip6_output.c  | 3 ++-
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ net/core/dev.c         | 2 +-
+ net/core/skbuff.c      | 3 ++-
+ net/ipv4/ip_output.c   | 7 +++++--
+ net/ipv4/tcp.c         | 5 ++++-
+ net/ipv6/ip6_output.c  | 7 +++++--
+ 6 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3a30cae8b0a5..f5de5c9cc3da 100644
+index f5de5c9cc3da..10f94b1909da 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -1679,7 +1679,7 @@ static inline void skb_zcopy_init(struct sk_buff *skb, struct ubuf_info *uarg)
- static inline void skb_zcopy_set(struct sk_buff *skb, struct ubuf_info *uarg,
- 				 bool *have_ref)
+@@ -1649,7 +1649,7 @@ static inline struct skb_shared_hwtstamps *skb_hwtstamps(struct sk_buff *skb)
+ 
+ static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
  {
--	if (skb && uarg && !skb_zcopy(skb)) {
-+	if (uarg && !skb_zcopy(skb)) {
- 		if (unlikely(have_ref && *have_ref))
- 			*have_ref = false;
+-	bool is_zcopy = skb && skb_shinfo(skb)->flags & SKBFL_ZEROCOPY_ENABLE;
++	bool is_zcopy = skb_shinfo(skb)->flags & SKBFL_ZEROCOPY_ENABLE;
+ 
+ 	return is_zcopy ? skb_uarg(skb) : NULL;
+ }
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8a5109479dbe..4842a398f08d 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2286,7 +2286,7 @@ void dev_queue_xmit_nit(struct sk_buff *skb, struct net_device *dev)
+ 	}
+ out_unlock:
+ 	if (pt_prev) {
+-		if (!skb_orphan_frags_rx(skb2, GFP_ATOMIC))
++		if (!skb2 || !skb_orphan_frags_rx(skb2, GFP_ATOMIC))
+ 			pt_prev->func(skb2, skb->dev, pt_prev, skb->dev);
  		else
+ 			kfree_skb(skb2);
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 10bde7c6db44..7680314038b4 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -893,7 +893,8 @@ EXPORT_SYMBOL(skb_dump);
+  */
+ void skb_tx_error(struct sk_buff *skb)
+ {
+-	skb_zcopy_clear(skb, true);
++	if (skb)
++		skb_zcopy_clear(skb, true);
+ }
+ EXPORT_SYMBOL(skb_tx_error);
+ 
 diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 00b4bf26fd93..f864b8c48e42 100644
+index f864b8c48e42..ab10b1f94669 100644
 --- a/net/ipv4/ip_output.c
 +++ b/net/ipv4/ip_output.c
-@@ -1027,7 +1027,8 @@ static int __ip_append_data(struct sock *sk,
- 			paged = true;
- 		} else {
- 			uarg->zerocopy = 0;
--			skb_zcopy_set(skb, uarg, &extra_uref);
-+			if (skb)
-+				skb_zcopy_set(skb, uarg, &extra_uref);
- 		}
- 	}
+@@ -1018,10 +1018,13 @@ static int __ip_append_data(struct sock *sk,
+ 		csummode = CHECKSUM_PARTIAL;
  
+ 	if (flags & MSG_ZEROCOPY && length && sock_flag(sk, SOCK_ZEROCOPY)) {
+-		uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
++		if (skb)
++			uarg = skb_zcopy(skb);
++		extra_uref = !uarg; /* only ref on new uarg */
++
++		uarg = msg_zerocopy_realloc(sk, length, uarg);
+ 		if (!uarg)
+ 			return -ENOBUFS;
+-		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
+ 		if (rt->dst.dev->features & NETIF_F_SG &&
+ 		    csummode == CHECKSUM_PARTIAL) {
+ 			paged = true;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index cf18fbcbf123..add71b703520 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1205,7 +1205,10 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 
+ 	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
+ 		skb = tcp_write_queue_tail(sk);
+-		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
++		if (skb)
++			uarg = skb_zcopy(skb);
++
++		uarg = msg_zerocopy_realloc(sk, size, uarg);
+ 		if (!uarg) {
+ 			err = -ENOBUFS;
+ 			goto out_err;
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index e23f058166af..e9b039f56637 100644
+index e9b039f56637..f1ada6f2af7d 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -1529,7 +1529,8 @@ static int __ip6_append_data(struct sock *sk,
- 			paged = true;
- 		} else {
- 			uarg->zerocopy = 0;
--			skb_zcopy_set(skb, uarg, &extra_uref);
-+			if (skb)
-+				skb_zcopy_set(skb, uarg, &extra_uref);
- 		}
- 	}
+@@ -1520,10 +1520,13 @@ static int __ip6_append_data(struct sock *sk,
+ 		csummode = CHECKSUM_PARTIAL;
  
+ 	if (flags & MSG_ZEROCOPY && length && sock_flag(sk, SOCK_ZEROCOPY)) {
+-		uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
++		if (skb)
++			uarg = skb_zcopy(skb);
++		extra_uref = !uarg; /* only ref on new uarg */
++
++		uarg = msg_zerocopy_realloc(sk, length, uarg);
+ 		if (!uarg)
+ 			return -ENOBUFS;
+-		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
+ 		if (rt->dst.dev->features & NETIF_F_SG &&
+ 		    csummode == CHECKSUM_PARTIAL) {
+ 			paged = true;
 -- 
 2.35.1
 
