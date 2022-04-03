@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 404834F0BA8
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 19:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD094F0BAC
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 19:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359716AbiDCR6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 13:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50408 "EHLO
+        id S1359712AbiDCR6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 13:58:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240320AbiDCR6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 13:58:08 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6738BC5
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 10:56:04 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id i27so8478254ejd.9
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 10:56:04 -0700 (PDT)
+        with ESMTP id S1359713AbiDCR6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 13:58:10 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB4538BC6
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 10:56:06 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id g22so8567198edz.2
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 10:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=f6a2ZXW2K0vychsyQbNsHz4PD6ItrRcaItNAke+6Q0s=;
-        b=44QPGzoRNmscCxgXfqNl7pINOwqdFty3vVdYHry4mP6KJwfpU18SXUWpXtNdgOPSDm
-         W9bmOfNtJi5qbzgClfNeeDMGURpY353UHUHvl6pixfZ/ajYZPJSKEVudBMPcQws/3eWl
-         K//1OdLLksCeKBbjEk2D4s6tjgY/oOOlA8276EvryOQunnR8FbB+9RQRqWvLvdnWbAxV
-         NJuRKlMfuN4aPC2Dglutwcac2LTjTylxRvTDKOOC43Yvi+nITN3w4mgbLIyFxtIcp1Bs
-         2i9Mv8kLmKZ/ZmCTSIPPnV3XCSKv72dveKIkkpx3y4oenqM0vHexSsb1lPvCiefTq25Q
-         nRWQ==
+        bh=eN7Ia++fbxzWlp4pgjd3rWcUOX9NDzR4XKxfj+Wa6tY=;
+        b=isXATMaeK5nEQY5xj7oMzfLSDfsdojBedTtUnZUl703kIzeEsDATv6shfZNseqfECB
+         DHgMiRRntHAT0L1TDXzLD3RtObm2X8KYapxVwUuhsrbAiO2JNccW+OA0krnTuB9wzTR1
+         Wb0YaI8SzGF4d+m3WGUe9D19mfP6yeY+kt0QhlZj/s2QhIos3UBN+CdSvwAIlu004DBv
+         PXkiQPyGT3R7NEymrEerskcmwmWWd1ChrXOdzq5WQwd0WJxAIujrDIfSJCplElVxS2DK
+         3LWeEA8qmqK0O7asglSRJ9uRRSGiyfChTwnPMAV0ZS3ko8HfAusEglY8efz7OWFdWgg4
+         FaIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=f6a2ZXW2K0vychsyQbNsHz4PD6ItrRcaItNAke+6Q0s=;
-        b=dhpHmeR7nSlO3WOhHhMwRWJ/m43fxqT0jhjRaTcg6AUg1eFbbO7N/Y5i2CHFn7E7w9
-         HpJ42ob02af1OTce7kh3OkG121xave4WTqQdM2NNGBr4bvVeBhqTBq2rUuh2yb4AOTLU
-         0wuUc32KEg7rXFpkJPzU0MUPsuzQc6Ff15RV84ywL2qsjJsCBA/cIVIIejyOKIAAcstn
-         HM9aeQPKPyi+E3NaTClkPe2HQd03vDN7h/Y9FXd/aWc/tI8EG5pi3oZtKj/QL+PauWXz
-         uKpIZA2yT4Id7o1Vmz1ersntxyHofjiFRBS6H6fkFRy/1B3x9SN6xt4LPHB1iNH7wbNf
-         RK2Q==
-X-Gm-Message-State: AOAM531nPOdwfL5gGprHBoLDT94dGnGuisEE8Y8s2Sv6STL7C+FEYqec
-        lk2a5rh+UCRkvL0xXte/riuWrw==
-X-Google-Smtp-Source: ABdhPJyQQlYjw9vaDZIDDbR2TuYP3xINBC649e3a4aHK+Kn5bP8Mjbqz9FIyHCC2/rl2sWTkcZprYw==
-X-Received: by 2002:a17:907:8d1a:b0:6e0:6db8:8042 with SMTP id tc26-20020a1709078d1a00b006e06db88042mr7851903ejc.300.1649008562958;
-        Sun, 03 Apr 2022 10:56:02 -0700 (PDT)
+        bh=eN7Ia++fbxzWlp4pgjd3rWcUOX9NDzR4XKxfj+Wa6tY=;
+        b=XuLp7u/1IlizRA79xtPyQbN7EWNAP/GjCxjrhp7S8wuepznDKL3tcDv2Ri1/VpWj7K
+         Aemngbm2Zf0zhoyfTo8z+lnhzESMGbyrNQNcfNp4tE7HFnaXrb1OSENVhEvwDu/dyfvC
+         ykXkESxw385nYbxFWt+qkSvr6v4e6ccUsNMkK9NV8L9jQ77r38QwacA/8bcREoODg3yy
+         1KqQQHW47bOpjWp9DfZgSNnO0hdklgSM6fkRiv95LDnRffUVmxq6C0j/8WEgDt4ioUm4
+         ar3kKz72VHNMDoqegCue0c4eu6Zc3xQCDUaCvKe+EcXY7zMoJ2X96tUquR9vYVhYIhIU
+         1GrA==
+X-Gm-Message-State: AOAM531fMgDxQR+cH+nI5gkr6Z1xVy/Wha6MyXFUjfmIZmf+jC74hH6Z
+        83/zygnsGKy0TRiTE4XM0c5iyQ==
+X-Google-Smtp-Source: ABdhPJzX1Lns0EMXhZUmlIiQXchC+21Jbhchegh6IKqSi2jf7Q1QNLK9zVlzvk+W5x9JUds2kfjgSQ==
+X-Received: by 2002:aa7:cb96:0:b0:413:8d05:ebc with SMTP id r22-20020aa7cb96000000b004138d050ebcmr29504888edt.81.1649008564945;
+        Sun, 03 Apr 2022 10:56:04 -0700 (PDT)
 Received: from hornet.engleder.at ([2001:871:23a:8366:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id q7-20020a170906540700b006d5eca5c9cfsm3451065ejo.191.2022.04.03.10.56.02
+        by smtp.gmail.com with ESMTPSA id q7-20020a170906540700b006d5eca5c9cfsm3451065ejo.191.2022.04.03.10.56.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 10:56:02 -0700 (PDT)
+        Sun, 03 Apr 2022 10:56:04 -0700 (PDT)
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     richardcochran@gmail.com, vinicius.gomes@intel.com,
         yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org
 Cc:     mlichvar@redhat.com, netdev@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v2 4/5] ptp: Support late timestamp determination
-Date:   Sun,  3 Apr 2022 19:55:43 +0200
-Message-Id: <20220403175544.26556-5-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v2 5/5] tsnep: Add free running cycle counter support
+Date:   Sun,  3 Apr 2022 19:55:44 +0200
+Message-Id: <20220403175544.26556-6-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220403175544.26556-1-gerhard@engleder-embedded.com>
 References: <20220403175544.26556-1-gerhard@engleder-embedded.com>
@@ -69,173 +69,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a physical clock supports a free running cycle counter, then
-timestamps shall be based on this time too. For TX it is known in
-advance before the transmission if a timestamp based on the free running
-cycle counter is needed. For RX it is impossible to know which timestamp
-is needed before the packet is received and assigned to a socket.
+The TSN endpoint Ethernet MAC supports a free running counter
+additionally to its clock. This free running counter can be read and
+hardware timestamps are supported. As the name implies, this counter
+cannot be set and its frequency cannot be adjusted.
 
-Support late timestamp determination by a network device. Therefore, an
-address/cookie is stored within the new netdev_data field of struct
-skb_shared_hwtstamps. This address/cookie is provided to a new network
-device function called ndo_get_tstamp(), which returns a timestamp based
-on the normal/adjustable time or based on the free running cycle
-counter. If function is not supported, then timestamp handling is not
-changed.
+Add free running cycle counter support based on this free running
+counter to physical clock. This also requires hardware time stamps
+based on that free running counter.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- include/linux/netdevice.h | 21 +++++++++++++++++++++
- include/linux/skbuff.h    | 11 ++++++++---
- net/socket.c              | 30 +++++++++++++++++++-----------
- 3 files changed, 48 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/engleder/tsnep_hw.h   |  9 +++++--
+ drivers/net/ethernet/engleder/tsnep_main.c | 31 ++++++++++++++++++----
+ drivers/net/ethernet/engleder/tsnep_ptp.c  | 28 +++++++++++++++++++
+ 3 files changed, 61 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 59e27a2b7bf0..f6cc4c673082 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1353,6 +1353,12 @@ struct netdev_net_notifier {
-  *	The caller must be under RCU read context.
-  * int (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx, struct net_device_path *path);
-  *     Get the forwarding path to reach the real device from the HW destination address
-+ * ktime_t (*ndo_get_tstamp)(struct net_device *dev,
-+ *			     const struct skb_shared_hwtstamps *hwtstamps,
-+ *			     bool cycles);
-+ *	Get hardware timestamp based on normal/adjustable time or free running
-+ *	cycle counter. This function is required if physical clock supports a
-+ *	free running cycle counter.
-  */
- struct net_device_ops {
- 	int			(*ndo_init)(struct net_device *dev);
-@@ -1570,6 +1576,9 @@ struct net_device_ops {
- 	struct net_device *	(*ndo_get_peer_dev)(struct net_device *dev);
- 	int                     (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx,
-                                                          struct net_device_path *path);
-+	ktime_t			(*ndo_get_tstamp)(struct net_device *dev,
-+						  const struct skb_shared_hwtstamps *hwtstamps,
-+						  bool cycles);
+diff --git a/drivers/net/ethernet/engleder/tsnep_hw.h b/drivers/net/ethernet/engleder/tsnep_hw.h
+index 71cc8577d640..916ceac3ada2 100644
+--- a/drivers/net/ethernet/engleder/tsnep_hw.h
++++ b/drivers/net/ethernet/engleder/tsnep_hw.h
+@@ -43,6 +43,10 @@
+ #define ECM_RESET_CHANNEL 0x00000100
+ #define ECM_RESET_TXRX 0x00010000
+ 
++/* counter */
++#define ECM_COUNTER_LOW 0x0028
++#define ECM_COUNTER_HIGH 0x002C
++
+ /* control and status */
+ #define ECM_STATUS 0x0080
+ #define ECM_LINK_MODE_OFF 0x01000000
+@@ -190,7 +194,8 @@ struct tsnep_tx_desc {
+ /* tsnep TX descriptor writeback */
+ struct tsnep_tx_desc_wb {
+ 	__le32 properties;
+-	__le32 reserved1[3];
++	__le32 reserved1;
++	__le64 counter;
+ 	__le64 timestamp;
+ 	__le32 dma_delay;
+ 	__le32 reserved2;
+@@ -221,7 +226,7 @@ struct tsnep_rx_desc_wb {
+ 
+ /* tsnep RX inline meta */
+ struct tsnep_rx_inline {
+-	__le64 reserved;
++	__le64 counter;
+ 	__le64 timestamp;
  };
  
- /**
-@@ -4764,6 +4773,18 @@ static inline void netdev_rx_csum_fault(struct net_device *dev,
- void net_enable_timestamp(void);
- void net_disable_timestamp(void);
- 
-+static inline ktime_t netdev_get_tstamp(struct net_device *dev,
-+					const struct skb_shared_hwtstamps *hwtstamps,
-+					bool cycles)
-+{
-+	const struct net_device_ops *ops = dev->netdev_ops;
+diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
+index 904f3304727e..c97651903892 100644
+--- a/drivers/net/ethernet/engleder/tsnep_main.c
++++ b/drivers/net/ethernet/engleder/tsnep_main.c
+@@ -470,8 +470,15 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
+ 		    (__le32_to_cpu(entry->desc_wb->properties) &
+ 		     TSNEP_DESC_EXTENDED_WRITEBACK_FLAG)) {
+ 			struct skb_shared_hwtstamps hwtstamps;
+-			u64 timestamp =
+-				__le64_to_cpu(entry->desc_wb->timestamp);
++			u64 timestamp;
 +
-+	if (ops->ndo_get_tstamp)
-+		return ops->ndo_get_tstamp(dev, hwtstamps, cycles);
-+
-+	return hwtstamps->hwtstamp;
-+}
-+
- #ifdef CONFIG_PROC_FS
- int __init dev_proc_init(void);
- #else
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index aeb3ed4d6cf8..c428b678e7f1 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -551,8 +551,10 @@ static inline bool skb_frag_must_loop(struct page *p)
++			if (skb_shinfo(entry->skb)->tx_flags &
++			    SKBTX_HW_TSTAMP_USE_CYCLES)
++				timestamp =
++					__le64_to_cpu(entry->desc_wb->counter);
++			else
++				timestamp =
++					__le64_to_cpu(entry->desc_wb->timestamp);
  
- /**
-  * struct skb_shared_hwtstamps - hardware time stamps
-- * @hwtstamp:	hardware time stamp transformed into duration
-- *		since arbitrary point in time
-+ * @hwtstamp:		hardware time stamp transformed into duration
-+ *			since arbitrary point in time
-+ * @netdev_data:	address/cookie of network device driver used as
-+ *			reference to actual hardware time stamp
-  *
-  * Software time stamps generated by ktime_get_real() are stored in
-  * skb->tstamp.
-@@ -564,7 +566,10 @@ static inline bool skb_frag_must_loop(struct page *p)
-  * &skb_shared_info. Use skb_hwtstamps() to get a pointer.
-  */
- struct skb_shared_hwtstamps {
--	ktime_t	hwtstamp;
-+	union {
-+		ktime_t	hwtstamp;
-+		void *netdev_data;
-+	};
- };
+ 			memset(&hwtstamps, 0, sizeof(hwtstamps));
+ 			hwtstamps.hwtstamp = ns_to_ktime(timestamp);
+@@ -704,11 +711,9 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
+ 					skb_hwtstamps(skb);
+ 				struct tsnep_rx_inline *rx_inline =
+ 					(struct tsnep_rx_inline *)skb->data;
+-				u64 timestamp =
+-					__le64_to_cpu(rx_inline->timestamp);
  
- /* Definitions for tx_flags in struct skb_shared_info */
-diff --git a/net/socket.c b/net/socket.c
-index 4801aeaeb285..d64bd3dfcf6a 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -805,21 +805,17 @@ static bool skb_is_swtx_tstamp(const struct sk_buff *skb, int false_tstamp)
- 	return skb->tstamp && !false_tstamp && skb_is_err_queue(skb);
+ 				memset(hwtstamps, 0, sizeof(*hwtstamps));
+-				hwtstamps->hwtstamp = ns_to_ktime(timestamp);
++				hwtstamps->netdev_data = rx_inline;
+ 			}
+ 			skb_pull(skb, TSNEP_RX_INLINE_METADATA_SIZE);
+ 			skb->protocol = eth_type_trans(skb,
+@@ -1010,6 +1015,21 @@ static int tsnep_netdev_set_mac_address(struct net_device *netdev, void *addr)
+ 	return 0;
  }
  
--static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
-+static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb,
-+			   int if_index)
- {
- 	struct scm_ts_pktinfo ts_pktinfo;
--	struct net_device *orig_dev;
- 
- 	if (!skb_mac_header_was_set(skb))
- 		return;
- 
- 	memset(&ts_pktinfo, 0, sizeof(ts_pktinfo));
- 
--	rcu_read_lock();
--	orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
--	if (orig_dev)
--		ts_pktinfo.if_index = orig_dev->ifindex;
--	rcu_read_unlock();
-+	ts_pktinfo.if_index = if_index;
- 
- 	ts_pktinfo.pkt_length = skb->len - skb_mac_offset(skb);
- 	put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPING_PKTINFO,
-@@ -839,6 +835,8 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
- 	int empty = 1, false_tstamp = 0;
- 	struct skb_shared_hwtstamps *shhwtstamps =
- 		skb_hwtstamps(skb);
-+	struct net_device *orig_dev;
-+	int if_index;
- 	ktime_t hwtstamp;
- 
- 	/* Race occurred between timestamp enabling and packet
-@@ -887,18 +885,28 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
- 	if (shhwtstamps &&
- 	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
- 	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
-+		rcu_read_lock();
-+		orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
-+		if (orig_dev) {
-+			if_index = orig_dev->ifindex;
-+			hwtstamp = netdev_get_tstamp(orig_dev, shhwtstamps,
-+						     sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC);
-+		} else {
-+			if_index = 0;
-+			hwtstamp = shhwtstamps->hwtstamp;
-+		}
-+		rcu_read_unlock();
++static ktime_t tsnep_netdev_get_tstamp(struct net_device *netdev,
++				       const struct skb_shared_hwtstamps *hwtstamps,
++				       bool cycles)
++{
++	struct tsnep_rx_inline *rx_inline = hwtstamps->netdev_data;
++	u64 timestamp;
 +
- 		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
--			hwtstamp = ptp_convert_timestamp(&shhwtstamps->hwtstamp,
-+			hwtstamp = ptp_convert_timestamp(&hwtstamp,
- 							 sk->sk_bind_phc);
--		else
--			hwtstamp = shhwtstamps->hwtstamp;
++	if (cycles)
++		timestamp = __le64_to_cpu(rx_inline->counter);
++	else
++		timestamp = __le64_to_cpu(rx_inline->timestamp);
++
++	return ns_to_ktime(timestamp);
++}
++
+ static const struct net_device_ops tsnep_netdev_ops = {
+ 	.ndo_open = tsnep_netdev_open,
+ 	.ndo_stop = tsnep_netdev_close,
+@@ -1019,6 +1039,7 @@ static const struct net_device_ops tsnep_netdev_ops = {
  
- 		if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
- 			empty = 0;
+ 	.ndo_get_stats64 = tsnep_netdev_get_stats64,
+ 	.ndo_set_mac_address = tsnep_netdev_set_mac_address,
++	.ndo_get_tstamp = tsnep_netdev_get_tstamp,
+ 	.ndo_setup_tc = tsnep_tc_setup,
+ };
  
- 			if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
- 			    !skb_is_err_queue(skb))
--				put_ts_pktinfo(msg, skb);
-+				put_ts_pktinfo(msg, skb, if_index);
- 		}
- 	}
- 	if (!empty) {
+diff --git a/drivers/net/ethernet/engleder/tsnep_ptp.c b/drivers/net/ethernet/engleder/tsnep_ptp.c
+index eaad453d487e..54fbf0126815 100644
+--- a/drivers/net/ethernet/engleder/tsnep_ptp.c
++++ b/drivers/net/ethernet/engleder/tsnep_ptp.c
+@@ -175,6 +175,33 @@ static int tsnep_ptp_settime64(struct ptp_clock_info *ptp,
+ 	return 0;
+ }
+ 
++static int tsnep_ptp_getcyclesx64(struct ptp_clock_info *ptp,
++				  struct timespec64 *ts,
++				  struct ptp_system_timestamp *sts)
++{
++	struct tsnep_adapter *adapter = container_of(ptp, struct tsnep_adapter,
++						     ptp_clock_info);
++	u32 high_before;
++	u32 low;
++	u32 high;
++	u64 counter;
++
++	/* read high dword twice to detect overrun */
++	high = ioread32(adapter->addr + ECM_COUNTER_HIGH);
++	do {
++		ptp_read_system_prets(sts);
++		low = ioread32(adapter->addr + ECM_COUNTER_LOW);
++		ptp_read_system_postts(sts);
++		high_before = high;
++		high = ioread32(adapter->addr + ECM_COUNTER_HIGH);
++	} while (high != high_before);
++	counter = (((u64)high) << 32) | ((u64)low);
++
++	*ts = ns_to_timespec64(counter);
++
++	return 0;
++}
++
+ int tsnep_ptp_init(struct tsnep_adapter *adapter)
+ {
+ 	int retval = 0;
+@@ -192,6 +219,7 @@ int tsnep_ptp_init(struct tsnep_adapter *adapter)
+ 	adapter->ptp_clock_info.adjtime = tsnep_ptp_adjtime;
+ 	adapter->ptp_clock_info.gettimex64 = tsnep_ptp_gettimex64;
+ 	adapter->ptp_clock_info.settime64 = tsnep_ptp_settime64;
++	adapter->ptp_clock_info.getcyclesx64 = tsnep_ptp_getcyclesx64;
+ 
+ 	spin_lock_init(&adapter->ptp_lock);
+ 
 -- 
 2.20.1
 
