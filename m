@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D064F099D
+	by mail.lfdr.de (Postfix) with ESMTP id 0B1214F099B
 	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235242AbiDCNKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 09:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        id S1358589AbiDCNLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 09:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358532AbiDCNK2 (ORCPT
+        with ESMTP id S1358536AbiDCNK2 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:28 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29CB13B
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:22 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id d7so10624152wrb.7
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:22 -0700 (PDT)
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525271029
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:24 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso4074099wmz.4
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mqCJk3Tcq92QKRFxYlavWwmlfxI03jKy0XINWiL2FrI=;
-        b=ODZ2mADnavhrYfzE4peIovQEBGpbGp0Zxz8mZTXMXjYBfcq8Lt9Ms/WrRbsqJQECli
-         RT/Ish8qaFIP40Bqj2MqG7C+zNQkDZDX7We6ZejACxeY4RnnAfrXU1gO3Psm/f0WMBBN
-         /AY9X96CPkt4sgyBF4u5uB9XCVKGDEaDTGujnrjrLFq1pOfnLzNncj5+C68mcm6Tp79B
-         UNYvYi8Z8pqVV5reHIeqNv0tBf07L/jeLvLYo/zo6OVrzpuMxCzDIChpxbX1RkRjLb5j
-         7BB88ZMlOQ/2cBsZMkZowOeyT8cMCRlgseX/5Fdvmh1xPir0Dw6YVBz2++YIiIpxNRKu
-         KKEA==
+        bh=b4iQGbstpUOSsgNXmdUB67X47VRarOvzLhVtfaDU4Wo=;
+        b=l+m80QqAOYTCuIdmyreEEQ6q7ged2RbmlEsNYc4X0pumPjYe3KlzonzAEjkmzxh9l/
+         YW3eYunumE0mxPhHHhJ1n5zWmLKPeU0X/OnvnMNhcoalFlxiLSzwmGJUVx1jnydAIqx7
+         Z8cX4eZbKy0APRYjCPIU5L/SvvNOy9wbHS5Z+pEEI+L3Gm/wxVdF4ouvHonyI8y422CX
+         Yb/AGdHbskXMJ6EIi0I1l9MpvKId56p6HZWPJtuYwCqDc1NOic/pY/OiaGpF3Kpc08Wj
+         KqxSol7jcLfAOJtM7D5Jx9rl8LfgYmDOyI67nQoak27wNJpo2td+tLi6o5g+w6mPAsrs
+         4BJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mqCJk3Tcq92QKRFxYlavWwmlfxI03jKy0XINWiL2FrI=;
-        b=vRDGjf4E1MvHhwIJFC7m/v8d1/5ediBuoD1G4aVHPsFVn0FXt3alZ75x1xSIuHXmhh
-         R7GYnOiiHAwtpiy1I6cUBGxE8u8EuV+pQKJW9CrCHgmpW1QF7TpnuXm7sJpv1ITK9ZC7
-         GF7es4JFQXmLdoGFoC4H1GxVf5sCoUDG/3RlatUTj9rf/8YrF2YyQLw6ti0GaV9la4Kp
-         yH59HgcTL/jkAqnRXDchhQ2YnKHsCjBAphqm/18kLE+nQICrXspzLCNFqEQr6A3qsZ3V
-         +VB4XlG1owscbQaUnAhkwMZcG2KzF/rCBxTLMIMS/zr8LVv2uazhFEYbRVWZEG7PbBUH
-         eAZQ==
-X-Gm-Message-State: AOAM531bkXPHVmxSnNvB9IL6Qy+qJbqyqN3AqCWCRsSi0nf9grWFcoHY
-        vbATKgWA56oiTAdO52dKCbN36LLbhyc=
-X-Google-Smtp-Source: ABdhPJzPtZMFtKNp1/YY5bwirlHKXf5w7ygwPDf8Qn4vpsNiRJ/FeTbu5IvDw95vQCJfrVn2cxFrtg==
-X-Received: by 2002:adf:fa09:0:b0:206:10e7:c7d9 with SMTP id m9-20020adffa09000000b0020610e7c7d9mr766779wrr.549.1648991301342;
-        Sun, 03 Apr 2022 06:08:21 -0700 (PDT)
+        bh=b4iQGbstpUOSsgNXmdUB67X47VRarOvzLhVtfaDU4Wo=;
+        b=uN1nXaAmxzKiAFhMfBWl/q1FuXkFuDr1R/zJA3gOOfg5xgGmDEt9t7sxL+dWXbdkGC
+         FZtfPPDxscrceZFhdWjoZh1RMlocnTsh/pR+SWKmXgs5d4eu1kf8DR8eJX6uok5FzIXG
+         rhqD2jB/DFxdQ+tgiPrajR3zmfXgiVtNVFlf4m8PHEjGb7pWDxTCVhvGOFODuDtD7KeB
+         XKPQjww0nfUB2c27Voyacn2aC7m+2nZys77qM8Yvl6SFRh6gziWP8F7ihuS89941Mr4h
+         ugreGMv45lAYD+4nfMXmppbP5ncyoiQdalkaWLgGS7NIUcn20vLaIQBXd/WpO4U3y37w
+         XEqA==
+X-Gm-Message-State: AOAM532EM/44rEDfti9FKdjSkpVyOO7hUeHnVgnYUZqRMFhlMb6icClh
+        qI9lZ/ikP5tFQEzOb9q9UxGGHyL1XB8=
+X-Google-Smtp-Source: ABdhPJxZczJk9E6frV2ldr1xnn1H/SaZHONMZE/fI4XArZ9Pyv4loDOyWRDR3/jqKxRGPZfyIkLVCQ==
+X-Received: by 2002:a05:600c:1ca7:b0:38e:27a6:5546 with SMTP id k39-20020a05600c1ca700b0038e27a65546mr15501660wms.188.1648991302573;
+        Sun, 03 Apr 2022 06:08:22 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-233-133.dab.02.net. [82.132.233.133])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.20
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:08:21 -0700 (PDT)
+        Sun, 03 Apr 2022 06:08:22 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 09/27] net: inline sock_alloc_send_skb
-Date:   Sun,  3 Apr 2022 14:06:21 +0100
-Message-Id: <02d5e2ea08dc28f3e22245c6c1110a108e576abc.1648981571.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 10/27] net: inline part of skb_csum_hwoffload_help
+Date:   Sun,  3 Apr 2022 14:06:22 +0100
+Message-Id: <8ca1d5139e1820ac7e55166f164a56b2993d10e1.1648981571.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648981570.git.asml.silence@gmail.com>
 References: <cover.1648981570.git.asml.silence@gmail.com>
@@ -71,56 +71,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sock_alloc_send_skb() is simple and just proxying to another function,
-so we can inline it and cut associated overhead.
+Inline a part of skb_csum_hwoffload_help() responsible for skipping
+for HW-accelerated cases.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/net/sock.h | 10 ++++++++--
- net/core/sock.c    |  7 -------
- 2 files changed, 8 insertions(+), 9 deletions(-)
+ include/linux/netdevice.h | 13 ++++++++++---
+ net/core/dev.c            | 11 ++++-------
+ 2 files changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index c4b91fc19b9c..9dab633c3caf 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1825,11 +1825,17 @@ int sock_getsockopt(struct socket *sock, int level, int op,
- 		    char __user *optval, int __user *optlen);
- int sock_gettstamp(struct socket *sock, void __user *userstamp,
- 		   bool timeval, bool time32);
--struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
--				    int noblock, int *errcode);
- struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
- 				     unsigned long data_len, int noblock,
- 				     int *errcode, int max_page_order);
-+
-+static inline struct sk_buff *sock_alloc_send_skb(struct sock *sk,
-+						  unsigned long size,
-+						  int noblock, int *errcode)
-+{
-+	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
-+}
-+
- void *sock_kmalloc(struct sock *sk, int size, gfp_t priority);
- void sock_kfree_s(struct sock *sk, void *mem, int size);
- void sock_kzfree_s(struct sock *sk, void *mem, int size);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index b1a8f47fda55..77e37556e0c3 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2626,13 +2626,6 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
- }
- EXPORT_SYMBOL(sock_alloc_send_pskb);
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index cd7a597c55b1..a4e41f7edc47 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4699,9 +4699,16 @@ extern u8 netdev_rss_key[NETDEV_RSS_KEY_LEN] __read_mostly;
+ void netdev_rss_key_fill(void *buffer, size_t len);
  
--struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
--				    int noblock, int *errcode)
--{
--	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
--}
--EXPORT_SYMBOL(sock_alloc_send_skb);
+ int skb_checksum_help(struct sk_buff *skb);
+-int skb_crc32c_csum_help(struct sk_buff *skb);
+-int skb_csum_hwoffload_help(struct sk_buff *skb,
+-			    const netdev_features_t features);
++int __skb_csum_hwoffload_help(struct sk_buff *skb,
++			      const netdev_features_t features);
++
++static inline int skb_csum_hwoffload_help(struct sk_buff *skb,
++					  const netdev_features_t features)
++{
++	if ((features & NETIF_F_HW_CSUM) && !skb_csum_is_sctp(skb))
++		return 0;
++	return __skb_csum_hwoffload_help(skb, features);
++}
+ 
+ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
+ 				  netdev_features_t features, bool tx_path);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 4842a398f08d..6044b6124edc 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3233,7 +3233,7 @@ int skb_checksum_help(struct sk_buff *skb)
+ }
+ EXPORT_SYMBOL(skb_checksum_help);
+ 
+-int skb_crc32c_csum_help(struct sk_buff *skb)
++static inline int skb_crc32c_csum_help(struct sk_buff *skb)
+ {
+ 	__le32 crc32c_csum;
+ 	int ret = 0, offset, start;
+@@ -3572,16 +3572,13 @@ static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
+ 	return skb;
+ }
+ 
+-int skb_csum_hwoffload_help(struct sk_buff *skb,
+-			    const netdev_features_t features)
++int __skb_csum_hwoffload_help(struct sk_buff *skb,
++			      const netdev_features_t features)
+ {
+ 	if (unlikely(skb_csum_is_sctp(skb)))
+ 		return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+ 			skb_crc32c_csum_help(skb);
+ 
+-	if (features & NETIF_F_HW_CSUM)
+-		return 0;
 -
- int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
- 		     struct sockcm_cookie *sockc)
+ 	if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)) {
+ 		switch (skb->csum_offset) {
+ 		case offsetof(struct tcphdr, check):
+@@ -3592,7 +3589,7 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
+ 
+ 	return skb_checksum_help(skb);
+ }
+-EXPORT_SYMBOL(skb_csum_hwoffload_help);
++EXPORT_SYMBOL(__skb_csum_hwoffload_help);
+ 
+ static struct sk_buff *validate_xmit_skb(struct sk_buff *skb, struct net_device *dev, bool *again)
  {
 -- 
 2.35.1
