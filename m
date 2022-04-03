@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B1214F099B
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C95644F09A9
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358589AbiDCNLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 09:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53966 "EHLO
+        id S1358481AbiDCNKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 09:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358536AbiDCNK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:28 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 525271029
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:24 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id 123-20020a1c1981000000b0038b3616a71aso4074099wmz.4
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:24 -0700 (PDT)
+        with ESMTP id S1358587AbiDCNK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:29 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B43263B6
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:25 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id h4so10584264wrc.13
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=b4iQGbstpUOSsgNXmdUB67X47VRarOvzLhVtfaDU4Wo=;
-        b=l+m80QqAOYTCuIdmyreEEQ6q7ged2RbmlEsNYc4X0pumPjYe3KlzonzAEjkmzxh9l/
-         YW3eYunumE0mxPhHHhJ1n5zWmLKPeU0X/OnvnMNhcoalFlxiLSzwmGJUVx1jnydAIqx7
-         Z8cX4eZbKy0APRYjCPIU5L/SvvNOy9wbHS5Z+pEEI+L3Gm/wxVdF4ouvHonyI8y422CX
-         Yb/AGdHbskXMJ6EIi0I1l9MpvKId56p6HZWPJtuYwCqDc1NOic/pY/OiaGpF3Kpc08Wj
-         KqxSol7jcLfAOJtM7D5Jx9rl8LfgYmDOyI67nQoak27wNJpo2td+tLi6o5g+w6mPAsrs
-         4BJA==
+        bh=X8Z6isJG5NFeUxeEjvkxdgE+kQKIsemrCR/6308ZWXw=;
+        b=XOeMqe5q8E5eT6wxLBvYkQ1jFIn+UZEesnikCxzlIVF+XX/SUKWC7+XI8JOjTVG0wA
+         E5IR2kqtBLNlLb1sr2sWpL1ipp5PwS0d4jV/K/Ke9/oJ3x22t21i26D9N5DSo9CbiMNX
+         XsDljfeDaixss3zJX7/AAMhyHnSrStMFM5bXcUwCmVlEBY6l1aUdb0NfN4T74B2AJ7Qo
+         KQh09O2/hdPt0F7bWXiE0RP/SLZlgTPCrxT09SUkk/NWRb6s6ROOciThAq4nwCsbwl+l
+         /WqgClk8RyfyDDLKR6D4AX5vaBOHXU2mTuo2TyDLzG8lEmPlBEdhg3vCoxTISSmUtF0O
+         9HWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=b4iQGbstpUOSsgNXmdUB67X47VRarOvzLhVtfaDU4Wo=;
-        b=uN1nXaAmxzKiAFhMfBWl/q1FuXkFuDr1R/zJA3gOOfg5xgGmDEt9t7sxL+dWXbdkGC
-         FZtfPPDxscrceZFhdWjoZh1RMlocnTsh/pR+SWKmXgs5d4eu1kf8DR8eJX6uok5FzIXG
-         rhqD2jB/DFxdQ+tgiPrajR3zmfXgiVtNVFlf4m8PHEjGb7pWDxTCVhvGOFODuDtD7KeB
-         XKPQjww0nfUB2c27Voyacn2aC7m+2nZys77qM8Yvl6SFRh6gziWP8F7ihuS89941Mr4h
-         ugreGMv45lAYD+4nfMXmppbP5ncyoiQdalkaWLgGS7NIUcn20vLaIQBXd/WpO4U3y37w
-         XEqA==
-X-Gm-Message-State: AOAM532EM/44rEDfti9FKdjSkpVyOO7hUeHnVgnYUZqRMFhlMb6icClh
-        qI9lZ/ikP5tFQEzOb9q9UxGGHyL1XB8=
-X-Google-Smtp-Source: ABdhPJxZczJk9E6frV2ldr1xnn1H/SaZHONMZE/fI4XArZ9Pyv4loDOyWRDR3/jqKxRGPZfyIkLVCQ==
-X-Received: by 2002:a05:600c:1ca7:b0:38e:27a6:5546 with SMTP id k39-20020a05600c1ca700b0038e27a65546mr15501660wms.188.1648991302573;
-        Sun, 03 Apr 2022 06:08:22 -0700 (PDT)
+        bh=X8Z6isJG5NFeUxeEjvkxdgE+kQKIsemrCR/6308ZWXw=;
+        b=Zqc6NdFj51F+VQYx/tT99jSovoYy0EauPCxh5vjr41yiaRE6TuHQ6KQzOJZj90o4Tk
+         zcss4x6701dRJG2E/S3DjjrYTBI4opN943aeCL652+glZY0T/nSecu5sOtSeEaSh74Tv
+         F3AylW/az+uhjLpnWWL5ittFNqDALGIEaE0SY4bbBZWKWk9wTuKi0ym4Tx3N9kgQlKAf
+         vjsFozLfcE7iZUWH+fqW5pcUpeVtHRT7cztJS2e68y2wZY/YVK21k0uUt6g4xUjdAxGf
+         eI+Q5VIIkjYWYTpoerwioTSN8kWNTpzG5lCpo5rm0gz7xFq1NejTEfA25tktwa2BWndn
+         w5kg==
+X-Gm-Message-State: AOAM532KHpRRkXWkyBvMo1yFk7UZMXgMoD8SHiFKy6egadpLxFn7E0/f
+        e9EiXEJvjF66+eYTPfEz2A2hKBCq6Jo=
+X-Google-Smtp-Source: ABdhPJxi5nzzCUeZzNns6kQOmLTC0sjPJvdC2nY/SX4hR8NornadvfThMqBuejxJ69zpRVJHkti6CQ==
+X-Received: by 2002:adf:916d:0:b0:206:db9:7ce9 with SMTP id j100-20020adf916d000000b002060db97ce9mr2122089wrj.556.1648991303655;
+        Sun, 03 Apr 2022 06:08:23 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-233-133.dab.02.net. [82.132.233.133])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.21
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:08:22 -0700 (PDT)
+        Sun, 03 Apr 2022 06:08:23 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 10/27] net: inline part of skb_csum_hwoffload_help
-Date:   Sun,  3 Apr 2022 14:06:22 +0100
-Message-Id: <8ca1d5139e1820ac7e55166f164a56b2993d10e1.1648981571.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 11/27] net: inline skb_zerocopy_iter_dgram
+Date:   Sun,  3 Apr 2022 14:06:23 +0100
+Message-Id: <37734b05228dd2c03821a650b5568eb94a801528.1648981571.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648981570.git.asml.silence@gmail.com>
 References: <cover.1648981570.git.asml.silence@gmail.com>
@@ -71,80 +71,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inline a part of skb_csum_hwoffload_help() responsible for skipping
-for HW-accelerated cases.
+skb_zerocopy_iter_dgram() is a small proxy function, inline it. For
+that, move __zerocopy_sg_from_iter into linux/skbuff.h
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/netdevice.h | 13 ++++++++++---
- net/core/dev.c            | 11 ++++-------
- 2 files changed, 14 insertions(+), 10 deletions(-)
+ include/linux/skbuff.h | 36 ++++++++++++++++++++++--------------
+ net/core/datagram.c    |  2 --
+ net/core/datagram.h    | 15 ---------------
+ net/core/skbuff.c      |  7 -------
+ 4 files changed, 22 insertions(+), 38 deletions(-)
+ delete mode 100644 net/core/datagram.h
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index cd7a597c55b1..a4e41f7edc47 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -4699,9 +4699,16 @@ extern u8 netdev_rss_key[NETDEV_RSS_KEY_LEN] __read_mostly;
- void netdev_rss_key_fill(void *buffer, size_t len);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index ebc4ad36c3a2..93a50ac6b9c4 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -647,20 +647,6 @@ struct ubuf_info {
+ int mm_account_pinned_pages(struct mmpin *mmp, size_t size);
+ void mm_unaccount_pinned_pages(struct mmpin *mmp);
  
- int skb_checksum_help(struct sk_buff *skb);
--int skb_crc32c_csum_help(struct sk_buff *skb);
--int skb_csum_hwoffload_help(struct sk_buff *skb,
--			    const netdev_features_t features);
-+int __skb_csum_hwoffload_help(struct sk_buff *skb,
-+			      const netdev_features_t features);
-+
-+static inline int skb_csum_hwoffload_help(struct sk_buff *skb,
-+					  const netdev_features_t features)
-+{
-+	if ((features & NETIF_F_HW_CSUM) && !skb_csum_is_sctp(skb))
-+		return 0;
-+	return __skb_csum_hwoffload_help(skb, features);
-+}
- 
- struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
- 				  netdev_features_t features, bool tx_path);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4842a398f08d..6044b6124edc 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3233,7 +3233,7 @@ int skb_checksum_help(struct sk_buff *skb)
- }
- EXPORT_SYMBOL(skb_checksum_help);
- 
--int skb_crc32c_csum_help(struct sk_buff *skb)
-+static inline int skb_crc32c_csum_help(struct sk_buff *skb)
- {
- 	__le32 crc32c_csum;
- 	int ret = 0, offset, start;
-@@ -3572,16 +3572,13 @@ static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
- 	return skb;
- }
- 
--int skb_csum_hwoffload_help(struct sk_buff *skb,
--			    const netdev_features_t features)
-+int __skb_csum_hwoffload_help(struct sk_buff *skb,
-+			      const netdev_features_t features)
- {
- 	if (unlikely(skb_csum_is_sctp(skb)))
- 		return !!(features & NETIF_F_SCTP_CRC) ? 0 :
- 			skb_crc32c_csum_help(skb);
- 
--	if (features & NETIF_F_HW_CSUM)
--		return 0;
+-struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size);
+-struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
+-				       struct ubuf_info *uarg);
 -
- 	if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)) {
- 		switch (skb->csum_offset) {
- 		case offsetof(struct tcphdr, check):
-@@ -3592,7 +3589,7 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
- 
- 	return skb_checksum_help(skb);
+-void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref);
+-
+-void msg_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *uarg,
+-			   bool success);
+-
+-int skb_zerocopy_iter_dgram(struct sk_buff *skb, struct msghdr *msg, int len);
+-int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+-			     struct msghdr *msg, int len,
+-			     struct ubuf_info *uarg);
+-
+ /* This data is invariant across clones and lives at
+  * the end of the header data, ie. at skb->end.
+  */
+@@ -1670,6 +1656,28 @@ static inline void skb_set_end_offset(struct sk_buff *skb, unsigned int offset)
  }
--EXPORT_SYMBOL(skb_csum_hwoffload_help);
-+EXPORT_SYMBOL(__skb_csum_hwoffload_help);
+ #endif
  
- static struct sk_buff *validate_xmit_skb(struct sk_buff *skb, struct net_device *dev, bool *again)
- {
++struct ubuf_info *msg_zerocopy_alloc(struct sock *sk, size_t size);
++struct ubuf_info *msg_zerocopy_realloc(struct sock *sk, size_t size,
++				       struct ubuf_info *uarg);
++
++void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref);
++
++void msg_zerocopy_callback(struct sk_buff *skb, struct ubuf_info *uarg,
++			   bool success);
++
++int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
++			    struct iov_iter *from, size_t length);
++
++static inline int skb_zerocopy_iter_dgram(struct sk_buff *skb,
++					  struct msghdr *msg, int len)
++{
++	return __zerocopy_sg_from_iter(skb->sk, skb, &msg->msg_iter, len);
++}
++
++int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
++			     struct msghdr *msg, int len,
++			     struct ubuf_info *uarg);
++
+ /* Internal */
+ #define skb_shinfo(SKB)	((struct skb_shared_info *)(skb_end_pointer(SKB)))
+ 
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index ee290776c661..bd78b974baa5 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -62,8 +62,6 @@
+ #include <trace/events/skb.h>
+ #include <net/busy_poll.h>
+ 
+-#include "datagram.h"
+-
+ /*
+  *	Is a socket 'connection oriented' ?
+  */
+diff --git a/net/core/datagram.h b/net/core/datagram.h
+deleted file mode 100644
+index bcfb75bfa3b2..000000000000
+--- a/net/core/datagram.h
++++ /dev/null
+@@ -1,15 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-
+-#ifndef _NET_CORE_DATAGRAM_H_
+-#define _NET_CORE_DATAGRAM_H_
+-
+-#include <linux/types.h>
+-
+-struct sock;
+-struct sk_buff;
+-struct iov_iter;
+-
+-int __zerocopy_sg_from_iter(struct sock *sk, struct sk_buff *skb,
+-			    struct iov_iter *from, size_t length);
+-
+-#endif /* _NET_CORE_DATAGRAM_H_ */
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 2c787d964a60..65ac779eb5cd 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -80,7 +80,6 @@
+ #include <linux/user_namespace.h>
+ #include <linux/indirect_call_wrapper.h>
+ 
+-#include "datagram.h"
+ #include "sock_destructor.h"
+ 
+ struct kmem_cache *skbuff_head_cache __ro_after_init;
+@@ -1340,12 +1339,6 @@ void msg_zerocopy_put_abort(struct ubuf_info *uarg, bool have_uref)
+ }
+ EXPORT_SYMBOL_GPL(msg_zerocopy_put_abort);
+ 
+-int skb_zerocopy_iter_dgram(struct sk_buff *skb, struct msghdr *msg, int len)
+-{
+-	return __zerocopy_sg_from_iter(skb->sk, skb, &msg->msg_iter, len);
+-}
+-EXPORT_SYMBOL_GPL(skb_zerocopy_iter_dgram);
+-
+ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
+ 			     struct msghdr *msg, int len,
+ 			     struct ubuf_info *uarg)
 -- 
 2.35.1
 
