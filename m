@@ -2,227 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 536E54F0820
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 08:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6854C4F0890
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 11:20:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352994AbiDCGpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 02:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51274 "EHLO
+        id S1356153AbiDCJVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 05:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238200AbiDCGpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 02:45:31 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06488FD25
-        for <netdev@vger.kernel.org>; Sat,  2 Apr 2022 23:43:35 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id a6so2949705ejk.0
-        for <netdev@vger.kernel.org>; Sat, 02 Apr 2022 23:43:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=3Xx2ErVMBxvM/FsKeVuUk3St6Mlwp0omh3F7AKnqaSI=;
-        b=i9rDzybQOX37P+qV8TaQQg/OWkO8nhv8kgK42pzWL139Z8Xu9iSCKQwDblvXomhQdz
-         erv8P/h9REJoC4eMGW651lYjvDDBy3NA7QOPQL8DfMmtPpvkbCZ6n7//UrRniEAi29yw
-         4tSlQ1bvLmKZJeBSJwKQV45geF/xfvB/Lm3lHTu/WbIlhhLZQ8DqrR+FpcUJpM2zaJZm
-         LRVQ0cFP1rJPYw3si2S3se7+ZTQmjcFLpmEc4dDx+6seXPz/iiZziII8dEb84JGicwcN
-         IuS8ILoduby5VIzBgGJF+E7viQ/8AwAUImqesCBKIfbnxqlXVNc4drxfJZAMlQi7wTS2
-         SACQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=3Xx2ErVMBxvM/FsKeVuUk3St6Mlwp0omh3F7AKnqaSI=;
-        b=v3lor8oitvqFbpM13O2m/QmNtLUt9NDlbOxPEmqyFksD9bXphfmg08ewuSpqfenzgo
-         +ql7JSTXxz4/MUDl8kioDdKOmzyVy2jSrgblwfTfmtPX+sP4UWw0/yH6P9WTChsLkw3p
-         MpZ1dWgUeVWiCZRnRj15GvqpeH0pfPr3yCsH25qzEzVwnHXJO0iMu0UgOnQ1IHAXIcWC
-         Ebgm2FX8cGSbbH56gs8feCUEVJ4ooAonY3rhzveYkkJa4o3RSIDdNrrdGLzSdxOuiPxQ
-         colGR18HEDEC92FKQN5aPzayneMs4tq9BKZhIJI2cfW6LxZV0C6snXYkwvMx0HltS00D
-         3zew==
-X-Gm-Message-State: AOAM5332Cn3i81zyrUwGl2cnEYKPLKen3uJH2kXugewxmd/DjIoW6tlH
-        g9cWO12sOhqy8RsO8C0vMmnsGZ2+At4/rrQGEVI=
-X-Google-Smtp-Source: ABdhPJx/3YPNiIHFwcdTaaNlKfTfaMhjgdlgvxJs/3tX27AB4qh3X5TrQZv3Z73xqSyo00fOZ3JUVsT4gKwvPn2U1js=
-X-Received: by 2002:a17:907:6e06:b0:6e4:dae7:9574 with SMTP id
- sd6-20020a1709076e0600b006e4dae79574mr6451508ejc.540.1648968213486; Sat, 02
- Apr 2022 23:43:33 -0700 (PDT)
+        with ESMTP id S234343AbiDCJVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 05:21:50 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030CF2C678;
+        Sun,  3 Apr 2022 02:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1648977597; x=1680513597;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UDCT08fSuAljQ3KsmV7M1mW+faCqhwtEgpoRXMbZEmE=;
+  b=n84i/7irvDou4gyAPeEgJk4rAx/1dM9XsW4b3tDiEuR1wFUkBgBgoHgO
+   GNvxtdx0kbQBgHpt1so7rPQdmAac4xXgfnfCEoVVCpEEy9gZUi/T0qFS7
+   8BASXmWxKYf1g+U0Xln9y8R4VKXBmc3w0czH3Ad9uWfodi0frH9y0tstF
+   9nyLSulTAbLmXq8/DG9WjQUMWPiQ3BL7RU150OeLc/h2LdhJnaNqNJyuj
+   9efOCeV97z9XMXKndO/DTBfePvT36aDe0CKH5LSktEs58wXfs1dkvvMZb
+   fv9pWs+B6Nc3+Qy7glF6yp7H9tzyhXSF2l4zjHevIFkH65fz4+fpdU/tQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10305"; a="259200727"
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="259200727"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 02:19:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,231,1643702400"; 
+   d="scan'208";a="568846449"
+Received: from npg-dpdk-haiyue-2.sh.intel.com ([10.67.111.4])
+  by orsmga008.jf.intel.com with ESMTP; 03 Apr 2022 02:19:52 -0700
+From:   Haiyue Wang <haiyue.wang@intel.com>
+To:     bpf@vger.kernel.org
+Cc:     Haiyue Wang <haiyue.wang@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v1] bpf: correct the comment for BTF kind bitfield
+Date:   Sun,  3 Apr 2022 16:44:33 +0800
+Message-Id: <20220403084433.200701-1-haiyue.wang@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-From:   Duke Abbaddon <duke.abbaddon@gmail.com>
-Date:   Sun, 3 Apr 2022 07:43:37 +0100
-Message-ID: <CAHpNFcNqkhWQ3xpSw1+MowYrVWii8FMjVOzv_DViCPSBMAHz0g@mail.gmail.com>
-Subject: VecSR Compression (HDMI & DP) & X-OR DSC1.2C & Along with our
- brilliant security features in NTP Folder (Security bat & WebHSM) & Default
- JS VESA_BT sure to please all on their servers
-To:     torvalds@linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HK_RANDOM_ENVFROM,
+        HK_RANDOM_FROM,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VecSR Compression (HDMI  & DP) & X-OR DSC1.2C & Along with our
-brilliant security features in NTP Folder (Security bat & WebHSM) &
-Default JS https://bit.ly/VESA_BT sure to please all on their servers
+The commit 8fd886911a6a ("bpf: Add BTF_KIND_FLOAT to uapi") has extended
+the BTF kind bitfield from 4 to 5 bits, correct the comment.
 
-is QFT a Zero compression or low level compression version of DSC
-1.2b? Maybe X-OR X=3D1 New Data & X=3D0 being not sent ? Therefore Masking
-The Frame Buffer!
+Signed-off-by: Haiyue Wang <haiyue.wang@intel.com>
+---
+ include/uapi/linux/btf.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-If not i dually submit it for inclusion in the standard along with
-Vector Compression VESA Standard Display protocol 3
-https://lkml.org/lkml/2022/4/2/328
-https://lkml.org/lkml/2022/4/2/295
+diff --git a/include/uapi/linux/btf.h b/include/uapi/linux/btf.h
+index b0d8fea1951d..a9162a6c0284 100644
+--- a/include/uapi/linux/btf.h
++++ b/include/uapi/linux/btf.h
+@@ -33,8 +33,8 @@ struct btf_type {
+ 	/* "info" bits arrangement
+ 	 * bits  0-15: vlen (e.g. # of struct's members)
+ 	 * bits 16-23: unused
+-	 * bits 24-27: kind (e.g. int, ptr, array...etc)
+-	 * bits 28-30: unused
++	 * bits 24-28: kind (e.g. int, ptr, array...etc)
++	 * bits 29-30: unused
+ 	 * bit     31: kind_flag, currently used by
+ 	 *             struct, union and fwd
+ 	 */
+-- 
+2.35.1
 
-Include vector today *important* RS
-https://vesa.org/vesa-display-compression-codecs/
-
-"QFT transports each frame at a higher rate to decrease =E2=80=9Cdisplay
-latency=E2=80=9D, which is the amount of time between a frame being ready f=
-or
-transport in the GPU and that frame being completely displayed. This
-latency is the sum of the transport time through the source=E2=80=99s outpu=
-t
-circuits, the transport time across the interface, the processing of
-the video data in the display, and the painting of the screen with the
-new data. This overall latency affects the responsiveness of games:
-how long it appears between a button is pressed to the time at which
-the resultant action is observed on the screen.
-
-While there are a lot of variables in this equation, not many are
-adjustable from an HDMI specification perspective. QFT operates on the
-transport portion of this equation by reducing the time it takes to
-send only the active video across the cable. This results in reduced
-display latency and increased responsiveness."
-
-*****
-
-VecSR - Vector Standard Render
-
-VESA Standards : Vector Graphics, Boxes, Ellipses, Curves & Fonts :
-Consolas & other brilliant fonts : (c)RS
-
-SiMD Render - Vector Graphics, Boxes, Ellipses, Curves & Fonts
-
-OT-SVG Fonts & TT-SVG Obviously Rendered in Direct X 9+ & OpenGL 3+
-Mode & Desktop Rendering modes
-
-Improve Console & TV & BIOS & General Animated Render
-
-Vector Display Standards with low relative CPU Weight
-SiMD Polygon Font Method Render
-
-Default option point scaling (the space) : Metadata Vector Fonts with
-Curl mathematical vector :
-
-16 Bit : SiMD 1 width
-32 Bit : SiMD Double Width
-
-High precision for AVX 32Bit to 256Bit width precision.
-
-Vectoring with SiMD allows traditional CPU mastered VESA Emulation
-desktops & safe mode to be super fast & displays to conform to VESA
-render standards with little effort & a 1MB Table ROM.
-
-Though the VESA & HDMI & DisplayPort standards Facilitates direct low
-bandwidth transport of and transformation of 3D & 2D graphics & fonts
-into directly Rendered Super High Fidelity SiMD & AVX Rendering Vector
-
-Display Standards Vector Render : DSVR-SiMD Can and will be directly
-rendered to a Surface for visual element : SfVE-Vec
-
-As such transport of Vectors & transformation onto display (Monitor,
-3D Unit, Render, TV, & Though HDMI, PCI Port & DP & RAM)
-
-Directly resolve The total graphics pipeline into high quality output
-or input & allow communication of almost infinite Floating point
-values for all rendered 3D & 2D Elements on a given surface (RAM
-Render Page or Surface)
-
-In high precision that is almost unbeatable & yet consumes many levels
-less RAM & Transport Protocol bandwidth,
-
-Further more can also render Vector 3D & 2D Audio & other elements
-though Vector 'Fonting' Systems, Examples exist : 3D Wave Tables,
-Harmonic reproduction units for example Yamaha and Casio keyboards.
-
-(c)Rupert S
-
-https://science.n-helix.com/2016/04/3d-desktop-virtualization.html
-
-https://science.n-helix.com/2019/06/vulkan-stack.html
-
-https://science.n-helix.com/2019/06/kernel.html
-
-https://science.n-helix.com/2022/03/fsr-focal-length.html
-
-https://science.n-helix.com/2018/01/integer-floats-with-remainder-theory.ht=
-ml
-
-https://bit.ly/VESA_BT
-
-*
-
-*Application of SiMD Polygon Font Method Render
-*3D Render method with Console input DEMO : RS
-
-3D Display access to correct display of fonts at angles in games &
-apps without Utilizing 3rd Axis maths on a simple Shape polygon Vector
-font or shape. (c)Rupert S
-
-3rd dimensional access with vector fonts by a simple method:
-
-Render text to virtual screen layer AKA a fully rendered monochrome, 2
-colour or multi colour..
-
-Bitmap/Texture,
-
-Due to latency we have 3 frames ahead to render to bitmap DPT 3 / Dot 5
-
-Can be higher resolution & we can sub sample with closer view priority...
-
-We then rotate the texture on our output polygon & factor size differential=
-.
-
-The maths is simple enough to implement in games on an SSE configured
-Celeron D (depending on resolution and Bilinear filter & resize
-
-Why ? Because rotating a polygon is harder than subtracting or adding
-width, Hight & direction to fully complex polygon Fonts & Polygon
-lines or curves...
-
-The maths is simple enough to implement in games on an SSE configured
-Celeron D (depending on resolution and Bilinear filter & resize.
-
-*
-
-VecSR is really good for secondary loading of sprites & text; In these
-terms very good for pre loading on for example the X86, RISC, AMIGA &
-Famicon type devices,
-With appropriate loading into Sprite buffers or Emulated Secondaries
-(Special Animations) or Font Buffers.
-
-Although Large TT-SVG & OT-SVG fonts load well in 8MB Ram on the Amiga
-with Integer & Emulated Float (Library); Traditional BitMap fonts work
-well in a Set Size & can resize well if cached!
-
-The full process leads upto the terminal & how to optimise CON,
-We can & will need to exceed capacities of any system & To improve them!
-
-presenting: Dev-Con-VectorE=C2=B2
-Fast/dev/CON 3DText & Audio Almost any CPU & GPU ''SiMD & Float/int"
-Class VESA Console +
-
-With Console in VecSR you can 3DText & Audio,
-
-VecSR Firmware update 2022 For immediate implementation in all
-operating systems & ROM's
-
-Potential is fast & useful.
-
-*
-
-https://science.n-helix.com/2022/04/vecsr.html
