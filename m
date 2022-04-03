@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D5C4F099A
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D064F099D
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358635AbiDCNKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 09:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53890 "EHLO
+        id S235242AbiDCNKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 09:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358503AbiDCNK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:27 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9813393FD
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:21 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso4097087wmn.1
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:21 -0700 (PDT)
+        with ESMTP id S1358532AbiDCNK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:28 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29CB13B
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:22 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id d7so10624152wrb.7
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wUEmFx91uw/Q5RHRXDGBiQki94Rhwniq9a+OnZPUQPQ=;
-        b=Gggwz4tvUuiIfZvwMcDNkdjT4yQAAg6EJ8S6lKLlqdgeI2csZI919zItNmie876Cfg
-         wJ6MzltEhscJgWzsB7ZHxfKTqWssbelza3vzjsiPRZ+NzOk3FMObxjsO8QU2ukQry1d/
-         6olXxOy8l3QDSmeDJKOpZh1IYdHIYXSfQCHNkNitmLOnyVuzRpFIElttoqbRZgzoAOie
-         Dk26p93sYvp8tpL/ldm5VTDS0cq+/876Z7YI5QBnQvH7bF8QtoYjDxpyflfhk0pZfM3H
-         6Wg6yfwC1tgn3FBrpHwtiwgq3iZBGfsZWAFfVDRj+tQJG5lxQzopqVvUuB2RqL45jyeN
-         EnXw==
+        bh=mqCJk3Tcq92QKRFxYlavWwmlfxI03jKy0XINWiL2FrI=;
+        b=ODZ2mADnavhrYfzE4peIovQEBGpbGp0Zxz8mZTXMXjYBfcq8Lt9Ms/WrRbsqJQECli
+         RT/Ish8qaFIP40Bqj2MqG7C+zNQkDZDX7We6ZejACxeY4RnnAfrXU1gO3Psm/f0WMBBN
+         /AY9X96CPkt4sgyBF4u5uB9XCVKGDEaDTGujnrjrLFq1pOfnLzNncj5+C68mcm6Tp79B
+         UNYvYi8Z8pqVV5reHIeqNv0tBf07L/jeLvLYo/zo6OVrzpuMxCzDIChpxbX1RkRjLb5j
+         7BB88ZMlOQ/2cBsZMkZowOeyT8cMCRlgseX/5Fdvmh1xPir0Dw6YVBz2++YIiIpxNRKu
+         KKEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wUEmFx91uw/Q5RHRXDGBiQki94Rhwniq9a+OnZPUQPQ=;
-        b=s9nwlr9L1RRw7PIkJ5iiw3xJOjcnmvtgsXuUpTlQFeX5bdJyPRLmywlMONBhth5mua
-         y+dXthIrz2Th3b+UEg/HUtzYaH+oOLfLVN3/0Bx4+W8gOGCjLHp8n5pD7lfAa3MCUKmq
-         i8q6Hhjyo9g2dyUJMqc0lnvnINwKe2PxP/fkywJ0HVKCggdiYI+m7v4t3/tS1dut9JNE
-         Qxp+xoSWd3Zrt/pFFS89gPCtcC/siqztAaCeCqche17Ul7d9sVvXrST8CLwRuJzqQemV
-         Z5FXeSXhEf4u/F9LFGYbQFc+9FYZDNx5z0o4rqya0I/HCyej7UJhTgmmF8d81GQySF25
-         Mdug==
-X-Gm-Message-State: AOAM5323PffP/oMvC25sUuFEkP2j3p+AeDcjHkz+e2jP3JAKxMo249ih
-        iyuOsUu2cRAsyxMg2vNLz3xgt2nxeos=
-X-Google-Smtp-Source: ABdhPJwFX/6Bsvd9ZOQWMHQ3nm68Nv84FzwFFEZN0hDFPf9i4EB7qJYR9eeUKLA+ipacLRxr90CEYQ==
-X-Received: by 2002:a05:600c:3511:b0:38c:d035:cddb with SMTP id h17-20020a05600c351100b0038cd035cddbmr15714893wmq.74.1648991300170;
-        Sun, 03 Apr 2022 06:08:20 -0700 (PDT)
+        bh=mqCJk3Tcq92QKRFxYlavWwmlfxI03jKy0XINWiL2FrI=;
+        b=vRDGjf4E1MvHhwIJFC7m/v8d1/5ediBuoD1G4aVHPsFVn0FXt3alZ75x1xSIuHXmhh
+         R7GYnOiiHAwtpiy1I6cUBGxE8u8EuV+pQKJW9CrCHgmpW1QF7TpnuXm7sJpv1ITK9ZC7
+         GF7es4JFQXmLdoGFoC4H1GxVf5sCoUDG/3RlatUTj9rf/8YrF2YyQLw6ti0GaV9la4Kp
+         yH59HgcTL/jkAqnRXDchhQ2YnKHsCjBAphqm/18kLE+nQICrXspzLCNFqEQr6A3qsZ3V
+         +VB4XlG1owscbQaUnAhkwMZcG2KzF/rCBxTLMIMS/zr8LVv2uazhFEYbRVWZEG7PbBUH
+         eAZQ==
+X-Gm-Message-State: AOAM531bkXPHVmxSnNvB9IL6Qy+qJbqyqN3AqCWCRsSi0nf9grWFcoHY
+        vbATKgWA56oiTAdO52dKCbN36LLbhyc=
+X-Google-Smtp-Source: ABdhPJzPtZMFtKNp1/YY5bwirlHKXf5w7ygwPDf8Qn4vpsNiRJ/FeTbu5IvDw95vQCJfrVn2cxFrtg==
+X-Received: by 2002:adf:fa09:0:b0:206:10e7:c7d9 with SMTP id m9-20020adffa09000000b0020610e7c7d9mr766779wrr.549.1648991301342;
+        Sun, 03 Apr 2022 06:08:21 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-233-133.dab.02.net. [82.132.233.133])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.19
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:08:19 -0700 (PDT)
+        Sun, 03 Apr 2022 06:08:21 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 08/27] skbuff: optimise alloc_skb_with_frags()
-Date:   Sun,  3 Apr 2022 14:06:20 +0100
-Message-Id: <6011c226ac8c8d3c178675dfc53ca1c5d84c1095.1648981571.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 09/27] net: inline sock_alloc_send_skb
+Date:   Sun,  3 Apr 2022 14:06:21 +0100
+Message-Id: <02d5e2ea08dc28f3e22245c6c1110a108e576abc.1648981571.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648981570.git.asml.silence@gmail.com>
 References: <cover.1648981570.git.asml.silence@gmail.com>
@@ -71,135 +71,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some users of alloc_skb_with_frags() including UDP pass zero datalen,
-Extract and inline the pure skb alloc part of it. We also save on
-needlessly pre-setting errcode ptr and with other small refactorings.
+sock_alloc_send_skb() is simple and just proxying to another function,
+so we can inline it and cut associated overhead.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 41 ++++++++++++++++++++++++++++++++++++-----
- net/core/skbuff.c      | 31 ++++++++++++-------------------
- 2 files changed, 48 insertions(+), 24 deletions(-)
+ include/net/sock.h | 10 ++++++++--
+ net/core/sock.c    |  7 -------
+ 2 files changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 410850832b6a..ebc4ad36c3a2 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1300,11 +1300,42 @@ static inline struct sk_buff *alloc_skb(unsigned int size,
- 	return __alloc_skb(size, priority, 0, NUMA_NO_NODE);
- }
- 
--struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
--				     unsigned long data_len,
--				     int max_page_order,
--				     int *errcode,
--				     gfp_t gfp_mask);
-+struct sk_buff *alloc_skb_frags(struct sk_buff *skb,
-+				unsigned long data_len,
-+				int max_page_order,
-+				int *errcode,
-+				gfp_t gfp_mask);
+diff --git a/include/net/sock.h b/include/net/sock.h
+index c4b91fc19b9c..9dab633c3caf 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1825,11 +1825,17 @@ int sock_getsockopt(struct socket *sock, int level, int op,
+ 		    char __user *optval, int __user *optlen);
+ int sock_gettstamp(struct socket *sock, void __user *userstamp,
+ 		   bool timeval, bool time32);
+-struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+-				    int noblock, int *errcode);
+ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ 				     unsigned long data_len, int noblock,
+ 				     int *errcode, int max_page_order);
 +
-+/**
-+ * alloc_skb_with_frags - allocate skb with page frags
-+ *
-+ * @header_len: size of linear part
-+ * @data_len: needed length in frags
-+ * @max_page_order: max page order desired.
-+ * @errcode: pointer to error code if any
-+ * @gfp_mask: allocation mask
-+ *
-+ * This can be used to allocate a paged skb, given a maximal order for frags.
-+ */
-+static inline struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
-+						   unsigned long data_len,
-+						   int max_page_order,
-+						   int *errcode,
-+						   gfp_t gfp_mask)
++static inline struct sk_buff *sock_alloc_send_skb(struct sock *sk,
++						  unsigned long size,
++						  int noblock, int *errcode)
 +{
-+	struct sk_buff *skb;
-+
-+	skb = alloc_skb(header_len, gfp_mask);
-+	if (unlikely(!skb)) {
-+		*errcode = -ENOBUFS;
-+		return NULL;
-+	}
-+
-+	if (!data_len)
-+		return skb;
-+	return alloc_skb_frags(skb, data_len, max_page_order, errcode, gfp_mask);
++	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
 +}
 +
- struct sk_buff *alloc_skb_for_msg(struct sk_buff *first);
- 
- /* Layout of fast clones : [skb1][skb2][fclone_ref] */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index f7842bfdd7ae..2c787d964a60 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5955,40 +5955,32 @@ int skb_mpls_dec_ttl(struct sk_buff *skb)
- EXPORT_SYMBOL_GPL(skb_mpls_dec_ttl);
- 
- /**
-- * alloc_skb_with_frags - allocate skb with page frags
-+ * alloc_skb_frags - allocate page frags for skb
-  *
-- * @header_len: size of linear part
-+ * @skb: buffer
-  * @data_len: needed length in frags
-  * @max_page_order: max page order desired.
-  * @errcode: pointer to error code if any
-  * @gfp_mask: allocation mask
-  *
-- * This can be used to allocate a paged skb, given a maximal order for frags.
-+ * This can be used to allocate pages for skb, given a maximal order for frags.
-  */
--struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
--				     unsigned long data_len,
--				     int max_page_order,
--				     int *errcode,
--				     gfp_t gfp_mask)
-+struct sk_buff *alloc_skb_frags(struct sk_buff *skb,
-+				unsigned long data_len,
-+				int max_page_order,
-+				int *errcode,
-+				gfp_t gfp_mask)
- {
- 	int npages = (data_len + (PAGE_SIZE - 1)) >> PAGE_SHIFT;
- 	unsigned long chunk;
--	struct sk_buff *skb;
- 	struct page *page;
- 	int i;
- 
--	*errcode = -EMSGSIZE;
- 	/* Note this test could be relaxed, if we succeed to allocate
- 	 * high order pages...
- 	 */
--	if (npages > MAX_SKB_FRAGS)
--		return NULL;
--
--	*errcode = -ENOBUFS;
--	skb = alloc_skb(header_len, gfp_mask);
--	if (!skb)
--		return NULL;
--
-+	if (unlikely(npages > MAX_SKB_FRAGS))
-+		goto failure;
- 	skb->truesize += npages << PAGE_SHIFT;
- 
- 	for (i = 0; npages > 0; i++) {
-@@ -6022,9 +6014,10 @@ struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
- 
- failure:
- 	kfree_skb(skb);
-+	*errcode = -EMSGSIZE;
- 	return NULL;
+ void *sock_kmalloc(struct sock *sk, int size, gfp_t priority);
+ void sock_kfree_s(struct sock *sk, void *mem, int size);
+ void sock_kzfree_s(struct sock *sk, void *mem, int size);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index b1a8f47fda55..77e37556e0c3 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2626,13 +2626,6 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
  }
--EXPORT_SYMBOL(alloc_skb_with_frags);
-+EXPORT_SYMBOL(alloc_skb_frags);
+ EXPORT_SYMBOL(sock_alloc_send_pskb);
  
- /* carve out the first off bytes from skb when off < headlen */
- static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
+-struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+-				    int noblock, int *errcode)
+-{
+-	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
+-}
+-EXPORT_SYMBOL(sock_alloc_send_skb);
+-
+ int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
+ 		     struct sockcm_cookie *sockc)
+ {
 -- 
 2.35.1
 
