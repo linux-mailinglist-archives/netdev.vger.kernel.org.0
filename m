@@ -2,50 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E0B4F0A12
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 16:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE01A4F0A14
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 16:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350102AbiDCODE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 10:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
+        id S1343717AbiDCOEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 10:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237059AbiDCODB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 10:03:01 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791B738780
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 07:01:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=H6Ha5lBsHsPX5G1DlmiXevipMYnnDCJ8AOPGKB32xEs=; b=PwcqmEKPYBTFvPooBYy5jJ2GC7
-        hB0pUirxhm9+IONk9jFyxnbNIezg39oE+2X2jLGLohwxnz2guXDYFhwVEunQuc5oYXte6L55Cq9Dw
-        BqNNiaVbSG9A3JZQ/TN1CBx/esfFq7k+H8dD8c6Se5kNynMJRBa3YyRNNv0np5RYIasS4uIEymF21
-        GjP/eFGppQ3qaarrCP7Uh2mxAzbgTSJ/Ci5eQqYi6hf5Qi+JWvcVFibifO5uyAQ25BNXgpf36pMoj
-        gDe2xrTNxgFTMKaF2I5OE9sEXw97AvusMpR0sjgrLBuHB6TUD3mKgd6YLGSRxRx8z6UHCz2/ROi3c
-        /q87wS8lUkvxFMLBz2Tw1B2mMa99UwHwap6gYoKycshkxi/SyTDFj5/02Xi2BYVsQhiHfe5hd3e6M
-        lz6e2fm5XWrjfIgw/4Sy6qWkGfgKLZkEsxEyXOruCejY8MC7C8mFA0DWv91ziAZTwKi8Egs2tHONi
-        rW2G4g/5qrsE7nut4gq/789RBLQrkxHNVcpdpvs/JC3Vc4QXRgmVAd9m7NiJ5c3VxzV5dmPm6DDXw
-        3tUs/v8yNLquY0Gk/J8/XYFfsTvzrX9YUycAonZSKB7MunqnCbOqenS1dJOaDr68nKYu95hWkG0+w
-        5z4XjIJqHY6rrS5yIs1e5ucEz6WKk7PSvrY5H8ijU=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>,
-        Nikolay Kichukov <nikolay@oldum.net>
-Subject: Re: [PATCH v4 12/12] net/9p: allocate appropriate reduced message buffers
-Date:   Sun, 03 Apr 2022 16:00:56 +0200
-Message-ID: <2745077.ukKBhl4x9b@silver>
-In-Reply-To: <YkmVI6pqTuMD8dVi@codewreck.org>
-References: <cover.1640870037.git.linux_oss@crudebyte.com> <1953222.pKi1t3aLRd@silver>
- <YkmVI6pqTuMD8dVi@codewreck.org>
+        with ESMTP id S237059AbiDCOEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 10:04:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74D7162DF
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 07:02:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1648994536;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=IgMX2nj2cNExGiU4IHmGwPOWMy+mYsJ+4MxIjrhMhLQ=;
+        b=P1f1Kd7XQs7zWhu3JWMRznh1l5pPzxdaiGB4B9XP7MMQbeAQZCHe0FoX+lLO9upUGB/RH2
+        Z7JKg04Ws+pz5YtZZOJkwUZXNgV2eBUWR3jU/p9A17NVkmcPyTPJ6WK253MNj16H8npXsA
+        fv/Mdbpb2LD7+l4g2FA6hqLScrwocLQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-474-q8jz7_0UNFu0UAhSNU5MOw-1; Sun, 03 Apr 2022 10:02:15 -0400
+X-MC-Unique: q8jz7_0UNFu0UAhSNU5MOw-1
+Received: by mail-wr1-f72.google.com with SMTP id t15-20020adfdc0f000000b001ef93643476so1195905wri.2
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 07:02:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IgMX2nj2cNExGiU4IHmGwPOWMy+mYsJ+4MxIjrhMhLQ=;
+        b=hDaZJw/d8ZEo7P3cfpcJ/kx9VR0LiHVmY8Tm3L2aijDVOxkbgI1CGu60TYQ4R3Hkwe
+         btoj/xitKrXRBxOQiWy4N40AYknjGlt/Fb+R9xBTmsK7CnVECrfTa6PTtgsgcfBzMESQ
+         6dzmQt5K1unhyRnwcMWPdZ1sCjYmu9sc7qSuA0RkQfY3QtgXNeP3pB5SCY1qdThLqHS3
+         NV3v+l5EVv4h2RILJjSQI6IbkV74lwFj36EDLzanUhW3dbdMEwN30OPliNIrw55G8h+p
+         7Qa0jVTqAnkxeLt2VEvqPTBXG7Widwpyx7aForGQB1KupTVUh1ocqOhECx7sJK5OIqh3
+         RNIA==
+X-Gm-Message-State: AOAM5317fs3kiUCZIKY6tgG0o2q/iipl63CxGngCRaFEl75twbKjP23P
+        CUyzLpdUxET+Dl8LRBq2DVgVCIYjrMTODEQP2usTfbUaTaC/TJ+p0EyNmn5vzzzm94yTarZXQF7
+        7i+wNxscJxFks6aU7
+X-Received: by 2002:a5d:40c8:0:b0:205:2a3b:c2c with SMTP id b8-20020a5d40c8000000b002052a3b0c2cmr14072349wrq.13.1648994534346;
+        Sun, 03 Apr 2022 07:02:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwz8TWqYImcP6rcwIhAkGMXujAFPtHd1mtW4Epczq6oGwMPXw022V6Oc/3xXzJvj9XSl1FGwA==
+X-Received: by 2002:a5d:40c8:0:b0:205:2a3b:c2c with SMTP id b8-20020a5d40c8000000b002052a3b0c2cmr14072332wrq.13.1648994534137;
+        Sun, 03 Apr 2022 07:02:14 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id k9-20020adfb349000000b00206101fc58fsm914374wrd.110.2022.04.03.07.02.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Apr 2022 07:02:13 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, mcoquelin.stm32@gmail.com
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] stmmac: dwmac-loongson: change loongson_dwmac_driver from global to static
+Date:   Sun,  3 Apr 2022 10:02:02 -0400
+Message-Id: <20220403140202.2191516-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,54 +76,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sonntag, 3. April 2022 14:37:55 CEST Dominique Martinet wrote:
-> Christian Schoenebeck wrote on Sun, Apr 03, 2022 at 01:29:53PM +0200:
-> > So maybe I should just exclude the 9p RDMA transport from this 9p message
-> > size reduction change in v5 until somebody had a chance to test this
-> > change with RDMA.
-> 
-> Yes, I'm pretty certain it won't work so we'll want to exclude it unless
-> we can extend the RDMA protocol to address buffers.
+Smatch reports this issue
+dwmac-loongson.c:208:19: warning: symbol
+  'loongson_dwmac_driver' was not declared.
+  Should it be static?
 
-OK, agreed. It only needs a minor adjustment to this patch 12 to exclude the
-RDMA transport (+2 lines or so). So no big deal.
+loongson_dwmac_driver is only used in dwmac-loongson.c.
+File scope variables used only in one file should
+be static. Change loongson_dwmac_driver's
+storage-class-specifier from global to static.
 
-> > On the long-term I can imagine to add RDMA transport support on QEMU 9p
-> > side.
-> What would you expect it to be used for?
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-There are several potential use cases that would come to my mind, e.g:
-
-- Separating storage hardware from host hardware. With virtio we are
-  constrained to the same machine.
-
-- Maybe also a candidate to achieve what the 9p 'synth' driver in QEMU tried 
-  to achieve? That 'synth' driver is running in a separate process from the 
-  QEMU process, with the goal to increase safety. However currently it is 
-  more or less abondened as it is extremely slow, as 9p requests have to be
-  dispatched like:
-
-   guest -> QEMU (9p server) -> synth daemon -> QEMU (9p server) -> guest
-
-  Maybe we could rid of those costly extra hops with RDMA, not sure though.
-
-- Maybe also an alternative to virtio on the same machine: there are also some 
-  shortcomings in virtio that are tedious to address (see e.g. current 
-  struggle with pure formal negotiation issues just to relax the virtio spec 
-  regarding its "Queue Size" requirements so that we could achieve higher 
-  message sizes). I'm also not a big fan of virtio's assumption that guest 
-  should guess in advance host's response size.
-
-- Maybe as transport for macOS guest support in future? Upcoming QEMU 7.0 adds
-  support for macOS 9p hosts, which revives the plan to add support for 9p
-  to macOS guests as well. The question still is what transport to use for 
-  macOS guests then.
-
-However I currently don't know any details inside RDMA yet, and as you already
-outlined, it probably has some shortcomings that would need to be revised with
-protocol changes as well.
-
-Best regards,
-Christian Schoenebeck
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+index ecf759ee1c9f..017dbbda0c1c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-loongson.c
+@@ -205,7 +205,7 @@ static const struct pci_device_id loongson_dwmac_id_table[] = {
+ };
+ MODULE_DEVICE_TABLE(pci, loongson_dwmac_id_table);
+ 
+-struct pci_driver loongson_dwmac_driver = {
++static struct pci_driver loongson_dwmac_driver = {
+ 	.name = "dwmac-loongson-pci",
+ 	.id_table = loongson_dwmac_id_table,
+ 	.probe = loongson_dwmac_probe,
+-- 
+2.27.0
 
