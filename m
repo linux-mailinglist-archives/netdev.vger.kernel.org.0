@@ -2,109 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B21394F0A08
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:53:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 731884F0A0E
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349420AbiDCNyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 09:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
+        id S237623AbiDCOAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 10:00:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234624AbiDCNyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:54:54 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCE731DCA;
-        Sun,  3 Apr 2022 06:52:59 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id k14so6271479pga.0;
-        Sun, 03 Apr 2022 06:52:59 -0700 (PDT)
+        with ESMTP id S233681AbiDCOAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 10:00:00 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC50366BB;
+        Sun,  3 Apr 2022 06:58:07 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id x14so3160784pjf.2;
+        Sun, 03 Apr 2022 06:58:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Lb9cPlyZwbStjJwtyos1H7UNpKKI/uQ50C7n0HV1cmg=;
-        b=ol6dX4/RtXYE+ytChjwpGHAuwCbbdB+IDdiEcpvJWXpiVphTPkjv1IExQ1ToaZBRPu
-         OirK0Fh3acKTV0wMXIyYsW0gAGxwd93cHemJXGVi343rUkb3CofTeBtD/IbwmvqRgcp6
-         mm8cjNF6iwZ5xNK0MChgKrW5uZaYk+CFZiDnY6euVi4lsAYZPrDaopFbn8/K7v2Jwcun
-         joCAlYFgRC/pgwILgk78kJAO57R8XW1CroNlNEDl+TvzTcfppFATaSdB75brzaPQARAI
-         /estsAqNQZhFh7XxreulgNXdAD661VIYq7Wr8bkTpPmmLyhb+Ukr9CCo3EFhqIgeKbgG
-         X8qA==
+        bh=J5mbcZTsiDy3mrNkZULEao/0esdA8VeRyfo3ZqOjIFQ=;
+        b=GVcAdkoyMokXfTR2LLDHuHD1vCyTv/CL4Mr0zcmD71hYcQLNx4trRtToCqpmglZ6p2
+         PfyrVY4bjMJXXryJlFSZQ/inrpyn7w0puiD1GGEY/XC92cwwNU1SxUYrW9IZcp7i+jIG
+         rr5TENhHGiX+LNgYDXHa6AVCI/VsyUXghylGxj7jMkpLT2FqRqavlgYBDmPuRHB89kl8
+         LftNF2g36cg6yha8KtSQVaDjIdftf5xi+Cxgar9wFbNJrCDeMY8KnnM9bq3P4Ey3m9Nh
+         /DgblGo29ZvOgCxzDuGnjFXgYqF5WmFRf1nyTgxTlrFEjhoJR6cvszzuclZGerOi/1Vw
+         FlQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Lb9cPlyZwbStjJwtyos1H7UNpKKI/uQ50C7n0HV1cmg=;
-        b=Du9vzMVJsficRpVysV1Tvciyj0eACq/lTSjP6sHrDb0adw3sKp7VbPYWlR3BktTEvu
-         /zKvMspVxim7msV95cPl9HXlrmerCxHYB9nil6eTw/1QI2k81hIwbzVTsLnbhJofTUW/
-         /+72CzX1LJShvvcxzN/YhVXixfgn/h3dbEC8gDBNg1TLPYTlDc4zuALa6HWkM9wFlWaf
-         i8EmeNX4pedcJAHONknYg0o2jhue4NTHotiBtmExQXbMrpPozB54a5CAoB5B+OI3eQks
-         aVKP4WuCTuCFCIG7ljkIQR5D/9HmbIF0aGuH17SGEOMYw6qLNdrhFfUh46TNHx1SXXgf
-         txwA==
-X-Gm-Message-State: AOAM5327vKHVoStncxX0hbGsA01vcytnS5L5gGs+eSFr7dCFGONmEgOr
-        NkQxTSDZnwYuz+JJ0CAi2Yw=
-X-Google-Smtp-Source: ABdhPJwiZvhSxAJo5R0Aey3Vtd57SMUkDnTvtPt3vFc3D9SvrciCNUo3WSE9GJBrMxz2huPRfTrHUA==
-X-Received: by 2002:a63:2b05:0:b0:398:677b:f460 with SMTP id r5-20020a632b05000000b00398677bf460mr22523433pgr.592.1648993978755;
-        Sun, 03 Apr 2022 06:52:58 -0700 (PDT)
-Received: from localhost.localdomain ([223.74.191.143])
-        by smtp.gmail.com with ESMTPSA id k20-20020aa788d4000000b004fb07f819c1sm8933299pff.50.2022.04.03.06.52.55
+        bh=J5mbcZTsiDy3mrNkZULEao/0esdA8VeRyfo3ZqOjIFQ=;
+        b=0IkI+0ar28nCn5CxBcm/ptSk5yQnF9T60D2D/kXQ4uHXa75hDnC5u3ZlPTIiVQkK9D
+         pVyTFQkeiqw9npq84sTty+1FAE7SeOSGj5qDU0nuKyZ49Lh68JLeFqZd5xQWcQ6m+okN
+         cAROWkGtEiT0iMt93o2ybq8C2Y3NXfsUAD+rXLzJJzPihH9bjyPICELLwjp4xszd4Eck
+         E9eG4WcDmZ63pBp3ExXtWfT3dQHxTvx7bvqvBfH8gLlj65R5D/yDFQ5y7GzdFKKH1bsN
+         tEFD9e8ctoG7E8lJ6F3jR6cX9wyZrVnKM4qefONMVUPA/lGVh5JKwxXgHVgnqGYnQtKs
+         +48A==
+X-Gm-Message-State: AOAM532PM5xX8J/cu1frS74CE/xDxCYduwDcm8IgAfOBN7/H0ACXylBc
+        xdTvfZTW2V8qhCE5tDJrQ2DoAU7IOyi0VA==
+X-Google-Smtp-Source: ABdhPJxsYMJ1kd5jIPYZmDRQk0lc+8cUe2U8iJtJpbX8SKgWG1rYaUEfmU/2/0CM6VmLyS0ME+dgHQ==
+X-Received: by 2002:a17:902:ce0a:b0:156:72e2:f191 with SMTP id k10-20020a170902ce0a00b0015672e2f191mr7726674plg.76.1648994286114;
+        Sun, 03 Apr 2022 06:58:06 -0700 (PDT)
+Received: from localhost.localdomain ([113.173.105.8])
+        by smtp.googlemail.com with ESMTPSA id v13-20020a17090a088d00b001c64d30fa8bsm17110441pjc.1.2022.04.03.06.58.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:52:58 -0700 (PDT)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
+        Sun, 03 Apr 2022 06:58:05 -0700 (PDT)
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+To:     cgroups@vger.kernel.org
+Cc:     Bui Quang Minh <minhquangbui99@gmail.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] selftests/bpf: Fix cd_flavor_subdir() of test_progs
-Date:   Sun,  3 Apr 2022 21:52:45 +0800
-Message-Id: <20220403135245.1713283-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] cgroup: Kill the parent controller when its last child is killed
+Date:   Sun,  3 Apr 2022 20:57:17 +0700
+Message-Id: <20220403135717.8294-1-minhquangbui99@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when we run test_progs with just executable file name, for
-example 'PATH=. test_progs-no_alu32', cd_flavor_subdir() will not check
-if test_progs is running as a flavored test runner and switch into
-corresponding sub-directory.
+When umounting a cgroup controller, in case the controller has no children,
+the initial ref will be dropped in cgroup_kill_sb. In cgroup_rmdir path,
+the controller is deleted from the parent's children list in
+css_release_work_fn, which is run on a kernel worker.
 
-This will cause test_progs-no_alu32 executed by the
-'PATH=. test_progs-no_alu32' command to run in the wrong directory and
-load the wrong BPF objects.
+With this simple script
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+	#!/bin/sh
+
+	mount -t cgroup -o none,name=test test ./tmp
+	mkdir -p ./tmp/abc
+
+	rmdir ./tmp/abc
+	umount ./tmp
+
+	sleep 5
+	cat /proc/self/cgroup
+
+The rmdir will remove the last child and umount is expected to kill the
+parent controller. However, when running the above script, we may get
+
+	1:name=test:/
+
+This shows that the parent controller has not been killed. The reason is
+after rmdir is completed, it is not guaranteed that the parent's children
+list is empty as css_release_work_fn is deferred to run on a worker. In
+case cgroup_kill_sb is run before that work, it does not drop the initial
+ref. Later in the worker, it just removes the child from the list without
+checking the list is empty to kill the parent controller. As a result, the
+parent controller still has the initial ref but without any logical refs
+(children ref, mount ref).
+
+This commit adds a free parent controller path into the worker function to
+free up the parent controller when the last child is killed.
+
+Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
 ---
- tools/testing/selftests/bpf/test_progs.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/cgroup/cgroup.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-index 2ecb73a65206..0a4b45d7b515 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -761,8 +761,10 @@ int cd_flavor_subdir(const char *exec_name)
- 	const char *flavor = strrchr(exec_name, '/');
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index a557eea7166f..220eb1742961 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -5157,12 +5157,25 @@ static void css_release_work_fn(struct work_struct *work)
+ 		container_of(work, struct cgroup_subsys_state, destroy_work);
+ 	struct cgroup_subsys *ss = css->ss;
+ 	struct cgroup *cgrp = css->cgroup;
++	struct cgroup *parent = cgroup_parent(cgrp);
  
- 	if (!flavor)
--		return 0;
--	flavor++;
-+		flavor = exec_name;
-+	else
-+		flavor++;
+ 	mutex_lock(&cgroup_mutex);
+ 
+ 	css->flags |= CSS_RELEASED;
+ 	list_del_rcu(&css->sibling);
+ 
++	/*
++	 * If parent doesn't have any children, start killing it.
++	 * And don't kill the default root.
++	 */
++	if (parent && list_empty(&parent->self.children) &&
++	    parent != &cgrp_dfl_root.cgrp &&
++	    !percpu_ref_is_dying(&parent->self.refcnt)) {
++		if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
++			cgroup_bpf_offline(parent);
++		percpu_ref_kill(&parent->self.refcnt);
++	}
 +
- 	flavor = strrchr(flavor, '-');
- 	if (!flavor)
- 		return 0;
+ 	if (ss) {
+ 		/* css release path */
+ 		if (!list_empty(&css->rstat_css_node)) {
 -- 
-2.35.1
+2.25.1
 
