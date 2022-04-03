@@ -2,78 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E07414F0C69
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 21:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3C984F0C70
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 22:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356065AbiDCT4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 15:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48300 "EHLO
+        id S1376412AbiDCUJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 16:09:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239271AbiDCT4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 15:56:14 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03088219A;
-        Sun,  3 Apr 2022 12:54:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=gqyV4vp9S0X60EY4aDAtM6FlvTYjN6u271pJT2WT0tE=; b=jT
-        aOPXWPBLUfVvmpCWD+usZb383FZwC25EspDeMrXjS8b1rMZvYyvXqS7t1pb+jrF/QnhTyqEuR+fzS
-        ybSwbXtMasEruzH54CxpEu1NOCmDVVmRii7DbdOMz1mUm2/bvgOg+c32taDjQ5dW/1jZUrvVg/pd9
-        owEWK6K+GJXlElQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nb6If-00Dz4E-8z; Sun, 03 Apr 2022 21:54:13 +0200
-Date:   Sun, 3 Apr 2022 21:54:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Stijn Tintel <stijn@linux-ipv6.be>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, pali@kernel.org, kabel@kernel.org,
-        pabeni@redhat.com, kuba@kernel.org, davem@davemloft.net,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH] net: phy: marvell: add 88E1543 support
-Message-ID: <Ykn7ZczbI3Zs+AOc@lunn.ch>
-References: <20220403172936.3213998-1-stijn@linux-ipv6.be>
- <YknlRh7MLgLllb9q@shell.armlinux.org.uk>
- <fa04f389-df01-4838-7304-2fb43b919b98@linux-ipv6.be>
- <YknvDRbRznWZpstM@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YknvDRbRznWZpstM@shell.armlinux.org.uk>
+        with ESMTP id S239271AbiDCUJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 16:09:53 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7811E3A1A6;
+        Sun,  3 Apr 2022 13:07:56 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id f10so6560812plr.6;
+        Sun, 03 Apr 2022 13:07:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=4UTb8E/mCbW8t6j2F7bYq2PlhXqC62wTANJk5So/Xmw=;
+        b=Fjxaw3RVHJARRhuzeY42JaYkPhY3VWv+ygeM3oQL1dCXroyCtrq7o2hjHDv8BdWPzV
+         lVtd4b2gWh01Lleg48yP4i79hmVkj0PqakcGOHSj6NKmeyAVFQOEsQRmwFjgakjf8Mc3
+         w2jilr6xAunXiWAJ/N0QzfXCeozO/xo+0127oecNMqzGpzUyW2LMhPni7PQr1CLMn4s5
+         0NvZUOQCvVgCiW8t004FkRTSQwAvDoUVvhzBe/3vxvvuuprrXIpiHJSc+ZfY5EaOcX5c
+         LAQWK1gB3jOWtFesp1H/L7dI2uBQuDLdeeGUhEhrIB6SeR7lrHBdl7RMiOxXEncqZTht
+         pvZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4UTb8E/mCbW8t6j2F7bYq2PlhXqC62wTANJk5So/Xmw=;
+        b=swnds0WYEimZ2AKa+GUNyOZkoSdCGSSe2eEVE/QV+WfPF5ifZP+6GRsWxwZ150cFPM
+         WV2KRzCU7FRIE2zJcrVHzjwDSswxgXH6nA0t8BH4S/8IVji031m0VqIJhXkybev1M1vU
+         52zAsZ71b1e+gHyRicrX6EscE/IBfF7kMAjHme8O6J9Z4EyF95/vFLRDm5k9+l5+Hxr9
+         gsWeC1j5043wiGOlSZNQFIBVSq+kV93H+V30pJCSKRtrjtbPjxOYRjQa63Zi1M8Pbjm2
+         UE9RlReqkmqEJHMk81i45He2jGNLESbGYJ2j7CJLU+tr7HEpuP9kpQwMVjFAmhxgv6kq
+         SUmg==
+X-Gm-Message-State: AOAM532K/cM679BOyhzoHffcJobw/4xbIXjnb37nwM6BgJH7wFkiyinY
+        FpfXtcbXKCGM6tCqkwxzcMY=
+X-Google-Smtp-Source: ABdhPJz6Rwxmab/rZl6Sao5quil0+Foh8WAqeWdLWXBPbjAe2exO0b6TGF6IDqZuEY4um7OYsv08NQ==
+X-Received: by 2002:a17:90a:5409:b0:1ca:8a21:323b with SMTP id z9-20020a17090a540900b001ca8a21323bmr3936698pjh.135.1649016475622;
+        Sun, 03 Apr 2022 13:07:55 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id p10-20020a637f4a000000b00373a2760775sm8154660pgn.2.2022.04.03.13.07.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 03 Apr 2022 13:07:55 -0700 (PDT)
+From:   Wells Lu <wellslutw@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        pabeni@redhat.com, krzk+dt@kernel.org, roopa@nvidia.com,
+        andrew@lunn.ch, edumazet@google.com
+Cc:     wells.lu@sunplus.com, Wells Lu <wellslutw@gmail.com>
+Subject: [PATCH net-next v6 0/2] This is a patch series for Ethernet driver of Sunplus SP7021 SoC.
+Date:   Mon,  4 Apr 2022 04:07:37 +0800
+Message-Id: <1649016459-23989-1-git-send-email-wellslutw@gmail.com>
+X-Mailer: git-send-email 2.7.4
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 03, 2022 at 08:01:33PM +0100, Russell King (Oracle) wrote:
-> On Sun, Apr 03, 2022 at 09:30:06PM +0300, Stijn Tintel wrote:
-> > On 3/04/2022 21:19, Russell King (Oracle) wrote:
-> > > Hi,
-> > >
-> > > On Sun, Apr 03, 2022 at 08:29:36PM +0300, Stijn Tintel wrote:
-> > >> Add support for the Marvell Alaska 88E1543 PHY used in the WatchGuard
-> > >> Firebox M200 and M300.
-> > > Looking at the IDs, this PHY should already be supported - reporting as
-> > > an 88E1545. Why do you need this patch?
-> > >
-> > Thanks for pointing that out, you're right. Please disregard the patch. 
-> > Would it be acceptable to change the name member to "Marvell
-> > 88E1543/88E1545" to make this more obvious?
-> 
-> Unfortuantely not, the driver name is used in sysfs, and as I'm sure
-> you're aware, "/" is a pathname element separator and thus can't be
-> used.
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control
+applications.
 
-The name is however reasonably free text. For example:
+Refer to:
+https://sunplus.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
-micrel.c:	.name		= "Micrel KSZ8021 or KSZ8031",
+Wells Lu (2):
+  devicetree: bindings: net: Add bindings doc for Sunplus SP7021.
+  net: ethernet: Add driver for Sunplus SP7021
 
-	Andrew
+ .../bindings/net/sunplus,sp7021-emac.yaml          | 140 +++++
+ MAINTAINERS                                        |   8 +
+ drivers/net/ethernet/Kconfig                       |   1 +
+ drivers/net/ethernet/Makefile                      |   1 +
+ drivers/net/ethernet/sunplus/Kconfig               |  36 ++
+ drivers/net/ethernet/sunplus/Makefile              |   6 +
+ drivers/net/ethernet/sunplus/spl2sw_define.h       | 271 +++++++++
+ drivers/net/ethernet/sunplus/spl2sw_desc.c         | 226 ++++++++
+ drivers/net/ethernet/sunplus/spl2sw_desc.h         |  19 +
+ drivers/net/ethernet/sunplus/spl2sw_driver.c       | 603 +++++++++++++++++++++
+ drivers/net/ethernet/sunplus/spl2sw_driver.h       |  12 +
+ drivers/net/ethernet/sunplus/spl2sw_int.c          | 253 +++++++++
+ drivers/net/ethernet/sunplus/spl2sw_int.h          |  13 +
+ drivers/net/ethernet/sunplus/spl2sw_mac.c          | 346 ++++++++++++
+ drivers/net/ethernet/sunplus/spl2sw_mac.h          |  19 +
+ drivers/net/ethernet/sunplus/spl2sw_mdio.c         | 126 +++++
+ drivers/net/ethernet/sunplus/spl2sw_mdio.h         |  12 +
+ drivers/net/ethernet/sunplus/spl2sw_phy.c          |  92 ++++
+ drivers/net/ethernet/sunplus/spl2sw_phy.h          |  12 +
+ drivers/net/ethernet/sunplus/spl2sw_register.h     |  86 +++
+ 20 files changed, 2282 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
+ create mode 100644 drivers/net/ethernet/sunplus/Kconfig
+ create mode 100644 drivers/net/ethernet/sunplus/Makefile
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_define.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_driver.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_driver.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_register.h
+
+-- 
+2.7.4
+
