@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E464F0999
+	by mail.lfdr.de (Postfix) with ESMTP id B3D5C4F099A
 	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358768AbiDCNKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 09:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        id S1358635AbiDCNKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 09:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358477AbiDCNK1 (ORCPT
+        with ESMTP id S1358503AbiDCNK1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:27 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE01027154
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:20 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id q19so3713807wrc.6
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:20 -0700 (PDT)
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9813393FD
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:21 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id n63-20020a1c2742000000b0038d0c31db6eso4097087wmn.1
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=KmKRZVdSh5FqmA1REwzHCTiq5E4GC2nAqX9kULvJvZU=;
-        b=Cu8L3mnPMzui1x64BdWt4PsYpsr2zA9c6DkJosOJxgnmzUepCnTCZwPP0Q2mtQAkcr
-         Cbin67FnEj60ccgXmDtetiPrVMMN+i4hDGOpTYVxJd/DD/XemhHM+3P2atwDob1EX5FI
-         cOmgmJEhrNQxWLi5k/VfhNgP2vgOYYCdtym+oX5RsRUzHL7uXpPDhlEqjrENjEqg571I
-         v0hNp16wypSOp84P5PVK73N6Ho20+VqFaXBx2dfIZJmj+ICGHqfavjlUAEv7MgviieSi
-         3kchbfawhxqH+qRPhnc2CbtHQvZKADg+AfAhz6emBCBu6VbxD7Utp0CRMnFuZZC2JoIj
-         QRAQ==
+        bh=wUEmFx91uw/Q5RHRXDGBiQki94Rhwniq9a+OnZPUQPQ=;
+        b=Gggwz4tvUuiIfZvwMcDNkdjT4yQAAg6EJ8S6lKLlqdgeI2csZI919zItNmie876Cfg
+         wJ6MzltEhscJgWzsB7ZHxfKTqWssbelza3vzjsiPRZ+NzOk3FMObxjsO8QU2ukQry1d/
+         6olXxOy8l3QDSmeDJKOpZh1IYdHIYXSfQCHNkNitmLOnyVuzRpFIElttoqbRZgzoAOie
+         Dk26p93sYvp8tpL/ldm5VTDS0cq+/876Z7YI5QBnQvH7bF8QtoYjDxpyflfhk0pZfM3H
+         6Wg6yfwC1tgn3FBrpHwtiwgq3iZBGfsZWAFfVDRj+tQJG5lxQzopqVvUuB2RqL45jyeN
+         EnXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KmKRZVdSh5FqmA1REwzHCTiq5E4GC2nAqX9kULvJvZU=;
-        b=4cIJNNWkW/E8N6usBH3KV4vZFvzZv4CWzledy49y0WfArD6QonCfBR4U3QWJzy01Mg
-         wZJD+kcvVGF0UYEWDqRIKSc5gQ5ieeSP99DgDTTm9NMWX0V//Lz6QPNlGgg5Nkxr1NZh
-         gJeMU7ssDfb5Rrh4ItM1RFhqXltsB4EF7DLzzO7a90PNJ5fgMuKtIAjgdjSC1HGbb5OD
-         QEGpgou2EMBMr/IA5lSZx61GEsYE/qt+UbcCnXAVnp8IQIi218WnTRsYdDGSavgBqJ73
-         zNvjlXScnFCe890F3WpXxpdUhSEDWqqphDhypsKSVKeqBgRvfk4/gCvyJM/iQP3alT/y
-         VLYQ==
-X-Gm-Message-State: AOAM531Xx3XatKcgwfM6BvDLHDt52QiG5/OkNlHAnTirfKby8+edoDQR
-        kvnucN2xUZjXKH3LBVdIe1IOTrRkhDY=
-X-Google-Smtp-Source: ABdhPJxfBtOGdTRtS5Q8J8UNaO4B68ZAkrwtnKarkic0oIXyxuj/Wsn49OfKuOppPgSrGeJNyoLwhQ==
-X-Received: by 2002:a05:6000:186d:b0:204:110a:d832 with SMTP id d13-20020a056000186d00b00204110ad832mr13935618wri.47.1648991299105;
-        Sun, 03 Apr 2022 06:08:19 -0700 (PDT)
+        bh=wUEmFx91uw/Q5RHRXDGBiQki94Rhwniq9a+OnZPUQPQ=;
+        b=s9nwlr9L1RRw7PIkJ5iiw3xJOjcnmvtgsXuUpTlQFeX5bdJyPRLmywlMONBhth5mua
+         y+dXthIrz2Th3b+UEg/HUtzYaH+oOLfLVN3/0Bx4+W8gOGCjLHp8n5pD7lfAa3MCUKmq
+         i8q6Hhjyo9g2dyUJMqc0lnvnINwKe2PxP/fkywJ0HVKCggdiYI+m7v4t3/tS1dut9JNE
+         Qxp+xoSWd3Zrt/pFFS89gPCtcC/siqztAaCeCqche17Ul7d9sVvXrST8CLwRuJzqQemV
+         Z5FXeSXhEf4u/F9LFGYbQFc+9FYZDNx5z0o4rqya0I/HCyej7UJhTgmmF8d81GQySF25
+         Mdug==
+X-Gm-Message-State: AOAM5323PffP/oMvC25sUuFEkP2j3p+AeDcjHkz+e2jP3JAKxMo249ih
+        iyuOsUu2cRAsyxMg2vNLz3xgt2nxeos=
+X-Google-Smtp-Source: ABdhPJwFX/6Bsvd9ZOQWMHQ3nm68Nv84FzwFFEZN0hDFPf9i4EB7qJYR9eeUKLA+ipacLRxr90CEYQ==
+X-Received: by 2002:a05:600c:3511:b0:38c:d035:cddb with SMTP id h17-20020a05600c351100b0038cd035cddbmr15714893wmq.74.1648991300170;
+        Sun, 03 Apr 2022 06:08:20 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-233-133.dab.02.net. [82.132.233.133])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.17
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:08:18 -0700 (PDT)
+        Sun, 03 Apr 2022 06:08:19 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 07/27] skbuff: introduce skb_is_zcopy()
-Date:   Sun,  3 Apr 2022 14:06:19 +0100
-Message-Id: <3cf9407f8fa1b73845d0a23e2f7445b5633d626d.1648981571.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 08/27] skbuff: optimise alloc_skb_with_frags()
+Date:   Sun,  3 Apr 2022 14:06:20 +0100
+Message-Id: <6011c226ac8c8d3c178675dfc53ca1c5d84c1095.1648981571.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648981570.git.asml.silence@gmail.com>
 References: <cover.1648981570.git.asml.silence@gmail.com>
@@ -71,146 +71,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new helper function called skb_is_zcopy() for checking for an skb
-zerocopy status. Before we were using skb_zcopy() for that, but it's
-slightly heavier and generates extra code. Note: since the previous
-patch we should have a ubuf set IFF an skb is SKBFL_ZEROCOPY_ENABLE
-marked apart from nouarg cases.
+Some users of alloc_skb_with_frags() including UDP pass zero datalen,
+Extract and inline the pure skb alloc part of it. We also save on
+needlessly pre-setting errcode ptr and with other small refactorings.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 25 +++++++++++++++----------
- net/core/skbuff.c      | 15 +++++++--------
- 2 files changed, 22 insertions(+), 18 deletions(-)
+ include/linux/skbuff.h | 41 ++++++++++++++++++++++++++++++++++++-----
+ net/core/skbuff.c      | 31 ++++++++++++-------------------
+ 2 files changed, 48 insertions(+), 24 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 10f94b1909da..410850832b6a 100644
+index 410850832b6a..ebc4ad36c3a2 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -1647,11 +1647,14 @@ static inline struct skb_shared_hwtstamps *skb_hwtstamps(struct sk_buff *skb)
- 	return &skb_shinfo(skb)->hwtstamps;
+@@ -1300,11 +1300,42 @@ static inline struct sk_buff *alloc_skb(unsigned int size,
+ 	return __alloc_skb(size, priority, 0, NUMA_NO_NODE);
  }
  
--static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
-+static inline bool skb_is_zcopy(struct sk_buff *skb)
- {
--	bool is_zcopy = skb_shinfo(skb)->flags & SKBFL_ZEROCOPY_ENABLE;
-+	return skb_shinfo(skb)->flags & SKBFL_ZEROCOPY_ENABLE;
-+}
- 
--	return is_zcopy ? skb_uarg(skb) : NULL;
-+static inline struct ubuf_info *skb_zcopy(struct sk_buff *skb)
-+{
-+	return skb_is_zcopy(skb) ? skb_uarg(skb) : NULL;
- }
- 
- static inline bool skb_zcopy_pure(const struct sk_buff *skb)
-@@ -1679,7 +1682,7 @@ static inline void skb_zcopy_init(struct sk_buff *skb, struct ubuf_info *uarg)
- static inline void skb_zcopy_set(struct sk_buff *skb, struct ubuf_info *uarg,
- 				 bool *have_ref)
- {
--	if (uarg && !skb_zcopy(skb)) {
-+	if (uarg && !skb_is_zcopy(skb)) {
- 		if (unlikely(have_ref && *have_ref))
- 			*have_ref = false;
- 		else
-@@ -1723,11 +1726,13 @@ static inline void net_zcopy_put_abort(struct ubuf_info *uarg, bool have_uref)
- /* Release a reference on a zerocopy structure */
- static inline void skb_zcopy_clear(struct sk_buff *skb, bool zerocopy_success)
- {
--	struct ubuf_info *uarg = skb_zcopy(skb);
- 
--	if (uarg) {
--		if (!skb_zcopy_is_nouarg(skb))
-+	if (skb_is_zcopy(skb)) {
-+		if (!skb_zcopy_is_nouarg(skb)) {
-+			struct ubuf_info *uarg = skb_zcopy(skb);
+-struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
+-				     unsigned long data_len,
+-				     int max_page_order,
+-				     int *errcode,
+-				     gfp_t gfp_mask);
++struct sk_buff *alloc_skb_frags(struct sk_buff *skb,
++				unsigned long data_len,
++				int max_page_order,
++				int *errcode,
++				gfp_t gfp_mask);
 +
- 			uarg->callback(skb, uarg, zerocopy_success);
-+		}
++/**
++ * alloc_skb_with_frags - allocate skb with page frags
++ *
++ * @header_len: size of linear part
++ * @data_len: needed length in frags
++ * @max_page_order: max page order desired.
++ * @errcode: pointer to error code if any
++ * @gfp_mask: allocation mask
++ *
++ * This can be used to allocate a paged skb, given a maximal order for frags.
++ */
++static inline struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
++						   unsigned long data_len,
++						   int max_page_order,
++						   int *errcode,
++						   gfp_t gfp_mask)
++{
++	struct sk_buff *skb;
++
++	skb = alloc_skb(header_len, gfp_mask);
++	if (unlikely(!skb)) {
++		*errcode = -ENOBUFS;
++		return NULL;
++	}
++
++	if (!data_len)
++		return skb;
++	return alloc_skb_frags(skb, data_len, max_page_order, errcode, gfp_mask);
++}
++
+ struct sk_buff *alloc_skb_for_msg(struct sk_buff *first);
  
- 		skb_shinfo(skb)->flags &= ~SKBFL_ALL_ZEROCOPY;
- 	}
-@@ -3023,7 +3028,7 @@ static inline void skb_orphan(struct sk_buff *skb)
-  */
- static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
- {
--	if (likely(!skb_zcopy(skb)))
-+	if (likely(!skb_is_zcopy(skb)))
- 		return 0;
- 	if (!skb_zcopy_is_nouarg(skb) &&
- 	    skb_uarg(skb)->callback == msg_zerocopy_callback)
-@@ -3034,7 +3039,7 @@ static inline int skb_orphan_frags(struct sk_buff *skb, gfp_t gfp_mask)
- /* Frags must be orphaned, even if refcounted, if skb might loop to rx path */
- static inline int skb_orphan_frags_rx(struct sk_buff *skb, gfp_t gfp_mask)
- {
--	if (likely(!skb_zcopy(skb)))
-+	if (likely(!skb_is_zcopy(skb)))
- 		return 0;
- 	return skb_copy_ubufs(skb, gfp_mask);
- }
-@@ -3591,7 +3596,7 @@ static inline int skb_add_data(struct sk_buff *skb,
- static inline bool skb_can_coalesce(struct sk_buff *skb, int i,
- 				    const struct page *page, int off)
- {
--	if (skb_zcopy(skb))
-+	if (skb_is_zcopy(skb))
- 		return false;
- 	if (i) {
- 		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i - 1];
+ /* Layout of fast clones : [skb1][skb2][fclone_ref] */
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 7680314038b4..f7842bfdd7ae 100644
+index f7842bfdd7ae..2c787d964a60 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -1350,14 +1350,13 @@ int skb_zerocopy_iter_stream(struct sock *sk, struct sk_buff *skb,
- 			     struct msghdr *msg, int len,
- 			     struct ubuf_info *uarg)
- {
--	struct ubuf_info *orig_uarg = skb_zcopy(skb);
- 	struct iov_iter orig_iter = msg->msg_iter;
- 	int err, orig_len = skb->len;
+@@ -5955,40 +5955,32 @@ int skb_mpls_dec_ttl(struct sk_buff *skb)
+ EXPORT_SYMBOL_GPL(skb_mpls_dec_ttl);
  
- 	/* An skb can only point to one uarg. This edge case happens when
- 	 * TCP appends to an skb, but zerocopy_realloc triggered a new alloc.
+ /**
+- * alloc_skb_with_frags - allocate skb with page frags
++ * alloc_skb_frags - allocate page frags for skb
+  *
+- * @header_len: size of linear part
++ * @skb: buffer
+  * @data_len: needed length in frags
+  * @max_page_order: max page order desired.
+  * @errcode: pointer to error code if any
+  * @gfp_mask: allocation mask
+  *
+- * This can be used to allocate a paged skb, given a maximal order for frags.
++ * This can be used to allocate pages for skb, given a maximal order for frags.
+  */
+-struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
+-				     unsigned long data_len,
+-				     int max_page_order,
+-				     int *errcode,
+-				     gfp_t gfp_mask)
++struct sk_buff *alloc_skb_frags(struct sk_buff *skb,
++				unsigned long data_len,
++				int max_page_order,
++				int *errcode,
++				gfp_t gfp_mask)
+ {
+ 	int npages = (data_len + (PAGE_SIZE - 1)) >> PAGE_SHIFT;
+ 	unsigned long chunk;
+-	struct sk_buff *skb;
+ 	struct page *page;
+ 	int i;
+ 
+-	*errcode = -EMSGSIZE;
+ 	/* Note this test could be relaxed, if we succeed to allocate
+ 	 * high order pages...
  	 */
--	if (orig_uarg && uarg != orig_uarg)
-+	if (skb_is_zcopy(skb) && uarg != skb_zcopy(skb))
- 		return -EEXIST;
+-	if (npages > MAX_SKB_FRAGS)
+-		return NULL;
+-
+-	*errcode = -ENOBUFS;
+-	skb = alloc_skb(header_len, gfp_mask);
+-	if (!skb)
+-		return NULL;
+-
++	if (unlikely(npages > MAX_SKB_FRAGS))
++		goto failure;
+ 	skb->truesize += npages << PAGE_SHIFT;
  
- 	err = __zerocopy_sg_from_iter(sk, skb, &msg->msg_iter, len);
-@@ -1380,9 +1379,9 @@ EXPORT_SYMBOL_GPL(skb_zerocopy_iter_stream);
- static int skb_zerocopy_clone(struct sk_buff *nskb, struct sk_buff *orig,
- 			      gfp_t gfp_mask)
- {
--	if (skb_zcopy(orig)) {
--		if (skb_zcopy(nskb)) {
--			/* !gfp_mask callers are verified to !skb_zcopy(nskb) */
-+	if (skb_is_zcopy(orig)) {
-+		if (skb_is_zcopy(nskb)) {
-+			/* !gfp_mask callers are verified to !skb_is_zcopy(nskb) */
- 			if (!gfp_mask) {
- 				WARN_ON_ONCE(1);
- 				return -ENOMEM;
-@@ -1721,8 +1720,8 @@ int pskb_expand_head(struct sk_buff *skb, int nhead, int ntail,
- 	if (skb_cloned(skb)) {
- 		if (skb_orphan_frags(skb, gfp_mask))
- 			goto nofrags;
--		if (skb_zcopy(skb))
--			refcount_inc(&skb_uarg(skb)->refcnt);
-+		if (skb_is_zcopy(skb))
-+			net_zcopy_get(skb_uarg(skb));
- 		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
- 			skb_frag_ref(skb, i);
+ 	for (i = 0; npages > 0; i++) {
+@@ -6022,9 +6014,10 @@ struct sk_buff *alloc_skb_with_frags(unsigned long header_len,
  
-@@ -3535,7 +3534,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
+ failure:
+ 	kfree_skb(skb);
++	*errcode = -EMSGSIZE;
+ 	return NULL;
+ }
+-EXPORT_SYMBOL(alloc_skb_with_frags);
++EXPORT_SYMBOL(alloc_skb_frags);
  
- 	if (skb_headlen(skb))
- 		return 0;
--	if (skb_zcopy(tgt) || skb_zcopy(skb))
-+	if (skb_is_zcopy(tgt) || skb_is_zcopy(skb))
- 		return 0;
- 
- 	todo = shiftlen;
+ /* carve out the first off bytes from skb when off < headlen */
+ static int pskb_carve_inside_header(struct sk_buff *skb, const u32 off,
 -- 
 2.35.1
 
