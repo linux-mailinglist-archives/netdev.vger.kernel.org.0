@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32C524F09A7
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B695B4F09A6
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358512AbiDCNKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 09:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53962 "EHLO
+        id S1358541AbiDCNK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 09:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358421AbiDCNK3 (ORCPT
+        with ESMTP id S1358637AbiDCNK3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 09:10:29 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D0D10FD7
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:27 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id q19so3714063wrc.6
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:27 -0700 (PDT)
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4752140E7
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 06:08:28 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id l62-20020a1c2541000000b0038e4570af2fso4081661wml.5
+        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 06:08:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AtsblrA0Q/EAB3Ej64TC+StZTR9fs4Fmy33efi83Z1w=;
-        b=P897ZHRZ42Kc/2lUY9RVPcWKaJeVIAp7YYv3U0oHfQo3U7EaHzoU0HRw/vWxVMDC8w
-         rAvY4dFbWcBe67Gkfyd4/oRW8DBa+IKIRHzlEM0VThkebCaRpuu84yyDGjFFKgisyhz0
-         XpgKB2nOtNsKYEVtKM6i54LAY0eCyAMVdLGOms5p957NAE3IgcPbjr1gGUokRNsc4/Tk
-         6EWnAV1OU2tzX4iUeuhjTjh9Hg5jWgxUO4ikw2VVMfP1HJ9QkFLxMc3ov8VbaEZcC1Is
-         xMF3taVLU3csWDLMXLpklCdnIDKC+6dmpfQX6nvx5hJX8kU5B8nrWvOV53f9mO9MjVWT
-         mU9g==
+        bh=B1wqCJjycXccmpr0OYQdIB9liIfmIlJGjy/dtfC04bA=;
+        b=F8D9fPrvJHsv70/isrhgUpVhKDrU2CZ1ttwfMfHxf1QPlvisbBcLgSAI/GrBp/+ZmD
+         SjJqT3ZTAoALzh0/4lfmBwHohnDoeFOKZZhYbQ1/mBIBWN3brlYGZEVj54PpwsjA1Phu
+         ym/FRdSHFSayM3txPHWCNZVLiwrx0lCbiQMWiYtfWt/w3GuQezWhW0htfG6K+WboyNLt
+         TbEZGsX7vD4uidYDh69kkN9OGIkXp8hYVf8oLEpkMpIe0g/gNIojlqpmZPc3WLbehWv9
+         qKdW5tGldJwvCLpAzPccqgIDxvKt/wXf6SHTkFF8d15CseeU6PejaA0CPuev3Md7ebiN
+         X3VQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AtsblrA0Q/EAB3Ej64TC+StZTR9fs4Fmy33efi83Z1w=;
-        b=e7tz7YGqgYOtrRkrW6EdZhU4URzSjCCd7b1o1dEDbtiYaAT2Xc8H/zabOgixkLGgBP
-         Zi8Ecg9FNS1pXjqUMDAn8yC2Nzv0Cd6FSZ6W7Bw8DoVxA+1QljTX7+IINyMSyPJDcywr
-         boQoTPrbcJahLiLmDG/VyQ4QleJqLVTl2jMD/9t32CtOzGEbWtCxeZQPZ6gVJlwFQuh3
-         rMwOfc3P0V8hJ26NFs/n3ueH5Cg+q3/fCoucDr6rv3gTtkwZ3dUtIrfQ3I2xFWv+VTYh
-         Jq2gLH5/nhoxko2mpLeIAIfdfzJXccg7hX09v4WKXwPZlcYEVUXzd2hOkDRmCHLF0m2F
-         KDnA==
-X-Gm-Message-State: AOAM532Q8oCtcLaR64epj0t/ol9+oPVvLGsp3M/9V/ypxxu6teWsZ+sz
-        vRM5merH9eSC94Zf14pSPzcf1SNfiiw=
-X-Google-Smtp-Source: ABdhPJykKr0h6gUD5OGv+7JbuG5Wf20yulnbZcXLVl4KTljwEcGay5yJ8e68xfgd1aEGMIucdW30qA==
-X-Received: by 2002:a5d:6945:0:b0:206:bd5:bf90 with SMTP id r5-20020a5d6945000000b002060bd5bf90mr3092425wrw.252.1648991305990;
-        Sun, 03 Apr 2022 06:08:25 -0700 (PDT)
+        bh=B1wqCJjycXccmpr0OYQdIB9liIfmIlJGjy/dtfC04bA=;
+        b=Q67862myUWbsgIGdR8SKZUtr5/nYpEnu0AsLxnPykNFqQlprm6tL3Sd6oVwA1uFuAN
+         7FRbMj+6g4dSKFKay8P0i5a67wfUl6FuNx+byo2PqRM8au9D2AtDwQK+vjM2h6cS1Dig
+         tWDigNOWxswG3uoQsHuXcJ1EFgMxzoPO06OYy3yr+fztghPnmy6o0caHUb65rB7qr/bK
+         n1jhZ/GSytkShNe/inCTe7OESpEGeZ8EZjPrBkYuaZ77GVJRL2ln/SX/eYru9ABiRrZC
+         mrrHdCQ084au7nUfmV8jxPSxVTcqENgtwdG40rWAja8/Id1GY5P2AmrMbzOVsTEqallc
+         MZHg==
+X-Gm-Message-State: AOAM533VImurV+K8CvIh7o/PFiCmkqXnpgOu9sfCl7vn91gbYB4jzCXj
+        4wQLvZ/QA/QIoLp8WEwhivpvSZEd3J4=
+X-Google-Smtp-Source: ABdhPJxQtlvBKOj2wHtVmrJURAHX/271L5lridHtzhlh+bleyHmqf5qQ1jWgFI6RCh6qMWwYZghI2Q==
+X-Received: by 2002:a05:600c:35cc:b0:38c:73e8:7dd5 with SMTP id r12-20020a05600c35cc00b0038c73e87dd5mr15702465wmq.196.1648991307256;
+        Sun, 03 Apr 2022 06:08:27 -0700 (PDT)
 Received: from 127.0.0.1localhost (82-132-233-133.dab.02.net. [82.132.233.133])
-        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.25
+        by smtp.gmail.com with ESMTPSA id c12-20020a05600c0a4c00b00381141f4967sm7866995wmq.35.2022.04.03.06.08.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:08:25 -0700 (PDT)
+        Sun, 03 Apr 2022 06:08:26 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Eric Dumazet <edumazet@google.com>, Wei Liu <wei.liu@kernel.org>,
         Paul Durrant <paul@xen.org>,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next 13/27] ipv6: help __ip6_finish_output() inlining
-Date:   Sun,  3 Apr 2022 14:06:25 +0100
-Message-Id: <c35a7f2347bbb8ab3d02589e994a66ebafd7aabe.1648981571.git.asml.silence@gmail.com>
+Subject: [PATCH net-next 14/27] ipv6: refactor ip6_finish_output2()
+Date:   Sun,  3 Apr 2022 14:06:26 +0100
+Message-Id: <53e9e0d4c60a54b0c1070619e7104dbe32b5f937.1648981571.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1648981570.git.asml.silence@gmail.com>
 References: <cover.1648981570.git.asml.silence@gmail.com>
@@ -71,32 +71,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two callers of __ip6_finish_output(), both are in
-ip6_finish_output(). We can combine the call sites into one and handle
-return code after, that will inline __ip6_finish_output().
-
-Note, error handling under NET_XMIT_CN will only return 0 if
-__ip6_finish_output() succeded, and in this case it return 0.
-Considering that NET_XMIT_SUCCESS is 0, it'll be returning exactly the
-same result for it as before.
+Throw neigh checks in ip6_finish_output2() under a single slow path if,
+so we don't have the overhead in the hot path.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/ip6_output.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/ipv6/ip6_output.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
 diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index f1ada6f2af7d..39f3e4bee9e6 100644
+index 39f3e4bee9e6..4319364a4a8c 100644
 --- a/net/ipv6/ip6_output.c
 +++ b/net/ipv6/ip6_output.c
-@@ -198,7 +198,6 @@ static int ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *s
- 	ret = BPF_CGROUP_RUN_PROG_INET_EGRESS(sk, skb);
- 	switch (ret) {
- 	case NET_XMIT_SUCCESS:
--		return __ip6_finish_output(net, sk, skb);
- 	case NET_XMIT_CN:
- 		return __ip6_finish_output(net, sk, skb) ? : ret;
- 	default:
+@@ -119,19 +119,21 @@ static int ip6_finish_output2(struct net *net, struct sock *sk, struct sk_buff *
+ 	rcu_read_lock_bh();
+ 	nexthop = rt6_nexthop((struct rt6_info *)dst, daddr);
+ 	neigh = __ipv6_neigh_lookup_noref(dev, nexthop);
+-	if (unlikely(!neigh))
+-		neigh = __neigh_create(&nd_tbl, nexthop, dev, false);
+-	if (!IS_ERR(neigh)) {
+-		sock_confirm_neigh(skb, neigh);
+-		ret = neigh_output(neigh, skb, false);
+-		rcu_read_unlock_bh();
+-		return ret;
++
++	if (unlikely(IS_ERR_OR_NULL(neigh))) {
++		if (unlikely(!neigh))
++			neigh = __neigh_create(&nd_tbl, nexthop, dev, false);
++		if (IS_ERR(neigh)) {
++			rcu_read_unlock_bh();
++			IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTNOROUTES);
++			kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_CREATEFAIL);
++			return -EINVAL;
++		}
+ 	}
++	sock_confirm_neigh(skb, neigh);
++	ret = neigh_output(neigh, skb, false);
+ 	rcu_read_unlock_bh();
+-
+-	IP6_INC_STATS(net, idev, IPSTATS_MIB_OUTNOROUTES);
+-	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_CREATEFAIL);
+-	return -EINVAL;
++	return ret;
+ }
+ 
+ static int
 -- 
 2.35.1
 
