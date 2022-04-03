@@ -2,73 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 731884F0A0E
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 15:58:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E0B4F0A12
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 16:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237623AbiDCOAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 10:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
+        id S1350102AbiDCODE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 10:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233681AbiDCOAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 10:00:00 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC50366BB;
-        Sun,  3 Apr 2022 06:58:07 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id x14so3160784pjf.2;
-        Sun, 03 Apr 2022 06:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J5mbcZTsiDy3mrNkZULEao/0esdA8VeRyfo3ZqOjIFQ=;
-        b=GVcAdkoyMokXfTR2LLDHuHD1vCyTv/CL4Mr0zcmD71hYcQLNx4trRtToCqpmglZ6p2
-         PfyrVY4bjMJXXryJlFSZQ/inrpyn7w0puiD1GGEY/XC92cwwNU1SxUYrW9IZcp7i+jIG
-         rr5TENhHGiX+LNgYDXHa6AVCI/VsyUXghylGxj7jMkpLT2FqRqavlgYBDmPuRHB89kl8
-         LftNF2g36cg6yha8KtSQVaDjIdftf5xi+Cxgar9wFbNJrCDeMY8KnnM9bq3P4Ey3m9Nh
-         /DgblGo29ZvOgCxzDuGnjFXgYqF5WmFRf1nyTgxTlrFEjhoJR6cvszzuclZGerOi/1Vw
-         FlQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J5mbcZTsiDy3mrNkZULEao/0esdA8VeRyfo3ZqOjIFQ=;
-        b=0IkI+0ar28nCn5CxBcm/ptSk5yQnF9T60D2D/kXQ4uHXa75hDnC5u3ZlPTIiVQkK9D
-         pVyTFQkeiqw9npq84sTty+1FAE7SeOSGj5qDU0nuKyZ49Lh68JLeFqZd5xQWcQ6m+okN
-         cAROWkGtEiT0iMt93o2ybq8C2Y3NXfsUAD+rXLzJJzPihH9bjyPICELLwjp4xszd4Eck
-         E9eG4WcDmZ63pBp3ExXtWfT3dQHxTvx7bvqvBfH8gLlj65R5D/yDFQ5y7GzdFKKH1bsN
-         tEFD9e8ctoG7E8lJ6F3jR6cX9wyZrVnKM4qefONMVUPA/lGVh5JKwxXgHVgnqGYnQtKs
-         +48A==
-X-Gm-Message-State: AOAM532PM5xX8J/cu1frS74CE/xDxCYduwDcm8IgAfOBN7/H0ACXylBc
-        xdTvfZTW2V8qhCE5tDJrQ2DoAU7IOyi0VA==
-X-Google-Smtp-Source: ABdhPJxsYMJ1kd5jIPYZmDRQk0lc+8cUe2U8iJtJpbX8SKgWG1rYaUEfmU/2/0CM6VmLyS0ME+dgHQ==
-X-Received: by 2002:a17:902:ce0a:b0:156:72e2:f191 with SMTP id k10-20020a170902ce0a00b0015672e2f191mr7726674plg.76.1648994286114;
-        Sun, 03 Apr 2022 06:58:06 -0700 (PDT)
-Received: from localhost.localdomain ([113.173.105.8])
-        by smtp.googlemail.com with ESMTPSA id v13-20020a17090a088d00b001c64d30fa8bsm17110441pjc.1.2022.04.03.06.58.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 06:58:05 -0700 (PDT)
-From:   Bui Quang Minh <minhquangbui99@gmail.com>
-To:     cgroups@vger.kernel.org
-Cc:     Bui Quang Minh <minhquangbui99@gmail.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH] cgroup: Kill the parent controller when its last child is killed
-Date:   Sun,  3 Apr 2022 20:57:17 +0700
-Message-Id: <20220403135717.8294-1-minhquangbui99@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S237059AbiDCODB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 10:03:01 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 791B738780
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 07:01:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=H6Ha5lBsHsPX5G1DlmiXevipMYnnDCJ8AOPGKB32xEs=; b=PwcqmEKPYBTFvPooBYy5jJ2GC7
+        hB0pUirxhm9+IONk9jFyxnbNIezg39oE+2X2jLGLohwxnz2guXDYFhwVEunQuc5oYXte6L55Cq9Dw
+        BqNNiaVbSG9A3JZQ/TN1CBx/esfFq7k+H8dD8c6Se5kNynMJRBa3YyRNNv0np5RYIasS4uIEymF21
+        GjP/eFGppQ3qaarrCP7Uh2mxAzbgTSJ/Ci5eQqYi6hf5Qi+JWvcVFibifO5uyAQ25BNXgpf36pMoj
+        gDe2xrTNxgFTMKaF2I5OE9sEXw97AvusMpR0sjgrLBuHB6TUD3mKgd6YLGSRxRx8z6UHCz2/ROi3c
+        /q87wS8lUkvxFMLBz2Tw1B2mMa99UwHwap6gYoKycshkxi/SyTDFj5/02Xi2BYVsQhiHfe5hd3e6M
+        lz6e2fm5XWrjfIgw/4Sy6qWkGfgKLZkEsxEyXOruCejY8MC7C8mFA0DWv91ziAZTwKi8Egs2tHONi
+        rW2G4g/5qrsE7nut4gq/789RBLQrkxHNVcpdpvs/JC3Vc4QXRgmVAd9m7NiJ5c3VxzV5dmPm6DDXw
+        3tUs/v8yNLquY0Gk/J8/XYFfsTvzrX9YUycAonZSKB7MunqnCbOqenS1dJOaDr68nKYu95hWkG0+w
+        5z4XjIJqHY6rrS5yIs1e5ucEz6WKk7PSvrY5H8ijU=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>,
+        Nikolay Kichukov <nikolay@oldum.net>
+Subject: Re: [PATCH v4 12/12] net/9p: allocate appropriate reduced message buffers
+Date:   Sun, 03 Apr 2022 16:00:56 +0200
+Message-ID: <2745077.ukKBhl4x9b@silver>
+In-Reply-To: <YkmVI6pqTuMD8dVi@codewreck.org>
+References: <cover.1640870037.git.linux_oss@crudebyte.com> <1953222.pKi1t3aLRd@silver>
+ <YkmVI6pqTuMD8dVi@codewreck.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,76 +53,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When umounting a cgroup controller, in case the controller has no children,
-the initial ref will be dropped in cgroup_kill_sb. In cgroup_rmdir path,
-the controller is deleted from the parent's children list in
-css_release_work_fn, which is run on a kernel worker.
+On Sonntag, 3. April 2022 14:37:55 CEST Dominique Martinet wrote:
+> Christian Schoenebeck wrote on Sun, Apr 03, 2022 at 01:29:53PM +0200:
+> > So maybe I should just exclude the 9p RDMA transport from this 9p message
+> > size reduction change in v5 until somebody had a chance to test this
+> > change with RDMA.
+> 
+> Yes, I'm pretty certain it won't work so we'll want to exclude it unless
+> we can extend the RDMA protocol to address buffers.
 
-With this simple script
+OK, agreed. It only needs a minor adjustment to this patch 12 to exclude the
+RDMA transport (+2 lines or so). So no big deal.
 
-	#!/bin/sh
+> > On the long-term I can imagine to add RDMA transport support on QEMU 9p
+> > side.
+> What would you expect it to be used for?
 
-	mount -t cgroup -o none,name=test test ./tmp
-	mkdir -p ./tmp/abc
+There are several potential use cases that would come to my mind, e.g:
 
-	rmdir ./tmp/abc
-	umount ./tmp
+- Separating storage hardware from host hardware. With virtio we are
+  constrained to the same machine.
 
-	sleep 5
-	cat /proc/self/cgroup
+- Maybe also a candidate to achieve what the 9p 'synth' driver in QEMU tried 
+  to achieve? That 'synth' driver is running in a separate process from the 
+  QEMU process, with the goal to increase safety. However currently it is 
+  more or less abondened as it is extremely slow, as 9p requests have to be
+  dispatched like:
 
-The rmdir will remove the last child and umount is expected to kill the
-parent controller. However, when running the above script, we may get
+   guest -> QEMU (9p server) -> synth daemon -> QEMU (9p server) -> guest
 
-	1:name=test:/
+  Maybe we could rid of those costly extra hops with RDMA, not sure though.
 
-This shows that the parent controller has not been killed. The reason is
-after rmdir is completed, it is not guaranteed that the parent's children
-list is empty as css_release_work_fn is deferred to run on a worker. In
-case cgroup_kill_sb is run before that work, it does not drop the initial
-ref. Later in the worker, it just removes the child from the list without
-checking the list is empty to kill the parent controller. As a result, the
-parent controller still has the initial ref but without any logical refs
-(children ref, mount ref).
+- Maybe also an alternative to virtio on the same machine: there are also some 
+  shortcomings in virtio that are tedious to address (see e.g. current 
+  struggle with pure formal negotiation issues just to relax the virtio spec 
+  regarding its "Queue Size" requirements so that we could achieve higher 
+  message sizes). I'm also not a big fan of virtio's assumption that guest 
+  should guess in advance host's response size.
 
-This commit adds a free parent controller path into the worker function to
-free up the parent controller when the last child is killed.
+- Maybe as transport for macOS guest support in future? Upcoming QEMU 7.0 adds
+  support for macOS 9p hosts, which revives the plan to add support for 9p
+  to macOS guests as well. The question still is what transport to use for 
+  macOS guests then.
 
-Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
----
- kernel/cgroup/cgroup.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+However I currently don't know any details inside RDMA yet, and as you already
+outlined, it probably has some shortcomings that would need to be revised with
+protocol changes as well.
 
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index a557eea7166f..220eb1742961 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -5157,12 +5157,25 @@ static void css_release_work_fn(struct work_struct *work)
- 		container_of(work, struct cgroup_subsys_state, destroy_work);
- 	struct cgroup_subsys *ss = css->ss;
- 	struct cgroup *cgrp = css->cgroup;
-+	struct cgroup *parent = cgroup_parent(cgrp);
- 
- 	mutex_lock(&cgroup_mutex);
- 
- 	css->flags |= CSS_RELEASED;
- 	list_del_rcu(&css->sibling);
- 
-+	/*
-+	 * If parent doesn't have any children, start killing it.
-+	 * And don't kill the default root.
-+	 */
-+	if (parent && list_empty(&parent->self.children) &&
-+	    parent != &cgrp_dfl_root.cgrp &&
-+	    !percpu_ref_is_dying(&parent->self.refcnt)) {
-+		if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
-+			cgroup_bpf_offline(parent);
-+		percpu_ref_kill(&parent->self.refcnt);
-+	}
-+
- 	if (ss) {
- 		/* css release path */
- 		if (!list_empty(&css->rstat_css_node)) {
--- 
-2.25.1
+Best regards,
+Christian Schoenebeck
+
 
