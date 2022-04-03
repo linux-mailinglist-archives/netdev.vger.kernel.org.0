@@ -2,453 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6ECE4F0947
-	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 14:13:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EDC24F0976
+	for <lists+netdev@lfdr.de>; Sun,  3 Apr 2022 14:38:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357434AbiDCMOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 08:14:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
+        id S236325AbiDCMkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 08:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357426AbiDCMOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 08:14:52 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263DC31501
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 05:12:55 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id r10so2233366eda.1
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 05:12:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=NQyHn+U8eVPdUIPvGzN3lKmJI7IauuBDznn8eNpqpKU=;
-        b=KGcQD8Mn0/jy05r0IiH697GNb2wCmzwZbm1upjSDYVA4CrGiZICd/wJ16EB3hFD6k+
-         ePwbGKjhG8cTaEhTK0KPo6YdDaJFO2ADS3aAZjoAusxrXZcKmUb+0y3njw9AHnLWj/oB
-         AVu2tjwTyTtn0TZNJ0WsNIa33TNyjwHK66UlU57sqJBAiXaCDCA7FWkvGhZVuGAYuZSy
-         6T97y0Ksn0gr0IBCy/89ZGuntkoyAqFrKrbji61sttvF1xH1sbVVcDw9BOm3B/N6CeVh
-         somEY6uunZWTeubgTPXFpG18Tt1drLl6CDfTuWETGPkylpADgARxwClkTUVateepNHAk
-         QMXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=NQyHn+U8eVPdUIPvGzN3lKmJI7IauuBDznn8eNpqpKU=;
-        b=KjdiNpIRoFqVdA3NU/3vX6yhsX+aliqCwrx4X/K7IHTa+Ex/vXMW9geebvI8LuMajh
-         3qut82ASfkKzRBFQFuzcko+cSY2Vj1jzGtt+KlRgOuH59yZfZDEX99gKyOC8jpUXRM+T
-         c3E7A9xp5pFdC6dAhMQCQYpCmmWTj3AmXdI0S3u9zBYJNJArDtat4tzCPkl4n5dxWI4E
-         4lTreWwZct+LGEHWIq+OoPV7Fr6SGWcRTdWatnPt155nBj5jVTnXojuLiX97PWJ8x4kS
-         bQjkG2oetH9YP/ssc7BuQR6z/g6DbQ9JUbn3g3jOBKabZbiGc5QfzPpThnyCPAxLITtC
-         ypBg==
-X-Gm-Message-State: AOAM533MnPu0VolZmeWeDI6ABHO1/oZrcI/Pp5G7iKeKKtG/pqSf76n7
-        kSwvMde8i/jS8UwOvLBvD1QBbJvSrTb8M3ccErM=
-X-Google-Smtp-Source: ABdhPJyee7Uspz+HoclvXe8kI62vrNVU1vInYowNLQoL1xZMYCxmrtlG9iHpvglxvFXB7O9vIzLApbU6+78IPl+19sA=
-X-Received: by 2002:a50:ce03:0:b0:41c:c36b:c75 with SMTP id
- y3-20020a50ce03000000b0041cc36b0c75mr1687142edi.195.1648987973246; Sun, 03
- Apr 2022 05:12:53 -0700 (PDT)
-MIME-Version: 1.0
-From:   Duke Abbaddon <duke.abbaddon@gmail.com>
-Date:   Sun, 3 Apr 2022 13:12:57 +0100
-Message-ID: <CAHpNFcMwsTH6cCHms0MwckbSZqy8RoSu=Bcs_dfx9uE5sdDr4g@mail.gmail.com>
-Subject: Modulus Dual Encrypt & Decrypt package : Processor feature RS AES-CCM
- & AES-GCM & Other Cypher Modulus
-To:     torvalds@linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S232455AbiDCMkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 08:40:12 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A065369DC
+        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 05:38:18 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id B8E14C021; Sun,  3 Apr 2022 14:38:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648989496; bh=14x/o31XF+hFpAYq9fTGzk2MDqsFhtWX55WYqE25E1U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S/GpHEC8WKXIiLuGa2p+YAJGhDOyKk1dcOKPj9tg5jpGysq4R4wAnmIGLDWBaPJhH
+         WjI9R7rrhjESOn7uf5knwAkHb0TEXRPXbEg18X+e/+hShIgjKEJ8z63Pit3Ag8M8WS
+         uyao1/JALGjToof3e/VzYJRp9DwBNcTk9QqTLIJ831tabMN1CqU3BmYYU+OdnEvPJm
+         MKwF+IBxnox4sjuZX+6l2mDI4pZQbWSsGtvZ16HV94aYHnF11YVFXWQsC6Y1pn3lQE
+         YBKF17QNL525xTZNE8cRsxnM6ptzF5D+/oPt3tPa6+/JfcKrLstV8BEu/08dwAGI46
+         J/jPGwkcy2EKA==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 3FDEEC009;
+        Sun,  3 Apr 2022 14:38:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1648989495; bh=14x/o31XF+hFpAYq9fTGzk2MDqsFhtWX55WYqE25E1U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cIyFg8jarIQGtbhQlFmpExci4A64a6JwCSMyoStzU8Qh+IQ2Ww4LmHhlP8t6cU0lA
+         JiLWalJRxi3/U0BWKgroj13SnuxZ7SRIlpbK28Dl5iPwOSKH9Loulme620K8TuRNXp
+         lYybuOgeviKx/I1MxYqLxMA0MQbrfONszpiwJN5vleNJUxIVqepSWaHvB30mdTEhIw
+         6pQ+S8ZC7hZWGSVZTsSaXcDlJY8OZP2L3O3a5Rf7/iKRfXg5YY8sTzotdrxQD1V/HS
+         wtaRu7Hk/du97HKFO1BEPbSG5DR7J2DmxVtiVR3nGSx3c3Kcd8e8sJCZcvSo1QpI1g
+         dCaCeN/aStUZA==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 467446ff;
+        Sun, 3 Apr 2022 12:38:10 +0000 (UTC)
+Date:   Sun, 3 Apr 2022 21:37:55 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>,
+        Nikolay Kichukov <nikolay@oldum.net>
+Subject: Re: [PATCH v4 12/12] net/9p: allocate appropriate reduced message
+ buffers
+Message-ID: <YkmVI6pqTuMD8dVi@codewreck.org>
+References: <cover.1640870037.git.linux_oss@crudebyte.com>
+ <8c305df4646b65218978fc6474aa0f5f29b216a0.1640870037.git.linux_oss@crudebyte.com>
+ <YkhYMFf63qnEhDd0@codewreck.org>
+ <1953222.pKi1t3aLRd@silver>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1953222.pKi1t3aLRd@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modulus Dual Encrypt & Decrypt package : Processor feature (c)RS
-
-AES-CCM & AES-GCM & Other Cypher Modulus + CCM & GCM can be
-accelerated with a joint AES Crypto module,
-
-Processor feature & package : Module list:
-
-2 Decryption pipelines working in parallel,
-With a Shared cache & RAM Module
-Modulus & Semi-parallel modulating decryption & Encryption combined
-with Encapsulation Cypher IP Protocol packet
-
-*reference*
-
-Performance Comparison of AES-CCM and AES-GCM Authenticated Encryption Modes
-http://worldcomp-proceedings.com/proc/p2016/SAM9746.pdf
-
-Basic comparison of Modes for Authenticated-Encryption -IAPM, XCBC,
-OCB, CCM, EAX, CWC, GCM, PCFB, CS
-https://www.fi.muni.cz/~xsvenda/docs/AE_comparison_ipics04.pdf
-
-
-*****
-
-ICE-SSRTP GEA Replacement 2022 + (c)RS
-
-"GEA-1 and GEA-2, which are very similar (GEA-2 is just an extension
-of GEA-1 with a higher amount of processing, and apparently not
-weakened) are bit-oriented stream ciphers."
-
-GEA-2 > GEA-3 is therefor 64Bit Safe (Mobile calls) & 128Bit Safe
-(Reasonable security)
-SHA2, SHA3therefor 128Bit Safe (Reasonable security Mobile) ++
-AES & PolyChaCha both provide a premise of 128Bit++
-
-So by reason alone GEA has a place in our hearts.
-
-*
-
-ICE-SSRTP GEA Replacement 2022 + (c)RS
-
-IiCE-SSR for digital channel infrastructure can help heal GPRS+ 3G+ 4G+ 5G+
-
-Time NTP Protocols : is usable in 2G+ <> 5G+LTE Network SIM
-
-ICE-SSRTP Encryption AES,Blake2, Poly ChaCha, SM4, SHA2, SHA3, GEA-1 and GEA-2
-'Ideal for USB Dongle & Radio' in Rust RS ' Ideal for Quality TPM
-Implementation'
-
-"GEA-1 and GEA-2, which are very similar (GEA-2 is just an extension
-of GEA-1 with a higher amount of processing, and apparently not
-weakened) are bit-oriented stream ciphers."
-
-IiCE-SSRTP : Interleaved Inverted Signal Send & Receive Time Crystal Protocol
-
-Interleaved signals help Isolate noise from a Signal Send & Receive ...
-
-Overlapping inverted waves are a profile for complex audio & FFT is the result.
-
-Interleaved, Inverted & Compressed & a simple encryption?
-
-*
-
-Time differentiated : Interleave, Inversion & differentiating Elliptic curve.
-
-We will be able to know and test the Cypher : PRINCIPLE OF INTENT TO TRUST
-
-We know of a cypher but : (Principle RS)
-
-We blend the cypher..
-Interleaved pages of a cypher obfuscate : PAL CScam does this
-
-Timed : Theoretically unique to you in principle for imprecision, But
-we cannot really have imprecise in Crypto!
-
-But we can have a set time & in effect Elliptic curve a transient variable T,
-With this, Interleave the resulting pages (RAM Buffer Concept)
-
-Invert them over Time Var = T
-
-We can do all & principally this is relatively simple.
-
-(c)RS
-
-*
-
-Modulus Dual Encrypt & Decrypt package : Processor feature (c)RS
-
-AES-CCM & AES-GCM & Other Cypher Modulus + CCM & GCM can be
-accelerated with a joint AES Crypto module,
-
-Processor feature & package : Module list:
-
-2 Decryption pipelines working in parallel,
-With a Shared cache & RAM Module
-Modulus & Semi-parallel modulating decryption & Encryption combined
-with Encapsulation Cypher IP Protocol packet
-
-*reference*
-
-Performance Comparison of AES-CCM and AES-GCM Authenticated Encryption Modes
-http://worldcomp-proceedings.com/proc/p2016/SAM9746.pdf
-
-Basic comparison of Modes for Authenticated-Encryption -IAPM, XCBC,
-OCB, CCM, EAX, CWC, GCM, PCFB, CS
-https://www.fi.muni.cz/~xsvenda/docs/AE_comparison_ipics04.pdf
-
-
-*
-
-Example of use:
-
-Nostalgic TriBand : Independence RADIO : Send : Receive :Rebel-you trade marker
-
-Nostalgic TriBand 5hz banding 2 to 5 bands, Close proximity..
-Interleaved channel BAND.
-
-Microchip clock and 50Mhz Risc Rio processor : 8Bit : 16Bit : 18Bit
-Coprocessor digital channel selector &
-
-channel Key selection based on unique..
-
-Crystal time Quartz with Synced Tick (Regulated & modular)
-
-All digital interface and resistor ring channel & sync selector with
-micro band tuning firmware.
-
-(c)Rupert S
-
-*
-
-Good for cables ? and noise ?
-
-Presenting :  IiCE-SSR for digital channel infrastructure & cables
-<Yes Even The Internet &+ Ethernet 5 Band>
-
-So the question of interleaved Bands & or signal inversion is a simple
-question but we have,
-
-SSD & HDD Cables & does signal inversion help us? Do interleaving bands help us?
-
-In Audio inversion would be a strange way to hear! but the inversion
-does help alleviate ...
-
-Transistor emission fatigue...
-
-IiCE-SSRTP : Interleaved Inverted Signal Send & Receive Time Crystal Protocol
-
-Interleaved signals help Isolate noise from a Signal Send & Receive ...
-
-Overlapping inverted waves are a profile for complex audio & FFT is the result.
-
-Interleaved, Inverted & Compressed & a simple encryption?
-
-Good for cables ? and noise ?
-
-Presenting : IiCE for digital channel infrastructure & cables <Yes
-Even The Internet &+ Ethernet 5 Band>
-
-(c) Rupert S
-
-https://science.n-helix.com/2018/12/rng.html
-
-https://science.n-helix.com/2022/02/rdseed.html
-
-https://science.n-helix.com/2017/04/rng-and-random-web.html
-
-https://science.n-helix.com/2022/02/interrupt-entropy.html
-
-https://science.n-helix.com/2021/11/monticarlo-workload-selector.html
-
-https://science.n-helix.com/2022/03/security-aspect-leaf-hash-identifiers.html
-
-
-Audio, Visual & Bluetooth & Headset & mobile developments only go so far:
-
-https://science.n-helix.com/2022/02/visual-acuity-of-eye-replacements.html
-
-https://science.n-helix.com/2022/03/ice-ssrtp.html
-
-https://science.n-helix.com/2021/11/ihmtes.html
-
-https://science.n-helix.com/2021/10/eccd-vr-3datmos-enhanced-codec.html
-https://science.n-helix.com/2021/11/wave-focus-anc.html
-https://science.n-helix.com/2021/12/3d-audio-plugin.html
-
-Integral to Telecoms Security TRNG
-
-*RAND OP Ubuntu :
-https://manpages.ubuntu.com/manpages/trusty/man1/pollinate.1.html
-
-https://pollinate.n-helix.com
-
-*
-
-***** Dukes Of THRUST ******
-
-Nostalgic TriBand : Independence RADIO : Send : Receive :Rebel-you trade markerz
-
-Nostalgic TriBand 5hz banding 2 to 5 bands, Close proximity..
-Interleaved channel BAND.
-
-Microchip clock and 50Mhz Risc Rio processor : 8Bit : 16Bit : 18Bit
-Coprocessor digital channel selector &
-
-channel Key selection based on unique..
-
-Crystal time Quartz with Synced Tick (Regulated & modular)
-
-All digital interface and resistor ring channel & sync selector with
-micro band tuning firmware.
-
-(c)Rupert S
-
-Dev/Random : Importance
-
-Dev/Random : Importance : Our C/T/RNG Can Help GEA-2 Open Software
-implementation of 3 Bits (T/RNG) Not 1 : We need Chaos : GEA-1 and
-GEA-2 Implementations we will improve with our /Dev/Random
-
-Our C/T/RNG Can Help GEA-2 Open Software implementation of 3 Bits
-(T/RNG) Not 1 : We need Chaos : GEA-1 and GEA-2 Implementations we
-will improve with our /Dev/Random
-
-We can improve GPRS 2G to 5G networks still need to save power, GPRS
-Doubles a phones capacity to run all day,
-
-Code can and will be improved, Proposals include:
-
-Blake2
-ChaCha
-SM4
-SHA2
-SHA3
-
-Elliptic Encipher
-AES
-Poly ChaCha
-
-Firstly we need a good solid & stable /dev/random
-
-So we can examine the issue with a true SEED!
-
-Rupert S https://science.n-helix.com/2022/02/interrupt-entropy.html
-
-TRNG Samples & Method DRAND Proud!
-
-https://drive.google.com/file/d/1b_Sl1oI7qTlc6__ihLt-N601nyLsY7QU/view?usp=drive_web
-https://drive.google.com/file/d/1yi4ERt0xdPc9ooh9vWrPY1LV_eXV-1Wc/view?usp=drive_web
-https://drive.google.com/file/d/11dKUNl0ngouSIJzOD92lO546tfGwC0tu/view?usp=drive_web
-https://drive.google.com/file/d/10a0E4Gh5S-itzBVh0fOaxS7JS9ru-68T/view?usp=drive_web
-
-https://github.com/P1sec/gea-implementation
-
-"GEA-1 and GEA-2, which are very similar (GEA-2 is just an extension
-of GEA-1 with a higher amount of processing, and apparently not
-weakened) are bit-oriented stream ciphers."
-
-"A stream cipher, such as the well-known RC4 or GEA-1, usually works
-through using the Xor operation against a plaintext. The Xor operation
-being symmetrical, this means that encrypting should be considered the
-same operation as decrypting: GEA-1 and GEA-2 are basically
-pseudo-random data generators, taking a seed (the key, IV and
-direction bit of the GPRS data, which are concatenated),
-
-The generated random data (the keystream) is xored with the clear-text
-data (the plaintext) for encrypting. Then, later, the keystream is
-xored with the encrypted data (the ciphertext) for decrypting. That is
-why the functions called in the target library for decrypting and
-encrypting are the same.
-
-GEA-1 and GEA-2 are bit-oriented, unlike RC4 which is byte-oriented,
-because their algorithms generate only one bit of pseudo-random data
-at once (derived from their internal state), while algorithms like RC4
-generate no less than one byte at once (in RC4's case, derived from
-
-permutation done in its internal state). Even though the keystream
-bits are put together by the current encryption / decryption C and
-Rust libraries into bytes in order to generate usable keystream,
-obviously.
-
-Based on this, you can understand that GEA-1 and GEA-2 are LFSR:
-Linear Feedback Shift Register-oriented ciphers, because their
-internal state is stored into fixed-size registers. This includes the
-S and W registers which serve for initialization / key scheduling
-purposes and are respectively 64 and 97-bit wide registers, and the A,
-B, C (and for GEA-2 only D) registers which serve for the purpose of
-keystream generation, which are respectively 31, 32, 33 and 29-bit
-wide registers.
-
-On each iteration of the keystream generation, each register is
-bit-wise rotated by one position, while the bit being rotated from the
-left towards the right side (or conversely depending on in which bit
-order you internally represent your registers) is fed back to the
-algorithm and mutated depending on given conditions. Hence, the
-
-shifted-out bit is derived from other processing, and reinserted,
-while being for this reason possibly flipped depending on conditions
-depending on bits present at the other side of the given register.
-
-This is the explanation for the name of linear feedback shift register
-(shift because of the shift operation required for the rotation, and
-linear feedback because of the constant-time transform operation
-involved).
-
-The rest of the register may also be mutated at each iteration steps,
-as in the case of the GEA-1 and 2, whole fixed Xor sequences (which
-differ for each register) may be applied depending on whether the
-rotated bit is a 0 or a 1.
-
-Note that a step where the register iterates is called clocking (the
-register is clocked), and that the fixed points where the register may
-be Xor'ed when the rotated bit becomes a 1 are called taps. The linear
-function which may transmute the rotated bit at the clocking step
-(taking several bits of the original register as an input) is called
-the F function.
-
-Those kind of bit-oriented LFSR algorithms, such as GEA-1 and 2 (for
-GPRS) and A5/1 and 2 (for GSM), were designed this way for optimal
-hardware implementations in the late 80's and early 90's."
-
-*****
-
-IiCE-SSRTP : Interleaved Inverted Signal Send & Receive Time Crystal Protocol
-
-Interleaved signals help Isolate noise from a Signal Send & Receive ...
-
-Overlapping inverted waves are a profile for complex audio & FFT is the result.
-
-Interleaved, Inverted & Compressed & a simple encryption?
-
-Good for cables ? and noise ?
-
-Presenting :  IiCE-SSR for digital channel infrastructure & cables
-<Yes Even The Internet &+ Ethernet 5 Band>
-
-So the question of interleaved Bands & or signal inversion is a simple
-question but we have,
-
-SSD & HDD Cables & does signal inversion help us? Do interleaving bands help us?
-
-In Audio inversion would be a strange way to hear! but the inversion
-does help alleviate ...
-
-Transistor emission fatigue...
-
-IiCE-SSRTP : Interleaved Inverted Signal Send & Receive Time Crystal Protocol
-
-Interleaved signals help Isolate noise from a Signal Send & Receive ...
-
-Overlapping inverted waves are a profile for complex audio & FFT is the result.
-
-Interleaved, Inverted & Compressed & a simple encryption?
-
-Good for cables ? and noise ?
-
-Presenting : IiCE for digital channel infrastructure & cables <Yes
-Even The Internet &+ Ethernet 5 Band>
-
-(c) Rupert S
-
-
-***** Dukes Of THRUST ******
-
-Autism, Deafness & the hard of hearing : In need of ANC & Active audio
-clarification or correction 2022-01
-
-Sony & a few others make noise cancelling headphones that are suitable
-for people with Acute disfunction to brain function for ear drums ...
-Attention deficit or Autism,
-The newer Sony headsets are theoretically enablers of a clear
-confusion free world for Autistic people..
-Reaching out to a larger audience of people simply annoyed by a
-confusing world; While they listen to music..
-Can and does protect a small percentage of people who are confused &
-harassed by major discord located in all jurisdictions of life...
-
-Crazy noise levels, Or simply drowned in HISSING Static:
-
-Search for active voice enhanced noise cancellation today.
-
-Rupert S https://science.n-helix.com
-
-
-https://science.n-helix.com/2021/11/wave-focus-anc.html
-
-https://science.n-helix.com/2021/10/noise-violation-technology-bluetooth.html
-
-
-https://www.orosound.com/
-
-https://www.consumerreports.org/noise-canceling-headphone/best-noise-canceling-headphones-of-the-year-a1166868524/
+Christian Schoenebeck wrote on Sun, Apr 03, 2022 at 01:29:53PM +0200:
+> So maybe I should just exclude the 9p RDMA transport from this 9p message size 
+> reduction change in v5 until somebody had a chance to test this change with 
+> RDMA.
+
+Yes, I'm pretty certain it won't work so we'll want to exclude it unless
+we can extend the RDMA protocol to address buffers.
+
+From my understanding, RDMA comes with two type of primitives:
+ - recv/send that 9p exlusively uses, which is just a pool of buffers
+registered to the NIC and get filled on a first-come-first-serve basis
+(I'm not sure if it's a first-fit, or if message will be truncated, or
+if it'll error out if the message doesn't fit... But basically given
+that's what we use for 9p we have no way of guaranteeing that a read
+reply will be filled in the big buffer allocated for it and not
+something else)
+
+If we're lucky the algorithm used is smallest-fit first, but it doesn't
+look like it:
+---
+The order of the Receive Request consumptions in a Receive Queue is by
+the order that they were posted to it.
+When you have a SRQ, you cannot predict which Receive Request will be
+consumed by which QP, so all the Receive Requests in that SRQ should be
+able to contain the incoming message (in terms of length).
+--- https://www.rdmamojo.com/2013/02/02/ibv_post_recv/ (in a comment)
+
+
+ - read/write, which can be addressed e.g. the remote end can specify a
+cookie along with address/size and directly operate on remote memory
+(hence the "remote direct memory access" name). There are also some cool
+stuff that can be done like atomic compare and swap or arithmetic
+operations on remote memory which doesn't really concern us.
+
+Using read/writes like NFS over RDMA does would resolve the problem and
+allow what they call "direct data placement", which is reading or
+writing directly from the page cache or user buffer as a real zero copy
+operation, but it requires the cookie/address to be sent and client to
+act on it so it's a real transport-specific protocol change, but given
+the low number of users I think that's something that could be
+considered if someone wants to work on it.
+
+Until then we'll be safer with that bit disabled...
+
+> Which makes me wonder, what is that exact hardware, hypervisor, OS that 
+> supports 9p & RDMA?
+
+I've used it with mellanox infiniband cards in the past. These support
+SRIOV virtual functions so are quite practical for VMs, could let it do
+the work with a single machine and no cable.
+
+I'm pretty sure it'd work with any recent server hardware that supports
+RoCE (I -think- it's getting more common?), or with emulation ~10 years
+ago I got it to run with softiwarp which has been merged in the kernel
+(siw) since so that might be the easiest way to run it now.
+
+Server-side, both diod and nfs-ganesha support 9p over RDMA, I haven't
+used diod recently but ganesha ought to work.
+
+
+> On the long-term I can imagine to add RDMA transport support on QEMU 9p side. 
+
+What would you expect it to be used for?
+
+> There is already RDMA code in QEMU, however it is only used for migration by 
+> QEMU so far I think.
+
+Yes, looking at it a bit there's live migration over RDMA (I tested it
+at my previous job), some handling for gluster+rdma, and a
+paravirtualized RDMA device (pvrdma).
+the docs for it says it works with soft-roce so it would also probably
+work for tests (I'm not sure what difference there is between rxe and
+siw), but at this point you've just setup virtualized rdma on the host
+anyway...
+
+I'll try to get something setup for tests on my end as well, it's
+definitely something I had on my todo...
+-- 
+Dominique
