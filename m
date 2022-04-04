@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A712A4F17D1
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 17:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E064F17E8
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 17:05:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378380AbiDDPDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 11:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
+        id S1352991AbiDDPHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 11:07:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378352AbiDDPDm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 11:03:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4763F2FE48
-        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 08:01:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649084497;
+        with ESMTP id S236667AbiDDPHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 11:07:13 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F2024F30;
+        Mon,  4 Apr 2022 08:05:17 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 167CF221D4;
+        Mon,  4 Apr 2022 17:05:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649084714;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zWvwmcsl5+f8+r48vPP7cYhAhBsyCC2Mt4f/vFQlCB8=;
-        b=LtVfGg6Is5Svgt3Ux3B1U3ydAUyLWDhlin3HVsBDi5/jUyWUGQFMFHFPqND9aG18/IRGDy
-        YLyUNmuz2tGmddE3+0urZwevwAidyuhwXDhOa38yNqMLvkPj9r4yavS4Bu16X96aftAX1S
-        HfUWHC7C1sToJt2XOJSi7qBMrboi4uQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-298-N1elNDxvOb2xD_1ALqUWIw-1; Mon, 04 Apr 2022 11:01:32 -0400
-X-MC-Unique: N1elNDxvOb2xD_1ALqUWIw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7689A811E84;
-        Mon,  4 Apr 2022 15:01:31 +0000 (UTC)
-Received: from ceranb (unknown [10.40.193.122])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 78B3B1111C8F;
-        Mon,  4 Apr 2022 15:01:29 +0000 (UTC)
-Date:   Mon, 4 Apr 2022 17:01:28 +0200
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Brett Creeley <brett@pensando.io>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] ice: arfs: fix use-after-free when freeing
- @rx_cpu_rmap
-Message-ID: <20220404170128.1f8d198a@ceranb>
-In-Reply-To: <20220404132832.1936529-1-alexandr.lobakin@intel.com>
-References: <20220404132832.1936529-1-alexandr.lobakin@intel.com>
+        bh=vFi7yXUyhEvuyEPAaB5PJBj31x6UAMrx11hHIwLpdNw=;
+        b=dc6JR3Kh1Ky3QpzM5AVH203vP79qpSRIe0/7KFPStc93uVzLA6hMlEPEl7+mjlOxUUQm5N
+        s9pNBuWORJiOmTMckn+4ooQE8mRVMNiYtpgDX5TFNKNcHP/PVUlWNuQAxyqLeNzAafgFs1
+        9HQ+CQBtpNZYNCqrUyrqASCM2kV4p6Q=
+From:   Michael Walle <michael@walle.cc>
+To:     richardcochran@gmail.com
+Cc:     andrew@lunn.ch, davem@davemloft.net, grygorii.strashko@ti.com,
+        kuba@kernel.org, kurt@linutronix.de, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, mlichvar@redhat.com, netdev@vger.kernel.org,
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping layer be selectable.
+Date:   Mon,  4 Apr 2022 17:05:08 +0200
+Message-Id: <20220404150508.3945833-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220104014215.GA20062@hoboy.vegasvil.org>
+References: <20220104014215.GA20062@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  4 Apr 2022 15:28:32 +0200
-Alexander Lobakin <alexandr.lobakin@intel.com> wrote:
+Sorry for digging out this older thread, but it seems to be discussed
+in [1].
 
-> The CI testing bots triggered the following splat:
+> IMO, the default should be PHY because up until now the PHY layer was
+> prefered.
 > 
-> ...
-> This is due to that free_irq_cpu_rmap() is always being called
-> *after* (devm_)free_irq() and thus it tries to work with IRQ descs
-> already freed. For example, on device reset the driver frees the
-> rmap right before allocating a new one (the splat above).
-> Make rmap creation and freeing function symmetrical with
-> {request,free}_irq() calls i.e. do that on ifup/ifdown instead
-> of device probe/remove/resume. These operations can be performed
-> independently from the actual device aRFS configuration.
-> Also, make sure ice_vsi_free_irq() clears IRQ affinity notifiers
-> only when aRFS is disabled -- otherwise, CPU rmap sets and clears
-> its own and they must not be touched manually.
+> Or would you say the MAC layer should take default priority?
 > 
-> Fixes: 28bf26724fdb0 ("ice: Implement aRFS")
-> Co-developed-by: Ivan Vecera <ivecera@redhat.com>
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> ---
-> Netdev folks, some more urgent stuff, would like to have this in
-> -net directly.
-> 
-> Ivan, I probably should've waited for your response regarding
-> signatures, hope you'll approve this one :p Feel free to review
-> and/or test.
+> (that may well break some existing systems)
 
-That's ok, Alex. You did it the way I prefer :-P.
-Will test.
+Correct me if I'm wrong, but for systems with multiple interfaces,
+in particular switches, you'd need external circuits to synchronize
+the PHCs within in the PHYs. (And if you use a time aware scheduler
+you'd need to synchronize the MAC, too). Whereas for switches there
+is usually just one PHC in the MAC which just works.
 
-Ivan
+On these systems, pushing the timestamping to the PHY would mean
+that this external circuitry must exist and have to be in use/
+supported. MAC timestamping will work in all cases without any
+external dependencies.
 
+I'm working on a board with the LAN9668 switch which has one LAN8814
+PHY and two GPY215 PHYs and two internal PHYs. The LAN9668 driver
+will forward all timestamping ioctls to the PHY if it supports
+timestamping (unconditionally). As soon as the patches to add ptp
+support to the LAN8814 will be accepted, I guess it will break the
+PTP/TAS support because there is no synchronization between all the
+PHCs on that board. Thus, IMHO MAC timestamping should be the default.
+
+-michael
+
+[1] https://lore.kernel.org/netdev/20220308145405.GD29063@hoboy.vegasvil.org/
