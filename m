@@ -2,150 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 954FC4F2003
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 01:12:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59024F2029
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 01:17:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241036AbiDDXNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 19:13:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57918 "EHLO
+        id S233190AbiDDXTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 19:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243817AbiDDXLn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 19:11:43 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162182CCBE;
-        Mon,  4 Apr 2022 15:49:21 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n18so9354987plg.5;
-        Mon, 04 Apr 2022 15:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DiZpMTn/EVNY/pnuPoizyqHMne6cPx1y5mye2ibx/ok=;
-        b=bgnp+RZ4/8nfeh0NMWErXmEtEshX86JerNFp8dq/RD44FxWiFAl972gOEJDqV++XyA
-         By4VZtAU4QVALrso+XOALjElN48YFB3TiZeU9RcQxb+9XSdszdEltEwvn9K8oecLmXTQ
-         TQQfzdCYgQyp4jsdjY5EwU/Uh3faCKJvnJbzu8VpGOGyjkhm+VjdOWOKNFg2CdC9WIHu
-         9qKlg3mhSFcqJlntThMyi4VG3ISf3oNk+2Ry4A/oRGT+IxjxU5e24QVPCkZiEspbB6Ae
-         CcLSJd1INuQNNkvMz1KILSOVf2EODqUP+szWpO3DLZgvPGzGiBVeiL6R9WCUXhOUmtMv
-         ed7Q==
+        with ESMTP id S241763AbiDDXTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 19:19:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8991F1E3E9
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 16:15:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649114101;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kTRTuL6R5chBVkZAPhvLEL9OPO5zJV1n3e4jxK5S8Ms=;
+        b=YTU70QBBLLd24iObYRQmaN92W+W5ONi+BYioijmT8cZ01TfIHt/WEOwdw/OnfuLHcCjIjV
+        rz5FM5pukPQaEWuuDjV1j8MwwmtkcQTxN4w03oqbvAe2M/1FBf+f2GJ9AzEyoKjSTEzIX/
+        2elO4Q4kxPJcrIjUv2poVSI96bShPdQ=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-20-SMUmPKuiMpSSnHa5Y7Z3cA-1; Mon, 04 Apr 2022 19:15:00 -0400
+X-MC-Unique: SMUmPKuiMpSSnHa5Y7Z3cA-1
+Received: by mail-qt1-f200.google.com with SMTP id z18-20020ac84552000000b002e201c79cd4so7436855qtn.2
+        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 16:14:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DiZpMTn/EVNY/pnuPoizyqHMne6cPx1y5mye2ibx/ok=;
-        b=nSCgURZ9JtxcJTR+gACePQ7grQ99Rs3SQJCalGLbJ+at5C/uDs3SiSxMp25l1hEy06
-         vLzTo/Y4/4+bIaiHf4ryPBEyur+gKx+PC6L1CE8BwZbRj1v33J5h6stAYgHNs1dQyC27
-         EEtaLda69g5EbVG5ZavTivO78JyH/thLvgSkEkgkS8KiWK07yg4GpV91nWfONClwId0q
-         9gakhqxUbknXKhWvStYfxRkG8VVJuWJl/HfEUAlN7dB0bXdiq4uehDEUDTQ9HW9oMQky
-         VTbYsyEOuNUHHJAhDmZoN2BXvagxwZnZel7ozHsvqg5F45QmItecDpsHPAcLpBw+DDDh
-         5Puw==
-X-Gm-Message-State: AOAM531MhNqDQmgeDTREiYYf8WTj6/maWDYT/GssIs2GpwqiBtA595Yi
-        lPvLCizoW27lrkeKoGvYVMEs47HZn3ALs1YRYD0=
-X-Google-Smtp-Source: ABdhPJw6yLez+Pola3pnCcu1X++dRI9Dtud1fwRlNqRru6KsE9kQoMKYHIIF+h1m/5FNxuqFspqfjNyXq2uiHfs7URQ=
-X-Received: by 2002:a17:902:ba83:b0:154:727e:5fc5 with SMTP id
- k3-20020a170902ba8300b00154727e5fc5mr475882pls.55.1649112560582; Mon, 04 Apr
- 2022 15:49:20 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=kTRTuL6R5chBVkZAPhvLEL9OPO5zJV1n3e4jxK5S8Ms=;
+        b=18MuGk7PoMzske8pd3+1FB4DrG0IANLcAsDI5S+rIfCgupmWLvbvnzqPgIX84HWdUP
+         xkmswSyb1Rg6E53gnLzcijpTp2s6KlCdhDCO8IoIztqT65Y9QeEAyUgI1ih1OUNa8hFL
+         IH2fXNmszbur1LWhabf4WthxbH5X7eiP6ZpyPPUWY/LVONnIMsssAnHYN/DzzVs+M9VJ
+         tmJGAqjd44qvs1u+vvfVIuNnxjFXNFZXhzGoIMpHdT2mz8UBtDje23jSpUt2oqsNLXK4
+         HdBNikpNgwvQYjXQmd4E81sXwt/OMEDjgDy6jlqe2lYt04es45JDdam+lVO859lkHEa5
+         rdig==
+X-Gm-Message-State: AOAM530HLOtfS07w9UtjP7QJ23zZpVfrSX4IEMZQMCSd90GEEt99/45D
+        fU4gZooqXq2sB3z1ElGU9YJkDt8miUldafxPmm88cW9TKJiORVAK9enAEdi6TOXtNMHNMt9hUxJ
+        tAyV2Kr3ttOmq/VEt
+X-Received: by 2002:a05:6214:2342:b0:42d:7c8b:9eac with SMTP id hu2-20020a056214234200b0042d7c8b9eacmr575439qvb.5.1649114099537;
+        Mon, 04 Apr 2022 16:14:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwaIxVkenjRBdDOh6Wv2UMQmmTIJuEr8fmsRSmJlATQoawKgS1eJzrIMpeEK/tuHf+1jb3erQ==
+X-Received: by 2002:a05:6214:2342:b0:42d:7c8b:9eac with SMTP id hu2-20020a056214234200b0042d7c8b9eacmr575421qvb.5.1649114099261;
+        Mon, 04 Apr 2022 16:14:59 -0700 (PDT)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id k1-20020ac85fc1000000b002e1c6420790sm10288267qta.40.2022.04.04.16.14.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Apr 2022 16:14:58 -0700 (PDT)
+Subject: Re: [PATCH v3 1/2] hwmon: introduce hwmon_sanitize_name()
+To:     Michael Walle <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>
+References: <20220404184340.3973329-1-michael@walle.cc>
+ <20220404184340.3973329-2-michael@walle.cc>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <428c28e4-87cc-50a4-ef13-41ae36702a84@redhat.com>
+Date:   Mon, 4 Apr 2022 16:14:55 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-References: <20220328175033.2437312-1-roberto.sassu@huawei.com>
- <20220331022727.ybj4rui4raxmsdpu@MBP-98dd607d3435.dhcp.thefacebook.com>
- <b9f5995f96da447c851f7c9db8232a9b@huawei.com> <20220401235537.mwziwuo4n53m5cxp@MBP-98dd607d3435.dhcp.thefacebook.com>
- <CACYkzJ5QgkucL3HZ4bY5Rcme4ey6U3FW4w2Gz-9rdWq0_RHvgA@mail.gmail.com>
- <CAEiveUcx1KHoJ421Cv+52t=0U+Uy2VF51VC_zfTSftQ4wVYOPw@mail.gmail.com> <c2e57f10b62940eba3cfcae996e20e3c@huawei.com>
-In-Reply-To: <c2e57f10b62940eba3cfcae996e20e3c@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 4 Apr 2022 15:49:09 -0700
-Message-ID: <CAADnVQJSso+GSXC-QmNmj0GBPZzxRCRfqAcQbqD-6y0CtMSopQ@mail.gmail.com>
-Subject: Re: [PATCH 00/18] bpf: Secure and authenticated preloading of eBPF programs
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     Djalal Harouni <tixxdz@gmail.com>, KP Singh <kpsingh@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20220404184340.3973329-2-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 4, 2022 at 10:21 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
->
-> > From: Djalal Harouni [mailto:tixxdz@gmail.com]
-> > Sent: Monday, April 4, 2022 9:45 AM
-> > On Sun, Apr 3, 2022 at 5:42 PM KP Singh <kpsingh@kernel.org> wrote:
-> > >
-> > > On Sat, Apr 2, 2022 at 1:55 AM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > ...
-> > > >
-> > > > > Pinning
-> > > > > them to unreachable inodes intuitively looked the
-> > > > > way to go for achieving the stated goal.
-> > > >
-> > > > We can consider inodes in bpffs that are not unlinkable by root
-> > > > in the future, but certainly not for this use case.
-> > >
-> > > Can this not be already done by adding a BPF_LSM program to the
-> > > inode_unlink LSM hook?
-> > >
-> >
-> > Also, beside of the inode_unlink... and out of curiosity: making sysfs/bpffs/
-> > readonly after pinning, then using bpf LSM hooks
-> > sb_mount|remount|unmount...
-> > family combining bpf() LSM hook... isn't this enough to:
-> > 1. Restrict who can pin to bpffs without using a full MAC
-> > 2. Restrict who can delete or unmount bpf filesystem
-> >
-> > ?
->
-> I'm thinking to implement something like this.
->
-> First, I add a new program flag called
-> BPF_F_STOP_ONCONFIRM, which causes the ref count
-> of the link to increase twice at creation time. In this way,
-> user space cannot make the link disappear, unless a
-> confirmation is explicitly sent via the bpf() system call.
->
-> Another advantage is that other LSMs can decide
-> whether or not they allow a program with this flag
-> (in the bpf security hook).
->
-> This would work regardless of the method used to
-> load the eBPF program (user space or kernel space).
->
-> Second, I extend the bpf() system call with a new
-> subcommand, BPF_LINK_CONFIRM_STOP, which
-> decreases the ref count for the link of the programs
-> with the BPF_F_STOP_ONCONFIRM flag. I will also
-> introduce a new security hook (something like
-> security_link_confirm_stop), so that an LSM has the
-> opportunity to deny the stop (the bpf security hook
-> would not be sufficient to determine exactly for
-> which link the confirmation is given, an LSM should
-> be able to deny the stop for its own programs).
->
-> What do you think?
 
-Hack upon a hack? Makes no sense.
+On 4/4/22 11:43 AM, Michael Walle wrote:
+> More and more drivers will check for bad characters in the hwmon name
+> and all are using the same code snippet. Consolidate that code by adding
+> a new hwmon_sanitize_name() function.
+>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>   Documentation/hwmon/hwmon-kernel-api.rst | 16 ++++++++
+>   drivers/hwmon/hwmon.c                    | 50 ++++++++++++++++++++++++
+>   include/linux/hwmon.h                    |  3 ++
+>   3 files changed, 69 insertions(+)
+>
+> diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
+> index c41eb6108103..e2975d5caf34 100644
+> --- a/Documentation/hwmon/hwmon-kernel-api.rst
+> +++ b/Documentation/hwmon/hwmon-kernel-api.rst
+> @@ -50,6 +50,10 @@ register/unregister functions::
+>   
+>     void devm_hwmon_device_unregister(struct device *dev);
+>   
+> +  char *hwmon_sanitize_name(const char *name);
+> +
+> +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+> +
+>   hwmon_device_register_with_groups registers a hardware monitoring device.
+>   The first parameter of this function is a pointer to the parent device.
+>   The name parameter is a pointer to the hwmon device name. The registration
+> @@ -95,6 +99,18 @@ All supported hwmon device registration functions only accept valid device
+>   names. Device names including invalid characters (whitespace, '*', or '-')
+>   will be rejected. The 'name' parameter is mandatory.
+>   
+> +If the driver doesn't use a static device name (for example it uses
+> +dev_name()), and therefore cannot make sure the name only contains valid
+> +characters, hwmon_sanitize_name can be used. This convenience function
+> +will duplicate the string and replace any invalid characters with an
+> +underscore. It will allocate memory for the new string and it is the
+> +responsibility of the caller to release the memory when the device is
+> +removed.
+> +
+> +devm_hwmon_sanitize_name is the resource managed version of
+> +hwmon_sanitize_name; the memory will be freed automatically on device
+> +removal.
+> +
+>   Using devm_hwmon_device_register_with_info()
+>   --------------------------------------------
+>   
+> diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+> index 989e2c8496dd..cc4a16a466a0 100644
+> --- a/drivers/hwmon/hwmon.c
+> +++ b/drivers/hwmon/hwmon.c
+> @@ -1057,6 +1057,56 @@ void devm_hwmon_device_unregister(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(devm_hwmon_device_unregister);
+>   
+> +static char *__hwmon_sanitize_name(struct device *dev, const char *old_name)
+> +{
+> +	char *name, *p;
+> +
+> +	if (dev)
+> +		name = devm_kstrdup(dev, old_name, GFP_KERNEL);
+> +	else
+> +		name = kstrdup(old_name, GFP_KERNEL);
+> +	if (!name)
+> +		return NULL;
+should return ERR_PTR(-ENOMEM)
+> +
+> +	for (p = name; *p; p++)
+> +		if (hwmon_is_bad_char(*p))
+> +			*p = '_';
+> +
+> +	return name;
+> +}
+> +
+> +/**
+> + * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
+> + * @name: NUL-terminated name
+> + *
+> + * Allocates a new string where any invalid characters will be replaced
+> + * by an underscore. It is the responsibility of the caller to release
+> + * the memory.
+> + *
+> + * Returns newly allocated name or %NULL in case of error.
+> + */
+> +char *hwmon_sanitize_name(const char *name)
+> +{
+> +	return __hwmon_sanitize_name(NULL, name);
+> +}
+> +EXPORT_SYMBOL_GPL(hwmon_sanitize_name);
+> +
+> +/**
+> + * devm_hwmon_sanitize_name - resource managed hwmon_sanitize_name()
+> + * @dev: device to allocate memory for
+> + * @name: NUL-terminated name
+> + *
+> + * Allocates a new string where any invalid characters will be replaced
+> + * by an underscore.
+> + *
+> + * Returns newly allocated name or %NULL in case of error.
+> + */
+> +char *devm_hwmon_sanitize_name(struct device *dev, const char *name)
+> +{
+> +	return __hwmon_sanitize_name(dev, name);
+Should have a (!dev) check.
+> +}
+> +EXPORT_SYMBOL_GPL(devm_hwmon_sanitize_name);
+> +
+>   static void __init hwmon_pci_quirks(void)
+>   {
+>   #if defined CONFIG_X86 && defined CONFIG_PCI
+> diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
+> index eba380b76d15..4efaf06fd2b8 100644
+> --- a/include/linux/hwmon.h
+> +++ b/include/linux/hwmon.h
+> @@ -461,6 +461,9 @@ void devm_hwmon_device_unregister(struct device *dev);
+>   int hwmon_notify_event(struct device *dev, enum hwmon_sensor_types type,
+>   		       u32 attr, int channel);
+>   
+> +char *hwmon_sanitize_name(const char *name);
+> +char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
+> +
+>   /**
+>    * hwmon_is_bad_char - Is the char invalid in a hwmon name
+
+This still needed in *.h ?
+
+Tom
+
+>    * @ch: the char to be considered
+
