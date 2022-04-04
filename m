@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22C684F0D6B
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 03:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C94844F0D6D
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 03:27:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376861AbiDDB2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 21:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S1376865AbiDDB3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Apr 2022 21:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344091AbiDDB2e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 21:28:34 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2C43A5E7;
-        Sun,  3 Apr 2022 18:26:40 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id 9so9593655iou.5;
-        Sun, 03 Apr 2022 18:26:40 -0700 (PDT)
+        with ESMTP id S1344091AbiDDB3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 21:29:00 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9B73A5F6;
+        Sun,  3 Apr 2022 18:27:05 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id q11so9579362iod.6;
+        Sun, 03 Apr 2022 18:27:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=f6sIyOireO9MdPW1vWiXAO/JTVcQzxdFRdN9x9iBRuM=;
-        b=fZFpwv+SMAPa8GBRUIepRjDZqnAGIFrz6md8VCB0xNJZvA2+ZQXJ2//CkueogJWJZy
-         V6xSfI2NbuMxk0NtEZ2P16TsVHK69GNHtYXQ7DMZRI8+9saS5pnbsBwmwNImmZslP+dr
-         MPNAMpkpzS75xdCY22xI5U8/8rq5D1aNL7FPaaKtzLZw9lt40xHiG/XjBhZqas0jybHO
-         CBdreH+7KVQeYSnfNQPXSAYZg5Qnrs+Vc3JlJdCUb9T+g+5PXLEExeT01LZoBfgENiiy
-         7ocTF7ebZVnz+NoTeMniDj/LWKAwvxOBnzkSuotMH39Ma4wrVLXDBRphp+gz39m4eWfM
-         Gflg==
+        bh=VaOZbRR43qQ0JgsqzQJ3/IMBqjvcGybpqt430DJSuu0=;
+        b=c27Tg+jZ8OQ/0o+EYhKlZPBXsF3aCjT4fGzrKgpCso+T0yKk6HHQljZLVBuqYRMAPu
+         CWcAVKqDc8zwpAX68K06ynDkrs0awl/sLrsNJsaltii6Bgvgceh/kNo15I1kCrWvYjuU
+         Pp86xmsPF1yekzBk13LX837ylcEohkWzQYYWRULp5S19dCjmVpoYiBGmQrVuBwvAd4n7
+         ynn7xt2gp/QI37+P+Pj3M4Z1Wiu21CT2AgKQkprYwdMiJ2v4A29IxgzSr8sf98OXSC9R
+         Yh+z2gNdmUSoncDr/4eDe6HNhnuWGGk3kBVL3erMe2aAc7wDgFunemhDGM61Ht455KeY
+         elRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=f6sIyOireO9MdPW1vWiXAO/JTVcQzxdFRdN9x9iBRuM=;
-        b=2Zjg6nm+rtcvGoOQtziETtdvYp3uQyma8XsDaqcLITN/rjDGkUIyAypOqWLfrmQ3BZ
-         VdKsEWYbQ++zPVrVsD0mJjOsC0t8bP367go7UUsgTUSxPST399GdhmlP64ievIVkvWHe
-         AJJlgNrSNcF3YmDsCzCpFYaCRASnvjwXCKe1ETLnbHJVIR1dPt32TdVzy3FAarwWy/4O
-         J8ZdcRZ73J+rl8zChrtKrnRk2rsaGDaYVBB17TlGnp37feJWcUvqmJhpdVkBgWsmfYhA
-         9ut0T2sk7rMLS6PtFfqsDdnHAyErNpoOWFyBnciGuKtEdPMvWO/qQCRn/69CuYMpGZMH
-         qL0g==
-X-Gm-Message-State: AOAM53174lPxEQdgjVDjr1RQrLwT1r62y0fOwhcIBy3sbepkG5YzdFI1
-        609CYk3JR2/01/2s/Y6zhv0l5/Cm6OeWI2Yc2i8=
-X-Google-Smtp-Source: ABdhPJxWL5dRlt3+QtkypDki3pY9Ot1etpqOIs4sv/InRR4PhgpA/iHvtzibFlaRlOKPKYIHeB8Ywaj3k8KOly3nExw=
-X-Received: by 2002:a05:6638:1685:b0:323:9fed:890a with SMTP id
- f5-20020a056638168500b003239fed890amr10564674jat.103.1649035599532; Sun, 03
- Apr 2022 18:26:39 -0700 (PDT)
+        bh=VaOZbRR43qQ0JgsqzQJ3/IMBqjvcGybpqt430DJSuu0=;
+        b=msUud2gmNoYTKiXhh6dGxQHEHDdOm6+S2dkNXU3JCNEDmskAH0AuoWGvhRaikI4Nay
+         +IoqRYEbO5Pe2PTyRFB1hVLjBLHt2z/ljY6t+8QrykgyTejqUMo214YffiISUlBPxSLF
+         IJGU4f1Oof3jLFpo0InVqEoa1LnHxEh22CIF5sX3MqhuFb7xRm4QbLku35CCwWHLc/in
+         V7XuNtxzHztkP7ieEwERVwfy3mcny9PcsUhhi8Ivh6igQfNXe1VUqZ7hxgj8Rqnclb1e
+         U+c/VNzbgIrRVOhmRnneLxtAbPSLAIgoTRPcAHR6cs1c75c0AqgVCPMJ9OwTD9dxCe3z
+         foOw==
+X-Gm-Message-State: AOAM531IXz+ZR73NHR4yEcHsAN5DdDCwsgbqjjytD/3CQNLoq1eZCDTs
+        KwvSAr4MGR8IPLD8LsgnU+qVQMviqf+miSHZlq0=
+X-Google-Smtp-Source: ABdhPJznfsazK2Yr/l0TzOwsU5SXT+SuGxoyI8Zs1QIX1oFXSKQJS4CR5HjcP5ogkfSbCXoGK34UPPkk7iztNDw+fWo=
+X-Received: by 2002:a05:6602:3c6:b0:63d:cac9:bd35 with SMTP id
+ g6-20020a05660203c600b0063dcac9bd35mr4424798iov.144.1649035624730; Sun, 03
+ Apr 2022 18:27:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220403144300.6707-1-laoar.shao@gmail.com> <20220403144300.6707-3-laoar.shao@gmail.com>
-In-Reply-To: <20220403144300.6707-3-laoar.shao@gmail.com>
+References: <20220403144300.6707-1-laoar.shao@gmail.com> <20220403144300.6707-2-laoar.shao@gmail.com>
+ <CAEf4BzZ2U=H-FEft3twSV7RCgTHHVJ8Dt6_RuYMdHdtC17WM1A@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ2U=H-FEft3twSV7RCgTHHVJ8Dt6_RuYMdHdtC17WM1A@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 3 Apr 2022 18:26:28 -0700
-Message-ID: <CAEf4Bza7ZoRaHWLF=03+Z-PLTvZ3EOKZR02=UgDLDX-XXOewJg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/9] bpf: selftests: Use bpf strict all ctor
- in xdping
+Date:   Sun, 3 Apr 2022 18:26:54 -0700
+Message-ID: <CAEf4BzYGOgrbvobqPBW+1Zdb5W7Cj0WUvQNitnrxJNgSOCnzQQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/9] bpf: selftests: Use libbpf 1.0 API mode
+ in bpf constructor
 To:     Yafang Shao <laoar.shao@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -71,17 +72,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Apr 3, 2022 at 7:43 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+On Sun, Apr 3, 2022 at 6:24 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> Aoid using the deprecated RLIMIT_MEMLOCK.
+> On Sun, Apr 3, 2022 at 7:43 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+> >
+> > In libbpf 1.0 API mode, it will bump rlimit automatically if there's no
+> > memcg-basaed accounting, so we can use libbpf 1.0 API mode instead in case
 
-typo: avoid
+also very eye catching typo: basaed -> based
 
+> > we want to run it in an old kernel.
+> >
+> > The constructor is renamed to bpf_strict_all_ctor().
+> >
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > ---
+> >  tools/testing/selftests/bpf/bpf_rlimit.h | 26 +++---------------------
+> >  1 file changed, 3 insertions(+), 23 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/bpf_rlimit.h b/tools/testing/selftests/bpf/bpf_rlimit.h
+> > index 9dac9b30f8ef..d050f7d0bb5c 100644
+> > --- a/tools/testing/selftests/bpf/bpf_rlimit.h
+> > +++ b/tools/testing/selftests/bpf/bpf_rlimit.h
+> > @@ -1,28 +1,8 @@
+> >  #include <sys/resource.h>
+> >  #include <stdio.h>
+> >
+> > -static  __attribute__((constructor)) void bpf_rlimit_ctor(void)
+> > +static  __attribute__((constructor)) void bpf_strict_all_ctor(void)
 >
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  tools/testing/selftests/bpf/xdping.c | 8 +-------
->  1 file changed, 1 insertion(+), 7 deletions(-)
+> well, no, let's get rid of bpf_rlimit.h altogether. There is no need
+> for constructor magic when you can have an explicit
+> libbpf_set_strict_mode(LIBBPF_STRICT_ALL).
 >
-
-[...]
+> >  {
+> > -       struct rlimit rlim_old, rlim_new = {
+> > -               .rlim_cur       = RLIM_INFINITY,
+> > -               .rlim_max       = RLIM_INFINITY,
+> > -       };
+> > -
+> > -       getrlimit(RLIMIT_MEMLOCK, &rlim_old);
+> > -       /* For the sake of running the test cases, we temporarily
+> > -        * set rlimit to infinity in order for kernel to focus on
+> > -        * errors from actual test cases and not getting noise
+> > -        * from hitting memlock limits. The limit is on per-process
+> > -        * basis and not a global one, hence destructor not really
+> > -        * needed here.
+> > -        */
+> > -       if (setrlimit(RLIMIT_MEMLOCK, &rlim_new) < 0) {
+> > -               perror("Unable to lift memlock rlimit");
+> > -               /* Trying out lower limit, but expect potential test
+> > -                * case failures from this!
+> > -                */
+> > -               rlim_new.rlim_cur = rlim_old.rlim_cur + (1UL << 20);
+> > -               rlim_new.rlim_max = rlim_old.rlim_max + (1UL << 20);
+> > -               setrlimit(RLIMIT_MEMLOCK, &rlim_new);
+> > -       }
+> > +       /* Use libbpf 1.0 API mode */
+> > +       libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
+> >  }
+> > --
+> > 2.17.1
+> >
