@@ -2,66 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3F5A4F16C8
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 16:10:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C094F16EC
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 16:26:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357321AbiDDOLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 10:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        id S1377148AbiDDO14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 10:27:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347898AbiDDOLx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 10:11:53 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A998B6554
-        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 07:09:57 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id d3so3887163wrb.7
-        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 07:09:57 -0700 (PDT)
+        with ESMTP id S1377120AbiDDO1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 10:27:51 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597DC3A1A0;
+        Mon,  4 Apr 2022 07:25:55 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id p8so9110422pfh.8;
+        Mon, 04 Apr 2022 07:25:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+L4j2Ipc+V3iILB7WtDi5E2e6P6IDB9Wp6ej4jzxLhk=;
-        b=BFrDmLNNXRqnyP7scR/0/jh2ogo7GyAa08bEUWBwPK+L3RY3Ijh3QzKw76gKv2wMSz
-         xbMy3gSQuB1haJ5xTKGnjyP4ee2x3b4C069/Vht1Uj5qxPTHPtTzPDkzG3011qACwVI8
-         DKzVNUNTXpP9DKsnNismbhy5FqrO//5V2IfalK/k4kPT0XColUGXOeofI6NFGnwoM9g4
-         7WdBA75HtEL1zkuBIs5l/cq4u4IxsznYfdamhXTknz/37F4JuW1eOGNHJd3IYBY3ePvS
-         tpWbm01wn0t29uP5/iVjHt5pb49zTwi9GsjpcyuaSnzG3w2iate5l6jL42mSz+73hFK9
-         lnwg==
+        bh=vmv5bxS5EWoc91g75Vzau8g0vSoXhGCuFE3qsoGJOPg=;
+        b=iLoswEs+5gduzsNqGbxzYOyUkRa1X0c3WNYv/u/uht/PCXO/BiXTGor+UATG1GTo6y
+         OGELiV1powqWayUslDrEskMHNAl8PdUCe3zrYMGuEpjb0SG651wSIW5wM/UIDfb1PZgG
+         2rCDyu3AADU/NXP0STTiWOZLLWHV7uRWxj+y4sOtv8PjerEPhadRF4w7GqVI3QXUtwqF
+         bT+ra2vKQE0gYitrlGR5MiR6O1XfsTD3MI/2xGVGgnZj5a6qadtKTICBPaJnRhNLfB6/
+         KUa4yk9AVOzRKckxcSezhAXhgEsJxuzfcI//tqd5HH0z8FsYQsPKw3YQbEIvpxmwDwOP
+         JVeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+L4j2Ipc+V3iILB7WtDi5E2e6P6IDB9Wp6ej4jzxLhk=;
-        b=3w23LmJ1rLMogxhpuVAD7LptLMXiAfIznc2Zvlc0PJJbI1cWpZhXlf7iJljedi523e
-         RRQSsX1JS+lIrebIPS2GrbWCoeRpubfzq9lziFEKL8ZkZHhnsDbtP0b7YyyQw2beoSDq
-         47z7SeSH674qMVzFAJiegugMcCtHDxdxtJYuX6QDr1/Vfo8OCXWQlH5QPvKganVqriMH
-         93pl4XBMWKlRoiRrQLSf42vo7SKAynB6DDP0n5F4zL4UWcQEUYpQYoUi+vyiud7q8Q20
-         OYxhRFwDW7p4/2I/Bf/5QiUZSNJlgixrr7mfBl+55uXhLMAxExOpxB+KQSaeBC1STVT9
-         1YHA==
-X-Gm-Message-State: AOAM531AeHWHKmT10XxNkhdhdx7bp1vpk0vre5yu/o/tJ2a5qVl+lt97
-        O9Rl0m6u0BFsi72K258Jawn8dg==
-X-Google-Smtp-Source: ABdhPJyxwbpMWcgn1YVUBDQDyap/J52DrWBADjjlkmSQ5pTkFoc1V2UHP7UARJ92VtfcOC+lJ9Dnlw==
-X-Received: by 2002:a5d:44ca:0:b0:206:893:6b5c with SMTP id z10-20020a5d44ca000000b0020608936b5cmr7723859wrr.145.1649081396249;
-        Mon, 04 Apr 2022 07:09:56 -0700 (PDT)
-Received: from harfang.fritz.box ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id n20-20020a05600c4f9400b0038cbd13e06esm17833818wmq.2.2022.04.04.07.09.55
+        bh=vmv5bxS5EWoc91g75Vzau8g0vSoXhGCuFE3qsoGJOPg=;
+        b=h3kDDe+C0tfmZY9ZeOBQ1wNVWZcrh+JlZp51Lhyclbwoy42iGep3mvKQWu7wycIOdS
+         i7CyrS6jDXEc+v5EesJwawznVeXrMqaGLG4GqQvxIVQxIH2YuucVGt/f+PVbDK6Xwy+z
+         0aHYBVl5EDsOmfBiKKZWL1UwSMaTYge7uQKJyp5yeuH5TAuxM519uFNPihqaUTiI3utd
+         X1slxyEVB6gELKer13AykGZKBpX//Uyn3KaBbt/R9hFFhSHu6M368F9vUj5DkFkVCRS2
+         BuIqt8xMwhu864jFSyS7wjbgExk6wkdVTn0HTfY9DBWOSisxbJdHld4lCstrmaF5j4W7
+         o1/A==
+X-Gm-Message-State: AOAM532an8Oqzu+OEq71kQRIfW1fv9it8a1sxQ4eHYyMdswQEXSg0hqR
+        8L31s2JAlVIEPjau0FGfcI+iENF6NSlsmOi9
+X-Google-Smtp-Source: ABdhPJwafKw9Rd90yVwt4IwWyyjMnWg7+ojtxRE2EoMZ3MPJVS4w/Y1rqKQlSraUbOO5P0FoxajaCg==
+X-Received: by 2002:a05:6a00:10c2:b0:4fd:a140:d5a9 with SMTP id d2-20020a056a0010c200b004fda140d5a9mr238623pfu.77.1649082354570;
+        Mon, 04 Apr 2022 07:25:54 -0700 (PDT)
+Received: from localhost.localdomain ([113.173.105.8])
+        by smtp.googlemail.com with ESMTPSA id p3-20020a056a000b4300b004faee36ea56sm12731625pfo.155.2022.04.04.07.25.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 07:09:55 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
+        Mon, 04 Apr 2022 07:25:54 -0700 (PDT)
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+To:     cgroups@vger.kernel.org
+Cc:     Bui Quang Minh <minhquangbui99@gmail.com>,
+        kernel test robot <lkp@intel.com>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>,
-        Milan Landaverde <milan@mdaverde.com>
-Subject: [PATCH bpf-next] selftests/bpf: Fix parsing of prog types in UAPI hdr for bpftool sync
-Date:   Mon,  4 Apr 2022 15:09:44 +0100
-Message-Id: <20220404140944.64744-1-quentin@isovalent.com>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v2] cgroup: Kill the parent controller when its last child is killed
+Date:   Mon,  4 Apr 2022 21:25:34 +0700
+Message-Id: <20220404142535.145975-1-minhquangbui99@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,41 +77,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The script for checking that various lists of types in bpftool remain in
-sync with the UAPI BPF header uses a regex to parse enum bpf_prog_type.
-If this enum contains a set of values different from the list of program
-types in bpftool, it complains.
+When umounting a cgroup controller, in case the controller has no children,
+the initial ref will be dropped in cgroup_kill_sb. In cgroup_rmdir path,
+the controller is deleted from the parent's children list in
+css_release_work_fn, which is run on a kernel worker.
 
-This script should have reported the addition, some time ago, of the new
-BPF_PROG_TYPE_SYSCALL, which was not reported to bpftool's program types
-list. It failed to do so, because it failed to parse that new type from
-the enum. This is because the new value, in the BPF header, has an
-explicative comment on the same line, and the regex does not support
-that.
+With this simple script
 
-Let's update the script to support parsing enum values when they have
-comments on the same line.
+	#!/bin/sh
 
-Cc: Andrii Nakryiko <andrii@kernel.org>
-Cc: Milan Landaverde <milan@mdaverde.com>
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+	mount -t cgroup -o none,name=test test ./tmp
+	mkdir -p ./tmp/abc
+
+	rmdir ./tmp/abc
+	umount ./tmp
+
+	sleep 5
+	cat /proc/self/cgroup
+
+The rmdir will remove the last child and umount is expected to kill the
+parent controller. However, when running the above script, we may get
+
+	1:name=test:/
+
+This shows that the parent controller has not been killed. The reason is
+after rmdir is completed, it is not guaranteed that the parent's children
+list is empty as css_release_work_fn is deferred to run on a worker. In
+case cgroup_kill_sb is run before that work, it does not drop the initial
+ref. Later in the worker, it just removes the child from the list without
+checking the list is empty to kill the parent controller. As a result, the
+parent controller still has the initial ref but without any logical refs
+(children ref, mount ref).
+
+This commit adds a free parent controller path into the worker function to
+free up the parent controller when the last child is killed.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
 ---
- tools/testing/selftests/bpf/test_bpftool_synctypes.py | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2: Fix compilation error when CONFIG_CGROUP_BPF is not set
 
-diff --git a/tools/testing/selftests/bpf/test_bpftool_synctypes.py b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-index 6bf21e47882a..c0e7acd698ed 100755
---- a/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-+++ b/tools/testing/selftests/bpf/test_bpftool_synctypes.py
-@@ -180,7 +180,7 @@ class FileExtractor(object):
-         @enum_name: name of the enum to parse
-         """
-         start_marker = re.compile(f'enum {enum_name} {{\n')
--        pattern = re.compile('^\s*(BPF_\w+),?$')
-+        pattern = re.compile('^\s*(BPF_\w+),?(\s+/\*.*\*/)?$')
-         end_marker = re.compile('^};')
-         parser = BlockParser(self.reader)
-         parser.search_block(start_marker)
+ kernel/cgroup/cgroup.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index f01ff231a484..1916070f0d59 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -5152,12 +5152,27 @@ static void css_release_work_fn(struct work_struct *work)
+ 		container_of(work, struct cgroup_subsys_state, destroy_work);
+ 	struct cgroup_subsys *ss = css->ss;
+ 	struct cgroup *cgrp = css->cgroup;
++	struct cgroup *parent = cgroup_parent(cgrp);
+ 
+ 	mutex_lock(&cgroup_mutex);
+ 
+ 	css->flags |= CSS_RELEASED;
+ 	list_del_rcu(&css->sibling);
+ 
++	/*
++	 * If parent doesn't have any children, start killing it.
++	 * And don't kill the default root.
++	 */
++	if (parent && list_empty(&parent->self.children) &&
++	    parent != &cgrp_dfl_root.cgrp &&
++	    !percpu_ref_is_dying(&parent->self.refcnt)) {
++#ifdef CONFIG_CGROUP_BPF
++		if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
++			cgroup_bpf_offline(parent);
++#endif
++		percpu_ref_kill(&parent->self.refcnt);
++	}
++
+ 	if (ss) {
+ 		/* css release path */
+ 		if (!list_empty(&css->rstat_css_node)) {
+
+base-commit: 1be9b7206b7dbff54b223eee7ef3bc91b80433aa
 -- 
-2.32.0
+2.25.1
 
