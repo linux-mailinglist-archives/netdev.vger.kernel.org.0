@@ -2,162 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62F3C4F122C
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 11:39:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D55704F123F
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 11:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244845AbiDDJlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 05:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
+        id S1354650AbiDDJqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 05:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242551AbiDDJk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 05:40:59 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2B7520F70
-        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 02:39:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=4x6NgibepUC0UFk60JpqHo0TJfizgSXLMHouyt4spKY=; t=1649065143; x=1650274743; 
-        b=EPXTeQDNOW5XwCWHIZtZAWnoLiaNy61HZCVyqBCBDhMymwAdIkulIms9FW/7JGzF+9YpkNDFCCt
-        wcpU0kh1pZQfXVGgupe1xczqkIETJNKH4XDhl0YfDpajRJ+DFhT+HLIEq71ydw7A0zOcFCZMTgNpT
-        l+1+p5IsG75+NJYSRJEv5RKAE+i4o4UAeO6mJ3lKGROOTfk+2BeMZIk42ZA98bJeMtBWusPxeHQVU
-        pDoWmR0xHc2NSmvNUUpZy2NddNlJR6WlLoUb67F8OrGr+mGkPnHGKUnS4eKVOQrqQoeNlIojONqyw
-        baC1AAt2M7r4sDwXDZew8G4OSjwG/eNIt64Q==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nbJAq-004lky-Ew;
-        Mon, 04 Apr 2022 11:39:00 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH net-next] net: ensure net_todo_list is processed quickly
-Date:   Mon,  4 Apr 2022 11:38:47 +0200
-Message-Id: <20220404113847.0ee02e4a70da.Ic73d206e217db20fd22dcec14fe5442ca732804b@changeid>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1354620AbiDDJqM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 05:46:12 -0400
+Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [IPv6:2001:1600:4:17::bc0a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913032D1DE
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 02:44:14 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4KX5T56LF7zMq018;
+        Mon,  4 Apr 2022 11:44:09 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4KX5T52SptzlhSMZ;
+        Mon,  4 Apr 2022 11:44:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1649065449;
+        bh=OhlSAblWkr8dG+GnXJuaxvKUKkxl2PETwQs54etIpSI=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=SV4Il36jAuT1J9I8Xmav0jJgt7Yt4abEHQX20JfBQzIBT1yOyGmZvSelxcXlzmTLu
+         rpPQr8Gv+pesnaby2CLh7G5mqADvmfYoELhUm9o2pdh/8HXESiFBDb4kWLdjWPAhsz
+         BiH9IxVGHSCniA5/mrD8ya8IwEK1z6y2VgLQtNlw=
+Message-ID: <6f631d7c-a2e3-20b3-997e-6b533b748767@digikod.net>
+Date:   Mon, 4 Apr 2022 11:44:32 +0200
 MIME-Version: 1.0
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        artem.kuzin@huawei.com, anton.sirazetdinov@huawei.com
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-11-konstantin.meskhidze@huawei.com>
+ <d3340ed0-fe61-3f00-d7ba-44ece235a319@digikod.net>
+ <491d6e96-4bfb-ed97-7eb8-fb18aa144d64@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [RFC PATCH v4 10/15] seltest/landlock: add tests for bind() hooks
+In-Reply-To: <491d6e96-4bfb-ed97-7eb8-fb18aa144d64@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
 
-In [1], Will raised a potential issue that the cfg80211 code,
-which does (from a locking perspective)
+On 04/04/2022 10:28, Konstantin Meskhidze wrote:
+> 
+> 
+> 4/1/2022 7:52 PM, Mickaël Salaün пишет:
 
-  rtnl_lock()
-  wiphy_lock()
-  rtnl_unlock()
+[...]
 
-might be suspectible to ABBA deadlocks, because rtnl_unlock()
-calls netdev_run_todo(), which might end up calling rtnl_lock()
-again, which could then deadlock (see the comment in the code
-added here for the scenario).
+>>> +static int create_socket(struct __test_metadata *const _metadata)
+>>> +{
+>>> +
+>>> +        int sockfd;
+>>> +
+>>> +        sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+>>> +        ASSERT_LE(0, sockfd);
+>>> +        /* Allows to reuse of local address */
+>>> +        ASSERT_EQ(0, setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, 
+>>> &one, sizeof(one)));
+>>
+>> Why is it required?
+> 
+>    Without SO_REUSEADDR there is an error that a socket's port is in use.
 
-Some back and forth and thinking ensued, but clearly this can't
-happen if the net_todo_list is empty at the rtnl_unlock() here.
-Clearly, the code here cannot actually put an entry on it, and
-all other users of rtnl_unlock() will empty it since that will
-always go through netdev_run_todo(), emptying the list.
+I'm sure there is, but why is this port reused? I think this means that 
+there is an issue in the tests and that could hide potential issue with 
+the tests (and then with the kernel code). Could you investigate and 
+find the problem? This would make these tests reliable.
 
-So the only other way to get there would be to add to the list
-and then unlock the RTNL without going through rtnl_unlock(),
-which is only possible through __rtnl_unlock(). However, this
-isn't exported and not used in many places, and none of them
-seem to be able to unregister before using it.
+Without removing the need to find this issue, the next series should use 
+a network namespace per test, which will confine such issue from other 
+tests and the host.
 
-Therefore, add a WARN_ON() in the code to ensure this invariant
-won't be broken, so that the cfg80211 (or any similar) code
-stays safe.
+[...]
 
-[1] https://lore.kernel.org/r/Yjzpo3TfZxtKPMAG@google.com
+>>> +TEST_F_FORK(socket, bind_with_restrictions) {
+>>> +
+>>> +    int sockfd_1, sockfd_2, sockfd_3;
+>>
+>> Do you really need to have 3 opened socket at the same time?
+> 
+>    I just wanted to "kill two birds with one stone" in this test.
+>    It possible to split it in 3 tests and open just one socket in each one.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
----
- include/linux/netdevice.h |  3 ++-
- net/core/dev.c            |  2 +-
- net/core/rtnetlink.c      | 33 +++++++++++++++++++++++++++++++++
- 3 files changed, 36 insertions(+), 2 deletions(-)
+I wanted to point out that these three variables could be replaced with 
+only one (taking into account that successful opened socket are closed 
+before the variable is reused).
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 59e27a2b7bf0..b6a1e7f643da 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3894,7 +3894,8 @@ void dev_queue_xmit_nit(struct sk_buff *skb, struct net_device *dev);
- extern int		netdev_budget;
- extern unsigned int	netdev_budget_usecs;
- 
--/* Called by rtnetlink.c:rtnl_unlock() */
-+/* Used by rtnetlink.c:__rtnl_unlock()/rtnl_unlock() */
-+extern struct list_head net_todo_list;
- void netdev_run_todo(void);
- 
- static inline void __dev_put(struct net_device *dev)
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8c6c08446556..2ec17358d7b4 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9431,7 +9431,7 @@ static int dev_new_index(struct net *net)
- }
- 
- /* Delayed registration/unregisteration */
--static LIST_HEAD(net_todo_list);
-+LIST_HEAD(net_todo_list);
- DECLARE_WAIT_QUEUE_HEAD(netdev_unregistering_wq);
- 
- static void net_set_todo(struct net_device *dev)
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 159c9c61e6af..0e4502d641eb 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -95,6 +95,39 @@ void __rtnl_unlock(void)
- 
- 	defer_kfree_skb_list = NULL;
- 
-+	/* Ensure that we didn't actually add any TODO item when __rtnl_unlock()
-+	 * is used. In some places, e.g. in cfg80211, we have code that will do
-+	 * something like
-+	 *   rtnl_lock()
-+	 *   wiphy_lock()
-+	 *   ...
-+	 *   rtnl_unlock()
-+	 *
-+	 * and because netdev_run_todo() acquires the RTNL for items on the list
-+	 * we could cause a situation such as this:
-+	 * Thread 1			Thread 2
-+	 *				  rtnl_lock()
-+	 *				  unregister_netdevice()
-+	 *				  __rtnl_unlock()
-+	 * rtnl_lock()
-+	 * wiphy_lock()
-+	 * rtnl_unlock()
-+	 *   netdev_run_todo()
-+	 *     __rtnl_unlock()
-+	 *
-+	 *     // list not empty now
-+	 *     // because of thread 2
-+	 *				  rtnl_lock()
-+	 *     while (!list_empty(...))
-+	 *       rtnl_lock()
-+	 *				  wiphy_lock()
-+	 * **** DEADLOCK ****
-+	 *
-+	 * However, usage of __rtnl_unlock() is rare, and so we can ensure that
-+	 * it's not used in cases where something is added to do the list.
-+	 */
-+	WARN_ON(!list_empty(&net_todo_list));
-+
- 	mutex_unlock(&rtnl_mutex);
- 
- 	while (head) {
--- 
-2.35.1
+It may not be obvious if we need to split a test into multiple. The 
+rules I try to follow are:
+- use a consistent Landlock rule setup, with potentially nested rules, 
+to test specific edge cases;
+- don't tamper the context of a test (e.g. with FS topology/layout 
+modification or network used port) unless it is clearly documented and 
+easy to spot, but be careful about the dependent tests;
+- don't make tests too long unless it makes sense for a specific scenario.
 
+
+>>
+>>> +
+>>> +    struct landlock_ruleset_attr ruleset_attr = {
+>>> +        .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
+>>> +                      LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +    };
+>>> +    struct landlock_net_service_attr net_service_1 = {
+>>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
+>>> +                  LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +        .port = port[0],
+>>> +    };
+>>> +    struct landlock_net_service_attr net_service_2 = {
+>>> +        .allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +        .port = port[1],
+>>> +    };
+>>> +    struct landlock_net_service_attr net_service_3 = {
+>>> +        .allowed_access = 0,
+>>> +        .port = port[2],
+>>> +    };
+>>> +
+>>> +    const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
+>>> +            sizeof(ruleset_attr), 0);
+>>> +    ASSERT_LE(0, ruleset_fd);
+>>> +
+>>> +    /* Allows connect and bind operations to the port[0] socket. */
+>>> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
+>>> LANDLOCK_RULE_NET_SERVICE,
+>>> +                &net_service_1, 0));
+>>> +    /* Allows connect and deny bind operations to the port[1] 
+>>> socket. */
+>>> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
+>>> LANDLOCK_RULE_NET_SERVICE,
+>>> +                &net_service_2, 0));
+>>> +    /* Empty allowed_access (i.e. deny rules) are ignored in network 
+>>> actions
+>>> +     * for port[2] socket.
+>>> +     */
+>>> +    ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 
+>>> LANDLOCK_RULE_NET_SERVICE,
+>>> +                &net_service_3, 0));
+>>> +    ASSERT_EQ(ENOMSG, errno);
+>>> +
+>>> +    /* Enforces the ruleset. */
+>>> +    enforce_ruleset(_metadata, ruleset_fd);
+>>> +
+>>> +    sockfd_1 = create_socket(_metadata);
+>>> +    ASSERT_LE(0, sockfd_1);
+>>> +    /* Binds a socket to port[0] */
+>>> +    ASSERT_EQ(0, bind(sockfd_1, (struct sockaddr  *)&addr[0], 
+>>> sizeof(addr[0])));
+>>> +
+>>> +    /* Close bounded socket*/
+>>> +    ASSERT_EQ(0, close(sockfd_1));
+>>> +
+>>> +    sockfd_2 = create_socket(_metadata);
+>>> +    ASSERT_LE(0, sockfd_2);
+>>> +    /* Binds a socket to port[1] */
+>>> +    ASSERT_EQ(-1, bind(sockfd_2, (struct sockaddr *)&addr[1], 
+>>> sizeof(addr[1])));
+>>> +    ASSERT_EQ(EACCES, errno);
+>>> +
+>>> +    sockfd_3 = create_socket(_metadata);
+>>> +    ASSERT_LE(0, sockfd_3);
+>>> +    /* Binds a socket to port[2] */
+>>> +    ASSERT_EQ(-1, bind(sockfd_3, (struct sockaddr *)&addr[2], 
+>>> sizeof(addr[2])));
+>>> +    ASSERT_EQ(EACCES, errno);
+>>> +}
+>>> +TEST_HARNESS_MAIN
+>>> -- 
+>>> 2.25.1
+>>>
+>>
+>> .
