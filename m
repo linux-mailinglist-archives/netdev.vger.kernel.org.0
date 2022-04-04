@@ -2,70 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 691E04F0F71
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 08:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E5F4F0F93
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 08:45:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377484AbiDDGfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 02:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
+        id S1353941AbiDDGq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 02:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377473AbiDDGfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 02:35:32 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7149BBC90
-        for <netdev@vger.kernel.org>; Sun,  3 Apr 2022 23:33:36 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id d5so15281933lfj.9
-        for <netdev@vger.kernel.org>; Sun, 03 Apr 2022 23:33:36 -0700 (PDT)
+        with ESMTP id S240418AbiDDGqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 02:46:55 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC46328E33;
+        Sun,  3 Apr 2022 23:44:59 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id 125so10074653iov.10;
+        Sun, 03 Apr 2022 23:44:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kugPTravw/pWjMItvRqIfrO55/1h/afpYQ2vDHdA2dc=;
-        b=PormARcG8FAWF8dAQqF/sYJ31IFoLhesZOcUS6CcZaAJjbwZ3wWgXFcLGcfPlarM5r
-         Hk0AjcUKhZa86KSZimXGVgII0jvLhoIds8pI9SPTxyf95oJrfZ3o+k+ABKZvKB6hZEkS
-         k87bCmYBmkA0EKYOa03telKFHP+aIRsG8/E7gzJ4iSk5IcDmp3GtH7sapYjpXv0UZVBi
-         XQlWQJXb+BuRBlGv4cIBGMxSZ5XZaYNOogl2Qz95bMSySsV+IWejjqN7tmuG1VeHGGqs
-         621WYRDwpsmqH1sX5Oll2tRo1BEfkamttHDzUiHtck89ZUPuOkFAa0I3u2EvZuiRPEiq
-         O5SQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g0ClKFuH7/uxJwEPwcXH6UlRmJbu6n2QH3M9ZvCVFuo=;
+        b=hhpyXIMkpX+mxIp1BkffRqBoVRvu4nsvMnb7sj97D+/PtDsoHMmePXMwGvaYurt1Hz
+         ZZsn5jIWMXfZCJHjmDctyndrwHKpODJHEMF+coKtqgZyLDeeyju9DTa5Xpcn5zyKHAgW
+         XfsKfd5GLEPhpPH3JsNWT79NVMC2DLe6uOX85GSozk82SbmLFADxi6RNfQBrWd1d/Y+H
+         nBBdtQ+2BBOMLefOS20lp/JH7CgpwRZbfL7G4t97lAN61CCN5DX1N9vYpp4TbkHBzu8x
+         PYAeiT+7tSNJsalgl9QCkVRgMSW55v/1iDBTjyunwEsMozn2FktCVuIzNFH6QoZjlAp8
+         DhOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kugPTravw/pWjMItvRqIfrO55/1h/afpYQ2vDHdA2dc=;
-        b=L2xwwLmE+8radVKCWbTZPFF7yk9R6THZCwv/rK1LTy3km2xi7CxHKDWWUeyr2v7VAW
-         +HYTmcJcVSesOjocDARmGx8bjMdASGYAU12mhZ9v/WmZqsLATJTuOLiRMMx2fVoVfYRT
-         z+XNBRnVlWSmBLrlr/sWCpgTtTST3yNG8zgDqoQ+yVG+QdNHnJRNn8mBQVlmMmEdpNF3
-         xFPPpgVKYHvBn6+h556DuW4JDiHi4dclGw+bqOBLWnhh5kMAo9kwSWp5FtNS7aZW6nlW
-         prPqteMKIUs3WVDTFHDjSaRVq0N6mmecdE+J+WfnmQcBj9j+dKn9sUZQMINKVAhbjcOo
-         52CQ==
-X-Gm-Message-State: AOAM533Qpa7xBL6L9Gw2/4b/mC0bzwuO8SGGx7ebl4cojZfjt+loAsMo
-        o1pqDNO1CnqIC7L+S8NlbCV+vwYSS5exvg==
-X-Google-Smtp-Source: ABdhPJzMazE6z44oYekvghG0gzq+fLGcObK3eOhG86QN9sa8kmjxKB+5b79tafryHq6jNXdFeNNUeQ==
-X-Received: by 2002:ac2:485b:0:b0:44a:23d5:d4bd with SMTP id 27-20020ac2485b000000b0044a23d5d4bdmr21562656lfy.214.1649054014536;
-        Sun, 03 Apr 2022 23:33:34 -0700 (PDT)
-Received: from wse-c0089.raspi.local (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id d17-20020a194f11000000b0044a30825a6fsm1033771lfb.42.2022.04.03.23.33.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 Apr 2022 23:33:33 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH v2 net-next 2/2] net: dsa: Implement tc offloading for drop target.
-Date:   Mon,  4 Apr 2022 08:33:27 +0200
-Message-Id: <20220404063327.1017157-3-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220404063327.1017157-1-mattias.forsblad@gmail.com>
-References: <20220404063327.1017157-1-mattias.forsblad@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g0ClKFuH7/uxJwEPwcXH6UlRmJbu6n2QH3M9ZvCVFuo=;
+        b=fJwjDEgve/6u0mlXAHsH0z/nn98M75fqCsFjxw0zlYDCUNnbt3M5TmSq5WRjhrsiN/
+         zvky6pwmyN6a+rIuNh+oLrjFMUCu5696Dy+7sr917qz/JuxLUZ8ST4t6hs5MdN8f6KmI
+         2LyKOwatuVAcW+Hc47e8rIQBzvPIreXaVQWG560MpPgCq1qD46uHeoSxrFlr5qqLQi+M
+         Xqcm9M6z9sI7LpHsGuGmMHTMnXocOPMYxOnavsFC+I1Bm3Le0jO02hQsSVrtoVJa+4i2
+         xCnB9Zn0o3HhWg9LlAjar9H3sDEiyB5L0RrKxGyEjYVOusVd83Ew8/n3WGj8Ay1MuZz3
+         AbQw==
+X-Gm-Message-State: AOAM530aU1uQU1qN4nYMkpID/7p992tBWPIPSmWJ3r4TTSGA9nUqCjxK
+        ddQyIDjG+Uj+Ba5A67fZo1q0PdhhVU/YmyZASVk=
+X-Google-Smtp-Source: ABdhPJxUVYXIgYbvbm9i/MchNl6Cbk0gj6At+dsJeWvKa0j7yPwoe/b7DG+wH+5JbBQrvHAsVUTgjknVC+SfEEvLDO0=
+X-Received: by 2002:a05:6638:3729:b0:323:e943:aaf8 with SMTP id
+ k41-20020a056638372900b00323e943aaf8mr1602818jav.293.1649054699116; Sun, 03
+ Apr 2022 23:44:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220403144300.6707-1-laoar.shao@gmail.com> <20220403144300.6707-2-laoar.shao@gmail.com>
+ <CAEf4BzZ2U=H-FEft3twSV7RCgTHHVJ8Dt6_RuYMdHdtC17WM1A@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ2U=H-FEft3twSV7RCgTHHVJ8Dt6_RuYMdHdtC17WM1A@mail.gmail.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Mon, 4 Apr 2022 14:44:23 +0800
+Message-ID: <CALOAHbCE-k-by5BvJJje_4P+dpJkAtRCeypLkDbNtqcrWsEAHg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/9] bpf: selftests: Use libbpf 1.0 API mode
+ in bpf constructor
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -76,62 +72,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to handle tc matchall drop HW offloading for Marvell
-switches.
+On Mon, Apr 4, 2022 at 9:24 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Sun, Apr 3, 2022 at 7:43 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+> >
+> > In libbpf 1.0 API mode, it will bump rlimit automatically if there's no
+> > memcg-basaed accounting, so we can use libbpf 1.0 API mode instead in case
+> > we want to run it in an old kernel.
+> >
+> > The constructor is renamed to bpf_strict_all_ctor().
+> >
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > ---
+> >  tools/testing/selftests/bpf/bpf_rlimit.h | 26 +++---------------------
+> >  1 file changed, 3 insertions(+), 23 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/bpf_rlimit.h b/tools/testing/selftests/bpf/bpf_rlimit.h
+> > index 9dac9b30f8ef..d050f7d0bb5c 100644
+> > --- a/tools/testing/selftests/bpf/bpf_rlimit.h
+> > +++ b/tools/testing/selftests/bpf/bpf_rlimit.h
+> > @@ -1,28 +1,8 @@
+> >  #include <sys/resource.h>
+> >  #include <stdio.h>
+> >
+> > -static  __attribute__((constructor)) void bpf_rlimit_ctor(void)
+> > +static  __attribute__((constructor)) void bpf_strict_all_ctor(void)
+>
+> well, no, let's get rid of bpf_rlimit.h altogether. There is no need
+> for constructor magic when you can have an explicit
+> libbpf_set_strict_mode(LIBBPF_STRICT_ALL).
+>
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+Sure, I will do it.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 64f4fdd02902..84e319520d36 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1436,7 +1436,7 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
- 	 * bridge group.
- 	 */
- 	dsa_switch_for_each_port(other_dp, ds)
--		if (other_dp->type == DSA_PORT_TYPE_CPU ||
-+		if ((other_dp->type == DSA_PORT_TYPE_CPU && dp->bridge->local_rcv_effective) ||
- 		    other_dp->type == DSA_PORT_TYPE_DSA ||
- 		    dsa_port_bridge_same(dp, other_dp))
- 			pvlan |= BIT(other_dp->index);
-@@ -6439,6 +6439,26 @@ static void mv88e6xxx_port_mirror_del(struct dsa_switch *ds, int port,
- 	mutex_unlock(&chip->reg_lock);
- }
- 
-+static int mv88e6xxx_bridge_local_rcv(struct dsa_switch *ds, int port,
-+				      struct dsa_mall_drop_tc_entry *drop)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	struct dsa_port *dp;
-+	int err;
-+
-+	dp = dsa_to_port(ds, port);
-+	if (!dp)
-+		return -EINVAL;
-+
-+	mutex_lock(&chip->reg_lock);
-+
-+	err = mv88e6xxx_bridge_map(chip, *dp->bridge);
-+
-+	mutex_unlock(&chip->reg_lock);
-+
-+	return err;
-+}
-+
- static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
- 					   struct switchdev_brport_flags flags,
- 					   struct netlink_ext_ack *extack)
-@@ -6837,6 +6857,7 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.port_mdb_del           = mv88e6xxx_port_mdb_del,
- 	.port_mirror_add	= mv88e6xxx_port_mirror_add,
- 	.port_mirror_del	= mv88e6xxx_port_mirror_del,
-+	.bridge_local_rcv	= mv88e6xxx_bridge_local_rcv,
- 	.crosschip_bridge_join	= mv88e6xxx_crosschip_bridge_join,
- 	.crosschip_bridge_leave	= mv88e6xxx_crosschip_bridge_leave,
- 	.port_hwtstamp_set	= mv88e6xxx_port_hwtstamp_set,
+> >  {
+> > -       struct rlimit rlim_old, rlim_new = {
+> > -               .rlim_cur       = RLIM_INFINITY,
+> > -               .rlim_max       = RLIM_INFINITY,
+> > -       };
+> > -
+> > -       getrlimit(RLIMIT_MEMLOCK, &rlim_old);
+> > -       /* For the sake of running the test cases, we temporarily
+> > -        * set rlimit to infinity in order for kernel to focus on
+> > -        * errors from actual test cases and not getting noise
+> > -        * from hitting memlock limits. The limit is on per-process
+> > -        * basis and not a global one, hence destructor not really
+> > -        * needed here.
+> > -        */
+> > -       if (setrlimit(RLIMIT_MEMLOCK, &rlim_new) < 0) {
+> > -               perror("Unable to lift memlock rlimit");
+> > -               /* Trying out lower limit, but expect potential test
+> > -                * case failures from this!
+> > -                */
+> > -               rlim_new.rlim_cur = rlim_old.rlim_cur + (1UL << 20);
+> > -               rlim_new.rlim_max = rlim_old.rlim_max + (1UL << 20);
+> > -               setrlimit(RLIMIT_MEMLOCK, &rlim_new);
+> > -       }
+> > +       /* Use libbpf 1.0 API mode */
+> > +       libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
+> >  }
+> > --
+> > 2.17.1
+> >
+
 -- 
-2.25.1
-
+Thanks
+Yafang
