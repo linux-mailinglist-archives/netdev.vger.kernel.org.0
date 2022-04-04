@@ -2,91 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 525494F1B19
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 23:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CDEA4F1B1F
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 23:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359728AbiDDVTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 17:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
+        id S1358121AbiDDVTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 17:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379720AbiDDR7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 13:59:01 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2C234BB9;
-        Mon,  4 Apr 2022 10:57:04 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-df22f50e0cso11624114fac.3;
-        Mon, 04 Apr 2022 10:57:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AEWP21GM4E9cyOoL3qIS0CoFdLbJpmk5WXVV+auexAQ=;
-        b=A8fxSPNmIfaWYKrHBlZaLXcvOYLu9Vrcb+u7TNHqeRxaF/O8WR7cLJCST+Tc1H7is6
-         K61aviSX1tCeV7jaQPXPb4zsKtFjWO9V4ZXkcZMWTBJbX5E7+DtBaM2KQaQxQ4NXy12M
-         VggI/cg9xK/1reYGYov8SHIDOSbJxUe7LPJ70ptMywxwLmYO7nPkjdCIwb76sGskIGsH
-         uALkaOGEGL7Osw6CrmiCAlUGaa+Ld0GAWKTdFSdsJJFtyGoF9Cedmf4VX1KsJR0DU3WP
-         lSoHhWrB/Lqqtfj3cJlLUISYxaA/U8U70C+up7rODwk8A65eKh/FQz1Nf3MoeGSfayNz
-         4a9w==
+        with ESMTP id S1379816AbiDDSKs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 14:10:48 -0400
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA47B63C8;
+        Mon,  4 Apr 2022 11:08:48 -0700 (PDT)
+Received: by mail-oi1-f174.google.com with SMTP id e4so10895325oif.2;
+        Mon, 04 Apr 2022 11:08:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=AEWP21GM4E9cyOoL3qIS0CoFdLbJpmk5WXVV+auexAQ=;
-        b=gE96Z0MC6NmgPP/v47aYW3XQgJdH0McAT5AHeornhtrL32tWtJ9+JKKgwQVN/Ywjl3
-         KV2rpbe9/U9rHQo+U0IFvXubIZ276ygcFvPAjSAKhj4c5sK469k9lHwOFnhj6MqGnwrG
-         qu828fLS8W6Vq21PurYpALr07EuIu/Z2SeGNgTEGa1BRrmNk1m4y5cBtHiT8QcTyNG68
-         KyrbyVOULaBt6pXj97gft2Css1Xb/jXmoukrSWEwhVSUhf0Q7uQWgPcY/idsSDwK1eCX
-         uPt/p+77Q5+DFxMWo/yEUM/hJ70Al+2BonwBtislWkWxtMHNYH85fI2q4rCUmUrb+5CP
-         GHrQ==
-X-Gm-Message-State: AOAM532r/aPrPeXZzol95uJSoqNyZ5a3F/nsgGq6KqSCCzkNLxmSrjdc
-        7OhPDja/kkN3pENK2+ldQ08=
-X-Google-Smtp-Source: ABdhPJx18shL1wpUax/xhz8105BoWa0G7HpdbNUzdvsDRLqA5/2ZEilu8wWMeQGrEG3upCgBtBI+yA==
-X-Received: by 2002:a05:6870:f719:b0:d6:e0c0:af42 with SMTP id ej25-20020a056870f71900b000d6e0c0af42mr187736oab.165.1649095024221;
-        Mon, 04 Apr 2022 10:57:04 -0700 (PDT)
-Received: from t14s.localdomain ([2001:1284:f013:bc01:5a2:a886:8487:b8de])
-        by smtp.gmail.com with ESMTPSA id r23-20020a056830237700b005b2610517c8sm4930201oth.56.2022.04.04.10.57.03
+        bh=DZpb0oBlOn87G7Q9uY1KQVcxA7oJ+asZrRDCjqQo8Z0=;
+        b=mw0cAgw2SQ7yg8GQm44Kcefu+IZc4+byKBJAJpAREypXrxt1ZD2aLeeuM+xRYP13xs
+         3e8fRywy2yQszXcnfyLdA+s0h1+9UxRyNXXBhuPyB0na+wcaPw0CSgLhGNNpjbyvPzOp
+         MVNH1u7jTsNLjWyYBk7CbTyxLgTKVIiXpk8raEIZrnJC5kqG6AVbOj4R2cDhYY/01kB7
+         PEQj8tKEVakVwvtuRTXGi9IRQ6MfZYy5sL+G91nTEjeZURi8ZgJTsJoO5Uvd21/RDkdA
+         giSVIS1f0yycQik5cB70vof5J7fdLQ9bcbqf8C/pejkloaeQH0ln8KlhHq1hHJ8+T7iW
+         a7aQ==
+X-Gm-Message-State: AOAM532kZquENPzOoHcdoxSYUFGXO3v9V4ZnMITy+VEGXdjeWbE+6guE
+        TP1ZDZX+2xVJKA7Bf8Qt/gyCLhKUZw==
+X-Google-Smtp-Source: ABdhPJxeH7Wnz+4tUU3Y3MNJPpLuS8q51VeePVqDnsderFcju4PRjj/rPTbO30yhzinHYhB/5r48eQ==
+X-Received: by 2002:a05:6808:d51:b0:2ec:b129:1197 with SMTP id w17-20020a0568080d5100b002ecb1291197mr211068oik.12.1649095728018;
+        Mon, 04 Apr 2022 11:08:48 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id u16-20020a056808151000b002f734da0881sm4667921oiw.57.2022.04.04.11.08.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 10:57:03 -0700 (PDT)
-Received: by t14s.localdomain (Postfix, from userid 1000)
-        id 1B7191DB7C2; Mon,  4 Apr 2022 14:57:02 -0300 (-03)
-Date:   Mon, 4 Apr 2022 14:57:02 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 net] sctp: count singleton chunks in assoc user stats
-Message-ID: <YksxbrRhtngGlERY@t14s.localdomain>
-References: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
+        Mon, 04 Apr 2022 11:08:47 -0700 (PDT)
+Received: (nullmailer pid 1643107 invoked by uid 1000);
+        Mon, 04 Apr 2022 18:08:46 -0000
+Date:   Mon, 4 Apr 2022 13:08:46 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Andy Chiu <andy.chiu@sifive.com>
+Cc:     netdev@vger.kernel.org, pabeni@redhat.com,
+        robert.hancock@calian.com, davem@davemloft.net, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux@armlinux.org.uk, kuba@kernel.org,
+        michal.simek@xilinx.com, radhey.shyam.pandey@xilinx.com,
+        Greentime Hu <greentime.hu@sifive.com>, andrew@lunn.ch
+Subject: Re: [PATCH v7 net 3/4] dt-bindings: net: add pcs-handle attribute
+Message-ID: <Yks0LoizNfx2uVmu@robh.at.kernel.org>
+References: <20220329024921.2739338-1-andy.chiu@sifive.com>
+ <20220329024921.2739338-4-andy.chiu@sifive.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220329024921.2739338-4-andy.chiu@sifive.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Apr 04, 2022 at 09:47:48AM +1000, Jamie Bainbridge wrote:
-> Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
-> COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
-> counter available to the assoc owner.
+On Tue, 29 Mar 2022 10:49:20 +0800, Andy Chiu wrote:
+> Document the new pcs-handle attribute to support connecting to an
+> external PHY. For Xilinx's AXI Ethernet, this is used when the core
+> operates in SGMII or 1000Base-X modes and links through the internal
+> PCS/PMA PHY.
 > 
-> These are all control chunks so they should be counted as such.
+> Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+> Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+> ---
+>  .../devicetree/bindings/net/ethernet-controller.yaml      | 6 ++++++
+>  Documentation/devicetree/bindings/net/xilinx_axienet.txt  | 8 +++++++-
+>  2 files changed, 13 insertions(+), 1 deletion(-)
 > 
-> Add counting of singleton chunks so they are properly accounted for.
-> 
-> Fixes: 196d67593439 ("sctp: Add support to per-association statistics via a new SCTP_GET_ASSOC_STATS call")
-> Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-
-Thanks Jamie.
+Reviewed-by: Rob Herring <robh@kernel.org>
