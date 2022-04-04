@@ -2,94 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8EA4F1F4F
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 00:46:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3C654F1F5B
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 00:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234990AbiDDWsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 18:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59852 "EHLO
+        id S232672AbiDDWvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 18:51:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237520AbiDDWsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 18:48:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1E222BC5;
-        Mon,  4 Apr 2022 15:00:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E2A615DD;
-        Mon,  4 Apr 2022 22:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F26DEC34112;
-        Mon,  4 Apr 2022 22:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649109613;
-        bh=dWrz3QED0XPSz2eLg6mzNhE9iIjiNZb/LateXIbjtNg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=N2QQsaWHUDO9HLOkMrwkFrKxtOCmeqp3PadKlhvoXXuxlcAmjFBZbPfakjSxj8cQG
-         ihux5L8lfpd1WSmaQrpX4iOMMnBWasAkKDh8phrjA1Ik1Bs2Kr0cAbHWXMDLGqL0w0
-         gea2eOzj4qEy4M9kYI1QScFyfaMB41cuB2FihM81xh8j1ADbQLlHenmuFJgVZvLVe3
-         e5YywrMqaIEmelebRhTevKTkue2mtKsxn+gfMVxkuW8rhCriJLBPhJmBfoQY+KIyJa
-         OeKmtGPJczi3bgoC403SKLLzws10sPhXDRJlsNwlBuuKXxYIiz0xwEvqy5dB8UjLE1
-         X8E6OQskkjqtg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6DBDE85D15;
-        Mon,  4 Apr 2022 22:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S235900AbiDDWvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 18:51:47 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D0D61A0A
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 15:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=kpKeRnJLlKYqZBD6VcfJyKUGK1O/DKpsspH64ose7t0=; b=ULsk1qKnN4MuUjjHu6D9lJeq3c
+        TRG3XGim3XwbTObOAqXHMZF3+dmULFKfGWWPIf/v63qurM/HzFyExUs9MWoTUHVNpXvyQUPf+h+PM
+        h3o8JD/1sceEWRpjde84nUdTfPkczqxTYQ/voOa4q0DKoF3U7reYv99w/G7bm8j8Og8k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nbUoI-00E9GV-7u; Tue, 05 Apr 2022 00:04:30 +0200
+Date:   Tue, 5 Apr 2022 00:04:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Matej Zachar <zachar.matej@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [DSA] fallback PTP to master port when switch does not support it
+Message-ID: <YktrbtbSr77bDckl@lunn.ch>
+References: <25688175-1039-44C7-A57E-EB93527B1615@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next 0/3] bpf/bpftool: add program & link type names
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164910961287.9198.15493484782582788851.git-patchwork-notify@kernel.org>
-Date:   Mon, 04 Apr 2022 22:00:12 +0000
-References: <20220331154555.422506-1-milan@mdaverde.com>
-In-Reply-To: <20220331154555.422506-1-milan@mdaverde.com>
-To:     Milan Landaverde <milan@mdaverde.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        quentin@isovalent.com, davemarchevsky@fb.com, sdf@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <25688175-1039-44C7-A57E-EB93527B1615@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
-
-On Thu, 31 Mar 2022 11:45:52 -0400 you wrote:
-> With the addition of the syscall prog type we should now
-> be able to see feature probe info for that prog type:
+On Mon, Apr 04, 2022 at 09:28:08PM +0200, Matej Zachar wrote:
+>  Hi,
 > 
->     $ bpftool feature probe kernel
->     ...
->     eBPF program_type syscall is available
->     ...
->     eBPF helpers supported for program type syscall:
->         ...
->         - bpf_sys_bpf
->         - bpf_sys_close
-> 
-> [...]
+> in my embedded setup I have CPU (master) port with full PTP support
+> connected to the onboard switch (without PTP support) through
+> DSA. As the ioctl and ts_info is passed to the switch driver I made
+> small change to fallback to the master net_device.
 
-Here is the summary with links:
-  - [bpf-next,1/3] bpf/bpftool: add syscall prog type
-    https://git.kernel.org/bpf/bpf-next/c/380341637ebb
-  - [bpf-next,2/3] bpf/bpftool: add missing link types
-    https://git.kernel.org/bpf/bpf-next/c/fff3dfab1786
-  - [bpf-next,3/3] bpf/bpftool: handle libbpf_probe_prog_type errors
-    https://git.kernel.org/bpf/bpf-next/c/7b53eaa656c3
+Did you try just running PTP on the master device? I'm wondering if
+the DSA headers get in the way?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+What i don't like about your proposed fallback is that it gives the
+impression the slave ports actually support PTP, when they do not. And
+maybe you want to run different ports in different modes, one upstream
+towards a grand master and one downstream? I suspect the errors you
+get are not obvious. Where as if you just run PTP on the master, the
+errors would be more obvious.
 
+> This however requires that the switch which does not support PTP
+> must not implement .get_ts_info and .port_hwtstamp_get/set from
+> dsa_switch_ops struct.
+
+And this is another advantage of just using master directly. You can
+even use master when the switch ports do support PTP.
+
+       Andrew
 
