@@ -2,106 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 875FA4F133D
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 12:42:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF7194F1348
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 12:48:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357230AbiDDKn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 06:43:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
+        id S1358145AbiDDKuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 06:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245317AbiDDKnz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 06:43:55 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BBED3CA77;
-        Mon,  4 Apr 2022 03:41:59 -0700 (PDT)
-Received: (Authenticated sender: i.maximets@ovn.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id E15841C000C;
-        Mon,  4 Apr 2022 10:41:54 +0000 (UTC)
-From:   Ilya Maximets <i.maximets@ovn.org>
+        with ESMTP id S231848AbiDDKug (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 06:50:36 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA04635D
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 03:48:38 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id s13so12290482ljd.5
+        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 03:48:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a5aKvrhwfQ/HI/ZlpDr68OhVoSyfibhM/59IeOTWRXE=;
+        b=TxRIoVNLWo1q0iNsmTb/4PXNCmXidNdCZXqBCvBGKoTz0zsXfQa+/Q9To9YtEsKGtt
+         qxLhfvVt1TNCQU5ONXUx1KqAyz4jzILVotu+7pYweHmSw6f1mFLg36vhqjRN6YP4wLqp
+         gKQP4IFoSH1+lhLNDmdHu5wh5JEFUkNnpdIfx32YaGTRiKN3YCnyiYzqgFYnWbYsiPh2
+         St2XQUG1fDx2tg4G7h8sw6w3v1kan0FvBCEiG9qaNTWTQgVSvr5RGOON0otwo70VxjuV
+         HfoPdXxOw/waKa3ZzGIgmdV6plshcR+lllv0qX6j8Bc851dUYKXdjQapnkBzukXqRfr8
+         KGUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=a5aKvrhwfQ/HI/ZlpDr68OhVoSyfibhM/59IeOTWRXE=;
+        b=0ZMOtnxhqbpLz6bL8ttRbNCWZMCIxJsj+/ylgMeGc0NUCHt0pYAMGUJPtv3kwlk5mY
+         EyA++OxoA1FrowwloDrgqjEa5ZRuntleyVwqG8+yitfRq2XgboJJLnK9ZG3Wo2KVGxox
+         +TjgpAV7B1M6kWApyAImos86pV491NZqG473kiv2tftgXXTaVAw3rO1hXVlXhgI+JEKN
+         vQiakUxqydnvCT8BMbvN0idY6xGoNncv9WfISpJWPkA3/jAa37LkxOwCcKTn7d/2L9yW
+         pJFodBtKkLxBIu5Ujx5VdgnOV2ZCgSseEYhoH6qYqz2LLBlU4IduLU8H0fuuQ/SqmpSv
+         5J2w==
+X-Gm-Message-State: AOAM5308/7FAxPlD6BntJR09iHTD+qpbQWINBhcz7LdHH6IbxKKYZN2j
+        0naC4OBLVyM7dSAJxkJmZyGGCDzhmFxbOw==
+X-Google-Smtp-Source: ABdhPJzp2F+XSysmR5aRg9Tl/AW0Jxi9Ioz75tdKDSk7jyAWrZNgytNiXTDOfdWoR0816s+GcV1wJw==
+X-Received: by 2002:a2e:9b05:0:b0:24b:e8:8c7e with SMTP id u5-20020a2e9b05000000b0024b00e88c7emr9767687lji.70.1649069315800;
+        Mon, 04 Apr 2022 03:48:35 -0700 (PDT)
+Received: from wse-c0089.raspi.local (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
+        by smtp.gmail.com with ESMTPSA id b26-20020a056512061a00b0044a57b38530sm1098116lfe.164.2022.04.04.03.48.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 03:48:34 -0700 (PDT)
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>, Andy Zhou <azhou@ovn.org>,
-        Yifeng Sun <pkusunyifeng@gmail.com>,
-        Ilya Maximets <i.maximets@ovn.org>
-Subject: [PATCH net] net: openvswitch: don't send internal clone attribute to the userspace.
-Date:   Mon,  4 Apr 2022 12:41:50 +0200
-Message-Id: <20220404104150.2865736-1-i.maximets@ovn.org>
-X-Mailer: git-send-email 2.34.1
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Mattias Forsblad <mattias.forsblad@gmail.com>
+Subject: [PATCH v3 net-next 0/2] net: tc: dsa: Implement offload of matchall for bridged DSA ports
+Date:   Mon,  4 Apr 2022 12:48:24 +0200
+Message-Id: <20220404104826.1902292-1-mattias.forsblad@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'OVS_CLONE_ATTR_EXEC' is an internal attribute that is used for
-performance optimization inside the kernel.  It's added by the kernel
-while parsing user-provided actions and should not be sent during the
-flow dump as it's not part of the uAPI.
+Greetings,
 
-The issue doesn't cause any significant problems to the ovs-vswitchd
-process, because reported actions are not really used in the
-application lifecycle and only supposed to be shown to a human via
-ovs-dpctl flow dump.  However, the action list is still incorrect
-and causes the following error if the user wants to look at the
-datapath flows:
+This series implements offloading of tc matchall filter to HW
+for bridged DSA ports.
 
-  # ovs-dpctl add-dp system@ovs-system
-  # ovs-dpctl add-flow "<flow match>" "clone(ct(commit),0)"
-  # ovs-dpctl dump-flows
-  <flow match>, packets:0, bytes:0, used:never,
-    actions:clone(bad length 4, expected -1 for: action0(01 00 00 00),
-                  ct(commit),0)
+Background
+When using a non-VLAN filtering bridge we want to be able to drop
+traffic directed to the CPU port so that the CPU doesn't get unnecessary loaded.
+This is specially important when we have disabled learning on user ports.
 
-With the fix:
+A sample configuration could be something like this:
 
-  # ovs-dpctl dump-flows
-  <flow match>, packets:0, bytes:0, used:never,
-    actions:clone(ct(commit),0)
+       br0
+      /   \
+   swp0   swp1
 
-Additionally fixed an incorrect attribute name in the comment.
+ip link add dev br0 type bridge stp_state 0 vlan_filtering 0
+ip link set swp0 master br0
+ip link set swp1 master br0
+ip link set swp0 type bridge_slave learning off
+ip link set swp1 type bridge_slave learning off
+ip link set swp0 up
+ip link set swp1 up
+ip link set br0 up
 
-Fixes: b233504033db ("openvswitch: kernel datapath clone action")
-Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
----
- net/openvswitch/actions.c      | 2 +-
- net/openvswitch/flow_netlink.c | 4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+After discussions here: https://lore.kernel.org/netdev/YjMo9xyoycXgSWXS@shredder/
+it was advised to use tc to set an ingress filter that could then
+be offloaded to HW, like so:
 
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 7056cb1b8ba0..1b5d73079dc9 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -1051,7 +1051,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
- 	int rem = nla_len(attr);
- 	bool dont_clone_flow_key;
- 
--	/* The first action is always 'OVS_CLONE_ATTR_ARG'. */
-+	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
- 	clone_arg = nla_data(attr);
- 	dont_clone_flow_key = nla_get_u32(clone_arg);
- 	actions = nla_next(clone_arg, &rem);
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index cc282a58b75b..dbdcaaa27f5b 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -3458,7 +3458,9 @@ static int clone_action_to_attr(const struct nlattr *attr,
- 	if (!start)
- 		return -EMSGSIZE;
- 
--	err = ovs_nla_put_actions(nla_data(attr), rem, skb);
-+	/* Skipping the OVS_CLONE_ATTR_EXEC that is always the first attribute. */
-+	attr = nla_next(nla_data(attr), &rem);
-+	err = ovs_nla_put_actions(attr, rem, skb);
- 
- 	if (err)
- 		nla_nest_cancel(skb, start);
+tc qdisc add dev br0 clsact
+tc filter add dev br0 ingress pref 1 proto all matchall action drop
+
+Limitations
+If there is tc rules on a bridge and all the ports leave the bridge
+and then joins the bridge again, the indirect framwork doesn't seem
+to reoffload them at join. The tc rules need to be torn down and
+re-added.
+
+The first part of this serie uses the flow indirect framework to
+setup monitoring of tc qdisc and filters added to a bridge.
+The second part offloads the matchall filter to HW for Marvell
+switches.
+
+RFC -> v1: Monitor bridge join/leave and re-evaluate offloading (Vladimir Oltean)
+v2: Fix code standard compliance (Jakub Kicinski)
+v3: Fix warning from kernel test robot (<lkp@intel.com>)
+
+Mattias Forsblad (2):
+  net: tc: dsa: Add the matchall filter with drop action for bridged DSA
+    ports.
+  net: dsa: Implement tc offloading for drop target.
+
+ drivers/net/dsa/mv88e6xxx/chip.c |  23 +++-
+ include/net/dsa.h                |  14 ++
+ net/dsa/dsa2.c                   |   5 +
+ net/dsa/dsa_priv.h               |   3 +
+ net/dsa/port.c                   |   2 +
+ net/dsa/slave.c                  | 224 ++++++++++++++++++++++++++++++-
+ 6 files changed, 266 insertions(+), 5 deletions(-)
+
 -- 
-2.34.1
+2.25.1
 
