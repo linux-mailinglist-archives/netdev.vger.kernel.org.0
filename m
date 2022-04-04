@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1C094F16EC
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 16:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A712A4F17D1
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 17:01:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377148AbiDDO14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 10:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        id S1378380AbiDDPDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 11:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377120AbiDDO1v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 10:27:51 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597DC3A1A0;
-        Mon,  4 Apr 2022 07:25:55 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id p8so9110422pfh.8;
-        Mon, 04 Apr 2022 07:25:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vmv5bxS5EWoc91g75Vzau8g0vSoXhGCuFE3qsoGJOPg=;
-        b=iLoswEs+5gduzsNqGbxzYOyUkRa1X0c3WNYv/u/uht/PCXO/BiXTGor+UATG1GTo6y
-         OGELiV1powqWayUslDrEskMHNAl8PdUCe3zrYMGuEpjb0SG651wSIW5wM/UIDfb1PZgG
-         2rCDyu3AADU/NXP0STTiWOZLLWHV7uRWxj+y4sOtv8PjerEPhadRF4w7GqVI3QXUtwqF
-         bT+ra2vKQE0gYitrlGR5MiR6O1XfsTD3MI/2xGVGgnZj5a6qadtKTICBPaJnRhNLfB6/
-         KUa4yk9AVOzRKckxcSezhAXhgEsJxuzfcI//tqd5HH0z8FsYQsPKw3YQbEIvpxmwDwOP
-         JVeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vmv5bxS5EWoc91g75Vzau8g0vSoXhGCuFE3qsoGJOPg=;
-        b=h3kDDe+C0tfmZY9ZeOBQ1wNVWZcrh+JlZp51Lhyclbwoy42iGep3mvKQWu7wycIOdS
-         i7CyrS6jDXEc+v5EesJwawznVeXrMqaGLG4GqQvxIVQxIH2YuucVGt/f+PVbDK6Xwy+z
-         0aHYBVl5EDsOmfBiKKZWL1UwSMaTYge7uQKJyp5yeuH5TAuxM519uFNPihqaUTiI3utd
-         X1slxyEVB6gELKer13AykGZKBpX//Uyn3KaBbt/R9hFFhSHu6M368F9vUj5DkFkVCRS2
-         BuIqt8xMwhu864jFSyS7wjbgExk6wkdVTn0HTfY9DBWOSisxbJdHld4lCstrmaF5j4W7
-         o1/A==
-X-Gm-Message-State: AOAM532an8Oqzu+OEq71kQRIfW1fv9it8a1sxQ4eHYyMdswQEXSg0hqR
-        8L31s2JAlVIEPjau0FGfcI+iENF6NSlsmOi9
-X-Google-Smtp-Source: ABdhPJwafKw9Rd90yVwt4IwWyyjMnWg7+ojtxRE2EoMZ3MPJVS4w/Y1rqKQlSraUbOO5P0FoxajaCg==
-X-Received: by 2002:a05:6a00:10c2:b0:4fd:a140:d5a9 with SMTP id d2-20020a056a0010c200b004fda140d5a9mr238623pfu.77.1649082354570;
-        Mon, 04 Apr 2022 07:25:54 -0700 (PDT)
-Received: from localhost.localdomain ([113.173.105.8])
-        by smtp.googlemail.com with ESMTPSA id p3-20020a056a000b4300b004faee36ea56sm12731625pfo.155.2022.04.04.07.25.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 07:25:54 -0700 (PDT)
-From:   Bui Quang Minh <minhquangbui99@gmail.com>
-To:     cgroups@vger.kernel.org
-Cc:     Bui Quang Minh <minhquangbui99@gmail.com>,
-        kernel test robot <lkp@intel.com>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v2] cgroup: Kill the parent controller when its last child is killed
-Date:   Mon,  4 Apr 2022 21:25:34 +0700
-Message-Id: <20220404142535.145975-1-minhquangbui99@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1378352AbiDDPDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 11:03:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4763F2FE48
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 08:01:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649084497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zWvwmcsl5+f8+r48vPP7cYhAhBsyCC2Mt4f/vFQlCB8=;
+        b=LtVfGg6Is5Svgt3Ux3B1U3ydAUyLWDhlin3HVsBDi5/jUyWUGQFMFHFPqND9aG18/IRGDy
+        YLyUNmuz2tGmddE3+0urZwevwAidyuhwXDhOa38yNqMLvkPj9r4yavS4Bu16X96aftAX1S
+        HfUWHC7C1sToJt2XOJSi7qBMrboi4uQ=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-298-N1elNDxvOb2xD_1ALqUWIw-1; Mon, 04 Apr 2022 11:01:32 -0400
+X-MC-Unique: N1elNDxvOb2xD_1ALqUWIw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7689A811E84;
+        Mon,  4 Apr 2022 15:01:31 +0000 (UTC)
+Received: from ceranb (unknown [10.40.193.122])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 78B3B1111C8F;
+        Mon,  4 Apr 2022 15:01:29 +0000 (UTC)
+Date:   Mon, 4 Apr 2022 17:01:28 +0200
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Madhu Chittim <madhu.chittim@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Brett Creeley <brett@pensando.io>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ice: arfs: fix use-after-free when freeing
+ @rx_cpu_rmap
+Message-ID: <20220404170128.1f8d198a@ceranb>
+In-Reply-To: <20220404132832.1936529-1-alexandr.lobakin@intel.com>
+References: <20220404132832.1936529-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,83 +69,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When umounting a cgroup controller, in case the controller has no children,
-the initial ref will be dropped in cgroup_kill_sb. In cgroup_rmdir path,
-the controller is deleted from the parent's children list in
-css_release_work_fn, which is run on a kernel worker.
+On Mon,  4 Apr 2022 15:28:32 +0200
+Alexander Lobakin <alexandr.lobakin@intel.com> wrote:
 
-With this simple script
+> The CI testing bots triggered the following splat:
+> 
+> ...
+> This is due to that free_irq_cpu_rmap() is always being called
+> *after* (devm_)free_irq() and thus it tries to work with IRQ descs
+> already freed. For example, on device reset the driver frees the
+> rmap right before allocating a new one (the splat above).
+> Make rmap creation and freeing function symmetrical with
+> {request,free}_irq() calls i.e. do that on ifup/ifdown instead
+> of device probe/remove/resume. These operations can be performed
+> independently from the actual device aRFS configuration.
+> Also, make sure ice_vsi_free_irq() clears IRQ affinity notifiers
+> only when aRFS is disabled -- otherwise, CPU rmap sets and clears
+> its own and they must not be touched manually.
+> 
+> Fixes: 28bf26724fdb0 ("ice: Implement aRFS")
+> Co-developed-by: Ivan Vecera <ivecera@redhat.com>
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
+> Netdev folks, some more urgent stuff, would like to have this in
+> -net directly.
+> 
+> Ivan, I probably should've waited for your response regarding
+> signatures, hope you'll approve this one :p Feel free to review
+> and/or test.
 
-	#!/bin/sh
+That's ok, Alex. You did it the way I prefer :-P.
+Will test.
 
-	mount -t cgroup -o none,name=test test ./tmp
-	mkdir -p ./tmp/abc
-
-	rmdir ./tmp/abc
-	umount ./tmp
-
-	sleep 5
-	cat /proc/self/cgroup
-
-The rmdir will remove the last child and umount is expected to kill the
-parent controller. However, when running the above script, we may get
-
-	1:name=test:/
-
-This shows that the parent controller has not been killed. The reason is
-after rmdir is completed, it is not guaranteed that the parent's children
-list is empty as css_release_work_fn is deferred to run on a worker. In
-case cgroup_kill_sb is run before that work, it does not drop the initial
-ref. Later in the worker, it just removes the child from the list without
-checking the list is empty to kill the parent controller. As a result, the
-parent controller still has the initial ref but without any logical refs
-(children ref, mount ref).
-
-This commit adds a free parent controller path into the worker function to
-free up the parent controller when the last child is killed.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
----
-v2: Fix compilation error when CONFIG_CGROUP_BPF is not set
-
- kernel/cgroup/cgroup.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index f01ff231a484..1916070f0d59 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -5152,12 +5152,27 @@ static void css_release_work_fn(struct work_struct *work)
- 		container_of(work, struct cgroup_subsys_state, destroy_work);
- 	struct cgroup_subsys *ss = css->ss;
- 	struct cgroup *cgrp = css->cgroup;
-+	struct cgroup *parent = cgroup_parent(cgrp);
- 
- 	mutex_lock(&cgroup_mutex);
- 
- 	css->flags |= CSS_RELEASED;
- 	list_del_rcu(&css->sibling);
- 
-+	/*
-+	 * If parent doesn't have any children, start killing it.
-+	 * And don't kill the default root.
-+	 */
-+	if (parent && list_empty(&parent->self.children) &&
-+	    parent != &cgrp_dfl_root.cgrp &&
-+	    !percpu_ref_is_dying(&parent->self.refcnt)) {
-+#ifdef CONFIG_CGROUP_BPF
-+		if (!percpu_ref_is_dying(&cgrp->bpf.refcnt))
-+			cgroup_bpf_offline(parent);
-+#endif
-+		percpu_ref_kill(&parent->self.refcnt);
-+	}
-+
- 	if (ss) {
- 		/* css release path */
- 		if (!list_empty(&css->rstat_css_node)) {
-
-base-commit: 1be9b7206b7dbff54b223eee7ef3bc91b80433aa
--- 
-2.25.1
+Ivan
 
