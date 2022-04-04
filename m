@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA7B4F1B24
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 23:18:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9357D4F1AAD
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 23:17:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354322AbiDDVTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 17:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36884 "EHLO
+        id S1379123AbiDDVSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 17:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380030AbiDDSlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 14:41:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 959D85F99;
-        Mon,  4 Apr 2022 11:39:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S1380039AbiDDSpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 14:45:45 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706CBA1A2;
+        Mon,  4 Apr 2022 11:43:48 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42A3FB818D8;
-        Mon,  4 Apr 2022 18:39:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81B0EC340F3;
-        Mon,  4 Apr 2022 18:39:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649097561;
-        bh=uoCUt9kRip3xmuGeLGDqglk9GEPAPCSc46dVFwVFFvs=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=pWjK8T/SiEbCNPFdLabaKBhPZF8HEsxpYiFOPoj11AhzUzWc0mFSTNoTlb44mzjIt
-         F3UZs1LSUjPo/vOdjOWkHWODjT6vCZV4ZDdN74DxYDMI5v/o8GBHU2fLfKRNJyKNv7
-         gtUzy0Kf5ojn5swpmgVLnbCnNNgCbQO7w0i9dnoCj/kzOzhXBF6WNWKxFi9motkxV1
-         mAZPq5pTW07Pv3EOFvaB4dD/VUmByyweb+IizmotBRaNxe2OECt5SeCdq2GbRkzw8s
-         AQKJTPhJozQ/0jP8eneP9qLPjEAktInngDlNV+gUc4cd2uHWA+D6yPbPP1WfCZEgV2
-         5G+GoDEs7Lu2A==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        linux-rdma@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-xfs@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-s390@vger.kernel.org
-Subject: Re: Build regressions/improvements in v5.18-rc1
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com>
-        <20220404074734.1092959-1-geert@linux-m68k.org>
-        <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
-Date:   Mon, 04 Apr 2022 21:39:15 +0300
-In-Reply-To: <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg> (Geert
-        Uytterhoeven's message of "Mon, 4 Apr 2022 10:16:08 +0200 (CEST)")
-Message-ID: <874k38u20c.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id BE559221D4;
+        Mon,  4 Apr 2022 20:43:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649097826;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=poOZKw8hZUUNnStW9clwSX8LRDw0XYQR4H0YmtmNls4=;
+        b=c1K1O2A45bQVK1v+SUa/w3i8v4mo4JH24bZs9KAztcIWIcBga5R7LRy8gA2cUDgCJrQhy6
+        RzYLV4aGJi7UP8G5xQZWuM2LqvMjSBwTG4QJ/1X1QkW/xN+CowOvYRjA+Mql+gz+9uSLmr
+        FxChOMLMZB+U7rf+znz48fJJWig/C0w=
+From:   Michael Walle <michael@walle.cc>
+To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 0/2] hwmon: introduce hwmon_sanitize()
+Date:   Mon,  4 Apr 2022 20:43:38 +0200
+Message-Id: <20220404184340.3973329-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Geert Uytterhoeven <geert@linux-m68k.org> writes:
+During development of the support for the temperature sensor on the GPY
+PHY, I've noticed that there is ususually a loop over the name to
+replace any invalid characters. Instead of open coding it in the drivers
+provide a convenience function.
 
->> /kisskb/src/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:
->> error: case label does not reduce to an integer constant: => 3798:2,
->> 3809:2
->
-> arm64-gcc5.4/arm64-allmodconfig
-> powerpc-gcc5/powerpc-allmodconfig
-> powerpc-gcc5/ppc64_book3e_allmodconfig
+The last patch is marked as RFC, it should probably be reposted/applied
+to the kernel release after next (?).
 
-After v5.17 there were two commits to brcmfmac/sdio.c:
+changes since v2:
+ - doc update
+ - dropped last three patches, the net patches will be submitted
+   seperately
 
-$ git log --oneline v5.17.. drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-ed26edf7bfd9 brcmfmac: Add BCM43454/6 support
-6d766d8cb505 brcmfmac: pcie: Declare missing firmware files in pcie.c
+changes since v1:
+ - split patches
+ - add hwmon-kernel-api.rst documentation
+ - move the strdup into the hwmon core
+ - also provide a resource managed variant
 
-I can't see how either of them could cause this warning. Could something
-else cause this or am I missing something?
+Michael Walle (2):
+  hwmon: introduce hwmon_sanitize_name()
+  hwmon: intel-m10-bmc-hwmon: use devm_hwmon_sanitize_name()
+
+ Documentation/hwmon/hwmon-kernel-api.rst | 16 ++++++++
+ drivers/hwmon/hwmon.c                    | 50 ++++++++++++++++++++++++
+ drivers/hwmon/intel-m10-bmc-hwmon.c      |  7 +---
+ include/linux/hwmon.h                    |  3 ++
+ 4 files changed, 70 insertions(+), 6 deletions(-)
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.30.2
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
