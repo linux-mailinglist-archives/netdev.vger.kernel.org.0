@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1800F4F134D
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 12:49:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D61F14F136A
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 12:54:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358205AbiDDKvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 06:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
+        id S1358661AbiDDK4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 06:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358102AbiDDKvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 06:51:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A090B245A2;
-        Mon,  4 Apr 2022 03:49:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47A5360A6B;
-        Mon,  4 Apr 2022 10:49:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13C73C2BBE4;
-        Mon,  4 Apr 2022 10:49:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649069366;
-        bh=Tg/7nsozYJMVjYgrbfpH7tAtgVHE6SnY/UIB0mnrigY=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=SwhWMfyydbmJp2hY+ZZ4j6WF7IybX5d8/wpSryAk7HBA6VniYnIfkHipsat5tvMRt
-         mdqoG4M5YuEXX2LN0zK1/bVPX05KQEDf4m0dz9FDK9KU3JJi3V0VJPCQ+IDLXXDmhj
-         mGdYVry69ZBmAp+0KtlaM4W4QcRY+2zvFqnbUilZ6lQrCzyHY98lsuf0SzFNR+gBY9
-         GAefiwHpJiCbt4HRlPtBXMTksimSY4JxS6U7Pqlt6gGwUO0RRzMY5dtvEpni00J+uQ
-         M9+otsDu3HNoY1dlWCYHVoiDmYWFYgsgX1G+1UKYleh4H55h/srbAk3iHWmUwO/wPk
-         22zf7J/RHPYvA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        with ESMTP id S1358571AbiDDK4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 06:56:15 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD402C131;
+        Mon,  4 Apr 2022 03:54:18 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id qh7so9025670ejb.11;
+        Mon, 04 Apr 2022 03:54:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rS2vrUQCqgIxoLaF1HFbbKKb3g/Rll3Hg3bNlGXWWFU=;
+        b=ZAx3AW9FCKPXQ+1FGU6mGDUl1IVpQ4wMwtwj6DSs2ypTFDomv2BzAG6MBG/NPa6TtU
+         DmoF7im1yJipBSKOiduBGIq0o1/KoWntvkA7iw32NZBl9+PvWnTQusrJR//uhPAzRUMV
+         FQ87WHbcQfvTVBjuaNiwTZvhzrpkXV9U7zNuvWAXppDNRh5hIsWlanX0Gq9TlQH0vYhx
+         o91pOje2KRe5ez/u2e44jjsEL2+PX0q9+qvJzA3z0zr/Ph2Uqvlaf3QpKhoSueGn/6C8
+         dQlqZTZ3zTwaPaWKjPaACF1Dk4Q5zgnaQEfs5W8ibPsXfIN62CATcO9emI3VftyTBlmx
+         OPAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rS2vrUQCqgIxoLaF1HFbbKKb3g/Rll3Hg3bNlGXWWFU=;
+        b=0/p8W216QqplCNWTzUk6UENGUb26S+bkGvcrwBmrwtArt+hnO4FFs7R7Zmtze9GwAr
+         WdqapkS9LJ5L0viJzCmro+ZbJ8CXI4+B6M4QJHrdG+Yr0ZkbQ1Q+eV8cBXLvsR26bEI5
+         dE8FUazcfA9sfuSeDcaoKcqVkAXlS/IUsspyFFPfqDXzRgIhCpyA2kxcVoiVOeCciFG1
+         vbqY7o+eKBXSYsclMMA1B1ItSY8p+F02FF0NDY6BQgq+1jK89g7xHoW/l69ipIwWDo4M
+         HXlysg0lbv7e9zPe+kCj0I8eGo+e0iVWefWYlAx81E9ZqQLAcsb8wAn2oQd/NNpH5bRk
+         HQTQ==
+X-Gm-Message-State: AOAM530hyuqr5uPQqHm1SP92HLdK7/KkaFuFrXup+xEG/KTtiOJ56J+W
+        nrJMt3sCkZKcXMT8AqlmDzQ=
+X-Google-Smtp-Source: ABdhPJy6OPm3Dpjp6lG1jC2bFmA2drnES4LgmLg6gDlTOw3cssB9sithUubMN20eC2fLccxnrfb0Ew==
+X-Received: by 2002:a17:907:8687:b0:6da:824e:c8b8 with SMTP id qa7-20020a170907868700b006da824ec8b8mr10315919ejc.428.1649069656910;
+        Mon, 04 Apr 2022 03:54:16 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb55.dynamic.kabel-deutschland.de. [95.90.187.85])
+        by smtp.gmail.com with ESMTPSA id qa30-20020a170907869e00b006df9ff41154sm4273210ejc.141.2022.04.04.03.54.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 03:54:16 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v10 0/1] wfx: get out from the staging area
-References: <20220226092142.10164-1-Jerome.Pouiller@silabs.com>
-        <YhojjHGp4EfsTpnG@kroah.com> <87wnhhsr9m.fsf@kernel.org>
-        <5830958.DvuYhMxLoT@pc-42>
-Date:   Mon, 04 Apr 2022 13:49:18 +0300
-In-Reply-To: <5830958.DvuYhMxLoT@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
- Pouiller"'s message of "Mon,
-        04 Apr 2022 11:31:23 +0200")
-Message-ID: <878rslt975.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH] ath11k: do not return random value
+Date:   Mon,  4 Apr 2022 12:53:24 +0200
+Message-Id: <20220404105324.13810-1-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
+Function ath11k_qmi_assign_target_mem_chunk() returns a random value
+if of_parse_phandle() fails because the return variable ret is not
+initialized before calling of_parse_phandle(). Return -EINVAL to avoid
+possibly returning 0, which would be wrong here.
 
-> On Saturday 26 February 2022 14:15:33 CEST Kalle Valo wrote:
->> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
->>=20
->> > That sounds great to me, let's plan on that happening after 5.18-rc1 is
->> > out.
->>=20
->> Very good, we have a plan then. I marked the patch as deferred in
->> patchwork:
->>=20
->> https://patchwork.kernel.org/project/linux-wireless/patch/20220226092142=
-.10164-2-Jerome.Pouiller@silabs.com/
->>=20
->> Jerome, feel free to remind me about this after v5.18-rc1 is released.
->
-> v5.18-rc1 is released :)
+Issue found by smatch.
 
-Thanks for the reminder :) Once we open wireless-next I'll start
-preparing the branch.
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/net/wireless/ath/ath11k/qmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Dave&Jakub, once you guys open net-next will it be based on -rc1? That
-would make it easier for me to create an immutable branch between
-staging-next and wireless-next.
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index 65d3c6ba35ae..81b2304b1fde 100644
+--- a/drivers/net/wireless/ath/ath11k/qmi.c
++++ b/drivers/net/wireless/ath/ath11k/qmi.c
+@@ -1932,7 +1932,7 @@ static int ath11k_qmi_assign_target_mem_chunk(struct ath11k_base *ab)
+ 			if (!hremote_node) {
+ 				ath11k_dbg(ab, ATH11K_DBG_QMI,
+ 					   "qmi fail to get hremote_node\n");
+-				return ret;
++				return -EINVAL;
+ 			}
+ 
+ 			ret = of_address_to_resource(hremote_node, 0, &res);
+-- 
+2.35.1
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
