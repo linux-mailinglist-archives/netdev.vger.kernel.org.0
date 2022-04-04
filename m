@@ -2,112 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 250534F1395
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 13:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D0FF4F140E
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 13:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245699AbiDDLIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 07:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55276 "EHLO
+        id S229764AbiDDLwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 07:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359322AbiDDLIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 07:08:05 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F8636311;
-        Mon,  4 Apr 2022 04:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649070369; x=1680606369;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OfZd8m/j4x2eSf+mhhw4j+5Z5vtb4dvGYE8LqR6i3e0=;
-  b=V5Q/TmA5+njIs+8kBGf6s6h9bgKNqLTHUFmTMogzjd9/ArC7VyHaCDyl
-   rY4fdqJt0qyPSVB5bD6+4zD1d3aoOQAPCJYTvRj5sCSetfN9+Ndgi+dyw
-   iXsIAErK3J5PsTXI8jiVppF9QMzYZ0VyLzzHbuG9aVa43zMky94ATg5OH
-   8zRTABB/mXQLylIXyrk2Pv8qeu9SnAP7LGjQlnvmDRn/FZidQu4AHG2q/
-   TpsWaJ9DRDQK1WJN00J00MHUjntprqZOayz67h+gZNAptd1T5U/MGGoWd
-   qG8zb9oCx2gSCvUuvcZ+bR7w1omSsNyFeEruDKHjofUkCgeDq01+qNGgv
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="259320410"
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="259320410"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 04:06:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,234,1643702400"; 
-   d="scan'208";a="651456697"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 04 Apr 2022 04:06:06 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 234B64TR032733;
-        Mon, 4 Apr 2022 12:06:04 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Ivan Vecera <ivecera@redhat.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        netdev@vger.kernel.org,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>, mschmidt@redhat.com,
-        Brett Creeley <brett.creeley@intel.com>,
-        open list <linux-kernel@vger.kernel.org>, poros@redhat.com,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        with ESMTP id S229462AbiDDLwe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 07:52:34 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDCB83CA73;
+        Mon,  4 Apr 2022 04:50:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1649072989; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=mo9jhXQZ7dDfCf1zx7Yyf+stoyzYLHDat6/ldYvgARU4DTqk8M/fLkTKnk6kk4m8K4dDx/tbE29b02iB/+7WXLZVRt7BlxIAwga5gqJUmEcl1lwZPbYgk21o8TIOcGFeoY3s0Mn3bsubyzEqVQw9r+vjftyvK0Td6cDS0tLLy6k=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1649072989; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=wH4MR2QRn9EFb2QbwxNQgFaKaRIZbXHNTjFSYpDqoMw=; 
+        b=mvN16TYvpnQFqPff72eSPvIC0ozSHO71u54Mb9PCl6qVOfs55jVj68Nkm+weM4gCFg5kXX4T2LXE5+xbCP3qxkh9t/PeTwxTlKpBGcp4N+eK2KpPxvl0tjkMZyjmT97nrv+bq0/D604smZ9Nm/IYVVQB/EPkS7bim5lBRhRP5KI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649072989;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=wH4MR2QRn9EFb2QbwxNQgFaKaRIZbXHNTjFSYpDqoMw=;
+        b=IkEd+cky5pBihx3tcwh3yFXJsL52aUpLmKI7SE1Veg6+CXdfer2QOO4OVurIN1cz
+        kqH2BKaeeH708amasT03Nq1Lhc31tl7VooNJHHiuYATvSkEcCoDsm/Wsnxxl25FMKqS
+        LHIoyRojQWUtUkheDaeSrCqNTo+eHvfAZKOwAWbg=
+Received: from arinc9-PC.localdomain (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1649072986682935.7989606149916; Mon, 4 Apr 2022 04:49:46 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [Intel-wired-lan] [PATCH net] ice: Fix use-after-free
-Date:   Mon,  4 Apr 2022 13:04:07 +0200
-Message-Id: <20220404110407.1106047-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220404100615.23525-1-ivecera@redhat.com>
-References: <20220404100615.23525-1-ivecera@redhat.com>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH] net: ethernet: mtk_eth_soc: add label support for GMACs
+Date:   Mon,  4 Apr 2022 14:40:00 +0300
+Message-Id: <20220404114000.3549-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
-Date: Mon,  4 Apr 2022 12:06:14 +0200
+From: René van Dorst <opensource@vdorst.com>
 
-> When CONFIG_RFS_ACCEL is enabled the driver uses CPU affinity
-> reverse-maps that set CPU affinity notifier in the background.
-> 
-> If the interface is put down then ice_vsi_free_irq() is called
-> via ice_vsi_close() and this clears affinity notifiers of IRQs
-> associated with the VSI and old notifier's release callback
-> is called - for this case this is cpu_rmap_release() that
-> frees allocated cpu_rmap.
-> 
-> During device removal (ice_remove()) free_irq_cpu_rmap() is called
-> and it tries to free already de-allocated cpu_rmap.
-> 
-> Do not clear IRQ affinity notifier in ice_vsi_free_irq() when
-> CONFIG_RFS_ACCEL is enabled. This is a code-path that
-> commit 28bf26724fdb ("ice: Implement aRFS") forgot to handle.
+Add label support for GMACs. The network interface of the GMAC will have
+the string of the label property defined on the devicetree as its name.
 
-Hey, thanks for the fix!
-I posted a patch which supercedes these changes to the internal
-review on Friday. I would proceed with applying mine (which I'll
-submit in 2 hours, it should've waited for the internal acks first),
-but for sure I can add you as 'Co-Developed-by:' if you want (or
-vice versa, me as co-dev-by?).
+Signed-off-by: René van Dorst <opensource@vdorst.com>
+[arinc.unal@arinc9.com: change commit log and rebase to current net-next]
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> 
-> Reproducer:
-> [root@host ~]# ip link set ens7f0 up
-> [root@host ~]# ip link set ens7f0 down
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index f02d07ec5ccb..af2f0693180a 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -2911,6 +2911,7 @@ static const struct net_device_ops mtk_netdev_ops = {
+ 
+ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ {
++	const char *name = of_get_property(np, "label", NULL);
+ 	const __be32 *_id = of_get_property(np, "reg", NULL);
+ 	phy_interface_t phy_mode;
+ 	struct phylink *phylink;
+@@ -3033,6 +3034,9 @@ static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+ 	else
+ 		eth->netdev[id]->max_mtu = MTK_MAX_RX_LENGTH_2K - MTK_RX_ETH_HLEN;
+ 
++	if (name)
++		strlcpy(eth->netdev[id]->name, name, IFNAMSIZ);
++
+ 	return 0;
+ 
+ free_netdev:
+-- 
+2.25.1
 
---- 8< ---
-
->  		/* clear the affinity_mask in the IRQ descriptor */
->  		irq_set_affinity_hint(irq_num, NULL);
-> -- 
-> 2.35.1
-
-Thanks,
-Al
