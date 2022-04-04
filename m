@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E064F17E8
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 17:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BF24F17F7
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 17:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352991AbiDDPHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 11:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56786 "EHLO
+        id S1378184AbiDDPLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 11:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236667AbiDDPHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 11:07:13 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F2024F30;
-        Mon,  4 Apr 2022 08:05:17 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S1377985AbiDDPLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 11:11:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4211C13D3A
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 08:09:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 167CF221D4;
-        Mon,  4 Apr 2022 17:05:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649084714;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vFi7yXUyhEvuyEPAaB5PJBj31x6UAMrx11hHIwLpdNw=;
-        b=dc6JR3Kh1Ky3QpzM5AVH203vP79qpSRIe0/7KFPStc93uVzLA6hMlEPEl7+mjlOxUUQm5N
-        s9pNBuWORJiOmTMckn+4ooQE8mRVMNiYtpgDX5TFNKNcHP/PVUlWNuQAxyqLeNzAafgFs1
-        9HQ+CQBtpNZYNCqrUyrqASCM2kV4p6Q=
-From:   Michael Walle <michael@walle.cc>
-To:     richardcochran@gmail.com
-Cc:     andrew@lunn.ch, davem@davemloft.net, grygorii.strashko@ti.com,
-        kuba@kernel.org, kurt@linutronix.de, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping layer be selectable.
-Date:   Mon,  4 Apr 2022 17:05:08 +0200
-Message-Id: <20220404150508.3945833-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220104014215.GA20062@hoboy.vegasvil.org>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1562615BE
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 15:09:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3CBC340EE;
+        Mon,  4 Apr 2022 15:09:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649084952;
+        bh=4MD4RKOkcZXCDxme5MpGD9pTFwCi1YFfE4z1oJFE1VI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ep6+mEi2jnfKUQ0apY6BSQgPhltC7axQPDmNzfA34hJ/Zuym4hN/Z3KoJOiggeHYt
+         pTXYKKTIYbJPCBsRTz5HNp6azqLXLsdnJDH7JqQLNawai0+sO5IvhWfnPKmzsVqkqm
+         F42IXGJzaNLxDTBEH/bfI7gJAtimQtuph/3jJuG/SjDMcUjEn/1Lq9kIOfRuBkVdMQ
+         8tv56CreTVopTEEGPed4YeHnTWKTg+WRfgZN9clOiRqjUxutBRn0lOHGbZWImVhsrm
+         PnNOs1TFclV3CviJjqa0kOlLOqoi0OK9d5zzFt41n+xB7I0SAFbAv9rgvgdGyXOCKb
+         CuCHFUC2ACDQQ==
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        pabeni@redhat.com
+Cc:     Filip.Pudak@windriver.com, Jiguang.Xiao@windriver.com,
+        ssuryaextr@gmail.com, David Ahern <dsahern@kernel.org>,
+        Pudak@vger.kernel.org, Xiao@vger.kernel.org
+Subject: [PATCH net] ipv6: Fix stats accounting in ip6_pkt_drop
+Date:   Mon,  4 Apr 2022 09:09:08 -0600
+Message-Id: <20220404150908.2937-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry for digging out this older thread, but it seems to be discussed
-in [1].
+VRF devices are the loopbacks for VRFs, and a loopback can not be
+assigned to a VRF. Accordingly, the condition in ip6_pkt_drop should
+be '||' not '&&'.
 
-> IMO, the default should be PHY because up until now the PHY layer was
-> prefered.
-> 
-> Or would you say the MAC layer should take default priority?
-> 
-> (that may well break some existing systems)
+Fixes: 1d3fd8a10bed ("vrf: Use orig netdev to count Ip6InNoRoutes and a fresh route lookup when sending dest unreach")
+Reported-by: Pudak, Filip <Filip.Pudak@windriver.com>
+Reported-by: Xiao, Jiguang <Jiguang.Xiao@windriver.com>
+Signed-off-by: David Ahern <dsahern@kernel.org>
+---
+ net/ipv6/route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Correct me if I'm wrong, but for systems with multiple interfaces,
-in particular switches, you'd need external circuits to synchronize
-the PHCs within in the PHYs. (And if you use a time aware scheduler
-you'd need to synchronize the MAC, too). Whereas for switches there
-is usually just one PHC in the MAC which just works.
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 2fa10e60cccd..169e9df6d172 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4484,7 +4484,7 @@ static int ip6_pkt_drop(struct sk_buff *skb, u8 code, int ipstats_mib_noroutes)
+ 	struct inet6_dev *idev;
+ 	int type;
+ 
+-	if (netif_is_l3_master(skb->dev) &&
++	if (netif_is_l3_master(skb->dev) ||
+ 	    dst->dev == net->loopback_dev)
+ 		idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
+ 	else
+-- 
+2.24.3 (Apple Git-128)
 
-On these systems, pushing the timestamping to the PHY would mean
-that this external circuitry must exist and have to be in use/
-supported. MAC timestamping will work in all cases without any
-external dependencies.
-
-I'm working on a board with the LAN9668 switch which has one LAN8814
-PHY and two GPY215 PHYs and two internal PHYs. The LAN9668 driver
-will forward all timestamping ioctls to the PHY if it supports
-timestamping (unconditionally). As soon as the patches to add ptp
-support to the LAN8814 will be accepted, I guess it will break the
-PTP/TAS support because there is no synchronization between all the
-PHCs on that board. Thus, IMHO MAC timestamping should be the default.
-
--michael
-
-[1] https://lore.kernel.org/netdev/20220308145405.GD29063@hoboy.vegasvil.org/
