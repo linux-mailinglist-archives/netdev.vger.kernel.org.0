@@ -2,65 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6400A4F0DD2
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 05:55:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D33564F0E2B
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 06:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377042AbiDDD5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Apr 2022 23:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55980 "EHLO
+        id S1377119AbiDDEgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 00:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377040AbiDDD5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Apr 2022 23:57:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8840236171;
-        Sun,  3 Apr 2022 20:55:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4ECF6093C;
-        Mon,  4 Apr 2022 03:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D54FC2BBE4;
-        Mon,  4 Apr 2022 03:55:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649044505;
-        bh=U+4uxSeSXYJxHJfmZr8zZBPJDPda8VUWre3DX0xrbIY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U0Wv8CIyD6+3VFPbhS8EO38J4TbeBaKA3muGBg84i8AzIMtlWQVGcPG3wHEUr/lU/
-         MHsrhOPuuOoOcIrrhhoh4lRNblW0ksNRWfz+GQRolkjcfXxqgMtu1yVUqmtlbEjuTF
-         5K/tzYGcbwk1cH6VFPlT9I4oqUj9cLqkk5tzoYzGxF1InXVUdywaOFW7cf7jQ6q/tc
-         QEiiGyQn4S3AqOGIoaHCn3vfviFOh6/0rB1M7cfEZlhshEUKu23c1y1+rXlUk/bQ+g
-         sPdHWm0t3p3BF6SR2B5hB5ivww+fOJRAj2GTni1ZAPZ8MQVFm18JRi4zP0YBvHhAam
-         aNzgI1b2R2cPw==
-Date:   Sun, 3 Apr 2022 20:55:02 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH] taprio: replace usage of found with dedicated list
- iterator variable
-Message-ID: <20220403205502.1b34415d@kernel.org>
-In-Reply-To: <6118F17F-6E0B-4FDA-A7C4-E1C487E9DB8F@gmail.com>
-References: <20220324072607.63594-1-jakobkoschel@gmail.com>
-        <87fsmz3uc6.fsf@intel.com>
-        <A19238DC-24F8-4BD9-A6FA-C8019596F4A6@gmail.com>
-        <877d8a3sww.fsf@intel.com>
-        <6118F17F-6E0B-4FDA-A7C4-E1C487E9DB8F@gmail.com>
+        with ESMTP id S233038AbiDDEgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 00:36:21 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB6E3193A;
+        Sun,  3 Apr 2022 21:34:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649046866; x=1680582866;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=J+9/VACJriMm9l1J/6Hp7wWQOXCr5rIeEVKxroBaykY=;
+  b=ehekU/BUXTOCdZVdC63xzd6NfzGGbpmz9RWtF+5ITlaX5QQZPB9DpRjA
+   HtkkIOc4x282tTihP2eQkQ6gdXCtXW5U6CxLBJk4Zs+OUj+DXSClSe96Z
+   thq7FRCKsUeHvprwzLpKs4IdZjo7VaVYhEsTke74D5DWynE86poKgl7kw
+   r0ZAisF/bxjQnc5T5lt184DnyrYsX3IDO01SKRli1pZkmK3soI9w0j+z4
+   Lvtv3EC9m0pMQzIU22qLslbCNW/m0nCyD2nIffI8IUNtS9pCxNc3PreVO
+   65CeW4HLSSuN4TLqquzFYhD1D2Qn7lFt/DclLrZSWerQzrGMcwgX8aCdL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10306"; a="241023318"
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="241023318"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 21:34:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,233,1643702400"; 
+   d="scan'208";a="548516264"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga007.jf.intel.com with ESMTP; 03 Apr 2022 21:34:25 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Sun, 3 Apr 2022 21:34:25 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Sun, 3 Apr 2022 21:34:25 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Sun, 3 Apr 2022 21:34:25 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.171)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Sun, 3 Apr 2022 21:34:24 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IO6Iq2+vYh12xmviwDj7mATJYMgu+GjQjyZd2HhGjJwR1GkrxRmD2ET5gx+YwfRa9i5iC5FZ4bUn+CXEVkioLVDB5IHLTEOHfvmZprub3eNneCRYZnJf1BEh5WUBq+bpjHVoZdnquNDVtsu11bTNbW51o6h0nLJGImJ9sPtPnIDGisUpEs06IuUbC4nzbQDdnZ4N+TeIabGtPPv058AAjYkIoRrgn08E7OY3dFZr6OQu0P0JhicVQb6326Z0n1iAhKMETHc1GsgzrDafmIdTP4CC9Aw7fAUYuDsr5WpAMGPKDOfFAoWrfWN4X3bbP3EH+WpCHT5lsdguXEtyRNnZ9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bAr9lRYl+t3J7DKFXXXNv6+gV004td+AFv7sp8zWiuc=;
+ b=iLgR7gZ4opqP7H0bLb64eAdj5w5IpzsgoVa4HI+2HqEcVwPQoozrpCJhxdOvpmmABhiVuOyIZ/z2CvKbElkfbIKUJ7CSzFYOFYYqyJFe0mSZN4WorEq2pqDeSn8USSV9hRkXPr1nDA0pFVjelfwrSKGgtIDCnVUQSsqwvn9w+TGXhlVv6tHB0QL3pevcpheChnGlWMdsZkNop7aALG9nvwSjOo3nLRyVuog9r1Z2mE79QdVQq/VKzK9AxX/nJpzw4CO1HCGxtRu0lPiS7IiXhNR2vJGOojZqklYpGQ2uJT0qrDpO2y8efU/3+jcwmQlCgJXnP8G1t8xfkt2kAIusjA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW4PR11MB5822.namprd11.prod.outlook.com (2603:10b6:303:185::9)
+ by BYAPR11MB2902.namprd11.prod.outlook.com (2603:10b6:a03:83::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Mon, 4 Apr
+ 2022 04:34:21 +0000
+Received: from MW4PR11MB5822.namprd11.prod.outlook.com
+ ([fe80::64c7:fef2:3781:92ca]) by MW4PR11MB5822.namprd11.prod.outlook.com
+ ([fe80::64c7:fef2:3781:92ca%7]) with mapi id 15.20.5123.031; Mon, 4 Apr 2022
+ 04:34:21 +0000
+From:   "Nagaraju, Shwetha" <shwetha.nagaraju@intel.com>
+To:     "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Subject: RE: [Intel-wired-lan] [PATCH intel-net 3/3] ice: clear
+ cmd_type_offset_bsz for TX rings
+Thread-Topic: [Intel-wired-lan] [PATCH intel-net 3/3] ice: clear
+ cmd_type_offset_bsz for TX rings
+Thread-Index: AQHYOi4l8egKbiWBiUmSf3JXHzLjoKzfRdVg
+Date:   Mon, 4 Apr 2022 04:34:21 +0000
+Message-ID: <MW4PR11MB582222B135FDD63795ED3C8E90E59@MW4PR11MB5822.namprd11.prod.outlook.com>
+References: <20220317183629.340350-1-maciej.fijalkowski@intel.com>
+ <20220317183629.340350-4-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220317183629.340350-4-maciej.fijalkowski@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.6.401.20
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 30d3f2bd-d132-4d06-e3d4-08da15f463de
+x-ms-traffictypediagnostic: BYAPR11MB2902:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-microsoft-antispam-prvs: <BYAPR11MB2902D677972345EB4854DEA790E59@BYAPR11MB2902.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: DBFziifzMhA/wkBOT6a04e0XPRdpcE2n12IbxDq0+LDwvP//jwu+ymlBBjapCLYqQhdd/n1FWpiqZ9aNUh4bjhDs5G6aoip8T23Poq991ThVww2ptvgyIseciw1HUatMl2ACMU5kvqQm/B2+GjgE4GU+uyKog2ZozG6SQPeqxpxx0YWLnpxdanUzMClNC2K3t/k4+J1JvS3Ke/nNmAVPmsZZi5kHd1JbqfEi57g4Ss1WpOv/+y2i75kXp7VJg3pepVHCa9FlPY3RgPehn3DoU6cPTivcyp929Fi6XvUeqSUjPBqCNvxkia46SuV+gDuZbjXMrcaE63a2Uj1TbfgTltN0ayJ6n2BP+lbmq4ic1kkd9S75bVBoP6Fb4CY9fg2CM7lBfW6D/tdfYMOBFKVe+EYNSeaniwt6469MRyqL2lYHKlmKVdsrf2PmF8mVPVUf9cOmfDbA7srfY5r9rxav2SruAcVs8z6/gaMoxcisQUDbtpqEcQW2RET7Rs4Dtw7pSGUVMdv68NXgZHRmLoHlxNNGpEF51D6hQGq3nWth5bCGTflcxSWydt34M0eEnhLD2OYHx8Jk6VE9FNQy6cOZa2ko1vG/gl4D4LkV6WB7NQPuhAph9GVia1SwXfn33Nk15aH2IxG4siaoW1Da2vbXN2qzk2q4wlSX7ORv8rKYnp7mYONxmcPxDtAzWTZrjk1DHUlxOGDscPjqBNoMStm7Ew==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5822.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(83380400001)(9686003)(7696005)(55236004)(53546011)(38100700002)(6506007)(122000001)(2906002)(5660300002)(71200400001)(55016003)(186003)(8936002)(508600001)(38070700005)(82960400001)(52536014)(76116006)(33656002)(316002)(66446008)(64756008)(26005)(66946007)(66476007)(66556008)(107886003)(54906003)(8676002)(4326008)(86362001)(110136005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?5Xu7hxO/pvzALD/9P4XdKy77jTVMI4pz3AL2uyyRSsj7ek4vvhkhf+LnE6kr?=
+ =?us-ascii?Q?l5DkEHhkJvQ4AGYtRPpRbHGhDjQSKFoKsSZK+FCtN5sA2KqDsOG9enlTn3Yr?=
+ =?us-ascii?Q?V8ZrFJR4A3E1+fbqZH7qEenL4zi59NWqNh2raHqBuN+ZEiefalfbk+vvU5jr?=
+ =?us-ascii?Q?zBkBgWPkEdHSJvV6Ve9aCSbiwHjKidoC1hqqjP7EYyoBS+OsXUbXlCJi0gDX?=
+ =?us-ascii?Q?oHwr30kchED4bLQ9B0S2Am93vDqkMi6Bd9BXPNj+0CSJVlFbktyzKLh9t0Mr?=
+ =?us-ascii?Q?4807JqWQ3TZkhOkqrOSjIyO0WfLPAp7i928Ryw+Vq1iYZaXWUEGZumvYnPV7?=
+ =?us-ascii?Q?wlCMNelDP8ndUtzNkkkB0Xt4efntYe+BOPFQTtrBn+AThQCB+4slhGMndgFf?=
+ =?us-ascii?Q?swxHdIcMRzinlW9A3ZqRDqgosjf/wbDpjSzMfKw3A3ImNi0BIw+dXk4tzX/Z?=
+ =?us-ascii?Q?TRErGmisswMjQIg+Gii9eV2Vlq2PMdYqSxjK0HB47oZWQC+o2HTn54mF6OiX?=
+ =?us-ascii?Q?IVatOiZpfctvB/i1kB5fDIzi3BL4z492tujXnhNK5GJuM4cmK/cAhAwkMBlq?=
+ =?us-ascii?Q?7OTjyYWJmPA6hPJ4WqKuM7X65Z/M9hsdrDBZyBEh1DAEw2uDeIs1B6OuNEHc?=
+ =?us-ascii?Q?f9h0/YBhVHvZXIfECBj/gA+z+ZJ2mmBUsy5aoxOAFhOXTv/CK3tYX0mFZ/EL?=
+ =?us-ascii?Q?ro5qI7GNOffK4StJMP/dD6M6lhpIQLfC+0p7UbrPKDuFgXU7bIOPXhAfPLcF?=
+ =?us-ascii?Q?nyShAeTjYGybe2PYKAfURue8l1+pzdmLr5DIT0IPT2dXf0BCC0uagd0AOf8M?=
+ =?us-ascii?Q?NMMu5zjWjZnAYp1ZZx8MMq6Y4fVEYalk9HLK2nY7QoLoInuB7eLIHty+KM3m?=
+ =?us-ascii?Q?gUdCdKg2Gv62/ZVwxhxfY3AhH8I/z3tNEkTBH86FUPnTe6vAKHWTEACXhLTB?=
+ =?us-ascii?Q?0SRykxcVP3rS4YPLxN6S3Ed5zode1Vi8Xg7I3Te7kGI4zt8XpA6gMKOe4YRW?=
+ =?us-ascii?Q?YUbMBZOp0Eik7MW3LC6sQCHq4eO6elBuDjKfiQXZY3ivWjghGWn55ZSsC9q3?=
+ =?us-ascii?Q?ksE0ezMplUtsdsWYi60i+4t2lnaGfAEchZFk/Ik5Da8F6wFvN3y/vMpPGzY7?=
+ =?us-ascii?Q?tsK66RDRZp7YyGUd+B8H8Wi1gqPw4+0v6qHQZxssyqmlM3MuVJ6X6VogcrrU?=
+ =?us-ascii?Q?5BvCXHBcGpQy6uTLtJX+OaX0WEDG8W7QRiXSQcjfaqKMWPWKZNJ2s3Ct/0UM?=
+ =?us-ascii?Q?y3onQ+Vce4dfJMHJgvSOIT5EaS7rdTprOC5UDb+8uIhGloaGQjOEDZJpbkDE?=
+ =?us-ascii?Q?H8E8LgqlJm+yOxcAXXlnqOHDHdMxP/aXwkHE/x0gUpbDVqG3wKgFJqorSOuq?=
+ =?us-ascii?Q?dXWOiMmdSqa6prF2dJ6HHqd/CNR/iUFtNN+2GNmR9kv1dow4zNc8fv4G49IV?=
+ =?us-ascii?Q?qzOawhekKVy+2+emYRvU++aNFimibjlWHydfufBOP+VjSYaOKqh+47nNRAip?=
+ =?us-ascii?Q?4OzCmcnB11pLcnsbv9JLXRk5EmTcsEuepFffXDYh7okM4P1pCeRYCuryT4/1?=
+ =?us-ascii?Q?S5r3zKJZLHcCQGRxzZj8+XJvp9LUNxZjTk/W3768PAp153769EP7whgl6Klr?=
+ =?us-ascii?Q?oXH0O5XS58ZXg8P/6rVV2rUtUQnCbO6B/sWq6jUV9Sv8y6gGl1rLp6QB8ERe?=
+ =?us-ascii?Q?R4d+rLkJIIFwjpy+2o21Qxsrhnk/kU/KEKdZpFKj+C5Wr7i4WIxW2EqGZBIK?=
+ =?us-ascii?Q?/MAaO7lcskA8HT/KafXcguphaH1z70w=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5822.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30d3f2bd-d132-4d06-e3d4-08da15f463de
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2022 04:34:21.7321
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kGyK7+2rcvgJSnDBULgNcwsDEBRBZ8gYLqw6W1EQ+OTyJW5VPPT14Do1Ly88/HiXF5Q4Blm5ctGlOh/0RkYbafL15Gzl3BeJglIRh3TL1dU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2902
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,115 +164,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 3 Apr 2022 13:53:06 +0200 Jakob Koschel wrote:
-> I have all the net-next patches bundled in one series now ready to repost.
-> Just wanted to verify that's the intended format since it grew a bit larger
-> then what was posted so far.
-> 
-> It's 46 patches changing 51 files across all those files:
 
-Thanks for asking, we have a limit of 15 patches per series to avoid
-overloading reviewers. But the patches will likely get merged rather
-quickly so it won't be a long wait before you can send another series.
 
-That said:
-
->  drivers/connector/cn_queue.c                            | 13 ++++++-------
->  drivers/net/dsa/mv88e6xxx/chip.c                        | 21 ++++++++++-----------
->  drivers/net/dsa/sja1105/sja1105_vl.c                    | 14 +++++++++-----
-
-yup, that's net-next
-
->  drivers/net/ethernet/intel/i40e/i40e_ethtool.c          |  3 ++-
->  drivers/net/ethernet/intel/i40e/i40e_main.c             | 24 ++++++++++++++----------
->  drivers/net/ethernet/mellanox/mlx4/alloc.c              | 29 +++++++++++++++++++----------
->  drivers/net/ethernet/mellanox/mlx4/mcg.c                | 17 ++++++++---------
->  drivers/net/ethernet/mellanox/mlx5/core/eq.c            | 10 +++++++---
->  drivers/net/ethernet/mellanox/mlx5/core/fs_core.c       | 12 ++++++------
->  drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c   | 21 ++++++++++++---------
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_fid.c      |  7 +++++--
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c       | 12 +++++++++---
-
-i40e and mlx5 patches you may or may not want to post separately 
-so that Intel and Mellanox can take them via their trees.
-
->  drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c | 25 ++++++++++++-------------
->  drivers/net/ethernet/qlogic/qed/qed_dev.c               | 11 ++++++-----
->  drivers/net/ethernet/qlogic/qed/qed_iwarp.c             | 26 ++++++++++++--------------
->  drivers/net/ethernet/qlogic/qed/qed_spq.c               |  6 +++---
->  drivers/net/ethernet/qlogic/qede/qede_filter.c          | 11 +++++++----
->  drivers/net/ethernet/qlogic/qede/qede_rdma.c            | 11 +++++------
->  drivers/net/ethernet/sfc/rx_common.c                    |  6 ++++--
->  drivers/net/ethernet/ti/netcp_core.c                    | 24 ++++++++++++++++--------
->  drivers/net/ethernet/toshiba/ps3_gelic_wireless.c       | 30 +++++++++++++++---------------
->  drivers/net/ipvlan/ipvlan_main.c                        |  7 +++++--
->  drivers/net/rionet.c                                    | 14 +++++++-------
->  drivers/net/team/team.c                                 | 20 +++++++++++++-------
-
-yup, that's all net-next
-
->  drivers/net/wireless/ath/ath10k/mac.c                   | 19 ++++++++++---------
->  drivers/net/wireless/ath/ath11k/dp_rx.c                 | 15 +++++++--------
->  drivers/net/wireless/ath/ath11k/wmi.c                   | 11 +++++------
->  drivers/net/wireless/ath/ath6kl/htc_mbox.c              |  2 +-
->  drivers/net/wireless/intel/ipw2x00/libipw_rx.c          | 14 ++++++++------
-
-Wireless goes to Kalle and Johannes.
-
->  drivers/rapidio/devices/rio_mport_cdev.c                | 42 ++++++++++++++++++++----------------------
->  drivers/rapidio/devices/tsi721.c                        | 13 ++++++-------
->  drivers/rapidio/rio.c                                   | 14 +++++++-------
->  drivers/rapidio/rio_cm.c                                | 81 ++++++++++++++++++++++++++++++++++++
-
-That's not networking.
-
->  net/9p/trans_virtio.c                                   | 15 +++++++--------
->  net/9p/trans_xen.c                                      | 10 ++++++----
-
-Also not really networking, those go thru other people's trees.
-
->  net/core/devlink.c                                      | 22 +++++++++++++++-------
->  net/core/gro.c                                          | 12 ++++++++----
->  net/dsa/dsa.c                                           | 11 +++++------
-
-yup, net-next
-
->  net/ieee802154/core.c                                   |  7 +++++--
-
-individual posting for Stefan to take via his tree
-
->  net/ipv4/udp_tunnel_nic.c                               | 10 ++++++----
-
-yup
-
->  net/mac80211/offchannel.c                               | 28 ++++++++++++++--------------
->  net/mac80211/util.c                                     |  7 +++++--
-
-This is wireless, so Johannes & Kalle.
-
->  net/sched/sch_cbs.c                                     | 11 +++++------
->  net/sched/sch_taprio.c                                  | 11 +++++------
->  net/smc/smc_ism.c                                       | 14 +++++++-------
->  net/tipc/group.c                                        | 12 ++++++++----
->  net/tipc/monitor.c                                      | 21 ++++++++++++++-------
->  net/tipc/name_table.c                                   | 11 +++++++----
->  net/tipc/socket.c                                       | 11 +++++++----
-
-yup
-
->  net/wireless/core.c                                     |  7 +++++--
-
-wireless
-
->  net/xfrm/xfrm_ipcomp.c                                  | 11 +++++++----
-
-IPsec, so Steffen and Herbert, separate posting.
-
->  51 files changed, 452 insertions(+), 364 deletions(-)
-
-So 21-ish patches for net-next if you group changes for a same driver
-/ project into one patch. Two series 10+ patches each?
-
-> Please let me know if I should split it up or if there are certain files that might not fit.
-> Otherwise I'll post them beginning of next week.
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Maciej Fijalkowski
+> Sent: Friday, March 18, 2022 12:06 AM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: netdev@vger.kernel.org; kuba@kernel.org; bpf@vger.kernel.org;
+> davem@davemloft.net; Karlsson, Magnus <magnus.karlsson@intel.com>
+> Subject: [Intel-wired-lan] [PATCH intel-net 3/3] ice: clear
+> cmd_type_offset_bsz for TX rings
+>=20
+> Currently when XDP rings are created, each descriptor gets its DD bit set=
+,
+> which turns out to be the wrong approach as it can lead to a situation wh=
+ere
+> more descriptors get cleaned than it was supposed to, e.g. when AF_XDP
+> busy poll is run with a large batch size. In this situation, the driver w=
+ould
+> request for more buffers than it is able to handle.
+>=20
+> Fix this by not setting the DD bits in ice_xdp_alloc_setup_rings(). They =
+should
+> be initialized to zero instead.
+>=20
+> Fixes: 9610bd988df9 ("ice: optimize XDP_TX workloads")
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+Tested-by: Shwetha Nagaraju <Shwetha.nagaraju@intel.com>
 
