@@ -2,260 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 797C44F10B0
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 10:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B597D4F10DC
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 10:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241398AbiDDITO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 04:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
+        id S233113AbiDDI2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 04:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237801AbiDDITN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 04:19:13 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A343525F;
-        Mon,  4 Apr 2022 01:17:17 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KX3Vt17LLz67kM8;
-        Mon,  4 Apr 2022 16:15:34 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 4 Apr 2022 10:17:13 +0200
-Message-ID: <7c28a0cc-3dbb-c094-79f9-6a1c30dccabd@huawei.com>
-Date:   Mon, 4 Apr 2022 11:17:10 +0300
+        with ESMTP id S232527AbiDDI2x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 04:28:53 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03DA33A36;
+        Mon,  4 Apr 2022 01:26:57 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id t19so7097764qtc.4;
+        Mon, 04 Apr 2022 01:26:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9B1vDg725ZL75B9hNHdJwVzoV1gBOAZG8QnNdH+UPxA=;
+        b=TGG+Z2rYdZzDaSevItzamM42OIU80qWLeqPMTkTiFlEJxRmPVujDHJwDDXgYdExXTl
+         Th8He6JC6kEtU2QmNDWKz6+FwBRWhSPyqUENADNgb/wiE37ZcaoNjnJ3tmawIDD9jYqR
+         9Yuov0LGuC0CIzVkLbtK8fUjeiQcOA4MjIxh5vmmtxzejMYpLWpuv1jgyDWu8mpe7iOn
+         v65RX/l5fJvJtfRlm5L27pG9q8PhaEpuVYzjGrAgxOFyxBDRRHzBXxDasIfbvRNreKu8
+         4PqkbsNJdnCE2KX2PjBqSA+E/D1XA+kN+diAKPr8pHdNCYQQJwmHLFAhAE1e3GHaM528
+         Am7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9B1vDg725ZL75B9hNHdJwVzoV1gBOAZG8QnNdH+UPxA=;
+        b=bpakZlxmPlHBAyJzasGXpvtV2owfTdt/MytiAWMRyte62cG4kRNiXwQxAVGxndOJ7Z
+         0hkWMiz2KAKvIRx2hGh1DW1D3wpLYEzEXRK71ud+bkO4YMxr8Sz91lQuaL8hhY2Aj6ZX
+         9f+InPjNcfBi9pjmL3oi0Xc1YUkAzZu3eG2RO30MF1yByD/fBN5uIApiOZ48rU76nfVZ
+         Xc5F+pEVm1y3t+1SjUt1hgJQs83jDoDpRpz+mm+ZWEqeJLFl14GuGgynTzMWAS2KiXL0
+         vhOn+iqq/G8U/fdXscJVpnVgz4A9PMpxudKgmgv43rAwHJnsvSnzYBt7nF303f11yAGQ
+         oDmA==
+X-Gm-Message-State: AOAM5322kSLtxtv9bSNnu6QdyvWXBzKP6NcRJYuCbWQFL+hryCoa1gIp
+        bZoa+np2s+WwcZJT3x4jBYT5gnM2Z7bxcS35qFc=
+X-Google-Smtp-Source: ABdhPJyMyNUGjmhcgxdxcxIUEwWFso/oW3ZHbINEDa3SsiRO5EUgB3PU/yUmWSq8iuC7Ed8DE1CELm3ObEm4rETLdHo=
+X-Received: by 2002:ac8:598a:0:b0:2e1:e81a:d059 with SMTP id
+ e10-20020ac8598a000000b002e1e81ad059mr16436086qte.297.1649060817152; Mon, 04
+ Apr 2022 01:26:57 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH v4 01/15] landlock: access mask renaming
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
-References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
- <20220309134459.6448-2-konstantin.meskhidze@huawei.com>
- <9fe2c504-627f-c5eb-b77f-db34d471116f@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <9fe2c504-627f-c5eb-b77f-db34d471116f@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220401093554.360211-1-robimarko@gmail.com> <87ilrsuab4.fsf@kernel.org>
+ <CAOX2RU4pCn8C-HhhuOzyikjk2Ax3VDcjMKh7N6X5HeMN4xLMEg@mail.gmail.com> <87zgl1s4xr.fsf@kernel.org>
+In-Reply-To: <87zgl1s4xr.fsf@kernel.org>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Mon, 4 Apr 2022 10:26:46 +0200
+Message-ID: <CAOX2RU4+6_64MBxZAT9q0QQvjROteDtAsPiYYYWd-Yjijik91w@mail.gmail.com>
+Subject: Re: [PATCH] ath11k: select QRTR for AHB as well
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 4 Apr 2022 at 09:06, Kalle Valo <kvalo@kernel.org> wrote:
+>
+> Robert Marko <robimarko@gmail.com> writes:
+>
+> > On Fri, 1 Apr 2022 at 16:51, Kalle Valo <kvalo@kernel.org> wrote:
+> >>
+> >> Robert Marko <robimarko@gmail.com> writes:
+> >>
+> >> > Currently, ath11k only selects QRTR if ath11k PCI is selected, however
+> >> > AHB support requires QRTR, more precisely QRTR_SMD because it is using
+> >> > QMI as well which in turn uses QRTR.
+> >> >
+> >> > Without QRTR_SMD AHB does not work, so select QRTR in ATH11K and then
+> >> > select QRTR_SMD for ATH11K_AHB and QRTR_MHI for ATH11K_PCI.
+> >> >
+> >> > Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01208-QCAHKSWPL_SILICONZ-1
+> >> >
+> >> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+> >> > ---
+> >> >  drivers/net/wireless/ath/ath11k/Kconfig | 3 ++-
+> >> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >> >
+> >> > diff --git a/drivers/net/wireless/ath/ath11k/Kconfig b/drivers/net/wireless/ath/ath11k/Kconfig
+> >> > index ad5cc6cac05b..b45baad184f6 100644
+> >> > --- a/drivers/net/wireless/ath/ath11k/Kconfig
+> >> > +++ b/drivers/net/wireless/ath/ath11k/Kconfig
+> >> > @@ -5,6 +5,7 @@ config ATH11K
+> >> >       depends on CRYPTO_MICHAEL_MIC
+> >> >       select ATH_COMMON
+> >> >       select QCOM_QMI_HELPERS
+> >> > +     select QRTR
+> >> >       help
+> >> >         This module adds support for Qualcomm Technologies 802.11ax family of
+> >> >         chipsets.
+> >> > @@ -15,6 +16,7 @@ config ATH11K_AHB
+> >> >       tristate "Atheros ath11k AHB support"
+> >> >       depends on ATH11K
+> >> >       depends on REMOTEPROC
+> >> > +     select QRTR_SMD
+> >> >       help
+> >> >         This module adds support for AHB bus
+> >> >
+> >> > @@ -22,7 +24,6 @@ config ATH11K_PCI
+> >> >       tristate "Atheros ath11k PCI support"
+> >> >       depends on ATH11K && PCI
+> >> >       select MHI_BUS
+> >> > -     select QRTR
+> >> >       select QRTR_MHI
+> >> >       help
+> >> >         This module adds support for PCIE bus
+> >>
+> >> I now see a new warning:
+> >>
+> >> WARNING: unmet direct dependencies detected for QRTR_SMD
+> >>   Depends on [n]: NET [=y] && QRTR [=m] && (RPMSG [=n] || COMPILE_TEST [=n] && RPMSG [=n]=n)
+> >>   Selected by [m]:
+> >>   - ATH11K_AHB [=m] && NETDEVICES [=y] && WLAN [=y] && WLAN_VENDOR_ATH [=y] && ATH11K [=m] && REMOTEPROC [=y]
+> >
+> > Ahh yeah, since it's SMD then it requires RPMGS which in turn requires
+> > more stuff. What do you think about making it depend on QRTR_SMD
+> > instead, because without it AHB literally does not work?
+>
+> To be honest I don't know qrtr well enough to comment right now :)
 
+I dont know details about QRTR as well, but I know that its used for
+both AHB and PCI versions for QMI.
+AHB versions use it over SMD and without it, AHB support wont work, it
+will find the HW model and revision and that's it, only after the
+QRTR_SMD is inserted you can use QMI to load the caldata etc.
 
-4/1/2022 7:47 PM, Mickaël Salaün пишет:
-> 
-> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
->> Currently Landlock supports filesystem
->> restrictions. To support network type rules,
->> this modification extends and renames
->> ruleset's access masks.
-> 
-> Please use 72 columns for all commit messages.
-> With vim: set tw=72
-> 
-> The code looks good but you'll have to rebase it on top of my 
-> access_mask_t changes.
-> 
-> Next time you can rebase your changes on my landlock-wip branch at 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git
-> I'll update this branch regularly but it should not impact much your 
-> changes.
-> 
-   Sure. I will rebase it on your latest updates. Thanks.
-> 
->>
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->>
->> Changes since v3:
->> * Split commit.
->>
->> ---
->>   security/landlock/fs.c       |  4 ++--
->>   security/landlock/ruleset.c  | 18 +++++++++---------
->>   security/landlock/ruleset.h  |  8 ++++----
->>   security/landlock/syscalls.c |  6 +++---
->>   4 files changed, 18 insertions(+), 18 deletions(-)
->>
->> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
->> index 97b8e421f617..d727bdab7840 100644
->> --- a/security/landlock/fs.c
->> +++ b/security/landlock/fs.c
->> @@ -163,7 +163,7 @@ int landlock_append_fs_rule(struct 
->> landlock_ruleset *const ruleset,
->>           return -EINVAL;
->>
->>       /* Transforms relative access rights to absolute ones. */
->> -    access_rights |= LANDLOCK_MASK_ACCESS_FS & 
->> ~ruleset->fs_access_masks[0];
->> +    access_rights |= LANDLOCK_MASK_ACCESS_FS & 
->> ~ruleset->access_masks[0];
->>       object = get_inode_object(d_backing_inode(path->dentry));
->>       if (IS_ERR(object))
->>           return PTR_ERR(object);
->> @@ -252,7 +252,7 @@ static int check_access_path(const struct 
->> landlock_ruleset *const domain,
->>       /* Saves all layers handling a subset of requested accesses. */
->>       layer_mask = 0;
->>       for (i = 0; i < domain->num_layers; i++) {
->> -        if (domain->fs_access_masks[i] & access_request)
->> +        if (domain->access_masks[i] & access_request)
->>               layer_mask |= BIT_ULL(i);
->>       }
->>       /* An access request not handled by the domain is allowed. */
->> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->> index ec72b9262bf3..78341a0538de 100644
->> --- a/security/landlock/ruleset.c
->> +++ b/security/landlock/ruleset.c
->> @@ -28,7 +28,7 @@ static struct landlock_ruleset *create_ruleset(const 
->> u32 num_layers)
->>   {
->>       struct landlock_ruleset *new_ruleset;
->>
->> -    new_ruleset = kzalloc(struct_size(new_ruleset, fs_access_masks,
->> +    new_ruleset = kzalloc(struct_size(new_ruleset, access_masks,
->>                   num_layers), GFP_KERNEL_ACCOUNT);
->>       if (!new_ruleset)
->>           return ERR_PTR(-ENOMEM);
->> @@ -39,21 +39,21 @@ static struct landlock_ruleset 
->> *create_ruleset(const u32 num_layers)
->>       /*
->>        * hierarchy = NULL
->>        * num_rules = 0
->> -     * fs_access_masks[] = 0
->> +     * access_masks[] = 0
->>        */
->>       return new_ruleset;
->>   }
->>
->> -struct landlock_ruleset *landlock_create_ruleset(const u32 
->> fs_access_mask)
->> +struct landlock_ruleset *landlock_create_ruleset(const u32 access_mask)
->>   {
->>       struct landlock_ruleset *new_ruleset;
->>
->>       /* Informs about useless ruleset. */
->> -    if (!fs_access_mask)
->> +    if (!access_mask)
->>           return ERR_PTR(-ENOMSG);
->>       new_ruleset = create_ruleset(1);
->>       if (!IS_ERR(new_ruleset))
->> -        new_ruleset->fs_access_masks[0] = fs_access_mask;
->> +        new_ruleset->access_masks[0] = access_mask;
->>       return new_ruleset;
->>   }
->>
->> @@ -116,7 +116,7 @@ static void build_check_ruleset(void)
->>           .num_rules = ~0,
->>           .num_layers = ~0,
->>       };
->> -    typeof(ruleset.fs_access_masks[0]) fs_access_mask = ~0;
->> +    typeof(ruleset.access_masks[0]) fs_access_mask = ~0;
->>
->>       BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
->>       BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
->> @@ -279,7 +279,7 @@ static int merge_ruleset(struct landlock_ruleset 
->> *const dst,
->>           err = -EINVAL;
->>           goto out_unlock;
->>       }
->> -    dst->fs_access_masks[dst->num_layers - 1] = src->fs_access_masks[0];
->> +    dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
->>
->>       /* Merges the @src tree. */
->>       rbtree_postorder_for_each_entry_safe(walker_rule, next_rule,
->> @@ -337,8 +337,8 @@ static int inherit_ruleset(struct landlock_ruleset 
->> *const parent,
->>           goto out_unlock;
->>       }
->>       /* Copies the parent layer stack and leaves a space for the new 
->> layer. */
->> -    memcpy(child->fs_access_masks, parent->fs_access_masks,
->> -            flex_array_size(parent, fs_access_masks, 
->> parent->num_layers));
->> +    memcpy(child->access_masks, parent->access_masks,
->> +            flex_array_size(parent, access_masks, parent->num_layers));
->>
->>       if (WARN_ON_ONCE(!parent->hierarchy)) {
->>           err = -EINVAL;
->> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->> index 2d3ed7ec5a0a..32d90ce72428 100644
->> --- a/security/landlock/ruleset.h
->> +++ b/security/landlock/ruleset.h
->> @@ -97,7 +97,7 @@ struct landlock_ruleset {
->>            * section.  This is only used by
->>            * landlock_put_ruleset_deferred() when @usage reaches zero.
->>            * The fields @lock, @usage, @num_rules, @num_layers and
->> -         * @fs_access_masks are then unused.
->> +         * @access_masks are then unused.
->>            */
->>           struct work_struct work_free;
->>           struct {
->> @@ -124,7 +124,7 @@ struct landlock_ruleset {
->>                */
->>               u32 num_layers;
->>               /**
->> -             * @fs_access_masks: Contains the subset of filesystem
->> +             * @access_masks: Contains the subset of filesystem
->>                * actions that are restricted by a ruleset.  A domain
->>                * saves all layers of merged rulesets in a stack
->>                * (FAM), starting from the first layer to the last
->> @@ -135,12 +135,12 @@ struct landlock_ruleset {
->>                * layers are set once and never changed for the
->>                * lifetime of the ruleset.
->>                */
->> -            u16 fs_access_masks[];
->> +            u32 access_masks[];
-> 
-> Changing from u16 to u32 is not correct for this patch, but it would not 
-> be visible with access_mask_t anyway.
-> 
->>           };
->>       };
->>   };
->>
->> -struct landlock_ruleset *landlock_create_ruleset(const u32 
->> fs_access_mask);
->> +struct landlock_ruleset *landlock_create_ruleset(const u32 access_mask);
->>
->>   void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
->>   void landlock_put_ruleset_deferred(struct landlock_ruleset *const 
->> ruleset);
->> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
->> index 32396962f04d..f1d86311df7e 100644
->> --- a/security/landlock/syscalls.c
->> +++ b/security/landlock/syscalls.c
->> @@ -341,10 +341,10 @@ SYSCALL_DEFINE4(landlock_add_rule,
->>       }
->>       /*
->>        * Checks that allowed_access matches the @ruleset constraints
->> -     * (ruleset->fs_access_masks[0] is automatically upgraded to 
->> 64-bits).
->> +     * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
->>        */
->> -    if ((path_beneath_attr.allowed_access | 
->> ruleset->fs_access_masks[0]) !=
->> -            ruleset->fs_access_masks[0]) {
->> +    if ((path_beneath_attr.allowed_access | ruleset->access_masks[0]) !=
->> +            ruleset->access_masks[0]) {
->>           err = -EINVAL;
->>           goto out_put_ruleset;
->>       }
->> -- 
->> 2.25.1
->>
-> .
+Regards,
+Robert
+>
+> --
+> https://patchwork.kernel.org/project/linux-wireless/list/
+>
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
