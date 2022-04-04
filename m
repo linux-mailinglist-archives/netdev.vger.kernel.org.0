@@ -2,221 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B59024F2029
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 01:17:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95D4B4F203F
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 01:29:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233190AbiDDXTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 19:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46696 "EHLO
+        id S229942AbiDDXbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 19:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241763AbiDDXTW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 19:19:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8991F1E3E9
-        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 16:15:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649114101;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kTRTuL6R5chBVkZAPhvLEL9OPO5zJV1n3e4jxK5S8Ms=;
-        b=YTU70QBBLLd24iObYRQmaN92W+W5ONi+BYioijmT8cZ01TfIHt/WEOwdw/OnfuLHcCjIjV
-        rz5FM5pukPQaEWuuDjV1j8MwwmtkcQTxN4w03oqbvAe2M/1FBf+f2GJ9AzEyoKjSTEzIX/
-        2elO4Q4kxPJcrIjUv2poVSI96bShPdQ=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-20-SMUmPKuiMpSSnHa5Y7Z3cA-1; Mon, 04 Apr 2022 19:15:00 -0400
-X-MC-Unique: SMUmPKuiMpSSnHa5Y7Z3cA-1
-Received: by mail-qt1-f200.google.com with SMTP id z18-20020ac84552000000b002e201c79cd4so7436855qtn.2
-        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 16:14:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=kTRTuL6R5chBVkZAPhvLEL9OPO5zJV1n3e4jxK5S8Ms=;
-        b=18MuGk7PoMzske8pd3+1FB4DrG0IANLcAsDI5S+rIfCgupmWLvbvnzqPgIX84HWdUP
-         xkmswSyb1Rg6E53gnLzcijpTp2s6KlCdhDCO8IoIztqT65Y9QeEAyUgI1ih1OUNa8hFL
-         IH2fXNmszbur1LWhabf4WthxbH5X7eiP6ZpyPPUWY/LVONnIMsssAnHYN/DzzVs+M9VJ
-         tmJGAqjd44qvs1u+vvfVIuNnxjFXNFZXhzGoIMpHdT2mz8UBtDje23jSpUt2oqsNLXK4
-         HdBNikpNgwvQYjXQmd4E81sXwt/OMEDjgDy6jlqe2lYt04es45JDdam+lVO859lkHEa5
-         rdig==
-X-Gm-Message-State: AOAM530HLOtfS07w9UtjP7QJ23zZpVfrSX4IEMZQMCSd90GEEt99/45D
-        fU4gZooqXq2sB3z1ElGU9YJkDt8miUldafxPmm88cW9TKJiORVAK9enAEdi6TOXtNMHNMt9hUxJ
-        tAyV2Kr3ttOmq/VEt
-X-Received: by 2002:a05:6214:2342:b0:42d:7c8b:9eac with SMTP id hu2-20020a056214234200b0042d7c8b9eacmr575439qvb.5.1649114099537;
-        Mon, 04 Apr 2022 16:14:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwaIxVkenjRBdDOh6Wv2UMQmmTIJuEr8fmsRSmJlATQoawKgS1eJzrIMpeEK/tuHf+1jb3erQ==
-X-Received: by 2002:a05:6214:2342:b0:42d:7c8b:9eac with SMTP id hu2-20020a056214234200b0042d7c8b9eacmr575421qvb.5.1649114099261;
-        Mon, 04 Apr 2022 16:14:59 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id k1-20020ac85fc1000000b002e1c6420790sm10288267qta.40.2022.04.04.16.14.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 16:14:58 -0700 (PDT)
-Subject: Re: [PATCH v3 1/2] hwmon: introduce hwmon_sanitize_name()
-To:     Michael Walle <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>
-References: <20220404184340.3973329-1-michael@walle.cc>
- <20220404184340.3973329-2-michael@walle.cc>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <428c28e4-87cc-50a4-ef13-41ae36702a84@redhat.com>
-Date:   Mon, 4 Apr 2022 16:14:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S231603AbiDDXbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 19:31:11 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F082F038;
+        Mon,  4 Apr 2022 16:29:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649114952; x=1680650952;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=cGXyR49bcccWv8eCK+ywXLkpFHhfbWs9AEBVEeAZ8VU=;
+  b=OXIlTAxpHVqMdmYFAfH5s9JkPcB1q843m4+PL1B+nbEZyUX5W7Jo+iQU
+   8PKXr9LMLlwdW41/BtV1zVI5A2i2JYDobaTHa2ztQihG72DjgAqI6+zfm
+   nu7+fpOHKBZG9WhNRBRZwpAd0+XgCTijA3aMbcow8VDFATInrW3g7dUtl
+   zrGfsHj+izjZqvqcfuxZBaZDBN+CC3FODwzB+LOZ7o+aXl/4n4gE26jI6
+   baKWHgDaw5cp79B+YQ0UHs4GcFGJ+9MlqMENwhtDuKuBbvC8bEipoyR/V
+   MhIyArMXbixjXCkwLM8hCuPe9K3oq1Ha4H/6jsFB7j/Gd/CxOtfGY+bac
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="347070072"
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="347070072"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 16:29:11 -0700
+X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
+   d="scan'208";a="657694011"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.251.1.231]) ([10.251.1.231])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 16:29:10 -0700
+Message-ID: <a0f3d677-e3a8-ecef-a17e-0638764bd425@linux.intel.com>
+Date:   Mon, 4 Apr 2022 16:29:10 -0700
 MIME-Version: 1.0
-In-Reply-To: <20220404184340.3973329-2-michael@walle.cc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v5 08/13] net: wwan: t7xx: Add data path
+ interface
 Content-Language: en-US
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        chandrashekar.devegowda@intel.com,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        dinesh.sharma@intel.com, eliot.lee@intel.com,
+        ilpo.johannes.jarvinen@intel.com, moises.veleta@intel.com,
+        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
+        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
+        madhusmita.sahu@intel.com
+References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com>
+ <20220223223326.28021-9-ricardo.martinez@linux.intel.com>
+ <CAHNKnsTZ57hZfy_CTv8-AXuXJEuYVCaO0oax03eMMYzerB-Oyw@mail.gmail.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <CAHNKnsTZ57hZfy_CTv8-AXuXJEuYVCaO0oax03eMMYzerB-Oyw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Sergey,
 
-On 4/4/22 11:43 AM, Michael Walle wrote:
-> More and more drivers will check for bad characters in the hwmon name
-> and all are using the same code snippet. Consolidate that code by adding
-> a new hwmon_sanitize_name() function.
+On 3/6/2022 6:58 PM, Sergey Ryazanov wrote:
+> On Thu, Feb 24, 2022 at 1:35 AM Ricardo Martinez
+> <ricardo.martinez@linux.intel.com> wrote:
+>> From: Haijun Liu <haijun.liu@mediatek.com>
+>>
+>> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
+>> for initialization, ISR, control and event handling of TX/RX flows.
+>>
+>> DPMAIF TX
+>> Exposes the `dmpaif_tx_send_skb` function which can be used by the
+>> network device to transmit packets.
+>> The uplink data management uses a Descriptor Ring Buffer (DRB).
+>> First DRB entry is a message type that will be followed by 1 or more
+>> normal DRB entries. Message type DRB will hold the skb information
+>> and each normal DRB entry holds a pointer to the skb payload.
+>>
+>> DPMAIF RX
+>> The downlink buffer management uses Buffer Address Table (BAT) and
+>> Packet Information Table (PIT) rings.
+>> The BAT ring holds the address of skb data buffer for the HW to use,
+>> while the PIT contains metadata about a whole network packet including
+>> a reference to the BAT entry holding the data buffer address.
+>> The driver reads the PIT and BAT entries written by the modem, when
+>> reaching a threshold, the driver will reload the PIT and BAT rings.
+...
+>> +static int t7xx_dpmaif_add_skb_to_ring(struct dpmaif_ctrl *dpmaif_ctrl, struct sk_buff *skb)
+>> +{
+>> +       unsigned short cur_idx, drb_wr_idx_backup;
+>> ...
+>> +       txq = &dpmaif_ctrl->txq[skb_cb->txq_number];
+>> ...
+>> +       cur_idx = txq->drb_wr_idx;
+>> +       drb_wr_idx_backup = cur_idx;
+>> ...
+>> +       for (wr_cnt = 0; wr_cnt < payload_cnt; wr_cnt++) {
+>> ...
+>> +               bus_addr = dma_map_single(dpmaif_ctrl->dev, data_addr, data_len, DMA_TO_DEVICE);
+>> +               if (dma_mapping_error(dpmaif_ctrl->dev, bus_addr)) {
+>> +                       dev_err(dpmaif_ctrl->dev, "DMA mapping fail\n");
+>> +                       atomic_set(&txq->tx_processing, 0);
+>> +
+>> +                       spin_lock_irqsave(&txq->tx_lock, flags);
+>> +                       txq->drb_wr_idx = drb_wr_idx_backup;
+>> +                       spin_unlock_irqrestore(&txq->tx_lock, flags);
+> What is the purpose of locking here?
+
+The intention is to protect against concurrent access of drb_wr_idx by t7xx_txq_drb_wr_available()
+
 >
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->   Documentation/hwmon/hwmon-kernel-api.rst | 16 ++++++++
->   drivers/hwmon/hwmon.c                    | 50 ++++++++++++++++++++++++
->   include/linux/hwmon.h                    |  3 ++
->   3 files changed, 69 insertions(+)
+>> +                       return -ENOMEM;
+>> +               }
+>> ...
+>> +       }
+>> ...
+>> +}
 >
-> diff --git a/Documentation/hwmon/hwmon-kernel-api.rst b/Documentation/hwmon/hwmon-kernel-api.rst
-> index c41eb6108103..e2975d5caf34 100644
-> --- a/Documentation/hwmon/hwmon-kernel-api.rst
-> +++ b/Documentation/hwmon/hwmon-kernel-api.rst
-> @@ -50,6 +50,10 @@ register/unregister functions::
->   
->     void devm_hwmon_device_unregister(struct device *dev);
->   
-> +  char *hwmon_sanitize_name(const char *name);
-> +
-> +  char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
-> +
->   hwmon_device_register_with_groups registers a hardware monitoring device.
->   The first parameter of this function is a pointer to the parent device.
->   The name parameter is a pointer to the hwmon device name. The registration
-> @@ -95,6 +99,18 @@ All supported hwmon device registration functions only accept valid device
->   names. Device names including invalid characters (whitespace, '*', or '-')
->   will be rejected. The 'name' parameter is mandatory.
->   
-> +If the driver doesn't use a static device name (for example it uses
-> +dev_name()), and therefore cannot make sure the name only contains valid
-> +characters, hwmon_sanitize_name can be used. This convenience function
-> +will duplicate the string and replace any invalid characters with an
-> +underscore. It will allocate memory for the new string and it is the
-> +responsibility of the caller to release the memory when the device is
-> +removed.
-> +
-> +devm_hwmon_sanitize_name is the resource managed version of
-> +hwmon_sanitize_name; the memory will be freed automatically on device
-> +removal.
-> +
->   Using devm_hwmon_device_register_with_info()
->   --------------------------------------------
->   
-> diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-> index 989e2c8496dd..cc4a16a466a0 100644
-> --- a/drivers/hwmon/hwmon.c
-> +++ b/drivers/hwmon/hwmon.c
-> @@ -1057,6 +1057,56 @@ void devm_hwmon_device_unregister(struct device *dev)
->   }
->   EXPORT_SYMBOL_GPL(devm_hwmon_device_unregister);
->   
-> +static char *__hwmon_sanitize_name(struct device *dev, const char *old_name)
-> +{
-> +	char *name, *p;
-> +
-> +	if (dev)
-> +		name = devm_kstrdup(dev, old_name, GFP_KERNEL);
-> +	else
-> +		name = kstrdup(old_name, GFP_KERNEL);
-> +	if (!name)
-> +		return NULL;
-should return ERR_PTR(-ENOMEM)
-> +
-> +	for (p = name; *p; p++)
-> +		if (hwmon_is_bad_char(*p))
-> +			*p = '_';
-> +
-> +	return name;
-> +}
-> +
-> +/**
-> + * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
-> + * @name: NUL-terminated name
-> + *
-> + * Allocates a new string where any invalid characters will be replaced
-> + * by an underscore. It is the responsibility of the caller to release
-> + * the memory.
-> + *
-> + * Returns newly allocated name or %NULL in case of error.
-> + */
-> +char *hwmon_sanitize_name(const char *name)
-> +{
-> +	return __hwmon_sanitize_name(NULL, name);
-> +}
-> +EXPORT_SYMBOL_GPL(hwmon_sanitize_name);
-> +
-> +/**
-> + * devm_hwmon_sanitize_name - resource managed hwmon_sanitize_name()
-> + * @dev: device to allocate memory for
-> + * @name: NUL-terminated name
-> + *
-> + * Allocates a new string where any invalid characters will be replaced
-> + * by an underscore.
-> + *
-> + * Returns newly allocated name or %NULL in case of error.
-> + */
-> +char *devm_hwmon_sanitize_name(struct device *dev, const char *name)
-> +{
-> +	return __hwmon_sanitize_name(dev, name);
-Should have a (!dev) check.
-> +}
-> +EXPORT_SYMBOL_GPL(devm_hwmon_sanitize_name);
-> +
->   static void __init hwmon_pci_quirks(void)
->   {
->   #if defined CONFIG_X86 && defined CONFIG_PCI
-> diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-> index eba380b76d15..4efaf06fd2b8 100644
-> --- a/include/linux/hwmon.h
-> +++ b/include/linux/hwmon.h
-> @@ -461,6 +461,9 @@ void devm_hwmon_device_unregister(struct device *dev);
->   int hwmon_notify_event(struct device *dev, enum hwmon_sensor_types type,
->   		       u32 attr, int channel);
->   
-> +char *hwmon_sanitize_name(const char *name);
-> +char *devm_hwmon_sanitize_name(struct device *dev, const char *name);
-> +
->   /**
->    * hwmon_is_bad_char - Is the char invalid in a hwmon name
-
-This still needed in *.h ?
-
-Tom
-
->    * @ch: the char to be considered
-
