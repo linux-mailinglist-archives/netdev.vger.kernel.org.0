@@ -2,209 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 381804F10A5
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 10:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 797C44F10B0
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 10:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239350AbiDDISU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 04:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        id S241398AbiDDITO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 04:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237482AbiDDISR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 04:18:17 -0400
-Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102D83B3EC
-        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 01:16:19 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:6d4d:d9ec:3c70:7c2c])
-        by baptiste.telenet-ops.be with bizsmtp
-        id EYG82700R40M8zK01YG8cT; Mon, 04 Apr 2022 10:16:17 +0200
-Received: from geert (helo=localhost)
-        by ramsan.of.borg with local-esmtp (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nbHse-0089Aj-Eu; Mon, 04 Apr 2022 10:16:08 +0200
-Date:   Mon, 4 Apr 2022 10:16:08 +0200 (CEST)
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-X-X-Sender: geert@ramsan.of.borg
-To:     linux-kernel@vger.kernel.org
-cc:     linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        linux-rdma@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-xfs@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-s390@vger.kernel.org
-Subject: Re: Build regressions/improvements in v5.18-rc1
-In-Reply-To: <20220404074734.1092959-1-geert@linux-m68k.org>
-Message-ID: <alpine.DEB.2.22.394.2204041006230.1941618@ramsan.of.borg>
-References: <CAHk-=wg6FWL1xjVyHx7DdjD2dHZETA5_=FqqW17Z19X-WTfWSg@mail.gmail.com> <20220404074734.1092959-1-geert@linux-m68k.org>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        with ESMTP id S237801AbiDDITN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 04:19:13 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A343525F;
+        Mon,  4 Apr 2022 01:17:17 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KX3Vt17LLz67kM8;
+        Mon,  4 Apr 2022 16:15:34 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Mon, 4 Apr 2022 10:17:13 +0200
+Message-ID: <7c28a0cc-3dbb-c094-79f9-6a1c30dccabd@huawei.com>
+Date:   Mon, 4 Apr 2022 11:17:10 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v4 01/15] landlock: access mask renaming
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-2-konstantin.meskhidze@huawei.com>
+ <9fe2c504-627f-c5eb-b77f-db34d471116f@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <9fe2c504-627f-c5eb-b77f-db34d471116f@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Apr 2022, Geert Uytterhoeven wrote:
-> Below is the list of build error/warning regressions/improvements in
-> v5.18-rc1[1] compared to v5.17[2].
->
-> Summarized:
->  - build errors: +36/-15
->  - build warnings: +5/-38
->
-> Happy fixing! ;-)
->
-> Thanks to the linux-next team for providing the build service.
->
-> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/3123109284176b1532874591f7c81f3837bbdc17/ (all 96 configs)
-> [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/f443e374ae131c168a065ea1748feac6b2e76613/ (all 96 configs)
->
->
-> *** ERRORS ***
->
-> 36 error regressions:
->  + /kisskb/src/arch/m68k/include/asm/bitops.h: error: array subscript 2 is above array bounds of 'long unsigned int[1]' [-Werror=array-bounds]:  => 329:20
-
-m68k-gcc8/m68k-allmodconfig (assumed gcc8 bug)
-
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: .cfi_endproc without corresponding .cfi_startproc:  => 32
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: bad or irreducible absolute expression:  => 16
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: junk at end of line, first unrecognized character is `:':  => 16
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `be 0x100(%sr2,%r0)':  => 29
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldi 0,%r20':  => 30
->  + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldw 0(%sp),%r31':  => 26
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ble 0x100(%sr2,%r0)':  => 51, 46
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 0,%r25':  => 44
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 1,%r25':  => 49
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 173,%r20':  => 45, 50
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.callinfo':  => 40
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.entry':  => 41
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.exit':  => 54
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.proc':  => 39
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.procend':  => 55
->  + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.stringz':  => 76
-
-parisc64-gcc8/generic-64bit_defconfig
-parisc-gcc8/generic-32bit_defconfig
-parisc-gcc8/parisc-allmodconfig
-parisc-gcc8/parisc-allnoconfig
-
->  + /kisskb/src/arch/sparc/kernel/irq_32.c: error: array subscript [16, 79] is outside array bounds of 'struct tt_entry[1]' [-Werror=array-bounds]:  => 262:14, 261:46, 259:14, 258:14, 263:14
-
-sparc64-gcc11/sparc-allmodconfig
-
->  + /kisskb/src/drivers/gpu/drm/r128/r128_cce.c: error: case label does not reduce to an integer constant:  => 417:2, 418:2
-
-arm64-gcc5.4/arm64-allmodconfig
-mipsel/mips-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/powerpc-allyesconfig
-powerpc-gcc5/ppc32_allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-powerpc-gcc5/ppc64le_allmodconfig
-
->  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'X86_VENDOR_AMD' undeclared (first use in this function):  => 149:37
->  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: 'struct cpuinfo_um' has no member named 'x86_vendor':  => 149:22
->  + /kisskb/src/drivers/infiniband/hw/qib/qib_wc_x86_64.c: error: control reaches end of non-void function [-Werror=return-type]:  => 150:1
->  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: 'struct cpuinfo_um' has no member named 'x86_cache_size':  => 88:22
->  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: control reaches end of non-void function [-Werror=return-type]:  => 89:1
->  + /kisskb/src/drivers/infiniband/sw/rdmavt/qp.c: error: implicit declaration of function '__copy_user_nocache' [-Werror=implicit-function-declaration]:  => 100:2
-
-um-x86_64/um-allmodconfig
-um-x86_64/um-allyesconfig
-
->  + /kisskb/src/drivers/media/platform/nxp/imx-pxp.h: error: initializer element is not constant:  => 582:38
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-
->  + /kisskb/src/drivers/misc/habanalabs/common/memory.c: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]:  => 153:49, 153:7
-
-mipsel/mips-allmodconfig
-mips-gcc8/mips-allmodconfig
-sparc64/sparc-allmodconfig
-xtensa-gcc11/xtensa-allmodconfig
-
->  + /kisskb/src/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: error: case label does not reduce to an integer constant:  => 4917:4
->  + /kisskb/src/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: error: case label does not reduce to an integer constant:  => 3798:2, 3809:2
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-
->  + /kisskb/src/drivers/scsi/aacraid/commsup.c: error: case label does not reduce to an integer constant:  => 1983:2
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-powerpc-gcc5/ppc64le_allmodconfig
-
->  + /kisskb/src/drivers/tty/serial/mpc52xx_uart.c: error: initialization from incompatible pointer type [-Werror=incompatible-pointer-types]:  => 1004:12, 1005:12, 1006:14, 970:12, 968:16, 971:14, 969:12, 1002:16, 1003:16, 967:16
-
-powerpc-gcc5/ppc32_allmodconfig
-
->  + /kisskb/src/drivers/usb/typec/tcpm/tcpm.c: error: case label does not reduce to an integer constant:  => 4724:3
-
-arm64-gcc5.4/arm64-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-
->  + /kisskb/src/fs/xfs/xfs_buf.h: error: initializer element is not constant:  => 46:23
->  + /kisskb/src/sound/usb/midi.c: error: case label does not reduce to an integer constant:  => 1389:2
-
-arm64-gcc5.4/arm64-allmodconfig
-mipsel/mips-allmodconfig
-powerpc-gcc5/powerpc-allmodconfig
-powerpc-gcc5/powerpc-allyesconfig
-powerpc-gcc5/ppc32_allmodconfig
-powerpc-gcc5/ppc64_book3e_allmodconfig
-powerpc-gcc5/ppc64le_allmodconfig
-
->  + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_402' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
->  + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_404' declared with attribute error: FIELD_PREP: mask is not constant:  => 352:38
-
-powerpc-gcc5/powerpc-allmodconfig
 
 
-> *** WARNINGS ***
->
-> 5 warning regressions:
->  + /kisskb/src/arch/m68k/include/asm/string.h: warning: '__builtin_memset' offset [0, 11] is out of the bounds [0, 0] [-Warray-bounds]:  => 68:25
-
-m68k-gcc11/sun3_defconfig
-
->  + /kisskb/src/arch/s390/kernel/machine_kexec.c: warning: 'memcpy' offset [0, 511] is out of the bounds [0, 0] [-Warray-bounds]:  => 57:9
-
-s390x-gcc11/s390-defconfig
-
->  + /kisskb/src/drivers/net/ethernet/i825xx/sun3_82586.c: warning: array subscript 1 is above array bounds of 'volatile struct transmit_cmd_struct *[1]' [-Warray-bounds]:  => 989:108, 989:122
-
-m68k-gcc11/sun3_defconfig
-m68k-gcc8/sun3_defconfig
-
->  + /kisskb/src/drivers/scsi/mpt3sas/mpt3sas_base.c: warning: array subscript 'Mpi2SasIOUnitPage1_t {aka struct _MPI2_CONFIG_PAGE_SASIOUNIT_1}[0]' is partly outside array bounds of 'unsigned char[20]' [-Warray-bounds]:  => 5400:40, 5403:43, 5396:40
-
-powerpc-gcc11/skiroot_defconfig
-
->  + modpost: WARNING: modpost: EXPORT symbol "_mcount" [vmlinux] version generation failed, symbol will not be versioned.:  => N/A
-
-sparc64-gcc11/sparc64-defconfig
-sparc64/sparc64-defconfig
-
-Gr{oetje,eeting}s,
-
- 						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
- 							    -- Linus Torvalds
+4/1/2022 7:47 PM, Mickaël Salaün пишет:
+> 
+> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>> Currently Landlock supports filesystem
+>> restrictions. To support network type rules,
+>> this modification extends and renames
+>> ruleset's access masks.
+> 
+> Please use 72 columns for all commit messages.
+> With vim: set tw=72
+> 
+> The code looks good but you'll have to rebase it on top of my 
+> access_mask_t changes.
+> 
+> Next time you can rebase your changes on my landlock-wip branch at 
+> https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git
+> I'll update this branch regularly but it should not impact much your 
+> changes.
+> 
+   Sure. I will rebase it on your latest updates. Thanks.
+> 
+>>
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>>
+>> Changes since v3:
+>> * Split commit.
+>>
+>> ---
+>>   security/landlock/fs.c       |  4 ++--
+>>   security/landlock/ruleset.c  | 18 +++++++++---------
+>>   security/landlock/ruleset.h  |  8 ++++----
+>>   security/landlock/syscalls.c |  6 +++---
+>>   4 files changed, 18 insertions(+), 18 deletions(-)
+>>
+>> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
+>> index 97b8e421f617..d727bdab7840 100644
+>> --- a/security/landlock/fs.c
+>> +++ b/security/landlock/fs.c
+>> @@ -163,7 +163,7 @@ int landlock_append_fs_rule(struct 
+>> landlock_ruleset *const ruleset,
+>>           return -EINVAL;
+>>
+>>       /* Transforms relative access rights to absolute ones. */
+>> -    access_rights |= LANDLOCK_MASK_ACCESS_FS & 
+>> ~ruleset->fs_access_masks[0];
+>> +    access_rights |= LANDLOCK_MASK_ACCESS_FS & 
+>> ~ruleset->access_masks[0];
+>>       object = get_inode_object(d_backing_inode(path->dentry));
+>>       if (IS_ERR(object))
+>>           return PTR_ERR(object);
+>> @@ -252,7 +252,7 @@ static int check_access_path(const struct 
+>> landlock_ruleset *const domain,
+>>       /* Saves all layers handling a subset of requested accesses. */
+>>       layer_mask = 0;
+>>       for (i = 0; i < domain->num_layers; i++) {
+>> -        if (domain->fs_access_masks[i] & access_request)
+>> +        if (domain->access_masks[i] & access_request)
+>>               layer_mask |= BIT_ULL(i);
+>>       }
+>>       /* An access request not handled by the domain is allowed. */
+>> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
+>> index ec72b9262bf3..78341a0538de 100644
+>> --- a/security/landlock/ruleset.c
+>> +++ b/security/landlock/ruleset.c
+>> @@ -28,7 +28,7 @@ static struct landlock_ruleset *create_ruleset(const 
+>> u32 num_layers)
+>>   {
+>>       struct landlock_ruleset *new_ruleset;
+>>
+>> -    new_ruleset = kzalloc(struct_size(new_ruleset, fs_access_masks,
+>> +    new_ruleset = kzalloc(struct_size(new_ruleset, access_masks,
+>>                   num_layers), GFP_KERNEL_ACCOUNT);
+>>       if (!new_ruleset)
+>>           return ERR_PTR(-ENOMEM);
+>> @@ -39,21 +39,21 @@ static struct landlock_ruleset 
+>> *create_ruleset(const u32 num_layers)
+>>       /*
+>>        * hierarchy = NULL
+>>        * num_rules = 0
+>> -     * fs_access_masks[] = 0
+>> +     * access_masks[] = 0
+>>        */
+>>       return new_ruleset;
+>>   }
+>>
+>> -struct landlock_ruleset *landlock_create_ruleset(const u32 
+>> fs_access_mask)
+>> +struct landlock_ruleset *landlock_create_ruleset(const u32 access_mask)
+>>   {
+>>       struct landlock_ruleset *new_ruleset;
+>>
+>>       /* Informs about useless ruleset. */
+>> -    if (!fs_access_mask)
+>> +    if (!access_mask)
+>>           return ERR_PTR(-ENOMSG);
+>>       new_ruleset = create_ruleset(1);
+>>       if (!IS_ERR(new_ruleset))
+>> -        new_ruleset->fs_access_masks[0] = fs_access_mask;
+>> +        new_ruleset->access_masks[0] = access_mask;
+>>       return new_ruleset;
+>>   }
+>>
+>> @@ -116,7 +116,7 @@ static void build_check_ruleset(void)
+>>           .num_rules = ~0,
+>>           .num_layers = ~0,
+>>       };
+>> -    typeof(ruleset.fs_access_masks[0]) fs_access_mask = ~0;
+>> +    typeof(ruleset.access_masks[0]) fs_access_mask = ~0;
+>>
+>>       BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
+>>       BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
+>> @@ -279,7 +279,7 @@ static int merge_ruleset(struct landlock_ruleset 
+>> *const dst,
+>>           err = -EINVAL;
+>>           goto out_unlock;
+>>       }
+>> -    dst->fs_access_masks[dst->num_layers - 1] = src->fs_access_masks[0];
+>> +    dst->access_masks[dst->num_layers - 1] = src->access_masks[0];
+>>
+>>       /* Merges the @src tree. */
+>>       rbtree_postorder_for_each_entry_safe(walker_rule, next_rule,
+>> @@ -337,8 +337,8 @@ static int inherit_ruleset(struct landlock_ruleset 
+>> *const parent,
+>>           goto out_unlock;
+>>       }
+>>       /* Copies the parent layer stack and leaves a space for the new 
+>> layer. */
+>> -    memcpy(child->fs_access_masks, parent->fs_access_masks,
+>> -            flex_array_size(parent, fs_access_masks, 
+>> parent->num_layers));
+>> +    memcpy(child->access_masks, parent->access_masks,
+>> +            flex_array_size(parent, access_masks, parent->num_layers));
+>>
+>>       if (WARN_ON_ONCE(!parent->hierarchy)) {
+>>           err = -EINVAL;
+>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>> index 2d3ed7ec5a0a..32d90ce72428 100644
+>> --- a/security/landlock/ruleset.h
+>> +++ b/security/landlock/ruleset.h
+>> @@ -97,7 +97,7 @@ struct landlock_ruleset {
+>>            * section.  This is only used by
+>>            * landlock_put_ruleset_deferred() when @usage reaches zero.
+>>            * The fields @lock, @usage, @num_rules, @num_layers and
+>> -         * @fs_access_masks are then unused.
+>> +         * @access_masks are then unused.
+>>            */
+>>           struct work_struct work_free;
+>>           struct {
+>> @@ -124,7 +124,7 @@ struct landlock_ruleset {
+>>                */
+>>               u32 num_layers;
+>>               /**
+>> -             * @fs_access_masks: Contains the subset of filesystem
+>> +             * @access_masks: Contains the subset of filesystem
+>>                * actions that are restricted by a ruleset.  A domain
+>>                * saves all layers of merged rulesets in a stack
+>>                * (FAM), starting from the first layer to the last
+>> @@ -135,12 +135,12 @@ struct landlock_ruleset {
+>>                * layers are set once and never changed for the
+>>                * lifetime of the ruleset.
+>>                */
+>> -            u16 fs_access_masks[];
+>> +            u32 access_masks[];
+> 
+> Changing from u16 to u32 is not correct for this patch, but it would not 
+> be visible with access_mask_t anyway.
+> 
+>>           };
+>>       };
+>>   };
+>>
+>> -struct landlock_ruleset *landlock_create_ruleset(const u32 
+>> fs_access_mask);
+>> +struct landlock_ruleset *landlock_create_ruleset(const u32 access_mask);
+>>
+>>   void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
+>>   void landlock_put_ruleset_deferred(struct landlock_ruleset *const 
+>> ruleset);
+>> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+>> index 32396962f04d..f1d86311df7e 100644
+>> --- a/security/landlock/syscalls.c
+>> +++ b/security/landlock/syscalls.c
+>> @@ -341,10 +341,10 @@ SYSCALL_DEFINE4(landlock_add_rule,
+>>       }
+>>       /*
+>>        * Checks that allowed_access matches the @ruleset constraints
+>> -     * (ruleset->fs_access_masks[0] is automatically upgraded to 
+>> 64-bits).
+>> +     * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
+>>        */
+>> -    if ((path_beneath_attr.allowed_access | 
+>> ruleset->fs_access_masks[0]) !=
+>> -            ruleset->fs_access_masks[0]) {
+>> +    if ((path_beneath_attr.allowed_access | ruleset->access_masks[0]) !=
+>> +            ruleset->access_masks[0]) {
+>>           err = -EINVAL;
+>>           goto out_put_ruleset;
+>>       }
+>> -- 
+>> 2.25.1
+>>
+> .
