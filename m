@@ -2,128 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05DA64F1601
-	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 15:36:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE9594F1658
+	for <lists+netdev@lfdr.de>; Mon,  4 Apr 2022 15:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354076AbiDDNio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 09:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52536 "EHLO
+        id S1358389AbiDDNrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 09:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353469AbiDDNin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 09:38:43 -0400
-Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B8F13B56C
-        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 06:36:47 -0700 (PDT)
-Received: by mail-il1-x12d.google.com with SMTP id e13so3100602ils.8
-        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 06:36:47 -0700 (PDT)
+        with ESMTP id S1358276AbiDDNrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 09:47:08 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A871F3E5CA
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 06:45:06 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id u9so6032273edd.11
+        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 06:45:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=v7AXDrNkV0E+GuzQu0vkT521m8L2g3R8JZyBRpFSWSw=;
-        b=UGi9dsHRnoLPuvzo1S1EvzOOZUHvSHzXBsnw16StvvXGSTaLht7DkGhbmNgritgWoy
-         3S+vdPPYNI+CbTwzNjbbeE7Hw32snvtBgdJ3quDnbJxCb0KtnPvvUi8IKemKBU7+NTcn
-         YDKZMZsFTdUZ44CkNQLumu4g37ihuSwyQIWPc=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ag4NtuXcd337V7EAqGGmB9o5JEXFbkeH+3FIqIGxGO0=;
+        b=F0mJ7WcX4xs/jOWKodEod/6QWP7Ws2vdXT+KJwA3bipp69Y294eucyZJIPupeUKJ8N
+         6Aq2+S80bx6u/ZqROwVieqoEL5yAoKEH0GMrrOc4VbJ9BcKW8Jlm02idcWjg1ImRzOjO
+         bu38z/dqyZkTVu0lEJFBfXU6zPJWisFE+Rj1f4OhydFYaC40Ih+a1Q9WitQg/0+CTKmk
+         Z2zFcgSVry7N1yP7lLhh0JOUzlHQkLPivo6PVGj2GbDIV88pXNWs4sa8Yq54kyIHdF3G
+         mVquOW9lHC2ZyikW2VMY0M8K7F7859m/dHqLXvahTivFjkmaMXM3nusALXtOVmLfj7Ln
+         k5Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=v7AXDrNkV0E+GuzQu0vkT521m8L2g3R8JZyBRpFSWSw=;
-        b=5pgrAjTrSA2Nm59y1Vh873zOxryyrPTxd008hfIKDIOCg+QFqLVp2LYwPqWWVNNm5c
-         PDSx7iuJix/5rxZ3IcVqJbtBdqcXbgifxORTWvj4JRhGTqExDTVCweLFdxUcr5JMhfQx
-         qJT5s007JTcZR//W+SgJvkrWqZOn1WG2/C1c7bzWYqHyik3IRCrBODd8CsxT8L1GqHK0
-         0ZDi/MqCbkF/hCp3mjiImP+DqLVVtI+EFEDqDMloENjohL6qSPSr2jeiKJ6Z2xWLN9yG
-         wnyiSKn1kIFiiibqNK6a0X/rJpnatuKgDHcaYR3W75941Q4l+gfJxWrPeGYm2iZ4QJ9l
-         tCrw==
-X-Gm-Message-State: AOAM531MaQFO8YKv7GCPecnfVn2WmScQWXFoiwvCVAiMp3v53vc0BHqq
-        hJ0shFB7v9kLv1CqN1wPlROv2g==
-X-Google-Smtp-Source: ABdhPJxKWPVlUvcgfx4SvYr7vos8yA4v2Mi7qUIHb9E64q6XZsCGDyBE3n+kdaQg4cAx6UmNyhWkjw==
-X-Received: by 2002:a05:6e02:178d:b0:2ca:1ad2:c471 with SMTP id y13-20020a056e02178d00b002ca1ad2c471mr5284025ilu.311.1649079406491;
-        Mon, 04 Apr 2022 06:36:46 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id x8-20020a92d648000000b002ca2dc1a74esm3188537ilp.58.2022.04.04.06.36.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 04 Apr 2022 06:36:46 -0700 (PDT)
-Message-ID: <10d4f538-249d-f78c-b90f-298c9727d58d@ieee.org>
-Date:   Mon, 4 Apr 2022 08:36:44 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] dt-bindings: net: qcom,ipa: finish the qcom,smp2p
- example
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ag4NtuXcd337V7EAqGGmB9o5JEXFbkeH+3FIqIGxGO0=;
+        b=cPGASSF9qY+8UWwkVzHznmmCQ8hlWmSZq1SV71TWUe5iPAFz8vRwQ8759K1x7T6qM/
+         nygv+R7zxfGpItAsoDUQU4SaN9iTlKLqFbEMzpdp3rmSbkZHm4qGvqftNRtMmvphY/Km
+         XOJ+O1MlNGh6Pf+HkV8B6Wx+g/vHEfOrea5FotQq01Ij0jXlQCXNG50OE8aJpMKa3PRk
+         Wb2aPSrDJQUxbUgU202Qi+vJbrDvvr3Ev3zH0/rNMMSNSNnISQfsnS2ObHcdO+ZKfMjO
+         UrEV9qFtZ3CDBzOqrGHcsMSqxi4Fzl7Z8hTZgw3f49xUfQvGYJ/HzT/Rqbu7Eser7ELw
+         Foag==
+X-Gm-Message-State: AOAM530ZkdPzFMPV0EzlRcqNZoPuLbysg01//+LLMjZxLPTiQgjTNwpa
+        64D9P1a+00/k8V63+t2IQQLJYD44MzKqfxhM
+X-Google-Smtp-Source: ABdhPJwys+HV9TUCHNVVEmCAx3DDsJ2cNjVstxGVCnIgM8Bc/ms4M+z4PvyJ39/sEk8Lu/e3YL4/Mg==
+X-Received: by 2002:a05:6402:5201:b0:419:4c82:8f11 with SMTP id s1-20020a056402520100b004194c828f11mr77514edd.133.1649079905006;
+        Mon, 04 Apr 2022 06:45:05 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id hs12-20020a1709073e8c00b006dfdfdac005sm4409273ejc.174.2022.04.04.06.45.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 06:45:04 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     netdev@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-nfc@lists.01.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Alex Elder <elder@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>
-References: <20220402155551.16509-1-krzysztof.kozlowski@linaro.org>
- <20220402155551.16509-2-krzysztof.kozlowski@linaro.org>
-From:   Alex Elder <elder@ieee.org>
-In-Reply-To: <20220402155551.16509-2-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
+Subject: Re: [PATCH 0/2] MAINTAINERS/dt-bindings: changes to my emails
+Date:   Mon,  4 Apr 2022 15:45:02 +0200
+Message-Id: <164907989905.809631.16161802401962719876.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org>
+References: <20220330074016.12896-1-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/2/22 10:55 AM, Krzysztof Kozlowski wrote:
-> The example using qcom,smp2p should have all necessary properties, to
-> avoid DT schema validation warnings.
-
-Looks good to me.  The particular values don't match any
-reality, but that doesn't matter for getting the syntactic
-parse to pass without error or warning.
-
-Thanks.
-
-Reviewed-by: Alex Elder <elder@linaro.org>
-
+On Wed, 30 Mar 2022 09:40:14 +0200, Krzysztof Kozlowski wrote:
+> From: Krzysztof Kozlowski <krzk@kernel.org>
 > 
-> Reported-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->   Documentation/devicetree/bindings/net/qcom,ipa.yaml | 7 +++++++
->   1 file changed, 7 insertions(+)
+> Hi,
 > 
-> diff --git a/Documentation/devicetree/bindings/net/qcom,ipa.yaml b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> index 58ecc62adfaa..dd4bb2e74880 100644
-> --- a/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> +++ b/Documentation/devicetree/bindings/net/qcom,ipa.yaml
-> @@ -182,6 +182,12 @@ examples:
->   
->           smp2p-mpss {
->                   compatible = "qcom,smp2p";
-> +                interrupts = <GIC_SPI 576 IRQ_TYPE_EDGE_RISING>;
-> +                mboxes = <&apss_shared 6>;
-> +                qcom,smem = <94>, <432>;
-> +                qcom,local-pid = <0>;
-> +                qcom,remote-pid = <5>;
-> +
->                   ipa_smp2p_out: ipa-ap-to-modem {
->                           qcom,entry-name = "ipa";
->                           #qcom,smem-state-cells = <1>;
-> @@ -193,6 +199,7 @@ examples:
->                           #interrupt-cells = <2>;
->                   };
->           };
-> +
->           ipa@1e40000 {
->                   compatible = "qcom,sdm845-ipa";
->   
+> I can take both patches via my Samsung SoC tree, if that's ok.
+> 
+> Best regards,
+> Krzysztof
+> 
+> [...]
 
+Applied, thanks!
+
+[1/2] dt-bindings: update Krzysztof Kozlowski's email
+      commit: 8a1e6bb3f78f06432e095758476358d8cb63c03d
+[2/2] MAINTAINERS: update Krzysztof Kozlowski's email to Linaro
+      commit: 1a9f338f9cf96f8338d5592dee5fce222929e4f7
+
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
