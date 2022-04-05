@@ -2,118 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8E694F43D8
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:09:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 590D74F455F
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346028AbiDEUB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39238 "EHLO
+        id S1357277AbiDEUDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457901AbiDEQ6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 12:58:14 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD362613B
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 09:56:15 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id ku13-20020a17090b218d00b001ca8fcd3adeso3161865pjb.2
-        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 09:56:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pD9fPwmVTM/jGE8ljozcqxyf1v/JIowTzA8YgXdXgLo=;
-        b=6Yhc3GQ5D13EfpCiyxWdY9ATp+e66X5WPXMk58IseiYggOh8EF4zh770E/Bk7DRo51
-         p4h4+pm4+wXMgBLs7qhYW6r1vVN2Wm7Iva6ruTUNUbuSqXPQ14wKHV8caf3YtyNS2Lzu
-         Kveambm80gsiXG3DrJFesbT6dQs5tecj4kseuZoRyGhEDF0QpghcROkKwiOozw0IonrY
-         cFQp7Fy2dYV4yttfGd+tA5dCEWgo4daS5HamfxZ1aTcDAeoqoOlCSQkeSBOmIT+3oI3o
-         n27q25I2PMjmmtWPK+zyETaS0EMrgPC0vQ+07cBMFsDLQXUr/NREnSNOapE4gsNk4ftz
-         tSMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=pD9fPwmVTM/jGE8ljozcqxyf1v/JIowTzA8YgXdXgLo=;
-        b=umpYtpC65wvGLKCIjyT+EE1gqvBgQBBg9W+JyEDaoqimTyZ/4ZadgS1f8JqpU7WZ97
-         E9DaaHoctttnbu8EfFcfCei/i+c+YHrckvn1RGDLG7/mlLJY0Pr+3OSawWBeqFSMZhph
-         cHbYABL4pP6IdRzyCta346Quxvk9OX96OyrsdORBNmL5f8kC08ILHqJmY106vWx+F/Tk
-         sk4eGha4IHGy9q9w+nCfRdkvdBtmglD9jFvb/RYOaFcU1dOeYbSHhyyt9Lsl3WDlTe7k
-         chaS0uPSf8/scJGK+q76qVWEneUsBMOE7mgg3YCQY2NmwGXzdDj0sCC3OlnGsXhpwc6t
-         YNNA==
-X-Gm-Message-State: AOAM530CEwT+6NGEBqMYPlFOI+0tp68vsB+CSn4LLnWECEtQAJG3At2I
-        ijhurixY+yoFgg6N2nwrQESzSQ==
-X-Google-Smtp-Source: ABdhPJxURqOrvjUNTuGDdXp9QzgwB0B9A/Tn2x7b4aAfTIkHHSa8BmZtjlyBr0mLrouMcWOZ+7cwhQ==
-X-Received: by 2002:a17:90a:7841:b0:1c7:e8ad:ea25 with SMTP id y1-20020a17090a784100b001c7e8adea25mr5206129pjl.25.1649177774636;
-        Tue, 05 Apr 2022 09:56:14 -0700 (PDT)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id p18-20020a17090ad31200b001cab747e864sm2785950pju.43.2022.04.05.09.56.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 09:56:13 -0700 (PDT)
-Date:   Tue, 05 Apr 2022 09:56:13 -0700 (PDT)
-X-Google-Original-Date: Tue, 05 Apr 2022 09:56:11 PDT (-0700)
-Subject:     Re: riscv defconfig CONFIG_PM/macb/generic PHY regression in v5.18-rc1
-In-Reply-To: <Ykxl4m1uPPDktZnD@shell.armlinux.org.uk>
-CC:     Conor.Dooley@microchip.com, apatel@ventanamicro.com,
-        netdev@vger.kernel.org, Nicolas.Ferre@microchip.com,
-        Claudiu.Beznea@microchip.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux-riscv@lists.infradead.org
-From:   Palmer Dabbelt <palmer@rivosinc.com>
-To:     linux@armlinux.org.uk
-Message-ID: <mhng-524fe1b1-ca51-43a6-ac0f-7ea325da8b6a@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1573062AbiDERu5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 13:50:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26D4D4C81;
+        Tue,  5 Apr 2022 10:48:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DD98616C5;
+        Tue,  5 Apr 2022 17:48:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F1934C385A0;
+        Tue,  5 Apr 2022 17:48:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649180937;
+        bh=+1O856swZ0z6MyxA17arCGEyqFnENo2NE4LLuIMWiQk=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=B3i5mDiLzPCFJVHSLcYE8l7AFBLzBhcryxnkLtKhyMA55ds2LiVRcYIJjE8X3a/Dj
+         6znJt7exe5G+LbwfrI8FCJTMnQZRNYAkIOvoLAqcPN9KxIzPjngf+ouYVvFdzg7om/
+         bPVtTAaV/IE6BC2/ISXh9k4Ec8AI63B9M4iEC2DoqV8QbEZn5nfBdFubMHsS2/FOgC
+         QSHRdCvaTHPz4rOiDla75dX/RlEWAi4rR1PuF//fFhPmW64Kc7lQHIWQcGuxXkQ4hN
+         rimGX3fA2ZZGw6H4LmdGklbj+rK9AjbU3EBluM/mDkk9Z7FVyIEX/gkEC1J9FJXpNb
+         +8qYI1DKgMjfA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DC033E6D402;
+        Tue,  5 Apr 2022 17:48:56 +0000 (UTC)
+Subject: Re: [GIT PULL] virtio: fixes, cleanups
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220404063128-mutt-send-email-mst@kernel.org>
+References: <20220404063128-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-List-Id: Linux virtualization <virtualization.lists.linux-foundation.org>
+X-PR-Tracked-Message-Id: <20220404063128-mutt-send-email-mst@kernel.org>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+X-PR-Tracked-Commit-Id: 1c80cf031e0204fde471558ee40183695773ce13
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 3e732ebf7316ac83e8562db7e64cc68aec390a18
+Message-Id: <164918093688.27639.685715483194892648.pr-tracker-bot@kernel.org>
+Date:   Tue, 05 Apr 2022 17:48:56 +0000
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, mst@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, elic@nvidia.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 05 Apr 2022 08:53:06 PDT (-0700), linux@armlinux.org.uk wrote:
-> On Tue, Apr 05, 2022 at 01:05:12PM +0000, Conor.Dooley@microchip.com wrote:
->> Hey,
->> I seem to have come across a regression in the default riscv defconfig
->> between riscv-for-linus-5.18-mw0 (bbde015227e8) & v5.18-rc1, exposed by
->> c5179ef1ca0c ("RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt
->> machine") which causes the ethernet phy to not come up on my Icicle kit:
->> [ 3.179864] macb 20112000.ethernet eth0: validation of sgmii with support 0000000,00000000,00006280 and advertisement 0000000,00000000,00004280 failed: -EINVAL
->> [ 3.194490] macb 20112000.ethernet eth0: Could not attach PHY (-22)
->
-> I don't think that would be related to the idle driver. This looks like
-> the PHY hasn't filled in the supported mask at probe time - do you have
-> the driver for the PHY built-in or the PHY driver module loaded?
+The pull request you sent on Mon, 4 Apr 2022 06:31:28 -0400:
 
-IIRC we had a bunch of issues with the PHY on the HiFive Unleashed, 
-there was a quirky reset sequence that it wouldn't even probe 
-correctly without.  We have a 
+> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-    &eth0 {
-            status = "okay";
-            phy-mode = "gmii";
-            phy-handle = <&phy0>;
-            phy0: ethernet-phy@0 {
-                    compatible = "ethernet-phy-id0007.0771";
-                    reg = <0>;
-            };
-    };
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3e732ebf7316ac83e8562db7e64cc68aec390a18
 
-in the Unleashed DT, but I can't find anything similar in the Icicle DT
+Thank you!
 
-    &mac1 {
-            status = "okay";
-            phy-mode = "sgmii";
-            phy-handle = <&phy1>;
-            phy1: ethernet-phy@9 {
-                    reg = <9>;
-                    ti,fifo-depth = <0x1>;
-            };
-            phy0: ethernet-phy@8 {
-                    reg = <8>;
-                    ti,fifo-depth = <0x1>;
-            };
-    };
-
-I seem to remember picking that specific phy because it was similar to 
-the one that was POR for the Icicle at the time we decided, maybe you 
-have a similar phy with a similar quirk and need a similar workaround?
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
