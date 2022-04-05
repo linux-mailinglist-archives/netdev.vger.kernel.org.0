@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 071484F214F
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 06:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F05084F2163
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 06:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbiDECpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 22:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39788 "EHLO
+        id S229604AbiDECPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 22:15:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230222AbiDECpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 22:45:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CA0E15754A
-        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 19:33:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649125981;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wbRs4pePotq0ekCmOToPh7VLTR/XeKpZKgeTS698bkk=;
-        b=ShjVhwRBTo4tT0Id8LY/6rGPFWZy+wsC5Z4aQPdCaK6mYYArRwxv/0b+vGBimfxryHSuZ4
-        EWKv1vYOW41HmRf0vDrudLys+oJyakKaQQswITu6Scjn89/psrooN+pWnKHmJJwHUdq8Or
-        9m38f7qkSbiD4zLRUD871gSqyaApn2E=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-296-zQn9ggtjOvqLzzq60wNZSQ-1; Mon, 04 Apr 2022 20:15:34 -0400
-X-MC-Unique: zQn9ggtjOvqLzzq60wNZSQ-1
-Received: by mail-pl1-f198.google.com with SMTP id s5-20020a170902b18500b00155d6fbf4d4so4046144plr.18
-        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 17:15:34 -0700 (PDT)
+        with ESMTP id S229569AbiDECPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 22:15:24 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96B117ABB2;
+        Mon,  4 Apr 2022 18:10:16 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id o20so3852261pla.13;
+        Mon, 04 Apr 2022 18:10:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=woWc2+lO22HzkiGe6tfKJYkKrmQ1CA7aDFe+SOO4MVo=;
+        b=kfJo4Xj4tsvv/raS2h6Me0pD+/r2cSvGc3gqTYzD3/0o2MAiYvQwl6ekwsFdIjmSE/
+         8e8EX3k9sUmWEP3lmVSt90/6vPD3SGyNwpLLgWJ81KPGtgjXiXA3Y2Opzk2N3uMrJe0k
+         0645Ol9XN1/Sa+kXLJJ/qiRJtTt41BJofHvOAA/fMU+Rb+VUeItqT0mS9IxOlsK6l5HU
+         Z3Hqy8RY1hBwBDPqUX8Oz8gao9TEWxVhfVSqci1C7q7JI7Ht7UQqVK+vHPnxiOoEbF/j
+         /u0wVzWgPfrsuc6ux9NXuku6WHeu/2TX+iONMFZpROfl7DspH33C/kGU28f4h9+Ybj5A
+         WyKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wbRs4pePotq0ekCmOToPh7VLTR/XeKpZKgeTS698bkk=;
-        b=MzT8QgUzQaF0cMF0+5qW63WASBPQ9KqEZEaKboiCt4y5nWVEQ2CKZ0ka3VPe1TSkcH
-         rCDJ5qhKOnmciu2+CeVfurXL9sRHBGn+hOkaItrhNSAnJOp1RcXrYEq1KGlw3tgoNDyP
-         3KTZXYJAdaZvrQ3CN3+/6Vwe01UjhSnsqtxrH7WrBmWfUFhmxr774Ulk1vMBqTl+mXPw
-         sK+k2/VPd1COF4wt0xav9eLXOJ2ll7aa8+DUgVQ+VNegWFEtI80V/tHOesDyMHogzChT
-         Hrx9BCTGe07YS5EiIpcZe5JIf1ERZtqDbSEL/OYlNGGVYrEJK5v5ctcyJgwS2cGp5oqU
-         brGw==
-X-Gm-Message-State: AOAM531s/6l13DAg64R5bFP10Pp71jOmYV2qLKDea7ze9y7Fln+CIWJ8
-        VKUqojuDMoXcStOkl5W7hr661KkIa0oRZAyfrwplecYgL/pNuNaXLXtRXj6yQVdFMQ0RyJxNp3f
-        Wmi7UJ7aYaFZ0V20ZIJRHob4/Ypa4mxwiMzBsxG8bgFLJpuvo0FfxpFFE6uTEAJiZI4HE
-X-Received: by 2002:a17:902:a981:b0:156:229d:6834 with SMTP id bh1-20020a170902a98100b00156229d6834mr666924plb.128.1649117732976;
-        Mon, 04 Apr 2022 17:15:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyt23vGXvUjKmHD0vUDHPCxNCsQxV4fCMFvR7jrSimof6iIKcSA2fyMIvkqH3tAnC1fnLJQSQ==
-X-Received: by 2002:a17:902:a981:b0:156:229d:6834 with SMTP id bh1-20020a170902a98100b00156229d6834mr666892plb.128.1649117732576;
-        Mon, 04 Apr 2022 17:15:32 -0700 (PDT)
-Received: from fedora19.redhat.com (2403-5804-6c4-aa-7079-8927-5a0f-bb55.ip6.aussiebb.net. [2403:5804:6c4:aa:7079:8927:5a0f:bb55])
-        by smtp.gmail.com with ESMTPSA id p18-20020a17090ad31200b001cab747e864sm246404pju.43.2022.04.04.17.15.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Apr 2022 17:15:31 -0700 (PDT)
-From:   Ian Wienand <iwienand@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, Ian Wienand <iwienand@redhat.com>
-Subject: [PATCH v2] net/ethernet : set default assignment identifier to NET_NAME_ENUM
-Date:   Tue,  5 Apr 2022 10:15:00 +1000
-Message-Id: <20220405001500.1485242-1-iwienand@redhat.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=woWc2+lO22HzkiGe6tfKJYkKrmQ1CA7aDFe+SOO4MVo=;
+        b=RM7g+sLwVy6aoF9jzLGG1dWsuMT2RzLkQdzaSAi0P/Ojqx9MwbOP0dSwLOJcYa04Dx
+         H7jtmFA4WbyKcY5D6aXFg+xZvwJh4lgwoZY3yl1LrqOTblt0kkQfoN9nC49TwsRcsHwO
+         BZEnnsJg+9KZYz5+R7OVjAY0k8i9t3dydh+LKVW3jvjlXzm4Sq8QRw61OsbgTHoHmy7h
+         fkgXxIKSugkZXjoKZSQGg54Yy363E1sl0r8INSIxvpdITd9Y5cNID/sIg03NDL5Yn39l
+         /QsRmE2ch5eUFrIVKgmsbK2XNlsGkxSqgrwROgeRc4U8en8UyxKBWmYbd4j+aQSMnzzN
+         aELQ==
+X-Gm-Message-State: AOAM531lG6YImeiPvuj19Ux4dSuWeQFR9EBbcyAPmkzkJKi2W+NcvIij
+        l/mP+rvrr0ms8MEDtjGmCC1rUxKq7V6LDA==
+X-Google-Smtp-Source: ABdhPJyU90xOzeJ4z46zscOLk3F/0p1/sSaacQYJrTAKfRMomoQ2uWRBEXJPTNNlbKSA0irPj0sSuw==
+X-Received: by 2002:a17:902:a581:b0:154:8c7d:736a with SMTP id az1-20020a170902a58100b001548c7d736amr835564plb.74.1649118196127;
+        Mon, 04 Apr 2022 17:23:16 -0700 (PDT)
+Received: from localhost ([183.156.181.188])
+        by smtp.gmail.com with ESMTPSA id j6-20020a63b606000000b003808b0ea96fsm11091422pgf.66.2022.04.04.17.23.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 04 Apr 2022 17:23:15 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH] qed: remove an unneed NULL check on list iterator
+Date:   Tue,  5 Apr 2022 08:22:56 +0800
+Message-Id: <20220405002256.22772-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As noted in the original commit 685343fc3ba6 ("net: add
-name_assign_type netdev attribute")
+The define for_each_pci_dev(d) is:
+ while ((d = pci_get_device(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
 
-  ... when the kernel has given the interface a name using global
-  device enumeration based on order of discovery (ethX, wlanY, etc)
-  ... are labelled NET_NAME_ENUM.
+Thus, the list iterator 'd' is always non-NULL so it doesn't need to
+be checked. So just remove the unnecessary NULL check. Also remove the
+unnecessary initializer because the list iterator is always initialized.
 
-That describes this case, so set the default for the devices here to
-NET_NAME_ENUM to better help userspace tools to know if they might
-like to rename them.
-
-This is inspired by inconsistent interface renaming between both
-distributions and within different releases of distributions;
-particularly with Xen's xen-netfront driver which gets it's device
-from here and is not renamed under CentOS 8, but is under CentOS 9.
-Of course it is ultimately up to userspace (systemd/udev) what happens
-to interfaces marked with with this flag, but providing the naming
-info brings it inline with other common interfaces such as virtio, and
-should ensure better general consistency of renaming behaviour into
-the future.
-
-Signed-off-by: Ian Wienand <iwienand@redhat.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 ---
- net/ethernet/eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
-index ebcc812735a4..62b89d6f54fd 100644
---- a/net/ethernet/eth.c
-+++ b/net/ethernet/eth.c
-@@ -391,7 +391,7 @@ EXPORT_SYMBOL(ether_setup);
- struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
- 				      unsigned int rxqs)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
+index 96a2077fd315..37af8395f1bd 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_ip_services.c
+@@ -161,11 +161,11 @@ EXPORT_SYMBOL(qed_vlan_get_ndev);
+ 
+ struct pci_dev *qed_validate_ndev(struct net_device *ndev)
  {
--	return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_UNKNOWN,
-+	return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_ENUM,
- 				ether_setup, txqs, rxqs);
- }
- EXPORT_SYMBOL(alloc_etherdev_mqs);
+-	struct pci_dev *pdev = NULL;
++	struct pci_dev *pdev;
+ 	struct net_device *upper;
+ 
+ 	for_each_pci_dev(pdev) {
+-		if (pdev && pdev->driver &&
++		if (pdev->driver &&
+ 		    !strcmp(pdev->driver->name, "qede")) {
+ 			upper = pci_get_drvdata(pdev);
+ 			if (upper->ifindex == ndev->ifindex)
 -- 
-2.35.1
+2.17.1
 
