@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5BB4F466E
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 01:12:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C0404F4517
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:40:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387099AbiDEOaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 10:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
+        id S1387112AbiDEOaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 10:30:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386611AbiDEOWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 10:22:14 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B28266CBA;
-        Tue,  5 Apr 2022 06:09:40 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id bo5so12048496pfb.4;
-        Tue, 05 Apr 2022 06:09:40 -0700 (PDT)
+        with ESMTP id S239653AbiDEOWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 10:22:55 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF7D16C926;
+        Tue,  5 Apr 2022 06:09:45 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id d15so5509571pll.10;
+        Tue, 05 Apr 2022 06:09:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=37SR7Zn31WWBGX9RkRYaZCh1XxNUj+JjDrpjS5zX3xw=;
-        b=JNksm1P71eENbHVREKVq7V+oFiG698bw+ibxUTkrtCwpk5e589wfIVtk06SzOGK6ea
-         26zybbYD2Fgn7VqAqwdHWyvRNKU35j4ZUD8hoCUbV4XFijZkRNQvE3w/SV+bCfpe6VrB
-         Smlol8WNulgRXh9nAg1lRgjpCb9k4KtTP0xB4PewZ/iMyVqP413FdHcwW+z5AzFmpS1W
-         xgq5jdgzwuEYQFqE3CfTkSGtB5N2rcR1LCsY53jDILv/j1JgFJ9lCArekaUuu6Chyw4d
-         6BKppHQJMJ7wSY1VFCiKxesks6Z72sg9QnfhG71Y8eYOvCDmiaCDt7oiHVMuGzuI5Xiu
-         BkQA==
+        bh=AoLorMs2QPgOPZx/oN2eqUEASVkggfVUhBUk0oLgaIg=;
+        b=WVhseiONPVkjXGRNnbzJf1cwdGlUzmhqLfwTxM8ffS3nH9X8W+39MZqpIuJgRdVNrd
+         g6qbXWDc/Cm8HMgzHQ5qchrKayqLLWH7J4Ct0P/H1rgjenypPZhz0n/TitSWMGHJ46BH
+         3JnQe2Kof4b4sN+pBGY73x/Pwy+6dN/XF8kewnSb4b00x3MdT8RrRILcqUXZXA10IE2r
+         8MjvaoOR9CG0uiuR82dkHNkJ5bhpKOqGr8OvT8kw0Hi0xPCakbYLSfHtYwnlGJLkwz1W
+         eyjz3vTp6jFxtrESgV2M8TDfMC/QcQSTN7wj/OEyvP/igtgTN4f0WSXKH8Eek5hXLZc1
+         6soQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=37SR7Zn31WWBGX9RkRYaZCh1XxNUj+JjDrpjS5zX3xw=;
-        b=vrY5iY2gbMaEGg2ssE+Eg1JE/1xYZymO6iSH+PdqikUC8Ij78M67kxM6o8NTWOGAGQ
-         EmOM2xRA/yeq0MkivmHe0Ubmg//jVPEpTxberqqTtwOxqxXNtiR290wg7AR9aUbmGayh
-         pmd76jeNDZBKgn7f7NYeoei5NIKep5To5uQesJtVZ3ZyPk0VlsC87+Wmgu6n9//ScvIi
-         UjnvEtVTk9c6ZI0PlWuNcCVZTUpAhY9Kv/VU4Kt/hWi1xqWwSwnI4u6AArgUDV4iZlEG
-         DVZtuDmL1cVuPE7guSaSwfuaGiM9zuoi8kCGL2vOW6jp9lsvZCsKtZ3tFW2nQVmboBIh
-         NChg==
-X-Gm-Message-State: AOAM532CHCwHQx6sVangCrl8//m5JT6oVjoL7GxTvcRc/rGGmQAfbbSW
-        2jZQrdh5TGPyRedOlr6Y77c=
-X-Google-Smtp-Source: ABdhPJwWpczVL736y96tsDeroidAaWlHqfGEIpmpIQzcnUDPLxSVjZc0aijMy2B9dtOd04PvJ+/HUQ==
-X-Received: by 2002:a63:7741:0:b0:386:330e:1dcd with SMTP id s62-20020a637741000000b00386330e1dcdmr2744552pgc.71.1649164179481;
-        Tue, 05 Apr 2022 06:09:39 -0700 (PDT)
+        bh=AoLorMs2QPgOPZx/oN2eqUEASVkggfVUhBUk0oLgaIg=;
+        b=cI5raQBYw4fZRAIgMSEQBgBG7W98XsGt9eOnuJD2IDMaoxAK3OeWPmq4mn7M1BLzC1
+         bi0hOF/xSJqfUmaPvmUnbquZC8bczM/50QQ0oSyNriEuFH738J1lCFxEmKtzbSUmRKx1
+         eW55S2+CY1xfvxbnn8cuoc66tyk4cdURAYKukPXCiUUM9VWjqh3X+Y3j2gERlcaSB7jQ
+         rM2l/XGzLa8F+uowgOsy53xfYiNKIDCrenUUuYL6E/9e9jmnBLrxasBy0Rb7UCML02kJ
+         uXiYv7PFdyXR/u6GyY1LOEa8rlel5F6yEqWmE45U2axFLZzROtnmyR7rzMMl/8c39oNe
+         /SRg==
+X-Gm-Message-State: AOAM531sOLvEoslWXPDFWWajT6dn9giHi7/6Vem19oN/jTpci7LL/xjH
+        vfii/0baNAqUNm311ZVlGZnw1HgCThXcw5tqH3M=
+X-Google-Smtp-Source: ABdhPJy9Z75yqt2caLKMmfNSTkEFqHRvzIzosB9B7l1484grBYN61cIXBVUYYCR2FLCueukUQCexUA==
+X-Received: by 2002:a17:90b:1d04:b0:1c7:b10f:e33d with SMTP id on4-20020a17090b1d0400b001c7b10fe33dmr4069150pjb.165.1649164184763;
+        Tue, 05 Apr 2022 06:09:44 -0700 (PDT)
 Received: from vultr.guest ([2001:19f0:6001:5271:5400:3ff:feef:3aee])
-        by smtp.gmail.com with ESMTPSA id s135-20020a63778d000000b0038259e54389sm13147257pgc.19.2022.04.05.06.09.38
+        by smtp.gmail.com with ESMTPSA id s135-20020a63778d000000b0038259e54389sm13147257pgc.19.2022.04.05.06.09.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:09:38 -0700 (PDT)
+        Tue, 05 Apr 2022 06:09:44 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     andrii@kernel.org, ast@kernel.org, daniel@iogearbox.net,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, shuah@kernel.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH bpf-next v3 19/27] bpf: selftests: Get rid of bpf_rlimit.h
-Date:   Tue,  5 Apr 2022 13:08:50 +0000
-Message-Id: <20220405130858.12165-20-laoar.shao@gmail.com>
+Subject: [PATCH bpf-next v3 21/27] bpf: samples: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK in xdpsock_user
+Date:   Tue,  5 Apr 2022 13:08:52 +0000
+Message-Id: <20220405130858.12165-22-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220405130858.12165-1-laoar.shao@gmail.com>
 References: <20220405130858.12165-1-laoar.shao@gmail.com>
@@ -71,49 +71,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All the files which included bpf_rlimit.h have been set strict mode
-explicitly, so we can get rid of it now.
+Explicitly set libbpf 1.0 API mode, then we can avoid using the deprecated
+RLIMIT_MEMLOCK.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- tools/testing/selftests/bpf/bpf_rlimit.h | 28 ------------------------
- 1 file changed, 28 deletions(-)
- delete mode 100644 tools/testing/selftests/bpf/bpf_rlimit.h
+ samples/bpf/xdpsock_user.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/bpf_rlimit.h b/tools/testing/selftests/bpf/bpf_rlimit.h
-deleted file mode 100644
-index 9dac9b30f8ef..000000000000
---- a/tools/testing/selftests/bpf/bpf_rlimit.h
-+++ /dev/null
-@@ -1,28 +0,0 @@
+diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+index 6f3fe30ad283..be7d2572e3e6 100644
+--- a/samples/bpf/xdpsock_user.c
++++ b/samples/bpf/xdpsock_user.c
+@@ -25,7 +25,6 @@
+ #include <string.h>
+ #include <sys/capability.h>
+ #include <sys/mman.h>
 -#include <sys/resource.h>
--#include <stdio.h>
--
--static  __attribute__((constructor)) void bpf_rlimit_ctor(void)
--{
--	struct rlimit rlim_old, rlim_new = {
--		.rlim_cur	= RLIM_INFINITY,
--		.rlim_max	= RLIM_INFINITY,
--	};
--
--	getrlimit(RLIMIT_MEMLOCK, &rlim_old);
--	/* For the sake of running the test cases, we temporarily
--	 * set rlimit to infinity in order for kernel to focus on
--	 * errors from actual test cases and not getting noise
--	 * from hitting memlock limits. The limit is on per-process
--	 * basis and not a global one, hence destructor not really
--	 * needed here.
--	 */
--	if (setrlimit(RLIMIT_MEMLOCK, &rlim_new) < 0) {
--		perror("Unable to lift memlock rlimit");
--		/* Trying out lower limit, but expect potential test
--		 * case failures from this!
--		 */
--		rlim_new.rlim_cur = rlim_old.rlim_cur + (1UL << 20);
--		rlim_new.rlim_max = rlim_old.rlim_max + (1UL << 20);
--		setrlimit(RLIMIT_MEMLOCK, &rlim_new);
--	}
--}
+ #include <sys/socket.h>
+ #include <sys/types.h>
+ #include <sys/un.h>
+@@ -1886,7 +1885,6 @@ int main(int argc, char **argv)
+ {
+ 	struct __user_cap_header_struct hdr = { _LINUX_CAPABILITY_VERSION_3, 0 };
+ 	struct __user_cap_data_struct data[2] = { { 0 } };
+-	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
+ 	bool rx = false, tx = false;
+ 	struct sched_param schparam;
+ 	struct xsk_umem_info *umem;
+@@ -1917,11 +1915,8 @@ int main(int argc, char **argv)
+ 				data[1].effective, data[1].inheritable, data[1].permitted);
+ 		}
+ 	} else {
+-		if (setrlimit(RLIMIT_MEMLOCK, &r)) {
+-			fprintf(stderr, "ERROR: setrlimit(RLIMIT_MEMLOCK) \"%s\"\n",
+-				strerror(errno));
+-			exit(EXIT_FAILURE);
+-		}
++		/* Use libbpf 1.0 API mode */
++		libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
+ 
+ 		if (opt_num_xsks > 1)
+ 			load_xdp_program(argv, &obj);
 -- 
 2.17.1
 
