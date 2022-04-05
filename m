@@ -2,57 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F0E44F35A6
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 15:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 114274F35A9
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 15:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbiDEKx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 06:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50100 "EHLO
+        id S232130AbiDEKxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 06:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243882AbiDEJkf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 05:40:35 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82219B91BF;
-        Tue,  5 Apr 2022 02:25:04 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S1345814AbiDEJoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 05:44:06 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 800A0C55B9
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 02:29:39 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 1288920569;
+        Tue,  5 Apr 2022 11:29:29 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id P0j5NHflAAp2; Tue,  5 Apr 2022 11:29:28 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 59A0022247;
-        Tue,  5 Apr 2022 11:25:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649150702;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LFGJ3O9qYA9938AO+AQNVvGHGDybEslbIOzd5ve6rOc=;
-        b=Q47t6wRO/Ontk9oWcJ4vW9oK8/E+y+rWODF0rkBnL9v+/QXeae/qrwlUfdccHnDmhLRVX6
-        4ZJYbomJ2z88PT80DLdLq9xDxngYJFp7nL83yRLw7NFbNN+nI/gjV3Tq583WBCexaCW0hv
-        31+C6oUMXrl2LMJ4rdbUhUXiJsSfdV0=
-From:   Michael Walle <michael@walle.cc>
-To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v4 2/2] hwmon: intel-m10-bmc-hwmon: use devm_hwmon_sanitize_name()
-Date:   Tue,  5 Apr 2022 11:24:52 +0200
-Message-Id: <20220405092452.4033674-3-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405092452.4033674-1-michael@walle.cc>
-References: <20220405092452.4033674-1-michael@walle.cc>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 8F90E20527;
+        Tue,  5 Apr 2022 11:29:28 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 8941C80004A;
+        Tue,  5 Apr 2022 11:29:28 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 5 Apr 2022 11:29:28 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 5 Apr
+ 2022 11:29:28 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id AC1133182E07; Tue,  5 Apr 2022 11:29:27 +0200 (CEST)
+Date:   Tue, 5 Apr 2022 11:29:27 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     David Ahern <dsahern@kernel.org>
+CC:     <netdev@vger.kernel.org>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <oliver.sang@intel.com>,
+        <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH net] xfrm: Pass flowi_oif or l3mdev as oif to
+ xfrm_dst_lookup
+Message-ID: <20220405092927.GA2517843@gauss3.secunet.de>
+References: <20220401185837.40626-1-dsahern@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220401185837.40626-1-dsahern@kernel.org>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,44 +65,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of open-coding the bad characters replacement in the hwmon name,
-use the new devm_hwmon_sanitize_name().
+On Fri, Apr 01, 2022 at 12:58:37PM -0600, David Ahern wrote:
+> The commit referenced in the Fixes tag no longer changes the
+> flow oif to the l3mdev ifindex. A xfrm use case was expecting
+> the flowi_oif to be the VRF if relevant and the change broke
+> that test. Update xfrm_bundle_create to pass oif if set and any
+> potential flowi_l3mdev if oif is not set.
+> 
+> Fixes: 40867d74c374 ("net: Add l3mdev index to flow struct and avoid oif reset for port devices")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Signed-off-by: David Ahern <dsahern@kernel.org>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Acked-by: Xu Yilun <yilun.xu@intel.com>
----
- drivers/hwmon/intel-m10-bmc-hwmon.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/hwmon/intel-m10-bmc-hwmon.c b/drivers/hwmon/intel-m10-bmc-hwmon.c
-index 7a08e4c44a4b..6e82f7200d1c 100644
---- a/drivers/hwmon/intel-m10-bmc-hwmon.c
-+++ b/drivers/hwmon/intel-m10-bmc-hwmon.c
-@@ -515,7 +515,6 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
- 	struct intel_m10bmc *m10bmc = dev_get_drvdata(pdev->dev.parent);
- 	struct device *hwmon_dev, *dev = &pdev->dev;
- 	struct m10bmc_hwmon *hw;
--	int i;
- 
- 	hw = devm_kzalloc(dev, sizeof(*hw), GFP_KERNEL);
- 	if (!hw)
-@@ -528,13 +527,9 @@ static int m10bmc_hwmon_probe(struct platform_device *pdev)
- 	hw->chip.info = hw->bdata->hinfo;
- 	hw->chip.ops = &m10bmc_hwmon_ops;
- 
--	hw->hw_name = devm_kstrdup(dev, id->name, GFP_KERNEL);
--	if (!hw->hw_name)
--		return -ENOMEM;
--
--	for (i = 0; hw->hw_name[i]; i++)
--		if (hwmon_is_bad_char(hw->hw_name[i]))
--			hw->hw_name[i] = '_';
-+	hw->hw_name = devm_hwmon_sanitize_name(dev, id->name);
-+	if (IS_ERR(hw->hw_name))
-+		return PTR_ERR(hw->hw_name);
- 
- 	hwmon_dev = devm_hwmon_device_register_with_info(dev, hw->hw_name,
- 							 hw, &hw->chip, NULL);
--- 
-2.30.2
-
+Applied to the ipsec tree, thanks David!
