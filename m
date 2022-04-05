@@ -2,90 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D48874F3FF7
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123684F3EBF
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 22:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384794AbiDEUFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43220 "EHLO
+        id S1357493AbiDEUD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457745AbiDEQjr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 12:39:47 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70EF6D7631;
-        Tue,  5 Apr 2022 09:37:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649176668; x=1680712668;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0XdaCmbgNbaa3xchsuSOZO9UgEXIgUm89IngezaXfP4=;
-  b=Lsd4mn+xBYy6ZS6V0nGwJy0SisMRDMGWI+hm5Gm1+z9fmGBZEHwPZD/b
-   2nWKf1XEMMB5ZOhbCVzb9khD2WkTl9La4fFJL2Lq/MkP4yff7Mc42kFYm
-   Bip9ODnYqC3x09oykCv/ZcAu0NATpzmpcyNr1PpSSN+BOEzvtLUe5vl6g
-   E2ZX+zuhu9MEz1HnDcZeiLbuSs1aMz/bXnYKclZ6ttfJ0hy/5aRNwqO8D
-   2AYtiwJFwlR+OTFGb7bz571IdeVJIa/3znMzrA53ZpGy7jVXvMdGkIVw9
-   4i4uH3zJDOknn01abAAOZBvoszqnZRdXPhuV8leLZONMedmsIlhS0levl
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="321492685"
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="321492685"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 09:37:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="722116663"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga005.jf.intel.com with ESMTP; 05 Apr 2022 09:37:26 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
-        maciej.fijalkowski@intel.com, magnus.karlsson@intel.com,
-        ast@kernel.org, daniel@iogearbox.net, hawk@kernel.org,
-        john.fastabend@gmail.com, bpf@vger.kernel.org
-Subject: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates 2022-04-05
-Date:   Tue,  5 Apr 2022 09:38:00 -0700
-Message-Id: <20220405163803.63815-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S1457895AbiDEQ5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 12:57:44 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C729220BD6;
+        Tue,  5 Apr 2022 09:55:41 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 796EF1EC0502;
+        Tue,  5 Apr 2022 18:55:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649177735;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JY4/OPfg1PtWK4WJhPTqkYrmoKWgxT1mUYXtCHiS4ug=;
+        b=k5ii1JF5xPofyJTFKU5oNprGEWoub9d1wYkVRZs2+LqjlasIW90ySctLvwVo/9iM6bXfqe
+        wfV6moDTGIN5YaUgAbBRYTYDjmbdGAm+M4sPvzkxnjhEbuDGFo4qpkzUqVT2XGMCiEq16D
+        LCgp9HqbqIiI1MlXEv+1qMEUzNt1DkU=
+Date:   Tue, 5 Apr 2022 18:55:37 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: [RESEND PATCH 06/11] brcmfmac: sdio: Fix undefined behavior due to
+ shift overflowing the constant
+Message-ID: <Ykx0iRlvtBnKqtbG@zn.tnic>
+References: <20220405151517.29753-1-bp@alien8.de>
+ <20220405151517.29753-7-bp@alien8.de>
+ <87y20jr1qt.fsf@kernel.org>
+ <YkxpIQHKLXmGBwV1@zn.tnic>
+ <87pmlvqye0.fsf@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <87pmlvqye0.fsf@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Fijalkowski says:
+Fix:
 
-We were solving issues around AF_XDP busy poll's not-so-usual scenarios,
-such as very big busy poll budgets applied to very small HW rings. This
-set carries the things that were found during that work that apply to
-net tree.
+  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: In function ‘brcmf_sdio_drivestrengthinit’:
+  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3798:2: error: case label does not reduce to an integer constant
+    case SDIOD_DRVSTR_KEY(BRCM_CC_43143_CHIP_ID, 17):
+    ^~~~
+  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3809:2: error: case label does not reduce to an integer constant
+    case SDIOD_DRVSTR_KEY(BRCM_CC_43362_CHIP_ID, 13):
+    ^~~~
 
-One thing that was fixed for all in-tree ZC drivers was missing on ice
-side all the time - it's about syncing RCU before destroying XDP
-resources. Next one fixes the bit that is checked in ice_xsk_wakeup and
-third one avoids false setting of DD bits on Tx descriptors.
+See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
+details as to why it triggers with older gccs only.
 
-The following are changes since commit 1158f79f82d437093aeed87d57df0548bdd68146:
-  ipv6: Fix stats accounting in ip6_pkt_drop
-and are available in the git repository at:
-  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Arend van Spriel <aspriel@gmail.com>
+Cc: Franky Lin <franky.lin@broadcom.com>
+Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+Cc: Kalle Valo <kvalo@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: brcm80211-dev-list.pdl@broadcom.com
+Cc: netdev@vger.kernel.org
+---
 
-Maciej Fijalkowski (3):
-  ice: synchronize_rcu() when terminating rings
-  ice: xsk: fix VSI state check in ice_xsk_wakeup()
-  ice: clear cmd_type_offset_bsz for TX rings
+Resend, this time with linux-wireless on Cc so that patchwork can pick
+it up.
 
- drivers/net/ethernet/intel/ice/ice.h      | 2 +-
- drivers/net/ethernet/intel/ice/ice_main.c | 6 ++++--
- drivers/net/ethernet/intel/ice/ice_xsk.c  | 6 ++++--
- 3 files changed, 9 insertions(+), 5 deletions(-)
+Thx.
+
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index ba3c159111d3..d78ccc223709 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -557,7 +557,7 @@ enum brcmf_sdio_frmtype {
+ 	BRCMF_SDIO_FT_SUB,
+ };
+ 
+-#define SDIOD_DRVSTR_KEY(chip, pmu)     (((chip) << 16) | (pmu))
++#define SDIOD_DRVSTR_KEY(chip, pmu)     (((unsigned int)(chip) << 16) | (pmu))
+ 
+ /* SDIO Pad drive strength to select value mappings */
+ struct sdiod_drive_str {
+-- 
+2.35.1
+
 
 -- 
-2.31.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
