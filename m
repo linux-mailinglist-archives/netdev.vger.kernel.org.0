@@ -2,148 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E6394F21DF
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 06:10:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A453F4F21A4
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 06:09:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbiDECjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Apr 2022 22:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40738 "EHLO
+        id S229854AbiDECi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Apr 2022 22:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiDECjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 22:39:20 -0400
-Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3757B264579;
-        Mon,  4 Apr 2022 18:40:48 -0700 (PDT)
-Received: by mail-ot1-x330.google.com with SMTP id b17-20020a0568301df100b005ce0456a9efso8419292otj.9;
-        Mon, 04 Apr 2022 18:40:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p+DXFHCF2UvEXqcV3saeipg+Jd2FbLMogSaL4CBw2NA=;
-        b=g8OlHjsQ1CtzdObYDfcJ76xmzyb6G4j7QhB69J4zH1fv1/MLPELUdRUh8nN59fFsE9
-         TASiTYslSLbhFpTO607+Mt35hU6DkCibj9ewG0SETVINHFoa+WXeBrfeBI1cBJ7NMVWh
-         kvG0ZmcZRigeoyXH/wV/Hmj0JIGUXdQS4Qr0lkRW/JM6mDqXplYh8+xW6pIEjogWjEWQ
-         4EUVTWawsbvgHGAXIomwHeDupGWad2XjdHLt98LD2bVvSwV4YSP5LIti4Vh7mNUAwZyN
-         kMUdwjvSP8/p0qqYBNsEHjs4CIRjyvLHS3ewsqXE78fwWp4EPctk7LAaXFHFVjJxXzcF
-         4xhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p+DXFHCF2UvEXqcV3saeipg+Jd2FbLMogSaL4CBw2NA=;
-        b=Ygq7y3O8bpRdUOMDczK77O2CPQVdr+5hJAMdHtIMPy+v0YI/l/Gwhv6ZCiBOWyhoGB
-         XuioFovaGetqxr8yH3b+ZKV4mqFayTLAG6eMpuqG/WsMj9bkB8jsyKMXNzmSGWoyHHrP
-         Qa/fuOfVz7f+/8XY2JI/DC35Zhdks5QrfmMCkbaPsABFZfJkrV+owBs5emJmqaEBow+d
-         Ag6OfmSXjoFgHZ+vKPBr0yivmofBAr6fJxA/B4TVgFw9QJWarrdaO0X750zF3JcWb3Tl
-         7kYv0IBnnIp30wZ0mIlT47UpSSHIZFcKhdbd3ixZdRuAM7+OWOg5/CKIUPTpqR46MCBZ
-         eOFw==
-X-Gm-Message-State: AOAM532Rw/oMdS9ezP67q0cYXB5XRcUUhvE+8lSCICK/J+ifwDrGd1WU
-        Iek9PSCz62MFqlo6nieEp9vOF59M3XdYpSynXeZt68Wwj9yMVg==
-X-Google-Smtp-Source: ABdhPJxsdfGFVmbIngcIiGZU2Dze1DRrqxDCy8pTpRcHDbkqO00RV7IXw+jlMla6F7mZ32UdR2ryN77pZ+9uUsh0K+s=
-X-Received: by 2002:ab0:35f8:0:b0:35c:e49b:ede9 with SMTP id
- w24-20020ab035f8000000b0035ce49bede9mr177224uau.74.1649116258588; Mon, 04 Apr
- 2022 16:50:58 -0700 (PDT)
+        with ESMTP id S229848AbiDECiN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Apr 2022 22:38:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E1A239313
+        for <netdev@vger.kernel.org>; Mon,  4 Apr 2022 18:37:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A172B81AE0
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 00:00:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D93FC3411D
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 00:00:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649116837;
+        bh=zFyw1VrfGv7NEuMWOTezqzL8GubbV0WO1PDpwo/w7kk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IzT8pKglPQrYQePYYNDTTvWosEy8MxZkq3wR0piD8u7iSz63ghJ7anCpsXVy8rPww
+         h8sb6BeBAosTUPJfJSBf5tC/Uc9Zc7IhUFp3EN+3Y4bey3Juna89uPMBgdz3W6AXN8
+         KvMFgfyNzawLqWgHmU50yAJKNxBLRXw3d+NWJeiFYcgugGX/GADSzk/5G8g9++kPxr
+         OpF27iOsOSCNOr0NIjmDYXJCtgmcKH1aCT/Qss+bZqX0jw6YqWJZnXdaS1BIF6FzjI
+         YW3kHL8sWBe0nwkHW+VswjM/Okte+nrlOhP3czPdm/y4SX3zE8ViE7mZZZHIzCb+Y/
+         aCTsH/tzvnYAg==
+Received: by mail-ed1-f53.google.com with SMTP id k2so5769523edj.9
+        for <netdev@vger.kernel.org>; Mon, 04 Apr 2022 17:00:37 -0700 (PDT)
+X-Gm-Message-State: AOAM5313y1P2s8asmPamuhdahG1ZS1Dn5NwPEaNpWHs4AghtwQ09jr4C
+        dl3bz6kmrnfD1b0/3HLXzxk91mIx14zuKrFo3sSVMQ==
+X-Google-Smtp-Source: ABdhPJx00CBmV+NQNnGWVZ6pCbTPeYWoi7t9WNITl4M8WQe+QSjOqLEi5/uSRAkUXHVhCjpjoCKilOkyYU4kDA3K4zE=
+X-Received: by 2002:aa7:c157:0:b0:418:f8e3:4c87 with SMTP id
+ r23-20020aa7c157000000b00418f8e34c87mr671966edp.271.1649116835186; Mon, 04
+ Apr 2022 17:00:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220223223326.28021-1-ricardo.martinez@linux.intel.com>
- <20220223223326.28021-9-ricardo.martinez@linux.intel.com> <CAHNKnsTZ57hZfy_CTv8-AXuXJEuYVCaO0oax03eMMYzerB-Oyw@mail.gmail.com>
- <a0f3d677-e3a8-ecef-a17e-0638764bd425@linux.intel.com>
-In-Reply-To: <a0f3d677-e3a8-ecef-a17e-0638764bd425@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 5 Apr 2022 02:50:49 +0300
-Message-ID: <CAHNKnsRrvz+pnpeGoJdRDD=Qto3eQR79E29Jz2k2kKM0vXMaTQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 08/13] net: wwan: t7xx: Add data path interface
-To:     "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        chandrashekar.devegowda@intel.com,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>, amir.hanania@intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, eliot.lee@intel.com,
-        ilpo.johannes.jarvinen@intel.com, moises.veleta@intel.com,
-        pierre-louis.bossart@intel.com, muralidharan.sethuraman@intel.com,
-        Soumya.Prakash.Mishra@intel.com, sreehari.kancharla@intel.com,
-        madhusmita.sahu@intel.com
+References: <20220328175033.2437312-1-roberto.sassu@huawei.com>
+ <20220331022727.ybj4rui4raxmsdpu@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <b9f5995f96da447c851f7c9db8232a9b@huawei.com> <20220401235537.mwziwuo4n53m5cxp@MBP-98dd607d3435.dhcp.thefacebook.com>
+ <CACYkzJ5QgkucL3HZ4bY5Rcme4ey6U3FW4w2Gz-9rdWq0_RHvgA@mail.gmail.com>
+ <CAEiveUcx1KHoJ421Cv+52t=0U+Uy2VF51VC_zfTSftQ4wVYOPw@mail.gmail.com>
+ <c2e57f10b62940eba3cfcae996e20e3c@huawei.com> <CAADnVQJSso+GSXC-QmNmj0GBPZzxRCRfqAcQbqD-6y0CtMSopQ@mail.gmail.com>
+In-Reply-To: <CAADnVQJSso+GSXC-QmNmj0GBPZzxRCRfqAcQbqD-6y0CtMSopQ@mail.gmail.com>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Tue, 5 Apr 2022 02:00:24 +0200
+X-Gmail-Original-Message-ID: <CACYkzJ7ZVbL2MG7ugmDEfogSPAHkYYMCHxRO_eBCJJmBZyn6Rw@mail.gmail.com>
+Message-ID: <CACYkzJ7ZVbL2MG7ugmDEfogSPAHkYYMCHxRO_eBCJJmBZyn6Rw@mail.gmail.com>
+Subject: Re: [PATCH 00/18] bpf: Secure and authenticated preloading of eBPF programs
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Roberto Sassu <roberto.sassu@huawei.com>,
+        Djalal Harouni <tixxdz@gmail.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "alexandre.torgue@foss.st.com" <alexandre.torgue@foss.st.com>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Ricardo,
-
-On Tue, Apr 5, 2022 at 2:29 AM Martinez, Ricardo
-<ricardo.martinez@linux.intel.com> wrote:
-> On 3/6/2022 6:58 PM, Sergey Ryazanov wrote:
->> On Thu, Feb 24, 2022 at 1:35 AM Ricardo Martinez
->> <ricardo.martinez@linux.intel.com> wrote:
->>> From: Haijun Liu <haijun.liu@mediatek.com>
->>>
->>> Data Path Modem AP Interface (DPMAIF) HIF layer provides methods
->>> for initialization, ISR, control and event handling of TX/RX flows.
->>>
->>> DPMAIF TX
->>> Exposes the `dmpaif_tx_send_skb` function which can be used by the
->>> network device to transmit packets.
->>> The uplink data management uses a Descriptor Ring Buffer (DRB).
->>> First DRB entry is a message type that will be followed by 1 or more
->>> normal DRB entries. Message type DRB will hold the skb information
->>> and each normal DRB entry holds a pointer to the skb payload.
->>>
->>> DPMAIF RX
->>> The downlink buffer management uses Buffer Address Table (BAT) and
->>> Packet Information Table (PIT) rings.
->>> The BAT ring holds the address of skb data buffer for the HW to use,
->>> while the PIT contains metadata about a whole network packet including
->>> a reference to the BAT entry holding the data buffer address.
->>> The driver reads the PIT and BAT entries written by the modem, when
->>> reaching a threshold, the driver will reload the PIT and BAT rings.
-> ...
->>> +static int t7xx_dpmaif_add_skb_to_ring(struct dpmaif_ctrl *dpmaif_ctrl, struct sk_buff *skb)
->>> +{
->>> +       unsigned short cur_idx, drb_wr_idx_backup;
->>> ...
->>> +       txq = &dpmaif_ctrl->txq[skb_cb->txq_number];
->>> ...
->>> +       cur_idx = txq->drb_wr_idx;
->>> +       drb_wr_idx_backup = cur_idx;
->>> ...
->>> +       for (wr_cnt = 0; wr_cnt < payload_cnt; wr_cnt++) {
->>> ...
->>> +               bus_addr = dma_map_single(dpmaif_ctrl->dev, data_addr, data_len, DMA_TO_DEVICE);
->>> +               if (dma_mapping_error(dpmaif_ctrl->dev, bus_addr)) {
->>> +                       dev_err(dpmaif_ctrl->dev, "DMA mapping fail\n");
->>> +                       atomic_set(&txq->tx_processing, 0);
->>> +
->>> +                       spin_lock_irqsave(&txq->tx_lock, flags);
->>> +                       txq->drb_wr_idx = drb_wr_idx_backup;
->>> +                       spin_unlock_irqrestore(&txq->tx_lock, flags);
->>
->> What is the purpose of locking here?
+On Tue, Apr 5, 2022 at 12:49 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> The intention is to protect against concurrent access of drb_wr_idx by t7xx_txq_drb_wr_available()
+> On Mon, Apr 4, 2022 at 10:21 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
+> >
+> > > From: Djalal Harouni [mailto:tixxdz@gmail.com]
+> > > Sent: Monday, April 4, 2022 9:45 AM
+> > > On Sun, Apr 3, 2022 at 5:42 PM KP Singh <kpsingh@kernel.org> wrote:
+> > > >
+> > > > On Sat, Apr 2, 2022 at 1:55 AM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > ...
+> > > > >
+> > > > > > Pinning
+> > > > > > them to unreachable inodes intuitively looked the
+> > > > > > way to go for achieving the stated goal.
+> > > > >
+> > > > > We can consider inodes in bpffs that are not unlinkable by root
+> > > > > in the future, but certainly not for this use case.
+> > > >
+> > > > Can this not be already done by adding a BPF_LSM program to the
+> > > > inode_unlink LSM hook?
+> > > >
+> > >
+> > > Also, beside of the inode_unlink... and out of curiosity: making sysfs/bpffs/
+> > > readonly after pinning, then using bpf LSM hooks
+> > > sb_mount|remount|unmount...
+> > > family combining bpf() LSM hook... isn't this enough to:
+> > > 1. Restrict who can pin to bpffs without using a full MAC
+> > > 2. Restrict who can delete or unmount bpf filesystem
+> > >
 
-t7xx_txq_drb_wr_available() only reads the drb_wr_idx field, why would
-you serialize that concurrent read?
+I like this approach better, you will have to restrict the BPF, if you
+want to implement MAC policy using BPF.
 
->>> +                       return -ENOMEM;
->>> +               }
->>> ...
->>> +       }
->>> ...
->>> +}
+Can you please try implementing something using these hooks?
 
--- 
-Sergey
+> > > ?
+> >
+> > I'm thinking to implement something like this.
+> >
+> > First, I add a new program flag called
+> > BPF_F_STOP_ONCONFIRM, which causes the ref count
+> > of the link to increase twice at creation time. In this way,
+> > user space cannot make the link disappear, unless a
+> > confirmation is explicitly sent via the bpf() system call.
+
+I don't like this approach, this just sounds like an intentional
+dangling reference, prone to refcounting errors and it does not
+really solve the purpose you want to achieve.
+
+And you will still need a policy around the BPF syscall,
+so why not just use the LSM hooks as suggested above?
+
+> >
+> > Another advantage is that other LSMs can decide
+> > whether or not they allow a program with this flag
+> > (in the bpf security hook).
+> >
+> > This would work regardless of the method used to
+> > load the eBPF program (user space or kernel space).
+> >
+> > Second, I extend the bpf() system call with a new
+> > subcommand, BPF_LINK_CONFIRM_STOP, which
+> > decreases the ref count for the link of the programs
+> > with the BPF_F_STOP_ONCONFIRM flag. I will also
+> > introduce a new security hook (something like
+> > security_link_confirm_stop), so that an LSM has the
+> > opportunity to deny the stop (the bpf security hook
+> > would not be sufficient to determine exactly for
+> > which link the confirmation is given, an LSM should
+> > be able to deny the stop for its own programs).
+> >
+> > What do you think?
+>
+> Hack upon a hack? Makes no sense.
