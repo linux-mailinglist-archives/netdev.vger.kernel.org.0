@@ -2,106 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4B6D4F466A
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 01:12:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 703DC4F45FB
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:57:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378679AbiDEUEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
+        id S231571AbiDET7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 15:59:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573251AbiDESdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 14:33:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788F713F6F;
-        Tue,  5 Apr 2022 11:31:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2573EB81E2E;
-        Tue,  5 Apr 2022 18:31:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 658C7C385A1;
-        Tue,  5 Apr 2022 18:31:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649183480;
-        bh=1hnkQYUuoWkC4yQdqZXmunRlJ4PgNWR3bFFQPi+NKyg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WAh2iBjp+FfhVbPaBSaaW1gZl23WvY8W7NK7nD02Ge6408pU+/hV1gDEDnPZmTwzw
-         7QyNLelnig/aEflwUslwjCPrVhDTGVt/I1ic0FVr2Yo2r7/9geSY8WOPoxytkS7M//
-         Z8WU+k2aZq2HLB4Y7/a+5Tc9FckxgyPiLy9TuAXn70Vh311gcXeoSufKgqtzpneRYe
-         m4TOGfewkusTEIbOAyBax6kd88obeERSAjxC9l7yhfuczjIVHVZlC/yiSEaEpcAWgV
-         bh9TDfaQ4FGOzXWJIjaS2mtFXSBHxzgyNoN6TpmYbpg/3yBdEKaQVudQgYDbbMSHrX
-         BknM8GzlOpsuw==
-Date:   Tue, 5 Apr 2022 21:31:16 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH 10/11] IB/mlx5: Fix undefined behavior due to shift
- overflowing the constant
-Message-ID: <YkyK9NfN57ldFuyY@unreal>
-References: <20220405151517.29753-1-bp@alien8.de>
- <20220405151517.29753-11-bp@alien8.de>
+        with ESMTP id S1573403AbiDETHd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 15:07:33 -0400
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A7BDFD76;
+        Tue,  5 Apr 2022 12:05:33 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1649185531; bh=SAA9dfx55MysOmiQzcHDMnPsN4/x681hTalOLovhpPE=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=SBHOSgcXwcMafMQKThYaJOM7QfgUspeVO8YsgV+jXTp14qIw7kLMTjpP/4HI0J1XC
+         uH6ZeKg5K2t8Hn4E/zDhjQa01z01Cxs7lBNar6GXKpAHN/V0TNRvoIqCH7gvVLGDA7
+         g1K6/cIXTPUb4jkXy9TONf0QPYnMRjWNwI0LPb7paU3M97Dkv90mS6kKzhIASYuokC
+         tMJ94WaRh08SGM7JE+rgNNDwL2exRtl/f6uGuCej3eX3u/oReRMeuOFItgCL3Tx5XI
+         c1OACToIa5uv2vxHIK3XaSPc+VR3d9f8fql3DbAniQH31fOFjazzsLw7jjds3a+dP8
+         wgD6ZMPyI00UA==
+To:     Peter Seiderer <ps.report@gmx.net>
+Cc:     linux-wireless@vger.kernel.org, Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] ath9k: fix ath_get_rate_txpower() to respect the
+ rate list end tag
+In-Reply-To: <20220404225212.2876091a@gmx.net>
+References: <20220402153014.31332-1-ps.report@gmx.net>
+ <87ilroemo4.fsf@toke.dk> <20220404225212.2876091a@gmx.net>
+Date:   Tue, 05 Apr 2022 21:05:31 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87v8vncpvo.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220405151517.29753-11-bp@alien8.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 05:15:16PM +0200, Borislav Petkov wrote:
-> From: Borislav Petkov <bp@suse.de>
-> 
-> Fix:
-> 
->   drivers/infiniband/hw/mlx5/main.c: In function ‘translate_eth_legacy_proto_oper’:
->   drivers/infiniband/hw/mlx5/main.c:370:2: error: case label does not reduce to an integer constant
->     case MLX5E_PROT_MASK(MLX5E_50GBASE_KR2):
->     ^~~~
-> 
-> See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-> details as to why it triggers with older gccs only.
-> 
-> Signed-off-by: Borislav Petkov <bp@suse.de>
-> Cc: Leon Romanovsky <leon@kernel.org>
-> Cc: Saeed Mahameed <saeedm@nvidia.com>
-> Cc: linux-rdma@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> ---
->  include/linux/mlx5/port.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Peter Seiderer <ps.report@gmx.net> writes:
 
-I would like to take this patch to mlx5-next, but it didn't show
-nor in patchworks [1] nor in lore [2].
+> Hello Toke,
+>
+> On Mon, 04 Apr 2022 20:19:39 +0200, Toke H=C3=B8iland-J=C3=B8rgensen <tok=
+e@toke.dk> wrote:
+>
+>> Peter Seiderer <ps.report@gmx.net> writes:
+>>=20
+>> > Stop reading (and copying) from ieee80211_tx_rate to ath_tx_info.rates
+>> > after list end tag (count =3D=3D 0, idx < 0), prevents copying of garb=
+age
+>> > to card registers.=20=20
+>>=20
+>> In the normal case I don't think this patch does anything, since any
+>> invalid rate entries will already be skipped (just one at a time instead
+>> of all at once). So this comment is a bit misleading.
+>
+> Save some (minimal) compute time? Found it something misleading while
+> debugging to see random values written out to the card and found this
+> comment in net/mac80211/rate.c:
+>
+>  648                 /*
+>  649                  * make sure there's no valid rate following
+>  650                  * an invalid one, just in case drivers don't
+>  651                  * take the API seriously to stop at -1.
+>  652                  */
+>
+> and multiple places doing the same check (count =3D=3D 0, idx < 0) for va=
+lidation
+> e.g.:
+>
+>  723                 if (i < ARRAY_SIZE(info->control.rates) &&
+>  724                     info->control.rates[i].idx >=3D 0 &&
+>  725                     info->control.rates[i].count) {
+>
+> or=20
+>
+>  742                 if (rates[i].idx < 0 || !rates[i].count)
+>  743                         break;
+>
+>>=20
+>> Also, Minstrel could in principle produce a rate sequence where the
+>> indexes are all positive, but there's one in the middle with a count of
+>> 0, couldn't it? With this patch, the last entries of such a sequence
+>> would now be skipped...
+>
+> According to net/mac80211/rc80211_minstrel_ht.c:
+>
+> 1128 static bool
+> 1129 minstrel_ht_txstat_valid(struct minstrel_priv *mp, struct minstrel_h=
+t_sta *     mi,
+> 1130                          struct ieee80211_tx_rate *rate)
+> 1131 {
+> 1132         int i;
+> 1133=20
+> 1134         if (rate->idx < 0)
+> 1135                 return false;
+> 1136=20
+> 1137         if (!rate->count)
+> 1138                 return false;
+> 1139=20
+>
+> minstrel although evaluates a rate count of zero as invalid...
 
-Thanks
+So my concern was mostly that the documentation (in mac80211.h) says
+that an idx of -1 indicates the end, but says nothing about the count.
+Which implies that in principle you could have a rate table of { idx,
+count } like { 1, 1 }, { 2, 0 }, { 3, 1 } which would mean all three
+rates was valid but the second one would just be "skipped" due to a
+count of zero.
 
-[1] https://patchwork.kernel.org/project/linux-rdma/list/
-[2] https://lore.kernel.org/linux-rdma/
+But it seems that the code populating the rate table that you linked
+above (lines 742/743) actually do abort on either condition, so I guess
+it's safe to do so in the driver as well...
 
-> 
-> diff --git a/include/linux/mlx5/port.h b/include/linux/mlx5/port.h
-> index 28a928b0684b..e96ee1e348cb 100644
-> --- a/include/linux/mlx5/port.h
-> +++ b/include/linux/mlx5/port.h
-> @@ -141,7 +141,7 @@ enum mlx5_ptys_width {
->  	MLX5_PTYS_WIDTH_12X	= 1 << 4,
->  };
->  
-> -#define MLX5E_PROT_MASK(link_mode) (1 << link_mode)
-> +#define MLX5E_PROT_MASK(link_mode) (1U << link_mode)
->  #define MLX5_GET_ETH_PROTO(reg, out, ext, field)	\
->  	(ext ? MLX5_GET(reg, out, ext_##field) :	\
->  	MLX5_GET(reg, out, field))
-> -- 
-> 2.35.1
-> 
+-Toke
