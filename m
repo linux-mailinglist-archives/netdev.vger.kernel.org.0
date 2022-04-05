@@ -2,62 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FBF64F41BE
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:34:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 603F84F3FCF
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353290AbiDEUDW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46920 "EHLO
+        id S1355977AbiDEUDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452440AbiDEPyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:54:55 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7ED4AE0F
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 07:56:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=gxwZZyo5mJHFdc5jTFT7QqaCLsw7lI5fo+F1b7YE5EY=; b=tj0VGuaGKqsh8pAvGV2eOLQPln
-        z0CR+o2k5Xc4Q7CeEWT1gwyzMjfWkciSJTmfFCaIQQqLLGufHzMb0OeFVz8ny96ds9oS+WzhAYQZf
-        MoWYxsQMzcT2YHkIiogfkyZHLz8elBXdhNRJ7IRZYl7RxOpuCF5qUjSTdfCPY5kNq7gw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nbkbA-00EGBq-8H; Tue, 05 Apr 2022 16:56:00 +0200
-Date:   Tue, 5 Apr 2022 16:56:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Conor.Dooley@microchip.com
-Cc:     palmer@rivosinc.com, apatel@ventanamicro.com,
-        netdev@vger.kernel.org, Nicolas.Ferre@microchip.com,
-        Claudiu.Beznea@microchip.com, linux@armlinux.org.uk,
-        hkallweit1@gmail.com, linux-riscv@lists.infradead.org
-Subject: Re: riscv defconfig CONFIG_PM/macb/generic PHY regression in
- v5.18-rc1
-Message-ID: <YkxYgDnWNxeXou3F@lunn.ch>
-References: <9f4b057d-1985-5fd3-65c0-f944161c7792@microchip.com>
+        with ESMTP id S1452812AbiDEPzf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:55:35 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172177B546;
+        Tue,  5 Apr 2022 07:57:25 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id bx5so12076459pjb.3;
+        Tue, 05 Apr 2022 07:57:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0fNKMdl5EgB8iVKO3jm7hq1ylGNE7urfWADlkF8zHzk=;
+        b=ouZF9rErW74fo9ZonM3kbl48QBEP9m7ukEs8xbgviCGPBdG1trn8OYOgkunWQrv9Xp
+         6AsDq1Mz0OFkH2tTIlJgL6697IdMgJIPV0xamecang18e+ZTD9QzKrLKIOemtmNtZW6t
+         xMPbhL1GoZEAY6Vnb/Yj+ErgsRHJiFecRFJ2obcylz0YhPP5CkxJZqjNp9VG6pqKtxsD
+         U/JfTW3WzHYACaSRHW++KVgDT/a69ci5QEadZN53z7/PEuEX4DIIcYJtAvRS1y5+32vF
+         Nt5yBVd89OcTKFi9DIAkhjJiu7wvvHFYZiWP8TTmuLgqCpceUoKOnQWWRSKZRJiimpqL
+         se1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0fNKMdl5EgB8iVKO3jm7hq1ylGNE7urfWADlkF8zHzk=;
+        b=vYW9t33g0mxb9quEvP2AO+OL4fglUipaaue7Jn8kSMSyggi9I4tVVoYb1ZXNCjTfKw
+         dMgGvz7n/v/2l0d/Q8ntK1RVDPfYBBuVtHWPi/Ocu0GgqgPbCIhhYGq4wh8IE25ZCSv+
+         w5O9y5ZFytVQRiwrzSO4b7+rtwNA9rdc6NMpKIYdzqXL26lEiGaqJiCLWQoCuaIxCEP5
+         JfoAq2NMWVpu+p21kXNfmTjxb4yzhoVq/l0yi6sSxbyv8grvzl2Cy3wNNShDvYcShVr0
+         nhQicEUC2AJq0N13Bk8czCGgxtxVJ44HCFXMSVJEt9SawSvHcq5r9JO/gzhTfVnkb7NO
+         wO6Q==
+X-Gm-Message-State: AOAM532WEqjPW57GTP92zfbAVf/4h2mDAwh2k0R/RAJM2f9B3Q0Rc2Ti
+        P9CEOfJotoe9hUIS9roRUv0=
+X-Google-Smtp-Source: ABdhPJxNnD+uON5FVNi6s4DMI5cEjuwS1ZmzNMYMxcdxqmxddZ+4IwfYpWLoUaQhrUAbn0pDSnfLsg==
+X-Received: by 2002:a17:90a:4604:b0:1bc:8bdd:4a63 with SMTP id w4-20020a17090a460400b001bc8bdd4a63mr4582646pjg.147.1649170644566;
+        Tue, 05 Apr 2022 07:57:24 -0700 (PDT)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id 3-20020a17090a034300b001c779e82af6sm2687794pjf.48.2022.04.05.07.57.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 07:57:23 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] selftests/bpf: Fix file descriptor leak in load_kallsyms()
+Date:   Tue,  5 Apr 2022 22:57:11 +0800
+Message-Id: <20220405145711.49543-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f4b057d-1985-5fd3-65c0-f944161c7792@microchip.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Is this some sort of lack of support for CONFIG_PM=y in my clock driver,
-> that's leading to the PHY getting stuck in reset?
-> Or an interaction between CONFIG_PM=y & the macb/generic phy drivers?
+Currently, if sym_cnt > 0, it just returns and does not close file, fix it.
 
-What clock is driving the PHY? Sometimes the SoC outputs a clock to
-the PHY, and the PHY will not work without it. Sometimes it is the
-other way around, the PHY outputs a clock to SoC, so this might not be
-your issue.
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ tools/testing/selftests/bpf/trace_helpers.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Maybe PM is turning the clock off because nothing is using it?
+diff --git a/tools/testing/selftests/bpf/trace_helpers.c b/tools/testing/selftests/bpf/trace_helpers.c
+index 3d6217e3aff7..9c4be2cdb21a 100644
+--- a/tools/testing/selftests/bpf/trace_helpers.c
++++ b/tools/testing/selftests/bpf/trace_helpers.c
+@@ -25,15 +25,12 @@ static int ksym_cmp(const void *p1, const void *p2)
+ 
+ int load_kallsyms(void)
+ {
+-	FILE *f = fopen("/proc/kallsyms", "r");
++	FILE *f;
+ 	char func[256], buf[256];
+ 	char symbol;
+ 	void *addr;
+ 	int i = 0;
+ 
+-	if (!f)
+-		return -ENOENT;
+-
+ 	/*
+ 	 * This is called/used from multiplace places,
+ 	 * load symbols just once.
+@@ -41,6 +38,10 @@ int load_kallsyms(void)
+ 	if (sym_cnt)
+ 		return 0;
+ 
++	f = fopen("/proc/kallsyms", "r");
++	if (!f)
++		return -ENOENT;
++
+ 	while (fgets(buf, sizeof(buf), f)) {
+ 		if (sscanf(buf, "%p %c %s", &addr, &symbol, func) != 3)
+ 			break;
+-- 
+2.35.1
 
-      Andrew
