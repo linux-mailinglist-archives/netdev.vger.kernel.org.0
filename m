@@ -2,130 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EB904F3E18
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 22:41:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C31094F4186
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:33:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353216AbiDEOXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 10:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40972 "EHLO
+        id S1383921AbiDEOYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 10:24:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239661AbiDENyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 09:54:43 -0400
-Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE7BBD2CD;
-        Tue,  5 Apr 2022 05:55:50 -0700 (PDT)
-Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94.2)
-        (envelope-from <n0-1@orbyte.nwl.cc>)
-        id 1nbiiq-0003dp-DO; Tue, 05 Apr 2022 14:55:48 +0200
-Date:   Tue, 5 Apr 2022 14:55:48 +0200
-From:   Phil Sutter <phil@netfilter.org>
-To:     netfilter <netfilter@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
-        lwn@lwn.net
-Subject: [ANNOUNCE] libmnl 1.0.5 release
-Message-ID: <Ykw8VBenlUgEVPvl@orbyte.nwl.cc>
-Mail-Followup-To: Phil Sutter <phil@netfilter.org>,
-        netfilter <netfilter@vger.kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
-        lwn@lwn.net
+        with ESMTP id S242697AbiDEN7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 09:59:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 816E314FBB5
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 05:57:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649163422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MieTPQFs8VOXyiBgZhn9rhV52nQUcA3L833nsfzanM8=;
+        b=KEw28suMJ2GfuTfTThG/vrfhgsT0fmEWPDfdZADCl2Mx5puB3+oJpz3CSlYAjdk76MgoQX
+        ux60uBPa1DD1U8DAbx6kalPUR6Z6HMJ2kEZnZBOkjUPwkSbFVvXQi3WJSzfpOrjyvtbQTf
+        ZDgntC6G0jlJMA695p8o3unMIwK6PPI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-553-nOsaf9cQOtq3c5ulp4vhag-1; Tue, 05 Apr 2022 08:56:59 -0400
+X-MC-Unique: nOsaf9cQOtq3c5ulp4vhag-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BE8FF3C1EA4D;
+        Tue,  5 Apr 2022 12:56:58 +0000 (UTC)
+Received: from RHTPC1VM0NT (unknown [10.22.17.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6F5DB40CF8E5;
+        Tue,  5 Apr 2022 12:56:58 +0000 (UTC)
+From:   Aaron Conole <aconole@redhat.com>
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [ovs-dev] [PATCH net] net: openvswitch: fix leak of nested actions
+References: <20220404154345.2980792-1-i.maximets@ovn.org>
+Date:   Tue, 05 Apr 2022 08:56:52 -0400
+In-Reply-To: <20220404154345.2980792-1-i.maximets@ovn.org> (Ilya Maximets's
+        message of "Mon, 4 Apr 2022 17:43:45 +0200")
+Message-ID: <f7t4k371yej.fsf@redhat.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="FgAyCt4XeABDY93x"
-Content-Disposition: inline
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Ilya Maximets <i.maximets@ovn.org> writes:
 
---FgAyCt4XeABDY93x
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> While parsing user-provided actions, openvswitch module may dynamically
+> allocate memory and store pointers in the internal copy of the actions.
+> So this memory has to be freed while destroying the actions.
+>
+> Currently there are only two such actions: ct() and set().  However,
+> there are many actions that can hold nested lists of actions and
+> ovs_nla_free_flow_actions() just jumps over them leaking the memory.
+>
+> For example, removal of the flow with the following actions will lead
+> to a leak of the memory allocated by nf_ct_tmpl_alloc():
+>
+>   actions:clone(ct(commit),0)
+>
+> Non-freed set() action may also leak the 'dst' structure for the
+> tunnel info including device references.
+>
+> Under certain conditions with a high rate of flow rotation that may
+> cause significant memory leak problem (2MB per second in reporter's
+> case).  The problem is also hard to mitigate, because the user doesn't
+> have direct control over the datapath flows generated by OVS.
+>
+> Fix that by iterating over all the nested actions and freeing
+> everything that needs to be freed recursively.
+>
+> New build time assertion should protect us from this problem if new
+> actions will be added in the future.
+>
+> Unfortunately, openvswitch module doesn't use NLA_F_NESTED, so all
+> attributes has to be explicitly checked.  sample() and clone() actions
+> are mixing extra attributes into the user-provided action list.  That
+> prevents some code generalization too.
+>
+> Fixes: 34ae932a4036 ("openvswitch: Make tunnel set action attach a metada=
+ta dst")
+> Link: https://mail.openvswitch.org/pipermail/ovs-dev/2022-March/392922.ht=
+ml
+> Reported-by: St=C3=A9phane Graber <stgraber@ubuntu.com>
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
 
-Hi!
+Acked-by: Aaron Conole <aconole@redhat.com>
 
-The Netfilter project proudly presents:
-
-        libmnl 1.0.5
-
-This release contains new features:
-
-* Two new examples:
-  * rtnl-neigh-dump, dumping ARP cache
-  * rtnl-addr-add, adding an IP address to an interface
-* MNL_SOCKET_DUMP_SIZE define, holding a recommended buffer size for
-  netlink dumps
-
-... and fixes:
-
-* nfct-daemon example compile error with musl libc
-* Compiler warning when passing a const 'cb_ctl_array' to mnl_cb_run2()
-* Typo in rtnl-addr-dump example
-* Valgrind warnings due to uninitialized padding in netlink messages
-* Misc fixes in doxygen documentation
-* Misc build system fixes
-
-You can download this new release from:
-
-https://netfilter.org/projects/libmnl/downloads.html#libmnl-1.0.5
-
-Check out the doxygen documentation at:
-
-https://netfilter.org/projects/libmnl/doxygen/html/
-
-In case of bugs and feature requests, file them via:
-
-* https://bugzilla.netfilter.org
-
-Happy firewalling!
-
---FgAyCt4XeABDY93x
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="changes-libmnl-1.0.5.txt"
-
-Duncan Roe (5):
-      nlmsg: Fix a missing doxygen section trailer
-      build: doc: "make" builds & installs a full set of man pages
-      build: doc: get rid of the need for manual updating of Makefile
-      build: If doxygen is not available, be sure to report "doxygen: no" to ./configure
-      src: doc: Fix messed-up Netlink message batch diagram
-
-Fernando Fernandez Mancera (1):
-      src: fix doxygen function documentation
-
-Florian Westphal (1):
-      libmnl: zero attribute padding
-
-Guillaume Nault (1):
-      callback: mark cb_ctl_array 'const' in mnl_cb_run2()
-
-Kylie McClain (1):
-      examples: nfct-daemon: Fix test building on musl libc
-
-Laura Garcia Liebana (4):
-      examples: add arp cache dump example
-      examples: fix neigh max attributes
-      examples: fix print line format
-      examples: reduce LOCs during neigh attributes validation
-
-Pablo Neira Ayuso (3):
-      doxygen: remove EXPORT_SYMBOL from the output
-      include: add MNL_SOCKET_DUMP_SIZE definition
-      build: libmnl 1.0.5 release
-
-Petr Vorel (1):
-      examples: Add rtnl-addr-add.c
-
-Stephen Hemminger (1):
-      examples: rtnl-addr-dump: fix typo
-
-igo95862 (1):
-      doxygen: Fixed link to the git source tree on the website.
-
-
---FgAyCt4XeABDY93x--
