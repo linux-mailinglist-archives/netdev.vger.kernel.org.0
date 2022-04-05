@@ -2,191 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 140AF4F2244
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 06:51:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C78764F2258
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 07:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbiDEExB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 00:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        id S229579AbiDEFDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 01:03:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiDEEwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 00:52:51 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B5C2B186;
-        Mon,  4 Apr 2022 21:50:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649134205; x=1680670205;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=RfGmxm5HP4tF1xlJc2OfUjPs4S1LcQPDCL6SF803rPY=;
-  b=nEKZKiz2YmRyZwQw9jS+VzJMoe4p5+G2IGD32TLY8i3GmXvRs9icqFP8
-   KYLJ93AlCxilzFQE4WpTYxHuxc6NP9N6Heuaz+gB3zvbqvdjRffRtuKrh
-   xGfavFymqUSuNuenPasVyKNskmTkMe8yLMiJxpPq2OvIhOMCJR8uDh/lt
-   azjrwlUV/4YuHTROXX3hmrdzYqsbT/iiS2OMJANMSFaIYPKYNDTHjr839
-   jpjvVZIe1pEM7WFD1rz1qbTUHqMBJzOkAftBk5VZ2N4vJYueg3UfW2bgK
-   tkpRwapmqlTJxNIsNNpr/3VaUBC1nIe7mRTondLFoedbspHwH4b9Vm5Rf
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="323838100"
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="323838100"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2022 21:50:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,235,1643702400"; 
-   d="scan'208";a="696800445"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga001.fm.intel.com with ESMTP; 04 Apr 2022 21:50:03 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 4 Apr 2022 21:50:03 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 4 Apr 2022 21:50:02 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Mon, 4 Apr 2022 21:50:02 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Mon, 4 Apr 2022 21:50:02 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fb1I/GbD1AjR5+38YqQmkNEY3Dg0vOH0MPBFapAjnzUsnjfZoNMu4YUmCxpY5aRhu4aBL/UONajT3y2RpDkxmFj94Xld/6UVKpIuXn7isalFlf+1mxb22I36hxAcW1J7S7WyvP80R8DVltoW8OLdCzTDADLOZSE0/D5EJn9ea8XHL53NvXhebKeRs/61Ga6gojaqxuBaHrnCDkWO4RsEZDZAJEB8jPjw82WCkck+Fd6lnbQhJmrsrBvHg+MPoHpxmZeJaE8VHNirGjbPMBaPKZ9LbXAOJkw0zmaCYXaV8du9vWmRBlvId3rxbo28/VtiK0b7mENFNFngncLAVg/K6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=34xPorxj7snZZ33H2H91MYntvsNd1JZQpPezBp3oWpY=;
- b=ONKtmAr6hYrlQhQvb3tOJyAbCVW4C6jHqMLxziDZHznDzbYlPO9I+0b3mQdF+cB+kUgO84gRrQYeRFHtk/F+4QdquhmZBYiqjbBcwo1ILP7EthuX30ihiPRohzvo+QekLmdvRjHsJRfnn1+Zwt8dMpVCJ57/2kZCHyPBjOb3zmS5u52Mqn2aacsih1tfy9fVga+G+4rRXVDrLznYCrJuXQiDRr4BFPO9vt3NqAiymlCtQBn4E6Bteq2FcYr4SfESBd0QeuDjXGYRv4JUCHXm0+I0QnMbjuzd2Q2OL8zGsBnynf1VdBzAIRg+aa70s72aIGIGI2yUk+MblfzQsDPeTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com (2603:10b6:a03:79::29)
- by MWHPR1101MB2270.namprd11.prod.outlook.com (2603:10b6:301:54::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 04:50:01 +0000
-Received: from BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::b9ca:a49f:aea1:7d13]) by BYAPR11MB3367.namprd11.prod.outlook.com
- ([fe80::b9ca:a49f:aea1:7d13%7]) with mapi id 15.20.5123.030; Tue, 5 Apr 2022
- 04:50:01 +0000
-From:   "G, GurucharanX" <gurucharanx.g@intel.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>,
-        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "Lobakin, Alexandr" <alexandr.lobakin@intel.com>
-Subject: RE: [PATCH v2] ice: use min_t() to make code cleaner in ice_gnss
-Thread-Topic: [PATCH v2] ice: use min_t() to make code cleaner in ice_gnss
-Thread-Index: AQHYSKibsY3kSH6d6kCH3hCu9AUBbw==
-Date:   Tue, 5 Apr 2022 04:50:01 +0000
-Message-ID: <BYAPR11MB33676930AB96198D69C234B0FCE49@BYAPR11MB3367.namprd11.prod.outlook.com>
-References: <20220321135947.378250-1-wanjiabing@vivo.com>
-In-Reply-To: <20220321135947.378250-1-wanjiabing@vivo.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f343f158-c7fd-44a8-cbf9-08da16bfbe57
-x-ms-traffictypediagnostic: MWHPR1101MB2270:EE_
-x-microsoft-antispam-prvs: <MWHPR1101MB2270E400B2FEFAAFBEA9B321FCE49@MWHPR1101MB2270.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Elvs8ujW460TGsdU/JeFQk8VwNw3bipr39lv3KFQ8Wi/ULvqoVqHGXoMvpPmLuSwdfmvXCw7Q6z9x2/VEH7h6B6zFwf2urAogjZ6lJbGl6yiI+MEj20Ah/eYO4gNBQDR8aF4vK21uqesKyrRYFpEQJbugi/kI/qvXd2UsIbZRyvuU2Yr7JPejIiHcz0+6woc8eAyg5AC/h5Zi/s6ffeiLLnx2boVvHPfrqmRJB3RzX+c7f/eElNvlqqZ0WUtHLtho5xFd9nNeXHNARdPSXiH020XHLJE5se5ogVTiY9R3dy2dMmPX2o3ga5WYv6zAMLIyW90QtvmIc56uiPJuTitYnkSeSMzH12KfG8R/BqAdPnPYqztXr+jkCWHkuFykuDvEuvnx5OA40dTKbBeXS0FdizTp7VsOXQK91G+DgMTX1bwdHkpOsGiA0wIOcyadtwE655bb4ycCJ4AfcfbRq8kgOQd+Lr5Y/uE5XMZZSa/Q4xPE7Hi6Z8WsA/PRlk6K7oZTFE58gi/sGldJVykO+i0yOymVudkg1WNSCoVejkAgRuYM+5C8w/fk6mK4H1tjY2xVKj/mGOJUj1Nog+WekldMgCIxcF61jvemacdDFxJZ7Tt5+FhwonDRHfwOY/IPlVRHcPkjeOJvl6/WpXLGqUrU2gvuVVCTkC9XX1h/S/hRF58Zu8ieT+YllQO5jFY923rrRX/x42VP/TF9DRNyYwsWrTtB6CCovMUNLV4JtFP+S0=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3367.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(71200400001)(76116006)(921005)(7696005)(26005)(66556008)(186003)(107886003)(33656002)(9686003)(122000001)(4744005)(55016003)(53546011)(6506007)(5660300002)(8936002)(316002)(508600001)(110136005)(38070700005)(83380400001)(38100700002)(64756008)(66446008)(2906002)(52536014)(66476007)(82960400001)(8676002)(4326008)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HJEP1zzeEbgt8ennAG1b8ZJyp6DEbEMIouPRDw6gwGDKhQFRz5V9ac4I2BpQ?=
- =?us-ascii?Q?4eJlb3yNtpdFXRVw0PPrgHo/dCcwyZC5AlB4d47xfzXaXIlxivhiJDc+JbqS?=
- =?us-ascii?Q?r+OSuC36iaKBbB2aJFf0CvozH915/JGLWjZyjy4gknuvAjOBUpJWmo/BgWBU?=
- =?us-ascii?Q?IjklC4Ld0cch7rxNCk5qbVhgmS7GysF/ibtYCi3ZB4DmK+B3CwoLiif1P0lH?=
- =?us-ascii?Q?4zSxMCGtx47dUWjS8CAq9qtXkYhjYVsJTI6nhQ2KxgXoNZykE1BSz0yBs0A1?=
- =?us-ascii?Q?oGzuSO8bLutJm8miU9Pn+dpWS5cVxcgEMTDfNenFA6LwEc//91IqLbQrynxl?=
- =?us-ascii?Q?rumn2j29TAlXQfzLesLUIk8u7xRxCF6ovzwFLIy8mowBKOqkOkgmJt285R3A?=
- =?us-ascii?Q?kGasYQ67QTO5gLAXwAIWZ2LssE/0KfotmD0DbDdpAU7PXHViNd0ZqzJr635q?=
- =?us-ascii?Q?6OK7mea6ZrpnxjRzmpb+U7Y+AMKg1aBY4oVEDjj3HZtCWQheEuM0ve1hkukE?=
- =?us-ascii?Q?LZ4A+hgETtSjyN5UtJ2QoomuXYidzl6BMgIfQ/viaq8WOUEgKJtT2g7cKG4I?=
- =?us-ascii?Q?AKz4mfcr9ftp8jNq65GAWmLOwRYAOCatT5G7BAX6y/Wzc4Hzvcq5GgfymzrL?=
- =?us-ascii?Q?AbqUMaA2aTnjIHN8mHaOH099q6fdu1C4pDEeXizSL4xA2RMWRJWlZSsn1Qxf?=
- =?us-ascii?Q?vJ9xA0WStloCvtYWwcPF4hQxJ3iUGb3nYdzgqBaXMoZx1skhiQvmIC/OgUND?=
- =?us-ascii?Q?kJohT+W8Ar2UYk0NK9TFIUrE4Q3s5Pcy2iiMm/HTJ/sHCQe34wKFaCMheS+Y?=
- =?us-ascii?Q?7h5sRX5rvXmYKWuJrVHSyxgfRFOpK6HQYYfUdttayqaduY5U7pmvY0323xz2?=
- =?us-ascii?Q?Vkibj9LBk7WkWPb6ija1ZqVhgyWEkLIqT4iiiWJHuHJaQ41l3hSWBV4PLxm1?=
- =?us-ascii?Q?zqE32YpuOgFldp0jmTDm+ROv+ncZFhkdXrHNqTogl2X+a/NXOb1hlZMsygve?=
- =?us-ascii?Q?RzaLKAR1x7lDffU4B72Pa3iLECVn0RJ2Cw/GhzdhFpjhyESYYuzSHrqRKsOy?=
- =?us-ascii?Q?8HyYs67HjyP5NIVp80Vtz+O4vzqB0/LmXNXBAaTDLUlc22pMdKSlkslusmIM?=
- =?us-ascii?Q?wGHow8YXpWO3RnF0p5b1bUtV/RAvLxE1JGwtJeGncAgpb3OxT0ZZRKl2aV5e?=
- =?us-ascii?Q?1+Vp+FWpqIxGeCZv/BTtQxmtV8zTqaguBuPJd4w2yOS1qbm7Rl6OJP+uIEO+?=
- =?us-ascii?Q?Ez1SsoVMQmVXeLopaleFbwv7+HLJbVMx+1IsuV0Zo9OLBcPb5elMebz7HTa7?=
- =?us-ascii?Q?QY9BuZMD1sSTa08lN4lND/cNVXzH4wYB51oV7k/FdqBSeElcgLgM07Wwvf6F?=
- =?us-ascii?Q?TgAbVDJr9P0dpym2+P9kPq6vY/4wJQ/wpvwsML/D7M+0GHbLvsz3mWZPWI6e?=
- =?us-ascii?Q?Gz5NOk2L+6iEQqJs6PlX3Xh514SUc8O5FluE9P+FNkeyNUrbGuU/rx//SaM3?=
- =?us-ascii?Q?wFBKyNyo8HDljCG15S9ctsaDtg0d9MVIio6n+ekPMNfp27Z6ZMKdFqVSV8S/?=
- =?us-ascii?Q?86udIwRFG+w+ipOYhc723/evnNId5Zk742lWcJI+15KWkkf2vU/C1S3sNK59?=
- =?us-ascii?Q?zD1U9zvkdVipOu12yQ5GmuduJlpZTltnv/M+DahCL1HIstSa/1L4CUEDSaRb?=
- =?us-ascii?Q?yczcqyGdr+NTzUFcyi6KD7dTw5XLdUDMzeLeG1yCpcWpgnL2Npbq5UyOUunR?=
- =?us-ascii?Q?G05dQekWnQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3367.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f343f158-c7fd-44a8-cbf9-08da16bfbe57
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Apr 2022 04:50:01.3086
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0ruZCznWn0NL7FnGJIftlT37B0kL808IYkEhyBh9eF2+eBwFBzbsfVSxH2Lwim0p8l8mgO6rCKVbtCP9vjssyA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2270
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229679AbiDEFCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 01:02:50 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A714C39D;
+        Mon,  4 Apr 2022 22:00:30 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id i11so9923118plg.12;
+        Mon, 04 Apr 2022 22:00:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=gIpb5pUI3vC5IHa6FCVU8hr3uxezDl4t9B5XDk1p4F4=;
+        b=fSrQEFh6rJ0gYIDx2T3em9uTzc/OAm7cLjlGTfQ4pFQNO1wD9lft6wVhipqDLJIF03
+         qd7Nf+PWB0nHa8nT1dpABLdpq9tx4kbCXSO56Ix7sS3bqvmO/0JfnyMiRctsl1MqGz8p
+         J8UPFnK9Av1GBU0t4EEltPqJfzd6BK3AeAZEQkF+fdwgG5DfdRkhGFpYYRZpCn0Art+S
+         nPHKbgjJkjEqJSQrqfaOh+FVBWU2MfvnZ2Baa8k9t/gA3lPqUyKhMXk99zGsTycZMnVH
+         kGLz+FfqCKF+VXlFZmFdMX7Yy1yRL7GxumcaGYLxJ+oA1FL87R637a81t4W5wOpLaxY3
+         P9iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=gIpb5pUI3vC5IHa6FCVU8hr3uxezDl4t9B5XDk1p4F4=;
+        b=i0mv/fYYfJx7LLaRnPvjAkSp7uL/TubxMCMEqIlcls0l28EQgeCBLCApskBcY1J2m+
+         ETLWKvnUcWeMkzyCoM5L/kdu6+1SJGeXWak5H84rvho8gFZ+CTOnLDt2oq4qCU9Qx7xa
+         Mcn/sYschLiDOgAjn5f/ttPiCCrqu7eUcQ/PEStgiNkZMCbeF5Lm1ea/sVFYZodrTN2f
+         lj7glC6XgbWrDgieztwEj8MX5WY4IyBhNTWqtGxuaU6YpucCOwxsYRpevDGtNMczMwgS
+         UYS326wcBPWueaZbtjkGF0Xm0Qcoh9JFtwMIhZmdojvBLd48USPJy7GHGrJj2pL9l8DM
+         qtMA==
+X-Gm-Message-State: AOAM532kTxYSDU2xGELj3cR3uw4N4tyR9hVHqHPj125zvl3vl+Lwd4bX
+        fKZLDYbmpyy2F9OdEo2woZE=
+X-Google-Smtp-Source: ABdhPJxQct0FXMeI/WjYFLj6guDUsB4qOzFx4sghJTr+biMe2W/D0BMpf1ldvyMEl+zr9TpELgLKzw==
+X-Received: by 2002:a17:902:ef48:b0:156:8ff6:e2cc with SMTP id e8-20020a170902ef4800b001568ff6e2ccmr1755529plx.130.1649134830007;
+        Mon, 04 Apr 2022 22:00:30 -0700 (PDT)
+Received: from localhost.localdomain ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id p16-20020a056a000b5000b004faed463907sm14645631pfo.0.2022.04.04.22.00.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Apr 2022 22:00:29 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, ecree.xilinx@gmail.com,
+        habetsm.xilinx@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        cmclachlan@solarflare.com, bpf@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net] net: sfc: fix using uninitialized xdp tx_queue
+Date:   Tue,  5 Apr 2022 05:00:19 +0000
+Message-Id: <20220405050019.12260-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In some cases, xdp tx_queue can get used before initialization.
+1. interface up/down
+2. ring buffer size change
 
+When CPU cores are lower than maximum number of channels of sfc driver,
+it creates new channels only for XDP.
 
-> -----Original Message-----
-> From: Wan Jiabing <wanjiabing@vivo.com>
-> Sent: Monday, March 21, 2022 7:30 PM
-> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
-> Jakub Kicinski <kuba@kernel.org>; Paolo Abeni <pabeni@redhat.com>;
-> intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; linux-
-> kernel@vger.kernel.org
-> Cc: Lobakin, Alexandr <alexandr.lobakin@intel.com>; Wan Jiabing
-> <wanjiabing@vivo.com>
-> Subject: [PATCH v2] ice: use min_t() to make code cleaner in ice_gnss
->=20
-> Fix the following coccicheck warning:
-> ./drivers/net/ethernet/intel/ice/ice_gnss.c:79:26-27: WARNING opportunity
-> for min()
->=20
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> ---
-> Changelog:
-> v2:
-> - Use typeof(bytes_left) instead of u8.
-> ---
->  drivers/net/ethernet/intel/ice/ice_gnss.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->=20
+When an interface is up or ring buffer size is changed, all channels
+are initialized.
+But xdp channels are always initialized later.
+So, the below scenario is possible.
+Packets are received to rx queue of normal channels and it is acted
+XDP_TX and tx_queue of xdp channels get used.
+But these tx_queues are not initialized yet.
+If so, TX DMA or queue error occurs.
 
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Int=
-el)
+In order to avoid this problem
+1. initializes xdp tx_queues earlier than other rx_queue in
+efx_start_channels().
+2. checks whether tx_queue is initialized or not in efx_xdp_tx_buffers().
+
+Splat looks like:
+   sfc 0000:08:00.1 enp8s0f1np1: TX queue 10 spurious TX completion id 250
+   sfc 0000:08:00.1 enp8s0f1np1: resetting (RECOVER_OR_ALL)
+   sfc 0000:08:00.1 enp8s0f1np1: MC command 0x80 inlen 100 failed rc=-22
+   (raw=22) arg=789
+   sfc 0000:08:00.1 enp8s0f1np1: has been disabled
+
+Fixes: dfe44c1f52ee ("sfc: handle XDP_TX outcomes of XDP eBPF programs")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ drivers/net/ethernet/sfc/efx_channels.c | 2 +-
+ drivers/net/ethernet/sfc/tx.c           | 3 +++
+ drivers/net/ethernet/sfc/tx_common.c    | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+index 83e27231fbe6..377df8b7f015 100644
+--- a/drivers/net/ethernet/sfc/efx_channels.c
++++ b/drivers/net/ethernet/sfc/efx_channels.c
+@@ -1140,7 +1140,7 @@ void efx_start_channels(struct efx_nic *efx)
+ 	struct efx_rx_queue *rx_queue;
+ 	struct efx_channel *channel;
+ 
+-	efx_for_each_channel(channel, efx) {
++	efx_for_each_channel_rev(channel, efx) {
+ 		efx_for_each_channel_tx_queue(tx_queue, channel) {
+ 			efx_init_tx_queue(tx_queue);
+ 			atomic_inc(&efx->active_queues);
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index d16e031e95f4..6983799e1c05 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -443,6 +443,9 @@ int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xdpfs,
+ 	if (unlikely(!tx_queue))
+ 		return -EINVAL;
+ 
++	if (!tx_queue->initialised)
++		return -EINVAL;
++
+ 	if (efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DEDICATED)
+ 		HARD_TX_LOCK(efx->net_dev, tx_queue->core_txq, cpu);
+ 
+diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/tx_common.c
+index d530cde2b864..9bc8281b7f5b 100644
+--- a/drivers/net/ethernet/sfc/tx_common.c
++++ b/drivers/net/ethernet/sfc/tx_common.c
+@@ -101,6 +101,8 @@ void efx_fini_tx_queue(struct efx_tx_queue *tx_queue)
+ 	netif_dbg(tx_queue->efx, drv, tx_queue->efx->net_dev,
+ 		  "shutting down TX queue %d\n", tx_queue->queue);
+ 
++	tx_queue->initialised = false;
++
+ 	if (!tx_queue->buffer)
+ 		return;
+ 
+-- 
+2.17.1
+
