@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1C04F450C
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DB4E4F452C
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386997AbiDEO2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 10:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
+        id S1387008AbiDEO25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 10:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350769AbiDEOVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 10:21:34 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E92763BF7;
-        Tue,  5 Apr 2022 06:09:32 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id d15so5509096pll.10;
-        Tue, 05 Apr 2022 06:09:32 -0700 (PDT)
+        with ESMTP id S1355258AbiDEOVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 10:21:39 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D393F652F0;
+        Tue,  5 Apr 2022 06:09:34 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id q142so9209584pgq.9;
+        Tue, 05 Apr 2022 06:09:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=h7LdoFvQo1dYowij4laTQ3Abm1VMgnAUFDQSNCGV4+8=;
-        b=MBpcVXiJYabVjr+AB2B6shNFTIv3+T8kBZri1brekPSjtT2uFwwUuu8FRinmlVap+J
-         TAFCwu8eqaR9lriYocP9eg89tPLDZHSgmgvMsDPEIcOob+C0F2WGN7p06qtNQxjOfoOk
-         +Z28c0gZxi8gJIjZX3UqWlBdPtGKfo/r4J4xfM8/hSkyUO7QFGWvsfjzmYhOg6XPgda2
-         AVub9r4rsIw1+Pmjc4GgvcWIjnSILyGZnM4u0wOV0BxT8zGx3POTptUWecey587pTXZQ
-         0lvoGaGkwop/7ANm0/lNcniV1MRTtke5NplxO7YLW1HCddmmbotigKqt+LEdHuUQQoNX
-         QIcA==
+        bh=kEvX7e1LRk8hq7EVC3eBy2OeVtrJmQlrIB7WWAJzilU=;
+        b=aAXm1ETsLlBg2pebplD2DAO8ZOpD8sm3uSZtJsg9vwmAg0ZExijiYvoiZr+4iG4e1H
+         U6rm2IL2gwyTBTywqvmn2Sp4+ZmiUrNFw9Lgw2i1AEWZzsatJYBQxpPAyuUpLYpFa6lc
+         ED7oiFFQ7NlzuzTbS3cEvSPfFcqosfZn6Hg5s6YHDuDRo5ckOPI3yT0xXrnR3bKcp3HI
+         iB835vR/jzg0XQz6k0bROHd162OQruI4Lli449zaxIwYM9eZqUaZzSJv1mYLqidZwv5n
+         BnCXZkfOGdSGH/2ab8++dCS2CGDkCQGA9+3A7JrbU3XGSfiWhYT+PcQczYScoU1ywNgg
+         b6EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h7LdoFvQo1dYowij4laTQ3Abm1VMgnAUFDQSNCGV4+8=;
-        b=CkBVd7jCADVOZngwl7g9rjknarVi4wre4Ub9IYfjlY3IpymXg1mD5gniZS6NZy9+Qq
-         TjybVUyXWWtvrF6VUIExHI8RH3/icMTjwpfl9wPaE3H9d2IW3Kx23HpAYtTR5fl1aQvw
-         PjAbxU1m9x2RKb3p+1s9hGy7KL9y8xnZudYCR9RjerKDXEHHLXF7EhC2z19rMhWZChhf
-         ef0XoDbGQLzwzw2WNLNVO1aOGCcrY3rFy65ZrxQl6Yuc4Arwi18jAKQUSAkEQ2VIsHmn
-         jHxS0J9zy91jZMs21WIO0tAkgMcUeUEtc1PxitcD9tGzLFdIAipoWcp12djrFEhRe1bE
-         ZMdg==
-X-Gm-Message-State: AOAM530fpoZXmKsTlBaaNxv4UvqN0uHSgck5nbarBJJJhOKJcPlvlK42
-        9b7cw/8OCSsAuzqAS0rxhtDizTtPROEaB6zhSuM=
-X-Google-Smtp-Source: ABdhPJymXpm2XVgcNbbwgyfdWolQo0c1Kn1R2p/6WKD2zVPmz7OrkFaHtXtc2cQYbOo6fTe84nbRig==
-X-Received: by 2002:a17:902:c105:b0:154:81e0:529d with SMTP id 5-20020a170902c10500b0015481e0529dmr3470701pli.1.1649164171840;
-        Tue, 05 Apr 2022 06:09:31 -0700 (PDT)
+        bh=kEvX7e1LRk8hq7EVC3eBy2OeVtrJmQlrIB7WWAJzilU=;
+        b=Xo7l+gXtcUyGJeJCTOc0j+FFgYGZug6RcWPt9jlS8DWoaTpEinekObjl4LlQLmtd6P
+         VZtXpKEntW+hj4qI5A+RWGazRXU6hwwYEMevIaWpfaVNeP9QnaM/6b84YprlVsndy5cS
+         hx1lSVK6zXXeDW6VMxRm53Wug1m3JNJtZnBHRNI3zcaXQuxqflC97is8o55TiHnFjwAi
+         HoKkqcS36RDqBJBT300iyeyOfKfkdk04wr3K8y7Dd3ELoDAtRp0LwuNZ2fmOzSJ2juf5
+         VnEg/XIhr3CyBKLjckBrcQqbTreEsPtfIcXHsRGo4SjV+zGoP1OhbpWT/F/T28jNTcW2
+         Qs6Q==
+X-Gm-Message-State: AOAM533K6lbM2VB27pqNOah3iPOZuuqUita6+vXMws//jBmlaLeRW0Rq
+        S0ZBOpoCbrshWU15ZtEwGfM=
+X-Google-Smtp-Source: ABdhPJzV/FBtnA3fMwNnZGWzf3lprriAFgMU658FYakS9xPeDccuO6wPRtGV1fDrEV7npZ5AzY+Teg==
+X-Received: by 2002:a05:6a00:87:b0:4fb:39f9:bb9d with SMTP id c7-20020a056a00008700b004fb39f9bb9dmr3585296pfj.48.1649164174417;
+        Tue, 05 Apr 2022 06:09:34 -0700 (PDT)
 Received: from vultr.guest ([2001:19f0:6001:5271:5400:3ff:feef:3aee])
-        by smtp.gmail.com with ESMTPSA id s135-20020a63778d000000b0038259e54389sm13147257pgc.19.2022.04.05.06.09.30
+        by smtp.gmail.com with ESMTPSA id s135-20020a63778d000000b0038259e54389sm13147257pgc.19.2022.04.05.06.09.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 06:09:31 -0700 (PDT)
+        Tue, 05 Apr 2022 06:09:33 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     andrii@kernel.org, ast@kernel.org, daniel@iogearbox.net,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         john.fastabend@gmail.com, kpsingh@kernel.org, shuah@kernel.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH bpf-next v3 13/27] bpf: selftests: Set libbpf 1.0 API mode explicitly in test_sockmap
-Date:   Tue,  5 Apr 2022 13:08:44 +0000
-Message-Id: <20220405130858.12165-14-laoar.shao@gmail.com>
+Subject: [PATCH bpf-next v3 15/27] bpf: selftests: Set libbpf 1.0 API mode explicitly in test_tag
+Date:   Tue,  5 Apr 2022 13:08:46 +0000
+Message-Id: <20220405130858.12165-16-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220405130858.12165-1-laoar.shao@gmail.com>
 References: <20220405130858.12165-1-laoar.shao@gmail.com>
@@ -72,43 +72,35 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Let's set libbpf 1.0 API mode explicitly, then we can get rid of the
-included bpf_rlimit.h. This patch also removes the useless sys/resource.h.
+included bpf_rlimit.h.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- tools/testing/selftests/bpf/test_sockmap.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/test_tag.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-index dfb4f5c0fcb9..0fbaccdc8861 100644
---- a/tools/testing/selftests/bpf/test_sockmap.c
-+++ b/tools/testing/selftests/bpf/test_sockmap.c
-@@ -18,7 +18,6 @@
- #include <sched.h>
+diff --git a/tools/testing/selftests/bpf/test_tag.c b/tools/testing/selftests/bpf/test_tag.c
+index 0851c42ee31c..5546b05a0486 100644
+--- a/tools/testing/selftests/bpf/test_tag.c
++++ b/tools/testing/selftests/bpf/test_tag.c
+@@ -20,7 +20,6 @@
+ #include <bpf/bpf.h>
  
- #include <sys/time.h>
--#include <sys/resource.h>
- #include <sys/types.h>
- #include <sys/sendfile.h>
- 
-@@ -37,7 +36,6 @@
- #include <bpf/libbpf.h>
- 
- #include "bpf_util.h"
+ #include "../../../include/linux/filter.h"
 -#include "bpf_rlimit.h"
- #include "cgroup_helpers.h"
+ #include "testing_helpers.h"
  
- int running;
-@@ -2017,6 +2015,9 @@ int main(int argc, char **argv)
- 		cg_created = 1;
- 	}
+ static struct bpf_insn prog[BPF_MAXINSNS];
+@@ -189,6 +188,9 @@ int main(void)
+ 	uint32_t tests = 0;
+ 	int i, fd_map;
  
 +	/* Use libbpf 1.0 API mode */
 +	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
 +
- 	if (test == SELFTESTS) {
- 		err = test_selftest(cg_fd, &options);
- 		goto out;
+ 	fd_map = bpf_map_create(BPF_MAP_TYPE_HASH, NULL, sizeof(int),
+ 				sizeof(int), 1, &opts);
+ 	assert(fd_map > 0);
 -- 
 2.17.1
 
