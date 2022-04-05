@@ -2,64 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF1F04F43C7
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E694F43D8
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:09:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348411AbiDEUBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
+        id S1346028AbiDEUB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457788AbiDEQt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 12:49:59 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07206F3FA2
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 09:48:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=KwJe7koI5POQVlpJBL90lMmatqhkFD7sMDvSsn+JomQ=; b=oRpaLodPM74A5Jz3ctKqslLx1O
-        2enEb3o2oK4zDDOdezUeDVQzEm0YD5KxiEkooiWs9Iz5EetVtcfP9KuXAExejDW5DK3kPxHBZudSO
-        dHiwEL/kl/m0BIHSpIeIzcI7bvF1PPwjH+IsL7S4mL4AukNGnskyW9dbKUD+F0CO0HNzIefgczbAn
-        oaXLLhpncdEXZ3leBtyCSIf96X0J66Y6Mwht1cQHwiQKSV1neoXLP64haYJaKobPX+Rq0+imP+c/B
-        sajFy8wAGPjnnMbpBwyJ6z8Bfk6oX+Fn7kkDYS5pAtlmqIrj24X5H5cUB4rlwL/u3ZF+4pnkWPRky
-        7ksrmaxg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:58132)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nbmLV-0001iY-Kl; Tue, 05 Apr 2022 17:47:57 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nbmLS-0004Lf-MF; Tue, 05 Apr 2022 17:47:54 +0100
-Date:   Tue, 5 Apr 2022 17:47:54 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Cc:     Prasanna VengateshanVaradharajan 
-        <Prasanna.VengateshanVaradharajan@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        hkallweit1 <hkallweit1@gmail.com>, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v2 1/2] net: phy: micrel: add Microchip KSZ 9897 Switch
- PHY support
-Message-ID: <YkxyurTmhHseYEcK@shell.armlinux.org.uk>
-References: <20220207174532.362781-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
- <20220207174532.362781-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
- <YgGrNWeq6A7Rw3zG@lunn.ch>
- <2044096516.560385.1644309521228.JavaMail.zimbra@savoirfairelinux.com>
- <YgJshWvkCQLoGuNX@lunn.ch>
- <42ea108673200b3076d1b4f8d1fcb221b42d8e32.camel@microchip.com>
- <5a13e486f5eb8c15ae536bde714be873aa22aeb9.camel@microchip.com>
- <899950262.754511.1649170437739.JavaMail.zimbra@savoirfairelinux.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <899950262.754511.1649170437739.JavaMail.zimbra@savoirfairelinux.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        with ESMTP id S1457901AbiDEQ6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 12:58:14 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD362613B
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 09:56:15 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id ku13-20020a17090b218d00b001ca8fcd3adeso3161865pjb.2
+        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 09:56:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pD9fPwmVTM/jGE8ljozcqxyf1v/JIowTzA8YgXdXgLo=;
+        b=6Yhc3GQ5D13EfpCiyxWdY9ATp+e66X5WPXMk58IseiYggOh8EF4zh770E/Bk7DRo51
+         p4h4+pm4+wXMgBLs7qhYW6r1vVN2Wm7Iva6ruTUNUbuSqXPQ14wKHV8caf3YtyNS2Lzu
+         Kveambm80gsiXG3DrJFesbT6dQs5tecj4kseuZoRyGhEDF0QpghcROkKwiOozw0IonrY
+         cFQp7Fy2dYV4yttfGd+tA5dCEWgo4daS5HamfxZ1aTcDAeoqoOlCSQkeSBOmIT+3oI3o
+         n27q25I2PMjmmtWPK+zyETaS0EMrgPC0vQ+07cBMFsDLQXUr/NREnSNOapE4gsNk4ftz
+         tSMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=pD9fPwmVTM/jGE8ljozcqxyf1v/JIowTzA8YgXdXgLo=;
+        b=umpYtpC65wvGLKCIjyT+EE1gqvBgQBBg9W+JyEDaoqimTyZ/4ZadgS1f8JqpU7WZ97
+         E9DaaHoctttnbu8EfFcfCei/i+c+YHrckvn1RGDLG7/mlLJY0Pr+3OSawWBeqFSMZhph
+         cHbYABL4pP6IdRzyCta346Quxvk9OX96OyrsdORBNmL5f8kC08ILHqJmY106vWx+F/Tk
+         sk4eGha4IHGy9q9w+nCfRdkvdBtmglD9jFvb/RYOaFcU1dOeYbSHhyyt9Lsl3WDlTe7k
+         chaS0uPSf8/scJGK+q76qVWEneUsBMOE7mgg3YCQY2NmwGXzdDj0sCC3OlnGsXhpwc6t
+         YNNA==
+X-Gm-Message-State: AOAM530CEwT+6NGEBqMYPlFOI+0tp68vsB+CSn4LLnWECEtQAJG3At2I
+        ijhurixY+yoFgg6N2nwrQESzSQ==
+X-Google-Smtp-Source: ABdhPJxURqOrvjUNTuGDdXp9QzgwB0B9A/Tn2x7b4aAfTIkHHSa8BmZtjlyBr0mLrouMcWOZ+7cwhQ==
+X-Received: by 2002:a17:90a:7841:b0:1c7:e8ad:ea25 with SMTP id y1-20020a17090a784100b001c7e8adea25mr5206129pjl.25.1649177774636;
+        Tue, 05 Apr 2022 09:56:14 -0700 (PDT)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id p18-20020a17090ad31200b001cab747e864sm2785950pju.43.2022.04.05.09.56.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 09:56:13 -0700 (PDT)
+Date:   Tue, 05 Apr 2022 09:56:13 -0700 (PDT)
+X-Google-Original-Date: Tue, 05 Apr 2022 09:56:11 PDT (-0700)
+Subject:     Re: riscv defconfig CONFIG_PM/macb/generic PHY regression in v5.18-rc1
+In-Reply-To: <Ykxl4m1uPPDktZnD@shell.armlinux.org.uk>
+CC:     Conor.Dooley@microchip.com, apatel@ventanamicro.com,
+        netdev@vger.kernel.org, Nicolas.Ferre@microchip.com,
+        Claudiu.Beznea@microchip.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux-riscv@lists.infradead.org
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     linux@armlinux.org.uk
+Message-ID: <mhng-524fe1b1-ca51-43a6-ac0f-7ea325da8b6a@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,18 +70,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 10:53:57AM -0400, Enguerrand de Ribaucourt wrote:
-> Hello Prasanna,
-> 
-> Have you had any luck contacting the people working on the KSZ9897
-> PHY? As stated with more details in my previous emails, the RMII phy interface of
-> the KSZ9897 seems to share the same phy_id as the KSZ8081. However, a different
-> ksphy_driver struct must be used for the KSZ9897 PHY to work.
+On Tue, 05 Apr 2022 08:53:06 PDT (-0700), linux@armlinux.org.uk wrote:
+> On Tue, Apr 05, 2022 at 01:05:12PM +0000, Conor.Dooley@microchip.com wrote:
+>> Hey,
+>> I seem to have come across a regression in the default riscv defconfig
+>> between riscv-for-linus-5.18-mw0 (bbde015227e8) & v5.18-rc1, exposed by
+>> c5179ef1ca0c ("RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt
+>> machine") which causes the ethernet phy to not come up on my Icicle kit:
+>> [ 3.179864] macb 20112000.ethernet eth0: validation of sgmii with support 0000000,00000000,00006280 and advertisement 0000000,00000000,00004280 failed: -EINVAL
+>> [ 3.194490] macb 20112000.ethernet eth0: Could not attach PHY (-22)
+>
+> I don't think that would be related to the idle driver. This looks like
+> the PHY hasn't filled in the supported mask at probe time - do you have
+> the driver for the PHY built-in or the PHY driver module loaded?
 
-If there is some other way of detecting the phy device, the drivers can
-implement the "match_phy_device" method to do whatever it needs to
-differentiate between the two.
+IIRC we had a bunch of issues with the PHY on the HiFive Unleashed, 
+there was a quirky reset sequence that it wouldn't even probe 
+correctly without.  We have a 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+    &eth0 {
+            status = "okay";
+            phy-mode = "gmii";
+            phy-handle = <&phy0>;
+            phy0: ethernet-phy@0 {
+                    compatible = "ethernet-phy-id0007.0771";
+                    reg = <0>;
+            };
+    };
+
+in the Unleashed DT, but I can't find anything similar in the Icicle DT
+
+    &mac1 {
+            status = "okay";
+            phy-mode = "sgmii";
+            phy-handle = <&phy1>;
+            phy1: ethernet-phy@9 {
+                    reg = <9>;
+                    ti,fifo-depth = <0x1>;
+            };
+            phy0: ethernet-phy@8 {
+                    reg = <8>;
+                    ti,fifo-depth = <0x1>;
+            };
+    };
+
+I seem to remember picking that specific phy because it was similar to 
+the one that was POR for the Icicle at the time we decided, maybe you 
+have a similar phy with a similar quirk and need a similar workaround?
