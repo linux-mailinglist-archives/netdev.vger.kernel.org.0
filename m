@@ -2,62 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EC704F452A
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:40:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B83114F44FA
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:32:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381240AbiDEUEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36170 "EHLO
+        id S1382213AbiDEUEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391789AbiDEPfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:35:10 -0400
-Received: from olfflo.fourcot.fr (fourcot.fr [217.70.191.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6895F13EFB2
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 06:43:04 -0700 (PDT)
-From:   Florent Fourcot <florent.fourcot@wifirst.fr>
-To:     netdev@vger.kernel.org
-Cc:     cong.wang@bytedance.com, edumazet@google.com,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Brian Baboch <brian.baboch@wifirst.fr>
-Subject: [PATCH v3 net-next 4/4] rtnetlink: return EINVAL when request cannot succeed
-Date:   Tue,  5 Apr 2022 15:42:37 +0200
-Message-Id: <20220405134237.16533-4-florent.fourcot@wifirst.fr>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220405134237.16533-1-florent.fourcot@wifirst.fr>
-References: <20220405134237.16533-1-florent.fourcot@wifirst.fr>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S1447520AbiDEPqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:46:37 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1D6A777D
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 07:21:51 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id k2so7867230edj.9
+        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 07:21:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=nfFh/LslK5VRLsZhI4Mmp6pAWY+gEeRaK4OFqD/NR0M=;
+        b=GNQDZ9c013z7mAHmHIuu53aFVBZVi5GRK3lMmGG2Wkcwajhdu4ejFaQQB8rSSy8Eva
+         gQX/706T4TVIO6DTbwenoE4c5Uh2Aj99i5sV2CtFBPy4nFUh3eOw/iN4fHBlqvZis1H9
+         1mn6eTBvvOIRt/y+Ga4/cLSmNIgNWOOkuDNYdCPOoUiGIhyvnHQqbI2Udgds7gTOp2oG
+         hDadmbCwSDt5ZyjtQnuEhYuPO4h2zJDOEtsI+t+DqGaWsWXlwLAb2RJP80hFJhzJd4tY
+         +16OWpwCmVIBe6n476wfhY/aiBpZ3uWrbQREAznh3H5a5IOHhuuxtIXOe5iQpzCyxA11
+         gK3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=nfFh/LslK5VRLsZhI4Mmp6pAWY+gEeRaK4OFqD/NR0M=;
+        b=uuJHo5cJXXaPZWIemKVXda6AVp60Gvru1VAO2gNgnJ3Ys9Eb0Qu+tbvoZ2vctLBpAX
+         XavnEzSVdILywvt8OI1u5Dn2E6FpNRrqnSwWfZkerM1veY+fkuruerCk/5qs2CZqf3Jb
+         U+8kQ9P/8dtPSjgT9zeavf7O2oqAGsMTGfLtPq8Wq8CPNxuPiJk5VCTZ2AjX3FHd6yn+
+         5VH3lylDiwH+mQXySUc7jcZGeJ2hbtsTh68Ye45GL11xYyk10vAPQP6fH5eWnARAfBbp
+         SljChuO5l/B8i7stwjUfuYvIJPVQPe5Q3l/Qaop4gqoQIRB7pWui/cwfXHZrP6jQLGCg
+         4itg==
+X-Gm-Message-State: AOAM533hY+q3C3H0jAZ/PW8GxmTEBBOpPuCfzlin/ePSHG3jsZKFaWCc
+        4nb8M6SWL31QLl66ObaPGHzj0MrRgPc=
+X-Google-Smtp-Source: ABdhPJyivcrHZlxGt9BEGAoBn3i1C2Flh0J6Ga1mDysFapOqR4ErhNsUc9qER9AsosP+wyfi6ILB/w==
+X-Received: by 2002:a05:6402:84b:b0:419:85:b724 with SMTP id b11-20020a056402084b00b004190085b724mr3920885edz.413.1649168510099;
+        Tue, 05 Apr 2022 07:21:50 -0700 (PDT)
+Received: from smtpclient.apple (2001-1ae9-370-2000--da09.ip6.tmcz.cz. [2001:1ae9:370:2000::da09])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm5507244ejz.57.2022.04.05.07.21.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Apr 2022 07:21:49 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [DSA] fallback PTP to master port when switch does not support it
+From:   Matej Zachar <zachar.matej@gmail.com>
+In-Reply-To: <YktrbtbSr77bDckl@lunn.ch>
+Date:   Tue, 5 Apr 2022 16:21:47 +0200
+Cc:     netdev@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <AC44DB40-88EB-4613-ABEA-FA8C1062EA3A@gmail.com>
+References: <25688175-1039-44C7-A57E-EB93527B1615@gmail.com>
+ <YktrbtbSr77bDckl@lunn.ch>
+To:     Andrew Lunn <andrew@lunn.ch>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A request without interface name/interface index/interface group cannot
-work. We should return EINVAL
+Hi Andrew,
+thank you for the quick response.
 
-Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
-Signed-off-by: Brian Baboch <brian.baboch@wifirst.fr>
----
- net/core/rtnetlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On 5. 4. 2022, at 0:04, Andrew Lunn <andrew@lunn.ch> wrote:
+>=20
+>=20
+> Did you try just running PTP on the master device? I'm wondering if
+> the DSA headers get in the way?
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index e93f4058cf08..690324479cf5 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3420,7 +3420,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			return rtnl_group_changelink(skb, net,
- 						nla_get_u32(tb[IFLA_GROUP]),
- 						ifm, extack, tb);
--		return -ENODEV;
-+		return -EINVAL;
- 	}
- 
- 	if (tb[IFLA_MAP] || tb[IFLA_PROTINFO])
--- 
-2.30.2
+Yes this is exactly the problem as the master device is used as =
+=E2=80=9Cconduit interface=E2=80=9D
+so the switch is dropping the frames as there are no correct DSA headers =
+present.
+
+So running ptp4l on eth0 (master) interface configures the hardware =
+time-stamping correctly but no traffic is received.
+running it on lan1 (slave) interface you get the packets but no hardware =
+time-stamping support.
+
+I though this should be in a way similar to the case when you run ptp4l =
+over vlan interfaces (without dsa switch) - it fallbacks to the master =
+port.
+
+>=20
+> What i don't like about your proposed fallback is that it gives the
+> impression the slave ports actually support PTP, when they do not. And
+> maybe you want to run different ports in different modes, one upstream
+> towards a grand master and one downstream? I suspect the errors you
+> get are not obvious. Where as if you just run PTP on the master, the
+> errors would be more obvious.
+>=20
+
+I=E2=80=99m using switch ports in =E2=80=9Csingle port=E2=80=9D =
+configuration so there is lan1 lan2 interfaces connected to different =
+network segments.
+So it can behave as you described in upstream/downstream configuration =
+as =E2=80=9Cboundary=E2=80=9D PTP clock or as a redundancy where
+lan1 & lan2 are connected to physically separate networks - including =
+switches and cables.=20
+
+>=20
+> And this is another advantage of just using master directly. You can
+> even use master when the switch ports do support PTP.
+
+I do not see how is that possible as the DSA headers are in the way and =
+packets get dropped by the switch but maybe I am missing something.
+
+My second idea was to check the return values and fallback based on that =
+so the switch driver could still implement
+.get_ts_info and .port_hwtstamp_get/set from dsa_switch_ops struct. This =
+was just quick proof to test if it would work over slave interface.
+
+If there is better approach I could explore I=E2=80=99m happy to try.
+
+Matej.
 
