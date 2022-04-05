@@ -2,175 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFEB44F42D2
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 102FD4F3FD7
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240561AbiDEOW6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 10:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
+        id S1384095AbiDEOYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 10:24:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354551AbiDENH2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 09:07:28 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B858022B20;
-        Tue,  5 Apr 2022 05:09:58 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E0ED922248;
-        Tue,  5 Apr 2022 14:09:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649160596;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fCggV6bqzjUPTh2UWexsbRy4IO96rl40cUnwkAVnT5I=;
-        b=o9rAEG5dNTu/qS3ZOBvruaB/fIHLjhKxrVXoek8KJ1TykK8P3RzBI/WsitXw4LUyQ9LLKm
-        D7g1rsSD0/r5bZvfsajnZKBHMqBqTsSP2/LDVzqpwLnnPaiymXtkDn49hzSwbFOfjQFH5T
-        xKp26b33xygscWr1W+LI+oxzn5Ko+54=
-From:   Michael Walle <michael@walle.cc>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH net-next v3 1/3] dt-bindings: net: convert mscc-miim to YAML format
-Date:   Tue,  5 Apr 2022 14:09:49 +0200
-Message-Id: <20220405120951.4044875-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
-References: <20220405120951.4044875-1-michael@walle.cc>
+        with ESMTP id S1380608AbiDENOG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 09:14:06 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C702124C39;
+        Tue,  5 Apr 2022 05:17:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=TirUZa2jtJKxHIJLfrDdujcbpWXA+2UOaacwLbMHXu4=; b=HcqpA4hY9ri79fso0f339rrMcs
+        wCZmTFSHG5Z4XYSQx1NT4zatymh5toRG4XsyM+hmnBPwUA/ssg0FePcwNGIE9y1MK1pIDF1RbBd3u
+        qNkbgw1mAGxIDeegLAA6z4cJugPe8Nd8aaaOAzCUZHnivd0uVrXhc9oVxZwqR5Qo3Pm8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nbi7F-00EFMA-MV; Tue, 05 Apr 2022 14:16:57 +0200
+Date:   Tue, 5 Apr 2022 14:16:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andy Chiu <andy.chiu@sifive.com>
+Cc:     davem@davemloft.net, michal.simek@xilinx.com,
+        radhey.shyam.pandey@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzk+dt@kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Robert Hancock <robert.hancock@calian.com>
+Subject: Re: [PATCH v8 net-next 1/4] net: axienet: setup mdio unconditionally
+Message-ID: <YkwzOSR1yzspdCq3@lunn.ch>
+References: <20220405091929.670951-1-andy.chiu@sifive.com>
+ <20220405091929.670951-2-andy.chiu@sifive.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405091929.670951-2-andy.chiu@sifive.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert the mscc-miim device tree binding to the new YAML format.
+On Tue, Apr 05, 2022 at 05:19:26PM +0800, Andy Chiu wrote:
+> The call to axienet_mdio_setup should not depend on whether "phy-node"
+> pressents on the DT. Besides, since `lp->phy_node` is used if PHY is in
+> SGMII or 100Base-X modes, move it into the if statement. And the next patch
+> will remove `lp->phy_node` from driver's private structure and do an
+> of_node_put on it right away after use since it is not used elsewhere.
+> 
+> Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
+> Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
+> Reviewed-by: Robert Hancock <robert.hancock@calian.com>
 
-The original binding don't mention if the interrupt property is optional
-or not. But on the SparX-5 SoC, for example, the interrupt property isn't
-used, thus in the new binding that property is optional. FWIW the driver
-doesn't use interrupts at all.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/net/mscc,miim.yaml    | 56 +++++++++++++++++++
- .../devicetree/bindings/net/mscc-miim.txt     | 26 ---------
- 2 files changed, 56 insertions(+), 26 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/mscc,miim.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/mscc-miim.txt
-
-diff --git a/Documentation/devicetree/bindings/net/mscc,miim.yaml b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-new file mode 100644
-index 000000000000..cdc39aa20683
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/mscc,miim.yaml
-@@ -0,0 +1,56 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/mscc,miim.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microsemi MII Management Controller (MIIM)
-+
-+maintainers:
-+  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-+
-+allOf:
-+  - $ref: "mdio.yaml#"
-+
-+properties:
-+  compatible:
-+    enum:
-+      - mscc,ocelot-miim
-+      - microchip,lan966x-miim
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  reg:
-+    items:
-+      - description: base address
-+      - description: associated reset register for internal PHYs
-+    minItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    mdio@107009c {
-+      compatible = "mscc,ocelot-miim";
-+      reg = <0x107009c 0x36>, <0x10700f0 0x8>;
-+      interrupts = <14>;
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      phy0: ethernet-phy@0 {
-+        reg = <0>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/net/mscc-miim.txt b/Documentation/devicetree/bindings/net/mscc-miim.txt
-deleted file mode 100644
-index 70e0cb1ee485..000000000000
---- a/Documentation/devicetree/bindings/net/mscc-miim.txt
-+++ /dev/null
-@@ -1,26 +0,0 @@
--Microsemi MII Management Controller (MIIM) / MDIO
--=================================================
--
--Properties:
--- compatible: must be "mscc,ocelot-miim" or "microchip,lan966x-miim"
--- reg: The base address of the MDIO bus controller register bank. Optionally, a
--  second register bank can be defined if there is an associated reset register
--  for internal PHYs
--- #address-cells: Must be <1>.
--- #size-cells: Must be <0>.  MDIO addresses have no size component.
--- interrupts: interrupt specifier (refer to the interrupt binding)
--
--Typically an MDIO bus might have several children.
--
--Example:
--	mdio@107009c {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "mscc,ocelot-miim";
--		reg = <0x107009c 0x36>, <0x10700f0 0x8>;
--		interrupts = <14>;
--
--		phy0: ethernet-phy@0 {
--			reg = <0>;
--		};
--	};
--- 
-2.30.2
-
+    Andrew
