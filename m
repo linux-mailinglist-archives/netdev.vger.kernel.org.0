@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8454F2E87
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 14:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600154F2DA5
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 13:45:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343912AbiDEJPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 05:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        id S236253AbiDEJev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 05:34:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244976AbiDEIww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 04:52:52 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E55C1D0DD;
-        Tue,  5 Apr 2022 01:48:24 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D943E221D4;
-        Tue,  5 Apr 2022 10:48:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1649148502;
+        with ESMTP id S1343886AbiDEJOt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 05:14:49 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB5752E06;
+        Tue,  5 Apr 2022 02:01:14 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649149273;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=x/+zyXUcDmdndIIui1WDqypJvYDMYDrXZERNBQ0ecKk=;
-        b=aveEuHEhPZQK2Uwn++JVqUY23++YtQ2Iog5KE9xDadFiSBB9b3U5iB3yh8MN6rQH3Ij9Jq
-        W4neXVvnU1lja2kSQ35ur8KKaEpcANmZUPVFd3h1XfmeGmmaenwP4aZ/Jaw3UgCKWoM+A7
-        hJOlxIxVSNwizXEPqxE9Sj9Sd59uUbo=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 05 Apr 2022 10:48:21 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, davem@davemloft.net,
-        grygorii.strashko@ti.com, kuba@kernel.org, kurt@linutronix.de,
+        bh=Rh9iNBZn1TytrAMYCuDnnKJmAsEgHeZEynUJiMvsZOk=;
+        b=LqXhRsdwDnx50slIXYLrlXIl752amZvkIUa+s95z9opK0k7PBcMaDQEyDtbPGUTQc7zuKp
+        Oi1YamAS9fyv758WO/F8pHuu7KLe5taH9kVzXq8z9W/3ma+zIYv1V/wrsQgsyFuBFx8XRp
+        eDOKdiMFG9Mv0qenCxkSSN+y/739o2C39H5qdpKNEjQZdtILXtju9C0VZB7Hz2/w7ROoF/
+        0m8DkPKMK1mEs3BEfkqAdfdbhp7orXEO06I9hLjm7oe8FcxcSdH4rMffV2h/p9GjTfSo3K
+        JQ9wI2a6AWgnY7zANYUy1bCQepfqCFYazHgkAiUF6iLRg9rA7qQVdtxIlz8H7Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649149273;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rh9iNBZn1TytrAMYCuDnnKJmAsEgHeZEynUJiMvsZOk=;
+        b=cjAF5UHNewgoGCOyWlqrCBrRJ8eRcQ9tFo8q1TaB6DLMNlhycV8uzT4L1UijpRYZBi4czh
+        SuAsh9qDhvhk8sAQ==
+To:     Michael Walle <michael@walle.cc>, Andrew Lunn <andrew@lunn.ch>
+Cc:     richardcochran@gmail.com, davem@davemloft.net,
+        grygorii.strashko@ti.com, kuba@kernel.org,
         linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
         mlichvar@redhat.com, netdev@vger.kernel.org,
-        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
+        qiangqing.zhang@nxp.com, vladimir.oltean@nxp.com
 Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
  layer be selectable.
-In-Reply-To: <20220405055954.GB91955@hoboy.vegasvil.org>
+In-Reply-To: <e5a6f6193b86388ed7a081939b8745be@walle.cc>
 References: <20220104014215.GA20062@hoboy.vegasvil.org>
  <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
  <e5a6f6193b86388ed7a081939b8745be@walle.cc>
- <20220405055954.GB91955@hoboy.vegasvil.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <d38744cbe67474b3c83b84547ec3cb4f@walle.cc>
-X-Sender: michael@walle.cc
+Date:   Tue, 05 Apr 2022 11:01:11 +0200
+Message-ID: <877d83rjjc.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
@@ -62,25 +61,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-04-05 07:59, schrieb Richard Cochran:
-> On Mon, Apr 04, 2022 at 07:12:11PM +0200, Michael Walle wrote:
-> 
->> That would make sense. I guess what bothers me with the current
->> mechanism is that a feature addition to the PHY in the *future* (the
->> timestamping support) might break a board - or at least changes the
->> behavior by suddenly using PHY timestamping.
-> 
-> That is a good point, but then something will break in any case.
+--=-=-=
+Content-Type: text/plain
 
-Can the ethernet driver select the default one? So any current
-driver which has "if phy_has_hwtstamp() forward_ioctl;" can set
-it to PHY while newer drivers can (or should actually) leave it as
-MAC.
+On Mon Apr 04 2022, Michael Walle wrote:
+> That would make sense. I guess what bothers me with the current
+> mechanism is that a feature addition to the PHY in the *future* (the
+> timestamping support) might break a board - or at least changes the
+> behavior by suddenly using PHY timestamping.
 
-This doesn't really fix the problem per se. But at least new
-drivers won't be affected. For my problem at hand, I'd need to
-convince Microchip to default to MAC although the driver is
-already in the tree (but there is no user of it in mainline
-right now).
+Currently PHY timestamping is hidden behind a configuration option
+(NETWORK_PHY_TIMESTAMPING). By disabling this option the default
+behavior should stay at MAC timestamping even if additional features
+are added on top of the PHY drivers at later stages. Or not?
 
--michael
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmJMBVcTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgsMiEACJ6hgiPJnF7jCixnXIaxDdO+mW5fZI
+JPBCVnKJsrETFpGY2/cSr0aFN2KeNvF9S15jw36a+Tabnv6wNnYWnhqOdsyGBtE4
+wQUfJrNCJ6BHx9qUmgY+WbLdUEvXMnEx+ko/co9FCFWijd94M4ctaEdBbxq3WfQS
+3fzMpHssQfITgfgeaf+j+k+zR2i7UotKvQ7nTTZDiBgbQ1xn+4cDbR7uZZNPIKqj
+IC+R8BcOJENXkm8HwB/JvcRhOynsPFCJjHoHqM8N4v2DXFRnV8pfzceyZO6Lr5XF
+BEpaWfAHjcmnbzhC91oASXE5usbEqpQE5tAYK43m872DaHh+s1p4d4b3IzZU5uwt
+rx8zheaRta4gqUdaJo5qQkvKdD2CAYyK9O3v0rQMJRrTCK3Z3sZM/IMWNsEOqdVP
+QP1GxPByDHwwOsTJB4/v4DanuF39hSrZ4Ym2mi/PX76LmMZoL10JDzaU0rdg56nf
+Vg0EkwnCDxYSZJpB3r+6zFMNKDQyA6uOJAeKpaEB4kpLUMjZsRfZOgP1FJW1Ndgc
+Cggk0EckGKx5+zjTcHnVpr7VEVrSfeBGFnujzUx3TlduYJ8XBxLv7saUUlpE0O1O
+TkXxhxodllu2X4eis/5mIctYGgWl2XL/KZUD3Uws9a0PLLVZwuTxsEcS6ov00eKM
+NfqGdBj8KceuNg==
+=dVoz
+-----END PGP SIGNATURE-----
+--=-=-=--
