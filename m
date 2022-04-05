@@ -2,82 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D69C44F317C
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 14:44:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D502E4F3507
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 15:42:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234086AbiDEIjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 04:39:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55264 "EHLO
+        id S1343927AbiDEJPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 05:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234226AbiDEIYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 04:24:43 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DFE19FE2
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 01:20:14 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-272-5SR__z5bPA-muZaIpB3Szg-1; Tue, 05 Apr 2022 09:20:12 +0100
-X-MC-Unique: 5SR__z5bPA-muZaIpB3Szg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.32; Tue, 5 Apr 2022 09:20:09 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.033; Tue, 5 Apr 2022 09:20:09 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Guenter Roeck' <linux@roeck-us.net>, Tom Rix <trix@redhat.com>,
-        "Michael Walle" <michael@walle.cc>, Xu Yilun <yilun.xu@intel.com>,
-        Jean Delvare <jdelvare@suse.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v3 1/2] hwmon: introduce hwmon_sanitize_name()
-Thread-Topic: [PATCH v3 1/2] hwmon: introduce hwmon_sanitize_name()
-Thread-Index: AQHYSHwTg8sgNzQuFUK534Gp+j5NB6zg+ouA
-Date:   Tue, 5 Apr 2022 08:20:09 +0000
-Message-ID: <dd24d0ecc84e4576bfde16d80d971f88@AcuMS.aculab.com>
-References: <20220404184340.3973329-1-michael@walle.cc>
- <20220404184340.3973329-2-michael@walle.cc>
- <428c28e4-87cc-50a4-ef13-41ae36702a84@redhat.com>
- <25517c15-30f6-fbc5-5731-44c41ef904c7@roeck-us.net>
-In-Reply-To: <25517c15-30f6-fbc5-5731-44c41ef904c7@roeck-us.net>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S244017AbiDEIvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 04:51:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726ABD1CDF;
+        Tue,  5 Apr 2022 01:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 108D5B81C6F;
+        Tue,  5 Apr 2022 08:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9FF91C385A1;
+        Tue,  5 Apr 2022 08:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649148012;
+        bh=Zc1lPH1m7basa7ZzhirPvPyfn9KWw84TMvg3+N1Z3Iw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FUBoPWaBBUeCm7ZIaQtsGiOm3qmKp+ZwPu10zFqFnHisNR+OYrz2B+817AwmUTTQz
+         Zwn7z1nDRS7lTzduKDR6Hb6mI4CxXmlBkEeir+RNjrzvtZUsTRg4c2qClAZ4Harj9x
+         G+9hrX6/rxo7o7kXVDtEWSSQb9Wyn1kfihWlFJsayS+OPAhudymvoCBZBxkTv5HJrW
+         yTIxe9fgcElmIW9hNkcLi048dH9GiRQ2ryIWs66h1FFP5AN3oYAZKSWCTgz/Xs6p2w
+         uepNGF+ajKgSiM5zhxwKWAdg5/TdZibiUuDZGBtpQrEajpzd7e+9Kr8yi932mYZx8N
+         tmGYwk0WOfdqg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7B208E85D15;
+        Tue,  5 Apr 2022 08:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 net] sctp: count singleton chunks in assoc user stats
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164914801250.9044.11217465324374083651.git-patchwork-notify@kernel.org>
+Date:   Tue, 05 Apr 2022 08:40:12 +0000
+References: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
+In-Reply-To: <c9ba8785789880cf07923b8a5051e174442ea9ee.1649029663.git.jamie.bainbridge@gmail.com>
+To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
+        marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogR3VlbnRlciBSb2Vjaw0KPiBTZW50OiAwNSBBcHJpbCAyMDIyIDAwOjMxDQouLi4NCj4g
-Pj4gwqAgLyoqDQo+ID4+IMKgwqAgKiBod21vbl9pc19iYWRfY2hhciAtIElzIHRoZSBjaGFyIGlu
-dmFsaWQgaW4gYSBod21vbiBuYW1lDQo+ID4NCj4gPiBUaGlzIHN0aWxsIG5lZWRlZCBpbiAqLmgg
-Pw0KPiA+DQo+IA0KPiBZZXMsIGJlY2F1c2UgaXQgaXMgdXNlZCBieSBvdXQtb2YtdHJlZSBkcml2
-ZXJzLiBXZSBjYW4gb25seSBtb3ZlDQo+IHRoYXQgaW50byBod21vbi5jIGFmdGVyIGFsbCB1c2Vy
-cyBhcmUgZ29uZS4NCg0KQW5kIGRyaXZlcnMgbWlnaHQgd2FudCB0byAnc2FuaXRpemUnIGEgY29w
-eSBvZiB0aGUgbmFtZSB3aXRob3V0DQpyZWFsbG9jYXRpbmcgaXQuDQoNCglEYXZpZA0KDQotDQpS
-ZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWls
-dG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMp
-DQo=
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Mon,  4 Apr 2022 09:47:48 +1000 you wrote:
+> Singleton chunks (INIT, HEARTBEAT PMTU probes, and SHUTDOWN-
+> COMPLETE) are not counted in SCTP_GET_ASOC_STATS "sas_octrlchunks"
+> counter available to the assoc owner.
+> 
+> These are all control chunks so they should be counted as such.
+> 
+> Add counting of singleton chunks so they are properly accounted for.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v4,net] sctp: count singleton chunks in assoc user stats
+    https://git.kernel.org/netdev/net/c/e3d37210df5c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
