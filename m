@@ -2,119 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B028F4F40D3
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 607494F3DD2
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 22:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353850AbiDEUDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S1379160AbiDEUEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386444AbiDEOjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 10:39:20 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719B05EBD5;
-        Tue,  5 Apr 2022 06:16:13 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 235DFOsL038335;
-        Tue, 5 Apr 2022 08:15:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649164524;
-        bh=JYdCG3TAoNbKpALXnh21WRPhuqXFTS0WBJhqewUEdCQ=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=Vnl2EmkA6sfzsx2ccbIzJiMsHX1n/wKxf+zgFCW8p9J7ov2+B8OGi8nB9zWtPrjt6
-         vOkuz5TCROSq5qBzY4zn3PemosER2jll/k6f7A6By1RoyjVA+QJsDrmiSmkCQL27R8
-         zs/5BCk53ntaO0AGU/yZVjXtQquQ+7FtDiep2AIo=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 235DFO0Y061587
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 5 Apr 2022 08:15:24 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 5
- Apr 2022 08:15:24 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 5 Apr 2022 08:15:24 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 235DFGEe099167;
-        Tue, 5 Apr 2022 08:15:16 -0500
-Message-ID: <defe77d9-1a41-7112-0ef6-a12aa2b725ab@ti.com>
-Date:   Tue, 5 Apr 2022 16:15:05 +0300
+        with ESMTP id S1389238AbiDEPVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:21:12 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49B9ECD32F;
+        Tue,  5 Apr 2022 06:35:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649165747; x=1680701747;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fVWz4U1ex/01xYxGZqkQetlyIcjnp+/OvGi5CvLhVO0=;
+  b=Jfkjv9YjOLK19xOFnu94DHjUnxoc4bHe9Fpv7G1PKod/gHJMYoifTWJd
+   16AeIRhUG8P+tks8RZcPhmmlfHTdYsEO1SeMgXKgiSzKzgh68+rq4HN5v
+   sfHKM83p6xlghNhQ5Y54ftSLj44dRrf5jklfU/qY/Sfr6YUg7jVoDbIxW
+   Oek53bHYaty11vP1YhQFwuZpuSOQmrjl1DCeHEPqGBPo+4YMV8sZP5vRP
+   DnBzkdOkiyiCFtIdxVr2J/mYv6MweOD9410tRi+0diwl8Y8CaP9r5nk20
+   s9G2cpLJBR2ElsutBPw17c3nP2IQcwA8dfvoxsePtqxWeKbJbLtcYtoWU
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="241335999"
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="241335999"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 06:35:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
+   d="scan'208";a="556522499"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by fmsmga007.fm.intel.com with ESMTP; 05 Apr 2022 06:35:44 -0700
+Date:   Tue, 5 Apr 2022 15:35:44 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        magnus.karlsson@intel.com, bjorn@kernel.org, brouer@redhat.com,
+        netdev@vger.kernel.org, maximmi@nvidia.com,
+        alexandr.lobakin@intel.com
+Subject: Re: [PATCH bpf-next 02/10] xsk: diversify return codes in
+ xsk_rcv_check()
+Message-ID: <YkxFsMvj1PL2V/II@boxer>
+References: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
+ <20220405110631.404427-3-maciej.fijalkowski@intel.com>
+ <fdc503fa-9ecb-113f-4dd6-774765c3b2ba@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
- layer be selectable.
-Content-Language: en-US
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Michael Walle <michael@walle.cc>
-CC:     Andrew Lunn <andrew@lunn.ch>, <richardcochran@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
-        <mlichvar@redhat.com>, <netdev@vger.kernel.org>,
-        <qiangqing.zhang@nxp.com>, <vladimir.oltean@nxp.com>
-References: <20220104014215.GA20062@hoboy.vegasvil.org>
- <20220404150508.3945833-1-michael@walle.cc> <YksMvHgXZxA+YZci@lunn.ch>
- <e5a6f6193b86388ed7a081939b8745be@walle.cc> <877d83rjjc.fsf@kurt>
- <ad4a8d3efbeaacf241a19bfbca5976f9@walle.cc> <87wng3pyjl.fsf@kurt>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-In-Reply-To: <87wng3pyjl.fsf@kurt>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fdc503fa-9ecb-113f-4dd6-774765c3b2ba@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 05/04/2022 14:19, Kurt Kanzenbach wrote:
-> On Tue Apr 05 2022, Michael Walle wrote:
->> Am 2022-04-05 11:01, schrieb Kurt Kanzenbach:
->>> On Mon Apr 04 2022, Michael Walle wrote:
->>>> That would make sense. I guess what bothers me with the current
->>>> mechanism is that a feature addition to the PHY in the *future* (the
->>>> timestamping support) might break a board - or at least changes the
->>>> behavior by suddenly using PHY timestamping.
->>>
->>> Currently PHY timestamping is hidden behind a configuration option
->>> (NETWORK_PHY_TIMESTAMPING). By disabling this option the default
->>> behavior should stay at MAC timestamping even if additional features
->>> are added on top of the PHY drivers at later stages. Or not?
->>
->> That is correct. But a Kconfig option has several drawbacks:
->> (1) Doesn't work with boards where I might want PHY timestamping
->>       on *some* ports, thus I need to enable it and then stumple
->>       across the same problem.
->> (2) Doesn't work with generic distro support, which is what is
->>       ARM pushing right now with their SystemReady stuff (among other
->>       things also for embeddem system). Despite that, I have two boards
->>       which are already ready for booting debian out of the box for
->>       example. While I might convince Debian to enable that option
->>       (as I see it, that option is there to disable the additional
->>       overhead) it certainly won't be on a per board basis.
->>       Actually for keeping the MAC timestamping as is, you'd need to
->>       convince a distribution to never enable the PHY timestamping
->>       kconfig option.
->>
->> So yes, I agree it will work when you have control over your
->> kconfig options, after all (1) might be more academic. But I'm
->> really concerned about (2).
+On Tue, Apr 05, 2022 at 03:00:25PM +0200, Jesper Dangaard Brouer wrote:
 > 
-> Yes, the limitations described above are exactly one of the reasons to
-> make the timestamping layer configurable at run time as done by these
-> patches.
+> 
+> On 05/04/2022 13.06, Maciej Fijalkowski wrote:
+> > Inspired by patch that made xdp_do_redirect() return values for XSKMAP
+> > more meaningful, return -ENXIO instead of -EINVAL for socket being
+> > unbound in xsk_rcv_check() as this is the usual value that is returned
+> > for such event. In turn, it is now possible to easily distinguish what
+> > went wrong, which is a bit harder when for both cases checked, -EINVAL
+> > was returned.
+> 
+> I like this as it makes it easier to troubleshoot.
+> Could you update the description to explain how to debug this easily.
+> E.g. via this bpftrace one liner:
+> 
+> 
+>  bpftrace -e 'tracepoint:xdp:xdp_redirect* {@err[-args->err] = count();}'
 
-Seems like PHY TS support belongs to HW description category, so could it be device tree material,
-like generic property defining which layer should do timestamping?
+Nice one! I'll include this in the commit message of v2.
 
--- 
-Best regards,
-Grygorii, Ukraine
+> 
+> 
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > ---
+> 
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> 
+> >   net/xdp/xsk.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index f75e121073e7..040c73345b7c 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -217,7 +217,7 @@ static bool xsk_is_bound(struct xdp_sock *xs)
+> >   static int xsk_rcv_check(struct xdp_sock *xs, struct xdp_buff *xdp)
+> >   {
+> >   	if (!xsk_is_bound(xs))
+> > -		return -EINVAL;
+> > +		return -ENXIO;
+> >   	if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index)
+> >   		return -EINVAL;
+> > 
+> 
