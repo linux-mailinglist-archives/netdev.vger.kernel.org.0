@@ -2,99 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 030EC4F23CB
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 08:56:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C2D04F23EC
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 09:07:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231246AbiDEG6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 02:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
+        id S231377AbiDEHJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 03:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231234AbiDEG62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 02:58:28 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32273636C;
-        Mon,  4 Apr 2022 23:56:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649141791; x=1680677791;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XCuwsMkc/RYY+FxUw+6XukXX24ukq5d/45lTk16U5nY=;
-  b=ri921db6EtU+4zyQxJM8nsbRJFiRblUm6SzZJsb4gsvuWN5hGxPnCmgs
-   knTKzozLNJZ+xFsTZivjJhuY2adrD44JSIETL893rSOmz4CXYjFWFZQKU
-   ZxKUPpoeGrZyMWV9Se5cFb1MhyhgwyuOJ1nYxwY2vKbJDtaadZZjvUwXO
-   +n6Jgp3V410M8jvJPUKOagjepHauW6f+fBbBT64Oo0Vk9y0MLsfmeJb1C
-   yPGdQG1KShQ1pZo23HEUtb59MyBD+roce9EbTtU+0eR8qaG5JVAI0bAfM
-   4CLCJiTjic4Grb8Fi8c9aYFTXZ1er/N8XhF5cqL05Z9veU07Yhb3oSsIi
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,236,1643698800"; 
-   d="scan'208";a="159319232"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Apr 2022 23:56:30 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 4 Apr 2022 23:56:29 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 4 Apr 2022 23:56:28 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <Divya.Koppera@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH net] net: micrel: Fix KS8851 Kconfig
-Date:   Tue, 5 Apr 2022 08:59:36 +0200
-Message-ID: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S231375AbiDEHJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 03:09:42 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3119313E90;
+        Tue,  5 Apr 2022 00:07:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=mb8LxTS7N1wZA6PGLOAHodUliQGXD2Gj4fJDPq7BY7I=; b=3vvYnrIhGjhGuytIlX1R63z5oZ
+        8HJzAlppnlhvbkRKwmatxzikLyz9TZOkhfA28ZKt/Gs2YURxe9o5MXYoIDosXLJAqXJo5/flGm66/
+        Yrpoxjf8eDN6iOgG8ODT+Bb5xtjO+HyjtLbPufSo37UVL6pKRATfVvAbh7mNJqhkcC+u3ZzKbUGI3
+        1FFD4vq1YsRD6Sb5ZAGaUdHXph/RR1nOeS/OsAz4D9q3/O8QHTiE66dIA3GSGLXTafFssuFeuhOWW
+        E+yHFYMYCPzCeEKQVkwEueBksfkUyIUmnW6M9Fu2bW6aSBntwJyDaAF6gaYmwpDLu0SZ9G/rNgtU/
+        YvXyjZhA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nbdHq-00HOmb-7S; Tue, 05 Apr 2022 07:07:34 +0000
+Date:   Tue, 5 Apr 2022 00:07:34 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Song Liu <song@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        X86 ML <x86@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>
+Subject: Re: [PATCH bpf 0/4] introduce HAVE_ARCH_HUGE_VMALLOC_FLAG for
+ bpf_prog_pack
+Message-ID: <YkvqtvNFtzDNkEhy@infradead.org>
+References: <20220330225642.1163897-1-song@kernel.org>
+ <YkU+ADIeWACbgFNA@infradead.org>
+ <F3447905-8D42-46C0-B324-988A0E4E52E7@fb.com>
+ <6AA91984-7DF3-4820-91DF-DD6CA251B638@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6AA91984-7DF3-4820-91DF-DD6CA251B638@fb.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-KS8851 selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL, so
-make KS8851 also depend on PTP_1588_CLOCK_OPTIONAL.
+On Fri, Apr 01, 2022 at 10:22:00PM +0000, Song Liu wrote:
+> >> Please fix the underlying issues instead of papering over them and
+> >> creating a huge maintainance burden for others.
+> 
+> After reading the code a little more, I wonder what would be best strategy. 
+> IIUC, most of the kernel is not ready for huge page backed vmalloc memory.
+> For example, all the module_alloc cannot work with huge pages at the moment.
+> And the error Paul Menzel reported in drm_fb_helper.c will probably hit 
+> powerpc with 5.17 kernel as-is? (trace attached below) 
+> 
+> Right now, we have VM_NO_HUGE_VMAP to let a user to opt out of huge pages. 
+> However, given there are so many users of vmalloc, vzalloc, etc., we 
+> probably do need a flag for the user to opt-in? 
+> 
+> Does this make sense? Any recommendations are really appreciated. 
 
-Fixes kconfig warning and build errors:
+I think there is multiple aspects here:
 
-WARNING: unmet direct dependencies detected for MICREL_PHY
-  Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
-    Selected by [y]:
-      - KS8851 [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && SPI [=y]
-
-ld.lld: error: undefined symbol: ptp_clock_register referenced by micrel.c
-net/phy/micrel.o:(lan8814_probe) in archive drivers/built-in.a
-ld.lld: error: undefined symbol: ptp_clock_index referenced by micrel.c
-net/phy/micrel.o:(lan8814_ts_info) in archive drivers/built-in.a
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: ece19502834d ("net: phy: micrel: 1588 support for LAN8814 phy")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/micrel/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
-index 1b632cdd7630..830363bafcce 100644
---- a/drivers/net/ethernet/micrel/Kconfig
-+++ b/drivers/net/ethernet/micrel/Kconfig
-@@ -28,6 +28,7 @@ config KS8842
- config KS8851
- 	tristate "Micrel KS8851 SPI"
- 	depends on SPI
-+	depends on PTP_1588_CLOCK_OPTIONAL
- 	select MII
- 	select CRC32
- 	select EEPROM_93CX6
--- 
-2.33.0
-
+ - if we think that the kernel is not ready for hugepage backed vmalloc
+   in general we need to disable it in powerpc for now.
+ - if we think even in the longer run only some users can cope with
+   hugepage backed vmalloc we need to turn it into an opt-in in
+   general and not just for x86
+ - there still to appear various unresolved underlying x86 specific
+   issues that need to be fixed either way
