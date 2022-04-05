@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73D674F5373
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:32:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 543E14F5366
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243785AbiDFEVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 00:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48088 "EHLO
+        id S1349680AbiDFEWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351798AbiDEUP3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:15:29 -0400
+        with ESMTP id S1358894AbiDEUuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:50:06 -0400
 Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0CFF9FB5;
-        Tue,  5 Apr 2022 12:58:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8616966ADB;
+        Tue,  5 Apr 2022 13:24:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
          s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=PZEg5szaXbIhbL1e77PZtiylr+OggSY5UFkfbd2FJus=; b=oW3o1rkXgUKGFaIfSwFntKTRBV
-        TP1XJvpgDDt/87NziK0rjMNqkgPYwZfPNwwRMmLNZ/XlwQQ//ugnoL4zRUo5EXfKf9umZkteMrMDr
-        XnLvf+GkyxIrVxXXHnTKAnLAr9biL31rHs4jSdoL5PvHbFPQ2kRzxhskn07HMJpvry7s=;
+        bh=gXvEQrfZY9HNBpxfU0Zzm6NHw+EacTGssl2BnoA7qE0=; b=J/ymy3Uqmx90f5JQAtw03vc9mI
+        argCvDrmevWZn0QJBD+TAfBEovMmoU9fFQtdxBxq/MuDi7lA885JpmqN346nTYSu/rGDeO9+1Zpyw
+        snXS5Ep9sk87UP6kj0wY6cSoPwMkT3ONEZH/30dNvKHuzbFEnFn/3KOY5I0HKFEj2iJQ=;
 Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=Maecks.lan)
         by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <nbd@nbd.name>)
-        id 1nbpJW-00035V-JN; Tue, 05 Apr 2022 21:58:06 +0200
+        id 1nbpJX-00035V-7B; Tue, 05 Apr 2022 21:58:07 +0200
 From:   Felix Fietkau <nbd@nbd.name>
 To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
         Sean Wang <sean.wang@mediatek.com>,
@@ -36,12 +36,11 @@ To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     David Bentham <db260179@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
+Cc:     linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/14] net: ethernet: mtk_eth_soc: add ipv6 flow offload support
-Date:   Tue,  5 Apr 2022 21:57:50 +0200
-Message-Id: <20220405195755.10817-10-nbd@nbd.name>
+Subject: [PATCH v2 10/14] net: ethernet: mtk_eth_soc: support TC_SETUP_BLOCK for PPE offload
+Date:   Tue,  5 Apr 2022 21:57:51 +0200
+Message-Id: <20220405195755.10817-11-nbd@nbd.name>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405195755.10817-1-nbd@nbd.name>
 References: <20220405195755.10817-1-nbd@nbd.name>
@@ -56,86 +55,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Bentham <db260179@gmail.com>
+This allows offload entries to be created from user space
 
-Add the missing IPv6 flow offloading support for routing only.
-Hardware flow offloading is done by the packet processing engine (PPE)
-of the Ethernet MAC and as it doesn't support mangling of IPv6 packets,
-IPv6 NAT cannot be supported.
-
-Signed-off-by: David Bentham <db260179@gmail.com>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- .../net/ethernet/mediatek/mtk_ppe_offload.c   | 28 +++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/net/ethernet/mediatek/mtk_ppe_offload.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-index bcf342bb9051..0113cddcebf4 100644
+index 0113cddcebf4..da3bc93676f8 100644
 --- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
 +++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -6,6 +6,7 @@
- #include <linux/if_ether.h>
- #include <linux/rhashtable.h>
- #include <linux/ip.h>
-+#include <linux/ipv6.h>
- #include <net/flow_offload.h>
- #include <net/pkt_cls.h>
- #include <net/dsa.h>
-@@ -20,6 +21,11 @@ struct mtk_flow_data {
- 			__be32 src_addr;
- 			__be32 dst_addr;
- 		} v4;
-+
-+		struct {
-+			struct in6_addr src_addr;
-+			struct in6_addr dst_addr;
-+		} v6;
- 	};
- 
- 	__be16 src_port;
-@@ -65,6 +71,14 @@ mtk_flow_set_ipv4_addr(struct mtk_foe_entry *foe, struct mtk_flow_data *data,
- 					    data->v4.dst_addr, data->dst_port);
+@@ -563,10 +563,13 @@ mtk_eth_setup_tc_block(struct net_device *dev, struct flow_block_offload *f)
+ int mtk_eth_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 		     void *type_data)
+ {
+-	if (type == TC_SETUP_FT)
++	switch (type) {
++	case TC_SETUP_BLOCK:
++	case TC_SETUP_FT:
+ 		return mtk_eth_setup_tc_block(dev, type_data);
+-
+-	return -EOPNOTSUPP;
++	default:
++		return -EOPNOTSUPP;
++	}
  }
  
-+static int
-+mtk_flow_set_ipv6_addr(struct mtk_foe_entry *foe, struct mtk_flow_data *data)
-+{
-+	return mtk_foe_entry_set_ipv6_tuple(foe,
-+					    data->v6.src_addr.s6_addr32, data->src_port,
-+					    data->v6.dst_addr.s6_addr32, data->dst_port);
-+}
-+
- static void
- mtk_flow_offload_mangle_eth(const struct flow_action_entry *act, void *eth)
- {
-@@ -296,6 +310,9 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 	case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
- 		offload_type = MTK_PPE_PKT_TYPE_IPV4_HNAPT;
- 		break;
-+	case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
-+		offload_type = MTK_PPE_PKT_TYPE_IPV6_ROUTE_5T;
-+		break;
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-@@ -331,6 +348,17 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 		mtk_flow_set_ipv4_addr(&foe, &data, false);
- 	}
- 
-+	if (addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
-+		struct flow_match_ipv6_addrs addrs;
-+
-+		flow_rule_match_ipv6_addrs(rule, &addrs);
-+
-+		data.v6.src_addr = addrs.key->src;
-+		data.v6.dst_addr = addrs.key->dst;
-+
-+		mtk_flow_set_ipv6_addr(&foe, &data);
-+	}
-+
- 	flow_action_for_each(i, act, &rule->action) {
- 		if (act->id != FLOW_ACTION_MANGLE)
- 			continue;
+ int mtk_eth_offload_init(struct mtk_eth *eth)
 -- 
 2.35.1
 
