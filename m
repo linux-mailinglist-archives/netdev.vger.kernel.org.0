@@ -2,241 +2,371 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D31294F53C5
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6B24F5429
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:48:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452841AbiDFEXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 00:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42426 "EHLO
+        id S1577651AbiDFE2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1838569AbiDFAzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 20:55:20 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2072.outbound.protection.outlook.com [40.107.94.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EAA19FF40;
-        Tue,  5 Apr 2022 15:57:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VkZ/4pBB5toWP6OeiU+1jwhJmWLMu1tH0B2xQFXb3zcBytlqLv8TxA6JuFZZb2ugYgnq3JU3XsHikuEVUcG/zRo8ufYIx/HBH/4OCgGZ5Fy4lmVzNTcsCAedjUVNh0N7/b3YWlTgrPUuoLmOyK56beHAU2cMdRIpJDmjlGQJeW1sbo7PJNSGMEDeHJ57mqOgWEBT6tmBVYzzz8fAmM5RP7tCz8zdUhsD0B7pkl1CNomkMdPY6g2ew7XXCjjrnL9V87QBnS9CkTT4DhVEcmmvNm+xuORk7Y7bxhrvvUeJ1LzFTrFn13RDcSNw5+VDhz9W3K59WZe3Q5+h5fCLebw8xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HvnP56WZfmDZ8OOtSptEBTdkllR7kIl0OZ4FSadH0c8=;
- b=CZgreFZa11Ne8+7/I4B6mpb39ZkaX3xHEQMrYpsRsdoAvhJxZ+dFQX2ToQvREAOdyVyQ9TkVgY0yKeF5giNu77+V5mja0Uye00LcS+fJyykKXvtKXXG0kwuFPI7ywrb1Uxh3pHRb17qIk8sm60fuWMMN02ZOT6i416teIQn3HAhHtN6q8C08ZFHS6JDOHAjaPy8gKGYTq88rZgqywGwrElWQ8Qk6ThxEgpX4iKDskdtb99HLNESCzjoYBX+cw5z2OWES8ny0Q7JFNd2lUgTnDKlV6Th1Tlc4vYwZVzoWxPPb5BZpu1gMF+0qDp881F/BAMZpaFiOeTLotMW1LndNBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HvnP56WZfmDZ8OOtSptEBTdkllR7kIl0OZ4FSadH0c8=;
- b=S0ceSEyLSP52sUjwpBtOq6OsZ7Fyxn+eVKkONs5q0lfWjdgjjPZMQduVv5sy3Y6BwySj9xZ1oHxWL0Q/UqVe+FqSvCmZFmmHJ0cydbPZV0cwUfhQuKOrtc9V88mXL9mSvYHco1e+N8+2uRna5WSPTLCNRR4f/54A56QRrgyBNOxYPI8SWEfDUWPQijWp7JL00x0kxh85BfNrhYTjjPYevA+3T01Os0lERkVvflz3vCOHWPSJ5HQCHSw7iIU/Xk8eIMEI4UjeN3ffbeFEIzsKwhKe29c1c998dGQlVzI6pUTmfaRBBUgrFpMYUMf1nn/qdYp9fCxUgHn4rjOZiCXgGA==
-Received: from CO6PR12MB5427.namprd12.prod.outlook.com (2603:10b6:5:358::13)
- by MW4PR12MB5666.namprd12.prod.outlook.com (2603:10b6:303:188::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.30; Tue, 5 Apr
- 2022 22:57:42 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by CO6PR12MB5427.namprd12.prod.outlook.com (2603:10b6:5:358::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 22:57:42 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%5]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
- 22:57:41 +0000
-Date:   Tue, 5 Apr 2022 19:57:39 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Christian Benvenuti <benve@cisco.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        iommu@lists.linux-foundation.org, Jason Wang <jasowang@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-s390@vger.kernel.org,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
-        Rob Clark <robdclark@gmail.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        virtualization@lists.linux-foundation.org,
-        Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 3/5] iommu: Introduce the domain op
- enforce_cache_coherency()
-Message-ID: <20220405225739.GW2120790@nvidia.com>
-References: <0-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
- <3-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
- <20220405135036.4812c51e.alex.williamson@redhat.com>
+        with ESMTP id S1446578AbiDFBQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 21:16:17 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7756C245B3;
+        Tue,  5 Apr 2022 16:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649200127; x=1680736127;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Xp43dfjNB+BJfz5gN1k7pk22qVpg2ISIf8p6jr207ZY=;
+  b=oDwzrA2tihl3CX3LTZQ3gFuiE0t6kn8EKP4Viai4HBQQL+qKwH2+PF1M
+   Z00Fyg0pplXwpa+lhAY4pRUHx0sWw7uWZBVNBGlFChtgYh4cyfItjDtXG
+   MSajakf4nao2uatLYlB4J9MBm9WzHXNO2TTwJi4UYdnC6iq4/k5DcDbUG
+   F3JiuCjKIgDLqKnl3mMbD5UTB3t6nKH+/DJZ4JneIwMqrDQlXqJ5rRPKc
+   5IBWj5j7Wst38oGZIbT+TaKZUAcuWy57eUIdW4UsCxMjuHUljaQ8HRMGo
+   DA/qvyEhftjQ1146rfrbGmU+83Sywjv5FAYqIK+PRGNXNMekqrRWp+ogT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10308"; a="261060064"
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="261060064"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 16:08:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,238,1643702400"; 
+   d="scan'208";a="658149390"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga004.jf.intel.com with ESMTP; 05 Apr 2022 16:08:38 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nbsHu-0003qj-3i;
+        Tue, 05 Apr 2022 23:08:38 +0000
+Date:   Wed, 6 Apr 2022 07:07:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Wells Lu <wellslutw@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.zabel@pengutronix.de, pabeni@redhat.com, krzk+dt@kernel.org,
+        roopa@nvidia.com, andrew@lunn.ch, edumazet@google.com
+Cc:     kbuild-all@lists.01.org, wells.lu@sunplus.com,
+        Wells Lu <wellslutw@gmail.com>
+Subject: Re: [PATCH net-next v6 2/2] net: ethernet: Add driver for Sunplus
+ SP7021
+Message-ID: <202204060616.kl1yKwP5-lkp@intel.com>
+References: <1649016459-23989-3-git-send-email-wellslutw@gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220405135036.4812c51e.alex.williamson@redhat.com>
-X-ClientProxiedBy: MN2PR11CA0013.namprd11.prod.outlook.com
- (2603:10b6:208:23b::18) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1a7aae92-6df2-4873-52f6-08da1757aff6
-X-MS-TrafficTypeDiagnostic: CO6PR12MB5427:EE_|MW4PR12MB5666:EE_
-X-Microsoft-Antispam-PRVS: <CO6PR12MB54271D0E7FB6366155518102C2E49@CO6PR12MB5427.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +ix8JeI2N/Ndb9xmCk3NfY6f/gI6n9SLRVP3lEMwBQzmdGRJe4uriGAJDqGrdSiz1wxFSQarPBxlq8wjoUhftyiBGdvxvqwOYEDj81yx2GF9C6qcwt8v3ZP/ypuVEkgcIV/4AcEKb5tgQPL+voL4/Yzm3bQcs6IMv8/Z7bPy2Kbs9Q1PK8RCERgKr/WxPCEj2dXrdjXwtEg7opTT/FxXt9h4yPWoDtf7ygmOzNlwjVFNdA4PzBIRBEjaSdNgzwryVlcVonulYuxSYv5w2FWHz3TZxkf2Ybpav0km5iHwgy2ryS8xE91EJHBRvRLXnTAqhUXriSgaQF7UaUwpWmtDhBhJYVQprO8/qolLR0ekgdHxpyLyKVdFAm+qqfdmyswrVPF0iBz+2zAulZQfPIpWQcr6muo4YOHliYUKiF92tF33igB0odKpneDSvKyPTBwaNVCM/k4vkkbVM8Q5vLu8wgaQ8v9UbQZxarItslWfzL0Dv3pg5FeDNuWgOu8Q3d+npous4c7BUcSrLw/2TUP8rlUOhjhuFUeUM/qiVEhznTYPlOn1PLPJdc1bbB8f7VL44nt2ssQeEPfNwvSY7W1GZiG+FqzsYvrd0CJo4pluy5DtKKZ2KtOQInRTfRiyfSyyLX8j/DjHGcv4cj1RY9dApA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR12MB5427.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(2616005)(7416002)(8936002)(6486002)(1076003)(186003)(26005)(508600001)(6512007)(33656002)(6506007)(2906002)(38100700002)(83380400001)(66946007)(8676002)(86362001)(110136005)(4326008)(54906003)(316002)(66556008)(66476007)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SBlTyarK3A5tNgPtSxiL4psvEoca/eFzwR2umuyfy+OxlUoW8kJ+yPz5yDy9?=
- =?us-ascii?Q?+4Z9P/nZWKpiOj63iThFK8GPDQxn9uoekE/dks+WQskHugk/m0ygZfx+PL2G?=
- =?us-ascii?Q?Vw6cJbILbHJEgY6Kz03rX403FR9ffiHulaJO5HADwYZYxjKIY3ZM//GZMxyU?=
- =?us-ascii?Q?bRrx1cZMRd5KKzdG9NEwi5w9PotryYxvY8kFZScrlKmiYqjTc4RfdpsSEHuO?=
- =?us-ascii?Q?oXELM7S7HoJQ1UaiVNny0gnhUL1kJHDMOunSbPL9YyGVaRpK9MuUxYw7umnU?=
- =?us-ascii?Q?ZpmQHGi3IxNgurXqcg62Bj0h4xdPJHQXPjh+lhDv+ErxO++/srxVeqzG7379?=
- =?us-ascii?Q?NuROx5rZAvIAxT9QKcsSYwncUWm8sUizC8+FFdoOq4Si5N0k/d/9zIZafEY7?=
- =?us-ascii?Q?BetKQsJ0ywG0zfGIxz8kFiG9PXb3RQ+mqxSifptDQDFYzFtO14c6ZgTAsPxt?=
- =?us-ascii?Q?TsFNY4E2wC1fyIeaVRIYA0Aiy9BU6jhdP3K6XpFuxKfvpoeH9Es9qx+NTNCq?=
- =?us-ascii?Q?GuyIAzzk5jWk0EbaxuoOZUbwE7TI2I6AIE62qi49S9KtzeVyejtFlb1xq2qt?=
- =?us-ascii?Q?wS3T0+2Z7jQopa/dGHRKAIB6zx7WPiO+LoAKGkEe93Q3sriPJ4knQi1qPnxX?=
- =?us-ascii?Q?bsXwAxv09TZczC5u6aDdiF1zB9yYB6ilC9npRATG7cfKO2BSS5dnHaTX6u+G?=
- =?us-ascii?Q?huosj9vDr/1puibqcFfPEGi323DxGAtR7JwEymA0tLhc5liw1kszP1bgR5Iz?=
- =?us-ascii?Q?ba89BDsudJSNUEgcWBqWM5r54tVG9fFjbsfyOYoBViYzMSiqpPVjhcXo4Jj2?=
- =?us-ascii?Q?7S5LU+VvdNgBtkVYvpIotIWzSl+WkTr/8Zdpu0gnZjEuW5BuAi71moyGToj4?=
- =?us-ascii?Q?hPp5S6vEtkGBsq8FQ26wsrD3BSjc/nuAhh+r8j9RI6jqukYSihQ9uz+u2ibL?=
- =?us-ascii?Q?e7vYLUAHuhal6LexDCBJnyLKRZg8tpJgixl6FvjKkRWZT1ugnKbNWBq0y4oV?=
- =?us-ascii?Q?0phWsdqVPAkxCrmPji7Dcvr6AjsNoOufSjFmhq0tzwjwb5aJfi9vvKmSE43z?=
- =?us-ascii?Q?Rjolum0jOwiPTmTTsTtny3xt2zURjsow7F3KLOpmz97Tjc4BIPeLCkXUoA14?=
- =?us-ascii?Q?AKdoKuKGeA+Ni0eXRA+9mzspXM2zgI35HL4ZhC47AOud4Nu3VHV2FGxaOmf3?=
- =?us-ascii?Q?6b97kz5pj/hgH8Dk8kF4H0SU6eI6aj5GawltfcjDcr0wTs4a9FJ/LQJdD3le?=
- =?us-ascii?Q?Np1e78emQI2O270Lw6EqbHdEc1HEFd8zbYakEgj/TTOjXwXwmwqbdVw6Zv+t?=
- =?us-ascii?Q?sfSZZwX8CSSuco1vr6GYCFxtfsHJ+DmkbE+akD4uQoXzyjnZhtADkv0Ocove?=
- =?us-ascii?Q?mWWbHNv5uif0lUg3x55194lyjnmgExt45zES2JFhUDSi5f6Vm0DloMxYZzxl?=
- =?us-ascii?Q?RLW2kRogIxx1wdIBGNgsKIuWvJBgT5p5CULlHmsbyOoz0uvKng17+Dc8NJou?=
- =?us-ascii?Q?A6CDhXkS+1GO0hOjK5XmShh/PB7mvklrDNVIt0ej/qD9el0VWOjGlh+3Kv+v?=
- =?us-ascii?Q?PXCKFt9vQAIJL6sMy3BE9XEFXi7MqY8fY5r3daKJLsebLjsnKiq2KXTmeMvD?=
- =?us-ascii?Q?rd1/8Ji78QKjBoAY6ILDs9s4GtDlNPOizMgy9t7LpMqzRwQPVoTKSKiY2mYp?=
- =?us-ascii?Q?82hfODiHSBWxlf5q3ZYTv8h/4y0wTwsxtAdhz/u2rDFHE+9kmmk/tEhvZRML?=
- =?us-ascii?Q?UqCIxqWHeg=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a7aae92-6df2-4873-52f6-08da1757aff6
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 22:57:41.0126
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xxkYDUqfh83dJ3YBNn6EGEO1+fZcMjCY7DNnzmFxWgBSiLVnz8T+kprVf1zkj8Am
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5666
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <1649016459-23989-3-git-send-email-wellslutw@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 01:50:36PM -0600, Alex Williamson wrote:
-> >  
-> > +static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
-> > +{
-> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> > +
-> > +	if (!dmar_domain->iommu_snooping)
-> > +		return false;
-> > +	dmar_domain->enforce_no_snoop = true;
-> > +	return true;
-> > +}
-> 
-> Don't we have issues if we try to set DMA_PTE_SNP on DMARs that don't
-> support it, ie. reserved register bit set in pte faults?  
+Hi Wells,
 
-The way the Intel driver is setup that is not possible. Currently it
-does:
+I love your patch! Yet something to improve:
 
- static bool intel_iommu_capable(enum iommu_cap cap)
- {
-	if (cap == IOMMU_CAP_CACHE_COHERENCY)
-		return domain_update_iommu_snooping(NULL);
+[auto build test ERROR on net/master]
+[also build test ERROR on robh/for-next linus/master v5.18-rc1 next-20220405]
+[cannot apply to net-next/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Which is a global property unrelated to any device.
+url:    https://github.com/intel-lab-lkp/linux/commits/Wells-Lu/This-is-a-patch-series-for-Ethernet-driver-of-Sunplus-SP7021-SoC/20220404-040949
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 692930cc435099580a4b9e32fa781b0688c18439
+config: alpha-randconfig-c004-20220405 (https://download.01.org/0day-ci/archive/20220406/202204060616.kl1yKwP5-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/d8d2085594ea52869669a553bb6d60e0b3a1f412
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Wells-Lu/This-is-a-patch-series-for-Ethernet-driver-of-Sunplus-SP7021-SoC/20220404-040949
+        git checkout d8d2085594ea52869669a553bb6d60e0b3a1f412
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
 
-Thus either all devices and all domains support iommu_snooping, or
-none do.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-It is unclear because for some reason the driver recalculates this
-almost constant value on every device attach..
+All errors (new ones prefixed by >>):
 
-> There's also a disconnect, maybe just in the naming or documentation,
-> but if I call enforce_cache_coherency for a domain, that seems like the
-> domain should retain those semantics regardless of how it's
-> modified,
+   drivers/pinctrl/sunplus/sppctl.c: In function 'sppctl_gpio_new':
+>> drivers/pinctrl/sunplus/sppctl.c:559:14: error: 'struct gpio_chip' has no member named 'of_gpio_n_cells'
+     559 |         gchip->of_gpio_n_cells  = 2;
+         |              ^~
+--
+   drivers/net/ethernet/sunplus/spl2sw_driver.c: In function 'spl2sw_get_eth_child_node':
+>> drivers/net/ethernet/sunplus/spl2sw_driver.c:328:9: error: implicit declaration of function 'for_each_child_of_node'; did you mean 'for_each_online_node'? [-Werror=implicit-function-declaration]
+     328 |         for_each_child_of_node(ether_np, port_np) {
+         |         ^~~~~~~~~~~~~~~~~~~~~~
+         |         for_each_online_node
+>> drivers/net/ethernet/sunplus/spl2sw_driver.c:328:50: error: expected ';' before '{' token
+     328 |         for_each_child_of_node(ether_np, port_np) {
+         |                                                  ^~
+         |                                                  ;
+   drivers/net/ethernet/sunplus/spl2sw_driver.c:326:13: warning: unused variable 'port_id' [-Wunused-variable]
+     326 |         int port_id;
+         |             ^~~~~~~
+   drivers/net/ethernet/sunplus/spl2sw_driver.c:342:1: error: no return statement in function returning non-void [-Werror=return-type]
+     342 | }
+         | ^
+   drivers/net/ethernet/sunplus/spl2sw_driver.c: In function 'spl2sw_probe':
+>> drivers/net/ethernet/sunplus/spl2sw_driver.c:407:24: error: implicit declaration of function 'of_get_child_by_name' [-Werror=implicit-function-declaration]
+     407 |         eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
+         |                        ^~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/sunplus/spl2sw_driver.c:407:22: warning: assignment to 'struct device_node *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     407 |         eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
+         |                      ^
+>> drivers/net/ethernet/sunplus/spl2sw_driver.c:428:26: error: implicit declaration of function 'of_parse_phandle' [-Werror=implicit-function-declaration]
+     428 |                 phy_np = of_parse_phandle(port_np, "phy-handle", 0);
+         |                          ^~~~~~~~~~~~~~~~
+   drivers/net/ethernet/sunplus/spl2sw_driver.c:428:24: warning: assignment to 'struct device_node *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+     428 |                 phy_np = of_parse_phandle(port_np, "phy-handle", 0);
+         |                        ^
+   cc1: some warnings being treated as errors
 
-Right, this is how I would expect it to work.
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for PINCTRL_SPPCTL
+   Depends on PINCTRL && SOC_SP7021 && OF && HAS_IOMEM
+   Selected by
+   - SP7021_EMAC && NETDEVICES && ETHERNET && NET_VENDOR_SUNPLUS && (SOC_SP7021 || COMPILE_TEST
 
-> ie. "enforced".  For example, if I tried to perform the above operation,
-> I should get a failure attaching the device that brings in the less
-> capable DMAR because the domain has been set to enforce this
-> feature.
 
-We don't have any code causing a failure like this because no driver
-needs it.
+vim +328 drivers/net/ethernet/sunplus/spl2sw_driver.c
 
-> Maybe this should be something like set_no_snoop_squashing with the
-> above semantics, it needs to be re-applied whenever the domain:device
-> composition changes?  Thanks,
+   322	
+   323	static struct device_node *spl2sw_get_eth_child_node(struct device_node *ether_np, int id)
+   324	{
+   325		struct device_node *port_np;
+   326		int port_id;
+   327	
+ > 328		for_each_child_of_node(ether_np, port_np) {
+   329			/* It is not a 'port' node, continue. */
+   330			if (strcmp(port_np->name, "port"))
+   331				continue;
+   332	
+   333			if (of_property_read_u32(port_np, "reg", &port_id) < 0)
+   334				continue;
+   335	
+   336			if (port_id == id)
+   337				return port_np;
+   338		}
+   339	
+   340		/* Not found! */
+   341		return NULL;
+   342	}
+   343	
+   344	static int spl2sw_probe(struct platform_device *pdev)
+   345	{
+   346		struct device_node *eth_ports_np;
+   347		struct device_node *port_np;
+   348		struct spl2sw_common *comm;
+   349		struct device_node *phy_np;
+   350		phy_interface_t phy_mode;
+   351		struct net_device *ndev;
+   352		u8 mac_addr[ETH_ALEN];
+   353		struct spl2sw_mac *mac;
+   354		int irq, i;
+   355		int ret;
+   356	
+   357		if (platform_get_drvdata(pdev))
+   358			return -ENODEV;
+   359	
+   360		/* Allocate memory for 'spl2sw_common' area. */
+   361		comm = devm_kzalloc(&pdev->dev, sizeof(*comm), GFP_KERNEL);
+   362		if (!comm)
+   363			return -ENOMEM;
+   364		comm->pdev = pdev;
+   365	
+   366		spin_lock_init(&comm->rx_lock);
+   367		spin_lock_init(&comm->tx_lock);
+   368		spin_lock_init(&comm->mdio_lock);
+   369	
+   370		/* Get memory resource 0 from dts. */
+   371		comm->l2sw_reg_base = devm_platform_ioremap_resource(pdev, 0);
+   372		if (IS_ERR(comm->l2sw_reg_base))
+   373			return PTR_ERR(comm->l2sw_reg_base);
+   374	
+   375		/* Get irq resource from dts. */
+   376		ret = platform_get_irq(pdev, 0);
+   377		if (ret < 0)
+   378			return ret;
+   379		irq = ret;
+   380	
+   381		/* Get clock controller. */
+   382		comm->clk = devm_clk_get(&pdev->dev, NULL);
+   383		if (IS_ERR(comm->clk)) {
+   384			dev_err_probe(&pdev->dev, PTR_ERR(comm->clk),
+   385				      "Failed to retrieve clock controller!\n");
+   386			return PTR_ERR(comm->clk);
+   387		}
+   388	
+   389		/* Get reset controller. */
+   390		comm->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
+   391		if (IS_ERR(comm->rstc)) {
+   392			dev_err_probe(&pdev->dev, PTR_ERR(comm->rstc),
+   393				      "Failed to retrieve reset controller!\n");
+   394			return PTR_ERR(comm->rstc);
+   395		}
+   396	
+   397		/* Enable clock. */
+   398		clk_prepare_enable(comm->clk);
+   399		udelay(1);
+   400	
+   401		reset_control_assert(comm->rstc);
+   402		udelay(1);
+   403		reset_control_deassert(comm->rstc);
+   404		udelay(1);
+   405	
+   406		/* Get child node ethernet-ports. */
+ > 407		eth_ports_np = of_get_child_by_name(pdev->dev.of_node, "ethernet-ports");
+   408		if (!eth_ports_np) {
+   409			dev_err(&pdev->dev, "No ethernet-ports child node found!\n");
+   410			ret = -ENODEV;
+   411			goto out_clk_disable;
+   412		}
+   413	
+   414		for (i = 0; i < MAX_NETDEV_NUM; i++) {
+   415			/* Get port@i of node ethernet-ports. */
+   416			port_np = spl2sw_get_eth_child_node(eth_ports_np, i);
+   417			if (!port_np)
+   418				continue;
+   419	
+   420			/* Get phy-mode. */
+   421			if (of_get_phy_mode(port_np, &phy_mode)) {
+   422				dev_err(&pdev->dev, "Failed to get phy-mode property of port@%d!\n",
+   423					i);
+   424				continue;
+   425			}
+   426	
+   427			/* Get phy-handle. */
+ > 428			phy_np = of_parse_phandle(port_np, "phy-handle", 0);
+   429			if (!phy_np) {
+   430				dev_err(&pdev->dev, "Failed to get phy-handle property of port@%d!\n",
+   431					i);
+   432				continue;
+   433			}
+   434	
+   435			/* Get mac-address from nvmem. */
+   436			ret = spl2sw_nvmem_get_mac_address(&pdev->dev, port_np, mac_addr);
+   437			if (ret) {
+   438				dev_info(&pdev->dev, "Generate a random mac address!\n");
+   439	
+   440				/* Generate a mac address using OUI of Sunplus Technology
+   441				 * and random controller number.
+   442				 */
+   443				mac_addr[0] = 0xfc; /* OUI of Sunplus: fc:4b:bc */
+   444				mac_addr[1] = 0x4b;
+   445				mac_addr[2] = 0xbc;
+   446				mac_addr[3] = get_random_int() % 256;
+   447				mac_addr[4] = get_random_int() % 256;
+   448				mac_addr[5] = get_random_int() % 256;
+   449			}
+   450	
+   451			/* Initialize the net device. */
+   452			ret = spl2sw_init_netdev(pdev, mac_addr, &ndev);
+   453			if (ret)
+   454				goto out_unregister_dev;
+   455	
+   456			ndev->irq = irq;
+   457			comm->ndev[i] = ndev;
+   458			mac = netdev_priv(ndev);
+   459			mac->phy_node = phy_np;
+   460			mac->phy_mode = phy_mode;
+   461			mac->comm = comm;
+   462	
+   463			mac->lan_port = 0x1 << i;	/* forward to port i */
+   464			mac->to_vlan = 0x1 << i;	/* vlan group: i     */
+   465			mac->vlan_id = i;		/* vlan group: i     */
+   466	
+   467			/* Set MAC address */
+   468			ret = spl2sw_mac_addr_add(mac);
+   469			if (ret)
+   470				goto out_unregister_dev;
+   471	
+   472			spl2sw_mac_rx_mode_set(mac);
+   473		}
+   474	
+   475		/* Find first valid net device. */
+   476		for (i = 0; i < MAX_NETDEV_NUM; i++) {
+   477			if (comm->ndev[i])
+   478				break;
+   479		}
+   480		if (i >= MAX_NETDEV_NUM) {
+   481			dev_err(&pdev->dev, "No valid ethernet port!\n");
+   482			ret = -ENODEV;
+   483			goto out_clk_disable;
+   484		}
+   485	
+   486		/* Save first valid net device */
+   487		ndev = comm->ndev[i];
+   488		platform_set_drvdata(pdev, ndev);
+   489	
+   490		/* Request irq. */
+   491		ret = devm_request_irq(&pdev->dev, irq, spl2sw_ethernet_interrupt,
+   492				       0, ndev->name, ndev);
+   493		if (ret) {
+   494			netdev_err(ndev, "Failed to request irq #%d for \"%s\"!\n",
+   495				   irq, ndev->name);
+   496			goto out_unregister_dev;
+   497		}
+   498	
+   499		/* Initialize mdio bus */
+   500		ret = spl2sw_mdio_init(comm);
+   501		if (ret) {
+   502			netdev_err(ndev, "Failed to initialize mdio bus!\n");
+   503			goto out_unregister_dev;
+   504		}
+   505	
+   506		ret = spl2sw_mac_addr_del_all(comm);
+   507		if (ret)
+   508			goto out_free_mdio;
+   509	
+   510		ret = spl2sw_descs_init(comm);
+   511		if (ret) {
+   512			dev_err(&comm->pdev->dev, "Fail to initialize mac descriptors!\n");
+   513			spl2sw_descs_free(comm);
+   514			goto out_free_mdio;
+   515		}
+   516	
+   517		spl2sw_mac_init(comm);
+   518	
+   519		ret = spl2sw_phy_connect(comm);
+   520		if (ret) {
+   521			netdev_err(ndev, "Failed to connect phy!\n");
+   522			goto out_free_mdio;
+   523		}
+   524	
+   525		netif_napi_add(ndev, &comm->rx_napi, spl2sw_rx_poll, SPL2SW_RX_NAPI_WEIGHT);
+   526		napi_enable(&comm->rx_napi);
+   527		netif_napi_add(ndev, &comm->tx_napi, spl2sw_tx_poll, SPL2SW_TX_NAPI_WEIGHT);
+   528		napi_enable(&comm->tx_napi);
+   529		return 0;
+   530	
+   531	out_free_mdio:
+   532		spl2sw_mdio_remove(comm);
+   533	
+   534	out_unregister_dev:
+   535		for (i = 0; i < MAX_NETDEV_NUM; i++)
+   536			if (comm->ndev[i])
+   537				unregister_netdev(comm->ndev[i]);
+   538	
+   539	out_clk_disable:
+   540		clk_disable_unprepare(comm->clk);
+   541		return ret;
+   542	}
+   543	
 
-If we get a real driver that needs non-uniformity here we can revisit
-what to do. There are a couple of good options depending on exactly
-what the HW behavior is.
-
-Is it more clear if I fold in the below? It helps show that the
-decision to use DMA_PTE_SNP is a global choice based on
-domain_update_iommu_snooping():
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e5062461ab0640..fc789a9d955645 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -641,7 +641,6 @@ static unsigned long domain_super_pgsize_bitmap(struct dmar_domain *domain)
- static void domain_update_iommu_cap(struct dmar_domain *domain)
- {
- 	domain_update_iommu_coherency(domain);
--	domain->iommu_snooping = domain_update_iommu_snooping(NULL);
- 	domain->iommu_superpage = domain_update_iommu_superpage(domain, NULL);
- 
- 	/*
-@@ -4283,7 +4282,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	domain->agaw = width_to_agaw(adjust_width);
- 
- 	domain->iommu_coherency = false;
--	domain->iommu_snooping = false;
- 	domain->iommu_superpage = 0;
- 	domain->max_addr = 0;
- 
-@@ -4549,7 +4547,7 @@ static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- 
--	if (!dmar_domain->iommu_snooping)
-+	if (!domain_update_iommu_snooping(NULL))
- 		return false;
- 	dmar_domain->enforce_no_snoop = true;
- 	return true;
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 1f930c0c225d94..bc39f633efdf03 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -539,7 +539,6 @@ struct dmar_domain {
- 
- 	u8 has_iotlb_device: 1;
- 	u8 iommu_coherency: 1;		/* indicate coherency of iommu access */
--	u8 iommu_snooping: 1;		/* indicate snooping control feature */
- 	u8 enforce_no_snoop : 1;        /* Create IOPTEs with snoop control */
- 
- 	struct list_head devices;	/* all devices' list */
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
