@@ -2,172 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADFCD4F40C9
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:24:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E404F3EA8
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 22:49:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346723AbiDEUBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:01:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37906 "EHLO
+        id S1344831AbiDEUBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458053AbiDERGa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 13:06:30 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 061ACAC06D
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 10:04:32 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id t4so11537334pgc.1
-        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 10:04:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pROGuwStiro9rcSYW3YeAtKJaGC9ZWqC+E1qhRzShxk=;
-        b=tA6Lp2KTlzqbzCItB0ys8viPQghH3YJ6+SdbGwcrPNlITBfn8nt3mBaneYmi6Ifz19
-         CJiVBsCpL+c6HqbbfYgHzDZsuF/gkKXK2lc4bTgNxgAK0/S4mz/rsh1hqwAlMUKEjKul
-         w4GTz21a+EhIjdikEvLqtLFgIfLRaNS4O1VLUqQ4S1I5lgeSNNvm0TyL80b59lj1OXUa
-         hXj0ircE3zWV8P0ASeIP76xonjuC1AoHwd7xnKPxA8+7Ewp9e+chhvgblMU270xglxj+
-         rlavD5UNtimCx/YI+j+fTfO8nmEkwYIbCLnqEcie9L/jpvqMoWWcBJR7XFjpUQvB+ZAa
-         7E8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pROGuwStiro9rcSYW3YeAtKJaGC9ZWqC+E1qhRzShxk=;
-        b=r6LIx5fCtT2izw+ox4krR/BsZqPXQmjc+Cx3zKDBLc4Qh1FcVUr+TJyRI1GeDO+l67
-         oHrbJ7/5/H2Z/FfwYJF2FUeTz60W7yBGgDLe+9AoFJfiySkz7tJpcjM1pdel4GYHAAf7
-         WuVdWI44MssbfiI7uiQ9CItDzJbsmSnT+E0RVgeHln4MPqjZdTFLTCaAJlpJHRJObpoa
-         JnzNOkh7+gJY/Be0BR6VujL4mvmZ+JT9QbMJflzOGUHBpr6nNnr6JSRhuIZo60mg5PB4
-         XjHemReKaQML6Ak7IMVbyPnQEZZikfOpu8yhs2eU467YNsxxiLvJFjPbNf7DPpdn4Pgd
-         z0aQ==
-X-Gm-Message-State: AOAM532H1XO0g8YHlzwKREwz/Q5hwg29fWUD+z4W/ZHrI6FqvgcF5dvT
-        5qqoWGu0+1C9QGRpEyNXKS5U2Q==
-X-Google-Smtp-Source: ABdhPJwD7B9L7RiPiFfKaGMQkGtYLA2hahKEheRhiKEh42v4f/MZK/KIfpScH9FOO2wpWsopqWEb2w==
-X-Received: by 2002:a65:4647:0:b0:399:11b1:810b with SMTP id k7-20020a654647000000b0039911b1810bmr3638651pgr.449.1649178271389;
-        Tue, 05 Apr 2022 10:04:31 -0700 (PDT)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id m7-20020a625807000000b004fe0a89f24fsm7796142pfb.112.2022.04.05.10.04.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 10:04:30 -0700 (PDT)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     bpf@vger.kernel.org
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        "KP Singh" <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
-Subject: [PATCH] bpf: Fix KASAN use-after-free Read in compute_effective_progs
-Date:   Tue,  5 Apr 2022 10:03:56 -0700
-Message-Id: <20220405170356.43128-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1572907AbiDERS1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 13:18:27 -0400
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C3925DA;
+        Tue,  5 Apr 2022 10:16:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1649178945; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=VY+0yKVKo/OVl+of7lhiC+NmERw/mO0QIL7d/4Zt2BK2DvDHJe7p+FYSZU3ej7pPRyCuFkYQodsZwHnCI9+bDNxwX6ymxq8d2/QH2AiqgeWo721jljL1AS/mnCSF93Ovl7njzvvGJE/8nPx2+CC5dv5YPbayD+LBEOc4kDhEH7U=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1649178945; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=IGWowlI8r+WgRZZc7My5D0pUljhMLj42f7CltFmHSBg=; 
+        b=IdFBMiNpx3O18xSKZrid62+fV4c3LjwQ0U5dbZNvNfinfrS7/JVi5247bRbVOWBFRMEJiwUeCx6wk3pzHbgYwYkhdYAco8Bl+gggK3j9lZ90igApJOd55kFN68d/l64iucbBTvPDLVxNw/1oB/WW11qtZRNczpsySkwuvQczSNQ=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1649178945;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=IGWowlI8r+WgRZZc7My5D0pUljhMLj42f7CltFmHSBg=;
+        b=MMUud1Fbn3lFWPmI1IjLMb9yr4uoLp/IjkTbnW4xngwQb5ukVWKyYDRd7ForX3lU
+        eqqJTnUHQSunNNAPWg/AhRaRNXIuO13j9Kn+KjJHPo0ShvP3vajIfrUphFmiIEMh6Hz
+        hGrk6GwnArH72BXcmPELd+uzA/l0c3659orphwOI=
+Received: from [10.10.10.3] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1649178943002319.0872332652002; Tue, 5 Apr 2022 10:15:43 -0700 (PDT)
+Message-ID: <991f49fd-354b-6d07-6925-f79ca7f09838@arinc9.com>
+Date:   Tue, 5 Apr 2022 20:15:36 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: add label support for GMACs
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
+References: <20220404114000.3549-1-arinc.unal@arinc9.com>
+ <Ykri9tOtUDmXzHkG@lunn.ch>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <Ykri9tOtUDmXzHkG@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot found a Use After Free bug in compute_effective_progs().
-The reproducer creates a number of BPF links, and causes a fault
-injected alloc to fail, while calling bpf_link_detach on them.
-Link detach triggers the link to be freed by bpf_link_free(),
-which calls __cgroup_bpf_detach() and update_effective_progs().
-If the memory allocation in this function fails, the function restores
-the pointer to the bpf_cgroup_link on the cgroup list, but the memory
-gets freed just after it returns. After this, every subsequent call to
-update_effective_progs() causes this already deallocated pointer to be
-dereferenced in prog_list_length(), and triggers KASAN UAF error.
-To fix this don't preserve the pointer to the link on the cgroup list
-in __cgroup_bpf_detach(), but proceed with the cleanup and retry calling
-update_effective_progs() again afterwards.
+On 04/04/2022 15:22, Andrew Lunn wrote:
+> On Mon, Apr 04, 2022 at 02:40:00PM +0300, Arınç ÜNAL wrote:
+>> From: René van Dorst <opensource@vdorst.com>
+>>
+>> Add label support for GMACs. The network interface of the GMAC will have
+>> the string of the label property defined on the devicetree as its name.
+> 
+> Sorry, but no. This has been discussed a few times, you need something
+> in user space, udev or systemd etc to set interface names.
+> 
+> Please look back in the archive at previous discussions.
 
+Thanks for the heads up Andrew, I found your quote from 
+https://lore.kernel.org/all/Ydhwfa%2FECqTE3rLx@lunn.ch/:
 
-Cc: "Alexei Starovoitov" <ast@kernel.org>
-Cc: "Daniel Borkmann" <daniel@iogearbox.net>
-Cc: "Andrii Nakryiko" <andrii@kernel.org>
-Cc: "Martin KaFai Lau" <kafai@fb.com>
-Cc: "Song Liu" <songliubraving@fb.com>
-Cc: "Yonghong Song" <yhs@fb.com>
-Cc: "John Fastabend" <john.fastabend@gmail.com>
-Cc: "KP Singh" <kpsingh@kernel.org>
-Cc: <netdev@vger.kernel.org>
-Cc: <bpf@vger.kernel.org>
-Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+> I agree with Russell here. I doubt this is going to be accepted.
+> 
+> DSA is special because DSA is very old, much older than DT, and maybe
+> older than udev. The old DSA platform drivers had a mechanism to
+> supply the interface name to the DSA core. When we added a DT binding
+> to DSA we kept that mechanism, since that mechanism had been used for
+> a long time.
+> 
+> Even if you could show there was a generic old mechanism, from before
+> the days of DT, that allowed interface names to be set from platform
+> drivers, i doubt it would be accepted because there is no continuity,
+> which DSA has.
 
-Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
-Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
-Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
----
- kernel/bpf/cgroup.c | 25 ++++++++++++++-----------
- 1 file changed, 14 insertions(+), 11 deletions(-)
+On MT7621 SoC, we can mux a switch phy of MT7530 (must be phy0 or 4) to 
+the SoC's gmac1. So a UTP port connected to that phy becomes directly 
+connected to the SoC's gmac1. Because of that, I wanted to be able to 
+give the gmac's netdev interface a name from DT like DSA. However, the 
+quote above makes sense why not to do so.
 
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 128028efda64..b6307337a3c7 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -723,10 +723,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 	pl->link = NULL;
- 
- 	err = update_effective_progs(cgrp, atype);
--	if (err)
--		goto cleanup;
--
--	/* now can actually delete it from this cgroup list */
-+	/*
-+	 * Proceed regardless of error. The link and/or prog will be freed
-+	 * just after this function returns so just delete it from this
-+	 * cgroup list and retry calling update_effective_progs again later.
-+	 */
- 	list_del(&pl->node);
- 	kfree(pl);
- 	if (list_empty(progs))
-@@ -735,12 +736,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
- 	static_branch_dec(&cgroup_bpf_enabled_key[atype]);
--	return 0;
- 
--cleanup:
--	/* restore back prog or link */
--	pl->prog = old_prog;
--	pl->link = link;
-+	/* In case of error call update_effective_progs again */
-+	if (err)
-+		err = update_effective_progs(cgrp, atype);
-+
- 	return err;
- }
- 
-@@ -881,6 +881,7 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
- 	struct bpf_cgroup_link *cg_link =
- 		container_of(link, struct bpf_cgroup_link, link);
- 	struct cgroup *cg;
-+	int err;
- 
- 	/* link might have been auto-detached by dying cgroup already,
- 	 * in that case our work is done here
-@@ -896,8 +897,10 @@ static void bpf_cgroup_link_release(struct bpf_link *link)
- 		return;
- 	}
- 
--	WARN_ON(__cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
--				    cg_link->type));
-+	err = __cgroup_bpf_detach(cg_link->cgroup, NULL, cg_link,
-+				  cg_link->type);
-+	if (err)
-+		pr_warn("cgroup_bpf_detach() failed, err %d\n", err);
- 
- 	cg = cg_link->cgroup;
- 	cg_link->cgroup = NULL;
--- 
-2.35.1
+Thanks.
+Arınç
