@@ -2,118 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC3374F359D
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 15:52:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B80B4F3597
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 15:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236545AbiDEKwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 06:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41742 "EHLO
+        id S229975AbiDEKv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 06:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244578AbiDEJl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 05:41:28 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F01EBBE1C
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 02:27:10 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id n18so10407947plg.5
-        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 02:27:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=W8IY+K7ipydB43YdWcn0LCQnxSiGzpiMtNQlPCELZV8=;
-        b=aEJr1eKmE9GxiWjz85LefgI5tANXpA9ae7tFs29KQftpdUNi96HAtQgd2kHRQ811Hf
-         08TLZl/9bG8RaTgmgrDylNgd0HnVTFvmw70FKR2SkYfsPE4JAiLQLulx//AeQQNDI1Vu
-         8tsSEUDI3HhSUJ9Y2W1LewEM/7pipUP/5GcDjSvixtOErn3JCogg+DOUEVvtUqYJ/NRR
-         H2wISB0bkwwRd8GziMFkNl9LNZRDXpbvRjklU6i7hGNKFMLo0hDGFupvh3lNCgMvIoAz
-         635updBI2ASdEZsLpPPLYXGlXIlLf8ySpyusNMwQcjrYxF/15g8dIfzZte7hgPFuH8fb
-         b7fQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=W8IY+K7ipydB43YdWcn0LCQnxSiGzpiMtNQlPCELZV8=;
-        b=293cA27WA8SFWkHVaE0SAp9HocqX8fmiswNkkdZ3haiiDu/aKQb9KKbMs/cuE18UKy
-         C49IzjxO7Mo+FZkZ/Vg55U3YrAWLLCh2UgeyJws04DCvPeomAksNkKVAWnvHlPOTYVGb
-         OEF76OWQoOetnhk2lPLWdoWiC5j18iuufOcb7em5Cre3KeYbdw61LrX0BbHwO/seoWZP
-         rjLcPIvyZiRKI7GSJS97xySmOB5CbBAL1Fa5XHSPh8D2GNd2E63Y2fGM1YpddXzhPE0Y
-         Pk6IP26EyoS1ogA4bdlnHioxpD4IWSLhxEaB2TDQziyZDpq2M9k+tXcrG5VQKSj1bUzy
-         J8lQ==
-X-Gm-Message-State: AOAM532KLXzql9hA6PN6C4ZcuS4oO0MP2iHDmynZHTygpL/2E3R8C0TY
-        5b8p3ZoWeTWi2lXzme31by/SlA==
-X-Google-Smtp-Source: ABdhPJz9w2hEdCGXtD1D3Ufpza7Spoddrs8iRimcY0bI3IJDP0pNv2VBD4Wd9iSwg1e3YFVFKQ0esw==
-X-Received: by 2002:a17:90a:734a:b0:1ca:8240:9e48 with SMTP id j10-20020a17090a734a00b001ca82409e48mr2957090pjs.174.1649150830085;
-        Tue, 05 Apr 2022 02:27:10 -0700 (PDT)
-Received: from archlinux.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id b4-20020aa78704000000b004fe0ce6d6e1sm5824291pfo.32.2022.04.05.02.27.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 02:27:09 -0700 (PDT)
-From:   Andy Chiu <andy.chiu@sifive.com>
-To:     davem@davemloft.net, michal.simek@xilinx.com,
-        radhey.shyam.pandey@xilinx.com
-Cc:     andrew@lunn.ch, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzk+dt@kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        Andy Chiu <andy.chiu@sifive.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH v8 net-next 4/4] net: axiemac: use a phandle to reference pcs_phy
-Date:   Tue,  5 Apr 2022 17:19:29 +0800
-Message-Id: <20220405091929.670951-5-andy.chiu@sifive.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220405091929.670951-1-andy.chiu@sifive.com>
-References: <20220405091929.670951-1-andy.chiu@sifive.com>
+        with ESMTP id S243817AbiDEJkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 05:40:31 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470D5B9192;
+        Tue,  5 Apr 2022 02:25:03 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id DB5C0221D4;
+        Tue,  5 Apr 2022 11:25:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1649150701;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uk8mzQYPK6hRxrVTkR2htOw04+Yd2q9FLsv83PaJNfQ=;
+        b=Mj1y4B8wxRiPbBrSLP3Z3gfqL9Mdb+B+0hX6u8Lzk6mE+3gi002hvqLIgAnXZGx83HvG76
+        Yb9P5aBc+6P3dQ5kX7LAL/Bn8GONRzUVtZZdHsrUixUooOUcSLC3QKUEg6i0/Pf2LlL61C
+        H2eEcVKJ02EM2E7wW5c5n2bw7Ve2/tM=
+From:   Michael Walle <michael@walle.cc>
+To:     Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, David Laight <David.Laight@ACULAB.COM>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v4 0/2] hwmon: introduce hwmon_sanitize()
+Date:   Tue,  5 Apr 2022 11:24:50 +0200
+Message-Id: <20220405092452.4033674-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In some SGMII use cases where both a fixed link external PHY and the
-internal PCS/PMA PHY need to be configured, we should explicitly use a
-phandle "pcs-phy" to get the reference to the PCS/PMA PHY. Otherwise, the
-driver would use "phy-handle" in the DT as the reference to both the
-external and the internal PCS/PMA PHY.
+During development of the support for the temperature sensor on the GPY
+PHY, I've noticed that there is ususually a loop over the name to
+replace any invalid characters. Instead of open coding it in the drivers
+provide a convenience function.
 
-In other cases where the core is connected to a SFP cage, we could still
-point phy-handle to the intenal PCS/PMA PHY, and let the driver connect
-to the SFP module, if exist, via phylink.
+changes since v3:
+ - don't return NULL but ERR_PTR(-ENOMEM)
+ - check !dev in devm_ variant
 
-Signed-off-by: Andy Chiu <andy.chiu@sifive.com>
-Reviewed-by: Greentime Hu <greentime.hu@sifive.com>
-Reviewed-by: Robert Hancock <robert.hancock@calian.com>
----
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+changes since v2:
+ - doc update
+ - dropped last three patches, the net patches will be submitted
+   seperately
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 3daef64a85bd..d6fc3f7acdf0 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -2071,9 +2071,16 @@ static int axienet_probe(struct platform_device *pdev)
- 
- 	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
- 	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
--		np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
-+		np = of_parse_phandle(pdev->dev.of_node, "pcs-handle", 0);
- 		if (!np) {
--			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
-+			/* Deprecated: Always use "pcs-handle" for pcs_phy.
-+			 * Falling back to "phy-handle" here is only for
-+			 * backward compatibility with old device trees.
-+			 */
-+			np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
-+		}
-+		if (!np) {
-+			dev_err(&pdev->dev, "pcs-handle (preferred) or phy-handle required for 1000BaseX/SGMII\n");
- 			ret = -EINVAL;
- 			goto cleanup_mdio;
- 		}
+changes since v1:
+ - split patches
+ - add hwmon-kernel-api.rst documentation
+ - move the strdup into the hwmon core
+ - also provide a resource managed variant
+
+Michael Walle (2):
+  hwmon: introduce hwmon_sanitize_name()
+  hwmon: intel-m10-bmc-hwmon: use devm_hwmon_sanitize_name()
+
+ Documentation/hwmon/hwmon-kernel-api.rst | 16 +++++++
+ drivers/hwmon/hwmon.c                    | 53 ++++++++++++++++++++++++
+ drivers/hwmon/intel-m10-bmc-hwmon.c      | 11 ++---
+ include/linux/hwmon.h                    |  3 ++
+ 4 files changed, 75 insertions(+), 8 deletions(-)
+
 -- 
-2.34.1
+2.30.2
 
