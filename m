@@ -2,59 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 123684F3EBF
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 22:49:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4654F3E20
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 22:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357493AbiDEUD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:03:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37084 "EHLO
+        id S1344934AbiDEUBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457895AbiDEQ5o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 12:57:44 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C729220BD6;
-        Tue,  5 Apr 2022 09:55:41 -0700 (PDT)
-Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 796EF1EC0502;
-        Tue,  5 Apr 2022 18:55:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1649177735;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JY4/OPfg1PtWK4WJhPTqkYrmoKWgxT1mUYXtCHiS4ug=;
-        b=k5ii1JF5xPofyJTFKU5oNprGEWoub9d1wYkVRZs2+LqjlasIW90ySctLvwVo/9iM6bXfqe
-        wfV6moDTGIN5YaUgAbBRYTYDjmbdGAm+M4sPvzkxnjhEbuDGFo4qpkzUqVT2XGMCiEq16D
-        LCgp9HqbqIiI1MlXEv+1qMEUzNt1DkU=
-Date:   Tue, 5 Apr 2022 18:55:37 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: [RESEND PATCH 06/11] brcmfmac: sdio: Fix undefined behavior due to
- shift overflowing the constant
-Message-ID: <Ykx0iRlvtBnKqtbG@zn.tnic>
-References: <20220405151517.29753-1-bp@alien8.de>
- <20220405151517.29753-7-bp@alien8.de>
- <87y20jr1qt.fsf@kernel.org>
- <YkxpIQHKLXmGBwV1@zn.tnic>
- <87pmlvqye0.fsf@kernel.org>
+        with ESMTP id S1457942AbiDERAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 13:00:52 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D30851FA4F
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 09:58:52 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id q19so13353956wrc.6
+        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 09:58:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=8aHjdrzxvuuwSECjwvJEnyfmwIs0wnZS2SDA3RmFL94=;
+        b=72YUET14s8SEElAjSW0t3i7Yg1P7m27US94euc+B33qxKztjfcGXWvx5NmgLNsPFPt
+         NUtwyeaPm0bEEKvJfJJ3dXbf8AwIYARvwG++ClpEOZ2H4hdjKtMD4NuuQ2h5jsJjUrGN
+         VpJrvhQOF8FP9ygCyEBB9ZE856r3d6Nat+AmmD0WS8tvqUAnFRfNq8laLiCRToRcbQsY
+         tD9CyQ1lmY4Z0vyt8FGthgoX3rhMa/nzzmjplRK0zP23F9UmfcRidP9oKmHsER2Pwr6V
+         BgtsZUo6I2/RV02DWXU6bnUqtu62K/wn829LFg5RVq6dFNAeoc/LfhIJoowRY2cPev6p
+         J/Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8aHjdrzxvuuwSECjwvJEnyfmwIs0wnZS2SDA3RmFL94=;
+        b=u9O6Hm3+O80fcq5MA+JZMPSUbvMH5LQ8WW+gKxplcrx9OvuiSnkWInIcHeF6YxGOhb
+         kzDTiBB+uWIq/ZK9u+M8HUpt2aVEJvtIJ4wjsz4RlkSi3AwlI6DoMFX7HueBcvWXLs3q
+         Okdt0f6ERiBQBb/vtX7Z4Rg1SEa0pQVz2lsALrEEOcID7QX/DDi4IdjFNrQA7ZpDifIJ
+         jEbpyRwOu7a+tqG+YDdRp/9kW5UKwrirD4x8ezpIy+A28Ay/d0N86/yfKWHn8pQbWkPg
+         H5NIO0FuIXDF5T5fKwfetDmDiHVCjYIvl+BfwyXszU4DuSf5nPzowrWtr6ZkSr5ODun7
+         tNJQ==
+X-Gm-Message-State: AOAM533UyIc/iZdTo3p5/830JmV6u+pIhLS0aamdKeXiUtgnqPnbNwAF
+        1VsY/yQk0z9DdXFphl4pV6t/Qg==
+X-Google-Smtp-Source: ABdhPJzjFdsPWmaS5MX3p/c9EvEWmyhF7l9YbAzv9tGV0wm6kHYJ1M5CL8YrSb98zEk1M6MVwxm2IQ==
+X-Received: by 2002:a5d:6505:0:b0:205:9a98:e184 with SMTP id x5-20020a5d6505000000b002059a98e184mr3238708wru.317.1649177931194;
+        Tue, 05 Apr 2022 09:58:51 -0700 (PDT)
+Received: from [192.168.2.116] ([51.37.209.28])
+        by smtp.gmail.com with ESMTPSA id s1-20020adfb781000000b002060d4a8bd9sm7578666wre.17.2022.04.05.09.58.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Apr 2022 09:58:50 -0700 (PDT)
+Message-ID: <0415ff44-34fd-2f00-833d-fbcea3a967cb@conchuod.ie>
+Date:   Tue, 5 Apr 2022 17:58:50 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87pmlvqye0.fsf@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: riscv defconfig CONFIG_PM/macb/generic PHY regression in
+ v5.18-rc1
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Conor.Dooley@microchip.com
+Cc:     palmer@rivosinc.com, apatel@ventanamicro.com,
+        netdev@vger.kernel.org, Nicolas.Ferre@microchip.com,
+        Claudiu.Beznea@microchip.com, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux-riscv@lists.infradead.org
+References: <9f4b057d-1985-5fd3-65c0-f944161c7792@microchip.com>
+ <Ykxl4m1uPPDktZnD@shell.armlinux.org.uk>
+From:   Conor Dooley <mail@conchuod.ie>
+In-Reply-To: <Ykxl4m1uPPDktZnD@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,57 +77,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix:
-
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c: In function ‘brcmf_sdio_drivestrengthinit’:
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3798:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43143_CHIP_ID, 17):
-    ^~~~
-  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c:3809:2: error: case label does not reduce to an integer constant
-    case SDIOD_DRVSTR_KEY(BRCM_CC_43362_CHIP_ID, 13):
-    ^~~~
-
-See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-details as to why it triggers with older gccs only.
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: brcm80211-dev-list.pdl@broadcom.com
-Cc: netdev@vger.kernel.org
----
-
-Resend, this time with linux-wireless on Cc so that patchwork can pick
-it up.
-
-Thx.
-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index ba3c159111d3..d78ccc223709 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -557,7 +557,7 @@ enum brcmf_sdio_frmtype {
- 	BRCMF_SDIO_FT_SUB,
- };
- 
--#define SDIOD_DRVSTR_KEY(chip, pmu)     (((chip) << 16) | (pmu))
-+#define SDIOD_DRVSTR_KEY(chip, pmu)     (((unsigned int)(chip) << 16) | (pmu))
- 
- /* SDIO Pad drive strength to select value mappings */
- struct sdiod_drive_str {
--- 
-2.35.1
 
 
--- 
-Regards/Gruss,
-    Boris.
+On 05/04/2022 16:53, Russell King (Oracle) wrote:
+> On Tue, Apr 05, 2022 at 01:05:12PM +0000, Conor.Dooley@microchip.com wrote:
+>> Hey,
+>> I seem to have come across a regression in the default riscv defconfig
+>> between riscv-for-linus-5.18-mw0 (bbde015227e8) & v5.18-rc1, exposed by
+>> c5179ef1ca0c ("RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt
+>> machine") which causes the ethernet phy to not come up on my Icicle kit:
+>> [ 3.179864] macb 20112000.ethernet eth0: validation of sgmii with support 0000000,00000000,00006280 and advertisement 0000000,00000000,00004280 failed: -EINVAL
+>> [ 3.194490] macb 20112000.ethernet eth0: Could not attach PHY (-22)
+> 
+> I don't think that would be related to the idle driver. This looks like
+> the PHY hasn't filled in the supported mask at probe time - do you have
+> the driver for the PHY built-in or the PHY driver module loaded?
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Hey Russel,
+The idle stuff enabled CONFIG_PM=y though in the default riscv
+defconfig, so it is not confined to just QEMU.
+
+I am not sure what the symbol for the generic phy & I am not at work
+to properly check, so I hope this is the relevant part of the config:
+
+CONFIG_PHYLINK=y
+CONFIG_PHYLIB=y
+CONFIG_SWPHY=y
+CONFIG_FIXED_PHY=y
+
+If it isn't, you should be able to generate the config I used to cause
+the error with:
+make ARCH=RISCV defconfig
+
+If you look at my response to Andrew [1] you'll see that my problems
+are not isolated to just the Generic PHY driver as a builtin Vitesse
+driver has issues too (although validation appears to have passed).
+
+Thanks,
+Conor.
+
+[1] 
+https://lore.kernel.org/linux-riscv/60fd1eb7-a2ce-9084-c567-721e975e7e86@microchip.com/
