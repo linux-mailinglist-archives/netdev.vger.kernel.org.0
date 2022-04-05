@@ -2,66 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1FE4F53A0
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B48024F534A
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:31:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850732AbiDFEYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 00:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51596 "EHLO
+        id S2361016AbiDFEZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389147AbiDEV6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 17:58:42 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2D127157;
-        Tue,  5 Apr 2022 13:53:09 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id 8so488355ilq.4;
-        Tue, 05 Apr 2022 13:53:09 -0700 (PDT)
+        with ESMTP id S1576508AbiDEXKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 19:10:44 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3983B4C797
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 14:41:44 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id qh7so371655ejb.11
+        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 14:41:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HWywLCnuBJENyaVSzau6oxayEHnan1gP5wOiyTjE0lE=;
-        b=Ng44QPog2Ob/33Nb0XtIXGcPgdZSTaph4xEENN/niuAvs1XHftuk3AiE+wROi1S91x
-         +qyBC+xryehcvY7GgAXctFkS0i30tzWT9cJZ2IY9SbAu1OQDSXF1lwoZ8RVsJTP8Zdlh
-         oORwXapaqbAf095fE95h2NMHWuJVP1DT2ZY5xWszPc3nLX5hLtvCLzN9gaONPgrtBgWq
-         uXU7Du/63P9BA7d8bl+o2wIcUACJhBziQZ4SPq3T1e9uVwmXjJftcVnbHEQdYDVbvIZY
-         Z/1yuyJkRKKkLS5PlOUeobcM10zJreDMReU7dgKl+Eo75E0diBtmI7Vjv7kQEVNo5D1O
-         +lyg==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=ao66c39lDXSZDrmfpWAolMn1IGH5i64J+LVad5/f4UM=;
+        b=bo1JItiWD8iFpzoCKD8TgTyvXPkdFhsK50XGs87qiMpJcDml4olxlivsBLszqrfcz0
+         +Kj6qbT2HyBDCbzeDho4WHl44Ymd0vj23aKHRtTgJCmlGE8nR3hPurNWByY9cAVNVKec
+         WVhgIdYWbJCK5nj9ccJPGFYsdMfAqsRRADEpDNWhdXuxFo9LCKXy5gTpnvnSkM0hWZpF
+         PNV3Oi8VHQLcqKgbdm6u1geV74Ma7Dtj9FZ+9mwECWwUmANV3wqCEheMDxtnTI/l2vpk
+         PptATUWdgSmEW57gscbmHdSZAew8olunCN1mQE2ENlPhbrGEI0bHuTC0iv6MIznmc1of
+         8HNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HWywLCnuBJENyaVSzau6oxayEHnan1gP5wOiyTjE0lE=;
-        b=gg8UyswW3gUoU8WEW8io7sIxw7R7Ua5k+nyEnMto7uLAMeCVV6Jah8ULNifeQBiyHG
-         YN+p2vte+M0zch8YRoa7R4lqYwI73WuGqfVGfl430EyGkupjOvr/giC2Sk1UGRP543d5
-         0i1LOGWKMr31Wrowh2+vrlm1tTINNPq32yEj/vIOCILDRFY4t4JIfhaQ4+pX+AbjvTiw
-         gjGaave5izrCe72zdlddFt11fLKN9KqPYzRGcG7Lc+c/tQMzt4ruesX2jKjWSNEoV4Ts
-         ugpFJt1XxfaZpv/ozArbcfjoSd0XnaRXlLgLth11BSoDKz1Hsv/DqVgraVZXUI3i5lsN
-         ielw==
-X-Gm-Message-State: AOAM53392hwkCU1rtTF3EIlztSMh1fn5elE4kWiuhg2iGh6Q7sw6jMB6
-        LwTpAhi6Kicndm0bgctfM14AtrmKY4THm+ir4dg=
-X-Google-Smtp-Source: ABdhPJz9lFsa85feLlcxpsJ+S0S26P8Czc++xSyLlg83sTnhPX3YqPTZX+i0zsIMFIG7GldpdkV0pSyxmeljw1ElklI=
-X-Received: by 2002:a92:6406:0:b0:2bb:f1de:e13e with SMTP id
- y6-20020a926406000000b002bbf1dee13emr2538171ilb.305.1649191989003; Tue, 05
- Apr 2022 13:53:09 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=ao66c39lDXSZDrmfpWAolMn1IGH5i64J+LVad5/f4UM=;
+        b=T7Oi1/o/VJc2JntWc/9lwQXs2gTQYhwMH+xa8GfgvlbOx4ZSXf4PrDE9LzM+eS7mms
+         A/lwdlzOOxFf58Z2fW9mSK5/z4ixzSoqIkK9wHh7nuGhE9JqcI+TrxUq70ZXsGe7MQjd
+         8NKiPLlTqQ76TKqB+zZqF17L1hgHexUe6I1Dsm42nFojKLp5ol4DpGFp0yWLrVKW8iOG
+         owsUb7t3FP7NbRj12XXciU8U3LZDJHMWEPPBZRWFDo7pidtCmlFW2Mpwdg6Oc+wQ0SRX
+         ceAoJr+ZaJ6uwGmoFB4Lj3uJHo9CgbHVxIom2jSjwvqwXGYU8XSkfta7H2RGon3X047i
+         8seA==
+X-Gm-Message-State: AOAM531hlLh/ZAjnLh4RyIvdz6X61JJS69jonf3m1oSuVpSrSDROlfv3
+        Os1BESVARlEdyFlQZs7cdRYJkh5V6jZJ3TADO4A=
+X-Google-Smtp-Source: ABdhPJyFDE/16osppxD7V/k1b0k3Gd311E4D8jEx0fbUCJZHbHSbpptOjBnmaMe5MNBFwIJscOCJA1gIieSPdSqCa4Y=
+X-Received: by 2002:a17:907:1b10:b0:6e4:bac5:f080 with SMTP id
+ mp16-20020a1709071b1000b006e4bac5f080mr5466982ejc.24.1649194899933; Tue, 05
+ Apr 2022 14:41:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220405130858.12165-1-laoar.shao@gmail.com>
-In-Reply-To: <20220405130858.12165-1-laoar.shao@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 5 Apr 2022 13:52:58 -0700
-Message-ID: <CAEf4BzaEF013kPkV=gkN6fw7e9hO_h0MLWuDbx4Qd68ZCr=5pw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 00/27] bpf: RLIMIT_MEMLOCK cleanups
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
+From:   Duke Abbaddon <duke.abbaddon@gmail.com>
+Date:   Tue, 5 Apr 2022 22:41:28 +0100
+Message-ID: <CAHpNFcNYoz_VY0JBDw75ditAKXs5ghujShjBdYjM_nnFSTzcGg@mail.gmail.com>
+Subject: LiberKHAOS - "So my 2k buffer is fine then." & We Wanted FINE ?
+ #DEV-RAND #Chromium gcc-plugins: latent_entropy: use /dev/urandom
+To:     torvalds@linux-foundation.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -73,134 +60,331 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 6:09 AM Yafang Shao <laoar.shao@gmail.com> wrote:
->
-> We have switched to memcg based memory accouting and thus the rlimit is
-> not needed any more. LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK was introduced in
-> libbpf for backward compatibility, so we can use it instead now.
->
-> This patchset cleanups the usage of RLIMIT_MEMLOCK in tools/bpf/,
-> tools/testing/selftests/bpf and samples/bpf. The file
-> tools/testing/selftests/bpf/bpf_rlimit.h is removed. The included header
-> sys/resource.h is removed from many files as it is useless in these files.
->
-> - v3: Get rid of bpf_rlimit.h and fix some typos (Andrii)
-> - v2: Use libbpf_set_strict_mode instead. (Andrii)
-> - v1: https://lore.kernel.org/bpf/20220320060815.7716-2-laoar.shao@gmail.com/
->
-> Yafang Shao (27):
->   bpf: selftests: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK in
->     xdping
->   bpf: selftests: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK in
->     xdpxceiver
->   bpf: selftests: No need to include bpf_rlimit.h in test_tcpnotify_user
->   bpf: selftests: No need to include bpf_rlimit.h in flow_dissector_load
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in
->     get_cgroup_id_user
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in
->     test_cgroup_storage
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in
->     get_cgroup_id_user
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in test_lpm_map
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in test_lru_map
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in
->     test_skb_cgroup_id_user
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in test_sock_addr
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in test_sock
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in test_sockmap
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in test_sysctl
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in test_tag
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in
->     test_tcp_check_syncookie_user
->   bpf: selftests: Set libbpf 1.0 API mode explicitly in
->     test_verifier_log
->   bpf: samples: Set libbpf 1.0 API mode explicitly in hbm
->   bpf: selftests: Get rid of bpf_rlimit.h
->   bpf: selftests: No need to include sys/resource.h in some files
->   bpf: samples: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK in
->     xdpsock_user
->   bpf: samples: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK in
->     xsk_fwd
->   bpf: samples: No need to include sys/resource.h in many files
->   bpf: bpftool: Remove useless return value of libbpf_set_strict_mode
->   bpf: bpftool: Set LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK for legacy libbpf
->   bpf: bpftool: remove RLIMIT_MEMLOCK
->   bpf: runqslower: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK
->
+LiberKHAOS - "So my 2k buffer is fine then." & We Wanted FINE ?
+#DEV-RAND #Chromium gcc-plugins: latent_entropy: use /dev/urandom
 
-Hey Yafang, thanks for the clean up! It looks good, but please make it
-a bit more manageable in terms of number of patches. There is no need
-to have so many tiny patches. Can you squash together all the
-samples/bpf changes into one patch, all the selftests/bpf changes into
-another, bpftool ones still can be just one patch. runqslower makes
-sense to keep separate. Please also use customary subject prefixes for
-those: "selftests/bpf: ", "bpftool: ", "samples/bpf: ". For runqslower
-probably "tools/runqslower: " would be ok as well.
+https://lkml.org/lkml/2022/4/5/2829
 
->  samples/bpf/cpustat_user.c                    |  1 -
->  samples/bpf/hbm.c                             |  5 ++--
->  samples/bpf/ibumad_user.c                     |  1 -
->  samples/bpf/map_perf_test_user.c              |  1 -
->  samples/bpf/offwaketime_user.c                |  1 -
->  samples/bpf/sockex2_user.c                    |  1 -
->  samples/bpf/sockex3_user.c                    |  1 -
->  samples/bpf/spintest_user.c                   |  1 -
->  samples/bpf/syscall_tp_user.c                 |  1 -
->  samples/bpf/task_fd_query_user.c              |  1 -
->  samples/bpf/test_lru_dist.c                   |  1 -
->  samples/bpf/test_map_in_map_user.c            |  1 -
->  samples/bpf/test_overhead_user.c              |  1 -
->  samples/bpf/tracex2_user.c                    |  1 -
->  samples/bpf/tracex3_user.c                    |  1 -
->  samples/bpf/tracex4_user.c                    |  1 -
->  samples/bpf/tracex5_user.c                    |  1 -
->  samples/bpf/tracex6_user.c                    |  1 -
->  samples/bpf/xdp1_user.c                       |  1 -
->  samples/bpf/xdp_adjust_tail_user.c            |  1 -
->  samples/bpf/xdp_monitor_user.c                |  1 -
->  samples/bpf/xdp_redirect_cpu_user.c           |  1 -
->  samples/bpf/xdp_redirect_map_multi_user.c     |  1 -
->  samples/bpf/xdp_redirect_user.c               |  1 -
->  samples/bpf/xdp_router_ipv4_user.c            |  1 -
->  samples/bpf/xdp_rxq_info_user.c               |  1 -
->  samples/bpf/xdp_sample_pkts_user.c            |  1 -
->  samples/bpf/xdp_sample_user.c                 |  1 -
->  samples/bpf/xdp_tx_iptunnel_user.c            |  1 -
->  samples/bpf/xdpsock_user.c                    |  9 ++----
->  samples/bpf/xsk_fwd.c                         |  7 ++---
->  tools/bpf/bpftool/common.c                    |  8 ------
->  tools/bpf/bpftool/feature.c                   |  2 --
->  tools/bpf/bpftool/main.c                      |  6 ++--
->  tools/bpf/bpftool/main.h                      |  2 --
->  tools/bpf/bpftool/map.c                       |  2 --
->  tools/bpf/bpftool/pids.c                      |  1 -
->  tools/bpf/bpftool/prog.c                      |  3 --
->  tools/bpf/bpftool/struct_ops.c                |  2 --
->  tools/bpf/runqslower/runqslower.c             | 18 ++----------
->  tools/testing/selftests/bpf/bench.c           |  1 -
->  tools/testing/selftests/bpf/bpf_rlimit.h      | 28 -------------------
->  .../selftests/bpf/flow_dissector_load.c       |  6 ++--
->  .../selftests/bpf/get_cgroup_id_user.c        |  4 ++-
->  tools/testing/selftests/bpf/prog_tests/btf.c  |  1 -
->  .../selftests/bpf/test_cgroup_storage.c       |  4 ++-
->  tools/testing/selftests/bpf/test_dev_cgroup.c |  4 ++-
->  tools/testing/selftests/bpf/test_lpm_map.c    |  4 ++-
->  tools/testing/selftests/bpf/test_lru_map.c    |  4 ++-
->  .../selftests/bpf/test_skb_cgroup_id_user.c   |  4 ++-
->  tools/testing/selftests/bpf/test_sock.c       |  4 ++-
->  tools/testing/selftests/bpf/test_sock_addr.c  |  4 ++-
->  tools/testing/selftests/bpf/test_sockmap.c    |  5 ++--
->  tools/testing/selftests/bpf/test_sysctl.c     |  4 ++-
->  tools/testing/selftests/bpf/test_tag.c        |  4 ++-
->  .../bpf/test_tcp_check_syncookie_user.c       |  4 ++-
->  .../selftests/bpf/test_tcpnotify_user.c       |  1 -
->  .../testing/selftests/bpf/test_verifier_log.c |  5 ++--
->  .../selftests/bpf/xdp_redirect_multi.c        |  1 -
->  tools/testing/selftests/bpf/xdping.c          |  8 ++----
->  tools/testing/selftests/bpf/xdpxceiver.c      |  6 ++--
->  61 files changed, 57 insertions(+), 142 deletions(-)
->  delete mode 100644 tools/testing/selftests/bpf/bpf_rlimit.h
->
-> --
-> 2.17.1
->
+DMAC yep Security Align 128Bits to Cache Array
+Align that 128Bit Buffer to Cache Align = Pure, 32Bit,64Bit,128Bit
+Align Quads & Float Quads -
+HDD,SDD normally have the EIDD DDI Equivalent
+Device Cache Align 'code align also speeds up prefetch' Radio AKA Wifi
+is also aligned & Internet protocols
+
+RS
+
+https://lkml.org/lkml/2022/4/4/1254
+https://lore.kernel.org/all/20220404194510.9206-2-mario.limonciello@amd.com/
+
+Subject: Hardware Dual Encrypt & Decrypt : Hardware Accelerators
+
+
+(indirect) - Plan & method RS
+
+Modulus Dual Encrypt & Decrypt package : Processor feature (c)RS
+
+AES-CCM & AES-GCM & Other Cypher Modulus + CCM & GCM can be
+accelerated with a joint AES Crypto module,
+
+Processor feature & package : Module list:
+
+2 Decryption pipelines working in parallel,
+With a Shared cache & RAM Module
+Modulus & Semi-parallel modulating decryption & Encryption combined
+with Encapsulation Cypher IP Protocol packet
+
+Parallax Cryptographic Processing Unit: RS
+
+The capacity To Multiply decryption on specific hardware in situations
+such as lower Bit precision is to be implemented as follows:
+
+On AES-NI & ARM Cryptographic processors; In particular PPS(ARM+) & SiMD ..
+
+The capacity to exploit the fact that the nonce is 16Bit to 64Bit &
+full float upto 128Bit for legal decryption (client) means there is a
+simple method to use:
+
+In situations that a AES-NI & ARM Cryptographic unit can process 2
+threads on a 256Bit Function we can do both the main 128Bit/192Bit &
+the nonce 16Bit to 64Bit & Enable a single instruction Roll to
+Synchronise both The main HASH & Nonce.
+
+AES & Crypto hardware can utilise the CPU/GPU/Processor FPU & SiMD to
+decrypt the nonce (smaller so fast) & in the same 8bto to 64Bits of
+code; Inline & parallax the cryptographic function.
+
+With a 256Bit AES-NI & Cryptographic unit : Parallel Decryption &
+Return Encryption by using 2x 128Bit & a Processor Enciphered Nonce.
+
+(c)Rupert S
+
+*reference* https://bit.ly/VESA_BT
+
+Dual Encrypt & Decrypt : Hardware Accelerators (indirect)
+https://lkml.org/lkml/2022/4/4/1153
+https://lore.kernel.org/linux-crypto/20220223080400.139367-1-gilad@benyossef.com/T/#u,
+
+Performance Comparison of AES-CCM and AES-GCM Authenticated Encryption Modes
+http://worldcomp-proceedings.com/proc/p2016/SAM9746.pdf
+
+Basic comparison of Modes for Authenticated-Encryption -IAPM, XCBC,
+OCB, CCM, EAX, CWC, GCM, PCFB, CS
+https://www.fi.muni.cz/~xsvenda/docs/AE_comparison_ipics04.pdf
+
+*****
+
+ICE-SSRTP GEA Replacement 2022 + (c)RS
+
+"GEA-1 and GEA-2, which are very similar (GEA-2 is just an extension
+of GEA-1 with a higher amount of processing, and apparently not
+weakened) are bit-oriented stream ciphers."
+
+GEA-2 > GEA-3 is therefor 64Bit Safe (Mobile calls) & 128Bit Safe
+(Reasonable security)
+SHA2, SHA3therefor 128Bit Safe (Reasonable security Mobile) ++
+AES & PolyChaCha both provide a premise of 128Bit++
+
+So by reason alone GEA has a place in our hearts.
+
+*
+
+ICE-SSRTP GEA Replacement 2022 + (c)RS
+
+IiCE-SSR for digital channel infrastructure can help heal GPRS+ 3G+ 4G+ 5G+
+
+Time NTP Protocols : is usable in 2G+ <> 5G+LTE Network SIM
+
+ICE-SSRTP Encryption AES,Blake2, Poly ChaCha, SM4, SHA2, SHA3, GEA-1 and GEA-2
+'Ideal for USB Dongle & Radio' in Rust RS ' Ideal for Quality TPM
+Implementation'
+
+"GEA-1 and GEA-2, which are very similar (GEA-2 is just an extension
+of GEA-1 with a higher amount of processing, and apparently not
+weakened) are bit-oriented stream ciphers."
+
+IiCE-SSRTP : Interleaved Inverted Signal Send & Receive Time Crystal Protocol
+
+Interleaved signals help Isolate noise from a Signal Send & Receive ...
+
+Overlapping inverted waves are a profile for complex audio & FFT is the result.
+
+Interleaved, Inverted & Compressed & a simple encryption?
+
+*
+
+Time differentiated : Interleave, Inversion & differentiating Elliptic curve.
+
+We will be able to know and test the Cypher : PRINCIPLE OF INTENT TO TRUST
+
+We know of a cypher but : (Principle RS)
+
+We blend the cypher..
+Interleaved pages of a cypher obfuscate : PAL CScam does this
+
+Timed : Theoretically unique to you in principle for imprecision, But
+we cannot really have imprecise in Crypto!
+
+But we can have a set time & in effect Elliptic curve a transient variable T,
+With this, Interleave the resulting pages (RAM Buffer Concept)
+
+Invert them over Time Var = T
+
+We can do all & principally this is relatively simple.
+
+(c)RS
+
+*
+
+Modulus Dual Encrypt & Decrypt package : Processor feature (c)RS
+
+AES-CCM & AES-GCM & Other Cypher Modulus + CCM & GCM can be
+accelerated with a joint AES Crypto module,
+
+Processor feature & package : Module list:
+
+2 Decryption pipelines working in parallel,
+With a Shared cache & RAM Module
+Modulus & Semi-parallel modulating decryption & Encryption combined
+with Encapsulation Cypher IP Protocol packet
+
+Parallax Cryptographic Processing Unit: RS
+
+The capacity To Multiply decryption on specific hardware in situations
+such as lower Bit precision is to be implemented as follows:
+
+On AES-NI & ARM Cryptographic processors; In particular PSP+PPS(ARM+) & SiMD ..
+
+The capacity to exploit the fact that the nonce is 16Bit to 64Bit &
+full float upto 128Bit for legal decryption (client) means there is a
+simple method to use:
+
+In situations that a AES-NI & ARM Cryptographic unit can process 2
+threads on a 256Bit Function we can do both the main 128Bit/192Bit &
+the nonce 16Bit to 64Bit & Enable a single instruction Roll to
+Synchronise both The main HASH & Nonce.
+
+AES & Crypto hardware can utilise the CPU/GPU/Processor FPU & SiMD to
+decrypt the nonce (smaller so fast) & in the same 8bto to 64Bits of
+code; Inline & parallax the cryptographic function.
+
+With a 256Bit AES-NI & Cryptographic unit : Parallel Decryption &
+Return Encryption by using 2x 128Bit & a Processor Enciphered Nonce.
+
+(c)Rupert S
+
+*reference*
+
+Performance Comparison of AES-CCM and AES-GCM Authenticated Encryption Modes
+http://worldcomp-proceedings.com/proc/p2016/SAM9746.pdf
+
+Basic comparison of Modes for Authenticated-Encryption -IAPM, XCBC,
+OCB, CCM, EAX, CWC, GCM, PCFB, CS
+https://www.fi.muni.cz/~xsvenda/docs/AE_comparison_ipics04.pdf
+
+
+*
+
+Example of use:
+
+Nostalgic TriBand : Independence RADIO : Send : Receive :Rebel-you trade marker
+
+Nostalgic TriBand 5hz banding 2 to 5 bands, Close proximity..
+Interleaved channel BAND.
+
+Microchip clock and 50Mhz Risc Rio processor : 8Bit : 16Bit : 18Bit
+Coprocessor digital channel selector &
+
+channel Key selection based on unique..
+
+Crystal time Quartz with Synced Tick (Regulated & modular)
+
+All digital interface and resistor ring channel & sync selector with
+micro band tuning firmware.
+
+(c)Rupert S
+
+*
+
+Good for cables ? and noise ?
+
+Presenting :  IiCE-SSR for digital channel infrastructure & cables
+<Yes Even The Internet &+ Ethernet 5 Band>
+
+So the question of interleaved Bands & or signal inversion is a simple
+question but we have,
+
+SSD & HDD Cables & does signal inversion help us? Do interleaving bands help us?
+
+In Audio inversion would be a strange way to hear! but the inversion
+does help alleviate ...
+
+Transistor emission fatigue...
+
+IiCE-SSRTP : Interleaved Inverted Signal Send & Receive Time Crystal Protocol
+
+Interleaved signals help Isolate noise from a Signal Send & Receive ...
+
+Overlapping inverted waves are a profile for complex audio & FFT is the result.
+
+Interleaved, Inverted & Compressed & a simple encryption?
+
+Good for cables ? and noise ?
+
+Presenting : IiCE for digital channel infrastructure & cables <Yes
+Even The Internet &+ Ethernet 5 Band>
+
+(c) Rupert S
+
+https://science.n-helix.com/2018/12/rng.html
+
+https://science.n-helix.com/2022/02/rdseed.html
+
+https://science.n-helix.com/2017/04/rng-and-random-web.html
+
+https://science.n-helix.com/2022/02/interrupt-entropy.html
+
+https://science.n-helix.com/2021/11/monticarlo-workload-selector.html
+
+https://science.n-helix.com/2022/03/security-aspect-leaf-hash-identifiers.html
+
+
+Audio, Visual & Bluetooth & Headset & mobile developments only go so far:
+
+https://science.n-helix.com/2022/02/visual-acuity-of-eye-replacements.html
+
+https://science.n-helix.com/2022/03/ice-ssrtp.html
+
+https://science.n-helix.com/2021/11/ihmtes.html
+
+https://science.n-helix.com/2021/10/eccd-vr-3datmos-enhanced-codec.html
+https://science.n-helix.com/2021/11/wave-focus-anc.html
+https://science.n-helix.com/2021/12/3d-audio-plugin.html
+
+Integral to Telecoms Security TRNG
+
+*RAND OP Ubuntu :
+https://manpages.ubuntu.com/manpages/trusty/man1/pollinate.1.html
+
+https://pollinate.n-helix.com
+
+*
+
+***** Dukes Of THRUST ******
+
+Nostalgic TriBand : Independence RADIO : Send : Receive :Rebel-you trade markerz
+
+Nostalgic TriBand 5hz banding 2 to 5 bands, Close proximity..
+Interleaved channel BAND.
+
+Microchip clock and 50Mhz Risc Rio processor : 8Bit : 16Bit : 18Bit
+Coprocessor digital channel selector &
+
+channel Key selection based on unique..
+
+Crystal time Quartz with Synced Tick (Regulated & modular)
+
+All digital interface and resistor ring channel & sync selector with
+micro band tuning firmware.
+
+(c)Rupert S
+
+Dev/Random : Importance
+
+Dev/Random : Importance : Our C/T/RNG Can Help GEA-2 Open Software
+implementation of 3 Bits (T/RNG) Not 1 : We need Chaos : GEA-1 and
+GEA-2 Implementations we will improve with our /Dev/Random
+
+Our C/T/RNG Can Help GEA-2 Open Software implementation of 3 Bits
+(T/RNG) Not 1 : We need Chaos : GEA-1 and GEA-2 Implementations we
+will improve with our /Dev/Random
+
+We can improve GPRS 2G to 5G networks still need to save power, GPRS
+Doubles a phones capacity to run all day,
+
+Code can and will be improved, Proposals include:
+
+Blake2
+ChaCha
+SM4
+SHA2
+SHA3
+
+Elliptic Encipher
+AES
+Poly ChaCha
+
+Firstly we need a good solid & stable /dev/random
+
+So we can examine the issue with a true SEED!
+
+Rupert S https://science.n-helix.com/2022/02/interrupt-entropy.html
+
+TRNG Samples & Method DRAND Proud!
+
+https://drive.google.com/file/d/1b_Sl1oI7qTlc6__ihLt-N601nyLsY7QU/view?usp=drive_web
+https://drive.google.com/file/d/1yi4ERt0xdPc9ooh9vWrPY1LV_eXV-1Wc/view?usp=drive_web
+https://drive.google.com/file/d/11dKUNl0ngouSIJzOD92lO546tfGwC0tu/view?usp=drive_web
+https://drive.google.com/file/d/10a0E4Gh5S-itzBVh0fOaxS7JS9ru-68T/view?usp=drive_web
+
+https://github.com/P1sec/gea-implementation
