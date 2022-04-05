@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA264F5418
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E2944F53B2
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:38:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1851279AbiDFEY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 00:24:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
+        id S2361266AbiDFEZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240694AbiDEUpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:45:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7F4D9E96;
-        Tue,  5 Apr 2022 13:22:18 -0700 (PDT)
+        with ESMTP id S1356225AbiDEUtr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:49:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3320EF9FB0;
+        Tue,  5 Apr 2022 13:23:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD8E06199D;
-        Tue,  5 Apr 2022 20:22:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9CFC385A1;
-        Tue,  5 Apr 2022 20:22:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4DD8B81FCB;
+        Tue,  5 Apr 2022 20:23:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04ED9C385A0;
+        Tue,  5 Apr 2022 20:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649190137;
-        bh=iNf3u//RenbgIFD6vj3Jlm5LNBRvGuu8NWlmRuWq0qE=;
+        s=k20201202; t=1649190235;
+        bh=+h8ZzTU60u7YqBVIktB8t5HoId/6yDAI8cwBhdE5rx4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SkmD42vtbSHd30A4rLpk505UkLToZ1JOL27KNWGrdX3+Th2p3HigyrKagdqOzC+j/
-         IprKIn2kyiw1FDtrDhsCCMnUC072toB7ipOp5UdMH7HA0qh/iCaRh/Dn72HoiThjbb
-         BVF6MqSZDf+9Nk8jmNqzqkjHIgIeeUpUAQ7/sblYQsQz7qTqiijihx/OtHYHlaPPXl
-         /F8a1K5lpHdDKEkSL58JBHgHSIabYsUVpwf/hmN2DlknMQ0IHwFH+iLaileIPcA9Iz
-         463uGYiXGFjA+yevyWV/QDfXd/kE6L4W6JLVZjNeY2o5lhu3VOmfCyo9iTPUzCuBxa
-         z637LY13YaW4w==
-Date:   Tue, 5 Apr 2022 13:22:15 -0700
+        b=YRmQIurrg8g5lOoNCeCLHV8pjFQHFNKpKutlj3rwqbZWrX585/wHFcvVjJ4XJIAzi
+         o/asCoEHFHp1cTaZ5qunmw75i6CKLx43dv0ndUo2K0+1NT1hIU/2bMQNvkpC1rczaT
+         5DlGx/gyqkWSCXSgYY57BaZYOlidksTeY4WJA3FpWCW6fBj9r3Vwebc3kCnWAqoeL9
+         m9pD6t43Kx1ct23VNg8pnqvj5WAPFTxrUBYA1RPrXq1y3knRF58FzRfd0GQ70E1fj9
+         3mQQDQ5vmJ7fPiDnSzuW3EakOch9qTx/cV+mArhWMSaQ3kLVK5058ifLwydjTNf3jE
+         H9c/3NJHaQrzw==
+Date:   Tue, 5 Apr 2022 13:23:53 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] sungem: Prepare cleanup of powerpc's
- asm/prom.h
-Message-ID: <20220405132215.75f0d5ec@kernel.org>
-In-Reply-To: <fa778bf9c0a23df8a9e6fe2e2b20d936bd0a89af.1648833433.git.christophe.leroy@csgroup.eu>
-References: <fa778bf9c0a23df8a9e6fe2e2b20d936bd0a89af.1648833433.git.christophe.leroy@csgroup.eu>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Tom Rix <trix@redhat.com>, idosch@nvidia.com, petrm@nvidia.com,
+        davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mlxsw: spectrum_router: simplify list unwinding
+Message-ID: <20220405132353.00e7cb5e@kernel.org>
+In-Reply-To: <Ykmcu5y4Tx8pqhtQ@shredder>
+References: <20220402121516.2750284-1-trix@redhat.com>
+        <Ykmcu5y4Tx8pqhtQ@shredder>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,14 +55,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  2 Apr 2022 12:17:13 +0200 Christophe Leroy wrote:
-> powerpc's asm/prom.h brings some headers that it doesn't
-> need itself.
+On Sun, 3 Apr 2022 16:10:19 +0300 Ido Schimmel wrote:
+> On Sat, Apr 02, 2022 at 08:15:16AM -0400, Tom Rix wrote:
+> > The setting of i here
+> > err_nexthop6_group_get:
+> > 	i = nrt6;
+> > Is redundant, i is already nrt6.  So remove
+> > this statement.
+> > 
+> > The for loop for the unwinding
+> > err_rt6_create:
+> > 	for (i--; i >= 0; i--) {
+> > Is equivelent to
+> > 	for (; i > 0; i--) {
+> > 
+> > Two consecutive labels can be reduced to one.
+> > 
+> > Signed-off-by: Tom Rix <trix@redhat.com>  
 > 
-> In order to clean it up, first add missing headers in
-> users of asm/prom.h
+> For net-next:
+> 
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
-Could you resend the net-next patches you had?
-
-They got dropped from patchwork due to net-next being closed during 
-the merge window.
+Now 6f2f36e5f932 ("mlxsw: spectrum_router: simplify list unwinding")
+Thanks!
