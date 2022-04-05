@@ -2,51 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 722C94F3C3F
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 17:25:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 602F24F3BA9
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 17:21:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244490AbiDEMGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 08:06:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        id S235411AbiDEMA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 08:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380403AbiDELmd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 07:42:33 -0400
+        with ESMTP id S1380412AbiDELme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 07:42:34 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F0C10BBE3;
-        Tue,  5 Apr 2022 04:06:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3765E457B2;
+        Tue,  5 Apr 2022 04:06:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649156803; x=1680692803;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=NNaVagVkmxZRREd0d3044ps0HWL2oB7S1hkDYwyMVAU=;
-  b=BKPdKP7Ifvwupi4vkQfiNv4RpBq3STobS82n3+P1NKNviaZ1uaBmYHL3
-   vtvL2YZ4kAjvL9B0tAho8XXDyQ8xKTOwTxr5Z/eOJO10gHjMMeprusO4A
-   C1Xa01JfRLuWS0Vb5A6pNQdEAp8zCcGwwgQLdU/wNQG1/INzfOhIONrQf
-   92+CBmJYKuzGCaQZaKrbv8w2ksn1tkDwsdb6Stw4ek3BGu+bp+1853fQC
-   rM8NEbDhrJpbZhARs89oIQJpb58GCKTToUtRoEjkH8+834huFyMMlzuB8
-   S/CvFm1loMKzgnMhqZ+MuC6QUYOj00/QfRLoGJobXm4WEBN2uHQ7bCoM7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="241307935"
+  t=1649156807; x=1680692807;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ytWUfx3/ys0CGOoMx9C2IYY7bI8XUBc9hMr4xRvcsP4=;
+  b=Jwn3H0O5IhZDql5+qUrrMj5E0+rYqY37Hs2iQPXibFidoH7bRuvfvpBB
+   obzye3U5wjNqgslnrPxrHvkrvgOPheheNqdzMcGLp/kp3xscf1P4tO++/
+   ovIo3QHcLUvi9z7QIUk+AkXyrrYq6NHQB5cEC5RIM1QSHpJC4GOGQCyZI
+   4ccz+UXHgyzfuN5H0bRp3nFOy/oV1gHxwqShfsExSf82V8qZ4Ed+0OcfT
+   tP9qIMQqVCIPWnVDcsz8vB1VGZ62ycmHd35h3P/hI5LzIsjhVgnDSmpfh
+   NXbkgIg2EtV/E6p15uQ6S0jz4mKUehr08/iWGpzUzbB0dYLePxnJvCKOK
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10307"; a="241307948"
 X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="241307935"
+   d="scan'208";a="241307948"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:06:42 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2022 04:06:45 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,236,1643702400"; 
-   d="scan'208";a="641570791"
+   d="scan'208";a="641570801"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Apr 2022 04:06:40 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 05 Apr 2022 04:06:43 -0700
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         magnus.karlsson@intel.com, bjorn@kernel.org
 Cc:     netdev@vger.kernel.org, brouer@redhat.com, maximmi@nvidia.com,
         alexandr.lobakin@intel.com,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf-next 00/10] xsk: stop softirq processing on full XSK Rx queue
-Date:   Tue,  5 Apr 2022 13:06:21 +0200
-Message-Id: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
+Subject: [PATCH bpf-next 01/10] xsk: improve xdp_do_redirect() error codes
+Date:   Tue,  5 Apr 2022 13:06:22 +0200
+Message-Id: <20220405110631.404427-2-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
+References: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -60,69 +62,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+From: Björn Töpel <bjorn@kernel.org>
 
-This is a revival of Bjorn's idea [0] to break NAPI loop when XSK Rx
-queue gets full which in turn makes it impossible to keep on
-successfully producing descriptors to XSK Rx ring. By breaking out of
-the driver side immediately we will give the user space opportunity for
-consuming descriptors from XSK Rx ring and therefore provide room in the
-ring so that HW Rx -> XSK Rx redirection can be done.
+The error codes returned by xdp_do_redirect() when redirecting a frame
+to an AF_XDP socket has not been very useful. A driver could not
+distinguish between different errors. Prior this change the following
+codes where used:
 
-Maxim asked and Jesper agreed on simplifying Bjorn's original API used
-for detecting the event of interest, so let's just simply check for
--ENOBUFS within Intel's ZC drivers after an attempt to redirect a buffer
-to XSK Rx. No real need for redirect API extension.
+Socket not bound or incorrect queue/netdev: EINVAL
+XDP frame/AF_XDP buffer size mismatch: ENOSPC
+Could not allocate buffer (copy mode): ENOSPC
+AF_XDP Rx buffer full: ENOSPC
 
-One might ask why it is still relevant even after having proper busy
-poll support in place - here is the justification.
+After this change:
 
-For xdpsock that was:
-- run for l2fwd scenario,
-- app/driver processing took place on the same core in busy poll
-  with 2048 budget,
-- HW ring sizes Tx 256, Rx 2048,
+Socket not bound or incorrect queue/netdev: EINVAL
+XDP frame/AF_XDP buffer size mismatch: ENOSPC
+Could not allocate buffer (copy mode): ENOMEM
+AF_XDP Rx buffer full: ENOBUFS
 
-this work improved throughput by 78% and reduced Rx queue full statistic
-bump by 99%.
+An AF_XDP zero-copy driver can now potentially determine if the
+failure was due to a full Rx buffer, and if so stop processing more
+frames, yielding to the userland AF_XDP application.
 
-For testing ice, make sure that you have [1] present on your side.
+Signed-off-by: Björn Töpel <bjorn@kernel.org>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ net/xdp/xsk.c       | 2 +-
+ net/xdp/xsk_queue.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-This set, besides the work described above, also carries also
-improvements around return codes in various XSK paths and lastly a minor
-optimization for xskq_cons_has_entries(), a helper that might be used
-when XSK Rx batching would make it to the kernel.
-
-Thanks!
-MF
-
-[0]: https://lore.kernel.org/bpf/20200904135332.60259-1-bjorn.topel@gmail.com/
-[1]: https://lore.kernel.org/netdev/20220317175727.340251-1-maciej.fijalkowski@intel.com/
-
-Björn Töpel (1):
-  xsk: improve xdp_do_redirect() error codes
-
-Maciej Fijalkowski (9):
-  xsk: diversify return codes in xsk_rcv_check()
-  ice: xsk: terminate NAPI when XSK Rx queue gets full
-  i40e: xsk: terminate NAPI when XSK Rx queue gets full
-  ixgbe: xsk: terminate NAPI when XSK Rx queue gets full
-  ice: xsk: diversify return values from xsk_wakeup call paths
-  i40e: xsk: diversify return values from xsk_wakeup call paths
-  ixgbe: xsk: diversify return values from xsk_wakeup call paths
-  ice: xsk: avoid refilling single Rx descriptors
-  xsk: drop ternary operator from xskq_cons_has_entries
-
- .../ethernet/intel/i40e/i40e_txrx_common.h    |  1 +
- drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 27 +++++++++------
- drivers/net/ethernet/intel/ice/ice_txrx.h     |  1 +
- drivers/net/ethernet/intel/ice/ice_xsk.c      | 34 ++++++++++++-------
- .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |  1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 29 ++++++++++------
- net/xdp/xsk.c                                 |  4 +--
- net/xdp/xsk_queue.h                           |  4 +--
- 8 files changed, 64 insertions(+), 37 deletions(-)
-
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 2c34caee0fd1..f75e121073e7 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -184,7 +184,7 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+ 	xsk_xdp = xsk_buff_alloc(xs->pool);
+ 	if (!xsk_xdp) {
+ 		xs->rx_dropped++;
+-		return -ENOSPC;
++		return -ENOMEM;
+ 	}
+ 
+ 	xsk_copy_xdp(xsk_xdp, xdp, len);
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index 801cda5d1938..644479e65578 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -382,7 +382,7 @@ static inline int xskq_prod_reserve_desc(struct xsk_queue *q,
+ 	u32 idx;
+ 
+ 	if (xskq_prod_is_full(q))
+-		return -ENOSPC;
++		return -ENOBUFS;
+ 
+ 	/* A, matches D */
+ 	idx = q->cached_prod++ & q->ring_mask;
 -- 
 2.33.1
 
