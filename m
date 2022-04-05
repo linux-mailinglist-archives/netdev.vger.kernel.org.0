@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E537D4F530E
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8288E4F5425
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2361297AbiDFE00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 00:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        id S1356749AbiDFE1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359683AbiDEUuK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:50:10 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FF110A7D1;
-        Tue,  5 Apr 2022 13:25:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=bBi7tWNtD6G+/435dOrH2y7Mzq/gxksOqSy3vNrpvQI=; b=Ja1I9dg1F7w/IUbasQjK2Q5hxP
-        xkyqgPccVTRPwUPC8hP5gsFtenI+uRvTQXzSOaU5A4zMWicEDOFx7L9CDBczV1cKwKQ5vTh8TIHaz
-        /40lN3tHLv/vCoR7dFL/WosLRA0C/ZCNOl2QF75ImlKlnIb813OqaPgKZS3rm3IQAUJA=;
-Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=Maecks.lan)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nbpJa-00035V-SK; Tue, 05 Apr 2022 21:58:10 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        with ESMTP id S242853AbiDEUTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:19:53 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395D866605;
+        Tue,  5 Apr 2022 12:59:59 -0700 (PDT)
+Received: from zn.tnic (p2e55dff8.dip0.t-ipconnect.de [46.85.223.248])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 02F261EC0502;
+        Tue,  5 Apr 2022 21:59:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1649188794;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=SvIU4eZcn93NftxXsNKHCqdzPzPfwZZgm8Wxx1MOMuw=;
+        b=ERFM06xopatlGBGjisa0wjOdN0qLVRBqPKrPMnxeoDehohByrncOvmrmUK6A4PmNO7Ez5m
+        wFOT6A8rq5EnhmsBat3Qv1yScS9n9rdDtyCOYOPiptL56MJeA8O5oinRrLTLtoD36ewkCF
+        ETPMHWvzo68dXPESkf4I9nzAIyAqb5U=
+Date:   Tue, 5 Apr 2022 21:59:52 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 14/14] net: ethernet: mtk_eth_soc: support creating mac address based offload entries
-Date:   Tue,  5 Apr 2022 21:57:55 +0200
-Message-Id: <20220405195755.10817-15-nbd@nbd.name>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220405195755.10817-1-nbd@nbd.name>
-References: <20220405195755.10817-1-nbd@nbd.name>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 03/11] bnx2x: Fix undefined behavior due to shift
+ overflowing the constant
+Message-ID: <YkyfuMAaghi+gev9@zn.tnic>
+References: <20220405151517.29753-1-bp@alien8.de>
+ <20220405151517.29753-4-bp@alien8.de>
+ <20220405125342.1f4d0a1a@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220405125342.1f4d0a1a@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,565 +56,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will be used to implement a limited form of bridge offloading.
-Since the hardware does not support flow table entries with just source
-and destination MAC address, the driver has to emulate it.
+On Tue, Apr 05, 2022 at 12:53:42PM -0700, Jakub Kicinski wrote:
+> I think this patch did not make it to netdev patchwork.
+> Could you resend (as a non-series patch - drop the 03/11
+> from the subject, that way build bot will not consider
+> it a partial/broken posting)? Thanks!
 
-The hardware automatically creates entries entries for incoming flows, even
-when they are bridged instead of routed, and reports when packets for these
-flows have reached the minimum PPS rate for offloading.
+Yeah, will give vger some time as it sounds like it is clogged at the
+moment. Which would explain why my patches haven't appeared in multiple
+patchworks, if they depend on vger, that is...
 
-After this happens, we look up the L2 flow offload entry based on the MAC
-header and fill in the output routing information in the flow table.
-The dynamically created per-flow entries are automatically removed when
-either the hardware flowtable entry expires, is replaced, or if the offload
-rule they belong to is removed
+I'll do what you suggest tomorrow if it doesn't appear by then.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/net/ethernet/mediatek/mtk_ppe.c       | 241 ++++++++++++++++--
- drivers/net/ethernet/mediatek/mtk_ppe.h       |  44 +++-
- .../net/ethernet/mediatek/mtk_ppe_offload.c   |  60 ++++-
- 3 files changed, 299 insertions(+), 46 deletions(-)
+Thx.
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index aa0d190db65d..282a1f34a88a 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -6,12 +6,22 @@
- #include <linux/iopoll.h>
- #include <linux/etherdevice.h>
- #include <linux/platform_device.h>
-+#include <linux/if_ether.h>
-+#include <linux/if_vlan.h>
-+#include <net/dsa.h>
- #include "mtk_eth_soc.h"
- #include "mtk_ppe.h"
- #include "mtk_ppe_regs.h"
- 
- static DEFINE_SPINLOCK(ppe_lock);
- 
-+static const struct rhashtable_params mtk_flow_l2_ht_params = {
-+	.head_offset = offsetof(struct mtk_flow_entry, l2_node),
-+	.key_offset = offsetof(struct mtk_flow_entry, data.bridge),
-+	.key_len = offsetof(struct mtk_foe_bridge, key_end),
-+	.automatic_shrinking = true,
-+};
-+
- static void ppe_w32(struct mtk_ppe *ppe, u32 reg, u32 val)
- {
- 	writel(val, ppe->base + reg);
-@@ -123,6 +133,9 @@ mtk_foe_entry_l2(struct mtk_foe_entry *entry)
- {
- 	int type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->ib1);
- 
-+	if (type == MTK_PPE_PKT_TYPE_BRIDGE)
-+		return &entry->bridge.l2;
-+
- 	if (type >= MTK_PPE_PKT_TYPE_IPV4_DSLITE)
- 		return &entry->ipv6.l2;
- 
-@@ -134,6 +147,9 @@ mtk_foe_entry_ib2(struct mtk_foe_entry *entry)
- {
- 	int type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->ib1);
- 
-+	if (type == MTK_PPE_PKT_TYPE_BRIDGE)
-+		return &entry->bridge.ib2;
-+
- 	if (type >= MTK_PPE_PKT_TYPE_IPV4_DSLITE)
- 		return &entry->ipv6.ib2;
- 
-@@ -168,7 +184,12 @@ int mtk_foe_entry_prepare(struct mtk_foe_entry *entry, int type, int l4proto,
- 	if (type == MTK_PPE_PKT_TYPE_IPV6_ROUTE_3T)
- 		entry->ipv6.ports = ports_pad;
- 
--	if (type >= MTK_PPE_PKT_TYPE_IPV4_DSLITE) {
-+	if (type == MTK_PPE_PKT_TYPE_BRIDGE) {
-+		ether_addr_copy(entry->bridge.src_mac, src_mac);
-+		ether_addr_copy(entry->bridge.dest_mac, dest_mac);
-+		entry->bridge.ib2 = val;
-+		l2 = &entry->bridge.l2;
-+	} else if (type >= MTK_PPE_PKT_TYPE_IPV4_DSLITE) {
- 		entry->ipv6.ib2 = val;
- 		l2 = &entry->ipv6.l2;
- 	} else {
-@@ -371,6 +392,84 @@ mtk_flow_entry_match(struct mtk_flow_entry *entry, struct mtk_foe_entry *data)
- 	return !memcmp(&entry->data.data, &data->data, len - 4);
- }
- 
-+static void
-+__mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
-+{
-+	struct hlist_head *head;
-+	struct hlist_node *tmp;
-+
-+	if (entry->type == MTK_FLOW_TYPE_L2) {
-+		rhashtable_remove_fast(&ppe->l2_flows, &entry->l2_node,
-+				       mtk_flow_l2_ht_params);
-+
-+		head = &entry->l2_flows;
-+		hlist_for_each_entry_safe(entry, tmp, head, l2_data.list)
-+			__mtk_foe_entry_clear(ppe, entry);
-+		return;
-+	}
-+
-+	hlist_del_init(&entry->list);
-+	if (entry->hash != 0xffff) {
-+		ppe->foe_table[entry->hash].ib1 &= ~MTK_FOE_IB1_STATE;
-+		ppe->foe_table[entry->hash].ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE,
-+							      MTK_FOE_STATE_BIND);
-+		dma_wmb();
-+	}
-+	entry->hash = 0xffff;
-+
-+	if (entry->type != MTK_FLOW_TYPE_L2_SUBFLOW)
-+		return;
-+
-+	hlist_del_init(&entry->l2_data.list);
-+	kfree(entry);
-+}
-+
-+static int __mtk_foe_entry_idle_time(struct mtk_ppe *ppe, u32 ib1)
-+{
-+	u16 timestamp;
-+	u16 now;
-+
-+	now = mtk_eth_timestamp(ppe->eth) & MTK_FOE_IB1_BIND_TIMESTAMP;
-+	timestamp = ib1 & MTK_FOE_IB1_BIND_TIMESTAMP;
-+
-+	if (timestamp > now)
-+		return MTK_FOE_IB1_BIND_TIMESTAMP + 1 - timestamp + now;
-+	else
-+		return now - timestamp;
-+}
-+
-+static void
-+mtk_flow_entry_update_l2(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
-+{
-+	struct mtk_flow_entry *cur;
-+	struct mtk_foe_entry *hwe;
-+	struct hlist_node *tmp;
-+	int idle;
-+
-+	idle = __mtk_foe_entry_idle_time(ppe, entry->data.ib1);
-+	hlist_for_each_entry_safe(cur, tmp, &entry->l2_flows, l2_data.list) {
-+		int cur_idle;
-+		u32 ib1;
-+
-+		hwe = &ppe->foe_table[cur->hash];
-+		ib1 = READ_ONCE(hwe->ib1);
-+
-+		if (FIELD_GET(MTK_FOE_IB1_STATE, ib1) != MTK_FOE_STATE_BIND) {
-+			cur->hash = 0xffff;
-+			__mtk_foe_entry_clear(ppe, cur);
-+			continue;
-+		}
-+
-+		cur_idle = __mtk_foe_entry_idle_time(ppe, ib1);
-+		if (cur_idle >= idle)
-+			continue;
-+
-+		idle = cur_idle;
-+		entry->data.ib1 &= ~MTK_FOE_IB1_BIND_TIMESTAMP;
-+		entry->data.ib1 |= hwe->ib1 & MTK_FOE_IB1_BIND_TIMESTAMP;
-+	}
-+}
-+
- static void
- mtk_flow_entry_update(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- {
-@@ -378,6 +477,12 @@ mtk_flow_entry_update(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- 	struct mtk_foe_entry foe;
- 
- 	spin_lock_bh(&ppe_lock);
-+
-+	if (entry->type == MTK_FLOW_TYPE_L2) {
-+		mtk_flow_entry_update_l2(ppe, entry);
-+		goto out;
-+	}
-+
- 	if (entry->hash == 0xffff)
- 		goto out;
- 
-@@ -419,21 +524,28 @@ __mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
- void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- {
- 	spin_lock_bh(&ppe_lock);
--	hlist_del_init(&entry->list);
--	if (entry->hash != 0xffff) {
--		ppe->foe_table[entry->hash].ib1 &= ~MTK_FOE_IB1_STATE;
--		ppe->foe_table[entry->hash].ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE,
--							      MTK_FOE_STATE_BIND);
--		dma_wmb();
--	}
--	entry->hash = 0xffff;
-+	__mtk_foe_entry_clear(ppe, entry);
- 	spin_unlock_bh(&ppe_lock);
- }
- 
-+static int
-+mtk_foe_entry_commit_l2(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
-+{
-+	entry->type = MTK_FLOW_TYPE_L2;
-+
-+	return rhashtable_insert_fast(&ppe->l2_flows, &entry->l2_node,
-+				      mtk_flow_l2_ht_params);
-+}
-+
- int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- {
--	u32 hash = mtk_ppe_hash_entry(&entry->data);
-+	int type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->data.ib1);
-+	u32 hash;
-+
-+	if (type == MTK_PPE_PKT_TYPE_BRIDGE)
-+		return mtk_foe_entry_commit_l2(ppe, entry);
- 
-+	hash = mtk_ppe_hash_entry(&entry->data);
- 	entry->hash = 0xffff;
- 	spin_lock_bh(&ppe_lock);
- 	hlist_add_head(&entry->list, &ppe->foe_flow[hash / 2]);
-@@ -442,18 +554,72 @@ int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- 	return 0;
- }
- 
-+static void
-+mtk_foe_entry_commit_subflow(struct mtk_ppe *ppe, struct mtk_flow_entry *entry,
-+			     u16 hash)
-+{
-+	struct mtk_flow_entry *flow_info;
-+	struct mtk_foe_entry foe, *hwe;
-+	struct mtk_foe_mac_info *l2;
-+	u32 ib1_mask = MTK_FOE_IB1_PACKET_TYPE | MTK_FOE_IB1_UDP;
-+	int type;
-+
-+	flow_info = kzalloc(offsetof(struct mtk_flow_entry, l2_data.end),
-+			    GFP_ATOMIC);
-+	if (!flow_info)
-+		return;
-+
-+	flow_info->l2_data.base_flow = entry;
-+	flow_info->type = MTK_FLOW_TYPE_L2_SUBFLOW;
-+	flow_info->hash = hash;
-+	hlist_add_head(&flow_info->list, &ppe->foe_flow[hash / 2]);
-+	hlist_add_head(&flow_info->l2_data.list, &entry->l2_flows);
-+
-+	hwe = &ppe->foe_table[hash];
-+	memcpy(&foe, hwe, sizeof(foe));
-+	foe.ib1 &= ib1_mask;
-+	foe.ib1 |= entry->data.ib1 & ~ib1_mask;
-+
-+	l2 = mtk_foe_entry_l2(&foe);
-+	memcpy(l2, &entry->data.bridge.l2, sizeof(*l2));
-+
-+	type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, foe.ib1);
-+	if (type == MTK_PPE_PKT_TYPE_IPV4_HNAPT)
-+		memcpy(&foe.ipv4.new, &foe.ipv4.orig, sizeof(foe.ipv4.new));
-+	else if (type >= MTK_PPE_PKT_TYPE_IPV6_ROUTE_3T && l2->etype == ETH_P_IP)
-+		l2->etype = ETH_P_IPV6;
-+
-+	*mtk_foe_entry_ib2(&foe) = entry->data.bridge.ib2;
-+
-+	__mtk_foe_entry_commit(ppe, &foe, hash);
-+}
-+
- void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
- {
- 	struct hlist_head *head = &ppe->foe_flow[hash / 2];
--	struct mtk_flow_entry *entry;
- 	struct mtk_foe_entry *hwe = &ppe->foe_table[hash];
-+	struct mtk_flow_entry *entry;
-+	struct mtk_foe_bridge key = {};
-+	struct ethhdr *eh;
- 	bool found = false;
--
--	if (hlist_empty(head))
--		return;
-+	u8 *tag;
- 
- 	spin_lock_bh(&ppe_lock);
-+
-+	if (FIELD_GET(MTK_FOE_IB1_STATE, hwe->ib1) == MTK_FOE_STATE_BIND)
-+		goto out;
-+
- 	hlist_for_each_entry(entry, head, list) {
-+		if (entry->type == MTK_FLOW_TYPE_L2_SUBFLOW) {
-+			if (unlikely(FIELD_GET(MTK_FOE_IB1_STATE, hwe->ib1) ==
-+				     MTK_FOE_STATE_BIND))
-+				continue;
-+
-+			entry->hash = 0xffff;
-+			__mtk_foe_entry_clear(ppe, entry);
-+			continue;
-+		}
-+
- 		if (found || !mtk_flow_entry_match(entry, hwe)) {
- 			if (entry->hash != 0xffff)
- 				entry->hash = 0xffff;
-@@ -464,21 +630,50 @@ void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
- 		__mtk_foe_entry_commit(ppe, &entry->data, hash);
- 		found = true;
- 	}
-+
-+	if (found)
-+		goto out;
-+
-+	eh = eth_hdr(skb);
-+	ether_addr_copy(key.dest_mac, eh->h_dest);
-+	ether_addr_copy(key.src_mac, eh->h_source);
-+	tag = skb->data - 2;
-+	key.vlan = 0;
-+	switch (skb->protocol) {
-+#if IS_ENABLED(CONFIG_NET_DSA)
-+	case htons(ETH_P_XDSA):
-+		if (!netdev_uses_dsa(skb->dev) ||
-+		    skb->dev->dsa_ptr->tag_ops->proto != DSA_TAG_PROTO_MTK)
-+			goto out;
-+
-+		tag += 4;
-+		if (get_unaligned_be16(tag) != ETH_P_8021Q)
-+			break;
-+
-+		fallthrough;
-+#endif
-+	case htons(ETH_P_8021Q):
-+		key.vlan = get_unaligned_be16(tag + 2) & VLAN_VID_MASK;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	entry = rhashtable_lookup_fast(&ppe->l2_flows, &key, mtk_flow_l2_ht_params);
-+	if (!entry)
-+		goto out;
-+
-+	mtk_foe_entry_commit_subflow(ppe, entry, hash);
-+
-+out:
- 	spin_unlock_bh(&ppe_lock);
- }
- 
- int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- {
--	u16 now = mtk_eth_timestamp(ppe->eth) & MTK_FOE_IB1_BIND_TIMESTAMP;
--	u16 timestamp;
--
- 	mtk_flow_entry_update(ppe, entry);
--	timestamp = entry->data.ib1 & MTK_FOE_IB1_BIND_TIMESTAMP;
- 
--	if (timestamp > now)
--		return MTK_FOE_IB1_BIND_TIMESTAMP + 1 - timestamp + now;
--	else
--		return now - timestamp;
-+	return __mtk_foe_entry_idle_time(ppe, entry->data.ib1);
- }
- 
- struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
-@@ -492,6 +687,8 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- 	if (!ppe)
- 		return NULL;
- 
-+	rhashtable_init(&ppe->l2_flows, &mtk_flow_l2_ht_params);
-+
- 	/* need to allocate a separate device, since it PPE DMA access is
- 	 * not coherent.
- 	 */
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index 217b44bed8b6..1f5cf1c9a947 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
-@@ -6,6 +6,7 @@
- 
- #include <linux/kernel.h>
- #include <linux/bitfield.h>
-+#include <linux/rhashtable.h>
- 
- #define MTK_ETH_PPE_BASE		0xc00
- 
-@@ -84,19 +85,16 @@ struct mtk_foe_mac_info {
- 	u16 src_mac_lo;
- };
- 
-+/* software-only entry type */
- struct mtk_foe_bridge {
--	u32 dest_mac_hi;
--
--	u16 src_mac_lo;
--	u16 dest_mac_lo;
-+	u8 dest_mac[ETH_ALEN];
-+	u8 src_mac[ETH_ALEN];
-+	u16 vlan;
- 
--	u32 src_mac_hi;
-+	struct {} key_end;
- 
- 	u32 ib2;
- 
--	u32 _rsv[5];
--
--	u32 udf_tsid;
- 	struct mtk_foe_mac_info l2;
- };
- 
-@@ -235,13 +233,33 @@ enum {
- 	MTK_PPE_CPU_REASON_INVALID			= 0x1f,
- };
- 
-+enum {
-+	MTK_FLOW_TYPE_L4,
-+	MTK_FLOW_TYPE_L2,
-+	MTK_FLOW_TYPE_L2_SUBFLOW,
-+};
-+
- struct mtk_flow_entry {
-+	union {
-+		struct hlist_node list;
-+		struct {
-+			struct rhash_head l2_node;
-+			struct hlist_head l2_flows;
-+		};
-+	};
-+	u8 type;
-+	s8 wed_index;
-+	u16 hash;
-+	union {
-+		struct mtk_foe_entry data;
-+		struct {
-+			struct mtk_flow_entry *base_flow;
-+			struct hlist_node list;
-+			struct {} end;
-+		} l2_data;
-+	};
- 	struct rhash_head node;
--	struct hlist_node list;
- 	unsigned long cookie;
--	struct mtk_foe_entry data;
--	u16 hash;
--	s8 wed_index;
- };
- 
- struct mtk_ppe {
-@@ -256,6 +274,8 @@ struct mtk_ppe {
- 	u16 foe_check_time[MTK_PPE_ENTRIES];
- 	struct hlist_head foe_flow[MTK_PPE_ENTRIES / 2];
- 
-+	struct rhashtable l2_flows;
-+
- 	void *acct_table;
- };
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-index 378685fe92b6..1fe31058b0f2 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -31,6 +31,8 @@ struct mtk_flow_data {
- 	__be16 src_port;
- 	__be16 dst_port;
- 
-+	u16 vlan_in;
-+
- 	struct {
- 		u16 id;
- 		__be16 proto;
-@@ -257,9 +259,45 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 		return -EOPNOTSUPP;
- 	}
- 
-+	switch (addr_type) {
-+	case 0:
-+		offload_type = MTK_PPE_PKT_TYPE_BRIDGE;
-+		if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
-+			struct flow_match_eth_addrs match;
-+
-+			flow_rule_match_eth_addrs(rule, &match);
-+			memcpy(data.eth.h_dest, match.key->dst, ETH_ALEN);
-+			memcpy(data.eth.h_source, match.key->src, ETH_ALEN);
-+		} else {
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
-+			struct flow_match_vlan match;
-+
-+			flow_rule_match_vlan(rule, &match);
-+
-+			if (match.key->vlan_tpid != cpu_to_be16(ETH_P_8021Q))
-+				return -EOPNOTSUPP;
-+
-+			data.vlan_in = match.key->vlan_id;
-+		}
-+		break;
-+	case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
-+		offload_type = MTK_PPE_PKT_TYPE_IPV4_HNAPT;
-+		break;
-+	case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
-+		offload_type = MTK_PPE_PKT_TYPE_IPV6_ROUTE_5T;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
- 	flow_action_for_each(i, act, &rule->action) {
- 		switch (act->id) {
- 		case FLOW_ACTION_MANGLE:
-+			if (offload_type == MTK_PPE_PKT_TYPE_BRIDGE)
-+				return -EOPNOTSUPP;
- 			if (act->mangle.htype == FLOW_ACT_MANGLE_HDR_TYPE_ETH)
- 				mtk_flow_offload_mangle_eth(act, &data.eth);
- 			break;
-@@ -291,17 +329,6 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 		}
- 	}
- 
--	switch (addr_type) {
--	case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
--		offload_type = MTK_PPE_PKT_TYPE_IPV4_HNAPT;
--		break;
--	case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
--		offload_type = MTK_PPE_PKT_TYPE_IPV6_ROUTE_5T;
--		break;
--	default:
--		return -EOPNOTSUPP;
--	}
--
- 	if (!is_valid_ether_addr(data.eth.h_source) ||
- 	    !is_valid_ether_addr(data.eth.h_dest))
- 		return -EINVAL;
-@@ -315,10 +342,13 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_PORTS)) {
- 		struct flow_match_ports ports;
- 
-+		if (offload_type == MTK_PPE_PKT_TYPE_BRIDGE)
-+			return -EOPNOTSUPP;
-+
- 		flow_rule_match_ports(rule, &ports);
- 		data.src_port = ports.key->src;
- 		data.dst_port = ports.key->dst;
--	} else {
-+	} else if (offload_type != MTK_PPE_PKT_TYPE_BRIDGE) {
- 		return -EOPNOTSUPP;
- 	}
- 
-@@ -348,6 +378,9 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 		if (act->id != FLOW_ACTION_MANGLE)
- 			continue;
- 
-+		if (offload_type == MTK_PPE_PKT_TYPE_BRIDGE)
-+			return -EOPNOTSUPP;
-+
- 		switch (act->mangle.htype) {
- 		case FLOW_ACT_MANGLE_HDR_TYPE_TCP:
- 		case FLOW_ACT_MANGLE_HDR_TYPE_UDP:
-@@ -373,6 +406,9 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 			return err;
- 	}
- 
-+	if (offload_type == MTK_PPE_PKT_TYPE_BRIDGE)
-+		foe.bridge.vlan = data.vlan_in;
-+
- 	if (data.vlan.num == 1) {
- 		if (data.vlan.proto != htons(ETH_P_8021Q))
- 			return -EOPNOTSUPP;
 -- 
-2.35.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
