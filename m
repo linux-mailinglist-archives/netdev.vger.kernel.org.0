@@ -2,41 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6F874F5428
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:48:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D674F5373
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:32:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453086AbiDFE2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 00:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46730 "EHLO
+        id S243785AbiDFEVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346000AbiDEUOU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:14:20 -0400
+        with ESMTP id S1351798AbiDEUP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:15:29 -0400
 Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C897FF9543;
-        Tue,  5 Apr 2022 12:58:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0CFF9FB5;
+        Tue,  5 Apr 2022 12:58:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
          s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=byXalcNrcZ9OxVnER9PUK6RuQsMPfgTlKVdB9QDIgQw=; b=UEuDYqYkdpAUACrl2VWpp6oB/w
-        Y9XmRGiibiiJ+ghXrcm30PFTnNuNqkuK3Qd23TnY5MZKvl7fWb1Fq6Aeu2Kh6tSUZgR65t/w0jGkL
-        CfSzvpQOcuqGfQBRwJVgG4hK1Cm9umnjKrgCTHBBrC/OroSAwbwVstHg0yA1J3sIzhH0=;
+        bh=PZEg5szaXbIhbL1e77PZtiylr+OggSY5UFkfbd2FJus=; b=oW3o1rkXgUKGFaIfSwFntKTRBV
+        TP1XJvpgDDt/87NziK0rjMNqkgPYwZfPNwwRMmLNZ/XlwQQ//ugnoL4zRUo5EXfKf9umZkteMrMDr
+        XnLvf+GkyxIrVxXXHnTKAnLAr9biL31rHs4jSdoL5PvHbFPQ2kRzxhskn07HMJpvry7s=;
 Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=Maecks.lan)
         by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <nbd@nbd.name>)
-        id 1nbpJV-00035V-Sv; Tue, 05 Apr 2022 21:58:05 +0200
+        id 1nbpJW-00035V-JN; Tue, 05 Apr 2022 21:58:06 +0200
 From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+Cc:     David Bentham <db260179@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 08/14] arm64: dts: mediatek: mt7622: introduce nodes for Wireless Ethernet Dispatch
-Date:   Tue,  5 Apr 2022 21:57:49 +0200
-Message-Id: <20220405195755.10817-9-nbd@nbd.name>
+Subject: [PATCH v2 09/14] net: ethernet: mtk_eth_soc: add ipv6 flow offload support
+Date:   Tue,  5 Apr 2022 21:57:50 +0200
+Message-Id: <20220405195755.10817-10-nbd@nbd.name>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220405195755.10817-1-nbd@nbd.name>
 References: <20220405195755.10817-1-nbd@nbd.name>
@@ -51,67 +56,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce wed0 and wed1 nodes in order to enable offloading forwarding
-between ethernet and wireless devices on the mt7622 chipset.
+From: David Bentham <db260179@gmail.com>
 
+Add the missing IPv6 flow offloading support for routing only.
+Hardware flow offloading is done by the packet processing engine (PPE)
+of the Ethernet MAC and as it doesn't support mangling of IPv6 packets,
+IPv6 NAT cannot be supported.
+
+Signed-off-by: David Bentham <db260179@gmail.com>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- arch/arm64/boot/dts/mediatek/mt7622.dtsi | 28 ++++++++++++++++++++++++
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   | 28 +++++++++++++++++++
  1 file changed, 28 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-index a2257ec6d256..47d223e28f8d 100644
---- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-@@ -901,6 +901,11 @@ sata_port: sata-phy@1a243000 {
- 		};
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+index bcf342bb9051..0113cddcebf4 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
+@@ -6,6 +6,7 @@
+ #include <linux/if_ether.h>
+ #include <linux/rhashtable.h>
+ #include <linux/ip.h>
++#include <linux/ipv6.h>
+ #include <net/flow_offload.h>
+ #include <net/pkt_cls.h>
+ #include <net/dsa.h>
+@@ -20,6 +21,11 @@ struct mtk_flow_data {
+ 			__be32 src_addr;
+ 			__be32 dst_addr;
+ 		} v4;
++
++		struct {
++			struct in6_addr src_addr;
++			struct in6_addr dst_addr;
++		} v6;
  	};
  
-+	hifsys: syscon@1af00000 {
-+		compatible = "mediatek,mt7622-hifsys", "syscon";
-+		reg = <0 0x1af00000 0 0x70>;
-+	};
-+
- 	ethsys: syscon@1b000000 {
- 		compatible = "mediatek,mt7622-ethsys",
- 			     "syscon";
-@@ -919,6 +924,26 @@ hsdma: dma-controller@1b007000 {
- 		#dma-cells = <1>;
- 	};
+ 	__be16 src_port;
+@@ -65,6 +71,14 @@ mtk_flow_set_ipv4_addr(struct mtk_foe_entry *foe, struct mtk_flow_data *data,
+ 					    data->v4.dst_addr, data->dst_port);
+ }
  
-+	pcie_mirror: pcie-mirror@10000400 {
-+		compatible = "mediatek,mt7622-pcie-mirror",
-+			     "syscon";
-+		reg = <0 0x10000400 0 0x10>;
-+	};
++static int
++mtk_flow_set_ipv6_addr(struct mtk_foe_entry *foe, struct mtk_flow_data *data)
++{
++	return mtk_foe_entry_set_ipv6_tuple(foe,
++					    data->v6.src_addr.s6_addr32, data->src_port,
++					    data->v6.dst_addr.s6_addr32, data->dst_port);
++}
 +
-+	wed0: wed@1020a000 {
-+		compatible = "mediatek,mt7622-wed",
-+			     "syscon";
-+		reg = <0 0x1020a000 0 0x1000>;
-+		interrupts = <GIC_SPI 214 IRQ_TYPE_LEVEL_LOW>;
-+	};
+ static void
+ mtk_flow_offload_mangle_eth(const struct flow_action_entry *act, void *eth)
+ {
+@@ -296,6 +310,9 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
+ 	case FLOW_DISSECTOR_KEY_IPV4_ADDRS:
+ 		offload_type = MTK_PPE_PKT_TYPE_IPV4_HNAPT;
+ 		break;
++	case FLOW_DISSECTOR_KEY_IPV6_ADDRS:
++		offload_type = MTK_PPE_PKT_TYPE_IPV6_ROUTE_5T;
++		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
+@@ -331,6 +348,17 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
+ 		mtk_flow_set_ipv4_addr(&foe, &data, false);
+ 	}
+ 
++	if (addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
++		struct flow_match_ipv6_addrs addrs;
 +
-+	wed1: wed@1020b000 {
-+		compatible = "mediatek,mt7622-wed",
-+			     "syscon";
-+		reg = <0 0x1020b000 0 0x1000>;
-+		interrupts = <GIC_SPI 215 IRQ_TYPE_LEVEL_LOW>;
-+	};
++		flow_rule_match_ipv6_addrs(rule, &addrs);
 +
- 	eth: ethernet@1b100000 {
- 		compatible = "mediatek,mt7622-eth",
- 			     "mediatek,mt2701-eth",
-@@ -946,6 +971,9 @@ eth: ethernet@1b100000 {
- 		mediatek,ethsys = <&ethsys>;
- 		mediatek,sgmiisys = <&sgmiisys>;
- 		mediatek,cci-control = <&cci_control2>;
-+		mediatek,wed = <&wed0>, <&wed1>;
-+		mediatek,pcie-mirror = <&pcie_mirror>;
-+		mediatek,hifsys = <&hifsys>;
- 		dma-coherent;
- 		#address-cells = <1>;
- 		#size-cells = <0>;
++		data.v6.src_addr = addrs.key->src;
++		data.v6.dst_addr = addrs.key->dst;
++
++		mtk_flow_set_ipv6_addr(&foe, &data);
++	}
++
+ 	flow_action_for_each(i, act, &rule->action) {
+ 		if (act->id != FLOW_ACTION_MANGLE)
+ 			continue;
 -- 
 2.35.1
 
