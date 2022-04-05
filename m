@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBD54F424F
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:43:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6DE94F40B4
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244767AbiDEUAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
+        id S1345852AbiDEUBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:01:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457616AbiDEQSK (ORCPT
+        with ESMTP id S1457617AbiDEQSK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 12:18:10 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2082.outbound.protection.outlook.com [40.107.223.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88FFF19C16;
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2087.outbound.protection.outlook.com [40.107.93.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B443919C18;
         Tue,  5 Apr 2022 09:16:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I/HOEJp1fiJka0X+UzXl3p2VBHGCp2QL8VO2WQSqmXGbkYb4SqvJ+bBHCP8Dsw+P+VBd26MNK46srlmUtmctPBrUV759giChF37fWlrq9m6yCAEV1LEqZwc6/4Y8LZ/J5Kx0ldPh/+enp0DwDMnMSON2l+VCSkFHNX98VdS5OA4pA64HLYtkSf1VADIE0qpU5eVKEPrrsn3fEMZ+Kpd0m69pb84KSA0FN8Fq7CeIwVMuedYTAm40YAtn/1lhdd93CTLWDDgs76t6BFHXL8zuf/s/7W5eu9AEG8JdJLN4qCRFEaB42nLsavIzmx4+sriuPupNmBbJSGIh9p07rMKqcA==
+ b=envp/g5Ogbq/mr4VcVqqfInc8+Pv8V0JCaE/rPG3UFUnUgPH9f0B+aksaPOYC43zIvYYFKdCcTMNLSQeKhN54MNtKOX5P7aFl5yngIY8zsXvFWYOuCp0AN6O0pusWkwRWar3u0bPGNlhDb5HTi30kqHo9g3Ox+u2RflMZNKlesJsPt3BXMpORKuSdWofPz6jfwRNjguTYZaifxvuJvPKtPwV7As1rSuENhjEKbN8jpp7YhBMkpzoRRSc1j907sDUJDruc7jlknLV+S9daA+OR6SVPsHXNIS1KqxKuUOtJGR28X7O8JY7eBZI6guWoljF1kwdQvIRSfofwJZGxm7HlQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9rJMAM//g3GG6PN8WYRNfcOTDWEB0/sAjxYzw+ILqvk=;
- b=ijSARo25Iie3l45l2NAGDyxUx+dxw6zAYbOYUbTorKNqu28d6gmpEx7FU6nHI73jqxDExwSXq8r7s5osWBZhrT36163pw1lgTzP0yQ2loQDwu1skQq22TgX21R8L4cQNrQBxR7dHMOpCKW0RXfLkPZK2XJLdEKNXAzm4V7UgvG4C75nXkB/uKIB6bd4RHeAePLTAx2U9RXFfiOF6w1f5ec+Lnf4b5PKYQhpfwlUr/9id/vK0E05LqKJng8jj7PeBzpM1vicm4R5pkNie1N0hxsnthqxoFGO/6FV+M/oEmSuQhjUisu2uJ+HMswNmqe9KeVOgJJ14nCVmSCWyFGWbtQ==
+ bh=caLncysSLkUFjIJU7XS5btAFcz/iwrDZ/0nbwg2upIQ=;
+ b=nYR3RY8fVvGI3txxwBzsPNAnKpEyU4AMXygnu1x8loyASbz8+XrR2iUjt1H7zp2P1IRVd6g6PPrftljLNegip1ckDg4jQYjawhlXfvNnn95I9ECVoR4F6v88POuZ2zteACwavxSAYdCQKX1+IAqGZRDgjYogBmrepvhk6jSWs40YGk0ba4hZOcouMgaomrbrKp8l9wiFGSURNWNWCNOILi844ciXc0eVafXLedOUb22O3PJdVYLT1f9SnKjcSUjGyiFuMDez3YqVDInPw5e4sZ/wl9E8h1AW5FFmLYyHvWgm1mAM6hKKyMCPCcXKzBdn0tUp1apDAhx6cW4reSKIRg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9rJMAM//g3GG6PN8WYRNfcOTDWEB0/sAjxYzw+ILqvk=;
- b=JZc2HOkkr5rohL0atxegmfCwKZqI4wbHvavocv/TEF4iBtHYUJzgkI8g7kMUtMT6AOyqdQ28/HEVyJ901kY2bPDbNBNgI9IPTL0BRB/+zvqdPR3nP3+f45Od5DfGmP+O9CrOkusuEq6PoaXuZ6B30EmUAq21tblb08Lty3XtK4WZDRqVpNOryYaCnT/E1z+3VeZ/zTtJaRzU691hdcPrMwkO7KOicpcbdevJXeOT36wfUSBtdFOlXlvoS67Xu3PyZNy9fOVzIElC0GrH7c0vuRXNQLto8zvAy66WSNnev6992YeFiYJHhLzZgcTcV3NipDnnreOLlrZDbN+7QKQOmA==
+ bh=caLncysSLkUFjIJU7XS5btAFcz/iwrDZ/0nbwg2upIQ=;
+ b=A45fB/t5GjLmlYsrLjz57WQ2wSdJdfzModwbu5+4o5VbLOY3zQ8cb749U0+Y4zoud8l0DudNLofE25DA8JZt0WnHdpNejCKI8h6kkfpKO+kT7VitSjt0cT0xtEM3+wMDTD2lbohfFXgCaJCkKEZxBUSX/rgjJs1xZaZ3ZprYdj6LWSvLGF5RWL7wjpdiD6+JiM42qNiSMbntnVjfHmOgB8iWAZMOp1fsYl6mrmrhMxazCAswzIOir6/a5l1bMP8YT/sgCMchqEOHlPT/9dRic3AFWDMILQ3eRUVw2LGDxZzC9TtlRELrk51RkP2aiz3nZDTxsT7c8UHMI+dyaGoVhQ==
 Received: from BN6PR12MB1153.namprd12.prod.outlook.com (2603:10b6:404:19::17)
- by MW2PR12MB2506.namprd12.prod.outlook.com (2603:10b6:907:7::12) with
+ by BYAPR12MB2727.namprd12.prod.outlook.com (2603:10b6:a03:71::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 16:16:09 +0000
+ 2022 16:16:08 +0000
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
  by BN6PR12MB1153.namprd12.prod.outlook.com (2603:10b6:404:19::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 16:16:08 +0000
+ 2022 16:16:07 +0000
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::cdfb:f88e:410b:9374%5]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
@@ -67,68 +67,68 @@ To:     Alex Williamson <alex.williamson@redhat.com>,
         Will Deacon <will@kernel.org>
 Cc:     Christoph Hellwig <hch@lst.de>,
         "Tian, Kevin" <kevin.tian@intel.com>
-Subject: [PATCH 4/5] vfio: Move the Intel no-snoop control off of IOMMU_CACHE
-Date:   Tue,  5 Apr 2022 13:16:03 -0300
-Message-Id: <4-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
+Subject: [PATCH 5/5] iommu: Delete IOMMU_CAP_CACHE_COHERENCY
+Date:   Tue,  5 Apr 2022 13:16:04 -0300
+Message-Id: <5-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
 In-Reply-To: <0-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
 References: 
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BLAPR03CA0143.namprd03.prod.outlook.com
- (2603:10b6:208:32e::28) To MN2PR12MB4192.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL1PR13CA0351.namprd13.prod.outlook.com
+ (2603:10b6:208:2c6::26) To MN2PR12MB4192.namprd12.prod.outlook.com
  (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 731aaced-2fcc-420d-ecd1-08da171f96ae
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1153:EE_|MW2PR12MB2506:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB115359FE34392E58B75136D8C2E49@BN6PR12MB1153.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: a809535d-a68f-4eaa-ecd1-08da171f96ae
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1153:EE_|BYAPR12MB2727:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1153559F21C4254FD89E7DC7C2E49@BN6PR12MB1153.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FIMy67zoM4b5OBJtY4r2m5qgeyvqom2HJosJfjGHgHt3V+CBySSyQr1J80+d56zJWFe2gGoECFccp3DMpUCT/LGajPKchK3BuJy8voutIs5dLPGt/ifE3jOK4t/6+3XrSyYJOYRaYDy7CtiylpdobAPgu5jmPcWuek7ZVyWalu/Kp7/2EAi0cG60Qy1FvobZibq1j7ulEOXQ017DJwWoEajIS1Xqe7xEd/GFOKqD6NznmYSjAdgXHEA0B5W6ygl8LYKyJZVjbh+lpREwlyDTU/HuPjoZws0FsM9m8PrjvfL4eKkBIEbWCnMRxOylkdn66DGoNc9fF8Yh6GxiJIiYUO5YNBNXwd1JsSAqVRLIPKyApyqxJfCvwXj1Z5HZ5arAjMQRW0olokb8WDmvxYX49CoVPye5SGPyB7AwpuU16NyEm6BdnNXrP6ZWViIzCQA9cpLgCCPsdQwE3A+ih8i5woqdMOupmS1Qu4ZT4d5ZMtM/4eWrYciqJE2lsh7KrOGkjYRQDgEM0BS0WFFEuHs2S9wD/2WbVgfTtZnDBWXjSdbpIQML5PEf7u188srU3wo6Y8AEx0qKMo4IizOL3VI2dwP27m7lcJVp7WKK7I85uTkA63YcvMggrJ9vBfYEmeQOOqsB7cX3DLNQu++gLnR4Kq4QRvt2ARIBFkDjKTtFsx2ed3kmR/w8IzKZyXJuK70CesERbqGIPW5NWvAMiNlNzw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR12MB1153.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(508600001)(7416002)(38100700002)(8936002)(921005)(2616005)(26005)(186003)(6486002)(83380400001)(54906003)(66556008)(86362001)(8676002)(6512007)(6506007)(2906002)(316002)(6666004)(4326008)(66476007)(66946007)(36756003)(110136005)(4216001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 73GC5SU+34uDNFbsj0cNzn0J1Qv2CYmv/xx9zoDEn5M32hM/0CIX//1QNIX2EOcoxXOuwQK5ey79NLDBF+nIBpCqey5b9Cnh7y3hD+VPcehA64i9VVz7lyWq0sjZekSsvH/4j5osN0m7sQnWopatLgAy9UX57c/SUu2iFrE9/IaDpa2zR7w3eCHBDlm8vveStMYkEEd9R+UIsfQeG7MvA/FEJv2YgfUtok23DDLfQxi5b3CkRLabB0x05oXR/A0HketTRo4D5WiyCBdYX/bwazloxET0/0ObFZ572q58wSl0VAH0PCoEx74v452Fkwt6V/la7l4bP1Mf3whTm7QX5d0sG93KAYLI/8GZp0If5BhA9Ja4L5kpVBasR3z1dvrIUKH60fpBxrr/vW8mbs25TGiluHE2bmyQRZBJm8ioCsRbrENBOmZPd2WfhqegeBFjwRpofk1H/zFHLJ8a++v4ooYbLhytc9s0fSRu/5Vq7qj6bICplSVk1WVzi7sGsnt/C/jWTdT24nBQIkYKMO4qiHqr2fyR0sOstumL4vLuJ0w/WcC75i1fXf70s4ZTDqUX2BxrfcRVxQad722ds0wsCGwZrtKLTdBEZleht8+iDP/8vEbWI4v5e/0vR4q7WN4EULsZCkaZr4HkJtZ0G7qGFj4NmsMQE5/+gzj6T6yQ3LVW4AryTmyfsaIc4nJNd0h97k+ayWFXZ5vxOXtwdwcFQg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR12MB1153.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(6512007)(2616005)(508600001)(86362001)(66946007)(5660300002)(186003)(66556008)(6506007)(26005)(66476007)(8676002)(6486002)(6666004)(7416002)(4326008)(8936002)(83380400001)(36756003)(921005)(54906003)(316002)(38100700002)(110136005)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gT00MiJyk8qem9OtNL1VdGnRVxR/BXjU+F6FzTlKKPkV3O7c/kJLwqmJdCaJ?=
- =?us-ascii?Q?NSWWF6yGDgNYPMrrnrmxGCv4xGWTzztMKOPOV/hDiaDUaKP1bdqZhmPF3fS4?=
- =?us-ascii?Q?Er2O5WJtExkF02yHpfYIWsmmBZBUuZ9lObpYxwxZe3coDxkHWFE7HQB47RkX?=
- =?us-ascii?Q?MyJb4/CIt2MvrRK2IwG0ckb4yOKUEIp01PBiMvkifaUc2l/lIKxprGg338V0?=
- =?us-ascii?Q?ili3XFaqp+DMM3UkEJCzf/+1uWnqktQmEAdVd9a+9iKREjC68nQz3ry+1eVS?=
- =?us-ascii?Q?ERGG+W7hnf6ocNSW2F7dJ/7g2pOvMLBgm00V+HUsHK3gJs5fXDp9PeU/5Wq0?=
- =?us-ascii?Q?9zg5ZXZl2hvw00R7YtxfLZd4Bdi3QIzikJq4gmzN+SCBeLxN5ZTAYN+ZvCTv?=
- =?us-ascii?Q?/QJP/vXOVTfRvB7rxfSyzxptYrJXeuD55v1tDKiNsNlYaFydr13RSSwZTMmU?=
- =?us-ascii?Q?qJDs1L1rvlNF6trqVObc6xUROluc283g5+GrF1YLRBOS9txwPjMiw3Ug/2Ub?=
- =?us-ascii?Q?9eQhXeLni27FaMQAvRjAiV9G5MlNaWgZAhpZVRpwCSTrbSEjzLKlBKmA1GBt?=
- =?us-ascii?Q?2sWAfcDKZ3puiHkxDeBHzKCG+di9pIZ7/RB/BqhhlsxUek+Vt9VGL8Wo3/id?=
- =?us-ascii?Q?MPCG7N9NueCHAytIHVCtTbD2kSJCnIwlRLdVXE7wCHrksHyiNvqal/2xKMx/?=
- =?us-ascii?Q?lDzZUyfYulCkCzXSGZesQI12R2cYgiOdsXqVgpvhYg5sRveuray/vF4XAz6u?=
- =?us-ascii?Q?tJv36yKxaTz0ZArw/2+s1tugVtQwN6gkz+Mt26EZVAp3IPqiXvW0yBxCHfKM?=
- =?us-ascii?Q?rgO1ZgPR5UdMaJry75o2KeImW2fsxSB+eoG42SR97WHpz+ARnt26L00qkzyS?=
- =?us-ascii?Q?n2i3Gj6GErnbFQjNOsZjC4dr3Z6LrW3Zm7TUHtMg7yITaAz/xV/eSyoDAY7E?=
- =?us-ascii?Q?Qq/WOZCwR/jNo8iIj5ctNRl3VSAbqG0q75U6EXvKBFzbhU8FfrqX0u956XfE?=
- =?us-ascii?Q?QwDl3UK6uL/rLuV/lIuj1fb/CT/HPsMmmQ2hdOgOurLiEB152bW09dD94n9D?=
- =?us-ascii?Q?XHZFiBdhT+uUqZXuupN5yeEJFoUukJPk4jc8FxckzgmKFUk/QfOAPDvLz45E?=
- =?us-ascii?Q?3iDnsVZWKPsukYkYnreRtj967G1P/89rT4FCWziQieVwrw6Uf+s1qRjC5AkJ?=
- =?us-ascii?Q?FLKhjntNL7XqTO8DU9EGOb4shY9RdTRzmLe9p0lJhLtZ5x46JPmrh+ALFES7?=
- =?us-ascii?Q?ixgnwCIFHkB7eTYECi9wkkQCe3WwueMBP+D2hplJV9ERD4QE925tiSqphNfq?=
- =?us-ascii?Q?0jrv/o9bQFAj4dneBnCJE+7KLz3a+kVQSLKaWJB18Uf7TfSjl6COi/VelOyK?=
- =?us-ascii?Q?GqbhnCm/Yr+zXEFLtfNx9sYeEzrSYbz/TMR5iR8TDlt7iKzfmuitsxa4C2+0?=
- =?us-ascii?Q?49ps/CN/ZX40y6f6OF7gsTrjcfcjE+OLHjk4QO7OcU991NEPJ5yff5mYsaQj?=
- =?us-ascii?Q?yJqeC++6f4A1vXIrgYX2d/FtguXzNRK1xmmO/i6+ff9vX1PJ1mlnn7Taq/fT?=
- =?us-ascii?Q?DQtQ/RBdnYVjUaRXnIPZis+yDEv7CMFVEU6y3k3WgKP+Ux8NTb3eJVrxINb/?=
- =?us-ascii?Q?jXkw2X+wzgT7FeYaY+ef2TaWij7/gE0qnyWRIPRH/DhMqFd78w8QWHkXIIo1?=
- =?us-ascii?Q?2Cqa31JWxOJgwIkTch2v7hYnOTMho5vOcBuaWOVBnmn32GCF4usSEO645K1+?=
- =?us-ascii?Q?t/1ZWIBahg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?toC+hrreXAVOBw/rTbl8HU4Y9qddWRR3yCneKVXSIl0i9DWrYqt5lroRpmD/?=
+ =?us-ascii?Q?meBfzXat73hOrfhrBwMbtmymZX1iJ4IWqb+RowtMD8043uLZMprnkIGhgHC4?=
+ =?us-ascii?Q?BxQ6+b2P2IIB/auAx1ggd1i7CQGK0MyfJvl7KsihAah3L61J0ZTw5GQYM79V?=
+ =?us-ascii?Q?bdj/AxKYjWDkVIROOd4PZlzmqkHJBMBLuNGa45mX2cEUNl94wucVunpFXjYT?=
+ =?us-ascii?Q?hIWfcHKE1M8sl099uD43yYnsgn/xlocfb0aPCC/fI1h3ilaZKrH3U+qZI7vE?=
+ =?us-ascii?Q?mwGCM/BMrlaXaH81OKsuDNtTmn2K+CuzY4SSmqwAxlodFZMIXxJmyD1/lEow?=
+ =?us-ascii?Q?7XjPR3MSjTmVT3zkYBAabhyEK8gM6RE/U8yXQugO0Cufj6bq7Xw8JGHQppy9?=
+ =?us-ascii?Q?A2nrfpkzQRxKHt2KVYzjqMiW1GC7rVJEoXrLQbHttxIp/Cec+JjtReMPNMWz?=
+ =?us-ascii?Q?0/4MnTt23Mbgl3TaKt69XQkyhNXEgV1r29PlhBP0zv5FPmpH1fVkIPr2Ln4m?=
+ =?us-ascii?Q?VVKL6Z7AR+1SDCwOV4sdpZNgo1jHCfsYtC2FvCVTos+YuHMqyrpZrKVsf+F5?=
+ =?us-ascii?Q?AOu33rb0HV6sCV7EzEEBXKpNL5La5zdD/neLkhLiQwR2zmNf95AANf6SGghb?=
+ =?us-ascii?Q?76ZRxVWsyLx9Sg3o5KiPVGwrkP8RGIbVsYPqlE/L3tV0vLfQXf5UQl7nvA19?=
+ =?us-ascii?Q?pb5p5mQIbMqNGaaUNS6rM0nKdgNKcNy2V6quT5AD69lYphqTg4A/849h0VYU?=
+ =?us-ascii?Q?Hehx5ZSuNSmKgPk7bMEaFEwn0Cjt7oR43eg9xqEP9iVGxu+0ZjbYfQIVqZqr?=
+ =?us-ascii?Q?DkTSYKxY8soQOn7fnhxtBelkt82temjnYuQfO3DWjxpdyy5dye9poalk69K8?=
+ =?us-ascii?Q?4ZutXphFnGUQfM+3++LzLr+ps81YKb/XCMca0xzrOJK0lvBEc+Mx8k6GnsMi?=
+ =?us-ascii?Q?87MkhdntASYUznUpoKQuUidwMrgpPmsAUlyqwiQvfTvciJCSeaem+79GPKmV?=
+ =?us-ascii?Q?n+ZsU885rJKY8ScK/xT40zIJ+E6M7OOHPWiiIJ6l38W5t7gEWIAyWPJ6mIST?=
+ =?us-ascii?Q?EmXRIRxoR9YAVZekerHCakOP1ANiV3WXzSjeNoLZmHk6C+x7Eo7d2CULm6f4?=
+ =?us-ascii?Q?RG87t28usW62ibYgD+dK+ldWtx+xaTrUEtQom6tF8f7Q9iEe5vHnsb/Ji+kg?=
+ =?us-ascii?Q?GSdx8PdctHGAbloHFXf50LQ5wOlrJZkHMk+Y6QPzRzxrPUFFzny4SAvehsr+?=
+ =?us-ascii?Q?7BGbMAG4lfmALDeZCekt6jUV2vIjzUFGbsjkoxDo4LRJrsrEk+KlCokZ/c3R?=
+ =?us-ascii?Q?iRmlIHR5oeo/K+gymzmcY5+zzYH1W5NkoGJOdOU42cyOnrwjefd2ohEJQ8oV?=
+ =?us-ascii?Q?siqKtBL++H6ohRuYxxVFeRb3OHfO0ANx2GYww0Fmz1hpd2FuYGnhD7ogdS1n?=
+ =?us-ascii?Q?ekkJxM/uA3SM6Xt25cQlY0hx7DZVb+oxuSQpYkmVYhUz/KgVZGYn9RvBSTkB?=
+ =?us-ascii?Q?BOadYdTyHy7nyTg5I2yXjs/yDFdscgpt5SMMjEEdQQnnFVMlz0XOPlZaqV/h?=
+ =?us-ascii?Q?5Pgyl43S/UdpUYfhiZogm3vgaIXuV6IRAgw9un593db1PGbbfbs07rl3NWmV?=
+ =?us-ascii?Q?CcL61Me4UXcS5bFDCikEUaVtCRvcuEA7MUAJozSZIegV+d+zIFuxtWGwVJfj?=
+ =?us-ascii?Q?tFSeDUAjB/Aa2My7XsEa9c+LnQqb6CTdKKCDw/AS2e1jKxv7z2WEWKVCeEY7?=
+ =?us-ascii?Q?7bUkhe7jOg=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 731aaced-2fcc-420d-ecd1-08da171f96ae
+X-MS-Exchange-CrossTenant-Network-Message-Id: a809535d-a68f-4eaa-ecd1-08da171f96ae
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 16:16:06.9398
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 16:16:06.8161
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HzczWhkzm5fFCBX6dlnVRZ0KozIPF5/oigHvvKl1V8xx/4Rd5P1ZIMDKao9aHmzt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR12MB2506
+X-MS-Exchange-CrossTenant-UserPrincipalName: +EMg1eWYRJopFedeVUcnCjBip0u//HMgB4uTRppN6ngcTCAmTI94Ste7nnyZub8G
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2727
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
@@ -139,149 +139,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IOMMU_CACHE means "normal DMA to this iommu_domain's IOVA should be cache
-coherent" and is used by the DMA API. The definition allows for special
-non-coherent DMA to exist - ie processing of the no-snoop flag in PCIe
-TLPs - so long as this behavior is opt-in by the device driver.
-
-The flag is used by the DMA API and is always available if
-dev_is_dma_coherent() is set.
-
-For Intel IOMMU IOMMU_CACHE was redefined to mean 'force all DMA to be
-cache coherent' which has the practical effect of causing the IOMMU to
-ignore the no-snoop bit in a PCIe TLP.
-
-x86 platforms are always IOMMU_CACHE, so Intel should ignore this flag.
-
-Instead use the new domain op enforce_cache_coherency() which causes every
-IOPTE created in the domain to have the no-snoop blocking behavior.
-
-Reconfigure VFIO to always use IOMMU_CACHE and call
-enforce_cache_coherency() to operate the special Intel behavior.
-
-Remove the IOMMU_CACHE test from Intel IOMMU.
-
-Ultimately VFIO plumbs the result of enforce_cache_coherency() back into
-the x86 platform code through kvm_arch_register_noncoherent_dma() which
-controls if the WBINVD instruction is available in the guest. No other
-arch implements kvm_arch_register_noncoherent_dma().
+Nothing reads this value anymore, remove it.
 
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/iommu/intel/iommu.c     |  3 +--
- drivers/vfio/vfio_iommu_type1.c | 30 +++++++++++++++++++-----------
- 2 files changed, 20 insertions(+), 13 deletions(-)
+ drivers/iommu/amd/iommu.c                   | 2 --
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 --
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 6 ------
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c     | 6 ------
+ drivers/iommu/fsl_pamu_domain.c             | 6 ------
+ drivers/iommu/intel/iommu.c                 | 2 --
+ drivers/iommu/s390-iommu.c                  | 2 --
+ include/linux/iommu.h                       | 2 --
+ 8 files changed, 28 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index f08611a6cc4799..0ca43671d934e9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4422,8 +4422,7 @@ static int intel_iommu_map(struct iommu_domain *domain,
- 		prot |= DMA_PTE_READ;
- 	if (iommu_prot & IOMMU_WRITE)
- 		prot |= DMA_PTE_WRITE;
--	if (((iommu_prot & IOMMU_CACHE) && dmar_domain->iommu_snooping) ||
--	    dmar_domain->enforce_no_snoop)
-+	if (dmar_domain->enforce_no_snoop)
- 		prot |= DMA_PTE_SNP;
- 
- 	max_addr = iova + size;
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 9394aa9444c10c..c13b9290e35759 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -84,8 +84,8 @@ struct vfio_domain {
- 	struct iommu_domain	*domain;
- 	struct list_head	next;
- 	struct list_head	group_list;
--	int			prot;		/* IOMMU_CACHE */
--	bool			fgsp;		/* Fine-grained super pages */
-+	bool			fgsp : 1;	/* Fine-grained super pages */
-+	bool			enforce_cache_coherency : 1;
- };
- 
- struct vfio_dma {
-@@ -1461,7 +1461,7 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
- 
- 	list_for_each_entry(d, &iommu->domain_list, next) {
- 		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
--				npage << PAGE_SHIFT, prot | d->prot);
-+				npage << PAGE_SHIFT, prot | IOMMU_CACHE);
- 		if (ret)
- 			goto unwind;
- 
-@@ -1771,7 +1771,7 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
- 			}
- 
- 			ret = iommu_map(domain->domain, iova, phys,
--					size, dma->prot | domain->prot);
-+					size, dma->prot | IOMMU_CACHE);
- 			if (ret) {
- 				if (!dma->iommu_mapped) {
- 					vfio_unpin_pages_remote(dma, iova,
-@@ -1859,7 +1859,7 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain)
- 		return;
- 
- 	ret = iommu_map(domain->domain, 0, page_to_phys(pages), PAGE_SIZE * 2,
--			IOMMU_READ | IOMMU_WRITE | domain->prot);
-+			IOMMU_READ | IOMMU_WRITE | IOMMU_CACHE);
- 	if (!ret) {
- 		size_t unmapped = iommu_unmap(domain->domain, 0, PAGE_SIZE);
- 
-@@ -2267,8 +2267,15 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 		goto out_detach;
- 	}
- 
--	if (iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
--		domain->prot |= IOMMU_CACHE;
-+	/*
-+	 * If the IOMMU can block non-coherent operations (ie PCIe TLPs with
-+	 * no-snoop set) then VFIO always turns this feature on because on Intel
-+	 * platforms it optimizes KVM to disable wbinvd emulation.
-+	 */
-+	if (domain->domain->ops->enforce_cache_coherency)
-+		domain->enforce_cache_coherency =
-+			domain->domain->ops->enforce_cache_coherency(
-+				domain->domain);
- 
- 	/*
- 	 * Try to match an existing compatible domain.  We don't want to
-@@ -2279,7 +2286,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	 */
- 	list_for_each_entry(d, &iommu->domain_list, next) {
- 		if (d->domain->ops == domain->domain->ops &&
--		    d->prot == domain->prot) {
-+		    d->enforce_cache_coherency ==
-+			    domain->enforce_cache_coherency) {
- 			iommu_detach_group(domain->domain, group->iommu_group);
- 			if (!iommu_attach_group(d->domain,
- 						group->iommu_group)) {
-@@ -2611,14 +2619,14 @@ static void vfio_iommu_type1_release(void *iommu_data)
- 	kfree(iommu);
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index e500b487eb3429..f144eb9fea8e31 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2156,8 +2156,6 @@ static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
+ static bool amd_iommu_capable(enum iommu_cap cap)
+ {
+ 	switch (cap) {
+-	case IOMMU_CAP_CACHE_COHERENCY:
+-		return true;
+ 	case IOMMU_CAP_INTR_REMAP:
+ 		return (irq_remapping_enabled == 1);
+ 	case IOMMU_CAP_NOEXEC:
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 627a3ed5ee8fd1..c4115015a633a7 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1986,8 +1986,6 @@ static const struct iommu_flush_ops arm_smmu_flush_ops = {
+ static bool arm_smmu_capable(enum iommu_cap cap)
+ {
+ 	switch (cap) {
+-	case IOMMU_CAP_CACHE_COHERENCY:
+-		return true;
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 568cce590ccc13..166bf45ac3d444 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -1333,12 +1333,6 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+ static bool arm_smmu_capable(enum iommu_cap cap)
+ {
+ 	switch (cap) {
+-	case IOMMU_CAP_CACHE_COHERENCY:
+-		/*
+-		 * Return true here as the SMMU can always send out coherent
+-		 * requests.
+-		 */
+-		return true;
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+index 4c077c38fbd64f..fc72465fc63d50 100644
+--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
++++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -496,12 +496,6 @@ static phys_addr_t qcom_iommu_iova_to_phys(struct iommu_domain *domain,
+ static bool qcom_iommu_capable(enum iommu_cap cap)
+ {
+ 	switch (cap) {
+-	case IOMMU_CAP_CACHE_COHERENCY:
+-		/*
+-		 * Return true here as the SMMU can always send out coherent
+-		 * requests.
+-		 */
+-		return true;
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 69a4a62dc3b9c7..9f80285dab2951 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -177,11 +177,6 @@ static phys_addr_t fsl_pamu_iova_to_phys(struct iommu_domain *domain,
+ 	return iova;
  }
  
--static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
-+static int vfio_domains_have_enforce_cache_coherency(struct vfio_iommu *iommu)
+-static bool fsl_pamu_capable(enum iommu_cap cap)
+-{
+-	return cap == IOMMU_CAP_CACHE_COHERENCY;
+-}
+-
+ static void fsl_pamu_domain_free(struct iommu_domain *domain)
  {
- 	struct vfio_domain *domain;
- 	int ret = 1;
+ 	struct fsl_dma_domain *dma_domain = to_fsl_dma_domain(domain);
+@@ -451,7 +446,6 @@ static void fsl_pamu_release_device(struct device *dev)
+ }
  
- 	mutex_lock(&iommu->lock);
- 	list_for_each_entry(domain, &iommu->domain_list, next) {
--		if (!(domain->prot & IOMMU_CACHE)) {
-+		if (!(domain->enforce_cache_coherency)) {
- 			ret = 0;
- 			break;
- 		}
-@@ -2641,7 +2649,7 @@ static int vfio_iommu_type1_check_extension(struct vfio_iommu *iommu,
- 	case VFIO_DMA_CC_IOMMU:
- 		if (!iommu)
- 			return 0;
--		return vfio_domains_have_iommu_cache(iommu);
-+		return vfio_domains_have_enforce_cache_coherency(iommu);
+ static const struct iommu_ops fsl_pamu_ops = {
+-	.capable	= fsl_pamu_capable,
+ 	.domain_alloc	= fsl_pamu_domain_alloc,
+ 	.probe_device	= fsl_pamu_probe_device,
+ 	.release_device	= fsl_pamu_release_device,
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 0ca43671d934e9..e5062461ab0640 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4557,8 +4557,6 @@ static bool intel_iommu_enforce_cache_coherency(struct iommu_domain *domain)
+ 
+ static bool intel_iommu_capable(enum iommu_cap cap)
+ {
+-	if (cap == IOMMU_CAP_CACHE_COHERENCY)
+-		return domain_update_iommu_snooping(NULL);
+ 	if (cap == IOMMU_CAP_INTR_REMAP)
+ 		return irq_remapping_enabled == 1;
+ 
+diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+index 3833e86c6e7b8a..3dbf9663246552 100644
+--- a/drivers/iommu/s390-iommu.c
++++ b/drivers/iommu/s390-iommu.c
+@@ -42,8 +42,6 @@ static struct s390_domain *to_s390_domain(struct iommu_domain *dom)
+ static bool s390_iommu_capable(enum iommu_cap cap)
+ {
+ 	switch (cap) {
+-	case IOMMU_CAP_CACHE_COHERENCY:
+-		return true;
+ 	case IOMMU_CAP_INTR_REMAP:
+ 		return true;
  	default:
- 		return 0;
- 	}
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index fe4f24c469c373..aebb73bda19797 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -103,8 +103,6 @@ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+ }
+ 
+ enum iommu_cap {
+-	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
+-					   transactions */
+ 	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
+ 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
+ };
 -- 
 2.35.1
 
