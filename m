@@ -2,75 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F11334F4310
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:54:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A1AD4F402C
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:15:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350140AbiDEUCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
+        id S1358142AbiDEUEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391218AbiDEPeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:34:09 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BEE44C42B;
-        Tue,  5 Apr 2022 06:41:01 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E79A2D6E;
-        Tue,  5 Apr 2022 06:41:00 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CF2833F5A1;
-        Tue,  5 Apr 2022 06:40:59 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] sfc: Stop using iommu_present()
-Date:   Tue,  5 Apr 2022 14:40:55 +0100
-Message-Id: <7350f957944ecfce6cce90f422e3992a1f428775.1649166055.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
+        with ESMTP id S1391791AbiDEPfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:35:10 -0400
+Received: from olfflo.fourcot.fr (fourcot.fr [217.70.191.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A8813E41F
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 06:43:00 -0700 (PDT)
+From:   Florent Fourcot <florent.fourcot@wifirst.fr>
+To:     netdev@vger.kernel.org
+Cc:     cong.wang@bytedance.com, edumazet@google.com,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Brian Baboch <brian.baboch@wifirst.fr>
+Subject: [PATCH v3 net-next 1/4] rtnetlink: enable alt_ifname for setlink/newlink
+Date:   Tue,  5 Apr 2022 15:42:34 +0200
+Message-Id: <20220405134237.16533-1-florent.fourcot@wifirst.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Even if an IOMMU might be present for some PCI segment in the system,
-that doesn't necessarily mean it provides translation for the device
-we care about. It appears that what we care about here is specifically
-whether DMA mapping ops involve any IOMMU overhead or not, so check for
-translation actually being active for our device.
+buffer called "ifname" given in function rtnl_dev_get
+is always valid when called by setlink/newlink,
+but contains only empty string when IFLA_IFNAME is not given. So
+IFLA_ALT_IFNAME is always ignored
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+This patch fixes rtnl_dev_get function with a remove of ifname argument,
+and move ifname copy in do_setlink when required.
+
+It extends feature of commit 76c9ac0ee878,
+"net: rtnetlink: add possibility to use alternative names as message
+handle""
+
+Changes in v2:
+ * Remove ifname argument in rtnl_dev_get/do_setlink
+   functions (simplify code)
+
+Changes in v3:
+ * Simplify rtnl_dev_get signature
+
+CC: Jiri Pirko <jiri@mellanox.com>
+Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
+Signed-off-by: Brian Baboch <brian.baboch@wifirst.fr>
 ---
- drivers/net/ethernet/sfc/falcon/rx.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/core/rtnetlink.c | 69 +++++++++++++++++++-------------------------
+ 1 file changed, 29 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/falcon/rx.c b/drivers/net/ethernet/sfc/falcon/rx.c
-index 0c6cc2191369..6bbdb5d2eebf 100644
---- a/drivers/net/ethernet/sfc/falcon/rx.c
-+++ b/drivers/net/ethernet/sfc/falcon/rx.c
-@@ -718,12 +718,14 @@ static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
- 				     struct ef4_rx_queue *rx_queue)
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 159c9c61e6af..6a5764745288 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -2607,17 +2607,23 @@ static int do_set_proto_down(struct net_device *dev,
+ static int do_setlink(const struct sk_buff *skb,
+ 		      struct net_device *dev, struct ifinfomsg *ifm,
+ 		      struct netlink_ext_ack *extack,
+-		      struct nlattr **tb, char *ifname, int status)
++		      struct nlattr **tb, int status)
  {
- 	unsigned int bufs_in_recycle_ring, page_ring_size;
-+	struct iommu_domain __maybe_unused *domain;
+ 	const struct net_device_ops *ops = dev->netdev_ops;
++	char ifname[IFNAMSIZ];
+ 	int err;
  
- 	/* Set the RX recycle ring size */
- #ifdef CONFIG_PPC64
- 	bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
- #else
--	if (iommu_present(&pci_bus_type))
-+	domain = iommu_get_domain_for_dev(&efx->pci_dev->dev);
-+	if (domain && domain->type != IOMMU_DOMAIN_IDENTITY)
- 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
+ 	err = validate_linkmsg(dev, tb, extack);
+ 	if (err < 0)
+ 		return err;
+ 
++	if (tb[IFLA_IFNAME])
++		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
++	else
++		ifname[0] = '\0';
++
+ 	if (tb[IFLA_NET_NS_PID] || tb[IFLA_NET_NS_FD] || tb[IFLA_TARGET_NETNSID]) {
+-		const char *pat = ifname && ifname[0] ? ifname : NULL;
++		const char *pat = ifname[0] ? ifname : NULL;
+ 		struct net *net;
+ 		int new_ifindex;
+ 
+@@ -2973,21 +2979,16 @@ static int do_setlink(const struct sk_buff *skb,
+ }
+ 
+ static struct net_device *rtnl_dev_get(struct net *net,
+-				       struct nlattr *ifname_attr,
+-				       struct nlattr *altifname_attr,
+-				       char *ifname)
+-{
+-	char buffer[ALTIFNAMSIZ];
+-
+-	if (!ifname) {
+-		ifname = buffer;
+-		if (ifname_attr)
+-			nla_strscpy(ifname, ifname_attr, IFNAMSIZ);
+-		else if (altifname_attr)
+-			nla_strscpy(ifname, altifname_attr, ALTIFNAMSIZ);
+-		else
+-			return NULL;
+-	}
++				       struct nlattr *tb[])
++{
++	char ifname[ALTIFNAMSIZ];
++
++	if (tb[IFLA_IFNAME])
++		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
++	else if (tb[IFLA_ALT_IFNAME])
++		nla_strscpy(ifname, tb[IFLA_ALT_IFNAME], ALTIFNAMSIZ);
++	else
++		return NULL;
+ 
+ 	return __dev_get_by_name(net, ifname);
+ }
+@@ -3000,7 +3001,6 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	struct net_device *dev;
+ 	int err;
+ 	struct nlattr *tb[IFLA_MAX+1];
+-	char ifname[IFNAMSIZ];
+ 
+ 	err = nlmsg_parse_deprecated(nlh, sizeof(*ifm), tb, IFLA_MAX,
+ 				     ifla_policy, extack);
+@@ -3011,17 +3011,12 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (err < 0)
+ 		goto errout;
+ 
+-	if (tb[IFLA_IFNAME])
+-		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
+-	else
+-		ifname[0] = '\0';
+-
+ 	err = -EINVAL;
+ 	ifm = nlmsg_data(nlh);
+ 	if (ifm->ifi_index > 0)
+ 		dev = __dev_get_by_index(net, ifm->ifi_index);
+ 	else if (tb[IFLA_IFNAME] || tb[IFLA_ALT_IFNAME])
+-		dev = rtnl_dev_get(net, NULL, tb[IFLA_ALT_IFNAME], ifname);
++		dev = rtnl_dev_get(net, tb);
  	else
- 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_NOIOMMU;
+ 		goto errout;
+ 
+@@ -3030,7 +3025,7 @@ static int rtnl_setlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		goto errout;
+ 	}
+ 
+-	err = do_setlink(skb, dev, ifm, extack, tb, ifname, 0);
++	err = do_setlink(skb, dev, ifm, extack, tb, 0);
+ errout:
+ 	return err;
+ }
+@@ -3119,8 +3114,7 @@ static int rtnl_dellink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (ifm->ifi_index > 0)
+ 		dev = __dev_get_by_index(tgt_net, ifm->ifi_index);
+ 	else if (tb[IFLA_IFNAME] || tb[IFLA_ALT_IFNAME])
+-		dev = rtnl_dev_get(net, tb[IFLA_IFNAME],
+-				   tb[IFLA_ALT_IFNAME], NULL);
++		dev = rtnl_dev_get(net, tb);
+ 	else if (tb[IFLA_GROUP])
+ 		err = rtnl_group_dellink(tgt_net, nla_get_u32(tb[IFLA_GROUP]));
+ 	else
+@@ -3262,7 +3256,7 @@ static int rtnl_group_changelink(const struct sk_buff *skb,
+ 
+ 	for_each_netdev_safe(net, dev, aux) {
+ 		if (dev->group == group) {
+-			err = do_setlink(skb, dev, ifm, extack, tb, NULL, 0);
++			err = do_setlink(skb, dev, ifm, extack, tb, 0);
+ 			if (err < 0)
+ 				return err;
+ 		}
+@@ -3303,16 +3297,11 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (err < 0)
+ 		return err;
+ 
+-	if (tb[IFLA_IFNAME])
+-		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
+-	else
+-		ifname[0] = '\0';
+-
+ 	ifm = nlmsg_data(nlh);
+ 	if (ifm->ifi_index > 0)
+ 		dev = __dev_get_by_index(net, ifm->ifi_index);
+ 	else if (tb[IFLA_IFNAME] || tb[IFLA_ALT_IFNAME])
+-		dev = rtnl_dev_get(net, NULL, tb[IFLA_ALT_IFNAME], ifname);
++		dev = rtnl_dev_get(net, tb);
+ 	else
+ 		dev = NULL;
+ 
+@@ -3413,7 +3402,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			status |= DO_SETLINK_NOTIFY;
+ 		}
+ 
+-		return do_setlink(skb, dev, ifm, extack, tb, ifname, status);
++		return do_setlink(skb, dev, ifm, extack, tb, status);
+ 	}
+ 
+ 	if (!(nlh->nlmsg_flags & NLM_F_CREATE)) {
+@@ -3445,7 +3434,9 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (!ops->alloc && !ops->setup)
+ 		return -EOPNOTSUPP;
+ 
+-	if (!ifname[0]) {
++	if (tb[IFLA_IFNAME]) {
++		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
++	} else {
+ 		snprintf(ifname, IFNAMSIZ, "%s%%d", ops->kind);
+ 		name_assign_type = NET_NAME_ENUM;
+ 	}
+@@ -3617,8 +3608,7 @@ static int rtnl_getlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (ifm->ifi_index > 0)
+ 		dev = __dev_get_by_index(tgt_net, ifm->ifi_index);
+ 	else if (tb[IFLA_IFNAME] || tb[IFLA_ALT_IFNAME])
+-		dev = rtnl_dev_get(tgt_net, tb[IFLA_IFNAME],
+-				   tb[IFLA_ALT_IFNAME], NULL);
++		dev = rtnl_dev_get(tgt_net, tb);
+ 	else
+ 		goto out;
+ 
+@@ -3713,8 +3703,7 @@ static int rtnl_linkprop(int cmd, struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (ifm->ifi_index > 0)
+ 		dev = __dev_get_by_index(net, ifm->ifi_index);
+ 	else if (tb[IFLA_IFNAME] || tb[IFLA_ALT_IFNAME])
+-		dev = rtnl_dev_get(net, tb[IFLA_IFNAME],
+-				   tb[IFLA_ALT_IFNAME], NULL);
++		dev = rtnl_dev_get(net, tb);
+ 	else
+ 		return -EINVAL;
+ 
 -- 
-2.28.0.dirty
+2.30.2
 
