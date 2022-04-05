@@ -2,102 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F22504F453F
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBD644F447C
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381562AbiDEUEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
+        id S1377824AbiDEUEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344530AbiDEOzI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 10:55:08 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D882B167F83
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 06:22:27 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.15.192.164])
-        by mail-app3 (Coremail) with SMTP id cC_KCgB3H2h_QkxiEihqAQ--.63902S2;
-        Tue, 05 Apr 2022 21:22:10 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.or, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        jirislaby@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Date:   Tue,  5 Apr 2022 21:22:06 +0800
-Message-Id: <20220405132206.55291-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgB3H2h_QkxiEihqAQ--.63902S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7tF15KF1rCr4UZw15WFyUWrg_yoW8Xry5pF
-        4jg3ZYkrWUGry2g3y8Ja1v9r4Fv348JryDGrW3K3ySyr1kJFZYqr1ftayq9FWxtFZFya42
-        vF1rA3y3Cr43AF7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvl1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
-        6r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28I
-        cxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
-        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
-        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
-        DU0xZFpf9x0JUZa9-UUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg4IAVZdtZAzNQAgsN
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1346010AbiDEPLO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 11:11:14 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F03E10610F
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 06:25:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=GMTFemwBkT81roEqY5EW/cRE6P00Wf5M8QX9OYOwMoA=; b=Ufk4Wd3cNhTFeXGKmWtuB30YTS
+        su3xAJN+XbLcT73Xd3oZ7ULznBLmvaNP/MSxOJf0fCYT84I1UVl5s1EuEzFdenDJKR7o6Re0KUYm/
+        Khq7pw0+bJak6NUI0GCU82e7UQPDMPi/6C6SqXJTJRCOORGBqPWPtVQ3Xg8C/xWpmhp0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nbjBJ-00EFhM-AR; Tue, 05 Apr 2022 15:25:13 +0200
+Date:   Tue, 5 Apr 2022 15:25:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Conor.Dooley@microchip.com
+Cc:     palmer@rivosinc.com, apatel@ventanamicro.com,
+        netdev@vger.kernel.org, Nicolas.Ferre@microchip.com,
+        Claudiu.Beznea@microchip.com, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, linux-riscv@lists.infradead.org
+Subject: Re: riscv defconfig CONFIG_PM/macb/generic PHY regression in
+ v5.18-rc1
+Message-ID: <YkxDOWfULPFo7xFi@lunn.ch>
+References: <9f4b057d-1985-5fd3-65c0-f944161c7792@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9f4b057d-1985-5fd3-65c0-f944161c7792@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a slip driver is detaching, the slip_close() will act to
-cleanup necessary resources and sl->tty is set to NULL in
-slip_close(). Meanwhile, the packet we transmit is blocked,
-sl_tx_timeout() will be called. Although slip_close() and
-sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-whether sl->tty equals to NULL in sl_tx_timeout() and the
-null pointer dereference bug will happen.
+On Tue, Apr 05, 2022 at 01:05:12PM +0000, Conor.Dooley@microchip.com wrote:
+> [ 2.818894] macb 20112000.ethernet eth0: PHY [20112000.ethernet-ffffffff:09] driver [Generic PHY] (irq=POLL)
 
-   (Thread 1)                 |      (Thread 2)
-                              | slip_close()
-                              |   spin_lock_bh(&sl->lock)
-                              |   ...
-...                           |   sl->tty = NULL //(1)
-sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
-  spin_lock(&sl->lock);       |
-  ...                         |   ...
-  tty_chars_in_buffer(sl->tty)|
-    if (tty->ops->..) //(2)   |
-    ...                       |   synchronize_rcu()
+Hi Conor
 
-We set NULL to sl->tty in position (1) and dereference sl->tty
-in position (2).
+In general, it is better to use the specific PHY driver for the PHY
+then rely on the generic PHY driver. I think the Icicle Kit has a
+VSC8662? So i would suggest you enable the Vitesse PHYs.
 
-This patch adds check in sl_tx_timeout(). If sl->tty equals to
-NULL, sl_tx_timeout() will goto out.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- drivers/net/slip/slip.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-index 88396ff99f0..6865d32270e 100644
---- a/drivers/net/slip/slip.c
-+++ b/drivers/net/slip/slip.c
-@@ -469,7 +469,7 @@ static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	spin_lock(&sl->lock);
- 
- 	if (netif_queue_stopped(dev)) {
--		if (!netif_running(dev))
-+		if (!netif_running(dev) || !sl->tty)
- 			goto out;
- 
- 		/* May be we must check transmitter timeout here ?
--- 
-2.17.1
-
+  Andrew
