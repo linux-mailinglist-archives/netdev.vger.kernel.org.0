@@ -2,110 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70A9D4F4384
-	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:59:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DE794F4058
+	for <lists+netdev@lfdr.de>; Tue,  5 Apr 2022 23:16:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354422AbiDEUDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:03:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60066 "EHLO
+        id S1380169AbiDEUEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Apr 2022 16:04:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572959AbiDER2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 13:28:04 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0FC18378
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 10:26:05 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id b15so84401pfm.5
-        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 10:26:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FZGfm+e76GgU9w1YHU4QJswMXDu1nDn/YLb5QsnkFXs=;
-        b=sb7O6lz8839TY4aLmmwn5fi7xXJXdrJ+i6/7AtHKyG25Cxu81oOvMrOMP0gBMMQSy0
-         K8ZoX/TteMwZD/75TRxJ3VWj6erEFO485kO2UO+q65/R0IjOBVnv24xupANJ0Fy9oOdQ
-         QiywganFVnc14aOC9CmVoeAO7HPaYap1hcMeLXDsr56PT1wfbPEEd/HCmyGfOZ8we6hm
-         3sjg+ZQVtXmbzJO/ELZTGLttugpNrWpc03YNNgopO4N7knGD7xh6X5gUZ3IM8oW6epjA
-         uRrWJFi+h7Df1PbI7wHn5HmuuImbYZJzhdYKpjOhRqc9uAk0hfmxD0oi3u5r7wcWr4BG
-         JMnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FZGfm+e76GgU9w1YHU4QJswMXDu1nDn/YLb5QsnkFXs=;
-        b=lr8yq45tkJ+lBPogWDYu5iksFdLv+cEBi3IaDqySoPfABkM7Xu/yLZQHa6cXrwRXn6
-         LQL+7TKIiJweVmd+FifwC7QZkTYGZUfYxcakUfuAlvQ1c6vpbkrzqTR2hvTFvF1tY/EN
-         q97Lkyt8CIxEUiAWBMMUko2lT1E01i0ZMRWTl554GjYyyS7s8rdqoevhwaXU6+a6HiIV
-         0NkVUCAslpcUf8UXvtPGLZTRxub5AuTfOqaE6F0QeiVra3qxvDzdpcASdTxI6M7l2wMq
-         kfvN07xVNcGfxWHebwzV2VXOhTCit7WUCIhn7JBfGvVUvIhIKxQHzoXIqEG3oWjf8BFB
-         QXiA==
-X-Gm-Message-State: AOAM533cN2VQOB9xJ0als0NzXjD6tbIiwUW1cdIp9XyS5avKlzOEymIN
-        RsxmWTT0ZOVX0nsP9UhJhi/pIjvQ48KMKw==
-X-Google-Smtp-Source: ABdhPJyJp7im4en6VmOchruqzJrDFLplfI5Fx2i2TEkotaft/gIWjdFW8ZtAAjRWYQASf1jlsaDVLw==
-X-Received: by 2002:a63:520c:0:b0:382:2953:a338 with SMTP id g12-20020a63520c000000b003822953a338mr3728443pgb.610.1649179564298;
-        Tue, 05 Apr 2022 10:26:04 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id b13-20020a056a000ccd00b004fadb6f0299sm16614726pfv.191.2022.04.05.10.26.03
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Apr 2022 10:26:03 -0700 (PDT)
-Date:   Tue, 5 Apr 2022 10:26:01 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
+        with ESMTP id S1573085AbiDERza (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 13:55:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F828DE098;
+        Tue,  5 Apr 2022 10:53:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4117618BF;
+        Tue,  5 Apr 2022 17:53:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10E37C385A0;
+        Tue,  5 Apr 2022 17:53:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649181209;
+        bh=UcffL7obZFIqSR0hxtL30TFDuYZ62d5T/DDNxtcNc3k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Ive2FIZUz9QDWMoaFIaAABR2YxYJCuBle48O09ukx2iGLSnFuVUp5Qv/nhJKJ/X/x
+         1MTXAoRwFVLOlwGbSlojZcga1owgDgBbfvGjZehKtGL6QTHpY5fjkIE7GKJSOG3cjz
+         rfZeaN9WgBjOJKMvw1eNmmWzm7jqAc3NfFkohQtCaHz2dEixLJPoUXMXp7dPYkrFxc
+         cHVZN0spyf+90yhX4cdm3malL0IgiRcrse+COQqTNckoUQPpqD3wv24eFPBTYbSjqB
+         QvQ6rQn/cN7nl0T0/DvT83+s2F96KzgTRdZ6fZQqCOx72F7NKmeLAEdo6Ck4hTWCkA
+         qLD0bhPNoxhfA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 215806] New: bridge can not receive self send igmp query
- if multicast_query_use_ifaddr set to 1,no firewall
-Message-ID: <20220405102601.1270a028@hermes.local>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        lorenzo.bianconi@redhat.com, andrii@kernel.org,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        magnus.karlsson@intel.com, jbrouer@redhat.com, toke@redhat.com
+Subject: [PATCH net-next] ixgbe: add xdp frags support to ndo_xdp_xmit
+Date:   Tue,  5 Apr 2022 19:53:15 +0200
+Message-Id: <6de1d7547b60677ad0b0f7ebcbc7ebc76a31dcf7.1649180962.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add the capability to map non-linear xdp frames in XDP_TX and ndo_xdp_xmit
+callback.
 
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 99 ++++++++++++-------
+ 1 file changed, 63 insertions(+), 36 deletions(-)
 
-Begin forwarded message:
-
-Date: Tue, 05 Apr 2022 10:12:56 +0000
-From: bugzilla-daemon@kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 215806] New: bridge can not receive self send igmp query if multicast_query_use_ifaddr set to 1,no firewall
-
-
-https://bugzilla.kernel.org/show_bug.cgi?id=215806
-
-            Bug ID: 215806
-           Summary: bridge can not receive self send igmp query if
-                    multicast_query_use_ifaddr set to 1,no firewall
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.15.32
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: Other
-          Assignee: stephen@networkplumber.org
-          Reporter: shixudong@163.com
-        Regression: No
-
-no firewall 
-bridge can not receive self send igmp query if 
-echo 1 > /sys/class/net/br0/bridge/multicast_querier
-echo 1 > /sys/class/net/br0/bridge/multicast_query_use_ifaddr
-
-bridge can receive self send igmp query if
-echo 1 > /sys/class/net/br0/bridge/multicast_querier
-echo 0 > /sys/class/net/br0/bridge/multicast_query_use_ifaddr
-
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index c4a4954aa317..8b84c9b2eecc 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -2344,6 +2344,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
+ 			hard_start = page_address(rx_buffer->page) +
+ 				     rx_buffer->page_offset - offset;
+ 			xdp_prepare_buff(&xdp, hard_start, offset, size, true);
++			xdp_buff_clear_frags_flag(&xdp);
+ #if (PAGE_SIZE > 4096)
+ 			/* At larger PAGE_SIZE, frame_sz depend on len size */
+ 			xdp.frame_sz = ixgbe_rx_frame_truesize(rx_ring, size);
+@@ -8571,57 +8572,83 @@ static u16 ixgbe_select_queue(struct net_device *dev, struct sk_buff *skb,
+ int ixgbe_xmit_xdp_ring(struct ixgbe_ring *ring,
+ 			struct xdp_frame *xdpf)
+ {
+-	struct ixgbe_tx_buffer *tx_buffer;
+-	union ixgbe_adv_tx_desc *tx_desc;
+-	u32 len, cmd_type;
+-	dma_addr_t dma;
+-	u16 i;
+-
+-	len = xdpf->len;
++	struct skb_shared_info *sinfo = xdp_get_shared_info_from_frame(xdpf);
++	u8 nr_frags = unlikely(xdp_frame_has_frags(xdpf)) ? sinfo->nr_frags : 0;
++	u16 i = 0, index = ring->next_to_use;
++	struct ixgbe_tx_buffer *tx_head = &ring->tx_buffer_info[index];
++	struct ixgbe_tx_buffer *tx_buff = tx_head;
++	union ixgbe_adv_tx_desc *tx_desc = IXGBE_TX_DESC(ring, index);
++	u32 cmd_type, len = xdpf->len;
++	void *data = xdpf->data;
+ 
+-	if (unlikely(!ixgbe_desc_unused(ring)))
++	if (unlikely(ixgbe_desc_unused(ring) < 1 + nr_frags))
+ 		return IXGBE_XDP_CONSUMED;
+ 
+-	dma = dma_map_single(ring->dev, xdpf->data, len, DMA_TO_DEVICE);
+-	if (dma_mapping_error(ring->dev, dma))
+-		return IXGBE_XDP_CONSUMED;
++	tx_head->bytecount = xdp_get_frame_len(xdpf);
++	tx_head->gso_segs = 1;
++	tx_head->xdpf = xdpf;
+ 
+-	/* record the location of the first descriptor for this packet */
+-	tx_buffer = &ring->tx_buffer_info[ring->next_to_use];
+-	tx_buffer->bytecount = len;
+-	tx_buffer->gso_segs = 1;
+-	tx_buffer->protocol = 0;
++	tx_desc->read.olinfo_status =
++		cpu_to_le32(tx_head->bytecount << IXGBE_ADVTXD_PAYLEN_SHIFT);
+ 
+-	i = ring->next_to_use;
+-	tx_desc = IXGBE_TX_DESC(ring, i);
++	for (;;) {
++		dma_addr_t dma;
+ 
+-	dma_unmap_len_set(tx_buffer, len, len);
+-	dma_unmap_addr_set(tx_buffer, dma, dma);
+-	tx_buffer->xdpf = xdpf;
++		dma = dma_map_single(ring->dev, data, len, DMA_TO_DEVICE);
++		if (dma_mapping_error(ring->dev, dma))
++			goto unmap;
+ 
+-	tx_desc->read.buffer_addr = cpu_to_le64(dma);
++		dma_unmap_len_set(tx_buff, len, len);
++		dma_unmap_addr_set(tx_buff, dma, dma);
++
++		cmd_type = IXGBE_ADVTXD_DTYP_DATA | IXGBE_ADVTXD_DCMD_DEXT |
++			   IXGBE_ADVTXD_DCMD_IFCS | len;
++		tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
++		tx_desc->read.buffer_addr = cpu_to_le64(dma);
++		tx_buff->protocol = 0;
++
++		if (++index == ring->count)
++			index = 0;
++
++		if (i == nr_frags)
++			break;
++
++		tx_buff = &ring->tx_buffer_info[index];
++		tx_desc = IXGBE_TX_DESC(ring, index);
++		tx_desc->read.olinfo_status = 0;
+ 
++		data = skb_frag_address(&sinfo->frags[i]);
++		len = skb_frag_size(&sinfo->frags[i]);
++		i++;
++	}
+ 	/* put descriptor type bits */
+-	cmd_type = IXGBE_ADVTXD_DTYP_DATA |
+-		   IXGBE_ADVTXD_DCMD_DEXT |
+-		   IXGBE_ADVTXD_DCMD_IFCS;
+-	cmd_type |= len | IXGBE_TXD_CMD;
+-	tx_desc->read.cmd_type_len = cpu_to_le32(cmd_type);
+-	tx_desc->read.olinfo_status =
+-		cpu_to_le32(len << IXGBE_ADVTXD_PAYLEN_SHIFT);
++	tx_desc->read.cmd_type_len |= cpu_to_le32(IXGBE_TXD_CMD);
+ 
+ 	/* Avoid any potential race with xdp_xmit and cleanup */
+ 	smp_wmb();
+ 
+-	/* set next_to_watch value indicating a packet is present */
+-	i++;
+-	if (i == ring->count)
+-		i = 0;
+-
+-	tx_buffer->next_to_watch = tx_desc;
+-	ring->next_to_use = i;
++	tx_head->next_to_watch = tx_desc;
++	ring->next_to_use = index;
+ 
+ 	return IXGBE_XDP_TX;
++
++unmap:
++	for (;;) {
++		tx_buff = &ring->tx_buffer_info[index];
++		if (dma_unmap_len(tx_buff, len))
++			dma_unmap_page(ring->dev, dma_unmap_addr(tx_buff, dma),
++				       dma_unmap_len(tx_buff, len),
++				       DMA_TO_DEVICE);
++		dma_unmap_len_set(tx_buff, len, 0);
++		if (tx_buff == tx_head)
++			break;
++
++		if (!index)
++			index += ring->count;
++		index--;
++	}
++
++	return IXGBE_XDP_CONSUMED;
+ }
+ 
+ netdev_tx_t ixgbe_xmit_frame_ring(struct sk_buff *skb,
 -- 
-You may reply to this email to add a comment.
+2.35.1
 
-You are receiving this mail because:
-You are the assignee for the bug.
