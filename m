@@ -2,190 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A79F04F53CD
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:39:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3C174F5379
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:33:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2361287AbiDFE0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 00:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
+        id S2359881AbiDFEYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847721AbiDFCUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 22:20:15 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2040.outbound.protection.outlook.com [40.107.212.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EEA269378;
-        Tue,  5 Apr 2022 16:37:31 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eJMHFDb385Pk1INiFJy/jKPgalLqLf2lNzGcBdnP5uLd9ofJuWSuarwNUH2bpcv1m/GdQIl9fiFnL09rY6rVL1UMEsMn1MS7sq4xcOeI6vbbOrUzDf3IzSauTJ9eYhe08rUHlNUDZZf1zabClOLrnm0VlM2oEfVAPJP0+Jko1yemQ+wPcpNGQ6EyV6l+jUvw2qH6sqKLjWPW05S2uVOh17qyuGSkc2U6itgKI6+qq8PsTtLd/C8+o65W0StKSkWK5K9BSfz51PVvf9XqOhos+3/QZtGR+gcIAJL4tS7Ce/4lkhgPr0+AYbvlCbT9Mmm6Ntn8ko412myyuic1ikV92g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mJ8fkqQRyvccGEjfChcVHQG6wLPS1HHzdhMQ9kB0mN4=;
- b=GiltZAq4YGpmmdVYNgkZFYFDX7NSqpMsaTL+q/4lrWH631TkfXU2ovTLZRp9UzNuhvTUPLcqyX1R4rYmyjiVmm0urZmvG/lz8gXXeTgMA9UgxAETWZPoGUG1XRlAixRnTHH10+ZqT4lZkmhlCedqnUFNJuGxqFvUFoZCkKsJXlQPfFp8Rsc0aMf4nxBbevdV5/ETCIvgZoDm3Em7lSnbDOTdzRt2UMVFLcMD8XR1QD9URqSUXtd9/BRYdkWNNwv9K2wWr+71JVJ8u2wP+yFZRvCd6zauEexe/v+vG2yUXmtiTLk89J7b3g33njMlDJBOfOkGb+lc1qIZhY4UiriTBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mJ8fkqQRyvccGEjfChcVHQG6wLPS1HHzdhMQ9kB0mN4=;
- b=dYpE+BB/+QfGiZN1QE+46xVgkxjBT5HT8WvjLHAEgEtv/taaJRvldZb8/j4w6zRnlm5pKYx7uj+Dmjcf5xFI+3ZsfaC4ZxGPGNcCycmnb5UBPP6IHPNTph7EdpzGgs+/dsCfZXFEF5O4QZmHztEaabFbtPwMU9gM9RVNxPWrvqgEduQhG9jA/wT/fYn8LIXB6kQAeGdHGIrrTXCueJCRzmbOHV+4A9a1nz4NQDLy0IOKW0MNS4fBLIdeYaRDuG5bCtCC5fNZJmsq6OYZJPcp5Z6dzyHl+xguOPUP71WP7eCF0Btp3pM3m2B1tBvL6JaFB4WV3GLXzxEzLSllGYGvpA==
-Received: from BN8PR12MB3426.namprd12.prod.outlook.com (2603:10b6:408:4a::14)
- by CY4PR12MB1688.namprd12.prod.outlook.com (2603:10b6:910:8::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 23:37:28 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BN8PR12MB3426.namprd12.prod.outlook.com (2603:10b6:408:4a::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Tue, 5 Apr
- 2022 23:37:27 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::cdfb:f88e:410b:9374%5]) with mapi id 15.20.5123.031; Tue, 5 Apr 2022
- 23:37:27 +0000
-Date:   Tue, 5 Apr 2022 20:37:25 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Ariel Elior <aelior@marvell.com>, Anna Schumaker <anna@kernel.org>,
-        Jens Axboe <axboe@fb.com>,
-        Christian Benvenuti <benve@cisco.com>,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>, linux-cifs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, rds-devel@oss.oracle.com,
-        Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        target-devel@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Xiao Yang <yangx.jy@fujitsu.com>
-Subject: Re: [PATCH] RDMA: Split kernel-only global device caps from uvers
- device caps
-Message-ID: <20220405233725.GY2120790@nvidia.com>
-References: <0-v1-47e161ac2db9+80f-kern_caps_jgg@nvidia.com>
- <20220405044331.GA22322@lst.de>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220405044331.GA22322@lst.de>
-X-ClientProxiedBy: CH0PR03CA0407.namprd03.prod.outlook.com
- (2603:10b6:610:11b::34) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        with ESMTP id S1849917AbiDFCpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 22:45:07 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24909291BB2;
+        Tue,  5 Apr 2022 16:47:24 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id r2so1071995iod.9;
+        Tue, 05 Apr 2022 16:47:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=c+XYrd0Oyx5bZokyYgKdQAHq6tFoBY4IZr2oyMITbE8=;
+        b=XHy9gts7ur+Kuy4KpYalW0V+9qqmnaSmfkL+H0hvD5mZrNCwFSv3wDlp5F+BLGvrfy
+         xmF2TRe+9UWg6WXAWB7ZU5g5TlJAtKFJ7l9mlCGANs/pGwqKlduEvf6sNl2G3MRXdJFl
+         e1c6gEndG9gJQM6tSSvKF3BOzqWUSfbsua7DSJDNxNpY8Oph2EIaYmiu1Utbn1UYyZCM
+         ZXiL8Y76UXUI6ezDHhJWzd80OwZJaTJRaoOnI2QaKQrh5jHG9XUTCZPDNNBjH7eimIQ4
+         +v0zdAFoIl4+7im1VIY7IyUZyeimH9dLY3Uo+xi8IWeWkjNa3ybmZI1/Y7nrONfPqqld
+         OmOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c+XYrd0Oyx5bZokyYgKdQAHq6tFoBY4IZr2oyMITbE8=;
+        b=htRv9bYYn7In7j/AChHoufLS24OE8MLEOQ4o96PoSwnzQsR/0SxwJDUcpXEKQBHWfA
+         5YAEbpFXxg+s9c8yea1yrYPh2Nc+u56yvz0ScbWlK0AwKAGGwUVuE1hfXeH1JBcsxRby
+         /NTVRN/f/Iy1ccegEcz5kHhMumcOxlCw652lqrAdsV/LcQLc0MITyNF9GAU9PzTxbHXg
+         jEwjhcpjvcFr6bzOUpGXi/0/GzDLiJ/FQ9KJuiiHkFh6UOT3fOc8rjWy3LQA2VY0goHi
+         Pt+3ayFIzTOxadp3R+BM94AKZzdEdsTyPhbEITK6f+lmFO24hY9PJ9x94o/tWaKdM5rn
+         MDgA==
+X-Gm-Message-State: AOAM530iPll2XM0s2TPRa19UOVCVcgEBdxi8JNmtGHBiMtuLSdwgwakv
+        7nx/hk0QOCY/+IhrugOV8alDBS3cOlVOx5LxF0g=
+X-Google-Smtp-Source: ABdhPJxMFIZrH/Vkj5PwnSRm6Lo8J2BA5ONUmBR4cQxKL0V8Cu/CrwzAKcERZ/PqaPaAwcz2NcGa+f4MHUMQ5kS1LLw=
+X-Received: by 2002:a05:6602:185a:b0:645:d914:35e9 with SMTP id
+ d26-20020a056602185a00b00645d91435e9mr2796386ioi.154.1649202443390; Tue, 05
+ Apr 2022 16:47:23 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7e110783-3c5c-4ab9-6add-08da175d3e25
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3426:EE_|CY4PR12MB1688:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR12MB34262BBA6A0C4A4A389A602CC2E49@BN8PR12MB3426.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UPwiVvLTw6Qw6p80buxNeQNC0wVMbAHRUpjjyKYq5/+OMFjQmjM4nH6K7wrTQFHNf8eJW7pW9RABaM7gQpdsSYFEsdcaQLZuIhJCZhASDkOWGqwQKfFfmvN3te/DRG9mBuz/e833tP3fhJCrjIzOf1JH/XKiB9b9KVAXE1OPOMDHlkQi9smHESoCs8KuRTvnw2OGP0JZS84sLbkvJ3qUDIc50IhvPjp0f9bK/e0SAxs5q+lVoKldthXpE2ZxDXwWUoMwf3P9ywrDQ9YyHtU1YW5CoeYHlHd502dvqL7o8wxBWIxSd+A8pL32/dAlr70D4e5C/FbPOJDgSMKCcbl0f5bRQsYhoRKzaf6D9QuMG3OzJrvPjn2yrOdo4v9/jHBsb67O+NShYDXlEXSHXCKBwZI8scCdR/y3urU4DxFZNknbAMtLQgu4acOGQTAMUKaueGDO/2aFxb9Nc4KoopCNIZLclstjaGOgXA8+KpJX3AenMah/imx80n6DPdV/klLJYXsCvh6dEMqAFOFRGw+g03eSn875cQYEsQR/IIXE00MPwmNb+PfhdbvlhdgssltNmTHYs8LafelVnzqEvJApNIzoVvu3Dx6Jq2rZkKghL3ut/n5SIkbpo7twRfXybPv0p40rhh8ldimGhskFTtI6LQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3426.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(36756003)(1076003)(6486002)(5660300002)(83380400001)(2906002)(26005)(508600001)(7416002)(7406005)(2616005)(38100700002)(4326008)(66946007)(8676002)(33656002)(316002)(66556008)(66476007)(86362001)(54906003)(6506007)(6512007)(186003)(6916009);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Lao9NZvIpLqgmWrkf1RuQ1CaTOkjzxQnRf/hbeY5sn38rBp+xyky79tnkug9?=
- =?us-ascii?Q?P5o71mA/QpNJ1d+Zoxq2Z9jlBPbdOhFWDTpy2o5g+eodMCnxtjQdKkvFCA4Y?=
- =?us-ascii?Q?/o+IDKHc79ZhPtNQjeq/UU/DoVfTP/wJsUbVrTQU/5u2WAGYoLOSDNKUF31B?=
- =?us-ascii?Q?6pyUgYFquHnsHnGXivBua4iOmByWUIvP2gIB6ML9BNhiNC3s73vBiD338Px5?=
- =?us-ascii?Q?FRCQiRtA5h3NkFp0GHwKKgMg57DZKzh65R5tH46JukAYP9BMgeJHoqiCV+js?=
- =?us-ascii?Q?bulw5cWXGw5UKKK2w3HFxUf5jFmEwSCdtS3YPMofDNfw6ePULsSe4BUrAsfE?=
- =?us-ascii?Q?AjO/qiu1rGn8rUG3AUtbHCXeszeWSRNI9PO+OuNeWlBSHykktQj2DPOBaMCB?=
- =?us-ascii?Q?YWEFxtaIg04VC1eoKos533u6b9Yb6XLpzayEk3+51CJ2D593Q8Th5nBos+Ti?=
- =?us-ascii?Q?KbaUl4amf0JJJ7ugpm5nBCOb42V2Xoe6rnmVfN9Dt6kCJv4mT2MG8qqstL2B?=
- =?us-ascii?Q?eb5x3vYo4TqaDzg7Ai9oS+8vDdfa5FYAzWvpRb+0ZP2dQAXHVGD4fu5KDLy1?=
- =?us-ascii?Q?kbcJTDjoUV7nWrzzyUyqLj0M+Y/MuvGbhqhUfj1Hyj+Z3pQwqA4uiUj8sAWV?=
- =?us-ascii?Q?217UHGVOHrQtybGS3ORFlLirgXnJ3rnv0gtzSJIwNz9l1+cjO2XRNJiMd5WD?=
- =?us-ascii?Q?f2oJQTTzoK/pDqoPT03QnvnDEi585LP0DenMTb9ruWubH6kqZAiq3+vSM1Z+?=
- =?us-ascii?Q?rD+i8SNoHY6DskxKtmtndB2zXVLzHly8hoVrHX+xUmlGezVinyj4Xi4Ynt4o?=
- =?us-ascii?Q?X7WDpDovhXnMKq4/OYxPOWgxpbOPIoD6C59fadWCWlWsB1nnusQIQRqWMHRm?=
- =?us-ascii?Q?x9fBFPUrz23+x2lAlxmJNaL0JhebT2ASFP7m7DwgP1RqYIznXc2EUgV8lAb7?=
- =?us-ascii?Q?qy+FNdVlG03aen86BoWXbHt0b2EWJKJ4cSJGs33nxIrxSpKcPdcmsG2+XdOa?=
- =?us-ascii?Q?vXRu6ROZG9PB7cE1CCi0HBmmyb+SwMtuSGT1BRFMKZplCtmzMQ9Wh9pDBcoI?=
- =?us-ascii?Q?y5a75B8+aeNjKfjcFc3zeA6GrF2B6j1ZSlP0EeHa9xHhCstyYcJ3NOBGTyIl?=
- =?us-ascii?Q?eKjJSS2Fex/TAsneViQt7XYZ16R9ZxNHXNhDQmmM8tijOwZ7hmTieCPRk1wA?=
- =?us-ascii?Q?szSh11GeIKeHIqFPnGNGkFgIhex7kWtm/hFTV7rl5kYOcJQTJSPUVecN5Osx?=
- =?us-ascii?Q?SrxrO/hPvxA2423u8RDynqQ7ePyk0hwvmEHLv0PF36gPTBB7/heLfBho17qx?=
- =?us-ascii?Q?uzS+GrWQCqrZJ+XotbPlImTMVpMgzEYGNcdUrIHD4IDM0XXP4HP51ey6e9Uy?=
- =?us-ascii?Q?5kd1UGwxN+Wps4cI7QgNqvGcH6UdgbFMQxg6WadC7Z5XrDB0dGfTQMorZjKp?=
- =?us-ascii?Q?i1BqF7m+hdQQIsyDuEaKQgn/iIf+m6D4+urOyMteWVY8Rrj/FbZLL3GsAZaB?=
- =?us-ascii?Q?BnF+82EJ+UXQhI+sI3hKtQEoeQ2xb5ay650yGmJV773EM7XNwSmUo0Lg11mn?=
- =?us-ascii?Q?lWBFP4AKqZxxpY4hmD42x5TMVURhFOO+0KXL1ap61d5I6L7kJ3WloP7OTavP?=
- =?us-ascii?Q?1eaiguMuVHWZDtfskWWtkogQbuLEo0lt7Ron1DivPGnGpxIZBYKUkRRroSS7?=
- =?us-ascii?Q?D3QZrkk3p/OjWM54S82envn0dNyLE++LZk8Kuxg9WJEytnjdroTTr2EERBC4?=
- =?us-ascii?Q?SL359FARMQ=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e110783-3c5c-4ab9-6add-08da175d3e25
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2022 23:37:27.0258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hULMmrwIXqJVIB82KVPbe3UZEVQ8HOMSeJYD0tz0vb2BuiIns3rnG+hLGkBMjBqO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1688
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <1648654000-21758-1-git-send-email-alan.maguire@oracle.com>
+ <CAEf4BzZdV60ZeNt1YfS8qoB69pggSe+=gjnDZ1tZy00L4Quazw@mail.gmail.com> <alpine.LRH.2.23.451.2204051116110.9651@MyRouter>
+In-Reply-To: <alpine.LRH.2.23.451.2204051116110.9651@MyRouter>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 5 Apr 2022 16:47:12 -0700
+Message-ID: <CAEf4Bzam5qnm16fc2g1--GLokN3KpdJpoDrTK27ZcbVWYCcYYg@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 0/5] libbpf: name-based u[ret]probe attach
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Yucong Sun <sunyucong@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 05, 2022 at 06:43:31AM +0200, Christoph Hellwig wrote:
+On Tue, Apr 5, 2022 at 3:28 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> On Mon, 4 Apr 2022, Andrii Nakryiko wrote:
+>
+> > On Wed, Mar 30, 2022 at 8:27 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+> > >
+> > > This patch series focuses on supporting name-based attach - similar
+> > > to that supported for kprobes - for uprobe BPF programs.
+> > >
+> > > Currently attach for such probes is done by determining the offset
+> > > manually, so the aim is to try and mimic the simplicity of kprobe
+> > > attach, making use of uprobe opts to specify a name string.
+> > > Patch 1 supports expansion of the binary_path argument used for
+> > > bpf_program__attach_uprobe_opts(), allowing it to determine paths
+> > > for programs and shared objects automatically, allowing for
+> > > specification of "libc.so.6" rather than the full path
+> > > "/usr/lib64/libc.so.6".
+> > >
+> > > Patch 2 adds the "func_name" option to allow uprobe attach by
+> > > name; the mechanics are described there.
+> > >
+> > > Having name-based support allows us to support auto-attach for
+> > > uprobes; patch 3 adds auto-attach support while attempting
+> > > to handle backwards-compatibility issues that arise.  The format
+> > > supported is
+> > >
+> > > u[ret]probe/binary_path:[raw_offset|function[+offset]]
+> > >
+> > > For example, to attach to libc malloc:
+> > >
+> > > SEC("uprobe//usr/lib64/libc.so.6:malloc")
+> > >
+> > > ..or, making use of the path computation mechanisms introduced in patch 1
+> > >
+> > > SEC("uprobe/libc.so.6:malloc")
+> > >
+> > > Finally patch 4 add tests to the attach_probe selftests covering
+> > > attach by name, with patch 5 covering skeleton auto-attach.
+> > >
+> > > Changes since v4 [1]:
+> > > - replaced strtok_r() usage with copying segments from static char *; avoids
+> > >   unneeded string allocation (Andrii, patch 1)
+> > > - switched to using access() instead of stat() when checking path-resolved
+> > >   binary (Andrii, patch 1)
+> > > - removed computation of .plt offset for instrumenting shared library calls
+> > >   within binaries.  Firstly it proved too brittle, and secondly it was somewhat
+> > >   unintuitive in that this form of instrumentation did not support function+offset
+> > >   as the "local function in binary" and "shared library function in shared library"
+> > >   cases did.  We can still instrument library calls, just need to do it in the
+> > >   library .so (patch 2)
+> >
+> > ah, that's too bad, it seemed like a nice and clever idea. What was
+> > brittle? Curious to learn for the future.
+> >
+>
+> On Ubuntu, Daniel reported selftest failures which corresponded to the
+> cases where we attached to a library function in a non-library - i.e. used
+> the .plt computations.  I reproduced this failure myself, and it seemed
+> that although we were correctly computing the size of the .plt initial
+> code - 16 bytes - and each .plt entry - again 16 bytes - finding the
+> .rela.plt entry and using its index as the basis for figuring out which
+> .plt entry to instrument wasn't working.
+>
+> Specifically, the .rela.plt entry for "free" was 146, but the actual .plt
+> location of free was the 372 entry in the .plt table.  I'm not clear on
+> why, but the the correspondence betweeen .rela.plt and .plt order
+> isn't present on Ubuntu.
 
-> > -	if (!(device->attrs.device_cap_flags & IB_DEVICE_ALLOW_USER_UNREG)) {
-> > +	if (!(device->attrs.kernel_cap_flags & IB_KDEVICE_ALLOW_USER_UNREG)) {
-> 
-> Maybe shorten the prefix to IBD_ ?
+Ok, curious. I'm not a big expert on PLT and stuff, but would be
+curious to look at such an ELF file and see if we are missing
+something that can be recovered from PLT relocations maybe? If you
+happen to have a small ELF with repro case, please share.
 
-Sure
- 
-> > +enum ib_kernel_cap_flags {
-> > +	/*
-> > +	 * This device supports a per-device lkey or stag that can be
-> > +	 * used without performing a memory registration for the local
-> > +	 * memory.  Note that ULPs should never check this flag, but
-> > +	 * instead of use the local_dma_lkey flag in the ib_pd structure,
-> > +	 * which will always contain a usable lkey.
-> > +	 */
-> > +	IB_KDEVICE_LOCAL_DMA_LKEY = 1 << 0,
-> > +	IB_KDEVICE_UD_TSO = 1 << 1,
-> > +	IB_KDEVICE_BLOCK_MULTICAST_LOOPBACK = 1 << 2,
-> > +	IB_KDEVICE_INTEGRITY_HANDOVER = 1 << 3,
-> > +	IB_KDEVICE_ON_DEMAND_PAGING = 1ULL << 4,
-> > +	IB_KDEVICE_SG_GAPS_REG = 1ULL << 5,
-> > +	IB_KDEVICE_VIRTUAL_FUNCTION = 1ULL << 6,
-> > +	IB_KDEVICE_RDMA_NETDEV_OPA = 1ULL << 7,
-> > +	IB_KDEVICE_ALLOW_USER_UNREG = 1ULL << 8,
-> > +};
-> 
-> And maybe not in this patch, but if you touch this anyway please add
-> comments to document allthe flags.
+>
+> > The fact that function+offset isn't supported int this "mode"
+> seems
+> > totally fine to me, we can provide a nice descriptive error in this
+> > case anyways.
+> >
+>
+> I'll try and figure out exactly what's going on above; would be nice if we
+> can still add this in the future.
 
-Wouldn't that be nice.. I know what some of these do at least and can
-try
+Yep, definitely, provided we are sure it will keep working reliably :)
 
-The 'ULL' should go away too..
+>
+> > Anyways, all the added functionality makes sense and we can further
+> > improve on it if necessary and possible. I've found a few small issues
+> > with your patches and fixed some of them while applying, please do a
+> > follow up for the rest.
+>
+> Yep, will do, thanks for the fix-ups! Ilya has fixed a few of the issues
+> too, so I'll have some follow-ups for the rest shortly. I'll take a look
+> at adding aarch64 to libbpf CI too, that would be great.
 
-Jason
+Awesome, aarch64 seems like a logical addition, thanks!
+
+>
+> > Thanks, great work and great addition to
+> > libbpf!
+> >
+>
+> Thanks again!
