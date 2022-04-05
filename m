@@ -2,97 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D92C94F445A
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 00:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 371334F5424
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 06:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235083AbiDEULU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Apr 2022 16:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35636 "EHLO
+        id S1351862AbiDFE1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 00:27:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242305AbiDETzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 15:55:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0986A46B3A;
-        Tue,  5 Apr 2022 12:53:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99E9261899;
-        Tue,  5 Apr 2022 19:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A8CC385A1;
-        Tue,  5 Apr 2022 19:53:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649188424;
-        bh=ksIfVFjF0VhXvGOjeWph7+zGCs5no8Zk0CDK25rDXR0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nc8OjmuDJjbpD7Zx0INTlt+XDlZKmHGNaSSRGSH/aWhy0P/JXj0ZjTGtyIEvtWn5x
-         kKVcT7f6LAJKOrdKg13hSoB5+WFT0O3H2wbAdzQ+KkQU1JaaqJXAxUxrDkTq0Vwku3
-         RrOWWH5qot4yjkt/ZVEUBoqHbSXzYuukJNOE35pmV32CGgdY6pbYwFVQUavNmH6zVO
-         Mp0z3tNewufvLF6KGjFPtjt8Ai0NHkqAlEK5RmkztNGum5ZBmNOsKawHX7GimVzoY6
-         ByiQ/pC+lnDxfHtGygxl4Uk8cXgqWryykNFF0HSxMQz+J2WYbnwHFVPzhHpD9ezRXF
-         ZuJfEa8tKvu3w==
-Date:   Tue, 5 Apr 2022 12:53:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 03/11] bnx2x: Fix undefined behavior due to shift
- overflowing the constant
-Message-ID: <20220405125342.1f4d0a1a@kernel.org>
-In-Reply-To: <20220405151517.29753-4-bp@alien8.de>
-References: <20220405151517.29753-1-bp@alien8.de>
-        <20220405151517.29753-4-bp@alien8.de>
+        with ESMTP id S244787AbiDEUNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Apr 2022 16:13:23 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42A2F94DC
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 12:58:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
+        :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6RThTrIjSD+KgHY57687QYQ6+eGEGiDbgQLuvpHLE3Y=; b=XKn3t7838gXXFeW0mLX4zKO3Po
+        AEXPN995zU/JbTfakjHb6CLcJIV/4khPlfy2iXE4FiOwWxyY+pZ76eR0+uiFGgvWTDMl+0EP3JD/x
+        hNS3GK5UPqOQmFXXmEwwz0D7EQuVhejooE3cKYwQjcJAttwIyl9BGmGR07BCKoV3F1QY=;
+Received: from p200300daa70ef200456864e8b8d10029.dip0.t-ipconnect.de ([2003:da:a70e:f200:4568:64e8:b8d1:29] helo=Maecks.lan)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nbpJO-00035V-E2; Tue, 05 Apr 2022 21:57:58 +0200
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org, Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v2 00/14] MediaTek SoC flow offload improvements + wireless support
+Date:   Tue,  5 Apr 2022 21:57:41 +0200
+Message-Id: <20220405195755.10817-1-nbd@nbd.name>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  5 Apr 2022 17:15:09 +0200 Borislav Petkov wrote:
-> From: Borislav Petkov <bp@suse.de>
->=20
-> Fix:
->=20
->   drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c: In function =E2=80=98=
-bnx2x_check_blocks_with_parity3=E2=80=99:
->   drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c:4917:4: error: case la=
-bel does not reduce to an integer constant
->       case AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY:
->       ^~~~
->=20
-> See https://lore.kernel.org/r/YkwQ6%2BtIH8GQpuct@zn.tnic for the gory
-> details as to why it triggers with older gccs only.
->=20
-> Signed-off-by: Borislav Petkov <bp@suse.de>
+This series contains the following improvements to mediatek ethernet flow
+offload support:
 
-I think this patch did not make it to netdev patchwork.
-Could you resend (as a non-series patch - drop the 03/11
-from the subject, that way build bot will not consider
-it a partial/broken posting)? Thanks!
+- support dma-coherent on ethernet to improve performance
+- add ipv6 offload support
+- rework hardware flow table entry handling to improve dealing with hash
+  collisions and competing flows
+- support creating offload entries from user space
+- support creating offload entries with just source/destination mac address,
+  vlan and output device information
+- add driver changes for supporting the Wireless Ethernet Dispatch core,
+  which can be used to offload flows from ethernet to MT7915 PCIe WLAN
+  devices
 
-> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h b/drivers/ne=
-t/ethernet/broadcom/bnx2x/bnx2x_reg.h
-> index 5caa75b41b73..881ac33fe914 100644
-> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_reg.h
-> @@ -6218,7 +6218,7 @@
->  #define AEU_INPUTS_ATTN_BITS_GPIO0_FUNCTION_0			 (0x1<<2)
->  #define AEU_INPUTS_ATTN_BITS_IGU_PARITY_ERROR			 (0x1<<12)
->  #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_ROM_PARITY		 (0x1<<28)
-> -#define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY		 (0x1<<31)
-> +#define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_SCPAD_PARITY		 (0x1U<<31)
->  #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_RX_PARITY		 (0x1<<29)
->  #define AEU_INPUTS_ATTN_BITS_MCP_LATCHED_UMP_TX_PARITY		 (0x1<<30)
->  #define AEU_INPUTS_ATTN_BITS_MISC_HW_INTERRUPT			 (0x1<<15)
+Changes in v2:
+- add missing dt-bindings patches
+
+David Bentham (1):
+  net: ethernet: mtk_eth_soc: add ipv6 flow offload support
+
+Felix Fietkau (10):
+  net: ethernet: mtk_eth_soc: add support for coherent DMA
+  arm64: dts: mediatek: mt7622: add support for coherent DMA
+  net: ethernet: mtk_eth_soc: add support for Wireless Ethernet Dispatch
+    (WED)
+  net: ethernet: mtk_eth_soc: implement flow offloading to WED devices
+  arm64: dts: mediatek: mt7622: introduce nodes for Wireless Ethernet
+    Dispatch
+  net: ethernet: mtk_eth_soc: support TC_SETUP_BLOCK for PPE offload
+  net: ethernet: mtk_eth_soc: allocate struct mtk_ppe separately
+  net: ethernet: mtk_eth_soc: rework hardware flow table management
+  net: ethernet: mtk_eth_soc: remove bridge flow offload type entry
+    support
+  net: ethernet: mtk_eth_soc: support creating mac address based offload
+    entries
+
+Lorenzo Bianconi (3):
+  dt-bindings: net: mediatek: add optional properties for the SoC
+    ethernet core
+  dt-bindings: arm: mediatek: document WED binding for MT7622
+  dt-bindings: arm: mediatek: document the pcie mirror node on MT7622
+
+ .../mediatek/mediatek,mt7622-pcie-mirror.yaml |  42 +
+ .../arm/mediatek/mediatek,mt7622-wed.yaml     |  50 +
+ .../devicetree/bindings/net/mediatek-net.txt  |  10 +
+ arch/arm64/boot/dts/mediatek/mt7622.dtsi      |  32 +-
+ drivers/net/ethernet/mediatek/Kconfig         |   4 +
+ drivers/net/ethernet/mediatek/Makefile        |   5 +
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   | 131 ++-
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  14 +-
+ drivers/net/ethernet/mediatek/mtk_ppe.c       | 368 +++++++-
+ drivers/net/ethernet/mediatek/mtk_ppe.h       |  89 +-
+ .../net/ethernet/mediatek/mtk_ppe_debugfs.c   |   1 -
+ .../net/ethernet/mediatek/mtk_ppe_offload.c   | 189 +++-
+ drivers/net/ethernet/mediatek/mtk_wed.c       | 875 ++++++++++++++++++
+ drivers/net/ethernet/mediatek/mtk_wed.h       | 135 +++
+ .../net/ethernet/mediatek/mtk_wed_debugfs.c   | 175 ++++
+ drivers/net/ethernet/mediatek/mtk_wed_ops.c   |   8 +
+ drivers/net/ethernet/mediatek/mtk_wed_regs.h  | 251 +++++
+ include/linux/netdevice.h                     |   7 +
+ include/linux/soc/mediatek/mtk_wed.h          | 131 +++
+ net/core/dev.c                                |   4 +
+ 20 files changed, 2396 insertions(+), 125 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-pcie-mirror.yaml
+ create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed.h
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_debugfs.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_ops.c
+ create mode 100644 drivers/net/ethernet/mediatek/mtk_wed_regs.h
+ create mode 100644 include/linux/soc/mediatek/mtk_wed.h
+
+-- 
+2.35.1
 
