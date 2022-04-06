@@ -2,120 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B21F4F5E46
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 14:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D44154F5E86
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229609AbiDFMlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 08:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
+        id S230113AbiDFMvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 08:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232464AbiDFMkz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:40:55 -0400
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611F157E270
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 01:45:18 -0700 (PDT)
-Received: by mail-ej1-f41.google.com with SMTP id l26so2821843ejx.1
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 01:45:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4jwHnOOOunM2p3fB60moZ62Tj5OCoqYJ5ZjN1VA/7ZA=;
-        b=z5x7OrDMUcAnLWa3lMVtB1NgwrRXIxtkR5FHGXFt/o3ew2rZ3HJmLvWbGWf/JvtqF/
-         VQTBNplvsNdiE99EykW3cQqjSYUQIm4jD/dVDdJQ5uEBz9V7vgU1aC6RTj6YN2nifMYs
-         qPVlmwe6k/PTsJ8YF1huhJCi0XkTSFHU45JeP+sfcAzd6Tx0pmj3bxI5py/fOw2xPXAb
-         MtaLmwdM1Nhg8JHe0Tp/vhk//qQiwCHQXZK5XwRMSvxmcg4HeJiv+kZQkPzOO0pgtJWj
-         EDcta9ecgmPcZFFTi7pcUwimTGxssShCJ/A+2B9sjhJjuJYj4LeWSTzRXE3Tn86bBx2R
-         ix3g==
-X-Gm-Message-State: AOAM533/d5sUVm/Emeq9WMu80Xe8ptGMpMQRfyuoGIY79vnCpvscW16M
-        6PNsUXJJItlSx4ayhZHhqxY=
-X-Google-Smtp-Source: ABdhPJzrzi+N6iLOQj7waoK6xvq/IBsqaKcKfrlFDTe/AH7GzRdzSu0JYVxUrdqw2PD4Pp+B8iPskQ==
-X-Received: by 2002:a17:907:1c0a:b0:6da:7ac4:5349 with SMTP id nc10-20020a1709071c0a00b006da7ac45349mr7127817ejc.596.1649234707323;
-        Wed, 06 Apr 2022 01:45:07 -0700 (PDT)
-Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
-        by smtp.gmail.com with ESMTPSA id y8-20020a50d8c8000000b0041c80bb88c7sm7163652edj.8.2022.04.06.01.45.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 01:45:06 -0700 (PDT)
-Message-ID: <631ac05c-6807-11ff-c940-cd27bcc3a925@kernel.org>
-Date:   Wed, 6 Apr 2022 10:45:05 +0200
+        with ESMTP id S231754AbiDFMur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:50:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC2979D4D7
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 01:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649235256;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=C3E55v6H/hYc3LaSvLNAvhU13rJ0i/ZaskPmc70RQYw=;
+        b=iZx2hIlt5mqR/lMZmIydfIJJ5163pmJ1P82qni4Kktp1F/KVnbRXu23Bk1+XLg+eEDI4a5
+        GXJSjq0iLRvNsLbqA8FFlQE6eZwuMNR/kNtytqqJcWDcjgBU/Jc/6R54p2PyqbC4DFqDS5
+        8pXqwsZzO2+tY+monoK+z2U/hHWQVeM=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-513-hBdzYFkQP5SA6QJW8XVnrQ-1; Wed, 06 Apr 2022 04:54:12 -0400
+X-MC-Unique: hBdzYFkQP5SA6QJW8XVnrQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E7E35800B28;
+        Wed,  6 Apr 2022 08:54:11 +0000 (UTC)
+Received: from samus.usersys.redhat.com (unknown [10.43.17.26])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BE7EA2166B2F;
+        Wed,  6 Apr 2022 08:54:10 +0000 (UTC)
+From:   Artem Savkov <asavkov@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
+Subject: [PATCH bpf-next] bpf/selftests: use bpf_num_possible_cpus() in per-cpu map allocations
+Date:   Wed,  6 Apr 2022 10:54:08 +0200
+Message-Id: <20220406085408.339336-1-asavkov@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] drivers: net: slip: fix NPD bug in sl_tx_timeout()
-Content-Language: en-US
-To:     Duoming Zhou <duoming@zju.edu.cn>, davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.or, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org
-References: <20220405132206.55291-1-duoming@zju.edu.cn>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220405132206.55291-1-duoming@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05. 04. 22, 15:22, Duoming Zhou wrote:
-> When a slip driver is detaching, the slip_close() will act to
-> cleanup necessary resources and sl->tty is set to NULL in
-> slip_close(). Meanwhile, the packet we transmit is blocked,
-> sl_tx_timeout() will be called. Although slip_close() and
-> sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-> whether sl->tty equals to NULL in sl_tx_timeout() and the
-> null pointer dereference bug will happen.
-> 
->     (Thread 1)                 |      (Thread 2)
->                                | slip_close()
->                                |   spin_lock_bh(&sl->lock)
->                                |   ...
-> ...                           |   sl->tty = NULL //(1)
-> sl_tx_timeout()               |   spin_unlock_bh(&sl->lock)
->    spin_lock(&sl->lock);       |
->    ...                         |   ...
->    tty_chars_in_buffer(sl->tty)|
->      if (tty->ops->..) //(2)   |
->      ...                       |   synchronize_rcu()
-> 
-> We set NULL to sl->tty in position (1) and dereference sl->tty
-> in position (2).
-> 
-> This patch adds check in sl_tx_timeout(). If sl->tty equals to
-> NULL, sl_tx_timeout() will goto out.
+bpf_map_value_size() uses num_possible_cpus() to determine map size, but
+some of the tests only allocate enough memory for online cpus. This
+results in out-of-bound writes in userspace during bpf(BPF_MAP_LOOKUP_ELEM)
+syscalls in cases when number of online cpus is lower than the number of
+possible cpus. Fix by switching from get_nprocs_conf() to
+bpf_num_possible_cpus() when determining the number of processors in
+these tests (test_progs/netcnt and test_cgroup_storage).
 
-It makes sense. unregister_netdev() (to kill the timer) is called only 
-later in slip_close().
+Signed-off-by: Artem Savkov <asavkov@redhat.com>
+---
+ tools/testing/selftests/bpf/prog_tests/netcnt.c   | 2 +-
+ tools/testing/selftests/bpf/test_cgroup_storage.c | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> ---
->   drivers/net/slip/slip.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/slip/slip.c b/drivers/net/slip/slip.c
-> index 88396ff99f0..6865d32270e 100644
-> --- a/drivers/net/slip/slip.c
-> +++ b/drivers/net/slip/slip.c
-> @@ -469,7 +469,7 @@ static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
->   	spin_lock(&sl->lock);
->   
->   	if (netif_queue_stopped(dev)) {
-> -		if (!netif_running(dev))
-> +		if (!netif_running(dev) || !sl->tty)
->   			goto out;
->   
->   		/* May be we must check transmitter timeout here ?
-
-
+diff --git a/tools/testing/selftests/bpf/prog_tests/netcnt.c b/tools/testing/selftests/bpf/prog_tests/netcnt.c
+index 954964f0ac3d..d3915c58d0e1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/netcnt.c
++++ b/tools/testing/selftests/bpf/prog_tests/netcnt.c
+@@ -25,7 +25,7 @@ void serial_test_netcnt(void)
+ 	if (!ASSERT_OK_PTR(skel, "netcnt_prog__open_and_load"))
+ 		return;
+ 
+-	nproc = get_nprocs_conf();
++	nproc = bpf_num_possible_cpus();
+ 	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
+ 	if (!ASSERT_OK_PTR(percpu_netcnt, "malloc(percpu_netcnt)"))
+ 		goto err;
+diff --git a/tools/testing/selftests/bpf/test_cgroup_storage.c b/tools/testing/selftests/bpf/test_cgroup_storage.c
+index d6a1be4d8020..2ffa08198d1c 100644
+--- a/tools/testing/selftests/bpf/test_cgroup_storage.c
++++ b/tools/testing/selftests/bpf/test_cgroup_storage.c
+@@ -7,6 +7,7 @@
+ #include <sys/sysinfo.h>
+ 
+ #include "bpf_rlimit.h"
++#include "bpf_util.h"
+ #include "cgroup_helpers.h"
+ #include "testing_helpers.h"
+ 
+@@ -44,7 +45,7 @@ int main(int argc, char **argv)
+ 	unsigned long long *percpu_value;
+ 	int cpu, nproc;
+ 
+-	nproc = get_nprocs_conf();
++	nproc = bpf_num_possible_cpus();
+ 	percpu_value = malloc(sizeof(*percpu_value) * nproc);
+ 	if (!percpu_value) {
+ 		printf("Not enough memory for per-cpu area (%d cpus)\n", nproc);
 -- 
-js
-suse labs
+2.34.1
+
