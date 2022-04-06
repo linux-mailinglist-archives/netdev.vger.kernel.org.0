@@ -2,173 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B86844F5E89
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:04:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB324F5F6B
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:29:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231872AbiDFNFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 09:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
+        id S231964AbiDFNSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 09:18:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231862AbiDFNFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 09:05:07 -0400
-Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18E5468245
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 02:36:56 -0700 (PDT)
-X-QQ-mid: bizesmtp62t1649237795tevo88r8
-Received: from localhost.localdomain.localdoma ( [116.228.45.98])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 06 Apr 2022 17:36:34 +0800 (CST)
-X-QQ-SSF: 01000000002000903000B00A0000000
-X-QQ-FEAT: khFrY5NuiqQ7qMv4VncgwibZeQOLVAjwrTbQ9OqwxmbaSNvi3Dbbxat0zKwxX
-        3Wf+pE00cwHqGkWQwUROvqzVVhb6rDTn5hAkTrZsKtHMY+ZzAY7oJAC5ykBfdgMRjgaU2Zf
-        JsNuWjwWlBitStUD+DQ6tVrZQVSdOX9A2Ve5dXhzDO+Qc8xz784n/qGNKevs/VpNKWWJelP
-        BKP2phOaTCJKPMCDSsXWkmUe9YiwEYXh9+9LuUmSOBsRAH84/bNXsD2fn169XZW0xbLRDYO
-        OcbCAed8PaRv31lHiN2wREJoo1zcjKUpb2OmvWUGh7I4VVBEYzRH8YlaMxpMsY/s5WhvnWB
-        rZOTGICmqymEiOkcG4=
-X-QQ-GoodBg: 0
-From:   Michael Qiu <qiudayu@archeros.com>
-To:     parav@nvidia.com, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, Michael Qiu <qiudayu@archeros.com>
-Subject: [PATCH iproute2 v2] vdpa: Add virtqueue pairs set capacity
-Date:   Wed,  6 Apr 2022 05:36:31 -0400
-Message-Id: <1649237791-31723-1-git-send-email-qiudayu@archeros.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1648113553-10547-1-git-send-email-08005325@163.com>
-References: <1648113553-10547-1-git-send-email-08005325@163.com>
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:archeros.com:qybgspam:qybgspam10
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
-        autolearn_force=no version=3.4.6
+        with ESMTP id S233807AbiDFNSV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 09:18:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CBCF612667
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 02:56:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649238909;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ybPMGpSVgGbhE0vIjl+GYydz1+5CdicGEBsupFU3sOg=;
+        b=E925UgEZqoOOyVbsYt01Oa574ilB7mx/pDxR75PpXBXa3cOwmBk3yy/DcTiLJd17sxzpeO
+        AmyeeOcHhOS9EQFWGIZIXzcpgf3ev9Oy8m/hKIv0hUISgHV9+/0t0ZAtNOP3eeIDvaaYlF
+        +ZCq3VZ1GhPUWfacPcgE3taP9pxZqH8=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-288-nx9nCfOnOFyTXH4DGXTpYg-1; Wed, 06 Apr 2022 05:37:09 -0400
+X-MC-Unique: nx9nCfOnOFyTXH4DGXTpYg-1
+Received: by mail-pg1-f197.google.com with SMTP id t204-20020a635fd5000000b0039ba3f42ba0so1175853pgb.13
+        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 02:37:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ybPMGpSVgGbhE0vIjl+GYydz1+5CdicGEBsupFU3sOg=;
+        b=Y2rpfFuIHIOqtXG+7WPHOiWQ1Wo0r/afOo6GPZ3v1gaenP7fYTTXcvofenM6rjUcVx
+         HYBiI6vRUrX2z4JfKghIRYsSPSpm3jV79rZbQRgiKp2r0hb2QIX/WVO/ym95Ht0aG4FK
+         Yqlo/R8wtI12cz1tyBDS1XST4GH4iEz2GwFpW5iDfGHUi8MxmMXY46drJINSaOhmVD+M
+         /7buhqq4UCab9YUCI/mPIAmnvpXGcYU6ry7Pdk8e6AZLmehpGw/OBPiHknTKq4jeQY3R
+         4o3tZrvc73RzzKBWQVid/e4bGr80dMgQO4/XTpLJiY32+qJ345kqySKWBA8+Ao0Anu63
+         DIxw==
+X-Gm-Message-State: AOAM530JiV0WHxcOu9G+Oc4T8ubJtdoB1A4f4cCjvZn13m+653KASfaa
+        lAkhC09uq3ObXEBtIafVVu9F8UnmxPojA9MH5uXw/Svr8vGZQcZrIcRSht+EkUU7ftcwM1fbtNn
+        Z2t5IRSfEzV5y59Cg1kciRp3H6Gah6erB++zMOb9dFBpXtsRMKyFL/9f08eFCsYkTszhD
+X-Received: by 2002:a05:6a00:2386:b0:4fa:e772:ebac with SMTP id f6-20020a056a00238600b004fae772ebacmr8106662pfc.75.1649237827780;
+        Wed, 06 Apr 2022 02:37:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxWZkCTeZnOkM6UY9by48MAOhnnl1h/ug05QuFfe6g5moX/X4bllYOK2Rm2clXaB9pY0DWAMQ==
+X-Received: by 2002:a05:6a00:2386:b0:4fa:e772:ebac with SMTP id f6-20020a056a00238600b004fae772ebacmr8106637pfc.75.1649237827402;
+        Wed, 06 Apr 2022 02:37:07 -0700 (PDT)
+Received: from fedora19.redhat.com (2403-5804-6c4-aa-7079-8927-5a0f-bb55.ip6.aussiebb.net. [2403:5804:6c4:aa:7079:8927:5a0f:bb55])
+        by smtp.gmail.com with ESMTPSA id l18-20020a056a00141200b004f75395b2cesm18407626pfu.150.2022.04.06.02.37.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 02:37:06 -0700 (PDT)
+From:   Ian Wienand <iwienand@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, Tom Gundersen <teg@jklm.no>,
+        David Herrmann <dh.herrmann@gmail.com>,
+        Ian Wienand <iwienand@redhat.com>
+Subject: [PATCH v3] net/ethernet : set default assignment identifier to NET_NAME_ENUM
+Date:   Wed,  6 Apr 2022 19:36:36 +1000
+Message-Id: <20220406093635.1601506-1-iwienand@redhat.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220405204758.3ebfa82d@kernel.org>
+References: <20220405204758.3ebfa82d@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vdpa framework not only support query the max virtqueue pair, but
-also for the set action.
+As noted in the original commit 685343fc3ba6 ("net: add
+name_assign_type netdev attribute")
 
-This patch enable this capacity, and it is very useful for VMs
- who needs multiqueue support.
+  ... when the kernel has given the interface a name using global
+  device enumeration based on order of discovery (ethX, wlanY, etc)
+  ... are labelled NET_NAME_ENUM.
 
-After enable this feature, we could simply use below command to
-create multi-queue support:
+That describes this case, so set the default for the devices here to
+NET_NAME_ENUM.  Current popular network setup tools like systemd use
+this only to warn if you're setting static settings on interfaces that
+might change, so it is expected this only leads to better user
+information, but not changing of interfaces, etc.
 
-vdpa dev add mgmtdev pci/0000:03:10.3 name foo mac 56:d0:2f:03:c9:6d max_vqp 6
-
-Signed-off-by: Michael Qiu <qiudayu@archeros.com>
+Signed-off-by: Ian Wienand <iwienand@redhat.com>
 ---
+ net/ethernet/eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-v2 --> v1:
-    rename "max_vq_pairs" to "max_vqp"
-
-    extend the man page for this addition with example
----
- man/man8/vdpa-dev.8 |  9 +++++++++
- vdpa/vdpa.c         | 19 ++++++++++++++++---
- 2 files changed, 25 insertions(+), 3 deletions(-)
-
-diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
-index aa21ae3..a401115 100644
---- a/man/man8/vdpa-dev.8
-+++ b/man/man8/vdpa-dev.8
-@@ -74,6 +74,10 @@ This is applicable only for the network type of vdpa device. This is optional.
- - specifies the mtu for the new vdpa device.
- This is applicable only for the network type of vdpa device. This is optional.
- 
-+.BI max_vqp " MAX_VQP"
-+- specifies the max queue pairs for the new vdpa device.
-+This is applicable only for the network type of vdpa device. This is optional.
-+
- .SS vdpa dev del - Delete the vdpa device.
- 
- .PP
-@@ -119,6 +123,11 @@ vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55 mtu 9000
- Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55 and mtu of 9000 bytes.
- .RE
- .PP
-+vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55 mtu 9000 max_vqp 6
-+.RS 4
-+Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55, mtu of 9000 bytes and max virtqueue pairs of 6.
-+.RE
-+.PP
- vdpa dev del foo
- .RS 4
- Delete the vdpa device named foo which was previously created.
-diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-index f048e47..104c503 100644
---- a/vdpa/vdpa.c
-+++ b/vdpa/vdpa.c
-@@ -23,6 +23,7 @@
- #define VDPA_OPT_VDEV_HANDLE		BIT(3)
- #define VDPA_OPT_VDEV_MAC		BIT(4)
- #define VDPA_OPT_VDEV_MTU		BIT(5)
-+#define VDPA_OPT_VDEV_QUEUE_PAIRS	BIT(6)
- 
- struct vdpa_opts {
- 	uint64_t present; /* flags of present items */
-@@ -32,6 +33,7 @@ struct vdpa_opts {
- 	unsigned int device_id;
- 	char mac[ETH_ALEN];
- 	uint16_t mtu;
-+	uint16_t max_vqp;
- };
- 
- struct vdpa {
-@@ -219,6 +221,8 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
- 			     sizeof(opts->mac), opts->mac);
- 	if (opts->present & VDPA_OPT_VDEV_MTU)
- 		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MTU, opts->mtu);
-+	if (opts->present & VDPA_OPT_VDEV_QUEUE_PAIRS)
-+		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, opts->max_vqp);
- }
- 
- static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
-@@ -287,6 +291,15 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
- 
- 			NEXT_ARG_FWD();
- 			o_found |= VDPA_OPT_VDEV_MTU;
-+		} else if ((strcmp(*argv, "max_vqp") == 0) &&
-+			   (o_all & VDPA_OPT_VDEV_QUEUE_PAIRS)) {
-+			NEXT_ARG_FWD();
-+			err = vdpa_argv_u16(vdpa, argc, argv, &opts->max_vqp);
-+			if (err)
-+				return err;
-+
-+			NEXT_ARG_FWD();
-+			o_found |= VDPA_OPT_VDEV_QUEUE_PAIRS;
- 		} else {
- 			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
- 			return -EINVAL;
-@@ -467,7 +480,7 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
- static void cmd_dev_help(void)
+diff --git a/net/ethernet/eth.c b/net/ethernet/eth.c
+index ebcc812735a4..62b89d6f54fd 100644
+--- a/net/ethernet/eth.c
++++ b/net/ethernet/eth.c
+@@ -391,7 +391,7 @@ EXPORT_SYMBOL(ether_setup);
+ struct net_device *alloc_etherdev_mqs(int sizeof_priv, unsigned int txqs,
+ 				      unsigned int rxqs)
  {
- 	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
--	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
-+	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ] [ max_vqp N ]\n");
- 	fprintf(stderr, "       vdpa dev del DEV\n");
- 	fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
+-	return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_UNKNOWN,
++	return alloc_netdev_mqs(sizeof_priv, "eth%d", NET_NAME_ENUM,
+ 				ether_setup, txqs, rxqs);
  }
-@@ -557,7 +570,7 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
- 					  NLM_F_REQUEST | NLM_F_ACK);
- 	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
- 				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
--				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU);
-+				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU | VDPA_OPT_VDEV_QUEUE_PAIRS);
- 	if (err)
- 		return err;
- 
-@@ -603,7 +616,7 @@ static void pr_out_dev_net_config(struct nlattr **tb)
- 	}
- 	if (tb[VDPA_ATTR_DEV_NET_CFG_MAX_VQP]) {
- 		val_u16 = mnl_attr_get_u16(tb[VDPA_ATTR_DEV_NET_CFG_MAX_VQP]);
--		print_uint(PRINT_ANY, "max_vq_pairs", "max_vq_pairs %d ",
-+		print_uint(PRINT_ANY, "max_vqp", "max_vqp %d ",
- 			     val_u16);
- 	}
- 	if (tb[VDPA_ATTR_DEV_NET_CFG_MTU]) {
+ EXPORT_SYMBOL(alloc_etherdev_mqs);
 -- 
-1.8.3.1
-
+2.35.1
 
