@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D46734F5C88
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:40:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C935E4F5C5C
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbiDFLjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 07:39:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
+        id S230377AbiDFLiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 07:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233341AbiDFLhq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:37:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1CB26AE30;
-        Wed,  6 Apr 2022 01:26:40 -0700 (PDT)
+        with ESMTP id S232140AbiDFLge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:36:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871F630F9EE;
+        Wed,  6 Apr 2022 01:26:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CD3BB82186;
-        Wed,  6 Apr 2022 08:26:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B04B1C385A5;
-        Wed,  6 Apr 2022 08:26:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6F0C60C54;
+        Wed,  6 Apr 2022 08:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B17A5C385B9;
+        Wed,  6 Apr 2022 08:26:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649233597;
-        bh=Pjq8CzlWSoebxrrXO3A2CpkZQuBfVoeYsPiq5lyodxI=;
+        s=k20201202; t=1649233585;
+        bh=+bDXqNV2UF2eXw1j1MXzMDZjPZtFy+Iw3iF9fgsGHiY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CEutoCDS+PP/oXv+5ihaot3C4BugULuHuyiSBcupqRhD78qD+Wz4Wel5WVb6LdOPG
-         QztOWRFbfQ8nRTb7bXx52u3xu4OuPOMt6DUaLVJhbGL+HGH6jAW5mfLlxhS+2c5PBQ
-         qB3IBrj71i8fOThzbDGxk/spF9zxcaKatl3VQAROW+ogaJibtovQkd60cHG7jOxJWu
-         Mxi1BzTQhp59fKnvMbkTgEYfE++hckSKsW0JUlNXoSt8ziaM6cL8Ya809YrJ2RoMnD
-         NIUGej2fukeWISCYj2H0O/G2fyakPp/qm8CCc/unHuAM9o0bhjy84nOIO86yHJHQ29
-         WufoAEcw+EPLw==
+        b=kVxnShPJ/ptHG3a8MpEGL8LVkOkFfWJ4nrnGuPB1AzZGnB/wAZKI3IQv0GzP+xyPo
+         qVBk4cezX0Hu9+taA1qvGzAJ7RZj1tecTTfLTsgdoWnYLi5/s9ZPhhzY5Q4l+pIary
+         XSVa3wOUBxX/k+NCI4SSWn4BTkJag9gbWLt75JkofbKMSCrb4VMYTcq/lFIz/4ixD6
+         E2aOnc4sklzGGwbqILAfPwKGaVcFAhBnljjRfd2YnQE/wbcDMh1BYI5h3qjYnOkvTK
+         DlwnXFUF+Vsa42e1U2jDZFm+d4x0Bn+bE75tIGhWwhxDKCPNUFnUhEqmKmChpMtQUr
+         WHwo/cTiTyXlA==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -38,9 +38,9 @@ To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
 Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 07/17] RDMA/mlx5: Drop crypto flow steering API
-Date:   Wed,  6 Apr 2022 11:25:42 +0300
-Message-Id: <634a5face7734381463d809bfb89850f6998deac.1649232994.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next 08/17] RDMA/core: Delete IPsec flow action logic from the core
+Date:   Wed,  6 Apr 2022 11:25:43 +0300
+Message-Id: <a638e376314a2eb1c66f597c0bbeeab2e5de7faf.1649232994.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
 References: <cover.1649232994.git.leonro@nvidia.com>
@@ -58,456 +58,460 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-The mlx5 flow steering crypto API was intended to be used in FPGA
-devices, which is not supported for years already. The removal of
-mlx5 crypto FPGA code together with inability to configure encryption
-keys makes the low steering API completely unusable.
-
-So delete the code, so any ESP flow steering requests will fail with
-not supported error, as it is happening now anyway as no device support
-this type of API.
+The removal of mlx5 flow steering logic, left the kernel without any RDMA
+drivers that implements flow action callbacks supplied by RDMA/core. Any
+user access to them caused to EOPNOTSUPP error, which can be achieved by
+simply removing ioctl implementation.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/fs.c               | 223 +-----------------
- drivers/infiniband/hw/mlx5/main.c             |  27 ---
- .../ethernet/mellanox/mlx5/core/accel/ipsec.c |   5 +-
- .../mellanox/mlx5/core/en_accel/ipsec.c       |   4 +-
- include/linux/mlx5/accel.h                    |  13 +-
- 5 files changed, 10 insertions(+), 262 deletions(-)
+ drivers/infiniband/core/device.c              |   2 -
+ .../core/uverbs_std_types_flow_action.c       | 383 +-----------------
+ include/rdma/ib_verbs.h                       |   8 -
+ 3 files changed, 1 insertion(+), 392 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/fs.c b/drivers/infiniband/hw/mlx5/fs.c
-index 661ed2b44508..9c2886bc72cb 100644
---- a/drivers/infiniband/hw/mlx5/fs.c
-+++ b/drivers/infiniband/hw/mlx5/fs.c
-@@ -15,7 +15,6 @@
- #include <linux/mlx5/driver.h>
- #include <linux/mlx5/fs.h>
- #include <linux/mlx5/fs_helpers.h>
--#include <linux/mlx5/accel.h>
- #include <linux/mlx5/eswitch.h>
- #include <net/inet_ecn.h>
- #include "mlx5_ib.h"
-@@ -148,16 +147,6 @@ int parse_flow_flow_action(struct mlx5_ib_flow_action *maction,
- {
- 
- 	switch (maction->ib_action.type) {
--	case IB_FLOW_ACTION_ESP:
--		if (action->action & (MLX5_FLOW_CONTEXT_ACTION_ENCRYPT |
--				      MLX5_FLOW_CONTEXT_ACTION_DECRYPT))
--			return -EINVAL;
--		/* Currently only AES_GCM keymat is supported by the driver */
--		action->esp_id = (uintptr_t)maction->esp_aes_gcm.ctx;
--		action->action |= is_egress ?
--			MLX5_FLOW_CONTEXT_ACTION_ENCRYPT :
--			MLX5_FLOW_CONTEXT_ACTION_DECRYPT;
--		return 0;
- 	case IB_FLOW_ACTION_UNSPECIFIED:
- 		if (maction->flow_action_raw.sub_type ==
- 		    MLX5_IB_FLOW_ACTION_MODIFY_HEADER) {
-@@ -368,14 +357,7 @@ static int parse_flow_attr(struct mlx5_core_dev *mdev,
- 			       ib_spec->type & IB_FLOW_SPEC_INNER);
- 		break;
- 	case IB_FLOW_SPEC_ESP:
--		if (ib_spec->esp.mask.seq)
--			return -EOPNOTSUPP;
--
--		MLX5_SET(fte_match_set_misc, misc_params_c, outer_esp_spi,
--			 ntohl(ib_spec->esp.mask.spi));
--		MLX5_SET(fte_match_set_misc, misc_params_v, outer_esp_spi,
--			 ntohl(ib_spec->esp.val.spi));
--		break;
-+		return -EOPNOTSUPP;
- 	case IB_FLOW_SPEC_TCP:
- 		if (FIELDS_NOT_SUPPORTED(ib_spec->tcp_udp.mask,
- 					 LAST_TCP_UDP_FIELD))
-@@ -587,47 +569,6 @@ static bool flow_is_multicast_only(const struct ib_flow_attr *ib_attr)
- 	return false;
+diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+index a311df07b1bd..4deb60a3b43f 100644
+--- a/drivers/infiniband/core/device.c
++++ b/drivers/infiniband/core/device.c
+@@ -2613,7 +2613,6 @@ void ib_set_device_ops(struct ib_device *dev, const struct ib_device_ops *ops)
+ 	SET_DEVICE_OP(dev_ops, create_counters);
+ 	SET_DEVICE_OP(dev_ops, create_cq);
+ 	SET_DEVICE_OP(dev_ops, create_flow);
+-	SET_DEVICE_OP(dev_ops, create_flow_action_esp);
+ 	SET_DEVICE_OP(dev_ops, create_qp);
+ 	SET_DEVICE_OP(dev_ops, create_rwq_ind_table);
+ 	SET_DEVICE_OP(dev_ops, create_srq);
+@@ -2676,7 +2675,6 @@ void ib_set_device_ops(struct ib_device *dev, const struct ib_device_ops *ops)
+ 	SET_DEVICE_OP(dev_ops, modify_ah);
+ 	SET_DEVICE_OP(dev_ops, modify_cq);
+ 	SET_DEVICE_OP(dev_ops, modify_device);
+-	SET_DEVICE_OP(dev_ops, modify_flow_action_esp);
+ 	SET_DEVICE_OP(dev_ops, modify_hw_stat);
+ 	SET_DEVICE_OP(dev_ops, modify_port);
+ 	SET_DEVICE_OP(dev_ops, modify_qp);
+diff --git a/drivers/infiniband/core/uverbs_std_types_flow_action.c b/drivers/infiniband/core/uverbs_std_types_flow_action.c
+index d42ed7ff223e..0ddcf6da66c4 100644
+--- a/drivers/infiniband/core/uverbs_std_types_flow_action.c
++++ b/drivers/infiniband/core/uverbs_std_types_flow_action.c
+@@ -46,385 +46,6 @@ static int uverbs_free_flow_action(struct ib_uobject *uobject,
+ 	return action->device->ops.destroy_flow_action(action);
  }
  
--enum valid_spec {
--	VALID_SPEC_INVALID,
--	VALID_SPEC_VALID,
--	VALID_SPEC_NA,
+-static u64 esp_flags_uverbs_to_verbs(struct uverbs_attr_bundle *attrs,
+-				     u32 flags, bool is_modify)
+-{
+-	u64 verbs_flags = flags;
+-
+-	if (uverbs_attr_is_valid(attrs, UVERBS_ATTR_FLOW_ACTION_ESP_ESN))
+-		verbs_flags |= IB_FLOW_ACTION_ESP_FLAGS_ESN_TRIGGERED;
+-
+-	if (is_modify && uverbs_attr_is_valid(attrs,
+-					      UVERBS_ATTR_FLOW_ACTION_ESP_ATTRS))
+-		verbs_flags |= IB_FLOW_ACTION_ESP_FLAGS_MOD_ESP_ATTRS;
+-
+-	return verbs_flags;
 -};
 -
--static enum valid_spec
--is_valid_esp_aes_gcm(struct mlx5_core_dev *mdev,
--		     const struct mlx5_flow_spec *spec,
--		     const struct mlx5_flow_act *flow_act,
--		     bool egress)
+-static int validate_flow_action_esp_keymat_aes_gcm(struct ib_flow_action_attrs_esp_keymats *keymat)
 -{
--	const u32 *match_c = spec->match_criteria;
--	bool is_crypto =
--		(flow_act->action & (MLX5_FLOW_CONTEXT_ACTION_ENCRYPT |
--				     MLX5_FLOW_CONTEXT_ACTION_DECRYPT));
--	bool is_ipsec = mlx5_fs_is_ipsec_flow(match_c);
--	bool is_drop = flow_act->action & MLX5_FLOW_CONTEXT_ACTION_DROP;
+-	struct ib_uverbs_flow_action_esp_keymat_aes_gcm *aes_gcm =
+-		&keymat->keymat.aes_gcm;
 -
--	/*
--	 * Currently only crypto is supported in egress, when regular egress
--	 * rules would be supported, always return VALID_SPEC_NA.
--	 */
--	if (!is_crypto)
--		return VALID_SPEC_NA;
--
--	return is_crypto && is_ipsec &&
--		(!egress || (!is_drop &&
--			     !(spec->flow_context.flags & FLOW_CONTEXT_HAS_TAG))) ?
--		VALID_SPEC_VALID : VALID_SPEC_INVALID;
--}
--
--static bool is_valid_spec(struct mlx5_core_dev *mdev,
--			  const struct mlx5_flow_spec *spec,
--			  const struct mlx5_flow_act *flow_act,
--			  bool egress)
--{
--	/* We curretly only support ipsec egress flow */
--	return is_valid_esp_aes_gcm(mdev, spec, flow_act, egress) != VALID_SPEC_INVALID;
--}
--
- static bool is_valid_ethertype(struct mlx5_core_dev *mdev,
- 			       const struct ib_flow_attr *flow_attr,
- 			       bool check_inner)
-@@ -1154,8 +1095,7 @@ static struct mlx5_ib_flow_handler *_create_flow_rule(struct mlx5_ib_dev *dev,
- 
- 	spec->match_criteria_enable = get_match_criteria_enable(spec->match_criteria);
- 
--	if (is_egress &&
--	    !is_valid_spec(dev->mdev, spec, &flow_act, is_egress)) {
-+	if (is_egress) {
- 		err = -EINVAL;
- 		goto free;
- 	}
-@@ -1740,149 +1680,6 @@ static struct mlx5_ib_flow_handler *raw_fs_rule_add(
- 	return ERR_PTR(err);
- }
- 
--static u32 mlx5_ib_flow_action_flags_to_accel_xfrm_flags(u32 mlx5_flags)
--{
--	u32 flags = 0;
--
--	if (mlx5_flags & MLX5_IB_UAPI_FLOW_ACTION_FLAGS_REQUIRE_METADATA)
--		flags |= MLX5_ACCEL_XFRM_FLAG_REQUIRE_METADATA;
--
--	return flags;
--}
--
--#define MLX5_FLOW_ACTION_ESP_CREATE_LAST_SUPPORTED                             \
--	MLX5_IB_UAPI_FLOW_ACTION_FLAGS_REQUIRE_METADATA
--static struct ib_flow_action *
--mlx5_ib_create_flow_action_esp(struct ib_device *device,
--			       const struct ib_flow_action_attrs_esp *attr,
--			       struct uverbs_attr_bundle *attrs)
--{
--	struct mlx5_ib_dev *mdev = to_mdev(device);
--	struct ib_uverbs_flow_action_esp_keymat_aes_gcm *aes_gcm;
--	struct mlx5_accel_esp_xfrm_attrs accel_attrs = {};
--	struct mlx5_ib_flow_action *action;
--	u64 action_flags;
--	u64 flags;
--	int err = 0;
--
--	err = uverbs_get_flags64(
--		&action_flags, attrs, MLX5_IB_ATTR_CREATE_FLOW_ACTION_FLAGS,
--		((MLX5_FLOW_ACTION_ESP_CREATE_LAST_SUPPORTED << 1) - 1));
--	if (err)
--		return ERR_PTR(err);
--
--	flags = mlx5_ib_flow_action_flags_to_accel_xfrm_flags(action_flags);
--
--	/* We current only support a subset of the standard features. Only a
--	 * keymat of type AES_GCM, with icv_len == 16, iv_algo == SEQ and esn
--	 * (with overlap). Full offload mode isn't supported.
--	 */
--	if (!attr->keymat || attr->replay || attr->encap ||
--	    attr->spi || attr->seq || attr->tfc_pad ||
--	    attr->hard_limit_pkts ||
--	    (attr->flags & ~(IB_FLOW_ACTION_ESP_FLAGS_ESN_TRIGGERED |
--			     IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ENCRYPT)))
--		return ERR_PTR(-EOPNOTSUPP);
--
--	if (attr->keymat->protocol !=
--	    IB_UVERBS_FLOW_ACTION_ESP_KEYMAT_AES_GCM)
--		return ERR_PTR(-EOPNOTSUPP);
--
--	aes_gcm = &attr->keymat->keymat.aes_gcm;
--
--	if (aes_gcm->icv_len != 16 ||
--	    aes_gcm->iv_algo != IB_UVERBS_FLOW_ACTION_IV_ALGO_SEQ)
--		return ERR_PTR(-EOPNOTSUPP);
--
--	action = kmalloc(sizeof(*action), GFP_KERNEL);
--	if (!action)
--		return ERR_PTR(-ENOMEM);
--
--	action->esp_aes_gcm.ib_flags = attr->flags;
--	memcpy(&accel_attrs.keymat.aes_gcm.aes_key, &aes_gcm->aes_key,
--	       sizeof(accel_attrs.keymat.aes_gcm.aes_key));
--	accel_attrs.keymat.aes_gcm.key_len = aes_gcm->key_len * 8;
--	memcpy(&accel_attrs.keymat.aes_gcm.salt, &aes_gcm->salt,
--	       sizeof(accel_attrs.keymat.aes_gcm.salt));
--	memcpy(&accel_attrs.keymat.aes_gcm.seq_iv, &aes_gcm->iv,
--	       sizeof(accel_attrs.keymat.aes_gcm.seq_iv));
--	accel_attrs.keymat.aes_gcm.icv_len = aes_gcm->icv_len * 8;
--	accel_attrs.keymat.aes_gcm.iv_algo = MLX5_ACCEL_ESP_AES_GCM_IV_ALGO_SEQ;
--	accel_attrs.keymat_type = MLX5_ACCEL_ESP_KEYMAT_AES_GCM;
--
--	accel_attrs.esn = attr->esn;
--	if (attr->flags & IB_FLOW_ACTION_ESP_FLAGS_ESN_TRIGGERED)
--		accel_attrs.flags |= MLX5_ACCEL_ESP_FLAGS_ESN_TRIGGERED;
--	if (attr->flags & IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ESN_NEW_WINDOW)
--		accel_attrs.flags |= MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP;
--
--	if (attr->flags & IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ENCRYPT)
--		accel_attrs.action |= MLX5_ACCEL_ESP_ACTION_ENCRYPT;
--
--	action->esp_aes_gcm.ctx =
--		mlx5_accel_esp_create_xfrm(mdev->mdev, &accel_attrs, flags);
--	if (IS_ERR(action->esp_aes_gcm.ctx)) {
--		err = PTR_ERR(action->esp_aes_gcm.ctx);
--		goto err_parse;
--	}
--
--	action->esp_aes_gcm.ib_flags = attr->flags;
--
--	return &action->ib_action;
--
--err_parse:
--	kfree(action);
--	return ERR_PTR(err);
--}
--
--static int
--mlx5_ib_modify_flow_action_esp(struct ib_flow_action *action,
--			       const struct ib_flow_action_attrs_esp *attr,
--			       struct uverbs_attr_bundle *attrs)
--{
--	struct mlx5_ib_flow_action *maction = to_mflow_act(action);
--	struct mlx5_accel_esp_xfrm_attrs accel_attrs;
--	int err = 0;
--
--	if (attr->keymat || attr->replay || attr->encap ||
--	    attr->spi || attr->seq || attr->tfc_pad ||
--	    attr->hard_limit_pkts ||
--	    (attr->flags & ~(IB_FLOW_ACTION_ESP_FLAGS_ESN_TRIGGERED |
--			     IB_FLOW_ACTION_ESP_FLAGS_MOD_ESP_ATTRS |
--			     IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ESN_NEW_WINDOW)))
+-	if (aes_gcm->iv_algo > IB_UVERBS_FLOW_ACTION_IV_ALGO_SEQ)
 -		return -EOPNOTSUPP;
 -
--	/* Only the ESN value or the MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP can
--	 * be modified.
--	 */
--	if (!(maction->esp_aes_gcm.ib_flags &
--	      IB_FLOW_ACTION_ESP_FLAGS_ESN_TRIGGERED) &&
--	    attr->flags & (IB_FLOW_ACTION_ESP_FLAGS_ESN_TRIGGERED |
--			   IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ESN_NEW_WINDOW))
+-	if (aes_gcm->key_len != 32 &&
+-	    aes_gcm->key_len != 24 &&
+-	    aes_gcm->key_len != 16)
 -		return -EINVAL;
 -
--	memcpy(&accel_attrs, &maction->esp_aes_gcm.ctx->attrs,
--	       sizeof(accel_attrs));
--
--	accel_attrs.esn = attr->esn;
--	if (attr->flags & IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ESN_NEW_WINDOW)
--		accel_attrs.flags |= MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP;
--	else
--		accel_attrs.flags &= ~MLX5_ACCEL_ESP_FLAGS_ESN_STATE_OVERLAP;
--
--	err = mlx5_accel_esp_modify_xfrm(maction->esp_aes_gcm.ctx,
--					 &accel_attrs);
--	if (err)
--		return err;
--
--	maction->esp_aes_gcm.ib_flags &=
--		~IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ESN_NEW_WINDOW;
--	maction->esp_aes_gcm.ib_flags |=
--		attr->flags & IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ESN_NEW_WINDOW;
+-	if (aes_gcm->icv_len != 16 &&
+-	    aes_gcm->icv_len != 8 &&
+-	    aes_gcm->icv_len != 12)
+-		return -EINVAL;
 -
 -	return 0;
 -}
 -
- static void destroy_flow_action_raw(struct mlx5_ib_flow_action *maction)
- {
- 	switch (maction->flow_action_raw.sub_type) {
-@@ -1906,13 +1703,6 @@ static int mlx5_ib_destroy_flow_action(struct ib_flow_action *action)
- 	struct mlx5_ib_flow_action *maction = to_mflow_act(action);
- 
- 	switch (action->type) {
--	case IB_FLOW_ACTION_ESP:
--		/*
--		 * We only support aes_gcm by now, so we implicitly know this is
--		 * the underline crypto.
--		 */
--		mlx5_accel_esp_destroy_xfrm(maction->esp_aes_gcm.ctx);
--		break;
- 	case IB_FLOW_ACTION_UNSPECIFIED:
- 		destroy_flow_action_raw(maction);
- 		break;
-@@ -2709,11 +2499,6 @@ static const struct ib_device_ops flow_ops = {
- 	.destroy_flow_action = mlx5_ib_destroy_flow_action,
- };
- 
--static const struct ib_device_ops flow_ipsec_ops = {
--	.create_flow_action_esp = mlx5_ib_create_flow_action_esp,
--	.modify_flow_action_esp = mlx5_ib_modify_flow_action_esp,
+-static int (* const flow_action_esp_keymat_validate[])(struct ib_flow_action_attrs_esp_keymats *keymat) = {
+-	[IB_UVERBS_FLOW_ACTION_ESP_KEYMAT_AES_GCM] = validate_flow_action_esp_keymat_aes_gcm,
 -};
 -
- int mlx5_ib_fs_init(struct mlx5_ib_dev *dev)
- {
- 	dev->flow_db = kzalloc(sizeof(*dev->flow_db), GFP_KERNEL);
-@@ -2724,9 +2509,5 @@ int mlx5_ib_fs_init(struct mlx5_ib_dev *dev)
- 	mutex_init(&dev->flow_db->lock);
- 
- 	ib_set_device_ops(&dev->ib_dev, &flow_ops);
--	if (mlx5_accel_ipsec_device_caps(dev->mdev) &
--	    MLX5_ACCEL_IPSEC_CAP_DEVICE)
--		ib_set_device_ops(&dev->ib_dev, &flow_ipsec_ops);
+-static int flow_action_esp_replay_none(struct ib_flow_action_attrs_esp_replays *replay,
+-				       bool is_modify)
+-{
+-	/* This is used in order to modify an esp flow action with an enabled
+-	 * replay protection to a disabled one. This is only supported via
+-	 * modify, as in create verb we can simply drop the REPLAY attribute and
+-	 * achieve the same thing.
+-	 */
+-	return is_modify ? 0 : -EINVAL;
+-}
 -
- 	return 0;
- }
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 4a9629c01cf1..d58115daaa32 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -42,7 +42,6 @@
- #include "restrack.h"
- #include "counters.h"
- #include "umr.h"
--#include <linux/mlx5/accel.h>
- #include <rdma/uverbs_std_types.h>
- #include <rdma/uverbs_ioctl.h>
- #include <rdma/mlx5_user_ioctl_verbs.h>
-@@ -907,10 +906,6 @@ static int mlx5_ib_query_device(struct ib_device *ibdev,
- 						MLX5_RX_HASH_SRC_PORT_UDP |
- 						MLX5_RX_HASH_DST_PORT_UDP |
- 						MLX5_RX_HASH_INNER;
--			if (mlx5_accel_ipsec_device_caps(dev->mdev) &
--			    MLX5_ACCEL_IPSEC_CAP_DEVICE)
--				resp.rss_caps.rx_hash_fields_mask |=
--					MLX5_RX_HASH_IPSEC_SPI;
- 			resp.response_length += sizeof(resp.rss_caps);
- 		}
- 	} else {
-@@ -1792,19 +1787,6 @@ static int set_ucontext_resp(struct ib_ucontext *uctx,
- 	resp->num_uars_per_page = MLX5_CAP_GEN(dev->mdev, uar_4k) ?
- 					MLX5_CAP_GEN(dev->mdev,
- 						     num_of_uars_per_page) : 1;
+-static int flow_action_esp_replay_def_ok(struct ib_flow_action_attrs_esp_replays *replay,
+-					 bool is_modify)
+-{
+-	/* Some replay protections could always be enabled without validating
+-	 * anything.
+-	 */
+-	return 0;
+-}
 -
--	if (mlx5_accel_ipsec_device_caps(dev->mdev) &
--				MLX5_ACCEL_IPSEC_CAP_DEVICE) {
--		if (mlx5_get_flow_namespace(dev->mdev,
--				MLX5_FLOW_NAMESPACE_EGRESS))
--			resp->flow_action_flags |= MLX5_USER_ALLOC_UCONTEXT_FLOW_ACTION_FLAGS_ESP_AES_GCM;
--		if (MLX5_CAP_FLOWTABLE(dev->mdev, flow_table_properties_nic_receive.ft_field_support.outer_esp_spi))
--			resp->flow_action_flags |= MLX5_USER_ALLOC_UCONTEXT_FLOW_ACTION_FLAGS_ESP_AES_GCM_SPI_STEERING;
--		if (mlx5_accel_ipsec_device_caps(dev->mdev) &
--				MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN)
--			resp->flow_action_flags |= MLX5_USER_ALLOC_UCONTEXT_FLOW_ACTION_FLAGS_ESP_AES_GCM_TX_IV_IS_ESN;
+-static int (* const flow_action_esp_replay_validate[])(struct ib_flow_action_attrs_esp_replays *replay,
+-						       bool is_modify) = {
+-	[IB_UVERBS_FLOW_ACTION_ESP_REPLAY_NONE] = flow_action_esp_replay_none,
+-	[IB_UVERBS_FLOW_ACTION_ESP_REPLAY_BMP] = flow_action_esp_replay_def_ok,
+-};
+-
+-static int parse_esp_ip(enum ib_flow_spec_type proto,
+-			const void __user *val_ptr,
+-			size_t len, union ib_flow_spec *out)
+-{
+-	int ret;
+-	const struct ib_uverbs_flow_ipv4_filter ipv4 = {
+-		.src_ip = cpu_to_be32(0xffffffffUL),
+-		.dst_ip = cpu_to_be32(0xffffffffUL),
+-		.proto = 0xff,
+-		.tos = 0xff,
+-		.ttl = 0xff,
+-		.flags = 0xff,
+-	};
+-	const struct ib_uverbs_flow_ipv6_filter ipv6 = {
+-		.src_ip = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+-			   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
+-		.dst_ip = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+-			   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
+-		.flow_label = cpu_to_be32(0xffffffffUL),
+-		.next_hdr = 0xff,
+-		.traffic_class = 0xff,
+-		.hop_limit = 0xff,
+-	};
+-	union {
+-		struct ib_uverbs_flow_ipv4_filter ipv4;
+-		struct ib_uverbs_flow_ipv6_filter ipv6;
+-	} user_val = {};
+-	const void *user_pmask;
+-	size_t val_len;
+-
+-	/* If the flow IPv4/IPv6 flow specifications are extended, the mask
+-	 * should be changed as well.
+-	 */
+-	BUILD_BUG_ON(offsetof(struct ib_uverbs_flow_ipv4_filter, flags) +
+-		     sizeof(ipv4.flags) != sizeof(ipv4));
+-	BUILD_BUG_ON(offsetof(struct ib_uverbs_flow_ipv6_filter, reserved) +
+-		     sizeof(ipv6.reserved) != sizeof(ipv6));
+-
+-	switch (proto) {
+-	case IB_FLOW_SPEC_IPV4:
+-		if (len > sizeof(user_val.ipv4) &&
+-		    !ib_is_buffer_cleared(val_ptr + sizeof(user_val.ipv4),
+-					  len - sizeof(user_val.ipv4)))
+-			return -EOPNOTSUPP;
+-
+-		val_len = min_t(size_t, len, sizeof(user_val.ipv4));
+-		ret = copy_from_user(&user_val.ipv4, val_ptr,
+-				     val_len);
+-		if (ret)
+-			return -EFAULT;
+-
+-		user_pmask = &ipv4;
+-		break;
+-	case IB_FLOW_SPEC_IPV6:
+-		if (len > sizeof(user_val.ipv6) &&
+-		    !ib_is_buffer_cleared(val_ptr + sizeof(user_val.ipv6),
+-					  len - sizeof(user_val.ipv6)))
+-			return -EOPNOTSUPP;
+-
+-		val_len = min_t(size_t, len, sizeof(user_val.ipv6));
+-		ret = copy_from_user(&user_val.ipv6, val_ptr,
+-				     val_len);
+-		if (ret)
+-			return -EFAULT;
+-
+-		user_pmask = &ipv6;
+-		break;
+-	default:
+-		return -EOPNOTSUPP;
 -	}
 -
- 	resp->tot_bfregs = bfregi->lib_uar_dyn ? 0 :
- 			bfregi->total_num_bfregs - bfregi->num_dyn_bfregs;
- 	resp->num_ports = dev->num_ports;
-@@ -3601,13 +3583,6 @@ DECLARE_UVERBS_NAMED_OBJECT(MLX5_IB_OBJECT_UAR,
- 			    &UVERBS_METHOD(MLX5_IB_METHOD_UAR_OBJ_ALLOC),
- 			    &UVERBS_METHOD(MLX5_IB_METHOD_UAR_OBJ_DESTROY));
- 
--ADD_UVERBS_ATTRIBUTES_SIMPLE(
--	mlx5_ib_flow_action,
--	UVERBS_OBJECT_FLOW_ACTION,
--	UVERBS_METHOD_FLOW_ACTION_ESP_CREATE,
--	UVERBS_ATTR_FLAGS_IN(MLX5_IB_ATTR_CREATE_FLOW_ACTION_FLAGS,
--			     enum mlx5_ib_uapi_flow_action_flags));
+-	return ib_uverbs_kern_spec_to_ib_spec_filter(proto, user_pmask,
+-						     &user_val,
+-						     val_len, out);
+-}
 -
- ADD_UVERBS_ATTRIBUTES_SIMPLE(
- 	mlx5_ib_query_context,
- 	UVERBS_OBJECT_DEVICE,
-@@ -3625,8 +3600,6 @@ static const struct uapi_definition mlx5_ib_defs[] = {
- 	UAPI_DEF_CHAIN(mlx5_ib_std_types_defs),
- 	UAPI_DEF_CHAIN(mlx5_ib_dm_defs),
- 
--	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_FLOW_ACTION,
--				&mlx5_ib_flow_action),
- 	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_DEVICE, &mlx5_ib_query_context),
- 	UAPI_DEF_CHAIN_OBJ_TREE_NAMED(MLX5_IB_OBJECT_VAR,
- 				UAPI_DEF_IS_OBJ_SUPPORTED(var_is_supported)),
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c
-index 45296ec2d055..387be13b2f1f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec.c
-@@ -133,8 +133,7 @@ void mlx5_accel_esp_free_hw_context(struct mlx5_core_dev *mdev, void *context)
- 
- struct mlx5_accel_esp_xfrm *
- mlx5_accel_esp_create_xfrm(struct mlx5_core_dev *mdev,
--			   const struct mlx5_accel_esp_xfrm_attrs *attrs,
--			   u32 flags)
-+			   const struct mlx5_accel_esp_xfrm_attrs *attrs)
- {
- 	const struct mlx5_accel_ipsec_ops *ipsec_ops = mdev->ipsec_ops;
- 	struct mlx5_accel_esp_xfrm *xfrm;
-@@ -142,7 +141,7 @@ mlx5_accel_esp_create_xfrm(struct mlx5_core_dev *mdev,
- 	if (!ipsec_ops || !ipsec_ops->esp_create_xfrm)
- 		return ERR_PTR(-EOPNOTSUPP);
- 
--	xfrm = ipsec_ops->esp_create_xfrm(mdev, attrs, flags);
-+	xfrm = ipsec_ops->esp_create_xfrm(mdev, attrs, 0);
- 	if (IS_ERR(xfrm))
- 		return xfrm;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 13f6fed74950..f6e3b549424f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -333,9 +333,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
- 
- 	/* create xfrm */
- 	mlx5e_ipsec_build_accel_xfrm_attrs(sa_entry, &attrs);
--	sa_entry->xfrm =
--		mlx5_accel_esp_create_xfrm(priv->mdev, &attrs,
--					   MLX5_ACCEL_XFRM_FLAG_REQUIRE_METADATA);
-+	sa_entry->xfrm = mlx5_accel_esp_create_xfrm(priv->mdev, &attrs);
- 	if (IS_ERR(sa_entry->xfrm)) {
- 		err = PTR_ERR(sa_entry->xfrm);
- 		goto err_sa_entry;
-diff --git a/include/linux/mlx5/accel.h b/include/linux/mlx5/accel.h
-index dacf69516002..af67d51308cf 100644
---- a/include/linux/mlx5/accel.h
-+++ b/include/linux/mlx5/accel.h
-@@ -111,10 +111,6 @@ struct mlx5_accel_esp_xfrm {
- 	struct mlx5_accel_esp_xfrm_attrs attrs;
- };
- 
--enum {
--	MLX5_ACCEL_XFRM_FLAG_REQUIRE_METADATA = 1UL << 0,
+-static int flow_action_esp_get_encap(struct ib_flow_spec_list *out,
+-				     struct uverbs_attr_bundle *attrs)
+-{
+-	struct ib_uverbs_flow_action_esp_encap uverbs_encap;
+-	int ret;
+-
+-	ret = uverbs_copy_from(&uverbs_encap, attrs,
+-			       UVERBS_ATTR_FLOW_ACTION_ESP_ENCAP);
+-	if (ret)
+-		return ret;
+-
+-	/* We currently support only one encap */
+-	if (uverbs_encap.next_ptr)
+-		return -EOPNOTSUPP;
+-
+-	if (uverbs_encap.type != IB_FLOW_SPEC_IPV4 &&
+-	    uverbs_encap.type != IB_FLOW_SPEC_IPV6)
+-		return -EOPNOTSUPP;
+-
+-	return parse_esp_ip(uverbs_encap.type,
+-			    u64_to_user_ptr(uverbs_encap.val_ptr),
+-			    uverbs_encap.len,
+-			    &out->spec);
+-}
+-
+-struct ib_flow_action_esp_attr {
+-	struct	ib_flow_action_attrs_esp		hdr;
+-	struct	ib_flow_action_attrs_esp_keymats	keymat;
+-	struct	ib_flow_action_attrs_esp_replays	replay;
+-	/* We currently support only one spec */
+-	struct	ib_flow_spec_list			encap;
 -};
 -
- enum mlx5_accel_ipsec_cap {
- 	MLX5_ACCEL_IPSEC_CAP_DEVICE		= 1 << 0,
- 	MLX5_ACCEL_IPSEC_CAP_REQUIRED_METADATA	= 1 << 1,
-@@ -132,8 +128,7 @@ u32 mlx5_accel_ipsec_device_caps(struct mlx5_core_dev *mdev);
+-#define ESP_LAST_SUPPORTED_FLAG		IB_UVERBS_FLOW_ACTION_ESP_FLAGS_ESN_NEW_WINDOW
+-static int parse_flow_action_esp(struct ib_device *ib_dev,
+-				 struct uverbs_attr_bundle *attrs,
+-				 struct ib_flow_action_esp_attr *esp_attr,
+-				 bool is_modify)
+-{
+-	struct ib_uverbs_flow_action_esp uverbs_esp = {};
+-	int ret;
+-
+-	/* Optional param, if it doesn't exist, we get -ENOENT and skip it */
+-	ret = uverbs_copy_from(&esp_attr->hdr.esn, attrs,
+-			       UVERBS_ATTR_FLOW_ACTION_ESP_ESN);
+-	if (IS_UVERBS_COPY_ERR(ret))
+-		return ret;
+-
+-	/* This can be called from FLOW_ACTION_ESP_MODIFY where
+-	 * UVERBS_ATTR_FLOW_ACTION_ESP_ATTRS is optional
+-	 */
+-	if (uverbs_attr_is_valid(attrs, UVERBS_ATTR_FLOW_ACTION_ESP_ATTRS)) {
+-		ret = uverbs_copy_from_or_zero(&uverbs_esp, attrs,
+-					       UVERBS_ATTR_FLOW_ACTION_ESP_ATTRS);
+-		if (ret)
+-			return ret;
+-
+-		if (uverbs_esp.flags & ~((ESP_LAST_SUPPORTED_FLAG << 1) - 1))
+-			return -EOPNOTSUPP;
+-
+-		esp_attr->hdr.spi = uverbs_esp.spi;
+-		esp_attr->hdr.seq = uverbs_esp.seq;
+-		esp_attr->hdr.tfc_pad = uverbs_esp.tfc_pad;
+-		esp_attr->hdr.hard_limit_pkts = uverbs_esp.hard_limit_pkts;
+-	}
+-	esp_attr->hdr.flags = esp_flags_uverbs_to_verbs(attrs, uverbs_esp.flags,
+-							is_modify);
+-
+-	if (uverbs_attr_is_valid(attrs, UVERBS_ATTR_FLOW_ACTION_ESP_KEYMAT)) {
+-		esp_attr->keymat.protocol =
+-			uverbs_attr_get_enum_id(attrs,
+-						UVERBS_ATTR_FLOW_ACTION_ESP_KEYMAT);
+-		ret = uverbs_copy_from_or_zero(&esp_attr->keymat.keymat,
+-					       attrs,
+-					       UVERBS_ATTR_FLOW_ACTION_ESP_KEYMAT);
+-		if (ret)
+-			return ret;
+-
+-		ret = flow_action_esp_keymat_validate[esp_attr->keymat.protocol](&esp_attr->keymat);
+-		if (ret)
+-			return ret;
+-
+-		esp_attr->hdr.keymat = &esp_attr->keymat;
+-	}
+-
+-	if (uverbs_attr_is_valid(attrs, UVERBS_ATTR_FLOW_ACTION_ESP_REPLAY)) {
+-		esp_attr->replay.protocol =
+-			uverbs_attr_get_enum_id(attrs,
+-						UVERBS_ATTR_FLOW_ACTION_ESP_REPLAY);
+-
+-		ret = uverbs_copy_from_or_zero(&esp_attr->replay.replay,
+-					       attrs,
+-					       UVERBS_ATTR_FLOW_ACTION_ESP_REPLAY);
+-		if (ret)
+-			return ret;
+-
+-		ret = flow_action_esp_replay_validate[esp_attr->replay.protocol](&esp_attr->replay,
+-										 is_modify);
+-		if (ret)
+-			return ret;
+-
+-		esp_attr->hdr.replay = &esp_attr->replay;
+-	}
+-
+-	if (uverbs_attr_is_valid(attrs, UVERBS_ATTR_FLOW_ACTION_ESP_ENCAP)) {
+-		ret = flow_action_esp_get_encap(&esp_attr->encap, attrs);
+-		if (ret)
+-			return ret;
+-
+-		esp_attr->hdr.encap = &esp_attr->encap;
+-	}
+-
+-	return 0;
+-}
+-
+-static int UVERBS_HANDLER(UVERBS_METHOD_FLOW_ACTION_ESP_CREATE)(
+-	struct uverbs_attr_bundle *attrs)
+-{
+-	struct ib_uobject *uobj = uverbs_attr_get_uobject(
+-		attrs, UVERBS_ATTR_CREATE_FLOW_ACTION_ESP_HANDLE);
+-	struct ib_device *ib_dev = attrs->context->device;
+-	int				  ret;
+-	struct ib_flow_action		  *action;
+-	struct ib_flow_action_esp_attr	  esp_attr = {};
+-
+-	if (!ib_dev->ops.create_flow_action_esp)
+-		return -EOPNOTSUPP;
+-
+-	ret = parse_flow_action_esp(ib_dev, attrs, &esp_attr, false);
+-	if (ret)
+-		return ret;
+-
+-	/* No need to check as this attribute is marked as MANDATORY */
+-	action = ib_dev->ops.create_flow_action_esp(ib_dev, &esp_attr.hdr,
+-						    attrs);
+-	if (IS_ERR(action))
+-		return PTR_ERR(action);
+-
+-	uverbs_flow_action_fill_action(action, uobj, ib_dev,
+-				       IB_FLOW_ACTION_ESP);
+-
+-	return 0;
+-}
+-
+-static int UVERBS_HANDLER(UVERBS_METHOD_FLOW_ACTION_ESP_MODIFY)(
+-	struct uverbs_attr_bundle *attrs)
+-{
+-	struct ib_uobject *uobj = uverbs_attr_get_uobject(
+-		attrs, UVERBS_ATTR_MODIFY_FLOW_ACTION_ESP_HANDLE);
+-	struct ib_flow_action *action = uobj->object;
+-	int				  ret;
+-	struct ib_flow_action_esp_attr	  esp_attr = {};
+-
+-	if (!action->device->ops.modify_flow_action_esp)
+-		return -EOPNOTSUPP;
+-
+-	ret = parse_flow_action_esp(action->device, attrs, &esp_attr, true);
+-	if (ret)
+-		return ret;
+-
+-	if (action->type != IB_FLOW_ACTION_ESP)
+-		return -EINVAL;
+-
+-	return action->device->ops.modify_flow_action_esp(action,
+-							  &esp_attr.hdr,
+-							  attrs);
+-}
+-
+-static const struct uverbs_attr_spec uverbs_flow_action_esp_keymat[] = {
+-	[IB_UVERBS_FLOW_ACTION_ESP_KEYMAT_AES_GCM] = {
+-		.type = UVERBS_ATTR_TYPE_PTR_IN,
+-		UVERBS_ATTR_STRUCT(
+-			struct ib_uverbs_flow_action_esp_keymat_aes_gcm,
+-			aes_key),
+-	},
+-};
+-
+-static const struct uverbs_attr_spec uverbs_flow_action_esp_replay[] = {
+-	[IB_UVERBS_FLOW_ACTION_ESP_REPLAY_NONE] = {
+-		.type = UVERBS_ATTR_TYPE_PTR_IN,
+-		UVERBS_ATTR_NO_DATA(),
+-	},
+-	[IB_UVERBS_FLOW_ACTION_ESP_REPLAY_BMP] = {
+-		.type = UVERBS_ATTR_TYPE_PTR_IN,
+-		UVERBS_ATTR_STRUCT(struct ib_uverbs_flow_action_esp_replay_bmp,
+-				   size),
+-	},
+-};
+-
+-DECLARE_UVERBS_NAMED_METHOD(
+-	UVERBS_METHOD_FLOW_ACTION_ESP_CREATE,
+-	UVERBS_ATTR_IDR(UVERBS_ATTR_CREATE_FLOW_ACTION_ESP_HANDLE,
+-			UVERBS_OBJECT_FLOW_ACTION,
+-			UVERBS_ACCESS_NEW,
+-			UA_MANDATORY),
+-	UVERBS_ATTR_PTR_IN(UVERBS_ATTR_FLOW_ACTION_ESP_ATTRS,
+-			   UVERBS_ATTR_STRUCT(struct ib_uverbs_flow_action_esp,
+-					      hard_limit_pkts),
+-			   UA_MANDATORY),
+-	UVERBS_ATTR_PTR_IN(UVERBS_ATTR_FLOW_ACTION_ESP_ESN,
+-			   UVERBS_ATTR_TYPE(__u32),
+-			   UA_OPTIONAL),
+-	UVERBS_ATTR_ENUM_IN(UVERBS_ATTR_FLOW_ACTION_ESP_KEYMAT,
+-			    uverbs_flow_action_esp_keymat,
+-			    UA_MANDATORY),
+-	UVERBS_ATTR_ENUM_IN(UVERBS_ATTR_FLOW_ACTION_ESP_REPLAY,
+-			    uverbs_flow_action_esp_replay,
+-			    UA_OPTIONAL),
+-	UVERBS_ATTR_PTR_IN(
+-		UVERBS_ATTR_FLOW_ACTION_ESP_ENCAP,
+-		UVERBS_ATTR_TYPE(struct ib_uverbs_flow_action_esp_encap),
+-		UA_OPTIONAL));
+-
+-DECLARE_UVERBS_NAMED_METHOD(
+-	UVERBS_METHOD_FLOW_ACTION_ESP_MODIFY,
+-	UVERBS_ATTR_IDR(UVERBS_ATTR_MODIFY_FLOW_ACTION_ESP_HANDLE,
+-			UVERBS_OBJECT_FLOW_ACTION,
+-			UVERBS_ACCESS_WRITE,
+-			UA_MANDATORY),
+-	UVERBS_ATTR_PTR_IN(UVERBS_ATTR_FLOW_ACTION_ESP_ATTRS,
+-			   UVERBS_ATTR_STRUCT(struct ib_uverbs_flow_action_esp,
+-					      hard_limit_pkts),
+-			   UA_OPTIONAL),
+-	UVERBS_ATTR_PTR_IN(UVERBS_ATTR_FLOW_ACTION_ESP_ESN,
+-			   UVERBS_ATTR_TYPE(__u32),
+-			   UA_OPTIONAL),
+-	UVERBS_ATTR_ENUM_IN(UVERBS_ATTR_FLOW_ACTION_ESP_KEYMAT,
+-			    uverbs_flow_action_esp_keymat,
+-			    UA_OPTIONAL),
+-	UVERBS_ATTR_ENUM_IN(UVERBS_ATTR_FLOW_ACTION_ESP_REPLAY,
+-			    uverbs_flow_action_esp_replay,
+-			    UA_OPTIONAL),
+-	UVERBS_ATTR_PTR_IN(
+-		UVERBS_ATTR_FLOW_ACTION_ESP_ENCAP,
+-		UVERBS_ATTR_TYPE(struct ib_uverbs_flow_action_esp_encap),
+-		UA_OPTIONAL));
+-
+ DECLARE_UVERBS_NAMED_METHOD_DESTROY(
+ 	UVERBS_METHOD_FLOW_ACTION_DESTROY,
+ 	UVERBS_ATTR_IDR(UVERBS_ATTR_DESTROY_FLOW_ACTION_HANDLE,
+@@ -435,9 +56,7 @@ DECLARE_UVERBS_NAMED_METHOD_DESTROY(
+ DECLARE_UVERBS_NAMED_OBJECT(
+ 	UVERBS_OBJECT_FLOW_ACTION,
+ 	UVERBS_TYPE_ALLOC_IDR(uverbs_free_flow_action),
+-	&UVERBS_METHOD(UVERBS_METHOD_FLOW_ACTION_ESP_CREATE),
+-	&UVERBS_METHOD(UVERBS_METHOD_FLOW_ACTION_DESTROY),
+-	&UVERBS_METHOD(UVERBS_METHOD_FLOW_ACTION_ESP_MODIFY));
++	&UVERBS_METHOD(UVERBS_METHOD_FLOW_ACTION_DESTROY));
  
- struct mlx5_accel_esp_xfrm *
- mlx5_accel_esp_create_xfrm(struct mlx5_core_dev *mdev,
--			   const struct mlx5_accel_esp_xfrm_attrs *attrs,
--			   u32 flags);
-+			   const struct mlx5_accel_esp_xfrm_attrs *attrs);
- void mlx5_accel_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm);
- int mlx5_accel_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
- 			       const struct mlx5_accel_esp_xfrm_attrs *attrs);
-@@ -144,8 +139,10 @@ static inline u32 mlx5_accel_ipsec_device_caps(struct mlx5_core_dev *mdev) { ret
- 
- static inline struct mlx5_accel_esp_xfrm *
- mlx5_accel_esp_create_xfrm(struct mlx5_core_dev *mdev,
--			   const struct mlx5_accel_esp_xfrm_attrs *attrs,
--			   u32 flags) { return ERR_PTR(-EOPNOTSUPP); }
-+			   const struct mlx5_accel_esp_xfrm_attrs *attrs)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
- static inline void
- mlx5_accel_esp_destroy_xfrm(struct mlx5_accel_esp_xfrm *xfrm) {}
- static inline int
+ const struct uapi_definition uverbs_def_obj_flow_action[] = {
+ 	UAPI_DEF_CHAIN_OBJ_TREE_NAMED(
+diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
+index ada4a5226dbd..f9b99c41965f 100644
+--- a/include/rdma/ib_verbs.h
++++ b/include/rdma/ib_verbs.h
+@@ -2529,15 +2529,7 @@ struct ib_device_ops {
+ 				       struct ib_flow_attr *flow_attr,
+ 				       struct ib_udata *udata);
+ 	int (*destroy_flow)(struct ib_flow *flow_id);
+-	struct ib_flow_action *(*create_flow_action_esp)(
+-		struct ib_device *device,
+-		const struct ib_flow_action_attrs_esp *attr,
+-		struct uverbs_attr_bundle *attrs);
+ 	int (*destroy_flow_action)(struct ib_flow_action *action);
+-	int (*modify_flow_action_esp)(
+-		struct ib_flow_action *action,
+-		const struct ib_flow_action_attrs_esp *attr,
+-		struct uverbs_attr_bundle *attrs);
+ 	int (*set_vf_link_state)(struct ib_device *device, int vf, u32 port,
+ 				 int state);
+ 	int (*get_vf_config)(struct ib_device *device, int vf, u32 port,
 -- 
 2.35.1
 
