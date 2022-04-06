@@ -2,48 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB0C54F5E94
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:04:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4234F621F
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 16:49:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230322AbiDFM7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 08:59:04 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49788 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232873AbiDFM6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:58:04 -0400
-Received: from localhost (unknown [149.11.102.75])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 6CE43841AF19;
-        Wed,  6 Apr 2022 05:56:01 -0700 (PDT)
-Date:   Wed, 06 Apr 2022 05:55:55 -0700 (PDT)
-Message-Id: <20220406.055555.249920175385792988.davem@davemloft.net>
-To:     michael.chan@broadcom.com
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        bpf@vger.kernel.org, john.fastabend@gmail.com, toke@redhat.com,
-        lorenzo@kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        echaudro@redhat.com, pabeni@redhat.com
-Subject: Re: [PATCH net-next v3 00/11] bnxt: Support XDP multi buffer
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1649213633-7662-1-git-send-email-michael.chan@broadcom.com>
-References: <1649213633-7662-1-git-send-email-michael.chan@broadcom.com>
-X-Mailer: Mew version 6.8 on Emacs 27.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S234666AbiDFOsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 10:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235089AbiDFOrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 10:47:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDA5102423
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 18:09:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CD0561920
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 01:09:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7051C385A1;
+        Wed,  6 Apr 2022 01:09:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649207391;
+        bh=i/dP04Ms0AuBJfVPYpjYX4lfOXz5aD7fJSy1gXE56dc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Mfrc5l+TTj0wav/R/gJvOHCyQ6H3L1vsNYMxnR+FBl1KwpgItL4/JIOJK6I1AR4HR
+         tkXCuD9wY32mX/a5+giAWG5Z1qtf1omAd66cR7vB2O0tq/BG0hQmbtfznadUDSCIKP
+         BrpAyRGHGEXG2hTRYr1Hh8zXSd3eDWZESFO0rvE3YBZI+hUJ/nrq9LXjJsA6hOUU6J
+         HrfGngj0HFVAqjtWngO3DjZk7zk+nnMaVUQfURMiBrj7+QztRwH25CNkakERQRjjYN
+         XUVFqmYBM5bExEN3uHv2EHd7Z+wC7NnFA+vu2olooT3/7GokA04LrowTaf4u0uMSp9
+         O0OwNC3xnSdrA==
+Date:   Tue, 5 Apr 2022 18:09:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH v3 net-next 0/2] net: tc: dsa: Implement offload of
+ matchall for bridged DSA ports
+Message-ID: <20220405180949.3dd204a1@kernel.org>
+In-Reply-To: <20220404104826.1902292-1-mattias.forsblad@gmail.com>
+References: <20220404104826.1902292-1-mattias.forsblad@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Wed, 06 Apr 2022 05:56:04 -0700 (PDT)
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
-Date: Tue,  5 Apr 2022 22:53:42 -0400
+On Mon,  4 Apr 2022 12:48:24 +0200 Mattias Forsblad wrote:
+> Limitations
+> If there is tc rules on a bridge and all the ports leave the bridge
+> and then joins the bridge again, the indirect framwork doesn't seem
+> to reoffload them at join. The tc rules need to be torn down and
+> re-added.
 
-> This series adds XDP multi buffer support, allowing MTU to go beyond
-> the page size limit.
-> 
-> v3: Simplify page mode buffer size calculation
->     Check to make sure XDP program supports multipage packets
-> v2: Fix uninitialized variable warnings in patch 1 and 10.
+You should unregister your callback when last DSA port leaves and
+re-register when first joins. That way you'll get replay.
 
-Not all the patches made it into patchwork,  please re-post.
-
-Thank you.
+Also the code needs to check the matchall is highest prio.
