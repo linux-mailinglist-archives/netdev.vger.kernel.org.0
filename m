@@ -2,81 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 600544F679C
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:39:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F3824F6780
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:39:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239097AbiDFReQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 13:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
+        id S239353AbiDFRi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 13:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239396AbiDFReE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:34:04 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CEF4AE34
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 08:39:44 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id p8so2786533pfh.8
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 08:39:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yq7GCHs06o07h5BFZ/o9wudrE4MyVe73tTx4ETbhacM=;
-        b=xWBIUvzyDfe1HZ/WdToKQKxXHywLywPZQH3+LdXfamMSdgsF5OCxi3iBjqMAxPSmC4
-         uChsnNjhxGRl8A97/tJXdP/TN673vH9Vt9LEBd33yFIJtnO1cZCz8yXZs+Ao5w6icfpK
-         GSRYVxqpwfCL227ud/KEnAEZ/P3XEyrTAsuyPzRsazbzqZe84lTg2L+gbthgOioRHpJl
-         Ys9JEp2lYuL7euceeRYzDVa9B0iQpzGR7A8B2bONusmwC+MkwBFdfldxfHjARqUUnJvp
-         3UdI0Puoo31Pgrfpd8eo/maGA3dUvGCQCLKHh5Tq/dE6+ZfIRrM7ccPO0ve98xs4vXmR
-         IAjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yq7GCHs06o07h5BFZ/o9wudrE4MyVe73tTx4ETbhacM=;
-        b=6hEADId5i7Gnmh3IyOEHVuzltMvlscfcDvJMj/GDhMm6p7cxug/NGwbDmkOdWMvVrm
-         o5pQ6oJ5uWgQHmR9ud3DxBJPBddpphS2lTkPdCq+lQjWdf1UBXkJNl+tgV58K9OEWh2p
-         2Cc35fsdVP0sH+rb1lCM/3rIEMExmauOmxg8HSjnshAIoZLL0cECrPxvonpmqtRmS8wj
-         PqTK/STg56VxUgIKMjeEl1hXOnH21tB46KPkGHrTKEDMqqKyokzFQl25HrA9cVsscrzp
-         4jFLsZAlOsQDuu1wTDbUL8btoIjcmO4kefV02XuxkJM7tWEpSJUhrdg+tZ9ZKG1IDLaV
-         xBXg==
-X-Gm-Message-State: AOAM5317Whc9NbS7SxiqkG7bs8jWpIKnxyt5EjCq8a+lVKEORoGUbBSK
-        xtG7h93sSpjxKEKO7XBq4Z8XYg==
-X-Google-Smtp-Source: ABdhPJwX+OjXrqQt2QAfYN90sWPSgjToEcw/kiFLRuCx7WK9fMsl6e7jV7rZh+qYYWU9Whwlp/9p8g==
-X-Received: by 2002:a63:68c6:0:b0:380:3fbc:dfb6 with SMTP id d189-20020a6368c6000000b003803fbcdfb6mr7684436pgc.326.1649259584551;
-        Wed, 06 Apr 2022 08:39:44 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id o4-20020a625a04000000b004fdf5419e41sm12366417pfb.36.2022.04.06.08.39.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 08:39:44 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 08:39:41 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Michael Qiu <qiudayu@archeros.com>
-Cc:     parav@nvidia.com, netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2 v2] vdpa: Add virtqueue pairs set capacity
-Message-ID: <20220406083941.378626ae@hermes.local>
-In-Reply-To: <1649237791-31723-1-git-send-email-qiudayu@archeros.com>
-References: <1648113553-10547-1-git-send-email-08005325@163.com>
-        <1649237791-31723-1-git-send-email-qiudayu@archeros.com>
+        with ESMTP id S239345AbiDFRib (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:38:31 -0400
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EA03839A2;
+        Wed,  6 Apr 2022 08:47:31 -0700 (PDT)
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 4C5E168AFE; Wed,  6 Apr 2022 17:47:24 +0200 (CEST)
+Date:   Wed, 6 Apr 2022 17:47:23 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Christian Benvenuti <benve@cisco.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        iommu@lists.linux-foundation.org, Jason Wang <jasowang@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
+        Rob Clark <robdclark@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        virtualization@lists.linux-foundation.org,
+        Will Deacon <will@kernel.org>,
+        "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY
+ with dev_is_dma_coherent()
+Message-ID: <20220406154723.GA30153@lst.de>
+References: <0-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com> <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com> <20220406053039.GA10580@lst.de> <20220406120730.GA2120790@nvidia.com> <20220406135150.GA21532@lst.de> <20220406141446.GE2120790@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406141446.GE2120790@nvidia.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  6 Apr 2022 05:36:31 -0400
-Michael Qiu <qiudayu@archeros.com> wrote:
+On Wed, Apr 06, 2022 at 11:14:46AM -0300, Jason Gunthorpe wrote:
+> Really? It is the only condition that dma_info_to_prot() tests to
+> decide of IOMMU_CACHE is used or not, so you are saying that there is
+> a condition where a device can be attached to an iommu_domain and
+> dev_is_dma_coherent() returns the wrong information? How does
+> dma-iommu.c safely use it then?
 
-> 	if (tb[VDPA_ATTR_DEV_NET_CFG_MAX_VQP]) {
->  		val_u16 = mnl_attr_get_u16(tb[VDPA_ATTR_DEV_NET_CFG_MAX_VQP]);
-> -		print_uint(PRINT_ANY, "max_vq_pairs", "max_vq_pairs %d ",
-> +		print_uint(PRINT_ANY, "max_vqp", "max_vqp %d ",
->  			     val_u16);
-
-Good, the print should match the set parameters.
-
-Wanted to apply but can not go against main branch, is the targeted for next
+arm does not use dma-iommu.c
