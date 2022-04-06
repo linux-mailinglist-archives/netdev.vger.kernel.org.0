@@ -2,54 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1064F682C
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB904F680E
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:58:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239677AbiDFRuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 13:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34740 "EHLO
+        id S239639AbiDFRzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 13:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239626AbiDFRty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:49:54 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758AC27CFA;
-        Wed,  6 Apr 2022 08:58:27 -0700 (PDT)
+        with ESMTP id S239665AbiDFRza (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:55:30 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E72747D902;
+        Wed,  6 Apr 2022 09:05:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649260707; x=1680796707;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dXI98OJqQW2ahS6RsWI895QYQlAECHmgbr0YBsR0OsE=;
-  b=cTjkTtZHi9N0UrcRfe3OaVjhddfohfoFKPJ8PxZhMWlx8iJDVuZqeEg4
-   yG52md6dZc94KRn+yFaLjKZP5C7Uq+jdh8MpMqemOJRemXTyGreqXKCD2
-   xwqfvmdKUSDJSx7Io2OWD2gYh3QAlKr7wMqucguzaKEQ/yQlC9Vyj9YV0
-   WpHjwoXi+bInyTcwmUCW9soqJRMSRO2ujeM1QFtU0tzw6NuYiPGfz+ypQ
-   ixm4DAc2AONBKfd1SAqrw63P3EI3dXvDr9Vi6s8ceUOPuDy0OpaQ75Rxy
-   C1KEIQfgKV2sk1z0O+/r+b9Y2h/BPi6xiSvhyrXX9VTTX8ufEAIkdpdwK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="261079402"
+  t=1649261101; x=1680797101;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LCEP7z9iVmnS+5YAekuvbdZXgDguf3alCnSjdIOWx8s=;
+  b=WBKxCHmeIAWijuDTdtcq3IqrMUyvYrM2RVVgzPTiIc2WgKfJ6yysGy3Z
+   8rd/efJA7XS0KtRepAtjjKPxdUqbzL0TRjxz/sPqMab+Hlw5wivXtyiAO
+   8UgI+ebsFJLsJ6TOgBhbSSwkvR5VjqwycSNQYr7mvLjZh0eagVVZNp971
+   e8LsxPReHC03nXQfQjrWCrO4NQhsc/Brsm/SGzWasY+ly+QGlzUvTFu1g
+   O6pIKYomFTEL4lz51bx5qe/MmBQI+loX5yw+vzly10CS69F1abI4tY+7h
+   mq1Z+9g+T6SUmB9Wy2GtgqzblWFntZNaLPR796vSFmVNkuGegur8QdwHz
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10309"; a="241676579"
 X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="261079402"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 08:58:26 -0700
+   d="scan'208";a="241676579"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2022 09:05:01 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,240,1643702400"; 
-   d="scan'208";a="570620691"
-Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga008.jf.intel.com with ESMTP; 06 Apr 2022 08:58:24 -0700
+   d="scan'208";a="608953323"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by fmsmga008.fm.intel.com with ESMTP; 06 Apr 2022 09:04:58 -0700
+Date:   Wed, 6 Apr 2022 18:04:58 +0200
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, brouer@redhat.com, alexandr.lobakin@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf] xsk: fix l2fwd for copy mode + busy poll combo
-Date:   Wed,  6 Apr 2022 17:58:04 +0200
-Message-Id: <20220406155804.434493-1-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.33.1
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        magnus.karlsson@intel.com, bjorn@kernel.org, brouer@redhat.com,
+        netdev@vger.kernel.org, maximmi@nvidia.com,
+        alexandr.lobakin@intel.com,
+        Toke Hoiland Jorgensen <toke@redhat.com>
+Subject: Re: [PATCH bpf-next 04/10] i40e: xsk: terminate NAPI when XSK Rx
+ queue gets full
+Message-ID: <Yk26KjeTNI08dLII@boxer>
+References: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
+ <20220405110631.404427-5-maciej.fijalkowski@intel.com>
+ <8bb40f98-2f1f-c331-23d4-ed94a6a1ce76@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8bb40f98-2f1f-c331-23d4-ed94a6a1ce76@redhat.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -58,46 +65,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While checking AF_XDP copy mode combined with busy poll, strange
-results were observed. rxdrop and txonly scenarios worked fine, but
-l2fwd broke immediately.
+On Tue, Apr 05, 2022 at 03:04:17PM +0200, Jesper Dangaard Brouer wrote:
+> 
+> 
+> On 05/04/2022 13.06, Maciej Fijalkowski wrote:
+> > Correlate -ENOBUFS that was returned from xdp_do_redirect() with a XSK
+> > Rx queue being full. In such case, terminate the softirq processing and
+> > let the user space to consume descriptors from XSK Rx queue so that
+> > there is room that driver can use later on.
+> > 
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > ---
+> >   .../ethernet/intel/i40e/i40e_txrx_common.h    |  1 +
+> >   drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 21 ++++++++++++-------
+> >   2 files changed, 15 insertions(+), 7 deletions(-)
+> > 
+> [...]
+> 
+> I noticed you are only doing this for the Zero-Copy variants.
+> Wouldn't this also be a benefit for normal AF_XDP ?
 
-After a deeper look, it turned out that for l2fwd, Tx side was exiting
-early due to xsk_no_wakeup() returning true and in the end
-xsk_generic_xmit() was never called. Note that AF_XDP Tx in copy mode is
-syscall steered, so the current behavior is broken.
+Sorry for the delay, indeed this would improve AF_XDP in copy mode as
+well, but only after a fix I have sent (not on lore yet :<).
 
-Txonly scenario only worked due to the fact that
-sk_mark_napi_id_once_xdp() was never called - since Rx side is not in
-the picture for this case and mentioned function is called in
-xsk_rcv_check(), sk::sk_napi_id was never set, which in turn meant that
-xsk_no_wakeup() was returning false (see the sk->sk_napi_id >=
-MIN_NAPI_ID check in there).
+I'll adjust patches to check for -ENOBUFS in $DRIVER_txrx.c and send a v2.
 
-To fix this, prefer busy poll in xsk_sendmsg() only when zero copy is
-enabled on a given AF_XDP socket. By doing so, busy poll in copy mode
-would not exit early on Tx side and eventually xsk_generic_xmit() will
-be called.
-
-Fixes: a0731952d9cd ("xsk: Add busy-poll support for {recv,send}msg()")
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- net/xdp/xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 2c34caee0fd1..7d3a00cb24ec 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -639,7 +639,7 @@ static int __xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len
- 	if (sk_can_busy_loop(sk))
- 		sk_busy_loop(sk, 1); /* only support non-blocking sockets */
- 
--	if (xsk_no_wakeup(sk))
-+	if (xs->zc && xsk_no_wakeup(sk))
- 		return 0;
- 
- 	pool = xs->pool;
--- 
-2.27.0
-
+> 
+> 
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > index c1d25b0b0ca2..9f9e4ce9a24d 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > @@ -161,9 +161,10 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+> >   	if (likely(act == XDP_REDIRECT)) {
+> >   		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
+> > -		if (err)
+> > -			goto out_failure;
+> > -		return I40E_XDP_REDIR;
+> > +		if (!err)
+> > +			return I40E_XDP_REDIR;
+> > +		result = (err == -ENOBUFS) ? I40E_XDP_EXIT : I40E_XDP_CONSUMED;
+> > +		goto out_failure;
+> >   	}
+> >   	switch (act) {
+> > @@ -175,6 +176,9 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+> >   		if (result == I40E_XDP_CONSUMED)
+> >   			goto out_failure;
+> >   		break;
+> > +	case XDP_DROP:
+> > +		result = I40E_XDP_CONSUMED;
+> > +		break;
+> >   	default:
+> >   		bpf_warn_invalid_xdp_action(rx_ring->netdev, xdp_prog, act);
+> >   		fallthrough;
+> > @@ -182,9 +186,6 @@ static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
+> >   out_failure:
+> >   		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
+> >   		fallthrough; /* handle aborts by dropping packet */
+> > -	case XDP_DROP:
+> > -		result = I40E_XDP_CONSUMED;
+> > -		break;
+> >   	}
+> >   	return result;
+> >   }
+> > @@ -370,6 +371,12 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+> >   		xsk_buff_dma_sync_for_cpu(bi, rx_ring->xsk_pool);
+> >   		xdp_res = i40e_run_xdp_zc(rx_ring, bi);
+> > +		if (xdp_res == I40E_XDP_EXIT) {
+> > +			failure = true;
+> > +			xsk_buff_free(bi);
+> > +			next_to_clean = (next_to_clean + 1) & count_mask;
+> > +			break;
+> > +		}
+> >   		i40e_handle_xdp_result_zc(rx_ring, bi, rx_desc, &rx_packets,
+> >   					  &rx_bytes, size, xdp_res);
+> >   		total_rx_packets += rx_packets;
+> > @@ -382,7 +389,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+> >   	cleaned_count = (next_to_clean - rx_ring->next_to_use - 1) & count_mask;
+> >   	if (cleaned_count >= I40E_RX_BUFFER_WRITE)
+> > -		failure = !i40e_alloc_rx_buffers_zc(rx_ring, cleaned_count);
+> > +		failure |= !i40e_alloc_rx_buffers_zc(rx_ring, cleaned_count);
+> >   	i40e_finalize_xdp_rx(rx_ring, xdp_xmit);
+> >   	i40e_update_rx_stats(rx_ring, total_rx_bytes, total_rx_packets);
+> > 
+> 
