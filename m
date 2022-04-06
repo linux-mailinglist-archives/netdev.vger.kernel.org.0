@@ -2,104 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A79704F6C2A
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 23:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3A4A4F6C47
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 23:12:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235414AbiDFVKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 17:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
+        id S234309AbiDFVN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 17:13:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiDFVKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 17:10:03 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BF41BB806
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 12:49:32 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id t2so6071313qtw.9
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 12:49:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YALPcXFlHyjJhM5IWic8x8fsXsmFYfOaEejI/INaLqA=;
-        b=Y/LXP7pUpQ/mB4D2Bm5PRBF+M9OQHdXqn1VwvqNhpwGTAGnOYEvjaT7gj06TOoXUlA
-         Q7JoZlyaXNJXIzIyqVy0C1436BtgV1uvf5vNDam8qufk0kDTp5kRX7+VoTPKNwHHYibO
-         mE49Cgi9zQ1+YVg9j0PpdETJD0CebPzxvpx0O7YMQ3qHHW6z5WO4n47LK6Ecoy4zMyq5
-         LdvfSN/wS8f9agQoDVjQoXDMc6hwWLpPkNg9NL/h9kVYrIWdxQJcmuPK+7vaHqjZJ2LP
-         ob1vZmvXVrvh6KC6diiiDq4HGv29tj0Bh7cZqbu2cJgCsFkyq2aYQYXvvF7VGAAAm1oP
-         //7Q==
+        with ESMTP id S236310AbiDFVM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 17:12:57 -0400
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 467121B74DE;
+        Wed,  6 Apr 2022 12:57:40 -0700 (PDT)
+Received: by mail-pj1-f43.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso6839242pju.1;
+        Wed, 06 Apr 2022 12:57:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YALPcXFlHyjJhM5IWic8x8fsXsmFYfOaEejI/INaLqA=;
-        b=TgsoTj1s6exqDW1bUjbc4Bqo+T0Nu7iuBymUOtY1ZEdAQWnVzzgd/bfH9hHtyvQX9y
-         AONY1rvfafM3RDkwcM6vHfBDoDRVc95STn26B0kBTMZWW4YmiUHlvCz7EtvlJDaS05tB
-         1a4oUCGKG6UnmSbD73ZbBgHAn0/pQsOACToWPGAXxbv/+0vP8hp+QgpS+L1x9RcEiJtj
-         a7zPRcvcpWGvZPBU2PdE6lZVTJs459YjjmJ+4JlprC5y/cM8JB12TW8R3UNBPqJ+CEaf
-         oU645VgEtJ4lEYfwa59CRTN5e87AnLNrsE57mneGtKLutN0HJq0lDXJISwBDhlcZ4PNU
-         NuOQ==
-X-Gm-Message-State: AOAM531ojg9ZaQeaGW7nIS1L7LgfS0D7b4lTmb7s2HBKa58lamOGJcXH
-        5dhtDEaF+FlZDpCifkXCPeRGp1Gczbg=
-X-Google-Smtp-Source: ABdhPJwQf+4XpCcpRo2xr5+CPmNkKsMizAiPymJhjIgULgc4/gqUDuV5Htfm9gNxx93pjdFjugk2dw==
-X-Received: by 2002:a05:622a:391:b0:2e2:3282:7e66 with SMTP id j17-20020a05622a039100b002e232827e66mr8819566qtx.566.1649274571358;
-        Wed, 06 Apr 2022 12:49:31 -0700 (PDT)
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
-        by smtp.gmail.com with ESMTPSA id k8-20020a05620a138800b00679fc7566fcsm10105188qki.18.2022.04.06.12.49.30
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=amIBwcurHA/IB31GoJLXw8YYalrzwFRfV1FNlUywLyA=;
+        b=A+ldMtGikFUMW0nfl3NicAkA+QcLIcD6thv6uQRWu1NvLRvDOyYy/MnIwZcXVMnB8p
+         C2LhM2tIO+fszp8CazwogGob1ozqXTHi8KIXanT+geTGOszYYANyDkd7CuE/yonCcr8p
+         g7i6PRU9gkXq0co1KKsLD5O49a2LIFMkcZK18Bil/dK9eAqClfXLDGxWAQCSiO2w6Ap4
+         p8qGNv2l5XMslaEKT2A/ooY8wMxHUPtTs7S4cmuca6PrtZR2fSE46QyLwxQWDa3iZQ4M
+         1YNAzXEzRa45tMb0Krqeyqua8aJhzOtToGv60dZWl+XXfOUlAFaqJb6lmlEXtqHOfheL
+         0SlA==
+X-Gm-Message-State: AOAM533DoOkv/GWi2g6AZlcrLl6j9nETuSPknzFzNuh3Oy9GIq/FGqhI
+        uMTkKCTZdouWi4vNolk0Vhw=
+X-Google-Smtp-Source: ABdhPJzPYf5xMo/3tiolm5zS6xnm4HQHpdPD7nFtjZCYwwxKplAg725myh8iIllXTcpGGAj31TN69Q==
+X-Received: by 2002:a17:903:40c1:b0:156:f1cc:7d72 with SMTP id t1-20020a17090340c100b00156f1cc7d72mr3074987pld.70.1649275056484;
+        Wed, 06 Apr 2022 12:57:36 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id m18-20020a056a00081200b004faeae3a291sm20294259pfk.26.2022.04.06.12.57.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 12:49:31 -0700 (PDT)
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2e5e31c34bfso38479967b3.10
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 12:49:30 -0700 (PDT)
-X-Received: by 2002:a81:b04a:0:b0:2eb:6919:f27 with SMTP id
- x10-20020a81b04a000000b002eb69190f27mr8641057ywk.54.1649274570313; Wed, 06
- Apr 2022 12:49:30 -0700 (PDT)
+        Wed, 06 Apr 2022 12:57:35 -0700 (PDT)
+Message-ID: <ca06d463-cf68-4b6f-8432-a86e34398bf0@acm.org>
+Date:   Wed, 6 Apr 2022 12:57:31 -0700
 MIME-Version: 1.0
-References: <20220406192956.3291614-1-vladimir.oltean@nxp.com> <20220406192956.3291614-3-vladimir.oltean@nxp.com>
-In-Reply-To: <20220406192956.3291614-3-vladimir.oltean@nxp.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 6 Apr 2022 15:48:54 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe0YNxNqR5kWSB3+8DLEBz4FDQBXG0w8yTDTKCRtrrR_w@mail.gmail.com>
-Message-ID: <CA+FuTSe0YNxNqR5kWSB3+8DLEBz4FDQBXG0w8yTDTKCRtrrR_w@mail.gmail.com>
-Subject: Re: [PATCH 4.14 2/2] net: add missing SOF_TIMESTAMPING_OPT_ID support
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Sasha Levin <sashal@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable <stable@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2] RDMA: Split kernel-only global device caps from uverbs
+ device caps
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>, Ariel Elior <aelior@marvell.com>,
+        Anna Schumaker <anna@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christian Benvenuti <benve@cisco.com>,
+        Potnuri Bharat Teja <bharat@chelsio.com>,
+        Bernard Metzler <bmt@zurich.ibm.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Keith Busch <kbusch@kernel.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Leon Romanovsky <leon@kernel.org>, linux-cifs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
+        linux-rdma@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        Mustafa Ismail <mustafa.ismail@intel.com>,
+        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, rds-devel@oss.oracle.com,
+        Sagi Grimberg <sagi@grimberg.me>,
+        samba-technical@lists.samba.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Steve French <sfrench@samba.org>,
+        Shiraz Saleem <shiraz.saleem@intel.com>,
+        target-devel@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>
+References: <0-v2-22c19e565eef+139a-kern_caps_jgg@nvidia.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <0-v2-22c19e565eef+139a-kern_caps_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 3:30 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->
-> From: Willem de Bruijn <willemb@google.com>
->
-> [ Upstream commit 8f932f762e7928d250e21006b00ff9b7718b0a64 ]
->
-> SOF_TIMESTAMPING_OPT_ID is supported on TCP, UDP and RAW sockets.
-> But it was missing on RAW with IPPROTO_IP, PF_PACKET and CAN.
->
-> Add skb_setup_tx_timestamp that configures both tx_flags and tskey
-> for these paths that do not need corking or use bytestream keys.
->
-> Fixes: 09c2d251b707 ("net-timestamp: add key to disambiguate concurrent datagrams")
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
-> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 4/6/22 12:27, Jason Gunthorpe wrote:
+> +enum ib_kernel_cap_flags {
+> +	/*
+> +	 * This device supports a per-device lkey or stag that can be
+> +	 * used without performing a memory registration for the local
+> +	 * memory.  Note that ULPs should never check this flag, but
+> +	 * instead of use the local_dma_lkey flag in the ib_pd structure,
+> +	 * which will always contain a usable lkey.
+> +	 */
+> +	IBK_LOCAL_DMA_LKEY = 1 << 0,
+> +	/* IB_QP_CREATE_INTEGRITY_EN is supported to implement T10-PI */
+> +	IBK_INTEGRITY_HANDOVER = 1 << 1,
+> +	/* IB_ACCESS_ON_DEMAND is supported during reg_user_mr() */
+> +	IBK_ON_DEMAND_PAGING = 1 << 2,
+> +	/* IB_MR_TYPE_SG_GAPS is supported */
+> +	IBK_SG_GAPS_REG = 1 << 3,
+> +	/* Driver supports RDMA_NLDEV_CMD_DELLINK */
+> +	IBK_ALLOW_USER_UNREG = 1 << 4,
+> +
+> +	/* ipoib will use IB_QP_CREATE_BLOCK_MULTICAST_LOOPBACK */
+> +	IBK_BLOCK_MULTICAST_LOOPBACK = 1 << 5,
+> +	/* iopib will use IB_QP_CREATE_IPOIB_UD_LSO for its QPs */
+> +	IBK_UD_TSO = 1 << 6,
+> +	/* iopib will use the device ops:
+> +	 *   get_vf_config
+> +	 *   get_vf_guid
+> +	 *   get_vf_stats
+> +	 *   set_vf_guid
+> +	 *   set_vf_link_state
+> +	 */
+> +	IBK_VIRTUAL_FUNCTION = 1 << 7,
+> +	/* ipoib will use IB_QP_CREATE_NETDEV_USE for its QPs */
+> +	IBK_RDMA_NETDEV_OPA = 1 << 8,
+> +};
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+Has it been considered to use the kernel-doc syntax? This means moving 
+all comments above "enum ib_kernel_cap_flags {".
 
-Thanks for handling the cherry-pick to stable of this fix, Vladimir.
+Thanks,
+
+Bart.
