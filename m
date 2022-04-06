@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 337194F6488
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FA324F648C
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236732AbiDFPvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 11:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S236736AbiDFQAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 12:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236503AbiDFPvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 11:51:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF1A4DFAB5;
-        Wed,  6 Apr 2022 06:10:25 -0700 (PDT)
+        with ESMTP id S236832AbiDFQAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:00:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D292255AB7;
+        Wed,  6 Apr 2022 06:30:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68F2CB8238E;
-        Wed,  6 Apr 2022 13:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 266F7C385B5;
-        Wed,  6 Apr 2022 13:10:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05226B823DD;
+        Wed,  6 Apr 2022 13:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9BD5AC385A7;
+        Wed,  6 Apr 2022 13:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649250614;
-        bh=WOI/3Z/LteYjoTuPn50L6YBOOhoxI8VPYVqhUpjr6xI=;
+        s=k20201202; t=1649251817;
+        bh=r0Jkg5TINenFot4Tj/g1Ta9k+qUla3NNZ2acVa9ZqqE=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SMv+u/J9Hy+HsR5lkTQDVZLXutCGi0qWdrRyoFQPT7wn+9SBUGDnHPUDwiOw1HWgq
-         SK2D6OSaTHFPnxAaoAakqMJNtQ82pY/fNdDRWqa1O7wSHIFX9dOKx4ES8/xAmGOjJe
-         aWbrYsZzf1DqGwGLRiv8ZTdABs0jSGgq6jO14qFaYV0/6Pe8eTyRXkirUif67qkhaf
-         l/IsN43YEYJfAzuYarXDZYO2laORmPy0x624ayIqAAP7a/fm9GfYVD9G9EhpcXsr37
-         J52GLK5nduYHU1F8llu64uSTf5n91u7Kci7rFnCFBnNAvtM8e0vbtBUnRIz96BWUXq
-         U/P3beDnVxl7w==
+        b=f2lALW/iqquEnYqMFl+Q8Bc3OucCzWmO9VeeJdHeu9Gv5ixZR2hQ6F/MlC68mHsQU
+         k0rXAWLgr+Vg0RbCrj06h3WL7F5TtI9s9AKEMxxxNdfdnlfVhAceeqSXVb5DnDHRM6
+         qYbJ5R9NvN+r+RsgLfKsEEGCbW9X05f4VK5eJzjjfKNmJRtUTYNFBr6dz0Oi7o2dl8
+         kINPKBjoOCZr24mzDE1Txwx4Iqv1sebOSv1hIVltYDqgic9IuV2urjDjb/JgMRP9Qf
+         EZ9Xb5d0WH+wa49QslmlrTEdftoUp+hgzPBPjChmNWdoxJeoxU7Y1r3OseVElFucho
+         OXQ7xEAjLwdFA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13165E85BCB;
-        Wed,  6 Apr 2022 13:10:14 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7D7DDE85D15;
+        Wed,  6 Apr 2022 13:30:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3] net, uapi: remove inclusion of arpa/inet.h
+Subject: Re: [PATCH net-next v3 0/3] net: phy: mscc-miim: add MDIO bus frequency
+ support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164925061407.5679.9432370761204809582.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Apr 2022 13:10:14 +0000
-References: <20220404175448.46200-1-ndesaulniers@google.com>
-In-Reply-To: <20220404175448.46200-1-ndesaulniers@google.com>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     kuba@kernel.org, jmaloy@redhat.com, ying.xue@windriver.com,
-        arnd@arndb.de, masahiroy@kernel.org, dhowells@redhat.com,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
+Message-Id: <164925181750.19554.8207066606756390444.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 13:30:17 +0000
+References: <20220405120951.4044875-1-michael@walle.cc>
+In-Reply-To: <20220405120951.4044875-1-michael@walle.cc>
+To:     Michael Walle <michael@walle.cc>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        robh+dt@kernel.org, krzk+dt@kernel.org, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        alexandre.belloni@bootlin.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,22 +62,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon,  4 Apr 2022 10:54:47 -0700 you wrote:
-> In include/uapi/linux/tipc_config.h, there's a comment that it includes
-> arpa/inet.h for ntohs; but ntohs is not defined in any UAPI header. For
-> now, reuse the definitions from include/linux/byteorder/generic.h, since
-> the various conversion functions do exist in UAPI headers:
-> include/uapi/linux/byteorder/big_endian.h
-> include/uapi/linux/byteorder/little_endian.h
+On Tue,  5 Apr 2022 14:09:48 +0200 you wrote:
+> Introduce MDIO bus frequency support. This way the board can have a
+> faster (or maybe slower) bus frequency than the hardware default.
+> 
+> changes since v2:
+>  - resend, no RFC anymore, because net-next is open again
+> 
+> changes since v1:
+>  - fail probe if clock-frequency is set, but not clock is given
+>  - rename clk_freq to bus_freq
+>  - add maxItems to interrupts property
+>  - put compatible and reg first in the example
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v3] net, uapi: remove inclusion of arpa/inet.h
-    https://git.kernel.org/netdev/net-next/c/1ee375d77bb9
+  - [net-next,v3,1/3] dt-bindings: net: convert mscc-miim to YAML format
+    https://git.kernel.org/netdev/net-next/c/ed941f65da81
+  - [net-next,v3,2/3] dt-bindings: net: mscc-miim: add clock and clock-frequency
+    https://git.kernel.org/netdev/net-next/c/b0385d4c1fff
+  - [net-next,v3,3/3] net: phy: mscc-miim: add support to set MDIO bus frequency
+    https://git.kernel.org/netdev/net-next/c/bb2a1934ca01
 
 You are awesome, thank you!
 -- 
