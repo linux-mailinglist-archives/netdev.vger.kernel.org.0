@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A1AE4F5FC3
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 198CD4F5F15
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232710AbiDFNLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 09:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
+        id S232966AbiDFNL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 09:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232640AbiDFNK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 09:10:59 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3C1B5F4746;
-        Wed,  6 Apr 2022 02:45:37 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iK0v124113;
-        Wed, 6 Apr 2022 04:44:20 -0500
+        with ESMTP id S232859AbiDFNLA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 09:11:00 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99505F474E;
+        Wed,  6 Apr 2022 02:45:39 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369iY2K108785;
+        Wed, 6 Apr 2022 04:44:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649238260;
-        bh=/5NlnwXPN+MBKqpNS3+01wsyJFwJHxbj3myy9wtg2wY=;
+        s=ti-com-17Q1; t=1649238274;
+        bh=OskuzPfkNKjmgGxwDEWjMFzgc0nXe4l8jI+0wfywHIw=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=OKdEtb6UM2UhuOxNsF9kKoAN6qv4fpcDmEvO6kesY36qBkyRVVVyNYS7JjD28GIrJ
-         6ht/DB0CUN3IOntp0DNrFqbqJHMZe+0k1gIcdEzrQlWvhmydFV/6CM0yIX0VcPJDrh
-         O8ae8rhn3nmELeySakzDvjb8IfRVtQ2I9poCn2pQ=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iKEs014837
+        b=Qg/m55LMAU/AcyFOrNbJOCsQyJ9SOYXlVu19ZOJgYracME127VVaj2tIwHHd0grV9
+         KecFIqBbzRJ0byzcTDlMcOwtwkPwIQxp/Df/PTWEmBm1xZoMUIZE/fQcEm6GJShhVK
+         Ht3SUi8IOgaaTO+0LzZSbQTrQQSczkgPYVyYbR3Q=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369iYrW113189
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 04:44:20 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+        Wed, 6 Apr 2022 04:44:34 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 04:44:20 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ Apr 2022 04:44:33 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 04:44:20 -0500
+ Frontend Transport; Wed, 6 Apr 2022 04:44:34 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iILq021405;
-        Wed, 6 Apr 2022 04:44:19 -0500
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369iWal025938;
+        Wed, 6 Apr 2022 04:44:33 -0500
 From:   Puranjay Mohan <p-mohan@ti.com>
 To:     <linux-kernel@vger.kernel.org>
 CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
@@ -48,9 +48,9 @@ CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
         <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
         <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
         <vigneshr@ti.com>, <kishon@ti.com>
-Subject: [RFC 07/13] soc: ti: pruss: Add pruss_{request,release}_mem_region() API
-Date:   Wed, 6 Apr 2022 15:13:52 +0530
-Message-ID: <20220406094358.7895-8-p-mohan@ti.com>
+Subject: [RFC 12/13] dt-bindings: net: Add ICSSG Ethernet Driver bindings
+Date:   Wed, 6 Apr 2022 15:13:57 +0530
+Message-ID: <20220406094358.7895-13-p-mohan@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
 References: <20220406094358.7895-1-p-mohan@ti.com>
@@ -67,239 +67,195 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Andrew F. Davis" <afd@ti.com>
+Add a YAML binding document for the ICSSG Programmable real time unit
+based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
+to interface the PRUs and load/run the firmware for supporting ethernet
+functionality.
 
-Add two new API - pruss_request_mem_region() & pruss_release_mem_region(),
-to the PRUSS platform driver to allow client drivers to acquire and release
-the common memory resources present within a PRU-ICSS subsystem. This
-allows the client drivers to directly manipulate the respective memories,
-as per their design contract with the associated firmware.
-
-Co-developed-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Andrew F. Davis <afd@ti.com>
-Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
 Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
 ---
- drivers/soc/ti/pruss.c       | 77 ++++++++++++++++++++++++++++++++++++
- include/linux/pruss.h        | 39 ++++++++++++++++++
- include/linux/pruss_driver.h | 27 +++----------
- 3 files changed, 121 insertions(+), 22 deletions(-)
+ .../bindings/net/ti,icssg-prueth.yaml         | 172 ++++++++++++++++++
+ 1 file changed, 172 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
 
-diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-index 5ad62c35da5d..bda920662de2 100644
---- a/drivers/soc/ti/pruss.c
-+++ b/drivers/soc/ti/pruss.c
-@@ -88,6 +88,82 @@ void pruss_put(struct pruss *pruss)
- }
- EXPORT_SYMBOL_GPL(pruss_put);
- 
-+/**
-+ * pruss_request_mem_region() - request a memory resource
-+ * @pruss: the pruss instance
-+ * @mem_id: the memory resource id
-+ * @region: pointer to memory region structure to be filled in
-+ *
-+ * This function allows a client driver to request a memory resource,
-+ * and if successful, will let the client driver own the particular
-+ * memory region until released using the pruss_release_mem_region()
-+ * API.
-+ *
-+ * Return: 0 if requested memory region is available (in such case pointer to
-+ * memory region is returned via @region), an error otherwise
-+ */
-+int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
-+			     struct pruss_mem_region *region)
-+{
-+	if (!pruss || !region || mem_id >= PRUSS_MEM_MAX)
-+		return -EINVAL;
+diff --git a/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+new file mode 100644
+index 000000000000..8b8acb69e43e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+@@ -0,0 +1,172 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/ti,icssg-prueth.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	mutex_lock(&pruss->lock);
++title: |+
++  Texas Instruments ICSSG PRUSS Ethernet
 +
-+	if (pruss->mem_in_use[mem_id]) {
-+		mutex_unlock(&pruss->lock);
-+		return -EBUSY;
-+	}
++maintainers:
++  - Puranjay Mohan <p-mohan@ti.com>
 +
-+	*region = pruss->mem_regions[mem_id];
-+	pruss->mem_in_use[mem_id] = region;
++description: |+
++  Ethernet based on the Programmable Real-Time Unit and Industrial Communication Subsystem.
 +
-+	mutex_unlock(&pruss->lock);
++allOf:
++  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pruss_request_mem_region);
++properties:
++  compatible:
++    enum:
++      - ti,am654-icssg-prueth  # for AM65x SoC family
 +
-+/**
-+ * pruss_release_mem_region() - release a memory resource
-+ * @pruss: the pruss instance
-+ * @region: the memory region to release
-+ *
-+ * This function is the complimentary function to
-+ * pruss_request_mem_region(), and allows the client drivers to
-+ * release back a memory resource.
-+ *
-+ * Return: 0 on success, an error code otherwise
-+ */
-+int pruss_release_mem_region(struct pruss *pruss,
-+			     struct pruss_mem_region *region)
-+{
-+	int id;
++  sram:
++    description: |
++      phandle to MSMC SRAM node
 +
-+	if (!pruss || !region)
-+		return -EINVAL;
++  dmas:
++    description: |
++      list of phandles and specifiers to UDMA as specified in bindings/dma/ti/k3-udma.txt.
 +
-+	mutex_lock(&pruss->lock);
++  dma-names:
++    items:
++      - const: tx0-0
++      - const: tx0-1
++      - const: tx0-2
++      - const: tx0-3
++      - const: tx1-0
++      - const: tx1-1
++      - const: tx1-2
++      - const: tx1-3
++      - const: rx0
++      - const: rx1
 +
-+	/* find out the memory region being released */
-+	for (id = 0; id < PRUSS_MEM_MAX; id++) {
-+		if (pruss->mem_in_use[id] == region)
-+			break;
-+	}
++  ethernet-ports:
++    type: object
++    properties:
++      '#address-cells':
++        const: 1
++      '#size-cells':
++        const: 0
 +
-+	if (id == PRUSS_MEM_MAX) {
-+		mutex_unlock(&pruss->lock);
-+		return -EINVAL;
-+	}
++    patternProperties:
++      port@[0-1]:
++        type: object
++        description: ICSSG PRUETH external ports
 +
-+	pruss->mem_in_use[id] = NULL;
++        $ref: ethernet-controller.yaml#
 +
-+	mutex_unlock(&pruss->lock);
++        properties:
++          reg:
++            items:
++              - enum: [0, 1]
++            description: ICSSG PRUETH port number
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(pruss_release_mem_region);
++          ti,syscon-rgmii-delay:
++            $ref: /schemas/types.yaml#/definitions/phandle-array
++            description:
++              phandle to system controller node and register offset
++              to ICSSG control register for RGMII transmit delay
 +
- static void pruss_of_free_clk_provider(void *data)
- {
- 	struct device_node *clk_mux_np = data;
-@@ -290,6 +366,7 @@ static int pruss_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	pruss->dev = dev;
-+	mutex_init(&pruss->lock);
- 
- 	child = of_get_child_by_name(np, "memories");
- 	if (!child) {
-diff --git a/include/linux/pruss.h b/include/linux/pruss.h
-index 23d556e0dd72..689ef243bcbc 100644
---- a/include/linux/pruss.h
-+++ b/include/linux/pruss.h
-@@ -39,6 +39,28 @@ enum pru_ctable_idx {
- 	PRU_C31,
- };
- 
-+/*
-+ * enum pruss_mem - PRUSS memory range identifiers
-+ */
-+enum pruss_mem {
-+	PRUSS_MEM_DRAM0 = 0,
-+	PRUSS_MEM_DRAM1,
-+	PRUSS_MEM_SHRD_RAM2,
-+	PRUSS_MEM_MAX,
-+};
++        required:
++          - reg
 +
-+/**
-+ * struct pruss_mem_region - PRUSS memory region structure
-+ * @va: kernel virtual address of the PRUSS memory region
-+ * @pa: physical (bus) address of the PRUSS memory region
-+ * @size: size of the PRUSS memory region
-+ */
-+struct pruss_mem_region {
-+	void __iomem *va;
-+	phys_addr_t pa;
-+	size_t size;
-+};
++    additionalProperties: false
 +
- struct device_node;
- struct rproc;
- struct pruss;
-@@ -47,6 +69,10 @@ struct pruss;
- 
- struct pruss *pruss_get(struct rproc *rproc);
- void pruss_put(struct pruss *pruss);
-+int pruss_request_mem_region(struct pruss *pruss, enum pruss_mem mem_id,
-+			     struct pruss_mem_region *region);
-+int pruss_release_mem_region(struct pruss *pruss,
-+			     struct pruss_mem_region *region);
- 
- #else
- 
-@@ -57,6 +83,19 @@ static inline struct pruss *pruss_get(struct rproc *rproc)
- 
- static inline void pruss_put(struct pruss *pruss) { }
- 
-+static inline int pruss_request_mem_region(struct pruss *pruss,
-+					   enum pruss_mem mem_id,
-+					   struct pruss_mem_region *region)
-+{
-+	return -EOPNOTSUPP;
-+}
++  ti,mii-g-rt:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: |
++      phandle to MII_G_RT module's syscon regmap.
 +
-+static inline int pruss_release_mem_region(struct pruss *pruss,
-+					   struct pruss_mem_region *region)
-+{
-+	return -EOPNOTSUPP;
-+}
++  ti,mii-rt:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: |
++      phandle to MII_RT module's syscon regmap
 +
- #endif /* CONFIG_TI_PRUSS */
- 
- #if IS_ENABLED(CONFIG_PRU_REMOTEPROC)
-diff --git a/include/linux/pruss_driver.h b/include/linux/pruss_driver.h
-index d054d2179d82..e2d5477225c6 100644
---- a/include/linux/pruss_driver.h
-+++ b/include/linux/pruss_driver.h
-@@ -9,37 +9,18 @@
- #ifndef _PRUSS_DRIVER_H_
- #define _PRUSS_DRIVER_H_
- 
-+#include <linux/mutex.h>
- #include <linux/pruss.h>
- #include <linux/types.h>
- 
--/*
-- * enum pruss_mem - PRUSS memory range identifiers
-- */
--enum pruss_mem {
--	PRUSS_MEM_DRAM0 = 0,
--	PRUSS_MEM_DRAM1,
--	PRUSS_MEM_SHRD_RAM2,
--	PRUSS_MEM_MAX,
--};
--
--/**
-- * struct pruss_mem_region - PRUSS memory region structure
-- * @va: kernel virtual address of the PRUSS memory region
-- * @pa: physical (bus) address of the PRUSS memory region
-- * @size: size of the PRUSS memory region
-- */
--struct pruss_mem_region {
--	void __iomem *va;
--	phys_addr_t pa;
--	size_t size;
--};
--
- /**
-  * struct pruss - PRUSS parent structure
-  * @dev: pruss device pointer
-  * @cfg_base: base iomap for CFG region
-  * @cfg_regmap: regmap for config region
-  * @mem_regions: data for each of the PRUSS memory regions
-+ * @mem_in_use: to indicate if memory resource is in use
-+ * @lock: mutex to serialize access to resources
-  * @core_clk_mux: clk handle for PRUSS CORE_CLK_MUX
-  * @iep_clk_mux: clk handle for PRUSS IEP_CLK_MUX
-  */
-@@ -48,6 +29,8 @@ struct pruss {
- 	void __iomem *cfg_base;
- 	struct regmap *cfg_regmap;
- 	struct pruss_mem_region mem_regions[PRUSS_MEM_MAX];
-+	struct pruss_mem_region *mem_in_use[PRUSS_MEM_MAX];
-+	struct mutex lock; /* PRU resource lock */
- 	struct clk *core_clk_mux;
- 	struct clk *iep_clk_mux;
- };
++  interrupts:
++    description: |
++      Interrupt specifiers to TX timestamp IRQ.
++
++  interrupt-names:
++    items:
++      - const: tx_ts0
++      - const: tx_ts1
++
++required:
++  - compatible
++  - sram
++  - ti,mii-g-rt
++  - dmas
++  - dma-names
++  - ethernet-ports
++  - interrupts
++  - interrupt-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++
++    /* Example k3-am654 base board SR2.0, dual-emac */
++        pruss2_eth: pruss2_eth {
++                compatible = "ti,am654-icssg-prueth";
++                pinctrl-names = "default";
++                pinctrl-0 = <&icssg2_rgmii_pins_default>;
++                sram = <&msmc_ram>;
++
++                ti,prus = <&pru2_0>, <&rtu2_0>, <&tx_pru2_0>, <&pru2_1>, <&rtu2_1>, <&tx_pru2_1>;
++                firmware-name = "ti-pruss/am65x-pru0-prueth-fw.elf",
++                                "ti-pruss/am65x-rtu0-prueth-fw.elf",
++                                "ti-pruss/am65x-txpru0-prueth-fw.elf",
++                                "ti-pruss/am65x-pru1-prueth-fw.elf",
++                                "ti-pruss/am65x-rtu1-prueth-fw.elf",
++                                "ti-pruss/am65x-txpru1-prueth-fw.elf";
++                ti,pruss-gp-mux-sel = <2>,      /* MII mode */
++                                      <2>,
++                                      <2>,
++                                      <2>,      /* MII mode */
++                                      <2>,
++                                      <2>;
++                ti,mii-g-rt = <&icssg2_mii_g_rt>;
++                dmas = <&main_udmap 0xc300>, /* egress slice 0 */
++                       <&main_udmap 0xc301>, /* egress slice 0 */
++                       <&main_udmap 0xc302>, /* egress slice 0 */
++                       <&main_udmap 0xc303>, /* egress slice 0 */
++                       <&main_udmap 0xc304>, /* egress slice 1 */
++                       <&main_udmap 0xc305>, /* egress slice 1 */
++                       <&main_udmap 0xc306>, /* egress slice 1 */
++                       <&main_udmap 0xc307>, /* egress slice 1 */
++                       <&main_udmap 0x4300>, /* ingress slice 0 */
++                       <&main_udmap 0x4301>, /* ingress slice 1 */
++                       <&main_udmap 0x4302>, /* mgmnt rsp slice 0 */
++                       <&main_udmap 0x4303>; /* mgmnt rsp slice 1 */
++                dma-names = "tx0-0", "tx0-1", "tx0-2", "tx0-3",
++                            "tx1-0", "tx1-1", "tx1-2", "tx1-3",
++                            "rx0", "rx1";
++                interrupts = <24 0 2>, <25 1 3>;
++                interrupt-names = "tx_ts0", "tx_ts1";
++                ethernet-ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        pruss2_emac0: port@0 {
++                                reg = <0>;
++                                phy-handle = <&pruss2_eth0_phy>;
++                                phy-mode = "rgmii-rxid";
++                                interrupts-extended = <&icssg2_intc 24>;
++                                ti,syscon-rgmii-delay = <&scm_conf 0x4120>;
++                                /* Filled in by bootloader */
++                                local-mac-address = [00 00 00 00 00 00];
++                        };
++
++                        pruss2_emac1: port@1 {
++                                reg = <1>;
++                                phy-handle = <&pruss2_eth1_phy>;
++                                phy-mode = "rgmii-rxid";
++                                interrupts-extended = <&icssg2_intc 25>;
++                                ti,syscon-rgmii-delay = <&scm_conf 0x4124>;
++                                /* Filled in by bootloader */
++                                local-mac-address = [00 00 00 00 00 00];
++                        };
++                };
++        };
 -- 
 2.17.1
 
