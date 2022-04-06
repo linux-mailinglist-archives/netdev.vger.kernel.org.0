@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 044194F5C7C
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:40:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59DDE4F5C52
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232894AbiDFLi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 07:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56694 "EHLO
+        id S232116AbiDFLkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 07:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232596AbiDFLhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:37:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A975777B1;
-        Wed,  6 Apr 2022 01:26:45 -0700 (PDT)
+        with ESMTP id S233103AbiDFLic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:38:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63052577B7B;
+        Wed,  6 Apr 2022 01:26:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C6C660B62;
-        Wed,  6 Apr 2022 08:26:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27DC5C385A8;
-        Wed,  6 Apr 2022 08:26:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D3D3B8217F;
+        Wed,  6 Apr 2022 08:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68D79C385A3;
+        Wed,  6 Apr 2022 08:26:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649233604;
-        bh=yTqbiKtFHf8rCUWDV/6SrW/ck2biprXiZegV3WYrODs=;
+        s=k20201202; t=1649233615;
+        bh=AI2q8bZ5rztCUk0gt3UBTC5UtsKFg2W3jcUEz0D2PfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aaIwVoQtJ0CMJk7Huijy4TjOnDyjh0ACrPFbiUobtVY/IYJITiegBHpIHCX32hd3x
-         tjEJz9Ow4+gviNTttPoP54GoNrHK6wID3n8HGEEQ+ASLNlYlKvFDIhHyvWZ/6cyiom
-         525A/GZktu18wBxRucM0IJv2OGfvr9AMzARIkF3/Saa8W6+Yx56XRhzgqpjSLgMlca
-         9ruVvqYQkxboeT9CmgIx3PbZA8qoeqIav6a1LwbS9+A+4i+rJ/fVgRpFn2t1Z9f7Go
-         Xfs7UNgCrK9xHxNfT3yegp80tBvi7AkMs9uEeSX2eHyRsLX3Wrd94LWSVYtXnMyy7t
-         CMQCBFwtS3J8Q==
+        b=Kto9uXo+27JO2OMN/e4hI/4bgLRdvtRESq5gOGLMX8P2Zut5jHF8jBrRRmHS/ji1S
+         r17Z/XAces07oSd6hGx1WYXpMRYMofzNhs0iaMX7iR7doj9ghgCZB76VNNN5suA3fC
+         YdkHgtMx99TrRLQK/rfroQe290cqHHOo0bkf/VJV6OkqMXJR/DHVR4V1cjgXAU1YWS
+         FyktMMRXdcDyQAb78iGesDpPeWGVch03j8gp0JqxNKtxI/Cg09q7Rv9AME3WclPhvl
+         Mo4Zp+OpmiLYfA8D0WKGWk2c4BGs9h+YPAj1OehMr07ikhTbL2aX8VTs1Ctswp3Lpm
+         MdsbFh08qoZHQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -38,9 +38,9 @@ To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
 Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
         linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
         Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 13/17] net/mlx5: Remove not-needed IPsec config
-Date:   Wed,  6 Apr 2022 11:25:48 +0300
-Message-Id: <fd14492cbc01a0d51a5bfedde02bcd2154123fde.1649232994.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next 15/17] net/mlx5: Reduce kconfig complexity while building crypto support
+Date:   Wed,  6 Apr 2022 11:25:50 +0300
+Message-Id: <37f02171da06886c1b403d44dd18b2a56b19219d.1649232994.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
 References: <cover.1649232994.git.leonro@nvidia.com>
@@ -58,143 +58,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-In current code, the CONFIG_MLX5_IPSEC and CONFIG_MLX5_EN_IPSEC are
-the same. So remove useless indirection.
+Both IPsec and kTLS need two functions declared in the lib/crypto.c
+file. These functions are advertised through general mlx5.h file and
+don't have any protection from attempts to call them without proper
+config option.
+
+Instead of creating stubs just for two functions, simply build that *.c
+file as part of regular mlx5_eth build and rely on compiler to throw
+them away if no callers exist in produced code.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/Kconfig    | 16 +---------------
- .../net/ethernet/mellanox/mlx5/core/Makefile   |  4 ++--
- .../mellanox/mlx5/core/accel/ipsec_offload.h   | 18 ++----------------
- include/linux/mlx5/accel.h                     |  4 ++--
- include/linux/mlx5/driver.h                    |  2 +-
- 5 files changed, 8 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig  | 5 -----
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile | 4 +---
+ 2 files changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-index e34e64a9ff4a..176883cf2827 100644
+index 176883cf2827..bfc0cd5ec423 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/Kconfig
-@@ -142,28 +142,14 @@ config MLX5_CORE_IPOIB
- 	help
- 	  MLX5 IPoIB offloads & acceleration support.
+@@ -16,9 +16,6 @@ config MLX5_CORE
+ 	  Core driver for low level functionality of the ConnectX-4 and
+ 	  Connect-IB cards by Mellanox Technologies.
  
--config MLX5_IPSEC
-+config MLX5_EN_IPSEC
- 	bool "Mellanox Technologies IPsec Connect-X support"
+-config MLX5_ACCEL
+-	bool
+-
+ config MLX5_FPGA
+ 	bool "Mellanox Technologies Innova support"
+ 	depends on MLX5_CORE
+@@ -147,7 +144,6 @@ config MLX5_EN_IPSEC
  	depends on MLX5_CORE_EN
  	depends on XFRM_OFFLOAD
  	depends on INET_ESP_OFFLOAD || INET6_ESP_OFFLOAD
- 	select MLX5_ACCEL
--	help
--	Build IPsec support for the Connect-X family of network cards by Mellanox
--	Technologies.
--	Note: If you select this option, the mlx5_core driver will include
--	IPsec support for the Connect-X family.
--
--config MLX5_EN_IPSEC
--	bool "IPSec XFRM cryptography-offload acceleration"
--	depends on MLX5_CORE_EN
--	depends on XFRM_OFFLOAD
--	depends on INET_ESP_OFFLOAD || INET6_ESP_OFFLOAD
--	depends on MLX5_IPSEC
+-	select MLX5_ACCEL
  	help
  	  Build support for IPsec cryptography-offload acceleration in the NIC.
--	  Note: Support for hardware with this capability needs to be selected
--	  for this option to become available.
  
- config MLX5_EN_TLS
- 	bool "Mellanox Technologies TLS Connect-X support"
+@@ -156,7 +152,6 @@ config MLX5_EN_TLS
+ 	depends on TLS_DEVICE
+ 	depends on TLS=y || MLX5_CORE=m
+ 	depends on MLX5_CORE_EN
+-	select MLX5_ACCEL
+ 	help
+ 	Build support for TLS cryptography-offload acceleration in the NIC.
+ 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index ad852703a3cb..9e715a1056f8 100644
+index f7aafbfcdb61..81620c25c77e 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -88,13 +88,13 @@ mlx5_core-$(CONFIG_MLX5_CORE_IPOIB) += ipoib/ipoib.o ipoib/ethtool.o ipoib/ipoib
+@@ -28,7 +28,7 @@ mlx5_core-$(CONFIG_MLX5_CORE_EN) += en/rqt.o en/tir.o en/rss.o en/rx_res.o \
+ 		en_selftest.o en/port.o en/monitor_stats.o en/health.o \
+ 		en/reporter_tx.o en/reporter_rx.o en/params.o en/xsk/pool.o \
+ 		en/xsk/setup.o en/xsk/rx.o en/xsk/tx.o en/devlink.o en/ptp.o \
+-		en/qos.o en/trap.o en/fs_tt_redirect.o en/selq.o
++		en/qos.o en/trap.o en/fs_tt_redirect.o en/selq.o lib/crypto.o
+ 
+ #
+ # Netdev extra
+@@ -88,8 +88,6 @@ mlx5_core-$(CONFIG_MLX5_CORE_IPOIB) += ipoib/ipoib.o ipoib/ethtool.o ipoib/ipoib
  #
  # Accelerations & FPGA
  #
--mlx5_core-$(CONFIG_MLX5_IPSEC) += accel/ipsec_offload.o
- mlx5_core-$(CONFIG_MLX5_ACCEL) += lib/crypto.o
- 
+-mlx5_core-$(CONFIG_MLX5_ACCEL) += lib/crypto.o
+-
  mlx5_core-$(CONFIG_MLX5_FPGA) += fpga/cmd.o fpga/core.o fpga/conn.o fpga/sdk.o
  
  mlx5_core-$(CONFIG_MLX5_EN_IPSEC) += en_accel/ipsec.o en_accel/ipsec_rxtx.o \
--				     en_accel/ipsec_stats.o en_accel/ipsec_fs.o
-+				     en_accel/ipsec_stats.o en_accel/ipsec_fs.o \
-+				     accel/ipsec_offload.o
- 
- mlx5_core-$(CONFIG_MLX5_EN_TLS) += en_accel/ktls_stats.o \
- 				   en_accel/fs_tcp.o en_accel/ktls.o en_accel/ktls_txrx.o \
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
-index 3d13e2c136b1..36e700b596d8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/accel/ipsec_offload.h
-@@ -7,7 +7,7 @@
- #include <linux/mlx5/driver.h>
- #include <linux/mlx5/accel.h>
- 
--#ifdef CONFIG_MLX5_IPSEC
-+#ifdef CONFIG_MLX5_EN_IPSEC
- 
- unsigned int mlx5_accel_ipsec_counters_count(struct mlx5_core_dev *mdev);
- int mlx5_accel_ipsec_counters_read(struct mlx5_core_dev *mdev, u64 *counters,
-@@ -42,22 +42,8 @@ struct mlx5_accel_ipsec_ops {
- };
- 
- #else
--
--static inline void *
--mlx5_accel_esp_create_hw_context(struct mlx5_core_dev *mdev,
--				 struct mlx5_accel_esp_xfrm *xfrm,
--				 u32 *sa_handle)
--{
--	return NULL;
--}
--
--static inline void mlx5_accel_esp_free_hw_context(struct mlx5_core_dev *mdev,
--						  void *context)
--{
--}
--
- static inline void mlx5_accel_ipsec_init(struct mlx5_core_dev *mdev) {}
- 
- static inline void mlx5_accel_ipsec_cleanup(struct mlx5_core_dev *mdev) {}
--#endif /* CONFIG_MLX5_IPSEC */
-+#endif /* CONFIG_MLX5_EN_IPSEC */
- #endif /* __MLX5_IPSEC_OFFLOAD_H__ */
-diff --git a/include/linux/mlx5/accel.h b/include/linux/mlx5/accel.h
-index 9145e2d37c0e..73e4d50a9f02 100644
---- a/include/linux/mlx5/accel.h
-+++ b/include/linux/mlx5/accel.h
-@@ -122,7 +122,7 @@ enum mlx5_accel_ipsec_cap {
- 	MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN	= 1 << 7,
- };
- 
--#ifdef CONFIG_MLX5_ACCEL
-+#ifdef CONFIG_MLX5_EN_IPSEC
- 
- u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev);
- 
-@@ -152,5 +152,5 @@ static inline int
- mlx5_accel_esp_modify_xfrm(struct mlx5_accel_esp_xfrm *xfrm,
- 			   const struct mlx5_accel_esp_xfrm_attrs *attrs) { return -EOPNOTSUPP; }
- 
--#endif /* CONFIG_MLX5_ACCEL */
-+#endif /* CONFIG_MLX5_EN_IPSEC */
- #endif /* __MLX5_ACCEL_H__ */
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 9424503eb8d3..5af53c035949 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -778,7 +778,7 @@ struct mlx5_core_dev {
- #ifdef CONFIG_MLX5_FPGA
- 	struct mlx5_fpga_device *fpga;
- #endif
--#ifdef CONFIG_MLX5_ACCEL
-+#ifdef CONFIG_MLX5_EN_IPSEC
- 	const struct mlx5_accel_ipsec_ops *ipsec_ops;
- #endif
- 	struct mlx5_clock        clock;
 -- 
 2.35.1
 
