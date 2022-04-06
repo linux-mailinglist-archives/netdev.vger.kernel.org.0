@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 078EA4F6712
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:39:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 218414F67AB
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239022AbiDFRbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 13:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44934 "EHLO
+        id S238965AbiDFRbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 13:31:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239159AbiDFRbZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:31:25 -0400
+        with ESMTP id S239208AbiDFRba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:31:30 -0400
 Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75DB2A047A;
-        Wed,  6 Apr 2022 08:34:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7E4320D82;
+        Wed,  6 Apr 2022 08:35:15 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3FC45200010;
-        Wed,  6 Apr 2022 15:34:51 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 84809200018;
+        Wed,  6 Apr 2022 15:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649259292;
+        t=1649259293;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cTOSqg3wgA/EBvGPJTu7veiSkHzXCmhlqoXd663CBgI=;
-        b=QM7BYPjxqyK6uGcHNYK7Oo2nemwlCHp/0hINWLeWdSjBr0aSSRyHXusPalgnzLTzEbVEiM
-        KQLN1L8JVa1CQk3r8xDr6iQocNspgWo2YFBZS1el7TZze41NEu2hVl3gbGA+rSK+0l/rSs
-        ghsnfnoqBACHD8XLjRkca8nxu/r/9xWtK+Q6pMMoxdjX7+jeBKAid2AyPairvQy3APj8K4
-        nUkeBm3HYvx3TcVd6P5vFU36xcJD3K7UEq/7K7PIyavAaIr8YcAhlKDKjknAMcAOeq5lzr
-        RWIony0SiHBE/U+s6clgE3qT9dk/IFBCU3RhMYWnp1Y9oB3rDDS1a8B8abO6GQ==
+        bh=yemwRS3+7A2qgrpEFEeMRRDaZ2IRZhWit4rd8Hl6Ong=;
+        b=WcemDIgVzoC+Do38B0B6OzoZ4fkXMEZPw4etg5V2TO0a0oZo9hR7EObh0ubsBhJiCE0zaM
+        4PPPKyj9bMMh4ynO8PdqxvqBn6NV3Cjrk3vMJJoegHKMlyj4md5Vt7TycJbqb/EzNRkYq2
+        TAFiDpfC9/UkWtKh3uhNngUoPDIp7p+XJUfyoOecuLLxGWIT3Sg3E1ut56bKDT9z9AgzE+
+        oPjLoBtz4kqp7f3onUd0mOJ/mMTtN4XhJUSyV1Ms6KAcCENf09ypqZvNsVkL9OeXm36h3t
+        H5J+NP38me4zCKC/XuJjlngkBGvPe8PNoaRg2bbpDG2dpL5BIca2iGIxDzyZuQ==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -41,9 +41,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v5 07/11] net: ieee802154: at86rf230: Call _xmit_bus_error() when a bus error occurs
-Date:   Wed,  6 Apr 2022 17:34:37 +0200
-Message-Id: <20220406153441.1667375-8-miquel.raynal@bootlin.com>
+Subject: [PATCH v5 08/11] net: ieee802154: at86rf230: Drop debugfs support
+Date:   Wed,  6 Apr 2022 17:34:38 +0200
+Message-Id: <20220406153441.1667375-9-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220406153441.1667375-1-miquel.raynal@bootlin.com>
 References: <20220406153441.1667375-1-miquel.raynal@bootlin.com>
@@ -60,29 +60,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ieee802154_xmit_bus_error() is the right helper to call when a transmission
-has failed. Let's use it instead of open-coding it. This also has the
-advantage of forwarding a generic IEEE80254_SYSTEM_ERROR reason.
+Commit 493bc90a9683 ("at86rf230: add debugfs support") brought trac
+support as part of a debugfs feature, in order to add some testing
+capabilities involving ack handling.
 
+As we want to collect trac errors but do not need the debugfs feature
+anymore, let's partially revert this commit, keeping the Tx trac
+handling part which still makes sense. This allows to return the trac
+error directly to the core with the recently introduced
+ieee802154_xmit_error() helper.
+
+Suggested-by: Alexander Aring <alex.aring@gmail.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/at86rf230.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ieee802154/Kconfig     |   7 --
+ drivers/net/ieee802154/at86rf230.c | 127 +++++------------------------
+ 2 files changed, 21 insertions(+), 113 deletions(-)
 
+diff --git a/drivers/net/ieee802154/Kconfig b/drivers/net/ieee802154/Kconfig
+index 0f7c6dc2ed15..95da876c5613 100644
+--- a/drivers/net/ieee802154/Kconfig
++++ b/drivers/net/ieee802154/Kconfig
+@@ -33,13 +33,6 @@ config IEEE802154_AT86RF230
+ 	  This driver can also be built as a module. To do so, say M here.
+ 	  the module will be called 'at86rf230'.
+ 
+-config IEEE802154_AT86RF230_DEBUGFS
+-	depends on IEEE802154_AT86RF230
+-	bool "AT86RF230 debugfs interface"
+-	depends on DEBUG_FS
+-	help
+-	  This option compiles debugfs code for the at86rf230 driver.
+-
+ config IEEE802154_MRF24J40
+ 	tristate "Microchip MRF24J40 transceiver driver"
+ 	depends on IEEE802154_DRIVERS && MAC802154
 diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index cafc786aab57..f219732ab301 100644
+index f219732ab301..45622db486f5 100644
 --- a/drivers/net/ieee802154/at86rf230.c
 +++ b/drivers/net/ieee802154/at86rf230.c
-@@ -346,8 +346,7 @@ at86rf230_async_bus_error_recover_complete(void *context)
+@@ -23,7 +23,6 @@
+ #include <linux/skbuff.h>
+ #include <linux/of_gpio.h>
+ #include <linux/ieee802154.h>
+-#include <linux/debugfs.h>
  
- 	if (lp->was_tx) {
- 		lp->was_tx = 0;
--		dev_kfree_skb_any(lp->tx_skb);
--		ieee802154_wake_queue(lp->hw);
-+		ieee802154_xmit_bus_error(lp->hw, lp->tx_skb);
- 	}
+ #include <net/mac802154.h>
+ #include <net/cfg802154.h>
+@@ -72,19 +71,11 @@ struct at86rf230_state_change {
+ 	void (*complete)(void *context);
+ 	u8 from_state;
+ 	u8 to_state;
++	int trac;
+ 
+ 	bool free;
+ };
+ 
+-struct at86rf230_trac {
+-	u64 success;
+-	u64 success_data_pending;
+-	u64 success_wait_for_ack;
+-	u64 channel_access_failure;
+-	u64 no_ack;
+-	u64 invalid;
+-};
+-
+ struct at86rf230_local {
+ 	struct spi_device *spi;
+ 
+@@ -104,8 +95,6 @@ struct at86rf230_local {
+ 	u8 tx_retry;
+ 	struct sk_buff *tx_skb;
+ 	struct at86rf230_state_change tx;
+-
+-	struct at86rf230_trac trac;
+ };
+ 
+ #define AT86RF2XX_NUMREGS 0x3F
+@@ -652,7 +641,11 @@ at86rf230_tx_complete(void *context)
+ 	struct at86rf230_state_change *ctx = context;
+ 	struct at86rf230_local *lp = ctx->lp;
+ 
+-	ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
++	if (ctx->trac == IEEE802154_SUCCESS)
++		ieee802154_xmit_complete(lp->hw, lp->tx_skb, false);
++	else
++		ieee802154_xmit_error(lp->hw, lp->tx_skb, ctx->trac);
++
+ 	kfree(ctx);
  }
  
+@@ -671,30 +664,21 @@ at86rf230_tx_trac_check(void *context)
+ {
+ 	struct at86rf230_state_change *ctx = context;
+ 	struct at86rf230_local *lp = ctx->lp;
++	u8 trac = TRAC_MASK(ctx->buf[1]);
+ 
+-	if (IS_ENABLED(CONFIG_IEEE802154_AT86RF230_DEBUGFS)) {
+-		u8 trac = TRAC_MASK(ctx->buf[1]);
+-
+-		switch (trac) {
+-		case TRAC_SUCCESS:
+-			lp->trac.success++;
+-			break;
+-		case TRAC_SUCCESS_DATA_PENDING:
+-			lp->trac.success_data_pending++;
+-			break;
+-		case TRAC_CHANNEL_ACCESS_FAILURE:
+-			lp->trac.channel_access_failure++;
+-			break;
+-		case TRAC_NO_ACK:
+-			lp->trac.no_ack++;
+-			break;
+-		case TRAC_INVALID:
+-			lp->trac.invalid++;
+-			break;
+-		default:
+-			WARN_ONCE(1, "received tx trac status %d\n", trac);
+-			break;
+-		}
++	switch (trac) {
++	case TRAC_SUCCESS:
++	case TRAC_SUCCESS_DATA_PENDING:
++		ctx->trac = IEEE802154_SUCCESS;
++		break;
++	case TRAC_CHANNEL_ACCESS_FAILURE:
++		ctx->trac = IEEE802154_CHANNEL_ACCESS_FAILURE;
++		break;
++	case TRAC_NO_ACK:
++		ctx->trac = IEEE802154_NO_ACK;
++		break;
++	default:
++		ctx->trac = IEEE802154_SYSTEM_ERROR;
+ 	}
+ 
+ 	at86rf230_async_state_change(lp, ctx, STATE_TX_ON, at86rf230_tx_on);
+@@ -736,25 +720,6 @@ at86rf230_rx_trac_check(void *context)
+ 	u8 *buf = ctx->buf;
+ 	int rc;
+ 
+-	if (IS_ENABLED(CONFIG_IEEE802154_AT86RF230_DEBUGFS)) {
+-		u8 trac = TRAC_MASK(buf[1]);
+-
+-		switch (trac) {
+-		case TRAC_SUCCESS:
+-			lp->trac.success++;
+-			break;
+-		case TRAC_SUCCESS_WAIT_FOR_ACK:
+-			lp->trac.success_wait_for_ack++;
+-			break;
+-		case TRAC_INVALID:
+-			lp->trac.invalid++;
+-			break;
+-		default:
+-			WARN_ONCE(1, "received rx trac status %d\n", trac);
+-			break;
+-		}
+-	}
+-
+ 	buf[0] = CMD_FB;
+ 	ctx->trx.len = AT86RF2XX_MAX_BUF;
+ 	ctx->msg.complete = at86rf230_rx_read_frame_complete;
+@@ -950,10 +915,6 @@ at86rf230_start(struct ieee802154_hw *hw)
+ {
+ 	struct at86rf230_local *lp = hw->priv;
+ 
+-	/* reset trac stats on start */
+-	if (IS_ENABLED(CONFIG_IEEE802154_AT86RF230_DEBUGFS))
+-		memset(&lp->trac, 0, sizeof(struct at86rf230_trac));
+-
+ 	at86rf230_awake(lp);
+ 	enable_irq(lp->spi->irq);
+ 
+@@ -1581,47 +1542,6 @@ at86rf230_detect_device(struct at86rf230_local *lp)
+ 	return rc;
+ }
+ 
+-#ifdef CONFIG_IEEE802154_AT86RF230_DEBUGFS
+-static struct dentry *at86rf230_debugfs_root;
+-
+-static int at86rf230_stats_show(struct seq_file *file, void *offset)
+-{
+-	struct at86rf230_local *lp = file->private;
+-
+-	seq_printf(file, "SUCCESS:\t\t%8llu\n", lp->trac.success);
+-	seq_printf(file, "SUCCESS_DATA_PENDING:\t%8llu\n",
+-		   lp->trac.success_data_pending);
+-	seq_printf(file, "SUCCESS_WAIT_FOR_ACK:\t%8llu\n",
+-		   lp->trac.success_wait_for_ack);
+-	seq_printf(file, "CHANNEL_ACCESS_FAILURE:\t%8llu\n",
+-		   lp->trac.channel_access_failure);
+-	seq_printf(file, "NO_ACK:\t\t\t%8llu\n", lp->trac.no_ack);
+-	seq_printf(file, "INVALID:\t\t%8llu\n", lp->trac.invalid);
+-	return 0;
+-}
+-DEFINE_SHOW_ATTRIBUTE(at86rf230_stats);
+-
+-static void at86rf230_debugfs_init(struct at86rf230_local *lp)
+-{
+-	char debugfs_dir_name[DNAME_INLINE_LEN + 1] = "at86rf230-";
+-
+-	strncat(debugfs_dir_name, dev_name(&lp->spi->dev), DNAME_INLINE_LEN);
+-
+-	at86rf230_debugfs_root = debugfs_create_dir(debugfs_dir_name, NULL);
+-
+-	debugfs_create_file("trac_stats", 0444, at86rf230_debugfs_root, lp,
+-			    &at86rf230_stats_fops);
+-}
+-
+-static void at86rf230_debugfs_remove(void)
+-{
+-	debugfs_remove_recursive(at86rf230_debugfs_root);
+-}
+-#else
+-static void at86rf230_debugfs_init(struct at86rf230_local *lp) { }
+-static void at86rf230_debugfs_remove(void) { }
+-#endif
+-
+ static int at86rf230_probe(struct spi_device *spi)
+ {
+ 	struct ieee802154_hw *hw;
+@@ -1718,16 +1638,12 @@ static int at86rf230_probe(struct spi_device *spi)
+ 	/* going into sleep by default */
+ 	at86rf230_sleep(lp);
+ 
+-	at86rf230_debugfs_init(lp);
+-
+ 	rc = ieee802154_register_hw(lp->hw);
+ 	if (rc)
+-		goto free_debugfs;
++		goto free_dev;
+ 
+ 	return rc;
+ 
+-free_debugfs:
+-	at86rf230_debugfs_remove();
+ free_dev:
+ 	ieee802154_free_hw(lp->hw);
+ 
+@@ -1742,7 +1658,6 @@ static int at86rf230_remove(struct spi_device *spi)
+ 	at86rf230_write_subreg(lp, SR_IRQ_MASK, 0);
+ 	ieee802154_unregister_hw(lp->hw);
+ 	ieee802154_free_hw(lp->hw);
+-	at86rf230_debugfs_remove();
+ 	dev_dbg(&spi->dev, "unregistered at86rf230\n");
+ 
+ 	return 0;
 -- 
 2.27.0
 
