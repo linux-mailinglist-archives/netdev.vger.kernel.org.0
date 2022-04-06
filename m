@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A6E4F6AF0
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 22:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 778984F6AFD
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 22:12:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233692AbiDFUMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 16:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53626 "EHLO
+        id S234078AbiDFUOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 16:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233403AbiDFULm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 16:11:42 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAF4FA20D;
-        Wed,  6 Apr 2022 10:38:29 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id z7so3868751iom.1;
-        Wed, 06 Apr 2022 10:38:29 -0700 (PDT)
+        with ESMTP id S235221AbiDFUNR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 16:13:17 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C775956214
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 10:40:20 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id r66so2805197pgr.3
+        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 10:40:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1Cs5Vt6UkYq7u69hUCTmkTbEACL4NrNkmG728WDKAXo=;
-        b=dRM9cimVa9u5yQTeb5E/b3pEEpGMKhqQhh0C0hfaHczGVxKqcJVYXdywmB0Qyt5IQr
-         ZLr0wF3b7TCKNFac0KQMi2rgI1SililYJikap/OA4S2Dvcgb6KrzpgcEGStqFFANof2a
-         t2iZIznAjQAFQ+nhIJ19UJygwo5hAsq1CVxJIsbdjfM7fMWM/sZdJr61SHqlvbrtw1qe
-         VdvX5tHGSemsl1rtCzvd8/AVMG4brIUZnWXc/JvYUJ24fbXJE33HoIDYCotGjngs2+V3
-         7BhrwwL3hjolOg+SiH/KEZAQjAq6ixLxdIMxEByYkz0vkdsGJivdtXGLw6NlFV3felf3
-         Hdug==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=6uLsJJChYBLCOOPgLZAHSdkxLxZlaUCQFBTEagQjLcU=;
+        b=hs4ZBiL7o4DuRB8x6TVGa2c/jVr3l4PqzmAKqASkRXmSPjxTkMd7c/AdExaoE/+LaY
+         AN08ZF9z4+yDGu6/fI+0qEFY1kdYX4gO0njfZu+rh1afUYM+icA/JC+cGva/2dDDywUc
+         bsnfHVraxYdv8m3YCW4odmA2fd8K5k6GtCEK48Y7c7TVCphZ4bU6Lp4arhBSwm6VTqzN
+         sP2L/xwEcxJUIGgrdrnGTL5M2gJWXH45sjL3BJYI5hW03PFD2GvZHNPsrh1t4MhKT0rB
+         Ftzvh3iWpnmEiX4hgKlLmkO9yL15jgZS/vOePakTkvSvQpZHCVThacBb3DLp60MlGALE
+         995Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1Cs5Vt6UkYq7u69hUCTmkTbEACL4NrNkmG728WDKAXo=;
-        b=7dLIXLbiREI0pxgg0zyF+3BFd93Qe72gmHWvoH0TWC/GOA8Xq+7At8o58SkV1m6YVl
-         cQcurQJsoJZOmzqu/Oow0HpQ/ZvSHsiuGwhI2WiiVxJatmMfkKiCfTmba2ZjrOAR8ayM
-         kI77XhPd7UVXNBhYz45klgLqDOv3IC01FW4KegE6IQw8M62y2i8S0m5CvAuybL+QWRGw
-         SkZZHWUo7qO4+P77l6JOeY81SKWIpW7UmMyQoCZlFRGoxTfJOh9awdkW5XbZj9zHVDYL
-         FN7awgNTAeqNd8R8hLryoqNsuhxpkpdNHTfQdv7x4znPWjnacm4vqPWf++GzBefYGb7a
-         Cqzw==
-X-Gm-Message-State: AOAM531jhkBuVaXKN9zyV4oU7FfMMTJhukd+f1PWVfbFFxL9WzNpK4wq
-        W6HZQhgbewyr2Lmv6tlWURKce9pjB5ptlfAP6uM=
-X-Google-Smtp-Source: ABdhPJzux8tLoiukInAccV8nyJJYFr4Dhs3C5r+F4yrLd4iVkCofupMNKWBuPIDrcdxYKm6ukf7P3lVMgituvE9eX1M=
-X-Received: by 2002:a05:6638:1685:b0:323:9fed:890a with SMTP id
- f5-20020a056638168500b003239fed890amr5168085jat.103.1649266708930; Wed, 06
- Apr 2022 10:38:28 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6uLsJJChYBLCOOPgLZAHSdkxLxZlaUCQFBTEagQjLcU=;
+        b=lmi3NxpXI9Mj/kdNC1+lO7TizSksBFPxRbcRXTU/9PpfgMGqCFpqxmjqfcXg26Estf
+         JBZ73H2P5S5x4DWsahIEVmZWA6R+uHbi4Tjf7R0jh9OPPseikjOcQTugMgS//tFnVW+B
+         6IocKJ90o9SFl74G8BkWRXdXWvtUrqAdDDadBC12VWQLB/IlyPBc+wCqXgz+Km/FLNos
+         90U/yyI6NHYoaUYbAPn6fOoAWnehHk7kdxWgYCbbE+wHsBJBm6Nl/Hoplq9c1z5LLZSA
+         q4+y4fgf8nva5bUepzmElqvcpgoOUFv8Z3j5xvgKXyXmt3zfLqkvH3F/uGWxIQJljdZK
+         O1gw==
+X-Gm-Message-State: AOAM531rCBDgV6ju+QV+/4jkLxE4mn//VJt6SF13lh8EeI/JD77QbvYH
+        aP0yWerUJm7vxvWG+we3us2H9y1GFQSFDQ==
+X-Google-Smtp-Source: ABdhPJxStpN09WqE79cSbe79B4h0oIN/tHd+0SUffyFdF8Tl4o7tmqCYmi4miDxQNcdrn0oHfRXfCA==
+X-Received: by 2002:a63:4642:0:b0:398:b6b9:5f45 with SMTP id v2-20020a634642000000b00398b6b95f45mr8153534pgk.518.1649266820260;
+        Wed, 06 Apr 2022 10:40:20 -0700 (PDT)
+Received: from ?IPV6:2620:15c:2c1:200:be1c:593c:43fb:d0a8? ([2620:15c:2c1:200:be1c:593c:43fb:d0a8])
+        by smtp.gmail.com with ESMTPSA id f16-20020a056a00239000b004fa7103e13csm21014511pfc.41.2022.04.06.10.40.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 10:40:19 -0700 (PDT)
+Message-ID: <18cd7e48-d719-bc82-9dbc-67cbb42eed83@gmail.com>
+Date:   Wed, 6 Apr 2022 10:40:18 -0700
 MIME-Version: 1.0
-References: <20220331122822.14283-1-houtao1@huawei.com>
-In-Reply-To: <20220331122822.14283-1-houtao1@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 6 Apr 2022 10:38:18 -0700
-Message-ID: <CAEf4Bzb7keBS8vXgV5JZzwgNGgMV0X3_guQ_m9JW3X6fJBDpPQ@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/2] bpf: Introduce ternary search tree for
- string key
-To:     Hou Tao <houtao1@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: =?UTF-8?Q?Re=3a_TCP_stack_gets_into_state_of_continually_advertisin?=
+ =?UTF-8?B?ZyDigJxzaWxseSB3aW5kb3figJ0gc2l6ZSBvZiAx?=
+Content-Language: en-US
+To:     Erin MacNeil <emacneil@juniper.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <BY3PR05MB8002750FAB3DC34F3B18AD9AD0E79@BY3PR05MB8002.namprd05.prod.outlook.com>
+ <BY3PR05MB80023CD8700DA1B1F203A975D0E79@BY3PR05MB8002.namprd05.prod.outlook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <BY3PR05MB80023CD8700DA1B1F203A975D0E79@BY3PR05MB8002.namprd05.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,143 +74,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 5:04 AM Hou Tao <houtao1@huawei.com> wrote:
->
-> Hi,
->
-> The initial motivation for the patchset is due to the suggestion of Alexei.
-> During the discuss of supporting of string key in hash-table, he saw the
-> space efficiency of ternary search tree under our early test and suggest
-> us to post it as a new bpf map [1].
->
-> Ternary search tree is a special trie where nodes are arranged in a
-> manner similar to binary search tree, but with up to three children
-> rather than two. The three children correpond to nodes whose value is
-> less than, equal to, and greater than the value of current node
-> respectively.
->
-> In ternary search tree map, only the valid content of string is saved.
-> The trailing null byte and unused bytes after it are not saved. If there
-> are common prefixes between these strings, the prefix is only saved once.
-> Compared with other space optimized trie (e.g. HAT-trie, succinct trie),
-> the advantage of ternary search tree is simple and being writeable.
->
-> Below are diagrams for ternary search map when inserting hello, he,
-> test and tea into it:
->
-> 1. insert "hello"
->
->         [ hello ]
->
-> 2. insert "he": need split "hello" into "he" and "llo"
->
->          [ he ]
->             |
->             *
->             |
->          [ llo ]
->
-> 3. insert "test": add it as right child of "he"
->
->          [ he ]
->             |
->             *-------x
->             |       |
->          [ llo ] [ test ]
->
-> 5. insert "tea": split "test" into "te" and "st",
->    and insert "a" as left child of "st"
->
->          [ he ]
->             |
->      x------*-------x
->      |      |       |
->   [ ah ] [ llo ] [ te ]
->                     |
->                     *
->                     |
->                  [ st ]
->                     |
->                x----*
->                |
->              [ a ]
->
-> As showed in above diagrams, the common prefix between "test" and "tea"
-> is "te" and it only is saved once. Also add benchmarks to compare the
-> memory usage and lookup performance between ternary search tree and
-> hash table. When the common prefix is lengthy (~192 bytes) and the
-> length of suffix is about 64 bytes, there are about 2~3 folds memory
-> saving compared with hash table. But the memory saving comes at prices:
-> the lookup performance of tst is about 2~3 slower compared with hash
-> table. See more benchmark details on patch #2.
->
-> Comments and suggestions are always welcome.
->
 
-Have you heard and tried qp-trie ([0]) by any chance? It is elegant
-and simple data structure. By all the available benchmarks it handily
-beats Red-Black trees in terms of memory usage and performance (though
-it of course depends on the data set, just like "memory compression"
-for ternary tree of yours depends on large set of common prefixes).
-qp-trie based BPF map seems (at least on paper) like a better
-general-purpose BPF map that is dynamically sized (avoiding current
-HASHMAP limitations) and stores keys in sorted order (and thus allows
-meaningful ordered iteration *and*, importantly for longest prefix
-match tree, allows efficient prefix matches). I did a quick experiment
-about a month ago trying to replace libbpf's internal use of hashmap
-with qp-trie for BTF string dedup and it was slightly slower than
-hashmap (not surprisingly, though, because libbpf over-sizes hashmap
-to avoid hash collisions and long chains in buckets), but it was still
-very decent even in that scenario. So I've been mulling the idea of
-implementing BPF map based on qp-trie elegant design and ideas, but
-can't find time to do this.
-
-This prefix sharing is nice when you have a lot of long common
-prefixes, but I'm a bit skeptical that as a general-purpose BPF data
-structure it's going to be that beneficial. 192 bytes of common
-prefixes seems like a very unusual dataset :)
-
-More specifically about TST implementation in your paches. One global
-per-map lock I think is a very big downside. We have LPM trie which is
-very slow in big part due to global lock. It might be possible to
-design more granular schema for TST, but this whole in-place splitting
-logic makes this harder. I think qp-trie can be locked in a granular
-fashion much more easily by having a "hand over hand" locking: lock
-parent, find child, lock child, unlock parent, move into child node.
-Something like that would be more scalable overall, especially if the
-access pattern is not focused on a narrow set of nodes.
-
-Anyways, I love data structures and this one is an interesting idea.
-But just my few cents of "production-readiness" for general-purpose
-data structures for BPF.
-
-  [0] https://dotat.at/prog/qp/README.html
-
-> Regards,
-> Tao
+On 4/6/22 07:19, Erin MacNeil wrote:
+> This issue has been observed with the  4.8.28 kernel, I am wondering if it may be a known issue with an available fix?
 >
-> [1]: https://lore.kernel.org/bpf/CAADnVQJUJp3YBcpESwR3Q1U6GS1mBM=Vp-qYuQX7eZOaoLjdUA@mail.gmail.com/
+> Description:
+> Device A hosting IP address <Device A i/f addr>  is running Linux version: 4.8.28, and device B hosting IP address <Device B i/f addr>  is non-Linux based.
+> Both devices are configured with an interface MTU of 9114 bytes.
 >
-> Hou Tao (2):
->   bpf: Introduce ternary search tree for string key
->   selftests/bpf: add benchmark for ternary search tree map
+> The TCP connection gets  established via frames 1418-1419, where a window size + MSS of 9060 is agreed upon; SACK is disabled as device B does not support it + window scaling is not in play.
 >
->  include/linux/bpf_types.h                     |   1 +
->  include/uapi/linux/bpf.h                      |   1 +
->  kernel/bpf/Makefile                           |   1 +
->  kernel/bpf/bpf_tst.c                          | 411 +++++++++++++++++
->  tools/include/uapi/linux/bpf.h                |   1 +
->  tools/testing/selftests/bpf/Makefile          |   5 +-
->  tools/testing/selftests/bpf/bench.c           |   6 +
->  .../selftests/bpf/benchs/bench_tst_map.c      | 415 ++++++++++++++++++
->  .../selftests/bpf/benchs/run_bench_tst.sh     |  54 +++
->  tools/testing/selftests/bpf/progs/tst_bench.c |  70 +++
->  10 files changed, 964 insertions(+), 1 deletion(-)
->  create mode 100644 kernel/bpf/bpf_tst.c
->  create mode 100644 tools/testing/selftests/bpf/benchs/bench_tst_map.c
->  create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_tst.sh
->  create mode 100644 tools/testing/selftests/bpf/progs/tst_bench.c
+> No.     Time                          Source                Destination           Protocol Length Info
+>    *1418 2022-03-15 06:52:49.693168    <Device A i/f addr>   <Device B i/f addr>   TCP      122    57486 -> 179 [SYN] Seq=0 Win=9060 Len=0 MSS=9060 SACK_PERM=1 TSval=3368771415 TSecr=0 WS=1
+>    *1419 2022-03-15 06:52:49.709325    <Device B i/f addr>   <Device A i/f addr>   TCP      132    179 -> 57486 [SYN, ACK] Seq=0 Ack=1 Win=16384 Len=0 MSS=9060 WS=1
+> ...
+>     4661 2022-03-15 06:53:52.437668    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
+>     4662 2022-03-15 06:53:52.437747    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9658065 Win=9060 Len=0
+>     4663 2022-03-15 06:53:52.454599    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
+>     4664 2022-03-15 06:53:52.454661    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9667125 Win=9060 Len=0
+>     4665 2022-03-15 06:53:52.471377    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
+>     4666 2022-03-15 06:53:52.512396    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9676185 Win=0 Len=0
+>     4667 2022-03-15 06:53:52.828918    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9676185 Win=9060 Len=0
+>     4668 2022-03-15 06:53:52.829001    <Device B i/f addr>   <Device A i/f addr>   BGP      125
+>     4669 2022-03-15 06:53:52.829032    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9676186 Win=9060 Len=0
+>     4670 2022-03-15 06:53:52.845494    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
+>    *4671 2022-03-15 06:53:52.845532    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9685245 Win=1 Len=0
+>     4672 2022-03-15 06:53:52.861968    <Device B i/f addr>   <Device A i/f addr>   TCP      125    179 -> 57486 [ACK] Seq=9685245 Ack=3177223 Win=27803 Len=1
+> ...
+> At frame 4671, some 63 seconds after the connection has been established, device A advertises a window size of 1, and the connection never recovers from this; a window size of 1 is continually advertised. The issue seems to be triggered by device B sending a TCP window probe conveying a single byte of data (the next byte in its send window) in frame 4668; when this is ACKed by device A, device A also re-advertises its receive window as 9060. The next packet from device B, frame 4670, conveys 9060 bytes of data, the first byte of which is the same byte that it sent in frame 4668 which device A has already ACKed, but which device B may not yet have seen.
+>
+> On device A, the TCP socket was configured with setsockopt() SO_RCVBUF & SO_SNDBUF values of 16k.
+
+Presumably 16k buffers while MTU is 9000 is not correct.
+
+Kernel has some logic to ensure a minimal value, based on standard MTU 
+sizes.
+
+
+Have you tried not using setsockopt() SO_RCVBUF & SO_SNDBUF ?
+
+
+>
+> Here is the sequence detail:
+>
+> |2022-03-15 06:53:52.437668|         ACK - Len: 9060               |Seq = 4236355144 Ack = 502383504 |         |(57486)  <------------------  (179)    |
+> |2022-03-15 06:53:52.437747|         ACK       |                   |Seq = 502383551 Ack = 4236364204 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.454599|         ACK - Len: 9060               |Seq = 4236364204 Ack = 502383551 |         |(57486)  <------------------  (179)    |
+> |2022-03-15 06:53:52.454661|         ACK       |                   |Seq = 502383551 Ack = 4236373264 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.471377|         ACK - Len: 9060               |Seq = 4236373264 Ack = 502383551 |         |(57486)  <------------------  (179)    |
+> |2022-03-15 06:53:52.512396|         ACK       |                   |Seq = 502383551 Ack = 4236382324 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.828918|         ACK       |                   |Seq = 502383551 Ack = 4236382324 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.829001|         ACK - Len: 1                  |Seq = 4236382324 Ack = 502383551 |         |(57486)  <------------------  (179)    |
+> |2022-03-15 06:53:52.829032|         ACK       |                   |Seq = 502383551 Ack = 4236382325 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.845494|         ACK - Len: 9060               |Seq = 4236382324 Ack = 502383551 |         |(57486)  <------------------  (179)    |
+> |2022-03-15 06:53:52.845532|         ACK       |                   |Seq = 502383551 Ack = 4236391384 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.861968|         ACK - Len: 1                  |Seq = 4236391384 Ack = 502383551 |         |(57486)  <------------------  (179)    |
+> |2022-03-15 06:53:52.862022|         ACK       |                   |Seq = 502383551 Ack = 4236391385 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.878445|         ACK - Len: 1                  |Seq = 4236391385 Ack = 502383551 |         |(57486)  <------------------  (179)    |
+> |2022-03-15 06:53:52.878529|         ACK       |                   |Seq = 502383551 Ack = 4236391386 |         |(57486)  ------------------>  (179)    |
+> |2022-03-15 06:53:52.895212|         ACK - Len: 1                  |Seq = 4236391386 Ack = 502383551 |         |(57486)  <------------------  (179)    |
+>
+>
+> There is no data in the recv-q or send-q at this point, yet the window stays at size 1:
+>
+> $ ss -o state established -ntepi '( dport = 179 or sport = 179 )' dst <Device B i/f addr>
+> Recv-Q Send-Q                 Local Address:Port                                Peer Address:Port
+> 0     0                  <Device A i/f addr>:57486                               <Device B i/f addr>:179                ino:1170981660 sk:d9d <->
+>
+>
+> Thanks
+> -Erin
 >
 > --
-> 2.31.1
 >
+> Juniper Business Use Only
