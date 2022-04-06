@@ -2,47 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E68894F65D6
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F20664F65BA
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237879AbiDFQjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 12:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40832 "EHLO
+        id S237725AbiDFQnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 12:43:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237942AbiDFQjp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:39:45 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E67A3024D9;
-        Wed,  6 Apr 2022 06:58:11 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1nc6Ah-0005QG-9l; Wed, 06 Apr 2022 15:58:07 +0200
-Date:   Wed, 6 Apr 2022 15:58:07 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>, Jaco Kroon <jaco@uls.co.za>,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        kadlec@netfilter.org
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
- connections
-Message-ID: <20220406135807.GA16047@breakpoint.cc>
-References: <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za>
- <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com>
- <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com>
- <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
- <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com>
- <CADVnQy=GX0J_QbMJXogGzPwD=f0diKDDxLiHV0gzrb4bo=4FjA@mail.gmail.com>
- <429dd56b-8a6c-518f-ccb4-fa5beae30953@uls.co.za>
- <CADVnQynGT7pGBT4PJ=vYg-bj9gnHTsKYHMU_6W0RFZb2FOoxiw@mail.gmail.com>
- <CANn89iJqKmjvJGtRHVumfP0T_SSa1uioFLgUvW+MF2ov2Ec2vQ@mail.gmail.com>
- <CADVnQykexgJ+NEUojiKrt=HTomF0nL8CncF401+mEFkvuge7Rg@mail.gmail.com>
+        with ESMTP id S238653AbiDFQnD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:43:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAA62D0FFE
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 07:02:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23FBA617CC
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 14:02:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0210EC385A3;
+        Wed,  6 Apr 2022 14:02:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649253768;
+        bh=uzUWupfh+5CFkIN8O1pne0u/KjQkA/rfqBh0qD+Lpv0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ltfRsfCnIW7r/Ib5Y42iDgDYsM6tnrhFOFobhPiuL6NIFOeyZHFiQwcIENf2ngLJn
+         lwdQyRqZ0gUUao3+Tl2OMT2RLzEwPAcZVWGqs57eCiDgq4pWTtnHqdizdZQxytfujN
+         PJ6n7ODgv/hW9KjOvXBWIpbeuU4SJSo/iiuPytEFcwyNMnsVTm2JKYm1+yIXQLFaxM
+         HCGBJOEFp8vp83kwOEgTb7+fJiT/dnCKAbRY3F7UHeWVzMAu+oeubmIIEVxIHGLEfB
+         q8accJLmBinsWnNGAQccW+5xGrBz6MHdXWwgcFJqhrf3oBNzkja4ofakywOwAhsGiV
+         tclF+obeo+E1g==
+Date:   Wed, 6 Apr 2022 16:02:44 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        thomas.petazzoni@bootlin.com, linux@armlinux.org.uk,
+        jbrouer@redhat.com, ilias.apalodimas@linaro.org, jdamato@fastly.com
+Subject: Re: [PATCH net-next] net: mvneta: add support for page_pool_get_stats
+Message-ID: <Yk2dhD2rjQQaF4Pc@lore-desk>
+References: <e4a3bb0fb407ead607b85f7f041f24b586c8b99d.1649190493.git.lorenzo@kernel.org>
+ <Yk2X6KPyeN3z7OUW@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3OL8aaSaBF9lPCU0"
 Content-Disposition: inline
-In-Reply-To: <CADVnQykexgJ+NEUojiKrt=HTomF0nL8CncF401+mEFkvuge7Rg@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <Yk2X6KPyeN3z7OUW@lunn.ch>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,121 +57,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Neal Cardwell <ncardwell@google.com> wrote:
 
-[ trimmed CCs, add Jozsef and nf-devel ]
+--3OL8aaSaBF9lPCU0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Neal, Eric, thanks for debugging this problem.
+> > +static void mvneta_ethtool_update_pp_stats(struct mvneta_port *pp,
+> > +					   struct page_pool_stats *stats)
+> > +{
+> > +	int i;
+> > +
+> > +	memset(stats, 0, sizeof(*stats));
+> > +	for (i =3D 0; i < rxq_number; i++) {
+> > +		struct page_pool *page_pool =3D pp->rxqs[i].page_pool;
+> > +		struct page_pool_stats pp_stats =3D {};
+> > +
+> > +		if (!page_pool_get_stats(page_pool, &pp_stats))
+> > +			continue;
+> > +
+> > +		stats->alloc_stats.fast +=3D pp_stats.alloc_stats.fast;
+> > +		stats->alloc_stats.slow +=3D pp_stats.alloc_stats.slow;
+> > +		stats->alloc_stats.slow_high_order +=3D
+> > +			pp_stats.alloc_stats.slow_high_order;
+> > +		stats->alloc_stats.empty +=3D pp_stats.alloc_stats.empty;
+> > +		stats->alloc_stats.refill +=3D pp_stats.alloc_stats.refill;
+> > +		stats->alloc_stats.waive +=3D pp_stats.alloc_stats.waive;
+> > +		stats->recycle_stats.cached +=3D pp_stats.recycle_stats.cached;
+> > +		stats->recycle_stats.cache_full +=3D
+> > +			pp_stats.recycle_stats.cache_full;
+> > +		stats->recycle_stats.ring +=3D pp_stats.recycle_stats.ring;
+> > +		stats->recycle_stats.ring_full +=3D
+> > +			pp_stats.recycle_stats.ring_full;
+> > +		stats->recycle_stats.released_refcnt +=3D
+> > +			pp_stats.recycle_stats.released_refcnt;
+>=20
+> Am i right in saying, these are all software stats? They are also
+> generic for any receive queue using the page pool?
 
-> On Sat, Apr 2, 2022 at 12:32 PM Eric Dumazet <edumazet@google.com> wrote:
-> > On Sat, Apr 2, 2022 at 9:29 AM Neal Cardwell <ncardwell@google.com> wrote:
-> > > FWIW those log entries indicate netfilter on the mail client machine
-> > > dropping consecutive outbound skbs with 2*MSS of payload. So that
-> > > explains the large consecutive losses of client data packets to the
-> > > e-mail server. That seems to confirm my earlier hunch that those drops
-> > > of consecutive client data packets "do not look like normal congestive
-> > > packet loss".
-> >
-> > This also explains why we have all these tiny 2-MSS packets in the pcap.
-> > Under normal conditions, autocorking should kick in, allowing TCP to
-> > build bigger TSO packets.
-> 
-> I have not looked at the conntrack code before today, but AFAICT this
-> is the buggy section of  nf_conntrack_proto_tcp.c:
-> 
->         } else if (((state->state == TCP_CONNTRACK_SYN_SENT
->                      && dir == IP_CT_DIR_ORIGINAL)
->                    || (state->state == TCP_CONNTRACK_SYN_RECV
->                      && dir == IP_CT_DIR_REPLY))
->                    && after(end, sender->td_end)) {
->                 /*
->                  * RFC 793: "if a TCP is reinitialized ... then it need
->                  * not wait at all; it must only be sure to use sequence
->                  * numbers larger than those recently used."
->                  */
->                 sender->td_end =
->                 sender->td_maxend = end;
->                 sender->td_maxwin = (win == 0 ? 1 : win);
-> 
->                 tcp_options(skb, dataoff, tcph, sender);
-> 
-> Note that the tcp_options() function implicitly assumes it is being
-> called on a SYN, because it sets state->td_scale to 0 and only sets
-> state->td_scale to something non-zero if it sees a wscale option. So
-> if we ever call that on an skb that's not a SYN, we will forget that
-> the connection is using the wscale option.
->
-> But at this point in the code it is calling tcp_options() without
-> first checking that this is a SYN.
+yes, these stats are accounted by the kernel so they are sw stats, but I gu=
+ess
+xdp ones are sw as well, right?
 
-Yes, thats the bug, tcp_options() must not be called if syn bit is not
-set.
+>=20
+> It seems odd the driver is doing the addition here. Why not pass stats
+> into page_pool_get_stats()? That will make it easier when you add
+> additional statistics?
+>=20
+> I'm also wondering if ethtool -S is even the correct API. It should be
+> for hardware dependent statistics, those which change between
+> implementations. Where as these statistics should be generic. Maybe
+> they should be in /sys/class/net/ethX/statistics/ and the driver
+> itself is not even involved, the page pool code implements it?
 
-> For this TFO scenario like the one in the trace, where the server
-> sends its first data packet after the SYNACK packet and before the
-> client's first ACK, presumably the conntrack state machine is
-> (correctly) SYN_RECV, and then (incorrectly) executes this code,
+I do not have a strong opinion on it, but I can see an issue for some drive=
+rs
+(e.g. mvpp2 iirc) where page_pools are not specific for each net_device but=
+ are shared
+between multiple ports, so maybe it is better to allow the driver to decide=
+ how
+to report them. What do you think?
 
-Right.  Jozsef, for context, sequence is in trace is:
+Regards,
+Lorenzo
 
-S > C Flags [S], seq 3451342529, win 62580, options [mss 8940,sackOK,TS val 331187616 ecr 0,nop,wscale 7,tfo [|tcp]>
-C > S Flags [S.], seq 2699962254, ack 3451342530, win 65535, options [mss 1440,sackOK,TS val 1206542770 ecr 331187616,nop,wscale 8], length 0
-C > S Flags [P.], seq 1:89, ack 1, win 256, options [nop,nop,TS val 1206542772 ecr 331187616], length 88: SMTP [|smtp]
+>=20
+>        Andrew
 
-Normally, 3rd packet would be S > C, but this one is C > S.
+--3OL8aaSaBF9lPCU0
+Content-Type: application/pgp-signature; name="signature.asc"
 
-So, packet #3 hits the 'reinit' branch which zaps wscale option.
+-----BEGIN PGP SIGNATURE-----
 
-> Someone more familiar with conntrack may have a good idea about how to
-> best fix this?
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYk2dhAAKCRA6cBh0uS2t
+rA31AQDsf9jnfVWTP/UF9XIR8+01vCUPXyZdcIqbuD8XVp1KhQD/XKWH3mOUWcN8
+VfDMoKolRyxsIFSXxxaqN9fGvy2X9Qk=
+=a/RR
+-----END PGP SIGNATURE-----
 
-Jozsef, does this look sane to you?
-It fixes the TFO capture and still passes the test case i made for
-82b72cb94666b3dbd7152bb9f441b068af7a921b
-("netfilter: conntrack: re-init state for retransmitted syn-ack").
-
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 8ec55cd72572..90ad1c0f23b1 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -556,33 +556,24 @@ static bool tcp_in_window(struct nf_conn *ct,
- 			}
- 
- 		}
--	} else if (((state->state == TCP_CONNTRACK_SYN_SENT
--		     && dir == IP_CT_DIR_ORIGINAL)
--		   || (state->state == TCP_CONNTRACK_SYN_RECV
--		     && dir == IP_CT_DIR_REPLY))
--		   && after(end, sender->td_end)) {
-+	} else if (tcph->syn &&
-+		   after(end, sender->td_end) &&
-+		   (state->state == TCP_CONNTRACK_SYN_SENT ||
-+		    state->state == TCP_CONNTRACK_SYN_RECV)) {
- 		/*
- 		 * RFC 793: "if a TCP is reinitialized ... then it need
- 		 * not wait at all; it must only be sure to use sequence
- 		 * numbers larger than those recently used."
--		 */
--		sender->td_end =
--		sender->td_maxend = end;
--		sender->td_maxwin = (win == 0 ? 1 : win);
--
--		tcp_options(skb, dataoff, tcph, sender);
--	} else if (tcph->syn && dir == IP_CT_DIR_REPLY &&
--		   state->state == TCP_CONNTRACK_SYN_SENT) {
--		/* Retransmitted syn-ack, or syn (simultaneous open).
- 		 *
-+		 * also check for retransmitted syn-ack, or syn (simultaneous open).
- 		 * Re-init state for this direction, just like for the first
- 		 * syn(-ack) reply, it might differ in seq, ack or tcp options.
-+		 *
-+		 * Check for invalid syn-ack in original direction was already done.
- 		 */
- 		tcp_init_sender(sender, receiver,
- 				skb, dataoff, tcph,
- 				end, win);
--		if (!tcph->ack)
--			return true;
- 	}
- 
- 	if (!(tcph->ack)) {
+--3OL8aaSaBF9lPCU0--
