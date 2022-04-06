@@ -2,86 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D7E4F57E5
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 10:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E8B54F59E8
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 11:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234602AbiDFIZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 04:25:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37662 "EHLO
+        id S235493AbiDFJas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 05:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357081AbiDFIYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 04:24:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EA1FE41C;
-        Tue,  5 Apr 2022 18:20:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7A2861978;
-        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 25B47C385A6;
-        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649208012;
-        bh=dC3v0I2tbjatrppFTcXtArePWkg3Hg3WP7/TXZKrEYI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eU31G606J6itN38BjoJvPTgXdZX9D6h9QYMA93UzZGQsHvHjkWfL9P1Z4yEkPTWHb
-         G3qrb/qmquK50artxYNOA9piMh4BLAOUIN58X0tAES7w+/jBtFNCU6g33XJqczHuRz
-         yWrn3ed6ij3wseUkl4Dwdg7Kwhj2wTUDNSBo35R4rZADwjoolI0EIfJfXc985Wpenf
-         MP9j1o4rp00XelBQh4vY5Ts3i4PpwY0XyPd7YwBDbGW2tvJy1UeerC1YJmANox8guI
-         BqPF+gOqzyoAgDLTEgA15s/CDi0+9cpNX3B1COEASNaHS03QAkyUQFPuA0qIjCRZy+
-         S7Y8QgH5UBkYQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0A490E85BCB;
-        Wed,  6 Apr 2022 01:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1457059AbiDFJTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 05:19:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72D6B450323
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 18:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649210218;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=99Z2Rijt/VE4EbyknhjqjEZxvGPAdDFOgiKQjfGOIEU=;
+        b=iUNLwUk1H4Lo/oseEynG/SGJrlPguCMKzw+RENJivei2aMTqscs65uVt0JNuZGotmsliCu
+        18EVeI9AXKq+ryokcpLLxgeS9zmZbI0AEBVVZGSpflqz9j+AZZ2+AiBaTA9rKIJKB2Dwme
+        pHcBCu3h9zqBDJLcBgmDj4yqf5hfsw0=
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+ [209.85.215.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-104-fu9oFyCBNW6UksUtDfip1A-1; Tue, 05 Apr 2022 21:56:57 -0400
+X-MC-Unique: fu9oFyCBNW6UksUtDfip1A-1
+Received: by mail-pg1-f199.google.com with SMTP id p4-20020a631e44000000b00399598a48c5so604572pgm.1
+        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 18:56:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=99Z2Rijt/VE4EbyknhjqjEZxvGPAdDFOgiKQjfGOIEU=;
+        b=O5b2FcsGHe9+7NMxRbElgPjyEE76cvG1Q1xa7qgfY3CmXnNmn30wb5th63KnD/aFbD
+         KKLcFsbtFJHSWI9xnpCWMDwErdNfKi3dlA8EIH+2duSpGIKGT92Mza9s0C31Xmi/tkyz
+         UN21ibN0AtrwDFi6dBQN/NUG6IljmmkfOwQ7YPxGv1nJfymom0Lgt8ZkVcHMd5eJX1vZ
+         EU99+Ed60Sw7YDoCIMAiikTCdP28tNcqHa849OkerU4tkGC9uOEvAVlAmz6eYoYq7stJ
+         9kSSyBNpr9QGPPnSAW34+o/y9GjRP36P0Trt2KGrXLPbeRjuH5F5/YPPJGIG5XjmEnyU
+         HqXw==
+X-Gm-Message-State: AOAM532AoA6ph45sUnxmlGB1e/SCbvniHfVtLqzKsaIBaykywhitQKl8
+        ww7XPeptqvvFAAHXDTyZPy2FFJ7FGtoK4apOyXUwlRLrE7W/wcS9a0vFQUSn3Qv2D0LEE+i6v7/
+        ioFLMN5NBzKqxQABs
+X-Received: by 2002:a17:90b:3886:b0:1c7:c935:4447 with SMTP id mu6-20020a17090b388600b001c7c9354447mr7412664pjb.196.1649210216660;
+        Tue, 05 Apr 2022 18:56:56 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyj+7ANZxM8sUwq4Uo7Vdcrs9toKr0kHrL0LeoNsUciJBkQwj6kWHwZWXw0V5aCUv1aSW2ctw==
+X-Received: by 2002:a17:90b:3886:b0:1c7:c935:4447 with SMTP id mu6-20020a17090b388600b001c7c9354447mr7412655pjb.196.1649210216379;
+        Tue, 05 Apr 2022 18:56:56 -0700 (PDT)
+Received: from fedora19.localdomain (2403-5804-6c4-aa-7079-8927-5a0f-bb55.ip6.aussiebb.net. [2403:5804:6c4:aa:7079:8927:5a0f:bb55])
+        by smtp.gmail.com with ESMTPSA id y16-20020a63b510000000b00398d8b19bbfsm14511359pge.23.2022.04.05.18.56.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 18:56:55 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 11:56:51 +1000
+From:   Ian Wienand <iwienand@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, Tom Gundersen <teg@jklm.no>,
+        David Herrmann <dh.herrmann@gmail.com>
+Subject: Re: [PATCH v2] net/ethernet : set default assignment identifier to
+ NET_NAME_ENUM
+Message-ID: <YkzzYxn0/04JT6Yv@fedora19.localdomain>
+References: <20220405001500.1485242-1-iwienand@redhat.com>
+ <20220405124103.1f25e5b5@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: micrel: Fix KS8851 Kconfig
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164920801203.3942.12236675927293580268.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Apr 2022 01:20:12 +0000
-References: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220405065936.4105272-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        Divya.Koppera@microchip.com, lkp@intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405124103.1f25e5b5@kernel.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Thanks for review
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+On Tue, Apr 05, 2022 at 12:41:03PM -0700, Jakub Kicinski wrote:
+> Can you spell out how netfront gets a different type to virtio?
+> I see alloc_etherdev_mq() in both cases.
 
-On Tue, 5 Apr 2022 08:59:36 +0200 you wrote:
-> KS8851 selects MICREL_PHY, which depends on PTP_1588_CLOCK_OPTIONAL, so
-> make KS8851 also depend on PTP_1588_CLOCK_OPTIONAL.
-> 
-> Fixes kconfig warning and build errors:
-> 
-> WARNING: unmet direct dependencies detected for MICREL_PHY
->   Depends on [m]: NETDEVICES [=y] && PHYLIB [=y] && PTP_1588_CLOCK_OPTIONAL [=m]
->     Selected by [y]:
->       - KS8851 [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_MICREL [=y] && SPI [=y]
-> 
-> [...]
+Yeah I've been doing further testing to narrow this down, and I think
+I've been confused by the renaming happening during the initrd steps.
 
-Here is the summary with links:
-  - [net] net: micrel: Fix KS8851 Kconfig
-    https://git.kernel.org/netdev/net/c/1d7e4fd72bb9
+It seems that renamed devices (no matter what the driver) will have
+their name_assign_type set to NET_NAME_USER; which [1] gives away as
+coming from the rtnl_newlink path.  virtio devices were renamed in
+init phase in my testing environment, which is why
+/sys/class/net/<iface>/net_name_type works for them by the time
+interactive login starts -- not because they explicitly flag
+themselves.  Sorry for not recognising that earlier.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> This worries me. Why is UNKNOWN and ENUM treated differently?
+> Can you point me to the code which pays attention to the assign type?
 
+Yeah, I'll have to retract that claim; it remains unclear to me why
+CentOS 8-stream does not rename netfront devices (systemd 239) and
+CentOS 9-stream does (systemd 249).
+
+systemd only seems to use NET_NAME_ENUM in an informational way to
+print a warning when you're using a .link file to set network info for
+a device that might change names [2].
+
+Perhaps this still has some utility in making that warning more
+useful?
+
+[1] https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/tree/ip/iplink.c#n65
+[2] https://github.com/systemd/systemd/blob/main/src/udev/net/link-config.c#L446
 
