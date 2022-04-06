@@ -2,229 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44A0D4F6603
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 227CC4F65FC
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:52:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238271AbiDFQut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 12:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
+        id S238013AbiDFQwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 12:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238222AbiDFQun (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:50:43 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35E13DDE81;
-        Wed,  6 Apr 2022 07:13:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=sd/PsPgwHRoZV9qtjZqHegQHb46ZFmljHcKA2C4yic0=; b=Og6RBUjJQQc5oScHfhAvWEjg0b
-        pdfDockNNddPaV+0JeuLI2RPwGOg0Vi3CbqJQlkRATjhF44uFvZni+n9cu0VH1cDEJS2IcniVc2kN
-        axdEupiU4XxGP72AjbIVkBYafc869yRG+JakKPxlQrCgw92Tll56TLNzfmnMdhAgMrYE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nc6Pc-00ESl0-US; Wed, 06 Apr 2022 16:13:32 +0200
-Date:   Wed, 6 Apr 2022 16:13:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Puranjay Mohan <p-mohan@ti.com>
-Cc:     linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
-        mathieu.poirier@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        nm@ti.com, ssantosh@kernel.org, s-anna@ti.com,
-        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org, vigneshr@ti.com,
-        kishon@ti.com
-Subject: Re: [RFC 13/13] net: ti: icssg-prueth: Add ICSSG ethernet driver
-Message-ID: <Yk2gDGN8a2xss1UO@lunn.ch>
-References: <20220406094358.7895-1-p-mohan@ti.com>
- <20220406094358.7895-14-p-mohan@ti.com>
-MIME-Version: 1.0
+        with ESMTP id S238192AbiDFQvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:51:22 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2053.outbound.protection.outlook.com [40.107.94.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290022FC31A;
+        Wed,  6 Apr 2022 07:14:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n/Ikwh92qNofHP7L+l5QnXYursY1vUmfiQpgndguCYcZyMkMivJMFo3mqFM/EqNtP8IBe3LdA9pNo5EVBAvem8ps9afawwRFTFUtrw5uYuvrEK5mNj2Ju/nctWKjhFste1+9i7HkFHNoXblR2BBed8qStTV5WxaRqGYLfawX92aSQIaMI+wX+H0GByx6wLxB2kaaiK72WsV84PFTm2G7+d18rlNZjvADOa1msxlXKkoJvZL3m42xIFv6dzrPg7lFB/HRid3IlSW8rBh2tTl546WBceG4mIZ6lcFJS/mJ84zMm7anZo3SSmatV1c7v7rr/jBkPrfoeXjWbL0bPXDfEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2nFOd6kvZfWQ8L2LZ6hSbXvacIIRBmMXCNZjVDyiX3E=;
+ b=PgV0NMgo3GW24xmLydKbk/fixpQM9+IVZiI9V8A0acjPnFqFZUjcYIabZM6dF9YfJF/O3sYupw8PS+neBgnZRlBqJeQfMzA772U3pVPLVbGSTZb2/xDazwX1im+blKhKh7Ck0B/9pofPO3/8XMsiPJHuvhQfwD48vwCiAyp0aZZSSs4om8sjzQkjQeuNFCG/kmgLQlc/a1Zm9Z4pvxms3xgVp/r1fCz3jYkI3GUY0iUX9g6PXaktlNM6EEOFUTHgYO+N/9wgBh/X1HTfRhUcvHcO7lg1hL099ngbHqS1S0n0zJyjfWsi9BpBDJcijEtXIne9UUsJBqQi0Xf98dn75w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2nFOd6kvZfWQ8L2LZ6hSbXvacIIRBmMXCNZjVDyiX3E=;
+ b=FTqLZqXiDTFVzYlXnGYNSBvbpGRVQsHYrL+04sLAmZR72aCTnpg4dxq/vZn4aFagSqZZBe7UwQH2n5XZ/GsBun3ylrDwVy1Thm5kfhLcVSporOWB/b2AlCBQeF2CIUqKVzPZ3Kyn7sDN7LVR+5y0LAxkr0Xh30JVaH8Hq7+9NcCMlykM2HpLSOVQ/kEcQJNvqEBVjwX/s/zltTk6rgA7u7n0cVXzCbf18lGTCMRbt8ZrkSWgMHUAeZPFPr8sfJ6HgjA+eKIIiqnbM2zovfuijBtQWN8ZGt5fiOhJKaLVQlkfxGMO9O4p8dp5fgpPy9xHnfYG9vP7zL8Usd7/WMtifg==
+Received: from BL0PR12MB2515.namprd12.prod.outlook.com (2603:10b6:207:40::30)
+ by BN8PR12MB2915.namprd12.prod.outlook.com (2603:10b6:408:9d::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Wed, 6 Apr
+ 2022 14:14:50 +0000
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BL0PR12MB2515.namprd12.prod.outlook.com (2603:10b6:207:40::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 14:14:49 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
+ 14:14:49 +0000
+Date:   Wed, 6 Apr 2022 11:14:46 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Christian Benvenuti <benve@cisco.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        iommu@lists.linux-foundation.org, Jason Wang <jasowang@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
+        Rob Clark <robdclark@gmail.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        virtualization@lists.linux-foundation.org,
+        Will Deacon <will@kernel.org>,
+        "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY
+ with dev_is_dma_coherent()
+Message-ID: <20220406141446.GE2120790@nvidia.com>
+References: <0-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
+ <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
+ <20220406053039.GA10580@lst.de>
+ <20220406120730.GA2120790@nvidia.com>
+ <20220406135150.GA21532@lst.de>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220406094358.7895-14-p-mohan@ti.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220406135150.GA21532@lst.de>
+X-ClientProxiedBy: YT3PR01CA0018.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:86::22) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d2d136b0-2734-46d9-7b8d-08da17d7cf30
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2515:EE_|BN8PR12MB2915:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB2515B0E4677F4F57EDA6AB7EC2E79@BL0PR12MB2515.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Lz1aTkMbXgJSvGH1j+rtzBqT/MJjDtKJV+be8/O66rqSzKuC7d/5utCTncWE7rBP1TiMxTZyx+GJ3X7/4ftZg0JGzsSPu78l0JHDyZyzqBUCI1/ZoIqAXPAjlkGPP1dnmknwdrdNXLsblFx2K8o9UuGIsE2tvZ5qroLoV91zI7kFViMpT0c8RX3l721mlEtTpAoR95az0xs93Uwh6CSVHM7rp/WmwkfQePqzBdn0xEup+k8aKCbujRAfyoZQAKoYPykZAvFVC8XoDEpU6asXs0DGhvmNuihlRHacUMlXM3SccIWSdHYsY5UFvv7dPdCDCRVHFFUUhdm/4+CIAotuz5dgEKLRn/v7HObEWED22xmAwSAqs305Ecs3pzJ2M/JtXtN5pNy+exInyrlDKyllxI4LQ5MPPqKAkWt53eAtSpnbtX2/KdgjmNA+yj1FwqzxU1MrxiLKstPcB3rUL/vgZsRvGYUIjV9eEr2p2QQmbiUvY1EYOB/aCLdXcrAYCI5hBCjnX6dmPAsDiUPRBu12bNHcqrTDYmd33MHM6nCpY48mcmdAIMa/KrMsSTWybi4pRo2+8Y6OjlNsDH2h24apZNO1rS7pytzRnnd5raxvZQCvSnJAkHB7ba520JExiIH9tvlgPBGZNaMU0dbUaRTPNQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB2515.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(5660300002)(36756003)(316002)(38100700002)(33656002)(8676002)(6916009)(6506007)(6486002)(54906003)(8936002)(508600001)(66476007)(66946007)(66556008)(7416002)(6666004)(4744005)(6512007)(2906002)(86362001)(1076003)(26005)(186003)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JLnlpnxsUqan9UEgjynVzdmhVAn8QkJ9O9ARXmpeVpvDj6VD9GG8XKaGhIxe?=
+ =?us-ascii?Q?fDssF7Y6YA8SfAnk1Dn3EUl9IZil7n1v32nfJ9g0RastjqWkAUqiq94/j9vF?=
+ =?us-ascii?Q?5IPqZ6Ny12sXX6M4MCgIV7/ozmIyQfxKBKfaQI2pUGHsoEArF2trcePFXhHQ?=
+ =?us-ascii?Q?UIKap/PotQ/oq+qaISumiYXNGJMPXNtH1aTwYwg7REyvj/LPclqe46VprjAE?=
+ =?us-ascii?Q?uZKw74IDEA2JMPfPvSyboQvcaas+3DoNK9ccGdAAF4BeKJEKFUJbYtSbJ5Kv?=
+ =?us-ascii?Q?l6WqH09YIhacTfoEcL1jB7UZ1HNIMYn5Keo4vRELANYDmTdsyWN0t0xAak7p?=
+ =?us-ascii?Q?OX1HC84ISwIdiDCRCO4PLEhpFFr5/dC63safBngOt+89H2whlR6ekTmyKb8W?=
+ =?us-ascii?Q?NHXwlqXYAeAXLTu96k3cfG98KL095Pdaw0l02/3FekBaldpGks7HIeK14U6h?=
+ =?us-ascii?Q?PouqnVYNdAIYtUqtTI1Qb2aDBsYdLXDoUqcP8kzpquFiLti2vUhpT3KtRNtF?=
+ =?us-ascii?Q?3Kww6dCDBwc0fYs3i5Qq37SMzl7Ng6OM8/yrcbpNGXvC7I5gLzbQL/s+myq2?=
+ =?us-ascii?Q?pyvKGMssTUfPQfgyaPIwhqZ+FzKAez7EEtH5b/+DDyGDZKWMaIUL7LO8+aWY?=
+ =?us-ascii?Q?esiSDwwRjX9xgbcGFBz/Mvlk0RMGkgwCpfH6xtqdNjxtZ8jja79OmP9FqFoD?=
+ =?us-ascii?Q?N5JTCCrb/XYNXq31Em4NKKizgHDdh/szBDHDUPhA78zmebXhjzmUGdmDzkGu?=
+ =?us-ascii?Q?1v4vAYcfZ+sl1Nm5fdnZwTnfXmy9K9jU9epOduuyJ88CAKMhTEvPAD3BH22n?=
+ =?us-ascii?Q?G4l40HcQKmk/f8sNwVuNk9a5uLP/bFFmJk6rkMS+kgav+LMtcl1btyi3BNXE?=
+ =?us-ascii?Q?sJURRr1uj0eMOP895xYCkfoVhZTUdVXZHUBOY0XRzSovAZlFqW8bJOiJbuHq?=
+ =?us-ascii?Q?jxotU4EE+zvcEojPC1udC8K9UDV7/rNNJRsTayhPcOLcakmlet4awhdXixps?=
+ =?us-ascii?Q?So1d1dApWR/gG6eDuKWB0ng+I35ijFV6qNqEWHwMqnte8ncaTkxMcszu5zrV?=
+ =?us-ascii?Q?4rjDDv+UKOmvRPXUr+Xyrflp4uFPvKBt5LpnUNPlydpKyU0Y18v3X2RzQIp5?=
+ =?us-ascii?Q?KFtRWqxS2odsDZyZs4Ul5oSLQS/fVht0b2o7hybWutk3Q6k29cGOQruInpUT?=
+ =?us-ascii?Q?xyIFi3qDFI/NA5jOysBE17oWilspM6HQyH+mqeIGXswOV52olVJxWSVSeJiy?=
+ =?us-ascii?Q?2IKAiyyo1d+qRIuolRE8uAICVB38RXjysNo1PuQRjGQu/EYbXncaYSLu/qfl?=
+ =?us-ascii?Q?6lPbl+7ZQPMSvh1UpX83iM/23DsI57XrXxYKTF18wdE6jQqpdi9DOst+dzzh?=
+ =?us-ascii?Q?92vUGMvAi8dpU75o9BuyzAdB9cMn75D/8HxxskxTy4EJhsb7iIY7JNJ27mJl?=
+ =?us-ascii?Q?ewxrcCSv4sbUe239UgJ+sEv8m2D65JJuPWTQl9o07i7OR2dvJ1OdFIWa49M1?=
+ =?us-ascii?Q?aFgLyLXPpOFZ9BCZW4BFMwKlMNQoEcHzkOadRA1VMdW6CMDJwwBJhwad8v9g?=
+ =?us-ascii?Q?kj47yvESOGlGVump1x6LTtKylpKWi2OOV08uCbNSN8MOlToKVu26EvUJWLUn?=
+ =?us-ascii?Q?x/jU8SgX/o4DLbwtDOoF4f8tUeVagxJQnro7mTw1/mmVD+v10YPME0tZHQ0J?=
+ =?us-ascii?Q?c8wP2BdZIfsewjrTIZQQY+G+cYSe6Hebgnd0U+s1jsZlTY0srF6y19Rzl0bI?=
+ =?us-ascii?Q?MwNISoRQuQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2d136b0-2734-46d9-7b8d-08da17d7cf30
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 14:14:48.8906
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WT3gEKi5Z8Enxhe2Q3JgepepysGA7pADQn8lyN4bOW2oPW8LVAjzo+ZjfEy9/Vg9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2915
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +static int emac_set_link_ksettings(struct net_device *ndev,
-> +				   const struct ethtool_link_ksettings *ecmd)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +
-> +	if (!emac->phydev || phy_is_pseudo_fixed_link(emac->phydev))
-> +		return -EOPNOTSUPP;
-> +
-> +	return phy_ethtool_ksettings_set(emac->phydev, ecmd);
-> +}
-> +
-> +static int emac_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +
-> +	if (!emac->phydev || phy_is_pseudo_fixed_link(emac->phydev))
-> +		return -EOPNOTSUPP;
-> +
-> +	return phy_ethtool_get_eee(emac->phydev, edata);
-> +}
+On Wed, Apr 06, 2022 at 03:51:50PM +0200, Christoph Hellwig wrote:
+> On Wed, Apr 06, 2022 at 09:07:30AM -0300, Jason Gunthorpe wrote:
+> > Didn't see it
+> > 
+> > I'll move dev_is_dma_coherent to device.h along with
+> > device_iommu_mapped() and others then
+> 
+> No.  It it is internal for a reason.  It also doesn't actually work
+> outside of the dma core.  E.g. for non-swiotlb ARM configs it will
+> not actually work.
 
-Why do you need the phy_is_pseudo_fixed_link() calls here?
+Really? It is the only condition that dma_info_to_prot() tests to
+decide of IOMMU_CACHE is used or not, so you are saying that there is
+a condition where a device can be attached to an iommu_domain and
+dev_is_dma_coherent() returns the wrong information? How does
+dma-iommu.c safely use it then?
 
-> +/* called back by PHY layer if there is change in link state of hw port*/
-> +static void emac_adjust_link(struct net_device *ndev)
-> +{
+In any case I still need to do something about the places checking
+IOMMU_CAP_CACHE_COHERENCY and thinking that means IOMMU_CACHE
+works. Any idea?
 
-...
-
-> +	if (emac->link) {
-> +		/* link ON */
-> +		netif_carrier_on(ndev);
-> +		/* reactivate the transmit queue */
-> +		netif_tx_wake_all_queues(ndev);
-> +	} else {
-> +		/* link OFF */
-> +		netif_carrier_off(ndev);
-> +		netif_tx_stop_all_queues(ndev);
-> +	}
-
-phylib should of set the carrier for you.
-
-> + * emac_ndo_open - EMAC device open
-> + * @ndev: network adapter device
-> + *
-> + * Called when system wants to start the interface.
-> + *
-> + * Returns 0 for a successful open, or appropriate error code
-> + */
-> +static int emac_ndo_open(struct net_device *ndev)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +	int ret, i, num_data_chn = emac->tx_ch_num;
-> +	struct prueth *prueth = emac->prueth;
-> +	int slice = prueth_emac_slice(emac);
-> +	struct device *dev = prueth->dev;
-> +	int max_rx_flows;
-> +	int rx_flow;
-> +
-> +	/* clear SMEM and MSMC settings for all slices */
-> +	if (!prueth->emacs_initialized) {
-> +		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
-> +		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
-> +	}
-> +
-> +	/* set h/w MAC as user might have re-configured */
-> +	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
-> +
-> +	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
-> +	icssg_ft1_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
-> +
-> +	icssg_class_default(prueth->miig_rt, slice, 0);
-> +
-> +	netif_carrier_off(ndev);
-
-phylib should take care of this.
-
-> +
-> +	/* Notify the stack of the actual queue counts. */
-> +	ret = netif_set_real_num_tx_queues(ndev, num_data_chn);
-> +	if (ret) {
-> +		dev_err(dev, "cannot set real number of tx queues\n");
-> +		return ret;
-> +	}
-> +
-> +	init_completion(&emac->cmd_complete);
-> +	ret = prueth_init_tx_chns(emac);
-> +	if (ret) {
-> +		dev_err(dev, "failed to init tx channel: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	max_rx_flows = PRUETH_MAX_RX_FLOWS;
-> +	ret = prueth_init_rx_chns(emac, &emac->rx_chns, "rx",
-> +				  max_rx_flows, PRUETH_MAX_RX_DESC);
-> +	if (ret) {
-> +		dev_err(dev, "failed to init rx channel: %d\n", ret);
-> +		goto cleanup_tx;
-> +	}
-> +
-> +	ret = prueth_ndev_add_tx_napi(emac);
-> +	if (ret)
-> +		goto cleanup_rx;
-> +
-> +	/* we use only the highest priority flow for now i.e. @irq[3] */
-> +	rx_flow = PRUETH_RX_FLOW_DATA;
-> +	ret = request_irq(emac->rx_chns.irq[rx_flow], prueth_rx_irq,
-> +			  IRQF_TRIGGER_HIGH, dev_name(dev), emac);
-> +	if (ret) {
-> +		dev_err(dev, "unable to request RX IRQ\n");
-> +		goto cleanup_napi;
-> +	}
-> +
-> +	/* reset and start PRU firmware */
-> +	ret = prueth_emac_start(prueth, emac);
-> +	if (ret)
-> +		goto free_rx_irq;
-> +
-> +	/* Prepare RX */
-> +	ret = prueth_prepare_rx_chan(emac, &emac->rx_chns, PRUETH_MAX_PKT_SIZE);
-> +	if (ret)
-> +		goto stop;
-> +
-> +	ret = k3_udma_glue_enable_rx_chn(emac->rx_chns.rx_chn);
-> +	if (ret)
-> +		goto reset_rx_chn;
-> +
-> +	for (i = 0; i < emac->tx_ch_num; i++) {
-> +		ret = k3_udma_glue_enable_tx_chn(emac->tx_chns[i].tx_chn);
-> +		if (ret)
-> +			goto reset_tx_chan;
-> +	}
-> +
-> +	/* Enable NAPI in Tx and Rx direction */
-> +	for (i = 0; i < emac->tx_ch_num; i++)
-> +		napi_enable(&emac->tx_chns[i].napi_tx);
-> +	napi_enable(&emac->napi_rx);
-> +
-> +	emac_phy_connect(emac);
-
-Why don't you check the error code?
-
-> +static int prueth_config_rgmiidelay(struct prueth *prueth,
-> +				    struct device_node *eth_np,
-> +				    phy_interface_t phy_if)
-> +{
-> +	struct device *dev = prueth->dev;
-> +	struct regmap *ctrl_mmr;
-> +	u32 rgmii_tx_id = 0;
-> +	u32 icssgctrl_reg;
-> +
-> +	if (!phy_interface_mode_is_rgmii(phy_if))
-> +		return 0;
-> +
-> +	ctrl_mmr = syscon_regmap_lookup_by_phandle(eth_np, "ti,syscon-rgmii-delay");
-> +	if (IS_ERR(ctrl_mmr)) {
-> +		dev_err(dev, "couldn't get ti,syscon-rgmii-delay\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (of_property_read_u32_index(eth_np, "ti,syscon-rgmii-delay", 1,
-> +				       &icssgctrl_reg)) {
-> +		dev_err(dev, "couldn't get ti,rgmii-delay reg. offset\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
-> +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
-> +
-> +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
-
-Do you need to do a units conversion here, or does the register
-already take pico seconds?
-
-	Andrew
+Jason
