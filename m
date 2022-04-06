@@ -2,114 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 157304F5E73
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:03:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B86844F5E89
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiDFNAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 09:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
+        id S231872AbiDFNFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 09:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230152AbiDFNAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 09:00:12 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465AA5B9542
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 02:25:58 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id bn33so2369565ljb.6
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 02:25:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=C6QDCDUyjEGvBSzCnZBnMMd2TYRDDb79iUJmxGyEU9g=;
-        b=foP8RN/cqAFvB8ZW6FsCcqYmzD7CLs174xyGAMJ9q1bkBilx6T9jjHcF8kWO7bEP/0
-         C7JGrx5fBvB02Y4YCwrZLOKSLm0Mib1F3xvJNnxaltFORzUulNDQRpJGs6qbmc4ilDGY
-         Qk1i/BFWroSndKkLmUJ6TXCFC4+LUbyaSNTPePWkXLyNWOy53IsEEqK4zfWxKp/mbs+G
-         0sE9Ghm5/z6tD8t8BmwOVzJXXdTHEI2aUxARDuOoORmFxBYEt9gA0lZkDOLUQ89Sx0Nf
-         NOgJvrUvL+/y56IjHQCxniRDNRwo3f78IxFi/4qTBZKRppKaFnK90IBtLshgix0mo9KF
-         iqiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=C6QDCDUyjEGvBSzCnZBnMMd2TYRDDb79iUJmxGyEU9g=;
-        b=xHOcxm9znkxBiSpD/i7Fr8+KWnWvg3nOmRBzizaRwjW198dM+6g41MNSGZOSPzn2lK
-         Sp2CNTUFHg8mj4TxW67u9LRJL48/2y44GMpKN7B1HeYkYZwbXLN394fQJAvtFCvNffVC
-         SGvXaP6TT2iNdEKn4Nz54M8FEKRfEDbVITxXL2CnfpOcwjCEVRRWT8cylckzFPwX799X
-         i5cQThzObnGimxi1jTTCSgMdzBjT/oRlzquUBhjkFUCMkW55VNeg+UlxhCpCdCYYyOpj
-         rZBN82+M/j4/iqkjyC5IZrnPNUihrqXVlu5wnX28gB1PocTlXNAdeCwBOQHup+oLCEC4
-         5Ebg==
-X-Gm-Message-State: AOAM533FGzR6f81X1dx+BBkBNutx0f4g75t2apyjY6QrtBtme8RLpw2d
-        /9cAKpxhBLamn562NJxbB3FY6y2+pAxlEA==
-X-Google-Smtp-Source: ABdhPJxUW9WGAx4APfbnAAb74hsg8mPYCCGCYdayAoNfuH39JV5yWQp7tpc0dZYo/x0zBT3NDa5E+Q==
-X-Received: by 2002:a2e:bf22:0:b0:247:da0b:e091 with SMTP id c34-20020a2ebf22000000b00247da0be091mr4773402ljr.489.1649237088413;
-        Wed, 06 Apr 2022 02:24:48 -0700 (PDT)
-Received: from [10.0.1.14] (h-98-128-237-157.A259.priv.bahnhof.se. [98.128.237.157])
-        by smtp.gmail.com with ESMTPSA id p41-20020a05651213a900b00443fac7d6ffsm1775273lfa.108.2022.04.06.02.24.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 02:24:47 -0700 (PDT)
-Message-ID: <84412805-f095-3e39-9747-e800c862095d@gmail.com>
-Date:   Wed, 6 Apr 2022 11:24:46 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 net-next 0/2] net: tc: dsa: Implement offload of
- matchall for bridged DSA ports
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-References: <20220404104826.1902292-1-mattias.forsblad@gmail.com>
- <20220405180949.3dd204a1@kernel.org>
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-In-Reply-To: <20220405180949.3dd204a1@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231862AbiDFNFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 09:05:07 -0400
+Received: from smtpbg.qq.com (smtpbg138.qq.com [106.55.201.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18E5468245
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 02:36:56 -0700 (PDT)
+X-QQ-mid: bizesmtp62t1649237795tevo88r8
+Received: from localhost.localdomain.localdoma ( [116.228.45.98])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 06 Apr 2022 17:36:34 +0800 (CST)
+X-QQ-SSF: 01000000002000903000B00A0000000
+X-QQ-FEAT: khFrY5NuiqQ7qMv4VncgwibZeQOLVAjwrTbQ9OqwxmbaSNvi3Dbbxat0zKwxX
+        3Wf+pE00cwHqGkWQwUROvqzVVhb6rDTn5hAkTrZsKtHMY+ZzAY7oJAC5ykBfdgMRjgaU2Zf
+        JsNuWjwWlBitStUD+DQ6tVrZQVSdOX9A2Ve5dXhzDO+Qc8xz784n/qGNKevs/VpNKWWJelP
+        BKP2phOaTCJKPMCDSsXWkmUe9YiwEYXh9+9LuUmSOBsRAH84/bNXsD2fn169XZW0xbLRDYO
+        OcbCAed8PaRv31lHiN2wREJoo1zcjKUpb2OmvWUGh7I4VVBEYzRH8YlaMxpMsY/s5WhvnWB
+        rZOTGICmqymEiOkcG4=
+X-QQ-GoodBg: 0
+From:   Michael Qiu <qiudayu@archeros.com>
+To:     parav@nvidia.com, stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, Michael Qiu <qiudayu@archeros.com>
+Subject: [PATCH iproute2 v2] vdpa: Add virtqueue pairs set capacity
+Date:   Wed,  6 Apr 2022 05:36:31 -0400
+Message-Id: <1649237791-31723-1-git-send-email-qiudayu@archeros.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1648113553-10547-1-git-send-email-08005325@163.com>
+References: <1648113553-10547-1-git-send-email-08005325@163.com>
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:archeros.com:qybgspam:qybgspam10
+X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-04-06 03:09, Jakub Kicinski wrote:
-> On Mon,  4 Apr 2022 12:48:24 +0200 Mattias Forsblad wrote:
->> Limitations
->> If there is tc rules on a bridge and all the ports leave the bridge
->> and then joins the bridge again, the indirect framwork doesn't seem
->> to reoffload them at join. The tc rules need to be torn down and
->> re-added.
-> 
-> You should unregister your callback when last DSA port leaves and
-> re-register when first joins. That way you'll get replay.
-> 
+vdpa framework not only support query the max virtqueue pair, but
+also for the set action.
 
-So I've tried that and it partially works. I get the FLOW_BLOCK_BIND
-callback but tcf_action_reoffload_cb() bails out here (tc_act_bind() == 1):
+This patch enable this capacity, and it is very useful for VMs
+ who needs multiqueue support.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/sched/act_api.c?h=v5.18-rc1#n1819
+After enable this feature, we could simply use below command to
+create multi-queue support:
 
-B.c. that flag is set here:
+vdpa dev add mgmtdev pci/0000:03:10.3 name foo mac 56:d0:2f:03:c9:6d max_vqp 6
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/net/sched/cls_api.c?h=v5.18-rc1#n3088
+Signed-off-by: Michael Qiu <qiudayu@archeros.com>
+---
 
-I cannot say I fully understand this logic. Can you perhaps advise?
+v2 --> v1:
+    rename "max_vq_pairs" to "max_vqp"
 
-> Also the code needs to check the matchall is highest prio.
+    extend the man page for this addition with example
+---
+ man/man8/vdpa-dev.8 |  9 +++++++++
+ vdpa/vdpa.c         | 19 ++++++++++++++++---
+ 2 files changed, 25 insertions(+), 3 deletions(-)
 
-Isn't sufficient with this check?
+diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
+index aa21ae3..a401115 100644
+--- a/man/man8/vdpa-dev.8
++++ b/man/man8/vdpa-dev.8
+@@ -74,6 +74,10 @@ This is applicable only for the network type of vdpa device. This is optional.
+ - specifies the mtu for the new vdpa device.
+ This is applicable only for the network type of vdpa device. This is optional.
+ 
++.BI max_vqp " MAX_VQP"
++- specifies the max queue pairs for the new vdpa device.
++This is applicable only for the network type of vdpa device. This is optional.
++
+ .SS vdpa dev del - Delete the vdpa device.
+ 
+ .PP
+@@ -119,6 +123,11 @@ vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55 mtu 9000
+ Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55 and mtu of 9000 bytes.
+ .RE
+ .PP
++vdpa dev add name foo mgmtdev vdpa_sim_net mac 00:11:22:33:44:55 mtu 9000 max_vqp 6
++.RS 4
++Add the vdpa device named foo on the management device vdpa_sim_net with mac address of 00:11:22:33:44:55, mtu of 9000 bytes and max virtqueue pairs of 6.
++.RE
++.PP
+ vdpa dev del foo
+ .RS 4
+ Delete the vdpa device named foo which was previously created.
+diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
+index f048e47..104c503 100644
+--- a/vdpa/vdpa.c
++++ b/vdpa/vdpa.c
+@@ -23,6 +23,7 @@
+ #define VDPA_OPT_VDEV_HANDLE		BIT(3)
+ #define VDPA_OPT_VDEV_MAC		BIT(4)
+ #define VDPA_OPT_VDEV_MTU		BIT(5)
++#define VDPA_OPT_VDEV_QUEUE_PAIRS	BIT(6)
+ 
+ struct vdpa_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -32,6 +33,7 @@ struct vdpa_opts {
+ 	unsigned int device_id;
+ 	char mac[ETH_ALEN];
+ 	uint16_t mtu;
++	uint16_t max_vqp;
+ };
+ 
+ struct vdpa {
+@@ -219,6 +221,8 @@ static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
+ 			     sizeof(opts->mac), opts->mac);
+ 	if (opts->present & VDPA_OPT_VDEV_MTU)
+ 		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MTU, opts->mtu);
++	if (opts->present & VDPA_OPT_VDEV_QUEUE_PAIRS)
++		mnl_attr_put_u16(nlh, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, opts->max_vqp);
+ }
+ 
+ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+@@ -287,6 +291,15 @@ static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
+ 
+ 			NEXT_ARG_FWD();
+ 			o_found |= VDPA_OPT_VDEV_MTU;
++		} else if ((strcmp(*argv, "max_vqp") == 0) &&
++			   (o_all & VDPA_OPT_VDEV_QUEUE_PAIRS)) {
++			NEXT_ARG_FWD();
++			err = vdpa_argv_u16(vdpa, argc, argv, &opts->max_vqp);
++			if (err)
++				return err;
++
++			NEXT_ARG_FWD();
++			o_found |= VDPA_OPT_VDEV_QUEUE_PAIRS;
+ 		} else {
+ 			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
+ 			return -EINVAL;
+@@ -467,7 +480,7 @@ static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
+ static void cmd_dev_help(void)
+ {
+ 	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
+-	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ]\n");
++	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV [ mac MACADDR ] [ mtu MTU ] [ max_vqp N ]\n");
+ 	fprintf(stderr, "       vdpa dev del DEV\n");
+ 	fprintf(stderr, "Usage: vdpa dev config COMMAND [ OPTIONS ]\n");
+ }
+@@ -557,7 +570,7 @@ static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
+ 					  NLM_F_REQUEST | NLM_F_ACK);
+ 	err = vdpa_argv_parse_put(nlh, vdpa, argc, argv,
+ 				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME,
+-				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU);
++				  VDPA_OPT_VDEV_MAC | VDPA_OPT_VDEV_MTU | VDPA_OPT_VDEV_QUEUE_PAIRS);
+ 	if (err)
+ 		return err;
+ 
+@@ -603,7 +616,7 @@ static void pr_out_dev_net_config(struct nlattr **tb)
+ 	}
+ 	if (tb[VDPA_ATTR_DEV_NET_CFG_MAX_VQP]) {
+ 		val_u16 = mnl_attr_get_u16(tb[VDPA_ATTR_DEV_NET_CFG_MAX_VQP]);
+-		print_uint(PRINT_ANY, "max_vq_pairs", "max_vq_pairs %d ",
++		print_uint(PRINT_ANY, "max_vqp", "max_vqp %d ",
+ 			     val_u16);
+ 	}
+ 	if (tb[VDPA_ATTR_DEV_NET_CFG_MTU]) {
+-- 
+1.8.3.1
 
-	else if (flow_offload_has_one_action(&cls->rule->action) &&
-		 cls->rule->action.entries[0].id == FLOW_ACTION_DROP)
-		err = dsa_slave_add_cls_matchall_drop(dev, cls, ingress);
 
-If it only has one action is must be the highest priority or am I 
-missing something?
