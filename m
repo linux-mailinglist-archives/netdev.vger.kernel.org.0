@@ -2,61 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA4744F5C56
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 757E54F5C3D
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235828AbiDFLef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 07:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
+        id S237610AbiDFLec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 07:34:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234947AbiDFLcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:32:21 -0400
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CA656FD22;
-        Wed,  6 Apr 2022 01:20:47 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 0D75130ADE7F;
-        Wed,  6 Apr 2022 10:20:45 +0200 (CEST)
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 1D2BF30ADE4A;
-        Wed,  6 Apr 2022 10:20:44 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 2368KhCX018534;
-        Wed, 6 Apr 2022 10:20:43 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 2368KhL8018533;
-        Wed, 6 Apr 2022 10:20:43 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     "Marc Kleine-Budde" <mkl@pengutronix.de>
-Subject: Re: [PATCH v8 0/7] CTU CAN FD open-source IP core SocketCAN driver, PCI, platform integration and documentation
-Date:   Wed, 6 Apr 2022 10:20:42 +0200
-User-Agent: KMail/1.9.10
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Drew Fustini <pdp7pdp7@gmail.com>,
-        Mataj Vasilevski <vasilmat@fel.cvut.cz>
-References: <cover.1647904780.git.pisa@cmp.felk.cvut.cz> <202203220918.33033.pisa@cmp.felk.cvut.cz> <20220322092212.f5eaxm5k45j5khra@pengutronix.de>
-In-Reply-To: <20220322092212.f5eaxm5k45j5khra@pengutronix.de>
-X-KMail-QuotePrefix: > 
+        with ESMTP id S233615AbiDFLcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:32:24 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7475443AD1E
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 01:20:49 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ot30so2587692ejb.12
+        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 01:20:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nwwNMDaP5Yh8K0WaZWOfIjXkdwXbq5VOVV+PO+4zCEI=;
+        b=t7z1bs+kTqbj1INwRe1vMtQ6NKc9uAcZwKH60yfxmMmMEUv5b2KMB9WrLTjgP48JEr
+         yJSUf9ilQz0NsSCbqfCtGk3S5Y6RMpHcFgypLxDLY4xXto8of3uXP8OhAa2JlUVZd+z+
+         STDLjB7eUkYmPVJ/dKPcvWdoR2MzbknsovOOYDkfvdgAXybQnXF7QXhp3uK8KBx6bBwN
+         yW0SOxMHKO46Pqx08IvSKm5rFKwocFHce2EocdmglFWZsyYKaiCGogjwQ7jlTLu39I0y
+         0RSfqUSdfO6qX/snMr/HH0+KQ9C2V+oUnfDIFX94aNbg6t6wQ+loyiy7hOx/mqPT+n1d
+         WwyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nwwNMDaP5Yh8K0WaZWOfIjXkdwXbq5VOVV+PO+4zCEI=;
+        b=mASvNNqHjO3kgN/qkgMBwXtUjqsEN/J7W3a/v6Rymjm61eVZvqA+wxJlKOKLlUnMjY
+         ZuF4JaFhxurRMrMRJwM4lv5wLRqFsRvyhDRS//8YnCKjktlmw/GyUeHIu4SkLgQVV1QG
+         ijksgfbSCi/Zq6CAplwB+pWuP8Z8BADvmqgdFlWnCI6jF+DxgBUfE+goQcKr7QAoXs5G
+         qUyk1VjRfinWhFYzWJ+ic35Zmg8kW6DOThQNrglCV2vew2USP43zsxaTAvm+pLm1kHFQ
+         9vZi+oksfv2M+PRdCVyroRmHCm/EpVoKq9SaW6t9XcsPN5WTCEM2B7uz/W33xrcBRBSt
+         V2ow==
+X-Gm-Message-State: AOAM532F/GVHL57tnZdISey/CKwK7glgYmJ5W7yl9v/vcTyb4wLi1TvQ
+        0qTx/98fT14/A6JxOhLrJD6bdw==
+X-Google-Smtp-Source: ABdhPJwXpHbNbl+9gjYwq/xSxgHmjmznGjTieI5zwK9DQvHmBWZLhxJmk6snQcc/KpO8olUy4KkMhg==
+X-Received: by 2002:a17:906:7304:b0:6da:9243:865 with SMTP id di4-20020a170906730400b006da92430865mr7135579ejc.665.1649233248063;
+        Wed, 06 Apr 2022 01:20:48 -0700 (PDT)
+Received: from [192.168.0.182] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id dm11-20020a170907948b00b006cf488e72e3sm6347202ejc.25.2022.04.06.01.20.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:20:47 -0700 (PDT)
+Message-ID: <4bafe244-6a3d-d0ec-59d3-3f3f00e71caf@linaro.org>
+Date:   Wed, 6 Apr 2022 10:20:46 +0200
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 05/14] dt-bindings: arm: mediatek: document the pcie
+ mirror node on MT7622
+Content-Language: en-US
+To:     Felix Fietkau <nbd@nbd.name>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220405195755.10817-1-nbd@nbd.name>
+ <20220405195755.10817-6-nbd@nbd.name>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220405195755.10817-6-nbd@nbd.name>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202204061020.42943.pisa@cmp.felk.cvut.cz>
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,62 +82,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc and others,
+On 05/04/2022 21:57, Felix Fietkau wrote:
+> From: Lorenzo Bianconi <lorenzo@kernel.org>
+> 
+> This patch adds the pcie mirror document bindings for MT7622 SoC.
+> The feature is used for intercepting PCIe MMIO access for the WED core
+> Add related info in mediatek-net bindings.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> ---
+>  .../mediatek/mediatek,mt7622-pcie-mirror.yaml | 42 +++++++++++++++++++
 
-On Tuesday 22 of March 2022 10:22:12 Marc Kleine-Budde wrote:
-> On 22.03.2022 09:18:32, Pavel Pisa wrote:
-> > > The driver looks much better now. Good work. Please have a look at the
-> > > TX path of the mcp251xfd driver, especially the tx_stop_queue and
-> > > tx_wake_queue in mcp251xfd_start_xmit() and mcp251xfd_handle_tefif(). A
-> > > lockless implementation should work in your hardware, too.
-> >
-> > Is this blocker for now? I would like to start with years tested base.
->
-> Makes sense.
+Eh, I wanted to ask to not put it inside arm/, but judging by your usage
+- you did not create drivers for both of these (WED and PCIe mirror).
 
-I have missed timing for 5.18 but v5.18-rc1 is out so I would be
-happy if we do not miss 5.19 merge window at least with minimal version.
+You only need them to expose address spaces via syscon.
 
-If we succeeds in review reasonably early we could fit with inclusion
-or at least the first review round of Mataj Vasilevski's 
+This actually looks hacky. Either WED and PCIe mirror are part of
+network driver, then add the address spaces via "reg". If they are not,
+but instead they are separate blocks, why you don't have drivers for them?
 
-  https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/-/tree/hw-timestamping
 
-Please, help us to finish this subsequent goal of our portfolio development.
-I think that our work is valuable for the community, code can be tested
-even in QEMU CAN bus subsystem which we architected as well
-
-  https://www.qemu.org/docs/master/system/devices/can.html
-
-I hope that it is usable for others. I have the last support call from
-Magdeburg University where they use CAN emulation for some Volkswagen
-projects. The Xilinx uses code for their CAN FD controllers emulation.
-Thei have whole stack including mainline driver for their CAN FD controller
-in mainline but on the other hand, their CAN FD is bound to Xilinx devices
-emulation. But CTU CAN FD provides generic PCI integration and can be used
-even on broad range of FPGAs so its emulation and matching driver provides
-valuable tool even if you do not consider use its actual design on hardware.
-
-New version of the latency tester based on CTU CAN FD timestamping
-is in preparation as upgrade of original Martin Jerabek's
-work done on Oliver Hartkopp's and Volkswagen call
-
-  
-https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/wikis/uploads/56b4d27d8f81ae390fc98bdce803398f/F3-BP-2016-Jerabek-Martin-Jerabek-thesis-2016.pdf
-
-Best wishes,
-
-                Pavel
---
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://dce.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
-
+Best regards,
+Krzysztof
