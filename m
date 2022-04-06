@@ -2,137 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B17124F642F
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 968A14F64BA
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:08:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236978AbiDFQD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 12:03:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35434 "EHLO
+        id S237271AbiDFQKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 12:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237442AbiDFQDK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:03:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 367374781E1
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 06:34:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649252051;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xqJrO6dmU5SvkPcGw8UCuWuh5/5NxvMZsaumTowIu8c=;
-        b=XayyjZV8LUoA1PLyX9HsXMdMLGZaFEXs0y+MHC/k2malIRQa8pIxqmDgyGvWDCDryJrUpc
-        Enc/tNBWsdHmbB9EHf2l0XJCfsFvXaJl7RKNzwGy3O4DMM+g7mtqAEEbaq2dU9Dukiwd+j
-        /qgYJoKIZpq+sZAiLqas7cSpOBdoH8o=
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
- [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-144-FVS7h3UjMLiXxpAfrwyC0g-1; Wed, 06 Apr 2022 09:34:09 -0400
-X-MC-Unique: FVS7h3UjMLiXxpAfrwyC0g-1
-Received: by mail-yb1-f198.google.com with SMTP id k206-20020a2524d7000000b0063db1bacae1so1789074ybk.4
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 06:34:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xqJrO6dmU5SvkPcGw8UCuWuh5/5NxvMZsaumTowIu8c=;
-        b=2eIpo/h+AbAr+yJ63mK2R0PaIovrRgjnJ9KH7zwiHWzXPHBTv4QcRnpIlvWRf/fE3E
-         xiHuRGnE3RuZCnZonpPu2KIXOABeSXKjJzie2feY+zCruQtjhMZyFZFY5i+jVtaXvtZO
-         MyALfRNaiq5Xvzh6Ye7sCHizgK6lfFG2EoDe4tF1/GHvOBisURhe+JqzlXgV/rvvQkgE
-         T/sE6IFconHse6XhYsSfHnaYjEdmAJVJ2+TJTV2hJgRayz7sfSFPKZimCPDReppj6sEN
-         j2qlZeU0co2Hr9fijz5cyY5RxLqD9PP2UWOucfRKi6Qa3OkrYOe5uC8JQrXfQCOG2ZoW
-         kBbg==
-X-Gm-Message-State: AOAM530Fg+x5lzBp2VUBrx9lzjjVTDyOtYxDAmJ+CGFye0LSepak7BEn
-        2ucSJXc+i+jNMHrIPliKTfTYPyxcgpNEbGklebM9R5LNLoH6Mp628S0u7LrlnzMQVcSnmc/GwZ/
-        tpphp6EX4vON9k6aFE5EQ+toDf7fNRDV5
-X-Received: by 2002:a0d:e64d:0:b0:2e6:43f8:234f with SMTP id p74-20020a0de64d000000b002e643f8234fmr7012371ywe.12.1649252049392;
-        Wed, 06 Apr 2022 06:34:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzVRyzw7tB7nHauTQeSQg7Hj0WMwzeDSc4tOVfXZNCRQWMlZ043KzTYBmx0XGbMf0eIBPqtGUja+rJ6sTcquoA=
-X-Received: by 2002:a0d:e64d:0:b0:2e6:43f8:234f with SMTP id
- p74-20020a0de64d000000b002e643f8234fmr7012342ywe.12.1649252049081; Wed, 06
- Apr 2022 06:34:09 -0700 (PDT)
+        with ESMTP id S237256AbiDFQJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:09:13 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A64245074
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 06:38:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=309vV6+q0pJrWbskIC3byRM0lpnGJaDG6/iASKjKfa4=; b=aYuzJUMzuedsqNT/MeLsZi6G8c
+        HV697SGXP5mSzy8rjSBSNgFRBe1NV2NdkWVrf7sMoOPulkSog1ocFm2cTqlS9qXSOaK9EKRT3733n
+        /HD2XFBc986DprGbtslS+uLHe61bi+pWP7YM8FaRwr/Nuk/e4DT7s03tCpsC5qyOJ8zc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nc5s0-00ESKX-6a; Wed, 06 Apr 2022 15:38:48 +0200
+Date:   Wed, 6 Apr 2022 15:38:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        thomas.petazzoni@bootlin.com, linux@armlinux.org.uk,
+        jbrouer@redhat.com, ilias.apalodimas@linaro.org, jdamato@fastly.com
+Subject: Re: [PATCH net-next] net: mvneta: add support for page_pool_get_stats
+Message-ID: <Yk2X6KPyeN3z7OUW@lunn.ch>
+References: <e4a3bb0fb407ead607b85f7f041f24b586c8b99d.1649190493.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <a77a584b3ce9761eb5dda5828192e1cab94571f0.1649037151.git.lucien.xin@gmail.com>
- <CAFqZXNt=Ca+x7PaYgc1jXq-3cKxin-_=UNCSiyVHjbP7OYUKvA@mail.gmail.com> <CADvbK_fTnWhnuxR7JkNYeoSB4a1nSX7O0jg4Mif6V_or-tOy3w@mail.gmail.com>
-In-Reply-To: <CADvbK_fTnWhnuxR7JkNYeoSB4a1nSX7O0jg4Mif6V_or-tOy3w@mail.gmail.com>
-From:   Ondrej Mosnacek <omosnace@redhat.com>
-Date:   Wed, 6 Apr 2022 15:33:57 +0200
-Message-ID: <CAFqZXNss=7DMb=75ZBDwL9HrrubkxJK=xu7-kqxX-Mw1FtRuuA@mail.gmail.com>
-Subject: Re: [PATCH net] sctp: use the correct skb for security_sctp_assoc_request
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Linux Security Module list 
-        <linux-security-module@vger.kernel.org>,
-        SElinux list <selinux@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e4a3bb0fb407ead607b85f7f041f24b586c8b99d.1649190493.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Apr 5, 2022 at 1:58 PM Xin Long <lucien.xin@gmail.com> wrote:
-> On Mon, Apr 4, 2022 at 6:15 AM Ondrej Mosnacek <omosnace@redhat.com> wrote:
-> >
-> > Adding LSM and SELinux lists to CC for awareness; the original patch
-> > is available at:
-> > https://lore.kernel.org/netdev/a77a584b3ce9761eb5dda5828192e1cab94571f0.1649037151.git.lucien.xin@gmail.com/T/
-> > https://patchwork.kernel.org/project/netdevbpf/patch/a77a584b3ce9761eb5dda5828192e1cab94571f0.1649037151.git.lucien.xin@gmail.com/
-> >
-> > On Mon, Apr 4, 2022 at 3:53 AM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > Yi Chen reported an unexpected sctp connection abort, and it occurred when
-> > > COOKIE_ECHO is bundled with DATA Fragment by SCTP HW GSO. As the IP header
-> > > is included in chunk->head_skb instead of chunk->skb, it failed to check
-> > > IP header version in security_sctp_assoc_request().
-> > >
-> > > According to Ondrej, SELinux only looks at IP header (address and IPsec
-> > > options) and XFRM state data, and these are all included in head_skb for
-> > > SCTP HW GSO packets. So fix it by using head_skb when calling
-> > > security_sctp_assoc_request() in processing COOKIE_ECHO.
-> >
-> > The logic looks good to me, but I still have one unanswered concern.
-> > The head_skb member of struct sctp_chunk is defined inside a union:
-> >
-> > struct sctp_chunk {
-> >         [...]
-> >         union {
-> >                 /* In case of GSO packets, this will store the head one */
-> >                 struct sk_buff *head_skb;
-> >                 /* In case of auth enabled, this will point to the shkey */
-> >                 struct sctp_shared_key *shkey;
-> >         };
-> >         [...]
-> > };
-> >
-> > What guarantees that this chunk doesn't have "auth enabled" and the
-> > head_skb pointer isn't actually a non-NULL shkey pointer? Maybe it's
-> > obvious to a Linux SCTP expert, but at least for me as an outsider it
-> > isn't - that's usually a good hint that there should be a code comment
-> > explaining it.
-> Hi Ondrej,
->
-> shkey is for tx skbs only, while head_skb is for skbs on rx path.
+> +static void mvneta_ethtool_update_pp_stats(struct mvneta_port *pp,
+> +					   struct page_pool_stats *stats)
+> +{
+> +	int i;
+> +
+> +	memset(stats, 0, sizeof(*stats));
+> +	for (i = 0; i < rxq_number; i++) {
+> +		struct page_pool *page_pool = pp->rxqs[i].page_pool;
+> +		struct page_pool_stats pp_stats = {};
+> +
+> +		if (!page_pool_get_stats(page_pool, &pp_stats))
+> +			continue;
+> +
+> +		stats->alloc_stats.fast += pp_stats.alloc_stats.fast;
+> +		stats->alloc_stats.slow += pp_stats.alloc_stats.slow;
+> +		stats->alloc_stats.slow_high_order +=
+> +			pp_stats.alloc_stats.slow_high_order;
+> +		stats->alloc_stats.empty += pp_stats.alloc_stats.empty;
+> +		stats->alloc_stats.refill += pp_stats.alloc_stats.refill;
+> +		stats->alloc_stats.waive += pp_stats.alloc_stats.waive;
+> +		stats->recycle_stats.cached += pp_stats.recycle_stats.cached;
+> +		stats->recycle_stats.cache_full +=
+> +			pp_stats.recycle_stats.cache_full;
+> +		stats->recycle_stats.ring += pp_stats.recycle_stats.ring;
+> +		stats->recycle_stats.ring_full +=
+> +			pp_stats.recycle_stats.ring_full;
+> +		stats->recycle_stats.released_refcnt +=
+> +			pp_stats.recycle_stats.released_refcnt;
 
-That makes sense, thanks. I would still be happier if this was
-documented, but the comment would best fit in the struct sctp_chunk
-definition and that wouldn't fit in this patch...
+Am i right in saying, these are all software stats? They are also
+generic for any receive queue using the page pool?
 
-Actually I have one more question - what about the
-security_sctp_assoc_established() call in sctp_sf_do_5_1E_ca()? Is
-COOKIE ACK guaranteed to be never bundled?
+It seems odd the driver is doing the addition here. Why not pass stats
+into page_pool_get_stats()? That will make it easier when you add
+additional statistics?
 
---
-Ondrej Mosnacek
-Software Engineer, Linux Security - SELinux kernel
-Red Hat, Inc.
+I'm also wondering if ethtool -S is even the correct API. It should be
+for hardware dependent statistics, those which change between
+implementations. Where as these statistics should be generic. Maybe
+they should be in /sys/class/net/ethX/statistics/ and the driver
+itself is not even involved, the page pool code implements it?
 
+       Andrew
