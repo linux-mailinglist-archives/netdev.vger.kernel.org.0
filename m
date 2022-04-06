@@ -2,243 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 227274F6BC0
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 22:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06E744F6BCF
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 22:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233214AbiDFUyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 16:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
+        id S235014AbiDFU4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 16:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbiDFUxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 16:53:50 -0400
-X-Greylist: delayed 368 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 12:11:05 PDT
-Received: from smtp-out.kfki.hu (smtp-out.kfki.hu [IPv6:2001:738:5001::48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD6FB6D1D;
-        Wed,  6 Apr 2022 12:11:05 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by smtp2.kfki.hu (Postfix) with ESMTP id 1A8B3CC0114;
-        Wed,  6 Apr 2022 21:04:53 +0200 (CEST)
-X-Virus-Scanned: Debian amavisd-new at smtp2.kfki.hu
-Received: from smtp2.kfki.hu ([127.0.0.1])
-        by localhost (smtp2.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP; Wed,  6 Apr 2022 21:04:50 +0200 (CEST)
-Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [148.6.240.2])
-        by smtp2.kfki.hu (Postfix) with ESMTP id 65801CC0100;
-        Wed,  6 Apr 2022 21:04:50 +0200 (CEST)
-Received: by blackhole.kfki.hu (Postfix, from userid 1000)
-        id 5937D340D76; Wed,  6 Apr 2022 21:04:50 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by blackhole.kfki.hu (Postfix) with ESMTP id 57204340D60;
-        Wed,  6 Apr 2022 21:04:50 +0200 (CEST)
-Date:   Wed, 6 Apr 2022 21:04:50 +0200 (CEST)
-From:   Jozsef Kadlecsik <kadlec@netfilter.org>
-To:     Florian Westphal <fw@strlen.de>
-cc:     Neal Cardwell <ncardwell@google.com>,
+        with ESMTP id S234833AbiDFU4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 16:56:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2143C3375
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 12:16:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 695E1B82547
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 19:16:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45CE2C385A3;
+        Wed,  6 Apr 2022 19:16:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649272573;
+        bh=qXgCC/RuAQKmL5gKlzhzXO/Y6MhOjA0LtN0KMo1IQSk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=d7mIIuBoGl+8GoHI+sUDDdle0jex7dsxEqx9nsRP/sJM1wlqYQw8lLcFw8LrjFSp5
+         QDURL0OBrOD663Jsah7TPWQ5nEP/4ye3JzW5CmpFLsA/jZKYaJk8lMYjwf8JrcFYEP
+         502o/ZGMl4M0N4lMWY/oY+776xkNA8ViX2AXA3eVjqFlLVw56ChqkgSLOoYxLiAseQ
+         liIAkATqYL31KryedcX8BDdsDCL8rwfv86I5/sTInNM5+BnP8e0/Vu7MN5RtJT6op2
+         lHfVXtTVdytSwMqZyyBVjalTUj7Wo2lazfafrCyhX0H/bmYOQ0llXQR/YyPFfDshXr
+         lCPyLmHCfFbeQ==
+Date:   Wed, 6 Apr 2022 12:16:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     xiangxia.m.yue@gmail.com, netdev@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Jaco Kroon <jaco@uls.co.za>, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: linux 5.17.1 disregarding ACK values resulting in stalled TCP
- connections
-In-Reply-To: <20220406135807.GA16047@breakpoint.cc>
-Message-ID: <726cf53c-f6aa-38a9-71c4-52fb2457f818@netfilter.org>
-References: <e0bc0c7f-5e47-ddb7-8e24-ad5fb750e876@uls.co.za> <CANn89i+Dqtrm-7oW+D6EY+nVPhRH07GXzDXt93WgzxZ1y9_tJA@mail.gmail.com> <CADVnQyn=VfcqGgWXO_9h6QTkMn5ZxPbNRTnMFAxwQzKpMRvH3A@mail.gmail.com> <5f1bbeb2-efe4-0b10-bc76-37eff30ea905@uls.co.za>
- <CADVnQymPoyY+AX_P7k+NcRWabJZrb7UCJdDZ=FOkvWguiTPVyQ@mail.gmail.com> <CADVnQy=GX0J_QbMJXogGzPwD=f0diKDDxLiHV0gzrb4bo=4FjA@mail.gmail.com> <429dd56b-8a6c-518f-ccb4-fa5beae30953@uls.co.za> <CADVnQynGT7pGBT4PJ=vYg-bj9gnHTsKYHMU_6W0RFZb2FOoxiw@mail.gmail.com>
- <CANn89iJqKmjvJGtRHVumfP0T_SSa1uioFLgUvW+MF2ov2Ec2vQ@mail.gmail.com> <CADVnQykexgJ+NEUojiKrt=HTomF0nL8CncF401+mEFkvuge7Rg@mail.gmail.com> <20220406135807.GA16047@breakpoint.cc>
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>
+Subject: Re: [net-next RESEND v2] net: core: use shared sysctl macro
+Message-ID: <20220406121611.1791499d@kernel.org>
+In-Reply-To: <Yk29yO53lSigIbml@bombadil.infradead.org>
+References: <20220406124208.3485-1-xiangxia.m.yue@gmail.com>
+        <Yk29yO53lSigIbml@bombadil.infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
-
-On Wed, 6 Apr 2022, Florian Westphal wrote:
-
-> Neal Cardwell <ncardwell@google.com> wrote:
-> 
-> [ trimmed CCs, add Jozsef and nf-devel ]
-> 
-> Neal, Eric, thanks for debugging this problem.
-> 
-> > On Sat, Apr 2, 2022 at 12:32 PM Eric Dumazet <edumazet@google.com> wrote:
-> > > On Sat, Apr 2, 2022 at 9:29 AM Neal Cardwell <ncardwell@google.com> wrote:
-> > > > FWIW those log entries indicate netfilter on the mail client machine
-> > > > dropping consecutive outbound skbs with 2*MSS of payload. So that
-> > > > explains the large consecutive losses of client data packets to the
-> > > > e-mail server. That seems to confirm my earlier hunch that those drops
-> > > > of consecutive client data packets "do not look like normal congestive
-> > > > packet loss".
-> > >
-> > > This also explains why we have all these tiny 2-MSS packets in the pcap.
-> > > Under normal conditions, autocorking should kick in, allowing TCP to
-> > > build bigger TSO packets.
+On Wed, 6 Apr 2022 09:20:24 -0700 Luis Chamberlain wrote:
+> On Wed, Apr 06, 2022 at 08:42:08PM +0800, xiangxia.m.yue@gmail.com wrote:
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > > 
-> > I have not looked at the conntrack code before today, but AFAICT this
-> > is the buggy section of  nf_conntrack_proto_tcp.c:
+> > This patch introdues the SYSCTL_THREE, and replace the
+> > two, three and long_one to SYSCTL_XXX accordingly.
 > > 
-> >         } else if (((state->state == TCP_CONNTRACK_SYN_SENT
-> >                      && dir == IP_CT_DIR_ORIGINAL)
-> >                    || (state->state == TCP_CONNTRACK_SYN_RECV
-> >                      && dir == IP_CT_DIR_REPLY))
-> >                    && after(end, sender->td_end)) {
-> >                 /*
-> >                  * RFC 793: "if a TCP is reinitialized ... then it need
-> >                  * not wait at all; it must only be sure to use sequence
-> >                  * numbers larger than those recently used."
-> >                  */
-> >                 sender->td_end =
-> >                 sender->td_maxend = end;
-> >                 sender->td_maxwin = (win == 0 ? 1 : win);
+> >  KUnit:
+> >  [23:03:58] ================ sysctl_test (10 subtests) =================
+> >  [23:03:58] [PASSED] sysctl_test_api_dointvec_null_tbl_data
+> >  [23:03:58] [PASSED] sysctl_test_api_dointvec_table_maxlen_unset
+> >  [23:03:58] [PASSED] sysctl_test_api_dointvec_table_len_is_zero
+> >  [23:03:58] [PASSED] sysctl_test_api_dointvec_table_read_but_position_set
+> >  [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_positive
+> >  [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_negative
+> >  [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_positive
+> >  [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_negative
+> >  [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_less_int_min
+> >  [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_greater_int_max
+> >  [23:03:58] =================== [PASSED] sysctl_test ===================
 > > 
-> >                 tcp_options(skb, dataoff, tcph, sender);
-> > 
-> > Note that the tcp_options() function implicitly assumes it is being
-> > called on a SYN, because it sets state->td_scale to 0 and only sets
-> > state->td_scale to something non-zero if it sees a wscale option. So
-> > if we ever call that on an skb that's not a SYN, we will forget that
-> > the connection is using the wscale option.
-> >
-> > But at this point in the code it is calling tcp_options() without
-> > first checking that this is a SYN.
+> >  ./run_kselftest.sh -c sysctl
+> >  ...
+> >  # Running test: sysctl_test_0006 - run #49
+> >  # Checking bitmap handler... ok
+> >  # Wed Mar 16 14:58:41 UTC 2022
+> >  # Running test: sysctl_test_0007 - run #0
+> >  # Boot param test only possible sysctl_test is built-in, not module:
+> >  # CONFIG_TEST_SYSCTL=m
+> >  ok 1 selftests: sysctl: sysctl.sh
+>
+> I can take this through sysctl-next [0] if folks are OK with that. There are
+> quite a bit of changes already queued there for sysctl.
 > 
-> Yes, thats the bug, tcp_options() must not be called if syn bit is not
-> set.
+> Jakub?
 > 
-> > For this TFO scenario like the one in the trace, where the server
-> > sends its first data packet after the SYNACK packet and before the
-> > client's first ACK, presumably the conntrack state machine is
-> > (correctly) SYN_RECV, and then (incorrectly) executes this code,
-> 
-> Right.  Jozsef, for context, sequence is in trace is:
-> 
-> S > C Flags [S], seq 3451342529, win 62580, options [mss 8940,sackOK,TS val 331187616 ecr 0,nop,wscale 7,tfo [|tcp]>
-> C > S Flags [S.], seq 2699962254, ack 3451342530, win 65535, options [mss 1440,sackOK,TS val 1206542770 ecr 331187616,nop,wscale 8], length 0
-> C > S Flags [P.], seq 1:89, ack 1, win 256, options [nop,nop,TS val 1206542772 ecr 331187616], length 88: SMTP [|smtp]
-> 
-> Normally, 3rd packet would be S > C, but this one is C > S.
-> 
-> So, packet #3 hits the 'reinit' branch which zaps wscale option.
-> 
-> > Someone more familiar with conntrack may have a good idea about how to
-> > best fix this?
-> 
-> Jozsef, does this look sane to you?
-> It fixes the TFO capture and still passes the test case i made for
-> 82b72cb94666b3dbd7152bb9f441b068af7a921b
-> ("netfilter: conntrack: re-init state for retransmitted syn-ack").
+> [0] https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git/log/?h=sysctl-next
 
-As far as I see it'd break simultaneous open because after(end, 
-sender->td_end) is called in the new condition:
+sysctl-next makes a lot of sense, but I'm worried about conflicts.
+Would you be able to spin up a stable branch based on -rc1 so we
+can pull it into net-next as well?
 
-> diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-> index 8ec55cd72572..90ad1c0f23b1 100644
-> --- a/net/netfilter/nf_conntrack_proto_tcp.c
-> +++ b/net/netfilter/nf_conntrack_proto_tcp.c
-> @@ -556,33 +556,24 @@ static bool tcp_in_window(struct nf_conn *ct,
->  			}
->  
->  		}
-> -	} else if (((state->state == TCP_CONNTRACK_SYN_SENT
-> -		     && dir == IP_CT_DIR_ORIGINAL)
-> -		   || (state->state == TCP_CONNTRACK_SYN_RECV
-> -		     && dir == IP_CT_DIR_REPLY))
-> -		   && after(end, sender->td_end)) {
-> +	} else if (tcph->syn &&
-> +		   after(end, sender->td_end) &&
-> +		   (state->state == TCP_CONNTRACK_SYN_SENT ||
-> +		    state->state == TCP_CONNTRACK_SYN_RECV)) {
->  		/*
->  		 * RFC 793: "if a TCP is reinitialized ... then it need
->  		 * not wait at all; it must only be sure to use sequence
->  		 * numbers larger than those recently used."
-> -		 */
-> -		sender->td_end =
-> -		sender->td_maxend = end;
-> -		sender->td_maxwin = (win == 0 ? 1 : win);
-> -
-> -		tcp_options(skb, dataoff, tcph, sender);
-> -	} else if (tcph->syn && dir == IP_CT_DIR_REPLY &&
-> -		   state->state == TCP_CONNTRACK_SYN_SENT) {
-> -		/* Retransmitted syn-ack, or syn (simultaneous open).
->  		 *
-> +		 * also check for retransmitted syn-ack, or syn (simultaneous open).
->  		 * Re-init state for this direction, just like for the first
->  		 * syn(-ack) reply, it might differ in seq, ack or tcp options.
-> +		 *
-> +		 * Check for invalid syn-ack in original direction was already done.
->  		 */
->  		tcp_init_sender(sender, receiver,
->  				skb, dataoff, tcph,
->  				end, win);
-> -		if (!tcph->ack)
-> -			return true;
->  	}
->  
->  	if (!(tcph->ack)) {
-> 
-
-I'd merge the two conditions so that it'd cover both original condition 
-branches:
-
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 8ec55cd72572..87375ce2f995 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -556,33 +556,26 @@ static bool tcp_in_window(struct nf_conn *ct,
- 			}
- 
- 		}
--	} else if (((state->state == TCP_CONNTRACK_SYN_SENT
--		     && dir == IP_CT_DIR_ORIGINAL)
--		   || (state->state == TCP_CONNTRACK_SYN_RECV
--		     && dir == IP_CT_DIR_REPLY))
--		   && after(end, sender->td_end)) {
-+	} else if (tcph->syn &&
-+		   ((after(end, sender->td_end) &&
-+		     (state->state == TCP_CONNTRACK_SYN_SENT ||
-+		      state->state == TCP_CONNTRACK_SYN_RECV)) ||
-+		    (dir == IP_CT_DIR_REPLY &&
-+		     state->state == TCP_CONNTRACK_SYN_SENT))) {
- 		/*
- 		 * RFC 793: "if a TCP is reinitialized ... then it need
- 		 * not wait at all; it must only be sure to use sequence
- 		 * numbers larger than those recently used."
--		 */
--		sender->td_end =
--		sender->td_maxend = end;
--		sender->td_maxwin = (win == 0 ? 1 : win);
--
--		tcp_options(skb, dataoff, tcph, sender);
--	} else if (tcph->syn && dir == IP_CT_DIR_REPLY &&
--		   state->state == TCP_CONNTRACK_SYN_SENT) {
--		/* Retransmitted syn-ack, or syn (simultaneous open).
- 		 *
-+		 * also check for retransmitted syn-ack, or syn (simultaneous open).
- 		 * Re-init state for this direction, just like for the first
- 		 * syn(-ack) reply, it might differ in seq, ack or tcp options.
-+		 *
-+		 * Check for invalid syn-ack in original direction was already done.
- 		 */
- 		tcp_init_sender(sender, receiver,
- 				skb, dataoff, tcph,
- 				end, win);
--		if (!tcph->ack)
--			return true;
- 	}
- 
- 	if (!(tcph->ack)) {
-
-What do you think?
-
-Best regards,
-Jozsef
--
-E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
-PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
-Address : Wigner Research Centre for Physics
-          H-1525 Budapest 114, POB. 49, Hungary
+Let me take a look at the patch as well...
