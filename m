@@ -2,148 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 934704F5AD1
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 12:40:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0390E4F5B85
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 12:43:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235487AbiDFKT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 06:19:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        id S1347275AbiDFKUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 06:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377555AbiDFKSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 06:18:43 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F317FABD6;
-        Tue,  5 Apr 2022 20:44:57 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R691e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=34;SR=0;TI=SMTPD_---0V9JnaX5_1649216691;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9JnaX5_1649216691)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 11:44:52 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     virtualization@lists.linux-foundation.org
-Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-um@lists.infradead.org, netdev@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v9 30/32] virtio_net: split free_unused_bufs()
-Date:   Wed,  6 Apr 2022 11:43:44 +0800
-Message-Id: <20220406034346.74409-31-xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
-References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
-MIME-Version: 1.0
-X-Git-Hash: 881cb3483d12
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H4,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1377788AbiDFKSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 06:18:46 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918DA127585;
+        Tue,  5 Apr 2022 20:56:03 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id o10so886026ple.7;
+        Tue, 05 Apr 2022 20:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=S2Mrxod2ITgWYTN04g5x9FPQTpq7BfhJLFyLK5OxcvE=;
+        b=Q2HPjZrJAOUw3d6ApjMSFPkwq1oi2IIv1t5HPdFBZTbPNFE7ki+367dgP8rUtuaULA
+         whMJA2ZEZryQ0DTAvO4caIpoJViiIrU2urjAQCQiUpXn8rnqZoE8pMwjsTYf00LYylOK
+         1kse5KDOg+/pXMPwG0dqA6oLNUofWqfF4wue69e3zRGT0NqvvhBnXgIyHJi5nl3oorGo
+         E0niSWqKljoLehFWw/3rb7gdFEDUohZVKl8Nz2QUgUIANOk5UjFyOO+0NtN1WEJmwT27
+         Tp1QcUleliDm9EyAcXxhRUGDpC7pD14omPO87GrFLcg+8fRmg6z2NThdH+W48Tf5QTa2
+         n4IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=S2Mrxod2ITgWYTN04g5x9FPQTpq7BfhJLFyLK5OxcvE=;
+        b=c4aPBdkcnlpsm+WFYiElR1zFu68c0unY1FMe5Gf9a4/tRrhiQ6csbIWzypIbHCSHK1
+         EXGEllQ2E2HLV3qRFPfIKwNGBeoIovRjXalO+4VDilVHMuL2ZSk33f7A27DZQrbvnOub
+         ACa1zlENqpGs1grYhywlVMfytE3Gk4rMcRrI+9lOmjiqT3th3Npm7qrnGFrg2sAYESQ1
+         Ii02EeIzjmXu85XeBesOlmgFjx/3PyL0F5Yb34T/oDUsy1GWrGCKE7AeSAtI0iK3SMCw
+         SATIZaAxcUYeDDSPc+uDvlCQkswypXIC6MtW1pRinoto9BeyRLITksti0mdJH2zn/iV7
+         FLPg==
+X-Gm-Message-State: AOAM530al4CuIiJ8LMm3lhWfEq+FN1wxoR84rRyc6+YNPOloh/3NUWDP
+        MK3v4UoplD0ouzEwI4VJOmA=
+X-Google-Smtp-Source: ABdhPJzKjQL395BwiPaZzTXSWdTdQXcmoXkAdWxmDnCrmEwIUBuEuvMGTyhf76hKsr4/sfZZQH1skA==
+X-Received: by 2002:a17:90b:915:b0:1ca:b584:8241 with SMTP id bo21-20020a17090b091500b001cab5848241mr7708111pjb.46.1649217363132;
+        Tue, 05 Apr 2022 20:56:03 -0700 (PDT)
+Received: from localhost.localdomain ([119.3.119.18])
+        by smtp.gmail.com with ESMTPSA id fw15-20020a17090b128f00b001ca93a34d0dsm3611087pjb.19.2022.04.05.20.56.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Apr 2022 20:56:02 -0700 (PDT)
+From:   Xiaomeng Tong <xiam0nd.tong@gmail.com>
+To:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Subject: [PATCH v3] myri10ge: fix an incorrect free for skb in myri10ge_sw_tso
+Date:   Wed,  6 Apr 2022 11:55:56 +0800
+Message-Id: <20220406035556.730-1-xiam0nd.tong@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch separates two functions for freeing sq buf and rq buf from
-free_unused_bufs().
+All remaining skbs should be released when myri10ge_xmit fails to
+transmit a packet. Fix it within another skb_list_walk_safe.
 
-When supporting the enable/disable tx/rq queue in the future, it is
-necessary to support separate recovery of a sq buf or a rq buf.
-
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
 ---
- drivers/net/virtio_net.c | 41 ++++++++++++++++++++++++----------------
- 1 file changed, 25 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 96d96c666c8c..b8bf00525177 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2804,6 +2804,27 @@ static void free_receive_page_frags(struct virtnet_info *vi)
- 			put_page(vi->rq[i].alloc_frag.page);
- }
- 
-+static void virtnet_sq_free_unused_buf(struct virtqueue *vq, void *buf)
-+{
-+	if (!is_xdp_frame(buf))
-+		dev_kfree_skb(buf);
-+	else
-+		xdp_return_frame(ptr_to_xdp(buf));
-+}
-+
-+static void virtnet_rq_free_unused_buf(struct virtqueue *vq, void *buf)
-+{
-+	struct virtnet_info *vi = vq->vdev->priv;
-+	int i = vq2rxq(vq);
-+
-+	if (vi->mergeable_rx_bufs)
-+		put_page(virt_to_head_page(buf));
-+	else if (vi->big_packets)
-+		give_pages(&vi->rq[i], buf);
-+	else
-+		put_page(virt_to_head_page(buf));
-+}
-+
- static void free_unused_bufs(struct virtnet_info *vi)
- {
- 	void *buf;
-@@ -2811,26 +2832,14 @@ static void free_unused_bufs(struct virtnet_info *vi)
- 
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
- 		struct virtqueue *vq = vi->sq[i].vq;
--		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL) {
--			if (!is_xdp_frame(buf))
--				dev_kfree_skb(buf);
--			else
--				xdp_return_frame(ptr_to_xdp(buf));
--		}
-+		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
-+			virtnet_sq_free_unused_buf(vq, buf);
- 	}
- 
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
- 		struct virtqueue *vq = vi->rq[i].vq;
--
--		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL) {
--			if (vi->mergeable_rx_bufs) {
--				put_page(virt_to_head_page(buf));
--			} else if (vi->big_packets) {
--				give_pages(&vi->rq[i], buf);
--			} else {
--				put_page(virt_to_head_page(buf));
--			}
--		}
-+		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL)
-+			virtnet_rq_free_unused_buf(vq, buf);
- 	}
- }
- 
+changes since v2:
+ - free all remaining skbs. (Xiaomeng Tong)
+
+changes since v1:
+ - remove the unneeded assignmnets. (Xiaomeng Tong)
+
+v2:https://lore.kernel.org/lkml/20220405000553.21856-1-xiam0nd.tong@gmail.com/
+v1:https://lore.kernel.org/lkml/20220319052350.26535-1-xiam0nd.tong@gmail.com/
+
+---
+ drivers/net/ethernet/myricom/myri10ge/myri10ge.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+index 50ac3ee2577a..21d2645885ce 100644
+--- a/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
++++ b/drivers/net/ethernet/myricom/myri10ge/myri10ge.c
+@@ -2903,11 +2903,9 @@ static netdev_tx_t myri10ge_sw_tso(struct sk_buff *skb,
+ 		status = myri10ge_xmit(curr, dev);
+ 		if (status != 0) {
+ 			dev_kfree_skb_any(curr);
+-			if (segs != NULL) {
+-				curr = segs;
+-				segs = next;
++			skb_list_walk_safe(next, curr, next) {
+ 				curr->next = NULL;
+-				dev_kfree_skb_any(segs);
++				dev_kfree_skb_any(curr);
+ 			}
+ 			goto drop;
+ 		}
 -- 
-2.31.0
+2.17.1
 
