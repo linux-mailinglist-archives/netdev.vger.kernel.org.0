@@ -2,233 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 083574F6695
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D38B64F66DC
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 19:19:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238741AbiDFRUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 13:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
+        id S238803AbiDFRUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 13:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238834AbiDFRUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:20:25 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1CB2320DB6;
-        Wed,  6 Apr 2022 08:18:23 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id k23so3728567wrd.8;
-        Wed, 06 Apr 2022 08:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=U40qc6GQ+SYodTIzBOdqOZLwZjwjzDI8PPMpjuLO23M=;
-        b=qGKYV5W384zdQNQ8zw1aGodGOdwK21gS5pz/8yEd9vW0X5PoY6zkvso/jy0OD2ZpMl
-         R6cGMhidVv1PRHXyAaPP34WONoy9IJuyWOY3emvm4Pc+Qa0/ymhjs+k0p3UAMRjQ+bYP
-         S1Rbh1ffDrpxOH/N0luR86LQVoWz3wpcez7Eu7PpGXY4HjxsXBn136wgErywTkxrbtL4
-         gr0iQDR4xH6CCvfaUACbfC311BeaKXYn8VbIodSo173OK9I7wfNVegD4wBes3R2AfHCU
-         AvEfr4/J7RLiLGyHmQC0ixgvXmzLB1h6SNh2w4lY9ytIRlqnH6/1n3XGymYCLzEFLco+
-         GXAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=U40qc6GQ+SYodTIzBOdqOZLwZjwjzDI8PPMpjuLO23M=;
-        b=O98jNvcPlf7gYGZn8jtRWy616QyxSuFE2WOM1fblkpojeVW9qBZZwnqas7P2hsOiAI
-         DLD720cCJOsmSDbtBxbUa15osxmroKvigjrEO+a+j3qT6DyxMnOB4djwspzeEkLi6Gn9
-         pG6UReDoTWR2thMae9YtEhfVQllFPakFnAcjccJfS4VgWWhdh/hfhRh7kBQl9si59LXu
-         iuf2rCj4uf9+kdDuYg4XCRBrzXRFgJqM8e1Sgp7HdiCXe0ozCOPffqCzU0wxaVFZS0Gh
-         QCx7bJLuv/5Ed1x3Fvr3jNYaFpZOpOy6dzq+zMtK7vwr7PxpacOcS35pkqH9Xgokzkk4
-         VB4g==
-X-Gm-Message-State: AOAM533hY4AvpUGioLtHhQjh1p/FIeu1gQ2HnSukaa7CfpRWhQX4CLVG
-        pNQuZ9rjXTtSmLc6uCnGrJs=
-X-Google-Smtp-Source: ABdhPJyCYjrUpOXRKUOMNlOKspcPqmHHJD1TpshBOnLqE/8upHaCgOAE57aqeMsyScW3cblgtmrGfw==
-X-Received: by 2002:a5d:528b:0:b0:203:d928:834c with SMTP id c11-20020a5d528b000000b00203d928834cmr7312065wrv.500.1649258302003;
-        Wed, 06 Apr 2022 08:18:22 -0700 (PDT)
-Received: from orome (pd9e518f7.dip0.t-ipconnect.de. [217.229.24.247])
-        by smtp.gmail.com with ESMTPSA id s10-20020adf978a000000b002060c258514sm10062623wrb.23.2022.04.06.08.18.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 08:18:20 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 17:18:18 +0200
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Brian Silverman <bsilver16384@gmail.com>
-Cc:     Brian Silverman <brian.silverman@bluerivertech.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Dan Murphy <dmurphy@ti.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
-Subject: Re: [RFC PATCH] can: m_can: Add driver for M_CAN hardware in NVIDIA
- devices
-Message-ID: <Yk2vOj8wKi4FdPg2@orome>
-References: <20220106002514.24589-1-brian.silverman@bluerivertech.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="BsOhgM1lSoA88Bvi"
+        with ESMTP id S238839AbiDFRU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 13:20:26 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359C249E420;
+        Wed,  6 Apr 2022 08:18:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YYcvb9TpAc76znz33SjakILmvL9A4ke3mzwUeA6StGRAvsHVsJqpj4kazq5OliQeXghoBSjBGsQYn1+mkSIY/mDHuwwyy+gMtgmI2GMKBcXlWK9e9FWSpIa13cjqx34kjeYZaOOjpElR7yKRYh1drLZnm5YTHwUx+IP0/V9n+d9d4ncsvJiM2n+bBOfTt8zbJrQ4kNItikXOqN7G5dvUM8LzFThD6UWzE6ex/BVeg5563S9JpN8VZf7tj3VeAJurXdMUxcpnyWCkhOxEC/3iVd4xEYGPpfFVLvIpJi8EWLFbMaAwe84YFEXsjAF+oVggaPu4JRMzbxNASew2bFh05Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=izr1e7RybFAhSwCNQz+TUFcb75nd0zkcZRCsjicNIgw=;
+ b=DU9uuWpK7SyWeNOAnWG7Y3PHJngqgbuvAWkujAIRmyN15Y0tXpVHEezJPlXHJxw1jZZeq9yh1kVQvT3fTzpSTNRYhc6gsfmmpK3b3X8N91zMv89Ri1S+WieyPqgTWanJNuvNFX/NveqH/lPJqnJqdkKFi3Av5TyFZMth0np36rmeEK7fL8XYsjBJVkVx2rMTz/GtzHzF+ogxeK/lt+1riKUbQwGh5QOoWdviLgbxKfGILydPxQYHWXQ2/z6Youqo01YPT6yPPnHSBTMqR0xU626BdVWWXWfV327nuvjhxjFMDfBZu14QVhgM6hWky4+PgRtH3ICcmyT85LzeWy/oXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=izr1e7RybFAhSwCNQz+TUFcb75nd0zkcZRCsjicNIgw=;
+ b=o51/Y+cTXQS/LrSvHUbZa0Lc12L+aZcCHrQ/NCOTXiad99H5a/bZK4thUVVGePWuWRm1S83ZuAohOh4PrGPyqUrw9wLUztRm1e/3PiBgM/8N3SuJoitGVW8o8qTFXrVpoR7hR79JJd+qPOSqcei7ziqv8ThjwOnBFRZALEBAvWoWF+GenTUp6CbhoojFVQ3uDs670GPv1L+a6WuA8co92fBtM41FZY170S8mNH4KrrzlO7oBG8OpJ70J9BF9lmsZ7c7bN9w/r18xLF9OFisP4BUYj5C+dE3KM6J9gjZiRknzhjEX96L6dY01+UONVZVUebULzTwfRmMJRszAMQ/UJA==
+Received: from DM5PR12MB1130.namprd12.prod.outlook.com (2603:10b6:3:75::19) by
+ CH2PR12MB4840.namprd12.prod.outlook.com (2603:10b6:610:c::33) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5123.25; Wed, 6 Apr 2022 15:18:27 +0000
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM5PR12MB1130.namprd12.prod.outlook.com (2603:10b6:3:75::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
+ 2022 15:18:27 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::cdfb:f88e:410b:9374%6]) with mapi id 15.20.5144.021; Wed, 6 Apr 2022
+ 15:18:27 +0000
+Date:   Wed, 6 Apr 2022 12:18:23 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Christian Benvenuti <benve@cisco.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        iommu@lists.linux-foundation.org, Jason Wang <jasowang@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-s390@vger.kernel.org,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
+        Rob Clark <robdclark@gmail.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        virtualization@lists.linux-foundation.org,
+        Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY
+ with dev_is_dma_coherent()
+Message-ID: <20220406151823.GG2120790@nvidia.com>
+References: <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
+ <db5a6daa-bfe9-744f-7fc5-d5167858bc3e@arm.com>
+ <20220406142432.GF2120790@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220106002514.24589-1-brian.silverman@bluerivertech.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220406142432.GF2120790@nvidia.com>
+X-ClientProxiedBy: BYAPR11CA0039.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::16) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 76c989d6-1d35-46de-9a64-08da17e0b293
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1130:EE_|CH2PR12MB4840:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB11307CE78E936F1B45C731A9C2E79@DM5PR12MB1130.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RXfWFBGUFm7FZ98mExNlgaYp/7jKqHZIN++P9DojmAiyM6shoEsye0W3VDaz/nvcJQyaMUD+TeELJ3Mg+9W5dbjEo24F39p2iMN9WBAXs2I99K2RsFcaeb3YOm08+EbLdhGx5QCax+Kw2fXjlR9anttwImw37ffUiIh6cfL/0eUFkFPwsmg5clYsIp+BuscRQnXPvY61DbtMas++5sTqKgFTMYL6wxDiIjh+g40KsdjYNUBn4c9xnKbO+P07WmElRQYrXVb4PpLboBkS7aRFfosoyPTetDdC8uIBYtnmPnpPlC4d4akilTgt2QYz8EgXf8QIBpkTDSpMzAtxlm1em54/KiTpTX19w/7x7piKgyAdUxNq6X4Fe3+J/zonTzegncizSv4D5nQpk9FTmd4alL8KVrGmBmBhSUdvrLXkB1xEqafEZp0Irr8L5fhiajiMLHDZ2v7NGtbZF5F3BI58Hx6SSrQeo1CSY0h0Au+ek5d0FhKmu6RLF+mo4oOe4jmTIAzW7k3G2v8927onWg/OD8o4GuZPiB4atA7mzT8MjIyg5C/UmQpQI3ai+t0+goDltenZN7nqt0QsnsQXTWmDw/uBaNdJoIvQV1QnC4TLO+GT25j1QGtFKpWBntYH0GxUffvFLQCzRnG5wPeQDm2oTQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(6916009)(1076003)(186003)(66946007)(66556008)(26005)(316002)(38100700002)(33656002)(8936002)(2616005)(66476007)(54906003)(5660300002)(8676002)(6486002)(4326008)(6512007)(508600001)(53546011)(6666004)(86362001)(7416002)(6506007)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8OQHGTt2kw6m5Q0TztmYVjuYD2JEIZc/L/U0JCwYO3qpx+dtYRRFlrddnRtk?=
+ =?us-ascii?Q?6AN3LKRb/T3M0/u/KU8o4b+lCIcwauJnkKHUFnhUKDGs0mHccOxPVyKXEU3G?=
+ =?us-ascii?Q?QTfCu3agxKMtg5Q7X5T8k18HVaYzvcbJROfwQlmWQ8HXCWJRHxdnlD1msJtR?=
+ =?us-ascii?Q?TfOvXzC4103a7yO4atVxibTpizs5VlY/nxGyq+wcSByPjUwN2Bsz2tEetK52?=
+ =?us-ascii?Q?yMTJnutfjNVOG5PJ1jf9tROUgJX5Gmen47ivxRUorTuXK/tcbbgKCDh+AYBB?=
+ =?us-ascii?Q?a62O3aW3AsENGxJCqOfaobOdZTw/N6cGR9ACDPnIMq/amJLX+GN98nKpGOAl?=
+ =?us-ascii?Q?ypv6vEwzmg0nouCdS5KV3M8QrJskuUAs+AlYafVCoze7aL2f6I4ACE31dUeu?=
+ =?us-ascii?Q?LjkKL/oxmEKN9WY0ORy0fwpBp2/gGSPqZTY7vQCbJv3FJKqCpvG4N+4iYRge?=
+ =?us-ascii?Q?PUdXufIwEz13L2cYCsIuSzfkNmJG+B+FYP4NA3vHlD5359jmMtGjhGSj16hO?=
+ =?us-ascii?Q?rfQKsFKD7u+Z1F1maM5XybO13lyyufTwE4ssi2lDe00SxxHCesmuNQjXSB1l?=
+ =?us-ascii?Q?6Y/pJ5y7u1tf00rDzj3oZqwopPO3R4yjlYCT0OSvOyy3MgKuaGgM8sZ+hesX?=
+ =?us-ascii?Q?pzlm0in2/2raW1NqkWJkZAHd+HdeF6Qm/SCzHI46aRURjcSbf7pgivjNv4/g?=
+ =?us-ascii?Q?SgZKvhIwbELipflA6/wpP2QkISYo2gelXuBegSaBj0bn5rEQ5xufAQlIGGor?=
+ =?us-ascii?Q?Co+IY9tfabaLXMlPzm3KFxRv71r3ZOoHqwApObG41a+Clus+LMaVOX+RJ8Fw?=
+ =?us-ascii?Q?AKNsPh1PuTHAlyHVjWSjrlL66S3M8bQF0eNQV/iyMhGDvhjLfbvuTbBxdspQ?=
+ =?us-ascii?Q?qBARMYPFOTHQePFNseOhZH4eJLKtSDyKGokcWkkHfed/WCmpu0rcwgnNa2sH?=
+ =?us-ascii?Q?qqrkylDx8Ph8wBcxdhg0+oBhqNADb7TzlzsSCUCv6FUY7JynMDwXqhGQ2/nz?=
+ =?us-ascii?Q?PLlFIq5sEPZCQyDArKQ7qepwrbxUfZtS2A8IHg+9cuN9kJW1phIgx7GNuGkN?=
+ =?us-ascii?Q?c8XP3Yy8K+pvcvv9Eu9v/P75b8lTaHsFLYWoAfr8c+Ia24h1s8euZTj83h1A?=
+ =?us-ascii?Q?zKZ6k44S2MnldXxLR/Z7Pi0Ob9cRCBX5kwAq9UW3emhCb/hKDQgQwkS5D2X6?=
+ =?us-ascii?Q?RlYVBNKP/nHqhQAIFk+w313bmTfWxo0SQNQqTUu2J+NkiVHBbXjXSRfugu8K?=
+ =?us-ascii?Q?k9C5CzEsfxVXEatStZuHf2f8sgJm/JO2aJRwoLGuZwvQxJuWdjMOVSOj6NB2?=
+ =?us-ascii?Q?Rh8jWuqPsLhNySWAHSa4j+LGCtsJ0JyWaf/BUx4AvToLgh75c7/kmcXQSW3S?=
+ =?us-ascii?Q?8xELz7ev9SCesSSzVOPQBm/pk8Yn095FPLIxxZuElVfrcN+tiU+WlZQvljWi?=
+ =?us-ascii?Q?yQKpy/quYSxamhN5fkb9gGcIObrCvX92kGMUK5TWEtFM4DGjRF7BeUvhOy3v?=
+ =?us-ascii?Q?6ii90IflpkigjQOu2Vice5axRGeG0weAp81/7CgNZ/OH9L9a3TUBqkZAFbUb?=
+ =?us-ascii?Q?kONL95PXeKInrTmH5A0ZVNES/8qFOZr2f+cOWXPwdGkz2IGzeicokZvBWv1c?=
+ =?us-ascii?Q?bJ7AjEUuofvSLT+K/NngazeSodEcQPdpCHERDV5uoNc1ogWfwgtBewALuwhB?=
+ =?us-ascii?Q?eO3tTBgwWXrZ/5zMtdHDbc7qXWaEL8Gjz3cjrnwrbAd8BrQN5jeQ53a+AK/k?=
+ =?us-ascii?Q?0bgaXyXTxQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76c989d6-1d35-46de-9a64-08da17e0b293
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 15:18:26.9819
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sfI33ZNkKwTIySO2OejdY3xTdJF5KxltkhFd+rz3FlzPz3nIzr1r759XNCs6/SMf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4840
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Apr 06, 2022 at 11:24:32AM -0300, Jason Gunthorpe wrote:
+> On Wed, Apr 06, 2022 at 02:56:56PM +0100, Robin Murphy wrote:
+> > On 2022-04-05 17:16, Jason Gunthorpe wrote:
+> > > vdpa and usnic are trying to test if IOMMU_CACHE is supported. The correct
+> > > way to do this is via dev_is_dma_coherent()
+> > 
+> > Not necessarily...
+> > 
+> > Disregarding the complete disaster of PCIe No Snoop on Arm-Based systems,
+> > there's the more interesting effectively-opposite scenario where an SMMU
+> > bridges non-coherent devices to a coherent interconnect. It's not something
+> > we take advantage of yet in Linux, and it can only be properly described in
+> > ACPI, but there do exist situations where IOMMU_CACHE is capable of making
+> > the device's traffic snoop, but dev_is_dma_coherent() - and
+> > device_get_dma_attr() for external users - would still say non-coherent
+> > because they can't assume that the SMMU is enabled and programmed in just
+> > the right way.
+> 
+> Oh, I didn't know about device_get_dma_attr()..
+> 
+> Considering your future issue, maybe this:
+> 
+> /*
+>  * true if the given domain supports IOMMU_CACHE and when dev is attached to
+>  * that domain it will have coherent DMA and require no cache
+>  * maintenance when IOMMU_CACHE is used.
+>  */
+> bool iommu_domain_supports_coherent_dma(struct iommu_domain *domain, struct device *dev)
+> {
+> 	return device_get_dma_attr(dev) == DEV_DMA_COHERENT;
+> }
+> 
+> ? In future it could become a domain op and the SMMU driver could
+> figure out the situation you described?
 
---BsOhgM1lSoA88Bvi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I also spent some time looking at something like this:
 
-On Wed, Jan 05, 2022 at 04:25:09PM -0800, Brian Silverman wrote:
-> It's a M_TTCAN with some NVIDIA-specific glue logic and clocks. The
-> existing m_can driver works with it after handling the glue logic.
->=20
-> The code is a combination of pieces from m_can_platform and NVIDIA's
-> driver [1].
->=20
-> [1] https://github.com/hartkopp/nvidia-t18x-can/blob/master/r32.2.1/nvidi=
-a/drivers/net/can/mttcan/hal/m_ttcan.c
->=20
-> Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
-> ---
-> I ran into bugs with the error handling in NVIDIA's m_ttcan driver, so I
-> switched to m_can which has been much better. I'm looking for feedback
-> on whether I should ensure rebasing hasn't broken anything, write up DT
-> documentation, and submit this patch for real. The driver works great,
-> but I've got some questions about submitting it.
->=20
-> question: This has liberal copying of GPL code from NVIDIA's
-> non-upstreamed m_ttcan driver. Is that OK?
->=20
-> corollary: I don't know what any of this glue logic does. I do know the
-> device doesn't work without it. I can't find any documentation of what
-> these addresses do.
->=20
-> question: There is some duplication between this and m_can_platform. It
-> doesn't seem too bad to me, but is this the preferred way to do it or is
-> there another alternative?
->=20
-> question: Do new DT bindings need to be in the YAML format, or is the
-> .txt one OK?
->=20
->  drivers/net/can/m_can/Kconfig       |  10 +
->  drivers/net/can/m_can/Makefile      |   1 +
->  drivers/net/can/m_can/m_can_tegra.c | 362 ++++++++++++++++++++++++++++
->  3 files changed, 373 insertions(+)
->  create mode 100644 drivers/net/can/m_can/m_can_tegra.c
+struct iommu_domain *iommu_domain_alloc_coherent(struct device *device)
+{
+	if (device_get_dma_attr(device) == DEV_DMA_COHERENT)
+		return NULL;
+	return __iommu_domain_alloc(device->bus, IOMMU_DOMAIN_UNMANAGED);
+}
+EXPORT_SYMBOL_GPL(iommu_domain_alloc_coherent);
 
-Sorry for the late reply, I completely missed this. I think along with
-the DT bindings it'd be great if you could provide DT updates for the
-platform that you tested this on so we can get that upstream as well.
+Which could evolve into to passing the flag down to the iommu driver
+and then it could ensure SMMU is "programmed in just the right way"
+or fail?
 
-I don't know much about CAN so I can't comment on those pieces, so just
-a few thoughts on the integration bits.
+Could also go like this:
 
-> diff --git a/drivers/net/can/m_can/m_can_tegra.c b/drivers/net/can/m_can/=
-m_can_tegra.c
-[...]
-> +static int m_can_tegra_probe(struct platform_device *pdev)
-> +{
-[...]
-> +	ret =3D clk_set_parent(can_clk, pclk);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	ret =3D fwnode_property_read_u32(dev_fwnode(&pdev->dev), "can-clk-rate"=
-, &rate);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	new_rate =3D clk_round_rate(can_clk, rate);
-> +	if (!new_rate)
-> +		dev_warn(&pdev->dev, "incorrect CAN clock rate\n");
-> +
-> +	ret =3D clk_set_rate(can_clk, new_rate > 0 ? new_rate : rate);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	ret =3D clk_set_rate(host_clk, new_rate > 0 ? new_rate : rate);
-> +	if (ret) {
-> +		goto probe_fail;
-> +	}
-> +
-> +	if (core_clk) {
-> +		ret =3D fwnode_property_read_u32(dev_fwnode(&pdev->dev), "core-clk-rat=
-e", &rate);
-> +		if (ret) {
-> +			goto probe_fail;
-> +		}
-> +		new_rate =3D clk_round_rate(core_clk, rate);
-> +		if (!new_rate)
-> +			dev_warn(&pdev->dev, "incorrect CAN_CORE clock rate\n");
-> +
-> +		ret =3D clk_set_rate(core_clk, new_rate > 0 ? new_rate : rate);
-> +		if (ret) {
-> +			goto probe_fail;
-> +		}
-> +	}
+#define IOMMU_DOMAIN_FLAG_COHERENT 1
+struct iommu_domain *iommu_device_alloc_domain(struct device *device,
+                                               unsigned int flags)
 
-Can all of this clock setup not be simplified by using the standard
-assigned-clocks, assigned-clock-parent and assigned-clock-rates DT
-properties?
+A new alloc option is not so easy to fit VFIO into right now though.
 
-> +
-> +	res =3D platform_get_resource_byname(pdev, IORESOURCE_MEM, "m_can");
-> +	addr =3D devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(addr)) {
-> +		ret =3D PTR_ERR(addr);
-> +		goto probe_fail;
-> +	}
-> +
-> +	irq =3D platform_get_irq_byname(pdev, "int0");
-> +	if (irq < 0) {
-> +		ret =3D -ENODEV;
-> +		goto probe_fail;
-> +	}
+Advices?
 
-If there's only one of these, it doesn't make much sense to name them.
-But perhaps this can be discussed when reviewing the DT bindings.
-
-[...]
-> +static const struct of_device_id m_can_of_table[] =3D {
-> +	{ .compatible =3D "nvidia,tegra194-m_can", .data =3D NULL },
-
-We typically name the compatible string after the IP block name. The TRM
-references this as simply "CAN", so I think "nvidia,tegra194-can" would
-be more in line with what we use for existing Tegra hardware.
-
-Thierry
-
---BsOhgM1lSoA88Bvi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmJNrzgACgkQ3SOs138+
-s6H85hAAjpQPOGIqFtsZNbZ6ZNiio0A9LQhmCQTjcW2fIixt0g7Yqk4Hn8Df1FAg
-fJibRWvhio+Yor4JWUIP9NsntbgywoKoUSO1rX+LX66KP0Q23laOft/oYZc3soAu
-kVBeL4JsvcwJOKY1K/smty4OY2zC6G4fojBdYnc6kQhoFyTKxER9Tx6/RTRgDz/n
-8vbWejOjxEgrAJpJ+a/xKPCDf8N0qfXLITcdT2v29HAorgL8QmTnYZ3ky2ROMEKn
-BD08Dw14Fe45NCm98H/ACd4sFBuLKmaB2B9P+XlZVO4z8LDxAvpdHPoghD/nfGTa
-IV0RlDYgwpsq+hfwkucjNaznaQxK7uIYobCp8jqZXdqkxNELRCa+W/4Fk64b3oHQ
-f0r9HJWDFRkU/8XWFP2fxNvP52HhM1bAJIgoO/F2xLprgIjcniQCT1wbuGBkICxM
-g0mf7W0pbzHT2drCnaolNNTB2Zugey5ulbf0pFe88x9taFr2H0P3anEVJyasMJM/
-u0PFhTxcSd4osAV/eWNDYv4qE2pVASHt7TssKpPfiNdcu8+7BT0zKqqZfSG+NoLC
-Buh5kX8GP+hFpj1E8eQZfTztaL1R3dsJRCRB0i/V7do2KpSnTxUoC0XVVNBdevJZ
-OXzSVUXyfKhEnAsmp5It1Eso1iVTmMA5iO80O4T+ynxbK0DYfbw=
-=Nf/A
------END PGP SIGNATURE-----
-
---BsOhgM1lSoA88Bvi--
+Thanks,
+Jason
