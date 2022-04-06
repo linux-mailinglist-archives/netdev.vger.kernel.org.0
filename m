@@ -2,295 +2,368 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEDCE4F6338
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 17:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A784B4F631D
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 17:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236060AbiDFPdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 11:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41880 "EHLO
+        id S236011AbiDFPbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 11:31:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236191AbiDFPdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 11:33:14 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28364BDACB;
-        Wed,  6 Apr 2022 05:42:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q878cRs4//0C9Kud4vo/wW1AFKbYnIGxgHWMtrgt3umA0MKqJsvc5dN/xe2dwPoetUyhLEgP2Nc/yf9nogFM+mCU5aGUbJyjphfdRgAjsD4sp+v8wl/g7ROAgucK2bWdzjB25aQ1LamEgZVrIBkZSo3E1zCR3xLjPd625cgzvMlVwMPAxor4R3A6cz3HRWwcimJchAW61rYpF/1qyV060NJ7LDNnhKA9tIIxkEBe/rxZkSgBT7FxU3Q3Lfeq+DsS7yixVaw0J+tjlm8REi8OEcrk4wezXcHfgNgW01Q+qYronUpErTci9k0qi5tvNTUDn/eMr7LI58bEYGoEXWsnwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TTWuh4pIIul7EGJ/M/YyW67bt48nhB3Usbkemo/n3h8=;
- b=MmZpt5PMVcv5MeBUs1rPmWZVd8GYWRP6MEPYDvhqhbxdiCjggqRkJuwQvUJEgnHlUAdlx+N05OINj95cWhDZhwRKlzOg3uYv0jW/TCq/o3usYqVrrgXTfvSo97j/XV1ozWAcprwPu68hV3USzCD2aQJZ+CAy1r2IuceOYM2wEkv27+N+okfOx+J3Ny/6y9yLmpYFj5p7pQVi/Z2xRWNKYSvIRoOrHhgZ2yz/d/be9sTzKnbc7P39ZANs1o1LC8Bsu/ZYGKL2TNFjTvf3ir+8kZsU6pCg8lx9jK0wFlDAQ2tIO3aQBRFsTzCxHGr8iCDoYWfGP4WlgLX/lKbRgQ4AqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TTWuh4pIIul7EGJ/M/YyW67bt48nhB3Usbkemo/n3h8=;
- b=OzOJgxE8RFAkeo/kP4gVKYSPYfu5TGZYlXEaHUvRPDy+W2fmO1tIBAmxKdElo0Z4gN1sAgTrx9wdUv5jS/zpzKJReIymEfHFYio54JgInvGdXCIfla1IF5AGZBcgyNRmJhUbIJmNgrt3E02t3bIqoA/iezymSY+8VHJonsEUQP6+RQYXd6MHdDByBmV4ghgv1w1VMd9Ap6YeRrpBRZYzuPzufAXjb2dHJKTCXAbEG02QacCctvjOeE08fDa6rT5M3LHszm/I2M+70sDMJfixQ1EeX4Ko0+uBHG0HRz7D3jQVKPLgXuosPesqJObSpeW4vWLzqC7l6nSuk1tTZpt+ig==
-Received: from BN9P222CA0008.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::13)
- by BN6PR12MB1810.namprd12.prod.outlook.com (2603:10b6:404:107::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Wed, 6 Apr
- 2022 12:41:49 +0000
-Received: from BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10c:cafe::db) by BN9P222CA0008.outlook.office365.com
- (2603:10b6:408:10c::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.13 via Frontend
- Transport; Wed, 6 Apr 2022 12:41:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT010.mail.protection.outlook.com (10.13.177.53) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5144.20 via Frontend Transport; Wed, 6 Apr 2022 12:41:48 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 6 Apr
- 2022 12:41:48 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 6 Apr 2022
- 05:41:47 -0700
-Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.9)
- with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Wed, 6 Apr
- 2022 05:41:42 -0700
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Arthur Fabre <afabre@cloudflare.com>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
+        with ESMTP id S236228AbiDFPb1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 11:31:27 -0400
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C647669E1BD
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 05:42:40 -0700 (PDT)
+Received: by mail-oi1-x235.google.com with SMTP id i7so2227995oie.7
+        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 05:42:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vHO2C8Ot+FtIES+g4vBSFicDZYDefX/ZtNhuMzY+jYI=;
+        b=hRlfMezXWBoToJsuyFxSqiNdxnBqKtGui7QeGNyYsHIw19vSPd3peuidNdcIL/kzxp
+         UvRVc83jZR74ZAbT+OnHRrMnees69KrggSQhKSqB7kn1YEGVWe88Id/ge9Q4A1DH4vuQ
+         prgfIKq5PPSPEDpDZ12EIy7lD3lL5LxI3CUC4qEEADJ8qEzjOVWz3U98LFwwfOLY5s8e
+         sEbZ/eEed5TEXEN58va5RP5YFZm5yM5oLNjeuKfBEzSjfprl8eC0kKgSPJQh3r+BreKR
+         jmW4/n30GUwSfu0UNghCchtpD1UV2SCX5NKxFZjCkFWyRd2eIAg5iYO2g95OkQ+AVSNI
+         no/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vHO2C8Ot+FtIES+g4vBSFicDZYDefX/ZtNhuMzY+jYI=;
+        b=WLC0c2uBa1w8VFsxr94k4CiyEqoKqEerXMFN3hIp0jfl5Zf5PzkaSpSijk4cF56wfY
+         tMLDhlptyuZ7xC4i+omJL70q7X3WzkbDTGAkk7QcKinpM/3n66hKTtLKwX8TLKxr5udd
+         MFu7pj4cHdVSf/qkxGevdr1KERmUiBt5iXyumSgYxpri9EJPKgDtZMGjfqkXrABBwMZL
+         s32FIJgSJy6e5dm1yuUNczEgtvyBfbIlFchVoSGowHWBQWND+aMZrKt3yf/0sMLuIo5C
+         tm2RRgWOXHEGuxZjP0EAuyK7tYDtiD2e4UQtK+crVhIRQvPlz9asx5U8zDDFGDyG3GVV
+         tdvg==
+X-Gm-Message-State: AOAM533pFMmSCgxyxg4AMsT3khZphwPQU9i9k1uUal29r/A8KX85KES0
+        KMVqbO2dlUO9hxUNIAJy7bRjWUrRuvFfGw==
+X-Google-Smtp-Source: ABdhPJxtWKk4lsv15UgB6MngjKmawU1L/zxafyh0W0qttl4kK3CxBt/YYQD6tP+1Diz9wdRH6YoDxg==
+X-Received: by 2002:a17:90b:1b4d:b0:1c6:bd9e:a63d with SMTP id nv13-20020a17090b1b4d00b001c6bd9ea63dmr9779579pjb.56.1649248937693;
+        Wed, 06 Apr 2022 05:42:17 -0700 (PDT)
+Received: from localhost.localdomain ([111.204.182.106])
+        by smtp.gmail.com with ESMTPSA id h10-20020a056a00230a00b004faa0f67c3esm18246671pfh.23.2022.04.06.05.42.12
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Apr 2022 05:42:16 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "Maxim Mikityanskiy" <maximmi@nvidia.com>
-Subject: [PATCH bpf v5 2/2] bpf: Adjust bpf_tcp_check_syncookie selftest to test dual-stack sockets
-Date:   Wed, 6 Apr 2022 15:41:13 +0300
-Message-ID: <20220406124113.2795730-2-maximmi@nvidia.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220406124113.2795730-1-maximmi@nvidia.com>
-References: <20220406124113.2795730-1-maximmi@nvidia.com>
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Akhmat Karakotov <hmukos@yandex-team.ru>
+Subject: [net-next RESEND v2] net: core: use shared sysctl macro
+Date:   Wed,  6 Apr 2022 20:42:08 +0800
+Message-Id: <20220406124208.3485-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d0c8dbfc-1e34-4a14-f4db-08da17cad167
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1810:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB1810A25603AFDCAE839B48CEDCE79@BN6PR12MB1810.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yYamxIOrRdqnE+ZBmETUqo1nRpWNE8n/Ro83pQuJX9g7vP0D7U7qIW2pZCl7y3I++Yb4CwEIsmx06fkEoApluMy9JExeS5Hj9ZnJFNOPHKiIkZ/OwX0OFrmLlYvksCzBb+QEhRYPHhcK/YSvlpktjBKTHCL6xa0TKq4syxrQAIxuXNI9VLkjeC+Feg9rLzYAQEApddp2iIfHlb4xJAiYzeixXTsW080CJC3WCk1L+srYlygX3J0U+Od91BeIWTD/d24HObPNyYnXe9Y2AZMwN+bNeZrAJ6EdJ1tMlkPy2RgFEh6m5vcFHLGHWEPJZB+Gf6gv4VH+lt9YiQH4+ls6RZgDH2U7McdAjwMJWQ2WEJNWckd64wlgzRbYBk0fAcFMf0VB0kd5DZYsu4syKmu88sbD+R3A0fOz4Vg2mjMMohjDZpUAWLLiFpqipYJULWnOyG6Y9i3kUNCsn15K1dlf8g8hV/aRjGGZxEFGAK/jN4ytAD0FwR7COOJHi4wjG7a6yXKnilw1pmcxlM1Opv0sZnwzO02MLUfN1T8a/gPNnK5IyBY1sh9Hgj+M4asJAIgMAA5TXkO6x7YmRKyTrVqhauEQj0Q+PizuqvHU8g7vcUpvk7gdgBbjIp0fCAASaAGah8d8Ejjinl1B+ndvCou4WefKmMKfBI+amgzBQw6rk8A67ahWoHfgQMBICjfiNodbzHnBxH5MU/8eTD9mlnNmaQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(7696005)(6666004)(426003)(36860700001)(2616005)(47076005)(83380400001)(107886003)(26005)(186003)(336012)(1076003)(7416002)(8936002)(4326008)(36756003)(70206006)(81166007)(5660300002)(82310400005)(356005)(8676002)(2906002)(316002)(508600001)(110136005)(40460700003)(54906003)(86362001)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 12:41:48.8711
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0c8dbfc-1e34-4a14-f4db-08da17cad167
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT010.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1810
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The previous commit fixed support for dual-stack sockets in
-bpf_tcp_check_syncookie. This commit adjusts the selftest to verify the
-fixed functionality.
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Acked-by: Arthur Fabre <afabre@cloudflare.com>
+This patch introdues the SYSCTL_THREE, and replace the
+two, three and long_one to SYSCTL_XXX accordingly.
+
+ KUnit:
+ [23:03:58] ================ sysctl_test (10 subtests) =================
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_null_tbl_data
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_table_maxlen_unset
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_table_len_is_zero
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_table_read_but_position_set
+ [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_positive
+ [23:03:58] [PASSED] sysctl_test_dointvec_read_happy_single_negative
+ [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_positive
+ [23:03:58] [PASSED] sysctl_test_dointvec_write_happy_single_negative
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_less_int_min
+ [23:03:58] [PASSED] sysctl_test_api_dointvec_write_single_greater_int_max
+ [23:03:58] =================== [PASSED] sysctl_test ===================
+
+ ./run_kselftest.sh -c sysctl
+ ...
+ # Running test: sysctl_test_0006 - run #49
+ # Checking bitmap handler... ok
+ # Wed Mar 16 14:58:41 UTC 2022
+ # Running test: sysctl_test_0007 - run #0
+ # Boot param test only possible sysctl_test is built-in, not module:
+ # CONFIG_TEST_SYSCTL=m
+ ok 1 selftests: sysctl: sysctl.sh
+
+Cc: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Iurii Zaikin <yzaikin@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David Ahern <dsahern@kernel.org>
+Cc: Simon Horman <horms@verge.net.au>
+Cc: Julian Anastasov <ja@ssi.bg>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Cc: Lorenz Bauer <lmb@cloudflare.com>
+Cc: Akhmat Karakotov <hmukos@yandex-team.ru>
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
- .../bpf/test_tcp_check_syncookie_user.c       | 78 ++++++++++++++-----
- 1 file changed, 59 insertions(+), 19 deletions(-)
+ fs/proc/proc_sysctl.c          |  2 +-
+ include/linux/sysctl.h         | 13 +++++++------
+ net/core/sysctl_net_core.c     | 14 +++++---------
+ net/ipv4/sysctl_net_ipv4.c     | 16 ++++++----------
+ net/ipv6/sysctl_net_ipv6.c     |  6 ++----
+ net/netfilter/ipvs/ip_vs_ctl.c |  4 +---
+ 6 files changed, 22 insertions(+), 33 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c b/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c
-index b9e991d43155..e7775d3bbe08 100644
---- a/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c
-+++ b/tools/testing/selftests/bpf/test_tcp_check_syncookie_user.c
-@@ -18,8 +18,9 @@
- #include "bpf_rlimit.h"
- #include "cgroup_helpers.h"
+diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
+index 7d9cfc730bd4..0bdd9249666b 100644
+--- a/fs/proc/proc_sysctl.c
++++ b/fs/proc/proc_sysctl.c
+@@ -26,7 +26,7 @@ static const struct file_operations proc_sys_dir_file_operations;
+ static const struct inode_operations proc_sys_dir_operations;
  
--static int start_server(const struct sockaddr *addr, socklen_t len)
-+static int start_server(const struct sockaddr *addr, socklen_t len, bool dual)
- {
-+	int mode = !dual;
- 	int fd;
+ /* shared constants to be used in various sysctls */
+-const int sysctl_vals[] = { -1, 0, 1, 2, 4, 100, 200, 1000, 3000, INT_MAX, 65535 };
++const int sysctl_vals[] = { -1, 0, 1, 2, 3, 4, 100, 200, 1000, 3000, INT_MAX, 65535 };
+ EXPORT_SYMBOL(sysctl_vals);
  
- 	fd = socket(addr->sa_family, SOCK_STREAM, 0);
-@@ -28,6 +29,14 @@ static int start_server(const struct sockaddr *addr, socklen_t len)
- 		goto out;
- 	}
+ const unsigned long sysctl_long_vals[] = { 0, 1, LONG_MAX };
+diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
+index 6353d6db69b2..b2ac6542455f 100644
+--- a/include/linux/sysctl.h
++++ b/include/linux/sysctl.h
+@@ -42,12 +42,13 @@ struct ctl_dir;
+ #define SYSCTL_ZERO			((void *)&sysctl_vals[1])
+ #define SYSCTL_ONE			((void *)&sysctl_vals[2])
+ #define SYSCTL_TWO			((void *)&sysctl_vals[3])
+-#define SYSCTL_FOUR			((void *)&sysctl_vals[4])
+-#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[5])
+-#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[6])
+-#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[7])
+-#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[8])
+-#define SYSCTL_INT_MAX			((void *)&sysctl_vals[9])
++#define SYSCTL_THREE			((void *)&sysctl_vals[4])
++#define SYSCTL_FOUR			((void *)&sysctl_vals[5])
++#define SYSCTL_ONE_HUNDRED		((void *)&sysctl_vals[6])
++#define SYSCTL_TWO_HUNDRED		((void *)&sysctl_vals[7])
++#define SYSCTL_ONE_THOUSAND		((void *)&sysctl_vals[8])
++#define SYSCTL_THREE_THOUSAND		((void *)&sysctl_vals[9])
++#define SYSCTL_INT_MAX			((void *)&sysctl_vals[10])
  
-+	if (addr->sa_family == AF_INET6) {
-+		if (setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&mode,
-+			       sizeof(mode)) == -1) {
-+			log_err("Failed to set the dual-stack mode");
-+			goto close_out;
-+		}
-+	}
-+
- 	if (bind(fd, addr, len) == -1) {
- 		log_err("Failed to bind server socket");
- 		goto close_out;
-@@ -47,24 +56,17 @@ static int start_server(const struct sockaddr *addr, socklen_t len)
- 	return fd;
- }
+ /* this is needed for the proc_dointvec_minmax for [fs_]overflow UID and GID */
+ #define SYSCTL_MAXOLDUID		((void *)&sysctl_vals[10])
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 7123fe7feeac..6ea51c155860 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -23,14 +23,10 @@
+ #include <net/busy_poll.h>
+ #include <net/pkt_sched.h>
  
--static int connect_to_server(int server_fd)
-+static int connect_to_server(const struct sockaddr *addr, socklen_t len)
- {
--	struct sockaddr_storage addr;
--	socklen_t len = sizeof(addr);
- 	int fd = -1;
+-static int two = 2;
+-static int three = 3;
+ static int int_3600 = 3600;
+ static int min_sndbuf = SOCK_MIN_SNDBUF;
+ static int min_rcvbuf = SOCK_MIN_RCVBUF;
+ static int max_skb_frags = MAX_SKB_FRAGS;
+-static long long_one __maybe_unused = 1;
+-static long long_max __maybe_unused = LONG_MAX;
  
--	if (getsockname(server_fd, (struct sockaddr *)&addr, &len)) {
--		log_err("Failed to get server addr");
--		goto out;
--	}
+ static int net_msg_warn;	/* Unused, but still a sysctl */
+ 
+@@ -388,7 +384,7 @@ static struct ctl_table net_core_table[] = {
+ 		.extra2		= SYSCTL_ONE,
+ # else
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ # endif
+ 	},
+ # ifdef CONFIG_HAVE_EBPF_JIT
+@@ -399,7 +395,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0600,
+ 		.proc_handler	= proc_dointvec_minmax_bpf_restricted,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "bpf_jit_kallsyms",
+@@ -417,7 +413,7 @@ static struct ctl_table net_core_table[] = {
+ 		.maxlen		= sizeof(long),
+ 		.mode		= 0600,
+ 		.proc_handler	= proc_dolongvec_minmax_bpf_restricted,
+-		.extra1		= &long_one,
++		.extra1		= SYSCTL_LONG_ONE,
+ 		.extra2		= &bpf_jit_limit_max,
+ 	},
+ #endif
+@@ -544,7 +540,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "devconf_inherit_init_net",
+@@ -553,7 +549,7 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "high_order_alloc_disable",
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index ad80d180b60b..cd448cdd3b38 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -20,10 +20,6 @@
+ #include <net/protocol.h>
+ #include <net/netevent.h>
+ 
+-static int two = 2;
+-static int three __maybe_unused = 3;
+-static int four = 4;
+-static int thousand = 1000;
+ static int tcp_retr1_max = 255;
+ static int ip_local_port_range_min[] = { 1, 1 };
+ static int ip_local_port_range_max[] = { 65535, 65535 };
+@@ -1006,7 +1002,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "tcp_max_syn_backlog",
+@@ -1059,7 +1055,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_fib_multipath_hash_policy,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "fib_multipath_hash_fields",
+@@ -1117,7 +1113,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &four,
++		.extra2		= SYSCTL_FOUR,
+ 	},
+ 	{
+ 		.procname	= "tcp_recovery",
+@@ -1310,7 +1306,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &thousand,
++		.extra2		= SYSCTL_ONE_THOUSAND,
+ 	},
+ 	{
+ 		.procname	= "tcp_pacing_ca_ratio",
+@@ -1319,7 +1315,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &thousand,
++		.extra2		= SYSCTL_ONE_THOUSAND,
+ 	},
+ 	{
+ 		.procname	= "tcp_wmem",
+@@ -1391,7 +1387,7 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &two,
++		.extra2		= SYSCTL_TWO,
+ 	},
+ 	{ }
+ };
+diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+index d53dd142bf87..94a0a294c6a1 100644
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@ -23,8 +23,6 @@
+ #endif
+ #include <linux/ioam6.h>
+ 
+-static int two = 2;
+-static int three = 3;
+ static int flowlabel_reflect_max = 0x7;
+ static int auto_flowlabels_max = IP6_AUTO_FLOW_LABEL_MAX;
+ static u32 rt6_multipath_hash_fields_all_mask =
+@@ -172,7 +170,7 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler   = proc_rt6_multipath_hash_policy,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "fib_multipath_hash_fields",
+@@ -197,7 +195,7 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dou8vec_minmax,
+ 		.extra1         = SYSCTL_ZERO,
+-		.extra2         = &two,
++		.extra2         = SYSCTL_TWO,
+ 	},
+ 	{
+ 		.procname	= "ioam6_id",
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index 7f645328b47f..efab2b06d373 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -1767,8 +1767,6 @@ static int ip_vs_zero_all(struct netns_ipvs *ipvs)
+ 
+ #ifdef CONFIG_SYSCTL
+ 
+-static int three = 3;
 -
--	fd = socket(addr.ss_family, SOCK_STREAM, 0);
-+	fd = socket(addr->sa_family, SOCK_STREAM, 0);
- 	if (fd == -1) {
- 		log_err("Failed to create client socket");
- 		goto out;
- 	}
- 
--	if (connect(fd, (const struct sockaddr *)&addr, len) == -1) {
-+	if (connect(fd, (const struct sockaddr *)addr, len) == -1) {
- 		log_err("Fail to connect to server");
- 		goto close_out;
- 	}
-@@ -116,7 +118,8 @@ static int get_map_fd_by_prog_id(int prog_id, bool *xdp)
- 	return map_fd;
- }
- 
--static int run_test(int server_fd, int results_fd, bool xdp)
-+static int run_test(int server_fd, int results_fd, bool xdp,
-+		    const struct sockaddr *addr, socklen_t len)
- {
- 	int client = -1, srv_client = -1;
- 	int ret = 0;
-@@ -142,7 +145,7 @@ static int run_test(int server_fd, int results_fd, bool xdp)
- 		goto err;
- 	}
- 
--	client = connect_to_server(server_fd);
-+	client = connect_to_server(addr, len);
- 	if (client == -1)
- 		goto err;
- 
-@@ -199,12 +202,30 @@ static int run_test(int server_fd, int results_fd, bool xdp)
- 	return ret;
- }
- 
-+static bool get_port(int server_fd, in_port_t *port)
-+{
-+	struct sockaddr_in addr;
-+	socklen_t len = sizeof(addr);
-+
-+	if (getsockname(server_fd, (struct sockaddr *)&addr, &len)) {
-+		log_err("Failed to get server addr");
-+		return false;
-+	}
-+
-+	/* sin_port and sin6_port are located at the same offset. */
-+	*port = addr.sin_port;
-+	return true;
-+}
-+
- int main(int argc, char **argv)
- {
- 	struct sockaddr_in addr4;
- 	struct sockaddr_in6 addr6;
-+	struct sockaddr_in addr4dual;
-+	struct sockaddr_in6 addr6dual;
- 	int server = -1;
- 	int server_v6 = -1;
-+	int server_dual = -1;
- 	int results = -1;
- 	int err = 0;
- 	bool xdp;
-@@ -224,25 +245,43 @@ int main(int argc, char **argv)
- 	addr4.sin_family = AF_INET;
- 	addr4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
- 	addr4.sin_port = 0;
-+	memcpy(&addr4dual, &addr4, sizeof(addr4dual));
- 
- 	memset(&addr6, 0, sizeof(addr6));
- 	addr6.sin6_family = AF_INET6;
- 	addr6.sin6_addr = in6addr_loopback;
- 	addr6.sin6_port = 0;
- 
--	server = start_server((const struct sockaddr *)&addr4, sizeof(addr4));
--	if (server == -1)
-+	memset(&addr6dual, 0, sizeof(addr6dual));
-+	addr6dual.sin6_family = AF_INET6;
-+	addr6dual.sin6_addr = in6addr_any;
-+	addr6dual.sin6_port = 0;
-+
-+	server = start_server((const struct sockaddr *)&addr4, sizeof(addr4),
-+			      false);
-+	if (server == -1 || !get_port(server, &addr4.sin_port))
- 		goto err;
- 
- 	server_v6 = start_server((const struct sockaddr *)&addr6,
--				 sizeof(addr6));
--	if (server_v6 == -1)
-+				 sizeof(addr6), false);
-+	if (server_v6 == -1 || !get_port(server_v6, &addr6.sin6_port))
-+		goto err;
-+
-+	server_dual = start_server((const struct sockaddr *)&addr6dual,
-+				   sizeof(addr6dual), true);
-+	if (server_dual == -1 || !get_port(server_dual, &addr4dual.sin_port))
-+		goto err;
-+
-+	if (run_test(server, results, xdp,
-+		     (const struct sockaddr *)&addr4, sizeof(addr4)))
- 		goto err;
- 
--	if (run_test(server, results, xdp))
-+	if (run_test(server_v6, results, xdp,
-+		     (const struct sockaddr *)&addr6, sizeof(addr6)))
- 		goto err;
- 
--	if (run_test(server_v6, results, xdp))
-+	if (run_test(server_dual, results, xdp,
-+		     (const struct sockaddr *)&addr4dual, sizeof(addr4dual)))
- 		goto err;
- 
- 	printf("ok\n");
-@@ -252,6 +291,7 @@ int main(int argc, char **argv)
- out:
- 	close(server);
- 	close(server_v6);
-+	close(server_dual);
- 	close(results);
- 	return err;
- }
+ static int
+ proc_do_defense_mode(struct ctl_table *table, int write,
+ 		     void *buffer, size_t *lenp, loff_t *ppos)
+@@ -1977,7 +1975,7 @@ static struct ctl_table vs_vars[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ZERO,
+-		.extra2		= &three,
++		.extra2		= SYSCTL_THREE,
+ 	},
+ 	{
+ 		.procname	= "nat_icmp_send",
 -- 
-2.30.2
+2.27.0
 
