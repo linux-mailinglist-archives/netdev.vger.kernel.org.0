@@ -2,104 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD6214F65ED
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:52:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 442714F660F
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238260AbiDFQxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 12:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
+        id S238173AbiDFQyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 12:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238634AbiDFQw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:52:59 -0400
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A741DF66E
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 07:16:58 -0700 (PDT)
-Received: by mail-ot1-x32a.google.com with SMTP id i11-20020a9d4a8b000000b005cda3b9754aso1774902otf.12
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 07:16:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=SUWQMmwZSct1NUq5pHL/uGOr0m/f9iWjJQkP63QJuAY=;
-        b=necXboHIqIY4mU6mIoE/fX52SW22rYaizBJiUkWBqqjC2FwblXLvSB9fDNNlLEvaI6
-         oqBXNj4VPdKIF9aJiyxPlWCzcK2KgHx1JAA7QdmvoboKS/lH5Iu+kGGpmbNIi7Ywl8TI
-         UcNA2KSm+jLGC69NfXAGuw0TCM8ZShhrOljcnFeTMAS9JeKg3f3xCBeYtb+EnKaExItN
-         k9KrEFntCWB/ZrtQCY1O75h+RbB9loSbU4Jrsf79yBgkTjOHk/GhfybT31sAhrQN8Xuq
-         EjsftMyqiuPrd4Yh0FGbq30oF2D0e7zyGxOuhuOEIAKoGQJDg/Vua2CCE18EXeRJwSot
-         auog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=SUWQMmwZSct1NUq5pHL/uGOr0m/f9iWjJQkP63QJuAY=;
-        b=Sq1NEB3v6zIGDOeHRtMYyVgREFAmHEJnMx0yLw52tV/xeqq0v9M6W0L6rJmGvGhwrO
-         OdnNZVe6PeRYD3BCrMhHGhDEvEspBpQ7N2uqErjdputTr6qsHQtKuj8Q95GL5WJHlI8j
-         ceoY6TfwY8jWEt3VuVEqm+mifjYxKZt4uG83JowkeceOowwVqzufiLpFlyQ2Lvux4frj
-         K4o1zAK2vnDFiVb3dYc8VzPV7F5MZzNR/Z3yxWnff19mX1/4yYf/XMaKMwWU+aNQ4XuT
-         OdhNQOywM7KDfhJWajHJj23l6euR4T/XUVol6ZdhrcT9CjvPCaaXAj52guO1oMNas8Uy
-         4MjQ==
-X-Gm-Message-State: AOAM5303l7DtF8AD3KioseaLdvTqvTxAQUwf2hDq3QsMzI4JKMeSjAtq
-        apN/sIu6m04fIHOHyViOvS71TrmdSAn5f5jgOkg=
-X-Google-Smtp-Source: ABdhPJzuF79m/qpNtu7+dOsx0HvwXESJw/1kk5/OM0RLL5KJ267ZrK1w0vly/ZgMrW7cH0l/eoGz3iVJ4OoC5SKsSh4=
-X-Received: by 2002:a05:6830:438b:b0:5cd:a590:adfe with SMTP id
- s11-20020a056830438b00b005cda590adfemr3185588otv.248.1649254616443; Wed, 06
- Apr 2022 07:16:56 -0700 (PDT)
+        with ESMTP id S238247AbiDFQxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:53:52 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B083CF48C;
+        Wed,  6 Apr 2022 07:17:53 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KYRPw0hZMz67wqg;
+        Wed,  6 Apr 2022 22:16:04 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Wed, 6 Apr 2022 16:17:50 +0200
+Message-ID: <e1835aeb-8fe3-a8d7-9d36-69ce8e989291@huawei.com>
+Date:   Wed, 6 Apr 2022 17:17:47 +0300
 MIME-Version: 1.0
-Received: by 2002:a4a:abcb:0:0:0:0:0 with HTTP; Wed, 6 Apr 2022 07:16:56 -0700 (PDT)
-Reply-To: jub47823@gmail.com
-From:   Julian Bikarm <alassanilami71@gmail.com>
-Date:   Wed, 6 Apr 2022 14:16:56 +0000
-Message-ID: <CAEg-_2VKh_7Y-varf-FF30eOaj8=O7EMU_9xdY5Jhp6cjtC1xA@mail.gmail.com>
-Subject: Please can i have your attention
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_20,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:32a listed in]
-        [list.dnswl.org]
-        * -0.0 BAYES_20 BODY: Bayes spam probability is 5 to 20%
-        *      [score: 0.1692]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [jub47823[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [alassanilami71[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [alassanilami71[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.8 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [RFC PATCH v4 10/15] seltest/landlock: add tests for bind() hooks
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
+References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
+ <20220309134459.6448-11-konstantin.meskhidze@huawei.com>
+ <c2bc5ccf-8942-ab5e-c071-6f6c6e6b2d9d@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <c2bc5ccf-8942-ab5e-c071-6f6c6e6b2d9d@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear ,
 
 
-Please can I have your attention and possibly help me for humanity's
-sake please. I am writing this message with a heavy heart filled with
-sorrows and sadness.
+4/4/2022 9:32 PM, Mickaël Salaün пишет:
+> 
+> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
+>> Adds two selftests for bind socket action.
+>> The one is with no landlock restrictions:
+>>      - bind_no_restrictions;
+>> The second one is with mixed landlock rules:
+>>      - bind_with_restrictions;
+>>
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>>
+>> Changes since v3:
+>> * Split commit.
+>> * Add helper create_socket.
+>> * Add FIXTURE_SETUP.
+>>
+>> ---
+>>   .../testing/selftests/landlock/network_test.c | 153 ++++++++++++++++++
+>>   1 file changed, 153 insertions(+)
+>>   create mode 100644 tools/testing/selftests/landlock/network_test.c
+>>
+>> diff --git a/tools/testing/selftests/landlock/network_test.c 
+>> b/tools/testing/selftests/landlock/network_test.c
+>> new file mode 100644
+>> index 000000000000..4c60f6d973a8
+>> --- /dev/null
+>> +++ b/tools/testing/selftests/landlock/network_test.c
+> 
+> [...]
+> 
+>> +
+>> +uint port[MAX_SOCKET_NUM];
+>> +struct sockaddr_in addr[MAX_SOCKET_NUM];
+> 
+> You should not change global variables, it is a source of issue. Instead 
+> use FIXTURE local variables accessible through self->X.
+> 
+   Sorry. Did not get your point here.
+>> +
+>> +const int one = 1;
+> 
+> This doesn't need to be global.
 
-Please if you can respond, i have an issue that i will be most
-grateful if you could help me deal with it please.
+    Ok. Got it.
+> 
+> [...]
+> 
+>> +
+>> +static void enforce_ruleset(struct __test_metadata *const _metadata,
+>> +        const int ruleset_fd)
+>> +{
+>> +    ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
+>> +    ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0)) {
+>> +        TH_LOG("Failed to enforce ruleset: %s", strerror(errno));
+>> +    }
+>> +}
+> 
+> You should move the same helper from fs_base.c to common.h (see caps 
+> helpers) and reuse it here.
+> 
+   Ok. Thanks.
+> 
+>> +
+>> +FIXTURE(socket) { };
+>> +
+>> +FIXTURE_SETUP(socket)
+>> +{
+>> +    int i;
+> 
+> Please add a new line between declaration and actual code (everywhere).
 
-Julian
+   Ok. Got it. Will be refactored.
+> 
+>> +    /* Creates socket addresses */
+>> +    for (i = 0; i < MAX_SOCKET_NUM; i++) {
+> 
+> Use ARRAY_SIZE() instead of MAY_SOCKET_NUM.
+> 
+   Ok. I got it.
+> 
+>> +        port[i] = SOCK_PORT_START + SOCK_PORT_ADD*i;
+> 
+> Use self->port[i] and self->addr[i] instead.
+> 
+
+   Do you mean to add it in FIXTURE variables?
+
+>> +        addr[i].sin_family = AF_INET;
+>> +        addr[i].sin_port = htons(port[i]);
+>> +        addr[i].sin_addr.s_addr = inet_addr(IP_ADDRESS);
+>> +        memset(&(addr[i].sin_zero), '\0', 8);
+>> +    }
+>> +}
+> 
+> [...]
+> 
+>> +    /* Allows connect and deny bind operations to the port[1] socket. */
+>> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
+>> LANDLOCK_RULE_NET_SERVICE,
+>> +                &net_service_2, 0));
+>> +    /* Empty allowed_access (i.e. deny rules) are ignored in network 
+>> actions
+> 
+> The kernel coding style says to start a multi-line comments with a "/*" 
+> and a new line.
+
+   I missed it here. Thanks.
+> .
