@@ -2,122 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B872D4F5BEE
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A63E24F5CAA
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349856AbiDFLBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 07:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33474 "EHLO
+        id S229657AbiDFLq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 07:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349983AbiDFLAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:00:20 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7867B52392A
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 00:25:44 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id m12so2006857ljp.8
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 00:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=uM+FGcsj8toEe5e+GV8hGulxG9f/x9ohvcn77yjffaQ=;
-        b=nyki1sfe5G+aAzOLpLnZhO2ZDkCF5ikqOx76aXsqKRkcVu8Rxqw+y+5/vta0UJfZZp
-         pCk3c6ItnK3lG+zgUQrHULMddAPMuobruF3kg6Lw1oYvE0+QLZZf+HJWuNi7+aNIkXQF
-         S74qC5hQezZ+AKP17/Jf/cqwMJL3xixxCQ/SEWkjY5bOPOf7KsNHewht0h9qdh0gk3oS
-         r2tT5XcdOoYXaCCK/LQ4CHB7b1BG/M3ItIVOXgZ0w0mXfUXtxTKlK9AOWXkK1Ly9qEmL
-         zc4sF12PfTP6tZRaoKPLkn4cShN40j5o2xyN7bVf7LuFgI1My+JRqQh8D32AT5PlFBvg
-         QjsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=uM+FGcsj8toEe5e+GV8hGulxG9f/x9ohvcn77yjffaQ=;
-        b=7xxkp2U65ia6T9FEjLImWR7Z9SHJ9yaMpeQm08VgwhiHH5PoAF+e1ffqo2sMyaCfuf
-         Nv99h5rT+JhVXdwDhLdNx/Hk1AcirO3TvCWkzckCr0wJIppjlgoqgUkq901ZODlbOp8i
-         51A9UsY0buaISqd9lHkpIErcCF2lTLXMRq/LhlUqZsfdsW57KVUcrwQtLgVZMJSN4vKI
-         KjqxrQT5me03ZxLnCthVi9PxGdK2X4SU25hkoNj/EUUltCGeS7GihS5KoT6T5X3g/2ao
-         uBSsHYTZ7+OvZdpk4FWSbVshEmW6t+iDJlguHPTJzNEnvmQIO0kT2jMicempQvs45h65
-         FpRA==
-X-Gm-Message-State: AOAM531ze6QYZ+ra0hFr5Y7452AyAfTpSmQEdK4z7MefBdy+al9ypAqz
-        2FYymd4kxrOIpLjdvXZ8JQdau4J2J5C4cIgnh+M=
-X-Google-Smtp-Source: ABdhPJyXd4x1EY152aytJrGrrH9LsxGHjouD2bajhKDiATPjHXWw+BbzbF//Bs5880gAhmoyFqGCmtNR6sQYozaWevw=
-X-Received: by 2002:a2e:a28d:0:b0:247:dce8:cecd with SMTP id
- k13-20020a2ea28d000000b00247dce8cecdmr4419866lja.415.1649229942372; Wed, 06
- Apr 2022 00:25:42 -0700 (PDT)
+        with ESMTP id S230045AbiDFLqn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:46:43 -0400
+X-Greylist: delayed 623 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 06 Apr 2022 01:35:51 PDT
+Received: from smtpservice.6wind.com (unknown [185.13.181.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D913D595FF6;
+        Wed,  6 Apr 2022 01:35:49 -0700 (PDT)
+Received: from 6wind.com (unknown [10.17.250.37])
+        by smtpservice.6wind.com (Postfix) with ESMTP id DDB706000E;
+        Wed,  6 Apr 2022 10:18:14 +0200 (CEST)
+Date:   Wed, 6 Apr 2022 10:18:14 +0200
+From:   Olivier Matz <olivier.matz@6wind.com>
+To:     netdev@vger.kernel.org
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, stable@vger.kernel.org,
+        Hiroshi Shimamoto <h-shimamoto@ct.jp.nec.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        intel-wired-lan@osuosl.org
+Subject: Re: [PATCH net 0/2] ixgbe: fix promiscuous mode on VF
+Message-ID: <Yk1MxlsbGi810tgb@arsenic.home>
+References: <20220325140250.21663-1-olivier.matz@6wind.com>
 MIME-Version: 1.0
-Sender: rolandcarson343@gmail.com
-Received: by 2002:a05:6520:3423:b0:1aa:e3a5:b818 with HTTP; Wed, 6 Apr 2022
- 00:25:41 -0700 (PDT)
-From:   "Mr. Jimmy Moore" <jimmymoore265@gmail.com>
-Date:   Wed, 6 Apr 2022 08:25:41 +0100
-X-Google-Sender-Auth: 5ncwtOZdi-NdrDSLQxLdkgVs-pQ
-Message-ID: <CAKa+mTuKGiersDqoUDQCNeBBfPpLBVmMqTQiYGo7Cd8m5T_9hA@mail.gmail.com>
-Subject: COMPENSATION.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=6.4 required=5.0 tests=BAYES_60,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,LOTS_OF_MONEY,LOTTO_DEPT,MILLION_USD,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:243 listed in]
-        [list.dnswl.org]
-        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.6841]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [jimmymoore265[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [rolandcarson343[at]gmail.com]
-        *  0.5 MILLION_USD BODY: Talks about millions of dollars
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  0.7 LOTTO_DEPT Claims Department
-        *  3.7 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220325140250.21663-1-olivier.matz@6wind.com>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UNITED NATIONS COVID-19 OVERDUE COMPENSATION UNIT.
-REFERENCE PAYMENT CODE: 8525595
-BAILOUT AMOUNT:$10.5 MILLION USD
-ADDRESS: NEW YORK, NY 10017, UNITED STATES
+Hi,
 
-Dear award recipient, Covid-19 Compensation funds.
+On Fri, Mar 25, 2022 at 03:02:48PM +0100, Olivier Matz wrote:
+> These 2 patches fix issues related to the promiscuous mode on VF.
+> 
+> Comments are welcome,
+> Olivier
+> 
+> Cc: stable@vger.kernel.org
+> Cc: Hiroshi Shimamoto <h-shimamoto@ct.jp.nec.com>
+> Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> 
+> Olivier Matz (2):
+>   ixgbe: fix bcast packets Rx on VF after promisc removal
+>   ixgbe: fix unexpected VLAN Rx in promisc mode on VF
+> 
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 
-You are receiving this correspondence because we have finally reached
-a consensus with UN, IRS and IMF that your total fund worth $10.5
-Million Dollars of Covid-19 Compensation payment shall be delivered to
-your nominated mode of receipt, and you are expected to pay the sum of
-$12,000 for levies owed to authorities after receiving your funds.
+Sorry, the intel-wired-lan mailing list was not CC'ed initially.
 
-You have a grace period of 2 weeks to pay the $12,000 levy after you
-have receive your Covid-19 Compensation total sum of $10.5 Million. We
-shall proceed with the payment of your bailout grant only if you agree
-to the terms and conditions stated.
+Please let me know if I need to resend the patchset.
 
-Contact Dr. Mustafa Ali for more information by email on:(
-mustafa.ali@rahroco.com ) Your consent in this regard would be highly
-appreciated.
-
-Regards,
-Mr. Jimmy Moore.
-Undersecretary General United Nations
-Office of Internal Oversight-UNIOS
-UN making the world a better place
-http://www.un.org/sg/
+Thanks,
+Olivier
