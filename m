@@ -2,43 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AA044F6D4E
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 23:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5504F6D53
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 23:48:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236415AbiDFVuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 17:50:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
+        id S233135AbiDFVue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 17:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235860AbiDFVtw (ORCPT
+        with ESMTP id S236205AbiDFVtw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 17:49:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F58A25FD
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 14:37:59 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD4C02AE6;
+        Wed,  6 Apr 2022 14:38:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 123D861B6F
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 21:37:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 393C7C385A3;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A68B61BA2;
+        Wed,  6 Apr 2022 21:38:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CA37C385A5;
         Wed,  6 Apr 2022 21:37:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649281078;
-        bh=MZkV9vG8ymPGa120OYlY1KzRfaLklUgFeoaTRo1/MPA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ts0GCRKkhzfRkAamEb2dD1iK4kX/LNF/bUj8rMJ53Bs4FkGGPT0t8+fsLkSFcZsD4
-         HUcJ/p6KHhNhhjuwjAaMWGe3E6sJbS8pllYgCn1FkXyTwZr7iZGPTRyoF2yl8WxdSm
-         Si09IDRJruCVvcLvViTLsGaRFPdzC8tB96r9EUBGUh2w22540y9X7mJLSj7eTLWSNF
-         oMgiEM3djtWWGADy+rtvw3+ZUJZthhpOatquD9lUhNXk0GD2Kxn1XaNVbLcLCuEcaC
-         3o+a61u4WHQv1EhMnAsxXxHJW9KjxLttW2htjvuFSvlMFjf7kdPAMymQL55jf5iHGx
-         m4GKMYcmv7dDw==
+        s=k20201202; t=1649281079;
+        bh=A0fW3syI/3Or0fXGJCHpbOxcC3mWosW/4h17ME4o2Wo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U8zTYeiU+sYoQrmOOlzp8mbxsrFjNGCWUiWe59vTNc/4rCC8bctgHQnXZcdf20iSP
+         Ry8P63L8FZcYs/lUGGRY39S+zNI/DmcCtToumgR/Kq3PTl1X6+s6lsB/G6hXL1rghS
+         9TsAUNRmYWxgb0rY3v6+Od87VEd/ae9W9SCae8F1oFejA6V+FIhs97O6ksqxaP+jIV
+         taFGoVPLWJcCsODHHXSKpVyV6bdYnf3GE/ylYZRSQWkB/hamlt6hwSoiQAhtDHtL1m
+         0iS4eFO8jgpEGGPyF8daaf7PFjI27A7BUvri4GtsLw9nMQxNyglVNh5ZiMGrZicwN+
+         7gwjoloqd8stg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 0/3] net: create a net/core/ internal header
-Date:   Wed,  6 Apr 2022 14:37:51 -0700
-Message-Id: <20220406213754.731066-1-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, hawk@kernel.org,
+        linux-hyperv@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH net-next 1/3] net: hyperv: remove use of bpf_op_t
+Date:   Wed,  6 Apr 2022 14:37:52 -0700
+Message-Id: <20220406213754.731066-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220406213754.731066-1-kuba@kernel.org>
+References: <20220406213754.731066-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -51,30 +58,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are adding stuff to netdevice.h which really should be
-local to net/core/. Create a net/core/dev.h header and use it.
-Minor cleanups precede.
+Following patch will hide that typedef. There seems to be
+no strong reason for hyperv to use it, so let's not.
 
-Jakub Kicinski (3):
-  net: hyperv: remove use of bpf_op_t
-  net: unexport a handful of dev_* functions
-  net: extract a few internals from netdevice.h
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: kys@microsoft.com
+CC: haiyangz@microsoft.com
+CC: sthemmin@microsoft.com
+CC: wei.liu@kernel.org
+CC: decui@microsoft.com
+CC: pabeni@redhat.com
+CC: ast@kernel.org
+CC: daniel@iogearbox.net
+CC: andrii@kernel.org
+CC: kafai@fb.com
+CC: songliubraving@fb.com
+CC: yhs@fb.com
+CC: john.fastabend@gmail.com
+CC: kpsingh@kernel.org
+CC: hawk@kernel.org
+CC: linux-hyperv@vger.kernel.org
+CC: bpf@vger.kernel.org
+---
+ drivers/net/hyperv/netvsc_bpf.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
- drivers/net/hyperv/netvsc_bpf.c |  6 +--
- include/linux/netdevice.h       | 72 +-------------------------
- net/core/dev.c                  |  7 +--
- net/core/dev.h                  | 91 +++++++++++++++++++++++++++++++++
- net/core/dev_addr_lists.c       |  2 +
- net/core/dev_ioctl.c            |  2 +
- net/core/link_watch.c           |  1 +
- net/core/net-procfs.c           |  2 +
- net/core/net-sysfs.c            |  1 +
- net/core/rtnetlink.c            |  2 +
- net/core/sock.c                 |  2 +
- net/core/sysctl_net_core.c      |  2 +
- 12 files changed, 110 insertions(+), 80 deletions(-)
- create mode 100644 net/core/dev.h
-
+diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/netvsc_bpf.c
+index 7856905414eb..232c4a0efd7b 100644
+--- a/drivers/net/hyperv/netvsc_bpf.c
++++ b/drivers/net/hyperv/netvsc_bpf.c
+@@ -137,7 +137,6 @@ int netvsc_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+ int netvsc_vf_setxdp(struct net_device *vf_netdev, struct bpf_prog *prog)
+ {
+ 	struct netdev_bpf xdp;
+-	bpf_op_t ndo_bpf;
+ 	int ret;
+ 
+ 	ASSERT_RTNL();
+@@ -145,8 +144,7 @@ int netvsc_vf_setxdp(struct net_device *vf_netdev, struct bpf_prog *prog)
+ 	if (!vf_netdev)
+ 		return 0;
+ 
+-	ndo_bpf = vf_netdev->netdev_ops->ndo_bpf;
+-	if (!ndo_bpf)
++	if (!vf_netdev->netdev_ops->ndo_bpf)
+ 		return 0;
+ 
+ 	memset(&xdp, 0, sizeof(xdp));
+@@ -157,7 +155,7 @@ int netvsc_vf_setxdp(struct net_device *vf_netdev, struct bpf_prog *prog)
+ 	xdp.command = XDP_SETUP_PROG;
+ 	xdp.prog = prog;
+ 
+-	ret = ndo_bpf(vf_netdev, &xdp);
++	ret = vf_netdev->netdev_ops->ndo_bpf(vf_netdev, &xdp);
+ 
+ 	if (ret && prog)
+ 		bpf_prog_put(prog);
 -- 
 2.34.1
 
