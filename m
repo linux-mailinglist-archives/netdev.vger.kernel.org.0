@@ -2,62 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D09E74F5DBA
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 14:21:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA5B4F5D57
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 14:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232155AbiDFMEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 08:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52432 "EHLO
+        id S231588AbiDFMMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 08:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233489AbiDFMD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:03:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB9350BB62;
-        Wed,  6 Apr 2022 00:51:01 -0700 (PDT)
+        with ESMTP id S231831AbiDFML7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:11:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6369F362014;
+        Wed,  6 Apr 2022 00:55:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CAC4B82140;
-        Wed,  6 Apr 2022 07:51:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5872DC385A1;
-        Wed,  6 Apr 2022 07:50:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC08361B33;
+        Wed,  6 Apr 2022 07:55:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C70C385A1;
+        Wed,  6 Apr 2022 07:55:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649231459;
-        bh=RVG9FfA/95qVG2QdZds4+9t4n1NB+/ldzTzaqZ3WVqM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fT5fIDoV/NWB6t4+2nKdZXyaMn2ZGq2ivHhTLkJVOVw72526DaEkdj+Q35ZNibbCR
-         Ey5TVux2blnk/bcJ2JfA2/wEIkiry7XTwHhXJAbOgnS8FxoXVbCN45gRBZmJQNc0eC
-         3w5bYhlnqGJ+NXNGG0f8aTIUxG2GtkETeXeayR9VkWPWmvBHNMsFwfgYY+Q3P4ichI
-         j7/BQx/dqilFauh9+ZAhKE6dedG54iesW01UW7rCBPugDWZz4bASJblvln2vM7pX+5
-         LeuzUnTF9ZLC9EJIz3w5efGgS76nRFHdSd8jqESShucOBseuFI0zzmZd+iO5ye+mxs
-         Cft4AryW/gtMQ==
-Received: by mail-wr1-f44.google.com with SMTP id w4so1847980wrg.12;
-        Wed, 06 Apr 2022 00:50:59 -0700 (PDT)
-X-Gm-Message-State: AOAM533rUF5Pg/5a/mRFvW+fcx+kIkF1yJW+Xrp5e54AoMptF/bfbF40
-        ci5S8Bxf75aAGm9YIvrZMLgyLBLe2hCIdmNieGo=
-X-Google-Smtp-Source: ABdhPJyiqjgdXKT+Gm3SGPYSCzPQJkLRQ8uaMQmjANYZyedWfv5cvhtw3ix0jOW8xkR6WQ9tZ0xvPwl85G+CJoj20I0=
-X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
- e12-20020a056000178c00b002040648b4c4mr5391670wrg.219.1649231457611; Wed, 06
- Apr 2022 00:50:57 -0700 (PDT)
+        s=k20201202; t=1649231735;
+        bh=pIU6sCODsIEGzX8DXmWz/+uusMOWPOQIIcIBN61QHiw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A9O0uOEDLb0E2N/CnlJcGEG+VmVFBtHNjPT856WHkswPUrMCMKmwVgTCIwhC3bxiH
+         H3G4+fvg9l8ST6XybA1Nrs1TzhJjIUruoqXl1IickHaQmb6e5j5IIs7hlkzgS4iWFN
+         se5NsuBW7ojaax+2e3CzuXBrVoO12ZXb2woEwHUVDYcSLRPB9VgmTpxto5N22gg0pa
+         Ryhn9Iznz2PU5nmN0wpcVA11dBUSiy17SoAMlxCtX6LtOh9XWb9fuMB2KLkQjjhNpl
+         PuhPuyVSYV2i8Ka+8cmHKt/kKOmpQkevumu+HRhDMQTjWT8urf+/dY/QsiChGfic5T
+         YMd6y06s7VJJg==
+Date:   Wed, 6 Apr 2022 10:55:31 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Patrisious Haddad <phaddad@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Yishai Hadas <yishaih@nvidia.com>
+Subject: Re: [PATCH mlx5-next 1/3] net/mlx5: Nullify eq->dbg and qp->dbg
+ pointers post destruction
+Message-ID: <Yk1Hc8l5bs25wEcE@unreal>
+References: <cover.1649139915.git.leonro@nvidia.com>
+ <032d54e1ed92d0f288b385d6343a5b6e109daabe.1649139915.git.leonro@nvidia.com>
+ <20220405194845.c443x4gf522c2kgv@sx1>
 MIME-Version: 1.0
-References: <20220406041627.643617-1-kuba@kernel.org>
-In-Reply-To: <20220406041627.643617-1-kuba@kernel.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 6 Apr 2022 09:50:41 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a28s+NkN2XLghBgXA5i_g56z0yK0H3CVMZkLpamyZt2qw@mail.gmail.com>
-Message-ID: <CAK8P3a28s+NkN2XLghBgXA5i_g56z0yK0H3CVMZkLpamyZt2qw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: atm: remove the ambassador driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, pabeni@redhat.com,
-        Networking <netdev@vger.kernel.org>, myxie@debian.org,
-        Jesper Juhl <jj@chaosbits.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405194845.c443x4gf522c2kgv@sx1>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -68,39 +60,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 6, 2022 at 6:16 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> The driver for ATM Ambassador devices spews build warnings on
-> microblaze. The virt_to_bus() calls discard the volatile keyword.
-> The right thing to do would be to migrate this driver to a modern
-> DMA API but it seems unlikely anyone is actually using it.
-> There had been no fixes or functional changes here since
-> the git era begun.
->
-> In fact it sounds like the FW loading was broken from 2008
-> 'til 2012 - see commit fcdc90b025e6 ("atm: forever loop loading
-> ambassador firmware").
->
-> Let's remove this driver, there isn't much changing in the APIs,
-> if users come forward we can apologize and revert.
->
-> Link: https://lore.kernel.org/all/20220321144013.440d7fc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: myxie@debian.org,gprocida@madge.com
-> CC: Jesper Juhl <jj@chaosbits.net>
-> CC: Dan Carpenter <dan.carpenter@oracle.com>
-> CC: Chas Williams <3chas3@gmail.com> # ATM
-> CC: linux-atm-general@lists.sourceforge.net
-> CC: tsbogend@alpha.franken.de # MIPS
-> CC: linux-mips@vger.kernel.org
-> CC: p.zabel@pengutronix.de # dunno why, get_maintainer
-> ---
->  arch/mips/configs/gpr_defconfig  |    1 -
->  arch/mips/configs/mtx1_defconfig |    1 -
->  drivers/atm/Kconfig              |   25 -
->  drivers/atm/Makefile             |    1 -
->  drivers/atm/ambassador.c         | 2400 ------------------------------
->  drivers/atm/ambassador.h         |  648 --------
+On Tue, Apr 05, 2022 at 12:48:45PM -0700, Saeed Mahameed wrote:
+> On 05 Apr 11:12, Leon Romanovsky wrote:
+> > From: Patrisious Haddad <phaddad@nvidia.com>
+> > 
+> > Prior to this patch in the case that destroy_unmap_eq()
+> > failed and was called again, it triggered an additional call of
+> 
+> Where is it being failed and called again ? this shouldn't even be an
+> option, we try to keep mlx5 symmetrical, constructors and destructors are
+> supposed to be called only once in their respective positions.
+> the callers must be fixed to avoid re-entry, or change destructors to clear
+> up all resources even on failures, no matter what do not invent a reentry
+> protocols to mlx5 destructors.
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
+It can happen when QP is exposed through DEVX interface. In that flow,
+only FW knows about it and reference count all users. This means that
+attempt to destroy such QP will fail, but mlx5_core is structured in
+such way that all cleanup was done before calling to FW to get
+success/fail response.
+
+For more detailed information, see this cover letter:
+https://lore.kernel.org/all/20200907120921.476363-1-leon@kernel.org/
+
+<...>
+
+> > int mlx5_eq_destroy_generic(struct mlx5_core_dev *dev, struct mlx5_eq *eq)
+> > {
+> > +	struct mlx5_eq_table *eq_table = dev->priv.eq_table;
+> > 	int err;
+> > 
+> > 	if (IS_ERR(eq))
+> > 		return -EINVAL;
+> > 
+> > -	err = destroy_async_eq(dev, eq);
+> > +	mutex_lock(&eq_table->lock);
+> 
+> Here you are inventing the re-entry. Please drop this and fix properly. And
+> avoid boolean parameters to mlx5 core
+> functions as much as possible, let's keep mlx5_core simple.
+
+If after reading the link above, you were not convinced, let's take it offline.
+
+Thanks
