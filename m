@@ -2,111 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D44154F5E86
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B46B4F5E76
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:03:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiDFMvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 08:51:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34078 "EHLO
+        id S231551AbiDFM4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 08:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbiDFMur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:50:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DC2979D4D7
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 01:54:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649235256;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=C3E55v6H/hYc3LaSvLNAvhU13rJ0i/ZaskPmc70RQYw=;
-        b=iZx2hIlt5mqR/lMZmIydfIJJ5163pmJ1P82qni4Kktp1F/KVnbRXu23Bk1+XLg+eEDI4a5
-        GXJSjq0iLRvNsLbqA8FFlQE6eZwuMNR/kNtytqqJcWDcjgBU/Jc/6R54p2PyqbC4DFqDS5
-        8pXqwsZzO2+tY+monoK+z2U/hHWQVeM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-hBdzYFkQP5SA6QJW8XVnrQ-1; Wed, 06 Apr 2022 04:54:12 -0400
-X-MC-Unique: hBdzYFkQP5SA6QJW8XVnrQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E7E35800B28;
-        Wed,  6 Apr 2022 08:54:11 +0000 (UTC)
-Received: from samus.usersys.redhat.com (unknown [10.43.17.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE7EA2166B2F;
-        Wed,  6 Apr 2022 08:54:10 +0000 (UTC)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH bpf-next] bpf/selftests: use bpf_num_possible_cpus() in per-cpu map allocations
-Date:   Wed,  6 Apr 2022 10:54:08 +0200
-Message-Id: <20220406085408.339336-1-asavkov@redhat.com>
+        with ESMTP id S231539AbiDFMzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:55:52 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976142FCE86
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 01:57:24 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id dr20so2830274ejc.6
+        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 01:57:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7oGdqe4edvqr+iYfJInFHVmb7+U6NUbqblozp3XrpQg=;
+        b=i+U889ubHp/vqD39N9mGHzSBxDkleyQwz/NKD0dqRtQCXOhQn3Be6msm33/4hP8WDQ
+         z//23cjvUb+fkkceiSyT7T08AqIo5FDX3UurpydepsVA13l5Tghgh949AbE1vo/0vpMS
+         MunVwbnQlqlray9rykp3K4cZu09MwZYvYgxR7ZLSaXY0RdRxmlrb94cBBclWn8AZLD+I
+         GklRqWwbXTQebvLfyShnONpxJdDb4dEZplwAwS55peWNy77EAcMiCpeHmX5qK+U30fnQ
+         MkpxHFM8PcP5yg0wFjXJWB4ONKi+TXcIZ6EE3CVbb9yyWs+LFbKmQMKadXfJWkgtGIiH
+         2QNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7oGdqe4edvqr+iYfJInFHVmb7+U6NUbqblozp3XrpQg=;
+        b=JZtJdFmB+hGpt6M+IV6TOeLIoEloLxB7/0Co7FzHOdx9VCAeVzyXkEGtevu0K4MLQ0
+         K4Xr5zT62Sd8EkYp7EetCY01WfyWiL9VHcj3KTkNWI5k49B2W+n9ybP9if6ajrsFO25I
+         u6RWSxAjTpw4dX90nano3yMDvmxCqn4y6zEWev4IgvimZTtW0cnArhBEPhHeiOugxSWr
+         Y0GZpbQ3OJXrK9LpuVKaNIh6ATi3Be2tINSqP20PQzolnuBaLXQNrqhJyflp8CMdnOUg
+         c46WvFeR1DJqm+yM36aM2ZYrCIK+6fpXz3yC0H6mPvwWn01BYUT4RBstsmYEsIpSycpN
+         pfJg==
+X-Gm-Message-State: AOAM5301oCMMyLjycOf8pK4JTS9mvrxXT/4sjyVPYY9q+zSGjwkpSheL
+        30UGSGcm6TP+/6GHsumzJrBjaQ==
+X-Google-Smtp-Source: ABdhPJw2YtGOMiUak58GFk63SIktW16kDe4il6YrYPXGz8jzb5j689+r7WfODo7WQ8xkLk7+CqqeKg==
+X-Received: by 2002:a17:906:698a:b0:6ce:b983:babf with SMTP id i10-20020a170906698a00b006ceb983babfmr7573228ejr.553.1649235442532;
+        Wed, 06 Apr 2022 01:57:22 -0700 (PDT)
+Received: from [192.168.0.183] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
+        by smtp.gmail.com with ESMTPSA id c4-20020a170906340400b006d077e850b5sm6331152ejb.23.2022.04.06.01.57.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Apr 2022 01:57:22 -0700 (PDT)
+Message-ID: <750c1f9e-6a53-16d5-390e-f9f81fa23afd@linaro.org>
+Date:   Wed, 6 Apr 2022 10:57:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED binding
+ for MT7622
+Content-Language: en-US
+To:     Felix Fietkau <nbd@nbd.name>, Arnd Bergmann <arnd@arndb.de>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220405195755.10817-1-nbd@nbd.name>
+ <20220405195755.10817-5-nbd@nbd.name>
+ <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org>
+ <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
+ <CAK8P3a1A6QYajv_HTw79HjiJ8CN6YPeKXc_X3ZFD83pdOqVTkQ@mail.gmail.com>
+ <08883cf4-27b9-30bf-bd27-9391b763417c@nbd.name>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <08883cf4-27b9-30bf-bd27-9391b763417c@nbd.name>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_map_value_size() uses num_possible_cpus() to determine map size, but
-some of the tests only allocate enough memory for online cpus. This
-results in out-of-bound writes in userspace during bpf(BPF_MAP_LOOKUP_ELEM)
-syscalls in cases when number of online cpus is lower than the number of
-possible cpus. Fix by switching from get_nprocs_conf() to
-bpf_num_possible_cpus() when determining the number of processors in
-these tests (test_progs/netcnt and test_cgroup_storage).
+On 06/04/2022 10:32, Felix Fietkau wrote:
+> On 06.04.22 10:29, Arnd Bergmann wrote:
+>> On Wed, Apr 6, 2022 at 10:18 AM Felix Fietkau <nbd@nbd.name>
+>> wrote:
+>>> On 06.04.22 10:09, Krzysztof Kozlowski wrote:
+>>>> On 05/04/2022 21:57, Felix Fietkau wrote:
+>>>>> From: Lorenzo Bianconi <lorenzo@kernel.org>
+>>>>> 
+>>>>> Document the binding for the Wireless Ethernet Dispatch core
+>>>>> on the MT7622 SoC, which is used for Ethernet->WLAN
+>>>>> offloading Add related info in mediatek-net bindings.
+>>>>> 
+>>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org> 
+>>>>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+>>>> 
+>>>> Thank you for your patch. There is something to
+>>>> discuss/improve.
+>>>> 
+>>>>> --- .../arm/mediatek/mediatek,mt7622-wed.yaml     | 50
+>>>>> +++++++++++++++++++ 
+>>>>> .../devicetree/bindings/net/mediatek-net.txt  |  2 + 2 files
+>>>>> changed, 52 insertions(+) create mode 100644
+>>>>> Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+>>>>
+>>>>
+>>>>> 
+Don't store drivers in arm directory. See:
+>>>> https://lore.kernel.org/linux-devicetree/YkJa1oLSEP8R4U6y@robh.at.kernel.org/
+>>>>
+>>>>
+>>>> 
+Isn't this a network offload engine? If yes, then probably it should be
+>>>> in "net/".
+>>> It's not a network offload engine by itself. It's a SoC component
+>>> that connects to the offload engine and controls a MTK PCIe WLAN
+>>> device, intercepting interrupts and DMA rings in order to be able
+>>> to inject packets coming in from the offload engine. Do you think
+>>> it still belongs in net, or maybe in soc instead?
+>> 
+>> I think it belongs into drivers/net/. Presumably this has some kind
+>> of user interface to configure which packets are forwarded? I would
+>> not want to maintain that in a SoC driver as this clearly needs to
+>> communicate with both of the normal network devices in some form.
+> The WLAN driver attaches to WED in order to deal with the intercepted
+>  DMA rings, but other than that, WED itself has no user
+> configuration. Offload is controlled by the PPE code in the ethernet
+> driver (which is already upstream), and WED simply provides a
+> destination port for PPE, which allows packets to flow to the
+> wireless device.
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- tools/testing/selftests/bpf/prog_tests/netcnt.c   | 2 +-
- tools/testing/selftests/bpf/test_cgroup_storage.c | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+Thanks for clarification. I still wonder about the missing drivers as I
+responded to your second bindings:
+https://lore.kernel.org/all/20220405195755.10817-1-nbd@nbd.name/T/#m6d108c644f0c05cd12c05e56abe2ef75760c6cef
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/netcnt.c b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-index 954964f0ac3d..d3915c58d0e1 100644
---- a/tools/testing/selftests/bpf/prog_tests/netcnt.c
-+++ b/tools/testing/selftests/bpf/prog_tests/netcnt.c
-@@ -25,7 +25,7 @@ void serial_test_netcnt(void)
- 	if (!ASSERT_OK_PTR(skel, "netcnt_prog__open_and_load"))
- 		return;
- 
--	nproc = get_nprocs_conf();
-+	nproc = bpf_num_possible_cpus();
- 	percpu_netcnt = malloc(sizeof(*percpu_netcnt) * nproc);
- 	if (!ASSERT_OK_PTR(percpu_netcnt, "malloc(percpu_netcnt)"))
- 		goto err;
-diff --git a/tools/testing/selftests/bpf/test_cgroup_storage.c b/tools/testing/selftests/bpf/test_cgroup_storage.c
-index d6a1be4d8020..2ffa08198d1c 100644
---- a/tools/testing/selftests/bpf/test_cgroup_storage.c
-+++ b/tools/testing/selftests/bpf/test_cgroup_storage.c
-@@ -7,6 +7,7 @@
- #include <sys/sysinfo.h>
- 
- #include "bpf_rlimit.h"
-+#include "bpf_util.h"
- #include "cgroup_helpers.h"
- #include "testing_helpers.h"
- 
-@@ -44,7 +45,7 @@ int main(int argc, char **argv)
- 	unsigned long long *percpu_value;
- 	int cpu, nproc;
- 
--	nproc = get_nprocs_conf();
-+	nproc = bpf_num_possible_cpus();
- 	percpu_value = malloc(sizeof(*percpu_value) * nproc);
- 	if (!percpu_value) {
- 		printf("Not enough memory for per-cpu area (%d cpus)\n", nproc);
--- 
-2.34.1
+Both of these compatibles - WED and PCIe - are not actually used. Now
+everything is done inside your Ethernet driver which pokes WED and
+PCIe-mirror address space via regmap/syscon.
 
+Separate bindings might have sense if WED/PCIe mirror were ever
+converted to real drivers.
+
+Best regards,
+Krzysztof
