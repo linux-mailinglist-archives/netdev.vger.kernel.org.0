@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D97174F6051
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:52:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1C14F5D47
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 14:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233517AbiDFNew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 09:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        id S232237AbiDFMG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 08:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233466AbiDFNeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 09:34:31 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CE32E1971
-        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 21:24:24 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id bx5so1412134pjb.3
-        for <netdev@vger.kernel.org>; Tue, 05 Apr 2022 21:24:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EeYSfZ5xH+IlAcJ+xTcG79IheqB96eU+egCEaXP6x+E=;
-        b=AHF1rXqXob8GH6Q42EmoIPDa3FIN/ShW5cryQ1NF5CsnI3Q4IBqEluwLsG6COLPDx0
-         Z3SWGnP4ihH7x8YNVj62yYfO/96aZU1+aPoiUYoyc1wtms/QghNZFvN1KvjESswg8R2y
-         ZQ1Bqo3CjtDWo0i3JnzVofQ3E0Ldc26N4vNQhVuTq++0u02l+131z6Vr9gQXIBGSmEeg
-         Hykj0SsCvX1UZh9VrWSUeejNNeT6m2/JJx+vx00vsGB7nmgeX0TCZVIbjdYLk7ANs7oO
-         GelNP2wxknJhqLGogdUwWbHfeTPsYaPkfdbjig+bKUNEuOXbK621hVR7CMejpJ8ViiBo
-         e3WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EeYSfZ5xH+IlAcJ+xTcG79IheqB96eU+egCEaXP6x+E=;
-        b=mjLSpxRkTIfXA6cU63eYQ/LsKqATi6z+4oAn3oSn8bPZtSSAUyPArBNFihD0arFkLL
-         eSmfztqCvOd+7rQa97xxaYa+Wae9KGv6LI4RriTBktU4sqrn6fsmhWQ4mqOjwVbN35ni
-         PI6PLvzIYsUETC5bTAWJrTGdhVF4qF7ddRdAQkvRIPdsC6yqKeNa/pttVOaam96tnW24
-         6iJASNR8dY2R7nz2gdiHGEKT+hVU4PAnQdpnHBRUm9m1RBW9EVWb2OKFkuwkvE7CjY6I
-         YeT1WzUxHAbSPr/KMWDLmgpB3GU6OleJehCclxKNMZio33WCzHwyAAoUh2frV7y9tibW
-         +ukw==
-X-Gm-Message-State: AOAM5327wyMbrUFQm9ofTxRdsxW9Ssqw7Xk3oAbvmLBCkohXVERbblPD
-        6tAKyVzl0xYNbrQ2eMcwhwerflx3VrnHSw==
-X-Google-Smtp-Source: ABdhPJxtDZ3YxYOmx1j8+U4YCNNKFsjDW1w53GcKKllZ/RrkFc1eKLttBEbYltHxtMDJirkkE7liRQ==
-X-Received: by 2002:a17:90b:4a01:b0:1c9:a552:f487 with SMTP id kk1-20020a17090b4a0100b001c9a552f487mr8001917pjb.68.1649219063598;
-        Tue, 05 Apr 2022 21:24:23 -0700 (PDT)
-Received: from localhost.localdomain ([2405:201:d008:8bfd:2c57:ced7:5f4:42e2])
-        by smtp.gmail.com with ESMTPSA id l27-20020a63701b000000b0038233e59422sm14437523pgc.84.2022.04.05.21.24.19
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 05 Apr 2022 21:24:22 -0700 (PDT)
-From:   Arun Ajith S <aajith@arista.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, dsahern@kernel.org,
-        yoshfuji@linux-ipv6.org, gilligan@arista.com,
-        noureddine@arista.com, aajith@arista.com
-Subject: [PATCH net-next] net/ipv6: Introduce accept_unsolicited_na knob to implement router-side changes for RFC9131
-Date:   Wed,  6 Apr 2022 09:53:39 +0530
-Message-Id: <20220406042339.10986-1-aajith@arista.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        with ESMTP id S232135AbiDFMFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:05:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A3A47CDF2;
+        Wed,  6 Apr 2022 00:48:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B738B82140;
+        Wed,  6 Apr 2022 07:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07510C385A8;
+        Wed,  6 Apr 2022 07:48:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649231330;
+        bh=5kdeIYu08lrxcinXo/wn2rGDmkAPiaise7blEAq0ra8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=u5nFxI62qds5luCwfiabA3w51nPKdqqjIMBcDMinr/PHt+JWti3y2LkM+z89cdNFP
+         IYGef0xODvNkk/Ni/Fdlf++5AuKlIKNvd6egdZqdGWTy7N1Xv57DwKeWyJsZVlmuKS
+         wq8x0uZt/9WFgIcuo5V2nzIzlm+OqupK2uKxo5+vVcms9wGYqemQbIn72z91NEBQa1
+         jP5miy8EFXkaRB7WqSkWyNdJFDRtJFKFMA8pJ9Ov1VFMdRK7m/6SeeVogLeIidtAeO
+         +2qFGdy9YX9CB3xInHWLg5/11szsQVTLBU5G8yu2c1MARrRIDb2E9jAooM/g4zsNDw
+         Rz9d/EHKsWaRg==
+Received: by mail-wr1-f43.google.com with SMTP id r13so1863164wrr.9;
+        Wed, 06 Apr 2022 00:48:49 -0700 (PDT)
+X-Gm-Message-State: AOAM533pm8zTIRgXVpQoPw4+BO0J5m1I46SgmBLJ4mkdR8Ace9y7CVH4
+        /dPAHnJK2uDCU9vgAG2zUTrfvMCixxYnSzTevqA=
+X-Google-Smtp-Source: ABdhPJyT5POylyPh0xGqg/cwaHmEHQNuNvVWSCOrc2ZuVu++yjHmGBoQMupeKZkipi8ZB8yq6SetBZGxhL4xb51Ipy4=
+X-Received: by 2002:adf:d081:0:b0:1ef:9378:b7cc with SMTP id
+ y1-20020adfd081000000b001ef9378b7ccmr5643198wrh.407.1649231328236; Wed, 06
+ Apr 2022 00:48:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220406041548.643503-1-kuba@kernel.org>
+In-Reply-To: <20220406041548.643503-1-kuba@kernel.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 6 Apr 2022 09:48:32 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0N=Rn95T1jZCCcOcF4WiBsMkObw4FLjbZd91wbAi2zww@mail.gmail.com>
+Message-ID: <CAK8P3a0N=Rn95T1jZCCcOcF4WiBsMkObw4FLjbZd91wbAi2zww@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: wan: remove the lanmedia (lmc) driver
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, pabeni@redhat.com,
+        Networking <netdev@vger.kernel.org>,
+        =?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>,
+        Andrew Stanley-Jones <asj@cban.com>,
+        Rob Braun <bbraun@vix.com>, Michael Graff <explorer@vix.com>,
+        Matt Thomas <matt@3am-software.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,152 +68,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new neighbour cache entry in STALE state for routers on receiving
-an unsolicited (gratuitous) neighbour advertisement with
-source-link-layer-address option specified.
-This is similar to the arp_accept configuration for IPv4.
-A new sysctl endpoint is created to turn on this behaviour:
-/proc/sys/net/ipv6/conf/interface/accept_unsolicited_na.
+On Wed, Apr 6, 2022 at 6:15 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> The driver for LAN Media WAN interfaces spews build warnings on
+> microblaze. The virt_to_bus() calls discard the volatile keyword.
+> The right thing to do would be to migrate this driver to a modern
+> DMA API but it seems unlikely anyone is actually using it.
+> There had been no fixes or functional changes here since
+> the git era begun.
+>
+> Let's remove this driver, there isn't much changing in the APIs,
+> if users come forward we can apologize and revert.
+>
+> Link: https://lore.kernel.org/all/20220321144013.440d7fc0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Signed-off-by: Arun Ajith S <aajith@arista.com>
-Tested-by: Arun Ajith S <aajith@arista.com>
----
- Documentation/networking/ip-sysctl.rst | 23 +++++++++++++++++++++++
- include/linux/ipv6.h                   |  1 +
- include/uapi/linux/ipv6.h              |  1 +
- net/ipv6/addrconf.c                    |  8 ++++++++
- net/ipv6/ndisc.c                       | 20 +++++++++++++++++++-
- 5 files changed, 52 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index b0024aa7b051..92e870693436 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -2467,6 +2467,29 @@ drop_unsolicited_na - BOOLEAN
- 
- 	By default this is turned off.
- 
-+accept_unsolicited_na - BOOLEAN
-+	Add a new neighbour cache entry in STALE state for routers on receiving an
-+	unsolicited neighbour advertisement with source-link-layer address option
-+	specified. This is as per router-side behavior documented in RFC9131.
-+	This has lower precedence than drop_unsolicited_na.
-+	 drop   accept  fwding                   behaviour
-+	 ----   ------  ------  ----------------------------------------------
-+	    1        X       X  Drop NA packet and don't pass up the stack
-+	    0        0       X  Pass NA packet up the stack, don't update NC
-+	    0        1       0  Pass NA packet up the stack, don't update NC
-+	    0        1       1  Pass NA packet up the stack, and add a STALE
-+	                          NC entry
-+	This will optimize the return path for the initial off-link communication
-+	that is initiated by a directly connected host, by ensuring that
-+	the first-hop router which turns on this setting doesn't have to
-+	buffer the initial return packets to do neighbour-solicitation.
-+	The prerequisite is that the host is configured to send
-+	unsolicited neighbour advertisements on interface bringup.
-+	This setting should be used in conjunction with the ndisc_notify setting
-+	on the host to satisfy this prerequisite.
-+
-+	By default this is turned off.
-+
- enhanced_dad - BOOLEAN
- 	Include a nonce option in the IPv6 neighbor solicitation messages used for
- 	duplicate address detection per RFC7527. A received DAD NS will only signal
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index 16870f86c74d..918bfea4ef5f 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -61,6 +61,7 @@ struct ipv6_devconf {
- 	__s32		suppress_frag_ndisc;
- 	__s32		accept_ra_mtu;
- 	__s32		drop_unsolicited_na;
-+	__s32		accept_unsolicited_na;
- 	struct ipv6_stable_secret {
- 		bool initialized;
- 		struct in6_addr secret;
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index d4178dace0bf..549ddeaf788b 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -194,6 +194,7 @@ enum {
- 	DEVCONF_IOAM6_ID,
- 	DEVCONF_IOAM6_ID_WIDE,
- 	DEVCONF_NDISC_EVICT_NOCARRIER,
-+	DEVCONF_ACCEPT_UNSOLICITED_NA,
- 	DEVCONF_MAX
- };
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index b22504176588..e8a50f2c08d7 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -5569,6 +5569,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
- 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
- 	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
-+	array[DEVCONF_ACCEPT_UNSOLICITED_NA] = cnf->accept_unsolicited_na;
- }
- 
- static inline size_t inet6_ifla6_size(void)
-@@ -7019,6 +7020,13 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.extra1		= (void *)SYSCTL_ZERO,
- 		.extra2		= (void *)SYSCTL_ONE,
- 	},
-+	{
-+		.procname	= "accept_unsolicited_na",
-+		.data		= &ipv6_devconf.accept_unsolicited_na,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
- 	{
- 		/* sentinel */
- 	}
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index fcb288b0ae13..254addad0dd3 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -979,6 +979,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 	struct inet6_dev *idev = __in6_dev_get(dev);
- 	struct inet6_ifaddr *ifp;
- 	struct neighbour *neigh;
-+	bool create_neigh;
- 
- 	if (skb->len < sizeof(struct nd_msg)) {
- 		ND_PRINTK(2, warn, "NA: packet too short\n");
-@@ -999,6 +1000,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 	/* For some 802.11 wireless deployments (and possibly other networks),
- 	 * there will be a NA proxy and unsolicitd packets are attacks
- 	 * and thus should not be accepted.
-+	 * drop_unsolicited_na takes precedence over accept_unsolicited_na
- 	 */
- 	if (!msg->icmph.icmp6_solicited && idev &&
- 	    idev->cnf.drop_unsolicited_na)
-@@ -1039,7 +1041,23 @@ static void ndisc_recv_na(struct sk_buff *skb)
- 		in6_ifa_put(ifp);
- 		return;
- 	}
--	neigh = neigh_lookup(&nd_tbl, &msg->target, dev);
-+	/* RFC 9131 updates original Neighbour Discovery RFC 4861.
-+	 * An unsolicited NA can now create a neighbour cache entry
-+	 * on routers if it has Target LL Address option.
-+	 *
-+	 * drop   accept  fwding                   behaviour
-+	 * ----   ------  ------  ----------------------------------------------
-+	 *    1        X       X  Drop NA packet and don't pass up the stack
-+	 *    0        0       X  Pass NA packet up the stack, don't update NC
-+	 *    0        1       0  Pass NA packet up the stack, don't update NC
-+	 *    0        1       1  Pass NA packet up the stack, and add a STALE
-+	 *                          NC entry
-+	 * Note that we don't do a (daddr == all-routers-mcast) check.
-+	 */
-+	create_neigh = !msg->icmph.icmp6_solicited && lladdr &&
-+		       idev && idev->cnf.forwarding &&
-+		       idev->cnf.accept_unsolicited_na;
-+	neigh = __neigh_lookup(&nd_tbl, &msg->target, dev, create_neigh);
- 
- 	if (neigh) {
- 		u8 old_flags = neigh->flags;
--- 
-2.32.0 (Apple Git-132)
-
+Acked-by: Arnd Bergmann <arnd@arndb.de>
