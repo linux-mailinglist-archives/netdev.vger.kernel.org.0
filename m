@@ -2,63 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B589F4F6D4A
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 23:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA044F6D4E
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 23:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233837AbiDFVt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 17:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36276 "EHLO
+        id S236415AbiDFVuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 17:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234797AbiDFVtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 17:49:45 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 571432ADF
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 14:36:16 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id s2so3673482pfh.6
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 14:36:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3ZqGnquzrw04i9RM2COM2RYdBRQyPsyMdisp2duIj8Y=;
-        b=aTd8kBi0dESCOo0ACqfnbicT2dPVP4fVDQvg4o6aqhInQeSoaoH6qyccBzomOXuk+h
-         Hz+vDmvOc2u5sSQGznDpRyuWm81qE4xnETmZz7rZz4pqnWGllPLIPxz7gwvJ3kDlhpeG
-         VB42fpWVS7ijI9KBdpJdeVPa/yRnZ4vft/Y8A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3ZqGnquzrw04i9RM2COM2RYdBRQyPsyMdisp2duIj8Y=;
-        b=Ezvt4th3Bf9Kdbxor5RQYkA5UGDjlRHJF8KYgsSHu7M0WHiq9wfbsna1qeOUoqplfS
-         78gZc82QfuoZgypBxqpNzBYTQRnaSXoMkxoUydIDDjoUV0gRbUz4LNTEDKxjl579ikTY
-         yliu3mnX4kDO6sZ3KTHguXQOL8UgKmn6oLOUtndkdJMx4HGTUes+v8tK1kTJ9IrYCe72
-         BPhBnBnM7J5OMnGrXHjPhfTO/dSmVase2Ji8hOEnxMxuuHRyKDQ/a/M7Hgdl/lwPCuq8
-         HYNDAVkZiFB9wgaPURfoMMqZ6AH0RYB1ETEzO9bnOtEmgghymL32pUVLbrZOCrDvbX8Z
-         S3Kw==
-X-Gm-Message-State: AOAM531xTPujlLdS5F1U5nKod0KR8P4era5w3Uc0j0vM7ZHBvM35zfd7
-        WdbyhCHT8+w6TnvSHxqP5SeNMA==
-X-Google-Smtp-Source: ABdhPJyXzczJ0K32H6XLjb0hYPpDHL2FVuvPBChgCPiu2MrZWrvSoqTX0ZXtXa1jsgN8MK+5ZLRJ4g==
-X-Received: by 2002:a63:214e:0:b0:399:1123:a388 with SMTP id s14-20020a63214e000000b003991123a388mr8806356pgm.66.1649280975873;
-        Wed, 06 Apr 2022 14:36:15 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a001ad000b004fb358ffe86sm20258774pfv.137.2022.04.06.14.36.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 14:36:15 -0700 (PDT)
-Date:   Wed, 6 Apr 2022 14:36:14 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org,
-        gustavoars@kernel.org, kurt@linutronix.de
-Subject: Re: [PATCH net] flow_dissector: fix false-positive
- __read_overflow2_field() warning
-Message-ID: <202204061435.69D056F@keescook>
-References: <20220406211521.723357-1-kuba@kernel.org>
+        with ESMTP id S235860AbiDFVtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 17:49:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F58A25FD
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 14:37:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 123D861B6F
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 21:37:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 393C7C385A3;
+        Wed,  6 Apr 2022 21:37:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649281078;
+        bh=MZkV9vG8ymPGa120OYlY1KzRfaLklUgFeoaTRo1/MPA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ts0GCRKkhzfRkAamEb2dD1iK4kX/LNF/bUj8rMJ53Bs4FkGGPT0t8+fsLkSFcZsD4
+         HUcJ/p6KHhNhhjuwjAaMWGe3E6sJbS8pllYgCn1FkXyTwZr7iZGPTRyoF2yl8WxdSm
+         Si09IDRJruCVvcLvViTLsGaRFPdzC8tB96r9EUBGUh2w22540y9X7mJLSj7eTLWSNF
+         oMgiEM3djtWWGADy+rtvw3+ZUJZthhpOatquD9lUhNXk0GD2Kxn1XaNVbLcLCuEcaC
+         3o+a61u4WHQv1EhMnAsxXxHJW9KjxLttW2htjvuFSvlMFjf7kdPAMymQL55jf5iHGx
+         m4GKMYcmv7dDw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/3] net: create a net/core/ internal header
+Date:   Wed,  6 Apr 2022 14:37:51 -0700
+Message-Id: <20220406213754.731066-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406211521.723357-1-kuba@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -67,18 +51,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 02:15:21PM -0700, Jakub Kicinski wrote:
-> Bounds checking is unhappy that we try to copy both Ethernet
-> addresses but pass pointer to the first one. Luckily destination
-> address is the first field so pass the pointer to the entire header,
-> whatever.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+We are adding stuff to netdevice.h which really should be
+local to net/core/. Create a net/core/dev.h header and use it.
+Minor cleanups precede.
 
-Ah yes, thanks! I had prepared this patch last week, but failed to
-actually send it. :|
+Jakub Kicinski (3):
+  net: hyperv: remove use of bpf_op_t
+  net: unexport a handful of dev_* functions
+  net: extract a few internals from netdevice.h
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+ drivers/net/hyperv/netvsc_bpf.c |  6 +--
+ include/linux/netdevice.h       | 72 +-------------------------
+ net/core/dev.c                  |  7 +--
+ net/core/dev.h                  | 91 +++++++++++++++++++++++++++++++++
+ net/core/dev_addr_lists.c       |  2 +
+ net/core/dev_ioctl.c            |  2 +
+ net/core/link_watch.c           |  1 +
+ net/core/net-procfs.c           |  2 +
+ net/core/net-sysfs.c            |  1 +
+ net/core/rtnetlink.c            |  2 +
+ net/core/sock.c                 |  2 +
+ net/core/sysctl_net_core.c      |  2 +
+ 12 files changed, 110 insertions(+), 80 deletions(-)
+ create mode 100644 net/core/dev.h
 
 -- 
-Kees Cook
+2.34.1
+
