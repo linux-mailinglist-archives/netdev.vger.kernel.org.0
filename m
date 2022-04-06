@@ -2,149 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 778984F6AFD
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 22:12:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C9EE4F6B4A
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 22:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234078AbiDFUOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 16:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43622 "EHLO
+        id S234206AbiDFUZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 16:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235221AbiDFUNR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 16:13:17 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C775956214
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 10:40:20 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id r66so2805197pgr.3
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 10:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=6uLsJJChYBLCOOPgLZAHSdkxLxZlaUCQFBTEagQjLcU=;
-        b=hs4ZBiL7o4DuRB8x6TVGa2c/jVr3l4PqzmAKqASkRXmSPjxTkMd7c/AdExaoE/+LaY
-         AN08ZF9z4+yDGu6/fI+0qEFY1kdYX4gO0njfZu+rh1afUYM+icA/JC+cGva/2dDDywUc
-         bsnfHVraxYdv8m3YCW4odmA2fd8K5k6GtCEK48Y7c7TVCphZ4bU6Lp4arhBSwm6VTqzN
-         sP2L/xwEcxJUIGgrdrnGTL5M2gJWXH45sjL3BJYI5hW03PFD2GvZHNPsrh1t4MhKT0rB
-         Ftzvh3iWpnmEiX4hgKlLmkO9yL15jgZS/vOePakTkvSvQpZHCVThacBb3DLp60MlGALE
-         995Q==
+        with ESMTP id S234370AbiDFUVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 16:21:50 -0400
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5EC15729;
+        Wed,  6 Apr 2022 11:16:20 -0700 (PDT)
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-df02f7e2c9so3786001fac.10;
+        Wed, 06 Apr 2022 11:16:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6uLsJJChYBLCOOPgLZAHSdkxLxZlaUCQFBTEagQjLcU=;
-        b=lmi3NxpXI9Mj/kdNC1+lO7TizSksBFPxRbcRXTU/9PpfgMGqCFpqxmjqfcXg26Estf
-         JBZ73H2P5S5x4DWsahIEVmZWA6R+uHbi4Tjf7R0jh9OPPseikjOcQTugMgS//tFnVW+B
-         6IocKJ90o9SFl74G8BkWRXdXWvtUrqAdDDadBC12VWQLB/IlyPBc+wCqXgz+Km/FLNos
-         90U/yyI6NHYoaUYbAPn6fOoAWnehHk7kdxWgYCbbE+wHsBJBm6Nl/Hoplq9c1z5LLZSA
-         q4+y4fgf8nva5bUepzmElqvcpgoOUFv8Z3j5xvgKXyXmt3zfLqkvH3F/uGWxIQJljdZK
-         O1gw==
-X-Gm-Message-State: AOAM531rCBDgV6ju+QV+/4jkLxE4mn//VJt6SF13lh8EeI/JD77QbvYH
-        aP0yWerUJm7vxvWG+we3us2H9y1GFQSFDQ==
-X-Google-Smtp-Source: ABdhPJxStpN09WqE79cSbe79B4h0oIN/tHd+0SUffyFdF8Tl4o7tmqCYmi4miDxQNcdrn0oHfRXfCA==
-X-Received: by 2002:a63:4642:0:b0:398:b6b9:5f45 with SMTP id v2-20020a634642000000b00398b6b95f45mr8153534pgk.518.1649266820260;
-        Wed, 06 Apr 2022 10:40:20 -0700 (PDT)
-Received: from ?IPV6:2620:15c:2c1:200:be1c:593c:43fb:d0a8? ([2620:15c:2c1:200:be1c:593c:43fb:d0a8])
-        by smtp.gmail.com with ESMTPSA id f16-20020a056a00239000b004fa7103e13csm21014511pfc.41.2022.04.06.10.40.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 10:40:19 -0700 (PDT)
-Message-ID: <18cd7e48-d719-bc82-9dbc-67cbb42eed83@gmail.com>
-Date:   Wed, 6 Apr 2022 10:40:18 -0700
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3DcT65QQ0fFX6erprizuCZP9AN2bBYzGsaDxgJE1Qq4=;
+        b=QVWCCS6Ketuz2O8wNpKzQ7yl57abhLAP3jUbF/BhOVPidXydhHzDr5glGtjNg51pH7
+         e6OBfoWCCM1UAuEIe7ADCSWTdDpTNSrdtlZ0I6xF+jANemtlcdKwLlS7qT8Jam14PO5I
+         Wp/yf0xDMc/THjJCy1utyL2CnKL6gzP62TD3BQ8jQvmKWyDBl4yfUyeWkZKEhSdyFX0b
+         26URXcvCKdiSf5E9VOoS5FWgh1locIgd7TNfs2PRn8YfloTl/GtRMzgS1Oy+em3miSnb
+         VW6sj1iPQtrSP+nI8/SUvXdLcAr/jHtremtiKEl7U57vP7O50JSlgxNSrKM0419a/wFf
+         WqWg==
+X-Gm-Message-State: AOAM532VT44GcuxTIprr42+aFmXC80hjEdMmND6fEEK9oSyEjIruDiEW
+        /1d3feHmZoc+o3u0sftUuQ==
+X-Google-Smtp-Source: ABdhPJySTpS1q42dyIrx0Jgd1qd0wepA2b4Cr/SEdFb5jIBG/BglcOxvnDDDtTY+5AXR0qIJmS0heQ==
+X-Received: by 2002:a05:6870:5693:b0:e2:1992:14b5 with SMTP id p19-20020a056870569300b000e2199214b5mr4598961oao.131.1649268979861;
+        Wed, 06 Apr 2022 11:16:19 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 65-20020aca0544000000b002f980b50140sm2621141oif.18.2022.04.06.11.16.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Apr 2022 11:16:19 -0700 (PDT)
+Received: (nullmailer pid 2526475 invoked by uid 1000);
+        Wed, 06 Apr 2022 18:16:18 -0000
+Date:   Wed, 6 Apr 2022 13:16:18 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: net: ave: Clean up clocks, resets, and
+ their names using compatible string
+Message-ID: <Yk3Y8hQew2/wuUpc@robh.at.kernel.org>
+References: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
+ <1649145181-30001-2-git-send-email-hayashi.kunihiko@socionext.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: =?UTF-8?Q?Re=3a_TCP_stack_gets_into_state_of_continually_advertisin?=
- =?UTF-8?B?ZyDigJxzaWxseSB3aW5kb3figJ0gc2l6ZSBvZiAx?=
-Content-Language: en-US
-To:     Erin MacNeil <emacneil@juniper.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <BY3PR05MB8002750FAB3DC34F3B18AD9AD0E79@BY3PR05MB8002.namprd05.prod.outlook.com>
- <BY3PR05MB80023CD8700DA1B1F203A975D0E79@BY3PR05MB8002.namprd05.prod.outlook.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <BY3PR05MB80023CD8700DA1B1F203A975D0E79@BY3PR05MB8002.namprd05.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1649145181-30001-2-git-send-email-hayashi.kunihiko@socionext.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 05 Apr 2022 16:53:00 +0900, Kunihiko Hayashi wrote:
+> Instead of "oneOf:" choices, use "allOf:" and "if:" to define clocks,
+> resets, and their names that can be taken by the compatible string.
+> 
+> The order of clock-names and reset-names doesn't change here.
+> 
+> Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+> ---
+>  .../bindings/net/socionext,uniphier-ave4.yaml | 55 +++++++++++++------
+>  1 file changed, 38 insertions(+), 17 deletions(-)
+> 
 
-On 4/6/22 07:19, Erin MacNeil wrote:
-> This issue has been observed with the  4.8.28 kernel, I am wondering if it may be a known issue with an available fix?
->
-> Description:
-> Device A hosting IP address <Device A i/f addr>  is running Linux version: 4.8.28, and device B hosting IP address <Device B i/f addr>  is non-Linux based.
-> Both devices are configured with an interface MTU of 9114 bytes.
->
-> The TCP connection gets  established via frames 1418-1419, where a window size + MSS of 9060 is agreed upon; SACK is disabled as device B does not support it + window scaling is not in play.
->
-> No.     Time                          Source                Destination           Protocol Length Info
->    *1418 2022-03-15 06:52:49.693168    <Device A i/f addr>   <Device B i/f addr>   TCP      122    57486 -> 179 [SYN] Seq=0 Win=9060 Len=0 MSS=9060 SACK_PERM=1 TSval=3368771415 TSecr=0 WS=1
->    *1419 2022-03-15 06:52:49.709325    <Device B i/f addr>   <Device A i/f addr>   TCP      132    179 -> 57486 [SYN, ACK] Seq=0 Ack=1 Win=16384 Len=0 MSS=9060 WS=1
-> ...
->     4661 2022-03-15 06:53:52.437668    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
->     4662 2022-03-15 06:53:52.437747    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9658065 Win=9060 Len=0
->     4663 2022-03-15 06:53:52.454599    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
->     4664 2022-03-15 06:53:52.454661    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9667125 Win=9060 Len=0
->     4665 2022-03-15 06:53:52.471377    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
->     4666 2022-03-15 06:53:52.512396    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9676185 Win=0 Len=0
->     4667 2022-03-15 06:53:52.828918    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9676185 Win=9060 Len=0
->     4668 2022-03-15 06:53:52.829001    <Device B i/f addr>   <Device A i/f addr>   BGP      125
->     4669 2022-03-15 06:53:52.829032    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9676186 Win=9060 Len=0
->     4670 2022-03-15 06:53:52.845494    <Device B i/f addr>   <Device A i/f addr>   BGP      9184
->    *4671 2022-03-15 06:53:52.845532    <Device A i/f addr>   <Device B i/f addr>   TCP      102    57486 -> 179 [ACK] Seq=3177223 Ack=9685245 Win=1 Len=0
->     4672 2022-03-15 06:53:52.861968    <Device B i/f addr>   <Device A i/f addr>   TCP      125    179 -> 57486 [ACK] Seq=9685245 Ack=3177223 Win=27803 Len=1
-> ...
-> At frame 4671, some 63 seconds after the connection has been established, device A advertises a window size of 1, and the connection never recovers from this; a window size of 1 is continually advertised. The issue seems to be triggered by device B sending a TCP window probe conveying a single byte of data (the next byte in its send window) in frame 4668; when this is ACKed by device A, device A also re-advertises its receive window as 9060. The next packet from device B, frame 4670, conveys 9060 bytes of data, the first byte of which is the same byte that it sent in frame 4668 which device A has already ACKed, but which device B may not yet have seen.
->
-> On device A, the TCP socket was configured with setsockopt() SO_RCVBUF & SO_SNDBUF values of 16k.
-
-Presumably 16k buffers while MTU is 9000 is not correct.
-
-Kernel has some logic to ensure a minimal value, based on standard MTU 
-sizes.
-
-
-Have you tried not using setsockopt() SO_RCVBUF & SO_SNDBUF ?
-
-
->
-> Here is the sequence detail:
->
-> |2022-03-15 06:53:52.437668|         ACK - Len: 9060               |Seq = 4236355144 Ack = 502383504 |         |(57486)  <------------------  (179)    |
-> |2022-03-15 06:53:52.437747|         ACK       |                   |Seq = 502383551 Ack = 4236364204 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.454599|         ACK - Len: 9060               |Seq = 4236364204 Ack = 502383551 |         |(57486)  <------------------  (179)    |
-> |2022-03-15 06:53:52.454661|         ACK       |                   |Seq = 502383551 Ack = 4236373264 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.471377|         ACK - Len: 9060               |Seq = 4236373264 Ack = 502383551 |         |(57486)  <------------------  (179)    |
-> |2022-03-15 06:53:52.512396|         ACK       |                   |Seq = 502383551 Ack = 4236382324 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.828918|         ACK       |                   |Seq = 502383551 Ack = 4236382324 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.829001|         ACK - Len: 1                  |Seq = 4236382324 Ack = 502383551 |         |(57486)  <------------------  (179)    |
-> |2022-03-15 06:53:52.829032|         ACK       |                   |Seq = 502383551 Ack = 4236382325 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.845494|         ACK - Len: 9060               |Seq = 4236382324 Ack = 502383551 |         |(57486)  <------------------  (179)    |
-> |2022-03-15 06:53:52.845532|         ACK       |                   |Seq = 502383551 Ack = 4236391384 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.861968|         ACK - Len: 1                  |Seq = 4236391384 Ack = 502383551 |         |(57486)  <------------------  (179)    |
-> |2022-03-15 06:53:52.862022|         ACK       |                   |Seq = 502383551 Ack = 4236391385 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.878445|         ACK - Len: 1                  |Seq = 4236391385 Ack = 502383551 |         |(57486)  <------------------  (179)    |
-> |2022-03-15 06:53:52.878529|         ACK       |                   |Seq = 502383551 Ack = 4236391386 |         |(57486)  ------------------>  (179)    |
-> |2022-03-15 06:53:52.895212|         ACK - Len: 1                  |Seq = 4236391386 Ack = 502383551 |         |(57486)  <------------------  (179)    |
->
->
-> There is no data in the recv-q or send-q at this point, yet the window stays at size 1:
->
-> $ ss -o state established -ntepi '( dport = 179 or sport = 179 )' dst <Device B i/f addr>
-> Recv-Q Send-Q                 Local Address:Port                                Peer Address:Port
-> 0     0                  <Device A i/f addr>:57486                               <Device B i/f addr>:179                ino:1170981660 sk:d9d <->
->
->
-> Thanks
-> -Erin
->
-> --
->
-> Juniper Business Use Only
+Reviewed-by: Rob Herring <robh@kernel.org>
