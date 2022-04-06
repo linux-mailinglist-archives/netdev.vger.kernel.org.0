@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1817A4F64B6
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 337194F6488
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236458AbiDFPvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 11:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
+        id S236732AbiDFPvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 11:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236703AbiDFPvM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 11:51:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF05D354D3D
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 06:10:49 -0700 (PDT)
+        with ESMTP id S236503AbiDFPvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 11:51:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF1A4DFAB5;
+        Wed,  6 Apr 2022 06:10:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5318060BA1
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 13:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9E00AC385A8;
-        Wed,  6 Apr 2022 13:10:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68F2CB8238E;
+        Wed,  6 Apr 2022 13:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 266F7C385B5;
+        Wed,  6 Apr 2022 13:10:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649250613;
-        bh=Jx0U8ulZNSrvN/c60ZWWgKpjEsz8saoHuA8qLqcCris=;
+        s=k20201202; t=1649250614;
+        bh=WOI/3Z/LteYjoTuPn50L6YBOOhoxI8VPYVqhUpjr6xI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Wu1BQmYtwwfEqo4pKKwwLIpcTK602f7O+lIJoWwsOk2IwhiXGA40SXt01uYzowtBV
-         o8RTUTzkh0kwA5fXsluzcNxU6SSvDbHt47u2SsjODEZaudp/U/P89xjqkP1QC2bkvN
-         XsSyF1kIWo7KgNsXvru8YpjhqV89Zf/4ui/GtVNPCJXWdMb8B8ZEpEfRT+pEfHK7nk
-         KW7AO67HZmFIPVKGja/d9MOrhWMGodIOINiuQWp/bDYvgLeGDxaICvf2r1oHcC3VTp
-         /wJRaqQ4QSO/ycIr6a3onOiyxlDARElEnvqjSbA/pRD6FEdyyA3bGE1ZYBy3b99uFm
-         YD3Ysj9cMNrbQ==
+        b=SMv+u/J9Hy+HsR5lkTQDVZLXutCGi0qWdrRyoFQPT7wn+9SBUGDnHPUDwiOw1HWgq
+         SK2D6OSaTHFPnxAaoAakqMJNtQ82pY/fNdDRWqa1O7wSHIFX9dOKx4ES8/xAmGOjJe
+         aWbrYsZzf1DqGwGLRiv8ZTdABs0jSGgq6jO14qFaYV0/6Pe8eTyRXkirUif67qkhaf
+         l/IsN43YEYJfAzuYarXDZYO2laORmPy0x624ayIqAAP7a/fm9GfYVD9G9EhpcXsr37
+         J52GLK5nduYHU1F8llu64uSTf5n91u7Kci7rFnCFBnNAvtM8e0vbtBUnRIz96BWUXq
+         U/P3beDnVxl7w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 802B9E8DBD1;
-        Wed,  6 Apr 2022 13:10:13 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13165E85BCB;
+        Wed,  6 Apr 2022 13:10:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] rxrpc: fix a race in rxrpc_exit_net()
+Subject: Re: [PATCH net-next v3] net, uapi: remove inclusion of arpa/inet.h
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164925061352.5679.14514170581640848740.git-patchwork-notify@kernel.org>
-Date:   Wed, 06 Apr 2022 13:10:13 +0000
-References: <20220404183439.3537837-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220404183439.3537837-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, edumazet@google.com, dhowells@redhat.com,
-        marc.dionne@auristor.com, linux-afs@lists.infradead.org,
-        syzkaller@googlegroups.com
+Message-Id: <164925061407.5679.9432370761204809582.git-patchwork-notify@kernel.org>
+Date:   Wed, 06 Apr 2022 13:10:14 +0000
+References: <20220404175448.46200-1-ndesaulniers@google.com>
+In-Reply-To: <20220404175448.46200-1-ndesaulniers@google.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     kuba@kernel.org, jmaloy@redhat.com, ying.xue@windriver.com,
+        arnd@arndb.de, masahiroy@kernel.org, dhowells@redhat.com,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,25 +60,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Mon,  4 Apr 2022 11:34:39 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Current code can lead to the following race:
-> 
-> CPU0                                                 CPU1
-> 
-> rxrpc_exit_net()
->                                                      rxrpc_peer_keepalive_worker()
->                                                        if (rxnet->live)
+On Mon,  4 Apr 2022 10:54:47 -0700 you wrote:
+> In include/uapi/linux/tipc_config.h, there's a comment that it includes
+> arpa/inet.h for ntohs; but ntohs is not defined in any UAPI header. For
+> now, reuse the definitions from include/linux/byteorder/generic.h, since
+> the various conversion functions do exist in UAPI headers:
+> include/uapi/linux/byteorder/big_endian.h
+> include/uapi/linux/byteorder/little_endian.h
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] rxrpc: fix a race in rxrpc_exit_net()
-    https://git.kernel.org/netdev/net/c/1946014ca3b1
+  - [net-next,v3] net, uapi: remove inclusion of arpa/inet.h
+    https://git.kernel.org/netdev/net-next/c/1ee375d77bb9
 
 You are awesome, thank you!
 -- 
