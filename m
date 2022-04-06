@@ -2,109 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E112A4F5C2E
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 484D04F5CE1
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 13:57:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230359AbiDFLlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 07:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
+        id S229712AbiDFLng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 07:43:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231946AbiDFLjE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:39:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5161C578E8A;
-        Wed,  6 Apr 2022 01:27:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E128460B5C;
-        Wed,  6 Apr 2022 08:27:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F05C385A3;
-        Wed,  6 Apr 2022 08:27:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649233623;
-        bh=Ae3dks8iD/kIl3ERAKIdLoK88RU26+MC3X73BL0O6cU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mb3gs6uNGRaSV7tb6SnwKS7kBbpKzRtKqJOUxTykGyH6SGoiEiKfNcwN6JZLh2c35
-         SK66nkpV3ogntuSFPovP4QUV+b5QVzBqTgA7wfaRW2Nx3mbCQ8rW4pQwphUNf9tfuY
-         pEeBXtrgIuzhschSVCFmJYlUzQrUv/HAB/MozndYN7tlTplgaY5r+kbtUFZmG5Z3Ud
-         c/IMeAF4Yi4mN1nbZ0eCXZaYz/uXReTpFjN9/zj5Ae0cnENVwwGjoIfEXn7EN2ShcZ
-         3FvCqVL0zuqlU02QlJppmSavWowhuF1VN9UNhetOu4T1gV/3489k/Thiu8JILffg/q
-         6bVY0hjYCb+LQ==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Raed Salem <raeds@nvidia.com>
-Subject: [PATCH mlx5-next 17/17] net/mlx5: Remove not-implemented IPsec capabilities
-Date:   Wed,  6 Apr 2022 11:25:52 +0300
-Message-Id: <1044bb7b779107ff38e48e3f6553421104f3f819.1649232994.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1649232994.git.leonro@nvidia.com>
-References: <cover.1649232994.git.leonro@nvidia.com>
+        with ESMTP id S231648AbiDFLnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 07:43:19 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83135826C2;
+        Wed,  6 Apr 2022 01:29:36 -0700 (PDT)
+Received: from mail-wr1-f42.google.com ([209.85.221.42]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MUGmJ-1nTSAf49gp-00RGcd; Wed, 06 Apr 2022 10:29:35 +0200
+Received: by mail-wr1-f42.google.com with SMTP id z1so2052634wrg.4;
+        Wed, 06 Apr 2022 01:29:34 -0700 (PDT)
+X-Gm-Message-State: AOAM531OqtwpTUOg/EVfV2+UmJYA0dXu/AnjpJjfw+EM4q16jICsyIML
+        tf37VFHTca6RTkr9lTjXbOaswI6c/kFG7cPnJtk=
+X-Google-Smtp-Source: ABdhPJzqKjimJ4xZnU9IPYt6fad20KHtM3TIsGz7LIfUNSAEh1Re0WD0ken3T+oCqWElZNVdr0ug0qBt3+5Wlumu5QE=
+X-Received: by 2002:a05:6000:178c:b0:204:648:b4c4 with SMTP id
+ e12-20020a056000178c00b002040648b4c4mr5517385wrg.219.1649233774585; Wed, 06
+ Apr 2022 01:29:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220405195755.10817-1-nbd@nbd.name> <20220405195755.10817-5-nbd@nbd.name>
+ <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org> <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
+In-Reply-To: <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 6 Apr 2022 10:29:18 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1A6QYajv_HTw79HjiJ8CN6YPeKXc_X3ZFD83pdOqVTkQ@mail.gmail.com>
+Message-ID: <CAK8P3a1A6QYajv_HTw79HjiJ8CN6YPeKXc_X3ZFD83pdOqVTkQ@mail.gmail.com>
+Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED binding
+ for MT7622
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Networking <netdev@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:LqaHr6zQfU63/KWC6IeHSigHnsL9BIJjTNGAo+pOtFMNqkYgWK+
+ qUDoplE/Sw83CfpzQULwxHJ1W39zwgAd79ykAa/+fe0ExWXw7ftfen8XLjT7gYwvaNy4BPA
+ 3KuKZG3aMpEW6CuAyECDaQAnlIA+VuavkpT64DltnENZgd+kr2pa6LnNklCAdqE7hudEIjS
+ A9GRnXOMY6UbCs4JsAz6A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BzheXsG6FwM=:lg/g4Wyl4/RF5LqxEvpfvk
+ KKYJWvaS+wvWRZtVArZ/ClXOWia8PVjNVm9si85mcWYixRVc/aRdfzIMpy+tUiYinSaKfjG4+
+ hdrDYGeExr9bn1ct26akXZ+DDFtFII4AFZ4m0njrWitiNEwUTV33lDXAaR2FjqOhJnUCbHL2g
+ E4E1g/pIi7dF2QUrpUCUUM5Zgco7yTrqoC1Y7NNIWrZjNfRuvR/5zM8mBfRxd+rn+8z9FxDxj
+ M934Rd0egAkdXZjNk0EyjvFvgsYVVPG0k1zDuvJ5eXxpWsGUX6uF2abfyRswd161OkVCEXCZA
+ QSSEuW/5VAdAOQbyyFkCWQ3oZAzUnerlmSjukdDCbnxQjkOd7ZisOS1ocdvQKMnExWZ+D0rmk
+ xdHggtD8TWKFmZDo5UE9hN+slc8mM+2IxIhDdRzsLZjRxSdF11zRfMvoeSuumj9Gpp/il2q3U
+ xD/XngG83S1iCDLrV8LkcUt/YQA8OR4CckWCQ13gR3cP5EapDHPKIFmZAdUh1MeGG727aK0iC
+ x0Nbwh/avUzfvZFDgI+JQfJ1vWMBCHx686wpb9h7Hms9hUmmf0vEXm2eyt84f5t1q4ftX2P+P
+ YGs8tilrlLW2N0ibBxnYY2If4knWoFDohzhE7BG7K2yWgKQ/o7p7HyJ0ZEN8hIGfvnHmF/1CZ
+ KK+Dzkf6eBd8zqCK7cpXK4f6iFHU6gaVPL6DBGp7TMXhnZMBCPbP4CprSftVytQ/xvKSFFtQI
+ +OVn74Rm2A+faAFh6VQPFV9bFKFak2GydaBuQmSJCCsI0PiW9QxWZcL5XQf86yMLxRFRxEgpt
+ cAZ47H5qjCXwXhea4f5I4x5ux1RwZ25ZVpwMz+HbsdsDiEHVG4=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Wed, Apr 6, 2022 at 10:18 AM Felix Fietkau <nbd@nbd.name> wrote:
+> On 06.04.22 10:09, Krzysztof Kozlowski wrote:
+> > On 05/04/2022 21:57, Felix Fietkau wrote:
+> >> From: Lorenzo Bianconi <lorenzo@kernel.org>
+> >>
+> >> Document the binding for the Wireless Ethernet Dispatch core on the MT7622
+> >> SoC, which is used for Ethernet->WLAN offloading
+> >> Add related info in mediatek-net bindings.
+> >>
+> >> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> >> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> >
+> > Thank you for your patch. There is something to discuss/improve.
+> >
+> >> ---
+> >>  .../arm/mediatek/mediatek,mt7622-wed.yaml     | 50 +++++++++++++++++++
+> >>  .../devicetree/bindings/net/mediatek-net.txt  |  2 +
+> >>  2 files changed, 52 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
+> >
+> > Don't store drivers in arm directory. See:
+> > https://lore.kernel.org/linux-devicetree/YkJa1oLSEP8R4U6y@robh.at.kernel.org/
+> >
+> > Isn't this a network offload engine? If yes, then probably it should be
+> > in "net/".
+> It's not a network offload engine by itself. It's a SoC component that
+> connects to the offload engine and controls a MTK PCIe WLAN device,
+> intercepting interrupts and DMA rings in order to be able to inject
+> packets coming in from the offload engine.
+> Do you think it still belongs in net, or maybe in soc instead?
 
-Clean a capabilities enum to remove not-implemented bits.
+I think it belongs into drivers/net/. Presumably this has some kind of
+user interface to configure which packets are forwarded? I would not
+want to maintain that in a SoC driver as this clearly needs to communicate
+with both of the normal network devices in some form.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../mellanox/mlx5/core/en_accel/ipsec_offload.c       |  4 +---
- include/linux/mlx5/accel.h                            | 11 ++++-------
- 2 files changed, 5 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index f0f44bd95cc9..37c9880719cf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -51,10 +51,8 @@ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
- 	    MLX5_CAP_IPSEC(mdev, ipsec_crypto_esp_aes_gcm_128_decrypt))
- 		caps |= MLX5_ACCEL_IPSEC_CAP_ESP;
- 
--	if (MLX5_CAP_IPSEC(mdev, ipsec_esn)) {
-+	if (MLX5_CAP_IPSEC(mdev, ipsec_esn))
- 		caps |= MLX5_ACCEL_IPSEC_CAP_ESN;
--		caps |= MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN;
--	}
- 
- 	/* We can accommodate up to 2^24 different IPsec objects
- 	 * because we use up to 24 bit in flow table metadata
-diff --git a/include/linux/mlx5/accel.h b/include/linux/mlx5/accel.h
-index 73e4d50a9f02..0f2596297f6a 100644
---- a/include/linux/mlx5/accel.h
-+++ b/include/linux/mlx5/accel.h
-@@ -113,13 +113,10 @@ struct mlx5_accel_esp_xfrm {
- 
- enum mlx5_accel_ipsec_cap {
- 	MLX5_ACCEL_IPSEC_CAP_DEVICE		= 1 << 0,
--	MLX5_ACCEL_IPSEC_CAP_REQUIRED_METADATA	= 1 << 1,
--	MLX5_ACCEL_IPSEC_CAP_ESP		= 1 << 2,
--	MLX5_ACCEL_IPSEC_CAP_IPV6		= 1 << 3,
--	MLX5_ACCEL_IPSEC_CAP_LSO		= 1 << 4,
--	MLX5_ACCEL_IPSEC_CAP_RX_NO_TRAILER	= 1 << 5,
--	MLX5_ACCEL_IPSEC_CAP_ESN		= 1 << 6,
--	MLX5_ACCEL_IPSEC_CAP_TX_IV_IS_ESN	= 1 << 7,
-+	MLX5_ACCEL_IPSEC_CAP_ESP		= 1 << 1,
-+	MLX5_ACCEL_IPSEC_CAP_IPV6		= 1 << 2,
-+	MLX5_ACCEL_IPSEC_CAP_LSO		= 1 << 3,
-+	MLX5_ACCEL_IPSEC_CAP_ESN		= 1 << 4,
- };
- 
- #ifdef CONFIG_MLX5_EN_IPSEC
--- 
-2.35.1
-
+         Arnd
