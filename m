@@ -2,154 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B46B4F5E76
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E49784F5E9E
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 15:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231551AbiDFM4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 08:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        id S231154AbiDFMu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 08:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbiDFMzw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:55:52 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976142FCE86
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 01:57:24 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id dr20so2830274ejc.6
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 01:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7oGdqe4edvqr+iYfJInFHVmb7+U6NUbqblozp3XrpQg=;
-        b=i+U889ubHp/vqD39N9mGHzSBxDkleyQwz/NKD0dqRtQCXOhQn3Be6msm33/4hP8WDQ
-         z//23cjvUb+fkkceiSyT7T08AqIo5FDX3UurpydepsVA13l5Tghgh949AbE1vo/0vpMS
-         MunVwbnQlqlray9rykp3K4cZu09MwZYvYgxR7ZLSaXY0RdRxmlrb94cBBclWn8AZLD+I
-         GklRqWwbXTQebvLfyShnONpxJdDb4dEZplwAwS55peWNy77EAcMiCpeHmX5qK+U30fnQ
-         MkpxHFM8PcP5yg0wFjXJWB4ONKi+TXcIZ6EE3CVbb9yyWs+LFbKmQMKadXfJWkgtGIiH
-         2QNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7oGdqe4edvqr+iYfJInFHVmb7+U6NUbqblozp3XrpQg=;
-        b=JZtJdFmB+hGpt6M+IV6TOeLIoEloLxB7/0Co7FzHOdx9VCAeVzyXkEGtevu0K4MLQ0
-         K4Xr5zT62Sd8EkYp7EetCY01WfyWiL9VHcj3KTkNWI5k49B2W+n9ybP9if6ajrsFO25I
-         u6RWSxAjTpw4dX90nano3yMDvmxCqn4y6zEWev4IgvimZTtW0cnArhBEPhHeiOugxSWr
-         Y0GZpbQ3OJXrK9LpuVKaNIh6ATi3Be2tINSqP20PQzolnuBaLXQNrqhJyflp8CMdnOUg
-         c46WvFeR1DJqm+yM36aM2ZYrCIK+6fpXz3yC0H6mPvwWn01BYUT4RBstsmYEsIpSycpN
-         pfJg==
-X-Gm-Message-State: AOAM5301oCMMyLjycOf8pK4JTS9mvrxXT/4sjyVPYY9q+zSGjwkpSheL
-        30UGSGcm6TP+/6GHsumzJrBjaQ==
-X-Google-Smtp-Source: ABdhPJw2YtGOMiUak58GFk63SIktW16kDe4il6YrYPXGz8jzb5j689+r7WfODo7WQ8xkLk7+CqqeKg==
-X-Received: by 2002:a17:906:698a:b0:6ce:b983:babf with SMTP id i10-20020a170906698a00b006ceb983babfmr7573228ejr.553.1649235442532;
-        Wed, 06 Apr 2022 01:57:22 -0700 (PDT)
-Received: from [192.168.0.183] (xdsl-188-155-201-27.adslplus.ch. [188.155.201.27])
-        by smtp.gmail.com with ESMTPSA id c4-20020a170906340400b006d077e850b5sm6331152ejb.23.2022.04.06.01.57.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Apr 2022 01:57:22 -0700 (PDT)
-Message-ID: <750c1f9e-6a53-16d5-390e-f9f81fa23afd@linaro.org>
-Date:   Wed, 6 Apr 2022 10:57:21 +0200
+        with ESMTP id S231790AbiDFMtk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 08:49:40 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D755C4BF330;
+        Wed,  6 Apr 2022 02:00:18 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aef4f.dynamic.kabel-deutschland.de [95.90.239.79])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 9A31D61E64846;
+        Wed,  6 Apr 2022 11:00:15 +0200 (CEST)
+Message-ID: <d8571528-4202-e6d7-e8b2-f9feb7e6f8f7@molgen.mpg.de>
+Date:   Wed, 6 Apr 2022 11:00:15 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED binding
- for MT7622
+Subject: Re: [Intel-wired-lan] [PATCH net 0/2] ixgbe: fix promiscuous mode on
+ VF
 Content-Language: en-US
-To:     Felix Fietkau <nbd@nbd.name>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     Olivier Matz <olivier.matz@6wind.com>
+Cc:     netdev@vger.kernel.org,
+        Hiroshi Shimamoto <h-shimamoto@ct.jp.nec.com>,
+        intel-wired-lan@osuosl.org, stable@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220405195755.10817-1-nbd@nbd.name>
- <20220405195755.10817-5-nbd@nbd.name>
- <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org>
- <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name>
- <CAK8P3a1A6QYajv_HTw79HjiJ8CN6YPeKXc_X3ZFD83pdOqVTkQ@mail.gmail.com>
- <08883cf4-27b9-30bf-bd27-9391b763417c@nbd.name>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <08883cf4-27b9-30bf-bd27-9391b763417c@nbd.name>
-Content-Type: text/plain; charset=UTF-8
+        "David S . Miller" <davem@davemloft.net>
+References: <20220325140250.21663-1-olivier.matz@6wind.com>
+ <Yk1MxlsbGi810tgb@arsenic.home>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <Yk1MxlsbGi810tgb@arsenic.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/04/2022 10:32, Felix Fietkau wrote:
-> On 06.04.22 10:29, Arnd Bergmann wrote:
->> On Wed, Apr 6, 2022 at 10:18 AM Felix Fietkau <nbd@nbd.name>
->> wrote:
->>> On 06.04.22 10:09, Krzysztof Kozlowski wrote:
->>>> On 05/04/2022 21:57, Felix Fietkau wrote:
->>>>> From: Lorenzo Bianconi <lorenzo@kernel.org>
->>>>> 
->>>>> Document the binding for the Wireless Ethernet Dispatch core
->>>>> on the MT7622 SoC, which is used for Ethernet->WLAN
->>>>> offloading Add related info in mediatek-net bindings.
->>>>> 
->>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org> 
->>>>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
->>>> 
->>>> Thank you for your patch. There is something to
->>>> discuss/improve.
->>>> 
->>>>> --- .../arm/mediatek/mediatek,mt7622-wed.yaml     | 50
->>>>> +++++++++++++++++++ 
->>>>> .../devicetree/bindings/net/mediatek-net.txt  |  2 + 2 files
->>>>> changed, 52 insertions(+) create mode 100644
->>>>> Documentation/devicetree/bindings/arm/mediatek/mediatek,mt7622-wed.yaml
->>>>
->>>>
->>>>> 
-Don't store drivers in arm directory. See:
->>>> https://lore.kernel.org/linux-devicetree/YkJa1oLSEP8R4U6y@robh.at.kernel.org/
->>>>
->>>>
->>>> 
-Isn't this a network offload engine? If yes, then probably it should be
->>>> in "net/".
->>> It's not a network offload engine by itself. It's a SoC component
->>> that connects to the offload engine and controls a MTK PCIe WLAN
->>> device, intercepting interrupts and DMA rings in order to be able
->>> to inject packets coming in from the offload engine. Do you think
->>> it still belongs in net, or maybe in soc instead?
->> 
->> I think it belongs into drivers/net/. Presumably this has some kind
->> of user interface to configure which packets are forwarded? I would
->> not want to maintain that in a SoC driver as this clearly needs to
->> communicate with both of the normal network devices in some form.
-> The WLAN driver attaches to WED in order to deal with the intercepted
->  DMA rings, but other than that, WED itself has no user
-> configuration. Offload is controlled by the PPE code in the ethernet
-> driver (which is already upstream), and WED simply provides a
-> destination port for PPE, which allows packets to flow to the
-> wireless device.
+Dear Olivier,
 
-Thanks for clarification. I still wonder about the missing drivers as I
-responded to your second bindings:
-https://lore.kernel.org/all/20220405195755.10817-1-nbd@nbd.name/T/#m6d108c644f0c05cd12c05e56abe2ef75760c6cef
 
-Both of these compatibles - WED and PCIe - are not actually used. Now
-everything is done inside your Ethernet driver which pokes WED and
-PCIe-mirror address space via regmap/syscon.
+Am 06.04.22 um 10:18 schrieb Olivier Matz:
 
-Separate bindings might have sense if WED/PCIe mirror were ever
-converted to real drivers.
+> On Fri, Mar 25, 2022 at 03:02:48PM +0100, Olivier Matz wrote:
+>> These 2 patches fix issues related to the promiscuous mode on VF.
+>>
+>> Comments are welcome,
+>> Olivier
+>>
+>> Cc: stable@vger.kernel.org
+>> Cc: Hiroshi Shimamoto <h-shimamoto@ct.jp.nec.com>
+>> Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+>>
+>> Olivier Matz (2):
+>>    ixgbe: fix bcast packets Rx on VF after promisc removal
+>>    ixgbe: fix unexpected VLAN Rx in promisc mode on VF
+>>
+>>   drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 8 ++++----
+>>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> Sorry, the intel-wired-lan mailing list was not CC'ed initially.
+> 
+> Please let me know if I need to resend the patchset.
 
-Best regards,
-Krzysztof
+Yes, please resend.
+
+
+Kind regards,
+
+Paul
