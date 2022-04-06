@@ -2,155 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 998A44F6E6C
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 01:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D624F6E6E
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 01:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232662AbiDFXQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 19:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54062 "EHLO
+        id S233215AbiDFXRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 19:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232477AbiDFXQU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 19:16:20 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E081719F462
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 16:14:21 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id bq8so7286898ejb.10
-        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 16:14:21 -0700 (PDT)
+        with ESMTP id S232960AbiDFXRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 19:17:15 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3881CC427
+        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 16:15:18 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 32so1331475pgl.4
+        for <netdev@vger.kernel.org>; Wed, 06 Apr 2022 16:15:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=fastly.com; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=IMVQ9I1FDSJfG7xBamQYu9vQ2K9W71jBSbwJdffj0jU=;
-        b=Dt+LCTWvtJJ/DJNRQB7O72EimFf4tk2xDGFUIFLSx/fuPFGe+sZHdrdNdvdHCO53tZ
-         WNfnp/oT2rTvF9Mgsvwdn2LTazNfet80uldzqqJY1dGM0tKDbwTSZK/+bAtfPX6J4VmA
-         id4PVIr0nC7odWGwvnemZwOY8i4ZbHaNpxnkmZZAy0NRPhIeqC+bXa7Djy6cGm/vZpRM
-         waKQEzrGzTzxtzRg0GiDqPGLSRE72a7wLzzl7A1yX6Tl6rJXViwCzAJBK5oJkhvjuGFe
-         csHWuxVWnSCLTppJ3aVpCneQmvEjxAfFuxB/I/EDa7SRiaU/L4J7APsKLGpgYa/ymZX/
-         VdsA==
+         :content-disposition:in-reply-to:user-agent;
+        bh=n3a7RBDoMv4pRNBnRLcq9TBMr5diRy/k9LuAIKEZpaQ=;
+        b=h0jfbh2bSTDxv9GIfo6WTW1QvgUmp9N2zwcEzpZXAoCt03DNTeb6ckZtGHvtCx4Iv2
+         uVENJ6OfryGnqzahOMJ3+ULx4P7ywOLm6PEWaj+1agefK0u7/V47hgh2EOE/tq1zep+/
+         RIstcVeETlp5zNcdVCt0EM0BW9Eqz8xkA/SXU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IMVQ9I1FDSJfG7xBamQYu9vQ2K9W71jBSbwJdffj0jU=;
-        b=myYOvO/TffCkzrfb+hrtDBXuOIw5MpcDZc248O6zf5DOtDsMUBTY0aqK3KvXNJArFx
-         elxt4IB1kdI5eDQz1NQcgYLnPsgYt5ZKtbtI5oPk6StncfV9DRdaeGa21Y0qzjCdkAo2
-         7i3z5HYfgN6HaQr+k/XrKcLtHtE/RUTWzrAImiusKcX3YhtyXwYvdjHtuspEIQ6GK31D
-         l0LYw75mqNbZJ41GesppuOPrLk9QpoffOVaG6daT3b9wh24Ivbt4S9/L/rKnyeFyEGvL
-         +YgDMwgXs1qoPmiJsyh6Mn3UlrI1QdjjM1FAljboReuq5Jo7hXl4lgIts8YigErIaJuk
-         seoA==
-X-Gm-Message-State: AOAM530pSIuUSuJvEzZxdgDzrdF34Txp3l7O/QuvJTxcYKzklhi+fPdj
-        m45FJI9+UYWrpFYQDoxrTG9IH4tDC7I=
-X-Google-Smtp-Source: ABdhPJx1GPi4TzYvoFih0/Q3PkJ+Iozt5tFC85ZACOGfVaZYIit/jxm89VoeBBqJAnKXqE2V8R7WkA==
-X-Received: by 2002:a17:906:7955:b0:6e8:a9b:8c7b with SMTP id l21-20020a170906795500b006e80a9b8c7bmr10616685ejo.691.1649286860443;
-        Wed, 06 Apr 2022 16:14:20 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id j17-20020a05640211d100b00419357a2647sm8819725edw.25.2022.04.06.16.14.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 16:14:19 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 02:14:18 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>
-Subject: Re: [PATCH v3 net-next 2/2] net: dsa: Implement tc offloading for
- drop target.
-Message-ID: <20220406231418.sx2gybx5tbnp5iet@skbuf>
-References: <20220404104826.1902292-1-mattias.forsblad@gmail.com>
- <20220404104826.1902292-3-mattias.forsblad@gmail.com>
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=n3a7RBDoMv4pRNBnRLcq9TBMr5diRy/k9LuAIKEZpaQ=;
+        b=XIPQQyuD9m5WJmXTfhYBoHbQZCP6LAL6javy/+8ebOHFdpjFjv6M8fmz8nAd4zZTZZ
+         BfdYlp2yA5RAKhDfgEbA+e2wrus65Hfb9Fq2Nh9wgBMlEPMCGykWzkDONsXGYQF4YzSh
+         EGGdDaGBYoGUNVIniWdNQTdm+gNzlE1pwgVhZrqXYgnXcr+/UE8sUUnzjy3XJt8KyhWg
+         JBWfwAbXJrrcf+tzYB9n+2c7nZ5FSq3fpTomlaPkMhbSFMYk+NpesDIdV188qnu+xzdf
+         Gk7ESOquKSHhBNcaNCoML7AmrBc1hoQRI09L25c3QbT2JR6O8M4ulzJk6MzqTXjesOFY
+         J2sw==
+X-Gm-Message-State: AOAM532XaAuKVeljFfNJ9da6tCl9C6vicKPJKbMATENrCb+gJvmnAqz9
+        vdSHYm42tddYFMm9SpLnHOmQ4w==
+X-Google-Smtp-Source: ABdhPJzkpdgd3d4ZrU5ceCR1LFMuAn2nVWvK5qUnLbKfe/djGR5MCcI0UOSmc7i16oT/QoS8mxi/Qg==
+X-Received: by 2002:a63:1744:0:b0:39c:c4d9:fd39 with SMTP id 4-20020a631744000000b0039cc4d9fd39mr890822pgx.130.1649286917603;
+        Wed, 06 Apr 2022 16:15:17 -0700 (PDT)
+Received: from fastly.com (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
+        by smtp.gmail.com with ESMTPSA id a9-20020a056a000c8900b004fb37ecc6bbsm21043661pfv.65.2022.04.06.16.15.15
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Apr 2022 16:15:16 -0700 (PDT)
+Date:   Wed, 6 Apr 2022 16:15:13 -0700
+From:   Joe Damato <jdamato@fastly.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        jbrouer@redhat.com, ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next] page_pool: Add recycle stats to
+ page_pool_put_page_bulk
+Message-ID: <20220406231512.GB96269@fastly.com>
+References: <1921137145a6a20bb3494c72b33268f5d6d86834.1649191881.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220404104826.1902292-3-mattias.forsblad@gmail.com>
+In-Reply-To: <1921137145a6a20bb3494c72b33268f5d6d86834.1649191881.git.lorenzo@kernel.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Again, please use an adequate commit prefix. In this case that is
-"net: dsa: mv88e6xxx: ".
+On Tue, Apr 05, 2022 at 10:52:55PM +0200, Lorenzo Bianconi wrote:
+> Add missing recycle stats to page_pool_put_page_bulk routine.
 
-On Mon, Apr 04, 2022 at 12:48:26PM +0200, Mattias Forsblad wrote:
-> Add the ability to handle tc matchall drop HW offloading for Marvell
-> switches.
-> 
-> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+Thanks for proposing this change. I did miss this path when adding
+stats.
+
+I'm sort of torn on this. It almost seems that we might want to track
+bulking events separately as their own stat.
+
+Maybe Ilias has an opinion on this; I did implement the stats, but I'm not
+a maintainer of the page_pool so I'm not sure what I think matters all
+that much ;) 
+
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->  drivers/net/dsa/mv88e6xxx/chip.c | 23 ++++++++++++++++++++++-
->  1 file changed, 22 insertions(+), 1 deletion(-)
+>  net/core/page_pool.c | 15 +++++++++++++--
+>  1 file changed, 13 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 64f4fdd02902..84e319520d36 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -1436,7 +1436,7 @@ static u16 mv88e6xxx_port_vlan(struct mv88e6xxx_chip *chip, int dev, int port)
->  	 * bridge group.
->  	 */
->  	dsa_switch_for_each_port(other_dp, ds)
-> -		if (other_dp->type == DSA_PORT_TYPE_CPU ||
-> +		if ((other_dp->type == DSA_PORT_TYPE_CPU && dp->bridge->local_rcv_effective) ||
-
-In the light of the idea that we should keep dsa_bridge :: have_foreign
-an independent variable, maybe there should be a static inline
-dsa_bridge_local_rcv(const struct dsa_bridge *bridge) helper which
-returns bridge->have_foreign || bridge->local_rcv. Then you could use
-that here.
-
-Also note that said dsa_bridge_local_rcv() function returns a loop
-invariant, so you should consider caching the result before using it in
-dsa_switch_for_each_port().
-
->  		    other_dp->type == DSA_PORT_TYPE_DSA ||
->  		    dsa_port_bridge_same(dp, other_dp))
->  			pvlan |= BIT(other_dp->index);
-> @@ -6439,6 +6439,26 @@ static void mv88e6xxx_port_mirror_del(struct dsa_switch *ds, int port,
->  	mutex_unlock(&chip->reg_lock);
->  }
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 1943c0f0307d..4af55d28ffa3 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -36,6 +36,12 @@
+>  		this_cpu_inc(s->__stat);						\
+>  	} while (0)
 >  
-> +static int mv88e6xxx_bridge_local_rcv(struct dsa_switch *ds, int port,
-> +				      struct dsa_mall_drop_tc_entry *drop)
+> +#define recycle_stat_add(pool, __stat, val)						\
+> +	do {										\
+> +		struct page_pool_recycle_stats __percpu *s = pool->recycle_stats;	\
+> +		this_cpu_add(s->__stat, val);						\
+> +	} while (0)
+> +
+>  bool page_pool_get_stats(struct page_pool *pool,
+>  			 struct page_pool_stats *stats)
+>  {
+> @@ -63,6 +69,7 @@ EXPORT_SYMBOL(page_pool_get_stats);
+>  #else
+>  #define alloc_stat_inc(pool, __stat)
+>  #define recycle_stat_inc(pool, __stat)
+> +#define recycle_stat_add(pool, __stat, val)
+>  #endif
+>  
+>  static int page_pool_init(struct page_pool *pool,
+> @@ -566,9 +573,13 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+>  	/* Bulk producer into ptr_ring page_pool cache */
+>  	page_pool_ring_lock(pool);
+>  	for (i = 0; i < bulk_len; i++) {
+> -		if (__ptr_ring_produce(&pool->ring, data[i]))
+> -			break; /* ring full */
+> +		if (__ptr_ring_produce(&pool->ring, data[i])) {
+> +			/* ring full */
+> +			recycle_stat_inc(pool, ring_full);
+> +			break;
+> +		}
+>  	}
+> +	recycle_stat_add(pool, ring, i);
 
-I think you should ask yourself some questions about passing the "drop"
-argument to ->bridge_local_rcv then never using it...
+If we do go with this approach (instead of adding bulking-specific stats),
+we might want to replicate this change in __page_pool_alloc_pages_slow; we
+currently only count the single allocation returned by the slow path, but
+the rest of the pages which refilled the cache are not counted.
 
-> +{
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +	struct dsa_port *dp;
-> +	int err;
-> +
-> +	dp = dsa_to_port(ds, port);
-> +	if (!dp)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&chip->reg_lock);
-> +
-> +	err = mv88e6xxx_bridge_map(chip, *dp->bridge);
-> +
-> +	mutex_unlock(&chip->reg_lock);
-> +
-> +	return err;
-> +}
-> +
->  static int mv88e6xxx_port_pre_bridge_flags(struct dsa_switch *ds, int port,
->  					   struct switchdev_brport_flags flags,
->  					   struct netlink_ext_ack *extack)
-> @@ -6837,6 +6857,7 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
->  	.port_mdb_del           = mv88e6xxx_port_mdb_del,
->  	.port_mirror_add	= mv88e6xxx_port_mirror_add,
->  	.port_mirror_del	= mv88e6xxx_port_mirror_del,
-> +	.bridge_local_rcv	= mv88e6xxx_bridge_local_rcv,
->  	.crosschip_bridge_join	= mv88e6xxx_crosschip_bridge_join,
->  	.crosschip_bridge_leave	= mv88e6xxx_crosschip_bridge_leave,
->  	.port_hwtstamp_set	= mv88e6xxx_port_hwtstamp_set,
+>  	page_pool_ring_unlock(pool);
+>  
+>  	/* Hopefully all pages was return into ptr_ring */
 > -- 
-> 2.25.1
+> 2.35.1
 > 
