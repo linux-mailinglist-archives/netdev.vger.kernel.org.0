@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77CBE4F61DA
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 16:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6DDE4F614B
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 16:15:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234827AbiDFOYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 10:24:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        id S234231AbiDFOCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 10:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234843AbiDFOYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 10:24:11 -0400
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5E6267AC6;
-        Tue,  5 Apr 2022 20:44:21 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R651e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=34;SR=0;TI=SMTPD_---0V9JmreT_1649216654;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9JmreT_1649216654)
+        with ESMTP id S234221AbiDFOBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 10:01:38 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF9E21828;
+        Tue,  5 Apr 2022 20:44:27 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R941e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=34;SR=0;TI=SMTPD_---0V9JnaR0_1649216661;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V9JnaR0_1649216661)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 06 Apr 2022 11:44:16 +0800
+          Wed, 06 Apr 2022 11:44:22 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     virtualization@lists.linux-foundation.org
 Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
@@ -49,9 +49,9 @@ Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
         platform-driver-x86@vger.kernel.org,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
         kvm@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH v9 13/32] virtio_ring: packed: extract the logic of alloc state and extra
-Date:   Wed,  6 Apr 2022 11:43:27 +0800
-Message-Id: <20220406034346.74409-14-xuanzhuo@linux.alibaba.com>
+Subject: [PATCH v9 16/32] virtio_ring: packed: introduce virtqueue_reinit_packed()
+Date:   Wed,  6 Apr 2022 11:43:30 +0800
+Message-Id: <20220406034346.74409-17-xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 2.31.0
 In-Reply-To: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
 References: <20220406034346.74409-1-xuanzhuo@linux.alibaba.com>
@@ -69,106 +69,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Separate the logic for alloc desc_state and desc_extra, which will
-be called separately by subsequent patches.
+Introduce a function to initialize vq without allocating new ring,
+desc_state, desc_extra.
 
-Use struct vring_packed to pass desc_state, desc_extra.
+Subsequent patches will call this function after reset vq to
+reinitialize vq.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/virtio/virtio_ring.c | 51 ++++++++++++++++++++++++++----------
- 1 file changed, 37 insertions(+), 14 deletions(-)
+ drivers/virtio/virtio_ring.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
 diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index ea451ae2aaef..5b5976c5742e 100644
+index c783eb272468..9a4f2db718bd 100644
 --- a/drivers/virtio/virtio_ring.c
 +++ b/drivers/virtio/virtio_ring.c
-@@ -1876,6 +1876,34 @@ static int vring_alloc_queue_packed(struct virtio_device *vdev,
- 	return -ENOMEM;
+@@ -1971,6 +1971,27 @@ static void vring_virtqueue_init_packed(struct vring_virtqueue *vq,
+ 	}
  }
  
-+static int vring_alloc_state_extra_packed(u32 num,
-+					  struct vring_desc_state_packed **desc_state,
-+					  struct vring_desc_extra **desc_extra)
++static void virtqueue_reinit_packed(struct vring_virtqueue *vq)
 +{
-+	struct vring_desc_state_packed *state;
-+	struct vring_desc_extra *extra;
++	struct virtio_device *vdev = vq->vq.vdev;
++	int size, i;
 +
-+	state = kmalloc_array(num, sizeof(struct vring_desc_state_packed), GFP_KERNEL);
-+	if (!state)
-+		goto err_desc_state;
++	memset(vq->packed.vring.device, 0, vq->packed.event_size_in_bytes);
++	memset(vq->packed.vring.driver, 0, vq->packed.event_size_in_bytes);
++	memset(vq->packed.vring.desc, 0, vq->packed.ring_size_in_bytes);
 +
-+	memset(state, 0, num * sizeof(struct vring_desc_state_packed));
++	size = sizeof(struct vring_desc_state_packed) * vq->packed.vring.num;
++	memset(vq->packed.desc_state, 0, size);
 +
-+	extra = vring_alloc_desc_extra(num);
-+	if (!extra)
-+		goto err_desc_extra;
++	size = sizeof(struct vring_desc_extra) * vq->packed.vring.num;
++	memset(vq->packed.desc_extra, 0, size);
 +
-+	*desc_state = state;
-+	*desc_extra = extra;
++	for (i = 0; i < vq->packed.vring.num - 1; i++)
++		vq->packed.desc_extra[i].next = i + 1;
 +
-+	return 0;
-+
-+err_desc_extra:
-+	kfree(state);
-+err_desc_state:
-+	return -ENOMEM;
++	vring_virtqueue_init_packed(vq, vdev);
 +}
 +
  static struct virtqueue *vring_create_virtqueue_packed(
  	unsigned int index,
  	unsigned int num,
-@@ -1891,8 +1919,11 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	dma_addr_t ring_dma_addr, driver_event_dma_addr, device_event_dma_addr;
- 	struct vring_packed_desc_event *driver, *device;
- 	size_t ring_size_in_bytes, event_size_in_bytes;
-+	struct vring_desc_state_packed *state;
-+	struct vring_desc_extra *extra;
- 	struct vring_packed_desc *ring;
- 	struct vring_virtqueue *vq;
-+	int err;
- 
- 	if (vring_alloc_queue_packed(vdev, num, &ring, &driver, &device,
- 				     &ring_dma_addr, &driver_event_dma_addr,
-@@ -1949,22 +1980,16 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	vq->packed.event_flags_shadow = 0;
- 	vq->packed.avail_used_flags = 1 << VRING_PACKED_DESC_F_AVAIL;
- 
--	vq->packed.desc_state = kmalloc_array(num,
--			sizeof(struct vring_desc_state_packed),
--			GFP_KERNEL);
--	if (!vq->packed.desc_state)
--		goto err_desc_state;
-+	err = vring_alloc_state_extra_packed(num, &state, &extra);
-+	if (err)
-+		goto err_state_extra;
- 
--	memset(vq->packed.desc_state, 0,
--		num * sizeof(struct vring_desc_state_packed));
-+	vq->packed.desc_state = state;
-+	vq->packed.desc_extra = extra;
- 
- 	/* Put everything in free lists. */
- 	vq->free_head = 0;
- 
--	vq->packed.desc_extra = vring_alloc_desc_extra(num);
--	if (!vq->packed.desc_extra)
--		goto err_desc_extra;
--
- 	/* No callback?  Tell other side not to bother us. */
- 	if (!callback) {
- 		vq->packed.event_flags_shadow = VRING_PACKED_EVENT_FLAG_DISABLE;
-@@ -1977,9 +2002,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
- 	spin_unlock(&vdev->vqs_list_lock);
- 	return &vq->vq;
- 
--err_desc_extra:
--	kfree(vq->packed.desc_state);
--err_desc_state:
-+err_state_extra:
- 	kfree(vq);
- err_vq:
- 	vring_free_queue(vdev, event_size_in_bytes, device, device_event_dma_addr);
 -- 
 2.31.0
 
