@@ -2,219 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAA514F65E8
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:52:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44A0D4F6603
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231887AbiDFQtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 12:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
+        id S238271AbiDFQut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 12:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238054AbiDFQtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:49:39 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFEE1E9622;
-        Wed,  6 Apr 2022 07:12:07 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KYRFv5ClGz67Nl1;
-        Wed,  6 Apr 2022 22:09:07 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Wed, 6 Apr 2022 16:12:04 +0200
-Message-ID: <2958392e-ba3e-453e-415b-c3869523ea25@huawei.com>
-Date:   Wed, 6 Apr 2022 17:12:00 +0300
+        with ESMTP id S238222AbiDFQun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:50:43 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35E13DDE81;
+        Wed,  6 Apr 2022 07:13:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=sd/PsPgwHRoZV9qtjZqHegQHb46ZFmljHcKA2C4yic0=; b=Og6RBUjJQQc5oScHfhAvWEjg0b
+        pdfDockNNddPaV+0JeuLI2RPwGOg0Vi3CbqJQlkRATjhF44uFvZni+n9cu0VH1cDEJS2IcniVc2kN
+        axdEupiU4XxGP72AjbIVkBYafc869yRG+JakKPxlQrCgw92Tll56TLNzfmnMdhAgMrYE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nc6Pc-00ESl0-US; Wed, 06 Apr 2022 16:13:32 +0200
+Date:   Wed, 6 Apr 2022 16:13:32 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
+        mathieu.poirier@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        nm@ti.com, ssantosh@kernel.org, s-anna@ti.com,
+        linux-arm-kernel@lists.infradead.org, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org, vigneshr@ti.com,
+        kishon@ti.com
+Subject: Re: [RFC 13/13] net: ti: icssg-prueth: Add ICSSG ethernet driver
+Message-ID: <Yk2gDGN8a2xss1UO@lunn.ch>
+References: <20220406094358.7895-1-p-mohan@ti.com>
+ <20220406094358.7895-14-p-mohan@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH v4 10/15] seltest/landlock: add tests for bind() hooks
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
-References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
- <20220309134459.6448-11-konstantin.meskhidze@huawei.com>
- <d3340ed0-fe61-3f00-d7ba-44ece235a319@digikod.net>
- <491d6e96-4bfb-ed97-7eb8-fb18aa144d64@huawei.com>
- <6f631d7c-a2e3-20b3-997e-6b533b748767@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <6f631d7c-a2e3-20b3-997e-6b533b748767@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URI_DOTEDU autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406094358.7895-14-p-mohan@ti.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> +static int emac_set_link_ksettings(struct net_device *ndev,
+> +				   const struct ethtool_link_ksettings *ecmd)
+> +{
+> +	struct prueth_emac *emac = netdev_priv(ndev);
+> +
+> +	if (!emac->phydev || phy_is_pseudo_fixed_link(emac->phydev))
+> +		return -EOPNOTSUPP;
+> +
+> +	return phy_ethtool_ksettings_set(emac->phydev, ecmd);
+> +}
+> +
+> +static int emac_get_eee(struct net_device *ndev, struct ethtool_eee *edata)
+> +{
+> +	struct prueth_emac *emac = netdev_priv(ndev);
+> +
+> +	if (!emac->phydev || phy_is_pseudo_fixed_link(emac->phydev))
+> +		return -EOPNOTSUPP;
+> +
+> +	return phy_ethtool_get_eee(emac->phydev, edata);
+> +}
 
+Why do you need the phy_is_pseudo_fixed_link() calls here?
 
-4/4/2022 12:44 PM, Mickaël Salaün пишет:
-> 
-> On 04/04/2022 10:28, Konstantin Meskhidze wrote:
->>
->>
->> 4/1/2022 7:52 PM, Mickaël Salaün пишет:
-> 
-> [...]
-> 
->>>> +static int create_socket(struct __test_metadata *const _metadata)
->>>> +{
->>>> +
->>>> +        int sockfd;
->>>> +
->>>> +        sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
->>>> +        ASSERT_LE(0, sockfd);
->>>> +        /* Allows to reuse of local address */
->>>> +        ASSERT_EQ(0, setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, 
->>>> &one, sizeof(one)));
->>>
->>> Why is it required?
->>
->>    Without SO_REUSEADDR there is an error that a socket's port is in use.
-> 
-> I'm sure there is, but why is this port reused? I think this means that 
-> there is an issue in the tests and that could hide potential issue with 
-> the tests (and then with the kernel code). Could you investigate and 
-> find the problem? This would make these tests reliable.
-   The next scenario is possible here:
-   "In order for a network connection to close, both ends have to send 
-FIN (final) packets, which indicate they will not send any additional 
-data, and both ends must ACK (acknowledge) each other's FIN packets. The 
-FIN packets are initiated by the application performing a close(), a 
-shutdown(), or an exit(). The ACKs are handled by the kernel after the 
-close() has completed. Because of this, it is possible for the process 
-to complete before the kernel has released the associated network 
-resource, and this port cannot be bound to another process until the 
-kernel has decided that it is done."
-https://hea-www.harvard.edu/~fine/Tech/addrinuse.html.
+> +/* called back by PHY layer if there is change in link state of hw port*/
+> +static void emac_adjust_link(struct net_device *ndev)
+> +{
 
-So in this case we have busy port in network selfttest and one of the 
-solution is to set SO_REUSEADDR socket option, "which explicitly allows 
-a process to bind to a port which remains in TIME_WAIT (it still only 
-allows a single process to be bound to that port). This is the both the 
-simplest and the most effective option for reducing the "address already 
-in use" error".
-> 
-> Without removing the need to find this issue, the next series should use 
-> a network namespace per test, which will confine such issue from other 
-> tests and the host.
+...
 
-   So there are 2 options here:
-	1. Using SO_REUSEADDR option
-	2. Using network namespace.
+> +	if (emac->link) {
+> +		/* link ON */
+> +		netif_carrier_on(ndev);
+> +		/* reactivate the transmit queue */
+> +		netif_tx_wake_all_queues(ndev);
+> +	} else {
+> +		/* link OFF */
+> +		netif_carrier_off(ndev);
+> +		netif_tx_stop_all_queues(ndev);
+> +	}
 
-I prefer the first option - "the simplest and the most effective one"
+phylib should of set the carrier for you.
 
-> 
-> [...]
-> 
->>>> +TEST_F_FORK(socket, bind_with_restrictions) {
->>>> +
->>>> +    int sockfd_1, sockfd_2, sockfd_3;
->>>
->>> Do you really need to have 3 opened socket at the same time?
->>
->>    I just wanted to "kill two birds with one stone" in this test.
->>    It possible to split it in 3 tests and open just one socket in each 
->> one.
-> 
-> I wanted to point out that these three variables could be replaced with 
-> only one (taking into account that successful opened socket are closed 
-> before the variable is reused).
-> 
-> It may not be obvious if we need to split a test into multiple. The 
-> rules I try to follow are:
-> - use a consistent Landlock rule setup, with potentially nested rules, 
-> to test specific edge cases;
-> - don't tamper the context of a test (e.g. with FS topology/layout 
-> modification or network used port) unless it is clearly documented and 
-> easy to spot, but be careful about the dependent tests;
-> - don't make tests too long unless it makes sense for a specific scenario.
-> 
-   Ok. I got your point here. Thanks.
-> 
->>>
->>>> +
->>>> +    struct landlock_ruleset_attr ruleset_attr = {
->>>> +        .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
->>>> +                      LANDLOCK_ACCESS_NET_CONNECT_TCP,
->>>> +    };
->>>> +    struct landlock_net_service_attr net_service_1 = {
->>>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
->>>> +                  LANDLOCK_ACCESS_NET_CONNECT_TCP,
->>>> +        .port = port[0],
->>>> +    };
->>>> +    struct landlock_net_service_attr net_service_2 = {
->>>> +        .allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
->>>> +        .port = port[1],
->>>> +    };
->>>> +    struct landlock_net_service_attr net_service_3 = {
->>>> +        .allowed_access = 0,
->>>> +        .port = port[2],
->>>> +    };
->>>> +
->>>> +    const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
->>>> +            sizeof(ruleset_attr), 0);
->>>> +    ASSERT_LE(0, ruleset_fd);
->>>> +
->>>> +    /* Allows connect and bind operations to the port[0] socket. */
->>>> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->>>> LANDLOCK_RULE_NET_SERVICE,
->>>> +                &net_service_1, 0));
->>>> +    /* Allows connect and deny bind operations to the port[1] 
->>>> socket. */
->>>> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->>>> LANDLOCK_RULE_NET_SERVICE,
->>>> +                &net_service_2, 0));
->>>> +    /* Empty allowed_access (i.e. deny rules) are ignored in 
->>>> network actions
->>>> +     * for port[2] socket.
->>>> +     */
->>>> +    ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 
->>>> LANDLOCK_RULE_NET_SERVICE,
->>>> +                &net_service_3, 0));
->>>> +    ASSERT_EQ(ENOMSG, errno);
->>>> +
->>>> +    /* Enforces the ruleset. */
->>>> +    enforce_ruleset(_metadata, ruleset_fd);
->>>> +
->>>> +    sockfd_1 = create_socket(_metadata);
->>>> +    ASSERT_LE(0, sockfd_1);
->>>> +    /* Binds a socket to port[0] */
->>>> +    ASSERT_EQ(0, bind(sockfd_1, (struct sockaddr  *)&addr[0], 
->>>> sizeof(addr[0])));
->>>> +
->>>> +    /* Close bounded socket*/
->>>> +    ASSERT_EQ(0, close(sockfd_1));
->>>> +
->>>> +    sockfd_2 = create_socket(_metadata);
->>>> +    ASSERT_LE(0, sockfd_2);
->>>> +    /* Binds a socket to port[1] */
->>>> +    ASSERT_EQ(-1, bind(sockfd_2, (struct sockaddr *)&addr[1], 
->>>> sizeof(addr[1])));
->>>> +    ASSERT_EQ(EACCES, errno);
->>>> +
->>>> +    sockfd_3 = create_socket(_metadata);
->>>> +    ASSERT_LE(0, sockfd_3);
->>>> +    /* Binds a socket to port[2] */
->>>> +    ASSERT_EQ(-1, bind(sockfd_3, (struct sockaddr *)&addr[2], 
->>>> sizeof(addr[2])));
->>>> +    ASSERT_EQ(EACCES, errno);
->>>> +}
->>>> +TEST_HARNESS_MAIN
->>>> -- 
->>>> 2.25.1
->>>>
->>>
->>> .
-> .
+> + * emac_ndo_open - EMAC device open
+> + * @ndev: network adapter device
+> + *
+> + * Called when system wants to start the interface.
+> + *
+> + * Returns 0 for a successful open, or appropriate error code
+> + */
+> +static int emac_ndo_open(struct net_device *ndev)
+> +{
+> +	struct prueth_emac *emac = netdev_priv(ndev);
+> +	int ret, i, num_data_chn = emac->tx_ch_num;
+> +	struct prueth *prueth = emac->prueth;
+> +	int slice = prueth_emac_slice(emac);
+> +	struct device *dev = prueth->dev;
+> +	int max_rx_flows;
+> +	int rx_flow;
+> +
+> +	/* clear SMEM and MSMC settings for all slices */
+> +	if (!prueth->emacs_initialized) {
+> +		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
+> +		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
+> +	}
+> +
+> +	/* set h/w MAC as user might have re-configured */
+> +	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
+> +
+> +	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
+> +	icssg_ft1_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
+> +
+> +	icssg_class_default(prueth->miig_rt, slice, 0);
+> +
+> +	netif_carrier_off(ndev);
+
+phylib should take care of this.
+
+> +
+> +	/* Notify the stack of the actual queue counts. */
+> +	ret = netif_set_real_num_tx_queues(ndev, num_data_chn);
+> +	if (ret) {
+> +		dev_err(dev, "cannot set real number of tx queues\n");
+> +		return ret;
+> +	}
+> +
+> +	init_completion(&emac->cmd_complete);
+> +	ret = prueth_init_tx_chns(emac);
+> +	if (ret) {
+> +		dev_err(dev, "failed to init tx channel: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	max_rx_flows = PRUETH_MAX_RX_FLOWS;
+> +	ret = prueth_init_rx_chns(emac, &emac->rx_chns, "rx",
+> +				  max_rx_flows, PRUETH_MAX_RX_DESC);
+> +	if (ret) {
+> +		dev_err(dev, "failed to init rx channel: %d\n", ret);
+> +		goto cleanup_tx;
+> +	}
+> +
+> +	ret = prueth_ndev_add_tx_napi(emac);
+> +	if (ret)
+> +		goto cleanup_rx;
+> +
+> +	/* we use only the highest priority flow for now i.e. @irq[3] */
+> +	rx_flow = PRUETH_RX_FLOW_DATA;
+> +	ret = request_irq(emac->rx_chns.irq[rx_flow], prueth_rx_irq,
+> +			  IRQF_TRIGGER_HIGH, dev_name(dev), emac);
+> +	if (ret) {
+> +		dev_err(dev, "unable to request RX IRQ\n");
+> +		goto cleanup_napi;
+> +	}
+> +
+> +	/* reset and start PRU firmware */
+> +	ret = prueth_emac_start(prueth, emac);
+> +	if (ret)
+> +		goto free_rx_irq;
+> +
+> +	/* Prepare RX */
+> +	ret = prueth_prepare_rx_chan(emac, &emac->rx_chns, PRUETH_MAX_PKT_SIZE);
+> +	if (ret)
+> +		goto stop;
+> +
+> +	ret = k3_udma_glue_enable_rx_chn(emac->rx_chns.rx_chn);
+> +	if (ret)
+> +		goto reset_rx_chn;
+> +
+> +	for (i = 0; i < emac->tx_ch_num; i++) {
+> +		ret = k3_udma_glue_enable_tx_chn(emac->tx_chns[i].tx_chn);
+> +		if (ret)
+> +			goto reset_tx_chan;
+> +	}
+> +
+> +	/* Enable NAPI in Tx and Rx direction */
+> +	for (i = 0; i < emac->tx_ch_num; i++)
+> +		napi_enable(&emac->tx_chns[i].napi_tx);
+> +	napi_enable(&emac->napi_rx);
+> +
+> +	emac_phy_connect(emac);
+
+Why don't you check the error code?
+
+> +static int prueth_config_rgmiidelay(struct prueth *prueth,
+> +				    struct device_node *eth_np,
+> +				    phy_interface_t phy_if)
+> +{
+> +	struct device *dev = prueth->dev;
+> +	struct regmap *ctrl_mmr;
+> +	u32 rgmii_tx_id = 0;
+> +	u32 icssgctrl_reg;
+> +
+> +	if (!phy_interface_mode_is_rgmii(phy_if))
+> +		return 0;
+> +
+> +	ctrl_mmr = syscon_regmap_lookup_by_phandle(eth_np, "ti,syscon-rgmii-delay");
+> +	if (IS_ERR(ctrl_mmr)) {
+> +		dev_err(dev, "couldn't get ti,syscon-rgmii-delay\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (of_property_read_u32_index(eth_np, "ti,syscon-rgmii-delay", 1,
+> +				       &icssgctrl_reg)) {
+> +		dev_err(dev, "couldn't get ti,rgmii-delay reg. offset\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (phy_if == PHY_INTERFACE_MODE_RGMII_ID ||
+> +	    phy_if == PHY_INTERFACE_MODE_RGMII_TXID)
+> +		rgmii_tx_id |= ICSSG_CTRL_RGMII_ID_MODE;
+> +
+> +	regmap_update_bits(ctrl_mmr, icssgctrl_reg, ICSSG_CTRL_RGMII_ID_MODE, rgmii_tx_id);
+
+Do you need to do a units conversion here, or does the register
+already take pico seconds?
+
+	Andrew
