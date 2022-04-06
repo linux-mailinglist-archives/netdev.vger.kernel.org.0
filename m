@@ -2,198 +2,702 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C00814F6578
-	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:43:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B68F4F6561
+	for <lists+netdev@lfdr.de>; Wed,  6 Apr 2022 18:27:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237781AbiDFQeV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Apr 2022 12:34:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56000 "EHLO
+        id S237403AbiDFQ3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Apr 2022 12:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237895AbiDFQdf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:33:35 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2135.outbound.protection.outlook.com [40.107.215.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A51152806;
-        Tue,  5 Apr 2022 18:20:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k7ZNi4j45yFW5d0AAVI4/9khcQiCmyIur4VHnHsMHHT6pLwmAmToFmQQsq2/sUaLcrCYv9KIj+3FrBW3RXO84qBWkRbgWMYJjbsJCTopfpFRFo/u4yxfSGH8kaf8Yfuq6QMZEYQs46P9917bgi8Z6KCHtw59v4FztYS576GeUjy0DPxbIrOR4cgUhJPffs7031bI6QTd+XtZRIpE6C8Hg8K5VGC/xHeYsgqMvA0NisIh/MgcOx3nzFj03bwu03FmNQHd6gIKUNw4IlsWKZCyTCN0aaoWEkE2N86h3l/pOjlLy5T0HEoUjx3Ti/Umm/QZvdB41Thnrj12Q/BpC014Ag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=edq+ryQ73PscVubk4QO6nQR8gN/3+Nc3wCNr3YSWrhI=;
- b=fNM4PAxkL4fK9DxhGasgL+RfUj+xySXSED5eBsLi9Euy58w5x473m/QYLVoqENB1TiqtZ7bu44USYv8SfKGayUWrqnJ55z1HwDuSlLPDnwzAVLIbckHIK4w0CBcp1YScE3ltaVBe2cPbIb9hTNajnRdIrmQr6uptC9iIVovqHNnt0N5DpibC2PZCR7XlMTjqJaLYJn0o00Fo4/k+mIlEYg/hZXHa54LQ7Gk2DVaMOFLyJjoGgSusMsYbLoLamfXIoxQci6ACeBmu+BXtdqSbuQqPs7p5SiBjuUbjcrMpqdS/jZhjho0WG0TUMR8MnoUGnhjXdzW0Suf5cGvEl5tybA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=quantatw.com; dmarc=pass action=none header.from=quantatw.com;
- dkim=pass header.d=quantatw.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=edq+ryQ73PscVubk4QO6nQR8gN/3+Nc3wCNr3YSWrhI=;
- b=B7Dcns8vhx8is3wsZxycpvT9pYkNwPVJT82DIl+VDGwOcOJr1AeshSU9my/0cRKz8Ij6pC/p4dmf01v2vKh0iL4T1bMHSycGs7aTazxcy5BI2Bs8ky4hbd8FCXloShh41Fz2UivTGYyEc6Vqu8gv2RC3pTThzj+TjadFKQ8xjkc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=quantatw.com;
-Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
- by TYZPR04MB4446.apcprd04.prod.outlook.com (2603:1096:400:4::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.31; Wed, 6 Apr
- 2022 01:20:25 +0000
-Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
- ([fe80::9c61:c8e7:d1ad:c65f]) by HK0PR04MB3282.apcprd04.prod.outlook.com
- ([fe80::9c61:c8e7:d1ad:c65f%6]) with mapi id 15.20.5123.031; Wed, 6 Apr 2022
- 01:20:25 +0000
-From:   Potin Lai <potin.lai@quantatw.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Cc:     Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] net: mdio: aspeed: Add c45 support
-Date:   Wed,  6 Apr 2022 09:20:02 +0800
-Message-Id: <20220406012002.15128-4-potin.lai@quantatw.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406012002.15128-1-potin.lai@quantatw.com>
-References: <20220406012002.15128-1-potin.lai@quantatw.com>
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR02CA0129.apcprd02.prod.outlook.com
- (2603:1096:202:16::13) To HK0PR04MB3282.apcprd04.prod.outlook.com
- (2603:1096:203:89::17)
+        with ESMTP id S237706AbiDFQ2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Apr 2022 12:28:51 -0400
+Received: from smtpbg511.qq.com (smtpbg511.qq.com [203.205.250.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA3B43B839
+        for <netdev@vger.kernel.org>; Tue,  5 Apr 2022 18:55:01 -0700 (PDT)
+X-QQ-mid: bizesmtp67t1649210094tibayfbs
+Received: from localhost.localdomain ( [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Wed, 06 Apr 2022 09:54:47 +0800 (CST)
+X-QQ-SSF: 01400000002000E0J000B00A0000000
+X-QQ-FEAT: c49ksGaa/D0gN5uUShXkLvi4StQF//H6ybxXME+XXnAxqDp2rXScwtotTigm3
+        6obhKpXd07FHPimqK12M3WpP+xzZcrhZv5BWqxovQ1fee7xq69T2VeMCxWdT5ZpmhbUMwPf
+        zzKY9zbkDsR1qR9HVsqhJYSFPsbGJdALhtHAlO4bUIMhtXFTa50a0FGgdAKq/H8WgsWbPDz
+        hTiH6PlGcT0n11R+9AJunPm0QtyJJdtqx8ulZyIYvaj9n/QGQFDYbebJCMUNTMjF0kI+VCP
+        9tENxv7DtB4aPclQsRSPpFWq60SRb4F3uxVpgwUw2k5yHE07G5Y8cRBzkh0PIKdrxPJl3Mq
+        RKLSVU8K9zN2OCpJ6Q37JarXWgnCg==
+X-QQ-GoodBg: 2
+From:   Meng Tang <tangmeng@uniontech.com>
+To:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>
+Subject: [PATCH net] ipw2x00: use DEVICE_ATTR_*() macro
+Date:   Wed,  6 Apr 2022 09:54:44 +0800
+Message-Id: <20220406015444.14408-1-tangmeng@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4bc4b837-685e-4cdc-e62e-08da176ba0c5
-X-MS-TrafficTypeDiagnostic: TYZPR04MB4446:EE_
-X-Microsoft-Antispam-PRVS: <TYZPR04MB4446FE8ACBB8FCC5C4C4E0008EE79@TYZPR04MB4446.apcprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l27w00vS6yVVZ/7ijS5nikPbPHClKQaubFN7CcwTPWyy8ChGtCcsrYbUsSx4N1ILXUv9bL2Xv+66esAO2eo27frahEKTtbLUk9hl5AZXMFzTYW6SL/1z3j35dsMyxnBhvKJyE/4nvvUmYRxqpcSWe38CkLNuW4fwWIVenfZa64Mi0kgRfUqv37OLutFf02EDFJasayXmd08PKyPTpJkz379wmAPSJBV67igRzkvCdqZIU26hQz69OJmWq1SKD4OAODWXSanJrFr4LJPTo6Q1xstfKxiAkZJ9fa06YfykPFZxfY9zUViFpi9YPDPFxvDW+pasQfQk+U4Xt9IrWjaCSVIR3a8tD4X+Tm8To+NLScy/rDS8iWrWls4XtIOquk6pWE0FV5moc5u3al0zwdYjWF2qGPGCQn/sz12BMF6kNOpVUO1AaKjFfA1qjmDZS42rf+EQo/B1frc8Q/JYmgGJyJdGvif3osSvFPLGhiB6eZvX6HaksSGE21wJ5RAGtqrRV07/Io/R24MlI34mKPPowbpOOEZcTKX57ch+s5B7a3n8RoSpjxIVoHYfjuA186FsnHPHoOKzY9q1hflb9/9OJHdzwpLcXzt2XgvoThFOO8sVOTBWPrvRGxKGnMi92mIDBaLOLFDfCDViWJPHrFEbco+bEveRVpb9BQY4BZKMQYBwgwsE0WWNfn19AgMMgiM9
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(66946007)(5660300002)(52116002)(38350700002)(38100700002)(6506007)(6666004)(8676002)(6512007)(66476007)(66556008)(2616005)(4326008)(110136005)(86362001)(8936002)(186003)(6486002)(26005)(7416002)(36756003)(44832011)(316002)(1076003)(2906002)(54906003)(83380400001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vvGKYz9qgUU98IUqKKLiwoxDkta7GjuTCCWYXR1vS8MbwOdT3bpCk4d3/S/3?=
- =?us-ascii?Q?/6uTmwV6QCzqAeXZ0mSUC6wQctAZhzvxR0zgOO3RuPiPvJCio2MX9CtcsIX7?=
- =?us-ascii?Q?3BFHWRzH0JGM4Xcm/vKEjC14yR/riu7rJic15S9yRt14AvrekdQOixVLHCIX?=
- =?us-ascii?Q?sOMm2OM/VOabnfyGrv9aF/y8m8wktxJ1L93bA3QBcK78gUt/n8tcwcD7jdpj?=
- =?us-ascii?Q?rfWg18HETFHPK2UvfqfAV5JiTQsCgG1vXglBaJdcPt2eLypbtBDiCda/jb35?=
- =?us-ascii?Q?jilGDMJ+e2vUz4HPchCns98VCEquXuzrttlPJC1hycmV4p4/yjRmJhYhUs8G?=
- =?us-ascii?Q?85v4PV9nFGbZtRhWlaDRi9WEhA+QDkJQKSUg+D6alu9Zbu1zO7dyKg4uwsvS?=
- =?us-ascii?Q?TZsXqsTG4d70E0/p+cCPnPVSTbVTWlSJ2ptAF490hYaD/yusjEx3w6YWI62T?=
- =?us-ascii?Q?3+3ooZmDz69ELSWgB48mdJIuEbaUvbcu574qydoiS+CneIKf/PB0G1yV38/U?=
- =?us-ascii?Q?tNnwA2uO7KZSmoQGjuahUygKVM32edPgjmOnLOakqLi+/38lmiQxWk2eR5zK?=
- =?us-ascii?Q?JPitvy5nYeJILhz4med1y8+vZBZiDKnLA15bDhEEo4KnskBMmDh7cwAJJqMY?=
- =?us-ascii?Q?8hHh2NYJEJ4243qnN7Tim+FKeZzUXrjg4ZGDfQPP2SWPUpoGC5DFS62X9LLs?=
- =?us-ascii?Q?9SdUm7w9mWkSEltmOt6Paf1kO7NHysmCwgWqrXzflEaSKWEbu9eRxRhxiT2/?=
- =?us-ascii?Q?RHxfR8uWIu2Gji9bDcJpdJJK97xCIzXVdbrTwMYqBnti6QULZWUxDz4rSoUG?=
- =?us-ascii?Q?MUxVBhwNpcxDDqZCJVX1YRtiUfurpzosmOOVphSXQlnhoDrCg74JIS5BmiyU?=
- =?us-ascii?Q?sUd6dcsRb0A2EFKH0z1Ew34QIWVJ9gjJ2+ubUfPCxoqd6XYcghxz/jenyr3d?=
- =?us-ascii?Q?pj9gFWR84ywHoKSS4MuaY8/W4kAg4vG+6Xto0LjeBTnu53KGeVq4fCq0zUWX?=
- =?us-ascii?Q?xX72Sn21abInXseEPkAt9cgiCNQRY0/T+qtY+D7VRQcC3BODy5g+iB/TWTE9?=
- =?us-ascii?Q?s5Gk3SqyD+wLXwcjYXqY/W/rLGEFnBeTg4HU1hNkf71gIHUxcfptFS6t+tKd?=
- =?us-ascii?Q?W3t29PmSeZrhIYQBA9jFfn8NSEw6dUREQF4X00jlHYYqrHYmfqNqT576U7Mz?=
- =?us-ascii?Q?FINBTVRtT4YTyBBpE03E7wn9UrCnygTlE0/9Rib5HLeiSD+xD9+gVDfyJlXR?=
- =?us-ascii?Q?jY5IT1P3yGJ83tQAvz7B/SXSYGFHHeGhetNZn5dq3wya0qKsoMroy1qstsZS?=
- =?us-ascii?Q?2xxPBNzy3KtgKmst9kOqYi++Py2o2C1u0h/hMVtsh2VPfGh/t3pyYmBLhksw?=
- =?us-ascii?Q?w2P6lrNxJ9a2v6JmXl3szbf0sTj8sH5fxmqH3AAT4XeNSudHMq15XwWWFb5w?=
- =?us-ascii?Q?Ey5B17QAsnl+PwIlNo5tMTKW22dvqXMVnbWKiiBWJv8k68+AyGWdVbGglMe7?=
- =?us-ascii?Q?/i7+/B0I/bi2Jy7BZlnzeH83P6TLgt02O+wNiIB0MKlPI2lDhy1FMStyYRHz?=
- =?us-ascii?Q?c48aSQsELJXQthmF2A4wz82Vnd5tdi9uEKZZXNhZCofLfpMeoptIOXqSGdTZ?=
- =?us-ascii?Q?iezhiCDbzuGK+9z0mtSoiet4M0Ecpw7uRhMIJN4MWtp83FwW9+CtLNx4p567?=
- =?us-ascii?Q?g0RQNeSiWQyFaHoaOQQh1ilen0LwBd5Sev7homJ6Kk+lb/uBUhG1Hs+F62Jm?=
- =?us-ascii?Q?evmxdzbze3mmSznvZn446FzWNySp2No=3D?=
-X-OriginatorOrg: quantatw.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4bc4b837-685e-4cdc-e62e-08da176ba0c5
-X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Apr 2022 01:20:25.3703
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EPVieK2LhWptcX7nE3+/iKTY5pvANhWuh+VdJ2zfU+208XVIH7Hvya9+aiTQVEfkdJfpklLE7YUTK2FeGO8Beg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR04MB4446
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign8
+X-QQ-Bgrelay: 1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add Clause 45 support for Aspeed mdio driver.
+Use DEVICE_ATTR_*() helper instead of plain DEVICE_ATTR,
+which makes the code a bit shorter and easier to read.
 
-Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 ---
- drivers/net/mdio/mdio-aspeed.c | 35 ++++++++++++++++++++++++++++++----
- 1 file changed, 31 insertions(+), 4 deletions(-)
+ drivers/net/wireless/intel/ipw2x00/ipw2100.c |  64 +++++-----
+ drivers/net/wireless/intel/ipw2x00/ipw2200.c | 119 +++++++++----------
+ 2 files changed, 90 insertions(+), 93 deletions(-)
 
-diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
-index 5becddb56117..4236ba78aa65 100644
---- a/drivers/net/mdio/mdio-aspeed.c
-+++ b/drivers/net/mdio/mdio-aspeed.c
-@@ -21,6 +21,10 @@
- #define   ASPEED_MDIO_CTRL_OP		GENMASK(27, 26)
- #define     MDIO_C22_OP_WRITE		0b01
- #define     MDIO_C22_OP_READ		0b10
-+#define     MDIO_C45_OP_ADDR		0b00
-+#define     MDIO_C45_OP_WRITE		0b01
-+#define     MDIO_C45_OP_PREAD		0b10
-+#define     MDIO_C45_OP_READ		0b11
- #define   ASPEED_MDIO_CTRL_PHYAD	GENMASK(25, 21)
- #define   ASPEED_MDIO_CTRL_REGAD	GENMASK(20, 16)
- #define   ASPEED_MDIO_CTRL_MIIWDATA	GENMASK(15, 0)
-@@ -100,15 +104,37 @@ static int aspeed_mdio_write_c22(struct mii_bus *bus, int addr, int regnum,
- 
- static int aspeed_mdio_read_c45(struct mii_bus *bus, int addr, int regnum)
- {
--	/* TODO: add c45 support */
--	return -EOPNOTSUPP;
-+	int rc;
-+	u8 c45_dev = (regnum >> 16) & 0x1F;
-+	u16 c45_addr = regnum & 0xFFFF;
-+
-+	rc = aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C45, MDIO_C45_OP_ADDR,
-+			    addr, c45_dev, c45_addr);
-+	if (rc < 0)
-+		return rc;
-+
-+	rc = aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C45, MDIO_C45_OP_READ,
-+			    addr, c45_dev, 0);
-+	if (rc < 0)
-+		return rc;
-+
-+	return aspeed_mdio_get_data(bus);
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+index 2ace2b27ecad..5234511dac78 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+@@ -3501,7 +3501,7 @@ static void ipw2100_msg_free(struct ipw2100_priv *priv)
+ 	priv->msg_buffers = NULL;
  }
  
- static int aspeed_mdio_write_c45(struct mii_bus *bus, int addr, int regnum,
- 				 u16 val)
+-static ssize_t show_pci(struct device *d, struct device_attribute *attr,
++static ssize_t pci_show(struct device *d, struct device_attribute *attr,
+ 			char *buf)
  {
--	/* TODO: add c45 support */
--	return -EOPNOTSUPP;
-+	int rc;
-+	u8 c45_dev = (regnum >> 16) & 0x1F;
-+	u16 c45_addr = regnum & 0xFFFF;
-+
-+	rc = aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C45, MDIO_C45_OP_ADDR,
-+			    addr, c45_dev, c45_addr);
-+	if (rc < 0)
-+		return rc;
-+
-+	return aspeed_mdio_op(bus, ASPEED_MDIO_CTRL_ST_C45, MDIO_C45_OP_WRITE,
-+			      addr, c45_dev, val);
+ 	struct pci_dev *pci_dev = to_pci_dev(d);
+@@ -3521,34 +3521,34 @@ static ssize_t show_pci(struct device *d, struct device_attribute *attr,
+ 	return out - buf;
  }
  
- static int aspeed_mdio_read(struct mii_bus *bus, int addr, int regnum)
-@@ -153,6 +179,7 @@ static int aspeed_mdio_probe(struct platform_device *pdev)
- 	bus->parent = &pdev->dev;
- 	bus->read = aspeed_mdio_read;
- 	bus->write = aspeed_mdio_write;
-+	bus->probe_capabilities = MDIOBUS_C22_C45;
+-static DEVICE_ATTR(pci, 0444, show_pci, NULL);
++static DEVICE_ATTR_RO(pci);
  
- 	rc = of_mdiobus_register(bus, pdev->dev.of_node);
- 	if (rc) {
+-static ssize_t show_cfg(struct device *d, struct device_attribute *attr,
++static ssize_t cfg_show(struct device *d, struct device_attribute *attr,
+ 			char *buf)
+ {
+ 	struct ipw2100_priv *p = dev_get_drvdata(d);
+ 	return sprintf(buf, "0x%08x\n", (int)p->config);
+ }
+ 
+-static DEVICE_ATTR(cfg, 0444, show_cfg, NULL);
++static DEVICE_ATTR_RO(cfg);
+ 
+-static ssize_t show_status(struct device *d, struct device_attribute *attr,
++static ssize_t status_show(struct device *d, struct device_attribute *attr,
+ 			   char *buf)
+ {
+ 	struct ipw2100_priv *p = dev_get_drvdata(d);
+ 	return sprintf(buf, "0x%08x\n", (int)p->status);
+ }
+ 
+-static DEVICE_ATTR(status, 0444, show_status, NULL);
++static DEVICE_ATTR_RO(status);
+ 
+-static ssize_t show_capability(struct device *d, struct device_attribute *attr,
++static ssize_t capability_show(struct device *d, struct device_attribute *attr,
+ 			       char *buf)
+ {
+ 	struct ipw2100_priv *p = dev_get_drvdata(d);
+ 	return sprintf(buf, "0x%08x\n", (int)p->capability);
+ }
+ 
+-static DEVICE_ATTR(capability, 0444, show_capability, NULL);
++static DEVICE_ATTR_RO(capability);
+ 
+ #define IPW2100_REG(x) { IPW_ ##x, #x }
+ static const struct {
+@@ -3785,7 +3785,7 @@ IPW2100_ORD(STAT_TX_HOST_REQUESTS, "requested Host Tx's (MSDU)"),
+ 	    IPW2100_ORD(NIC_MANF_DATE_TIME, "MANF Date/Time STAMP"),
+ 	    IPW2100_ORD(UCODE_VERSION, "Ucode Version"),};
+ 
+-static ssize_t show_registers(struct device *d, struct device_attribute *attr,
++static ssize_t registers_show(struct device *d, struct device_attribute *attr,
+ 			      char *buf)
+ {
+ 	int i;
+@@ -3805,9 +3805,9 @@ static ssize_t show_registers(struct device *d, struct device_attribute *attr,
+ 	return out - buf;
+ }
+ 
+-static DEVICE_ATTR(registers, 0444, show_registers, NULL);
++static DEVICE_ATTR_RO(registers);
+ 
+-static ssize_t show_hardware(struct device *d, struct device_attribute *attr,
++static ssize_t hardware_show(struct device *d, struct device_attribute *attr,
+ 			     char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -3846,9 +3846,9 @@ static ssize_t show_hardware(struct device *d, struct device_attribute *attr,
+ 	return out - buf;
+ }
+ 
+-static DEVICE_ATTR(hardware, 0444, show_hardware, NULL);
++static DEVICE_ATTR_RO(hardware);
+ 
+-static ssize_t show_memory(struct device *d, struct device_attribute *attr,
++static ssize_t memory_show(struct device *d, struct device_attribute *attr,
+ 			   char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -3905,7 +3905,7 @@ static ssize_t show_memory(struct device *d, struct device_attribute *attr,
+ 	return len;
+ }
+ 
+-static ssize_t store_memory(struct device *d, struct device_attribute *attr,
++static ssize_t memory_store(struct device *d, struct device_attribute *attr,
+ 			    const char *buf, size_t count)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -3940,9 +3940,9 @@ static ssize_t store_memory(struct device *d, struct device_attribute *attr,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(memory, 0644, show_memory, store_memory);
++static DEVICE_ATTR_RW(memory);
+ 
+-static ssize_t show_ordinals(struct device *d, struct device_attribute *attr,
++static ssize_t ordinals_show(struct device *d, struct device_attribute *attr,
+ 			     char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -3976,9 +3976,9 @@ static ssize_t show_ordinals(struct device *d, struct device_attribute *attr,
+ 	return len;
+ }
+ 
+-static DEVICE_ATTR(ordinals, 0444, show_ordinals, NULL);
++static DEVICE_ATTR_RO(ordinals);
+ 
+-static ssize_t show_stats(struct device *d, struct device_attribute *attr,
++static ssize_t stats_show(struct device *d, struct device_attribute *attr,
+ 			  char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -3997,7 +3997,7 @@ static ssize_t show_stats(struct device *d, struct device_attribute *attr,
+ 	return out - buf;
+ }
+ 
+-static DEVICE_ATTR(stats, 0444, show_stats, NULL);
++static DEVICE_ATTR_RO(stats);
+ 
+ static int ipw2100_switch_mode(struct ipw2100_priv *priv, u32 mode)
+ {
+@@ -4043,7 +4043,7 @@ static int ipw2100_switch_mode(struct ipw2100_priv *priv, u32 mode)
+ 	return 0;
+ }
+ 
+-static ssize_t show_internals(struct device *d, struct device_attribute *attr,
++static ssize_t internals_show(struct device *d, struct device_attribute *attr,
+ 			      char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -4095,9 +4095,9 @@ static ssize_t show_internals(struct device *d, struct device_attribute *attr,
+ 	return len;
+ }
+ 
+-static DEVICE_ATTR(internals, 0444, show_internals, NULL);
++static DEVICE_ATTR_RO(internals);
+ 
+-static ssize_t show_bssinfo(struct device *d, struct device_attribute *attr,
++static ssize_t bssinfo_show(struct device *d, struct device_attribute *attr,
+ 			    char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -4140,7 +4140,7 @@ static ssize_t show_bssinfo(struct device *d, struct device_attribute *attr,
+ 	return out - buf;
+ }
+ 
+-static DEVICE_ATTR(bssinfo, 0444, show_bssinfo, NULL);
++static DEVICE_ATTR_RO(bssinfo);
+ 
+ #ifdef CONFIG_IPW2100_DEBUG
+ static ssize_t debug_level_show(struct device_driver *d, char *buf)
+@@ -4165,7 +4165,7 @@ static ssize_t debug_level_store(struct device_driver *d,
+ static DRIVER_ATTR_RW(debug_level);
+ #endif				/* CONFIG_IPW2100_DEBUG */
+ 
+-static ssize_t show_fatal_error(struct device *d,
++static ssize_t fatal_error_show(struct device *d,
+ 				struct device_attribute *attr, char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -4190,7 +4190,7 @@ static ssize_t show_fatal_error(struct device *d,
+ 	return out - buf;
+ }
+ 
+-static ssize_t store_fatal_error(struct device *d,
++static ssize_t fatal_error_store(struct device *d,
+ 				 struct device_attribute *attr, const char *buf,
+ 				 size_t count)
+ {
+@@ -4199,16 +4199,16 @@ static ssize_t store_fatal_error(struct device *d,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(fatal_error, 0644, show_fatal_error, store_fatal_error);
++static DEVICE_ATTR_RW(fatal_error);
+ 
+-static ssize_t show_scan_age(struct device *d, struct device_attribute *attr,
++static ssize_t scan_age_show(struct device *d, struct device_attribute *attr,
+ 			     char *buf)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+ 	return sprintf(buf, "%d\n", priv->ieee->scan_age);
+ }
+ 
+-static ssize_t store_scan_age(struct device *d, struct device_attribute *attr,
++static ssize_t scan_age_store(struct device *d, struct device_attribute *attr,
+ 			      const char *buf, size_t count)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -4232,9 +4232,9 @@ static ssize_t store_scan_age(struct device *d, struct device_attribute *attr,
+ 	return strnlen(buf, count);
+ }
+ 
+-static DEVICE_ATTR(scan_age, 0644, show_scan_age, store_scan_age);
++static DEVICE_ATTR_RW(scan_age);
+ 
+-static ssize_t show_rf_kill(struct device *d, struct device_attribute *attr,
++static ssize_t rf_kill_show(struct device *d, struct device_attribute *attr,
+ 			    char *buf)
+ {
+ 	/* 0 - RF kill not enabled
+@@ -4278,7 +4278,7 @@ static int ipw_radio_kill_sw(struct ipw2100_priv *priv, int disable_radio)
+ 	return 1;
+ }
+ 
+-static ssize_t store_rf_kill(struct device *d, struct device_attribute *attr,
++static ssize_t rf_kill_store(struct device *d, struct device_attribute *attr,
+ 			     const char *buf, size_t count)
+ {
+ 	struct ipw2100_priv *priv = dev_get_drvdata(d);
+@@ -4286,7 +4286,7 @@ static ssize_t store_rf_kill(struct device *d, struct device_attribute *attr,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(rf_kill, 0644, show_rf_kill, store_rf_kill);
++static DEVICE_ATTR_RW(rf_kill);
+ 
+ static struct attribute *ipw2100_sysfs_entries[] = {
+ 	&dev_attr_hardware.attr,
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+index 5727c7c00a28..ed343d4fb9d5 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+@@ -1259,7 +1259,7 @@ static struct ipw_fw_error *ipw_alloc_error_log(struct ipw_priv *priv)
+ 	return error;
+ }
+ 
+-static ssize_t show_event_log(struct device *d,
++static ssize_t event_log_show(struct device *d,
+ 			      struct device_attribute *attr, char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1289,9 +1289,9 @@ static ssize_t show_event_log(struct device *d,
+ 	return len;
+ }
+ 
+-static DEVICE_ATTR(event_log, 0444, show_event_log, NULL);
++static DEVICE_ATTR_RO(event_log);
+ 
+-static ssize_t show_error(struct device *d,
++static ssize_t error_show(struct device *d,
+ 			  struct device_attribute *attr, char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1326,7 +1326,7 @@ static ssize_t show_error(struct device *d,
+ 	return len;
+ }
+ 
+-static ssize_t clear_error(struct device *d,
++static ssize_t error_store(struct device *d,
+ 			   struct device_attribute *attr,
+ 			   const char *buf, size_t count)
+ {
+@@ -1337,9 +1337,9 @@ static ssize_t clear_error(struct device *d,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(error, 0644, show_error, clear_error);
++static DEVICE_ATTR_RW(error);
+ 
+-static ssize_t show_cmd_log(struct device *d,
++static ssize_t cmd_log_show(struct device *d,
+ 			    struct device_attribute *attr, char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1364,12 +1364,12 @@ static ssize_t show_cmd_log(struct device *d,
+ 	return len;
+ }
+ 
+-static DEVICE_ATTR(cmd_log, 0444, show_cmd_log, NULL);
++static DEVICE_ATTR_RO(cmd_log);
+ 
+ #ifdef CONFIG_IPW2200_PROMISCUOUS
+ static void ipw_prom_free(struct ipw_priv *priv);
+ static int ipw_prom_alloc(struct ipw_priv *priv);
+-static ssize_t store_rtap_iface(struct device *d,
++static ssize_t rtap_iface_store(struct device *d,
+ 			 struct device_attribute *attr,
+ 			 const char *buf, size_t count)
+ {
+@@ -1414,7 +1414,7 @@ static ssize_t store_rtap_iface(struct device *d,
+ 	return count;
+ }
+ 
+-static ssize_t show_rtap_iface(struct device *d,
++static ssize_t rtap_iface_show(struct device *d,
+ 			struct device_attribute *attr,
+ 			char *buf)
+ {
+@@ -1429,9 +1429,9 @@ static ssize_t show_rtap_iface(struct device *d,
+ 	}
+ }
+ 
+-static DEVICE_ATTR(rtap_iface, 0600, show_rtap_iface, store_rtap_iface);
++static DEVICE_ATTR_ADMIN_RW(rtap_iface);
+ 
+-static ssize_t store_rtap_filter(struct device *d,
++static ssize_t rtap_filter_store(struct device *d,
+ 			 struct device_attribute *attr,
+ 			 const char *buf, size_t count)
+ {
+@@ -1451,7 +1451,7 @@ static ssize_t store_rtap_filter(struct device *d,
+ 	return count;
+ }
+ 
+-static ssize_t show_rtap_filter(struct device *d,
++static ssize_t rtap_filter_show(struct device *d,
+ 			struct device_attribute *attr,
+ 			char *buf)
+ {
+@@ -1460,17 +1460,17 @@ static ssize_t show_rtap_filter(struct device *d,
+ 		       priv->prom_priv ? priv->prom_priv->filter : 0);
+ }
+ 
+-static DEVICE_ATTR(rtap_filter, 0600, show_rtap_filter, store_rtap_filter);
++static DEVICE_ATTR_ADMIN_RW(rtap_filter);
+ #endif
+ 
+-static ssize_t show_scan_age(struct device *d, struct device_attribute *attr,
++static ssize_t scan_age_show(struct device *d, struct device_attribute *attr,
+ 			     char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+ 	return sprintf(buf, "%d\n", priv->ieee->scan_age);
+ }
+ 
+-static ssize_t store_scan_age(struct device *d, struct device_attribute *attr,
++static ssize_t scan_age_store(struct device *d, struct device_attribute *attr,
+ 			      const char *buf, size_t count)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1504,16 +1504,16 @@ static ssize_t store_scan_age(struct device *d, struct device_attribute *attr,
+ 	return len;
+ }
+ 
+-static DEVICE_ATTR(scan_age, 0644, show_scan_age, store_scan_age);
++static DEVICE_ATTR_RW(scan_age);
+ 
+-static ssize_t show_led(struct device *d, struct device_attribute *attr,
++static ssize_t led_show(struct device *d, struct device_attribute *attr,
+ 			char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+ 	return sprintf(buf, "%d\n", (priv->config & CFG_NO_LED) ? 0 : 1);
+ }
+ 
+-static ssize_t store_led(struct device *d, struct device_attribute *attr,
++static ssize_t led_store(struct device *d, struct device_attribute *attr,
+ 			 const char *buf, size_t count)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1537,36 +1537,36 @@ static ssize_t store_led(struct device *d, struct device_attribute *attr,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(led, 0644, show_led, store_led);
++static DEVICE_ATTR_RW(led);
+ 
+-static ssize_t show_status(struct device *d,
++static ssize_t status_show(struct device *d,
+ 			   struct device_attribute *attr, char *buf)
+ {
+ 	struct ipw_priv *p = dev_get_drvdata(d);
+ 	return sprintf(buf, "0x%08x\n", (int)p->status);
+ }
+ 
+-static DEVICE_ATTR(status, 0444, show_status, NULL);
++static DEVICE_ATTR_RO(status);
+ 
+-static ssize_t show_cfg(struct device *d, struct device_attribute *attr,
++static ssize_t cfg_show(struct device *d, struct device_attribute *attr,
+ 			char *buf)
+ {
+ 	struct ipw_priv *p = dev_get_drvdata(d);
+ 	return sprintf(buf, "0x%08x\n", (int)p->config);
+ }
+ 
+-static DEVICE_ATTR(cfg, 0444, show_cfg, NULL);
++static DEVICE_ATTR_RO(cfg);
+ 
+-static ssize_t show_nic_type(struct device *d,
++static ssize_t nic_type_show(struct device *d,
+ 			     struct device_attribute *attr, char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+ 	return sprintf(buf, "TYPE: %d\n", priv->nic_type);
+ }
+ 
+-static DEVICE_ATTR(nic_type, 0444, show_nic_type, NULL);
++static DEVICE_ATTR_RO(nic_type);
+ 
+-static ssize_t show_ucode_version(struct device *d,
++static ssize_t ucode_version_show(struct device *d,
+ 				  struct device_attribute *attr, char *buf)
+ {
+ 	u32 len = sizeof(u32), tmp = 0;
+@@ -1578,9 +1578,9 @@ static ssize_t show_ucode_version(struct device *d,
+ 	return sprintf(buf, "0x%08x\n", tmp);
+ }
+ 
+-static DEVICE_ATTR(ucode_version, 0644, show_ucode_version, NULL);
++static DEVICE_ATTR_RO(ucode_version);
+ 
+-static ssize_t show_rtc(struct device *d, struct device_attribute *attr,
++static ssize_t rtc_show(struct device *d, struct device_attribute *attr,
+ 			char *buf)
+ {
+ 	u32 len = sizeof(u32), tmp = 0;
+@@ -1592,20 +1592,20 @@ static ssize_t show_rtc(struct device *d, struct device_attribute *attr,
+ 	return sprintf(buf, "0x%08x\n", tmp);
+ }
+ 
+-static DEVICE_ATTR(rtc, 0644, show_rtc, NULL);
++static DEVICE_ATTR_RO(rtc);
+ 
+ /*
+  * Add a device attribute to view/control the delay between eeprom
+  * operations.
+  */
+-static ssize_t show_eeprom_delay(struct device *d,
++static ssize_t eeprom_delay_show(struct device *d,
+ 				 struct device_attribute *attr, char *buf)
+ {
+ 	struct ipw_priv *p = dev_get_drvdata(d);
+ 	int n = p->eeprom_delay;
+ 	return sprintf(buf, "%i\n", n);
+ }
+-static ssize_t store_eeprom_delay(struct device *d,
++static ssize_t eeprom_delay_store(struct device *d,
+ 				  struct device_attribute *attr,
+ 				  const char *buf, size_t count)
+ {
+@@ -1614,9 +1614,9 @@ static ssize_t store_eeprom_delay(struct device *d,
+ 	return strnlen(buf, count);
+ }
+ 
+-static DEVICE_ATTR(eeprom_delay, 0644, show_eeprom_delay, store_eeprom_delay);
++static DEVICE_ATTR_RW(eeprom_delay);
+ 
+-static ssize_t show_command_event_reg(struct device *d,
++static ssize_t command_event_reg_show(struct device *d,
+ 				      struct device_attribute *attr, char *buf)
+ {
+ 	u32 reg = 0;
+@@ -1625,7 +1625,7 @@ static ssize_t show_command_event_reg(struct device *d,
+ 	reg = ipw_read_reg32(p, IPW_INTERNAL_CMD_EVENT);
+ 	return sprintf(buf, "0x%08x\n", reg);
+ }
+-static ssize_t store_command_event_reg(struct device *d,
++static ssize_t command_event_reg_store(struct device *d,
+ 				       struct device_attribute *attr,
+ 				       const char *buf, size_t count)
+ {
+@@ -1637,10 +1637,9 @@ static ssize_t store_command_event_reg(struct device *d,
+ 	return strnlen(buf, count);
+ }
+ 
+-static DEVICE_ATTR(command_event_reg, 0644,
+-		   show_command_event_reg, store_command_event_reg);
++static DEVICE_ATTR_RW(command_event_reg);
+ 
+-static ssize_t show_mem_gpio_reg(struct device *d,
++static ssize_t mem_gpio_reg_show(struct device *d,
+ 				 struct device_attribute *attr, char *buf)
+ {
+ 	u32 reg = 0;
+@@ -1649,7 +1648,7 @@ static ssize_t show_mem_gpio_reg(struct device *d,
+ 	reg = ipw_read_reg32(p, 0x301100);
+ 	return sprintf(buf, "0x%08x\n", reg);
+ }
+-static ssize_t store_mem_gpio_reg(struct device *d,
++static ssize_t mem_gpio_reg_store(struct device *d,
+ 				  struct device_attribute *attr,
+ 				  const char *buf, size_t count)
+ {
+@@ -1661,9 +1660,9 @@ static ssize_t store_mem_gpio_reg(struct device *d,
+ 	return strnlen(buf, count);
+ }
+ 
+-static DEVICE_ATTR(mem_gpio_reg, 0644, show_mem_gpio_reg, store_mem_gpio_reg);
++static DEVICE_ATTR_RW(mem_gpio_reg);
+ 
+-static ssize_t show_indirect_dword(struct device *d,
++static ssize_t indirect_dword_show(struct device *d,
+ 				   struct device_attribute *attr, char *buf)
+ {
+ 	u32 reg = 0;
+@@ -1676,7 +1675,7 @@ static ssize_t show_indirect_dword(struct device *d,
+ 
+ 	return sprintf(buf, "0x%08x\n", reg);
+ }
+-static ssize_t store_indirect_dword(struct device *d,
++static ssize_t indirect_dword_store(struct device *d,
+ 				    struct device_attribute *attr,
+ 				    const char *buf, size_t count)
+ {
+@@ -1687,10 +1686,9 @@ static ssize_t store_indirect_dword(struct device *d,
+ 	return strnlen(buf, count);
+ }
+ 
+-static DEVICE_ATTR(indirect_dword, 0644,
+-		   show_indirect_dword, store_indirect_dword);
++static DEVICE_ATTR_RW(indirect_dword);
+ 
+-static ssize_t show_indirect_byte(struct device *d,
++static ssize_t indirect_byte_show(struct device *d,
+ 				  struct device_attribute *attr, char *buf)
+ {
+ 	u8 reg = 0;
+@@ -1703,7 +1701,7 @@ static ssize_t show_indirect_byte(struct device *d,
+ 
+ 	return sprintf(buf, "0x%02x\n", reg);
+ }
+-static ssize_t store_indirect_byte(struct device *d,
++static ssize_t indirect_byte_store(struct device *d,
+ 				   struct device_attribute *attr,
+ 				   const char *buf, size_t count)
+ {
+@@ -1714,10 +1712,9 @@ static ssize_t store_indirect_byte(struct device *d,
+ 	return strnlen(buf, count);
+ }
+ 
+-static DEVICE_ATTR(indirect_byte, 0644,
+-		   show_indirect_byte, store_indirect_byte);
++static DEVICE_ATTR_RW(indirect_byte);
+ 
+-static ssize_t show_direct_dword(struct device *d,
++static ssize_t direct_dword_show(struct device *d,
+ 				 struct device_attribute *attr, char *buf)
+ {
+ 	u32 reg = 0;
+@@ -1730,7 +1727,7 @@ static ssize_t show_direct_dword(struct device *d,
+ 
+ 	return sprintf(buf, "0x%08x\n", reg);
+ }
+-static ssize_t store_direct_dword(struct device *d,
++static ssize_t direct_dword_store(struct device *d,
+ 				  struct device_attribute *attr,
+ 				  const char *buf, size_t count)
+ {
+@@ -1741,7 +1738,7 @@ static ssize_t store_direct_dword(struct device *d,
+ 	return strnlen(buf, count);
+ }
+ 
+-static DEVICE_ATTR(direct_dword, 0644, show_direct_dword, store_direct_dword);
++static DEVICE_ATTR_RW(direct_dword);
+ 
+ static int rf_kill_active(struct ipw_priv *priv)
+ {
+@@ -1756,7 +1753,7 @@ static int rf_kill_active(struct ipw_priv *priv)
+ 	return (priv->status & STATUS_RF_KILL_HW) ? 1 : 0;
+ }
+ 
+-static ssize_t show_rf_kill(struct device *d, struct device_attribute *attr,
++static ssize_t rf_kill_show(struct device *d, struct device_attribute *attr,
+ 			    char *buf)
+ {
+ 	/* 0 - RF kill not enabled
+@@ -1802,7 +1799,7 @@ static int ipw_radio_kill_sw(struct ipw_priv *priv, int disable_radio)
+ 	return 1;
+ }
+ 
+-static ssize_t store_rf_kill(struct device *d, struct device_attribute *attr,
++static ssize_t rf_kill_store(struct device *d, struct device_attribute *attr,
+ 			     const char *buf, size_t count)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1812,9 +1809,9 @@ static ssize_t store_rf_kill(struct device *d, struct device_attribute *attr,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(rf_kill, 0644, show_rf_kill, store_rf_kill);
++static DEVICE_ATTR_RW(rf_kill);
+ 
+-static ssize_t show_speed_scan(struct device *d, struct device_attribute *attr,
++static ssize_t speed_scan_show(struct device *d, struct device_attribute *attr,
+ 			       char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1829,7 +1826,7 @@ static ssize_t show_speed_scan(struct device *d, struct device_attribute *attr,
+ 	return sprintf(buf, "0\n");
+ }
+ 
+-static ssize_t store_speed_scan(struct device *d, struct device_attribute *attr,
++static ssize_t speed_scan_store(struct device *d, struct device_attribute *attr,
+ 				const char *buf, size_t count)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1865,16 +1862,16 @@ static ssize_t store_speed_scan(struct device *d, struct device_attribute *attr,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(speed_scan, 0644, show_speed_scan, store_speed_scan);
++static DEVICE_ATTR_RW(speed_scan);
+ 
+-static ssize_t show_net_stats(struct device *d, struct device_attribute *attr,
++static ssize_t net_stats_show(struct device *d, struct device_attribute *attr,
+ 			      char *buf)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+ 	return sprintf(buf, "%c\n", (priv->config & CFG_NET_STATS) ? '1' : '0');
+ }
+ 
+-static ssize_t store_net_stats(struct device *d, struct device_attribute *attr,
++static ssize_t net_stats_store(struct device *d, struct device_attribute *attr,
+ 			       const char *buf, size_t count)
+ {
+ 	struct ipw_priv *priv = dev_get_drvdata(d);
+@@ -1886,9 +1883,9 @@ static ssize_t store_net_stats(struct device *d, struct device_attribute *attr,
+ 	return count;
+ }
+ 
+-static DEVICE_ATTR(net_stats, 0644, show_net_stats, store_net_stats);
++static DEVICE_ATTR_RW(net_stats);
+ 
+-static ssize_t show_channels(struct device *d,
++static ssize_t channels_show(struct device *d,
+ 			     struct device_attribute *attr,
+ 			     char *buf)
+ {
+@@ -1932,7 +1929,7 @@ static ssize_t show_channels(struct device *d,
+ 	return len;
+ }
+ 
+-static DEVICE_ATTR(channels, 0400, show_channels, NULL);
++static DEVICE_ATTR_ADMIN_RO(channels);
+ 
+ static void notify_wx_assoc_event(struct ipw_priv *priv)
+ {
 -- 
-2.17.1
+2.20.1
+
+
 
