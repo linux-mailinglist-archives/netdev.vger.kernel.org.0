@@ -2,124 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 169F74F8078
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 15:24:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B144F807A
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 15:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343648AbiDGN03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 09:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
+        id S234942AbiDGN20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 09:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242980AbiDGN02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 09:26:28 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4930E70852;
-        Thu,  7 Apr 2022 06:24:25 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id c4so8088063qtx.1;
-        Thu, 07 Apr 2022 06:24:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e9BBEGFkRoWtf1TNB9g9Peh7Pm7yimLQ1/ZYuWqvj4k=;
-        b=H7r2oqUBDNUF5WBh4tekAv6rapssaMxLG85MIqgiMYveJbo889WVaMOMwdIT8R2EDK
-         RsHM2mD7VyjKL/ubHbFVkQNyViPWZ0wwuSTInVWVkXOs85+dljwhq5ozMsi3cUNgdwpa
-         BP/1GkuAGderktJwZ9ANXmzsF/nI8LCEAXC3/zQAOroJn9g3AziXr8m6Ras/eWDwcJ++
-         hZKG2LvEXIrKPjBj8UmO7K0WqCnE26PfMvPZmxzlfPTT0XD8+5CjvaNuJANDHZqFEw3j
-         FcUkcmFN2myKAexJ8wCRDgHy/nrc14PqwqC0kAJ2eJ8EVh7japyqJWynfdi1xeBONChw
-         v2sA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e9BBEGFkRoWtf1TNB9g9Peh7Pm7yimLQ1/ZYuWqvj4k=;
-        b=kC7p2I7PUbdLlRGLqdSpETWGesHva7vsKqY0FGsXtiGMU2JqvH3pEzrvvzBMCnkcz6
-         Ikg8DpJEcEMAS1ji+nkvHfHQVQptKnd7TR0wA81KSKdqxZHd9KE6rUCjuxw4v7hbAkMa
-         ok4sV8lM1aqtwPeRHnqPo9xRrD4HQ3QQTIp/mt9a11bprPukfKbPD8c5swQSerKrioUM
-         jC5kpGLtDGZYsIzvd30L+YLIXokVEZPo6+yYbbG0On8ihnpeOVQ99e7XOnJB+aJGrXjb
-         BpFazOb/4nLi5vAQ8eQVG+RPoIPwo7ZcMqZlJm2nW9KH3YosHRPyWEW3PhxC4DcESIKZ
-         e5kA==
-X-Gm-Message-State: AOAM530b86t5APCk79FObY6TcZmby8Uqo59saWmJRmr193Ml4AnQfP6b
-        sVMeSNbWl+UgDZr5D8Ms6f85PO4i+dnVqA==
-X-Google-Smtp-Source: ABdhPJw0FNsu9hUpAXB0WdYjlJhtbbWePi+1le8SBKjMj2TRkQx+B0z/7wrcqB/HwugZwfJYgimeOg==
-X-Received: by 2002:a05:622a:4089:b0:2eb:b4bd:8fa4 with SMTP id cg9-20020a05622a408900b002ebb4bd8fa4mr11389743qtb.157.1649337864445;
-        Thu, 07 Apr 2022 06:24:24 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bk18-20020a05620a1a1200b00680c72b7bf4sm13164195qkb.93.2022.04.07.06.24.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 06:24:23 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>, omosnace@redhat.com
-Subject: [PATCHv2 net] sctp: use the correct skb for security_sctp_assoc_request
-Date:   Thu,  7 Apr 2022 09:24:22 -0400
-Message-Id: <71becb489e51284edf0c11fc15246f4ed4cef5b6.1649337862.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229593AbiDGN2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 09:28:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BB5EBAF5;
+        Thu,  7 Apr 2022 06:26:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DEDA612E7;
+        Thu,  7 Apr 2022 13:26:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB49C385A4;
+        Thu,  7 Apr 2022 13:26:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649337983;
+        bh=erBJ0JV2fhHFMqGKNptNKRo3neyxVGLELAUAeXYtWtk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X/sqENeziCwdcnj14lsc8fogNSX8411vFdwoKjUbwJCEY43bY9rj8rrH4UnYtMZXX
+         VwgcCZBS9kQOzFuNS1w9gi6XQvfUpYKzcUr0SG8APWdfRTvnyU3Jfo8cW1E9RoX3h3
+         fzZbiEq99/d/HQk/33mNdy479/rScfUNwn5fNm6kQNAoLUEwhHOfVbmwlkk0LUgSh5
+         sEXCAUaUT+SW3/+c1tEOnKQNKC/5ISWW93S9ChrV1RDC75fWMJTLYM/RmD2UbSeF1V
+         ioQ4r86TdhjTLFZKQeorC4W6bsZcVzxgSS9Zbk4H+TjI4MrrlfYtmjaWxoRjFCJZrM
+         Bl0DACw8n748g==
+From:   Dinh Nguyen <dinguyen@kernel.org>
+To:     davem@davemloft.net
+Cc:     dinguyen@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com
+Subject: [PATCH] net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link
+Date:   Thu,  7 Apr 2022 08:25:21 -0500
+Message-Id: <20220407132521.579713-1-dinguyen@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yi Chen reported an unexpected sctp connection abort, and it occurred when
-COOKIE_ECHO is bundled with DATA Fragment by SCTP HW GSO. As the IP header
-is included in chunk->head_skb instead of chunk->skb, it failed to check
-IP header version in security_sctp_assoc_request().
+When using a fixed-link, the altr_tse_pcs driver crashes
+due to null-pointer dereference as no phy_device is provided to
+tse_pcs_fix_mac_speed function. Fix this by adding a check for
+phy_dev before calling the tse_pcs_fix_mac_speed() function.
 
-According to Ondrej, SELinux only looks at IP header (address and IPsec
-options) and XFRM state data, and these are all included in head_skb for
-SCTP HW GSO packets. So fix it by using head_skb when calling
-security_sctp_assoc_request() in processing COOKIE_ECHO.
+Also clean up the tse_pcs_fix_mac_speed function a bit. There is
+no need to check for splitter_base and sgmii_adapter_base
+because the driver will fail if these 2 variables are not
+derived from the device tree.
 
-v1->v2:
-  - As Ondrej noticed, chunk->head_skb should also be used for
-    security_sctp_assoc_established() in sctp_sf_do_5_1E_ca().
-
-Fixes: e215dab1c490 ("security: call security_sctp_assoc_request in sctp_sf_do_5_1D_ce")
-Reported-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Fixes: fb3bbdb85989 ("net: ethernet: Add TSE PCS support to dwmac-socfpga")
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 ---
- net/sctp/sm_statefuns.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |  8 --------
+ drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |  4 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 13 +++++--------
+ 3 files changed, 9 insertions(+), 16 deletions(-)
 
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 7f342bc12735..52edee1322fc 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -781,7 +781,7 @@ enum sctp_disposition sctp_sf_do_5_1D_ce(struct net *net,
- 		}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
+index cd478d2cd871..00f6d347eaf7 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
+@@ -57,10 +57,6 @@
+ #define TSE_PCS_USE_SGMII_ENA				BIT(0)
+ #define TSE_PCS_IF_USE_SGMII				0x03
+ 
+-#define SGMII_ADAPTER_CTRL_REG				0x00
+-#define SGMII_ADAPTER_DISABLE				0x0001
+-#define SGMII_ADAPTER_ENABLE				0x0000
+-
+ #define AUTONEGO_LINK_TIMER				20
+ 
+ static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
+@@ -202,12 +198,8 @@ void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
+ 			   unsigned int speed)
+ {
+ 	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
+-	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
+ 	u32 val;
+ 
+-	writew(SGMII_ADAPTER_ENABLE,
+-	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+-
+ 	pcs->autoneg = phy_dev->autoneg;
+ 
+ 	if (phy_dev->autoneg == AUTONEG_ENABLE) {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
+index 442812c0a4bd..694ac25ef426 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
++++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
+@@ -10,6 +10,10 @@
+ #include <linux/phy.h>
+ #include <linux/timer.h>
+ 
++#define SGMII_ADAPTER_CTRL_REG		0x00
++#define SGMII_ADAPTER_ENABLE		0x0000
++#define SGMII_ADAPTER_DISABLE		0x0001
++
+ struct tse_pcs {
+ 	struct device *dev;
+ 	void __iomem *tse_pcs_base;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+index b7c2579c963b..ac9e6c7a33b5 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
+@@ -18,9 +18,6 @@
+ 
+ #include "altr_tse_pcs.h"
+ 
+-#define SGMII_ADAPTER_CTRL_REG                          0x00
+-#define SGMII_ADAPTER_DISABLE                           0x0001
+-
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
+ #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
+@@ -62,16 +59,14 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+ {
+ 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
+ 	void __iomem *splitter_base = dwmac->splitter_base;
+-	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
+ 	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
+ 	struct device *dev = dwmac->dev;
+ 	struct net_device *ndev = dev_get_drvdata(dev);
+ 	struct phy_device *phy_dev = ndev->phydev;
+ 	u32 val;
+ 
+-	if ((tse_pcs_base) && (sgmii_adapter_base))
+-		writew(SGMII_ADAPTER_DISABLE,
+-		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	writew(SGMII_ADAPTER_DISABLE,
++	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
+ 
+ 	if (splitter_base) {
+ 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
+@@ -93,7 +88,9 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
+ 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
  	}
  
--	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
-+	if (security_sctp_assoc_request(new_asoc, chunk->head_skb ?: chunk->skb)) {
- 		sctp_association_free(new_asoc);
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
-@@ -932,7 +932,7 @@ enum sctp_disposition sctp_sf_do_5_1E_ca(struct net *net,
+-	if (tse_pcs_base && sgmii_adapter_base)
++	writew(SGMII_ADAPTER_ENABLE,
++	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
++	if (phy_dev)
+ 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
+ }
  
- 	/* Set peer label for connection. */
- 	if (security_sctp_assoc_established((struct sctp_association *)asoc,
--					    chunk->skb))
-+					    chunk->head_skb ?: chunk->skb))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 
- 	/* Verify that the chunk length for the COOKIE-ACK is OK.
-@@ -2262,7 +2262,7 @@ enum sctp_disposition sctp_sf_do_5_2_4_dupcook(
- 	}
- 
- 	/* Update socket peer label if first association. */
--	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
-+	if (security_sctp_assoc_request(new_asoc, chunk->head_skb ?: chunk->skb)) {
- 		sctp_association_free(new_asoc);
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 	}
 -- 
-2.31.1
+2.25.1
 
