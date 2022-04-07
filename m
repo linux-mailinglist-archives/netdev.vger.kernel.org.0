@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B395C4F7CC9
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:31:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C33C24F7CCB
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244263AbiDGKdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 06:33:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
+        id S244272AbiDGKdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 06:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240653AbiDGKdC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:33:02 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F98252E4E;
-        Thu,  7 Apr 2022 03:31:02 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id qh7so9812816ejb.11;
-        Thu, 07 Apr 2022 03:31:02 -0700 (PDT)
+        with ESMTP id S244265AbiDGKdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:33:04 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D202063BEE;
+        Thu,  7 Apr 2022 03:31:03 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id a6so9996541ejk.0;
+        Thu, 07 Apr 2022 03:31:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bOp7/tC9bFhm53CLsSm24svzgwwfQBWtUDQnB+bIBuE=;
-        b=KXwh36Kseg3CVGevbGAE8a3Ax24ainsjSrWTaHc30TLr2jSFkdYRDP0MaSryXI8M4v
-         FBHfLFYpoaQGSX3GW2cn0FoJDmWZ1vY3c3fg+wtOnngvNO9fE1sDRwmM6BGgex1DwxnF
-         r4oLScN+3qnwGdSh7+7vGPHJ1nZj0pdz8DUgZEw73PY1+09R25O6X9g0y/cs1VDWQ6pv
-         zV/3gMcje94ykVaOdS1+CfDw6AGlQ9cM/Szvnq8SvH1mSJj6CZ77tt22yeMFUhscgNni
-         QxdGGaxRWKPWZXYuyzF9XzYRAt78E0o4Df2jSqk1sXM15r8hDe8ygGJ3e6wiHffdLIaw
-         Lrog==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cM7cNDbZdzDRR54XOLUdiPP1jrQ7jBG9dEAYVsbcNLE=;
+        b=kTFV0s1DjklFKRy0TxWbeuj3zyRHFlGqWxH8nk8PEziPdH89zJ1oEWCvPebSyljT7t
+         35la7ZWPkDDKsLVhEAApa9g88yhD63+pyT8BlwBuYAPTEgueqtF1sdFEWR5UcBp65VMx
+         HOLWtbTxXIBd2kSmcA4s8II/S+vr3eEeHlitrPYWKGN9NvHT7aQc98MiahddFrObEkRX
+         oqgXKsIRyM/+oWEyboW7eQT08MSgJs1f2RKCWSGK2HrAZG1DcfurHSRM8THpWtIME5Ml
+         efjWAnlzN/ExmS0f440FnRzvRPuBSY3nLe3+faUuHbLFeXj3B2TITC0/8tWm+brWuhH6
+         Gbbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bOp7/tC9bFhm53CLsSm24svzgwwfQBWtUDQnB+bIBuE=;
-        b=Axg6plfRyVgrPeUHrlrylxowvoZllcY2QjEv3NCroSDHjELHvvLY/XAQonCg58nfES
-         H+WW/rNyMhL1mlQhkyH0FcY28xXVjrOKCQtYCG2JVobEQMkTDkhDaZwX5lbq/5JHlyU0
-         X8mD7hpKC2efx1g9fazg+pQsJ9QjFE0o6W0Twzy8qF8ozkT9ku4BFwnJvu4IZ0dkq9u9
-         AaACILdDWKGhWmL9WSuulUbyajN9h1CFuGUvw1YD48OrUi1ILgJ0qrLFCQhtuHwb1HuT
-         ywWPCQ2bHyjqjUANaLRfxoGoZ+KPBORXWb241RlD+sGeom4bsWzHD4TYzqzwhdqWZsuq
-         X9xg==
-X-Gm-Message-State: AOAM532q7qxI1dHW+B7aNf6sbiv9P3tV14n9ke8GxfMgi04QIYGYlqlx
-        bf1BxGl3ou86LXdnEyxp4/g=
-X-Google-Smtp-Source: ABdhPJwqHs9nH5lpOjXcb6/qKvV0pCQNXS3T+Kk1mOdvii1ND6yeM2aFqKeCAbxHGyh62D14O+e0lg==
-X-Received: by 2002:a17:907:8a19:b0:6e8:a7e:5f50 with SMTP id sc25-20020a1709078a1900b006e80a7e5f50mr12871020ejc.322.1649327461054;
-        Thu, 07 Apr 2022 03:31:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cM7cNDbZdzDRR54XOLUdiPP1jrQ7jBG9dEAYVsbcNLE=;
+        b=I0YtiX0nsTXQo8oJvLCoNlHny3X/iQEWFV2dLJUIImQuyoqTbDDOZwQD4Jwyuf3Gu1
+         neysuTI8S+/D+KY/I/KHTtxCGYA7Eciwsh+g1lTAVVNwkbCTzLHglh6EsAhiBhnFVj3f
+         lKU/IF7rTbFrzmoqsFE2YtGRdI5s2l8Yuj+8+iYP3HYDOQQkIWRnvTvnBLeQwrYtxaxk
+         /rTxoqUV1AQxDcbmtH860E7y4WYPPmoLZBXVjktyOX3rc0DihBCUPfHDrt5Oh8kEt/9i
+         k86v0Uz5NGKA47MnPNbpgHCHoIMeD54tFoB8W8q4Fcav8DIXhfw+xoZiYvUmttFfh9nl
+         LwHA==
+X-Gm-Message-State: AOAM530RhxFPpvfVDGS8uk79QCYNQxjvlPahWzjJEnLHmcFOECMFrZ5x
+        KaLoDCcXD48xRevUS1QvI4c=
+X-Google-Smtp-Source: ABdhPJx0s8F+/Psbc0WRtBOGXMMQgcpVlU8uStqX8d6g32cAFKeTa6M6kXCz4rf1z38mgVMSQlqn+g==
+X-Received: by 2002:a17:907:1624:b0:6db:8caa:d71 with SMTP id hb36-20020a170907162400b006db8caa0d71mr12894106ejc.723.1649327462239;
+        Thu, 07 Apr 2022 03:31:02 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.30.59
+        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.31.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 03:31:00 -0700 (PDT)
+        Thu, 07 Apr 2022 03:31:01 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -79,52 +79,72 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next 00/15] net: Remove use of list iterator after loop body
-Date:   Thu,  7 Apr 2022 12:28:45 +0200
-Message-Id: <20220407102900.3086255-1-jakobkoschel@gmail.com>
+Subject: [PATCH net-next 01/15] connector: Replace usage of found with dedicated list iterator variable
+Date:   Thu,  7 Apr 2022 12:28:46 +0200
+Message-Id: <20220407102900.3086255-2-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220407102900.3086255-1-jakobkoschel@gmail.com>
+References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the list iterator loop does not exit early the list iterator variable
-contains a type-confused pointer to a 'bogus' list element computed based
-on the head [1].
+To move the list iterator variable into the list_for_each_entry_*()
+macro in the future it should be avoided to use the list iterator
+variable after the loop body.
 
-Often a 'found' variable is used to ensure the list iterator
-variable is only accessed after the loop body if the loop did exit early
-(using a break or goto).
+To *never* use the list iterator variable after the loop it was
+concluded to use a separate iterator variable instead of a
+found boolean [1].
 
-In other cases that list iterator variable is used in
-combination to access the list member which reverses the invocation of
-container_of() and brings back a "safe" pointer to the head of the list.
+This removes the need to use a found variable and simply checking if
+the variable was set, can determine if the break/goto was hit.
 
-Since, due to this code patten, there were quite a few bugs discovered [2],
-Linus concluded that the rule should be to never use the list iterator
-after the loop and introduce a dedicated pointer for that [3].
+Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+---
+ drivers/connector/cn_queue.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-With the new gnu11 standard, it will now be possible to limit the scope
-of the list iterator variable to the traversal loop itself by defining
-the variable within the for loop.
-This, however, requires to remove all uses of the list iterator after
-the loop.
-
-Based on input from Paolo Abeni [4], Vinicius Costa Gomes [5], and
-Jakub Kicinski [6], I've splitted all the net-next related changes into
-two patch sets, where this is part 1.
-
-Link: https://lwn.net/Articles/887097/ [1]
-Link: https://lore.kernel.org/linux-kernel/20220217184829.1991035-4-jakobkoschel@gmail.com/ [2]
-Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [3]
-Link: https://lore.kernel.org/linux-kernel/7393b673c626fd75f2b4f8509faa5459254fb87c.camel@redhat.com/ [4]
-Link: https://lore.kernel.org/linux-kernel/877d8a3sww.fsf@intel.com/ [5]
-Link: https://lore.kernel.org/linux-kernel/20220403205502.1b34415d@kernel.org/ [6]
+diff --git a/drivers/connector/cn_queue.c b/drivers/connector/cn_queue.c
+index 996f025eb63c..ed77599b0b25 100644
+--- a/drivers/connector/cn_queue.c
++++ b/drivers/connector/cn_queue.c
+@@ -92,20 +92,19 @@ int cn_queue_add_callback(struct cn_queue_dev *dev, const char *name,
+ 
+ void cn_queue_del_callback(struct cn_queue_dev *dev, const struct cb_id *id)
+ {
+-	struct cn_callback_entry *cbq, *n;
+-	int found = 0;
++	struct cn_callback_entry *cbq = NULL, *iter, *n;
+ 
+ 	spin_lock_bh(&dev->queue_lock);
+-	list_for_each_entry_safe(cbq, n, &dev->queue_list, callback_entry) {
+-		if (cn_cb_equal(&cbq->id.id, id)) {
+-			list_del(&cbq->callback_entry);
+-			found = 1;
++	list_for_each_entry_safe(iter, n, &dev->queue_list, callback_entry) {
++		if (cn_cb_equal(&iter->id.id, id)) {
++			list_del(&iter->callback_entry);
++			cbq = iter;
+ 			break;
+ 		}
+ 	}
+ 	spin_unlock_bh(&dev->queue_lock);
+ 
+-	if (found)
++	if (cbq)
+ 		cn_queue_release_callback(cbq);
+ }
+ 
+-- 
+2.25.1
 
