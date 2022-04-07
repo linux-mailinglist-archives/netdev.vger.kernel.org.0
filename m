@@ -2,145 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48D304F8912
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 00:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A69E4F89E8
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 00:15:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230407AbiDGUzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 16:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55582 "EHLO
+        id S231124AbiDGVMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 17:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231278AbiDGUzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 16:55:13 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A5BA2064;
-        Thu,  7 Apr 2022 13:51:54 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id p10so11647148lfa.12;
-        Thu, 07 Apr 2022 13:51:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EFQFKgXzq6QSoC33rTqJQXlNI+CEd5gBMZePyscFbyw=;
-        b=SZM6rO+0uFE4anXyFhzhJ9ODAQIA22CCchsSyFEaVNEXt5dcWB2MXmQGmbZ1sfbWvt
-         5u/P8GJH7EA3lenOwSIFhnTcSPPI/7CdE0t6x9zxeiqJd5tUsNrgM2aoQCnXZcLhHuwL
-         mxiyGp9wSNT2vkE7ISDB93AazLE4+nnp7kLwUuNOoeucWvpmqGYltaBVYLuNTviAoAlt
-         42XQ2kB6db5idq4g3QVt6fV43xh2d4MV+LQ2fKCzKcL+uBombltNNBygvme4ZhlYlmBn
-         cJijSy1VKTAur4iA3yUbRdPFFN8QwD1Us/sx/DYAXHXq7GomGMuKufeMUpvYfF6eKpFR
-         7M0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EFQFKgXzq6QSoC33rTqJQXlNI+CEd5gBMZePyscFbyw=;
-        b=x6TDFYZ/ZKD8Gf5aRDsefv5N6ES4EW2j2HnltGDSpHKz0p8JkKesRSzuoy7PRsKY3t
-         FrLGLfTZ86WU6Dy8CqOLuwvlvZ98Oex+OHJofKhgtW0UzljB7CTvF8QkKNWhtee2t+mn
-         REbjOixkYeU9k16k3jQ+xi2eDWnPvHghT+wNGRYrrh9L9r0cFdjryc6uA2zs791UMMxq
-         dAL+mklPvpmK6VIM4NjMqybEJs4vluAgZa+syQotn0TLKia21L4j9wNfFzLB1Q/S1YDu
-         D0uG3Y8IBQVA0g0FfbJEUOTXShLn224zWUfzes34yMe2+/JbVwml5bzZ7pc918MqPE2Z
-         hibg==
-X-Gm-Message-State: AOAM530btSsBZgpss4tlGhrePXo76wwLETY31NvSbBEZwQKV54Ga6bu/
-        2ORXnS7FR3dBFC4rsfdwjlY=
-X-Google-Smtp-Source: ABdhPJyy0fU1oI52cP+Ixer66pFEpY+xh19onGJTslmEeJzgy3vzrvnntbC3kZHg5ZhSE7PT7pjHPg==
-X-Received: by 2002:a05:6512:12d4:b0:44a:27fd:c3a2 with SMTP id p20-20020a05651212d400b0044a27fdc3a2mr11096370lfg.75.1649364713057;
-        Thu, 07 Apr 2022 13:51:53 -0700 (PDT)
-Received: from ?IPV6:2001:470:6180:0:818f:9b:6443:a5bc? ([2001:470:6180:0:818f:9b:6443:a5bc])
-        by smtp.googlemail.com with ESMTPSA id z21-20020a195e55000000b00466306e7b32sm168455lfi.222.2022.04.07.13.51.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 13:51:52 -0700 (PDT)
-Message-ID: <c5f5e028-26b1-5c2d-ed7f-e36550ce6ac2@gmail.com>
-Date:   Thu, 7 Apr 2022 22:51:52 +0200
+        with ESMTP id S230504AbiDGVMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 17:12:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787661820C2;
+        Thu,  7 Apr 2022 14:10:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E59CE61FA2;
+        Thu,  7 Apr 2022 21:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3D4C0C385A8;
+        Thu,  7 Apr 2022 21:10:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649365812;
+        bh=tqL0W9qksOVz0PZK0b/p4/Ep31RJjoJJUHx+UtERg10=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fNXarDi2Nt8Y+fHznBn4TTvkYONzN9aiSLpL1I0S6ih4ZsI8DUEOROA3TAEF642JC
+         tGR1vUGl5UHBJ3x+gSb0He7Z7o93F88SJSB672tqA35f2UBl64zjHkBgHSo+FYzX/z
+         frri6G2X8K/u9ODb+/S626LM5a3BFNr5CfGawTax1v9CofHpdqA2BtN9Ka6i+YCy4I
+         mjh7J1VeaGhV0TUVB+x4/NpvmkERqGMifAK35KCCkZlGuSZerg8E+A1FrqmarKhvSV
+         OD0+Ln4H4RlQbsjfFq/K+Rw2nXgNhG3QhygIqZ6QYtasKk2Cty/oe7yXY6gjQuTPHP
+         EdeL2IpkQdPyA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1AB1FE85B8C;
+        Thu,  7 Apr 2022 21:10:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/3] rndis_host: enable the bogus MAC fixup for ZTE
- devices from cdc_ether
-Content-Language: en-GB
-To:     =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Kristian Evensen <kristian.evensen@gmail.com>,
-        Oliver Neukum <oliver@neukum.org>
-References: <20220407001926.11252-1-lech.perczak@gmail.com>
- <20220407001926.11252-3-lech.perczak@gmail.com>
- <87o81d1kay.fsf@miraculix.mork.no>
-From:   Lech Perczak <lech.perczak@gmail.com>
-In-Reply-To: <87o81d1kay.fsf@miraculix.mork.no>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH bpf] xsk: fix l2fwd for copy mode + busy poll combo
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164936581210.6878.17567459374327495155.git-patchwork-notify@kernel.org>
+Date:   Thu, 07 Apr 2022 21:10:12 +0000
+References: <20220406155804.434493-1-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220406155804.434493-1-maciej.fijalkowski@intel.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, brouer@redhat.com, alexandr.lobakin@intel.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bjørn,
+Hello:
 
-Many thanks you for your review! Answers inline.
+This patch was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-W dniu 2022-04-07 o 08:25, Bjørn Mork pisze:
-> Lech Perczak <lech.perczak@gmail.com> writes:
->
->> +static int zte_rndis_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
->> +{
->> +	return rndis_rx_fixup(dev, skb) && usbnet_cdc_zte_rx_fixup(dev, skb);
->> +}
->>   
-> Does this work as expected? Only the last ethernet packet in the rndis
-> frame will end up being handled by usbnet_cdc_zte_rx_fixup().  The
-> others are cloned and submitted directly to usbnet_skb_return().
-I've got some positive reports from at least two owners of the device - 
-I don't have one myself. In the meantime asked them to run tests with 
-high traffic, because this should most probably manifest itself in that 
-scenario easily - my wild guess is that the modem doesn't use batching, 
-but you are most certainly right in the general case. And for testing on 
-older modems, we can probably only count on Kristian.
->
-> I don't know how to best solve that, but maybe add another
-> RNDIS_DRIVER_DATA_x flag and test that in rndis_rx_fixup?  I.e something
-> like
->
-> 	bool fixup_dst = dev->driver_info->data & RNDIS_DRIVER_DATA_FIXUP_DST:
->          ..
->
-> 		/* try to return all the packets in the batch */
-> 		skb2 = skb_clone(skb, GFP_ATOMIC);
-> 		if (unlikely(!skb2))
-> 			break;
-> 		skb_pull(skb, msg_len - sizeof *hdr);
-> 		skb_trim(skb2, data_len);
->                  if (fixup_dst)
->                  	usbnet_cdc_zte_rx_fixup(dev, skb2);
-> 		usbnet_skb_return(dev, skb2);
-> 	}
->          if (fixup_dst)
->                  usbnet_cdc_zte_rx_fixup(dev, skb);
->
-> 	/* caller will usbnet_skb_return the remaining packet */
-> 	return 1;
-> }
+On Wed,  6 Apr 2022 17:58:04 +0200 you wrote:
+> While checking AF_XDP copy mode combined with busy poll, strange
+> results were observed. rxdrop and txonly scenarios worked fine, but
+> l2fwd broke immediately.
+> 
+> After a deeper look, it turned out that for l2fwd, Tx side was exiting
+> early due to xsk_no_wakeup() returning true and in the end
+> xsk_generic_xmit() was never called. Note that AF_XDP Tx in copy mode is
+> syscall steered, so the current behavior is broken.
+> 
+> [...]
 
-I'll consider that. My concern with that approach is degradation of 
-performance by testing for that flag, both for ZTE and non-ZTE devices, 
-for each and every packet. But this might be the only solution, as I 
-cannot catch the n-1 sk_buffs from the batch mid-flight, only the last 
-one. The only other way that currently comes to my mind, is to duplicate 
-rndis_rx_fixup, with added calls to usbnet_cdc_zte_rx_fixup in the right 
-places. But the amount of duplicated code by doing so would be huge, so 
-I'd like to avoid that as well.
+Here is the summary with links:
+  - [bpf] xsk: fix l2fwd for copy mode + busy poll combo
+    https://git.kernel.org/bpf/bpf/c/8de8b71b787f
 
-I will definitely send a V2 after I decide on a solution and do some 
-testing, including high downlink traffic.
-
->
->
->
-> Bjørn
-
+You are awesome, thank you!
 -- 
-Pozdrawiam/Kind regards,
-Lech Perczak
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
