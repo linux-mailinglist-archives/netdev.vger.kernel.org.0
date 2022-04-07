@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D0594F757D
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 07:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51B4C4F7593
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 08:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238016AbiDGFwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 01:52:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48592 "EHLO
+        id S235324AbiDGGEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 02:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230486AbiDGFwR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 01:52:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936AB5F96;
-        Wed,  6 Apr 2022 22:50:15 -0700 (PDT)
+        with ESMTP id S232767AbiDGGEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 02:04:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9B61760CE;
+        Wed,  6 Apr 2022 23:02:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB9E6B826B9;
-        Thu,  7 Apr 2022 05:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7E1DAC385A5;
-        Thu,  7 Apr 2022 05:50:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CDE661CEE;
+        Thu,  7 Apr 2022 06:02:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F3BBC385A4;
+        Thu,  7 Apr 2022 06:02:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649310612;
-        bh=3YWLrpiFSvH6ZQ0daUuwV7CgfI5cVUWuqVsYagCDuEM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mh56rolN2SW5Y963J6o+m2zt0nSv9N5/ui1QuKEYGsuONE/YZYVoeRQczA0+xzJ3z
-         1EDi3IkB1Wos7IRMSmS9P6mzovTPL7CapRiJFvLT7r6QHmPnTYmh5l96k7kdovFt48
-         dBj6rBn1eXfsPGd1EIYnzdt394rj8J42OtMWaRTsVJwPIEVFwpPU64zdX3wgQMdU08
-         briKBV29XA6Itn4VuHrFyfb4uieIDEQdj4lf4daNAhCJnTi9qDrTJdHVaRsGLCFFIx
-         B9jw7ECUzTRY3oPQgc5QTEXOtuW9cc5hZsMWtbukUQ+Tcl8tppPaQmi/DlkUzzw3Iw
-         XlV0+aQkTApTA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 61B64E85B8C;
-        Thu,  7 Apr 2022 05:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1649311333;
+        bh=BgaoYC9KZxn0Wvwf28Pr/nfsxJngtamJAwW8EUBDJDE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W4EgE0vqt3708h/Y4wutArGRl5uSfqQN1wNoUCyczzDxUizUPppb0Fe0nndPt2ZGH
+         SxEqZnw/1mMUCKmYsKnsnr0gtEJ50h58N6zPrs934avYOk3zYQdq0CPEJd/VdDP/2g
+         QDhZILVA7xELVGlqBhY5J8uS7d+P91b+m5nlBMGfJgjubVDra5ZzLVgNJQm9IdnwU0
+         rRlkhQKxXQWmEo6TRFwOUdib55HQ9dfQQezMYKuBCQuEus2GiFg59CvGeBxbKtk/Ic
+         MKh24V93uCOlGKgAGaZzv0xetxOimB8LkoifQMsL3stSzTTuuTY9rqWtlhW8WhXQVb
+         uFcJT6VyEDhvg==
+Date:   Wed, 6 Apr 2022 23:02:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jamie Bainbridge <jamie.bainbridge@gmail.com>
+Cc:     Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Manish Chopra <manish.chopra@cavium.com>,
+        Ariel Elior <ariel.elior@cavium.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] qede: confirm skb is allocated before using
+Message-ID: <20220406230212.2763b868@kernel.org>
+In-Reply-To: <b86829347bc923c3b48487a941925292f103588d.1649210237.git.jamie.bainbridge@gmail.com>
+References: <b86829347bc923c3b48487a941925292f103588d.1649210237.git.jamie.bainbridge@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2] ipv6: fix locking issues with loops over
- idev->addr_list
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164931061239.16262.17688495506884085480.git-patchwork-notify@kernel.org>
-Date:   Thu, 07 Apr 2022 05:50:12 +0000
-References: <20220403231523.45843-1-dossche.niels@gmail.com>
-In-Reply-To: <20220403231523.45843-1-dossche.niels@gmail.com>
-To:     Niels Dossche <dossche.niels@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,30 +58,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon,  4 Apr 2022 01:15:24 +0200 you wrote:
-> idev->addr_list needs to be protected by idev->lock. However, it is not
-> always possible to do so while iterating and performing actions on
-> inet6_ifaddr instances. For example, multiple functions (like
-> addrconf_{join,leave}_anycast) eventually call down to other functions
-> that acquire the idev->lock. The current code temporarily unlocked the
-> idev->lock during the loops, which can cause race conditions. Moving the
-> locks up is also not an appropriate solution as the ordering of lock
-> acquisition will be inconsistent with for example mc_lock.
+On Wed,  6 Apr 2022 11:58:09 +1000 Jamie Bainbridge wrote:
+> qede_build_skb() assumes build_skb() always works and goes straight
+> to skb_reserve(). However, build_skb() can fail under memory pressure.
+> This results in a kernel panic because the skb to reserve is NULL.
 > 
-> [...]
+> Add a check in case build_skb() failed to allocate and return NULL.
+> 
+> The NULL return is handled correctly in callers to qede_build_skb().
+> 
+> Fixes: 8a8633978b842 ("qede: Add build_skb() support.")
+> Signed-off-by: Jamie Bainbridge <jamie.bainbridge@gmail.com>
 
-Here is the summary with links:
-  - [net-next,v2] ipv6: fix locking issues with loops over idev->addr_list
-    https://git.kernel.org/netdev/net-next/c/51454ea42c1a
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+FTR commit 4e910dbe3650 ("qede: confirm skb is allocated before using")
+in net.
