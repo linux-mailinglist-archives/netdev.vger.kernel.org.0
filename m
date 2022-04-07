@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C03C74F7A82
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 10:54:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E4C14F7A87
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 10:54:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243373AbiDGI4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 04:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
+        id S232453AbiDGI40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 04:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243338AbiDGI4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 04:56:17 -0400
+        with ESMTP id S243352AbiDGI4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 04:56:20 -0400
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8947A1B0BC5;
-        Thu,  7 Apr 2022 01:54:06 -0700 (PDT)
-X-UUID: 9d4593128a1a441ca1faff93d3380491-20220407
-X-UUID: 9d4593128a1a441ca1faff93d3380491-20220407
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CD4256677;
+        Thu,  7 Apr 2022 01:54:15 -0700 (PDT)
+X-UUID: 5f971f37c6b34234ac9c872879471170-20220407
+X-UUID: 5f971f37c6b34234ac9c872879471170-20220407
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
         (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1652143711; Thu, 07 Apr 2022 16:54:01 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 7 Apr 2022 16:54:01 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Apr
- 2022 16:54:00 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1309223339; Thu, 07 Apr 2022 16:54:11 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 7 Apr 2022 16:54:10 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 7 Apr
+ 2022 16:54:04 +0800
 Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 7 Apr 2022 16:53:59 +0800
+ Transport; Thu, 7 Apr 2022 16:54:03 +0800
 From:   Lina Wang <lina.wang@mediatek.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -44,154 +44,80 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
         Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH v5 2/3] selftests net: add UDP GRO fraglist + bpf self-tests
-Date:   Thu, 7 Apr 2022 16:47:26 +0800
-Message-ID: <20220407084727.10241-2-lina.wang@mediatek.com>
+Subject: [PATCH v5 3/3] net: fix wrong network header length
+Date:   Thu, 7 Apr 2022 16:47:27 +0800
+Message-ID: <20220407084727.10241-3-lina.wang@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220407084727.10241-1-lina.wang@mediatek.com>
 References: <20220407084727.10241-1-lina.wang@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When NETIF_F_GRO_FRAGLIST is enabled and bpf_skb_change_proto is used,
-check if udp packets and tcp packets are successfully delivered to user
-space. If wrong udp packets are delivered, udpgso_bench_rx will exit
-with "initial byte out of range".
+When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+network_header\transport_header\mac_header have been updated as ipv4 acts,
+but other skbs in frag_list didnot update anything, just ipv6 packets.
+
+udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+frag_list and make sure right udp payload is delivered to user space.
+Unfortunately, other skbs in frag_list who are still ipv6 packets are
+updated like the first skb and will have wrong transport header length.
+
+e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
+has the same network_header(24)& transport_header(64), after
+bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
+skb's network_header is 44,transport_header is 64, other skbs in frag_list
+didnot change.After skb_segment_list, the other skbs in frag_list has
+different network_header(24) and transport_header(44), so there will be 20
+bytes different from original,that is difference between ipv6 header and
+ipv4 header. Just change transport_header to be the same with original.
+
+Actually, there are two solutions to fix it, one is traversing all skbs
+and changing every skb header in bpf_skb_proto_6_to_4, the other is
+modifying frag_list skb's header in skb_segment_list. Considering
+efficiency, adopt the second one--- when the first skb and other skbs in
+frag_list has different network_header length, restore them to make sure
+right udp payload is delivered to user space.
 
 Signed-off-by: Lina Wang <lina.wang@mediatek.com>
 ---
- tools/testing/selftests/net/Makefile          |   1 +
- tools/testing/selftests/net/udpgro_frglist.sh | 101 ++++++++++++++++++
- 2 files changed, 102 insertions(+)
- create mode 100755 tools/testing/selftests/net/udpgro_frglist.sh
+ net/core/skbuff.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 3fe2515aa616..0490a14d3b99 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -25,6 +25,7 @@ TEST_PROGS += bareudp.sh
- TEST_PROGS += amt.sh
- TEST_PROGS += unicast_extensions.sh
- TEST_PROGS += udpgro_fwd.sh
-+TEST_PROGS += udpgro_frglist.sh
- TEST_PROGS += veth.sh
- TEST_PROGS += ioam6.sh
- TEST_PROGS += gro.sh
-diff --git a/tools/testing/selftests/net/udpgro_frglist.sh b/tools/testing/selftests/net/udpgro_frglist.sh
-new file mode 100755
-index 000000000000..89bd6abedcf1
---- /dev/null
-+++ b/tools/testing/selftests/net/udpgro_frglist.sh
-@@ -0,0 +1,101 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Run a series of udpgro benchmarks
-+
-+readonly PEER_NS="ns-peer-$(mktemp -u XXXXXX)"
-+
-+cleanup() {
-+	local -r jobs="$(jobs -p)"
-+	local -r ns="$(ip netns list|grep $PEER_NS)"
-+
-+	[ -n "${jobs}" ] && kill -INT ${jobs} 2>/dev/null
-+	[ -n "$ns" ] && ip netns del $ns 2>/dev/null
-+}
-+trap cleanup EXIT
-+
-+run_one() {
-+	# use 'rx' as separator between sender args and receiver args
-+	local -r all="$@"
-+	local -r tx_args=${all%rx*}
-+	local rx_args=${all#*rx}
-+
-+
-+
-+	ip netns add "${PEER_NS}"
-+	ip -netns "${PEER_NS}" link set lo up
-+	ip link add type veth
-+	ip link set dev veth0 up
-+	ip addr add dev veth0 192.168.1.2/24
-+	ip addr add dev veth0 2001:db8::2/64 nodad
-+
-+	ip link set dev veth1 netns "${PEER_NS}"
-+	ip -netns "${PEER_NS}" addr add dev veth1 192.168.1.1/24
-+	ip -netns "${PEER_NS}" addr add dev veth1 2001:db8::1/64 nodad
-+	ip -netns "${PEER_NS}" link set dev veth1 up
-+	ip netns exec "${PEER_NS}" ethtool -K veth1 rx-gro-list on
-+
-+
-+	ip -n "${PEER_NS}" link set veth1 xdp object ../bpf/xdp_dummy.o section xdp_dummy
-+	tc -n "${PEER_NS}" qdisc add dev veth1 clsact
-+	tc -n "${PEER_NS}" filter add dev veth1 ingress prio 4 protocol ipv6 bpf object-file ../bpf/nat6to4.o section schedcls/ingress6/nat_6  direct-action
-+	tc -n "${PEER_NS}" filter add dev veth1 egress prio 4 protocol ip bpf object-file ../bpf/nat6to4.o section schedcls/egress4/snat4 direct-action
-+        echo ${rx_args}
-+	ip netns exec "${PEER_NS}" ./udpgso_bench_rx ${rx_args} -r &
-+
-+	# Hack: let bg programs complete the startup
-+	sleep 0.1
-+	./udpgso_bench_tx ${tx_args}
-+}
-+
-+run_in_netns() {
-+	local -r args=$@
-+  echo ${args}
-+	./in_netns.sh $0 __subprocess ${args}
-+}
-+
-+run_udp() {
-+	local -r args=$@
-+
-+	echo "udp gso - over veth touching data"
-+	run_in_netns ${args} -u -S 0 rx -4 -v
-+
-+	echo "udp gso and gro - over veth touching data"
-+	run_in_netns ${args} -S 0 rx -4 -G
-+}
-+
-+run_tcp() {
-+	local -r args=$@
-+
-+	echo "tcp - over veth touching data"
-+	run_in_netns ${args} -t rx -4 -t
-+}
-+
-+run_all() {
-+	local -r core_args="-l 4"
-+	local -r ipv4_args="${core_args} -4  -D 192.168.1.1"
-+	local -r ipv6_args="${core_args} -6  -D 2001:db8::1"
-+
-+	echo "ipv6"
-+	run_tcp "${ipv6_args}"
-+	run_udp "${ipv6_args}"
-+}
-+
-+if [ ! -f ../bpf/xdp_dummy.o ]; then
-+	echo "Missing xdp_dummy helper. Build bpf selftest first"
-+	exit -1
-+fi
-+
-+if [ ! -f ../bpf/nat6to4.o ]; then
-+	echo "Missing nat6to4 helper. Build bpf selftest first"
-+	exit -1
-+fi
-+
-+if [[ $# -eq 0 ]]; then
-+	run_all
-+elif [[ $1 == "__subprocess" ]]; then
-+	shift
-+	run_one $@
-+else
-+	run_in_netns $@
-+fi
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 10bde7c6db44..e8006e0a1b25 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3897,7 +3897,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 	unsigned int delta_len = 0;
+ 	struct sk_buff *tail = NULL;
+ 	struct sk_buff *nskb, *tmp;
+-	int err;
++	int len_diff, err;
+ 
+ 	skb_push(skb, -skb_network_offset(skb) + offset);
+ 
+@@ -3937,9 +3937,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 		skb_push(nskb, -skb_network_offset(nskb) + offset);
+ 
+ 		skb_release_head_state(nskb);
++		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
+ 		__copy_skb_header(nskb, skb);
+ 
+ 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
++		nskb->transport_header += len_diff;
+ 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+ 						 nskb->data - tnl_hlen,
+ 						 offset + tnl_hlen);
 -- 
 2.18.0
 
