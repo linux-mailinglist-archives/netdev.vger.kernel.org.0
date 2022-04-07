@@ -2,263 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B4F54F7F95
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 14:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C6D54F7F9B
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 14:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245531AbiDGMz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 08:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56690 "EHLO
+        id S244304AbiDGM4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 08:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245514AbiDGMz2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 08:55:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009F522E967;
-        Thu,  7 Apr 2022 05:53:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB593B82762;
-        Thu,  7 Apr 2022 12:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E3CC385A0;
-        Thu,  7 Apr 2022 12:53:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649336005;
-        bh=DgEukseVqJ2f66I22KOLZIJNNrhxug0fQ7mB3fF8Bhw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oNx4WUn0yOuXJWvXAlHrVhERbyaCCUJVRzMyjJrVMFaAvsTYEUO6k2Z4dKrAOH6EL
-         llymqSRk3jkHxTiezrcJroBpp+0GC0B6xZQgtOfohnYyGa9WwHZo57Vm4RjvQ5Up7b
-         cIBxx2uZIUwIjPfE5pgQz9is/EIlkWJqyUle++IYTjqkTNvO2L5KsI1Yk2tV9PTv/D
-         FuYw5oD3OkVokbnTO1UNt0E20o7syDRf8LWrLYkJFXhoE+yJq2KoRDkgluOpLsMNTS
-         pXFAXF8s5pIDt6xyn+ow5hRUOJTkLC8KpUoCOkEKdgJB7+fTRpgd5VHwtd5uY4h0/B
-         Y+t/ZKYJhxMFg==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
-Date:   Thu,  7 Apr 2022 14:52:24 +0200
-Message-Id: <20220407125224.310255-5-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220407125224.310255-1-jolsa@kernel.org>
-References: <20220407125224.310255-1-jolsa@kernel.org>
+        with ESMTP id S235962AbiDGM4m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 08:56:42 -0400
+Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 678FA25A49E;
+        Thu,  7 Apr 2022 05:54:39 -0700 (PDT)
+Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 7 Apr 2022 20:54:13
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.181.226.201]
+Date:   Thu, 7 Apr 2022 20:54:13 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Dan Carpenter" <dan.carpenter@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, chris@zankel.net, jcmvbkbc@gmail.com,
+        mustafa.ismail@intel.com, shiraz.saleem@intel.com, jgg@ziepe.ca,
+        wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, jes@trained-monkey.org,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        alexander.deucher@amd.com, linux-xtensa@linux-xtensa.org,
+        linux-rdma@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-hippi@sunsite.dk,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: Re: [PATCH 09/11] drivers: infiniband: hw: Fix deadlock in
+ irdma_cleanup_cm_core()
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <20220407112455.GK3293@kadam>
+References: <cover.1649310812.git.duoming@zju.edu.cn>
+ <4069b99042d28c8e51b941d9e698b99d1656ed33.1649310812.git.duoming@zju.edu.cn>
+ <20220407112455.GK3293@kadam>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Message-ID: <1be0c02d.3f701.1800416ef60.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgDnXmL13k5iNReTAQ--.17805W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYNAVZdtZE4DQAFsX
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test that reads all functions from ftrace available_filter_functions
-file and attach them all through kprobe_multi API.
-
-It checks that the attach and detach times is under 2 seconds
-and printf stats info with -v option, like on my setup:
-
-  test_bench_attach: found 48712 functions
-  test_bench_attach: attached in   1.069s
-  test_bench_attach: detached in   0.373s
-
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../bpf/prog_tests/kprobe_multi_test.c        | 141 ++++++++++++++++++
- .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
- 2 files changed, 153 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index b9876b55fc0c..6798b54416de 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -2,6 +2,9 @@
- #include <test_progs.h>
- #include "kprobe_multi.skel.h"
- #include "trace_helpers.h"
-+#include "kprobe_multi_empty.skel.h"
-+#include "bpf/libbpf_internal.h"
-+#include "bpf/hashmap.h"
- 
- static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
- {
-@@ -301,6 +304,142 @@ static void test_attach_api_fails(void)
- 	kprobe_multi__destroy(skel);
- }
- 
-+static inline __u64 get_time_ns(void)
-+{
-+	struct timespec t;
-+
-+	clock_gettime(CLOCK_MONOTONIC, &t);
-+	return (__u64) t.tv_sec * 1000000000 + t.tv_nsec;
-+}
-+
-+static size_t symbol_hash(const void *key, void *ctx __maybe_unused)
-+{
-+	return str_hash((const char *) key);
-+}
-+
-+static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_unused)
-+{
-+	return strcmp((const char *) key1, (const char *) key2) == 0;
-+}
-+
-+#define DEBUGFS "/sys/kernel/debug/tracing/"
-+
-+static int get_syms(char ***symsp, size_t *cntp)
-+{
-+	size_t cap = 0, cnt = 0, i;
-+	char *name, **syms = NULL;
-+	struct hashmap *map;
-+	char buf[256];
-+	FILE *f;
-+	int err;
-+
-+	/*
-+	 * The available_filter_functions contains many duplicates,
-+	 * but other than that all symbols are usable in kprobe multi
-+	 * interface.
-+	 * Filtering out duplicates by using hashmap__add, which won't
-+	 * add existing entry.
-+	 */
-+	f = fopen(DEBUGFS "available_filter_functions", "r");
-+	if (!f)
-+		return -EINVAL;
-+
-+	map = hashmap__new(symbol_hash, symbol_equal, NULL);
-+	err = libbpf_get_error(map);
-+	if (err)
-+		goto error;
-+
-+	while (fgets(buf, sizeof(buf), f)) {
-+		/* skip modules */
-+		if (strchr(buf, '['))
-+			continue;
-+		if (sscanf(buf, "%ms$*[^\n]\n", &name) != 1)
-+			continue;
-+		err = hashmap__add(map, name, NULL);
-+		if (err) {
-+			free(name);
-+			if (err == -EEXIST)
-+				continue;
-+			goto error;
-+		}
-+		err = libbpf_ensure_mem((void **) &syms, &cap,
-+					sizeof(*syms), cnt + 1);
-+		if (err) {
-+			free(name);
-+			goto error;
-+		}
-+		syms[cnt] = name;
-+		cnt++;
-+	}
-+
-+	*symsp = syms;
-+	*cntp = cnt;
-+
-+error:
-+	fclose(f);
-+	hashmap__free(map);
-+	if (err) {
-+		for (i = 0; i < cnt; i++)
-+			free(syms[cnt]);
-+		free(syms);
-+	}
-+	return err;
-+}
-+
-+static void test_bench_attach(void)
-+{
-+	double attach_delta_ns, detach_delta_ns;
-+	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
-+	struct kprobe_multi_empty *skel = NULL;
-+	long attach_start_ns, attach_end_ns;
-+	long detach_start_ns, detach_end_ns;
-+	struct bpf_link *link = NULL;
-+	char **syms = NULL;
-+	size_t cnt, i;
-+
-+	if (!ASSERT_OK(get_syms(&syms, &cnt), "get_syms"))
-+		return;
-+
-+	skel = kprobe_multi_empty__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "kprobe_multi_empty__open_and_load"))
-+		goto cleanup;
-+
-+	opts.syms = (const char **) syms;
-+	opts.cnt = cnt;
-+
-+	attach_start_ns = get_time_ns();
-+	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe_empty,
-+						     NULL, &opts);
-+	attach_end_ns = get_time_ns();
-+
-+	if (!ASSERT_OK_PTR(link, "bpf_program__attach_kprobe_multi_opts"))
-+		goto cleanup;
-+
-+	detach_start_ns = get_time_ns();
-+	bpf_link__destroy(link);
-+	detach_end_ns = get_time_ns();
-+
-+	attach_delta_ns = (attach_end_ns - attach_start_ns) / 1000000000.0;
-+	detach_delta_ns = (detach_end_ns - detach_start_ns) / 1000000000.0;
-+
-+	fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
-+	fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta_ns);
-+	fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta_ns);
-+
-+	if (attach_delta_ns > 2.0)
-+		PRINT_FAIL("attach time above 2 seconds\n");
-+	if (detach_delta_ns > 2.0)
-+		PRINT_FAIL("detach time above 2 seconds\n");
-+
-+cleanup:
-+	kprobe_multi_empty__destroy(skel);
-+	if (syms) {
-+		for (i = 0; i < cnt; i++)
-+			free(syms[i]);
-+		free(syms);
-+	}
-+}
-+
- void test_kprobe_multi_test(void)
- {
- 	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
-@@ -320,4 +459,6 @@ void test_kprobe_multi_test(void)
- 		test_attach_api_syms();
- 	if (test__start_subtest("attach_api_fails"))
- 		test_attach_api_fails();
-+	if (test__start_subtest("bench_attach"))
-+		test_bench_attach();
- }
-diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
-new file mode 100644
-index 000000000000..be9e3d891d46
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
-@@ -0,0 +1,12 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("kprobe.multi/*")
-+int test_kprobe_empty(struct pt_regs *ctx)
-+{
-+	return 0;
-+}
--- 
-2.35.1
-
+SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMTQ6MjQ6NTYgKzAzMDAgRGFuIENhcnBlbnRlciB3
+cm90ZToKCj4gPiBUaGVyZSBpcyBhIGRlYWRsb2NrIGluIGlyZG1hX2NsZWFudXBfY21fY29yZSgp
+LCB3aGljaCBpcyBzaG93bgo+ID4gYmVsb3c6Cj4gPiAKPiA+ICAgIChUaHJlYWQgMSkgICAgICAg
+ICAgICAgIHwgICAgICAoVGhyZWFkIDIpCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICB8
+IGlyZG1hX3NjaGVkdWxlX2NtX3RpbWVyKCkKPiA+IGlyZG1hX2NsZWFudXBfY21fY29yZSgpICAg
+IHwgIGFkZF90aW1lcigpCj4gPiAgc3Bpbl9sb2NrX2lycXNhdmUoKSAvLygxKSB8ICAod2FpdCBh
+IHRpbWUpCj4gPiAgLi4uICAgICAgICAgICAgICAgICAgICAgICB8IGlyZG1hX2NtX3RpbWVyX3Rp
+Y2soKQo+ID4gIGRlbF90aW1lcl9zeW5jKCkgICAgICAgICAgfCAgc3Bpbl9sb2NrX2lycXNhdmUo
+KSAvLygyKQo+ID4gICh3YWl0IHRpbWVyIHRvIHN0b3ApICAgICAgfCAgLi4uCj4gPiAKPiA+IFdl
+IGhvbGQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMSkgb2YgdGhyZWFkIDEgYW5kCj4g
+PiB1c2UgZGVsX3RpbWVyX3N5bmMoKSB0byB3YWl0IHRpbWVyIHRvIHN0b3AsIGJ1dCB0aW1lciBo
+YW5kbGVyCj4gPiBhbHNvIG5lZWQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMikgb2Yg
+dGhyZWFkIDIuCj4gPiBBcyBhIHJlc3VsdCwgaXJkbWFfY2xlYW51cF9jbV9jb3JlKCkgd2lsbCBi
+bG9jayBmb3JldmVyLgo+ID4gCj4gPiBUaGlzIHBhdGNoIGV4dHJhY3RzIGRlbF90aW1lcl9zeW5j
+KCkgZnJvbSB0aGUgcHJvdGVjdGlvbiBvZgo+ID4gc3Bpbl9sb2NrX2lycXNhdmUoKSwgd2hpY2gg
+Y291bGQgbGV0IHRpbWVyIGhhbmRsZXIgdG8gb2J0YWluCj4gPiB0aGUgbmVlZGVkIGxvY2suCj4g
+PiAKPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+
+ID4gLS0tCj4gPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMgfCA1ICsrKystCj4g
+PiAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+ID4gCj4g
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMgYi9kcml2ZXJz
+L2luZmluaWJhbmQvaHcvaXJkbWEvY20uYwo+ID4gaW5kZXggZGVkYjNiN2VkZDguLjAxOWRkOGJm
+ZTA4IDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMKPiA+
+ICsrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9pcmRtYS9jbS5jCj4gPiBAQCAtMzI1Miw4ICsz
+MjUyLDExIEBAIHZvaWQgaXJkbWFfY2xlYW51cF9jbV9jb3JlKHN0cnVjdCBpcmRtYV9jbV9jb3Jl
+ICpjbV9jb3JlKQo+ID4gIAkJcmV0dXJuOwo+ID4gIAo+ID4gIAlzcGluX2xvY2tfaXJxc2F2ZSgm
+Y21fY29yZS0+aHRfbG9jaywgZmxhZ3MpOwo+ID4gLQlpZiAodGltZXJfcGVuZGluZygmY21fY29y
+ZS0+dGNwX3RpbWVyKSkKPiA+ICsJaWYgKHRpbWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1l
+cikpIHsKPiA+ICsJCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZs
+YWdzKTsKPiA+ICAJCWRlbF90aW1lcl9zeW5jKCZjbV9jb3JlLT50Y3BfdGltZXIpOwo+ID4gKwkJ
+c3Bpbl9sb2NrX2lycXNhdmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZsYWdzKTsKPiA+ICsJfQo+ID4g
+IAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjbV9jb3JlLT5odF9sb2NrLCBmbGFncyk7Cj4gCj4g
+VGhpcyBsb2NrIGRvZXNuJ3Qgc2VlbSB0byBiZSBwcm90ZWN0aW5nIGFueXRoaW5nLiAgQWxzbyBk
+byB3ZSBuZWVkIHRvCj4gY2hlY2sgdGltZXJfcGVuZGluZygpPyAgSSB0aGluayB0aGUgZGVsX3Rp
+bWVyX3N5bmMoKSBmdW5jdGlvbiB3aWxsIGp1c3QKPiByZXR1cm4gZGlyZWN0bHkgaWYgdGhlcmUg
+aXNuJ3QgYSBwZW5kaW5nIGxvY2s/CgpUaGFua3MgYSBsb3QgZm9yIHlvdXIgYWR2aWNlLCBJIHdp
+bGwgcmVtb3ZlIHRoZSB0aW1lcl9wZW5kaW5nKCkgYW5kIHRoZQpyZWR1bmRhbnQgbG9jay4KCkJl
+c3QgcmVnYXJkcywKRHVvbWluZyBaaG91
