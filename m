@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6024F75DF
+	by mail.lfdr.de (Postfix) with ESMTP id D89834F75E0
 	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 08:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240990AbiDGGYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 02:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
+        id S241001AbiDGGYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 02:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241020AbiDGGYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 02:24:00 -0400
+        with ESMTP id S241006AbiDGGYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 02:24:05 -0400
 Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479F21F6237;
-        Wed,  6 Apr 2022 23:21:56 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so5216167pjk.4;
-        Wed, 06 Apr 2022 23:21:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CEF817335C;
+        Wed,  6 Apr 2022 23:22:06 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id gt4so4678468pjb.4;
+        Wed, 06 Apr 2022 23:22:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qIQAXIraFBo7pp9F+UKiJewbp52XCbv0LyD3lJdVZ6Q=;
-        b=gEedZBPxVf7D2He4oUQ7Kmh59QVd9sD/7AU5O55/vRm09Px+34OduFUK8lUZ0NkEUg
-         Z50Q6EjWk4SD+YUnCJdE3bTvgUrvExZRRn+/mxcLTb3DGA57t8NYTYEj5ptePHAZuhn/
-         bNOfsOwFH7BkcbIQbea1+FZVIQi65sqAhHg2/0A6nOCySWli1zJ9Bxgo7z2dSAfEUDLo
-         U7xi5Qdz/oXoKqUZVcgHChtOH04RUYhnb8NisDc3Wb7fOSjHZzXKbvWB3+XMcKeRUWRi
-         WFb/IScqFFqfsHhCnisQSEDfxNioQ6wAdKiDvpjtm2ExDLLwTVe7CPwD0TZn/R2+Ba9z
-         AQ0A==
+        bh=//KZ6YHhys1mLVWKPMFh1+e7V9mc1xx+r9/4L0Awq3M=;
+        b=JCzxspGLnoO/gWqkguN6ckSzcjztc5fY16WYZoRzyWFIzDhL8KXlOFWDM9MR42vo7/
+         RJbAlNWFPg4ema/EFN29NAn4CWgYNmBkaIemdYU+IgnyyqNdj/pDuK9f6DOD10GpX6JY
+         YBs70AZekvg1GEY1CC8MN1nXz3uAWTc1XnG1Mu2aVRqoxCM5O3Nom5ZTX+Qo9wSGVAhJ
+         itxWLNyXP8uJ1T1XJUNGvHj52Kai6wHlVAMbfgQY0ylfNr7D/1PU8Gc1uLR0/OTm/thq
+         HZd/y9gIxdxKc50M/dRXUUBx/vLf0IeOATfKwH/tgGzTraVaawElhBOk8erC4RdwL7ha
+         fLug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qIQAXIraFBo7pp9F+UKiJewbp52XCbv0LyD3lJdVZ6Q=;
-        b=qYV5AuDSF/EOF4Iur1YLcdwfra+MrfY/kP6MFijdBgJMFt7anQlUskNZNt4tzCsIcn
-         Ho4xjbkua/HyEDHlW27mPxOei9nQgdb+mqLiVDcZBybX5jXmmvvhExLPuALKacjVVHTJ
-         AFrieLlN8nYmY8wl3MZPV5BWUentExaRfhv0MKMCZ8EHyHRh8w1aB2tcuFT52Si30t31
-         UpgBVeR7DEoaTDAYSdrGW1Gm6e9po86jxw/GZsxkiyEgRP8SaMUI499FOahwhdp/iPdn
-         u2KTDqxN0tSqZJMM+tkpj1YE+NKMV2eF0BZwwaEZF4qdtx+lVdEr0z9eqUyf5AFhm0VN
-         f9lg==
-X-Gm-Message-State: AOAM531C5LUJNMsRkwytSvd1OwjX+LWQppdIJ4bn59LCiJQKqCo/rg4y
-        A162sb3sQSmpcMmzuWj3Uc4=
-X-Google-Smtp-Source: ABdhPJxRK9fYIDIA1/razN1poHLxz5XFZ0QtPpUUs7d3rBRM8YFikT09NIFIUC850TYNhWapRJ4E+Q==
-X-Received: by 2002:a17:902:c94a:b0:156:ae43:4023 with SMTP id i10-20020a170902c94a00b00156ae434023mr12143321pla.115.1649312516054;
-        Wed, 06 Apr 2022 23:21:56 -0700 (PDT)
+        bh=//KZ6YHhys1mLVWKPMFh1+e7V9mc1xx+r9/4L0Awq3M=;
+        b=q2VjfOlgNjaYUoml4V2MJ0VSj4EhGsyMeGiDsxR1cq+pRN3J7L8wnT4XGrSqQMiTPc
+         bNht+VH5WlDqYOp324akygWS4fEhSfyzPnx6jgO7j9yo3MPkUMJab358pfxslBoiQPRU
+         8el8LK+FOfh+8WsqhJis4M0aD+LHZjqba6mpfeDZUlMweiDobQOxcaTzIZM2bNDlMM4B
+         JiqPtD4hR35BOYNTwDngP+eDRKOErKdhA9fBMcPoEb2tToRpL/idruQ9sJTJS1lAArrO
+         z4r5rd0dQh4rVYrtr0zQGGrv+TO0++gjfc2Mt12ISLmfzNAa8pb8f6Im5ExoHGqqQVym
+         h29w==
+X-Gm-Message-State: AOAM532USsXkcGL7wkRQZGC1UsnD7eR3HBZeEwolvhHfabLCexcINAV6
+        d1vVMRALGGOO1VxPKOCO0bM=
+X-Google-Smtp-Source: ABdhPJx2bs5VWR00T+NLUxXxO3g8V338nWdiIp9YK8U6oNn5LdkhOw84v3lt0p7hlZMlwFYDSnm4HA==
+X-Received: by 2002:a17:903:244b:b0:154:2cb2:86d with SMTP id l11-20020a170903244b00b001542cb2086dmr12160340pls.123.1649312526024;
+        Wed, 06 Apr 2022 23:22:06 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.118])
-        by smtp.gmail.com with ESMTPSA id k92-20020a17090a4ce500b001ca69b5c034sm7522829pjh.46.2022.04.06.23.21.46
+        by smtp.gmail.com with ESMTPSA id k92-20020a17090a4ce500b001ca69b5c034sm7522829pjh.46.2022.04.06.23.21.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 23:21:55 -0700 (PDT)
+        Wed, 06 Apr 2022 23:22:05 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     dsahern@kernel.org, kuba@kernel.org, pabeni@redhat.com
@@ -57,9 +57,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, xeb@mail.ru,
         flyingpeng@tencent.com, mengensun@tencent.com,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, benbjiang@tencent.com
-Subject: [PATCH RESEND net-next v5 1/4] net: sock: introduce sock_queue_rcv_skb_reason()
-Date:   Thu,  7 Apr 2022 14:20:49 +0800
-Message-Id: <20220407062052.15907-2-imagedong@tencent.com>
+Subject: [PATCH RESEND net-next v5 2/4] net: skb: rename SKB_DROP_REASON_PTYPE_ABSENT
+Date:   Thu,  7 Apr 2022 14:20:50 +0800
+Message-Id: <20220407062052.15907-3-imagedong@tencent.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407062052.15907-1-imagedong@tencent.com>
 References: <20220407062052.15907-1-imagedong@tencent.com>
@@ -77,91 +77,76 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-In order to report the reasons of skb drops in 'sock_queue_rcv_skb()',
-introduce the function 'sock_queue_rcv_skb_reason()'.
+As David Ahern suggested, the reasons for skb drops should be more
+general and not be code based.
 
-As the return value of 'sock_queue_rcv_skb()' is used as the error code,
-we can't make it as drop reason and have to pass extra output argument.
-'sock_queue_rcv_skb()' is used in many places, so we can't change it
-directly.
+Therefore, rename SKB_DROP_REASON_PTYPE_ABSENT to
+SKB_DROP_REASON_UNHANDLED_PROTO, which is used for the cases of no
+L3 protocol handler, no L4 protocol handler, version extensions, etc.
 
-Introduce the new function 'sock_queue_rcv_skb_reason()' and make
-'sock_queue_rcv_skb()' an inline call to it.
+From previous discussion, now we have the aim to make these reasons
+more abstract and users based, avoiding code based.
 
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/net/sock.h |  9 ++++++++-
- net/core/sock.c    | 30 ++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 7 deletions(-)
+ include/linux/skbuff.h     | 8 +++-----
+ include/trace/events/skb.h | 2 +-
+ net/core/dev.c             | 8 +++-----
+ 3 files changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index c4b91fc19b9c..1a988e605f09 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2392,7 +2392,14 @@ int __sk_queue_drop_skb(struct sock *sk, struct sk_buff_head *sk_queue,
- 			void (*destructor)(struct sock *sk,
- 					   struct sk_buff *skb));
- int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
--int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb);
-+
-+int sock_queue_rcv_skb_reason(struct sock *sk, struct sk_buff *skb,
-+			      enum skb_drop_reason *reason);
-+
-+static inline int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-+{
-+	return sock_queue_rcv_skb_reason(sk, skb, NULL);
-+}
- 
- int sock_queue_err_skb(struct sock *sk, struct sk_buff *skb);
- struct sk_buff *sock_dequeue_err_skb(struct sock *sk);
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 1180a0cb0110..2cae991f817e 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -503,17 +503,35 @@ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
- }
- EXPORT_SYMBOL(__sock_queue_rcv_skb);
- 
--int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-+int sock_queue_rcv_skb_reason(struct sock *sk, struct sk_buff *skb,
-+			      enum skb_drop_reason *reason)
- {
-+	enum skb_drop_reason drop_reason;
- 	int err;
- 
- 	err = sk_filter(sk, skb);
--	if (err)
--		return err;
--
--	return __sock_queue_rcv_skb(sk, skb);
-+	if (err) {
-+		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
-+		goto out;
-+	}
-+	err = __sock_queue_rcv_skb(sk, skb);
-+	switch (err) {
-+	case -ENOMEM:
-+		drop_reason = SKB_DROP_REASON_SOCKET_RCVBUFF;
-+		break;
-+	case -ENOBUFS:
-+		drop_reason = SKB_DROP_REASON_PROTO_MEM;
-+		break;
-+	default:
-+		drop_reason = SKB_NOT_DROPPED_YET;
-+		break;
-+	}
-+out:
-+	if (reason)
-+		*reason = drop_reason;
-+	return err;
- }
--EXPORT_SYMBOL(sock_queue_rcv_skb);
-+EXPORT_SYMBOL(sock_queue_rcv_skb_reason);
- 
- int __sk_receive_skb(struct sock *sk, struct sk_buff *skb,
- 		     const int nested, unsigned int trim_cap, bool refcounted)
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 26538ceb4b01..10ba07892c46 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -408,11 +408,9 @@ enum skb_drop_reason {
+ 					 */
+ 	SKB_DROP_REASON_XDP,		/* dropped by XDP in input path */
+ 	SKB_DROP_REASON_TC_INGRESS,	/* dropped in TC ingress HOOK */
+-	SKB_DROP_REASON_PTYPE_ABSENT,	/* not packet_type found to handle
+-					 * the skb. For an etner packet,
+-					 * this means that L3 protocol is
+-					 * not supported
+-					 */
++	SKB_DROP_REASON_UNHANDLED_PROTO,	/* protocol not implemented
++						 * or not supported
++						 */
+ 	SKB_DROP_REASON_SKB_CSUM,	/* sk_buff checksum computation
+ 					 * error
+ 					 */
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index e1670e1e4934..85abd7cbd221 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -50,7 +50,7 @@
+ 	EM(SKB_DROP_REASON_CPU_BACKLOG, CPU_BACKLOG)		\
+ 	EM(SKB_DROP_REASON_XDP, XDP)				\
+ 	EM(SKB_DROP_REASON_TC_INGRESS, TC_INGRESS)		\
+-	EM(SKB_DROP_REASON_PTYPE_ABSENT, PTYPE_ABSENT)		\
++	EM(SKB_DROP_REASON_UNHANDLED_PROTO, UNHANDLED_PROTO)	\
+ 	EM(SKB_DROP_REASON_SKB_CSUM, SKB_CSUM)			\
+ 	EM(SKB_DROP_REASON_SKB_GSO_SEG, SKB_GSO_SEG)		\
+ 	EM(SKB_DROP_REASON_SKB_UCOPY_FAULT, SKB_UCOPY_FAULT)	\
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 75bab5b0dbae..d73b35e6aae4 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5359,13 +5359,11 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+ 		*ppt_prev = pt_prev;
+ 	} else {
+ drop:
+-		if (!deliver_exact) {
++		if (!deliver_exact)
+ 			dev_core_stats_rx_dropped_inc(skb->dev);
+-			kfree_skb_reason(skb, SKB_DROP_REASON_PTYPE_ABSENT);
+-		} else {
++		else
+ 			dev_core_stats_rx_nohandler_inc(skb->dev);
+-			kfree_skb(skb);
+-		}
++		kfree_skb_reason(skb, SKB_DROP_REASON_UNHANDLED_PROTO);
+ 		/* Jamal, now you will not able to escape explaining
+ 		 * me how you were going to use this. :-)
+ 		 */
 -- 
 2.35.1
 
