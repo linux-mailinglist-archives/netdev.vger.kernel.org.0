@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2573D4F7F90
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 14:53:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B4F54F7F95
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 14:53:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245523AbiDGMz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 08:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56442 "EHLO
+        id S245531AbiDGMz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 08:55:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245522AbiDGMzZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 08:55:25 -0400
+        with ESMTP id S245514AbiDGMz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 08:55:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBFA259B78;
-        Thu,  7 Apr 2022 05:53:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009F522E967;
+        Thu,  7 Apr 2022 05:53:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91E80B82762;
-        Thu,  7 Apr 2022 12:53:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1CFAC385A4;
-        Thu,  7 Apr 2022 12:53:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB593B82762;
+        Thu,  7 Apr 2022 12:53:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45E3CC385A0;
+        Thu,  7 Apr 2022 12:53:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649335994;
-        bh=fUlOg+eV0hgirN13ZBDx1VtaVDLRtjWEM/8pa4q0EIU=;
+        s=k20201202; t=1649336005;
+        bh=DgEukseVqJ2f66I22KOLZIJNNrhxug0fQ7mB3fF8Bhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NCJSN+sZKR/lnVJn7SaGKRiJmcjHrPqZ++AeOQsspqgvlUInvzrIY42t/5H0eJtmj
-         N/dVf3Dv+UQQ3LFXT2J8QXwlvCxv+0uviZsjFkLUtAPy4ECYIUew9VipbJACEnQN+P
-         QgtfogYOk4nY3QSWUWJF2FrbHlQ2AgdBi/S+3NNm5KzQeQT5GdCDZxNzmdpkn0WiAt
-         5WGPrSPBWiI5wgNr+WGAnE+BkIn4BX5gfFQsAxH5SnzZUPE11TO8uMg6kpja5AMFUj
-         XiG3iClF+2WhWPHkLYsVbVy7uyTlS3v9YmsTVGHXgqqpT+e65HjxDSANV8H9wRi7r7
-         w1F6sbeNMoxiA==
+        b=oNx4WUn0yOuXJWvXAlHrVhERbyaCCUJVRzMyjJrVMFaAvsTYEUO6k2Z4dKrAOH6EL
+         llymqSRk3jkHxTiezrcJroBpp+0GC0B6xZQgtOfohnYyGa9WwHZo57Vm4RjvQ5Up7b
+         cIBxx2uZIUwIjPfE5pgQz9is/EIlkWJqyUle++IYTjqkTNvO2L5KsI1Yk2tV9PTv/D
+         FuYw5oD3OkVokbnTO1UNt0E20o7syDRf8LWrLYkJFXhoE+yJq2KoRDkgluOpLsMNTS
+         pXFAXF8s5pIDt6xyn+ow5hRUOJTkLC8KpUoCOkEKdgJB7+fTRpgd5VHwtd5uY4h0/B
+         Y+t/ZKYJhxMFg==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -42,9 +42,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>
-Subject: [RFC bpf-next 3/4] bpf: Resolve symbols with kallsyms_lookup_names for kprobe multi link
-Date:   Thu,  7 Apr 2022 14:52:23 +0200
-Message-Id: <20220407125224.310255-4-jolsa@kernel.org>
+Subject: [RFC bpf-next 4/4] selftests/bpf: Add attach bench test
+Date:   Thu,  7 Apr 2022 14:52:24 +0200
+Message-Id: <20220407125224.310255-5-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220407125224.310255-1-jolsa@kernel.org>
 References: <20220407125224.310255-1-jolsa@kernel.org>
@@ -60,175 +60,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using kallsyms_lookup_names function to speed up symbols lookup in
-kprobe multi link attachment and replacing with it the current
-kprobe_multi_resolve_syms function.
+Adding test that reads all functions from ftrace available_filter_functions
+file and attach them all through kprobe_multi API.
 
-This speeds up bpftrace kprobe attachment:
+It checks that the attach and detach times is under 2 seconds
+and printf stats info with -v option, like on my setup:
 
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
-
-After:
-
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+  test_bench_attach: found 48712 functions
+  test_bench_attach: attached in   1.069s
+  test_bench_attach: detached in   0.373s
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- kernel/trace/bpf_trace.c | 123 +++++++++++++++++++++++----------------
- 1 file changed, 73 insertions(+), 50 deletions(-)
+ .../bpf/prog_tests/kprobe_multi_test.c        | 141 ++++++++++++++++++
+ .../selftests/bpf/progs/kprobe_multi_empty.c  |  12 ++
+ 2 files changed, 153 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index b26f3da943de..2602957225ba 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2226,6 +2226,72 @@ struct bpf_kprobe_multi_run_ctx {
- 	unsigned long entry_ip;
- };
+diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+index b9876b55fc0c..6798b54416de 100644
+--- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
++++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+@@ -2,6 +2,9 @@
+ #include <test_progs.h>
+ #include "kprobe_multi.skel.h"
+ #include "trace_helpers.h"
++#include "kprobe_multi_empty.skel.h"
++#include "bpf/libbpf_internal.h"
++#include "bpf/hashmap.h"
  
-+struct user_syms {
-+	const char **syms;
-+	char *buf;
-+};
-+
-+static int copy_user_syms(struct user_syms *us, void __user *usyms, u32 cnt)
+ static void kprobe_multi_test_run(struct kprobe_multi *skel, bool test_return)
+ {
+@@ -301,6 +304,142 @@ static void test_attach_api_fails(void)
+ 	kprobe_multi__destroy(skel);
+ }
+ 
++static inline __u64 get_time_ns(void)
 +{
-+	const char __user **usyms_copy = NULL;
-+	const char **syms = NULL;
-+	char *buf = NULL, *p;
-+	int err = -EFAULT;
-+	unsigned int i;
-+	size_t size;
++	struct timespec t;
 +
-+	size = cnt * sizeof(*usyms_copy);
++	clock_gettime(CLOCK_MONOTONIC, &t);
++	return (__u64) t.tv_sec * 1000000000 + t.tv_nsec;
++}
 +
-+	usyms_copy = kvmalloc(size, GFP_KERNEL);
-+	if (!usyms_copy)
-+		return -ENOMEM;
++static size_t symbol_hash(const void *key, void *ctx __maybe_unused)
++{
++	return str_hash((const char *) key);
++}
 +
-+	if (copy_from_user(usyms_copy, usyms, size))
-+		goto error;
++static bool symbol_equal(const void *key1, const void *key2, void *ctx __maybe_unused)
++{
++	return strcmp((const char *) key1, (const char *) key2) == 0;
++}
 +
-+	err = -ENOMEM;
-+	syms = kvmalloc(size, GFP_KERNEL);
-+	if (!syms)
-+		goto error;
++#define DEBUGFS "/sys/kernel/debug/tracing/"
 +
-+	/* TODO this potentially allocates lot of memory (~6MB in my tests
-+	 * with attaching ~40k functions). I haven't seen this to fail yet,
-+	 * but it could be changed to allocate memory gradually if needed.
++static int get_syms(char ***symsp, size_t *cntp)
++{
++	size_t cap = 0, cnt = 0, i;
++	char *name, **syms = NULL;
++	struct hashmap *map;
++	char buf[256];
++	FILE *f;
++	int err;
++
++	/*
++	 * The available_filter_functions contains many duplicates,
++	 * but other than that all symbols are usable in kprobe multi
++	 * interface.
++	 * Filtering out duplicates by using hashmap__add, which won't
++	 * add existing entry.
 +	 */
-+	size = cnt * KSYM_NAME_LEN;
-+	buf = kvmalloc(size, GFP_KERNEL);
-+	if (!buf)
++	f = fopen(DEBUGFS "available_filter_functions", "r");
++	if (!f)
++		return -EINVAL;
++
++	map = hashmap__new(symbol_hash, symbol_equal, NULL);
++	err = libbpf_get_error(map);
++	if (err)
 +		goto error;
 +
-+	for (p = buf, i = 0; i < cnt; i++) {
-+		err = strncpy_from_user(p, usyms_copy[i], KSYM_NAME_LEN);
-+		if (err == KSYM_NAME_LEN)
-+			err = -E2BIG;
-+		if (err < 0)
++	while (fgets(buf, sizeof(buf), f)) {
++		/* skip modules */
++		if (strchr(buf, '['))
++			continue;
++		if (sscanf(buf, "%ms$*[^\n]\n", &name) != 1)
++			continue;
++		err = hashmap__add(map, name, NULL);
++		if (err) {
++			free(name);
++			if (err == -EEXIST)
++				continue;
 +			goto error;
-+		syms[i] = p;
-+		p += err + 1;
++		}
++		err = libbpf_ensure_mem((void **) &syms, &cap,
++					sizeof(*syms), cnt + 1);
++		if (err) {
++			free(name);
++			goto error;
++		}
++		syms[cnt] = name;
++		cnt++;
 +	}
 +
-+	err = 0;
-+	us->syms = syms;
-+	us->buf = buf;
++	*symsp = syms;
++	*cntp = cnt;
 +
 +error:
-+	kvfree(usyms_copy);
++	fclose(f);
++	hashmap__free(map);
 +	if (err) {
-+		kvfree(syms);
-+		kvfree(buf);
++		for (i = 0; i < cnt; i++)
++			free(syms[cnt]);
++		free(syms);
 +	}
 +	return err;
 +}
 +
-+static void free_user_syms(struct user_syms *us)
++static void test_bench_attach(void)
 +{
-+	kvfree(us->syms);
-+	kvfree(us->buf);
++	double attach_delta_ns, detach_delta_ns;
++	LIBBPF_OPTS(bpf_kprobe_multi_opts, opts);
++	struct kprobe_multi_empty *skel = NULL;
++	long attach_start_ns, attach_end_ns;
++	long detach_start_ns, detach_end_ns;
++	struct bpf_link *link = NULL;
++	char **syms = NULL;
++	size_t cnt, i;
++
++	if (!ASSERT_OK(get_syms(&syms, &cnt), "get_syms"))
++		return;
++
++	skel = kprobe_multi_empty__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "kprobe_multi_empty__open_and_load"))
++		goto cleanup;
++
++	opts.syms = (const char **) syms;
++	opts.cnt = cnt;
++
++	attach_start_ns = get_time_ns();
++	link = bpf_program__attach_kprobe_multi_opts(skel->progs.test_kprobe_empty,
++						     NULL, &opts);
++	attach_end_ns = get_time_ns();
++
++	if (!ASSERT_OK_PTR(link, "bpf_program__attach_kprobe_multi_opts"))
++		goto cleanup;
++
++	detach_start_ns = get_time_ns();
++	bpf_link__destroy(link);
++	detach_end_ns = get_time_ns();
++
++	attach_delta_ns = (attach_end_ns - attach_start_ns) / 1000000000.0;
++	detach_delta_ns = (detach_end_ns - detach_start_ns) / 1000000000.0;
++
++	fprintf(stderr, "%s: found %lu functions\n", __func__, cnt);
++	fprintf(stderr, "%s: attached in %7.3lfs\n", __func__, attach_delta_ns);
++	fprintf(stderr, "%s: detached in %7.3lfs\n", __func__, detach_delta_ns);
++
++	if (attach_delta_ns > 2.0)
++		PRINT_FAIL("attach time above 2 seconds\n");
++	if (detach_delta_ns > 2.0)
++		PRINT_FAIL("detach time above 2 seconds\n");
++
++cleanup:
++	kprobe_multi_empty__destroy(skel);
++	if (syms) {
++		for (i = 0; i < cnt; i++)
++			free(syms[i]);
++		free(syms);
++	}
 +}
 +
- static void bpf_kprobe_multi_link_release(struct bpf_link *link)
+ void test_kprobe_multi_test(void)
  {
- 	struct bpf_kprobe_multi_link *kmulti_link;
-@@ -2346,55 +2412,6 @@ kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
- 	kprobe_multi_link_prog_run(link, entry_ip, regs);
+ 	if (!ASSERT_OK(load_kallsyms(), "load_kallsyms"))
+@@ -320,4 +459,6 @@ void test_kprobe_multi_test(void)
+ 		test_attach_api_syms();
+ 	if (test__start_subtest("attach_api_fails"))
+ 		test_attach_api_fails();
++	if (test__start_subtest("bench_attach"))
++		test_bench_attach();
  }
- 
--static int
--kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
--			  unsigned long *addrs)
--{
--	unsigned long addr, size;
--	const char __user **syms;
--	int err = -ENOMEM;
--	unsigned int i;
--	char *func;
--
--	size = cnt * sizeof(*syms);
--	syms = kvzalloc(size, GFP_KERNEL);
--	if (!syms)
--		return -ENOMEM;
--
--	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
--	if (!func)
--		goto error;
--
--	if (copy_from_user(syms, usyms, size)) {
--		err = -EFAULT;
--		goto error;
--	}
--
--	for (i = 0; i < cnt; i++) {
--		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
--		if (err == KSYM_NAME_LEN)
--			err = -E2BIG;
--		if (err < 0)
--			goto error;
--		err = -EINVAL;
--		addr = kallsyms_lookup_name(func);
--		if (!addr)
--			goto error;
--		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
--			goto error;
--		addr = ftrace_location_range(addr, addr + size - 1);
--		if (!addr)
--			goto error;
--		addrs[i] = addr;
--	}
--
--	err = 0;
--error:
--	kvfree(syms);
--	kfree(func);
--	return err;
--}
--
- int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
- {
- 	struct bpf_kprobe_multi_link *link = NULL;
-@@ -2438,7 +2455,13 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 			goto error;
- 		}
- 	} else {
--		err = kprobe_multi_resolve_syms(usyms, cnt, addrs);
-+		struct user_syms us;
+diff --git a/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+new file mode 100644
+index 000000000000..be9e3d891d46
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
 +
-+		err = copy_user_syms(&us, usyms, cnt);
-+		if (err)
-+			goto error;
-+		err = kallsyms_lookup_names(us.syms, cnt, addrs);
-+		free_user_syms(&us);
- 		if (err)
- 			goto error;
- 	}
++char _license[] SEC("license") = "GPL";
++
++SEC("kprobe.multi/*")
++int test_kprobe_empty(struct pt_regs *ctx)
++{
++	return 0;
++}
 -- 
 2.35.1
 
