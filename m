@@ -2,97 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6D54F7F9B
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 14:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123C54F7FDC
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 15:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244304AbiDGM4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 08:56:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34606 "EHLO
+        id S245702AbiDGNDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 09:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235962AbiDGM4m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 08:56:42 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 678FA25A49E;
-        Thu,  7 Apr 2022 05:54:39 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 7 Apr 2022 20:54:13
- +0800 (GMT+08:00)
-X-Originating-IP: [10.181.226.201]
-Date:   Thu, 7 Apr 2022 20:54:13 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Dan Carpenter" <dan.carpenter@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, chris@zankel.net, jcmvbkbc@gmail.com,
-        mustafa.ismail@intel.com, shiraz.saleem@intel.com, jgg@ziepe.ca,
-        wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, jes@trained-monkey.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        alexander.deucher@amd.com, linux-xtensa@linux-xtensa.org,
-        linux-rdma@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-hippi@sunsite.dk,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: Re: [PATCH 09/11] drivers: infiniband: hw: Fix deadlock in
- irdma_cleanup_cm_core()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220407112455.GK3293@kadam>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <4069b99042d28c8e51b941d9e698b99d1656ed33.1649310812.git.duoming@zju.edu.cn>
- <20220407112455.GK3293@kadam>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S245675AbiDGNDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 09:03:32 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D987E22FDBC
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 06:01:32 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ncRlI-0002Av-JA; Thu, 07 Apr 2022 15:01:20 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-b17e-6ba8-60fd-ca2d.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:b17e:6ba8:60fd:ca2d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id AAA2B5D40C;
+        Thu,  7 Apr 2022 13:01:18 +0000 (UTC)
+Date:   Thu, 7 Apr 2022 15:01:18 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Thierry Reding <thierry.reding@gmail.com>
+Cc:     Brian Silverman <bsilver16384@gmail.com>,
+        Brian Silverman <brian.silverman@bluerivertech.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Dan Murphy <dmurphy@ti.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
+Subject: Re: [RFC PATCH] can: m_can: Add driver for M_CAN hardware in NVIDIA
+ devices
+Message-ID: <20220407130118.hp5szzhg4v6szmbq@pengutronix.de>
+References: <20220106002514.24589-1-brian.silverman@bluerivertech.com>
+ <Yk2vOj8wKi4FdPg2@orome>
 MIME-Version: 1.0
-Message-ID: <1be0c02d.3f701.1800416ef60.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgDnXmL13k5iNReTAQ--.17805W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgYNAVZdtZE4DQAFsX
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="n7sqxwpygc2d6wn2"
+Content-Disposition: inline
+In-Reply-To: <Yk2vOj8wKi4FdPg2@orome>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMTQ6MjQ6NTYgKzAzMDAgRGFuIENhcnBlbnRlciB3
-cm90ZToKCj4gPiBUaGVyZSBpcyBhIGRlYWRsb2NrIGluIGlyZG1hX2NsZWFudXBfY21fY29yZSgp
-LCB3aGljaCBpcyBzaG93bgo+ID4gYmVsb3c6Cj4gPiAKPiA+ICAgIChUaHJlYWQgMSkgICAgICAg
-ICAgICAgIHwgICAgICAoVGhyZWFkIDIpCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICB8
-IGlyZG1hX3NjaGVkdWxlX2NtX3RpbWVyKCkKPiA+IGlyZG1hX2NsZWFudXBfY21fY29yZSgpICAg
-IHwgIGFkZF90aW1lcigpCj4gPiAgc3Bpbl9sb2NrX2lycXNhdmUoKSAvLygxKSB8ICAod2FpdCBh
-IHRpbWUpCj4gPiAgLi4uICAgICAgICAgICAgICAgICAgICAgICB8IGlyZG1hX2NtX3RpbWVyX3Rp
-Y2soKQo+ID4gIGRlbF90aW1lcl9zeW5jKCkgICAgICAgICAgfCAgc3Bpbl9sb2NrX2lycXNhdmUo
-KSAvLygyKQo+ID4gICh3YWl0IHRpbWVyIHRvIHN0b3ApICAgICAgfCAgLi4uCj4gPiAKPiA+IFdl
-IGhvbGQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMSkgb2YgdGhyZWFkIDEgYW5kCj4g
-PiB1c2UgZGVsX3RpbWVyX3N5bmMoKSB0byB3YWl0IHRpbWVyIHRvIHN0b3AsIGJ1dCB0aW1lciBo
-YW5kbGVyCj4gPiBhbHNvIG5lZWQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMikgb2Yg
-dGhyZWFkIDIuCj4gPiBBcyBhIHJlc3VsdCwgaXJkbWFfY2xlYW51cF9jbV9jb3JlKCkgd2lsbCBi
-bG9jayBmb3JldmVyLgo+ID4gCj4gPiBUaGlzIHBhdGNoIGV4dHJhY3RzIGRlbF90aW1lcl9zeW5j
-KCkgZnJvbSB0aGUgcHJvdGVjdGlvbiBvZgo+ID4gc3Bpbl9sb2NrX2lycXNhdmUoKSwgd2hpY2gg
-Y291bGQgbGV0IHRpbWVyIGhhbmRsZXIgdG8gb2J0YWluCj4gPiB0aGUgbmVlZGVkIGxvY2suCj4g
-PiAKPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+
-ID4gLS0tCj4gPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMgfCA1ICsrKystCj4g
-PiAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+ID4gCj4g
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMgYi9kcml2ZXJz
-L2luZmluaWJhbmQvaHcvaXJkbWEvY20uYwo+ID4gaW5kZXggZGVkYjNiN2VkZDguLjAxOWRkOGJm
-ZTA4IDEwMDY0NAo+ID4gLS0tIGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMKPiA+
-ICsrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9pcmRtYS9jbS5jCj4gPiBAQCAtMzI1Miw4ICsz
-MjUyLDExIEBAIHZvaWQgaXJkbWFfY2xlYW51cF9jbV9jb3JlKHN0cnVjdCBpcmRtYV9jbV9jb3Jl
-ICpjbV9jb3JlKQo+ID4gIAkJcmV0dXJuOwo+ID4gIAo+ID4gIAlzcGluX2xvY2tfaXJxc2F2ZSgm
-Y21fY29yZS0+aHRfbG9jaywgZmxhZ3MpOwo+ID4gLQlpZiAodGltZXJfcGVuZGluZygmY21fY29y
-ZS0+dGNwX3RpbWVyKSkKPiA+ICsJaWYgKHRpbWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1l
-cikpIHsKPiA+ICsJCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZs
-YWdzKTsKPiA+ICAJCWRlbF90aW1lcl9zeW5jKCZjbV9jb3JlLT50Y3BfdGltZXIpOwo+ID4gKwkJ
-c3Bpbl9sb2NrX2lycXNhdmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZsYWdzKTsKPiA+ICsJfQo+ID4g
-IAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjbV9jb3JlLT5odF9sb2NrLCBmbGFncyk7Cj4gCj4g
-VGhpcyBsb2NrIGRvZXNuJ3Qgc2VlbSB0byBiZSBwcm90ZWN0aW5nIGFueXRoaW5nLiAgQWxzbyBk
-byB3ZSBuZWVkIHRvCj4gY2hlY2sgdGltZXJfcGVuZGluZygpPyAgSSB0aGluayB0aGUgZGVsX3Rp
-bWVyX3N5bmMoKSBmdW5jdGlvbiB3aWxsIGp1c3QKPiByZXR1cm4gZGlyZWN0bHkgaWYgdGhlcmUg
-aXNuJ3QgYSBwZW5kaW5nIGxvY2s/CgpUaGFua3MgYSBsb3QgZm9yIHlvdXIgYWR2aWNlLCBJIHdp
-bGwgcmVtb3ZlIHRoZSB0aW1lcl9wZW5kaW5nKCkgYW5kIHRoZQpyZWR1bmRhbnQgbG9jay4KCkJl
-c3QgcmVnYXJkcywKRHVvbWluZyBaaG91
+
+--n7sqxwpygc2d6wn2
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On 06.04.2022 17:18:18, Thierry Reding wrote:
+> On Wed, Jan 05, 2022 at 04:25:09PM -0800, Brian Silverman wrote:
+> > It's a M_TTCAN with some NVIDIA-specific glue logic and clocks. The
+> > existing m_can driver works with it after handling the glue logic.
+> >=20
+> > The code is a combination of pieces from m_can_platform and NVIDIA's
+> > driver [1].
+> >=20
+> > [1] https://github.com/hartkopp/nvidia-t18x-can/blob/master/r32.2.1/nvi=
+dia/drivers/net/can/mttcan/hal/m_ttcan.c
+> >=20
+> > Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
+> > ---
+> > I ran into bugs with the error handling in NVIDIA's m_ttcan driver, so I
+> > switched to m_can which has been much better. I'm looking for feedback
+> > on whether I should ensure rebasing hasn't broken anything, write up DT
+> > documentation, and submit this patch for real. The driver works great,
+> > but I've got some questions about submitting it.
+> >=20
+> > question: This has liberal copying of GPL code from NVIDIA's
+> > non-upstreamed m_ttcan driver. Is that OK?
+> >=20
+> > corollary: I don't know what any of this glue logic does. I do know the
+> > device doesn't work without it. I can't find any documentation of what
+> > these addresses do.
+> >=20
+> > question: There is some duplication between this and m_can_platform. It
+> > doesn't seem too bad to me, but is this the preferred way to do it or is
+> > there another alternative?
+> >=20
+> > question: Do new DT bindings need to be in the YAML format, or is the
+> > .txt one OK?
+> >=20
+> >  drivers/net/can/m_can/Kconfig       |  10 +
+> >  drivers/net/can/m_can/Makefile      |   1 +
+> >  drivers/net/can/m_can/m_can_tegra.c | 362 ++++++++++++++++++++++++++++
+> >  3 files changed, 373 insertions(+)
+> >  create mode 100644 drivers/net/can/m_can/m_can_tegra.c
+>=20
+> Sorry for the late reply, I completely missed this.
+
+Brian Silverman left the company bluerivertech, I think there'll be no
+progress on the tegra glue code. :/
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--n7sqxwpygc2d6wn2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJO4JsACgkQrX5LkNig
+0118nQf/R+gaw3X7zD28Ee0fb5e4rcIIsxL2d1wmxWL6jkgQ/kbNmDx+nKY12dBx
+pBsA69d5mP9I1RfXVOTaH6XFZd+iD2lcCrglXNaNyoo8O+p5y+nTKrVJr3yMEcHr
+8asGp052fHln6FPSNTV8mvQYadWVYxBjEQVBrHJNp8nl5dZAn6uvW/V9AzWKMLWf
+JOHv/Wu6229FlBnIcjHinPPHQFId5QaPS8sCZzGNefGZg3x1s9872bgvmBhqsQI+
+/HxHDGtSCbrYcpKT7ykpcW5hkuYO+0+kqJZ7gMAzznxnDuKZ40hVXY9x+EVudwMn
+dlYpGqn4jnFxYzDWJOr/tc1lKQF4JQ==
+=wQkw
+-----END PGP SIGNATURE-----
+
+--n7sqxwpygc2d6wn2--
