@@ -2,72 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 687004F82A8
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 17:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EBD14F82B7
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 17:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236968AbiDGPTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 11:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
+        id S231941AbiDGPYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 11:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241568AbiDGPT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 11:19:29 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 88E371FAA25;
-        Thu,  7 Apr 2022 08:17:25 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 921BA12FC;
-        Thu,  7 Apr 2022 08:17:19 -0700 (PDT)
-Received: from [10.57.41.19] (unknown [10.57.41.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0F7B33F73B;
-        Thu,  7 Apr 2022 08:17:15 -0700 (PDT)
-Message-ID: <fb55a025-348e-800c-e368-48be075d8e9c@arm.com>
-Date:   Thu, 7 Apr 2022 16:17:11 +0100
+        with ESMTP id S1344591AbiDGPYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 11:24:36 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB61320D80D;
+        Thu,  7 Apr 2022 08:22:35 -0700 (PDT)
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ncTxj-0003Hy-VO; Thu, 07 Apr 2022 17:22:20 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ncTxj-000Hlq-Ix; Thu, 07 Apr 2022 17:22:19 +0200
+Subject: Re: [PATCH v5 1/3] selftests: bpf: add test for bpf_skb_change_proto
+To:     Lina Wang <lina.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, Maciej enczykowski <maze@google.com>,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20220407084727.10241-1-lina.wang@mediatek.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9dc51533-92d2-1c82-2a6e-96e1ac747bb7@iogearbox.net>
+Date:   Thu, 7 Apr 2022 17:22:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 1/5] iommu: Replace uses of IOMMU_CAP_CACHE_COHERENCY with
- dev_is_dma_coherent()
-Content-Language: en-GB
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Christian Benvenuti <benve@cisco.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Nelson Escobar <neescoba@cisco.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Will Deacon <will@kernel.org>
-References: <1-v1-ef02c60ddb76+12ca2-intel_no_snoop_jgg@nvidia.com>
- <db5a6daa-bfe9-744f-7fc5-d5167858bc3e@arm.com>
- <20220406142432.GF2120790@nvidia.com> <20220406151823.GG2120790@nvidia.com>
- <20220406155056.GA30433@lst.de> <20220406160623.GI2120790@nvidia.com>
- <20220406161031.GA31790@lst.de> <20220406171729.GJ2120790@nvidia.com>
- <BN9PR11MB5276F9CEA2B01B3E75094B6D8CE69@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20220407135946.GM2120790@nvidia.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20220407135946.GM2120790@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <20220407084727.10241-1-lina.wang@mediatek.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26505/Thu Apr  7 10:25:37 2022)
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,101 +59,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-04-07 14:59, Jason Gunthorpe wrote:
-> On Thu, Apr 07, 2022 at 07:18:48AM +0000, Tian, Kevin wrote:
->>> From: Jason Gunthorpe <jgg@nvidia.com>
->>> Sent: Thursday, April 7, 2022 1:17 AM
->>>
->>> On Wed, Apr 06, 2022 at 06:10:31PM +0200, Christoph Hellwig wrote:
->>>> On Wed, Apr 06, 2022 at 01:06:23PM -0300, Jason Gunthorpe wrote:
->>>>> On Wed, Apr 06, 2022 at 05:50:56PM +0200, Christoph Hellwig wrote:
->>>>>> On Wed, Apr 06, 2022 at 12:18:23PM -0300, Jason Gunthorpe wrote:
->>>>>>>> Oh, I didn't know about device_get_dma_attr()..
->>>>>>
->>>>>> Which is completely broken for any non-OF, non-ACPI plaform.
->>>>>
->>>>> I saw that, but I spent some time searching and could not find an
->>>>> iommu driver that would load independently of OF or ACPI. ie no IOMMU
->>>>> platform drivers are created by board files. Things like Intel/AMD
->>>>> discover only from ACPI, etc.
->>
->> Intel discovers IOMMUs (and optionally ACPI namespace devices) from
->> ACPI, but there is no ACPI description for PCI devices i.e. the current
->> logic of device_get_dma_attr() cannot be used on PCI devices.
-> 
-> Oh? So on x86 acpi_get_dma_attr() returns DEV_DMA_NON_COHERENT or
-> DEV_DMA_NOT_SUPPORTED?
+Hi Lina,
 
-I think it _should_ return DEV_DMA_COHERENT on x86/IA-64 (unless a _CCA 
-method was actually present to say otherwise), based on 
-acpi_init_coherency(), but I only know for sure what happens on arm64.
+On 4/7/22 10:47 AM, Lina Wang wrote:
+> The code is copied from the Android Open Source Project and the author(
+> Maciej Żenczykowski) has gave permission to relicense it under GPLv2.
+> 
+> The test is to change input IPv6 packets to IPv4 ones and output IPv4 to
+> IPv6 with bpf_skb_change_proto.
+> 
+> Signed-off-by: Maciej Żenczykowski <maze@google.com>
+> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+> ---
+>   tools/testing/selftests/bpf/progs/nat6to4.c | 293 ++++++++++++++++++++
+>   1 file changed, 293 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/progs/nat6to4.c
 
-> I think I should give up on this and just redefine the existing iommu
-> cap flag to IOMMU_CAP_CACHE_SUPPORTED or something.
+Thanks for adding a selftest into your series!
 
-TBH I don't see any issue with current name, but I'd certainly be happy 
-to nail down a specific definition for it, along the lines of "this 
-means that IOMMU_CACHE mappings are generally coherent". That works for 
-things like Arm's S2FWB making it OK to assign an otherwise-non-coherent 
-device without extra hassle.
+Your patch 2/3 is utilizing this program out of selftests/net/udpgro_frglist.sh,
+however, this is a bit problematic given BPF CI which runs on every BPF submitted
+patch. Meaning, udpgro_frglist.sh won't be covered by CI and only needs to be run
+manually. Could you properly include this into test_progs from BPF suite (that way,
+BPF CI will also pick it up)? See also [2] for more complex netns setups.
 
-For the specific case of overriding PCIe No Snoop (which is more 
-problematic from an Arm SMMU PoV) when assigning to a VM, would that not 
-be easier solved by just having vfio-pci clear the "Enable No Snoop" 
-control bit in the endpoint's PCIe capability?
+Thanks again!
+Daniel
 
->>> We could alternatively use existing device_get_dma_attr() as a default
->>> with an iommu wrapper and push the exception down through the iommu
->>> driver and s390 can override it.
->>>
->>
->> if going this way probably device_get_dma_attr() should be renamed to
->> device_fwnode_get_dma_attr() instead to make it clearer?
-> 
-> I'm looking at the few users:
-> 
-> drivers/ata/ahci_ceva.c
-> drivers/ata/ahci_qoriq.c
->   - These are ARM only drivers. They are trying to copy the dma-coherent
->     property from its DT/ACPI definition to internal register settings
->     which look like they tune how the AXI bus transactions are created.
-> 
->     I'm guessing the SATA IP block's AXI interface can be configured to
->     generate coherent or non-coherent requests and it has to be set
->     in a way that is consistent with the SOC architecture and match
->     what the DMA API expects the device will do.
-> 
-> drivers/crypto/ccp/sp-platform.c
->   - Only used on ARM64 and also programs a HW register similar to the
->     sata drivers. Refuses to work if the FW property is not present.
-> 
-> drivers/net/ethernet/amd/xgbe/xgbe-platform.c
->   - Seems to be configuring another ARM AXI block
-> 
-> drivers/gpu/drm/panfrost/panfrost_drv.c
->   - Robin's commit comment here is good, and one of the things this
->     controls is if the coherent_walk is set for the io-pgtable-arm.c
->     code which avoids DMA API calls
-> 
-> drivers/gpu/drm/tegra/uapi.c
->   - Returns DRM_TEGRA_CHANNEL_CAP_CACHE_COHERENT to userspace. No idea.
-> 
-> My take is that the drivers using this API are doing it to make sure
-> their HW blocks are setup in a way that is consistent with the DMA API
-> they are also using, and run in constrained embedded-style
-> environments that know the firmware support is present.
-> 
-> So in the end it does not seem suitable right now for linking to
-> IOMMU_CACHE..
+Some small comments below.
 
-That seems a pretty good summary - I think they're basically all 
-"firmware told Linux I'm coherent so I'd better act coherent" cases, but 
-that still doesn't necessarily mean that they're *forced* to respect 
-that. One of the things on my to-do list is to try adding a 
-DMA_ATTR_NO_SNOOP that can force DMA cache maintenance for coherent 
-devices, primarily to hook up in Panfrost (where there is a bit of a 
-performance to claw back on the coherent AmLogic SoCs by leaving certain 
-buffers non-cacheable).
+   [0] https://patchwork.kernel.org/project/netdevbpf/patch/20220407084727.10241-2-lina.wang@mediatek.com/
+   [1] https://github.com/kernel-patches/bpf/actions
+   [2] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/tree/tools/testing/selftests/bpf/prog_tests/xdp_bonding.c
 
-Cheers,
-Robin.
+> diff --git a/tools/testing/selftests/bpf/progs/nat6to4.c b/tools/testing/selftests/bpf/progs/nat6to4.c
+> new file mode 100644
+> index 000000000000..099950f7a6cc
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/nat6to4.c
+> @@ -0,0 +1,293 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * This code is taken from the Android Open Source Project and the author
+> + * (Maciej Żenczykowski) has gave permission to relicense it under the
+> + * GPLv2. Therefore this program is free software;
+> + * You can redistribute it and/or modify it under the terms of the GNU
+> + * General Public License version 2 as published by the Free Software
+> + * Foundation
+> +
+> + * The original headers, including the original license headers, are
+> + * included below for completeness.
+> + *
+> + * Copyright (C) 2019 The Android Open Source Project
+> + *
+> + * Licensed under the Apache License, Version 2.0 (the "License");
+> + * you may not use this file except in compliance with the License.
+> + * You may obtain a copy of the License at
+> + *
+> + *      http://www.apache.org/licenses/LICENSE-2.0
+> + *
+> + * Unless required by applicable law or agreed to in writing, software
+> + * distributed under the License is distributed on an "AS IS" BASIS,
+> + * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+> + * See the License for the specific language governing permissions and
+> + * limitations under the License.
+> + */
+> +#include <linux/bpf.h>
+> +#include <linux/if.h>
+> +#include <linux/if_ether.h>
+> +#include <linux/if_packet.h>
+> +#include <linux/in.h>
+> +#include <linux/in6.h>
+> +#include <linux/ip.h>
+> +#include <linux/ipv6.h>
+> +#include <linux/pkt_cls.h>
+> +#include <linux/swab.h>
+> +#include <stdbool.h>
+> +#include <stdint.h>
+> +
+> +// bionic kernel uapi linux/udp.h header is munged...
+
+nit: Throughout the file, please use C style comments as per kernel coding convention.
+
+> +#define __kernel_udphdr udphdr
+> +#include <linux/udp.h>
+> +
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#define htons(x) (__builtin_constant_p(x) ? ___constant_swab16(x) : __builtin_bswap16(x))
+> +#define htonl(x) (__builtin_constant_p(x) ? ___constant_swab32(x) : __builtin_bswap32(x))
+> +#define ntohs(x) htons(x)
+> +#define ntohl(x) htonl(x)
+
+nit: Please use libbpf's bpf_htons() and friends helpers [3].
+
+   [3] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/tree/tools/lib/bpf/bpf_endian.h
+
+OT: In Cilium we run similar NAT46/64 translation for XDP and tc/BPF for our LB services [4] (that is,
+v4 VIP with v6 backends, and v6 VIP with v4 backends).
+
+   [4] https://github.com/cilium/cilium/blob/master/bpf/lib/nat_46x64.h
+       https://github.com/cilium/cilium/blob/master/test/nat46x64/test.sh
