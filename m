@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 134BB4F7836
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 09:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 252D14F785A
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 09:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242328AbiDGHy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 03:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39094 "EHLO
+        id S235545AbiDGH6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 03:58:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242296AbiDGHyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 03:54:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F381E1C404B
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 00:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649317974;
+        with ESMTP id S242588AbiDGH6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 03:58:10 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0879D10BC;
+        Thu,  7 Apr 2022 00:56:09 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1AF3E40007;
+        Thu,  7 Apr 2022 07:56:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649318168;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qQwtpv4LSJs4oYZkfG+yHqo4mCAyzu9Mqm5FcRavI60=;
-        b=OQZ+GXUBZWUXvircGf9m0koalw3o9ZDYMWmfAkK7/km6mBhbRSTHpZJSfGPtZq+XbOo2vo
-        4RuWAFzzfW1xXahc17B5/gCOfeljtIsejqK3bfRaUM6DD2/I8eonqDBT77c/sIMVieUM0I
-        SxZZ4RCobaO4rXA73OVqyHy8wGjvHCQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-180-rDqrMzroPZCOxoo4cQkGGw-1; Thu, 07 Apr 2022 03:52:49 -0400
-X-MC-Unique: rDqrMzroPZCOxoo4cQkGGw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 08864802819;
-        Thu,  7 Apr 2022 07:52:48 +0000 (UTC)
-Received: from shodan.usersys.redhat.com (unknown [10.43.17.22])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 25F4940D2962;
-        Thu,  7 Apr 2022 07:52:45 +0000 (UTC)
-Received: by shodan.usersys.redhat.com (Postfix, from userid 1000)
-        id E84AC1C00CD; Thu,  7 Apr 2022 09:52:43 +0200 (CEST)
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Anna-Maria Behnsen <anna-maria@linutronix.de>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
-Subject: [PATCH v4 2/2] net: make tcp keepalive timer upper bound
-Date:   Thu,  7 Apr 2022 09:52:42 +0200
-Message-Id: <20220407075242.118253-3-asavkov@redhat.com>
-In-Reply-To: <20220407075242.118253-1-asavkov@redhat.com>
-References: <871qyb35q4.ffs@tglx>
- <20220407075242.118253-1-asavkov@redhat.com>
+        bh=xzWtQrGhF2FpjlxnqN15bbWBsiH0n20STMCunGqXD5c=;
+        b=F46l/X2MljR59/T8b2ny2WoUKrkPmsluEtlliPuM5bcVjt8M5eiAhx5nBv1K3YnRa4Kl9/
+        knf0FqVpAKNh/msd17xhC7OIDq62nqFA+FsrZ6lZRfY/QSzBILHzBL+Q+PcYlei/NpMxoh
+        gXtxDlfBwL+EpD0FctCZlZLBDmirI5p/sAnx2FCSvhZYa5PdJmKp9q/l+BIbrSbx2+59tw
+        5x9YHIio5vNh9EJUY8eOsB9yMD/Xqx0YqgzS/eKXdDrEW4CLbollbFMz4zFUWouvEkBB1q
+        zrAbHVs5eD3Orc2AVQRiMwtyDAptAGsBkGcPNwUN6y9b2OTOsiMKGfLmx3x//g==
+Date:   Thu, 7 Apr 2022 09:56:05 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v5 05/11] net: mac802154: Create a transmit bus error
+ helper
+Message-ID: <20220407095605.1ca9f6e6@xps13>
+In-Reply-To: <CAB_54W53OrQVYo4pjCpgYaQGVsa-hZ2gBrquFGO_vQ5RMsm-jQ@mail.gmail.com>
+References: <20220406153441.1667375-1-miquel.raynal@bootlin.com>
+        <20220406153441.1667375-6-miquel.raynal@bootlin.com>
+        <CAB_54W53OrQVYo4pjCpgYaQGVsa-hZ2gBrquFGO_vQ5RMsm-jQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,31 +65,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure TCP keepalive timer does not expire late. Switching to upper
-bound timers means it can fire off early but in case of keepalive
-tcp_keepalive_timer() handler checks elapsed time and resets the timer
-if it was triggered early. This results in timer "cascading" to a
-higher precision and being just a couple of milliseconds off it's
-original mark.
+Hi Alexander,
 
-Signed-off-by: Artem Savkov <asavkov@redhat.com>
----
- net/ipv4/inet_connection_sock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+alex.aring@gmail.com wrote on Wed, 6 Apr 2022 17:43:30 -0400:
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 1e5b53c2bb267..bb2dbfb6f5b50 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -589,7 +589,7 @@ EXPORT_SYMBOL(inet_csk_delete_keepalive_timer);
- 
- void inet_csk_reset_keepalive_timer(struct sock *sk, unsigned long len)
- {
--	sk_reset_timer(sk, &sk->sk_timer, jiffies + len);
-+	sk_reset_timer(sk, &sk->sk_timer, jiffies + upper_bound_timeout(len));
- }
- EXPORT_SYMBOL(inet_csk_reset_keepalive_timer);
- 
--- 
-2.34.1
+> Hi,
+>=20
+> On Wed, Apr 6, 2022 at 11:34 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > A few drivers do the full transmit operation asynchronously, which means
+> > that a bus error that happens when forwarding the packet to the
+> > transmitter will not be reported immediately. The solution in this case
+> > is to call this new helper to free the necessary resources, restart the
+> > the queue and return a generic TRAC error code: IEEE802154_SYSTEM_ERROR.
+> >
+> > Suggested-by: Alexander Aring <alex.aring@gmail.com>
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  include/net/mac802154.h |  9 +++++++++
+> >  net/mac802154/util.c    | 10 ++++++++++
+> >  2 files changed, 19 insertions(+)
+> >
+> > diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+> > index abbe88dc9df5..5240d94aad8e 100644
+> > --- a/include/net/mac802154.h
+> > +++ b/include/net/mac802154.h
+> > @@ -498,6 +498,15 @@ void ieee802154_stop_queue(struct ieee802154_hw *h=
+w);
+> >  void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff=
+ *skb,
+> >                               bool ifs_handling);
+> >
+> > +/**
+> > + * ieee802154_xmit_bus_error - frame could not be delivered to the tra=
+smitter
+> > + *                             because of a bus error
+> > + *
+> > + * @hw: pointer as obtained from ieee802154_alloc_hw().
+> > + * @skb: buffer for transmission
+> > + */
+> > +void ieee802154_xmit_bus_error(struct ieee802154_hw *hw, struct sk_buf=
+f *skb);
+> > +
+> >  /**
+> >   * ieee802154_xmit_error - frame transmission failed
+> >   *
+> > diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+> > index ec523335336c..79ba803c40c9 100644
+> > --- a/net/mac802154/util.c
+> > +++ b/net/mac802154/util.c
+> > @@ -102,6 +102,16 @@ void ieee802154_xmit_error(struct ieee802154_hw *h=
+w, struct sk_buff *skb,
+> >  }
+> >  EXPORT_SYMBOL(ieee802154_xmit_error);
+> >
+> > +void ieee802154_xmit_bus_error(struct ieee802154_hw *hw, struct sk_buf=
+f *skb)
+> > +{
+> > +       struct ieee802154_local *local =3D hw_to_local(hw);
+> > +
+> > +       local->tx_result =3D IEEE802154_SYSTEM_ERROR;
+> > +       ieee802154_wake_queue(hw);
+> > +       dev_kfree_skb_any(skb);
+> > +}
+> > +EXPORT_SYMBOL(ieee802154_xmit_bus_error);
+> > + =20
+>=20
+> why not calling ieee802154_xmit_error(..., IEEE802154_SYSTEM_ERROR) ?
+> Just don't give the user a chance to pick a error code if something
+> bad happened.
 
+Oh ok, I assumed, based on your last comment, that you wanted a
+dedicated helper for that, but if just calling xmit_error() with the
+a fixed value is enough I'll drop this commit.
+
+Thanks,
+Miqu=C3=A8l
