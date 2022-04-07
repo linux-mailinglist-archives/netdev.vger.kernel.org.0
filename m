@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFCB24F74EA
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 06:43:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE084F74EC
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 06:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240764AbiDGEoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 00:44:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
+        id S240779AbiDGEo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 00:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240747AbiDGEox (ORCPT
+        with ESMTP id S240750AbiDGEox (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 00:44:53 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64329BB0A0;
-        Wed,  6 Apr 2022 21:42:48 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id a6so8453206ejk.0;
-        Wed, 06 Apr 2022 21:42:48 -0700 (PDT)
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29DED1017F0;
+        Wed,  6 Apr 2022 21:42:51 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id dr20so8297902ejc.6;
+        Wed, 06 Apr 2022 21:42:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IBqPOS9QHe+JJ1knT5EDEfSF4t5LcFtWDmlgHbBMhvA=;
-        b=mraPced7Vb+0aMa+6xkhCQHTp+CsZEIqXKzf7RH55AZR2n4cOJvyzpEhm3ZwfskBpQ
-         ftDW2snMQvZiWTcXQ3TStUOK77GXazfDCqvMa2qNWWn8BGMw2gnx30jC1k4309ow9TAc
-         9C46CLz/+RWxStgcmmCzpByGmE9cIbB0HBFQbamUk5JCkTw7Cz+hh42M0ohVG6Q82i+u
-         JHPe98uACGr4DEa6m+fO45j2bCBxaA/pRsN2dt7aDqaqzy4g3Dw4Lp0UREArB1M/h9Nx
-         KB9bSYRwLrgCfHwoAOqh/iUIKIA8WKMtiIhLFBB+uqww1uoiwSmOJBO/ACjFGHgoL9vW
-         Blxw==
+        bh=n4HcXuOXAZE6zoHCC/T33DPT/bULLpPnOSYZG5xwNiM=;
+        b=OYCMJRqmnh+B04rA+lkcc6Tlxx/poyV9w7qffpk4eAaYIEU3DKUsnhDwnIxKU96asq
+         2NIgU9uLB3YkkzlgSAnq0ZPUrN/vC+Nq0K7hDQCZdFRC6e4fSdUigklwY/7f4WXMaW8x
+         YZ47E5a982hGjh6fepld1dKvkAmch7se4vGCilW+j6dsX2yQ8U1STz4WkwJf9nwtPMjC
+         Lx7TCjiJdQ74ZTwN612hxYTgsnWCrhMbTg9+zZYWeReSDkPR6NbY/20/VzaAQYY40Far
+         +2Dz3KIjT+AUYIjo17uM3qsRp61sE8+ofojcRhaI6MMEz6gpDLbaZ94ofPgdp4PHnEaU
+         e+Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IBqPOS9QHe+JJ1knT5EDEfSF4t5LcFtWDmlgHbBMhvA=;
-        b=8IqiuH1evFPZh7DXprz+vW6N8zN03/JhkWx1hq3vi6J4BeNXGz/ik7q1akIB1zbK+r
-         EoUbfPEsYXAiTqf5rNhuc/VsxeGFc6umRoL2M4Y22z1Oi9PdvPDRCx86qxBm/jSgdkxr
-         IZZugxbfGGRzMn0vCuYQYAXk2IfUSDshf/hWAWVNgbGMfpZ3M+fbJ+V2JGf6lbFQoLGr
-         h1bt/p7x3+gzd4MISJUt0QRswVpQsGmFjXKFsa+B8sndTCszfe1oJ7cuI4m2HT132tvS
-         KCgOqR+zFJ4MXzjyBlsyFdjeYjgaElx3JbUVgt5ODyVRRKy1gDDYZQ2dUwFiYLW/3zeC
-         oPdg==
-X-Gm-Message-State: AOAM531DUj9Rrjpcx0sthceCRcM4up4StR5FALqhVhdi7SgkOLcB/u7i
-        Tvf1mj16EDEDxYtRiVDlfEE=
-X-Google-Smtp-Source: ABdhPJxLJCKSENJThJGXDyEAuiOLtuQqO5MxkmrIvMBPZspDL7/ZilnNbfE6svYfBQeIPtWYS8TbrQ==
-X-Received: by 2002:a17:906:b107:b0:6e0:a25a:af6e with SMTP id u7-20020a170906b10700b006e0a25aaf6emr11606494ejy.359.1649306566930;
-        Wed, 06 Apr 2022 21:42:46 -0700 (PDT)
+        bh=n4HcXuOXAZE6zoHCC/T33DPT/bULLpPnOSYZG5xwNiM=;
+        b=qKu5gWzSeRh1+pIxdqFKR4yRacWNjohu7a7yxYWW7X/KjEbBHxU6AgA0Ku7poWAZvm
+         DZ1aNRLFWGn2+yJ8MrqFE9CZV+CCCzclgO7tvbUq/72XqzvNZnMeFvW+J2xmj1apodew
+         ooYqPHsyYXBnJgyrdN/5eiHnCFF8Wr8gMePWd7VI31sajoB6FToyqsBccN+Isq5CmY1k
+         1UiqXTwg9NdzMQvQizujEV7mnhbziy0MfeGDtGmgcg2n392youXGlQB5yw39GRK5o+u1
+         CJ7PGgOtkurS+wmry/bUeBTBfwOcgZHC5brAj/ZkYQxS3Pf6ewW3SKRFqZen0LUX942F
+         kLdw==
+X-Gm-Message-State: AOAM530vNH1QmfdZ/9OhrQUhUxW8MbOfdR74QmEWZzU6GBobIRb2dlhs
+        kkyAg7chlSPYvpI16F7oBqY=
+X-Google-Smtp-Source: ABdhPJxrygnMfLK8eagvxGviFG90GKXnm04NyWO6ssvyhvKoxhRK6ZP9BtRjtVzfuNBoGZXcylcLNg==
+X-Received: by 2002:a17:907:6d96:b0:6df:f199:6a7c with SMTP id sb22-20020a1709076d9600b006dff1996a7cmr11603771ejc.137.1649306569679;
+        Wed, 06 Apr 2022 21:42:49 -0700 (PDT)
 Received: from anparri.mshome.net (host-87-11-75-174.retail.telecomitalia.it. [87.11.75.174])
-        by smtp.gmail.com with ESMTPSA id e3-20020a170906374300b006e7f060bf6asm4199455ejc.207.2022.04.06.21.42.45
+        by smtp.gmail.com with ESMTPSA id e3-20020a170906374300b006e7f060bf6asm4199455ejc.207.2022.04.06.21.42.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Apr 2022 21:42:46 -0700 (PDT)
+        Wed, 06 Apr 2022 21:42:49 -0700 (PDT)
 From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
 To:     KY Srinivasan <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -61,9 +61,9 @@ To:     KY Srinivasan <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-Subject: [PATCH 1/2] scsi: storvsc: Print value of invalid ID in storvsc_on_channel_callback()
-Date:   Thu,  7 Apr 2022 06:40:33 +0200
-Message-Id: <20220407044034.379971-2-parri.andrea@gmail.com>
+Subject: [PATCH 2/2] hv_netvsc: Print value of invalid ID in netvsc_send_{completion,tx_complete}()
+Date:   Thu,  7 Apr 2022 06:40:34 +0200
+Message-Id: <20220407044034.379971-3-parri.andrea@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220407044034.379971-1-parri.andrea@gmail.com>
 References: <20220407044034.379971-1-parri.andrea@gmail.com>
@@ -81,25 +81,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 That being useful for debugging purposes.
 
+Notice that the packet descriptor is in "private" guest memory, so
+that Hyper-V can not tamper with it.
+
+While at it, remove two unnecessary u64-casts.
+
 Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
 ---
- drivers/scsi/storvsc_drv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/hyperv/netvsc.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 9a0bba5a51a71..67ae2b5b1d5bb 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1334,7 +1334,8 @@ static void storvsc_on_channel_callback(void *context)
- 				/* Transaction 'rqst_id' corresponds to tag 'rqst_id - 1' */
- 				scmnd = scsi_host_find_tag(shost, rqst_id - 1);
- 				if (scmnd == NULL) {
--					dev_err(&device->device, "Incorrect transaction ID\n");
-+					dev_err(&device->device, "Invalid transaction ID %llx\n",
-+						rqst_id);
- 					continue;
- 				}
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index 9442f751ad3aa..4061af5baaea3 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -792,9 +792,9 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 	int queue_sends;
+ 	u64 cmd_rqst;
+ 
+-	cmd_rqst = channel->request_addr_callback(channel, (u64)desc->trans_id);
++	cmd_rqst = channel->request_addr_callback(channel, desc->trans_id);
+ 	if (cmd_rqst == VMBUS_RQST_ERROR) {
+-		netdev_err(ndev, "Incorrect transaction id\n");
++		netdev_err(ndev, "Invalid transaction ID %llx\n", desc->trans_id);
+ 		return;
+ 	}
+ 
+@@ -854,9 +854,9 @@ static void netvsc_send_completion(struct net_device *ndev,
+ 	/* First check if this is a VMBUS completion without data payload */
+ 	if (!msglen) {
+ 		cmd_rqst = incoming_channel->request_addr_callback(incoming_channel,
+-								   (u64)desc->trans_id);
++								   desc->trans_id);
+ 		if (cmd_rqst == VMBUS_RQST_ERROR) {
+-			netdev_err(ndev, "Invalid transaction id\n");
++			netdev_err(ndev, "Invalid transaction ID %llx\n", desc->trans_id);
+ 			return;
+ 		}
+ 
 -- 
 2.25.1
 
