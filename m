@@ -2,206 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 460874F8891
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 22:33:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 588884F8864
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 22:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229786AbiDGUeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 16:34:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35208 "EHLO
+        id S229628AbiDGUa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 16:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbiDGUdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 16:33:49 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57E629F581;
-        Thu,  7 Apr 2022 13:19:28 -0700 (PDT)
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 237IAlVT012428;
-        Thu, 7 Apr 2022 12:57:58 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : mime-version; s=facebook;
- bh=6sw++YMruD3/PdTzWGWNJ6cQ8Ve73KloYJEfR7vJdyk=;
- b=M817vN3WOuDfjCaHKwUw6PRlMfvNphattn9hXwOivagndqkmF6JlEyyZJZcWQ0NguPgG
- BipvWsMMaokKAJ80XjWGqBTQQLHoIGFxPUxzCk4qpH8AicLFQf8npFF60fWzWrR86D7v
- 0Z992V20SwmR8xKterfw/9ACxVPvVKloqm8= 
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2173.outbound.protection.outlook.com [104.47.73.173])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3f9gmr165k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Apr 2022 12:57:58 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XZ84XtZRCmlPe3pPC5uVcRrqYfoTnjhEej4tnntOk4NS8tt4r3ZuCBSqkzI/w5kjLkqrgaW/eZewxWBRUbPbKCEZ7BxoXNn+qkVZdJwLDvhW5Sl89l5p64DoVC/RrqqMAEv7LgsMWpwE55RYj6YblCXItLxq45hY5jZVLhViRp65MnfMBI+GQfKtQ1TtiO80Wgww6w00jtIARzTNrz+6pfXMg9Ej2EaiFuMclgQTlvLn52MQXPsDGPS/kTvsJxXPoZY/9YvPpPZjmHrMZI5tOmlPHokAEGcAUMFMDuYJir4n6PihHMXABNGBE4dsMBqpmLxEWsg+y3YMaS0AIURE7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6sw++YMruD3/PdTzWGWNJ6cQ8Ve73KloYJEfR7vJdyk=;
- b=XRchjW8EYEQbxVk2sQKjJQ2LEl/P0TGy11bpKbiGTofdVHLMKL+g/wF3vAxouiR9jxEQmvmtu1zSysm3Q6uAiBBbTcMheQWMMyweWbg0a4I9+HtYqIYvnuwLlIPK8zRGo2jCDF/rH5NMBVJJoS1QbFDU8WOaBsvKLkvQ6Qw4DHARZSDfxxnCjjCPjvt6xjNIEClF8bHuSzr6UfIEmO8YEByTzIQsOGO+vVTbrrl5q04z0g4/j2AlZ3xDK/1U1mcDaa1w+3zf0ilReAqHkxctDEOyfAOUZjf0x0Q4B2AYtBg2450K1fYDwLjBXnrHNC5RmOLSGwmzlk8a6VyJvs7FsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by BL1PR15MB5315.namprd15.prod.outlook.com (2603:10b6:208:386::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.21; Thu, 7 Apr
- 2022 19:57:25 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::e150:276a:b882:dda7]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::e150:276a:b882:dda7%7]) with mapi id 15.20.5123.031; Thu, 7 Apr 2022
- 19:57:25 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Christoph Hellwig <hch@infradead.org>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>
-CC:     "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        Song Liu <song@kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        X86 ML <x86@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>
-Subject: Re: [PATCH bpf 0/4] introduce HAVE_ARCH_HUGE_VMALLOC_FLAG for
- bpf_prog_pack
-Thread-Topic: [PATCH bpf 0/4] introduce HAVE_ARCH_HUGE_VMALLOC_FLAG for
- bpf_prog_pack
-Thread-Index: AQHYRIo6ffSmNDMip0KdC6K8yX1qc6zY+Z8AgAE0IQCAAXb7AIAFSdYAgAEZXACAAuJiAA==
-Date:   Thu, 7 Apr 2022 19:57:25 +0000
-Message-ID: <16491AB0-7FFD-40F5-A331-65B68F548A3B@fb.com>
-References: <20220330225642.1163897-1-song@kernel.org>
- <YkU+ADIeWACbgFNA@infradead.org>
- <F3447905-8D42-46C0-B324-988A0E4E52E7@fb.com>
- <6AA91984-7DF3-4820-91DF-DD6CA251B638@fb.com>
- <YkvqtvNFtzDNkEhy@infradead.org>
- <482D450C-9006-4979-8736-A9F1B47246E4@fb.com>
-In-Reply-To: <482D450C-9006-4979-8736-A9F1B47246E4@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.80.82.1.1)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 61fcc885-8b37-4237-9480-08da18d0d66c
-x-ms-traffictypediagnostic: BL1PR15MB5315:EE_
-x-microsoft-antispam-prvs: <BL1PR15MB5315152B9F7CBC341FBBB1A2B3E69@BL1PR15MB5315.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ARGEm+mUo7zuthPB/BjiKFHjYouaBKkRY2Q0UCJEVfgBER4+RYtDfznyfLvbrXKYFJhTfzr6Iy/hKNN7HoNGXDr7eLkyteviMY20TXdECyGLLlTuTqZrcH4RUdqW7/+mB1FfUtsHvP5TDdc5vz0vaf1MxeYKGDh1IRvmu0mk4GzfAiUXmpHpeKt8Rj+eBcJHWMhkO9VELs0vei6G8umHTpb0GNsCZK8JQj3d5t+eusfnENVqG3mYAvkmDa/6g81k6cMCs3QPRFjxKYMk73JyLhQuYY8WmnvGik170rJUeIwA71wPnTNeSdw4DBkfvxECFkNijVXe9Z4CdyWNjd8+T/Y1D4lYj9GzMqfJToVcyrShhWAoB7dyoAm60wEzgdzM3WHX0ppzPegXh1L+H4BstHmyB/xXk0Ir1I7lYMks/sFJ4GF/oLOKcenYOMLmO8ALIaiPde9eBHcg5ZHbCNSktpx3EmTl4IFJpvlxHOuKx5rhacmMUmZ1VdIRzAfl7Ba6MSCZPvUtLXMZuMUX8Auqa2XAalrPbWAqFRrI8xNe/dDNuWlc6MBYpiKGhVpSft7jGk6qpAm0ZjA7x1WY2ZRjLPJfMlGvtPMVB8oc1DQqcwrdsy+r2js03343ED+ypzrw6Oe4IIroyscKGuahIMFW+Hbs9xioRvhW93oTt7Xv5BXbet5SNbpRP+hVqC+4mzVH3wI567tlkakNNGJNm0Mgx686B4hzKMOGeIJJlRTSLjSTvISxyyHiDVZ78LCHOm6anQQY/mBv/okJHZLtxRc54g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38070700005)(6486002)(71200400001)(33656002)(122000001)(7416002)(38100700002)(36756003)(508600001)(8936002)(5660300002)(2906002)(66556008)(91956017)(76116006)(66446008)(64756008)(86362001)(54906003)(316002)(4326008)(53546011)(2616005)(8676002)(186003)(6512007)(110136005)(66476007)(66946007)(6506007)(14583001)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fzntdh3OGyEV4Yjp/i3kIXaymhSzFjufsVx8ZGhZ6mKPuuIAdO+op2d3jRCM?=
- =?us-ascii?Q?hXMfyQLvsIeHdy/u7sxd9G1V72YqT7SuUcZvGbCjA15p5Ez90n7WEGfEs8Ih?=
- =?us-ascii?Q?T0Xf7LUph8iJe0WgmsJwy7tmvyKo68KRRoIak2pG9AJh29hIuh/6rwu4lWiS?=
- =?us-ascii?Q?pUksSa6wDWKvSxVS4BVlHxjz9v3rg5eUaMPOGBoijwaYsDT2slntHTNtQb6Y?=
- =?us-ascii?Q?XiRqe22diXQlEaL/uuZ2YufdMJ/7C5Eyj3TC1SQbu7B0jhJuhRaLhLduteMX?=
- =?us-ascii?Q?EvQovPnOpR+aswn8JAAHCXYMzczhfA4eDvArX7AM6zT60RAOYS6vyV/YhvDd?=
- =?us-ascii?Q?8Qcc4qe1hz3wmhf6si0DDiudSzaEG37WurKqvrtThFcGvxo4jKdAHPQIcobo?=
- =?us-ascii?Q?SPGlv/JXdnE5bZVGJG4YCzuQSTHtaFaLu4XNTpfT/PDfyBol00TPkJajnD62?=
- =?us-ascii?Q?hQ7lKKow23jYT4XFRFAV0NGkuBQt0EP4MAenoQEioGCQ1VwZtRc4lHvXrXxP?=
- =?us-ascii?Q?jICNpd/1ZShusf/ERC9qFdoucMmz2GbpFXTAxKJSrMA+RHqzVYGJvIYuoYGs?=
- =?us-ascii?Q?ozGVfLHowEaxYmoagAQ5EGxCUsaaCp36PbajAq33y9zNfboSlKijXzWsHAWZ?=
- =?us-ascii?Q?Ng3S0Jn4kF6lWiYWgWNPMrkEb+stlSYRnt3E6dRMZ3Jo99p5fBhHu0PvXmrZ?=
- =?us-ascii?Q?PgHELDZbtvkItNrOuwqJ3+qJP/OtHdK+Sp9DiSwvzjZFUj++viAjOPSUFZ83?=
- =?us-ascii?Q?vCLX3pIbGJ7rN2I0P2ANYbGu/vLEvDcBX5rXZIzaKvlNhUVTuePI4BakHwS8?=
- =?us-ascii?Q?88a0wPn7nNbfuizZM1ZHRELE1so3krATsNrZNRbuum109f9JhM8/5JNMowLa?=
- =?us-ascii?Q?qVm7qpDWimo4jx1fGc9yt4nMhSf1BLxymvcC8yujrU8YP4j4OgxGkDktxS3+?=
- =?us-ascii?Q?eRjrg6ML6JLMrq6LI7/D5IEdm3NwYF9hZHOhHyI9oRbvRuFFym+l70bKdnpZ?=
- =?us-ascii?Q?clMd6W7bNM2pMrikUOSbxpgzTZiX+AQvAJrYu1NvZBSXWnTyftmKc6ioncam?=
- =?us-ascii?Q?RZVZh2IECbh/wb2sQ6jBgxNfSRzmGC3AAHvEeP1oFXjbEX9Nl29Jg+DdD7Ft?=
- =?us-ascii?Q?NxWILEo6qQQCXTbimcWkndLrRQnsnYtRkZ4ICxiCpXoVM6VM4RzMBExkOvkU?=
- =?us-ascii?Q?A6Pky7uQpQN8D+wbfHGKHZTRDgsnsdosH8I917EisxxNdkyvfykoR0EzZIYj?=
- =?us-ascii?Q?dOXWpz+F8e5DaikDiYn2GigmD/N6+MD1ieHP6XbqE1BcoM2w6BH7Y8A1bE1d?=
- =?us-ascii?Q?AeIIqxGnYn1JzzAT3zcWbNomKCTWZ1sBox2w7qhnA40GgEHEbRzNoQ0mOsfI?=
- =?us-ascii?Q?CiCci0a7K6EzINwZFS9OzZDXhi1YsNNJYlHccRkkkJLkEiY2WV6itHp1+Fq+?=
- =?us-ascii?Q?FuuOWIKpTOAGYP6ANq7Ob0L0QguSFZX9n5PvbVOsTfVihJC3xZCORqzVCXFr?=
- =?us-ascii?Q?PS+gszs/NHsA5H/dZSEoy2W6VZZerfuGdKnsBpdukYHC0xWb2A4uIGi7iQjF?=
- =?us-ascii?Q?kUh3+n/hok8tZU4jVPKefqI7WFv8ZpsGsXwNrQC5MeeWC/TVSFXhZ8NeFFV0?=
- =?us-ascii?Q?pYfIbfvdd55h4anhkC2K9OGM092l8dwXDFgVFX4CBpm545CmTfr+fSki0LKO?=
- =?us-ascii?Q?P3yh9OqJZpdOdKQvUF2/Q48sPCMaaapoVnPGOioylFntOt7tXfOYpyRrIbuY?=
- =?us-ascii?Q?T0UI7rAvmHSHoH/ufwoVQjLEKTY5JzzyHrXWkxpEKbM1uJnj/NuN?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <AC9C167C86148C439B85C72DDF0698CC@namprd15.prod.outlook.com>
+        with ESMTP id S229696AbiDGUaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 16:30:30 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2D248AB2F
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 13:14:52 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id l14so11561285ybe.4
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 13:14:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pYmk/ua1gRBXpeyoRsy55XdotLekwMo4KNCdQ+myqQk=;
+        b=MAvoWavex/kBvH3IhMnmakJDNwfuqzOuk5CWB9PenotWms55UN11lfW+SKQFsKVaBA
+         Sh891+h0Gx38+4853LSedUjp4IvPm5/Fy5DiLn0ra9jXHpF8KmPdsutfhGWUTErCqE91
+         jXQhqhgWRbsP9wru72usnpaDMDdO8NPmeshpx8UGh2NuLF6wl4MeR6HioKsGYM0fgKeB
+         1vIN9EEEwsiOv3oeVbVOCcjYjiGw2qEZwmSVRsXjYXUSNjyBerVoiEXQQWwwxmTQ04SD
+         n5K6EfJg614dwfcssfzg15+qprdhJr60QHk04wvs5zUkZRo5WmlWuOAE2TRE9GpXNhI7
+         kdaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pYmk/ua1gRBXpeyoRsy55XdotLekwMo4KNCdQ+myqQk=;
+        b=S5Y0oDCo85dAGYazqFMD+DyHQvz84qlFgCguPSn6aDAUQim56NmIYsw2DuUjMevUyH
+         Q+x0lDJMORrtUQSKCU2foGJD60GNNb185L3C4NubsTelc5ySGEJMxjR4zonwPaOkIIYa
+         FZyiq+9qqCMLfUvJ+8ZsHSrzege40uuXdvS8y76L0R0nMeSwaglrJQreoqLrc/pIHWlk
+         0eotmclHB5lZEtUn89fIaaf0sYf21M5DJQLFXjAMUvQcIBpFIX8zD/GQh1x9nJN+TKmR
+         gnqoRlzxP0rFVqbXnkgvOK0e7jojxtE/jpdn3nhJsDdXAjswcgriCEuT9ijuGP0+Shhe
+         PaKQ==
+X-Gm-Message-State: AOAM533IOvYEWsksOeoCGtMP3mmXgkUVX9uDlEEdEDZPLcTyiT4esVET
+        4MycYy4DrhkKVjOmAHlaI5nnOMSrDiIFrd3aTogc/g==
+X-Google-Smtp-Source: ABdhPJzpHg4HGq4gzsI8u1LVdka5Ywt0xyQYMNve0+yc+36hYcoCCFp3JtKUtYL49z/GeqXDoLt6fb2PP/dm3h3XfMg=
+X-Received: by 2002:a25:7bc2:0:b0:634:6678:b034 with SMTP id
+ w185-20020a257bc2000000b006346678b034mr11521097ybc.495.1649362491820; Thu, 07
+ Apr 2022 13:14:51 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 61fcc885-8b37-4237-9480-08da18d0d66c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2022 19:57:25.5738
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: oamr50X7viepaDu/5CJW12Rs2Cxp/OB60a4wQsRbp9GQM5QjMLfklPwaWis6ERF1ZXKPCTR/OIsEjejuclHuIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR15MB5315
-X-Proofpoint-ORIG-GUID: 8B_y3vWwaYWIBzfrfT9V0bGBNbiHT0mv
-X-Proofpoint-GUID: 8B_y3vWwaYWIBzfrfT9V0bGBNbiHT0mv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-04-07_04,2022-04-07_01,2022-02-23_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <1921137145a6a20bb3494c72b33268f5d6d86834.1649191881.git.lorenzo@kernel.org>
+ <20220406231512.GB96269@fastly.com>
+In-Reply-To: <20220406231512.GB96269@fastly.com>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Thu, 7 Apr 2022 23:14:15 +0300
+Message-ID: <CAC_iWjJdPvhd5Py5vWqWtbf16eJZfg_NWU=BBM90302mSZA=sQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] page_pool: Add recycle stats to page_pool_put_page_bulk
+To:     Joe Damato <jdamato@fastly.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, jbrouer@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nicholas and Claudio, 
+Hi Joe,
 
-> On Apr 5, 2022, at 4:54 PM, Song Liu <songliubraving@fb.com> wrote:
-> 
->> On Apr 5, 2022, at 12:07 AM, Christoph Hellwig <hch@infradead.org> wrote:
->> 
->> On Fri, Apr 01, 2022 at 10:22:00PM +0000, Song Liu wrote:
->>>>> Please fix the underlying issues instead of papering over them and
->>>>> creating a huge maintainance burden for others.
->>> 
->>> After reading the code a little more, I wonder what would be best strategy. 
->>> IIUC, most of the kernel is not ready for huge page backed vmalloc memory.
->>> For example, all the module_alloc cannot work with huge pages at the moment.
->>> And the error Paul Menzel reported in drm_fb_helper.c will probably hit 
->>> powerpc with 5.17 kernel as-is? (trace attached below) 
->>> 
->>> Right now, we have VM_NO_HUGE_VMAP to let a user to opt out of huge pages. 
->>> However, given there are so many users of vmalloc, vzalloc, etc., we 
->>> probably do need a flag for the user to opt-in? 
->>> 
->>> Does this make sense? Any recommendations are really appreciated. 
->> 
->> I think there is multiple aspects here:
->> 
->> - if we think that the kernel is not ready for hugepage backed vmalloc
->>  in general we need to disable it in powerpc for now.
-> 
-> Nicholas and Claudio, 
-> 
-> What do you think about the status of hugepage backed vmalloc on powerpc? 
-> I found module_alloc and kvm_s390_pv_alloc_vm() opt-out of huge pages.
-> But I am not aware of users that benefit from huge pages (except vfs hash,
-> which was mentioned in 8abddd968a30). Does an opt-in flag (instead of 
-> current opt-out flag, VM_NO_HUGE_VMAP) make sense to you? 
+On Thu, 7 Apr 2022 at 02:15, Joe Damato <jdamato@fastly.com> wrote:
+>
+> On Tue, Apr 05, 2022 at 10:52:55PM +0200, Lorenzo Bianconi wrote:
+> > Add missing recycle stats to page_pool_put_page_bulk routine.
+>
+> Thanks for proposing this change. I did miss this path when adding
+> stats.
+>
+> I'm sort of torn on this. It almost seems that we might want to track
+> bulking events separately as their own stat.
+>
+> Maybe Ilias has an opinion on this; I did implement the stats, but I'm not
+> a maintainer of the page_pool so I'm not sure what I think matters all
+> that much ;)
 
-Could you please share your comments on this? Specifically, does it make 
-sense to replace VM_NO_HUGE_VMAP with an opt-in flag? If we think current
-opt-out flag is better approach, what would be the best practice to find 
-all the cases to opt-out?
+It does.  In fact I think people that actually use the stats for
+something have a better understanding on what's useful and what's not.
+OTOH page_pool_put_page_bulk() is used on the XDP path for now but it
+ends up returning pages on a for loop.  So personally I think we are
+fine without it. The page will be either returned to the ptr_ring
+cache or be free'd and we account for both of those.
 
-Thanks,
-Song
+However looking at the code I noticed another issue.
+__page_pool_alloc_pages_slow() increments the 'slow' stat by one. But
+we are not only allocating a single page in there we allocate nr_pages
+and we feed all of them but one to the cache.  So imho here we should
+bump the slow counter appropriately.  The next allocations will
+probably be served from the cache and they will get their own proper
+counters.
 
+>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  net/core/page_pool.c | 15 +++++++++++++--
+> >  1 file changed, 13 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > index 1943c0f0307d..4af55d28ffa3 100644
+> > --- a/net/core/page_pool.c
+> > +++ b/net/core/page_pool.c
+> > @@ -36,6 +36,12 @@
+> >               this_cpu_inc(s->__stat);                                                \
+> >       } while (0)
+> >
+> > +#define recycle_stat_add(pool, __stat, val)                                          \
+> > +     do {                                                                            \
+> > +             struct page_pool_recycle_stats __percpu *s = pool->recycle_stats;       \
+> > +             this_cpu_add(s->__stat, val);                                           \
+> > +     } while (0)
+> > +
+> >  bool page_pool_get_stats(struct page_pool *pool,
+> >                        struct page_pool_stats *stats)
+> >  {
+> > @@ -63,6 +69,7 @@ EXPORT_SYMBOL(page_pool_get_stats);
+> >  #else
+> >  #define alloc_stat_inc(pool, __stat)
+> >  #define recycle_stat_inc(pool, __stat)
+> > +#define recycle_stat_add(pool, __stat, val)
+> >  #endif
+> >
+> >  static int page_pool_init(struct page_pool *pool,
+> > @@ -566,9 +573,13 @@ void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> >       /* Bulk producer into ptr_ring page_pool cache */
+> >       page_pool_ring_lock(pool);
+> >       for (i = 0; i < bulk_len; i++) {
+> > -             if (__ptr_ring_produce(&pool->ring, data[i]))
+> > -                     break; /* ring full */
+> > +             if (__ptr_ring_produce(&pool->ring, data[i])) {
+> > +                     /* ring full */
+> > +                     recycle_stat_inc(pool, ring_full);
+> > +                     break;
+> > +             }
+> >       }
+> > +     recycle_stat_add(pool, ring, i);
+>
+> If we do go with this approach (instead of adding bulking-specific stats),
+> we might want to replicate this change in __page_pool_alloc_pages_slow; we
+> currently only count the single allocation returned by the slow path, but
+> the rest of the pages which refilled the cache are not counted.
 
-> Thanks,
-> Song
-> 
->> - if we think even in the longer run only some users can cope with
->>  hugepage backed vmalloc we need to turn it into an opt-in in
->>  general and not just for x86
->> - there still to appear various unresolved underlying x86 specific
->>  issues that need to be fixed either way
-> 
+Ah yes we are saying the same thing here
 
+Thanks
+/Ilias
+>
+> >       page_pool_ring_unlock(pool);
+> >
+> >       /* Hopefully all pages was return into ptr_ring */
+> > --
+> > 2.35.1
+> >
