@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 536924F7CEA
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:33:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7D924F7CD7
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244310AbiDGKdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 06:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52614 "EHLO
+        id S244316AbiDGKdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 06:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244278AbiDGKdH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:33:07 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DAC81191;
-        Thu,  7 Apr 2022 03:31:07 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id l7so4472635ejn.2;
-        Thu, 07 Apr 2022 03:31:07 -0700 (PDT)
+        with ESMTP id S244287AbiDGKdO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:33:14 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8E339161;
+        Thu,  7 Apr 2022 03:31:08 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id dr20so9835822ejc.6;
+        Thu, 07 Apr 2022 03:31:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lwv0OP8MEFPtBT1zINZmdonMBn1rL8mDzX3cu0httRY=;
-        b=SLDwl8ec7EHCqXB62Qaclx9H9Z03BrVF3nvNnoga4I5VZfbPOpFyWx7hdMyKpLk0L5
-         z3nfcLccBKtNsEjzoUA6b5Pu+fz9792/cEu1a27jasM7TUKJWd/x+wWRJyaEVG4FdaRV
-         /7s7hdtpwXHZct226CzucQgj6TqxEzUFHbtZr/VonFHBffWW79CYktfmQ9cipx2/pzx9
-         lyAro41HtSPSzqW3d8BPaCWe0xbIcwf+6tOYAWs0w9/jXvCXf8/8ygF0xw4p2xVw0OaZ
-         UK11nbosIluBfvkigCP3YQVGh5ttPc7NasebUN3VfoUdIN1TxlNQODRBfjH6mGpbozZ9
-         xB9A==
+        bh=7YEqjlB8bsXZ45gzNCMwH2JxmTxm4dwtRKumhhyyThw=;
+        b=U64EZxGRbbD6pcGGxysdvb6UC8spWf9j4i/wUJz5ddDFhoazBBRgniBsbGKwfcoyB6
+         Y3R4h1Jtnl+dMLUOBbQ3Mbtm240Zz7D8ggLMYTHXI8X/jbDk1z9cYJGh/sLyB33Q2ux0
+         KIgo/Wp5dSFk/3NP6hRm8dkwZGAsHMDsOZULMSXvK/IP8Y9KLG1lBXjHYOTqUGyNCicZ
+         wDNvabeOOARFjYAssvgtqouuoCfNlxKTBH/1005bkg7MdUe5xwWfEjQv76oDHtA04/ZY
+         /HuBH2goLAhsQSwB7tRtkJ3V7VOarq6n22XJJGBdtp/b0lvGwyiWMwrDLCGrNCYZf+tp
+         8R0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lwv0OP8MEFPtBT1zINZmdonMBn1rL8mDzX3cu0httRY=;
-        b=g9WszYj/wG9/QKpE+vGtjL/KuAXuo9nBoKkBimgXVJe5ERuUUZdZfkBtVlWiWC50Jq
-         CJpEVJN3zxxxCe1xdZovThgPGuHXxkfkb9/XavZXsbUuLmKL5qTythjkMgBKhvYX7DAW
-         Y72fYePjL1XTCL1LwKh0Ftol5pRQ9z2cw0AIRvRue9RJUl3dFGlxxZeCcD3J1CMUIfoh
-         O4aZTUigWGI4NRm7R/M0j7h7JZZnoklwmCwps6hR2LDG/Lh29Tq3nFeoyx+RYV9WEAxO
-         KPRmDXp9/+TI+MA+SVWrMitfvyJBLbnZ8BMrDmvPNdK95lnH71aaNIMepmrHuChg8Dd8
-         Aq8A==
-X-Gm-Message-State: AOAM531ZIjfGtEiTN5Y1nVX45cbn44gZJSm1akloRjcfKYfU8hQ8kswU
-        +y2m3b+KsuSGHNXWH3fUnBc=
-X-Google-Smtp-Source: ABdhPJySSyY5aSv1i2XVaK+KgxwlfVUde9wvcEeXTd6ea85KAm10MyiuPJamgPE40HsgzTbz8Q01nQ==
-X-Received: by 2002:a17:906:6a05:b0:6e7:f5c8:1d55 with SMTP id qw5-20020a1709066a0500b006e7f5c81d55mr12571266ejc.443.1649327465747;
-        Thu, 07 Apr 2022 03:31:05 -0700 (PDT)
+        bh=7YEqjlB8bsXZ45gzNCMwH2JxmTxm4dwtRKumhhyyThw=;
+        b=8NRRyfbTZZ1dPxy/6s49kZKoVfMueFRZMJvAVhUCRShVTxWA6jAnjXCiBCgkfcFSi8
+         bOpZe2Xx1CI8226KLu5C0vux9stTJhYJNZlGBgeX+6S4+siwkbmr/fJHKMwLXOYlmaG3
+         SRNGVZBZe/z6+jUrk70ArnxOkEr7drTEFkwOywN7E0RjBkKP99m9Lbq2xyUtg6umcSve
+         dEfzPCEvPHd8KhGDDplwFO5W9ehJ9ZnsfzN71FguA3vNVA10OANCwlLtjS8P8YnUdEIr
+         8A6RLQWPO+UQfeiVV6u0Qaphz7F78YVlUg5VAMme9nQUYKyR0Rx5UfuATAEuPi8NnTFN
+         ycSw==
+X-Gm-Message-State: AOAM530f8uiloqzN1DY3U0KKxJxkKPLUA0Ww+7VxU6GOiLQp2actP7L3
+        riD7/YNocVP96NxkWkRzK70=
+X-Google-Smtp-Source: ABdhPJzfK7J/oVVIzBQuOre8YptTYXi0JAQavlyqub2o6edmGoAwWmVzAvj4GmM2kfON5LuClIxWJQ==
+X-Received: by 2002:a17:907:3f92:b0:6e7:2ad3:a92b with SMTP id hr18-20020a1709073f9200b006e72ad3a92bmr13146230ejc.239.1649327467049;
+        Thu, 07 Apr 2022 03:31:07 -0700 (PDT)
 Received: from localhost.localdomain (i130160.upc-i.chello.nl. [62.195.130.160])
-        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.31.04
+        by smtp.googlemail.com with ESMTPSA id c5-20020a170906d18500b006ce371f09d4sm7413573ejz.57.2022.04.07.03.31.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 03:31:05 -0700 (PDT)
+        Thu, 07 Apr 2022 03:31:06 -0700 (PDT)
 From:   Jakob Koschel <jakobkoschel@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
@@ -79,9 +79,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
         "Brian Johannesmeyer" <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: [PATCH net-next 04/15] net: dsa: Replace usage of found with dedicated list iterator variable
-Date:   Thu,  7 Apr 2022 12:28:49 +0200
-Message-Id: <20220407102900.3086255-5-jakobkoschel@gmail.com>
+Subject: [PATCH net-next 05/15] net: sparx5: Replace usage of found with dedicated list iterator variable
+Date:   Thu,  7 Apr 2022 12:28:50 +0200
+Message-Id: <20220407102900.3086255-6-jakobkoschel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220407102900.3086255-1-jakobkoschel@gmail.com>
 References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
@@ -111,41 +111,63 @@ the variable was set, can determine if the break/goto was hit.
 Link: https://lore.kernel.org/all/CAHk-=wgRr_D8CB-D9Kg-c=EHreAsk5SqXPwr9Y7k9sA6cWXJ6w@mail.gmail.com/ [1]
 Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
 ---
- net/dsa/dsa.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ .../microchip/sparx5/sparx5_mactable.c        | 25 +++++++++----------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index 89c6c86e746f..645522c4dd4a 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -112,22 +112,21 @@ const struct dsa_device_ops *dsa_find_tagger_by_name(const char *buf)
- 
- const struct dsa_device_ops *dsa_tag_driver_get(int tag_protocol)
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+index a5837dbe0c7e..bb8d9ce79ac2 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+@@ -362,8 +362,7 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
+ 				     unsigned char mac[ETH_ALEN],
+ 				     u16 vid, u32 cfg2)
  {
--	struct dsa_tag_driver *dsa_tag_driver;
-+	struct dsa_tag_driver *dsa_tag_driver = NULL, *iter;
- 	const struct dsa_device_ops *ops;
+-	struct sparx5_mact_entry *mact_entry;
 -	bool found = false;
++	struct sparx5_mact_entry *mact_entry = NULL, *iter;
+ 	u16 port;
  
- 	request_module("%s%d", DSA_TAG_DRIVER_ALIAS, tag_protocol);
+ 	if (LRN_MAC_ACCESS_CFG_2_MAC_ENTRY_ADDR_TYPE_GET(cfg2) !=
+@@ -378,28 +377,28 @@ static void sparx5_mact_handle_entry(struct sparx5 *sparx5,
+ 		return;
  
- 	mutex_lock(&dsa_tag_drivers_lock);
--	list_for_each_entry(dsa_tag_driver, &dsa_tag_drivers_list, list) {
--		ops = dsa_tag_driver->ops;
-+	list_for_each_entry(iter, &dsa_tag_drivers_list, list) {
-+		ops = iter->ops;
- 		if (ops->proto == tag_protocol) {
+ 	mutex_lock(&sparx5->mact_lock);
+-	list_for_each_entry(mact_entry, &sparx5->mact_entries, list) {
+-		if (mact_entry->vid == vid &&
+-		    ether_addr_equal(mac, mact_entry->mac)) {
 -			found = true;
-+			dsa_tag_driver = iter;
+-			mact_entry->flags |= MAC_ENT_ALIVE;
+-			if (mact_entry->port != port) {
++	list_for_each_entry(iter, &sparx5->mact_entries, list) {
++		if (iter->vid == vid &&
++		    ether_addr_equal(mac, iter->mac)) {
++			iter->flags |= MAC_ENT_ALIVE;
++			if (iter->port != port) {
+ 				dev_warn(sparx5->dev, "Entry move: %d -> %d\n",
+-					 mact_entry->port, port);
+-				mact_entry->port = port;
+-				mact_entry->flags |= MAC_ENT_MOVED;
++					 iter->port, port);
++				iter->port = port;
++				iter->flags |= MAC_ENT_MOVED;
+ 			}
+ 			/* Entry handled */
++			mact_entry = iter;
  			break;
  		}
  	}
+ 	mutex_unlock(&sparx5->mact_lock);
  
--	if (found) {
-+	if (dsa_tag_driver) {
- 		if (!try_module_get(dsa_tag_driver->owner))
- 			ops = ERR_PTR(-ENOPROTOOPT);
- 	} else {
+-	if (found && !(mact_entry->flags & MAC_ENT_MOVED))
++	if (mact_entry && !(mact_entry->flags & MAC_ENT_MOVED))
+ 		/* Present, not moved */
+ 		return;
+ 
+-	if (!found) {
++	if (!mact_entry) {
+ 		/* Entry not found - now add */
+ 		mact_entry = alloc_mact_entry(sparx5, mac, vid, port);
+ 		if (!mact_entry)
 -- 
 2.25.1
 
