@@ -2,53 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF954F7BF4
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 11:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38EA74F7C08
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 11:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240008AbiDGJom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 05:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56306 "EHLO
+        id S243975AbiDGJqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 05:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237161AbiDGJok (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 05:44:40 -0400
-Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F38718D9AD;
-        Thu,  7 Apr 2022 02:42:37 -0700 (PDT)
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru C1ADB20CD431
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 11/11] arch: xtensa: platforms: Fix deadlock in rs_close()
-To:     Duoming Zhou <duoming@zju.edu.cn>, <linux-kernel@vger.kernel.org>
-CC:     <chris@zankel.net>, <jcmvbkbc@gmail.com>,
-        <mustafa.ismail@intel.com>, <shiraz.saleem@intel.com>,
-        <jgg@ziepe.ca>, <wg@grandegger.com>, <mkl@pengutronix.de>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <jes@trained-monkey.org>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <alexander.deucher@amd.com>,
-        <linux-xtensa@linux-xtensa.org>, <linux-rdma@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-hippi@sunsite.dk>, <linux-staging@lists.linux.dev>,
-        <linux-serial@vger.kernel.org>, <linux-usb@vger.kernel.org>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <9ca3ab0b40c875b6019f32f031c68a1ae80dd73a.1649310812.git.duoming@zju.edu.cn>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <1195e776-328d-12fe-d1f8-22085dc77b44@omp.ru>
-Date:   Thu, 7 Apr 2022 12:42:31 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S243974AbiDGJqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 05:46:42 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79CB213507
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 02:44:42 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id q26so5712694edc.7
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 02:44:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DkggEoH1Cy9Q4wekLlHSimO5P2kOetKNoD/TtD4Swy4=;
+        b=OIG9QYF1N23IWQlJKss15z7ZfI3zRRClxcMApD9yHcs+hyWr9NwlxxX4Zsln6q0C5p
+         QYUG43RA1xSGOm+z0xFQdcBQY+ScaEDt3pNzzSW0UPWY+9u90AMHohXJbQfQZaoizsO+
+         snPSxt0908hyk+pHem1V3ziix0WQnkSD5kFrgEn1cTcGk1hLbCjHa2r6CPJIgo0lORGm
+         2NyvVusYJMiCTyv37+Oeuld2o0coEcfDMbz5vfSpiR6afkhhtfs7w7Bvw8LeqN35v3vI
+         RYxy8mP5iQYmq1ZnCnyGPAb30sazkFwFzen8uylGRTL7YlC2nhNKkhnI/BRz6sQh9e39
+         0jTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DkggEoH1Cy9Q4wekLlHSimO5P2kOetKNoD/TtD4Swy4=;
+        b=0pbxrk5XdhRhg5V61cfbVHqOjzFRROc9Z497aouCGi6UNF16OS0x2TUsAL6G9LOQru
+         uViDEnlA1DHn6Npxk5DVp6dBlHyBypgeUXoUuX7fhfop7drtpmitXAbvY0cM71Gl9RMG
+         eoBYNcXRCNU9xdsx9mZ0YXM5V+BZSqKsoJrsjTanJVko1xRELCos4BVs96evmnL7MGcV
+         9esI4oPKnOzh893c0QStIENI0QLEH0bsqUc9+4NC+BeKu2yrW19RVHvOsqPKll/aOQHt
+         AQ8RB85G2BHcx/BkzZOqLMXS3wJ5hrs/uYqERzt8ibyQ4CqHKwkCSgy1bLhjlfYYE+JN
+         b4gQ==
+X-Gm-Message-State: AOAM5302QRhXUDm28GQXwCQtKiIXeLy/ZepETfMIO6rjDpslGW23q6TZ
+        v/wdy/utoeVjVLdqz7GDvY0=
+X-Google-Smtp-Source: ABdhPJx8R8skSLzDlT9e6iyhsVIETvIMK4+84/ZvCBSDMMDEO6cgui4YUpWcpi7vVxJyYuFpO5eeNA==
+X-Received: by 2002:a05:6402:50c9:b0:419:3019:2d35 with SMTP id h9-20020a05640250c900b0041930192d35mr13296027edb.95.1649324680995;
+        Thu, 07 Apr 2022 02:44:40 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id e9-20020a50e009000000b0041cd2e38a3bsm5245799edl.81.2022.04.07.02.44.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 02:44:40 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 12:44:39 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Matej Zachar <zachar.matej@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [DSA] fallback PTP to master port when switch does not support it
+Message-ID: <20220407094439.ubf66iei3wgimx7d@skbuf>
+References: <25688175-1039-44C7-A57E-EB93527B1615@gmail.com>
+ <YktrbtbSr77bDckl@lunn.ch>
+ <20220405124851.38fb977d@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <9ca3ab0b40c875b6019f32f031c68a1ae80dd73a.1649310812.git.duoming@zju.edu.cn>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220405124851.38fb977d@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,52 +71,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+On Tue, Apr 05, 2022 at 12:48:51PM -0700, Jakub Kicinski wrote:
+> On Tue, 5 Apr 2022 00:04:30 +0200 Andrew Lunn wrote:
+> > What i don't like about your proposed fallback is that it gives the
+> > impression the slave ports actually support PTP, when they do not.
+>
+> +1, running PTP on the master means there is a non-PTP-aware switch
+> in the path, which should not be taken lightly.
 
-On 4/7/22 9:37 AM, Duoming Zhou wrote:
++2, the change could probably be technically done, and there are aspects
+worth discussing, but the goal presented here is questionable and it's
+best to not fool ourselves into thinking that the variable queuing delays
+of the switch are taken into account when reporting the timestamps,
+which they aren't.
 
-> There is a deadlock in rs_close(), which is shown
-> below:
-> 
->    (Thread 1)              |      (Thread 2)
->                            | rs_open()
-> rs_close()                 |  mod_timer()
->  spin_lock_bh() //(1)      |  (wait a time)
->  ...                       | rs_poll()
->  del_timer_sync()          |  spin_lock() //(2)
->  (wait timer to stop)      |  ...
-> 
-> We hold timer_lock in position (1) of thread 1 and
-> use del_timer_sync() to wait timer to stop, but timer handler
-> also need timer_lock in position (2) of thread 2.
-> As a result, rs_close() will block forever.
-> 
-> This patch extracts del_timer_sync() from the protection of
-> spin_lock_bh(), which could let timer handler to obtain
-> the needed lock.
-> 
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> ---
->  arch/xtensa/platforms/iss/console.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/xtensa/platforms/iss/console.c b/arch/xtensa/platforms/iss/console.c
-> index 81d7c7e8f7e..d431b61ae3c 100644
-> --- a/arch/xtensa/platforms/iss/console.c
-> +++ b/arch/xtensa/platforms/iss/console.c
-> @@ -51,8 +51,10 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
->  static void rs_close(struct tty_struct *tty, struct file * filp)
->  {
->  	spin_lock_bh(&timer_lock);
-> -	if (tty->count == 1)
-> +	if (tty->count == 1) {
-> +		spin_unlock_bh(&timer_lock);
->  		del_timer_sync(&serial_timer);
-> +	}
->  	spin_unlock_bh(&timer_lock);
-
-   Double unlock iff tty->count == 1?
-
-[...]
-
-MBR, Sergey
+I think that by the time you realize that you need PTP hardware
+timestamping on switch ports but you have a PTP-unaware switch
+integrated *into* your system, you need to go back to the drawing board.
