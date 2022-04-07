@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E48514F8B35
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:56:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06EEA4F8B7E
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbiDGWda (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 18:33:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48082 "EHLO
+        id S232041AbiDGWdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 18:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232045AbiDGWd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 18:33:27 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630D46898D
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 15:31:25 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb8b94ad35so60561407b3.9
-        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 15:31:25 -0700 (PDT)
+        with ESMTP id S232063AbiDGWdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 18:33:32 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53550710F7
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 15:31:28 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id v7-20020a05690204c700b0063dc849f9f8so5256928ybs.18
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 15:31:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Hu7sUD5zyrHl5uiPKZlxY1ld6/Ce7TFF/TdsyLVX5fA=;
-        b=Z6BrmJufof+OAh4RHiyvCakRSlX6zl3BpcHdpFqTKVKvMBbnf2qF55Lkwt4wzKLgXV
-         mMsfuVLwEYvq9w+JUA3GEAUhdfy9qdJn4zH4LWzlP3zmQ+0d7bW6XRsKRBQ4m5Iz+qYD
-         43VGaMnr2dX+lyjaC6fj66+VJtf9ctV6HCD3ihd1emlRC88y/r06iA7l21tq50I5LLWU
-         dtaACP2rtjIwI/OksasjTkN+iisSVDFzPtwRc+kl/zAfE4CkCb19yJh6OifyZ9vR1hnA
-         VLf+zfnO1kGVtX9o4CILAkquciEm/s5QPxdczRO+hydoG37rqFpW4+giMjUm/4Vd2iRO
-         VUew==
+        bh=mVRkJUJrBQiO7+Bsu1whxLXMRGnF9n+72bMW+OHddAU=;
+        b=AYjwe+v0XMLfY7jZx6LsnB0JoRBo9syomvIEP6T6T7OWTEZFTxlqrmEa9/6TFm5h7i
+         zabbHObdPEb6fS1hkMI7leGwyZRoN4T08PSCgSb93MA9QjsP/bjh4b48xkt9F9k6IQMS
+         4ELLZMwEOmuYk9QVCZJq3U3Ad/k0jn7hBwWNbzo8jiNOFm2BiVay0d6cygSuSkgLtMRy
+         ixi89Oi+4FR7LWAK1qtZwmKxyBpeQ0KLUdF1G38prXwCjTOHcTk17X+egtDD26zxk34j
+         eRWQxPllBs6NpIg+ZtqVK/FiQ4UfyYFXrifhI0MSgol0iRQ5X4aZWnZX0EgAUFbrflSr
+         uZAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Hu7sUD5zyrHl5uiPKZlxY1ld6/Ce7TFF/TdsyLVX5fA=;
-        b=YQKUVt0Y4qjb/mr5hZopo92/qygAQ98pYCaId6A1j86yGtLQa78npabp8YdU4SycL+
-         q2x8awie6KKCDSlAoAv4qGyDx6hRIUPiKsva9xTF9j2NVfD/5WPNBJj/ezgYskmdSBIQ
-         qXgHhPpcH9sjKCkVOwYOd0OpA+OBL3b21/Wprw3j6+Ivcxj8U3MS7MmQRb2gFpfgSzAu
-         6/7OXAqK/qmsWrlvu/acPVI2YEznpUjpkW+miBK2X0S+NZaYvTLFX0J2eDqnVV5HY+52
-         6ifH0a8sP6xFw3m9jBX4z1CLQ18ly5Bw4YZtgCVz1sWK+KqRewxytye3EgDN5dN1y3uK
-         cb4g==
-X-Gm-Message-State: AOAM531+jc2Q5z0cnyk+wVluBHkjWYfUlryMlSZjI9KZMiteWAd5+WUj
-        vw1T9k09q/hGUuLgwTG5BidChjKcTc/xg93KDFeHkk08T5EDs4cTlxDstamkhlhHa5eXkJyukW2
-        41Bb9etAk7nFSLnGk4gayW6LCi6Y7xyEM2cl6fAzXdP5cZo5+gia+Uw==
-X-Google-Smtp-Source: ABdhPJxYU1HvQcbPCFWfq7pj4Wl40jse127SVfUec3jZgK1vTd7ZTK2uEc+R1XDy+ZJVzjzvO1hFgR4=
+        bh=mVRkJUJrBQiO7+Bsu1whxLXMRGnF9n+72bMW+OHddAU=;
+        b=u5hjgvu/GXP16XAe7QH151pAOBUA8GgWWYJTHcTt6uSZMpENZi0fUV9FXho3FCbW9c
+         9XdO6Bom0M75jEdCkk3rU1uczMBPz0lhnSuunasDuQTX2myTbCWrpLphHCW02oAH2XGp
+         CCbSCRuRgE02QiKNCEPp7IYs74IZm144oP/Em11tdRlcvWZcVOTJgvGjWJgTfNOJWFlS
+         mpPxdk62d+7kNErYDEcJMAF7PqAiXb2NTj/Kayd8Jd03jsMHPNu0VRXcXEcHO5wtSdNH
+         d2fDK0ufKLK/jOPDLxsDlrLHM2lwOi55j3lrSBULogI6dnu+gXhqd58IGwWJCR4Qoe7y
+         XEzQ==
+X-Gm-Message-State: AOAM530ztAUn25byrNBxnL/wSV6XixSISgTfXmqt+4/NIM4kB/o97QWr
+        Fnj/P3a/tD8JC+vMCtZC57p3B5kEiei7i8237tWcmQ8NkJquoUoUI4W5rDQnq5oP6A7dzJwUILV
+        76CCV+cy3iMJSarPtzX0W1u6StZ6+2AOJMUUln5BcA1oVUrW7G+wDKA==
+X-Google-Smtp-Source: ABdhPJyLcjvVx5y++Qk77NNgUekWaOkb7vEEtnXRpQB5N39ZlXk4gXG6cXCB+61m3OAeTRXg4xNSZLk=
 X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:9e25:5910:c207:e29a])
- (user=sdf job=sendgmr) by 2002:a25:6f04:0:b0:63a:ee50:5afb with SMTP id
- k4-20020a256f04000000b0063aee505afbmr12076760ybc.443.1649370684423; Thu, 07
- Apr 2022 15:31:24 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 15:31:09 -0700
+ (user=sdf job=sendgmr) by 2002:a81:9852:0:b0:2eb:9b44:37fc with SMTP id
+ p79-20020a819852000000b002eb9b4437fcmr13679573ywg.263.1649370687440; Thu, 07
+ Apr 2022 15:31:27 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 15:31:10 -0700
 In-Reply-To: <20220407223112.1204582-1-sdf@google.com>
-Message-Id: <20220407223112.1204582-5-sdf@google.com>
+Message-Id: <20220407223112.1204582-6-sdf@google.com>
 Mime-Version: 1.0
 References: <20220407223112.1204582-1-sdf@google.com>
 X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH bpf-next v3 4/7] bpf: allow writing to a subset of sock fields
- from lsm progtype
+Subject: [PATCH bpf-next v3 5/7] libbpf: add lsm_cgoup_sock type
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -69,98 +68,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For now, allow only the obvious ones, like sk_priority and sk_mark.
+lsm_cgroup/ is the prefix for BPF_LSM_CGROUP.
 
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- kernel/bpf/bpf_lsm.c  | 58 +++++++++++++++++++++++++++++++++++++++++++
- kernel/bpf/verifier.c |  3 ++-
- 2 files changed, 60 insertions(+), 1 deletion(-)
+ tools/bpf/bpftool/common.c | 1 +
+ tools/lib/bpf/libbpf.c     | 2 ++
+ 2 files changed, 3 insertions(+)
 
-diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-index 8b948ec9ab73..cc13da18d8b3 100644
---- a/kernel/bpf/bpf_lsm.c
-+++ b/kernel/bpf/bpf_lsm.c
-@@ -332,7 +332,65 @@ bool bpf_lsm_is_sleepable_hook(u32 btf_id)
- const struct bpf_prog_ops lsm_prog_ops = {
- };
- 
-+static int lsm_btf_struct_access(struct bpf_verifier_log *log,
-+					const struct btf *btf,
-+					const struct btf_type *t, int off,
-+					int size, enum bpf_access_type atype,
-+					u32 *next_btf_id,
-+					enum bpf_type_flag *flag)
-+{
-+	const struct btf_type *sock_type;
-+	struct btf *btf_vmlinux;
-+	s32 type_id;
-+	size_t end;
-+
-+	if (atype == BPF_READ)
-+		return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-+					 flag);
-+
-+	btf_vmlinux = bpf_get_btf_vmlinux();
-+	if (!btf_vmlinux) {
-+		bpf_log(log, "no vmlinux btf\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	type_id = btf_find_by_name_kind(btf_vmlinux, "sock", BTF_KIND_STRUCT);
-+	if (type_id < 0) {
-+		bpf_log(log, "'struct sock' not found in vmlinux btf\n");
-+		return -EINVAL;
-+	}
-+
-+	sock_type = btf_type_by_id(btf_vmlinux, type_id);
-+
-+	if (t != sock_type) {
-+		bpf_log(log, "only 'struct sock' writes are supported\n");
-+		return -EACCES;
-+	}
-+
-+	switch (off) {
-+	case bpf_ctx_range(struct sock, sk_priority):
-+		end = offsetofend(struct sock, sk_priority);
-+		break;
-+	case bpf_ctx_range(struct sock, sk_mark):
-+		end = offsetofend(struct sock, sk_mark);
-+		break;
-+	default:
-+		bpf_log(log, "no write support to 'struct sock' at off %d\n", off);
-+		return -EACCES;
-+	}
-+
-+	if (off + size > end) {
-+		bpf_log(log,
-+			"write access at off %d with size %d beyond the member of 'struct sock' ended at %zu\n",
-+			off, size, end);
-+		return -EACCES;
-+	}
-+
-+	return NOT_INIT;
-+}
-+
- const struct bpf_verifier_ops lsm_verifier_ops = {
- 	.get_func_proto = bpf_lsm_func_proto,
- 	.is_valid_access = btf_ctx_access,
-+	.btf_struct_access = lsm_btf_struct_access,
- };
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index cc84954846d7..0d6d5be30a36 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -12872,7 +12872,8 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
- 				insn->code = BPF_LDX | BPF_PROBE_MEM |
- 					BPF_SIZE((insn)->code);
- 				env->prog->aux->num_exentries++;
--			} else if (resolve_prog_type(env->prog) != BPF_PROG_TYPE_STRUCT_OPS) {
-+			} else if (resolve_prog_type(env->prog) != BPF_PROG_TYPE_STRUCT_OPS &&
-+				   resolve_prog_type(env->prog) != BPF_PROG_TYPE_LSM) {
- 				verbose(env, "Writes through BTF pointers are not allowed\n");
- 				return -EINVAL;
- 			}
+diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+index 0c1e06cf50b9..2b3bf6fa413a 100644
+--- a/tools/bpf/bpftool/common.c
++++ b/tools/bpf/bpftool/common.c
+@@ -67,6 +67,7 @@ const char * const attach_type_name[__MAX_BPF_ATTACH_TYPE] = {
+ 	[BPF_TRACE_FEXIT]		= "fexit",
+ 	[BPF_MODIFY_RETURN]		= "mod_ret",
+ 	[BPF_LSM_MAC]			= "lsm_mac",
++	[BPF_LSM_CGROUP]		= "lsm_cgroup",
+ 	[BPF_SK_LOOKUP]			= "sk_lookup",
+ 	[BPF_TRACE_ITER]		= "trace_iter",
+ 	[BPF_XDP_DEVMAP]		= "xdp_devmap",
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 016ecdd1c3e1..789726df5fe8 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8691,6 +8691,7 @@ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("freplace/",		EXT, 0, SEC_ATTACH_BTF, attach_trace),
+ 	SEC_DEF("lsm/",			LSM, BPF_LSM_MAC, SEC_ATTACH_BTF, attach_lsm),
+ 	SEC_DEF("lsm.s/",		LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
++	SEC_DEF("lsm_cgroup/",	LSM, BPF_LSM_CGROUP, SEC_ATTACH_BTF),
+ 	SEC_DEF("iter/",		TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
+ 	SEC_DEF("iter.s/",		TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_iter),
+ 	SEC_DEF("syscall",		SYSCALL, 0, SEC_SLEEPABLE),
+@@ -9112,6 +9113,7 @@ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+ 		*kind = BTF_KIND_TYPEDEF;
+ 		break;
+ 	case BPF_LSM_MAC:
++	case BPF_LSM_CGROUP:
+ 		*prefix = BTF_LSM_PREFIX;
+ 		*kind = BTF_KIND_FUNC;
+ 		break;
 -- 
 2.35.1.1178.g4f1659d476-goog
 
