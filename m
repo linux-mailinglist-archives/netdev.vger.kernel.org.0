@@ -2,87 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9FD4F7C77
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:09:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 139EF4F7CA2
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244157AbiDGKLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 06:11:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
+        id S244199AbiDGKYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 06:24:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244129AbiDGKLd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:11:33 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDB2237FCA;
-        Thu,  7 Apr 2022 03:09:23 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 710EE60009;
-        Thu,  7 Apr 2022 10:09:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649326162;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ciS+k9VChIU4H5lHgCsYF4iRcuri5PAr+qW7SczT23g=;
-        b=ddJ1QyAEYMuFQmzcQsiFXJxEXtaRqomeq89oujvWk+O8ULPdeGS+RCBQ6+Dlz308O2AEtu
-        8BDslUIz5X3rgAjWR2xWxkutGB4oVOD3IOWKWPjZhpsgp39d9kQ0qYN8VyMryO7V+zJT6B
-        0oq3KViTXdzzJ835LD+23twJovmbmxJ3hs3jqqfIs8TzYmVrABMYJz22CH7grkd9UIiEUv
-        RZtplSvx3XzTN9towugfBNzvvmfxhGbIh6/fyi2ujg5ZwImJ3n36D8m5DQJyAZFkz6hO+R
-        +9K+2bIPS4NDKUg9NJEQTiuyCM/PICcgTz2p236TJd7rq5C9ANewzYeTcWSRnw==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v6 10/10] net: ieee802154: ca8210: Call _xmit_error() when a transmission fails
-Date:   Thu,  7 Apr 2022 12:09:03 +0200
-Message-Id: <20220407100903.1695973-11-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220407100903.1695973-1-miquel.raynal@bootlin.com>
-References: <20220407100903.1695973-1-miquel.raynal@bootlin.com>
+        with ESMTP id S244189AbiDGKY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:24:29 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9078127FD9;
+        Thu,  7 Apr 2022 03:22:26 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 736FE100003;
+        Thu,  7 Apr 2022 10:22:16 +0000 (UTC)
+Message-ID: <9cc34fbc-3fd6-b529-7a05-554224510452@ovn.org>
+Date:   Thu, 7 Apr 2022 12:22:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     i.maximets@ovn.org, Roi Dayan <roid@nvidia.com>,
+        Aaron Conole <aconole@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Toms Atteka <cpp.code.lv@gmail.com>, netdev@vger.kernel.org,
+        dev@openvswitch.org, linux-kernel@vger.kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Maor Dickman <maord@nvidia.com>
+Content-Language: en-US
+To:     Vlad Buslov <vladbu@nvidia.com>
+References: <20220309222033.3018976-1-i.maximets@ovn.org>
+ <f7ty21hir5v.fsf@redhat.com>
+ <44eeb550-3310-d579-91cc-ec18b59966d2@nvidia.com>
+ <1a185332-3693-2750-fef2-f6938bbc8500@ovn.org> <87k0c171ml.fsf@nvidia.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [PATCH net-next v2] net: openvswitch: fix uAPI incompatibility
+ with existing user space
+In-Reply-To: <87k0c171ml.fsf@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ieee802154_xmit_error() is the right helper to call when a transmission
-has failed. Let's use it instead of open-coding it.
+On 4/7/22 10:02, Vlad Buslov wrote:
+> On Mon 14 Mar 2022 at 20:40, Ilya Maximets <i.maximets@ovn.org> wrote:
+>> On 3/14/22 19:33, Roi Dayan wrote:
+>>>
+>>>
+>>> On 2022-03-10 8:44 PM, Aaron Conole wrote:
+>>>> Ilya Maximets <i.maximets@ovn.org> writes:
+>>>>
+>>>>> Few years ago OVS user space made a strange choice in the commit [1]
+>>>>> to define types only valid for the user space inside the copy of a
+>>>>> kernel uAPI header.  '#ifndef __KERNEL__' and another attribute was
+>>>>> added later.
+>>>>>
+>>>>> This leads to the inevitable clash between user space and kernel types
+>>>>> when the kernel uAPI is extended.  The issue was unveiled with the
+>>>>> addition of a new type for IPv6 extension header in kernel uAPI.
+>>>>>
+>>>>> When kernel provides the OVS_KEY_ATTR_IPV6_EXTHDRS attribute to the
+>>>>> older user space application, application tries to parse it as
+>>>>> OVS_KEY_ATTR_PACKET_TYPE and discards the whole netlink message as
+>>>>> malformed.  Since OVS_KEY_ATTR_IPV6_EXTHDRS is supplied along with
+>>>>> every IPv6 packet that goes to the user space, IPv6 support is fully
+>>>>> broken.
+>>>>>
+>>>>> Fixing that by bringing these user space attributes to the kernel
+>>>>> uAPI to avoid the clash.  Strictly speaking this is not the problem
+>>>>> of the kernel uAPI, but changing it is the only way to avoid breakage
+>>>>> of the older user space applications at this point.
+>>>>>
+>>>>> These 2 types are explicitly rejected now since they should not be
+>>>>> passed to the kernel.  Additionally, OVS_KEY_ATTR_TUNNEL_INFO moved
+>>>>> out from the '#ifdef __KERNEL__' as there is no good reason to hide
+>>>>> it from the userspace.  And it's also explicitly rejected now, because
+>>>>> it's for in-kernel use only.
+>>>>>
+>>>>> Comments with warnings were added to avoid the problem coming back.
+>>>>>
+>>>>> (1 << type) converted to (1ULL << type) to avoid integer overflow on
+>>>>> OVS_KEY_ATTR_IPV6_EXTHDRS, since it equals 32 now.
+>>>>>
+>>>>>   [1] beb75a40fdc2 ("userspace: Switching of L3 packets in L2 pipeline")
+>>>>>
+>>>>> Fixes: 28a3f0601727 ("net: openvswitch: IPv6: Add IPv6 extension header support")
+>>>>> Link: https://lore.kernel.org/netdev/3adf00c7-fe65-3ef4-b6d7-6d8a0cad8a5f@nvidia.com
+>>>>> Link: https://github.com/openvswitch/ovs/commit/beb75a40fdc295bfd6521b0068b4cd12f6de507c
+>>>>> Reported-by: Roi Dayan <roid@nvidia.com>
+>>>>> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+>>>>> ---
+>>>>
+>>>> Acked-by: Aaron Conole <aconole@redhat.com>
+>>>>
+>>>
+>>>
+>>>
+>>> I got to check traffic with the fix and I do get some traffic
+>>> but something is broken. I didn't investigate much but the quick
+>>> test shows me rules are not offloaded and dumping ovs rules gives
+>>> error like this
+>>>
+>>> recirc_id(0),in_port(enp8s0f0_1),ct_state(-trk),eth(),eth_type(0x86dd),ipv6(frag=no)(bad
+>>> key length 2, expected -1)(00 00/(bad mask length 2, expected -1)(00 00),
+>>> packets:2453, bytes:211594, used:0.004s, flags:S., actions:ct,recirc(0x2)
+>>
+>> Such a dump is expected, because kernel parses fields that current
+>> userspace doesn't understand, and at the same time OVS by design is
+>> using kernel provided key/mask while installing datapath rules, IIRC.
+>> It should be possible to make these dumps a bit more friendly though.
+>>
+>> For the offloading not working, see my comment in the v2 patch email
+>> I sent (top email of this thread).  In short, it's a problem in user
+>> space and it can not be fixed from the kernel side, unless we revert
+>> IPv6 extension header support and never add any new types, which is
+>> unreasonable.  I didn't test any actual offloading, but I had a
+>> successful run of 'make check-offloads' with my quick'n'dirty fix from
+>> the top email.
+> 
+> Hi Ilya,
+> 
+> I can confirm that with latest OvS master IPv6 rules offload still fails
+> without your pastebin code applied.
+> 
+>>
+>> Since we're here:
+>>
+>> Toms, do you plan to submit user space patches for this feature?
+> 
+> I see there is a patch from you that is supposed to fix compatibility
+> issues caused by this change in OvS d96d14b14733 ("openvswitch.h: Align
+> uAPI definition with the kernel."), but it doesn't fix offload for me
+> without pastebin patch.
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- drivers/net/ieee802154/ca8210.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Yes.  OVS commit d96d14b14733 is intended to only fix the uAPI.
+Issue with offload is an OVS bug that should be fixed separately.
+The fix will also need to be backported to OVS stable branches.
 
-diff --git a/drivers/net/ieee802154/ca8210.c b/drivers/net/ieee802154/ca8210.c
-index 116aece191cd..3c00310d26e8 100644
---- a/drivers/net/ieee802154/ca8210.c
-+++ b/drivers/net/ieee802154/ca8210.c
-@@ -1729,8 +1729,7 @@ static int ca8210_async_xmit_complete(
- 			status
- 		);
- 		if (status != IEEE802154_TRANSACTION_OVERFLOW) {
--			dev_kfree_skb_any(priv->tx_skb);
--			ieee802154_wake_queue(priv->hw);
-+			ieee802154_xmit_error(priv->hw, priv->tx_skb, status);
- 			return 0;
- 		}
- 	}
--- 
-2.27.0
+> Do you plan to merge that code into OvS or you
+> require some help from our side?
 
+I could do that, but I don't really have enough time.  So, if you
+can work on that fix, it would be great.  Note that comments inside
+the OVS's lib/odp-util.c:parse_key_and_mask_to_match() was blindly
+copied from the userspace datapath and are incorrect for the general
+case, so has to be fixed alongside the logic of that function.
+
+Best regards, Ilya Maximets.
