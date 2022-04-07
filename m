@@ -2,74 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C1C44F8037
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 15:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 169F74F8078
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 15:24:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343592AbiDGNOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 09:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59278 "EHLO
+        id S1343648AbiDGN03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 09:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240715AbiDGNOo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 09:14:44 -0400
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E9F4CD4B;
-        Thu,  7 Apr 2022 06:12:45 -0700 (PDT)
-Received: by mail-wr1-f41.google.com with SMTP id d29so7767265wra.10;
-        Thu, 07 Apr 2022 06:12:45 -0700 (PDT)
+        with ESMTP id S242980AbiDGN02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 09:26:28 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4930E70852;
+        Thu,  7 Apr 2022 06:24:25 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id c4so8088063qtx.1;
+        Thu, 07 Apr 2022 06:24:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e9BBEGFkRoWtf1TNB9g9Peh7Pm7yimLQ1/ZYuWqvj4k=;
+        b=H7r2oqUBDNUF5WBh4tekAv6rapssaMxLG85MIqgiMYveJbo889WVaMOMwdIT8R2EDK
+         RsHM2mD7VyjKL/ubHbFVkQNyViPWZ0wwuSTInVWVkXOs85+dljwhq5ozMsi3cUNgdwpa
+         BP/1GkuAGderktJwZ9ANXmzsF/nI8LCEAXC3/zQAOroJn9g3AziXr8m6Ras/eWDwcJ++
+         hZKG2LvEXIrKPjBj8UmO7K0WqCnE26PfMvPZmxzlfPTT0XD8+5CjvaNuJANDHZqFEw3j
+         FcUkcmFN2myKAexJ8wCRDgHy/nrc14PqwqC0kAJ2eJ8EVh7japyqJWynfdi1xeBONChw
+         v2sA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HCI13kqR579Q1TCsRbXnz/bmREDBGKbTRNjDM5mKHYc=;
-        b=0t9+qH6Zapk/S/VGvgTkGY9XvGsZ1L0cZP3z7zXRLHv5KAFCFj2dO8jqblU882eCmo
-         5sjMDxiQFIAvdrlA+Bj9My86DbBpNLWbEr1IGQhzjHfw2zRjKrK52rHS0//nfO/SwwPJ
-         5aFluSqy5rwbzVI78B316JGiQmCe9REmf8wudABCAEa+9WYP8LS+cMwAA1vrzO7DxAsG
-         29plg1/CCleu2VGQ3sjyCgjpkJk16XDRuqRlZV7CsGjw0eYxOGbYA1vUbWeOWZ2SzcGc
-         koHBzgO5d+LxT1+X1HZPxqXcQWBWeuJDo4e477F4bSeuwrTn66GZulJJaZTMfP63T7Fe
-         5xLg==
-X-Gm-Message-State: AOAM532CbXS1uJDNwdP32OSs+vJuIbSsFPNjloLNVr7oijUP7SEoCxyg
-        LKgkZkULmUGMUyQK7Tp4XYs=
-X-Google-Smtp-Source: ABdhPJxR6TVIZB16KefROVY559IWuQt8+VPOwN/mBpnp5UOY6KACX5raLvrPpeEItOnJ0uPbmhJgEw==
-X-Received: by 2002:adf:d1cf:0:b0:207:8c13:f268 with SMTP id b15-20020adfd1cf000000b002078c13f268mr1884810wrd.345.1649337163635;
-        Thu, 07 Apr 2022 06:12:43 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id o8-20020a5d6488000000b002051f1028f6sm20274396wri.111.2022.04.07.06.12.42
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e9BBEGFkRoWtf1TNB9g9Peh7Pm7yimLQ1/ZYuWqvj4k=;
+        b=kC7p2I7PUbdLlRGLqdSpETWGesHva7vsKqY0FGsXtiGMU2JqvH3pEzrvvzBMCnkcz6
+         Ikg8DpJEcEMAS1ji+nkvHfHQVQptKnd7TR0wA81KSKdqxZHd9KE6rUCjuxw4v7hbAkMa
+         ok4sV8lM1aqtwPeRHnqPo9xRrD4HQ3QQTIp/mt9a11bprPukfKbPD8c5swQSerKrioUM
+         jC5kpGLtDGZYsIzvd30L+YLIXokVEZPo6+yYbbG0On8ihnpeOVQ99e7XOnJB+aJGrXjb
+         BpFazOb/4nLi5vAQ8eQVG+RPoIPwo7ZcMqZlJm2nW9KH3YosHRPyWEW3PhxC4DcESIKZ
+         e5kA==
+X-Gm-Message-State: AOAM530b86t5APCk79FObY6TcZmby8Uqo59saWmJRmr193Ml4AnQfP6b
+        sVMeSNbWl+UgDZr5D8Ms6f85PO4i+dnVqA==
+X-Google-Smtp-Source: ABdhPJw0FNsu9hUpAXB0WdYjlJhtbbWePi+1le8SBKjMj2TRkQx+B0z/7wrcqB/HwugZwfJYgimeOg==
+X-Received: by 2002:a05:622a:4089:b0:2eb:b4bd:8fa4 with SMTP id cg9-20020a05622a408900b002ebb4bd8fa4mr11389743qtb.157.1649337864445;
+        Thu, 07 Apr 2022 06:24:24 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id bk18-20020a05620a1a1200b00680c72b7bf4sm13164195qkb.93.2022.04.07.06.24.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 06:12:43 -0700 (PDT)
-Date:   Thu, 7 Apr 2022 13:12:41 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
-        edumazet@google.com, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, hawk@kernel.org,
-        linux-hyperv@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: hyperv: remove use of bpf_op_t
-Message-ID: <20220407131241.2mu2nqih3i46n4jz@liuwe-devbox-debian-v2>
-References: <20220406213754.731066-1-kuba@kernel.org>
- <20220406213754.731066-2-kuba@kernel.org>
+        Thu, 07 Apr 2022 06:24:23 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>, omosnace@redhat.com
+Subject: [PATCHv2 net] sctp: use the correct skb for security_sctp_assoc_request
+Date:   Thu,  7 Apr 2022 09:24:22 -0400
+Message-Id: <71becb489e51284edf0c11fc15246f4ed4cef5b6.1649337862.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220406213754.731066-2-kuba@kernel.org>
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Apr 06, 2022 at 02:37:52PM -0700, Jakub Kicinski wrote:
-> Following patch will hide that typedef. There seems to be
-> no strong reason for hyperv to use it, so let's not.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Yi Chen reported an unexpected sctp connection abort, and it occurred when
+COOKIE_ECHO is bundled with DATA Fragment by SCTP HW GSO. As the IP header
+is included in chunk->head_skb instead of chunk->skb, it failed to check
+IP header version in security_sctp_assoc_request().
 
-FWIW this is a trivial change. If this is needed:
+According to Ondrej, SELinux only looks at IP header (address and IPsec
+options) and XFRM state data, and these are all included in head_skb for
+SCTP HW GSO packets. So fix it by using head_skb when calling
+security_sctp_assoc_request() in processing COOKIE_ECHO.
 
-Acked-by: Wei Liu <wei.liu@kernel.org>
+v1->v2:
+  - As Ondrej noticed, chunk->head_skb should also be used for
+    security_sctp_assoc_established() in sctp_sf_do_5_1E_ca().
+
+Fixes: e215dab1c490 ("security: call security_sctp_assoc_request in sctp_sf_do_5_1D_ce")
+Reported-by: Yi Chen <yiche@redhat.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/sm_statefuns.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index 7f342bc12735..52edee1322fc 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -781,7 +781,7 @@ enum sctp_disposition sctp_sf_do_5_1D_ce(struct net *net,
+ 		}
+ 	}
+ 
+-	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
++	if (security_sctp_assoc_request(new_asoc, chunk->head_skb ?: chunk->skb)) {
+ 		sctp_association_free(new_asoc);
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 	}
+@@ -932,7 +932,7 @@ enum sctp_disposition sctp_sf_do_5_1E_ca(struct net *net,
+ 
+ 	/* Set peer label for connection. */
+ 	if (security_sctp_assoc_established((struct sctp_association *)asoc,
+-					    chunk->skb))
++					    chunk->head_skb ?: chunk->skb))
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 
+ 	/* Verify that the chunk length for the COOKIE-ACK is OK.
+@@ -2262,7 +2262,7 @@ enum sctp_disposition sctp_sf_do_5_2_4_dupcook(
+ 	}
+ 
+ 	/* Update socket peer label if first association. */
+-	if (security_sctp_assoc_request(new_asoc, chunk->skb)) {
++	if (security_sctp_assoc_request(new_asoc, chunk->head_skb ?: chunk->skb)) {
+ 		sctp_association_free(new_asoc);
+ 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
+ 	}
+-- 
+2.31.1
+
