@@ -2,132 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09DF44F8725
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 20:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 524CD4F875D
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 20:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344110AbiDGSid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 14:38:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
+        id S1346990AbiDGSwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 14:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346883AbiDGSia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 14:38:30 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71F71C60F0
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 11:36:28 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2eb680211d9so71702567b3.9
-        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 11:36:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KWoLiEmwGXS8u1aBX50tyvllEFZL88qS3E2bXTdaTwE=;
-        b=DdaM0i3C/xiDl5f7w5OI76+tq1tch4KOV2dXXvghUPQ6mUhnlBK4I3OROJjtcitdtd
-         V3xjOJtkmxbETZsW18Q7s0mzLDpfufo6goKTYtv8YZXMeq+NYs12/emrTIOOpylyM3KT
-         BoU1ZEvX9aWz/wp3gxT5eJjeQ++TQigKBUAvRDaNp5HKkHXNsxWhTMtcmbFmtzqTPyPt
-         gDAthLn9V4oxGOyMRon+XhSSiyCBmxcVpxOfN3M6GfuECRac8VJHWD8ZZ9QxQl6lai5B
-         b8siaPMO1fPUG1dlaREBRDLx+63sjhI6xeTBDoIWq82BuCXrbLa80FEYjLOayZUs3hdB
-         nEVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KWoLiEmwGXS8u1aBX50tyvllEFZL88qS3E2bXTdaTwE=;
-        b=o68R7h4a+M2TBDyFdw2HeGyn8/H5krnH3BYs65WuKk1xKuNOTp0ZwXyMXag5GAHuoc
-         M82rtmrDFrVIq5vUWuPQmYteRHzQVXuV03lu4P51qzrcn+e5UnxLXG+A2KL/3lDE6JHK
-         XkKxnoPfTwPWbvO3gZZ2Bb8FHKM3mBeuUyLuB4ZuUbFmEhxMKSnsGlu4oFEmE4xclj7H
-         Mrleye47H2DQpgjMcgj7deYMt4OPfsIg+gQQzT10X8RnNa47lL8Y3tuw1bR71AjfPqcw
-         PiB5A6xSnlgQlRmN1WxtH3XCl0kaI4j8pnFmXj6xsrf22a1urSB0I/p1JYYGcHTXjU/4
-         aNqQ==
-X-Gm-Message-State: AOAM533PuRfu7ft48O6Vabxx94hPEQdubOoHjsDy5BFCugwGDKXj3zd6
-        YZABFoxqwKKtcVmgfysJO7IVxVuwWHNOQK6Om9Cvqw==
-X-Google-Smtp-Source: ABdhPJyLrBFUiBDLpvYi317VsxYmF5oPc0BzeVGusLuuqNpzNXc9UpmLk4cK1CbfCIvtxFSoMwNXwrJS82vey8EZi6E=
-X-Received: by 2002:a05:690c:81:b0:2e1:b8cf:5ea9 with SMTP id
- be1-20020a05690c008100b002e1b8cf5ea9mr14101032ywb.191.1649356588045; Thu, 07
- Apr 2022 11:36:28 -0700 (PDT)
+        with ESMTP id S1346971AbiDGSwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 14:52:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7D6118676;
+        Thu,  7 Apr 2022 11:50:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15CC761DE2;
+        Thu,  7 Apr 2022 18:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 713ADC385A6;
+        Thu,  7 Apr 2022 18:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649357412;
+        bh=1DfmZOE6cy4qc+BvIkkyjg9fe8B8HHTXkVo3mqaoYWY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=jO33Uw31mF9bJmMHu+b3wqgq3ziYuwVfdxyTXNrHQh9clvHCtkELUFepEbgPKzeZS
+         1wNMm9l4th46IbH1C83j3Difd3y43RUqQOlGwSDUm+LgzGhaw4DzXyd0tAWHGpokhW
+         bXQK22mCl1SHyE/7AnuL17NR49/tqYfM2TLjNtef1QmXCrnGngyq8fd6FHFqoaX57p
+         dXb1FTNeJOP6Yc8lag7mc9Dr9Pv4iHBqWgcakoFUxwc8s0nTB80Bz67+wR7ggpbzWZ
+         Jbeh9y68oN+TcvgpsjbMPpX14+LMiIOAPPZXvjQA7z4U6obWAaGbxQ3SK58lksW+CZ
+         p5q+YINOeFJDA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 55E50E8DD18;
+        Thu,  7 Apr 2022 18:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <cover.1649350165.git.lorenzo@kernel.org> <cd1bb62e5efe9d151fe96a5224add25122f5044a.1649350165.git.lorenzo@kernel.org>
- <Yk8sqA8sxutE+HRO@lunn.ch>
-In-Reply-To: <Yk8sqA8sxutE+HRO@lunn.ch>
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Date:   Thu, 7 Apr 2022 21:35:52 +0300
-Message-ID: <CAC_iWjKttCb-oDk27vb_Ar58qLN8vY_1cFbGtLB+YUMXtTX8nw@mail.gmail.com>
-Subject: Re: [RFC net-next 2/2] net: mvneta: add support for page_pool_get_stats
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, thomas.petazzoni@bootlin.com,
-        jbrouer@redhat.com, jdamato@fastly.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 bpf-next 0/3] libbpf: uprobe name-based attach followups
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164935741234.5642.724903556157196483.git-patchwork-notify@kernel.org>
+Date:   Thu, 07 Apr 2022 18:50:12 +0000
+References: <1649245431-29956-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1649245431-29956-1-git-send-email-alan.maguire@oracle.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     andrii@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hello:
 
-On Thu, 7 Apr 2022 at 21:25, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > +static void mvneta_ethtool_pp_stats(struct mvneta_port *pp, u64 *data)
-> > +{
-> > +     struct page_pool_stats stats = {};
-> > +     int i;
-> > +
-> > +     for (i = 0; i < rxq_number; i++) {
-> > +             struct page_pool *page_pool = pp->rxqs[i].page_pool;
-> > +             struct page_pool_stats pp_stats = {};
-> > +
-> > +             if (!page_pool_get_stats(page_pool, &pp_stats))
-> > +                     continue;
-> > +
-> > +             stats.alloc_stats.fast += pp_stats.alloc_stats.fast;
-> > +             stats.alloc_stats.slow += pp_stats.alloc_stats.slow;
-> > +             stats.alloc_stats.slow_high_order +=
-> > +                     pp_stats.alloc_stats.slow_high_order;
-> > +             stats.alloc_stats.empty += pp_stats.alloc_stats.empty;
-> > +             stats.alloc_stats.refill += pp_stats.alloc_stats.refill;
-> > +             stats.alloc_stats.waive += pp_stats.alloc_stats.waive;
-> > +             stats.recycle_stats.cached += pp_stats.recycle_stats.cached;
-> > +             stats.recycle_stats.cache_full +=
-> > +                     pp_stats.recycle_stats.cache_full;
-> > +             stats.recycle_stats.ring += pp_stats.recycle_stats.ring;
-> > +             stats.recycle_stats.ring_full +=
-> > +                     pp_stats.recycle_stats.ring_full;
-> > +             stats.recycle_stats.released_refcnt +=
-> > +                     pp_stats.recycle_stats.released_refcnt;
->
-> We should be trying to remove this sort of code from the driver, and
-> put it all in the core.  It wants to be something more like:
->
->         struct page_pool_stats stats = {};
->         int i;
->
->         for (i = 0; i < rxq_number; i++) {
->                 struct page_pool *page_pool = pp->rxqs[i].page_pool;
->
->                 if (!page_pool_get_stats(page_pool, &stats))
->                         continue;
->
->         page_pool_ethtool_stats_get(data, &stats);
->
-> Let page_pool_get_stats() do the accumulate as it puts values in stats.
+This series was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
 
-Unless I misunderstand this, I don't think that's doable in page pool.
-That means page pool is aware of what stats to accumulate per driver
-and I certainly don't want anything driver specific to creep in there.
-The driver knows the number of pools he is using and he can gather
-them all together.
+On Wed,  6 Apr 2022 12:43:48 +0100 you wrote:
+> Follow-up series to [1] to address some suggestions from Andrii to
+> improve parsing and make it more robust (patches 1, 2) and to improve
+> validation of u[ret]probe firing by validating expected argument
+> and return values (patch 3).
+> 
+> [1] https://lore.kernel.org/bpf/164903521182.13106.12656654142629368774.git-patchwork-notify@kernel.org/
+> 
+> [...]
 
-Regards
-/Ilias
->
-> You probably should also rework the mellanox driver to use the same
-> code structure.
->
->     Andrew
->
->
+Here is the summary with links:
+  - [v2,bpf-next,1/3] libbpf: improve library identification for uprobe binary path resolution
+    https://git.kernel.org/bpf/bpf-next/c/a1c9d61b19cb
+  - [v2,bpf-next,2/3] libbpf: improve string parsing for uprobe auto-attach
+    https://git.kernel.org/bpf/bpf-next/c/90db26e6be01
+  - [v2,bpf-next,3/3] selftests/bpf: uprobe tests should verify param/return values
+    https://git.kernel.org/bpf/bpf-next/c/1717e248014c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
