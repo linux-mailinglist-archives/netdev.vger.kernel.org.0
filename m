@@ -1,109 +1,95 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D51F44F8580
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 19:05:13 +0200 (CEST)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id 2FD7F4F85AF
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 19:16:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243266AbiDGRHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 13:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40480 "EHLO
+        id S1346025AbiDGRSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 13:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229655AbiDGRHD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 13:07:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8722F427E2
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 10:05:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E6C861445
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 17:05:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FC39C385A4;
-        Thu,  7 Apr 2022 17:05:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1649351100;
-        bh=9x2Qwn+KkffT2/fOlTButrqCW7RRJ5eciMtLxJT3BqY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XTe96NSOFw+23bPXWcZgZJBQZsdUP0UIhG/kirTAzsDCmRdE542MiRKNRdsY2KSci
-         xE2oNxnCOx5BEbnoAYytQX26LWKMybXwpPfISv7KJOwyxZX+MIbuP3wNcyB8A7p0yR
-         tpd1bJgSzQKntREhZHdtnZMQfS7tJdnaV3aUibPg=
-Date:   Thu, 7 Apr 2022 19:04:57 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S1346016AbiDGRSV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 13:18:21 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41CE5193B43
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 10:16:21 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2ebd532c5a9so7876947b3.5
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 10:16:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=m+o8vH305sH+IlbC7nxi+b473EiNSwI1NcAhd5gcKNg=;
+        b=o+RQ8J/gC363Mlt3fxzfhIWxELTFITTjaGnXwvQL2n8ybudr7pgauF47SCrVAj2Mi3
+         iQCY+SifSUxbn8w7qenVGfVtga/hVGMJAA55alpuJzKeOLcgkucnWTsiNmpqblC0kYRO
+         ZXRdrzzNC8ZIPF5mJlbXP8d9jkQytK59iAct01jj4gLmSLbv2RCcI0UYsC5oNJd4mH/Z
+         y9AM1fE7cY9mHD1S4J81bhR2UqmSM5a0oteoav40LcRNn4DGGAtEoh11JbPw+hldjXOH
+         Wd8KbHfs1hv1BonwD+Cmlixr8czYZJaOvHgMvzEP8VfkamkZU4HDLMa3Tz1PwgXLiftd
+         ncNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=m+o8vH305sH+IlbC7nxi+b473EiNSwI1NcAhd5gcKNg=;
+        b=tvTwOyyOSxn0KbkcvkqRht4quvNDBbm9MlDVKB/Vui+cd7a86SChaKk8C+3x5qsdEV
+         wafDK3gN5LxUof3RGEyVeSigGHRmMNgYyJ2z64BL09n8iyEfoql5EgJVcjzmQnNZ2hjv
+         q91yMHWh2EL1FJDMV74jVtpeNG/wd1Jyltys9I8gtE1vZYSgx06C2cfwXCjPOwjeLM3L
+         9ciwin5i1iW1+sG9naLgYkFM21Itb4JQOKTdirexNQrqkUewziIX02V/Wa6KiSnn0yQi
+         YKY8trcK0UF/t5R3ASXDGqLfzPf77mnREPSRAjlkG5XxE8G1+VZ7D/6gh+p8/0PoI8cI
+         VXvA==
+X-Gm-Message-State: AOAM533vTno7yBnnEn/NN4jAAUtFmqT2lYc6m4zilblqdVTvQ8vpUsJn
+        emOIouGK1rPqpJ/LwrObbDcoR6LbP5jWEcY=
+X-Google-Smtp-Source: ABdhPJwB7Q4sp3n8PJrlqof8f5/fiXurYzXoeOtomKaGguidvlKHK9cIepPKzksFxW3s/Y46jwKoMLhDfy+eeys=
+X-Received: from lixiaoyan-desktop.svl.corp.google.com ([2620:0:1000:3002:cd29:e4bc:e58c:dcd6])
+ (user=lixiaoyan job=sendgmr) by 2002:a05:6902:20e:b0:627:f1cb:a9ee with SMTP
+ id j14-20020a056902020e00b00627f1cba9eemr10500309ybs.129.1649351780504; Thu,
+ 07 Apr 2022 10:16:20 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 10:15:54 -0700
+Message-Id: <20220407171554.2712631-1-lixiaoyan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
+Subject: [PATCH net-next] fou: Remove XRFM from NET_FOU Kconfig
+From:   Coco Li <lixiaoyan@google.com>
+To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Saravana Kannan <saravanak@google.com>,
-        Rob Herring <robh@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 net] net: mdio: don't defer probe forever if PHY IRQ
- provider is missing
-Message-ID: <Yk8ZuSlhPJtAD9qi@kroah.com>
-References: <20220407165538.4084809-1-vladimir.oltean@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407165538.4084809-1-vladimir.oltean@nxp.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        willem de bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Coco Li <lixiaoyan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HK_RANDOM_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_DKIM_WL autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 07:55:38PM +0300, Vladimir Oltean wrote:
-> When a driver for an interrupt controller is missing, of_irq_get()
-> returns -EPROBE_DEFER ad infinitum, causing
-> fwnode_mdiobus_phy_device_register(), and ultimately, the entire
-> of_mdiobus_register() call, to fail. In turn, any phy_connect() call
-> towards a PHY on this MDIO bus will also fail.
-> 
-> This is not what is expected to happen, because the PHY library falls
-> back to poll mode when of_irq_get() returns a hard error code, and the
-> MDIO bus, PHY and attached Ethernet controller work fine, albeit
-> suboptimally, when the PHY library polls for link status. However,
-> -EPROBE_DEFER has special handling given the assumption that at some
-> point probe deferral will stop, and the driver for the supplier will
-> kick in and create the IRQ domain.
-> 
-> Reasons for which the interrupt controller may be missing:
-> 
-> - It is not yet written. This may happen if a more recent DT blob (with
->   an interrupt-parent for the PHY) is used to boot an old kernel where
->   the driver didn't exist, and that kernel worked with the
->   vintage-correct DT blob using poll mode.
-> 
-> - It is compiled out. Behavior is the same as above.
-> 
-> - It is compiled as a module. The kernel will wait for a number of
->   seconds specified in the "deferred_probe_timeout" boot parameter for
->   user space to load the required module. The current default is 0,
->   which times out at the end of initcalls. It is possible that this
->   might cause regressions unless users adjust this boot parameter.
-> 
-> The proposed solution is to use the driver_deferred_probe_check_state()
-> helper function provided by the driver core, which gives up after some
-> -EPROBE_DEFER attempts, taking "deferred_probe_timeout" into consideration.
-> The return code is changed from -EPROBE_DEFER into -ENODEV or
-> -ETIMEDOUT, depending on whether the kernel is compiled with support for
-> modules or not.
-> 
-> Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> v1->v2: export driver_deferred_probe_check_state, add driver core
->         maintainers
+XRFM is no longer needed for configuring FOU tunnels
+(CONFIG_NET_FOU_IP_TUNNELS), remove from Kconfig.
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Built and installed kernel and setup GUE/FOU tunnels.
+
+Signed-off-by: Coco Li <lixiaoyan@google.com>
+---
+ net/ipv4/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index 87983e70f03f..e983bb0c5012 100644
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -321,7 +321,6 @@ config NET_UDP_TUNNEL
+ 
+ config NET_FOU
+ 	tristate "IP: Foo (IP protocols) over UDP"
+-	select XFRM
+ 	select NET_UDP_TUNNEL
+ 	help
+ 	  Foo over UDP allows any IP protocol to be directly encapsulated
+-- 
+2.35.1.1178.g4f1659d476-goog
 
