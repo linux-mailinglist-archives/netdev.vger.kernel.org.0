@@ -2,235 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BEA04F819D
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 16:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99B0B4F81BF
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 16:33:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232310AbiDGOcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 10:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
+        id S1344061AbiDGOfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 10:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbiDGOcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 10:32:07 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B938719234A
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 07:30:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1649341803; x=1680877803;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=Uwil0fpw8PsamtEm7r7EI0PmdgDUox9M7JqnohErTP0=;
-  b=KeWFhn/SlLPiF0FQmhsziI3Up6NY/WHgnNDr0JU9G9fV0YSmxKw/1NdC
-   rRfD9LAFcMY8ZiiGHjmPl0Lzg1uCEEyWun0OKm27HPUTmsVPzjQN/HOlT
-   BfoXF9nZfUrBQShdkPaOW5ZGZQouiIVYYQdVMlXFpAe49yT1xFQGTF71L
-   xRsNyuhoyOw2l828RDMfbOQhTwHXWlOwJLEV6DzYebizqP2or/GQnEwjJ
-   DwrDi4Vr7inyQA7aLardFcO9OKlYU3tfTHz0uc2uCyA3O7b/KPwuLaZQK
-   I+ooDg3yEC1jeSrpMLZJxiuwULRM6ZKrtMnXtfVOhYxbGmOGy+HyfQIkk
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,242,1643698800"; 
-   d="scan'208";a="168808109"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 07 Apr 2022 07:30:02 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 7 Apr 2022 07:30:02 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17 via Frontend Transport; Thu, 7 Apr 2022 07:30:02 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ao/+Cnb9vL+s1CTPZkngFOF7OXHbHwJEgzB92zUA5h61vVWy10HPg3BRb7iCcR40AQGfOpk+CG5w2ituGbqDEX/GGZSZHrBv6ON/JNtAHgqBnlcS2WEz+VwvRUHl4+iJmGOQX3MoPJc4tjArSDYbSTo9xMA3UirSI44BuP2R+A0My6YWzqgPX0FXpw3Mv8aCGrR1bYy2dI60uP07jnTmpH95NN9aYk1bOgc+Yj5nfhTcimz52w7vOc43KpFWL/RLDgsqNwnEYFDuiqXrIB884AYkHr0ajqOO69tF2QPBicBKgl+XjZPnIVMqbptGt5ZWdQdJZK5LwpNyNszq3WVgyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Uwil0fpw8PsamtEm7r7EI0PmdgDUox9M7JqnohErTP0=;
- b=QCaMaAgMC6++N/s3YjMWxuObyfIiFvw48Kl0RY/m9EB6D5Yql0GAyj4SEEh6KByKNiNRcuHsLwItjML2LfNf/AbT1ZrWvlwIZhwQCNvFFJTw9f1rgdBbGWWFhzUaXwND+epKbxxb2EtKBecUA/EgmbHIBdfAhbSFkL7b9gM88Jz/ZjCcXk2m6omCCGixbEIRV4do664nUbOkt6fg6u6N5oVWw3sBntcAnXch+sy+z1wPteBu4dpx4dnlBCpri4I76IT2F0NCIvIaeo4G3uGg6LMZFFrUuxHBJQGji7xzqgHbJsAuNSx4e3Lssa+3fjGrH5FBCwYL/I/wH4s5aDN/pQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        with ESMTP id S1344039AbiDGOfE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 10:35:04 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A137B1A4D76
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 07:32:59 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id l7so5845662ejn.2
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 07:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Uwil0fpw8PsamtEm7r7EI0PmdgDUox9M7JqnohErTP0=;
- b=LhcRv4eUOZl71/+lCwY+32zz/NMLdBtGbdgTWKH/RAkHFoDOP+lTtgqj2vM3NVYvMS+oNnnKANSkEIUmCCgwYVcWX+LCv+Q8Wrcu1b61NB0cWko5mBXJ3ccyomQiTqawYJtybn4HlB79xTgxTUlK8vlzogj1J63dZ8girLnShGs=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:95::7)
- by SA2PR11MB5051.namprd11.prod.outlook.com (2603:10b6:806:11f::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Thu, 7 Apr
- 2022 14:30:00 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::dc95:437b:6564:f220]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::dc95:437b:6564:f220%8]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
- 14:30:00 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <andrew@lunn.ch>, <linux@armlinux.org.uk>, <palmer@rivosinc.com>,
-        <Daire.McNamara@microchip.com>
-CC:     <apatel@ventanamicro.com>, <netdev@vger.kernel.org>,
-        <Nicolas.Ferre@microchip.com>, <Claudiu.Beznea@microchip.com>,
-        <hkallweit1@gmail.com>, <linux-riscv@lists.infradead.org>
-Subject: Re: riscv defconfig CONFIG_PM/macb/generic PHY regression in
- v5.18-rc1
-Thread-Topic: riscv defconfig CONFIG_PM/macb/generic PHY regression in
- v5.18-rc1
-Thread-Index: AQHYSO3IJSdXwoud5UqKTAwCCAurg6zhaxYAgAEl3QCAAfUCgA==
-Date:   Thu, 7 Apr 2022 14:30:00 +0000
-Message-ID: <6411f181-88a5-14a5-114b-77b401683570@microchip.com>
-References: <9f4b057d-1985-5fd3-65c0-f944161c7792@microchip.com>
- <YkxaiEbHwduhS2+p@lunn.ch>
- <dd69c92d-dcb9-48e3-8ff5-078ea041769a@microchip.com>
-In-Reply-To: <dd69c92d-dcb9-48e3-8ff5-078ea041769a@microchip.com>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 83eab9c7-a51f-4c22-d0fc-08da18a31902
-x-ms-traffictypediagnostic: SA2PR11MB5051:EE_
-x-microsoft-antispam-prvs: <SA2PR11MB5051AD26C3C4351A0FB05CAA98E69@SA2PR11MB5051.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0d5tqlEjrk4k+AQwzSuYWsoV3kBu18Sn2bHe47ndT6OJcFCzyevMcnHEaGK1GnWtHL9PZ/tPeLz1slBzpIy2Qa1uMrCRFSZVvRfy+pwgD7BP4BYmUwC1BIBewSj0ZvaO4l5pQpXNMAYpw7VFopNS7d5Cv1EtR8UjGy3X+QdZHk6gDXfWipLfvg9ZBVXFcAR+MUKP+3oFDpsgM5NQqMZVy+Joh2oCDiodWDCfeWdrO8LfHdWlgDdNl9tCMcSnM2e7ImkdYenJwKlHqw9cnrAJ3StQ/iuFiZ8A9rHVhlw1gPn+svuPhE105uWz1L4ngPIj0b3N/sC9xDABxnRSv8Vmvoru/5yGCDVIzc/N4jgMxS8T8BklvHf5Zx8G3ozB8LGBP00Il62cJIuj+tjcnuwjrXFCArjBJNUpkmKwxcMzAANXLbEpCkugBsDuv+C9Whau47yH9/cjqJbmktQ8CH2eaUKEh9JFfZkTaZNW+jGeRaPmrR4G4N+2j3jMH3DnBUrFsDevUR2clPr+u4Th2YtNzaWjTZUp/ZPmmls3X2/gH85RzY8dL9jIBjc672uJxN4dq9FCk7CKsdJH5uBdp2hpmuhZJ9VvHwYUY737oMYKe2jNkdssz+km+275CaFe4go2SuFITxdETk/Q64HFdsfR601LQeM3p5NW5zuOeC+ahCwODlK0Zd2J9RgxL6CJqIdW5Wd371UTpFinYbHImb9zIWUEOlTvqR+9Q3fS0tu52SWxdgA2v6FzKGVgxLCiX9G1+DlG1XDQokUuvuwhh8YYtFIxfICI6w1+oKjcn7+YidE=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(38100700002)(6486002)(86362001)(71200400001)(4326008)(31696002)(8676002)(91956017)(66446008)(64756008)(66946007)(53546011)(66556008)(66476007)(76116006)(122000001)(508600001)(26005)(36756003)(6512007)(2906002)(31686004)(186003)(5660300002)(316002)(6506007)(8936002)(83380400001)(6636002)(2616005)(38070700005)(110136005)(54906003)(41533002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UFhMS2s2Skl6bjBrU3o3emswMUpvMWVjNkc0NGg3UmxvVUpmSlFGMjBaKytF?=
- =?utf-8?B?QVNnYmR5ZHlsekxHeDRYcDVuc3MvWW15MHc1c1MyWlRtdGNGTjJUQ3dtREtq?=
- =?utf-8?B?Tk1QVjNrcGhsTkxWanZXYlVKQXFCWTg3b0VYcExUOUdQbnNqeHZxZ2VSUXZL?=
- =?utf-8?B?S0YyOG1SQ0ZpZVNIRy9oYmExYS9HTVBOcmYzR1l1dkxaYXJIQ29nTHFOVlR3?=
- =?utf-8?B?amgzazc3R0UrVkIydzFaQk0wY2h6MFM2QXgwV21YenlZMEFJTmVCalhGNzZi?=
- =?utf-8?B?N1B4MVcxRDIxNE9TNzEvYkw2dEpWMXdvTDYwUS9MaDVmdmpMSjMrREh3R0JK?=
- =?utf-8?B?QTdyUDJ2UkNFcTF4ME5YYUVMaUwzWXZnTDdUN3JocTdqbEdwWTB3S3A5NG11?=
- =?utf-8?B?YzlvNzFISzFnbk5sZFJUOFVBdzg1MjFiMUlxKzl3c3BFM1pIMnRnaUVJNk55?=
- =?utf-8?B?RWk4alpoZEhEOFY0bm5aRjVHYjJPL0pNaGoyVEw5YWdCZ2YwN0Z3NlM5emF4?=
- =?utf-8?B?TDlyMEFWVndKRkZSM0NjcllHWDRvQlpYRHZmdHV6OWxRRUtUTGdYbGVOQ2g4?=
- =?utf-8?B?REZkYWpkZGtrNXhVZExUbHZTcmV3aEkvNkNpN0RuWjlFNC9adlQrY3duMWVp?=
- =?utf-8?B?UEVzeENKUUhMN2hTS0ZrM1BxU2xUQXVYbUxjbkdnUFhDd0lNMUNic1d0SWp6?=
- =?utf-8?B?VUlWVFZYM2ZjemJmOUpEa2QraFd5cFJoY09oaGU4a3kxV3JTTm5xcHhzNGV4?=
- =?utf-8?B?cXVOQW1sNE5WMkZhUjlLek02MkRqZTRQSnUxWnR5bFhhK01GWlNkLzFTVnYw?=
- =?utf-8?B?Z1pHajZRK3RoVFpKOCtoT2IzK3l2Y1daU1JKWG1GajcrUVkyMW5wZ3hucWNX?=
- =?utf-8?B?V1ZrYkJuY0xVN09tZTUwajIxSzVLRE9MNkZpT1Y5b3V2czFrdE5PWkEyQzdS?=
- =?utf-8?B?S2N2ZE9vV0VIbHAvRmZ1YVM0bGVHOXdrM1Q5eTRrRlhSNGhadUorLy9QVW4x?=
- =?utf-8?B?dWNGT0dPK0gzTU9GNklvS3pYbnVFZWd6NWVabklpMXJIdG84Z0JSYWlnclJM?=
- =?utf-8?B?Q1BiRnNsem5FUFdNbjRPMzU0UmxpRFJaYW9aYThrRlp3OXhsRXR6enRLMk1i?=
- =?utf-8?B?NDR2S2lkdGZtYmVlKy9jWXVZNW1XRjNVQjFrc0RmK1l0YWozU0dzZGRPS1Zv?=
- =?utf-8?B?Tll5VUFCYkNVMXN5NXdDNjVQazdoc1ZQK0ZDcFQ4SWdBOGVPR3pWL05uQVRJ?=
- =?utf-8?B?bk5HbmYxcXQyak9RRENwcFdFSlhMb3ZLSlQ4cnFscmk4MHN1RmMwc2FSTWNo?=
- =?utf-8?B?Uk11N0pLMk50VTAwOTFiN0Rad0c0THFrakhySHFER3V5WVVGWGdnaFloMXVK?=
- =?utf-8?B?NEFFV3N4aFpCYmxIbEprbVVJZTVOUHg3Vmd2cHlSUytyZktBbzR3L0t6aU0r?=
- =?utf-8?B?QjdZTVJWeE5ucVUwQ0dVcjNPdGtzYjhtYUN4c2tDbDRKN25vcmlldjM5VnBV?=
- =?utf-8?B?bUthWjJHT2R6V1V0b0RUdXhKaFFXU0RMNmZsbTA1NHhOayttTzVwQmhDVjcx?=
- =?utf-8?B?TmhGdnN4b1Uwa0taVEJrbFo2clhjSlM0Yy9ocFQ3UTc4Q29vb0FhbE1sdTdp?=
- =?utf-8?B?MzdRRGhaRDFNK1JpY0trTUwyeFo2d3ZXcjFvQXBtaDFTQTFMZ08wNFprN0Zu?=
- =?utf-8?B?SHVMbEh5SGVIR05GbVhzemRmenRDcUZOd282UFg1WVRMcXB1L0VhaHZyQTla?=
- =?utf-8?B?cUw1NkFKZzdjMEpNaVVia25oUUQzQUJIcmpkd2FwUDJlUFI3Z1FpbE04NGZi?=
- =?utf-8?B?NWMwN0V5NXNSSmxsOTd2b25hMDhWZ081alRHM3NXZXo4TUkzeElidDFWNzd0?=
- =?utf-8?B?Ym9idFpZSW1HWTc2WWJ2UUtRbmttbEtMR2NiMWZ0d0FWL1BUWEJxaXVpWUxs?=
- =?utf-8?B?azBONi9hTWFRS0lVMHYxSU1yY21oeVg2bTdaNTVWSlRZVWF1T0k3MktWVG05?=
- =?utf-8?B?aEsxZ2dSQm1kY3haSDJ5NnN6M0RrYWN0YjhJLzBOdllsU3lmU3FQbm1mSFZJ?=
- =?utf-8?B?ZDJvSjJsdGhtS2lkSWlwNlJRaHdjUXp4cm02cUh1aFZvYXlrN25HRWpZYTFO?=
- =?utf-8?B?Qm1Sc0hzRjl3S2pyWUF3Q0tZMmZUMVFBcGxkNzdYTlI3SldjZDR3V2ZaYnZy?=
- =?utf-8?B?UDNtM2MyN0lPaWpqUW5sZG5xYnhxTGtHQzVhcjJQak5RYlQwVXkzZStSNTk0?=
- =?utf-8?B?aStnMWc1SmZkTm5lV0Q1dk5EWFZQNGdVd1NEdWFySGNUcFY0V0kzTnQ1N0Iy?=
- =?utf-8?B?alI3K2FndUVzUUxLSm8zdWt6cFF1eTJ6QU1tZGJoT2thRDFOSTJBZz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <61F5B57789A7E2469C20C37FBBE4B150@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xKUy2LfkQOU36YYP275L0VIM3+P8AOvBnViRjJWqBFI=;
+        b=HbqV7e/pJGj4ujn97e3htMy3sNkWe49fTuSqcKuCOcpoZQG82OreQiBEiCw5/hgb/E
+         r58Tatyld41khG24JkUHnZsL2RcKQy6e16qwUKpuDUU47YwTmAfEgTM4SPdO4uqaJpRn
+         Oya9qGvshiVg+gXDaBf24EDXSaL3lzYVsGncBPAL+y4F7WTRdbuIVxmhJ0Bih2mMoj1s
+         AQAGjHo3qk/BfAA+IJeCMbRv/9MNEUiVcmSwwaW8Ew465btWXzVquqg6C+3/ej/lucc5
+         vipAXEf3Gz5tSCVg4P1DnUr83F79iRTS7yujmkny7gjngSXUlO10CYnj7NTqhla+Hkfe
+         Focw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xKUy2LfkQOU36YYP275L0VIM3+P8AOvBnViRjJWqBFI=;
+        b=7rwXiqfSHHixvvQi7QPbyBhLDhDfSXTr41Mk0gyFpL0FW/cXANBnceekK7cRW1JDcj
+         JDk4Zyo6yNx8DvMmvi75S36/40E7kYB+sS7/GW8Cy0+tbPSndCD7YFNvs6IEDtOld33/
+         e1AnLgqOFYp3fywUU3EKSgHRL/zBuJve2BIo9SNw2W6cbBupYMD1spW7Poh1+eFtpDAB
+         6ny7M1zRO1hxrQF1kpddZLqncz/X6h0QZl7MPyiNoST6Ar9OH9G6w833vQKImJV9YeZt
+         8TDzsrnnV/aeF5hvuByxqium5EMLgBcETquWgyXExIzcpiKzRyj+nHDlrkR+oYmP54VA
+         sHUw==
+X-Gm-Message-State: AOAM532lmD3KqyRu/rKqnoKJ7gooYfCmbHxzWKL2PoguNvWTsesIXlFq
+        vBYouOjZHPalM66gFLTAhyI=
+X-Google-Smtp-Source: ABdhPJwn8LJugTTDkFrg+dmB2k704vMDEbAwp+4LYEBrqtaP0TM2ZFd5ZMdG6AujdxWk7W6mvgVaoA==
+X-Received: by 2002:a17:907:9811:b0:6e8:d7:7bf5 with SMTP id ji17-20020a170907981100b006e800d77bf5mr14139783ejc.381.1649341945990;
+        Thu, 07 Apr 2022 07:32:25 -0700 (PDT)
+Received: from skbuf ([188.26.57.45])
+        by smtp.gmail.com with ESMTPSA id p3-20020a1709060e8300b006d0e8ada804sm7665607ejf.127.2022.04.07.07.32.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 07:32:24 -0700 (PDT)
+Date:   Thu, 7 Apr 2022 17:32:23 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH v3 net-next 1/2] net: tc: dsa: Add the matchall filter
+ with drop action for bridged DSA ports.
+Message-ID: <20220407143223.f7qqvvzbybjfkakm@skbuf>
+References: <20220404104826.1902292-1-mattias.forsblad@gmail.com>
+ <20220404104826.1902292-2-mattias.forsblad@gmail.com>
+ <20220406230135.cdhd3rwugz4m4lw3@skbuf>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83eab9c7-a51f-4c22-d0fc-08da18a31902
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2022 14:30:00.3447
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wB3bdIqKREkmlzGl99LhXo0elINnVzxjyeC+tx0cGv+RLHoNZwyEhEu44FA+Dyzjr+mzgYsDJERhNfREJh7qNDDm8kO2+qRvfzpGESCU8Xg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5051
-X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,
-        T_SPF_TEMPERROR,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220406230135.cdhd3rwugz4m4lw3@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMDYvMDQvMjAyMiAwODozNiwgQ29ub3IgRG9vbGV5IHdyb3RlOg0KPiBPbiAwNS8wNC8yMDIy
-IDE1OjA0LCBBbmRyZXcgTHVubiB3cm90ZToNCj4+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xp
-Y2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91IGtub3cgdGhlIGNvbnRlbnQg
-aXMgc2FmZQ0KPj4NCj4+PiBbIDIuODE4ODk0XSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0aDA6
-IFBIWSBbMjAxMTIwMDAuZXRoZXJuZXQtZmZmZmZmZmY6MDldIGRyaXZlciBbR2VuZXJpYyBQSFld
-IChpcnE9UE9MTCkNCj4+PiBbIDIuODI4OTE1XSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0aDA6
-IGNvbmZpZ3VyaW5nIGZvciBwaHkvc2dtaWkgbGluayBtb2RlDQo+Pj4gWzExLjA0NTQxMV0gbWFj
-YiAyMDExMjAwMC5ldGhlcm5ldCBldGgwOiBMaW5rIGlzIFVwIC0gMUdicHMvRnVsbCAtIGZsb3cg
-Y29udHJvbCBvZmYNCj4+PiBbMTEuMDUzMjQ3XSBJUHY2OiBBRERSQ09ORihORVRERVZfQ0hBTkdF
-KTogZXRoMDogbGluayBiZWNvbWVzIHJlYWR5DQo+Pg0KPj4gWW91IGhhdmUgYSBtdWx0aS1wYXJ0
-IGxpbmsuIFlvdSBuZWVkIHRoYXQgdGhlIFBIWSByZXBvcnRzIHRoZSBsaW5lDQo+PiBzaWRlIGlz
-IHVwLiBQdXQgc29tZSBwcmludGsgaW4gZ2VucGh5X3VwZGF0ZV9saW5rKCkgYW5kIGxvb2sgYXQN
-Cj4+IHBoeWRldi0+bGluay4gWW91IGFsc28gbmVlZCB0aGF0IHRoZSBTR01JSSBsaW5rIGJldHdl
-ZW4gdGhlIFBIWSBhbmQNCj4+IHRoZSBTb0MgaXMgdXAuIFRoYXQgaXMgYSBiaXQgaGFyZGVyIHRv
-IHNlZSwgYnV0IHRyeSBhZGRpbmcgI2RlZmluZQ0KPj4gREVCVUcgYXQgdGhlIHRvcCBvZiBwaHls
-aW5rLmMgYW5kIHBoeS5jIHNvIHlvdSBnZXQgYWRkaXRpb25hbCBkZWJ1Zw0KPj4gcHJpbnRzIGZv
-ciB0aGUgc3RhdGUgbWFjaGluZXMuDQo+IA0KPiBUcmFja2VkIHRoZSBzdGF0ZSBvZiBwaHlkZXYt
-PmxpbmsgaW4gZ2VucGh5X3VwZGF0ZV9saW5rLCBuZXZlciBzYXcgYQ0KPiB2YWx1ZSBvdGhlciB0
-aGFuIDAuDQo+IA0KPiBVc2luZyB0aGUgZGVidWcgcHJpbnRzIGluIHBoeWxpbmsuYyBJIGdvdCB0
-aGUgZm9sbG93aW5nOg0KPiBbICAgIDMuMjMwMzY0XSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0
-aDA6IFBIWSBbMjAxMTIwMDAuZXRoZXJuZXQtZmZmZmZmZmY6MDldIGRyaXZlciBbVml0ZXNzZSBW
-U0M4NjYyXSAoaXJxPVBPTEwpDQo+IFsgICAgMy4yNDA2ODJdIG1hY2IgMjAxMTIwMDAuZXRoZXJu
-ZXQgZXRoMDogcGh5OiBzZ21paSBzZXR0aW5nIHN1cHBvcnRlZCAwMDAwMDAwLDAwMDAwMDAwLDAw
-MDA0MmZmIGFkdmVydGlzaW5nIDAwMDAwMDAsMDAwMDAwMDAsMDAwMDQyZmYNCj4gWyAgICAzLjI1
-Mjc4M10gbWFjYiAyMDExMjAwMC5ldGhlcm5ldCBldGgwOiBjb25maWd1cmluZyBmb3IgcGh5L3Nn
-bWlpIGxpbmsgbW9kZQ0KPiBbICAgIDMuMjU5ODkyXSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0
-aDA6IG1ham9yIGNvbmZpZyBzZ21paQ0KPiBbICAgIDMuMjY1NTI2XSBtYWNiIDIwMTEyMDAwLmV0
-aGVybmV0IGV0aDA6IHBoeWxpbmtfbWFjX2NvbmZpZzogbW9kZT1waHkvc2dtaWkvVW5rbm93bi9V
-bmtub3duIGFkdj0wMDAwMDAwLDAwMDAwMDAwLDAwMDAwMDAwIHBhdXNlPTAwIGxpbms9MCBhbj0w
-DQo+IFsgICAgMy4yNzkyNDldIG1hY2IgMjAxMTIwMDAuZXRoZXJuZXQgZXRoMDogcGh5IGxpbmsg
-ZG93biBzZ21paS9Vbmtub3duL1Vua25vd24vb2ZmDQo+IA0KPiBJIGNvdWxkbid0IHNlZSBhbnkg
-cHJpbnRzIG91dCBvZiBwaHkuYw0KDQpJIHRoaW5rIEkgaGF2ZSBmb3VuZCB0aGUgcHJvYmxlbS4g
-V2hpbGUgdGhlIFNNR0lJIGNsb2NrIGlzIG5vdCBpbg0KTGludXgncyByZW1pdCwgdGhlIG1hYyBj
-bG9ja3MgYXJlLiBXaXRob3V0IENPTkZJR19QTSBJIHNlZQ0KdGhlIGZvbGxvd2luZywgd2hlcmUg
-NSByZXByZXNlbnRzIHRoZSBjbG9jayBmb3IgTUFDMToNCg0KWyAgICAwLjkwNzk1OV0gbXBmc19w
-ZXJpcGhfY2xrX2VuYWJsZTogNQ0KWyAgICAxLjMxMjk1NV0gbWFjYiAyMDExMjAwMC5ldGhlcm5l
-dCBldGgwOiBDYWRlbmNlIEdFTSByZXYgMHgwMTA3MDEwYyBhdCAweDIwMTEyMDAwIGlycSAxNyAo
-MDA6MDQ6YTM6NGQ6NGM6ZGMpDQpbICAgIDIuNjYwMzc2XSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0
-IGV0aDA6IFBIWSBbMjAxMTIwMDAuZXRoZXJuZXQtZmZmZmZmZmY6MDldIGRyaXZlciBbR2VuZXJp
-YyBQSFldIChpcnE9UE9MTCkNClsgICAgMi42NzA0MDBdIG1hY2IgMjAxMTIwMDAuZXRoZXJuZXQg
-ZXRoMDogY29uZmlndXJpbmcgZm9yIHBoeS9zZ21paSBsaW5rIG1vZGUNClsgICAgNi43ODk0NzRd
-IG1hY2IgMjAxMTIwMDAuZXRoZXJuZXQgZXRoMDogTGluayBpcyBVcCAtIDFHYnBzL0Z1bGwgLSBm
-bG93IGNvbnRyb2wgb2ZmDQoNCldpdGggQ09ORklHX1BNLCB0aGUgTUFDMSBjbG9jayBnZXRzIGRp
-c2FibGVkIGJldHdlZW4gbWFjIGFuZCBwaHkNCmJyaW5ndXAuIDQgaXMgdGhlIGNsb2NrIGZvciB0
-aGUgb3RoZXIgTUFDOg0KDQpbICAgIDAuOTMyNTk4XSBtcGZzX3BlcmlwaF9jbGtfZW5hYmxlOiA1
-DQpbICAgIDEuMzI3ODc2XSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0aDA6IENhZGVuY2UgR0VN
-IHJldiAweDAxMDcwMTBjIGF0IDB4MjAxMTIwMDAgaXJxIDE3ICgwMDowNDphMzo0ZDo0YzpkYykN
-ClsgICAgMS40NzM2MzJdIG1wZnNfcGVyaXBoX2Nsa19kaXNhYmxlOiA1DQpbICAgIDEuNTAzMzI3
-XSBtcGZzX3BlcmlwaF9jbGtfZGlzYWJsZTogNA0KWyAgICAyLjk5OTUyOF0gbXBmc19wZXJpcGhf
-Y2xrX2VuYWJsZTogNQ0KWyAgICAzLjAwMDMwMF0gbWFjYiAyMDExMjAwMC5ldGhlcm5ldCBldGgw
-OiB2YWxpZGF0aW9uIG9mIHNnbWlpIHdpdGggc3VwcG9ydCAwMDAwMDAwLDAwMDAwMDAwLDAwMDA2
-MjgwIGFuZCBhZHZlcnRpc2VtZW50IDAwMDAwMDAsMDAwMDAwMDAsMDAwMDQyODAgZmFpbGVkOiAt
-RUlOVkFMDQpbICAgIDMuMDE4NjEyXSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0aDA6IENvdWxk
-IG5vdCBhdHRhY2ggUEhZICgtMjIpDQpbICAgIDMuMTQzNTk0XSBtcGZzX3BlcmlwaF9jbGtfZGlz
-YWJsZTogNQ0KDQpIb3dldmVyIHRoZSBjbG9jayBkcml2ZXIgaXMgYWN0dWFsbHkgbm90IG9ubHkg
-ZGlzYWJsaW5nIHRoZSBjbG9jaywNCmJ1dCBhbHNvIHB1dHRpbmcgcGVyaXBoZXJhbHMgaW50byBy
-ZXNldCB3aGVuIHRoZSBjbG9jayB0byB0aGVtIGlzDQpkaXNhYmxlZC4gUmVtb3ZpbmcgdGhlIHJl
-c2V0IGdpdmVzOg0KDQpbICAgIDAuOTM0NzE3XSBtcGZzX3BlcmlwaF9jbGtfZW5hYmxlOiA1DQpb
-ICAgIDEuMzI2NTY0XSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0aDA6IENhZGVuY2UgR0VNIHJl
-diAweDAxMDcwMTBjIGF0IDB4MjAxMTIwMDAgaXJxIDE3ICgwMDowNDphMzo0ZDo0YzpkYykNClsg
-ICAgMS40NzMxNTVdIG1wZnNfcGVyaXBoX2Nsa19kaXNhYmxlOiA1DQpbICAgIDEuNTAyODA1XSBt
-cGZzX3BlcmlwaF9jbGtfZGlzYWJsZTogNA0KWyAgICAzLjAwNjM4NF0gbXBmc19wZXJpcGhfY2xr
-X2VuYWJsZTogNQ0KWyAgICAzLjAwNzY5MV0gbWFjYiAyMDExMjAwMC5ldGhlcm5ldCBldGgwOiBQ
-SFkgWzIwMTEyMDAwLmV0aGVybmV0LWZmZmZmZmZmOjA5XSBkcml2ZXIgW0dlbmVyaWMgUEhZXSAo
-aXJxPVBPTEwpDQpbICAgIDMuMDIxNDA5XSBtYWNiIDIwMTEyMDAwLmV0aGVybmV0IGV0aDA6IGNv
-bmZpZ3VyaW5nIGZvciBwaHkvc2dtaWkgbGluayBtb2RlDQpbICAgIDcuMTE0NzEwXSBtYWNiIDIw
-MTEyMDAwLmV0aGVybmV0IGV0aDA6IExpbmsgaXMgVXAgLSAxR2Jwcy9GdWxsIC0gZmxvdyBjb250
-cm9sIG9mZg0KDQoNClRoYW5rcyBmb3IgeW91ciBoZWxwIGluIGZpZ3VyaW5nIHRoaXMgb3V0LCBs
-b29rcyBsaWtlIHRoZSBwcm9ibGVtDQppcyBtaW5lIHRvIGZpeCA6KQ0KDQpUaGFua3MgYWdhaW4s
-DQpDb25vci4NCg==
+On Thu, Apr 07, 2022 at 02:01:35AM +0300, Vladimir Oltean wrote:
+> > +static int dsa_slave_bridge_foreign_if_check(struct net_device *dev,
+> > +					     struct dsa_mall_drop_tc_entry *drop)
+> > +{
+> > +	struct net_device *lower_dev;
+> > +	struct dsa_port *dp = NULL;
+> > +	bool foreign_if = false;
+> > +	struct list_head *iter;
+> > +
+> > +	/* Check port types in this bridge */
+> > +	netdev_for_each_lower_dev(dev, lower_dev, iter) {
+> > +		if (dsa_slave_dev_check(lower_dev))
+> > +			dp = dsa_slave_to_port(lower_dev);
+> 
+> This is subtly buggy, because "dp" may have a NULL dp->bridge (software
+> forwarding), which is effectively equivalent to "foreign_if = true" in
+> that it requires sending traffic to the CPU. Yet you don't set
+> "foreign_if = true" when you detect such a port.
+> 
+> > +		else
+> > +			foreign_if = true;
+> 
+> And this is really buggy, because the bridge port may be an offloaded
+> LAG device which doesn't require forwarding to the CPU, yet you mark it
+> as foreign_if = true.
+> 
+> This is actually more complicated to treat, because not only do you need
+> to dig deeper through the lowers of the bridge port itself, but you have
+> to monitor CHANGEUPPER events where info->upper_dev isn't a bridge at all.
+> Just consider the case where a DSA port joins a LAG which is already a
+> bridge port, in a bridge with foreign interfaces.
+> 
+> > +	}
+> > +
+> > +	/* Offload only if we have requested it and the bridge only
+> > +	 * contains dsa ports
+> > +	 */
+> > +	if (!dp || !dp->bridge)
+> > +		return 0;
+> 
+> And this is subtly buggy too, because you only look at the last dp you
+> see. But in a mixed bridge with offloaded and unoffloaded DSA interfaces,
+> you effectively fail to update dp->bridge->local_rcv_effective, because
+> the dp->bridge of the last dp may be NULL, yet you've walked through
+> non-NULL dp->bridge structures which you've ignored.
+
+Edit: the implementation I had posted yesterday is buggy too, because if
+the bridge contains no direct DSA slave interface, just LAG interfaces
+offloaded by DSA interfaces, we'll fail to get a hold of a dp->bridge.
+
+It seems like the most straightforward thing to do is to find the bridge
+from our list of bridges rather than deducing it from the bridge device
+lowers.
+
+-----------------------------[ cut here ]-----------------------------
+From f980ba7ac63c527fd2b9a674e2249d4308ac1620 Mon Sep 17 00:00:00 2001
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date: Thu, 7 Apr 2022 00:11:37 +0300
+Subject: [PATCH] net: dsa: track whether bridges have foreign interfaces in
+ them
+
+There are certain optimizations which can be done for bridges where all
+bridge ports are offloaded DSA interfaces. For instance, there is no
+reason to enable flooding towards the CPU, given some extra checks (the
+switch supports unicast and multicast filtering, the ports aren't
+promiscuous - the bridge makes them promiscuous anyway, which we need
+to change - etc).
+
+As a preparation for those optimizations, create a function called
+dsa_bridge_foreign_dev_update() which updates a new boolean of struct
+dsa_bridge called "have_foreign".
+
+Note that when dsa_port_bridge_create() is first called,
+dsa_bridge_foreign_dev_update() is not called. It is called slightly
+later (still under rtnl_mutex), leading to some DSA switch callbacks
+(->port_bridge_join) being called with a potentially not up-to-date
+"have_foreign" property. This can be changed if necessary.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ include/net/dsa.h  |  3 ++-
+ net/dsa/dsa_priv.h |  1 +
+ net/dsa/port.c     |  7 +++++++
+ net/dsa/slave.c    | 52 ++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 62 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index f2352d82e37b..0ea45a4acc80 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -240,8 +240,9 @@ struct dsa_mall_tc_entry {
+ struct dsa_bridge {
+ 	struct net_device *dev;
+ 	unsigned int num;
+-	bool tx_fwd_offload;
+ 	refcount_t refcount;
++	u8 tx_fwd_offload:1;
++	u8 have_foreign:1;
+ };
+ 
+ struct dsa_port {
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 5d3f4a67dce1..d610776ecd76 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -320,6 +320,7 @@ void dsa_slave_setup_tagger(struct net_device *slave);
+ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu);
+ int dsa_slave_manage_vlan_filtering(struct net_device *dev,
+ 				    bool vlan_filtering);
++int dsa_bridge_foreign_dev_update(struct net_device *bridge_dev);
+ 
+ static inline struct dsa_port *dsa_slave_to_port(const struct net_device *dev)
+ {
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index af9a815c2639..cbee564e1c22 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -656,8 +656,15 @@ int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
+ 	if (err)
+ 		goto err_bridge_join;
+ 
++	err = dsa_bridge_foreign_dev_update(bridge_dev);
++	if (err)
++		goto err_foreign_update;
++
+ 	return 0;
+ 
++err_foreign_update:
++	dsa_port_pre_bridge_leave(dp, bridge_dev);
++	dsa_port_bridge_leave(dp, bridge_dev);
+ err_bridge_join:
+ 	dsa_port_notify(dp, DSA_NOTIFIER_LAG_LEAVE, &info);
+ err_lag_join:
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index f87109e7696d..ce213b93ec05 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2595,6 +2595,18 @@ dsa_slave_lag_prechangeupper(struct net_device *dev,
+ 	return err;
+ }
+ 
++static int dsa_bridge_changelower(struct net_device *dev,
++				  struct netdev_notifier_changeupper_info *info)
++{
++	int err;
++
++	if (!netif_is_bridge_master(info->upper_dev))
++		return NOTIFY_DONE;
++
++	err = dsa_bridge_foreign_dev_update(info->upper_dev);
++	return notifier_from_errno(err);
++}
++
+ static int
+ dsa_prevent_bridging_8021q_upper(struct net_device *dev,
+ 				 struct netdev_notifier_changeupper_info *info)
+@@ -2720,6 +2732,10 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 		if (notifier_to_errno(err))
+ 			return err;
+ 
++		err = dsa_bridge_changelower(dev, ptr);
++		if (notifier_to_errno(err))
++			return err;
++
+ 		break;
+ 	}
+ 	case NETDEV_CHANGELOWERSTATE: {
+@@ -2874,6 +2890,42 @@ static bool dsa_foreign_dev_check(const struct net_device *dev,
+ 	return true;
+ }
+ 
++int dsa_bridge_foreign_dev_update(struct net_device *bridge_dev)
++{
++	struct net_device *first_slave = NULL, *lower;
++	struct dsa_bridge *bridge = NULL;
++	struct dsa_switch_tree *dst;
++	bool have_foreign = false;
++	struct list_head *iter;
++	struct dsa_port *dp;
++
++	list_for_each_entry(dst, &dsa_tree_list, list) {
++		dsa_tree_for_each_user_port(dp, dst) {
++			if (dsa_port_offloads_bridge_dev(dp, bridge_dev)) {
++				bridge = dp->bridge;
++				first_slave = dp->slave;
++				break;
++			}
++		}
++	}
++
++	/* Bridge with no DSA interface in it */
++	if (!bridge)
++		return 0;
++
++	netdev_for_each_lower_dev(bridge_dev, lower, iter) {
++		if (dsa_foreign_dev_check(first_slave, lower)) {
++			have_foreign = true;
++			break;
++		}
++	}
++
++	bridge->have_foreign = have_foreign;
++	/* TODO update all other consumers of this information */
++
++	return 0;
++}
++
+ static int dsa_slave_fdb_event(struct net_device *dev,
+ 			       struct net_device *orig_dev,
+ 			       unsigned long event, const void *ctx,
+-----------------------------[ cut here ]-----------------------------
