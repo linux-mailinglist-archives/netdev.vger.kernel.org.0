@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FA344F7CD6
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16F004F7D15
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244383AbiDGKei (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 06:34:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58340 "EHLO
+        id S244441AbiDGKjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 06:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244409AbiDGKeS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:34:18 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CB21066EF;
-        Thu,  7 Apr 2022 03:32:08 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Thu, 7 Apr
- 2022 18:32:01 +0800
+        with ESMTP id S244946AbiDGKiK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:38:10 -0400
+Received: from mail.meizu.com (edge07.meizu.com [112.91.151.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C25E18F213;
+        Thu,  7 Apr 2022 03:36:07 -0700 (PDT)
+Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail11.meizu.com
+ (172.16.1.15) with Microsoft SMTP Server (TLS) id 14.3.487.0; Fri, 8 Apr 2022
+ 02:46:33 +0800
 Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
  (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Thu, 7 Apr
- 2022 18:32:00 +0800
+ 2022 18:36:05 +0800
 From:   Haowen Bai <baihaowen@meizu.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Haowen Bai <baihaowen@meizu.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH] ethernet: Fix some formatting issues
-Date:   Thu, 7 Apr 2022 18:31:58 +0800
-Message-ID: <1649327518-19696-1-git-send-email-baihaowen@meizu.com>
+Subject: [PATCH V2] ethernet: Fix some formatting issues
+Date:   Thu, 7 Apr 2022 18:36:04 +0800
+Message-ID: <1649327764-29869-1-git-send-email-baihaowen@meizu.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [172.16.137.70]
 X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
  IT-EXMB-1-125.meizu.com (172.16.1.125)
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
-        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -48,13 +48,21 @@ X-Mailing-List: netdev@vger.kernel.org
 reported by checkpatch.pl
 
 WARNING: suspect code indent for conditional statements (16, 16)
-
+#732: FILE: drivers/net/ethernet/3com/3c589_cs.c:732:
 CHECK: Alignment should match open parenthesis
-
+#733: FILE: drivers/net/ethernet/3com/3c589_cs.c:733:
+CHECK: Alignment should match open parenthesis
+#735: FILE: drivers/net/ethernet/3com/3c589_cs.c:735:
 WARNING: suspect code indent for conditional statements (16, 16)
-
+#736: FILE: drivers/net/ethernet/3com/3c589_cs.c:736:
+CHECK: Alignment should match open parenthesis
+#737: FILE: drivers/net/ethernet/3com/3c589_cs.c:737:
+CHECK: Alignment should match open parenthesis
+#739: FILE: drivers/net/ethernet/3com/3c589_cs.c:739:
 Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 ---
+V1->V2: add detail of description
+
  drivers/net/ethernet/3com/3c589_cs.c | 12 ++++++------
  1 file changed, 6 insertions(+), 6 deletions(-)
 
