@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 550DE4F75B3
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 08:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 907074F75B7
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 08:11:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238795AbiDGGMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 02:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33016 "EHLO
+        id S238784AbiDGGMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 02:12:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiDGGMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 02:12:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EC919E3A8
-        for <netdev@vger.kernel.org>; Wed,  6 Apr 2022 23:10:13 -0700 (PDT)
+        with ESMTP id S234204AbiDGGMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 02:12:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B109419FF40;
+        Wed,  6 Apr 2022 23:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02F6B61D14
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 06:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5F1D2C385A5;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C2E0B826CC;
+        Thu,  7 Apr 2022 06:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BCFF7C385B0;
         Thu,  7 Apr 2022 06:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649311812;
-        bh=Wx2IkbAxnst5V0Nz40aYlCU83XQFKt/eTg51ujqqvQ0=;
+        bh=MBze6DN7wKgyvdrTEpSIDkcRzzMRsVzzneWscD7DhwM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rQ5+RH2ccfiGLQUDfJ/3zX5jf0ZF1tMgZyHLFQ2iycGiAEwYf4KubEjdVr1Ofgfwi
-         FbYmFbJ22KrQw+pq0VXIghoXLCevwPjYLfLbnRbcYPGqMPFYEUJrtbfotnjFwUdI5W
-         FyuaxDNGQmJGLo8kVdFAB4bye3R2eEjGwgaZ9OwAt7uZUpgzLn6l9OCkzwI9r32p0R
-         x6hCCsUku+Xy9W+BxJ3CmJs7pYsll8L5jLprwn5jQ670P2ZEtuGAYDr0OkrsbFe7nh
-         JfWdF6aXJ+CA8mkgPd+lti5/81Mo6SvzLTMYFMkI7N07CL1N1gDGXs6GpycIJN9RaP
-         fXL9TfuCI2Tcw==
+        b=qz5OrYbcoMsJvPs5PHWnZpMv0EiFI5KUsgdFBhyNuyejPWcIMOsEeNpnCGXd0iZy2
+         mlqjc1Fh9SC5EGalnPUXdtLs5xvYBhTG4bwTsjsVMZ0IEFRMD0Df5ffaOMyB4q5gh8
+         OsGGyQ+Y9sw7qT4Qlr0DEkOtzttZ2QI62fDRogT/NUtrsaX45UGw9wLDMdH28a17F+
+         TxtzzozKxGOgit7DIDqG+0i8LOP+LlzR05etXNo6blBgMCOQNrYug7hAp+4uy4hhmU
+         zx0Wl/1x8P2YYPU89d9JUYe0ryiBGQ6N3dX/sGaDvbrMPsRskZb1a5CalvRtpiLigi
+         +J8yWTMpFeTGQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 344C3E85B8C;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A1119E8DD18;
         Thu,  7 Apr 2022 06:10:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] drivers: net: slip: fix NPD bug in sl_tx_timeout()
+Subject: Re: [PATCH net-next] prestera: acl: add action hw_stats support
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164931181220.23961.18191397636572007546.git-patchwork-notify@kernel.org>
+Message-Id: <164931181264.23961.6968341673165749538.git-patchwork-notify@kernel.org>
 Date:   Thu, 07 Apr 2022 06:10:12 +0000
-References: <20220405132206.55291-1-duoming@zju.edu.cn>
-In-Reply-To: <20220405132206.55291-1-duoming@zju.edu.cn>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.or,
-        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
-        broonie@kernel.org, jirislaby@kernel.org
+References: <1649164814-18731-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+In-Reply-To: <1649164814-18731-1-git-send-email-volodymyr.mytnyk@plvision.eu>
+To:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>
+Cc:     netdev@vger.kernel.org, taras.chornyi@plvision.eu,
+        mickeyr@marvell.com, serhiy.pshyk@plvision.eu, vmytnyk@marvell.com,
+        tchornyi@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,23 +60,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  5 Apr 2022 21:22:06 +0800 you wrote:
-> When a slip driver is detaching, the slip_close() will act to
-> cleanup necessary resources and sl->tty is set to NULL in
-> slip_close(). Meanwhile, the packet we transmit is blocked,
-> sl_tx_timeout() will be called. Although slip_close() and
-> sl_tx_timeout() use sl->lock to synchronize, we don`t judge
-> whether sl->tty equals to NULL in sl_tx_timeout() and the
-> null pointer dereference bug will happen.
+On Tue,  5 Apr 2022 16:20:14 +0300 you wrote:
+> From: Volodymyr Mytnyk <vmytnyk@marvell.com>
+> 
+> Currently, when user adds a tc action and the action gets offloaded,
+> the user expects the HW stats to be counted also. This limits the
+> amount of supported offloaded filters, as HW counter resources may
+> be quite limited. Without counter assigned, the HW is capable to
+> carry much more filters.
 > 
 > [...]
 
 Here is the summary with links:
-  - drivers: net: slip: fix NPD bug in sl_tx_timeout()
-    https://git.kernel.org/netdev/net/c/ec4eb8a86ade
+  - [net-next] prestera: acl: add action hw_stats support
+    https://git.kernel.org/netdev/net-next/c/e8bd70250a82
 
 You are awesome, thank you!
 -- 
