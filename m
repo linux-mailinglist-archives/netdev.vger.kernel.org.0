@@ -2,85 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED844F87B8
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 21:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A68BC4F87FE
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 21:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235477AbiDGTMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 15:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49246 "EHLO
+        id S229775AbiDGTZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 15:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233924AbiDGTMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 15:12:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A1617E36;
-        Thu,  7 Apr 2022 12:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B00CCB82979;
-        Thu,  7 Apr 2022 19:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 63C19C385A0;
-        Thu,  7 Apr 2022 19:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649358612;
-        bh=hBd815vHLe1VUTlBg62x1qBzYqrJi14WHZY28x9o0AQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=k4Wy6N3/7GnB2H7/Vyf5Fw1jZeaFUtNHCd4UT9//3+1eT3bEp5E7hLiTSIL4cKh1L
-         AMF8PDmMs0lZ49vEQY41y8Ftxki00gnaT2NpUxEoLxf+oksukIdcm1NCT8AO6YPMNJ
-         M2eO0qyfhYtNm1L7X2xefkAKrQV+3Cku211mLMGno/iRGt3Xqc3jMk+exJiHIaQQLB
-         8m9GCcu+fYgKpXsKQgTZDfOMAQowcaM5Dsxcyvg48XLnOMcfyctogULsryUC2KXirq
-         xVMVzI89Kswj3Q+FOxDIhbyWxZTgjpUuk2cQDdgFv71vDelkSUM1TdDhqmDJ+L4xVJ
-         gXmOkKDNSynBw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 452BAE85D53;
-        Thu,  7 Apr 2022 19:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229495AbiDGTZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 15:25:16 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B49270851
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 12:23:13 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id 125so8011353iov.10
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 12:23:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=l8OgFspqIU7b4vxeuPh92V4JMHLE7mkjNVSAXOwkoiI=;
+        b=hqEsqkdUEZnH1z3sA9zbHCvR08eMANE+TcmOmjbDqr6CSsj75T6hADaySzUCuq0SeM
+         w8EgXroBrA+8AiQz6o5psyA0BnEiA5dPpuNR5VWR5JMeOkqZYfSeU9xOJDozQ/6B7iTE
+         EQEw0P1idXPRoOOjCOI0PDLVMOiRJSlqTlSm8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=l8OgFspqIU7b4vxeuPh92V4JMHLE7mkjNVSAXOwkoiI=;
+        b=lRSXDMVm8aXjsHpeiHvhjeKl38Td1dEeE7/WTcMOGLQu/uGWs+cIMuMrOueBgJbDrK
+         xldf/pd60apFBBz1j8hZb8Nw+tRN59KsLAKIgBhFbeoZMwJrKH7GvIPXCjZJGvApPaC3
+         VnXIKetBXUZdddh15dmKUP2McsAqzb5vNt1HtWezT0k7VJ2LSdEmLWrXPFwmjC/axKAh
+         jDjvfaq/yoCNWxRNJkLGNyu0vfdeDHtvsJKeoKlSE8KSEdnStRrlzHmQQq9x5bBKShfz
+         PRFnUk3SMEWDcNLz/aPEzJvooBxUTLZ6uZ1Sv+Si8paHNOrZHD2HMu5lyxf2n1QzcD1Z
+         bXhw==
+X-Gm-Message-State: AOAM531EsehGFNXALAx3k3CS9re43myzYv8mmLdB7ak3KQR1lu+fGmHj
+        FzyIq2Fc9r70kNKpSJ7d86zElw==
+X-Google-Smtp-Source: ABdhPJxo55dq2+4K1HsfVCjcmhVHiDxQKD4sjTU1sAei6R98e/vSm8ep5Z2aHOSWZ1QeDYi08Ztk2w==
+X-Received: by 2002:a05:6602:490:b0:638:c8ed:1e38 with SMTP id y16-20020a056602049000b00638c8ed1e38mr6848815iov.202.1649359392707;
+        Thu, 07 Apr 2022 12:23:12 -0700 (PDT)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id i12-20020a056e020ecc00b002ca53aba365sm5885794ilk.64.2022.04.07.12.23.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 12:23:11 -0700 (PDT)
+Subject: Re: [PATCH bpf-next] selftests/bpf: Fix return value checks in
+ perf_event_stackmap.c
+To:     Yuntao Wang <ytcoode@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220407153814.104914-1-ytcoode@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <7ac36fbe-aa44-9311-320b-1e953c29a3c4@linuxfoundation.org>
+Date:   Thu, 7 Apr 2022 13:23:10 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] libbpf: potential NULL dereference in
- usdt_manager_attach_usdt()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164935861227.15263.23714590437746578.git-patchwork-notify@kernel.org>
-Date:   Thu, 07 Apr 2022 19:10:12 +0000
-References: <1649299098-2069-1-git-send-email-baihaowen@meizu.com>
-In-Reply-To: <1649299098-2069-1-git-send-email-baihaowen@meizu.com>
-To:     Haowen Bai <baihaowen@meizu.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220407153814.104914-1-ytcoode@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On 4/7/22 9:38 AM, Yuntao Wang wrote:
+> The bpf_get_stackid() function may also return 0 on success.
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+Can you add couple of sentences to describe what this patch
+does? bpf_get_stackid() may also return doesn't really say
+anything about why this patch is needed.
 
-On Thu, 7 Apr 2022 10:38:17 +0800 you wrote:
-> link could be null but still dereference bpf_link__destroy(&link->link)
-> and it will lead to a null pointer access.
 > 
-> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
 > ---
->  tools/lib/bpf/usdt.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>   tools/testing/selftests/bpf/progs/perf_event_stackmap.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
+> index b3fcb5274ee0..f793280a3238 100644
+> --- a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
+> +++ b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
+> @@ -35,10 +35,10 @@ int oncpu(void *ctx)
+>   	long val;
+>   
+>   	val = bpf_get_stackid(ctx, &stackmap, 0);
+> -	if (val > 0)
+> +	if (val >= 0)
+>   		stackid_kernel = 2;
+>   	val = bpf_get_stackid(ctx, &stackmap, BPF_F_USER_STACK);
+> -	if (val > 0)
+> +	if (val >= 0)
+>   		stackid_user = 2;
+>   
+>   	trace = bpf_map_lookup_elem(&stackdata_map, &key);
+> 
+Linux 5.18-rc1 shows a couple of more bpf_get_stackid() in this function.
+Removed in bpf-next - I assume.
 
-Here is the summary with links:
-  - libbpf: potential NULL dereference in usdt_manager_attach_usdt()
-    https://git.kernel.org/bpf/bpf-next/c/e58c5c971746
+The change is good. I would like to see it explained better in the
+commit log.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+With the commit log fixed to explain why this change is needed and
+what happens if val equals to 0 condition isn't checked:
 
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
+thanks,
+-- Shuah
