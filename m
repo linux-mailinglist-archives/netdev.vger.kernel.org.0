@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 112984F83A8
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 17:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F34DD4F83B8
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 17:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343713AbiDGPk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 11:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
+        id S1344931AbiDGPmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 11:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbiDGPkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 11:40:24 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB64140DA;
-        Thu,  7 Apr 2022 08:38:23 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id b2-20020a17090a010200b001cb0c78db57so3415391pjb.2;
-        Thu, 07 Apr 2022 08:38:23 -0700 (PDT)
+        with ESMTP id S1344916AbiDGPmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 11:42:04 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EE61EAF3
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 08:39:46 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id r5so506288ybd.8
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 08:39:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zzTG5MA6feUhS90mwYwqW7MNwzm4RaqJqp0A1NIGFwE=;
-        b=Hei5w4bIjpEhUh/49pqCy9LJB/75Zbi/vj6XqL+jCjj5f2nLrSqLgdtx/m9jtWyhfL
-         irS8XRkaP7aGBNrtBFX+A5P7gSv1p7l8yKxC1CwJjVYXTXktt41WnxVPY8kr41vHYjgv
-         eRuzccgeKClRCUC1aLsAY438bqn2c7RCDuTr64hg8zA04WmLvkjmRnN65yuf+GHA2+fZ
-         js7nMe610p17kDowokKjN25FUjN10ZMQ2+AuqkK6cw4gNx0nW0yfWwbvr4e2ODhJ1RCK
-         6OwPDUIiYqNzemr9KSsHac4FUqNAOHx5gt2Yda+4gJFPYxT46b5slwhL80trQVbQOFs1
-         EaKw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7AvsbPAce0Zm6SYyVd62fnUo12PcDxQJ27rYPHvZXRk=;
+        b=fjf7AWP69YJT4yeCWiQ0Q8ftWxK8OFZ+N67gnbo3o6nyyculc49nYEaiY3+3mNt88a
+         QQLOSGwOBjL0m5FpnH243EgzIiVW0onVdIFl8P3bUjyPICLjifpkeqCDmnK2l6Bjfnjo
+         62kWjJW67FKBB54YHj3YItis4vE3R7Zu6RNDivVeE4mIJ8+ZOj1yVhziXuH4OTC/rKbi
+         8nTk5qSSAlET0R/46a6sOmLkwZkD60zFjAI3KXQNEdkOTalUeJXvmUChKo4CP9WApCbB
+         sb2adlunIsp+BM3iFfxxM09PR+36SWgToNnqj35aTpqOYIb2k5w8OurF71n4cYTnxQWO
+         YluA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zzTG5MA6feUhS90mwYwqW7MNwzm4RaqJqp0A1NIGFwE=;
-        b=iIiWBBaFnEHZNXQzWgMl6uWCnSm7Ydfbxkv26yh7UWzf5mruktnR9hStTR7E9raAWQ
-         OBMpG0cPF/gY+LsVRgjx8/Q6DO9eB46jD2LYxw+PwHy9uHqopraco7EVnn2BV5jhAzaK
-         XalEp8GHLf/EEwMx0GcCtjoLnw5cy/lm7WIFJnxVPEfviJtXrPLcHjxWN+JEpLK1evFT
-         2stsh/0ciUmeC1A4KUqaOhbmxiFEup72jcOyFUvcLUcvcIy4bK/XpMH+Ld77xy758p47
-         xH8RZBW1F4BO64pR/JTdh/koNZvmP4cUIxP2fou3oxEZKe9oUbY/xEKoHVtRmAI1V2hE
-         HIRw==
-X-Gm-Message-State: AOAM532Q5TImbmwuRF+Rf7zw11SgqvQc/Azkf5h0KIDvzeF5cM0dD9h/
-        p2UJ/7+ANuarvUZT/QYGY34=
-X-Google-Smtp-Source: ABdhPJy8fWprY4sfgTns16cefNiyWAHEe0UJ/zhCWUr3vx3ZlT8++ew5nxLZqq1Sl8zH7gQmPWG9LA==
-X-Received: by 2002:a17:902:ec88:b0:156:b24a:40f with SMTP id x8-20020a170902ec8800b00156b24a040fmr14615682plg.67.1649345902594;
-        Thu, 07 Apr 2022 08:38:22 -0700 (PDT)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id p64-20020a622943000000b004fdd5c07d0bsm21094797pfp.63.2022.04.07.08.38.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 08:38:21 -0700 (PDT)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Hengqi Chen <hengqi.chen@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next] selftests/bpf: Fix return value checks in perf_event_stackmap.c
-Date:   Thu,  7 Apr 2022 23:38:14 +0800
-Message-Id: <20220407153814.104914-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7AvsbPAce0Zm6SYyVd62fnUo12PcDxQJ27rYPHvZXRk=;
+        b=lS96RVlDKaHG61Lz/slpZp1m5sl4v9PiP2vTfuh+rRIcVrRCoyUXVJ+okqwGrZlNHv
+         Qp397d9ZVshCrFEpTuWlNXFGU9zPEfWdN2+fh6gKRE6cS58EDBQZ84BD39kddTCocsKW
+         vrhzMm8eXq2WzCXjrzPNes1PT4sH2/bAyuiP7wECFU8qIjah85TSM4P3Z4jqDsAY5eiG
+         92we4qHqbnqrKE9PlPJfJ5L1n6cR5e5PT5HGD7Ruz5IzMKotklcbGw2gVvGVUlxVMxNe
+         EieAMSXo3aUnvM1eDmzBOQtOQc2Kwe3UqJiGH3KZlpae0TvWl5eIPAj+heeB6tO24AWN
+         Eb1Q==
+X-Gm-Message-State: AOAM533dwmyud0WZdeZNnlTh9Rwd6ZUSb2U6xufLjP2WuFwUfLAiDOru
+        8sx9dRcPhYCH0H3Uqt2RTQ+RZ+pR/etJnNaFTnHjWQ==
+X-Google-Smtp-Source: ABdhPJyhsGdF3cMRU0ODbyZoaVZ+2NHLKO70Ar7Zh7PvM+7yCGYcTkNyyLmxFo2geEJGDUM/lTdHjxS55wTDpYGiWIg=
+X-Received: by 2002:a25:f441:0:b0:611:4f60:aab1 with SMTP id
+ p1-20020a25f441000000b006114f60aab1mr10641308ybe.598.1649345985425; Thu, 07
+ Apr 2022 08:39:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220406172600.1141083-1-jeffreyjilinux@gmail.com>
+ <20220406223141.51881854@kernel.org> <CAMzD94T_wo=5x5mzm6NgjgSyTrj6koCqg_ia50HeKZnGp73C6w@mail.gmail.com>
+In-Reply-To: <CAMzD94T_wo=5x5mzm6NgjgSyTrj6koCqg_ia50HeKZnGp73C6w@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 7 Apr 2022 08:39:34 -0700
+Message-ID: <CANn89iL=Yw1RmzH4qL1_jyM1D-aLrn-E2UiXh3YsFOZjc9y_cQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-core: rx_otherhost_dropped to core_stats
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jeffrey Ji <jeffreyji@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,30 +79,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf_get_stackid() function may also return 0 on success.
+On Thu, Apr 7, 2022 at 8:36 AM Brian Vazquez <brianvv@google.com> wrote:
+>
+> Looks good to me, thanks Jeffrey.
+>
+> Reviewed-by: Brian Vazquez <brianvv@google.com>
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- tools/testing/selftests/bpf/progs/perf_event_stackmap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
-index b3fcb5274ee0..f793280a3238 100644
---- a/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
-+++ b/tools/testing/selftests/bpf/progs/perf_event_stackmap.c
-@@ -35,10 +35,10 @@ int oncpu(void *ctx)
- 	long val;
- 
- 	val = bpf_get_stackid(ctx, &stackmap, 0);
--	if (val > 0)
-+	if (val >= 0)
- 		stackid_kernel = 2;
- 	val = bpf_get_stackid(ctx, &stackmap, BPF_F_USER_STACK);
--	if (val > 0)
-+	if (val >= 0)
- 		stackid_user = 2;
- 
- 	trace = bpf_map_lookup_elem(&stackdata_map, &key);
--- 
-2.35.1
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
+Thank you.
