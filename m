@@ -2,49 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B144F807A
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 15:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2CC4F80F9
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 15:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234942AbiDGN20 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 09:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
+        id S1343693AbiDGNwp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 09:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiDGN2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 09:28:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BB5EBAF5;
-        Thu,  7 Apr 2022 06:26:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DEDA612E7;
-        Thu,  7 Apr 2022 13:26:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BB49C385A4;
-        Thu,  7 Apr 2022 13:26:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649337983;
-        bh=erBJ0JV2fhHFMqGKNptNKRo3neyxVGLELAUAeXYtWtk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=X/sqENeziCwdcnj14lsc8fogNSX8411vFdwoKjUbwJCEY43bY9rj8rrH4UnYtMZXX
-         VwgcCZBS9kQOzFuNS1w9gi6XQvfUpYKzcUr0SG8APWdfRTvnyU3Jfo8cW1E9RoX3h3
-         fzZbiEq99/d/HQk/33mNdy479/rScfUNwn5fNm6kQNAoLUEwhHOfVbmwlkk0LUgSh5
-         sEXCAUaUT+SW3/+c1tEOnKQNKC/5ISWW93S9ChrV1RDC75fWMJTLYM/RmD2UbSeF1V
-         ioQ4r86TdhjTLFZKQeorC4W6bsZcVzxgSS9Zbk4H+TjI4MrrlfYtmjaWxoRjFCJZrM
-         Bl0DACw8n748g==
-From:   Dinh Nguyen <dinguyen@kernel.org>
-To:     davem@davemloft.net
-Cc:     dinguyen@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com
-Subject: [PATCH] net: ethernet: stmmac: fix altr_tse_pcs function when using a fixed-link
-Date:   Thu,  7 Apr 2022 08:25:21 -0500
-Message-Id: <20220407132521.579713-1-dinguyen@kernel.org>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S240547AbiDGNwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 09:52:33 -0400
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C51E1252;
+        Thu,  7 Apr 2022 06:50:29 -0700 (PDT)
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-de3eda6b5dso6454650fac.0;
+        Thu, 07 Apr 2022 06:50:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=6uOQ/kJvojqDkdfw1uMvPqM/fa5BMaYlPRD4ijDOV5Q=;
+        b=STINaCYMGKVRvMkZc1Zqrk2U96dEwHC4ZSvdfmhMvRDUZAwZD70aFhIhKfI9kt3H2H
+         3qVbr019iEJ72Fqp0UNhHrkBpkZlVNAGNX0zsr9cq/60GZ3EBLvDCCVdmTO9FZ9o+Py5
+         15arxxUnCojonvBFleWfLMdOUZ8icdPpZLQF4LOJ6UAz2jUFDnl5GKNClTZ1aqCmxKEj
+         ihuTZ9JiWVgu+gIjZxuRVk7htk9yhOF4E70wpRRc+wRACjj0GM0VQ8kUiZpzpW3+l+oN
+         iNxo2L9i2lcNmriruBOT+qN/wb0sJZeZGZjsunY5zPvfWjIBPwDGa8dEW5A85YqVoN3J
+         6e2Q==
+X-Gm-Message-State: AOAM530aJlfkdbWyhi8axsEs597Ul7qodaGQe642ObU5rk5Do9IDoEvR
+        8cNiq5EjepmvMwiywvtFdg==
+X-Google-Smtp-Source: ABdhPJzHJQX/bwlqRnnc+CjMF09UNJp4+1PjBmsF22ov5JbijXywUe3we+ROhb9qm7aAFuR1xRv5Vw==
+X-Received: by 2002:a05:6870:a106:b0:de:de08:4e3d with SMTP id m6-20020a056870a10600b000dede084e3dmr6559409oae.256.1649339429093;
+        Thu, 07 Apr 2022 06:50:29 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id k22-20020a056870959600b000d277c48d18sm8454241oao.3.2022.04.07.06.50.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 06:50:28 -0700 (PDT)
+Received: (nullmailer pid 795405 invoked by uid 1000);
+        Thu, 07 Apr 2022 13:50:27 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     kishon@ti.com, nm@ti.com, linux-kernel@vger.kernel.org,
+        kuba@kernel.org, s-anna@ti.com, vigneshr@ti.com,
+        bjorn.andersson@linaro.org, linux-remoteproc@vger.kernel.org,
+        ssantosh@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        mathieu.poirier@linaro.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+In-Reply-To: <20220406094358.7895-2-p-mohan@ti.com>
+References: <20220406094358.7895-1-p-mohan@ti.com> <20220406094358.7895-2-p-mohan@ti.com>
+Subject: Re: [RFC 01/13] dt-bindings: remoteproc: Add PRU consumer bindings
+Date:   Thu, 07 Apr 2022 08:50:27 -0500
+Message-Id: <1649339427.644388.795404.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,111 +63,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When using a fixed-link, the altr_tse_pcs driver crashes
-due to null-pointer dereference as no phy_device is provided to
-tse_pcs_fix_mac_speed function. Fix this by adding a check for
-phy_dev before calling the tse_pcs_fix_mac_speed() function.
+On Wed, 06 Apr 2022 15:13:46 +0530, Puranjay Mohan wrote:
+> From: Suman Anna <s-anna@ti.com>
+> 
+> Add a YAML binding document for PRU consumers. The binding includes
+> all the common properties that can be used by different PRU consumer
+> or application nodes and supported by the PRU remoteproc driver.
+> These are used to configure the PRU hardware for specific user
+> applications.
+> 
+> The application nodes themselves should define their own bindings.
+> 
+> Co-developed-by: Tero Kristo <t-kristo@ti.com>
+> Signed-off-by: Tero Kristo <t-kristo@ti.com>
+> Signed-off-by: Suman Anna <s-anna@ti.com>
+> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> ---
+>  .../bindings/remoteproc/ti,pru-consumer.yaml  | 66 +++++++++++++++++++
+>  1 file changed, 66 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
+> 
 
-Also clean up the tse_pcs_fix_mac_speed function a bit. There is
-no need to check for splitter_base and sgmii_adapter_base
-because the driver will fail if these 2 variables are not
-derived from the device tree.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Fixes: fb3bbdb85989 ("net: ethernet: Add TSE PCS support to dwmac-socfpga")
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
----
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c  |  8 --------
- drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h  |  4 ++++
- drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c | 13 +++++--------
- 3 files changed, 9 insertions(+), 16 deletions(-)
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml:39:9: [warning] wrong indentation: expected 6 but found 8 (indentation)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-index cd478d2cd871..00f6d347eaf7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.c
-@@ -57,10 +57,6 @@
- #define TSE_PCS_USE_SGMII_ENA				BIT(0)
- #define TSE_PCS_IF_USE_SGMII				0x03
- 
--#define SGMII_ADAPTER_CTRL_REG				0x00
--#define SGMII_ADAPTER_DISABLE				0x0001
--#define SGMII_ADAPTER_ENABLE				0x0000
--
- #define AUTONEGO_LINK_TIMER				20
- 
- static int tse_pcs_reset(void __iomem *base, struct tse_pcs *pcs)
-@@ -202,12 +198,8 @@ void tse_pcs_fix_mac_speed(struct tse_pcs *pcs, struct phy_device *phy_dev,
- 			   unsigned int speed)
- {
- 	void __iomem *tse_pcs_base = pcs->tse_pcs_base;
--	void __iomem *sgmii_adapter_base = pcs->sgmii_adapter_base;
- 	u32 val;
- 
--	writew(SGMII_ADAPTER_ENABLE,
--	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
--
- 	pcs->autoneg = phy_dev->autoneg;
- 
- 	if (phy_dev->autoneg == AUTONEG_ENABLE) {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-index 442812c0a4bd..694ac25ef426 100644
---- a/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/altr_tse_pcs.h
-@@ -10,6 +10,10 @@
- #include <linux/phy.h>
- #include <linux/timer.h>
- 
-+#define SGMII_ADAPTER_CTRL_REG		0x00
-+#define SGMII_ADAPTER_ENABLE		0x0000
-+#define SGMII_ADAPTER_DISABLE		0x0001
-+
- struct tse_pcs {
- 	struct device *dev;
- 	void __iomem *tse_pcs_base;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-index b7c2579c963b..ac9e6c7a33b5 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-socfpga.c
-@@ -18,9 +18,6 @@
- 
- #include "altr_tse_pcs.h"
- 
--#define SGMII_ADAPTER_CTRL_REG                          0x00
--#define SGMII_ADAPTER_DISABLE                           0x0001
--
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_GMII_MII 0x0
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RGMII 0x1
- #define SYSMGR_EMACGRP_CTRL_PHYSEL_ENUM_RMII 0x2
-@@ -62,16 +59,14 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- {
- 	struct socfpga_dwmac *dwmac = (struct socfpga_dwmac *)priv;
- 	void __iomem *splitter_base = dwmac->splitter_base;
--	void __iomem *tse_pcs_base = dwmac->pcs.tse_pcs_base;
- 	void __iomem *sgmii_adapter_base = dwmac->pcs.sgmii_adapter_base;
- 	struct device *dev = dwmac->dev;
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct phy_device *phy_dev = ndev->phydev;
- 	u32 val;
- 
--	if ((tse_pcs_base) && (sgmii_adapter_base))
--		writew(SGMII_ADAPTER_DISABLE,
--		       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+	writew(SGMII_ADAPTER_DISABLE,
-+	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
- 
- 	if (splitter_base) {
- 		val = readl(splitter_base + EMAC_SPLITTER_CTRL_REG);
-@@ -93,7 +88,9 @@ static void socfpga_dwmac_fix_mac_speed(void *priv, unsigned int speed)
- 		writel(val, splitter_base + EMAC_SPLITTER_CTRL_REG);
- 	}
- 
--	if (tse_pcs_base && sgmii_adapter_base)
-+	writew(SGMII_ADAPTER_ENABLE,
-+	       sgmii_adapter_base + SGMII_ADAPTER_CTRL_REG);
-+	if (phy_dev)
- 		tse_pcs_fix_mac_speed(&dwmac->pcs, phy_dev, speed);
- }
- 
--- 
-2.25.1
+dtschema/dtc warnings/errors:
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
