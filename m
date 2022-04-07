@@ -2,62 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9B44F791F
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 10:09:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22CFC4F795D
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 10:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233871AbiDGIJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 04:09:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
+        id S242831AbiDGIUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 04:20:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243183AbiDGIIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 04:08:53 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB909FE9;
-        Thu,  7 Apr 2022 01:06:50 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 90974E0009;
-        Thu,  7 Apr 2022 08:06:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1649318809;
+        with ESMTP id S242795AbiDGIUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 04:20:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D70121E50A
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 01:18:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1649319513;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PPoXp+o85lJaUNDTEzKGLQjgDZZbZUu76+1guehyhFE=;
-        b=fStcAjKUpKw0jCJPTgJ4Q5603NdigBu4RWofl8+UBMJX+kw43SQP0vhXODW3UQx8hiqOzd
-        tcxCcEexU8MQL+c9/YOaahnUdMr8Y9MJKX8GcyrJb2uXeHhtSZCl9f5qqrEuYc41jNVpPH
-        IycYQbhnuLD4zlGr0Cac5poaUJlUFrVJUIsJ/XkZOYQLWzFT1dMYudxNZZ6pzSiKNHLiz9
-        tpeuFuEiRWTLzBXapSOWl/jqdXJcp+oNFIXU3tZvT7njj9XNVqDcbilPdcqsY5TL2Ciujx
-        lwYxyYV6nNSgqZqrhrzz8tiRLYU1Sn9IC293ttCFMtkbpGg5b/ANr1fZ00Fu7A==
-Date:   Thu, 7 Apr 2022 10:06:46 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        bh=jW/rk7FENs40EnB0uCA1bBOqTjnDJxLTwFnAX1mGka8=;
+        b=hw+2QpvcYeynyKijXuBGS4oZeUjC2PVRxAdT1LuEe17Tvbmwg2gST0YST5qWyo8KN6jB9A
+        YlP1d68XPbEnYM5Sz4Y8XKoMewjyGFsdAPkIUeMKkQByr1DeyHy5iS2kvKv/8YmboRzzME
+        1tA6bEiuKGulKRkJ8vIstfkxRWmtuZg=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-672-q94zE0FmPCCpqVHu74zVig-1; Thu, 07 Apr 2022 04:18:32 -0400
+X-MC-Unique: q94zE0FmPCCpqVHu74zVig-1
+Received: by mail-wr1-f71.google.com with SMTP id u30-20020adfa19e000000b00206153b3cceso1025597wru.1
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 01:18:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=jW/rk7FENs40EnB0uCA1bBOqTjnDJxLTwFnAX1mGka8=;
+        b=mu98O/lk4hhrV5eKMSWlRACL3eq4fRQa+FKd+2GKRdgPIjbOzIDvhRQhy0ZmbKclGC
+         6xEoZeKb5/S0/wOpLiJx5TSPGkBGAV3ZffbGQfkq4wGEX/UtgwqDtgJxRACeTjxdE6me
+         rOO1OVw7wA2XyR2yjSMp0Z1O4fMlR8dEXdZZxWJDEZ+iyO4kpBENU/bdcnHexvu1bRk0
+         SodN/nbYJuS50fEHXW3o/No/BV9BTbpfoPbQqbQIfLgRhOdOEFBy+1SXQixFTbxd/pTI
+         Mzm+2ep0IOHmKN70IKbEfux68OoRUZkMQkG5NEURlpR0gOqqkIDkc+5M+ir1eM8sgzgb
+         pqIQ==
+X-Gm-Message-State: AOAM5319pHXnfIZpk3cP48ZzSx6Wh3lxkNgCwq1g80eZHMkqAoIpFaJ6
+        d1t2Ug9RzYud0Mbdu1i5aO4eXTCGtrl3PQAauWpN/APtv98j7iWg7VTreZOAPpuhIVsNX1Klapb
+        oUhM6bX1/I0q/baKT
+X-Received: by 2002:a5d:6812:0:b0:203:f854:c380 with SMTP id w18-20020a5d6812000000b00203f854c380mr9677202wru.235.1649319511259;
+        Thu, 07 Apr 2022 01:18:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxClxX14TbXWBIOJlDwZ06lVilSCrfAbdShQ6nkODxUZiE+GQP/JhL48g6k/Zr7Z+5NJx1VgQ==
+X-Received: by 2002:a5d:6812:0:b0:203:f854:c380 with SMTP id w18-20020a5d6812000000b00203f854c380mr9677191wru.235.1649319511074;
+        Thu, 07 Apr 2022 01:18:31 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-96-237.dyn.eolo.it. [146.241.96.237])
+        by smtp.gmail.com with ESMTPSA id y6-20020a05600015c600b00203fa70b4ebsm20316538wry.53.2022.04.07.01.18.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Apr 2022 01:18:30 -0700 (PDT)
+Message-ID: <62711467c3990d38ed8a11bf1c7c2594e8e1b436.camel@redhat.com>
+Subject: Re: [PATCH 0/2] dt-bindings: net: Fix ave descriptions
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v5 09/11] net: ieee802154: atusb: Call _xmit_error()
- when a transmission fails
-Message-ID: <20220407100646.049467af@xps13>
-In-Reply-To: <CAB_54W4epiqcATJhLB9JDZPKGZTj_jbmVwDHRZT9MxtXY6g-QA@mail.gmail.com>
-References: <20220406153441.1667375-1-miquel.raynal@bootlin.com>
-        <20220406153441.1667375-10-miquel.raynal@bootlin.com>
-        <CAB_54W4epiqcATJhLB9JDZPKGZTj_jbmVwDHRZT9MxtXY6g-QA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Date:   Thu, 07 Apr 2022 10:18:29 +0200
+In-Reply-To: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
+References: <1649145181-30001-1-git-send-email-hayashi.kunihiko@socionext.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,48 +83,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexander,
+Hi,
 
-alex.aring@gmail.com wrote on Wed, 6 Apr 2022 17:58:59 -0400:
+On Tue, 2022-04-05 at 16:52 +0900, Kunihiko Hayashi wrote:
+> This series fixes dt-schema descriptions for ave4 controller.
+> 
+> Kunihiko Hayashi (2):
+>   dt-bindings: net: ave: Clean up clocks, resets, and their names using
+>     compatible string
+>   dt-bindings: net: ave: Use unevaluatedProperties
+> 
+>  .../bindings/net/socionext,uniphier-ave4.yaml | 57 +++++++++++++------
+>  1 file changed, 39 insertions(+), 18 deletions(-)
 
-> Hi,
->=20
-> On Wed, Apr 6, 2022 at 11:34 AM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > ieee802154_xmit_error() is the right helper to call when a transmission
-> > has failed. Let's use it instead of open-coding it.
-> >
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  drivers/net/ieee802154/atusb.c | 5 ++---
-> >  1 file changed, 2 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/at=
-usb.c
-> > index f27a5f535808..d04db4d07a64 100644
-> > --- a/drivers/net/ieee802154/atusb.c
-> > +++ b/drivers/net/ieee802154/atusb.c
-> > @@ -271,9 +271,8 @@ static void atusb_tx_done(struct atusb *atusb, u8 s=
-eq)
-> >                  * unlikely case now that seq =3D=3D expect is then tru=
-e, but can
-> >                  * happen and fail with a tx_skb =3D NULL;
-> >                  */
-> > -               ieee802154_wake_queue(atusb->hw);
-> > -               if (atusb->tx_skb)
-> > -                       dev_kfree_skb_irq(atusb->tx_skb);
-> > +               ieee802154_xmit_error(atusb->hw, atusb->tx_skb,
-> > +                                     IEEE802154_SYSTEM_ERROR); =20
->=20
-> That should then call the xmit_error for ANY other reason which is not
-> 802.15.4 specific which is the bus_error() function?
+@Rob: since you acked this series, I guess you prefer/except this will
+go via net net-next tree, is that correct?
 
-I'll drop the bus error function so we can stick to a regular
-_xmit_error() call.
+Thanks!
 
-Besides, we do not have any trac information nor any easy access to
-what failed exactly, so it's probably best anyway.
+Paolo
 
-Thanks,
-Miqu=C3=A8l
