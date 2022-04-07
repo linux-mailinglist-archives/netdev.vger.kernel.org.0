@@ -2,164 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E62E14F7E28
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 13:39:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5AD54F7C50
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 12:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244846AbiDGLlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 07:41:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
+        id S236044AbiDGKFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 06:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240112AbiDGLlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 07:41:00 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA0A133654;
-        Thu,  7 Apr 2022 04:38:59 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2369i3Jj108698;
-        Wed, 6 Apr 2022 04:44:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1649238243;
-        bh=NZajb31VTP+/s1Rr/jPY5VYbBOIIC0ip92OpWe0CpKI=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=rLQvQURaHhNQczJHyY8HVhkB9iZhR4NTs96JkBqSVxWIpp03g3xc5DDCaEtxnlgUb
-         /HRFgxGx33AmQ8YggawaAR/l7MgKhfHDQBHCU4jE8Ypmt2bgfDE9m59SgEKM+hQz2u
-         N3T1PC+Wso0+s4wPS2FroV27pWRrx4nEmQlFc6uQ=
-Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2369i3mH069663
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 6 Apr 2022 04:44:03 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 6
- Apr 2022 04:44:03 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Wed, 6 Apr 2022 04:44:03 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2369i1sF089477;
-        Wed, 6 Apr 2022 04:44:02 -0500
-From:   Puranjay Mohan <p-mohan@ti.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <bjorn.andersson@linaro.org>, <mathieu.poirier@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <p-mohan@ti.com>, <linux-arm-kernel@lists.infradead.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <vigneshr@ti.com>, <kishon@ti.com>
-Subject: [RFC 01/13] dt-bindings: remoteproc: Add PRU consumer bindings
-Date:   Wed, 6 Apr 2022 15:13:46 +0530
-Message-ID: <20220406094358.7895-2-p-mohan@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220406094358.7895-1-p-mohan@ti.com>
-References: <20220406094358.7895-1-p-mohan@ti.com>
+        with ESMTP id S235915AbiDGKE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 06:04:58 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A184AE34;
+        Thu,  7 Apr 2022 03:02:55 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3A2F560003;
+        Thu,  7 Apr 2022 10:02:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1649325774;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kei7tpdBiTStLWxMw1bmF2HQh48Sk0nc8cF/hCT1xSI=;
+        b=gVu7Bo9Hjo5C13j8ARKg9J2LiDC6CZqBQy6GhjjnicKQkTfYQd5eCDdLBjgGs4oFvsIaue
+        vvi2NVsTvthnXP3aiqdxyyKTLg2eBot2BRHSM0pEZ6WqFnjuhcSOap5uhsd/dIU4NvmWz2
+        fRihyWvnhGFp//j4HFroZJRCPawhH1TO+FWzQaiDknbCrubT5AfQwRpzqZ8rwoQ76sx5ua
+        VzYKfHnL14BomegsUa6DmUYZb2S91K1B/20OjQwZpvhjBVoWeSpeWGaqf1RAuU9vitbkA5
+        Pbhrr9V+CtpXtzfENN7wCluPOE8YkDxD7ZxjPBiRxnyIZOM0kOvefZ84IWDz6w==
+Date:   Thu, 7 Apr 2022 12:02:51 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v5 05/11] net: mac802154: Create a transmit bus error
+ helper
+Message-ID: <20220407120251.5b15db9d@xps13>
+In-Reply-To: <20220407095605.1ca9f6e6@xps13>
+References: <20220406153441.1667375-1-miquel.raynal@bootlin.com>
+        <20220406153441.1667375-6-miquel.raynal@bootlin.com>
+        <CAB_54W53OrQVYo4pjCpgYaQGVsa-hZ2gBrquFGO_vQ5RMsm-jQ@mail.gmail.com>
+        <20220407095605.1ca9f6e6@xps13>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Suman Anna <s-anna@ti.com>
 
-Add a YAML binding document for PRU consumers. The binding includes
-all the common properties that can be used by different PRU consumer
-or application nodes and supported by the PRU remoteproc driver.
-These are used to configure the PRU hardware for specific user
-applications.
+miquel.raynal@bootlin.com wrote on Thu, 7 Apr 2022 09:56:05 +0200:
 
-The application nodes themselves should define their own bindings.
+> Hi Alexander,
+>=20
+> alex.aring@gmail.com wrote on Wed, 6 Apr 2022 17:43:30 -0400:
+>=20
+> > Hi,
+> >=20
+> > On Wed, Apr 6, 2022 at 11:34 AM Miquel Raynal <miquel.raynal@bootlin.co=
+m> wrote: =20
+> > >
+> > > A few drivers do the full transmit operation asynchronously, which me=
+ans
+> > > that a bus error that happens when forwarding the packet to the
+> > > transmitter will not be reported immediately. The solution in this ca=
+se
+> > > is to call this new helper to free the necessary resources, restart t=
+he
+> > > the queue and return a generic TRAC error code: IEEE802154_SYSTEM_ERR=
+OR.
+> > >
+> > > Suggested-by: Alexander Aring <alex.aring@gmail.com>
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+> > >  include/net/mac802154.h |  9 +++++++++
+> > >  net/mac802154/util.c    | 10 ++++++++++
+> > >  2 files changed, 19 insertions(+)
+> > >
+> > > diff --git a/include/net/mac802154.h b/include/net/mac802154.h
+> > > index abbe88dc9df5..5240d94aad8e 100644
+> > > --- a/include/net/mac802154.h
+> > > +++ b/include/net/mac802154.h
+> > > @@ -498,6 +498,15 @@ void ieee802154_stop_queue(struct ieee802154_hw =
+*hw);
+> > >  void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_bu=
+ff *skb,
+> > >                               bool ifs_handling);
+> > >
+> > > +/**
+> > > + * ieee802154_xmit_bus_error - frame could not be delivered to the t=
+rasmitter
+> > > + *                             because of a bus error
+> > > + *
+> > > + * @hw: pointer as obtained from ieee802154_alloc_hw().
+> > > + * @skb: buffer for transmission
+> > > + */
+> > > +void ieee802154_xmit_bus_error(struct ieee802154_hw *hw, struct sk_b=
+uff *skb);
+> > > +
+> > >  /**
+> > >   * ieee802154_xmit_error - frame transmission failed
+> > >   *
+> > > diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+> > > index ec523335336c..79ba803c40c9 100644
+> > > --- a/net/mac802154/util.c
+> > > +++ b/net/mac802154/util.c
+> > > @@ -102,6 +102,16 @@ void ieee802154_xmit_error(struct ieee802154_hw =
+*hw, struct sk_buff *skb,
+> > >  }
+> > >  EXPORT_SYMBOL(ieee802154_xmit_error);
+> > >
+> > > +void ieee802154_xmit_bus_error(struct ieee802154_hw *hw, struct sk_b=
+uff *skb)
+> > > +{
+> > > +       struct ieee802154_local *local =3D hw_to_local(hw);
+> > > +
+> > > +       local->tx_result =3D IEEE802154_SYSTEM_ERROR;
+> > > +       ieee802154_wake_queue(hw);
+> > > +       dev_kfree_skb_any(skb);
+> > > +}
+> > > +EXPORT_SYMBOL(ieee802154_xmit_bus_error);
+> > > +   =20
+> >=20
+> > why not calling ieee802154_xmit_error(..., IEEE802154_SYSTEM_ERROR) ?
+> > Just don't give the user a chance to pick a error code if something
+> > bad happened. =20
+>=20
+> Oh ok, I assumed, based on your last comment, that you wanted a
+> dedicated helper for that, but if just calling xmit_error() with the
+> a fixed value is enough I'll drop this commit.
 
-Co-developed-by: Tero Kristo <t-kristo@ti.com>
-Signed-off-by: Tero Kristo <t-kristo@ti.com>
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
-Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
----
- .../bindings/remoteproc/ti,pru-consumer.yaml  | 66 +++++++++++++++++++
- 1 file changed, 66 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
+I am re-reading your comment and actually you want this helper, but you
+advise to call ieee802154_xmit_error() instead of re-writing its
+content, which I agree with. So I will adapt the series in this
+direction, hopefully that will match your expectations.
 
-diff --git a/Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml b/Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
-new file mode 100644
-index 000000000000..c245fe1de656
---- /dev/null
-+++ b/Documentation/devicetree/bindings/remoteproc/ti,pru-consumer.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only or BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/remoteproc/ti,pru-consumer.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Common TI PRU Consumer Binding
-+
-+maintainers:
-+  - Suman Anna <s-anna@ti.com>
-+
-+description: |
-+  A PRU application/consumer/user node typically uses one or more PRU device
-+  nodes to implement a PRU application/functionality. Each application/client
-+  node would need a reference to at least a PRU node, and optionally define
-+  some properties needed for hardware/firmware configuration. The below
-+  properties are a list of common properties supported by the PRU remoteproc
-+  infrastructure.
-+
-+  The application nodes shall define their own bindings like regular platform
-+  devices, so below are in addition to each node's bindings.
-+
-+properties:
-+  ti,prus:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description: phandles to the PRU, RTU or Tx_PRU nodes used
-+
-+  firmware-name:
-+    $ref: /schemas/types.yaml#/definitions/string-array
-+    description: |
-+      firmwares for the PRU cores, the default firmware for the core from
-+      the PRU node will be used if not provided. The firmware names should
-+      correspond to the PRU cores listed in the 'ti,prus' property
-+
-+  ti,pruss-gp-mux-sel:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    maxItems: 6
-+    items:
-+        enum: [0, 1, 2, 3, 4]
-+    description: |
-+      array of values for the GP_MUX_SEL under PRUSS_GPCFG register for a PRU.
-+      This selects the internal muxing scheme for the PRU instance. Values
-+      should correspond to the PRU cores listed in the 'ti,prus' property. The
-+      GP_MUX_SEL setting is a per-slice setting (one setting for PRU0, RTU0,
-+      and Tx_PRU0 on K3 SoCs). Use the same value for all cores within the
-+      same slice in the associative array. If the array size is smaller than
-+      the size of 'ti,prus' property, the default out-of-reset value (0) for the
-+      PRU core is used.
-+
-+required:
-+  - ti,prus
-+
-+dependencies:
-+  firmware-name: [ 'ti,prus' ]
-+  ti,pruss-gp-mux-sel: [ 'ti,prus' ]
-+
-+additionalProperties: true
-+
-+examples:
-+  - |
-+    /* PRU application node example */
-+    pru-app {
-+        ti,prus = <&pru0>, <&pru1>;
-+        firmware-name = "pruss-app-fw0", "pruss-app-fw1";
-+        ti,pruss-gp-mux-sel = <2>, <1>;
-+    };
--- 
-2.17.1
-
+Thanks,
+Miqu=C3=A8l
