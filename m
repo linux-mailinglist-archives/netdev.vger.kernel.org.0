@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7EE94F7F82
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 14:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF444F7F86
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 14:53:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245469AbiDGMyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 08:54:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
+        id S245478AbiDGMy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 08:54:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbiDGMyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 08:54:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8E4259B41;
-        Thu,  7 Apr 2022 05:52:40 -0700 (PDT)
+        with ESMTP id S245497AbiDGMyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 08:54:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF910259B78;
+        Thu,  7 Apr 2022 05:52:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15C6060F8A;
-        Thu,  7 Apr 2022 12:52:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B977C385A4;
-        Thu,  7 Apr 2022 12:52:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DC12B8276E;
+        Thu,  7 Apr 2022 12:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E31EAC385A7;
+        Thu,  7 Apr 2022 12:52:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649335959;
-        bh=Efh9KZBTUFq/nJ++UsePBAQq4hIBUOTLc1DIbRgJ1Bg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OQ92ngDFwY+aYn6FxBtIm3WlGnTxQJAc8YV4jSbGv6OdA3IALRgCBdntcUUEIjY2s
-         bt1XeMemV/OdaAyhGIBncslMeP32mOk2qWL3fD2ULF4Ar0kqbgzfZjuL+2h8s37Lsr
-         hzk8Z9y4g9MYBZI0IRh4E2RHCrsJ7gGW5tVWq9Hb1JxFhuPNvfAWIWv/PlZ2MHABNH
-         X6p3P78PlYtq6q0cLtWpKmmbFK5n7COGi6x6Wod4ykpnXUcfjKfLKRdUlnCMq4/Z6L
-         7s8s15WHa61b6FpAy1WFyFuXLDz5NR7ub3xulKG01RYZG1qc9iJMxDOhpggYpoDiwS
-         QwHuuNMudRMyA==
+        s=k20201202; t=1649335971;
+        bh=yEgxalyouDOhCPVfvRQ3DDbeM5FBr/AeYPdte+FiyQE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p7uBFAD9XglW/HNYFw6X+3fEDChWBUurYqWLUh7RBoh21sHzbuHaVGc38F4uUVQcD
+         7SkK/Q8Ql7pE7Hvw3Vm2FOh9BltPh+ddqvzbM43Za3ZzDSgSZxgrmy8cNMXkqw2cQ8
+         cr038MpkV9dRZrGnToFvKeMu2PdHJin9UpltKIoAm1ptKVDTZhWBz9x86tQzuDCg4s
+         iqcw0YYbtBPqpCOnDbvkBQTujHqVh2+iqSEJPEfQuqkw0xK+hr3zH2zaWIorAxknRC
+         lhz0u8shbFQNLr7LwDzSYWF75Ub4AvicwkmoE5ADX5FMK76FPxAjYJSHdVN2XMVGLx
+         MLW5f6v5g9+qg==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -42,10 +42,12 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>
-Subject: [RFC bpf-next 0/4] bpf: Speed up symbol resolving in kprobe multi link
-Date:   Thu,  7 Apr 2022 14:52:20 +0200
-Message-Id: <20220407125224.310255-1-jolsa@kernel.org>
+Subject: [RFC bpf-next 1/4] kallsyms: Add kallsyms_lookup_names function
+Date:   Thu,  7 Apr 2022 14:52:21 +0200
+Message-Id: <20220407125224.310255-2-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220407125224.310255-1-jolsa@kernel.org>
+References: <20220407125224.310255-1-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -58,57 +60,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-sending additional fix for symbol resolving in kprobe multi link
-requested by Alexei and Andrii [1].
+Adding kallsyms_lookup_names function that resolves array of symbols
+with single pass over kallsyms.
 
-This speeds up bpftrace kprobe attachment, when using pure symbols
-(3344 symbols) to attach:
+The user provides array of string pointers with count and pointer to
+allocated array for resolved values.
 
-Before:
+  int kallsyms_lookup_names(const char **syms, u32 cnt,
+                            unsigned long *addrs)
 
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+Before we iterate kallsyms we sort user provided symbols by name and
+then use that in kalsyms iteration to find each kallsyms symbol in
+user provided symbols.
 
-After:
+We also check each symbol to pass ftrace_location, because this API
+will be used for fprobe symbols resolving. This can be optional in
+future if there's a need.
 
-  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
-  ...
-  0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
-
-
-There are 2 reasons I'm sending this as RFC though..
-
-  - I added test that meassures attachment speed on all possible functions
-    from available_filter_functions, which is 48712 functions on my setup.
-    The attach/detach speed for that is under 2 seconds and the test will
-    fail if it's bigger than that.. which might fail on different setups
-    or loaded machine.. I'm not sure what's the best solution yet, separate
-    bench application perhaps?
-
-  - copy_user_syms function potentially allocates lot of memory (~6MB in my
-    tests with attaching ~48k functions). I haven't seen this to fail yet,
-    but it might need to be changed to allocate memory gradually if needed,
-    do we care? ;-)
-
-thanks,
-jirka
-
-
-[1] https://lore.kernel.org/bpf/CAEf4BzZtQaiUxQ-sm_hH2qKPRaqGHyOfEsW96DxtBHRaKLoL3Q@mail.gmail.com/
+Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
-Jiri Olsa (4):
-      kallsyms: Add kallsyms_lookup_names function
-      fprobe: Resolve symbols with kallsyms_lookup_names
-      bpf: Resolve symbols with kallsyms_lookup_names for kprobe multi link
-      selftests/bpf: Add attach bench test
+ include/linux/kallsyms.h |  6 +++++
+ kernel/kallsyms.c        | 48 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 54 insertions(+)
 
- include/linux/kallsyms.h                                   |   6 ++++
- kernel/kallsyms.c                                          |  50 ++++++++++++++++++++++++++++++++-
- kernel/trace/bpf_trace.c                                   | 123 +++++++++++++++++++++++++++++++++++++++++++++++---------------------------------
- kernel/trace/fprobe.c                                      |  23 ++-------------
- tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 141 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- tools/testing/selftests/bpf/progs/kprobe_multi_empty.c     |  12 ++++++++
- 6 files changed, 283 insertions(+), 72 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/kprobe_multi_empty.c
+diff --git a/include/linux/kallsyms.h b/include/linux/kallsyms.h
+index ce1bd2fbf23e..5320a5e77f61 100644
+--- a/include/linux/kallsyms.h
++++ b/include/linux/kallsyms.h
+@@ -72,6 +72,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
+ #ifdef CONFIG_KALLSYMS
+ /* Lookup the address for a symbol. Returns 0 if not found. */
+ unsigned long kallsyms_lookup_name(const char *name);
++int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs);
+ 
+ extern int kallsyms_lookup_size_offset(unsigned long addr,
+ 				  unsigned long *symbolsize,
+@@ -103,6 +104,11 @@ static inline unsigned long kallsyms_lookup_name(const char *name)
+ 	return 0;
+ }
+ 
++int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
++{
++	return -ERANGE;
++}
++
+ static inline int kallsyms_lookup_size_offset(unsigned long addr,
+ 					      unsigned long *symbolsize,
+ 					      unsigned long *offset)
+diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
+index 79f2eb617a62..a3738ddf9e87 100644
+--- a/kernel/kallsyms.c
++++ b/kernel/kallsyms.c
+@@ -29,6 +29,8 @@
+ #include <linux/compiler.h>
+ #include <linux/module.h>
+ #include <linux/kernel.h>
++#include <linux/bsearch.h>
++#include <linux/sort.h>
+ 
+ /*
+  * These will be re-linked against their real values
+@@ -572,6 +574,52 @@ int sprint_backtrace_build_id(char *buffer, unsigned long address)
+ 	return __sprint_symbol(buffer, address, -1, 1, 1);
+ }
+ 
++static int symbols_cmp(const void *a, const void *b)
++{
++	const char **str_a = (const char **) a;
++	const char **str_b = (const char **) b;
++
++	return strcmp(*str_a, *str_b);
++}
++
++struct kallsyms_data {
++	unsigned long *addrs;
++	const char **syms;
++	u32 cnt;
++	u32 found;
++};
++
++static int kallsyms_callback(void *data, const char *name,
++			     struct module *mod, unsigned long addr)
++{
++	struct kallsyms_data *args = data;
++
++	if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
++		return 0;
++
++	addr = ftrace_location(addr);
++	if (!addr)
++		return 0;
++
++	args->addrs[args->found++] = addr;
++	return args->found == args->cnt ? 1 : 0;
++}
++
++int kallsyms_lookup_names(const char **syms, u32 cnt, unsigned long *addrs)
++{
++	struct kallsyms_data args;
++
++	sort(syms, cnt, sizeof(*syms), symbols_cmp, NULL);
++
++	args.addrs = addrs;
++	args.syms = syms;
++	args.cnt = cnt;
++	args.found = 0;
++	kallsyms_on_each_symbol(kallsyms_callback, &args);
++
++	return args.found == args.cnt ? 0 : -EINVAL;
++}
++
+ /* To avoid using get_symbol_offset for every symbol, we carry prefix along. */
+ struct kallsym_iter {
+ 	loff_t pos;
+-- 
+2.35.1
+
