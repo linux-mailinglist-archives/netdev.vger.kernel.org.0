@@ -2,226 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5174F8AE4
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C710F4F8AA1
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:55:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232346AbiDGW5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 18:57:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
+        id S232461AbiDGXD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 19:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232327AbiDGW5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 18:57:50 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AD91AD3BC
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 15:55:48 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id t13so6226255pgn.8
-        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 15:55:48 -0700 (PDT)
+        with ESMTP id S232454AbiDGXD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 19:03:26 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2120.outbound.protection.outlook.com [40.107.95.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1421114DDC;
+        Thu,  7 Apr 2022 16:01:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DpoCqeIjeSMRGq/BKQ+7lMg972LH2utwrK4vlgAfFqKn0fPv2SVPffYOWzDxXFyv4s4yp0vA0FQimLID6+pQBxio+rE0G3veD+nZc0aaUzyIP9HYk7Lykwj/sxpPwzSNBf4mq7GFxc949sk/pFij/L8mWYB/yQzgUeOTnQankOnMODrqtL1zyee3pduo4Qtcr+1waDeO2nZGhmWtv2ZXlA+/hVF6AltQ7x3yDbLid05bxJ/NyvOullfDxfOynaY/OqwjmuHWkhehsVKB5ta3fB4eMcPHJPOOzDmlE0U1KsiyeFZWkl+rY8Ypmv69Cz01UOhfnxB2u8RebaRJr/rCbQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=g8I3lw5wYMjbm8d4lp1ZA4Aqadq4PB6Qx50uqSgD9KU=;
+ b=eMEfqxrD+X5n1Nc7hpat1YBPpVKgTVtZsJeytxvs4fFvc2l8+1lx3oXuIEVvm2bwTKK9g2xDCC2maDcfKKwg7m6qOvljFyDw/kUMuM5YNHhO+kE5xXntoSYuOXwt38aeIZgE2gPRT40uyrKLiseoTpPXogvJE9Pyet0+kZRD6GlCFZ26Mqgz++xwmiLn1zlzOXVHv1OUujxxuB5apkDgp2vPPhPOy7K/rLH4x1qsdiOa6tZgySSkpSo19F4mOKyI9YdN9BqD46NsDVv6qtvEjtGphCYYBpJMyfnN5ZmEVz9cRDtBt4ebNWIB/Opg9tg9mv+F6jriJ2zlk0c15uakQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=11P2s2W7As2hBXSSpv0mvQiqL5Y4iuEW61/FMvO6Kv4=;
-        b=BFougMcSf1B7D6IJEUQx5/IuxZg9tGzb3sc9F9+JRJf5ErnVuXLAuHq+Hc99l/q61c
-         3i3Cw4L5+J/GGiFWasL9neRkg6zxW0VheCt5josU5m/T6jcR4VME8Osb+w/5UzLc5LIm
-         XWsu7UZGXn3fvf9bgB0ZreRNVja9G22lwhv/GxlemQWteXq8WN81k2I+cd5bA+3j5V0R
-         rB4fE9xT8PzVRHNS9lK7+aPoQS2eVyoobRhuKhhEwfTXQlEtvAafr81Zd9bVo4Iibyma
-         1e1DKbINhivWle1BXTwbaRQkfUnMYTeOYiLiBjkv3LWRuIyXY3SU89EiGUuhZr54DhjU
-         VgVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=11P2s2W7As2hBXSSpv0mvQiqL5Y4iuEW61/FMvO6Kv4=;
-        b=L74XBAzUrbJKPOwAZ/TjM0WBcdVbEKtMZUikzpOf1ewK+DvNOmxc7DHxcwDjPU3vBD
-         enNpH3bSEmQVgy1JCsJPV4H3R8Rde4a9Xi/0HxEhy+fMPKTYXcbaSpuR6NSjMBoY3Xfh
-         IFg1FxyAdGjdM2v1lnatOGSQeYeqlk835nBW1N+hg0n9W3lRvo1KEaLyPHkvD013Pk5w
-         4MdxLD5rUKXOWZCdYroVRsevb4RukrcZWsNJ7jSAvLf9l5tmhYsq9xnyzN2vqxduTS/p
-         BDnvGK9OEA2Y13bHTVq2+xaLnQe1n2F/IR3fiyGuJRdzi+Gslp/yGJZC4yzwhI5ZcsO3
-         5FEw==
-X-Gm-Message-State: AOAM532WdwV0t0wCUiMS01X51QT8WigdFifJNMcKqgWStaiW08HvpwuG
-        o4VTm9boM6KnPL30iFB/OPY=
-X-Google-Smtp-Source: ABdhPJwxlF3yb0RPG6uM/ybp4wu++T+fhWLL+/xC89BL/Rb6eShN7oRFBqJmMiNcnQJ12VEH3QnXgw==
-X-Received: by 2002:a63:fe45:0:b0:39c:e41e:b7d4 with SMTP id x5-20020a63fe45000000b0039ce41eb7d4mr2447309pgj.226.1649372148343;
-        Thu, 07 Apr 2022 15:55:48 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a85-20020a621a58000000b0050569a135besm3079161pfa.201.2022.04.07.15.55.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Apr 2022 15:55:47 -0700 (PDT)
-Message-ID: <f60b3515-d1a5-a5a8-9a3f-4cb82cd0a586@gmail.com>
-Date:   Thu, 7 Apr 2022 15:55:35 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RFC net-next] net: dsa: b53: convert to phylink_pcs
-Content-Language: en-US
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g8I3lw5wYMjbm8d4lp1ZA4Aqadq4PB6Qx50uqSgD9KU=;
+ b=xabTXx0BS+vw9cI4WX4++wlkQGeYzzrQaS0LjyFEY9sQFSdoK/F3PwHiaQo8iLNgmrv6ZgTV+AeUXUWeNhZ5zWjbMW532x9QeiqcCL2QEobeljotTIXUBXiap+HbODgeOgauuLKjsuuKUwBplNfWTiZxjKpLH2jHLL8GacDLwyM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by BYAPR10MB3125.namprd10.prod.outlook.com
+ (2603:10b6:a03:14c::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Thu, 7 Apr
+ 2022 23:01:21 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::4581:787c:1a7a:873e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::4581:787c:1a7a:873e%3]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
+ 23:01:21 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-References: <E1nc7F6-004lEo-Be@rmk-PC.armlinux.org.uk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <E1nc7F6-004lEo-Be@rmk-PC.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH v1 net-next 0/1] mscc-miim probe cleanup
+Date:   Thu,  7 Apr 2022 16:01:09 -0700
+Message-Id: <20220407230110.13514-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR03CA0008.namprd03.prod.outlook.com
+ (2603:10b6:a03:33a::13) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bef5d32a-4902-4e83-bbf0-08da18ea87ce
+X-MS-TrafficTypeDiagnostic: BYAPR10MB3125:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR10MB31259F21958F8F89C6B60CB7A4E69@BYAPR10MB3125.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Jm2N7CwKy3pGrs8tdpqu6sTNXYyi+rSuMNXQfSPfoIy55iXNHXnZ6c2LT7qPPf2zoUkre0zRNq6iH4pMC1gVWXJ4TbjPOJe6Z5W+QNMb+HkEdhNGj5Yie+wrxBhm6qliCJ5zPpy6rmy0wdGMnz70fqxUIu6rJQVmMW00ZGCYoZvHzIQL7I8tMRu3ACvy+kKSdzA0UvPbHgJlduAR64tzisQyXmIXgTTpb+Xm5f24bfFZ97XABFPov+J8GZWLpDNxmr3NKr4yTwEbLmgRFUAskLB8iRL5Mp9Xi0rk2Rp3l41r1ZukIy68eSlhGjDrClV3tcBsVyx0c/WzvNP8DSlToJkBRSULls24L0zVMAeo/OI9jjRnpq1LIjKLN72GomFTf+sKu1iN/uEFeTx5MIXtZN7E/JPZXAMSiQsPGEOtVHqMoFxG9jtHriRwYpKN9dGdlV26N4wvWyk7/3wB8O9Q2t2sGQRcazeYOSbOeD6A9VmYELpIUAY13IjrdjNQxEpOAmi+1MFU1qzWdL7k5O/ztvz8rIu/OIEbgl6XY+WS2z8ydIIiJK3yBr21rScbC1SfGvPsWtI67QZquZ03/zPxsUkiORHY7UcdFiW9Ix+WlZYa/MD9BQRlfwkq2EuF7J3g8fM2aw1wtmRJdi0ZoFS1NzvYYd+OtmkHh7biWgNHCd859ixZHd2cJO8phUp2dch7q9Cg879h6s+eyRKaYeZaFA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(376002)(396003)(136003)(346002)(39830400003)(366004)(5660300002)(4744005)(4326008)(44832011)(6486002)(508600001)(8676002)(2616005)(66946007)(66476007)(26005)(186003)(2906002)(6512007)(7416002)(1076003)(316002)(36756003)(54906003)(38100700002)(38350700002)(86362001)(6666004)(6506007)(66556008)(83380400001)(8936002)(52116002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uEiyfJA6pKgxBKrSrnN4Ukq9o37RjmKV84acew2PZlG4u5J0qMiDBUYzmLo8?=
+ =?us-ascii?Q?+tJP7/EGsuGc3X2ax/4kihNmR/Ag2zBkL1hmvOdR6D98avxL3VEZ+90D2T0o?=
+ =?us-ascii?Q?joHOkfgkiABWnslPd/PrZK1wJdh2v9fKrpFlJjneg3KzxHwI2kPwE6pl+qhX?=
+ =?us-ascii?Q?6TeEeyKdyvi5zDmm35fiSmNE6y93C1UvVz/aQFr7cHnw3LaA+cY7QpvdWVds?=
+ =?us-ascii?Q?8oK5FrsjMBMocmf0HKovOfrFg5z8BJR6/l65P33+6ySP/fjWk2jTJQTCvciA?=
+ =?us-ascii?Q?y7yfkHBKlsLAF+mNv7kUvJMOP7RLIguq/oD1TM63W7YPWQ+ApDAeCz7Po+EG?=
+ =?us-ascii?Q?eK8F5N0g07CJQ6tjnzSGweII+cbLaNU3dj9Mrtk2g0kAkeYorNGVCViBqxeE?=
+ =?us-ascii?Q?SiWYaOXAEcAaRF5Kx6vkNHS0o8W52XDVPbv9HQfofugtez9TuWFUFQahRAX1?=
+ =?us-ascii?Q?ULZhR/8T0o7yx5zKLkqcR4c3qCQxzcQ+ebVqH3uM7lVCew3/DZlCcm9DTZr4?=
+ =?us-ascii?Q?MNCCk4Up1G85E3GBpv7SNaOmnIi8aFR2XoxC0HF7KIsYvLfejzogw0MThICX?=
+ =?us-ascii?Q?4gFvXOrr3x5qHUUxTAaFljBneejhZjZR9idZa/y0cxMlyIahfbonlIs7MBF+?=
+ =?us-ascii?Q?fIxvV9Cm/zQgzXkuNYW4nllTObvZ9dXTowCrPD7SXq3iCnCB1++vJiYQ+ZO4?=
+ =?us-ascii?Q?THYhKvL+VStzGcga8Wnkx57wZNy+boHi779ppFcZvDAGkgPS25foIW+HIfLg?=
+ =?us-ascii?Q?PH+yZGGEuiYLcnRVyO9QrVXu71u8oKXuk22kJSci9icCF+I/vcZpZbgKNS4e?=
+ =?us-ascii?Q?0bZ69uRfmeqcUiDla9jymnh3qOtG15aoabrMnUKfrbVZIw73axGiNyHHpAK4?=
+ =?us-ascii?Q?f3zroUoLX/WMJ39JtBeN8IJrMcibYeOoafWkDqPz3Y+1w9Cn0GcWQJQogaRy?=
+ =?us-ascii?Q?4x3XwQc4eU+lLfBZrxRHQ9UejWY/ucG+fnaau8CGTXQ2Sl59lW1hWJVGpJKA?=
+ =?us-ascii?Q?E/3GQwgBLlPL7rTXtYbjnqv4jIzr0CcB+kem+o60RdTF8+B/00TZbhm60Xko?=
+ =?us-ascii?Q?PoFzxTHNczoog93pESS9o5vpbUtHz+Nu9aLgVh6Epf5YAwmOomjQEay3aY1g?=
+ =?us-ascii?Q?+JVufxp739ddX7TTpwqsMRB19ZtiuoFAlzdDqmYT0Q/IY68/xhtOCnoyL5Le?=
+ =?us-ascii?Q?z5S4goPJth6dXoNLfJExl0KhfvjmRcSSNvH6+3as7DEdDaH30UNORCSpOgOO?=
+ =?us-ascii?Q?jqEknMf7hiYxFPdWX+l74c+gFU983tWGcP+iQkOwYHy0BoxQg3VACIdCYUEn?=
+ =?us-ascii?Q?IBhCYF/8zeNmffFF9bZM5a/me5wUnAuhi3oS+7qx3SZKDlMOYBE0Or9GH8YB?=
+ =?us-ascii?Q?iloaS9cDN6hdBJkGfdLR+/19qlKABnaZkXOnqllVjmXHBo12HdskXEiiHzIh?=
+ =?us-ascii?Q?MJY9ZJdvBQbpWKujeDSscEiMnr16hgncdQlrzAts72UZRPzX3m4TDJM1UsWI?=
+ =?us-ascii?Q?YRoPgWOm5kE+OdMRKMS+tY+I4ypfvTbvyKTiPowRyjQV90FN01XWlf6GJFeV?=
+ =?us-ascii?Q?aseqHFGUml1k1vvLXDa7yLxQdTPABUpsdOm5g0ydbhF3AdqtK4cRDFFdoJck?=
+ =?us-ascii?Q?ESuaDKVuCWVVsoG4JKdGdGTYEMQLljmwcu5g0gvJnx2Ct7PR41ZNTiqtJRqN?=
+ =?us-ascii?Q?lePkPkVMgbvUfvxjS+JCHZgk7M2Tnwj6BhHaRFcCRVUlAo0yYBblBJrFnLf3?=
+ =?us-ascii?Q?Ahm40Fht8BD8XAdXfW3woMJpUPAi0cOHhdFFwQ2TM24NLpAmTiYi?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bef5d32a-4902-4e83-bbf0-08da18ea87ce
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 23:01:20.9201
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4acT7efTD7eIZT9dNz0WBj1de5j+Z9RuL6QTF9tGweXvDPW1Aj5a33nXfeBvEE1r/gizZh+lkmSQgFzSf9ifRkOhbkI6TrhG9M/3kaAWwY4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3125
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/6/22 08:06, Russell King (Oracle) wrote:
-> Convert B53 to use phylink_pcs for the serdes rather than hooking it
-> into the MAC-layer callbacks.
-> 
-> Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> ---
-> Hi Florian,
-> 
-> Please can you test this patch? Thanks.
+I'm submitting this patch independently from my ongoing patch set to
+include external control over Ocelot chips.
 
-Did not spend much time debugging this as I had to do something else but 
-here is what I got:
+Initially the sole patch had reviewed-by tags from Vladimir Oltean and
+Florian Fainelli, but since I had to manually resolve some conflicts I
+removed the tags.
 
-[    1.909223] b53-srab-switch 18036000.ethernet-switch: SerDes lane 0, 
-model: 1, rev B0 (OUI: 0x0143bff0)
-[    1.918956] 8<--- cut here ---
-[    1.922119] Unable to handle kernel NULL pointer dereference at 
-virtual address 0000012c
-[    1.930473] [0000012c] *pgd=00000000
-[    1.934177] Internal error: Oops: 805 [#1] SMP ARM
-[    1.939124] Modules linked in:
-[    1.942277] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.18.0-rc1 #8
-[    1.948744] Hardware name: Broadcom Northstar Plus SoC
-[    1.954041] PC is at b53_serdes_init+0x1d8/0x1e0
-[    1.958815] LR is at _printk_rb_static_descs+0x0/0x6000
-[    1.964218] pc : [<c0851e08>]    lr : [<c1b425d8>]    psr: 60000013
-[    1.970678] sp : e0821d08  ip : 00005ff4  fp : e0821d3c
-[    1.976064] r10: c102d3cc  r9 : c0d6a628  r8 : 00000143
-[    1.981448] r7 : 0000012c  r6 : 00004281  r5 : 00000000  r4 : c4636b40
-[    1.988177] r3 : c0d6b4ac  r2 : 00000000  r1 : 0000003c  r0 : 00000000
-[    1.994906] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM 
-Segment none
-[    2.002273] Control: 10c5387d  Table: 6000404a  DAC: 00000051
-[    2.008195] Register r0 information: NULL pointer
-[    2.013050] Register r1 information: non-paged memory
-[    2.018265] Register r2 information: NULL pointer
-[    2.023112] Register r3 information: non-slab/vmalloc memory
-[    2.028955] Register r4 information: slab kmalloc-256 start c4636b00 
-pointer offset 64 size 256
-[    2.037941] Register r5 information: NULL pointer
-[    2.042789] Register r6 information: non-paged memory
-[    2.048004] Register r7 information: non-paged memory
-[    2.053218] Register r8 information: non-paged memory
-[    2.058424] Register r9 information: non-slab/vmalloc memory
-[    2.064266] Register r10 information: non-slab/vmalloc memory
-[    2.070198] Register r11 information: 2-page vmalloc region starting 
-at 0xe0820000 allocated at kernel_clone+0xa4/0x3d8
-[    2.081335] Register r12 information: non-paged memory
-[    2.086639] Process swapper/0 (pid: 1, stack limit = 0x(ptrval))
-[    2.092840] Stack: (0xe0821d08 to 0xe0822000)
-[    2.097340] 1d00:                   00000042 00000000 0143bff0 
-c05d689c e0821d3c c4636b40
-[    2.105782] 1d20: c4636a40 00000005 c4636b40 c4636a40 e0821d74 
-e0821d40 c0851128 c0851c3c
-[    2.114222] 1d40: c0f9a998 c21abc10 c0761620 00000000 c21abc10 
-c1bec070 c1c3b528 00000000
-[    2.122662] 1d60: c1157854 c1c4f000 e0821d94 e0821d78 c0747708 
-c0850ed8 00000000 c21abc10
-[    2.131103] 1d80: c1bec070 c1c3b528 e0821dbc e0821d98 c07446ec 
-c07476a8 c07551f0 c0753e00
-[    2.139542] 1da0: c21abc10 c1bec070 c1c3b528 c21abc10 e0821dec 
-e0821dc0 c0744a38 c0744594
-[    2.147982] 1dc0: c21abc10 c1bec070 c1c83288 c1c8328c c1bec070 
-c21abc10 00000000 c1157854
-[    2.156423] 1de0: e0821e14 e0821df0 c0744be0 c0744994 c21abc10 
-c21abc54 c1bec070 c1bd7910
-[    2.164863] 1e00: 00000000 c1157854 e0821e34 e0821e18 c074545c 
-c0744ba8 00000000 c1bec070
-[    2.173303] 1e20: c0745364 c1bd7910 e0821e64 e0821e38 c07421d4 
-c0745370 00000000 c2128c58
-[    2.181744] 1e40: c216d134 32ea7446 e0821e74 c1bec070 c45f2700 
-00000000 e0821e74 e0821e68
-[    2.190185] 1e60: c074400c c074215c e0821e9c e0821e78 c07438e8 
-c0743fec c102d3e0 c0652620
-[    2.198624] 1e80: c1bec070 00000000 00000007 c2180000 e0821eb4 
-e0821ea0 c07460b0 c0743774
-[    2.207065] 1ea0: c1c2bb40 c112d33c e0821ec4 e0821eb8 c074736c 
-c0746024 e0821ed4 e0821ec8
-[    2.215506] 1ec0: c112d360 c074734c e0821f4c e0821ed8 c0102300 
-c112d348 c0fa28d8 c0fa28b8
-[    2.223946] 1ee0: c0fa2904 c0fbaf00 00000000 c0fa2894 00000006 
-00000006 c1c36440 c11005cc
-[    2.232386] 1f00: c1046b18 00000000 0000011c 00000000 c1101554 
-c20d9fd2 c20d9fdd 32ea7446
-[    2.240826] 1f20: c018bd80 32ea7446 c20d9f80 c1190248 c20d9f80 
-00000007 c1157834 0000011c
-[    2.249267] 1f40: e0821f94 e0821f50 c110161c c01022b4 00000006 
-00000006 00000000 c11005cc
-[    2.257707] 1f60: c10eda18 c11005cc 00000000 c1b04d00 c0c9bf20 
-00000000 00000000 00000000
-[    2.266147] 1f80: 00000000 00000000 e0821fac e0821f98 c0c9bf48 
-c1101454 00000000 c0c9bf20
-[    2.274588] 1fa0: 00000000 e0821fb0 c0100148 c0c9bf2c 00000000 
-00000000 00000000 00000000
-[    2.283027] 1fc0: 00000000 00000000 00000000 00000000 00000000 
-00000000 00000000 00000000
-[    2.291467] 1fe0: 00000000 00000000 00000000 00000000 00000013 
-00000000 00000000 00000000
-[    2.299905] Backtrace:
-[    2.302423]  b53_serdes_init from b53_srab_probe+0x25c/0x2b0
-[    2.308269]  r8:c4636a40 r7:c4636b40 r6:00000005 r5:c4636a40 r4:c4636b40
-[    2.315181]  b53_srab_probe from platform_probe+0x6c/0xcc
-[    2.320759]  r10:c1c4f000 r9:c1157854 r8:00000000 r7:c1c3b528 
-r6:c1bec070 r5:c21abc10
-[    2.328837]  r4:00000000
-[    2.331445]  platform_probe from really_probe+0x164/0x400
-[    2.337029]  r7:c1c3b528 r6:c1bec070 r5:c21abc10 r4:00000000
-[    2.342868]  really_probe from __driver_probe_device+0xb0/0x214
-[    2.348982]  r7:c21abc10 r6:c1c3b528 r5:c1bec070 r4:c21abc10
-[    2.354821]  __driver_probe_device from driver_probe_device+0x44/0xd4
-[    2.361473]  r9:c1157854 r8:00000000 r7:c21abc10 r6:c1bec070 
-r5:c1c8328c r4:c1c83288
-[    2.369462]  driver_probe_device from __driver_attach+0xf8/0x1dc
-[    2.375666]  r9:c1157854 r8:00000000 r7:c1bd7910 r6:c1bec070 
-r5:c21abc54 r4:c21abc10
-[    2.383654]  __driver_attach from bus_for_each_dev+0x84/0xd0
-[    2.389498]  r7:c1bd7910 r6:c0745364 r5:c1bec070 r4:00000000
-[    2.395329]  bus_for_each_dev from driver_attach+0x2c/0x30
-[    2.400993]  r6:00000000 r5:c45f2700 r4:c1bec070
-[    2.405749]  driver_attach from bus_add_driver+0x180/0x21c
-[    2.411412]  bus_add_driver from driver_register+0x98/0x128
-[    2.417167]  r7:c2180000 r6:00000007 r5:00000000 r4:c1bec070
-[    2.423007]  driver_register from __platform_driver_register+0x2c/0x34
-[    2.429746]  r5:c112d33c r4:c1c2bb40
-[    2.433427]  __platform_driver_register from 
-b53_srab_driver_init+0x24/0x28
-[    2.440622]  b53_srab_driver_init from do_one_initcall+0x58/0x210
-[    2.446920]  do_one_initcall from kernel_init_freeable+0x1d4/0x230
-[    2.453313]  r8:0000011c r7:c1157834 r6:00000007 r5:c20d9f80 r4:c1190248
-[    2.460227]  kernel_init_freeable from kernel_init+0x28/0x140
-[    2.466170]  r10:00000000 r9:00000000 r8:00000000 r7:00000000 
-r6:00000000 r5:c0c9bf20
-[    2.474249]  r4:c1b04d00
-[    2.476857]  kernel_init from ret_from_fork+0x14/0x2c
-[    2.482070] Exception stack(0xe0821fb0 to 0xe0821ff8)
-[    2.487279] 1fa0:                                     00000000 
-00000000 00000000 00000000
-[    2.495720] 1fc0: 00000000 00000000 00000000 00000000 00000000 
-00000000 00000000 00000000
-[    2.504160] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[    2.510986]  r5:c0c9bf20 r4:00000000
-[    2.514671] Code: e30b34ac e34c30d6 e0070791 e3a00000 (e7823007)
-[    2.520987] ---[ end trace 0000000000000000 ]---
+Colin Foster (1):
+  net: mdio: mscc-miim: add local dev variable to cleanup probe function
 
-
+ drivers/net/mdio/mdio-mscc-miim.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
 -- 
-Florian
+2.25.1
+
