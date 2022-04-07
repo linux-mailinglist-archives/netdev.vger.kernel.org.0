@@ -2,62 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 237154F84A1
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 18:11:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 012C44F849F
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 18:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345625AbiDGQNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 12:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52524 "EHLO
+        id S232236AbiDGQNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 12:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345616AbiDGQN3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 12:13:29 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5009B12082;
-        Thu,  7 Apr 2022 09:11:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=8ilOzeEpMGnqmcxm5ACkIhP+cfoDdajkjlKSouIG/qg=; b=h3DD6AtKVrCXay15nFo1Hm2b9S
-        1LO7hycjezhdpT3vtU9MCsyOM/K4Z1SVW+wZIuBsTllbvCmGDd9V6xrjTeHsdxOC4rFm/UQTA5p8t
-        5QqDxhQWdzdeuGi5oxFQS+BwmvIHf/X11kMCr30FIazWpeX45qK+nZozHAvhmPNkJrJ4=;
-Received: from p200300daa70ef20069621b7d3c575442.dip0.t-ipconnect.de ([2003:da:a70e:f200:6962:1b7d:3c57:5442] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1ncUip-0003Lb-Od; Thu, 07 Apr 2022 18:11:00 +0200
-Message-ID: <7ee0b60b-a931-357e-7d88-ee2fd04f6902@nbd.name>
-Date:   Thu, 7 Apr 2022 18:10:56 +0200
+        with ESMTP id S232154AbiDGQNW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 12:13:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFAFF73060
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 09:11:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15E5361F5A
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 16:11:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 117FDC385AA;
+        Thu,  7 Apr 2022 16:11:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649347881;
+        bh=ThDJyN+QR/Nifz7JLO24fG+OkcppU2kEbxnnVZ+Xvxo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SYzkSLcM01L1GZRDSVC9OX4qP4Lq8XuskHsm3rAFt075YCNq5YFW97UCa0QY6oqUD
+         RWVxpdn+kvfmZv0LfQAqOoOPHUC+bJtj69/I1mTwRBaIqhxgehz834ur1fWLoQbArG
+         h/TfN08/No4IX4UwIRirOL8uAlx+jveeD3teFMLAMaW9oLEWmZzU+nCTqNwI97EI4I
+         HOQQnTLPRSyRf2E+P1F2iVtgDO611b5NToDpqvIoGf6zfsdOSppXb7KTMIXbcZr6F4
+         wF1TcPYywS6Vfmtni6E57a3MS9SuThI1w1ZL1nEeYNOL877Ptq5k90v0KgbL6tcHRC
+         ApZJTl0SP9Eqw==
+Date:   Thu, 7 Apr 2022 09:11:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>
+Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
+        edumazet@google.com, Jiri Pirko <jiri@mellanox.com>,
+        Brian Baboch <brian.baboch@wifirst.fr>
+Subject: Re: [PATCH v3 net-next 1/4] rtnetlink: enable alt_ifname for
+ setlink/newlink
+Message-ID: <20220407091119.6ff5b879@kernel.org>
+In-Reply-To: <748f0357-2527-edda-d08a-ac0b0a7bffef@wifirst.fr>
+References: <20220405134237.16533-1-florent.fourcot@wifirst.fr>
+        <20220405174149.39a50448@kernel.org>
+        <748f0357-2527-edda-d08a-ac0b0a7bffef@wifirst.fr>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.7.0
-Subject: Re: [PATCH v2 04/14] dt-bindings: arm: mediatek: document WED binding
- for MT7622
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220405195755.10817-1-nbd@nbd.name>
- <20220405195755.10817-5-nbd@nbd.name>
- <d0bffa9a-0ea6-0f59-06b2-7eef3c746de1@linaro.org>
- <e3ea7381-87e3-99e1-2277-80835ec42f15@nbd.name> <Yk8IXno6sjkHVf4g@lunn.ch>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <Yk8IXno6sjkHVf4g@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,18 +57,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07.04.22 17:50, Andrew Lunn wrote:
->> > Isn't this a network offload engine? If yes, then probably it should be
->> > in "net/".
->> It's not a network offload engine by itself. It's a SoC component that
->> connects to the offload engine and controls a MTK PCIe WLAN device,
->> intercepting interrupts and DMA rings in order to be able to inject packets
->> coming in from the offload engine.
+On Thu, 7 Apr 2022 14:34:33 +0200 Florent Fourcot wrote:
+> > This patch needs to be after patch 3, AFAICT. Otherwise someone running
+> > a bisection and landing in between the two will have a buggy build.
 > 
-> Hi Felix
-> 
-> Maybe turn the question around. Can it be used for something other
-> than networking? If not, then somewhere under net seems reasonable.
-I'm fine with moving this to net.
+> I double checked and this patch compiles perfectly fine when applied 
+> first, at least with my .config.
+> Could you be more specific on what I'm missing?
 
-- Felix
+rtnl_group_changelink() was passing NULL as ifname, but with just 
+this patch applied we'll start using tb[IFLA_IFNAME] directly. 
+
+It's better to have your patch which rejects group settings with
+tb[IFLA_IFNAME] first, to avoid changing the group + IFLA_IFNAME
+behavior subtly multiple times.
