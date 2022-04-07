@@ -2,105 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9894B4F86A9
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 19:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F6A4F86B9
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 19:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346642AbiDGR4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 13:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        id S237074AbiDGR7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 13:59:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232184AbiDGR4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 13:56:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A79AC6EEB
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 10:54:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649354054;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CK9Z5mVDe4mgBGspYQzzn8gJDiHvz3qCsQ86FE3l+us=;
-        b=WRXydbvXYfYpSEMZIYZNKUVjEfx//g2Sv5ZmeMayiluOaiTSHJYVzxCuqrCpmwtpr0So16
-        Ey84+AzbccnLk5ftCHqoWqKelPdbXz3i8Gitdwcq9paSS+5G1yIW8FR6i4K8mVPj95b4Ph
-        q5LreLl5+XgRFWdDWu1Xn2OUSRmn3wE=
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
- [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-112-BHlNPSMIOI2FwNq7CDl6ug-1; Thu, 07 Apr 2022 13:54:13 -0400
-X-MC-Unique: BHlNPSMIOI2FwNq7CDl6ug-1
-Received: by mail-pj1-f72.google.com with SMTP id mm2-20020a17090b358200b001bf529127dfso3927410pjb.6
-        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 10:54:13 -0700 (PDT)
+        with ESMTP id S231249AbiDGR7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 13:59:40 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CF122F3DA
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 10:57:39 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id q19so5578216pgm.6
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 10:57:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=9Lmir/3pCfgeTnn9ZBjEAKgqHQ0smFo5TjXcj/fKooE=;
+        b=HYgBzkUSRIFG+C+mXuXArA002K7sFf7LHSsq98t7n9neqs573Io/Q/7frHVoctLOXu
+         rHR+qSOnuLDS0oYX+puML796zyD/vD0JE968FPVaysc0ljS+VDTNjrXC3pyxxjScH+Zv
+         rbqd7qdPhchfwnlKpEjrWGpcmY4KpfKb+pNbSmmPuObo7Zjw66tVZ6zQMhE9R6eeSIJl
+         L74wsons8D/BQxgXWiFsixARHuZLb0T0JmdJA6fQRQQg2ea0Ah8NqAM2ZBwYwBQ8Ahbv
+         7t1NS6O9wHPJu+4+epDTOo4DfMKBChJI4QFXIMxxui0O1FASw1l/7r5Fl0YIRdflgYD6
+         6Stg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=CK9Z5mVDe4mgBGspYQzzn8gJDiHvz3qCsQ86FE3l+us=;
-        b=sdmOyNoklVmDVwKTsOrnTEgY/Th+9gzCQNABqt8WGKMtipV1olDT3LFPOaLm57KTE+
-         1OlPMQ07cW5OAHet77sFsXUkfQP6GVWFHvY5M156HZ+iDWTMT0NppXye5nnI25y2BIHe
-         qGnbnu3+UKJgaRj93XDjfhPKJflxZ0056qBb6kb8u75WgIKhK7PC9yyCGTrP0h2/cnwG
-         p0QKy/8bW2OuO6TyEA/wJWTD87ekwRTlJ2fPQRbrfrpOd8xxl6pCUrVey2ndRJKC4dhu
-         cmubcjt4Dps+YP67FFWJpuvJhSNiekbXnkV+rKwHtpp4e26uVfr07bmLyFld88fkesk7
-         BCWg==
-X-Gm-Message-State: AOAM532RyWX+3URzU9aY0tjU08bRRbmYsMASMhtr7+WYcQuFOrMrn2zQ
-        0E5/5zpoOSC5NNgJfhJ6Iq7hxmr6UOCBb8Zvc94CLQ0+tVLTgEUzWDPs9aAbv+Ghv4OXCeaEq+s
-        vKX2R0o1pLYlfCKtG
-X-Received: by 2002:a65:6b92:0:b0:39c:c97b:1b57 with SMTP id d18-20020a656b92000000b0039cc97b1b57mr3129943pgw.517.1649354052364;
-        Thu, 07 Apr 2022 10:54:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxY+f9QwoacEBY4kuGoqYuYwACBfLXX9MLBnkeSnGdArm5ggb+OlgU6GsrW0+ANYwvG2th5MA==
-X-Received: by 2002:a65:6b92:0:b0:39c:c97b:1b57 with SMTP id d18-20020a656b92000000b0039cc97b1b57mr3129928pgw.517.1649354051960;
-        Thu, 07 Apr 2022 10:54:11 -0700 (PDT)
-Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id d8-20020a056a00198800b004fab740dbe6sm23439873pfl.15.2022.04.07.10.54.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Apr 2022 10:54:11 -0700 (PDT)
-From:   Tom Rix <trix@redhat.com>
-To:     pkshih@realtek.com, kvalo@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, nathan@kernel.org,
-        ndesaulniers@google.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] rtw89: ser: add a break statement
-Date:   Thu,  7 Apr 2022 13:53:49 -0400
-Message-Id: <20220407175349.3053362-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        bh=9Lmir/3pCfgeTnn9ZBjEAKgqHQ0smFo5TjXcj/fKooE=;
+        b=Mo2uymg/+ROYfe11zdZt/xFOmzS1YGPcuXl/APLhOaCGpbt24ANQpNXNvO812JYGp4
+         oEyOXVg0/r07j92NBRE7G2ypNgAF/5hYwunorBdPOQ47PDhmaERPAmTlrdOXZ3RgsJJ7
+         yJ6Zb3HGLQjzaVDH1QSbo7XYanxSTya9s202IU68MmrgzX+8mS0hFhf7O7JjROi9Vi64
+         sxocx3pmwcAhr0iQ1dbM3YPx3o/hTxYVtN9cFKDARBYYwHHHfzMzDP0XTj6IJn0dJCdD
+         icxzh/NiQWsrM+4hb+KMkYwo3idx+wnBsbPHk+8PzAUVl2tWXgRoiy1FaFhzqs5CxXHu
+         VeKw==
+X-Gm-Message-State: AOAM5304HuVmiSK9sd4fSa1jcMDCcT97R5PH5Ieay76kwIiiS5nivOSa
+        NZ7voQOv0JzE9DZxEvrwlUQ=
+X-Google-Smtp-Source: ABdhPJwXNYGGIL3MwwcZTV47UD8Hdabd7z7rVaXUd8EN8e5Nd3OeP3KXmGnPAjX9yGDJ5wH0rSwlfw==
+X-Received: by 2002:a65:604b:0:b0:398:ebeb:ad8f with SMTP id a11-20020a65604b000000b00398ebebad8fmr12523037pgp.89.1649354259285;
+        Thu, 07 Apr 2022 10:57:39 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id u18-20020a056a00125200b004fb112ee9b7sm21272739pfi.75.2022.04.07.10.57.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 10:57:38 -0700 (PDT)
+Message-ID: <94b897a1-2f5a-f290-7d8c-333d61ca5e5c@gmail.com>
+Date:   Thu, 7 Apr 2022 10:57:25 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 net] net: mdio: don't defer probe forever if PHY IRQ
+ provider is missing
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Saravana Kannan <saravanak@google.com>,
+        Rob Herring <robh@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+References: <20220407165538.4084809-1-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220407165538.4084809-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The clang build fails with
-ser.c:397:2: error: unannotated fall-through
-  between switch labels [-Werror,-Wimplicit-fallthrough]
-        default:
-        ^
-The case above the default does not have a break.
-So add one.
+On 4/7/22 09:55, Vladimir Oltean wrote:
+> When a driver for an interrupt controller is missing, of_irq_get()
+> returns -EPROBE_DEFER ad infinitum, causing
+> fwnode_mdiobus_phy_device_register(), and ultimately, the entire
+> of_mdiobus_register() call, to fail. In turn, any phy_connect() call
+> towards a PHY on this MDIO bus will also fail.
+> 
+> This is not what is expected to happen, because the PHY library falls
+> back to poll mode when of_irq_get() returns a hard error code, and the
+> MDIO bus, PHY and attached Ethernet controller work fine, albeit
+> suboptimally, when the PHY library polls for link status. However,
+> -EPROBE_DEFER has special handling given the assumption that at some
+> point probe deferral will stop, and the driver for the supplier will
+> kick in and create the IRQ domain.
+> 
+> Reasons for which the interrupt controller may be missing:
+> 
+> - It is not yet written. This may happen if a more recent DT blob (with
+>    an interrupt-parent for the PHY) is used to boot an old kernel where
+>    the driver didn't exist, and that kernel worked with the
+>    vintage-correct DT blob using poll mode.
+> 
+> - It is compiled out. Behavior is the same as above.
+> 
+> - It is compiled as a module. The kernel will wait for a number of
+>    seconds specified in the "deferred_probe_timeout" boot parameter for
+>    user space to load the required module. The current default is 0,
+>    which times out at the end of initcalls. It is possible that this
+>    might cause regressions unless users adjust this boot parameter.
+> 
+> The proposed solution is to use the driver_deferred_probe_check_state()
+> helper function provided by the driver core, which gives up after some
+> -EPROBE_DEFER attempts, taking "deferred_probe_timeout" into consideration.
+> The return code is changed from -EPROBE_DEFER into -ENODEV or
+> -ETIMEDOUT, depending on whether the kernel is compiled with support for
+> modules or not.
+> 
+> Fixes: 66bdede495c7 ("of_mdio: Fix broken PHY IRQ in case of probe deferral")
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/wireless/realtek/rtw89/ser.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/wireless/realtek/rtw89/ser.c b/drivers/net/wireless/realtek/rtw89/ser.c
-index 25d1df10f226..5aebd6839d29 100644
---- a/drivers/net/wireless/realtek/rtw89/ser.c
-+++ b/drivers/net/wireless/realtek/rtw89/ser.c
-@@ -394,6 +394,7 @@ static void ser_idle_st_hdl(struct rtw89_ser *ser, u8 evt)
- 		break;
- 	case SER_EV_STATE_OUT:
- 		rtw89_hci_recovery_start(rtwdev);
-+		break;
- 	default:
- 		break;
- 	}
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.27.0
-
+Florian
