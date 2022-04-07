@@ -2,114 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1104B4F76CB
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 09:07:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CDA4F76D3
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 09:08:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235444AbiDGHJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 03:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
+        id S240349AbiDGHKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 03:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231528AbiDGHJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 03:09:44 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2075.outbound.protection.outlook.com [40.107.244.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC13B12AEA
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 00:07:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=STLaZ6u5JfZyBuciYHu7Cuv3k+HaAmpMAPPU4xvGd/UqPtEQjwaIPCkS2FtcHWxI+NBA5GJIN+6o2ZSJ6+BcDwPs2wqCt6OaEI2g+sZFxVV+BxTURE+niLYeNbYjgefporVKx3L8ixbsqx84Hty+PXZ50eVDZhLWgYBLqJmjojUkftjpH/TLb2PvvhgftQC0Z4f4zNpRVHbrwEqUcazd6F6rRXytAuyeUuXvL+vlEFvHHdLS5DLI/pPmQz8OJERSoRQeRFJY2/fG0TdL1PWewdmMFJaBjrYobUVabOF9LSPkeU9BjO6JkXSQsEcKaVS6ko15eWYsCOiV7sDVtB3hVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WPhFq69eXbgglHblkGsyHzButn+qvgbrNMv2mhU6lQA=;
- b=cmijwa4dSAK+VpMMZCR1JZc4j2dl5cqm9Cr0Xro/6lCWIP8xckEok5wGbZCLrGRgl9+6z9+3dvcCf3wBw4xyg2nq4Q70wGgnSkAWnp2gd4D44saf6uhXvy6fVyKgvL57GjO0WQlxjsiA0ZJGUVT4+72XWYw/yIox70UWBBwPhjmMWbmvNTEeuYguXvU9siGzqyvT/9PWmC0E4Lkj2HVBtV9PGFP1qQQM3acrYWRTUeIcpxw9qVGxnEPEW/fvouRZT/1vFAz2AG4snZTcV0c2mtTilt7GEP8bwH2li5Hc/09hUH6aNVtRZbpIlYORIzkrzkivpgBedwY95DAsolxiRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WPhFq69eXbgglHblkGsyHzButn+qvgbrNMv2mhU6lQA=;
- b=k9MWJMh7cOzyZds2+wuHiB15UJs/tuwrMXi7fQvWRflSxZKkUBt4kKnNGhWKn6jdhybyMoZu6zM08U+IZgHwu+wCP+J4R1pGK31HtcnWOLUs/90uYk5ykzRQJkG5kBWUos3lcrtUW7EvkciFI9LSxw8od2gZccEHrzL+eS8pAUMQvZnkKSZseE4qRmkPweFwhjXddkuNOonGRA0CtslDYP/7I1NuhVSFSrr3DBimiQeUYSnhIpPgnP68QAc3v8btx2GuhN7Smmog4HPgSr0R8oeW8RzOyBkC8cetnL6pTYVXBzuWIQ//K0nfCbrSwlMN/qrGVd+Hs9cxvfb6RL/Ktg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
- by BY5PR12MB3779.namprd12.prod.outlook.com (2603:10b6:a03:1a7::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5144.22; Thu, 7 Apr
- 2022 07:07:42 +0000
-Received: from DM6PR12MB4337.namprd12.prod.outlook.com
- ([fe80::4c9:9b43:f068:7ee2]) by DM6PR12MB4337.namprd12.prod.outlook.com
- ([fe80::4c9:9b43:f068:7ee2%2]) with mapi id 15.20.5144.022; Thu, 7 Apr 2022
- 07:07:42 +0000
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        petrm@nvidia.com, vadimp@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net] mlxsw: i2c: Fix initialization error flow
-Date:   Thu,  7 Apr 2022 10:07:03 +0300
-Message-Id: <20220407070703.2421076-1-idosch@nvidia.com>
-X-Mailer: git-send-email 2.33.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0102CA0030.eurprd01.prod.exchangelabs.com
- (2603:10a6:802::43) To DM6PR12MB4337.namprd12.prod.outlook.com
- (2603:10b6:5:2a9::12)
+        with ESMTP id S240393AbiDGHKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 03:10:12 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCE321836;
+        Thu,  7 Apr 2022 00:08:09 -0700 (PDT)
+Received: from kwepemi500017.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KYss60v2WzdZhQ;
+        Thu,  7 Apr 2022 15:07:38 +0800 (CST)
+Received: from linux-suse12sp5.huawei.com (10.67.133.175) by
+ kwepemi500017.china.huawei.com (7.221.188.110) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 7 Apr 2022 15:08:05 +0800
+From:   Yan Zhu <zhuyan34@huawei.com>
+To:     <mcgrof@kernel.org>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <bpf@vger.kernel.org>,
+        <daniel@iogearbox.net>, <john.fastabend@gmail.com>, <kafai@fb.com>,
+        <keescook@chromium.org>, <kpsingh@kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <liucheng32@huawei.com>, <netdev@vger.kernel.org>,
+        <nixiaoming@huawei.com>, <songliubraving@fb.com>,
+        <xiechengliang1@huawei.com>, <yhs@fb.com>, <yzaikin@google.com>,
+        <zengweilin@huawei.com>, <zhuyan34@huawei.com>,
+        <leeyou.li@huawei.com>, <laiyuanyuan.lai@huawei.com>
+Subject: [PATCH v4 sysctl-next] bpf: move bpf sysctls from kernel/sysctl.c to bpf module
+Date:   Thu, 7 Apr 2022 15:07:59 +0800
+Message-ID: <20220407070759.29506-1-zhuyan34@huawei.com>
+X-Mailer: git-send-email 2.12.3
+In-Reply-To: <Yk4XE/hKGOQs5oq0@bombadil.infradead.org>
+References: <Yk4XE/hKGOQs5oq0@bombadil.infradead.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c372aa27-d3d5-4de5-f9ac-08da18654ebc
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3779:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB3779542824E29A9C8B2576F2B2E69@BY5PR12MB3779.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kXGt/gPVCqrj8z2mYgqN8mKA+oHUkz8zB6igDwZ0Wug79yxOmN8BVp6ld+elQF8kxOAFbpA22jtEvUr3JGl0X8kT31NIOwvjAv+Yx/bGv7AWaOWnCuyFtPf3QYwE5b16H9mcoXTiYeddA3fjQH7rKuaQwGSJHSABhV+fdR/d5tscErgVffgKD9QfhoZFbJCmXzB8AfkfWyayx4NFb6lbnz40IjzO3bHRSlKqep6xJurU5JtA1TCGJi5xRzZn/lRz7s7vvV54BheMp2fQJtXfMJUh95skJEwzI0U7mQa0PmdELGwtVKj5i/WC4a71r+BCbEaylYlr3geQ6NrD+B3g2TJYwwO5ElDfcWrLC6ZlePjEp5MZLAcrfXyX9Qnc+v6zqSUq53SONWKul6nDchqZG9PGnzmpPJMARQlhz3ycqdcQT9eJckE8wel/wGA3voJRn/YdNbdJYVQ58QwbnloFVlqGr02ZZ1qAaTXm7OC2gPViRG7ppPyIbS67k13AB4DM/oAdiwT+Is2xYu8+HLRHJC5KyK4QeS6azrU9cdz/HcY1J4mqlo4W0nsjYAS2cu8PLA2qkLQSLLMp1T9zga2Y1R/5C1mpfaaG4+6AAwH0qL6yjLDuiQ9RsxBctmLz5zZjpz2a1x/wqakl6x4cHT6NDg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(26005)(66556008)(186003)(6916009)(66476007)(316002)(4326008)(36756003)(8676002)(83380400001)(66946007)(6666004)(4744005)(6512007)(5660300002)(107886003)(2616005)(6486002)(508600001)(38100700002)(2906002)(8936002)(86362001)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DvrjOZ/8eiE8xJsomCuVcJ5PJCc7y0OJ4MEKOTsUiMhOAjvpfH3P0oCkMwWy?=
- =?us-ascii?Q?ttzSYU9oGC32PBYWLWB2KYkZqCSdFFQcYCZpbHR+VcuHfJSXj1aubyBpR7G9?=
- =?us-ascii?Q?rRRoMjGA2HxPKBS2SiBmbW8vvEXfgESlxEfgYfYefT0MZHF4EOnhSiOX0lik?=
- =?us-ascii?Q?FCbMaU7otLhP2qy2hTvSYvNW8XWXXsxQdJ6TNtOLjPRKRDW2ZIfv9KmonyOP?=
- =?us-ascii?Q?uO0P34ebMGOpULMn6BRzNlbEC8BmEzaurB2DlFy3Oo7PBH6+AJR2btgZwBbp?=
- =?us-ascii?Q?veqsXoMjYrV++Ts5yzc1HcTZyEbrZX9n725TkmOm+QUxYxQUMT8Dr4HdAmEW?=
- =?us-ascii?Q?Ni2DllhivvaCAP4JCLyoXjoV6sd4ErTNj87Bz6y1PyTSuv/3rHyXnp05/br+?=
- =?us-ascii?Q?A0j97pbYyb1Unk3QChj+htBbx8RCc2ml0bcWFJyTMEtbS7WR3tRU+y/AfuQA?=
- =?us-ascii?Q?hYtlrCIeIhedc9XjDsnqiZJJfBw4TtfTms50iOGDviDYAvY3aUQkkRqNA+LZ?=
- =?us-ascii?Q?Cm3cbbKLCpku2Y3JdfRRo2WQEtmwpmxiotqH7wnbcLfcGHKHRcp3g7nCZMv6?=
- =?us-ascii?Q?N2VSb3wLMKd7sv33payBAB6c2dDZ4Vqvy8br7VYiFEKlwc/63n52FPT5MSFp?=
- =?us-ascii?Q?SjxCrhJAVBNb/Hy36lXFoV8hgEMUt0qAoArsEd9h9Dx2dWjK2xeKtlmTqwj1?=
- =?us-ascii?Q?cxEiKmVafZ/kErYD4npDIc9PuOL//L91Z+zxlcU7kgUko2737ZctJ0pNFY3Y?=
- =?us-ascii?Q?MY+DiEvzy2mDHDCmuqCMoRgf1GLiYp4r7hQadXPaba0fKMo+jyPi2BIxJlwb?=
- =?us-ascii?Q?DKaUYHqQRWWAzfwSBUuJPe13dED92VapFdTt2J6IZNLkCtVNEQuIJw2GVxbx?=
- =?us-ascii?Q?nPcREUgjB2V1tDUrc4cMliH0VYs328RZyOWUgyTK3FND+vN286BZNGbn7cTw?=
- =?us-ascii?Q?ZwHW4w0S0CqEz9LtcM9es2vr3lTM9VIhus5sqRG4JQ9YgQVl4X5pGoFMuD+h?=
- =?us-ascii?Q?O3ZgSE7jazP586hoPESx4plw9B3f7vnRxSghQthFW2r5++HhZ76Os6bXrvVA?=
- =?us-ascii?Q?kKERxu6kssDwa0S3CG8JzlWVihlf2BejgQHGV49YVpaYyzzu3s2B1B2KjtIP?=
- =?us-ascii?Q?mbtsvp0KmHr8bHipsM/4c9Y8gifbP23FzyS//bRMALB7b+UXNBGOhywoTcgZ?=
- =?us-ascii?Q?5v6uUhi4z5Dm6biKHJssK0Zoeof1W19Dcp/oojRNDqzVwu5Xi/P+8EF2JP75?=
- =?us-ascii?Q?QcjR5x2cPHMtdRX4DCqL4zoLHmQX0nin2qtEW6dlR9cguQ6513nVq2Bv/nyc?=
- =?us-ascii?Q?iing1T23lw53vLisr5Pm56dISJptHoYhgkkW+R/jWjI/gLPrvEDuhlWTSO8n?=
- =?us-ascii?Q?xc0GPTU/KqF2eK71UudRW3TS3pT697Rlir/h0tyJCtJ3q4I6a/71sm5ooTwV?=
- =?us-ascii?Q?IvGmTyPwl0hwcEA3F2BKGZKui5jCpeSGdA7o0HkbOgq46fe0AcjRLM254T+i?=
- =?us-ascii?Q?Rx8CwboJR9HWeVTpcEpXLuURLCiEld8duy4NT5tx44RfIgfrilCd6WE9ZsqW?=
- =?us-ascii?Q?aZ1bFy86zzS9EpPh7PLWA2OCbKGqN7nrYkzq+IXbNTbRUetzeydvULNX52n+?=
- =?us-ascii?Q?dMeV3vMA0gZrhnCwCzoQoSWxV68Dp25z2zIi+5FmDU8FC8avVWt7l1HhFIwz?=
- =?us-ascii?Q?aoB+90K+hzSJLesLYNnpLlUB3CbP3WCwDp7rtjGDyQXCqcOpKcgUKx83+pDR?=
- =?us-ascii?Q?0RxA9BhfJw=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c372aa27-d3d5-4de5-f9ac-08da18654ebc
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Apr 2022 07:07:41.9679
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mrrNmWhLlXlbg549eWHzPXKJnjz2AX9OUdtfKkld6iFQMxAxBwpueg36ClzndCUSdJkbATnuqsp67fNncHhmLg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3779
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+Content-Type: text/plain
+X-Originating-IP: [10.67.133.175]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500017.china.huawei.com (7.221.188.110)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -117,29 +54,230 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@nvidia.com>
+We're moving sysctls out of kernel/sysctl.c as its a mess. We
+already moved all filesystem sysctls out. And with time the goal is
+to move all sysctls out to their own subsystem/actual user.
 
-Add mutex_destroy() call in driver initialization error flow.
+kernel/sysctl.c has grown to an insane mess and its easy to run
+into conflicts with it. The effort to move them out is part of this.
 
-Fixes: 6882b0aee180f ("mlxsw: Introduce support for I2C bus")
-Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Yan Zhu <zhuyan34@huawei.com>
+
 ---
- drivers/net/ethernet/mellanox/mlxsw/i2c.c | 1 +
- 1 file changed, 1 insertion(+)
+v1->v2:
+  1.Added patch branch identifier sysctl-next.
+  2.Re-describe the reason for the patch submission.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/i2c.c b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-index 939b692ffc33..ce843ea91464 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/i2c.c
-@@ -650,6 +650,7 @@ static int mlxsw_i2c_probe(struct i2c_client *client,
- 	return 0;
+v2->v3:
+  Re-describe the reason for the patch submission.
+
+v3->v4:
+  1.Remove '#include <linux/bpf.h>' in kernel/sysctl.c
+  2.re-adaptive the patch
+---
+ kernel/bpf/syscall.c | 87 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ kernel/sysctl.c      | 79 -----------------------------------------------
+ 2 files changed, 87 insertions(+), 79 deletions(-)
+
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index cdaa1152436a..e9621cfa09f2 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -4908,3 +4908,90 @@ const struct bpf_verifier_ops bpf_syscall_verifier_ops = {
+ const struct bpf_prog_ops bpf_syscall_prog_ops = {
+ 	.test_run = bpf_prog_test_run_syscall,
+ };
++
++#ifdef CONFIG_SYSCTL
++static int bpf_stats_handler(struct ctl_table *table, int write,
++			     void *buffer, size_t *lenp, loff_t *ppos)
++{
++	struct static_key *key = (struct static_key *)table->data;
++	static int saved_val;
++	int val, ret;
++	struct ctl_table tmp = {
++		.data   = &val,
++		.maxlen = sizeof(val),
++		.mode   = table->mode,
++		.extra1 = SYSCTL_ZERO,
++		.extra2 = SYSCTL_ONE,
++	};
++
++	if (write && !capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
++	mutex_lock(&bpf_stats_enabled_mutex);
++	val = saved_val;
++	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
++	if (write && !ret && val != saved_val) {
++		if (val)
++			static_key_slow_inc(key);
++		else
++			static_key_slow_dec(key);
++		saved_val = val;
++	}
++	mutex_unlock(&bpf_stats_enabled_mutex);
++	return ret;
++}
++
++void __weak unpriv_ebpf_notify(int new_state)
++{
++}
++
++static int bpf_unpriv_handler(struct ctl_table *table, int write,
++			      void *buffer, size_t *lenp, loff_t *ppos)
++{
++	int ret, unpriv_enable = *(int *)table->data;
++	bool locked_state = unpriv_enable == 1;
++	struct ctl_table tmp = *table;
++
++	if (write && !capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
++	tmp.data = &unpriv_enable;
++	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
++	if (write && !ret) {
++		if (locked_state && unpriv_enable != 1)
++			return -EPERM;
++		*(int *)table->data = unpriv_enable;
++	}
++
++	unpriv_ebpf_notify(unpriv_enable);
++
++	return ret;
++}
++
++static struct ctl_table bpf_syscall_table[] = {
++	{
++		.procname	= "unprivileged_bpf_disabled",
++		.data		= &sysctl_unprivileged_bpf_disabled,
++		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
++		.mode		= 0644,
++		.proc_handler	= bpf_unpriv_handler,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_TWO,
++	},
++	{
++		.procname	= "bpf_stats_enabled",
++		.data		= &bpf_stats_enabled_key.key,
++		.maxlen		= sizeof(bpf_stats_enabled_key),
++		.mode		= 0644,
++		.proc_handler	= bpf_stats_handler,
++	},
++	{ }
++};
++
++static int __init bpf_syscall_sysctl_init(void)
++{
++	register_sysctl_init("kernel", bpf_syscall_table);
++	return 0;
++}
++late_initcall(bpf_syscall_sysctl_init);
++#endif /* CONFIG_SYSCTL */
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 21172d3dad6e..c0fdf465a93d 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -62,7 +62,6 @@
+ #include <linux/binfmts.h>
+ #include <linux/sched/sysctl.h>
+ #include <linux/kexec.h>
+-#include <linux/bpf.h>
+ #include <linux/mount.h>
+ #include <linux/userfaultfd_k.h>
+ #include <linux/latencytop.h>
+@@ -139,66 +138,6 @@ static const int max_extfrag_threshold = 1000;
  
- errout:
-+	mutex_destroy(&mlxsw_i2c->cmd.lock);
- 	i2c_set_clientdata(client, NULL);
+ #endif /* CONFIG_SYSCTL */
  
- 	return err;
+-#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_SYSCTL)
+-static int bpf_stats_handler(struct ctl_table *table, int write,
+-			     void *buffer, size_t *lenp, loff_t *ppos)
+-{
+-	struct static_key *key = (struct static_key *)table->data;
+-	static int saved_val;
+-	int val, ret;
+-	struct ctl_table tmp = {
+-		.data   = &val,
+-		.maxlen = sizeof(val),
+-		.mode   = table->mode,
+-		.extra1 = SYSCTL_ZERO,
+-		.extra2 = SYSCTL_ONE,
+-	};
+-
+-	if (write && !capable(CAP_SYS_ADMIN))
+-		return -EPERM;
+-
+-	mutex_lock(&bpf_stats_enabled_mutex);
+-	val = saved_val;
+-	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
+-	if (write && !ret && val != saved_val) {
+-		if (val)
+-			static_key_slow_inc(key);
+-		else
+-			static_key_slow_dec(key);
+-		saved_val = val;
+-	}
+-	mutex_unlock(&bpf_stats_enabled_mutex);
+-	return ret;
+-}
+-
+-void __weak unpriv_ebpf_notify(int new_state)
+-{
+-}
+-
+-static int bpf_unpriv_handler(struct ctl_table *table, int write,
+-			      void *buffer, size_t *lenp, loff_t *ppos)
+-{
+-	int ret, unpriv_enable = *(int *)table->data;
+-	bool locked_state = unpriv_enable == 1;
+-	struct ctl_table tmp = *table;
+-
+-	if (write && !capable(CAP_SYS_ADMIN))
+-		return -EPERM;
+-
+-	tmp.data = &unpriv_enable;
+-	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
+-	if (write && !ret) {
+-		if (locked_state && unpriv_enable != 1)
+-			return -EPERM;
+-		*(int *)table->data = unpriv_enable;
+-	}
+-
+-	unpriv_ebpf_notify(unpriv_enable);
+-
+-	return ret;
+-}
+-#endif /* CONFIG_BPF_SYSCALL && CONFIG_SYSCTL */
+-
+ /*
+  * /proc/sys support
+  */
+@@ -2112,24 +2051,6 @@ static struct ctl_table kern_table[] = {
+ 		.extra2		= SYSCTL_ONE,
+ 	},
+ #endif
+-#ifdef CONFIG_BPF_SYSCALL
+-	{
+-		.procname	= "unprivileged_bpf_disabled",
+-		.data		= &sysctl_unprivileged_bpf_disabled,
+-		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
+-		.mode		= 0644,
+-		.proc_handler	= bpf_unpriv_handler,
+-		.extra1		= SYSCTL_ZERO,
+-		.extra2		= SYSCTL_TWO,
+-	},
+-	{
+-		.procname	= "bpf_stats_enabled",
+-		.data		= &bpf_stats_enabled_key.key,
+-		.maxlen		= sizeof(bpf_stats_enabled_key),
+-		.mode		= 0644,
+-		.proc_handler	= bpf_stats_handler,
+-	},
+-#endif
+ #if defined(CONFIG_TREE_RCU)
+ 	{
+ 		.procname	= "panic_on_rcu_stall",
 -- 
-2.33.1
+2.12.3
 
