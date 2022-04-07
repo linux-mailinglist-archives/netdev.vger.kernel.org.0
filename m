@@ -2,221 +2,390 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 666E34F8ADA
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C906F4F8AE2
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:55:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232063AbiDGWdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 18:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
+        id S232141AbiDGWjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 18:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiDGWdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 18:33:44 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2657B82332
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 15:31:32 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id x10-20020a5b028a000000b0063f0cc26f1bso662185ybl.16
-        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 15:31:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=zmR1o2tbqO1PCy5LYhOTyAaO3QgHPcHpKMd6y/ugnfU=;
-        b=JITxNyBjXwlvw1dwqwCXqXs7ZWoLkqtfUZ0RTIDcqyr+RuZXH78QT9afl+NJPec0QP
-         vmp6jPXWuue2ypLHx9+v3pudlKs0ecP438aAOoLwiCIpCaYl1Y0gddaGSGpB4m3PcWPc
-         b237uVEtT6oW3Yz6dd6y1TvTwA0QegQ4wjttrQ8X8IW3U2E4YqciJRml/g0zvFa/54dy
-         PUm1iKoRlVOMMXUuCZL3BluYiDt71fUCDmHza1rYHPSIFQ2nMuItyPz32VSeRcre05yq
-         4gWlkPRJGbfTNxq6NO+WR/gp/o6qc4ebAs96LRVnKTnBNsFVCLQF1xsuUihldP2qMJaM
-         o62A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=zmR1o2tbqO1PCy5LYhOTyAaO3QgHPcHpKMd6y/ugnfU=;
-        b=MnUAhzaChVXrxPdcb3IK0FxNUCnLHsTKJEJKGB/bZEH+i7pEHRls3jQoX7DkfhGQMt
-         nl/UWV79tix4Xo+0q5pHcJDCieun3IQE6V97retYhT3x+knAMzgSYwtsryMAjyDUTH/L
-         Y9iKqaV66qUWivddGebyeCTJ3NRN91ylwhwSQijfsUWGIa3gRkkQ0kG8anuU4kzPToBM
-         Ozqylnc7SDTcs9zsu+1sP/mFzK4h29v/eq9nHY9FNQ9xQuIR3kWpc4O5rBQRl/wo43ks
-         gzkZ23YDZSieZp+YW3BZGjWtUmE8n5o1Sp7pR95IjOkRAjnZpeq6EvjeGR+wFZFPxmU/
-         oc+Q==
-X-Gm-Message-State: AOAM530It7t6zRGBWYTZcUK5IWhYEXooULY10Xmv+D+APWGKIqa6ssZV
-        UDvKlqRL/en2p5QFPe/g9fDj8tU33to1MslEZ6szmwAijLUKmDhn7BcboGFt5rp5EI6r8iC0821
-        JQOwmiV5Ihtz5bZEBnhQY/QjczUS9ueEe97ZZ7I0FD6tSOiDeC+G4qw==
-X-Google-Smtp-Source: ABdhPJwKo+iErGY7B4rVb3xP1RowmegMAvIknx/F9bhsooruBGkVEWWaSSiTh+WxUfLJ8SAh2FLO0Jo=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:9e25:5910:c207:e29a])
- (user=sdf job=sendgmr) by 2002:a25:7e85:0:b0:63d:b3e4:884 with SMTP id
- z127-20020a257e85000000b0063db3e40884mr12033257ybc.311.1649370691838; Thu, 07
- Apr 2022 15:31:31 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 15:31:12 -0700
-In-Reply-To: <20220407223112.1204582-1-sdf@google.com>
-Message-Id: <20220407223112.1204582-8-sdf@google.com>
-Mime-Version: 1.0
-References: <20220407223112.1204582-1-sdf@google.com>
-X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH bpf-next v3 7/7] selftests/bpf: verify lsm_cgroup struct sock access
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,TVD_PH_SUBJ_META,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_DKIM_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229703AbiDGWjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 18:39:15 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CAD129843;
+        Thu,  7 Apr 2022 15:37:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649371032; x=1680907032;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=e9apK2o3t0LKn/Xl0j01nqryAH/MGxkQ7AMbsBWgvYo=;
+  b=HKv8AoOUDJAwGISqS+95719UxHILGEd6GuA8g/HWE4lvv7oOm90e1JRf
+   NmP6bSoGppqCiCDg0If5Ff4Xyk5XwnsnBrq5p63rhB6EU+t41Pyk1YXiw
+   g6CKprcIK80nDoqPmtoaHis0LRQAEyH5HI52USRLpsLW/MYlHo/aU70bC
+   ViLaiRCxzgyCUk29VhMBpFfpfvdqQINDOK40d/JJXzAk+wvAMUZsfnTO0
+   URdAvDFIHm+yLv48VatnydyvaiPc1+yzeG/v7SjjENyUjPkv8kbfWaVO/
+   Lz37N64HIU2QzqRETyw1XTMzm/n2A+wuF9nGRwjBJbFMjHw2zl4r8p0X1
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261449300"
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="261449300"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 15:37:11 -0700
+X-IronPort-AV: E=Sophos;i="5.90,242,1643702400"; 
+   d="scan'208";a="659242868"
+Received: from rmarti10-desk.jf.intel.com ([134.134.150.146])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 15:37:11 -0700
+From:   Ricardo Martinez <ricardo.martinez@linux.intel.com>
+To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, amir.hanania@intel.com,
+        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
+        eliot.lee@intel.com, ilpo.johannes.jarvinen@intel.com,
+        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
+        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
+        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com,
+        Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Subject: [PATCH net-next v6 00/13] net: wwan: t7xx: PCIe driver for MediaTek M.2 modem
+Date:   Thu,  7 Apr 2022 15:36:16 -0700
+Message-Id: <20220407223629.21487-1-ricardo.martinez@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_NONE,T_FILL_THIS_FORM_SHORT,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk_priority & sk_mark are writable, the rest is readonly.
+t7xx is the PCIe host device driver for Intel 5G 5000 M.2 solution which
+is based on MediaTek's T700 modem to provide WWAN connectivity.
+The driver uses the WWAN framework infrastructure to create the following
+control ports and network interfaces:
+* /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
+  Applications like libmbim [1] or Modem Manager [2] from v1.16 onwards
+  with [3][4] can use it to enable data communication towards WWAN.
+* /dev/wwan0at0 - Interface that supports AT commands.
+* wwan0 - Primary network interface for IP traffic.
 
-Add new ldx_offset fixups to lookup the offset of struct field.
-Allow using test.kfunc regardless of prog_type.
+The main blocks in t7xx driver are:
+* PCIe layer - Implements probe, removal, and power management callbacks.
+* Port-proxy - Provides a common interface to interact with different types
+  of ports such as WWAN ports.
+* Modem control & status monitor - Implements the entry point for modem
+  initialization, reset and exit, as well as exception handling.
+* CLDMA (Control Layer DMA) - Manages the HW used by the port layer to send
+  control messages to the modem using MediaTek's CCCI (Cross-Core
+  Communication Interface) protocol.
+* DPMAIF (Data Plane Modem AP Interface) - Controls the HW that provides
+  uplink and downlink queues for the data path. The data exchange takes
+  place using circular buffers to share data buffer addresses and metadata
+  to describe the packets.
+* MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels
+  for bidirectional event notification such as handshake, exception, PM and
+  port enumeration.
 
-One interesting thing here is that the verifier doesn't
-really force me to add NULL checks anywhere :-/
+The compilation of the t7xx driver is enabled by the CONFIG_MTK_T7XX config
+option which depends on CONFIG_WWAN.
+This driver was originally developed by MediaTek. Intel adapted t7xx to
+the WWAN framework, optimized and refactored the driver source code in close
+collaboration with MediaTek. This will enable getting the t7xx driver on the
+Approved Vendor List for interested OEM's and ODM's productization plans
+with Intel 5G 5000 M.2 solution.
 
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/test_verifier.c   | 54 ++++++++++++++++++-
- .../selftests/bpf/verifier/lsm_cgroup.c       | 34 ++++++++++++
- 2 files changed, 87 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/verifier/lsm_cgroup.c
+List of contributors:
+Amir Hanania <amir.hanania@intel.com>
+Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+Dinesh Sharma <dinesh.sharma@intel.com>
+Eliot Lee <eliot.lee@intel.com>
+Haijun Liu <haijun.liu@mediatek.com>
+M Chetan Kumar <m.chetan.kumar@intel.com>
+Mika Westerberg <mika.westerberg@linux.intel.com>
+Moises Veleta <moises.veleta@intel.com>
+Pierre-louis Bossart <pierre-louis.bossart@intel.com>
+Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
+Ricardo Martinez <ricardo.martinez@linux.intel.com>
+Madhusmita Sahu <madhusmita.sahu@intel.com>
+Muralidharan Sethuraman <muralidharan.sethuraman@intel.com>
+Soumya Prakash Mishra <Soumya.Prakash.Mishra@intel.com>
+Sreehari Kancharla <sreehari.kancharla@intel.com>
+Suresh Nagaraj <suresh.nagaraj@intel.com>
 
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-index a2cd236c32eb..d6bc55c54aaa 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -75,6 +75,12 @@ struct kfunc_btf_id_pair {
- 	int insn_idx;
- };
- 
-+struct ldx_offset {
-+	const char *strct;
-+	const char *field;
-+	int insn_idx;
-+};
-+
- struct bpf_test {
- 	const char *descr;
- 	struct bpf_insn	insns[MAX_INSNS];
-@@ -102,6 +108,7 @@ struct bpf_test {
- 	int fixup_map_ringbuf[MAX_FIXUPS];
- 	int fixup_map_timer[MAX_FIXUPS];
- 	struct kfunc_btf_id_pair fixup_kfunc_btf_id[MAX_FIXUPS];
-+	struct ldx_offset fixup_ldx[MAX_FIXUPS];
- 	/* Expected verifier log output for result REJECT or VERBOSE_ACCEPT.
- 	 * Can be a tab-separated sequence of expected strings. An empty string
- 	 * means no log verification.
-@@ -755,6 +762,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 	int *fixup_map_ringbuf = test->fixup_map_ringbuf;
- 	int *fixup_map_timer = test->fixup_map_timer;
- 	struct kfunc_btf_id_pair *fixup_kfunc_btf_id = test->fixup_kfunc_btf_id;
-+	struct ldx_offset *fixup_ldx = test->fixup_ldx;
- 
- 	if (test->fill_helper) {
- 		test->fill_insns = calloc(MAX_TEST_INSNS, sizeof(struct bpf_insn));
-@@ -967,6 +975,50 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
- 			fixup_kfunc_btf_id++;
- 		} while (fixup_kfunc_btf_id->kfunc);
- 	}
-+
-+	if (fixup_ldx->strct) {
-+		const struct btf_member *memb;
-+		const struct btf_type *tp;
-+		const char *name;
-+		struct btf *btf;
-+		int btf_id;
-+		int off;
-+		int i;
-+
-+		btf = btf__load_vmlinux_btf();
-+
-+		do {
-+			off = -1;
-+			if (!btf)
-+				goto next_ldx;
-+
-+			btf_id = btf__find_by_name_kind(btf,
-+							fixup_ldx->strct,
-+							BTF_KIND_STRUCT);
-+			if (btf_id < 0)
-+				goto next_ldx;
-+
-+			tp = btf__type_by_id(btf, btf_id);
-+			memb = btf_members(tp);
-+
-+			for (i = 0; i < btf_vlen(tp); i++) {
-+				name = btf__name_by_offset(btf,
-+							   memb->name_off);
-+				if (strcmp(fixup_ldx->field, name) == 0) {
-+					off = memb->offset / 8;
-+					break;
-+				}
-+				memb++;
-+			}
-+
-+next_ldx:
-+			prog[fixup_ldx->insn_idx].off = off;
-+			fixup_ldx++;
-+
-+		} while (fixup_ldx->strct);
-+
-+		btf__free(btf);
-+	}
- }
- 
- struct libcap {
-@@ -1131,7 +1183,7 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
- 		opts.log_level = 4;
- 	opts.prog_flags = pflags;
- 
--	if (prog_type == BPF_PROG_TYPE_TRACING && test->kfunc) {
-+	if (test->kfunc) {
- 		int attach_btf_id;
- 
- 		attach_btf_id = libbpf_find_vmlinux_btf_id(test->kfunc,
-diff --git a/tools/testing/selftests/bpf/verifier/lsm_cgroup.c b/tools/testing/selftests/bpf/verifier/lsm_cgroup.c
-new file mode 100644
-index 000000000000..af0efe783511
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verifier/lsm_cgroup.c
-@@ -0,0 +1,34 @@
-+#define SK_WRITABLE_FIELD(tp, field, size, res) \
-+{ \
-+	.descr = field, \
-+	.insns = { \
-+		/* r1 = *(u64 *)(r1 + 0) */ \
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, 0), \
-+		/* r1 = *(u64 *)(r1 + offsetof(struct socket, sk)) */ \
-+		BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, 0), \
-+		/* r2 = *(u64 *)(r1 + offsetof(struct sock, <field>)) */ \
-+		BPF_LDX_MEM(size, BPF_REG_2, BPF_REG_1, 0), \
-+		/* *(u64 *)(r1 + offsetof(struct sock, <field>)) = r2 */ \
-+		BPF_STX_MEM(size, BPF_REG_1, BPF_REG_2, 0), \
-+		BPF_MOV64_IMM(BPF_REG_0, 1), \
-+		BPF_EXIT_INSN(), \
-+	}, \
-+	.result = res, \
-+	.errstr = res ? "no write support to 'struct sock' at off" : "", \
-+	.prog_type = BPF_PROG_TYPE_LSM, \
-+	.expected_attach_type = BPF_LSM_CGROUP, \
-+	.kfunc = "socket_post_create", \
-+	.fixup_ldx = { \
-+		{ "socket", "sk", 1 }, \
-+		{ tp, field, 2 }, \
-+		{ tp, field, 3 }, \
-+	}, \
-+}
-+
-+SK_WRITABLE_FIELD("sock_common", "skc_family", BPF_H, REJECT),
-+SK_WRITABLE_FIELD("sock", "sk_sndtimeo", BPF_DW, REJECT),
-+SK_WRITABLE_FIELD("sock", "sk_priority", BPF_W, ACCEPT),
-+SK_WRITABLE_FIELD("sock", "sk_mark", BPF_W, ACCEPT),
-+SK_WRITABLE_FIELD("sock", "sk_pacing_rate", BPF_DW, REJECT),
-+
-+#undef SK_WRITABLE_FIELD
+[1] https://www.freedesktop.org/software/libmbim/
+[2] https://www.freedesktop.org/software/ModemManager/
+[3] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/582
+[4] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/523
+
+V6:
+- Remove unneeded initializations and bit masks.
+- Remove t7xx_common.h file.
+- Add comment to circular linking in GPD list.
+- Use min instead of min_t.
+- Use int for local indexes instead of short or char.
+- Update the commit message in CLDMA patch about dependencies on core patch.
+- Add space between contributor name and email address.
+- Rename registers with double negatives
+  e.g. DIS_ASPM_LOWPWR_CLR_0 -> ENABLE_ASPM_LOWPWR.
+- Fix a race condition in pci sleep resource locking.
+- Initialize interrupts with t7xx_pcie_mac_set_int() instead of 'clear'.
+- Remove duplicate spin_lock_init(&md->exp_lock).
+- Remove .ndo_select_queue callback due to singular TX queue.
+- Remove call to deprecated netif_rx_any_context().
+- Fix include guard name in t7xx_hif_dpmaif.h.
+- Remove unused q_num parameter in DPMAIF functions.
+- Do not serialize the drb_wr_idx write in t7xx_dpmaif_add_skb_to_ring()
+  and the read from t7xx_txq_drb_wr_available().
+- Fix potential leak in t7xx_dpmaif_add_skb_to_ring().
+- Unionize:
+    DRB structs: msg and pd.
+    PIT structs: msg and pd.
+- Replace list_head & spinlock with skb_buff_head in dpmaif_tx_queue.
+- Remove rx_length_th check in TX WWAN port flow.
+- Remove wwan_remove_port() from the critical section in WWAN port uninit.
+- Use skb_end_pointer() to avoid conditional compilation.
+- Simplify the loop in t7xx_port_ctrl_tx() by checking the buffer offset
+  instead of calculating the number of required packets.
+- Remove the code for unused channel PORT_CH_STATUS_RX.
+- Remove bit flags from ports. Ports can check chan_enable instead of the
+  PORT_F_RX_ALLOW_DROP flag.
+- Use INVALID_SEQ_NUM to identify the first seq number.
+- Rename port_static to port_conf and ports_private to ports.
+- Implement t7xx_port_send_skb() and t7xx_port_send_ctl_skb() in a layered
+  approach to reduce duplicated code and simplify the CCCI header handling.
+- Move wwan_port_rx() call from port-proxy to WWAN port.
+- Rename t7xx_port_recv_skb() to t7xx_port_enqueue_skb().
+- Move control message parsing logic from port-proxy to control port,
+  preserve the endianness when parsing the message and make port-proxy
+  export a function to enable/disable ports.
+- Use flexible arrays for:
+    port-proxy ports.
+    payload data in t7xx_fsm_event, port_msg, and mtk_runtime_feature.
+
+v5:
+- Update Intel's copyright years to 2021-2022.
+- Remove circular dependency between DPMAIF HW (07) and HIF (08).
+- Keep separate patches for CLDMA (02) and Core (03)
+  but improve the code split by decoupling CLDMA from
+  modem ops and cleaning up t7xx_common.h.
+- Rename ID_CLDMA0/ID_CLDMA1 to CLDMA_ID_AP/CLDMA_ID_MD.
+- Consistently use CLDMA's ring_lock to protect tr_ring.
+- Free resources first and then print messages.
+- Implement suggested name changes.
+- Do not explicitly include dev_printk.h.
+- Remove redundant dev_err()s.
+- Fix possible memory leak during probe.
+- Remove infrastructure for legacy interrupts.
+- Remove unused macros and variables, including those that
+  can be replaced with constants.
+- Remove PCIE_MAC_MSIX_MSK_SET macro which is duplicated code.
+- Refactor __t7xx_pci_pm_suspend() for clarity.
+- Refactor t7xx_cldma_rx_ring_init() and t7xx_cldma_tx_ring_init().
+- Do not use & for function callbacks.
+- Declare a structure to access skb->cb[] data.
+- Use skb_put_data instead of memcpy.
+- No need to use kfree_sensitive.
+- Use dev_kfree_skb() instead of kfree_skb().
+- Refactor t7xx_prepare_device_rt_data() to remove potential leaks,
+  avoid unneeded memset and keep rt_data and packet_size updates
+  inside the same 'if' block.
+- Set port's rx_length_th back to 0 during uninit.
+- Remove unneeded 'blocking' parameter from t7xx_cldma_send_skb().
+- Return -EIO in t7xx_cldma_send_skb() if the queue is inactive.
+- Refactor t7xx_cldma_qs_are_active() to use pci_device_is_present().
+- Simplify t7xx_cldma_stop_q() and rename it to t7xx_cldma_stop_all_qs().
+- Fix potential leaks in t7xx_cldma_init().
+- Improve error handling in fsm_append_event and fsm_routine_starting().
+- Propagate return codes from fsm_append_cmd() and t7xx_fsm_append_event().
+- Refactor fsm_wait_for_event() to avoid unnecessary sleep.
+- Create the WWAN ports and net device only after the modem is in
+  the ready state.
+- Refactor t7xx_port_proxy_recv_skb() and port_recv_skb().
+- Rename t7xx_port_check_rx_seq_num() as t7xx_port_next_rx_seq_num()
+  and fix the seq_num logic to handle overflows.
+- Declare seq_nums as u16 instead of short.
+- Use unsigned int for local indexes.
+- Use min_t instead of the ternary operator.
+- Refactor the loop in t7xx_dpmaif_rx_data_collect() to avoid a dead
+  condition check.
+- Use a bitmap (bat_bitmap) instead of an array to keep track of
+  the DRB status. Used in t7xx_dpmaif_avail_pkt_bat_cnt().
+- Refactor t7xx_dpmaif_tx_send_skb() to protect tx_submit_skb_cnt
+  with spinlock and remove the misleading tx_drb_available variable.
+- Consolidate bit operations before endianness conversion.
+- Use C bit fields in dpmaif_drb_skb struct which is not HW related.
+- Add back the que_started check in t7xx_select_tx_queue().
+- Create a helper function to get the DRB count.
+- Simplify the use of 'usage' during t7xx_ccmni_close().
+- Enforce CCMNI MTU selection with BUILD_BUG_ON() instead of a comment.
+- Remove t7xx_ccmni_ctrl->capability parameter which remains constant.
+
+v4:
+- Implement list_prev_entry_circular() and list_next_entry_circular() macros.
+- Remove inline from all c files.
+- Define ioread32_poll_timeout_atomic() helper macro.
+- Fix return code for WWAN port tx op.
+- Allow AT commands fragmentation same as MBIM commands.
+- Introduce t7xx_common.h file in the first patch.
+- Rename functions and variables as suggested in v3.
+- Reduce code duplication by creating fsm_wait_for_event() helper function.
+- Remove unneeded dev_err in t7xx_fsm_clr_event().
+- Remove unused variable last_state from struct t7xx_fsm_ctl.
+- Remove unused variable txq_select_times from struct dpmaif_ctrl.
+- Replace ETXTBSY with EBUSY.
+- Refactor t7xx_dpmaif_rx_buf_alloc() to remove an unneeded allocation.
+- Fix potential leak at t7xx_dpmaif_rx_frag_alloc().
+- Simplify return value handling at t7xx_dpmaif_rx_start().
+- Add a helper to handle the common part of CCCI header initialization.
+- Make sure interrupts are enabled during PM resume.
+- Add a parameter to t7xx_fsm_append_cmd() to tell if it is in interrupt context.
+
+v3:
+- Avoid unneeded ping-pong changes between patches.
+- Use t7xx_ prefix in functions.
+- Use t7xx_ prefix in generic structs where mtk_ or ccci prefix was used.
+- Update Authors/Contributors header.
+- Remove skb pools used for control path.
+- Remove skb pools used for RX data path.
+- Do not use dedicated TX queue for ACK-only packets.
+- Remove __packed attribute from GPD structs.
+- Remove the infrastructure for test and debug ports.
+- Use the skb control buffer to store metadata.
+- Get the IP packet type from RX PIT.
+- Merge variable declaration and simple assignments.
+- Use preferred coding patterns.
+- Remove global variables.
+- Declare HW facing structure members as little endian.
+- Rename goto tags to describe what is going to be done.
+- Do not use variable length arrays.
+- Remove unneeded blank lines source code and kdoc headers.
+- Use C99 initialization format for port-proxy ports.
+- Clean up comments.
+- Review included headers.
+- Better use of 100 column limit.
+- Remove unneeded mb() in CLDMA.
+- Remove unneeded spin locks and atomics.
+- Handle read_poll_timeout error.
+- Use dev_err_ratelimited() where required.
+- Fix resource leak when requesting IRQs.
+- Use generic DEFAULT_TX_QUEUE_LEN instead custom macro.
+- Use ETH_DATA_LEN instead of defining WWAN_DEFAULT_MTU.
+- Use sizeof() instead of defines when the size of structures is required.
+- Remove unneeded code from netdev:
+    No need to configure HW address length
+    No need to implement .ndo_change_mtu
+    Remove random address generation
+- Code simplifications by using kernel provided functions and macros such as:
+    module_pci_driver
+    PTR_ERR_OR_ZERO
+    for_each_set_bit
+    pci_device_is_present
+    skb_queue_purge
+    list_prev_entry
+    __ffs64
+
+v2:
+- Replace pdev->driver->name with dev_driver_string(&pdev->dev).
+- Replace random_ether_addr() with eth_random_addr().
+- Update kernel-doc comment for enum data_policy.
+- Indicate the driver is 'Supported' instead of 'Maintained'.
+- Fix the Signed-of-by and Co-developed-by tags in the patches.
+- Added authors and contributors in the top comment of the src files.
+
+Ricardo Martinez (13):
+  list: Add list_next_entry_circular() and list_prev_entry_circular()
+  net: wwan: t7xx: Add control DMA interface
+  net: wwan: t7xx: Add core components
+  net: wwan: t7xx: Add port proxy infrastructure
+  net: wwan: t7xx: Add control port
+  net: wwan: t7xx: Add AT and MBIM WWAN ports
+  net: wwan: t7xx: Data path HW layer
+  net: wwan: t7xx: Add data path interface
+  net: wwan: t7xx: Add WWAN network interface
+  net: wwan: t7xx: Introduce power management
+  net: wwan: t7xx: Runtime PM
+  net: wwan: t7xx: Device deep sleep lock/unlock
+  net: wwan: t7xx: Add maintainers and documentation
+
+ .../networking/device_drivers/wwan/index.rst  |    1 +
+ .../networking/device_drivers/wwan/t7xx.rst   |  120 ++
+ MAINTAINERS                                   |   11 +
+ drivers/net/wwan/Kconfig                      |   14 +
+ drivers/net/wwan/Makefile                     |    1 +
+ drivers/net/wwan/t7xx/Makefile                |   20 +
+ drivers/net/wwan/t7xx/t7xx_cldma.c            |  281 ++++
+ drivers/net/wwan/t7xx/t7xx_cldma.h            |  180 +++
+ drivers/net/wwan/t7xx/t7xx_dpmaif.c           | 1283 ++++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_dpmaif.h           |  179 +++
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.c        | 1357 +++++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.h        |  141 ++
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif.c       |  574 +++++++
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h       |  208 +++
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c    | 1246 +++++++++++++++
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h    |  116 ++
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c    |  691 +++++++++
+ drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.h    |   79 +
+ drivers/net/wwan/t7xx/t7xx_mhccif.c           |  122 ++
+ drivers/net/wwan/t7xx/t7xx_mhccif.h           |   37 +
+ drivers/net/wwan/t7xx/t7xx_modem_ops.c        |  727 +++++++++
+ drivers/net/wwan/t7xx/t7xx_modem_ops.h        |   88 ++
+ drivers/net/wwan/t7xx/t7xx_netdev.c           |  423 +++++
+ drivers/net/wwan/t7xx/t7xx_netdev.h           |   55 +
+ drivers/net/wwan/t7xx/t7xx_pci.c              |  761 +++++++++
+ drivers/net/wwan/t7xx/t7xx_pci.h              |  120 ++
+ drivers/net/wwan/t7xx/t7xx_pcie_mac.c         |  262 ++++
+ drivers/net/wwan/t7xx/t7xx_pcie_mac.h         |   31 +
+ drivers/net/wwan/t7xx/t7xx_port.h             |  139 ++
+ drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c    |  273 ++++
+ drivers/net/wwan/t7xx/t7xx_port_proxy.c       |  510 +++++++
+ drivers/net/wwan/t7xx/t7xx_port_proxy.h       |   98 ++
+ drivers/net/wwan/t7xx/t7xx_port_wwan.c        |  180 +++
+ drivers/net/wwan/t7xx/t7xx_reg.h              |  350 +++++
+ drivers/net/wwan/t7xx/t7xx_state_monitor.c    |  550 +++++++
+ drivers/net/wwan/t7xx/t7xx_state_monitor.h    |  135 ++
+ include/linux/list.h                          |   26 +
+ 37 files changed, 11389 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/wwan/t7xx.rst
+ create mode 100644 drivers/net/wwan/t7xx/Makefile
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_cldma.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_cldma.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_dpmaif.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_dpmaif.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_cldma.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_mhccif.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_mhccif.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_modem_ops.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_modem_ops.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_netdev.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_netdev.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pci.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pci.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pcie_mac.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_pcie_mac.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_ctrl_msg.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_proxy.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_proxy.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_wwan.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_reg.h
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_state_monitor.c
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_state_monitor.h
+
 -- 
-2.35.1.1178.g4f1659d476-goog
+2.17.1
 
