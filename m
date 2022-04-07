@@ -2,144 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 955344F849A
-	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 18:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 827DE4F849C
+	for <lists+netdev@lfdr.de>; Thu,  7 Apr 2022 18:10:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345586AbiDGQM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 12:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S1345596AbiDGQMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 12:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231956AbiDGQMZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 12:12:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38CB76A415;
-        Thu,  7 Apr 2022 09:10:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEB2A61F44;
-        Thu,  7 Apr 2022 16:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BAEBC385A4;
-        Thu,  7 Apr 2022 16:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649347816;
-        bh=i/wI2nzdbQUEB94WRWW6f8QcGZr6oohGA822sn6gZF4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eVbBbFbyiyzgR20zLG+AnfXVrI5nEGG79xuOPOVMalMxhIGSGEVoKz4Zk0uK6hYA9
-         ZjXmnPLmqX+MvdzV+QsQYZfEkumyWyeOCvicUvezw+zRZBxNE+Awinh1hRxGnvb6R0
-         CE2CEqtYGmJyCucjKbJiuRfKZISkJABZP6d1a2NTJBVEqrwtkZCa4wq1S/9msusv2d
-         h8wmCqOxNpk6rbbTrVQApUZhu+ZMHOzRREJlW6GwcNwIs8d/9JF3sTQGds6ptSAsAO
-         4ia9BQBibsx6GwI+Pql5oR6OVE4ikKAodu2gV9J8J9TRcIpghQvpJiGxjm7aUYDN/J
-         PSHcKxS6aFCRA==
-Date:   Thu, 7 Apr 2022 19:10:12 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Anna Schumaker <anna@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christian Benvenuti <benve@cisco.com>,
-        Potnuri Bharat Teja <bharat@chelsio.com>,
-        Bernard Metzler <bmt@zurich.ibm.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Keith Busch <kbusch@kernel.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-cifs@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-nvme@lists.infradead.org,
-        linux-rdma@vger.kernel.org, Max Gurtovoy <mgurtovoy@nvidia.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        Mustafa Ismail <mustafa.ismail@intel.com>,
-        Nelson Escobar <neescoba@cisco.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, rds-devel@oss.oracle.com,
-        Sagi Grimberg <sagi@grimberg.me>,
-        samba-technical@lists.samba.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Selvin Xavier <selvin.xavier@broadcom.com>,
-        Steve French <sfrench@samba.org>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        target-devel@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Yishai Hadas <yishaih@nvidia.com>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [PATCH v2] RDMA: Split kernel-only global device caps from
- uverbs device caps
-Message-ID: <Yk8M5C/7YO7F9sk2@unreal>
-References: <0-v2-22c19e565eef+139a-kern_caps_jgg@nvidia.com>
- <ca06d463-cf68-4b6f-8432-a86e34398bf0@acm.org>
- <20220407155244.GP2120790@nvidia.com>
+        with ESMTP id S231956AbiDGQMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 12:12:53 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793647665D
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 09:10:52 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id r13so8545739wrr.9
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 09:10:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=message-id:date:mime-version:user-agent:reply-to:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=x3pmqaNa0PtoIU8gER1caXrBLSF1ODzqLerDmxXVK74=;
+        b=MgRcFKvzVOm0BRJ319dcP8h1WJEwcpMeVvWHzlMWQr0kErX58XxhIu7uM1vZ0ppypR
+         LZhIW2MhkAeb1lep7tKBBvc/Bx1daATg6H0d8iJcak05ID3LNkRl1I21jJDE8tnwdywY
+         5x8nJQHS4JNm8I7KCMbjnWQOx2ji0VycJiunDlt9/CVHtp6Q9JdkK41obWdoNhMd68cX
+         OwUXm0x/HcMIAcTbwhZsxI3dNpA2/9q1teuEl9daUDS0hPYh/+n/ksmmi+K92PMhUH9b
+         4jVWenunsBgb7yAwVgMqQotVzS0oouIz+ZuEXQFXB3cXWxJ/oPdgElH9k8HCXeaA997o
+         Aq9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
+         :subject:content-language:to:cc:references:from:organization
+         :in-reply-to:content-transfer-encoding;
+        bh=x3pmqaNa0PtoIU8gER1caXrBLSF1ODzqLerDmxXVK74=;
+        b=S+LWIa1grpSG5gNL/g9IsLGjORVmtLna7TB6vGCmgktM3ubMXbqciB8dRbth8oQgDf
+         4IOtB60wQ7C/HeEPfKBwOImo7BtcyI3e4XF46gYecSoncXQMWcKfoWimsXYr8/+5urfb
+         I8yZXqlSVObXQyTvz6u9I7zlzzJCTaIJZmzzY2lfbugn1NuUjv7OIkTtZyjX/+DVMzT3
+         afq49ekYFCSxQbqjaRLGLBFRXxz2hVh40cvzOXZeTMpUFqqjumX2s4YQinUQyq3u4iCS
+         antEuplkWY7b967jt5TbDb43f91ozQiIIBGlprnqvqEeZqJq43rrcOiyWs0H+Lo8c86u
+         9GOw==
+X-Gm-Message-State: AOAM532JaOx7amljXa9mChE/0TCJsiBO4vo3qOshpYo8MPs5xAaAeIxd
+        pIyfjh5v0LFBMzU1/r8AEKNFOw==
+X-Google-Smtp-Source: ABdhPJw3v3eQrWyaBWPZCs/0STYwsAh4zpwNJHkq77RkY9jCBCfXuw86xtXgxD9aX1BYf7EwzrEKNg==
+X-Received: by 2002:adf:f90e:0:b0:203:e0fd:e9af with SMTP id b14-20020adff90e000000b00203e0fde9afmr11446956wrr.154.1649347850954;
+        Thu, 07 Apr 2022 09:10:50 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:6115:f172:4f40:31e9? ([2a01:e0a:b41:c160:6115:f172:4f40:31e9])
+        by smtp.gmail.com with ESMTPSA id f9-20020adff589000000b002060fcd92e9sm11380422wro.14.2022.04.07.09.10.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Apr 2022 09:10:50 -0700 (PDT)
+Message-ID: <59150cd5-9950-2479-a992-94dcdaa5e63c@6wind.com>
+Date:   Thu, 7 Apr 2022 18:10:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220407155244.GP2120790@nvidia.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH] ipv6:fix crash when idev is NULL
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        kongweibin <kongweibin2@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Vasily Averin <vvs@virtuozzo.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, rose.chen@huawei.com,
+        liaichun@huawei.com
+References: <20220407112512.2099221-1-kongweibin2@huawei.com>
+ <CANn89iLx5HRnyRShNatPveTBhdjoQTxaRn-8_gYk-6_NuSCiOQ@mail.gmail.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <CANn89iLx5HRnyRShNatPveTBhdjoQTxaRn-8_gYk-6_NuSCiOQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 07, 2022 at 12:52:44PM -0300, Jason Gunthorpe wrote:
-> On Wed, Apr 06, 2022 at 12:57:31PM -0700, Bart Van Assche wrote:
-> > On 4/6/22 12:27, Jason Gunthorpe wrote:
-> > > +enum ib_kernel_cap_flags {
-> > > +	/*
-> > > +	 * This device supports a per-device lkey or stag that can be
-> > > +	 * used without performing a memory registration for the local
-> > > +	 * memory.  Note that ULPs should never check this flag, but
-> > > +	 * instead of use the local_dma_lkey flag in the ib_pd structure,
-> > > +	 * which will always contain a usable lkey.
-> > > +	 */
-> > > +	IBK_LOCAL_DMA_LKEY = 1 << 0,
-> > > +	/* IB_QP_CREATE_INTEGRITY_EN is supported to implement T10-PI */
-> > > +	IBK_INTEGRITY_HANDOVER = 1 << 1,
-> > > +	/* IB_ACCESS_ON_DEMAND is supported during reg_user_mr() */
-> > > +	IBK_ON_DEMAND_PAGING = 1 << 2,
-> > > +	/* IB_MR_TYPE_SG_GAPS is supported */
-> > > +	IBK_SG_GAPS_REG = 1 << 3,
-> > > +	/* Driver supports RDMA_NLDEV_CMD_DELLINK */
-> > > +	IBK_ALLOW_USER_UNREG = 1 << 4,
-> > > +
-> > > +	/* ipoib will use IB_QP_CREATE_BLOCK_MULTICAST_LOOPBACK */
-> > > +	IBK_BLOCK_MULTICAST_LOOPBACK = 1 << 5,
-> > > +	/* iopib will use IB_QP_CREATE_IPOIB_UD_LSO for its QPs */
-> > > +	IBK_UD_TSO = 1 << 6,
-> > > +	/* iopib will use the device ops:
-> > > +	 *   get_vf_config
-> > > +	 *   get_vf_guid
-> > > +	 *   get_vf_stats
-> > > +	 *   set_vf_guid
-> > > +	 *   set_vf_link_state
-> > > +	 */
-> > > +	IBK_VIRTUAL_FUNCTION = 1 << 7,
-> > > +	/* ipoib will use IB_QP_CREATE_NETDEV_USE for its QPs */
-> > > +	IBK_RDMA_NETDEV_OPA = 1 << 8,
-> > > +};
-> > 
-> > Has it been considered to use the kernel-doc syntax? This means moving all
-> > comments above "enum ib_kernel_cap_flags {".
-> 
-> TBH I'm not a huge fan of kdoc for how wordy it is:
-> 
->  /** @IBK_RDMA_NETDEV_OPA: ipoib will use IB_QP_CREATE_NETDEV_USE for its QPs */
->  IBK_RDMA_NETDEV_OPA = 1 << 8,
-> 
-> Is the shortest format and still a bit awkward.
-> 
-> Given that we don't have a proper kdoc for rdma I haven't been putting
-> much energy there.
-> 
-> If someone came with patches to make a kdoc chapter and start to
-> organize it nicely I could see enforcing kdoc format..
 
-Do you see any value in kdoc?
-
-I personally didn't find it useful for kernel at all.
+Le 07/04/2022 à 16:08, Eric Dumazet a écrit :
+[snip]
+> 
+> And CC patch author for feedback.
+Thanks Eric.
 
 > 
-> Jason
+> In this case I suspect:
+> 
+> commit ccd27f05ae7b8ebc40af5b004e94517a919aa862
+> Author: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Date:   Tue Jul 6 11:13:35 2021 +0200
+> 
+>     ipv6: fix 'disable_policy' for fwd packets
+I agree.
+
+> 
+> 
+> 
+>> ---
+>>  net/ipv6/ip6_output.c | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>
+>> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+>> index 54cabf1c2..347b5600d 100644
+>> --- a/net/ipv6/ip6_output.c
+>> +++ b/net/ipv6/ip6_output.c
+>> @@ -495,6 +495,9 @@ int ip6_forward(struct sk_buff *skb)
+>>         u32 mtu;
+>>
+>>         idev = __in6_dev_get_safely(dev_get_by_index_rcu(net, IP6CB(skb)->iif));
+>> +       if (!idev)
+>> +               goto drop;
+>> +
+>>         if (net->ipv6.devconf_all->forwarding == 0)
+>>                 goto error;
+
+Dropping packet in this case may introduce another regression, because there was
+no drop before commit ccd27f05ae7b ("ipv6: fix 'disable_policy' for fwd packets").
+
+Maybe something like this:
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -485,7 +485,7 @@ int ip6_forward(struct sk_buff *skb)
+                goto drop;
+
+        if (!net->ipv6.devconf_all->disable_policy &&
+-           !idev->cnf.disable_policy &&
++           (!idev || !idev->cnf.disable_policy) &&
+            !xfrm6_policy_check(NULL, XFRM_POLICY_FWD, skb)) {
+                __IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
+                goto drop;
+
+I could submit it formally tomorrow.
+
+
+Regards,
+Nicolas
