@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B77E4F8E9E
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09BA74F8E8D
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:27:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234188AbiDHEM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 00:12:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
+        id S234171AbiDHEMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 00:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234105AbiDHEMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 00:12:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785BE1EB80B
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 21:10:15 -0700 (PDT)
+        with ESMTP id S229725AbiDHEMP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 00:12:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4B41EA5E7;
+        Thu,  7 Apr 2022 21:10:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E9F67CE2A03
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 04:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 589B6C385AD;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DABCD61E16;
+        Fri,  8 Apr 2022 04:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 346FDC385A6;
         Fri,  8 Apr 2022 04:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649391012;
-        bh=CJOb3rkIKnfWt/V1zNi4AdNSI7fi2M1t/klz5o9I/IM=;
+        bh=s5hllkVWyKG3dwiRu2x53s6FttJzBDWJDsJdzlkdWME=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=n17g0ejp40vZAB7NPq2Eem69sF3+U0r/CUnp+2cKbp6GJdQ5/DwxsKVVpGMt3/vA3
-         l8YW3S+4DF/ti9MvtOt/9w05TozpkBHFkhEmzg48uj74NGFyUnzwam0P5c3XWJyZPf
-         orf7PMvK5ZvVl7Pj+xUvzE5yHQ73hd6QGq/PgNrxNp6kedoQkF+sIOsSfWddyGwHTe
-         a8D7UMIgNh4mrluVLc/NoDOVBue47NFY++KvVFuQUww9pn6EtuXB5a9uFonVI1BzzH
-         JRFPQrmuZD6azm0Xfi6otdQjpfsTu6CN+d0YQUWCjj0lTqSQhygDs7DvCS+WmCezo9
-         PG68SePf8Sh+g==
+        b=tQtUUgGg5F+MPr7OtlF15gjaq27E6Zt5oTtYbUl2IgZ5J+XKJdW2J79ZC2vsqr9X8
+         p5JAhzAbMHSWGHfcw0v21guqZ1gk6W3U7dFZkvfvQtwhChgngCotkIyRL4Nq5+sSLA
+         JG6oK/EWssmOZutGwnPZqTkXnK+7VIBV3gpyXO/aFgZKu0Hxfv/78DHusX3UE4C/BU
+         h2BzgHPPyJQ9gh9+tHFcN9gwCKrDl49Xzngz5iaaa85nADt0A2xfWQ1ePEQJ7IW2Zu
+         3/Fq6VK2PgEtF/YA3GIGhKjTGakuFDnemmdHxcGcaz6wZ5adJrKQQm/a3wiFRM1Fiv
+         2q/eZALTS+MmQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 34BF7E8DCCE;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 18876E8DBDD;
         Fri,  8 Apr 2022 04:10:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3] net/ethernet : set default assignment identifier to
- NET_NAME_ENUM
+Subject: Re: [PATCH net-next] sfc: Stop using iommu_present()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164939101221.29309.13533045214799771590.git-patchwork-notify@kernel.org>
+Message-Id: <164939101209.29309.3949750124677153031.git-patchwork-notify@kernel.org>
 Date:   Fri, 08 Apr 2022 04:10:12 +0000
-References: <20220406093635.1601506-1-iwienand@redhat.com>
-In-Reply-To: <20220406093635.1601506-1-iwienand@redhat.com>
-To:     Ian Wienand <iwienand@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
-        teg@jklm.no, dh.herrmann@gmail.com
+References: <7350f957944ecfce6cce90f422e3992a1f428775.1649166055.git.robin.murphy@arm.com>
+In-Reply-To: <7350f957944ecfce6cce90f422e3992a1f428775.1649166055.git.robin.murphy@arm.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,19 +63,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed,  6 Apr 2022 19:36:36 +1000 you wrote:
-> As noted in the original commit 685343fc3ba6 ("net: add
-> name_assign_type netdev attribute")
+On Tue,  5 Apr 2022 14:40:55 +0100 you wrote:
+> Even if an IOMMU might be present for some PCI segment in the system,
+> that doesn't necessarily mean it provides translation for the device
+> we care about. It appears that what we care about here is specifically
+> whether DMA mapping ops involve any IOMMU overhead or not, so check for
+> translation actually being active for our device.
 > 
->   ... when the kernel has given the interface a name using global
->   device enumeration based on order of discovery (ethX, wlanY, etc)
->   ... are labelled NET_NAME_ENUM.
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [v3] net/ethernet : set default assignment identifier to NET_NAME_ENUM
-    https://git.kernel.org/netdev/net-next/c/e9f656b7a214
+  - [net-next] sfc: Stop using iommu_present()
+    https://git.kernel.org/netdev/net-next/c/6a62924c0a81
 
 You are awesome, thank you!
 -- 
