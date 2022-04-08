@@ -2,159 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 151024F9CCB
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:32:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E152E4F9CDA
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:38:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238759AbiDHSeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 14:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
+        id S238788AbiDHSkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 14:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237425AbiDHSeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:34:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B335EEE4CD
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 11:31:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EB2562247
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 18:31:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF69CC385AD;
-        Fri,  8 Apr 2022 18:31:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649442704;
-        bh=jZvOuKYXVGHVKDAQXzZ/c+sBFJPdAYysZblbHypCpk4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iABrnIFW0+KFhs1AEhPRA6UL4bRXD+y9gBZ+Mp5iFgNVdAtExgdwofr8idjF5yh1M
-         YLfxzXu5Ne6RRLdCKKytu7TRWcKkdbXPW4gTC7CfvSvOkRt1QzL7hk3oflgjPMDOHL
-         2JEwiQYlT0gPUyspnSaH52KrVhsO/2usMbYTs0wysCPjPYMzBddJkuNSeFJoqANYsm
-         AJFrkNM1W2xs+WLZsQ1e5G7I6CA6I4oj3VIWKPLf8AfEmHSGLr7VMetrpBU6f0mudH
-         fwhC2Ovo9Wv77mak1GnpdoVTlBofDx3xpLA7Vg7WF6RJzHVXeTVQFVCnxu8pfT2MzU
-         pYNI4rqh2dfVQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, borisp@nvidia.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        vfedorenko@novek.ru, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 11/11] tls: rx: jump out for cases which need to leave skb on list
-Date:   Fri,  8 Apr 2022 11:31:34 -0700
-Message-Id: <20220408183134.1054551-12-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220408183134.1054551-1-kuba@kernel.org>
-References: <20220408183134.1054551-1-kuba@kernel.org>
+        with ESMTP id S229909AbiDHSkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:40:19 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717D22DA8B;
+        Fri,  8 Apr 2022 11:38:12 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id e4so9726653oif.2;
+        Fri, 08 Apr 2022 11:38:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=j9URgvci6d6dMD9NFQmmsAHkmfmb5Enalauf6tbhJOA=;
+        b=jiPIr7GoWpN9FWlADHmNfwO/MmozypRL1uxibeNbh691ft2PekZcsPtGCCk9WvclG5
+         QYQoOR/hba/9yTNagQEEDMFQvLCvPuGQtw+o127QmSBUicvAqu62MmF6ctyTKbAlPs6b
+         yzDjJU+NFHY6dPV8dfso6Kt2vrVm8w0+yZaOSzr3Z+B/GbLnlC38yb9QGHWpQzYa2aud
+         ajWVzJJKKNmWhipgING1JXq7oRvn+q0G4ih5eSE8iWvJ5QBze+PMJCBThTNBC5Jv3vqk
+         niBezhG7WHje1KLJvsieO/0jiRGW+vFsM8NK8oPKUIOOZdcAu/u/ZjdQQfH6hImgh+6n
+         Fbag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=j9URgvci6d6dMD9NFQmmsAHkmfmb5Enalauf6tbhJOA=;
+        b=k2GUap/BeRlomnu5/EQHFSapzu1YdnUdMjWPk8sZ8x3P8bdAQ8cI9zinLUGdN6offb
+         rKsL5TZde4LbJizqPFnq1MjyZvd9THupscroJksjvBslChVI2WZYsa0Wbo2qfk5p42wa
+         LmR4NV/1pYcY8oPU9qkycvpaW7zEUmaWfgqtYIkflYiVBM9lVVphccOH6qu/TZpJ12IM
+         6w/FwXvATbhsbtQZLnOTwgfkXukF6SlX7a41FgtrBdoGhRlsT5+oP6k29Pl5/Zc7YLFH
+         rXNgl2fK1np1FiVi7JtkeNNkmO1KrWRDuztBLYrEvHrpLAV7KCN8az0LiK3yGnH29aZ7
+         Fm8Q==
+X-Gm-Message-State: AOAM533Or0dQsmkUQfRTcUsjvurGkDU8/M5sESGI7peE+vpr9CLHwcwP
+        Qd6h409rJOCwMvn/vk2EHj4=
+X-Google-Smtp-Source: ABdhPJwqrefsiW7isgWIaV3ZOtcz/4FusHzdZTTS/dCv7uqj1spWsUdkNMYrSPAU/W4EM+DJxXdYaQ==
+X-Received: by 2002:a05:6808:3ba:b0:2ec:f2ad:91a4 with SMTP id n26-20020a05680803ba00b002ecf2ad91a4mr512219oie.233.1649443091770;
+        Fri, 08 Apr 2022 11:38:11 -0700 (PDT)
+Received: from t14s.localdomain ([177.220.172.117])
+        by smtp.gmail.com with ESMTPSA id ms25-20020a0568706b9900b000e264986877sm2300773oab.48.2022.04.08.11.38.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Apr 2022 11:38:11 -0700 (PDT)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id 1ECA41DFE33; Fri,  8 Apr 2022 15:38:09 -0300 (-03)
+Date:   Fri, 8 Apr 2022 15:38:09 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>, omosnace@redhat.com
+Subject: Re: [PATCHv2 net] sctp: use the correct skb for
+ security_sctp_assoc_request
+Message-ID: <YlCBEU6r8Oe8h3CK@t14s.localdomain>
+References: <71becb489e51284edf0c11fc15246f4ed4cef5b6.1649337862.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <71becb489e51284edf0c11fc15246f4ed4cef5b6.1649337862.git.lucien.xin@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current invese logic is harder to follow (and adds extra
-tests to the fast path). We have to enumerate all cases which
-need to keep the skb before consuming it. It's simpler to
-jump out of the full record flow as we detect those cases.
+On Thu, Apr 07, 2022 at 09:24:22AM -0400, Xin Long wrote:
+> Yi Chen reported an unexpected sctp connection abort, and it occurred when
+> COOKIE_ECHO is bundled with DATA Fragment by SCTP HW GSO. As the IP header
+> is included in chunk->head_skb instead of chunk->skb, it failed to check
+> IP header version in security_sctp_assoc_request().
+> 
+> According to Ondrej, SELinux only looks at IP header (address and IPsec
+> options) and XFRM state data, and these are all included in head_skb for
+> SCTP HW GSO packets. So fix it by using head_skb when calling
+> security_sctp_assoc_request() in processing COOKIE_ECHO.
+> 
+> v1->v2:
+>   - As Ondrej noticed, chunk->head_skb should also be used for
+>     security_sctp_assoc_established() in sctp_sf_do_5_1E_ca().
+> 
+> Fixes: e215dab1c490 ("security: call security_sctp_assoc_request in sctp_sf_do_5_1D_ce")
+> Reported-by: Yi Chen <yiche@redhat.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-This makes it clear that partial consumption and peek can
-only reach end of the function thru the !zc case so move
-the code up there.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/tls/tls_sw.c | 43 ++++++++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 21 deletions(-)
-
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 71d8082647c8..2e8a896af81a 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -1773,7 +1773,6 @@ int tls_sw_recvmsg(struct sock *sk,
- 	decrypted = 0;
- 	while (len && (decrypted + copied < target || ctx->recv_pkt)) {
- 		struct tls_decrypt_arg darg = {};
--		bool retain_skb = false;
- 		int to_decrypt, chunk;
- 
- 		skb = tls_wait_data(sk, psock, flags & MSG_DONTWAIT, timeo, &err);
-@@ -1833,12 +1832,17 @@ int tls_sw_recvmsg(struct sock *sk,
- 		if (async) {
- 			/* TLS 1.2-only, to_decrypt must be text length */
- 			chunk = min_t(int, to_decrypt, len);
--			goto pick_next_record;
-+leave_on_list:
-+			decrypted += chunk;
-+			len -= chunk;
-+			continue;
- 		}
- 		/* TLS 1.3 may have updated the length by more than overhead */
- 		chunk = rxm->full_len;
- 
- 		if (!darg.zc) {
-+			bool partially_consumed = chunk > len;
-+
- 			if (bpf_strp_enabled) {
- 				err = sk_psock_tls_strp_read(psock, skb);
- 				if (err != __SK_PASS) {
-@@ -1851,39 +1855,36 @@ int tls_sw_recvmsg(struct sock *sk,
- 				}
- 			}
- 
--			if (chunk > len) {
--				retain_skb = true;
-+			if (partially_consumed)
- 				chunk = len;
--			}
- 
- 			err = skb_copy_datagram_msg(skb, rxm->offset,
- 						    msg, chunk);
- 			if (err < 0)
- 				goto recv_end;
- 
--			if (!is_peek) {
--				rxm->offset = rxm->offset + chunk;
--				rxm->full_len = rxm->full_len - chunk;
-+			if (is_peek)
-+				goto leave_on_list;
-+
-+			if (partially_consumed) {
-+				rxm->offset += chunk;
-+				rxm->full_len -= chunk;
-+				goto leave_on_list;
- 			}
- 		}
- 
--pick_next_record:
- 		decrypted += chunk;
- 		len -= chunk;
- 
--		/* For async or peek case, queue the current skb */
--		if (!(async || is_peek || retain_skb)) {
--			skb_unlink(skb, &ctx->rx_list);
--			consume_skb(skb);
-+		skb_unlink(skb, &ctx->rx_list);
-+		consume_skb(skb);
- 
--			/* Return full control message to
--			 * userspace before trying to parse
--			 * another message type
--			 */
--			msg->msg_flags |= MSG_EOR;
--			if (control != TLS_RECORD_TYPE_DATA)
--				goto recv_end;
--		}
-+		/* Return full control message to userspace before trying
-+		 * to parse another message type
-+		 */
-+		msg->msg_flags |= MSG_EOR;
-+		if (control != TLS_RECORD_TYPE_DATA)
-+			break;
- 	}
- 
- recv_end:
--- 
-2.34.1
-
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
