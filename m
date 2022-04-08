@@ -2,69 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F9F4F9153
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 11:06:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0FF74F916F
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 11:08:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbiDHJIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 05:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56410 "EHLO
+        id S232747AbiDHJKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 05:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232512AbiDHJIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 05:08:37 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F1B10075B
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 02:06:33 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id b21so13953968lfb.5
-        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 02:06:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZTgTrO8kYm9f4pu/QJrfNd/0CjpbX6Q1P+5MHmfotqk=;
-        b=i2envguo4E6b4pLxv4XJXo+T/VB92G0yxDyRf6C4Zynw809rRjG4TPgiKQW4iUdAv3
-         0tw/FwIqX9NFRcxNywh1A2CkXqBeDO3z4zaJ1HWc81YOpnbcYUz2HphICFC28YyT8dRd
-         rnL5rspaX1Anjxgpb5DF1oPVz0MJGGmd0zEMMkm7FLJmnWzCBJfKcnhRsqBP3rZAGVnH
-         UJIRsQeHZCYIOFRUoxrDZxh0DeotCHIgMIdzstU0UQd+Nxv5L1bQcdKzr7r++SlNCXpe
-         QgXC9KKAMxXCuoM3kGDuy6rRVjV0ECnVx9rKx3YmL5/KKn+bFgar4zwneztVZ0fKeyNS
-         qQJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZTgTrO8kYm9f4pu/QJrfNd/0CjpbX6Q1P+5MHmfotqk=;
-        b=YEIFKpMOnH7PmuXjbQeBd9NQ5LvU5mmoQRrP8/k4ZTPPPEZsoF6XVR8s2dEtmDBGmU
-         JmBDEXmad352qiE0EoU92axUoilLbuZGer5vdYorwIE98ru2hd2Yv5PDSAz7aUev5zAD
-         xVNOLPvGE+dLJwFXrKy45B1K/7oDDdxMNQ7cnNTy0+7EhYBHNlPssGaiJnKZpdETykmP
-         Az7v+BoAdzJEc56sqaOCWylPiiVA6gVJr3B0O4T3LvpGE1alS7sjorTJ9woSaTLklabK
-         mLcL/cyJ+xJpC3cFgsBfzRovCFUXx5u/7N4NmdSJQ6Z84auEhkvQZaojEzgS+cDwPqf9
-         Blrg==
-X-Gm-Message-State: AOAM530lu03DLQvIoLpVALFx/SG8xvmVT9Wk0OyQMhjCP0gRaSnz+oi1
-        Zq54tCQoQmarrBvTaVY9014wdG6CC4GxnzHHYVy9tg==
-X-Google-Smtp-Source: ABdhPJxJkWFAtOiYY7lH9mD1xE8veW54kPfgnqaEUsfjr6zNHODKBpmFl1OMxUDn+3CZnMq6R8G5Xp9HAI1SN+XENZ8=
-X-Received: by 2002:a05:6512:2627:b0:44a:f55c:ded9 with SMTP id
- bt39-20020a056512262700b0044af55cded9mr12460116lfb.373.1649408791888; Fri, 08
- Apr 2022 02:06:31 -0700 (PDT)
+        with ESMTP id S232718AbiDHJKu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 05:10:50 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3E711D78D;
+        Fri,  8 Apr 2022 02:08:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649408926; x=1680944926;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ZKdzglGLb5Yacw4vNCuGGPl/MNftiFw9nrbMfFNMqZk=;
+  b=Ukrhf/4QMGb5TeJdQbRaq15+T5xcWLGCUVEXxSmVrI5sj+WM5Y2lrJkC
+   y0qxt5WJOWp1EXCWYT3aU8oN5aHbgoQ2fI2Vys2R+fRkhMiTJ3QSSSmKP
+   bLswVnwwuaL5NQ5Fwyt2+osnT1vYP6BXVdPN6pKPfouqZPS6fjuko4X5d
+   GkxJoheI6D5oNhdVnpY7SqeHmcPfb1yo+U4Vbfo6wVk9c7CXyQ1bA7cE1
+   fICFP41lI4D3cT9a06cYCqzjBIxmpjZnz4yCDegHdOzOLBS/APBjyiqAF
+   EuzNjUM5Q4k/dw2us1oTBZ9VpsMcWgQW3I7izmNP3OJvyloEWbKff/Ay5
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="259148802"
+X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
+   d="scan'208";a="259148802"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 02:08:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
+   d="scan'208";a="589158507"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by orsmga001.jf.intel.com with ESMTP; 08 Apr 2022 02:08:42 -0700
+Date:   Fri, 8 Apr 2022 11:08:42 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        magnus.karlsson@intel.com, bjorn@kernel.org,
+        netdev@vger.kernel.org, brouer@redhat.com,
+        alexandr.lobakin@intel.com, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH bpf-next 00/10] xsk: stop softirq processing on full XSK
+ Rx queue
+Message-ID: <Yk/7mkNi52hLKyr6@boxer>
+References: <20220405110631.404427-1-maciej.fijalkowski@intel.com>
+ <8a81791e-342e-be8b-fc96-312f30b44be6@nvidia.com>
 MIME-Version: 1.0
-References: <20220408080045.6497-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220408080045.6497-1-wsa+renesas@sang-engineering.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 8 Apr 2022 11:05:55 +0200
-Message-ID: <CAPDyKFpaMy7ATDm6PCnYBxS_6-TZ-TF+gfHbp_o0nTo-6RaGdQ@mail.gmail.com>
-Subject: Re: [PATCH 0/3] mmc: improve API to make clear {h|s}w_reset is for cards
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-mmc@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        ath10k@lists.infradead.org, bcm-kernel-feedback-list@broadcom.com,
-        brcm80211-dev-list.pdl@broadcom.com,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8a81791e-342e-be8b-fc96-312f30b44be6@nvidia.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,55 +65,144 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Apr 2022 at 10:01, Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
->
-> As discussed in 2020 [1], Ulf and I agreed that it would be easier to
-> understand the {h|s}w_reset mechanisms if it was clear that they are for
-> cards. This series implements that by changing the parameter to mmc_card
-> where apropriate. Also, the callback into host drivers has been renamed
-> to 'card_hw_reset' to make it obvious what exactly the driver is
-> expected to reset.
->
-> I tested it with my Renesas boards, so far no regressions. Buildbots are
-> currently checking the series.
->
-> This series is based on mmc/next as of yesterday. A branch is here:
->
-> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/mmc/reset-api-v2
->
-> Looking forward to comments. Happy hacking,
->
->    Wolfram
->
-> [1] https://lore.kernel.org/all/20200916090121.2350-1-wsa+renesas@sang-engineering.com/
->
-> Wolfram Sang (3):
->   mmc: core: improve API to make clear mmc_hw_reset is for cards
->   mmc: core: improve API to make clear that mmc_sw_reset is for cards
->   mmc: improve API to make clear hw_reset callback is for cards
->
->  drivers/mmc/core/block.c                             |  2 +-
->  drivers/mmc/core/core.c                              | 12 +++++++-----
->  drivers/mmc/core/mmc.c                               |  4 ++--
->  drivers/mmc/core/mmc_test.c                          |  3 +--
->  drivers/mmc/host/bcm2835.c                           |  2 +-
->  drivers/mmc/host/dw_mmc.c                            |  2 +-
->  drivers/mmc/host/meson-mx-sdhc-mmc.c                 |  2 +-
->  drivers/mmc/host/mtk-sd.c                            |  2 +-
->  drivers/mmc/host/sdhci.c                             |  2 +-
->  drivers/mmc/host/sunxi-mmc.c                         |  2 +-
->  drivers/mmc/host/uniphier-sd.c                       |  2 +-
->  drivers/net/wireless/ath/ath10k/sdio.c               |  2 +-
->  .../net/wireless/broadcom/brcm80211/brcmfmac/sdio.c  |  2 +-
->  drivers/net/wireless/marvell/mwifiex/sdio.c          |  2 +-
->  drivers/net/wireless/ti/wlcore/sdio.c                |  2 +-
->  include/linux/mmc/core.h                             |  4 ++--
->  include/linux/mmc/host.h                             |  2 +-
->  17 files changed, 25 insertions(+), 24 deletions(-)
->
+On Thu, Apr 07, 2022 at 01:49:02PM +0300, Maxim Mikityanskiy wrote:
+> On 2022-04-05 14:06, Maciej Fijalkowski wrote:
+> > Hi!
+> > 
+> > This is a revival of Bjorn's idea [0] to break NAPI loop when XSK Rx
+> > queue gets full which in turn makes it impossible to keep on
+> > successfully producing descriptors to XSK Rx ring. By breaking out of
+> > the driver side immediately we will give the user space opportunity for
+> > consuming descriptors from XSK Rx ring and therefore provide room in the
+> > ring so that HW Rx -> XSK Rx redirection can be done.
+> > 
+> > Maxim asked and Jesper agreed on simplifying Bjorn's original API used
+> > for detecting the event of interest, so let's just simply check for
+> > -ENOBUFS within Intel's ZC drivers after an attempt to redirect a buffer
+> > to XSK Rx. No real need for redirect API extension.
+> 
 
-Patch 1 applied for fixes and the two others for next, thanks!
+Hey Maxim!
 
-Kind regards
-Uffe
+> I believe some of the other comments under the old series [0] might be still
+> relevant:
+> 
+> 1. need_wakeup behavior. If need_wakeup is disabled, the expected behavior
+> is busy-looping in NAPI, you shouldn't break out early, as the application
+> does not restart NAPI, and the driver restarts it itself, leading to a less
+> efficient loop. If need_wakeup is enabled, it should be set on ENOBUFS - I
+> believe this is the case here, right?
+
+Good point. We currently set need_wakeup flag for -ENOBUFS case as it is
+being done for failure == true. You are right that we shouldn't be
+breaking the loop on -ENOBUFS if need_wakeup flag is not set on xsk_pool,
+will fix!
+
+> 
+> 2. 50/50 AF_XDP and XDP_TX mix usecase. By breaking out early, you prevent
+> further packets from being XDP_TXed, leading to unnecessary latency
+> increase. The new feature should be opt-in, otherwise such usecases suffer.
+
+Anyone performing a lot of XDP_TX (or XDP_PASS, etc) should be using the
+regular copy-mode driver, while the zero-copy driver should be used when most
+packets are sent up to user-space. For the zero-copy driver, this opt in is not
+necessary. But it sounds like a valid option for copy mode, though could we
+think about the proper way as a follow up to this work?
+
+> 
+> 3. When the driver receives ENOBUFS, it has to drop the packet before
+> returning to the application. It would be better experience if your feature
+> saved all N packets from being dropped, not just N-1.
+
+Sure, I'll re-run tests and see if we can omit freeing the current
+xdp_buff and ntc bump, so that we would come back later on to the same
+entry.
+
+> 
+> 4. A slow or malicious AF_XDP application may easily cause an overflow of
+> the hardware receive ring. Your feature introduces a mechanism to pause the
+> driver while the congestion is on the application side, but no symmetric
+> mechanism to pause the application when the driver is close to an overflow.
+> I don't know the behavior of Intel NICs on overflow, but in our NICs it's
+> considered a critical error, that is followed by a recovery procedure, so
+> it's not something that should happen under normal workloads.
+
+I'm not sure I follow on this one. Feature is about overflowing the XSK
+receive ring, not the HW one, right? Driver picks entries from fill ring
+that were produced by app, so if app is slow on producing those I believe
+this would be rather an underflow of ring, we would simply receive less
+frames. For HW Rx ring actually being full, I think that HW would be
+dropping the incoming frames, so I don't see the real reason to treat this
+as critical error that needs to go through recovery.
+
+Am I missing something? Maybe I have just misunderstood you.
+
+> 
+> > One might ask why it is still relevant even after having proper busy
+> > poll support in place - here is the justification.
+> > 
+> > For xdpsock that was:
+> > - run for l2fwd scenario,
+> > - app/driver processing took place on the same core in busy poll
+> >    with 2048 budget,
+> > - HW ring sizes Tx 256, Rx 2048,
+> > 
+> > this work improved throughput by 78% and reduced Rx queue full statistic
+> > bump by 99%.
+> > 
+> > For testing ice, make sure that you have [1] present on your side.
+> > 
+> > This set, besides the work described above, also carries also
+> > improvements around return codes in various XSK paths and lastly a minor
+> > optimization for xskq_cons_has_entries(), a helper that might be used
+> > when XSK Rx batching would make it to the kernel.
+> 
+> Regarding error codes, I would like them to be consistent across all
+> drivers, otherwise all the debuggability improvements are not useful enough.
+> Your series only changed Intel drivers. Here also applies the backward
+> compatibility concern: the same error codes than were in use have been
+> repurposed, which may confuse some of existing applications.
+
+I'll double check if ZC drivers are doing something unusual with return
+values from xdp_do_redirect(). Regarding backward comp, I suppose you
+refer only to changes in ndo_xsk_wakeup() callbacks as others are not
+exposed to user space? They're not crucial to me, but it improved my
+debugging experience.
+
+FYI, your mail landed in my junk folder and the links [0] [1] are messed up in
+the reply you sent. And this is true even on lore.kernel.org. They suddenly
+refer to "nam11.safelinks.protection.outlook.com". Maybe something worth
+looking into if you have this problem in the future.
+
+> 
+> > Thanks!
+> > MF
+> > 
+> > [0]: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fbpf%2F20200904135332.60259-1-bjorn.topel%40gmail.com%2F&amp;data=04%7C01%7Cmaximmi%40nvidia.com%7Cc9cefaa3a1cd465ccdb908da16f45eaf%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637847536077594100%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=sLpTcgboo9YU55wtUtaY1%2F%2FbeiYxeWP5ubk%2FQ6X8vB8%3D&amp;reserved=0
+> > [1]: https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Fnetdev%2F20220317175727.340251-1-maciej.fijalkowski%40intel.com%2F&amp;data=04%7C01%7Cmaximmi%40nvidia.com%7Cc9cefaa3a1cd465ccdb908da16f45eaf%7C43083d15727340c1b7db39efd9ccc17a%7C0%7C0%7C637847536077594100%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=OWXeZhc2Nouz%2FTMWBxvtTYbw%2FS8HWQfbfEqnVc5478k%3D&amp;reserved=0
+> > 
+> > Björn Töpel (1):
+> >    xsk: improve xdp_do_redirect() error codes
+> > 
+> > Maciej Fijalkowski (9):
+> >    xsk: diversify return codes in xsk_rcv_check()
+> >    ice: xsk: terminate NAPI when XSK Rx queue gets full
+> >    i40e: xsk: terminate NAPI when XSK Rx queue gets full
+> >    ixgbe: xsk: terminate NAPI when XSK Rx queue gets full
+> >    ice: xsk: diversify return values from xsk_wakeup call paths
+> >    i40e: xsk: diversify return values from xsk_wakeup call paths
+> >    ixgbe: xsk: diversify return values from xsk_wakeup call paths
+> >    ice: xsk: avoid refilling single Rx descriptors
+> >    xsk: drop ternary operator from xskq_cons_has_entries
+> > 
+> >   .../ethernet/intel/i40e/i40e_txrx_common.h    |  1 +
+> >   drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 27 +++++++++------
+> >   drivers/net/ethernet/intel/ice/ice_txrx.h     |  1 +
+> >   drivers/net/ethernet/intel/ice/ice_xsk.c      | 34 ++++++++++++-------
+> >   .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |  1 +
+> >   drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 29 ++++++++++------
+> >   net/xdp/xsk.c                                 |  4 +--
+> >   net/xdp/xsk_queue.h                           |  4 +--
+> >   8 files changed, 64 insertions(+), 37 deletions(-)
+> > 
+> 
