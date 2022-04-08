@@ -2,57 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 185434F8D7F
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74EB44F8DB5
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:25:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234234AbiDHER4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 00:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
+        id S234241AbiDHEWR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 00:22:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234307AbiDHERx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 00:17:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77E32E4BA2;
-        Thu,  7 Apr 2022 21:15:50 -0700 (PDT)
+        with ESMTP id S231826AbiDHEWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 00:22:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DB6A0;
+        Thu,  7 Apr 2022 21:20:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64FA961E16;
-        Fri,  8 Apr 2022 04:15:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5D0AC385A1;
-        Fri,  8 Apr 2022 04:15:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 185D461E4B;
+        Fri,  8 Apr 2022 04:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 671C2C385AB;
+        Fri,  8 Apr 2022 04:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649391349;
-        bh=EStePIw+CMLR4aey6pRfe8ZFXCPEn48dQTN3ybwAr/k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dEuOEXcjBODPReRkKvtLXhreIDACN0N09wiZyKB7/Z6UvvaR/95s7cRC25j4oG8BN
-         jMzFaBn2TWcFpdCWWFrQVc8iasb49xWlBNzd+XhODXE+tvX37NqHg1MDOT4oCCaW6I
-         ZfW3xbbgn4AT5nh7DpvW2ffCX9lIoqpraU1aj9rpm9XyWNPj9kP2KxyYQNp+gvedEN
-         +qb03yVwth+xnpKn7mXmoyTpc2bIbm/a4djfiJLHjHczRtg5LtO/A/z5X/U82kyVLZ
-         IzmZNFPAy4E8CzOtlMUHdKrluqudyk/fkbYN3bvfvduPYDBsJ+wZw7FRsNMfaAqDBi
-         faatoaNPDibLQ==
-Date:   Thu, 7 Apr 2022 21:15:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, amir.hanania@intel.com,
-        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
-        eliot.lee@intel.com, ilpo.johannes.jarvinen@intel.com,
-        moises.veleta@intel.com, pierre-louis.bossart@intel.com,
-        muralidharan.sethuraman@intel.com, Soumya.Prakash.Mishra@intel.com,
-        sreehari.kancharla@intel.com, madhusmita.sahu@intel.com
-Subject: Re: [PATCH net-next v6 00/13] net: wwan: t7xx: PCIe driver for
- MediaTek M.2 modem
-Message-ID: <20220407211547.6dac8246@kernel.org>
-In-Reply-To: <20220407223629.21487-1-ricardo.martinez@linux.intel.com>
-References: <20220407223629.21487-1-ricardo.martinez@linux.intel.com>
+        s=k20201202; t=1649391612;
+        bh=u7ZMh83fqnYFtsF3Tn7eFF996YlGLimcmWlos4xrW0s=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fi4BfkAcaFodrBZy02fD7nGFH8DpdqdJmT7ImOolvm1c2osddp2Lv0Q6PGxY1nNP3
+         k4s4Ef5Ea1xBJWD9Muu3ANdgnnSLXBbFYI71fjnP7cG5FxMdSPJuuFw52ba9Ju9tbl
+         86S5oTdoRUixjOUChfAV1E6Dts2Uk0eoSJOGMtsv+38jk6olcyW8lEYnV9WWRCXUe/
+         hzvgy/EC/05L1+LespA5UkiU/9n2wBJBRWrjTpPbnXpuPoH7FUXYqM5Txr3MLMgFsy
+         it4qrbldgTP7UlsHnQqv1rJC3PMheIGu1LnFhpPzvtVQuBiGU59zViZrK1r2ywylGC
+         2zPzHKY49wp7Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4807DE8DBDD;
+        Fri,  8 Apr 2022 04:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: mpls: fix memdup.cocci warning
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164939161228.2784.17655995105945101146.git-patchwork-notify@kernel.org>
+Date:   Fri, 08 Apr 2022 04:20:12 +0000
+References: <20220406114629.182833-1-gongruiqi1@huawei.com>
+In-Reply-To: <20220406114629.182833-1-gongruiqi1@huawei.com>
+To:     GONG@ci.codeaurora.org, Ruiqi <gongruiqi1@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wangweiyang2@huawei.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -63,47 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Apr 2022 15:36:16 -0700 Ricardo Martinez wrote:
-> t7xx is the PCIe host device driver for Intel 5G 5000 M.2 solution which
-> is based on MediaTek's T700 modem to provide WWAN connectivity.
-> The driver uses the WWAN framework infrastructure to create the following
-> control ports and network interfaces:
-> * /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
->   Applications like libmbim [1] or Modem Manager [2] from v1.16 onwards
->   with [3][4] can use it to enable data communication towards WWAN.
-> * /dev/wwan0at0 - Interface that supports AT commands.
-> * wwan0 - Primary network interface for IP traffic.
+Hello:
 
-Does not build here (allmodconfig, W=3D1, gcc 11).
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-drivers/net/wwan/t7xx/t7xx_hif_cldma.c: In function =E2=80=98t7xx_cldma_irq=
-_work_cb=E2=80=99:
-include/linux/find.h:40:23: error: array subscript =E2=80=98long unsigned i=
-nt[0]=E2=80=99 is partly outside array bounds of =E2=80=98u32[1]=E2=80=99 {=
-aka =E2=80=98unsigned int[1]=E2=80=99} [-Werror=3Darray-bounds]
-   40 |                 val =3D *addr & GENMASK(size - 1, offset);
-      |                       ^~~~~
-drivers/net/wwan/t7xx/t7xx_hif_cldma.c:569:43: note: while referencing =E2=
-=80=98l2_tx_int=E2=80=99
-  569 |         u32 l2_tx_int_msk, l2_rx_int_msk, l2_tx_int, l2_rx_int, val;
-      |                                           ^~~~~~~~~
-In file included from ../include/linux/bitmap.h:9,
-                 from ../include/linux/cpumask.h:12,
-                 from ../arch/x86/include/asm/paravirt.h:17,
-                 from ../arch/x86/include/asm/irqflags.h:63,
-                 from ../include/linux/irqflags.h:16,
-                 from ../include/linux/rcupdate.h:26,
-                 from ../include/linux/rculist.h:11,
-                 from ../include/linux/pid.h:5,
-                 from ../include/linux/sched.h:14,
-                 from ../include/linux/delay.h:23,
-                 from ../drivers/net/wwan/t7xx/t7xx_hif_cldma.c:21:
-include/linux/find.h:40:23: error: array subscript =E2=80=98long unsigned i=
-nt[0]=E2=80=99 is partly outside array bounds of =E2=80=98u32[1]=E2=80=99 {=
-aka =E2=80=98unsigned int[1]=E2=80=99} [-Werror=3Darray-bounds]
-   40 |                 val =3D *addr & GENMASK(size - 1, offset);
-      |                       ^~~~~
-drivers/net/wwan/t7xx/t7xx_hif_cldma.c:569:54: note: while referencing =E2=
-=80=98l2_rx_int=E2=80=99
-  569 |         u32 l2_tx_int_msk, l2_rx_int_msk, l2_tx_int, l2_rx_int, val;
-      |                                                      ^~~~~~~~~
+On Wed, 6 Apr 2022 19:46:29 +0800 you wrote:
+> Simply use kmemdup instead of explicitly allocating and copying memory.
+> 
+> Generated by: scripts/coccinelle/api/memdup.cocci
+> 
+> Signed-off-by: GONG, Ruiqi <gongruiqi1@huawei.com>
+> ---
+>  net/mpls/af_mpls.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+
+Here is the summary with links:
+  - net: mpls: fix memdup.cocci warning
+    https://git.kernel.org/netdev/net-next/c/27a5a5685d37
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
