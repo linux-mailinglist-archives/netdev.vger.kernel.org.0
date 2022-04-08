@@ -2,54 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4752E4FA046
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 01:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E9614FA04B
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 01:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240092AbiDHXxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 19:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54540 "EHLO
+        id S236649AbiDHX41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 19:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236587AbiDHXxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 19:53:04 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F5FD0A8D;
-        Fri,  8 Apr 2022 16:50:56 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id i27so20164477ejd.9;
-        Fri, 08 Apr 2022 16:50:55 -0700 (PDT)
+        with ESMTP id S230205AbiDHX40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 19:56:26 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 178FDE21;
+        Fri,  8 Apr 2022 16:54:19 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id p189so6473245wmp.3;
+        Fri, 08 Apr 2022 16:54:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SUqMtItyQZq0VImWzHlQNyf9xOR5YZgjl7HG7ggaASA=;
-        b=nJriARLQYTMhH8chWXt44TKYI93PSDPUJtZYNgzWWUVvzVxPGiCZEEj1or0iOTefo6
-         cFscWaA85nZ2Y/kClhUqsgDfbrhKPUZDkkzyM5PK+amxjD4B9bkaMfh3UvILoEcBIGVp
-         pD9y/wuXRsQe30azkivrcgDlMms0jSrgpc0B4YRML0nOkZ8W8oa2xa3dmJEJI48q7Lph
-         hERaCN4LvyngWLcE/nNTdaJoURQxBLZ0UWrRoEU5cNkW9BTCN6Tydlp6kYyBV95RnXZw
-         p2O6zP4x77KUbOQ1olKZSBNoc7+rWVjcHZXqzKdeMH9GniNs2g4IkkVS8/3XGbjIDWwo
-         0yJw==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=n5UPNQEDai1gUFUdN9sucmKpzqqEUym2Bv+35OpgTmc=;
+        b=pG1F0MrmF0MxsheTCnU5KlnL7Fq3an1SzIoDIJWlvZTcNPwAejlsTxkr/aITjxttuN
+         4t9qOz+HWVuW9mjRCjV1vM02Lp8cdd8MquH/W9I+QdExZFr0zL5FS2Nb0kvl0UlWCFVK
+         NgbMRkfNJM8aq4eRSV2Ai4D/koQFTxUsZyeBDHnWTq2iI4ygMQjDD0DiM26d3Eg9r9fy
+         whdlpXipwUciya55rwa+AMb/cR0AFXTNn9znvHshZnrvO2q7Hhgb3ypRlYjgYvC2QDHR
+         tvaZ+Czt68GGIRMZ42zUl+nz0t57NIJTSXJjhID/BEsFgMymPAqNrdXgUaadY0zKbhfr
+         5DQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SUqMtItyQZq0VImWzHlQNyf9xOR5YZgjl7HG7ggaASA=;
-        b=8DPEZRpXJWWK2l766VV0YM7MbJPzXNZcKhKEtBwwll0TVZ6RXYkEiMUwBqKywHkwId
-         QrULu6Q2HkRO5VL9BZFp5ObTBAKkq4nVdAqrafVV0+KZ0RbijlxbfCjpYKmX9aFofvdl
-         3TALe/aUsSoZMPs9j3UHlqYrUGSHas2X6OXc5r87siL17KZ4WYyJrco9fEI9DxckRX2e
-         sV/GTb/BtaTIU9JwdaRLmek+JOq/FG7IKh+aCSRJv7EUOSTBRnYcgQy+x3QtLp27Ozdk
-         sEpDnvP/+wUB7rjmzfb5qKqoY5sT/nOToqlQq8ATTFmF8xmb1Y4262FF4DQBpFrGsNaF
-         BSbA==
-X-Gm-Message-State: AOAM533FUz76f6oZV7KItkI9wr477PfSkyg0kWcuNtCcQx/3Y/14UzAZ
-        tvfiBHtcAB03jqWEF6RxH30=
-X-Google-Smtp-Source: ABdhPJx48I6qNVXy5JRlDDppagH8Z8UT68EDC0Z1VNqIiGnngdmjei8lBxcmBqvnL8jnUCdrueVd4Q==
-X-Received: by 2002:a17:906:9c82:b0:6df:baa2:9f75 with SMTP id fj2-20020a1709069c8200b006dfbaa29f75mr20667399ejc.762.1649461854531;
-        Fri, 08 Apr 2022 16:50:54 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id w14-20020a509d8e000000b0041cd217726dsm7443672ede.4.2022.04.08.16.50.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 16:50:54 -0700 (PDT)
-Date:   Sat, 9 Apr 2022 02:50:51 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=n5UPNQEDai1gUFUdN9sucmKpzqqEUym2Bv+35OpgTmc=;
+        b=wqZVqkg+tRgqcKqW6VxL7qebjlw7bN7VSILHHzoDAWT6JOSyWCmG1Pfqrue6F84e9d
+         Wf930uH4I2jPtvkZQJUblyLYEqCw+Xri8PNmcUkH6UFwdrYGQgFxechZyo1H0lWb9MZJ
+         cObdGTL8Cwh7JvWxUv8hSI5cvXv8/N3aGEXim+i1NTpyQbVzOOmPTs8Qe0bn7ILXVrEW
+         sPXh34yb5lyYa7IjTxnEAINAIOg1KcQ3xZXX0LgAvXjwGjAJ6PNapOs6b7uwXmpxk0oh
+         PuVW7N8W/azJooFUKzhPcpg1nMcpYVu3BitjzQUBX6cipi4/3aZgwwoOxTW2UlYlG8Mh
+         WIhw==
+X-Gm-Message-State: AOAM532b3NbAxxexktrI8/feHraKLsEeKv6NfixZdYb1KirBdoHORkiy
+        kB3AC05Mor4I6F0l8ACvTtU=
+X-Google-Smtp-Source: ABdhPJzYPe2XZp3HIcQrurMuTy8KVeKXLKzzK2Euy2m/YilBtUjHiW3sSWpaiPkVrXseuI50+m05lg==
+X-Received: by 2002:a05:600c:190e:b0:38c:b1ea:f4ac with SMTP id j14-20020a05600c190e00b0038cb1eaf4acmr18783624wmq.70.1649462057538;
+        Fri, 08 Apr 2022 16:54:17 -0700 (PDT)
+Received: from smtpclient.apple ([185.238.38.242])
+        by smtp.gmail.com with ESMTPSA id p16-20020a5d6390000000b00203ffebddf3sm26542577wru.99.2022.04.08.16.54.16
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 08 Apr 2022 16:54:16 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH net-next 02/15] net: dsa: sja1105: Remove usage of
+ iterator for list_add() after loop
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <20220408114120.tvf2lxvhfqbnrlml@skbuf>
+Date:   Sat, 9 Apr 2022 01:54:13 +0200
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -81,17 +86,13 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
         Cristiano Giuffrida <c.giuffrida@vu.nl>,
         "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [PATCH net-next 03/15] net: dsa: mv88e6xxx: Replace usage of
- found with dedicated iterator
-Message-ID: <20220408235051.2a4hh7p3lee3a3xv@skbuf>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <FA317E17-3B09-411B-9DF6-05BDD320D988@gmail.com>
 References: <20220407102900.3086255-1-jakobkoschel@gmail.com>
- <20220407102900.3086255-4-jakobkoschel@gmail.com>
- <20220408123101.p33jpynhqo67hebe@skbuf>
- <C2AFC0FB-08EC-4421-AF44-8C485BF48879@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <C2AFC0FB-08EC-4421-AF44-8C485BF48879@gmail.com>
+ <20220407102900.3086255-3-jakobkoschel@gmail.com>
+ <20220408114120.tvf2lxvhfqbnrlml@skbuf>
+To:     Vladimir Oltean <olteanv@gmail.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -102,27 +103,173 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 09, 2022 at 01:44:00AM +0200, Jakob Koschel wrote:
-> > Let's try to not make convoluted code worse. Do the following 2 patches
-> > achieve what you are looking for? Originally I had a single patch (what
-> > is now 2/2) but I figured it would be cleaner to break out the unrelated
-> > change into what is now 1/2.
-> 
-> I do agree with not making convoluted code worse, but I was reluctant with
-> e.g. introducing new functions for this because others essentially
-> have the opposite opinion on this.
-> 
-> I however like solving it that way, it makes it a lot cleaner.
+Hello Vladimir,
 
-Yeah, I think 'just adapt to the context and style and intentions of the
-code you're changing and don't try to push a robotic one-size-fits-all
-solution' is sensible enough for an initial guiding principle.
+> On 8. Apr 2022, at 13:41, Vladimir Oltean <olteanv@gmail.com> wrote:
+>=20
+> Hello Jakob,
+>=20
+> On Thu, Apr 07, 2022 at 12:28:47PM +0200, Jakob Koschel wrote:
+>> In preparation to limit the scope of a list iterator to the list
+>> traversal loop, use a dedicated pointer to point to the found element =
+[1].
+>>=20
+>> Before, the code implicitly used the head when no element was found
+>> when using &pos->list. Since the new variable is only set if an
+>> element was found, the list_add() is performed within the loop
+>> and only done after the loop if it is done on the list head directly.
+>>=20
+>> Link: =
+https://lore.kernel.org/all/CAHk-=3DwgRr_D8CB-D9Kg-c=3DEHreAsk5SqXPwr9Y7k9=
+sA6cWXJ6w@mail.gmail.com/ [1]
+>> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+>> ---
+>> drivers/net/dsa/sja1105/sja1105_vl.c | 14 +++++++++-----
+>> 1 file changed, 9 insertions(+), 5 deletions(-)
+>>=20
+>> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
+b/drivers/net/dsa/sja1105/sja1105_vl.c
+>> index b7e95d60a6e4..cfcae4d19eef 100644
+>> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
+>> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+>> @@ -27,20 +27,24 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+>> 	if (list_empty(&gating_cfg->entries)) {
+>> 		list_add(&e->list, &gating_cfg->entries);
+>> 	} else {
+>> -		struct sja1105_gate_entry *p;
+>> +		struct sja1105_gate_entry *p =3D NULL, *iter;
+>>=20
+>> -		list_for_each_entry(p, &gating_cfg->entries, list) {
+>> -			if (p->interval =3D=3D e->interval) {
+>> +		list_for_each_entry(iter, &gating_cfg->entries, list) {
+>> +			if (iter->interval =3D=3D e->interval) {
+>> 				NL_SET_ERR_MSG_MOD(extack,
+>> 						   "Gate conflict");
+>> 				rc =3D -EBUSY;
+>> 				goto err;
+>> 			}
+>>=20
+>> -			if (e->interval < p->interval)
+>> +			if (e->interval < iter->interval) {
+>> +				p =3D iter;
+>> +				list_add(&e->list, iter->list.prev);
+>> 				break;
+>> +			}
+>> 		}
+>> -		list_add(&e->list, p->list.prev);
+>> +		if (!p)
+>> +			list_add(&e->list, gating_cfg->entries.prev);
+>> 	}
+>>=20
+>> 	gating_cfg->num_entries++;
+>> --=20
+>> 2.25.1
+>>=20
+>=20
+> I apologize in advance if I've misinterpreted the end goal of your =
+patch.
+> I do have a vague suspicion I understand what you're trying to =
+achieve,
+> and in that case, would you mind using this patch instead of yours?
 
-> > If you want I can submit these changes separately.
-> 
-> Sure if you want to submit them separately, go ahead. Otherwise I can
-> integrate it into a v2, whatever you prefer essentially.
+I think you are very much spot on!
 
-If you're moving quickly feel free to pick them up. I have lots of other
-things on my backlog so it won't be until late next week until I even
-consider submitting these.
+> I think it still preserves the intention of the code in a clean =
+manner.
+>=20
+> -----------------------------[ cut here ]-----------------------------
+> =46rom 7aed740750d1bc3bff6e85fd33298f5905bb4e01 Mon Sep 17 00:00:00 =
+2001
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date: Fri, 8 Apr 2022 13:55:14 +0300
+> Subject: [PATCH] net: dsa: sja1105: avoid use of type-confused pointer =
+in
+> sja1105_insert_gate_entry()
+>=20
+> It appears that list_for_each_entry() leaks a type-confused pointer =
+when
+> the iteration loop ends with no early break, since "*p" will no longer
+> point to a "struct sja1105_gate_entry", but rather to some memory in
+> front of "gating_cfg->entries".
+>=20
+> This isn't actually a problem here, because if the element we insert =
+has
+> the highest interval, therefore we never exit the loop early, =
+"p->list"
+> (which is all that we use outside the loop) will in fact point to
+> "gating_cfg->entries" even though "p" itself is invalid.
+>=20
+> Nonetheless, there are preparations to increase the safety of
+> list_for_each_entry() by making it impossible to use the encapsulating
+> structure of the iterator element outside the loop. So something needs
+> to change here before those preparations go in, even though this
+> constitutes legitimate use.
+>=20
+> Make it clear that we are not dereferencing members of the =
+encapsulating
+> "struct sja1105_gate_entry" outside the loop, by using the regular
+> list_for_each() iterator, and dereferencing the struct =
+sja1105_gate_entry
+> only within the loop.
+>=20
+> With list_for_each(), the iterator element at the end of the loop does
+> have a sane value in all cases, and we can just use that as the "head"
+> argument of list_add().
+>=20
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> drivers/net/dsa/sja1105/sja1105_vl.c | 12 +++++++++---
+> 1 file changed, 9 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/dsa/sja1105/sja1105_vl.c =
+b/drivers/net/dsa/sja1105/sja1105_vl.c
+> index c0e45b393fde..fe93c80fe5ef 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_vl.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_vl.c
+> @@ -27,9 +27,15 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+> 	if (list_empty(&gating_cfg->entries)) {
+> 		list_add(&e->list, &gating_cfg->entries);
+> 	} else {
+> -		struct sja1105_gate_entry *p;
+> +		struct list_head *pos;
+> +
+> +		/* We cannot safely use list_for_each_entry()
+> +		 * because we dereference "pos" after the loop
+> +		 */
+> +		list_for_each(pos, &gating_cfg->entries) {
+> +			struct sja1105_gate_entry *p;
+>=20
+> -		list_for_each_entry(p, &gating_cfg->entries, list) {
+> +			p =3D list_entry(pos, struct sja1105_gate_entry, =
+list);
+> 			if (p->interval =3D=3D e->interval) {
+> 				NL_SET_ERR_MSG_MOD(extack,
+> 						   "Gate conflict");
+> @@ -40,7 +46,7 @@ static int sja1105_insert_gate_entry(struct =
+sja1105_gating_config *gating_cfg,
+> 			if (e->interval < p->interval)
+> 				break;
+> 		}
+> -		list_add(&e->list, p->list.prev);
+> +		list_add(&e->list, pos->prev);
+
+I was actually considering doing it this way before but wasn't sure if =
+this would be preferred.
+I've done something like this in [1] and it does turn out quite well.
+
+I'll integrate this in the v2 series.
+
+Thanks for the suggestion.
+
+> 	}
+>=20
+> 	gating_cfg->num_entries++;
+> -----------------------------[ cut here ]-----------------------------
+
+[1] =
+https://lore.kernel.org/linux-kernel/20220407102900.3086255-12-jakobkosche=
+l@gmail.com/
+
+	Jakob=
