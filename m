@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF084F9072
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 10:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 957284F9081
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 10:13:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231185AbiDHIOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 04:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
+        id S231283AbiDHIPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 04:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiDHIOT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 04:14:19 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D514AE0D;
-        Fri,  8 Apr 2022 01:12:15 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id s7so10080555qtk.6;
-        Fri, 08 Apr 2022 01:12:15 -0700 (PDT)
+        with ESMTP id S231266AbiDHIPC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 04:15:02 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C404B57B0D;
+        Fri,  8 Apr 2022 01:12:58 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id j6so4212687qkp.9;
+        Fri, 08 Apr 2022 01:12:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jw/XuL4gze/EjFGmPl0tsO01dQMr5OjXvuq1Bzbys1Q=;
-        b=irp/7ScHoeQsUxSmCUbAbcmEFlRuyij8MQCMERCJiRm+THOMIlWJki09aJB2hid65U
-         /rxDnCPH03txnpSNWJhtBWWKthYSeN6w/nrPv+kdpTz6CEmReXQ4MahGS54VstfzT5Al
-         rPQTvbtnpJxfnd0KeUL8Lb9A7ZOW7X6KiYmJ3fJNWVo4iruVR9PZHeFI9HidNJIKaVHx
-         P763oWiScRxs52CJGi4NKf76AQtHbmvfn11sQOXX6d9vL+VLFslPM7ZJFo4XbrVW9Nv4
-         2ELk8SSeH+VGzRRDmktslJHWAWJah9gyiMjr5MQuntfw9Em06dAfHeoqBsKJccm8oJWh
-         wigQ==
+        bh=A1kYgClPNkXttcnpJuxPc0b6ZRe4IN7sg6hgxvxZY2I=;
+        b=kyEjHYb+mQEqY7tdjXMs0+hof/gNfwAwz9dja0FAcYnl7Kn2yZMySrQKi8P9cC9n1c
+         CrtjN1tyIdNUF+51+SrlLfuU7ya2y0WJG246oGGjod0iZExbZVBbxz+lGF1Db4h/s2qA
+         i6Id7+u85d6f6SJ9fRU8zrC9Iy8Rw9JXIieXMCRdohRYua+ZYihU6UkNdqGlGYDPoQ8u
+         5r+d1x+aw1ZgnjTyjkG17EDh5N7rJJ8+Of6ms6W/m0OflU8zKwhmz2dJXJXf4PQjJZIr
+         ASahsPzrYQ3mTyOjiwbFaQSNl8+tdhB1PhF7L3BP8uSvcE5CKutKj9nyn8Gv569dZdOJ
+         ICEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jw/XuL4gze/EjFGmPl0tsO01dQMr5OjXvuq1Bzbys1Q=;
-        b=Pap+e8iU6HKO8xVz/EspvjG0cAFxpNlCkmdKwXuoD2ipapxvYOPeheJELVfNVT2hyD
-         IIvhn2BsDWvFBr+eu1EH3umi5p4JWQ/so1sPwxxwTXw/IRjhxmc38fG60tsiX1Y21EHy
-         aVMwPmMsw4Lc2ZDwmTrOoPaL0Gyctp3MfUBRpK7Q81h1hEmvbL6VDvb6s017rcLsa+PD
-         /TfBYO6sGrBtoYrkjf2GFHksma001AmqYOf5dzqTb/tkEYQx7KReY9It76tp63CziRb0
-         5R5d80WTFM2DsGMr4jXx6HfgPCIXXeINBeUt11fcyOcGlYhCjmBCPBBmBwCkx8yYQQFP
-         v/mw==
-X-Gm-Message-State: AOAM530Bi89mUN8jVTt/7lfOz68E3gQEgdy955Z8sadvrNLwWihmbbM2
-        xIX+Gbk/gtAbD/MiI7N1pdI=
-X-Google-Smtp-Source: ABdhPJx3epWw8SnQaL8w47Y6EpL+Nxb2TfF2wFBPcUkPnpy1geqdfdb4Fr2esV6hzF8GexBy05uDgw==
-X-Received: by 2002:ac8:5895:0:b0:2e1:c997:a629 with SMTP id t21-20020ac85895000000b002e1c997a629mr14991481qta.124.1649405534737;
-        Fri, 08 Apr 2022 01:12:14 -0700 (PDT)
+        bh=A1kYgClPNkXttcnpJuxPc0b6ZRe4IN7sg6hgxvxZY2I=;
+        b=w0UE7Uwx5KM0P6teHFMe/RkzEZJRDDvCRAQApPft5ov+eJ59uWPkTOjfdiQ7omjTPo
+         lySpc0cDkUEUbwQbBxbBsGmCOCFpd4oiIeaZM8TmP5g8kUGiKekURtsXWEqA3AbYv5f6
+         TAbznEuU4g5lM9F6Qmh6NQKX2+ts6iLG76Tff/dqTI2eR1y3IOnjzvV0KqV9DKSBC353
+         RtT/Gyv9gDW/R3YEay+F9Z64ppETppLsk6QgAbDA3JTVJjxx1gHE+9BuWn/fhJFSEP3l
+         9fLFs20Wr99JrOWz4rTqyPx9eSdWlo9Q5H+GQ+VI09fmdqIAH0dlvgmb9hiKeuS114p2
+         6HsA==
+X-Gm-Message-State: AOAM532sIIrjJb8c3r6bpGLg1mzRc42oTv0emySLeBhnmm0ty7Kkbtq2
+        /LsRpNjZxHSk8dFSh0Cw68M=
+X-Google-Smtp-Source: ABdhPJxW/8z2WJJs+ZAhz+Xmzvh9kcBG41vVI4/HDjmZkkMAhj9pbXxrlb1zk92Dm7AY+6aJROjPYA==
+X-Received: by 2002:a37:787:0:b0:69a:854:caae with SMTP id 129-20020a370787000000b0069a0854caaemr4189817qkh.20.1649405578000;
+        Fri, 08 Apr 2022 01:12:58 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m6-20020a05622a118600b002ebb68c31d5sm10487776qtk.45.2022.04.08.01.12.11
+        by smtp.gmail.com with ESMTPSA id h11-20020a05622a170b00b002ebc9d47207sm4985436qtk.91.2022.04.08.01.12.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 01:12:14 -0700 (PDT)
+        Fri, 08 Apr 2022 01:12:57 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
+To:     peppe.cavallaro@st.com
+Cc:     alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] wlcore: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
-Date:   Fri,  8 Apr 2022 08:12:05 +0000
-Message-Id: <20220408081205.2494512-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] net: stmmac: using pm_runtime_resume_and_get instead of pm_runtime_get_sync
+Date:   Fri,  8 Apr 2022 08:12:50 +0000
+Message-Id: <20220408081250.2494588-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -78,137 +80,69 @@ for simplifing code
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/net/wireless/ti/wlcore/debugfs.c | 52 ++++++++----------------
- 1 file changed, 17 insertions(+), 35 deletions(-)
+ .../net/ethernet/stmicro/stmmac/stmmac_mdio.c | 24 +++++++------------
+ 1 file changed, 8 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/wireless/ti/wlcore/debugfs.c b/drivers/net/wireless/ti/wlcore/debugfs.c
-index cce8d75d8b81..eb3d3f0e0b4d 100644
---- a/drivers/net/wireless/ti/wlcore/debugfs.c
-+++ b/drivers/net/wireless/ti/wlcore/debugfs.c
-@@ -52,11 +52,9 @@ void wl1271_debugfs_update_stats(struct wl1271 *wl)
- 	if (unlikely(wl->state != WLCORE_STATE_ON))
- 		goto out;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index a5d150c5f3d8..9bc625fccca0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -88,11 +88,9 @@ static int stmmac_xgmac2_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ 	u32 tmp, addr, value = MII_XGMAC_BUSY;
+ 	int ret;
  
--	ret = pm_runtime_get_sync(wl->dev);
+-	ret = pm_runtime_get_sync(priv->device);
 -	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
+-		pm_runtime_put_noidle(priv->device);
++	ret = pm_runtime_resume_and_get(priv->device);
 +	if (ret < 0)
- 		goto out;
+ 		return ret;
 -	}
  
- 	if (!wl->plt &&
- 	    time_after(jiffies, wl->stats.fw_stats_update +
-@@ -108,12 +106,9 @@ static void chip_op_handler(struct wl1271 *wl, unsigned long value,
- 		return;
- 	}
+ 	/* Wait until any existing MII operation is complete */
+ 	if (readl_poll_timeout(priv->ioaddr + mii_data, tmp,
+@@ -156,11 +154,9 @@ static int stmmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
+ 	u32 addr, tmp, value = MII_XGMAC_BUSY;
+ 	int ret;
  
--	ret = pm_runtime_get_sync(wl->dev);
+-	ret = pm_runtime_get_sync(priv->device);
 -	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
--
-+	ret = pm_runtime_resume_and_get(wl->dev);
+-		pm_runtime_put_noidle(priv->device);
++	ret = pm_runtime_resume_and_get(priv->device);
 +	if (ret < 0)
- 		return;
+ 		return ret;
 -	}
  
- 	chip_op = arg;
- 	chip_op(wl);
-@@ -279,11 +274,9 @@ static ssize_t dynamic_ps_timeout_write(struct file *file,
- 	if (unlikely(wl->state != WLCORE_STATE_ON))
- 		goto out;
+ 	/* Wait until any existing MII operation is complete */
+ 	if (readl_poll_timeout(priv->ioaddr + mii_data, tmp,
+@@ -229,11 +225,9 @@ static int stmmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
+ 	int data = 0;
+ 	u32 v;
  
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
+-	data = pm_runtime_get_sync(priv->device);
+-	if (data < 0) {
+-		pm_runtime_put_noidle(priv->device);
++	data = pm_runtime_resume_and_get(priv->device);
++	if (data < 0)
+ 		return data;
 -	}
  
- 	/* In case we're already in PSM, trigger it again to set new timeout
- 	 * immediately without waiting for re-association
-@@ -349,11 +342,9 @@ static ssize_t forced_ps_write(struct file *file,
- 	if (unlikely(wl->state != WLCORE_STATE_ON))
- 		goto out;
+ 	value |= (phyaddr << priv->hw->mii.addr_shift)
+ 		& priv->hw->mii.addr_mask;
+@@ -297,11 +291,9 @@ static int stmmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
+ 	u32 value = MII_BUSY;
+ 	u32 v;
  
--	ret = pm_runtime_get_sync(wl->dev);
+-	ret = pm_runtime_get_sync(priv->device);
 -	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
+-		pm_runtime_put_noidle(priv->device);
++	ret = pm_runtime_resume_and_get(priv->device);
 +	if (ret < 0)
- 		goto out;
+ 		return ret;
 -	}
  
- 	/* In case we're already in PSM, trigger it again to switch mode
- 	 * immediately without waiting for re-association
-@@ -831,11 +822,9 @@ static ssize_t rx_streaming_interval_write(struct file *file,
- 
- 	wl->conf.rx_streaming.interval = value;
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	wl12xx_for_each_wlvif_sta(wl, wlvif) {
- 		wl1271_recalc_rx_streaming(wl, wlvif);
-@@ -889,11 +878,9 @@ static ssize_t rx_streaming_always_write(struct file *file,
- 
- 	wl->conf.rx_streaming.always = value;
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	wl12xx_for_each_wlvif_sta(wl, wlvif) {
- 		wl1271_recalc_rx_streaming(wl, wlvif);
-@@ -939,11 +926,9 @@ static ssize_t beacon_filtering_write(struct file *file,
- 
- 	mutex_lock(&wl->mutex);
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	wl12xx_for_each_wlvif(wl, wlvif) {
- 		ret = wl1271_acx_beacon_filter_opt(wl, wlvif, !!value);
-@@ -1021,11 +1006,9 @@ static ssize_t sleep_auth_write(struct file *file,
- 		goto out;
- 	}
- 
--	ret = pm_runtime_get_sync(wl->dev);
--	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
-+	if (ret < 0)
- 		goto out;
--	}
- 
- 	ret = wl1271_acx_sleep_auth(wl, value);
- 	if (ret < 0)
-@@ -1254,9 +1237,8 @@ static ssize_t fw_logger_write(struct file *file,
- 	}
- 
- 	mutex_lock(&wl->mutex);
--	ret = pm_runtime_get_sync(wl->dev);
-+	ret = pm_runtime_resume_and_get(wl->dev);
- 	if (ret < 0) {
--		pm_runtime_put_noidle(wl->dev);
- 		count = ret;
- 		goto out;
- 	}
+ 	value |= (phyaddr << priv->hw->mii.addr_shift)
+ 		& priv->hw->mii.addr_mask;
 -- 
 2.25.1
 
