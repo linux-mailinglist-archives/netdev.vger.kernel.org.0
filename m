@@ -2,67 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5560E4F9746
+	by mail.lfdr.de (Postfix) with ESMTP id 0D0D04F9745
 	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 15:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236533AbiDHNv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 09:51:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35146 "EHLO
+        id S236511AbiDHNuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 09:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234611AbiDHNv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 09:51:28 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C0622BF6;
-        Fri,  8 Apr 2022 06:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649425761; x=1680961761;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=JHxUCB/6BRTe6TReGYNBtiqtMSGrnYkHBfI8LfQrgAc=;
-  b=MkpuAuyrMLyJ1ArysSQdpCuaxLCiO6z0Sdoi/DxQ1w/mH9YZUjglsKMH
-   ZrkSNIkanshoxM/3iMjLb/RR0nLooF2vKPMjAaLWUabNjaMR/S70uw0hY
-   xtRkZRmpM1+T/H3lJKNiaOnpXWhdsY8eJiPgKOrIF7iNEBF7ydS6bPXWb
-   4BkXBD706+QKUEQVis8tuE4oimpU/i+Mplqz53h/WLng0M4Qav4T+RPyL
-   5yZbrKjOll54TE8eIzspyldle1MrVq6qHllQbSz6/vknpQoMQ91msjyML
-   rfaMCw7NfEutKhEQ5f6BcxbnXjwdtUgxkpFrIA4o/Jhf4IB0OOTHWJ2F9
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="242189596"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="242189596"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 06:49:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="550507028"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 08 Apr 2022 06:49:16 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 238DnFvK003958;
-        Fri, 8 Apr 2022 14:49:15 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
-        poros@redhat.com, mschmidt@redhat.com, jacob.e.keller@intel.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Brett Creeley <brett@pensando.io>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: Re: [PATCH net v2] ice: Fix incorrect locking in ice_vc_process_vf_msg()
-Date:   Fri,  8 Apr 2022 15:47:14 +0200
-Message-Id: <20220408134714.1834349-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220401104052.1711721-1-ivecera@redhat.com>
-References: <20220401104052.1711721-1-ivecera@redhat.com>
+        with ESMTP id S234611AbiDHNuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 09:50:50 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E327F1E92;
+        Fri,  8 Apr 2022 06:48:45 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 238DmeRb034356;
+        Fri, 8 Apr 2022 08:48:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1649425720;
+        bh=Yzv2IfuxorHkkyDNwD5OnhJsw0aVngAYPY8J9ftFkn0=;
+        h=From:To:CC:Subject:Date;
+        b=lahOonoKXmaVgM324eXqCXeTHJ7druJtS4BOJEhefkXD2nJgelk9r0TIbov49rlR8
+         m0bjosGTXySI8iFh8SgU1J4UiIsw8NUL7Q/EIW1XdjYVAaIcq7ijB4THe3A/cZxT5O
+         shtPHI3btFzirlDyQJ43EX4GAyCXj7n3zizHIbBw=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 238DmeNM041045
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 8 Apr 2022 08:48:40 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 8
+ Apr 2022 08:48:40 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 8 Apr 2022 08:48:40 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 238DmdOp071085;
+        Fri, 8 Apr 2022 08:48:39 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next] net: ethernet: ti: cpsw: drop CPSW_HEADROOM define
+Date:   Fri, 8 Apr 2022 16:48:38 +0300
+Message-ID: <20220408134838.24761-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,73 +62,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
-Date: Fri,  1 Apr 2022 12:40:52 +0200
+Since commit 1771afd47430 ("net: cpsw: avoid alignment faults by taking
+NET_IP_ALIGN into account") the TI CPSW driver was switched to use correct
+define CPSW_HEADROOM_NA to avoid alignment faults, but there are two places
+left where CPSW_HEADROOM is still used (without causing issues).
 
-> Usage of mutex_trylock() in ice_vc_process_vf_msg() is incorrect
-> because message sent from VF is ignored and never processed.
-> 
-> Use mutex_lock() instead to fix the issue. It is safe because this
-> mutex is used to prevent races between VF related NDOs and
-> handlers processing request messages from VF and these handlers
-> are running in ice_service_task() context. Additionally move this
-> mutex lock prior ice_vc_is_opcode_allowed() call to avoid potential
-> races during allowlist acccess.
-> 
-> Fixes: e6ba5273d4ed ("ice: Fix race conditions between virtchnl handling and VF ndo ops")
-> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+Hence, completely drop CPSW_HEADROOM define and use CPSW_HEADROOM_NA
+everywhere to avoid further mistakes in code.
 
-Hey Tony,
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+ drivers/net/ethernet/ti/cpsw.c      | 2 +-
+ drivers/net/ethernet/ti/cpsw_new.c  | 2 +-
+ drivers/net/ethernet/ti/cpsw_priv.h | 1 -
+ 3 files changed, 2 insertions(+), 3 deletions(-)
 
-I guess you missed this one due to being on a vacation previously.
-It's been previously reviewed IIRC, could you take it into
-net-queue?
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index 03575c017500..e4edcc8c6889 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -335,7 +335,7 @@ static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
+ 
+ static unsigned int cpsw_rxbuf_total_len(unsigned int len)
+ {
+-	len += CPSW_HEADROOM;
++	len += CPSW_HEADROOM_NA;
+ 	len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+ 
+ 	return SKB_DATA_ALIGN(len);
+diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+index 561fd8c51cda..dfa0a9cf9d89 100644
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -273,7 +273,7 @@ static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
+ 
+ static unsigned int cpsw_rxbuf_total_len(unsigned int len)
+ {
+-	len += CPSW_HEADROOM;
++	len += CPSW_HEADROOM_NA;
+ 	len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+ 
+ 	return SKB_DATA_ALIGN(len);
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
+index ec751e7e001d..fc591f5ebe18 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.h
++++ b/drivers/net/ethernet/ti/cpsw_priv.h
+@@ -418,7 +418,6 @@ struct __aligned(sizeof(long)) cpsw_meta_xdp {
+ 
+ /* The buf includes headroom compatible with both skb and xdpf */
+ #define CPSW_HEADROOM_NA (max(XDP_PACKET_HEADROOM, NET_SKB_PAD) + NET_IP_ALIGN)
+-#define CPSW_HEADROOM  ALIGN(CPSW_HEADROOM_NA, sizeof(long))
+ 
+ static inline int cpsw_is_xdpf_handle(void *handle)
+ {
+-- 
+2.17.1
 
-> ---
->  drivers/net/ethernet/intel/ice/ice_virtchnl.c | 21 +++++++------------
->  1 file changed, 7 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> index 3f1a63815bac..a465f3743ffc 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-> @@ -3642,14 +3642,6 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
->  			err = -EINVAL;
->  	}
->  
-> -	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
-> -		ice_vc_send_msg_to_vf(vf, v_opcode,
-> -				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
-> -				      0);
-> -		ice_put_vf(vf);
-> -		return;
-> -	}
-> -
->  error_handler:
->  	if (err) {
->  		ice_vc_send_msg_to_vf(vf, v_opcode, VIRTCHNL_STATUS_ERR_PARAM,
-> @@ -3660,12 +3652,13 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event)
->  		return;
->  	}
->  
-> -	/* VF is being configured in another context that triggers a VFR, so no
-> -	 * need to process this message
-> -	 */
-> -	if (!mutex_trylock(&vf->cfg_lock)) {
-> -		dev_info(dev, "VF %u is being configured in another context that will trigger a VFR, so there is no need to handle this message\n",
-> -			 vf->vf_id);
-> +	mutex_lock(&vf->cfg_lock);
-> +
-> +	if (!ice_vc_is_opcode_allowed(vf, v_opcode)) {
-> +		ice_vc_send_msg_to_vf(vf, v_opcode,
-> +				      VIRTCHNL_STATUS_ERR_NOT_SUPPORTED, NULL,
-> +				      0);
-> +		mutex_unlock(&vf->cfg_lock);
->  		ice_put_vf(vf);
->  		return;
->  	}
-> -- 
-> 2.35.1
-
-Thanks,
-Al
