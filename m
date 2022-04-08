@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C0924F8FDB
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 09:51:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D9F04F8FDF
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 09:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230036AbiDHHxR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 03:53:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
+        id S230057AbiDHHxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 03:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiDHHxQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 03:53:16 -0400
+        with ESMTP id S230008AbiDHHxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 03:53:17 -0400
 Received: from CHE01-ZR0-obe.outbound.protection.outlook.com (mail-zr0che01on2128.outbound.protection.outlook.com [40.107.24.128])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C2781F42D9;
-        Fri,  8 Apr 2022 00:51:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112AE207A1F;
+        Fri,  8 Apr 2022 00:51:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fMp8OyRmRGNG7enQaB7/7x4TgP85FqI+N7BdGiH6qCh6IBXBKQz+RlYLY0wrC/H5xp45u2N3EwjsXwKpaynYFwm4lsX0hTXtedmr85P+Ah9bpBQKRluMZ+hmgesH+Oigdd/eACDYuzgIUX2o7SEHcFmJrycZRfCTyEWjrldDNzGfYdIr21FnWvjUtrLYfUtjAOhSX+l9M10OLcavGLgc/BE9BlB6MPRMpOQ9e6phkTk89NpvlPWxBUC9agOYXw9HzHyY7HJzefrvmdoQDXe2o9okL+igffeUU9OiFRH57odZwyJzfxG0DMKRrJoPyLMyYg7zrhUtNE+MBmzyPFKp0g==
+ b=godgRYMuvcaY9HCpO/XP2mmK5mR+CCxgV8r/vKFUHfAeuwjEybBDIM1aOqzjbGVz6iwH1cVjLGFikOPD9MTf1ROtqvIIxtWAfwHuu0DXqj1+S6GFUganCIrhXGAaK6269OAXPFWY6BCyOUnXtMjPH5zJlRfHCc2P0a9XErLGFYTs3tHkcpsOeNTY5tDSwoPuMJxV1EaHu9K5qfc+ydwY0eK9bfOQkcanmBuc49gAVQ0zZeGbixYyX8hZOEe00OIjFNrcOwhV7jS7NFIjl8+z+t3HI9NbH1grHMS1p6apoSnt+f2OiRm6CbcBFsOKiaxaZV6Ai8uVpEi/F6PL5aKNXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yKXRH8rOVFwlNIkLFMsE7MbPvvHUeWBKZ/VCp+LW2B0=;
- b=eLiS8wd3C4qYH5p+2hFimdMgQ8ZVagqHywtsspugp6isdhKBbeUcnmDVe4w6PzOk18XBt1dkp1Z/7HhGk0wCFrUe4JpsZkMeB0lUEOnitOVTdSdpfzGJo+g5XeJtJURliscZNXnu+aihdXCYCD2Hj7PKjWQdkyNlVps+YxaXJyMlr3OWr2INJVjBJjap4mKHtjiziIoGxlIjbO2xBZ7sdyo+iSQBIxxN4hu0DtSzWv9P6KYt9Fqg/Y1q8ZIyBuLFIMczaf4spZZ32KSe/XVaVqTdujSjMXS7iGUxzb5VAIE9XkuFRKu4YHouxWvQsfgqWRrtkAuOgCfpSCV1zYfAvQ==
+ bh=vntxKgwio3P3xduTLf1P78GGZRL6VL+vCGbzJahz1Dk=;
+ b=iJZ4LyvPeCd5MUment+dLcuScSCaIjyIVyj5Y/GV5d0ygqow65dFny05rCSlBWcrMp6TN1SXb7Eq9YrQpB9qJJWOWgmgtSRgmG2uSxmMMZGZVGn84zpa2GieOXm63Bok7bAsmN/6x0DZpI2lQm9EHyGLJIoUwv2qMc0iuFr6QXB3R66YXcaKmKk71pw3aa9V48iUInl4naQ/eeZM8yZP8U1R0hh25fVfhlWHbz5dYyKrPPwe7LrvB9xQfjnCbclYPG02Jk1rH91xkg9teAYbglmYUOtBJBWQ1LYtFXtQ9FGkBCpBnTmxGop6Jm+mDF/qqUCGlE1lzaGWKWFCQ2sysQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
  dkim=pass header.d=toradex.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yKXRH8rOVFwlNIkLFMsE7MbPvvHUeWBKZ/VCp+LW2B0=;
- b=lhX3GGoW3lM48sGR/8rWJuIxyxarAMobZaUyaIV5EGaAoHJSL2+BkUMW79bWVJVc3ztGo7AhfiJZSWIYZGtOM8GVDAjte8RbrfCytDFRwomssrOQK6xkr0ktaIMYGqdYHZMVUGmCXMqb0zObuwbQnVqnegDtk0Sy/mjetkka890=
+ bh=vntxKgwio3P3xduTLf1P78GGZRL6VL+vCGbzJahz1Dk=;
+ b=FrkhZlam8Eua/0ySF+neMesQOZSYojZkElVLWHbHC2rrykR/A9aesUYTW0P+AshTh2l67SnySRL93GTIP62mN9UD0ajIqZ9KgubjFtc8MymBoA3mlBr7FcjgiIgs0NB5Ct8CukUsK5CmSKnK+IVUPUHFu8Ec2w6sjZMRYscV3Es=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=toradex.com;
 Received: from GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:57::6) by
@@ -53,10 +53,12 @@ Cc:     Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
         =?UTF-8?q?Jonas=20Dre=C3=9Fler?= <verdre@v0yd.nl>,
         Francesco Dolcini <francesco.dolcini@toradex.com>,
         netdev@vger.kernel.org
-Subject: [PATCH 0/2] mwifiex: Select firmware based on strapping
-Date:   Fri,  8 Apr 2022 09:50:58 +0200
-Message-Id: <20220408075100.10458-1-andrejs.cainikovs@toradex.com>
+Subject: [PATCH 1/2] mwifiex: Select firmware based on strapping
+Date:   Fri,  8 Apr 2022 09:50:59 +0200
+Message-Id: <20220408075100.10458-2-andrejs.cainikovs@toradex.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220408075100.10458-1-andrejs.cainikovs@toradex.com>
+References: <20220408075100.10458-1-andrejs.cainikovs@toradex.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: ZR0P278CA0193.CHEP278.PROD.OUTLOOK.COM
@@ -64,55 +66,55 @@ X-ClientProxiedBy: ZR0P278CA0193.CHEP278.PROD.OUTLOOK.COM
  (2603:10a6:710:57::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7c55cf88-7553-42cb-b5f7-08da19348c56
+X-MS-Office365-Filtering-Correlation-Id: 488b28cc-0752-4b77-b045-08da19348c94
 X-MS-TrafficTypeDiagnostic: ZRAP278MB0562:EE_
-X-Microsoft-Antispam-PRVS: <ZRAP278MB0562FD50775630489E8872E8E2E99@ZRAP278MB0562.CHEP278.PROD.OUTLOOK.COM>
+X-Microsoft-Antispam-PRVS: <ZRAP278MB0562A9EABD7499EA1E7536ADE2E99@ZRAP278MB0562.CHEP278.PROD.OUTLOOK.COM>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: u9qcFtTmBNP/ci+06FBjCui6xKIGBDUE0nToZWF6iuJHkbt5ZWd3tDAjersGD+4xFsLcjnHiIhb3qb8gk+bfU4zSG1r5Ts906Ufvr0i6ifNq70coSdWc5EneNpTDifQ3+pLIcbYpEwK5ZnTfwTJ2E2msEnIuLYpE5TklaO2zvvWaCvCTU0az5p4LDD1aW8CIiCUtJTZx9g42UHZahDuDgE99UMBCW80T/pZupjUGUs8AHRcfOXwh4oPdITc1xRmvQw1pDoPB5sKYKuhq6iEVWooGxPfcg2XLAFHv/VSudaRFj8xybqYHkqoLQdzmGN1zdLQTPdhimP4AMk3908kfRI6mM/4gcjGOhdOjxWNpCeNLhxAGkBMfERFUYpDsRwLca6OtW5Z3CDqD04ujIcQOXDPHRlBnspPGPinsGBo5lUAwgYKV+us3GywCnP64ACS0DjzgsJ9/yIw76yG6zN95EArEd2oGebFp7xx6z+VGZqBbPXAgaIqTtPzGDJQDkE1LxrMx1wYPKVK5sX/JKYw9Nq2porEUV7Q/Zh7rTG2mKIUrhVn8zqdqpgrgAwPnHcttSjjliv2Vmpg17JV75T/rlSYj9ElSGRjhsRVp+nf8Rmh7MT8aGJb4b5AP6Rw6cfhlPYHxSm65MU2UVZQ2iKI1GJ5DlJ6a2ktVbAHh6xt/AGcVxO+wwfCICKOTT/l84RDqY8eQxvskj/pfVaPkH182Gw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(396003)(136003)(376002)(39850400004)(346002)(366004)(54906003)(6666004)(316002)(66556008)(6506007)(66946007)(66476007)(52116002)(110136005)(5660300002)(1076003)(186003)(508600001)(4326008)(6512007)(26005)(2906002)(2616005)(36756003)(8936002)(83380400001)(6486002)(7416002)(4744005)(86362001)(8676002)(44832011)(38350700002)(38100700002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: evRqny/wrLIbnXehbj0NruDMK9mmuyFnayzBJR+qmq+EoWOg4GaelPuYnrbTEz1cYM91HiVpKpqPyttW2RhOlegznHWjCjFwVUC6dY8gr2pfYiIMnUcVFktc5xe2WNIoQQTtjGi7uW+Sw2erVFuWrupsJc6V6io9vqeOV5lgfg+YQUjA1eriZOYESVQoRp6rJoRpChVYlTwGQK5Nj+dRPaHdsJfvCeybdEkSki/kf/iRL3VrTDz81psji41/b4TpNBe7tJoKalAJpT8Xq9iqPlmvTxuQJHAKk2pL9wMiPIgCLh/nQjRRLNmgBWVZhHZdNYtSH4OFxwEjZIYKNZggzqapjMWJzz7c/Of2qnnc5XOHngSJn1ZINKqcEntdOAKJy2WTZO0pq9HHjxjCRhwYRWYMnw/afQywyt0hLpfFHMmhT/nuGSNWJsjhDZyFURCoYFIpDC3odCBLaaJTHaOObW6plATHFWce3NrhkRufpKL1K9SvNjwhzOoOeu8ED/3NSIcdr0uiDdYEMLNH0mywpDqA6L3deOYGknRW9xCJgMqVHY7aYViv9onVDKYsJZ6305HBEqZDsPZm+EgXb3o24DHSJtNi/whPVPlVhRTCbyIQi9dtahn6Ay74LbDKSTmGxKXafkrEJx/l+MjO3dxxQLA1iiDNTNja7MGoj4jz+gyMkjQ5boGTtvUGAsDL9SLMz7cwrox9U7zQMob1pTHUYEBz8k8+jZz0WJt/Xw9iuLc03NG4EmSf0qmMF0sPJFgHRUpuBJcFJ3+lXYt1x0JhLVJ9GZyp8nBWbFT/4FpzLZg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(396003)(136003)(376002)(39850400004)(346002)(366004)(54906003)(6666004)(316002)(66556008)(6506007)(66946007)(66476007)(52116002)(110136005)(5660300002)(1076003)(186003)(508600001)(4326008)(6512007)(26005)(2906002)(2616005)(36756003)(966005)(8936002)(83380400001)(6486002)(7416002)(86362001)(8676002)(44832011)(38350700002)(38100700002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QhNbq78IDDQOZbEtO7c/XoNTHCcHYhvy6GNIBPiAWsbf0WpvxXXR6FCzwvxF?=
- =?us-ascii?Q?8E5cRCknVuLbsiC0cDxqLWCHHG0p3ikrapxCcuZ4Db4ti61pHo21qKu0Pc64?=
- =?us-ascii?Q?tGheZl9hDFx94KnnNPfcyJhSJS5Rg502GgADiSyBw/yuHApXcOqI07YRLuND?=
- =?us-ascii?Q?DH4t6ZDUKlhNhCyWh4pGC9bZHooqS5bCtVvYlbLXC9UWOQQdRQbKYjEATKyh?=
- =?us-ascii?Q?TfTgmSRLntldieKTsFIt8SLytCpRNZ8XO3hoviLG+wUpehRYWtjW/4jtNTGj?=
- =?us-ascii?Q?5LCLMia8VqqmWZIqbncaYVUzDFfCaMTg0KWX0HtHynY3sEwQrtrLBtXD3Hj8?=
- =?us-ascii?Q?usEJbJaGQat9da1ypvgGIq7UQjZSXXqR1llVEF2EZm/GWH2eOA8361/U1khx?=
- =?us-ascii?Q?nrsyHx0pOnISx3cr0DYBZc3zwFfEgDaDfMQsrVkSs6DVnF4GMD7O4woyWnlz?=
- =?us-ascii?Q?xAYsq3hADO4HEvqHDxaqH9UvBQRoYvqrPThDIlQgA1X4g4uQJJ9N9zpuREt3?=
- =?us-ascii?Q?qQkzTXvfe8VaUpMOkPeasx7ofhcjc0SC5ak0ZmazJJk6+qwCj98cmjI2VQ5S?=
- =?us-ascii?Q?s7zyPtPamr8z8uMxItZSVxU1QNwoKxMMy008q+qKA1qdykRowf/e+Zogr3Zh?=
- =?us-ascii?Q?BV8tC3F7BdCYP+sFxPurgvymZUNKd2Z79q+1ZeSy2/M6MtxO0rWMJwMyuKlO?=
- =?us-ascii?Q?qY/iQm3m0A/jaTrdGm5Ein24u1iHHaVHvHyrxG0gtarnuPAgeNBczHsRFKSj?=
- =?us-ascii?Q?27UhlGCrXaDOz8Sd818cnH8h1WYAysdIsekvSJDA/L7Szdo4+JMnQc+qlb3z?=
- =?us-ascii?Q?mW/XpsUUAorLEE/dAd6pClZ340WG+orgJYVlsm3ICV3RVBCGEeJDdM0P4rw+?=
- =?us-ascii?Q?mO9bjj8jgiAbYf49r1saogvvyrOdQKKbPNk1B9/cwVqDnOj9okrzAKzksXqq?=
- =?us-ascii?Q?HxbvMAcuGbfQ4TgioqBiRRhJ+aCCnV45WPu1joNyfaswkdHnqsq2+T4GAZWr?=
- =?us-ascii?Q?R5wReyKSS1AHIyk5oeKnrWzwfl7rrvWyLXWhwaFTCsaYpYUNJLtEW2mFQfmG?=
- =?us-ascii?Q?UdBFnk7yjAp5Tds2XQN8cmABBZ8fDkH4dy+YXgKYjPfwCAK3c7LMN44uNTqV?=
- =?us-ascii?Q?j4hC4+PVsUsHlaoh/kh1oizpWa3Iwv7c40x151v5Pr4jYf4OuNkciUULHHxb?=
- =?us-ascii?Q?KuE88IET3KzAiwBiYY0zbsbVkJBlPIUeMyQPM3M6sm2F7JrY3N6BeqdYHsSt?=
- =?us-ascii?Q?CZ68OOZaFHtVSfb6vKo0WL5kIEYDFqCG3/fxHDXaEkqw9qYZULIfuDCkRJDp?=
- =?us-ascii?Q?bPMLQzPbTEHm1s80GoQ+TcfrzYnuFfFpbuchTdTpvAOeClUKxvBlBuedvQeE?=
- =?us-ascii?Q?NthTJPtNiTqfFGwrIYKXZRpOs0vqbOn6RfWJomVk5zAPP+0zyDbUKlMoct3S?=
- =?us-ascii?Q?uuusOBjS2m69neBp6cPWbYqDQNJz4BoSxRU94ENeFnA+M80cKpVp2jtVIyy1?=
- =?us-ascii?Q?FDv4LLAJI63BadSksB9ZbZPwtJ9VJ1SK6gd8lyVSa2TY+7W0/912VelC1Avc?=
- =?us-ascii?Q?AKasn7LiTbMVCOTCjhMo59aC7bXVqSAU4Z3WofHX+YVAPbeOihjp8PR8FFnj?=
- =?us-ascii?Q?hoDRQ1IdNTU7U7S3RjrJAvxvCCYVsLYiF6Q+qzTrE+MyKr+5lr3SKaYrQPcy?=
- =?us-ascii?Q?C2h///GyW95YmZdr4vUwTKl5U5JE2/lX2iY6BeG8BN887Pey54b2j5dJ8fYG?=
- =?us-ascii?Q?YZYwou1fa0QcMUY9sENb3xgcLXEiqDY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CRE8xf3ucIaWfDJjUb9fBj2ZNSqNt/2paSzFLvYFDLZj3NxLZMBW/X+EW2Vh?=
+ =?us-ascii?Q?oTRWARY3pfrNB7ahc09rQhMv7UrGRBGCy18YadiY8VQiGV9iQ33ULRoJVmZO?=
+ =?us-ascii?Q?XuqyIMqWievWdwAVF9nr98yoxjLhSX/FHk7Hgp5364sDaLLjoNAkN2UzYBTv?=
+ =?us-ascii?Q?MJtCeUfgZDgICh+2omDHsSU0wnSRG6k5QL5s+rsvoBVN9WtUzUdSbLORVPL/?=
+ =?us-ascii?Q?B/6RwyhV2ZP7xDczLR2jg+s6GGgcrTfjeWV/TEtx/Brg/02oycUYzkFz4u/o?=
+ =?us-ascii?Q?uYDdnH9WZzLVsCpgNgQBS21tDuTqaldw0r8Z7/FGgedNeGTcwkJIJGUW88Z8?=
+ =?us-ascii?Q?Jtx2NBgjcxoFuGNLX5hkOk0WdspnOI03QsahblDgDXGXlAg6vtnEWuMT6RSO?=
+ =?us-ascii?Q?TpXl/N/VwH86ExhMjIywrQ6i14Cig6LssKv5SmoLHeB02rWXlkcOo9jCwOIx?=
+ =?us-ascii?Q?3Hq1MZi+FtVhVhBSKn6Kw/dgK883QKU45NG498r8jkyDVF7VM3FfUbCFmvrQ?=
+ =?us-ascii?Q?dImUHks+2PvKbHm4s3svCcTTnJc3hfvYKqGDhn/ySSImWMnR3XOqKBWF97dr?=
+ =?us-ascii?Q?XLKt1HBhyeu3EVHkNRnkIrDoda2byq5UObo3us8dg1FXJ/ZETAbUbzR9nhwg?=
+ =?us-ascii?Q?KSv/taQpq+jz/CB2ylGqAEIu+fp394WuazcGbeBsgocyVcBKmiamFskIAAg/?=
+ =?us-ascii?Q?0MBGz/Z/0JnU4H/PGM+5NJKjutnB/RQ5ZMPVp6hdaWWMZDwZ1pwiafgTYZZB?=
+ =?us-ascii?Q?0UfQ4czNYKW2/nOMel6TyyuD+Sc2lnmBvVzbOONhOGk3HPlxVozEJGLrkKxQ?=
+ =?us-ascii?Q?JDt06OZXpwLpYZkqJPNzaHLf1pWJYpnHQ/NSQkng5HsVQTZiqhp/8qVFMZSw?=
+ =?us-ascii?Q?QhKRSTVtm0xVZ0yv8nQrVTzESQ7MUaH6qz7QXVaY1cjCqTcxUIanlUziraGh?=
+ =?us-ascii?Q?8QoN4GNLa79WAeU9uznFeHUXYwjZ/1QulRpwtK4bZZPRMw0uM/f5OCMr0XEo?=
+ =?us-ascii?Q?OlIH2g8YXxFYbYE8A1K6Xgeu5AWyrNxEumVoDPFBl9rxj3p6gmpMzh9KdGKr?=
+ =?us-ascii?Q?M3we0opZEhngoYyVrLoSNBakltpwfBXlHvZA1st485ACeAvCCmTx+OkyDfb4?=
+ =?us-ascii?Q?fsSDyksXrRz81fqkUG/g5QEW9crDnn0PEE/aUejpRFntQOuLoS/Qn4tETUml?=
+ =?us-ascii?Q?POfT9Cra3oCfFH9Bom86R1ilNhZkUHmW+cFG6JcMb/jqQqURkZg78a/wNDJ/?=
+ =?us-ascii?Q?4/BJY3SXTxMc/C8vZLO6FfRNq+70SfvFv3Z4681Hc9muNnGw/ath/hS0vdRU?=
+ =?us-ascii?Q?Cisyt13O0rp+U5FeLDuVwmutR+JH6Rfhl5NIk1RJz4UYuzM0o4D73kdReEsm?=
+ =?us-ascii?Q?Jhr5V3johIFiE/jXPsbmbqk5wDx6nwiQUO2klcGs8yYzn+tqUTHd0rvMCujw?=
+ =?us-ascii?Q?qPT0ua1seLfMdptrZ7WPxeSHWE/HR0oJMrbScC7Snh3CKYVG3TEyrQVuHamZ?=
+ =?us-ascii?Q?X9V9AC7KC5Ai678AP9iH8rzT6Xh/4lDVON8fQ4jmRHRTiiGp3ypHjH/DjEmf?=
+ =?us-ascii?Q?soKXrk2/DPQ/2qGCke00Wf2Zid6F4qa02ieZwSVzBjHGdUcrmJXDDIEE7Iyb?=
+ =?us-ascii?Q?/W6mzdIHMMsGDfZ8UGYn5NwfapTghqhIkvFrerBCX0YvIzecs8h7ezfe4VrZ?=
+ =?us-ascii?Q?JYaOnG7Nz7Z/O17ty0H3trF75Vlu51RbGI7BUYjbyOs0XitdCgIsyuAXhScF?=
+ =?us-ascii?Q?8mj6e0bNBcrF4An8hvoUM/h6QL+SO6E=3D?=
 X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c55cf88-7553-42cb-b5f7-08da19348c56
+X-MS-Exchange-CrossTenant-Network-Message-Id: 488b28cc-0752-4b77-b045-08da19348c94
 X-MS-Exchange-CrossTenant-AuthSource: GVAP278MB0929.CHEP278.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 07:51:11.0926
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2022 07:51:11.4988
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 545QCZL/IurrAN0E/B4hQN6HSQhDzletkrHYh3+V55xoDDx30IB5UiLLr4jSHDTwHUp6NmGZlNKmYT/FnBwtGQbiyPIV50so1fUUqdPPXUU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: EciaBbuO89zon6OGgv5KsbPIErwGLSu//iWySoRLCxGZg/i6Hpe8xYo4jSSIdMUcS02ELe9LP5LNcD2FtSdlJsnoriwiIj6UJH7CGG2prg8=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0562
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -124,17 +126,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set introduces a way to automatically select appropriate
-firmware depending of the host connection method.
+Some WiFi/Bluetooth modules might have different host connection
+options, allowing to either use SDIO for both WiFi and Bluetooth,
+or SDIO for WiFi and UART for Bluetooth. It is possible to detect
+whether a module has SDIO-SDIO or SDIO-UART connection by reading
+its host strap register.
 
-Andrejs Cainikovs (2):
-  mwifiex: Select firmware based on strapping
-  mwifiex: Add SD8997 SDIO-UART firmware
+This change introduces a way to automatically select appropriate
+firmware depending of the connection method, and removes a need
+of symlinking or overwriting the original firmware file with a
+required one.
 
- drivers/net/wireless/marvell/mwifiex/sdio.c | 20 +++++++++++++++++++-
- drivers/net/wireless/marvell/mwifiex/sdio.h |  6 ++++++
- 2 files changed, 25 insertions(+), 1 deletion(-)
+Host strap register used in this commit comes from the NXP driver [1]
+hosted at Code Aurora.
 
+[1] https://source.codeaurora.org/external/imx/linux-imx/tree/drivers/net/wireless/nxp/mxm_wifiex/wlan_src/mlinux/moal_sdio_mmc.c?h=rel_imx_5.4.70_2.3.2&id=688b67b2c7220b01521ffe560da7eee33042c7bd#n1274
+
+Signed-off-by: Andrejs Cainikovs <andrejs.cainikovs@toradex.com>
+---
+ drivers/net/wireless/marvell/mwifiex/sdio.c | 18 +++++++++++++++++-
+ drivers/net/wireless/marvell/mwifiex/sdio.h |  5 +++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
+index bde9e4bbfffe..23160d179485 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.c
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
+@@ -182,6 +182,9 @@ static const struct mwifiex_sdio_card_reg mwifiex_reg_sd8997 = {
+ 	.host_int_rsr_reg = 0x4,
+ 	.host_int_status_reg = 0x0C,
+ 	.host_int_mask_reg = 0x08,
++	.host_strap_reg = 0xF4,
++	.host_strap_mask = 0x01,
++	.host_strap_value = 0x00,
+ 	.status_reg_0 = 0xE8,
+ 	.status_reg_1 = 0xE9,
+ 	.sdio_int_mask = 0xff,
+@@ -536,6 +539,7 @@ mwifiex_sdio_probe(struct sdio_func *func, const struct sdio_device_id *id)
+ 		struct mwifiex_sdio_device *data = (void *)id->driver_data;
+ 
+ 		card->firmware = data->firmware;
++		card->firmware_sdiouart = data->firmware_sdiouart;
+ 		card->reg = data->reg;
+ 		card->max_ports = data->max_ports;
+ 		card->mp_agg_pkt_limit = data->mp_agg_pkt_limit;
+@@ -2439,6 +2443,7 @@ static int mwifiex_register_dev(struct mwifiex_adapter *adapter)
+ 	int ret;
+ 	struct sdio_mmc_card *card = adapter->card;
+ 	struct sdio_func *func = card->func;
++	const char *firmware = card->firmware;
+ 
+ 	/* save adapter pointer in card */
+ 	card->adapter = adapter;
+@@ -2455,7 +2460,18 @@ static int mwifiex_register_dev(struct mwifiex_adapter *adapter)
+ 		return ret;
+ 	}
+ 
+-	strcpy(adapter->fw_name, card->firmware);
++	/* Select correct firmware (sdsd or sdiouart) firmware based on the strapping
++	 * option
++	 */
++	if (card->firmware_sdiouart) {
++		u8 val;
++
++		mwifiex_read_reg(adapter, card->reg->host_strap_reg, &val);
++		if ((val & card->reg->host_strap_mask) == card->reg->host_strap_value)
++			firmware = card->firmware_sdiouart;
++	}
++	strcpy(adapter->fw_name, firmware);
++
+ 	if (card->fw_dump_enh) {
+ 		adapter->mem_type_mapping_tbl = generic_mem_type_map;
+ 		adapter->num_mem_types = 1;
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.h b/drivers/net/wireless/marvell/mwifiex/sdio.h
+index 5648512c9300..ad2c28cbb630 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.h
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.h
+@@ -196,6 +196,9 @@ struct mwifiex_sdio_card_reg {
+ 	u8 host_int_rsr_reg;
+ 	u8 host_int_status_reg;
+ 	u8 host_int_mask_reg;
++	u8 host_strap_reg;
++	u8 host_strap_mask;
++	u8 host_strap_value;
+ 	u8 status_reg_0;
+ 	u8 status_reg_1;
+ 	u8 sdio_int_mask;
+@@ -241,6 +244,7 @@ struct sdio_mmc_card {
+ 
+ 	struct completion fw_done;
+ 	const char *firmware;
++	const char *firmware_sdiouart;
+ 	const struct mwifiex_sdio_card_reg *reg;
+ 	u8 max_ports;
+ 	u8 mp_agg_pkt_limit;
+@@ -274,6 +278,7 @@ struct sdio_mmc_card {
+ 
+ struct mwifiex_sdio_device {
+ 	const char *firmware;
++	const char *firmware_sdiouart;
+ 	const struct mwifiex_sdio_card_reg *reg;
+ 	u8 max_ports;
+ 	u8 mp_agg_pkt_limit;
 -- 
 2.25.1
 
