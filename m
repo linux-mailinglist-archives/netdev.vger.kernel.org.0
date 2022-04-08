@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 780BC4F9CC9
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:32:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92CF74F9CC6
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238756AbiDHSeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 14:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
+        id S238760AbiDHSeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 14:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238751AbiDHSds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:33:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4F1ED939
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 11:31:43 -0700 (PDT)
+        with ESMTP id S238736AbiDHSeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:34:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0735BF1E96
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 11:31:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A55CC62245
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 18:31:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACF4AC385A6;
-        Fri,  8 Apr 2022 18:31:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF737B82CEF
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 18:31:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 361A7C385A5;
+        Fri,  8 Apr 2022 18:31:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649442702;
-        bh=Eug1iV3vH8lBdrXyE9dzkd8xYrWajqALIbQRlvSUX80=;
+        bh=WNrn0CbN27hd7Ig/SopJQIJOO8Leq09D6reEy3BW7Ho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NdryXEP1hlhb6Q6iunFLnzYVD1QYVyONe+Fku/C7MkFy5gCWpzQbO9N/2V/DPtxRm
-         KKuufdxkot+ckuHKNrEsUFxj+GoygFFgl9WK59EYsIW+K88nKqvbk8GlhPDZ56LThe
-         aL+EMQgn902Ke8PMoGkc3C+zVdyMME0FZuOgK0T/kGgn1IwNAY8p4Z16LIJFhRKSMH
-         Vw2vaebyPlKir3Qe0PT+OFYG5AXSq5giMBIIhTYgEuioes/6ZPFm7EkK4+JJGyYMnB
-         OHjYmryPdxcb1T3WZvi5hDgmHhZpBEQN64gquhdMPBVpgMS9OkCKVpfHH8vKzf1tg0
-         a6mUNyW894mlg==
+        b=GlteVsjiDEwYmWusepe+2beE6PFn1/zG4Zjp19JS9hNooSq8j8C/ZHo/UJVNyrxgu
+         Utori7yYDbtoEf/urjJSeDBbUs/Lom73H7a9GuBiVdej3qMcsKflFcKFmT4GKPl42c
+         1qI3gtYh9kv7kqZ+JAbvYICLl+RzFZkQbueD6oZ1HM4QKn/AvcbA85iCKnbBRl0+2v
+         lPmQn6Q4YQ8RJhfp+9w8woDqYQigOEvpM5aNz7FG0exroPzBZkSN4RyY2m0yCKdN1W
+         F5TnZ0TtqbiexA0l4zO8zfeEO03ZYLzeU9cgTDYjPbgErQxAD4L/4L++UK6+tUZntw
+         v4SGF/NqT53dg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net, pabeni@redhat.com
 Cc:     netdev@vger.kernel.org, borisp@nvidia.com,
         john.fastabend@gmail.com, daniel@iogearbox.net,
         vfedorenko@novek.ru, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 07/11] tls: rx: don't track the async count
-Date:   Fri,  8 Apr 2022 11:31:30 -0700
-Message-Id: <20220408183134.1054551-8-kuba@kernel.org>
+Subject: [PATCH net-next 08/11] tls: rx: pull most of zc check out of the loop
+Date:   Fri,  8 Apr 2022 11:31:31 -0700
+Message-Id: <20220408183134.1054551-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220408183134.1054551-1-kuba@kernel.org>
 References: <20220408183134.1054551-1-kuba@kernel.org>
@@ -54,75 +54,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We track both if the last record was handled by async crypto
-and how many records were async. This is not necessary. We
-implicitly assume once crypto goes async it will stay that
-way, otherwise we'd reorder records. So just track if we're
-in async mode, the exact number of records is not necessary.
-
-This change also forces us into "async" mode more consistently
-in case crypto ever decided to interleave async and sync.
+Most of the conditions deciding if zero-copy can be used
+do not change throughout the iterations, so pre-calculate
+them.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- net/tls/tls_sw.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ net/tls/tls_sw.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 6f17f599a6d4..183e5ec292a8 100644
+index 183e5ec292a8..5ad0b2505988 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -1751,13 +1751,13 @@ int tls_sw_recvmsg(struct sock *sk,
- 	struct tls_sw_context_rx *ctx = tls_sw_ctx_rx(tls_ctx);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
- 	struct sk_psock *psock;
--	int num_async, pending;
- 	unsigned char control = 0;
- 	ssize_t decrypted = 0;
- 	struct strp_msg *rxm;
- 	struct tls_msg *tlm;
- 	struct sk_buff *skb;
- 	ssize_t copied = 0;
-+	bool async = false;
- 	int target, err = 0;
- 	long timeo;
+@@ -1763,6 +1763,7 @@ int tls_sw_recvmsg(struct sock *sk,
  	bool is_kvec = iov_iter_is_kvec(&msg->msg_iter);
-@@ -1789,12 +1789,10 @@ int tls_sw_recvmsg(struct sock *sk,
+ 	bool is_peek = flags & MSG_PEEK;
+ 	bool bpf_strp_enabled;
++	bool zc_capable;
+ 
+ 	flags |= nonblock;
+ 
+@@ -1788,6 +1789,8 @@ int tls_sw_recvmsg(struct sock *sk,
+ 	len = len - copied;
  	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
  
++	zc_capable = !bpf_strp_enabled && !is_kvec && !is_peek &&
++		     prot->version != TLS_1_3_VERSION;
  	decrypted = 0;
--	num_async = 0;
  	while (len && (decrypted + copied < target || ctx->recv_pkt)) {
  		struct tls_decrypt_arg darg = {};
- 		bool retain_skb = false;
- 		int to_decrypt, chunk;
--		bool async;
+@@ -1814,10 +1817,8 @@ int tls_sw_recvmsg(struct sock *sk,
  
- 		skb = tls_wait_data(sk, psock, flags & MSG_DONTWAIT, timeo, &err);
- 		if (!skb) {
-@@ -1834,10 +1832,8 @@ int tls_sw_recvmsg(struct sock *sk,
- 			goto recv_end;
- 		}
+ 		to_decrypt = rxm->full_len - prot->overhead_size;
  
--		if (err == -EINPROGRESS) {
-+		if (err == -EINPROGRESS)
- 			async = true;
--			num_async++;
--		}
+-		if (to_decrypt <= len && !is_kvec && !is_peek &&
+-		    tlm->control == TLS_RECORD_TYPE_DATA &&
+-		    prot->version != TLS_1_3_VERSION &&
+-		    !bpf_strp_enabled)
++		if (zc_capable && to_decrypt <= len &&
++		    tlm->control == TLS_RECORD_TYPE_DATA)
+ 			darg.zc = true;
  
- 		/* If the type of records being processed is not known yet,
- 		 * set it to record type just dequeued. If it is already known,
-@@ -1911,7 +1907,9 @@ int tls_sw_recvmsg(struct sock *sk,
- 	}
- 
- recv_end:
--	if (num_async) {
-+	if (async) {
-+		int pending;
-+
- 		/* Wait for all previously submitted records to be decrypted */
- 		spin_lock_bh(&ctx->decrypt_compl_lock);
- 		reinit_completion(&ctx->async_wait.completion);
+ 		/* Do not use async mode if record is non-data */
 -- 
 2.34.1
 
