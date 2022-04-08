@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 677B34F9DC1
+	by mail.lfdr.de (Postfix) with ESMTP id AFCB14F9DC2
 	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 21:46:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiDHTsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 15:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48692 "EHLO
+        id S232814AbiDHTs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 15:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230264AbiDHTsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 15:48:16 -0400
+        with ESMTP id S232796AbiDHTsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 15:48:17 -0400
 Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B8CB06
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 12:46:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CE1114
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 12:46:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649447172; x=1680983172;
+  t=1649447173; x=1680983173;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/4vjDVJ7ph3o8sUs30XSct9CMH0dy4bXdz1/3w7fzo0=;
-  b=KN7ztfRbXFjdSg0/44cboc26hh1Ic/fFTQcoBkxrrqz1NrYF+gC8n9IW
-   Zddi6T+E/YFaQoHNVvvPbg+t+pG/7qmz92DczDprdxQSl5kyVCd1VyJzn
-   I/vjpmtbEsaAogQH3k4aV2y7wJPYSps7WxB/Zt0TRClnq9UOoKBsCqn1s
-   mpE1HaI/szSRD7cC/KfkaoUBicqgYCK++obU86auPcjzyEmxJj1PizYHE
-   y0KxF6RG7zPT2kiTDb58SZoV1/VLT58/peqFCjPwpQJVxbhztYSw/Pzl4
-   He2+Jw/eX3EmQOo4rpUf9Hl8zXtFiOUp1AMtJBY6rHdZ2tdHVK6c/7qVT
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="322365308"
+  bh=8mvYeN//jyhruds3zSZPUfIAa/8HM8kPyXTpqdPQdT0=;
+  b=Qs0mbOixiiIftEdqmt2pDkX2LJwiHm7PDI4ksq0qjSsPBpxucsRHOGPg
+   HKuNfmH+IgC9dQi1PrqtfcpmborTbYtRL9AcHV3rHkoZIvV6XKiNBQCtS
+   Veo++yFhA+40khzX+fYNt7RPAGlPMGhg9zw/+vCdOPVP0YZuRFrLfcnaS
+   llGjT+axibMAZ5kaIPR2VZmjrUCGmQbAylfx6pIFf2wFrTmzv0vD1HzAD
+   KDes/dVv6zIgEx4AzxPVOHDcUeXspt8Z2fJZqKBq2A4Go9+f0Q2P20C4j
+   yKzzXTv+OjOX+p56aWC9pHlLZPfs6yvTvBae1DCLnmjJMfSvVDs4z42vN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="322365311"
 X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="322365308"
+   d="scan'208";a="322365311"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 12:46:10 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 12:46:11 -0700
 X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="659602172"
+   d="scan'208";a="659602177"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.134.75.99])
   by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 12:46:10 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -42,9 +42,9 @@ Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 6/8] mptcp: remove locking in mptcp_diag_fill_info
-Date:   Fri,  8 Apr 2022 12:45:59 -0700
-Message-Id: <20220408194601.305969-7-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 7/8] mptcp: listen diag dump support
+Date:   Fri,  8 Apr 2022 12:46:00 -0700
+Message-Id: <20220408194601.305969-8-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220408194601.305969-1-mathew.j.martineau@linux.intel.com>
 References: <20220408194601.305969-1-mathew.j.martineau@linux.intel.com>
@@ -62,46 +62,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-Problem is that listener iteration would call this from atomic context
-so this locking is not allowed.
+makes 'ss -Ml' show mptcp listen sockets.
 
-One way is to drop locks before calling the helper, but afaics the lock
-isn't really needed, all values are fetched via READ_ONCE().
+Iterate over the tcp listen sockets and pick those that have mptcp ulp
+info attached.
+
+mptcp_diag_get_info() is modified to prefer msk->first for mptcp sockets
+in listen state.  This reports accurate number for recv and send queue
+(pending / max connection backlog counters).
+
+Sample output:
+ss -Mil
+State        Recv-Q Send-Q Local Address:Port  Peer Address:Port
+LISTEN       0      20     127.0.0.1:12000     0.0.0.0:*
+         subflows_max:2
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/sockopt.c | 6 ------
- 1 file changed, 6 deletions(-)
+ net/mptcp/mptcp_diag.c | 91 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
 
-diff --git a/net/mptcp/sockopt.c b/net/mptcp/sockopt.c
-index f949d22f52bd..826b0c1dae98 100644
---- a/net/mptcp/sockopt.c
-+++ b/net/mptcp/sockopt.c
-@@ -853,15 +853,11 @@ static int mptcp_getsockopt_first_sf_only(struct mptcp_sock *msk, int level, int
+diff --git a/net/mptcp/mptcp_diag.c b/net/mptcp/mptcp_diag.c
+index c4992eeb67d8..dbb6d876a203 100644
+--- a/net/mptcp/mptcp_diag.c
++++ b/net/mptcp/mptcp_diag.c
+@@ -69,8 +69,83 @@ static int mptcp_diag_dump_one(struct netlink_callback *cb,
+ struct mptcp_diag_ctx {
+ 	long s_slot;
+ 	long s_num;
++	unsigned int l_slot;
++	unsigned int l_num;
+ };
  
- void mptcp_diag_fill_info(struct mptcp_sock *msk, struct mptcp_info *info)
++static void mptcp_diag_dump_listeners(struct sk_buff *skb, struct netlink_callback *cb,
++				      const struct inet_diag_req_v2 *r,
++				      bool net_admin)
++{
++	struct inet_diag_dump_data *cb_data = cb->data;
++	struct mptcp_diag_ctx *diag_ctx = (void *)cb->ctx;
++	struct nlattr *bc = cb_data->inet_diag_nla_bc;
++	struct net *net = sock_net(skb->sk);
++	int i;
++
++	for (i = diag_ctx->l_slot; i < INET_LHTABLE_SIZE; i++) {
++		struct inet_listen_hashbucket *ilb;
++		struct hlist_nulls_node *node;
++		struct sock *sk;
++		int num = 0;
++
++		ilb = &tcp_hashinfo.listening_hash[i];
++
++		rcu_read_lock();
++		spin_lock(&ilb->lock);
++		sk_nulls_for_each(sk, node, &ilb->nulls_head) {
++			const struct mptcp_subflow_context *ctx = mptcp_subflow_ctx(sk);
++			struct inet_sock *inet = inet_sk(sk);
++			int ret;
++
++			if (num < diag_ctx->l_num)
++				goto next_listen;
++
++			if (!ctx || strcmp(inet_csk(sk)->icsk_ulp_ops->name, "mptcp"))
++				goto next_listen;
++
++			sk = ctx->conn;
++			if (!sk || !net_eq(sock_net(sk), net))
++				goto next_listen;
++
++			if (r->sdiag_family != AF_UNSPEC &&
++			    sk->sk_family != r->sdiag_family)
++				goto next_listen;
++
++			if (r->id.idiag_sport != inet->inet_sport &&
++			    r->id.idiag_sport)
++				goto next_listen;
++
++			if (!refcount_inc_not_zero(&sk->sk_refcnt))
++				goto next_listen;
++
++			ret = sk_diag_dump(sk, skb, cb, r, bc, net_admin);
++
++			sock_put(sk);
++
++			if (ret < 0) {
++				spin_unlock(&ilb->lock);
++				rcu_read_unlock();
++				diag_ctx->l_slot = i;
++				diag_ctx->l_num = num;
++				return;
++			}
++			diag_ctx->l_num = num + 1;
++			num = 0;
++next_listen:
++			++num;
++		}
++		spin_unlock(&ilb->lock);
++		rcu_read_unlock();
++
++		cond_resched();
++		diag_ctx->l_num = 0;
++	}
++
++	diag_ctx->l_num = 0;
++	diag_ctx->l_slot = i;
++}
++
+ static void mptcp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+ 			    const struct inet_diag_req_v2 *r)
  {
--	struct sock *sk = &msk->sk.icsk_inet.sk;
- 	u32 flags = 0;
--	bool slow;
- 	u8 val;
- 
- 	memset(info, 0, sizeof(*info));
- 
--	slow = lock_sock_fast(sk);
--
- 	info->mptcpi_subflows = READ_ONCE(msk->pm.subflows);
- 	info->mptcpi_add_addr_signal = READ_ONCE(msk->pm.add_addr_signaled);
- 	info->mptcpi_add_addr_accepted = READ_ONCE(msk->pm.add_addr_accepted);
-@@ -882,8 +878,6 @@ void mptcp_diag_fill_info(struct mptcp_sock *msk, struct mptcp_info *info)
- 	info->mptcpi_snd_una = READ_ONCE(msk->snd_una);
- 	info->mptcpi_rcv_nxt = READ_ONCE(msk->ack_seq);
- 	info->mptcpi_csum_enabled = READ_ONCE(msk->csum_enabled);
--
--	unlock_sock_fast(sk, slow);
+@@ -114,6 +189,9 @@ static void mptcp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
+ 		}
+ 		cond_resched();
+ 	}
++
++	if ((r->idiag_states & TCPF_LISTEN) && r->id.idiag_dport == 0)
++		mptcp_diag_dump_listeners(skb, cb, r, net_admin);
  }
- EXPORT_SYMBOL_GPL(mptcp_diag_fill_info);
+ 
+ static void mptcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
+@@ -124,6 +202,19 @@ static void mptcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
+ 
+ 	r->idiag_rqueue = sk_rmem_alloc_get(sk);
+ 	r->idiag_wqueue = sk_wmem_alloc_get(sk);
++
++	if (inet_sk_state_load(sk) == TCP_LISTEN) {
++		struct sock *lsk = READ_ONCE(msk->first);
++
++		if (lsk) {
++			/* override with settings from tcp listener,
++			 * so Send-Q will show accept queue.
++			 */
++			r->idiag_rqueue = READ_ONCE(lsk->sk_ack_backlog);
++			r->idiag_wqueue = READ_ONCE(lsk->sk_max_ack_backlog);
++		}
++	}
++
+ 	if (!info)
+ 		return;
  
 -- 
 2.35.1
