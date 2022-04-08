@@ -2,137 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EAEE4F8AAC
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAFFB4F8B98
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 02:56:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232907AbiDHAil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 20:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
+        id S232925AbiDHAjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 20:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232174AbiDHAij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 20:38:39 -0400
-Received: from zju.edu.cn (spam.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49B83106136;
-        Thu,  7 Apr 2022 17:36:35 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Fri, 8 Apr 2022 08:35:49
- +0800 (GMT+08:00)
-X-Originating-IP: [10.192.67.219]
-Date:   Fri, 8 Apr 2022 08:35:49 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     "Dan Carpenter" <dan.carpenter@oracle.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "chris@zankel.net" <chris@zankel.net>,
-        "jcmvbkbc@gmail.com" <jcmvbkbc@gmail.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "wg@grandegger.com" <wg@grandegger.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "jes@trained-monkey.org" <jes@trained-monkey.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "jirislaby@kernel.org" <jirislaby@kernel.org>,
-        "alexander.deucher@amd.com" <alexander.deucher@amd.com>,
-        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-hippi@sunsite.dk" <linux-hippi@sunsite.dk>,
-        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Subject: Re: RE: Re: [PATCH 09/11] drivers: infiniband: hw: Fix deadlock in
- irdma_cleanup_cm_core()
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.8 build 20200806(7a9be5e8)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <MWHPR11MB00293D107510E728769874DFE9E69@MWHPR11MB0029.namprd11.prod.outlook.com>
-References: <cover.1649310812.git.duoming@zju.edu.cn>
- <4069b99042d28c8e51b941d9e698b99d1656ed33.1649310812.git.duoming@zju.edu.cn>
- <20220407112455.GK3293@kadam>
- <1be0c02d.3f701.1800416ef60.Coremail.duoming@zju.edu.cn>
- <20220407142908.GO12805@kadam>
- <MWHPR11MB00293D107510E728769874DFE9E69@MWHPR11MB0029.namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S232174AbiDHAjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 20:39:32 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE78108BED;
+        Thu,  7 Apr 2022 17:37:28 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1649378246;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to; bh=v8wAVqTjtr3S+yNv24Qoju4enrtKRg9Vl4AVQdzomKw=;
+        b=EMhH88jCeXdBb1SKvMaZwP6woFbq2hzV0FAO3tm1K9W1Upm0GFyR+9p7LY0jhTcEra8UlP
+        Z8rAb+JxBHZpZBq7+l3VMyr84gBs4Khq/9tCFMsboYlFJp9d8MmEoyv5XW31TpnbsnUOkt
+        3CkV014aq4TYNi8CFJB4XyTdQZrIadAGOo7Zx8nB/yUvxgHNOrC9ffZgHug/ZZV0LVJ/Do
+        dT/gys9+jRQiQTki4Q31k/Ye/f2xWLRFbZLlSXkJL7oWca/RItkDw5TriDM4sLOUb0M/rH
+        41UbjLf2EaC2yQDiCv+mzWhZL3erlEdwl9dcaenFxtO1nG8dwiyDhlnTrudrTw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1649378246;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to; bh=v8wAVqTjtr3S+yNv24Qoju4enrtKRg9Vl4AVQdzomKw=;
+        b=l+aIohejJ8RgDSgG7Yq473re5HP4cGl8sszvF4o4IpgtFIq89KPjotDtzACMNeGJIJH38R
+        pUUKwix4YDTBIGDg==
+To:     Artem Savkov <asavkov@redhat.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Anna-Maria Behnsen <anna-maria@linutronix.de>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        linux-kernel@vger.kernel.org, Artem Savkov <asavkov@redhat.com>
+Subject: Re: [PATCH v4 1/2] timer: add a function to adjust timeouts to be
+ upper bound
+In-Reply-To: <20220407075242.118253-2-asavkov@redhat.com>
+Date:   Fri, 08 Apr 2022 02:37:25 +0200
+Message-ID: <87zgkwjtq2.ffs@tglx>
 MIME-Version: 1.0
-Message-ID: <7775f2d3.3fd15.18006994530.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgCHj6dlg09ist7pAA--.33797W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0OAVZdtZFLwwACsl
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDcgQXByIDIwMjIgMTc6MzY6MTIgKzAwMDAgU2FsZWVtLCBTaGlyYXog
-d3JvdGU6CiAKPiA+IFN1YmplY3Q6IFJlOiBSZTogW1BBVENIIDA5LzExXSBkcml2ZXJzOiBpbmZp
-bmliYW5kOiBodzogRml4IGRlYWRsb2NrIGluCj4gPiBpcmRtYV9jbGVhbnVwX2NtX2NvcmUoKQo+
-ID4gCj4gPiBPbiBUaHUsIEFwciAwNywgMjAyMiBhdCAwODo1NDoxM1BNICswODAwLCBkdW9taW5n
-QHpqdS5lZHUuY24gd3JvdGU6Cj4gPiA+IEhlbGxvLAo+ID4gPgo+ID4gPiBPbiBUaHUsIDcgQXBy
-IDIwMjIgMTQ6MjQ6NTYgKzAzMDAgRGFuIENhcnBlbnRlciB3cm90ZToKPiA+ID4KPiA+ID4gPiA+
-IFRoZXJlIGlzIGEgZGVhZGxvY2sgaW4gaXJkbWFfY2xlYW51cF9jbV9jb3JlKCksIHdoaWNoIGlz
-IHNob3duCj4gPiA+ID4gPiBiZWxvdzoKPiA+ID4gPiA+Cj4gPiA+ID4gPiAgICAoVGhyZWFkIDEp
-ICAgICAgICAgICAgICB8ICAgICAgKFRocmVhZCAyKQo+ID4gPiA+ID4gICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgfCBpcmRtYV9zY2hlZHVsZV9jbV90aW1lcigpCj4gPiA+ID4gPiBpcmRtYV9j
-bGVhbnVwX2NtX2NvcmUoKSAgICB8ICBhZGRfdGltZXIoKQo+ID4gPiA+ID4gIHNwaW5fbG9ja19p
-cnFzYXZlKCkgLy8oMSkgfCAgKHdhaXQgYSB0aW1lKQo+ID4gPiA+ID4gIC4uLiAgICAgICAgICAg
-ICAgICAgICAgICAgfCBpcmRtYV9jbV90aW1lcl90aWNrKCkKPiA+ID4gPiA+ICBkZWxfdGltZXJf
-c3luYygpICAgICAgICAgIHwgIHNwaW5fbG9ja19pcnFzYXZlKCkgLy8oMikKPiA+ID4gPiA+ICAo
-d2FpdCB0aW1lciB0byBzdG9wKSAgICAgIHwgIC4uLgo+ID4gPiA+ID4KPiA+ID4gPiA+IFdlIGhv
-bGQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlvbiAoMSkgb2YgdGhyZWFkIDEgYW5kIHVzZQo+
-ID4gPiA+ID4gZGVsX3RpbWVyX3N5bmMoKSB0byB3YWl0IHRpbWVyIHRvIHN0b3AsIGJ1dCB0aW1l
-ciBoYW5kbGVyIGFsc28KPiA+ID4gPiA+IG5lZWQgY21fY29yZS0+aHRfbG9jayBpbiBwb3NpdGlv
-biAoMikgb2YgdGhyZWFkIDIuCj4gPiA+ID4gPiBBcyBhIHJlc3VsdCwgaXJkbWFfY2xlYW51cF9j
-bV9jb3JlKCkgd2lsbCBibG9jayBmb3JldmVyLgo+ID4gPiA+ID4KPiA+ID4gPiA+IFRoaXMgcGF0
-Y2ggZXh0cmFjdHMgZGVsX3RpbWVyX3N5bmMoKSBmcm9tIHRoZSBwcm90ZWN0aW9uIG9mCj4gPiA+
-ID4gPiBzcGluX2xvY2tfaXJxc2F2ZSgpLCB3aGljaCBjb3VsZCBsZXQgdGltZXIgaGFuZGxlciB0
-byBvYnRhaW4gdGhlCj4gPiA+ID4gPiBuZWVkZWQgbG9jay4KPiA+ID4gPiA+Cj4gPiA+ID4gPiBT
-aWduZWQtb2ZmLWJ5OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4KPiA+ID4gPiA+
-IC0tLQo+ID4gPiA+ID4gIGRyaXZlcnMvaW5maW5pYmFuZC9ody9pcmRtYS9jbS5jIHwgNSArKysr
-LQo+ID4gPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
-LSkKPiA+ID4gPiA+Cj4gPiA+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbmZpbmliYW5kL2h3
-L2lyZG1hL2NtLmMKPiA+ID4gPiA+IGIvZHJpdmVycy9pbmZpbmliYW5kL2h3L2lyZG1hL2NtLmMK
-PiA+ID4gPiA+IGluZGV4IGRlZGIzYjdlZGQ4Li4wMTlkZDhiZmUwOCAxMDA2NDQKPiA+ID4gPiA+
-IC0tLSBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9pcmRtYS9jbS5jCj4gPiA+ID4gPiArKysgYi9k
-cml2ZXJzL2luZmluaWJhbmQvaHcvaXJkbWEvY20uYwo+ID4gPiA+ID4gQEAgLTMyNTIsOCArMzI1
-MiwxMSBAQCB2b2lkIGlyZG1hX2NsZWFudXBfY21fY29yZShzdHJ1Y3QKPiA+IGlyZG1hX2NtX2Nv
-cmUgKmNtX2NvcmUpCj4gPiA+ID4gPiAgCQlyZXR1cm47Cj4gPiA+ID4gPgo+ID4gPiA+ID4gIAlz
-cGluX2xvY2tfaXJxc2F2ZSgmY21fY29yZS0+aHRfbG9jaywgZmxhZ3MpOwo+ID4gPiA+ID4gLQlp
-ZiAodGltZXJfcGVuZGluZygmY21fY29yZS0+dGNwX3RpbWVyKSkKPiA+ID4gPiA+ICsJaWYgKHRp
-bWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1lcikpIHsKPiA+ID4gPiA+ICsJCXNwaW5fdW5s
-b2NrX2lycXJlc3RvcmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZsYWdzKTsKPiA+ID4gPiA+ICAJCWRl
-bF90aW1lcl9zeW5jKCZjbV9jb3JlLT50Y3BfdGltZXIpOwo+ID4gPiA+ID4gKwkJc3Bpbl9sb2Nr
-X2lycXNhdmUoJmNtX2NvcmUtPmh0X2xvY2ssIGZsYWdzKTsKPiA+ID4gPiA+ICsJfQo+ID4gPiA+
-ID4gIAlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjbV9jb3JlLT5odF9sb2NrLCBmbGFncyk7Cj4g
-PiA+ID4KPiA+ID4gPiBUaGlzIGxvY2sgZG9lc24ndCBzZWVtIHRvIGJlIHByb3RlY3RpbmcgYW55
-dGhpbmcuICBBbHNvIGRvIHdlIG5lZWQKPiA+ID4gPiB0byBjaGVjayB0aW1lcl9wZW5kaW5nKCk/
-ICBJIHRoaW5rIHRoZSBkZWxfdGltZXJfc3luYygpIGZ1bmN0aW9uCj4gPiA+ID4gd2lsbCBqdXN0
-IHJldHVybiBkaXJlY3RseSBpZiB0aGVyZSBpc24ndCBhIHBlbmRpbmcgbG9jaz8KPiA+ID4KPiA+
-ID4gVGhhbmtzIGEgbG90IGZvciB5b3VyIGFkdmljZSwgSSB3aWxsIHJlbW92ZSB0aGUgdGltZXJf
-cGVuZGluZygpIGFuZAo+ID4gPiB0aGUgcmVkdW5kYW50IGxvY2suCj4gPiAKPiA+IEkgZGlkbid0
-IGdpdmUgYW55IGFkdmljZS4gOlAgSSBvbmx5IGFzayBxdWVzdGlvbnMgd2hlbiBJIGRvbid0IGtu
-b3cgdGhlIGFuc3dlcnMuCj4gPiBTb21lb25lIHByb2JhYmx5IG5lZWRzIHRvIGxvb2sgYXQgJmNt
-X2NvcmUtPmh0X2xvY2sgYW5kIGZpZ3VyZSBvdXQgd2hhdCBpdCdzCj4gPiBwcm90ZWN0aW5nLgo+
-ID4gCj4gQWdyZWVkIG9uIHRoaXMgZml4Lgo+IAo+IFdlIHNob3VsZCBub3QgbG9jayBhcm91bmQg
-ZGVsX3RpbWVyX3N5bmMgb3IgbmVlZCB0byBjaGVjayBvbiB0aW1lcl9wZW5kaW5nLgo+IAo+IEhv
-d2V2ZXIsIHdlIGRvIG5lZWQgc2VyaWFsaXplIGFkZGl0aW9uIG9mIGEgdGltZXIgd2hpY2ggY2Fu
-IGJlIGNhbGxlZCBmcm9tIG11bHRpcGxlIHBhdGhzLCBpLmUuIHRoZSB0aW1lciBoYW5kbGVyIGFu
-ZCBpcmRtYV9zY2hlZHVsZV9jbV90aW1lci4KCkkgdGhpbmsgd2Ugc2hvdWxkIHJlcGxhY2UgdGhl
-IGNoZWNrICJpZiAoIXRpbWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1lcikpIiB0bwoiaWYg
-KHRpbWVyX3BlbmRpbmcoJmNtX2NvcmUtPnRjcF90aW1lcikpIiBpbiBpcmRtYV9jbV90aW1lcl90
-aWNrKCksIGFuZCByZXBsYWNlCiJpZiAoIXdhc190aW1lcl9zZXQpIiB0byAiaWYgKHdhc190aW1l
-cl9zZXQpIiBpbiBpcmRtYV9zY2hlZHVsZV9jbV90aW1lcigpIGluIG9yZGVyCnRvIGd1YXJhbnRl
-ZSB0aGUgdGltZXIgY291bGQgYmUgZXhlY3V0ZWQuIEkgd2lsbCBzZW5kIHRoZSBtb2RpZmllZCBw
-YXRjaCBhcyBzb29uIGFzIApwb3NzaWJsZS4KCkJlc3QgcmVnYXJkcywKRHVvbWluZyBaaG91Cgo=
+On Thu, Apr 07 2022 at 09:52, Artem Savkov wrote:
+> Current timer wheel implementation is optimized for performance and
+> energy usage but lacks in precision. This, normally, is not a problem as
+> most timers that use timer wheel are used for timeouts and thus rarely
+> expire, instead they often get canceled or modified before expiration.
+> Even when they don't, expiring a bit late is not an issue for timeout
+> timers.
+>
+> TCP keepalive timer is a special case, it's aim is to prevent timeouts,
+> so triggering earlier rather than later is desired behavior. In a
+> reported case the user had a 3600s keepalive timer for preventing firewall
+> disconnects (on a 3650s interval). They observed keepalive timers coming
+> in up to four minutes late, causing unexpected disconnects.
+>
+> This commit adds upper_bound_timeout() function that takes a relative
 
+s/This commit adds/Add a new function to ..../
+
+See Documentation/process/*
+
+> timeout and adjusts it based on timer wheel granularity so that supplied
+> value effectively becomes an upper bound for the timer.
+>  
+> -static int calc_wheel_index(unsigned long expires, unsigned long clk,
+> -			    unsigned long *bucket_expiry)
+> +static inline int get_wheel_lvl(unsigned long delta)
+>  {
+> -	unsigned long delta = expires - clk;
+> -	unsigned int idx;
+> -
+>  	if (delta < LVL_START(1)) {
+> -		idx = calc_index(expires, 0, bucket_expiry);
+> +		return 0;
+>  	} else if (delta < LVL_START(2)) {
+
+Can you please get rid of all those brackets?
+
+> +	return -1;
+> +}
+> +
+> +static int calc_wheel_index(unsigned long expires, unsigned long clk,
+> +			    unsigned long *bucket_expiry)
+> +{
+> +	unsigned long delta = expires - clk;
+> +	unsigned int idx;
+> +	int lvl = get_wheel_lvl(delta);
+> +
+> +	if (lvl >= 0) {
+> +		idx = calc_index(expires, lvl, bucket_expiry);
+>  	} else if ((long) delta < 0) {
+>  		idx = clk & LVL_MASK;
+>  		*bucket_expiry = clk;
+> @@ -545,6 +555,38 @@ static int calc_wheel_index(unsigned long expires, unsigned long clk,
+>  	return idx;
+>  }
+
+This generates horrible code on various compilers. I ran that through a
+couple of perf test scenarios and came up with the following, which
+still is a tad slower for the level 0 case depending on the branch
+predictor state. But it at least prevents the compilers from doing
+stupid things and on average it's on par.
+
+Though the level 0 case matters because of *drumroll* networking.
+
+static int calc_wheel_index(unsigned long expires, unsigned long clk,
+			    unsigned long *bucket_expiry)
+{
+	unsigned long delta = expires - clk;
+	int lvl = get_wheel_lvl(delta);
+
+	if (likely(lvl) >= 0)
+		return __calc_index(expires, lvl, bucket_expiry);
+
+	if ((long) delta < 0) {
+		*bucket_expiry = clk;
+		return clk & LVL_MASK;
+	}
+
+	/*
+	 * Force expire obscene large timeouts to expire at the capacity
+	 * limit of the wheel.
+	 */
+	if (delta >= WHEEL_TIMEOUT_CUTOFF)
+		expires = clk + WHEEL_TIMEOUT_MAX;
+
+	return __calc_index(expires, LVL_DEPTH - 1, bucket_expiry);
+}
+
+Just for the record. I told you last time that your patch creates a
+measurable overhead and I explained you in depth why the performance of
+this stupid thing matters. So why are you not providing a proper
+analysis for that?
+
+> +/**
+> + * upper_bound_timeout - return granularity-adjusted timeout
+> + * @timeout: timeout value in jiffies
+> + *
+> + * This function return supplied timeout adjusted based on timer wheel
+> + * granularity effectively making supplied value an upper bound at which the
+> + * timer will expire. Due to the way timer wheel works timeouts smaller than
+> + * LVL_GRAN on their respecrive levels will be _at least_
+> + * LVL_GRAN(lvl) - LVL_GRAN(lvl -1)) jiffies early.
+
+Contrary to the simple "timeout - timeout/8" this gives better accuracy
+as it does not converge to the early side for long timeouts.
+
+With the quirk that this cuts timeout=1 to 0, which means it expires
+immediately. The wonders of integer math avoid that with the simple
+timeout -= timeout >> 3 approach for timeouts up to 8 ticks. :)
+
+But that want's to be properly documented.
+
+> +unsigned long upper_bound_timeout(unsigned long timeout)
+> +{
+> +	int lvl = get_wheel_lvl(timeout);
+
+which is equivalent to:
+
+         lvl = calc_wheel_index(timeout, 0, &dummy) >> LVL_BITS;
+
+Sorry, could not resist. :)
+
+The more interesting question is, how frequently this upper bounds
+function is used. It's definitely not something which you want to
+inflict onto a high frequency (re)arming timer.
+
+Did you analyse that? And if so, then why is that analysis missing from
+the change log of the keepalive timer patch?
+
+Aside of that it clearly lacks any argument why the simple, stupid, but
+fast approach of shortening the timeout by 12.5% is not good enough and
+why we need yet another function which is just going to be another
+source of 'optimizations' for the wrong reasons.
+
+Seriously, I apprecitate that you want to make this 'perfect', but it's
+never going to be perfect and the real question is whether there is any
+reasonable difference between 'good' and almost 'perfect'.
+
+And this clearly resonates in your changelog of the network patch:
+
+ "Make sure TCP keepalive timer does not expire late. Switching to upper
+  bound timers means it can fire off early but in case of keepalive
+  tcp_keepalive_timer() handler checks elapsed time and resets the timer
+  if it was triggered early. This results in timer "cascading" to a
+  higher precision and being just a couple of milliseconds off it's
+  original mark."
+
+Which reinvents the cascading effect of the original timer wheel just
+with more overhead. Where is the justification for this?
+
+Is this really true for all the reasons where the keep alive timers are
+armed? I seriously doubt that. Why?
+
+On the end which waits for the keep alive packet to arrive in time it
+does not matter at all, whether the cutoff is a bit later than defined.
+
+     So why do you want to let the timer fire early just to rearm it? 
+
+But it matters a lot on the sender side. If that is late and the other
+end is strict about the timeout then you lost. But does it matter
+whether you send the packet too early? No, it does not matter at all
+because the important point is that you send it _before_ the other side
+decides to give up.
+
+     So why do you want to let the timer fire precise?
+
+You are solving the sender side problem by introducing a receiver side
+problem and both suffer from the overhead for no reason.
+
+Aside of the theoerical issue why this matters at all I have yet ot see
+a reasonable argument what the practical problen is. If this would be a
+real problem in the wild then why haven't we ssen a reassonable bug
+report within 6 years?
+
+Thanks,
+
+        tglx
