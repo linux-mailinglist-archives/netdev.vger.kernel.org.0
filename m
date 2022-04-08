@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B76544F9F3A
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 23:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EAE64F9F45
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 23:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234881AbiDHVf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 17:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33550 "EHLO
+        id S233068AbiDHVmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 17:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbiDHVf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 17:35:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37502709;
-        Fri,  8 Apr 2022 14:33:51 -0700 (PDT)
+        with ESMTP id S233182AbiDHVmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 17:42:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A94DE6
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 14:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D9F562054;
-        Fri,  8 Apr 2022 21:33:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 559A5C385A1;
-        Fri,  8 Apr 2022 21:33:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9574B62089
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 21:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E968AC385AC;
+        Fri,  8 Apr 2022 21:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1649453630;
-        bh=fU029qbTSWa9XGPuG1iTmZoPdbPNfI8weVyzJF2bQQs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tziQ2Jt1lEIVX6vPSNCaMwUU06Wk0VfYDfw4gDe497KN/8mMuYCWaISp8U6GAHqA0
-         m/B2JjbrEsnNWsX7Qhu9huu3F+kGFhh117qPWpP0ermd+deGuB0vBH588XjJ9ZscZy
-         r85o5cEjpXXxyQuu81MBn8wK+0LF5LudP7VrOWEI9R5GrMDSM4N7+6YCmGPu0bXg2t
-         RuSJwSHYWjbsCmY4F6hOKc7Bp7M62HtcN1XxEcfPhAgIpYFnB39rOSktGgA1kTNlCC
-         Fgk2QY7s3/t4baxuhwkkPJI3/lAgTLhX/z0uSUJ8yLX+doXoN1hCwPxxf/uIsnhIVS
-         Omq4ZDQXPcVUQ==
-Date:   Fri, 8 Apr 2022 14:33:49 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Coco Li <lixiaoyan@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        willem de bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Thelen <gthelen@google.com>
-Subject: Re: [PATCH net-next] fou: Remove XRFM from NET_FOU Kconfig
-Message-ID: <20220408143349.1e3413eb@kernel.org>
-In-Reply-To: <20220407171554.2712631-1-lixiaoyan@google.com>
-References: <20220407171554.2712631-1-lixiaoyan@google.com>
+        s=k20201202; t=1649454013;
+        bh=AMek6ftIXhHDFOWAG9wPsz0/c6ykBBIZeoTYVvBjjhY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JrLCpHWw0Bn9H5Ai0chvitEySnOinstdMMFgoJm8+HIF7DiH/IkDPrRuG60f42j2b
+         AXK4xZOBzepV7aJfd9A0xBHtiRTUvIuY1Cegw7djAXfX6USRscJMJZqaxZOfTJSZeh
+         BdakcOgqyJgFSbA9+QEyR0UNzF9IjE0CjrOEjKmFnX4D4elNddB5Nz+76HnZzq1A7O
+         ENMwqvcR75zW3Qmw+vwVw2sSjW3khyAHzh0A9LhBFdvw89+NSDZoEf4rPTVdDDR9PR
+         uryJzQTgjGrmqII+K04NJUjY3O0IXOL+puYICHhRSXZp92Y9ZNIfl3r44Jnyw+j8te
+         gwrY/vzx/YFtA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D66A2E8DD5E;
+        Fri,  8 Apr 2022 21:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] net: phy: micrel: ksz9031/ksz9131: add cabletest support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164945401287.15686.9752937509094914437.git-patchwork-notify@kernel.org>
+Date:   Fri, 08 Apr 2022 21:40:12 +0000
+References: <20220407105534.85833-1-marex@denx.de>
+In-Reply-To: <20220407105534.85833-1-marex@denx.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, davem@davemloft.net,
+        hkallweit1@gmail.com, kuba@kernel.org, linux@rempel-privat.de,
+        pabeni@redhat.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,31 +57,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Apr 2022 10:15:54 -0700 Coco Li wrote:
-> XRFM is no longer needed for configuring FOU tunnels
-> (CONFIG_NET_FOU_IP_TUNNELS), remove from Kconfig.
+Hello:
 
-What's the full story? The original code mentions udp_encap_rcv 
-but would be used to note where that dependency got removed.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> Built and installed kernel and setup GUE/FOU tunnels.
+On Thu,  7 Apr 2022 12:55:34 +0200 you wrote:
+> Add cable test support for Micrel KSZ9x31 PHYs.
 > 
-> Signed-off-by: Coco Li <lixiaoyan@google.com>
-> ---
->  net/ipv4/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
+> Tested on i.MX8M Mini with KSZ9131RNX in 100/Full mode with pairs shuffled
+> before magnetics:
+> (note: Cable test started/completed messages are omitted)
 > 
-> diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-> index 87983e70f03f..e983bb0c5012 100644
-> --- a/net/ipv4/Kconfig
-> +++ b/net/ipv4/Kconfig
-> @@ -321,7 +321,6 @@ config NET_UDP_TUNNEL
->  
->  config NET_FOU
->  	tristate "IP: Foo (IP protocols) over UDP"
-> -	select XFRM
->  	select NET_UDP_TUNNEL
->  	help
->  	  Foo over UDP allows any IP protocol to be directly encapsulated
+>   mx8mm-ksz9131-a-d-connected$ ethtool --cable-test eth0
+>   Pair A code OK
+>   Pair B code Short within Pair
+>   Pair B, fault length: 0.80m
+>   Pair C code Short within Pair
+>   Pair C, fault length: 0.80m
+>   Pair D code OK
+> 
+> [...]
 
-I think we can also remove the include of xfrm.h from fou.c ?
+Here is the summary with links:
+  - [v3] net: phy: micrel: ksz9031/ksz9131: add cabletest support
+    https://git.kernel.org/netdev/net-next/c/58389c00d49c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
