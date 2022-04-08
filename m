@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D7B44F8E9A
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B77E4F8E9E
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:27:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234183AbiDHEMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 00:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
+        id S234188AbiDHEM0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 00:12:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232390AbiDHEMR (ORCPT
+        with ESMTP id S234105AbiDHEMR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 00:12:17 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751781EB805;
-        Thu,  7 Apr 2022 21:10:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 785BE1EB80B
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 21:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E472DCE29FF;
-        Fri,  8 Apr 2022 04:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 450C4C385A3;
+        by sin.source.kernel.org (Postfix) with ESMTPS id E9F67CE2A03
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 04:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 589B6C385AD;
         Fri,  8 Apr 2022 04:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1649391012;
-        bh=/ocmwyPmcxJaE7A3jgFW3oPLW1FUfozUVp4GcoMvkoE=;
+        bh=CJOb3rkIKnfWt/V1zNi4AdNSI7fi2M1t/klz5o9I/IM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=SU50/V/1U1F4SxYfBIQWfbo0x2uJIoLXzsSxn2er9wPOXoHmtlBSuG5CIrrohjVTb
-         nNg9fEtBcYEMA9yFHB33kFDTr1uKGWwVTcUqvHW38MnmsXHOBQinc6bGlar7TYBpst
-         NPG8GubMiAxfSQQUoMX6MxeKQYUQHHwbzRvZz4i2NmjLG5L0IHOGxpZ98gmC743coz
-         o1gV3lGBsKH1np/fryx2V6nRC3KtwEJ+yjt0DUzZciS1Nmak3kEg2r41Bc/13SIobC
-         7XvUq0Ggf4JUvRSDa2EHhww0FP7BtMsq57lFBgD1C7Im3Md4qveOx/FzyzySfXmZTC
-         cMpeY/dYt35kw==
+        b=n17g0ejp40vZAB7NPq2Eem69sF3+U0r/CUnp+2cKbp6GJdQ5/DwxsKVVpGMt3/vA3
+         l8YW3S+4DF/ti9MvtOt/9w05TozpkBHFkhEmzg48uj74NGFyUnzwam0P5c3XWJyZPf
+         orf7PMvK5ZvVl7Pj+xUvzE5yHQ73hd6QGq/PgNrxNp6kedoQkF+sIOsSfWddyGwHTe
+         a8D7UMIgNh4mrluVLc/NoDOVBue47NFY++KvVFuQUww9pn6EtuXB5a9uFonVI1BzzH
+         JRFPQrmuZD6azm0Xfi6otdQjpfsTu6CN+d0YQUWCjj0lTqSQhygDs7DvCS+WmCezo9
+         PG68SePf8Sh+g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 22C9BE85BCB;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 34BF7E8DCCE;
         Fri,  8 Apr 2022 04:10:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] qed: remove an unneed NULL check on list iterator
+Subject: Re: [PATCH v3] net/ethernet : set default assignment identifier to
+ NET_NAME_ENUM
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164939101213.29309.15840560082982456814.git-patchwork-notify@kernel.org>
+Message-Id: <164939101221.29309.13533045214799771590.git-patchwork-notify@kernel.org>
 Date:   Fri, 08 Apr 2022 04:10:12 +0000
-References: <20220406015921.29267-1-xiam0nd.tong@gmail.com>
-In-Reply-To: <20220406015921.29267-1-xiam0nd.tong@gmail.com>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     aelior@marvell.com, manishc@marvell.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220406093635.1601506-1-iwienand@redhat.com>
+In-Reply-To: <20220406093635.1601506-1-iwienand@redhat.com>
+To:     Ian Wienand <iwienand@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, andrew@lunn.ch,
+        teg@jklm.no, dh.herrmann@gmail.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,19 +62,19 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed,  6 Apr 2022 09:59:21 +0800 you wrote:
-> The define for_each_pci_dev(d) is:
->  while ((d = pci_get_device(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
+On Wed,  6 Apr 2022 19:36:36 +1000 you wrote:
+> As noted in the original commit 685343fc3ba6 ("net: add
+> name_assign_type netdev attribute")
 > 
-> Thus, the list iterator 'd' is always non-NULL so it doesn't need to
-> be checked. So just remove the unnecessary NULL check. Also remove the
-> unnecessary initializer because the list iterator is always initialized.
+>   ... when the kernel has given the interface a name using global
+>   device enumeration based on order of discovery (ethX, wlanY, etc)
+>   ... are labelled NET_NAME_ENUM.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] qed: remove an unneed NULL check on list iterator
-    https://git.kernel.org/netdev/net-next/c/4daf5f195630
+  - [v3] net/ethernet : set default assignment identifier to NET_NAME_ENUM
+    https://git.kernel.org/netdev/net-next/c/e9f656b7a214
 
 You are awesome, thank you!
 -- 
