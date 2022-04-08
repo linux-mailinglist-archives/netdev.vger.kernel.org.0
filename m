@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A27094FA019
-	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 01:26:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF284FA01B
+	for <lists+netdev@lfdr.de>; Sat,  9 Apr 2022 01:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236244AbiDHX2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 19:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
+        id S239516AbiDHX2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 19:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236203AbiDHX2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 19:28:06 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6FCC11A13;
-        Fri,  8 Apr 2022 16:26:00 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id u18so994351eda.3;
-        Fri, 08 Apr 2022 16:26:00 -0700 (PDT)
+        with ESMTP id S238498AbiDHX2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 19:28:19 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C490939806;
+        Fri,  8 Apr 2022 16:26:14 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 125so8988363pgc.11;
+        Fri, 08 Apr 2022 16:26:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=4GaWA2Fuk8kXND0qeqeKieqo0o4cogxqEcU10NDv2L0=;
-        b=GCS7HNe7t4bJOfiX0Qgs3D/Mrf/3IfWv/qrKrcaR4fUWn8Koy+kdQ72uVPhlOqY3nj
-         LTPrf5LHX700EXL7K5HngD8vFI4X8RJzdQWQLaX2DNYSyE3rEB3PpiQERrgThmIpapVH
-         REDou3bA6BV+6pAcJRdaDevjwxvxqvpFP+p7U/eCkVRnQo0xBnr/gAz+p/9qyHuUdS77
-         NpqAqb4g3ZVSgAaJPcPtz5jFSTpJkd8jtP77nnsci/IsrvEftzEKptnwazPb9aEz3/Q8
-         QE4CEO310URG5WQh+D9eohVStBhYoJAOqaqen3AFvKauXpCHQepY//x58ltZP/XZL0M2
-         jb6w==
+        bh=bAn4o9K7th6YNdjZZg5AiEUK5FCDSAqo7SuixrDUegY=;
+        b=kF3rv9X6MlF+qIl1N2j+adVo4f7+BCYIDJb16YzNVUAFPfnzWZRjNLG5GHnXfaKV5a
+         rDE3Rmff0JZz/JEZToF0z5OO9SZMX+XTlKsTo07Tujct+1YVoKDh2Yb+zyWGuOGdLoK/
+         acUuYxdFx6/hF1jQ5lWsLc1xedwWmIC8dbjclo5TFihND4eel0U61tE444aQ+Xeiet7U
+         oc6HPxPrSqLqplXVqW+5T9ZKTQNBkPMBsQPdyeklJlxAveiShut0mqhrp2cE2b+QcfPP
+         Px4w2ekfQ31jM43YPBTs/RJAzpROvS2asJoymER9byzTygmAd23sBCE9fvx+VQCr0kST
+         Lx9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=4GaWA2Fuk8kXND0qeqeKieqo0o4cogxqEcU10NDv2L0=;
-        b=oq2pCIFy+gZ7PvS8hO1FW3gyAL8aENhoEekAeQbWzhKQcsAGVYMZwkl+13gFMEB1B9
-         2dfWQs+QWivfNIe2/YDT/b5YMQQIwtLqj/Ej0ZwWJSDf6r7B7B4HFCalgtQSkV3aiT7g
-         r3Vu+nd2LVtOYUHLCe1HaKqnEua+A45jziPqwh0t6yoL1vJAeM1jodGVJ5IJbPDiQB8I
-         ELPqbCMn2eHV1ola1h+ATuQ50DbemvnTgnSxewqF68+zLFpzgxb4jPsqTTW5j6izBnSB
-         m5E/eVo4KPEsm/8WprY1kR/Ims3JHZpbwCZ0rpjRTR4AMYwndxQ010bS3LbqpBrQVByY
-         wEgQ==
-X-Gm-Message-State: AOAM533SZiZxpAuhKPctyznAL0VVNbrGVcKaqPxuBjISjqsSOKbQ1xG2
-        XBaKe5ENLmN7fAZOuqRv9yw=
-X-Google-Smtp-Source: ABdhPJzfIvGtPN+jui8oCXx7bKJpTEqrNJuCGXO5M3y/EkXa0i1TjkJevRHfeKTTghskLBNHnllf2g==
-X-Received: by 2002:a05:6402:40ce:b0:41a:6817:5b07 with SMTP id z14-20020a05640240ce00b0041a68175b07mr21777105edb.7.1649460359283;
-        Fri, 08 Apr 2022 16:25:59 -0700 (PDT)
-Received: from skbuf ([188.26.57.45])
-        by smtp.gmail.com with ESMTPSA id r22-20020a17090638d600b006d584aaa9c9sm9170186ejd.133.2022.04.08.16.25.57
+        bh=bAn4o9K7th6YNdjZZg5AiEUK5FCDSAqo7SuixrDUegY=;
+        b=kFfkVsQuQb4DlNCaVUvcBMI6yKud8hUTdKY5z8wN6jhlR0kZCayRXPIInm686BNhEc
+         1GvGWvDstRpR4dYOYHuLUjZnglX8PweN+EDIQSlqzkUyB7f0tpQ+WhUUcyzeasjXJxCy
+         xJnkjU8TY83fRspsFhaPVX2yzsIfj9TTms4bJSgSKggK/SjnHVdnaWUk6keXIjWVJpNm
+         YZu7eFdmRAq4so9pH2CXQtTmCHlhfriTUldI7uAquvBr3KtKFNk2XEhO+4epzfMA7adN
+         Qf8T3AnX8bsoti/0GfqF8Sm+uqIo94p98CFyONnVqr1wbe45n86HwZLWgiI4DDnldNzz
+         rfZw==
+X-Gm-Message-State: AOAM531tE3AgnDA1WyI6W0gOXMr2TCpubKcr73q4Y0CRokbSlhV8Sscr
+        7UCOFkrIHRmIcVHF46ubOR0knmcr3w4=
+X-Google-Smtp-Source: ABdhPJwyXjc1Y+e5Ukw9aUInFSD53R83gWEYSJ1K/EMEyoQ4NNWONXQaDFlJO2IAbjSE1DTITduebw==
+X-Received: by 2002:a63:6c4a:0:b0:398:604b:7263 with SMTP id h71-20020a636c4a000000b00398604b7263mr17516083pgc.545.1649460374155;
+        Fri, 08 Apr 2022 16:26:14 -0700 (PDT)
+Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:400::5:4c4c])
+        by smtp.gmail.com with ESMTPSA id e10-20020a17090a630a00b001c685cfd9d1sm12779494pjj.20.2022.04.08.16.26.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 16:25:58 -0700 (PDT)
-Date:   Sat, 9 Apr 2022 02:25:57 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-Cc:     andrew@lunn.ch, netdev@vger.kernel.org, robh+dt@kernel.org,
-        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        devicetree@vger.kernel.org, pabeni@redhat.com
-Subject: Re: [RFC PATCH v11 net-next 05/10] net: dsa: microchip: add DSA
- support for microchip lan937x
-Message-ID: <20220408232557.b62l3lksotq5vuvm@skbuf>
-References: <20220325165341.791013-1-prasanna.vengateshan@microchip.com>
- <20220325165341.791013-6-prasanna.vengateshan@microchip.com>
+        Fri, 08 Apr 2022 16:26:13 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 16:26:10 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [RFC bpf-next 3/4] bpf: Resolve symbols with
+ kallsyms_lookup_names for kprobe multi link
+Message-ID: <20220408232610.nwtcuectacpwh6rk@MBP-98dd607d3435.dhcp.thefacebook.com>
+References: <20220407125224.310255-1-jolsa@kernel.org>
+ <20220407125224.310255-4-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220325165341.791013-6-prasanna.vengateshan@microchip.com>
+In-Reply-To: <20220407125224.310255-4-jolsa@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -75,133 +78,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 25, 2022 at 10:23:36PM +0530, Prasanna Vengateshan wrote:
-> +static void lan937x_r_mib_stats64(struct ksz_device *dev, int port)
+On Thu, Apr 07, 2022 at 02:52:23PM +0200, Jiri Olsa wrote:
+> Using kallsyms_lookup_names function to speed up symbols lookup in
+> kprobe multi link attachment and replacing with it the current
+> kprobe_multi_resolve_syms function.
+> 
+> This speeds up bpftrace kprobe attachment:
+> 
+>   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+>   ...
+>   6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+> 
+> After:
+> 
+>   # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+>   ...
+>   0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  kernel/trace/bpf_trace.c | 123 +++++++++++++++++++++++----------------
+>  1 file changed, 73 insertions(+), 50 deletions(-)
+> 
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index b26f3da943de..2602957225ba 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -2226,6 +2226,72 @@ struct bpf_kprobe_multi_run_ctx {
+>  	unsigned long entry_ip;
+>  };
+>  
+> +struct user_syms {
+> +	const char **syms;
+> +	char *buf;
+> +};
+> +
+> +static int copy_user_syms(struct user_syms *us, void __user *usyms, u32 cnt)
 > +{
-> +	struct ksz_port_mib *mib = &dev->ports[port].mib;
-> +	struct rtnl_link_stats64 *s;
-> +	u64 *ctr = mib->counters;
+> +	const char __user **usyms_copy = NULL;
+> +	const char **syms = NULL;
+> +	char *buf = NULL, *p;
+> +	int err = -EFAULT;
+> +	unsigned int i;
+> +	size_t size;
 > +
-> +	s = &mib->stats64;
-> +	spin_lock(&mib->stats64_lock);
+> +	size = cnt * sizeof(*usyms_copy);
+> +
+> +	usyms_copy = kvmalloc(size, GFP_KERNEL);
+> +	if (!usyms_copy)
+> +		return -ENOMEM;
+> +
+> +	if (copy_from_user(usyms_copy, usyms, size))
+> +		goto error;
+> +
+> +	err = -ENOMEM;
+> +	syms = kvmalloc(size, GFP_KERNEL);
+> +	if (!syms)
+> +		goto error;
+> +
+> +	/* TODO this potentially allocates lot of memory (~6MB in my tests
+> +	 * with attaching ~40k functions). I haven't seen this to fail yet,
+> +	 * but it could be changed to allocate memory gradually if needed.
+> +	 */
 
-I haven't looked at further patches yet to see if the situation improves
-or not, but right now, this spin lock is useless, as you do not
-implement .get_stats64.
+Why would 6MB kvmalloc fail?
+If we don't have such memory the kernel will be ooming soon anyway.
+I don't think we'll see this kvmalloc triggering oom in practice.
+The verifier allocates a lot more memory to check large programs.
 
+imo this approach is fine. It's simple.
+Trying to do gradual alloc with realloc would be just guessing.
+
+Another option would be to ask user space (libbpf) to do the sort.
+There are pros and cons.
+This vmalloc+sort is slightly better imo.
+
+> +	size = cnt * KSYM_NAME_LEN;
+> +	buf = kvmalloc(size, GFP_KERNEL);
+> +	if (!buf)
+> +		goto error;
 > +
-> +	s->rx_packets = ctr[lan937x_mib_rx_mcast] +
-> +			ctr[lan937x_mib_rx_bcast] +
-> +			ctr[lan937x_mib_rx_ucast] +
-> +			ctr[lan937x_mib_rx_pause];
+> +	for (p = buf, i = 0; i < cnt; i++) {
+> +		err = strncpy_from_user(p, usyms_copy[i], KSYM_NAME_LEN);
+> +		if (err == KSYM_NAME_LEN)
+> +			err = -E2BIG;
+> +		if (err < 0)
+> +			goto error;
+> +		syms[i] = p;
+> +		p += err + 1;
+> +	}
 > +
-> +	s->tx_packets = ctr[lan937x_mib_tx_mcast] +
-> +			ctr[lan937x_mib_tx_bcast] +
-> +			ctr[lan937x_mib_tx_ucast] +
-> +			ctr[lan937x_mib_tx_pause];
+> +	err = 0;
+> +	us->syms = syms;
+> +	us->buf = buf;
 > +
-> +	s->rx_bytes = ctr[lan937x_mib_rx_total];
-> +	s->tx_bytes = ctr[lan937x_mib_tx_total];
-> +
-> +	s->rx_errors = ctr[lan937x_mib_rx_fragments] +
-> +		       ctr[lan937x_mib_rx_jabbers] +
-> +		       ctr[lan937x_mib_rx_sym_err] +
-> +		       ctr[lan937x_mib_rx_align_err] +
-> +		       ctr[lan937x_mib_rx_crc_err];
-> +
-> +	s->tx_errors = ctr[lan937x_mib_tx_exc_col] +
-> +		       ctr[lan937x_mib_tx_late_col];
-> +
-> +	s->rx_dropped = ctr[lan937x_mib_rx_discard];
-> +	s->tx_dropped = ctr[lan937x_mib_tx_discard];
-> +	s->multicast = ctr[lan937x_mib_rx_mcast];
-> +
-> +	s->collisions = ctr[lan937x_mib_tx_late_col] +
-> +			ctr[lan937x_mib_tx_single_col] +
-> +			ctr[lan937x_mib_tx_mult_col];
-> +
-> +	s->rx_length_errors = ctr[lan937x_mib_rx_fragments] +
-> +			      ctr[lan937x_mib_rx_jabbers];
-> +
-> +	s->rx_crc_errors = ctr[lan937x_mib_rx_crc_err];
-> +	s->rx_frame_errors = ctr[lan937x_mib_rx_align_err];
-> +	s->tx_aborted_errors = ctr[lan937x_mib_tx_exc_col];
-> +	s->tx_window_errors = ctr[lan937x_mib_tx_late_col];
-> +
-> +	spin_unlock(&mib->stats64_lock);
+> +error:
+> +	kvfree(usyms_copy);
+> +	if (err) {
+> +		kvfree(syms);
+> +		kvfree(buf);
+> +	}
+> +	return err;
 > +}
-
-> +static int lan937x_init(struct ksz_device *dev)
+> +
+> +static void free_user_syms(struct user_syms *us)
 > +{
-> +	int ret;
-> +
-> +	ret = lan937x_switch_init(dev);
-> +	if (ret < 0) {
-> +		dev_err(dev->dev, "failed to initialize the switch");
-> +		return ret;
-> +	}
-> +
-> +	/* enable Indirect Access from SPI to the VPHY registers */
-> +	ret = lan937x_enable_spi_indirect_access(dev);
-
-Do you need to call this both from lan937x_init() and from lan937x_setup()?
-
-> +	if (ret < 0) {
-> +		dev_err(dev->dev, "failed to enable spi indirect access");
-> +		return ret;
-> +	}
-> +
-> +	ret = lan937x_mdio_register(dev);
-> +	if (ret < 0) {
-> +		dev_err(dev->dev, "failed to register the mdio");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
+> +	kvfree(us->syms);
+> +	kvfree(us->buf);
 > +}
-
-> +static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
-> +				       u8 state)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	struct ksz_port *p;
-> +	u8 data;
 > +
-> +	lan937x_pread8(dev, port, P_STP_CTRL, &data);
-
-This is a copy-paste of ksz8_port_stp_state_set() except for the use of
-lan937x_pread8() instead of ksz_pread8(). But ksz_pread8() should work
-too, since it calls dev->dev_ops->get_port_addr(port, offset) which you
-translate into PORT_CTRL_ADDR(port, offset) which is exactly what
-lan937x_pread8() does.
-
-> +	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
+>  static void bpf_kprobe_multi_link_release(struct bpf_link *link)
+>  {
+>  	struct bpf_kprobe_multi_link *kmulti_link;
+> @@ -2346,55 +2412,6 @@ kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+>  	kprobe_multi_link_prog_run(link, entry_ip, regs);
+>  }
+>  
+> -static int
+> -kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
+> -			  unsigned long *addrs)
+> -{
+> -	unsigned long addr, size;
+> -	const char __user **syms;
+> -	int err = -ENOMEM;
+> -	unsigned int i;
+> -	char *func;
+> -
+> -	size = cnt * sizeof(*syms);
+> -	syms = kvzalloc(size, GFP_KERNEL);
+> -	if (!syms)
+> -		return -ENOMEM;
+> -
+> -	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+> -	if (!func)
+> -		goto error;
+> -
+> -	if (copy_from_user(syms, usyms, size)) {
+> -		err = -EFAULT;
+> -		goto error;
+> -	}
+> -
+> -	for (i = 0; i < cnt; i++) {
+> -		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+> -		if (err == KSYM_NAME_LEN)
+> -			err = -E2BIG;
+> -		if (err < 0)
+> -			goto error;
+> -		err = -EINVAL;
+> -		addr = kallsyms_lookup_name(func);
+> -		if (!addr)
+> -			goto error;
+> -		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+> -			goto error;
+> -		addr = ftrace_location_range(addr, addr + size - 1);
+> -		if (!addr)
+> -			goto error;
+> -		addrs[i] = addr;
+> -	}
+> -
+> -	err = 0;
+> -error:
+> -	kvfree(syms);
+> -	kfree(func);
+> -	return err;
+> -}
+> -
+>  int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+>  {
+>  	struct bpf_kprobe_multi_link *link = NULL;
+> @@ -2438,7 +2455,13 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  			goto error;
+>  		}
+>  	} else {
+> -		err = kprobe_multi_resolve_syms(usyms, cnt, addrs);
+> +		struct user_syms us;
 > +
-> +	switch (state) {
-> +	case BR_STATE_DISABLED:
-> +		data |= PORT_LEARN_DISABLE;
-> +		break;
-> +	case BR_STATE_LISTENING:
-> +		data |= (PORT_RX_ENABLE | PORT_LEARN_DISABLE);
-> +		break;
-> +	case BR_STATE_LEARNING:
-> +		data |= PORT_RX_ENABLE;
-> +		break;
-> +	case BR_STATE_FORWARDING:
-> +		data |= (PORT_TX_ENABLE | PORT_RX_ENABLE);
-> +		break;
-> +	case BR_STATE_BLOCKING:
-> +		data |= PORT_LEARN_DISABLE;
-> +		break;
-> +	default:
-> +		dev_err(ds->dev, "invalid STP state: %d\n", state);
-> +		return;
-> +	}
-> +
-> +	lan937x_pwrite8(dev, port, P_STP_CTRL, data);
-> +
-> +	p = &dev->ports[port];
-> +	p->stp_state = state;
-> +
-> +	ksz_update_port_member(dev, port);
-> +}
+> +		err = copy_user_syms(&us, usyms, cnt);
+> +		if (err)
+> +			goto error;
+> +		err = kallsyms_lookup_names(us.syms, cnt, addrs);
+> +		free_user_syms(&us);
+>  		if (err)
+>  			goto error;
+>  	}
+> -- 
+> 2.35.1
+> 
