@@ -2,97 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B63124F9E26
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 22:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F214C4F9E6C
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 22:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239466AbiDHU3o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 16:29:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
+        id S233799AbiDHUy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 16:54:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbiDHU3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 16:29:43 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024321A8C23
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 13:27:39 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id l14so17078356ybe.4
-        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 13:27:38 -0700 (PDT)
+        with ESMTP id S229885AbiDHUy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 16:54:57 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5E660C6
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 13:52:53 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id r10so11380427eda.1
+        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 13:52:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ZOLspPWmc1KSmGfCxPulQw98AhVZT0pWgP290hFhzaE=;
-        b=dJojkqwyKlNQtFoYthsAKSjXtBEohs33GqkOiSkvERiTZx7FKSM7uqr1Zs94H1htYu
-         LUrJXfro0m0BtYTt3IpmU0R1armqAmg7K2Xit1GecnLnbHSPalqv4aEuMmsbNzjgz096
-         EcWshExGF0NTePkYahRKNTRsOsyUyvd33s+Qkwth3pDcQZv8s1hnkpTLJrJpcUnR3vqP
-         IySj2E5f+mFIE+3YUZgZIw0KGMP0AILa8I2IuKSNw6DJ7yXPrhrkJe1+ixgVgiY8YH2+
-         XR0S6SveN39XONRhKQP01/OQds0MT0ALJbb0QwpNPFJ8rirrVHXGB9nO80zLMCFEBot7
-         zQFQ==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Xuy5nyThQZEOcTuXAOvcq1XiCD79HnE36b0ex0234bw=;
+        b=xICSXrqz2MXxMUHJ0Rx9jPRwVKPofZ8CNC3DQKaMKuQ49f/FyjTQYhOfnVhjdp/MC4
+         UBUA9+J2V+vW52X4Q3FZMKeIuLsJ4MBuSAC60dRMv9v21jd3EjbPxusN723yD6j3NQbP
+         TA7Azx+dKttUwj/uZquWnQKk51pT79IBxl4g30Dv6rqbQhJUpTHI46kfSCpk96RF0RB4
+         Xz2xB1+yzXujVc0VpesDw4Jah0483xb5mhwdbZc7J4SNhTp9CeBciTqCsAa2DjSoIUYE
+         mK75/Twyzl/SINIWaCE7wKO3+GGI9FcE5qbGsNtXT6eGDMyPkpqN67xRSs5qcU48Ujbr
+         nmTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ZOLspPWmc1KSmGfCxPulQw98AhVZT0pWgP290hFhzaE=;
-        b=4gQGcwgNtuTyK2heJDRj92x6cyybhPFn2cFETvB2/1nHHdJP/fdq5CFxKUU5EF+GNq
-         muCM5w9vpZclnF2qum7GlLjxZbxp+hynK7CoRMryKAzXN+dlCzIPZhQHWdrab6b8FAxN
-         wpHVMmEJ7R0D7hIZYVijzCF2TGDHRRhOp0miKDhaQQBFcyu57kmOf3MHD1e5/m8QK/F8
-         nonb+1Mi1QpiSmdNdICivZSuUrFQxx+TlivntOUrasN7Kr5gw8EYLfVc2pQMVQZqgmT8
-         GjlqweNv1JGsWNb6A/cE3nXsq7X4mMiIyhz0//d3TAc7GAMUML1EajL4klmoj04n3ZN+
-         M5bQ==
-X-Gm-Message-State: AOAM533savzuONH/csd1ctjaPUpRlI60Q9XJiawCB2VWaIr4v83gvivw
-        YrNZzQ3vpx6npSCCU1qaj7iNkHnOsGjU605vtg8=
-X-Google-Smtp-Source: ABdhPJwZdBphSoLmU/aOaj4cQejGuf7grXq7zL0iVD0/t78vKIHrkjcvnNLTDIwwWtOuqKDmUf0xr9+LWPq27kI+Psc=
-X-Received: by 2002:a25:3b8b:0:b0:63d:f010:ed04 with SMTP id
- i133-20020a253b8b000000b0063df010ed04mr14101257yba.591.1649449657967; Fri, 08
- Apr 2022 13:27:37 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Xuy5nyThQZEOcTuXAOvcq1XiCD79HnE36b0ex0234bw=;
+        b=lEkXLM3hYeG2Tgsu81gx+Zmo2M47GHlodBUrm8/PIaiET1sttWt7oRn+HHdGZDGedG
+         UBdYJ1iVhg2CB23mh3PLqbJu6dJWVexS+m5R9zrOaGOmSSVHjVc8VqI+Evyuvl4aGYSZ
+         Ddl3542I/LAa9cQb+6AG5fk+SYVl56zq8gBQXi9RPCFqjOSAoP2u1f2xSjmALm1kcrjz
+         27SBmzyqdBQX2oYsIzrm2bj2dGhhKE03astm+p/LnSmTR4oAl0+oJwHH1AqBxJzD96cK
+         XdEpZiukS9eQe9T8eNawnpIL2OIWd4Km2p6Dd1XxaEk73hDHh2tO9Uyzj3Ws+yZIqohN
+         GeLQ==
+X-Gm-Message-State: AOAM530DfIexwA/2/jqUqeU3Y+SgwSpAJMLnau17AFeG40Eg1bLhidDI
+        rh2D/fweDTg7fduAf90NqHxxiA==
+X-Google-Smtp-Source: ABdhPJwMabksP4E0VnnFxRhb1F7cFT9eMkW+dmZDd4b2hG9+JuobYLXV9l1fmlD3dYy1J6UtxNxhpw==
+X-Received: by 2002:a50:c3c6:0:b0:416:293f:1f42 with SMTP id i6-20020a50c3c6000000b00416293f1f42mr21203146edf.187.1649451171359;
+        Fri, 08 Apr 2022 13:52:51 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id jl28-20020a17090775dc00b006e05cdf3a95sm9066361ejc.163.2022.04.08.13.52.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 13:52:50 -0700 (PDT)
+Message-ID: <809561da-0433-297a-2dd0-9be9b5e3c65a@blackwall.org>
+Date:   Fri, 8 Apr 2022 23:52:49 +0300
 MIME-Version: 1.0
-Received: by 2002:a05:7110:cd:b0:16f:f28b:eee0 with HTTP; Fri, 8 Apr 2022
- 13:27:37 -0700 (PDT)
-Reply-To: aishaqaddafi9@gmail.com
-From:   Aisha Al-Qaddafi <mahasaliou0@gmail.com>
-Date:   Fri, 8 Apr 2022 13:27:37 -0700
-Message-ID: <CAD97iXOUtiGXNxuKK2nE8ksz4MLGPskZ3NETmE-Dtug-Vepxzw@mail.gmail.com>
-Subject: i am contacting you, because I need your help
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_40,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:b2c listed in]
-        [list.dnswl.org]
-        * -0.0 BAYES_40 BODY: Bayes spam probability is 20 to 40%
-        *      [score: 0.3390]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [mahasaliou0[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [aishaqaddafi9[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [mahasaliou0[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.8 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next 0/6] Disable host flooding for DSA ports under a
+ bridge
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Mattias Forsblad <mattias.forsblad@gmail.com>
+References: <20220408200337.718067-1-vladimir.oltean@nxp.com>
+ <20220408201407.cl6juslapnwx73bo@skbuf>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220408201407.cl6juslapnwx73bo@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- i am contacting you, because I need your help if you are
+On 08/04/2022 23:14, Vladimir Oltean wrote:
+> On Fri, Apr 08, 2022 at 11:03:31PM +0300, Vladimir Oltean wrote:
+>> For this patch series to make more sense, it should be reviewed from the
+>> last patch to the first. Changes were made in the order that they were
+>> just to preserve patch-with-patch functionality.
+>>
+>> A little while ago, some DSA switch drivers gained support for
+>> IFF_UNICAST_FLT, a mechanism through which they are notified of the
+>> MAC addresses required for local standalone termination.
+>> A bit longer ago, DSA also gained support for offloading BR_FDB_LOCAL
+>> bridge FDB entries, which are the MAC addresses required for local
+>> termination when under a bridge.
+>>
+>> So we have come one step closer to removing the CPU from the list of
+>> destinations for packets with unknown MAC DA. What remains is to check
+>> whether any software L2 forwarding is enabled, and that is accomplished
+>> by monitoring the neighbor bridge ports that DSA switches have.
+>>
+>> With these changes, DSA drivers that fulfill the requirements for
+>> dsa_switch_supports_uc_filtering() and dsa_switch_supports_mc_filtering()
+>> will keep flooding towards the CPU disabled for as long as no port is
+>> promiscuous. The bridge won't attempt to make its ports promiscuous
+>> anymore either if said ports are offloaded by switchdev (this series
+>> changes that behavior). Instead, DSA will fall back by its own will to
+>> promiscuous mode on bridge ports when the bridge itself becomes
+>> promiscuous, or a foreign interface is detected under the same bridge.
+>>
+>> Vladimir Oltean (6):
+>>   net: refactor all NETDEV_CHANGE notifier calls to a single function
+>>   net: emit NETDEV_CHANGE for changes to IFF_PROMISC | IFF_ALLMULTI
+>>   net: dsa: walk through all changeupper notifier functions
+>>   net: dsa: track whether bridges have foreign interfaces in them
+>>   net: dsa: monitor changes to bridge promiscuity
+>>   net: bridge: avoid uselessly making offloaded ports promiscuous
+>>
+>>  include/net/dsa.h  |   4 +-
+>>  net/bridge/br_if.c |  63 +++++++++++--------
+>>  net/core/dev.c     |  34 +++++-----
+>>  net/dsa/dsa_priv.h |   2 +
+>>  net/dsa/port.c     |  12 ++++
+>>  net/dsa/slave.c    | 150 ++++++++++++++++++++++++++++++++++++++++++---
+>>  6 files changed, 215 insertions(+), 50 deletions(-)
+>>
+>> -- 
+>> 2.25.1
+>>
+> 
+> Hmm, Nikolay's address bounced back and I didn't notice the MAINTAINERS
+> change. Updated the CC list with his new address.
+> 
+> Nikolay, if you want to take a look the patches are here, I hope it's
+> fine if I don't resend:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20220408200337.718067-1-vladimir.oltean@nxp.com/
 
- interested Contact me For more details,
+That's ok, I'll check them out tomorrow. Thanks!
+
