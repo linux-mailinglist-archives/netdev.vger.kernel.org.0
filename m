@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB604F9E04
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 22:09:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F4404F9E02
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 22:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238869AbiDHULE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 16:11:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49882 "EHLO
+        id S239393AbiDHULC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 16:11:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239405AbiDHULB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 16:11:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7515F353AB4
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 13:08:56 -0700 (PDT)
+        with ESMTP id S239385AbiDHUK4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 16:10:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25AEE13CC6
+        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 13:08:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1649448535;
+        s=mimecast20190719; t=1649448531;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9JtMGFEcHASSbO/y+OpaR0k8htNidGm6y16N5vLP7bo=;
-        b=Z+heGdoXS4dUVo2SEX/GOBHs52XREt+oZCV9v28Ky6eD2StLru0a6XJO+KMrLrqgc9kqjY
-        MUqEXhfUJaTKDZ4oNpWSJuvJCYHnMwqnNJrNRUVBGURUPE9i2hg42SzoX63QrzHZScZUkt
-        VBYXZ/VWWub7NXcuHKli09++PiQFtLE=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=X34v9srajCg/j9QKK4DR7vgFmdCgZsanh/0V3kdx5P8=;
+        b=XR0HFiIh9ECisE22p+7eBxW9we3IDyJfOGnQVoxuO4lP5rgnSdGYfUF5OTJEfJ50Pk3k8e
+        Oy+FcGozcFOBdYZpBEzi282s+czDjqSPuXDNZpqcFT9qe7fhGVEOCeG3RHF1Ykj62JS1DM
+        PC7zh3lFniaILNLqbU1yDy5Lb7X3ok0=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-552-bbcDbgxpPx68l8RLj2dwRA-1; Fri, 08 Apr 2022 16:08:46 -0400
-X-MC-Unique: bbcDbgxpPx68l8RLj2dwRA-1
-Received: by mail-wm1-f70.google.com with SMTP id v62-20020a1cac41000000b0038cfe6edf3fso6412165wme.5
-        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 13:08:46 -0700 (PDT)
+ us-mta-357-bGXj6JI5PCWNK4XZrOoJXA-1; Fri, 08 Apr 2022 16:08:50 -0400
+X-MC-Unique: bGXj6JI5PCWNK4XZrOoJXA-1
+Received: by mail-wm1-f71.google.com with SMTP id f12-20020a05600c154c00b0038ea9ed0a4aso1001326wmg.1
+        for <netdev@vger.kernel.org>; Fri, 08 Apr 2022 13:08:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=9JtMGFEcHASSbO/y+OpaR0k8htNidGm6y16N5vLP7bo=;
-        b=Xz/7jhrwJVBTRw14yPWjYTGa2fqafDJONEBRSoE0+SEIGdzh2BPzi07AGPULVJKp4Y
-         Ilvt8GQewn8BSvsguDn4hNAvbH3tDM3wb1wtO1xhsi0rXZM44ssrIheTQAYTrGc9oBcN
-         T2jLKZkO1IAmM/eR7qsB4KMUqs1Z3+ExYdgn6jugHopkDAri2+reZmh9eEmjLwtiAaTL
-         /6jkC2imMy4SPoVFvQeDsEAtQMg2crwqWkhsDFkBirv2QXtVf0dCVbiNWnTCgvyVN421
-         b1bK0Tuhmv2/Yoaiq+Vo7iwFaz9KQlV49lpd1JKwjonGx579rbwWakX2rhyXGNexFuA2
-         eQ7Q==
-X-Gm-Message-State: AOAM533DuvhzaBcSdZIY0zLpFxtCQ3QJrtQKvWOMftGrGLOhm7TyENH1
-        s1UFwFCo9J2ISccQzzfVZ2sUOffpZ6f3DvK+4OJ4OuNdIrtihA/y8fc8Ddhh9DuJEIgJQzMn3X+
-        7mIccpstxMrsvEF0x
-X-Received: by 2002:a5d:6b4c:0:b0:1e6:8ece:62e8 with SMTP id x12-20020a5d6b4c000000b001e68ece62e8mr16107686wrw.201.1649448525689;
-        Fri, 08 Apr 2022 13:08:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzPoWKKWiLJiE0BfPH7xMLy00xAXNhDXD47X+qZBrCOARBGWucTQjoP8nL/Grn/KIJeWkAFww==
-X-Received: by 2002:a5d:6b4c:0:b0:1e6:8ece:62e8 with SMTP id x12-20020a5d6b4c000000b001e68ece62e8mr16107678wrw.201.1649448525518;
-        Fri, 08 Apr 2022 13:08:45 -0700 (PDT)
+        bh=X34v9srajCg/j9QKK4DR7vgFmdCgZsanh/0V3kdx5P8=;
+        b=vl2xSk2ypynEnJHFtkiJCYsAM4sfkmcddDgsrYE4RpUag9vDtalgZRBvmVy8eflEew
+         JfDhDy7PwTyR6zwAnazt/32DF+rOS2TBa535U1GLL4g4cL0OeNMJQ+Z44aTc6B5ud4fi
+         38hWOHFryiWQMGo5YWI3nvV2C6WTyZAmGykSnmixBpMSypDPnVogk+/K+ArqSnr057PQ
+         SwCrLK1F8PrXS5+ed+d+FGZPTbct/oU/n0bBBS5t47+s3uMFHsHGRT5n7ViDbkMcaGQp
+         V0iXg0KVnxbYbNWy2M6eejtBV+UfE3SG/oFy7Lg8+k9oTf9D5HexegBvWMHFAzO7wWLG
+         4+7g==
+X-Gm-Message-State: AOAM532aVmS2LLinasw5jhDOZMWV5PwJdkg7Yo4TFV/6UlFne7uz/LZX
+        7T31M0LebSJM//ZdTiQ2qT6Bv+CcRP3At07sqftedPsHtmibwzlFlbSfVhjBMbGKwrOZhlsEUJi
+        4LofkTvruBngPHiJC
+X-Received: by 2002:a5d:6c68:0:b0:205:a0ee:c871 with SMTP id r8-20020a5d6c68000000b00205a0eec871mr15612926wrz.526.1649448528934;
+        Fri, 08 Apr 2022 13:08:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxVmNg6TC/cM/LsUviXzO+9N+mdtP4Ojbir/jQ5EDPtC/yywny4FeQu4abK6fmuimFE2i31Gw==
+X-Received: by 2002:a5d:6c68:0:b0:205:a0ee:c871 with SMTP id r8-20020a5d6c68000000b00205a0eec871mr15612912wrz.526.1649448528771;
+        Fri, 08 Apr 2022 13:08:48 -0700 (PDT)
 Received: from debian.home (2a01cb058d3818005c1e4a7b0f47339f.ipv6.abo.wanadoo.fr. [2a01:cb05:8d38:1800:5c1e:4a7b:f47:339f])
-        by smtp.gmail.com with ESMTPSA id g7-20020a5d64e7000000b00204a13925dcsm21955301wri.11.2022.04.08.13.08.44
+        by smtp.gmail.com with ESMTPSA id k9-20020adfb349000000b00206101fc58fsm14547065wrd.110.2022.04.08.13.08.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 13:08:45 -0700 (PDT)
-Date:   Fri, 8 Apr 2022 22:08:43 +0200
+        Fri, 08 Apr 2022 13:08:48 -0700 (PDT)
+Date:   Fri, 8 Apr 2022 22:08:46 +0200
 From:   Guillaume Nault <gnault@redhat.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -63,8 +63,8 @@ Cc:     netdev@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
         Petr Machata <petrm@nvidia.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         David Ahern <dsahern@kernel.org>
-Subject: [PATCH net-next 3/5] netdevsim: Use dscp_t in struct nsim_fib4_rt
-Message-ID: <1f643c547fc22298afe21953492112de9b9df872.1649445279.git.gnault@redhat.com>
+Subject: [PATCH net-next 4/5] mlxsw: Use dscp_t in struct mlxsw_sp_fib4_entry
+Message-ID: <f7a376abaebd90e07853498c084ea2282ff1744f.1649445279.git.gnault@redhat.com>
 References: <cover.1649445279.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -72,7 +72,7 @@ Content-Disposition: inline
 In-Reply-To: <cover.1649445279.git.gnault@redhat.com>
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H5,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        RCVD_IN_MSPIKE_H4,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,8 +81,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Use the new dscp_t type to replace the tos field of struct
-nsim_fib4_rt. This ensures ECN bits are ignored and makes it compatible
-with the dscp fields of struct fib_entry_notifier_info and struct
+mlxsw_sp_fib4_entry. This ensures ECN bits are ignored and makes it
+compatible with the dscp fields of fib_entry_notifier_info and
 fib_rt_info.
 
 This also allows sparse to flag potential incorrect uses of DSCP and
@@ -90,40 +90,67 @@ ECN bits.
 
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- drivers/net/netdevsim/fib.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum_router.c    | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index fb9af26122ac..c8f398f5bc5b 100644
---- a/drivers/net/netdevsim/fib.c
-+++ b/drivers/net/netdevsim/fib.c
-@@ -79,7 +79,7 @@ struct nsim_fib_rt {
- struct nsim_fib4_rt {
- 	struct nsim_fib_rt common;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 1c451d648302..dc820d9f2696 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -508,7 +508,7 @@ struct mlxsw_sp_fib4_entry {
+ 	struct mlxsw_sp_fib_entry common;
  	struct fib_info *fi;
+ 	u32 tb_id;
 -	u8 tos;
 +	dscp_t dscp;
  	u8 type;
  };
  
-@@ -284,7 +284,7 @@ nsim_fib4_rt_create(struct nsim_fib_data *data,
+@@ -5560,7 +5560,7 @@ mlxsw_sp_fib4_entry_should_offload(const struct mlxsw_sp_fib_entry *fib_entry)
  
- 	fib4_rt->fi = fen_info->fi;
- 	fib_info_hold(fib4_rt->fi);
--	fib4_rt->tos = inet_dscp_to_dsfield(fen_info->dscp);
-+	fib4_rt->dscp = fen_info->dscp;
- 	fib4_rt->type = fen_info->type;
+ 	fib4_entry = container_of(fib_entry, struct mlxsw_sp_fib4_entry,
+ 				  common);
+-	return !fib4_entry->tos;
++	return !fib4_entry->dscp;
+ }
  
- 	return fib4_rt;
-@@ -343,7 +343,7 @@ static void nsim_fib4_rt_hw_flags_set(struct net *net,
- 	fri.tb_id = fib4_rt->common.key.tb_id;
+ static bool
+@@ -5646,7 +5646,7 @@ mlxsw_sp_fib4_entry_hw_flags_set(struct mlxsw_sp *mlxsw_sp,
+ 	fri.tb_id = fib4_entry->tb_id;
  	fri.dst = cpu_to_be32(*p_dst);
  	fri.dst_len = dst_len;
--	fri.dscp = inet_dsfield_to_dscp(fib4_rt->tos);
-+	fri.dscp = fib4_rt->dscp;
- 	fri.type = fib4_rt->type;
+-	fri.dscp = inet_dsfield_to_dscp(fib4_entry->tos);
++	fri.dscp = fib4_entry->dscp;
+ 	fri.type = fib4_entry->type;
+ 	fri.offload = should_offload;
+ 	fri.trap = !should_offload;
+@@ -5669,7 +5669,7 @@ mlxsw_sp_fib4_entry_hw_flags_clear(struct mlxsw_sp *mlxsw_sp,
+ 	fri.tb_id = fib4_entry->tb_id;
+ 	fri.dst = cpu_to_be32(*p_dst);
+ 	fri.dst_len = dst_len;
+-	fri.dscp = inet_dsfield_to_dscp(fib4_entry->tos);
++	fri.dscp = fib4_entry->dscp;
+ 	fri.type = fib4_entry->type;
  	fri.offload = false;
- 	fri.trap = trap;
+ 	fri.trap = false;
+@@ -6251,7 +6251,7 @@ mlxsw_sp_fib4_entry_create(struct mlxsw_sp *mlxsw_sp,
+ 	fib_info_hold(fib4_entry->fi);
+ 	fib4_entry->tb_id = fen_info->tb_id;
+ 	fib4_entry->type = fen_info->type;
+-	fib4_entry->tos = inet_dscp_to_dsfield(fen_info->dscp);
++	fib4_entry->dscp = fen_info->dscp;
+ 
+ 	fib_entry->fib_node = fib_node;
+ 
+@@ -6305,7 +6305,7 @@ mlxsw_sp_fib4_entry_lookup(struct mlxsw_sp *mlxsw_sp,
+ 	fib4_entry = container_of(fib_node->fib_entry,
+ 				  struct mlxsw_sp_fib4_entry, common);
+ 	if (fib4_entry->tb_id == fen_info->tb_id &&
+-	    fib4_entry->tos == inet_dscp_to_dsfield(fen_info->dscp) &&
++	    fib4_entry->dscp == fen_info->dscp &&
+ 	    fib4_entry->type == fen_info->type &&
+ 	    fib4_entry->fi == fen_info->fi)
+ 		return fib4_entry;
 -- 
 2.21.3
 
