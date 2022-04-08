@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7C44F9C63
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:18:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB4BA4F9C65
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 20:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238480AbiDHSUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 14:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53746 "EHLO
+        id S238488AbiDHSUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 14:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229902AbiDHSU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:20:29 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E410E197509;
-        Fri,  8 Apr 2022 11:18:23 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id c2so8418047pga.10;
-        Fri, 08 Apr 2022 11:18:23 -0700 (PDT)
+        with ESMTP id S238478AbiDHSUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 14:20:31 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EB01A590E;
+        Fri,  8 Apr 2022 11:18:27 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id 2so9364456pjw.2;
+        Fri, 08 Apr 2022 11:18:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/NR8xDcZ0Ylxq2biAVnyKoJYNvBMoN/jzvnuuXpDJCo=;
-        b=EZSt7WtPsZIlhZbAjBRRIGDIKQteZDIW5HKx6uefTbPS36Tou89+bne7PI/kfQV+lc
-         AeaRg8i/+HwMdbTZ70g9zI6bSJYBAJjaMdaTu/LtqbfZGwGBpQoC7bz8u7K7tN1rrzng
-         4pVY4O13Q0GgY6g90WRGZUHj+V5Qv5laWMY3N3+PQTd00KRWf3YH6fcSiNZv4/WNRshW
-         92eeP5S+sobZxz5h7MQdHVxcPN0mc4RfssX7ub3Eb/+vPrqFiebbos8037CfXBTVL9JC
-         ewmw6WLvXg952B9pnjliJ0MyRfMo3IjaOz51tM2Cf8b/Czr13fApscspIYRrBAlqB15p
-         FvTA==
+        bh=18I+RyxgUeMQH1gbioCsbZ117JmCwekdtCCEBKsOPhE=;
+        b=FQr3WOhq72nRoN40TG6jBdn/4lORwIkEO3TFfWxyjU5xl1CgdYxOvuBxQWszFg0O/w
+         8BzAnlECyZX0wlM74X8yyZqwVNUuj2YsL1QkmwOqO38PanUlAXc4UOXPaN1BkQAoBjtu
+         P8LcDmcrBILVqJ409r0a/kWO++uiWDPV7eICazm2ARzdYJtxz6OtZMubgkcnEoiQcQg5
+         kPgu9l8dIgiPSFNKAg0Mft5ZTrqzonbmmLJHER17TSfLvokbMI7uXnjkGjA2Ckc0QUcr
+         JH2yfJvsROwnDqt5S7Jw4csmwAZaH7al3Hzkdx6tqmkZT02jPQ/XIrGHPm0QMmEUCLJb
+         3Scw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=/NR8xDcZ0Ylxq2biAVnyKoJYNvBMoN/jzvnuuXpDJCo=;
-        b=KTEt12PdfDpYrihtM6ZsJqwWyClNxht4KNOe8VQ3NhNBDTj9FZ4nT1opUIdyP4Y1QH
-         wcZEdaZV5NNMlTAsmzX0h6OKr3H6gLQeXVaYcdl9DGQOPdJxVnEbFJzP7AqEipcLdpkm
-         01UGqK6DyByOcKDaeLb/FXwKBDIDsgEJxg59KITmQ0LYwbomDCdz7PPGO/UlMgrBAsXt
-         kVfVl7wR2Bii7VgqSatuBiZthQ56wjhtH2mdLsY/4flL8PmXMj/bgPklKcMH0WROr5zY
-         Uf4nbz8mBc4X2B2hKM2zL9Kx1shtrm4+nxNwERqAJENxs/Sg4tnB1ytqMAWfxUcLjaCo
-         Uu0A==
-X-Gm-Message-State: AOAM5310rxZIJeDc6HmHBsKeRnQZYp/EgsFW/MG8mReiBLIFsOKlZEg7
-        cRHrRk91S0u8USMDV6KMYgQ=
-X-Google-Smtp-Source: ABdhPJxdl1LdbRqe9oDnIPQMnCudgGgXDENJvAQfVfKhHqsq92fuIxWS8hszUZdPMWjpPxUv74N4Qg==
-X-Received: by 2002:a63:4a23:0:b0:39c:c255:11ef with SMTP id x35-20020a634a23000000b0039cc25511efmr8737029pga.569.1649441902301;
-        Fri, 08 Apr 2022 11:18:22 -0700 (PDT)
+        bh=18I+RyxgUeMQH1gbioCsbZ117JmCwekdtCCEBKsOPhE=;
+        b=r9o+QrNHDKuQz7/Nw2hMjYUqdDyR4iSiUcOAv2x04oI0nDJOqTPQrprcERT66DvEpd
+         knWSsjRRjaRDI+tfWlYXpv4JVAC+7Qwzei9MEw0mvGco+K+r9LkoVkTfdhLaF4Janrty
+         VWFhT8B4wJGvJjUsxOtxNtustq3fVFA5S7mGa4KX+H7vvH7YexMPSW87lFVNW4GnnSlx
+         uvzeoOac87yI2WyXx6U3AG/qZi+iA8WTLXYqWW49iivPtHQiA1D0d1yHKdbA6NfGyThW
+         JZHwPR6APKHr5Vrm6Tm462FXZyuv0RsOFbXOAA0E4cNvsgCYuZeOqIplGTpRnQDAULjy
+         pLhQ==
+X-Gm-Message-State: AOAM532wbDhP1MxhH2MweRDWQzckgSa5SeQ3Gmak5wwml+YrQSsmT3Oc
+        7PcMb82aNWQyt30bQNJX8Yy08SWWggw=
+X-Google-Smtp-Source: ABdhPJzQZgoZy5f1pyUYi5gAK1Uvyi1PY67ShSOnTC+LIaj4re4v/d0V9RNL1VnQ8W0ycGEeAQWzXA==
+X-Received: by 2002:a17:90b:1e0e:b0:1c7:5b03:1d8b with SMTP id pg14-20020a17090b1e0e00b001c75b031d8bmr23009417pjb.121.1649441906611;
+        Fri, 08 Apr 2022 11:18:26 -0700 (PDT)
 Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id d59-20020a17090a6f4100b001cb4b786e64sm2725388pjk.28.2022.04.08.11.18.18
+        by smtp.gmail.com with ESMTPSA id d59-20020a17090a6f4100b001cb4b786e64sm2725388pjk.28.2022.04.08.11.18.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Apr 2022 11:18:21 -0700 (PDT)
+        Fri, 08 Apr 2022 11:18:26 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org, irusskikh@marvell.com, ast@kernel.org,
@@ -53,668 +53,101 @@ To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         kpsingh@kernel.org, bpf@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net-next v4 2/3] net: atlantic: Implement xdp data plane
-Date:   Fri,  8 Apr 2022 18:17:13 +0000
-Message-Id: <20220408181714.15354-3-ap420073@gmail.com>
+Subject: [PATCH net-next v4 3/3] net: atlantic: Implement .ndo_xdp_xmit handler
+Date:   Fri,  8 Apr 2022 18:17:14 +0000
+Message-Id: <20220408181714.15354-4-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220408181714.15354-1-ap420073@gmail.com>
 References: <20220408181714.15354-1-ap420073@gmail.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It supports XDP_PASS, XDP_DROP and multi buffer.
-
-The new function aq_nic_xmit_xdpf() is used to send packet with
-xdp_frame and internally it calls aq_nic_map_xdp().
-
-AQC chip supports 32 multi-queues and 8 vectors(irq).
-there are two option
-1. under 8 cores and 4 tx queues per core.
-2. under 4 cores and 8 tx queues per core.
-
-Like ixgbe, these tx queues can be used only for XDP_TX, XDP_REDIRECT
-queue. If so, no tx_lock is needed.
-But this patchset doesn't use this strategy because getting hardware tx
-queue index cost is too high.
-So, tx_lock is used in the aq_nic_xmit_xdpf().
-
-single-core, single queue, 80% cpu utilization.
-
-  30.75%  bpf_prog_xxx_xdp_prog_tx  [k] bpf_prog_xxx_xdp_prog_tx
-  10.35%  [kernel]                  [k] aq_hw_read_reg <---------- here
-   4.38%  [kernel]                  [k] get_page_from_freelist
-
-single-core, 8 queues, 100% cpu utilization, half PPS.
-
-  45.56%  [kernel]                  [k] aq_hw_read_reg <---------- here
-  17.58%  bpf_prog_xxx_xdp_prog_tx  [k] bpf_prog_xxx_xdp_prog_tx
-   4.72%  [kernel]                  [k] hw_atl_b0_hw_ring_rx_receive
-
-The new function __aq_ring_xdp_clean() is a xdp rx handler and this is
-called only when XDP is attached.
+aq_xdp_xmit() is the callback function of .ndo_xdp_xmit.
+It internally calls aq_nic_xmit_xdpf() to send packet.
 
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
 
 v4:
- - Fix compile warning
+ - No changed
 
 v3:
- - Change wrong PPS performance result 40% -> 80% in single
-   core(Intel i3-12100)
- - Separate aq_nic_map_xdp() from aq_nic_map_skb()
- - Drop multi buffer packets if single buffer XDP is attached
- - Use xdp_get_{frame/buff}_len()
+ - No changed
 
 v2:
- - Do not use inline in C file
+ - No changed
 
- .../ethernet/aquantia/atlantic/aq_ethtool.c   |   8 +
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 137 +++++++
- .../net/ethernet/aquantia/atlantic/aq_nic.h   |   2 +
- .../net/ethernet/aquantia/atlantic/aq_ring.c  | 335 +++++++++++++++++-
- .../net/ethernet/aquantia/atlantic/aq_ring.h  |   6 +
- 5 files changed, 480 insertions(+), 8 deletions(-)
+ .../net/ethernet/aquantia/atlantic/aq_main.c  |  1 +
+ .../net/ethernet/aquantia/atlantic/aq_ring.c  | 23 +++++++++++++++++++
+ .../net/ethernet/aquantia/atlantic/aq_ring.h  |  2 ++
+ 3 files changed, 26 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-index a418238f6309..b33979bdfde0 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-@@ -97,6 +97,14 @@ static const char * const aq_ethtool_queue_rx_stat_names[] = {
- 	"%sQueue[%d] AllocFails",
- 	"%sQueue[%d] SkbAllocFails",
- 	"%sQueue[%d] Polls",
-+	"%sQueue[%d] PageFlips",
-+	"%sQueue[%d] PageReuses",
-+	"%sQueue[%d] XdpAbort",
-+	"%sQueue[%d] XdpDrop",
-+	"%sQueue[%d] XdpPass",
-+	"%sQueue[%d] XdpTx",
-+	"%sQueue[%d] XdpInvalid",
-+	"%sQueue[%d] XdpRedirect",
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
+index 43012648a351..a0c428db886f 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
+@@ -508,6 +508,7 @@ static const struct net_device_ops aq_ndev_ops = {
+ 	.ndo_vlan_rx_kill_vid = aq_ndo_vlan_rx_kill_vid,
+ 	.ndo_setup_tc = aq_ndo_setup_tc,
+ 	.ndo_bpf = aq_xdp,
++	.ndo_xdp_xmit = aq_xdp_xmit,
  };
  
- static const char * const aq_ethtool_queue_tx_stat_names[] = {
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 33f1a1377588..37110d51e7e3 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -569,6 +569,104 @@ int aq_nic_start(struct aq_nic_s *self)
- 	return err;
- }
- 
-+static unsigned int aq_nic_map_xdp(struct aq_nic_s *self,
-+				   struct xdp_frame *xdpf,
-+				   struct aq_ring_s *ring)
-+{
-+	struct device *dev = aq_nic_get_dev(self);
-+	struct aq_ring_buff_s *first = NULL;
-+	unsigned int dx = ring->sw_tail;
-+	struct aq_ring_buff_s *dx_buff;
-+	struct skb_shared_info *sinfo;
-+	unsigned int frag_count = 0U;
-+	unsigned int nr_frags = 0U;
-+	unsigned int ret = 0U;
-+	u16 total_len;
-+
-+	dx_buff = &ring->buff_ring[dx];
-+	dx_buff->flags = 0U;
-+
-+	sinfo = xdp_get_shared_info_from_frame(xdpf);
-+	total_len = xdpf->len;
-+	dx_buff->len = total_len;
-+	if (xdp_frame_has_frags(xdpf)) {
-+		nr_frags = sinfo->nr_frags;
-+		total_len += sinfo->xdp_frags_size;
-+	}
-+	dx_buff->pa = dma_map_single(dev, xdpf->data, dx_buff->len,
-+				     DMA_TO_DEVICE);
-+
-+	if (unlikely(dma_mapping_error(dev, dx_buff->pa)))
-+		goto exit;
-+
-+	first = dx_buff;
-+	dx_buff->len_pkt = total_len;
-+	dx_buff->is_sop = 1U;
-+	dx_buff->is_mapped = 1U;
-+	++ret;
-+
-+	for (; nr_frags--; ++frag_count) {
-+		skb_frag_t *frag = &sinfo->frags[frag_count];
-+		unsigned int frag_len = skb_frag_size(frag);
-+		unsigned int buff_offset = 0U;
-+		unsigned int buff_size = 0U;
-+		dma_addr_t frag_pa;
-+
-+		while (frag_len) {
-+			if (frag_len > AQ_CFG_TX_FRAME_MAX)
-+				buff_size = AQ_CFG_TX_FRAME_MAX;
-+			else
-+				buff_size = frag_len;
-+
-+			frag_pa = skb_frag_dma_map(dev, frag, buff_offset,
-+						   buff_size, DMA_TO_DEVICE);
-+
-+			if (unlikely(dma_mapping_error(dev, frag_pa)))
-+				goto mapping_error;
-+
-+			dx = aq_ring_next_dx(ring, dx);
-+			dx_buff = &ring->buff_ring[dx];
-+
-+			dx_buff->flags = 0U;
-+			dx_buff->len = buff_size;
-+			dx_buff->pa = frag_pa;
-+			dx_buff->is_mapped = 1U;
-+			dx_buff->eop_index = 0xffffU;
-+
-+			frag_len -= buff_size;
-+			buff_offset += buff_size;
-+
-+			++ret;
-+		}
-+	}
-+
-+	first->eop_index = dx;
-+	dx_buff->is_eop = 1U;
-+	dx_buff->skb = NULL;
-+	dx_buff->xdpf = xdpf;
-+	goto exit;
-+
-+mapping_error:
-+	for (dx = ring->sw_tail;
-+	     ret > 0;
-+	     --ret, dx = aq_ring_next_dx(ring, dx)) {
-+		dx_buff = &ring->buff_ring[dx];
-+
-+		if (!(dx_buff->is_gso_tcp || dx_buff->is_gso_udp) &&
-+		    !dx_buff->is_vlan && dx_buff->pa) {
-+			if (unlikely(dx_buff->is_sop))
-+				dma_unmap_single(dev, dx_buff->pa, dx_buff->len,
-+						 DMA_TO_DEVICE);
-+			else
-+				dma_unmap_page(dev, dx_buff->pa, dx_buff->len,
-+					       DMA_TO_DEVICE);
-+		}
-+	}
-+
-+exit:
-+	return ret;
-+}
-+
- unsigned int aq_nic_map_skb(struct aq_nic_s *self, struct sk_buff *skb,
- 			    struct aq_ring_s *ring)
- {
-@@ -697,6 +795,7 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, struct sk_buff *skb,
- 	first->eop_index = dx;
- 	dx_buff->is_eop = 1U;
- 	dx_buff->skb = skb;
-+	dx_buff->xdpf = NULL;
- 	goto exit;
- 
- mapping_error:
-@@ -725,6 +824,44 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, struct sk_buff *skb,
- 	return ret;
- }
- 
-+int aq_nic_xmit_xdpf(struct aq_nic_s *aq_nic, struct aq_ring_s *tx_ring,
-+		     struct xdp_frame *xdpf)
-+{
-+	u16 queue_index = AQ_NIC_RING2QMAP(aq_nic, tx_ring->idx);
-+	struct net_device *ndev = aq_nic_get_ndev(aq_nic);
-+	struct skb_shared_info *sinfo;
-+	int cpu = smp_processor_id();
-+	int err = NETDEV_TX_BUSY;
-+	struct netdev_queue *nq;
-+	unsigned int frags = 1;
-+
-+	if (xdp_frame_has_frags(xdpf)) {
-+		sinfo = xdp_get_shared_info_from_frame(xdpf);
-+		frags += sinfo->nr_frags;
-+	}
-+
-+	if (frags > AQ_CFG_SKB_FRAGS_MAX)
-+		return err;
-+
-+	nq = netdev_get_tx_queue(ndev, tx_ring->idx);
-+	__netif_tx_lock(nq, cpu);
-+
-+	aq_ring_update_queue_state(tx_ring);
-+
-+	/* Above status update may stop the queue. Check this. */
-+	if (__netif_subqueue_stopped(aq_nic_get_ndev(aq_nic), queue_index))
-+		goto out;
-+
-+	frags = aq_nic_map_xdp(aq_nic, xdpf, tx_ring);
-+	if (likely(frags))
-+		err = aq_nic->aq_hw_ops->hw_ring_tx_xmit(aq_nic->aq_hw, tx_ring,
-+							 frags);
-+out:
-+	__netif_tx_unlock(nq);
-+
-+	return err;
-+}
-+
- int aq_nic_xmit(struct aq_nic_s *self, struct sk_buff *skb)
- {
- 	struct aq_nic_cfg_s *cfg = aq_nic_get_cfg(self);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-index 47123baabd5e..935ba889bd9a 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -180,6 +180,8 @@ void aq_nic_ndev_free(struct aq_nic_s *self);
- int aq_nic_start(struct aq_nic_s *self);
- unsigned int aq_nic_map_skb(struct aq_nic_s *self, struct sk_buff *skb,
- 			    struct aq_ring_s *ring);
-+int aq_nic_xmit_xdpf(struct aq_nic_s *aq_nic, struct aq_ring_s *tx_ring,
-+		     struct xdp_frame *xdpf);
- int aq_nic_xmit(struct aq_nic_s *self, struct sk_buff *skb);
- int aq_nic_get_regs(struct aq_nic_s *self, struct ethtool_regs *regs, void *p);
- int aq_nic_get_regs_count(struct aq_nic_s *self);
+ static int __init aq_ndev_init_module(void)
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index b261283641a7..d2953a84073e 100644
+index d2953a84073e..e788f9095a96 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -31,6 +31,39 @@ static inline void aq_free_rxpage(struct aq_rxpage *rxpage, struct device *dev)
- 	rxpage->page = NULL;
- }
- 
-+static void aq_unset_rxpage_xdp(struct aq_ring_s *rx_ring,
-+				struct aq_ring_buff_s *buff,
-+				struct device *dev,
-+				struct xdp_buff *xdp)
-+{
-+	struct aq_ring_buff_s *nbuff = buff;
-+	struct skb_shared_info *sinfo;
-+	unsigned int next = 0;
-+	int i;
-+
-+	if (xdp_buff_has_frags(xdp)) {
-+		sinfo = xdp_get_shared_info_from_buff(xdp);
-+
-+		for (i = 0; i < sinfo->nr_frags; i++) {
-+			skb_frag_t *frag = &sinfo->frags[i];
-+			struct page *page;
-+
-+			page = skb_frag_page(frag);
-+
-+			dma_unmap_page(dev, page->dma_addr, skb_frag_size(frag),
-+				       DMA_FROM_DEVICE);
-+		}
-+
-+		do {
-+			next = nbuff->next;
-+			nbuff = &rx_ring->buff_ring[next];
-+			nbuff->rxdata.page = NULL;
-+		} while (!nbuff->is_eop);
-+	}
-+	dma_unmap_page(dev, buff->rxdata.daddr, PAGE_SIZE, DMA_FROM_DEVICE);
-+	buff->rxdata.page = NULL;
-+}
-+
- static int aq_get_rxpage(struct aq_rxpage *rxpage, struct aq_ring_s *rx_ring)
- {
- 	struct device *dev = aq_nic_get_dev(rx_ring->aq_nic);
-@@ -316,15 +349,26 @@ bool aq_ring_tx_clean(struct aq_ring_s *self)
- 			}
- 		}
- 
--		if (unlikely(buff->is_eop && buff->skb)) {
-+		if (likely(!buff->is_eop))
-+			goto out;
-+
-+		if (buff->skb) {
- 			u64_stats_update_begin(&self->stats.tx.syncp);
- 			++self->stats.tx.packets;
- 			self->stats.tx.bytes += buff->skb->len;
- 			u64_stats_update_end(&self->stats.tx.syncp);
--
- 			dev_kfree_skb_any(buff->skb);
--			buff->skb = NULL;
-+		} else if (buff->xdpf) {
-+			u64_stats_update_begin(&self->stats.tx.syncp);
-+			++self->stats.tx.packets;
-+			self->stats.tx.bytes += xdp_get_frame_len(buff->xdpf);
-+			u64_stats_update_end(&self->stats.tx.syncp);
-+			xdp_return_frame_rx_napi(buff->xdpf);
- 		}
-+
-+out:
-+		buff->skb = NULL;
-+		buff->xdpf = NULL;
- 		buff->pa = 0U;
- 		buff->eop_index = 0xffffU;
- 		self->sw_head = aq_ring_next_dx(self, self->sw_head);
-@@ -357,11 +401,136 @@ static void aq_rx_checksum(struct aq_ring_s *self,
+@@ -401,6 +401,29 @@ static void aq_rx_checksum(struct aq_ring_s *self,
  		__skb_incr_checksum_unnecessary(skb);
  }
  
--#define AQ_SKB_ALIGN SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
--int aq_ring_rx_clean(struct aq_ring_s *self,
--		     struct napi_struct *napi,
--		     int *work_done,
--		     int budget)
-+static struct sk_buff *aq_xdp_run_prog(struct aq_nic_s *aq_nic,
-+				       struct xdp_buff *xdp,
-+				       struct aq_ring_s *rx_ring,
-+				       struct aq_ring_buff_s *buff)
++int aq_xdp_xmit(struct net_device *dev, int num_frames,
++		struct xdp_frame **frames, u32 flags)
 +{
-+	int result = NETDEV_TX_BUSY;
-+	struct aq_ring_s *tx_ring;
-+	struct xdp_frame *xdpf;
-+	struct bpf_prog *prog;
-+	u32 act = XDP_ABORTED;
-+	struct sk_buff *skb;
++	struct aq_nic_s *aq_nic = netdev_priv(dev);
++	unsigned int vec, i, drop = 0;
++	int cpu = smp_processor_id();
++	struct aq_nic_cfg_s *aq_cfg;
++	struct aq_ring_s *ring;
 +
-+	u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+	++rx_ring->stats.rx.packets;
-+	rx_ring->stats.rx.bytes += xdp_get_buff_len(xdp);
-+	u64_stats_update_end(&rx_ring->stats.rx.syncp);
++	aq_cfg = aq_nic_get_cfg(aq_nic);
++	vec = cpu % aq_cfg->vecs;
++	ring = aq_nic->aq_ring_tx[AQ_NIC_CFG_TCVEC2RING(aq_cfg, 0, vec)];
 +
-+	prog = READ_ONCE(rx_ring->xdp_prog);
-+	if (!prog)
-+		goto pass;
++	for (i = 0; i < num_frames; i++) {
++		struct xdp_frame *xdpf = frames[i];
 +
-+	prefetchw(xdp->data_hard_start); /* xdp_frame write */
-+
-+	/* single buffer XDP program, but packet is multi buffer, aborted */
-+	if (xdp_buff_has_frags(xdp) && !prog->aux->xdp_has_frags)
-+		goto out_aborted;
-+
-+	act = bpf_prog_run_xdp(prog, xdp);
-+	switch (act) {
-+	case XDP_PASS:
-+pass:
-+		xdpf = xdp_convert_buff_to_frame(xdp);
-+		if (unlikely(!xdpf))
-+			goto out_aborted;
-+		skb = xdp_build_skb_from_frame(xdpf, aq_nic->ndev);
-+		if (!skb)
-+			goto out_aborted;
-+		u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+		++rx_ring->stats.rx.xdp_pass;
-+		u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+		aq_unset_rxpage_xdp(rx_ring, buff, &aq_nic->ndev->dev, xdp);
-+		return skb;
-+	case XDP_TX:
-+		xdpf = xdp_convert_buff_to_frame(xdp);
-+		if (unlikely(!xdpf))
-+			goto out_aborted;
-+		tx_ring = aq_nic->aq_ring_tx[rx_ring->idx];
-+		result = aq_nic_xmit_xdpf(aq_nic, tx_ring, xdpf);
-+		if (result == NETDEV_TX_BUSY)
-+			goto out_aborted;
-+		u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+		++rx_ring->stats.rx.xdp_tx;
-+		u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+		aq_unset_rxpage_xdp(rx_ring, buff, &aq_nic->ndev->dev, xdp);
-+		break;
-+	case XDP_REDIRECT:
-+		if (xdp_do_redirect(aq_nic->ndev, xdp, prog) < 0)
-+			goto out_aborted;
-+		xdp_do_flush();
-+		u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+		++rx_ring->stats.rx.xdp_redirect;
-+		u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+		aq_unset_rxpage_xdp(rx_ring, buff, &aq_nic->ndev->dev, xdp);
-+		break;
-+	default:
-+		fallthrough;
-+	case XDP_ABORTED:
-+out_aborted:
-+		u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+		++rx_ring->stats.rx.xdp_aborted;
-+		u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+		trace_xdp_exception(aq_nic->ndev, prog, act);
-+		bpf_warn_invalid_xdp_action(aq_nic->ndev, prog, act);
-+		break;
-+	case XDP_DROP:
-+		u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+		++rx_ring->stats.rx.xdp_drop;
-+		u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+		break;
++		if (aq_nic_xmit_xdpf(aq_nic, ring, xdpf) == NETDEV_TX_BUSY)
++			drop++;
 +	}
 +
-+	return ERR_PTR(-result);
++	return num_frames - drop;
 +}
 +
-+static bool aq_add_rx_fragment(struct device *dev,
-+			       struct aq_ring_s *ring,
-+			       struct aq_ring_buff_s *buff,
-+			       struct xdp_buff *xdp)
-+{
-+	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
-+	struct aq_ring_buff_s *buff_ = buff;
-+
-+	memset(sinfo, 0, sizeof(*sinfo));
-+	do {
-+		skb_frag_t *frag;
-+
-+		if (unlikely(sinfo->nr_frags >= MAX_SKB_FRAGS))
-+			return true;
-+
-+		frag = &sinfo->frags[sinfo->nr_frags++];
-+		buff_ = &ring->buff_ring[buff_->next];
-+		dma_sync_single_range_for_cpu(dev,
-+					      buff_->rxdata.daddr,
-+					      buff_->rxdata.pg_off,
-+					      buff_->len,
-+					      DMA_FROM_DEVICE);
-+		skb_frag_off_set(frag, buff_->rxdata.pg_off);
-+		skb_frag_size_set(frag, buff_->len);
-+		sinfo->xdp_frags_size += buff_->len;
-+		__skb_frag_set_page(frag, buff_->rxdata.page);
-+
-+		buff_->is_cleaned = 1;
-+
-+		buff->is_ip_cso &= buff_->is_ip_cso;
-+		buff->is_udp_cso &= buff_->is_udp_cso;
-+		buff->is_tcp_cso &= buff_->is_tcp_cso;
-+		buff->is_cso_err |= buff_->is_cso_err;
-+
-+		if (page_is_pfmemalloc(buff_->rxdata.page))
-+			xdp_buff_set_frag_pfmemalloc(xdp);
-+
-+	} while (!buff_->is_eop);
-+
-+	xdp_buff_set_frags_flag(xdp);
-+
-+	return false;
-+}
-+
-+static int __aq_ring_rx_clean(struct aq_ring_s *self, struct napi_struct *napi,
-+			      int *work_done, int budget)
- {
- 	struct net_device *ndev = aq_nic_get_ndev(self->aq_nic);
- 	bool is_rsc_completed = true;
-@@ -528,6 +697,148 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 	return err;
- }
- 
-+static int __aq_ring_xdp_clean(struct aq_ring_s *rx_ring,
-+			       struct napi_struct *napi, int *work_done,
-+			       int budget)
-+{
-+	struct aq_nic_s *aq_nic = rx_ring->aq_nic;
-+	bool is_rsc_completed = true;
-+	struct device *dev;
-+	int err = 0;
-+
-+	dev = aq_nic_get_dev(aq_nic);
-+
-+	for (; (rx_ring->sw_head != rx_ring->hw_head) && budget;
-+		rx_ring->sw_head = aq_ring_next_dx(rx_ring, rx_ring->sw_head),
-+		--budget, ++(*work_done)) {
-+		struct aq_ring_buff_s *buff = &rx_ring->buff_ring[rx_ring->sw_head];
-+		bool is_ptp_ring = aq_ptp_ring(rx_ring->aq_nic, rx_ring);
-+		struct aq_ring_buff_s *buff_ = NULL;
-+		struct sk_buff *skb = NULL;
-+		unsigned int next_ = 0U;
-+		struct xdp_buff xdp;
-+		void *hard_start;
-+
-+		if (buff->is_cleaned)
-+			continue;
-+
-+		if (!buff->is_eop) {
-+			buff_ = buff;
-+			do {
-+				if (buff_->next >= rx_ring->size) {
-+					err = -EIO;
-+					goto err_exit;
-+				}
-+				next_ = buff_->next;
-+				buff_ = &rx_ring->buff_ring[next_];
-+				is_rsc_completed =
-+					aq_ring_dx_in_range(rx_ring->sw_head,
-+							    next_,
-+							    rx_ring->hw_head);
-+
-+				if (unlikely(!is_rsc_completed))
-+					break;
-+
-+				buff->is_error |= buff_->is_error;
-+				buff->is_cso_err |= buff_->is_cso_err;
-+			} while (!buff_->is_eop);
-+
-+			if (!is_rsc_completed) {
-+				err = 0;
-+				goto err_exit;
-+			}
-+			if (buff->is_error ||
-+			    (buff->is_lro && buff->is_cso_err)) {
-+				buff_ = buff;
-+				do {
-+					if (buff_->next >= rx_ring->size) {
-+						err = -EIO;
-+						goto err_exit;
-+					}
-+					next_ = buff_->next;
-+					buff_ = &rx_ring->buff_ring[next_];
-+
-+					buff_->is_cleaned = true;
-+				} while (!buff_->is_eop);
-+
-+				u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+				++rx_ring->stats.rx.errors;
-+				u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+				continue;
-+			}
-+		}
-+
-+		if (buff->is_error) {
-+			u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+			++rx_ring->stats.rx.errors;
-+			u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+			continue;
-+		}
-+
-+		dma_sync_single_range_for_cpu(dev,
-+					      buff->rxdata.daddr,
-+					      buff->rxdata.pg_off,
-+					      buff->len, DMA_FROM_DEVICE);
-+		hard_start = page_address(buff->rxdata.page);
-+
-+		if (is_ptp_ring)
-+			buff->len -=
-+				aq_ptp_extract_ts(rx_ring->aq_nic, skb,
-+						  aq_buf_vaddr(&buff->rxdata),
-+						  buff->len);
-+
-+		/* page_order is always 0 if xdp is enabled */
-+		xdp_init_buff(&xdp, PAGE_SIZE, &rx_ring->xdp_rxq);
-+		xdp_prepare_buff(&xdp, hard_start, rx_ring->page_offset,
-+				 buff->len, true);
-+		if (!buff->is_eop) {
-+			if (aq_add_rx_fragment(dev, rx_ring, buff, &xdp)) {
-+				u64_stats_update_begin(&rx_ring->stats.rx.syncp);
-+				++rx_ring->stats.rx.packets;
-+				rx_ring->stats.rx.bytes += xdp_get_buff_len(&xdp);
-+				++rx_ring->stats.rx.xdp_aborted;
-+				u64_stats_update_end(&rx_ring->stats.rx.syncp);
-+				continue;
-+			}
-+		}
-+
-+		skb = aq_xdp_run_prog(aq_nic, &xdp, rx_ring, buff);
-+		if (IS_ERR(skb) || !skb)
-+			continue;
-+
-+		if (buff->is_vlan)
-+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-+					       buff->vlan_rx_tag);
-+
-+		aq_rx_checksum(rx_ring, buff, skb);
-+
-+		skb_set_hash(skb, buff->rss_hash,
-+			     buff->is_hash_l4 ? PKT_HASH_TYPE_L4 :
-+			     PKT_HASH_TYPE_NONE);
-+		/* Send all PTP traffic to 0 queue */
-+		skb_record_rx_queue(skb,
-+				    is_ptp_ring ? 0
-+						: AQ_NIC_RING2QMAP(rx_ring->aq_nic,
-+								   rx_ring->idx));
-+
-+		napi_gro_receive(napi, skb);
-+	}
-+
-+err_exit:
-+	return err;
-+}
-+
-+int aq_ring_rx_clean(struct aq_ring_s *self,
-+		     struct napi_struct *napi,
-+		     int *work_done,
-+		     int budget)
-+{
-+	if (static_branch_unlikely(&aq_xdp_locking_key))
-+		return __aq_ring_xdp_clean(self, napi, work_done, budget);
-+	else
-+		return __aq_ring_rx_clean(self, napi, work_done, budget);
-+}
-+
- void aq_ring_hwts_rx_clean(struct aq_ring_s *self, struct aq_nic_s *aq_nic)
- {
- #if IS_REACHABLE(CONFIG_PTP_1588_CLOCK)
-@@ -617,6 +928,14 @@ unsigned int aq_ring_fill_stats_data(struct aq_ring_s *self, u64 *data)
- 			data[++count] = self->stats.rx.alloc_fails;
- 			data[++count] = self->stats.rx.skb_alloc_fails;
- 			data[++count] = self->stats.rx.polls;
-+			data[++count] = self->stats.rx.pg_flips;
-+			data[++count] = self->stats.rx.pg_reuses;
-+			data[++count] = self->stats.rx.xdp_aborted;
-+			data[++count] = self->stats.rx.xdp_drop;
-+			data[++count] = self->stats.rx.xdp_pass;
-+			data[++count] = self->stats.rx.xdp_tx;
-+			data[++count] = self->stats.rx.xdp_invalid;
-+			data[++count] = self->stats.rx.xdp_redirect;
- 		} while (u64_stats_fetch_retry_irq(&self->stats.rx.syncp, start));
- 	} else {
- 		/* This data should mimic aq_ethtool_queue_tx_stat_names structure */
+ static struct sk_buff *aq_xdp_run_prog(struct aq_nic_s *aq_nic,
+ 				       struct xdp_buff *xdp,
+ 				       struct aq_ring_s *rx_ring,
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-index 168002657629..6a86d9cfac35 100644
+index 6a86d9cfac35..31e19dff6c1e 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
-@@ -105,6 +105,12 @@ struct aq_ring_stats_rx_s {
- 	u64 pg_losts;
- 	u64 pg_flips;
- 	u64 pg_reuses;
-+	u64 xdp_aborted;
-+	u64 xdp_drop;
-+	u64 xdp_pass;
-+	u64 xdp_tx;
-+	u64 xdp_invalid;
-+	u64 xdp_redirect;
- };
- 
- struct aq_ring_stats_tx_s {
+@@ -197,6 +197,8 @@ void aq_ring_update_queue_state(struct aq_ring_s *ring);
+ void aq_ring_queue_wake(struct aq_ring_s *ring);
+ void aq_ring_queue_stop(struct aq_ring_s *ring);
+ bool aq_ring_tx_clean(struct aq_ring_s *self);
++int aq_xdp_xmit(struct net_device *dev, int num_frames,
++		struct xdp_frame **frames, u32 flags);
+ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		     struct napi_struct *napi,
+ 		     int *work_done,
 -- 
 2.17.1
 
