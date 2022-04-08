@@ -2,134 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 193124F9DC0
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 21:46:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 999B94F9DC6
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 21:49:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237579AbiDHTs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 15:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48834 "EHLO
+        id S238688AbiDHTv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 15:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbiDHTsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 15:48:17 -0400
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3084A389E
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 12:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649447173; x=1680983173;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NABinCF0LHq/aOKg0y7Mwz+78G28IHxmsB6Mx1C7my4=;
-  b=V4DajmRrmUl5o7t17p/WL8YW5fjWoIR5kMGDsTe4eUsv3f4SXjIaihgL
-   nuQSKVK1HVHnyk8I5K69ZtCPx7yamC/Z2kczklANdkFZ7Y32+bBKNX2si
-   WMIFAdYGsX31S+OUtlpTgt5gXysPxrH6U5HVdD+0UvV4vUQucJmUi8VHR
-   o8AU6cD6os6AVUYeOX4wzYxhhwXWN8PlhZ8hdFCnU59xrwtcjzC/ufNSn
-   kQ09Vq3IoQ56LO04oAtSt4cTQtsUs9xpKOzX78aEPfB9WXuzMEoJ65xZJ
-   c0JY473JVjTg9c1XnC3+VdwMP4RQNBGyuIoagpixg8RTXbb9NZbBk3fLD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10311"; a="322365316"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="322365316"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 12:46:11 -0700
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="659602181"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.134.75.99])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 12:46:11 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 8/8] selftests/mptcp: add diag listen tests
-Date:   Fri,  8 Apr 2022 12:46:01 -0700
-Message-Id: <20220408194601.305969-9-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220408194601.305969-1-mathew.j.martineau@linux.intel.com>
-References: <20220408194601.305969-1-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S233000AbiDHTv5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 15:51:57 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC963CE7;
+        Fri,  8 Apr 2022 12:49:52 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id b2-20020a17090a010200b001cb0c78db57so7474547pjb.2;
+        Fri, 08 Apr 2022 12:49:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7VQXuZOd0i1jvW/8gCp/qhiKPoeAGyVQPlsfy06ITt4=;
+        b=ACXahYMulsP2jKhj0mAcWDG3pD96LO59FWQpva03C0IiYkyS1uG5gdfH0vlyTwz5+c
+         jXrKokmTChr61HZBdmc79zdx9xVFaNrQ10zYyCAWixVIq56G/B8rcu5WiE048xuOZ1go
+         ntgJjoIHOrm286ejdw3NPZlowHtVFjdVpnQmezyhv7CfFXb2Ihx8DC+jdlMLKzf4dPFA
+         dzyKkaTdWyi3VV8uKWpTKZOtLlrzqckNCHOMIxVjPWnLrrD+1bbL88O4Yq/h//3w20PP
+         Cl1CZzLMZyYGaOC5T2n5P8MzDpvhvBBxWOQbKmOLCzUjyIN0C4oga79Vw9b1iJEZoXhU
+         Basw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7VQXuZOd0i1jvW/8gCp/qhiKPoeAGyVQPlsfy06ITt4=;
+        b=K5qWETEgb6HPsiEG0J99jveaig4nJPUhdGaNOMTd+onj+0ByqTW6iQHJzgr3O0ZMH2
+         MAZsTvpoYRAsb82puBgs87lobtaDUrjXHHvRbC3SwjUjZ7utReephhZsvPSvb4twLRy+
+         ngD1hu3Uy0I/XZvOX97YAdC0V6+cFyZTLa9VKNnEh3SZqOB/aiJ93I4bEKSKFkt1qL40
+         9FZ9mj5ZLeGYzLXJWGWqJj3h4AsQYBzWflscELKk+bWeYgrlm/fJXb58TYffUIIYd9Dg
+         Iwvb4GOAz18/VJGkuz2ClkP2XlHEQDTEe1RdLCHy5FLLU/7IYBYzeYY969G9tw5790Ju
+         766w==
+X-Gm-Message-State: AOAM53349RePgdHzml2NTWrxiQ/AgpTlCXSl++KSHDYZmP7g9h++WV4L
+        XWYuas5GimdH4H50iTEXycw=
+X-Google-Smtp-Source: ABdhPJzPEx6FJevH1oP26OCAH9K0RFm/bws+3Hw1AmDOS4a9VwgmVLEiIagDWrkP6KIteD5aaDSMXQ==
+X-Received: by 2002:a17:903:11c7:b0:151:9769:3505 with SMTP id q7-20020a17090311c700b0015197693505mr20712810plh.72.1649447392412;
+        Fri, 08 Apr 2022 12:49:52 -0700 (PDT)
+Received: from [192.168.0.4] ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id i7-20020a628707000000b004fa6eb33b02sm26450531pfe.49.2022.04.08.12.49.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Apr 2022 12:49:51 -0700 (PDT)
+Message-ID: <a111f4f5-3b4b-781a-71c2-34dd042fa19f@gmail.com>
+Date:   Sat, 9 Apr 2022 04:49:46 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next v3 0/3] net: atlantic: Add XDP support
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org,
+        irusskikh@marvell.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, bpf@vger.kernel.org
+References: <20220408165950.10515-1-ap420073@gmail.com>
+ <d4106b81-31cb-2569-6b49-9393bd2c2b34@gmail.com>
+ <20220408115825.319e815e@kernel.org>
+From:   Taehee Yoo <ap420073@gmail.com>
+In-Reply-To: <20220408115825.319e815e@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+On 4/9/22 03:58, Jakub Kicinski wrote:
 
-Check dumping of mptcp listener sockets:
-1. filter by dport should not return any results
-2. filter by sport should return listen sk
-3. filter by saddr+sport should return listen sk
-4. no filter should return listen sk
+Hi Jakub,
+Thank you so much for your advice!
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- tools/testing/selftests/net/mptcp/diag.sh | 38 +++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ > On Sat, 9 Apr 2022 02:32:51 +0900 Taehee Yoo wrote:
+ >> I will send v4 patch because of compile warning.
+ >
+ > Please don't resend your series more often than once a day.
+ >
+ > If your code doesn't compile cleanly, too bad, you'll have to wait.
+ >
+ > This is sort of documented in the FAQ:
+ >
+ >    2.10. I have received review feedback, when should I post a revised
+ >          version of the patches?
+ >
+ >          Allow at least 24 hours to pass between postings. This will
+ >          ensure reviewers from all geographical locations have a chance
+ >          to chime in. Do not wait too long (weeks) between postings
+ >          either as it will make it harder for reviewers to recall all
+ >          the context.
+ >
+ > 
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html#i-have-received-review-feedback-when-should-i-post-a-revised-version-of-the-patches
 
-diff --git a/tools/testing/selftests/net/mptcp/diag.sh b/tools/testing/selftests/net/mptcp/diag.sh
-index ff821025d309..9dd43d7d957b 100755
---- a/tools/testing/selftests/net/mptcp/diag.sh
-+++ b/tools/testing/selftests/net/mptcp/diag.sh
-@@ -71,6 +71,43 @@ chk_msk_remote_key_nr()
- 		__chk_nr "grep -c remote_key" $*
- }
- 
-+__chk_listen()
-+{
-+	local filter="$1"
-+	local expected=$2
-+
-+	shift 2
-+	msg=$*
-+
-+	nr=$(ss -N $ns -Ml "$filter" | grep -c LISTEN)
-+	printf "%-50s" "$msg"
-+
-+	if [ $nr != $expected ]; then
-+		echo "[ fail ] expected $expected found $nr"
-+		ret=$test_cnt
-+	else
-+		echo "[  ok  ]"
-+	fi
-+}
-+
-+chk_msk_listen()
-+{
-+	lport=$1
-+	local msg="check for listen socket"
-+
-+	# destination port search should always return empty list
-+	__chk_listen "dport $lport" 0 "listen match for dport $lport"
-+
-+	# should return 'our' mptcp listen socket
-+	__chk_listen "sport $lport" 1 "listen match for sport $lport"
-+
-+	__chk_listen "src inet:0.0.0.0:$lport" 1 "listen match for saddr and sport"
-+
-+	__chk_listen "" 1 "all listen sockets"
-+
-+	nr=$(ss -Ml $filter | wc -l)
-+}
-+
- # $1: ns, $2: port
- wait_local_port_listen()
- {
-@@ -113,6 +150,7 @@ echo "a" | \
- 				0.0.0.0 >/dev/null &
- wait_local_port_listen $ns 10000
- chk_msk_nr 0 "no msk on netns creation"
-+chk_msk_listen 10000
- 
- echo "b" | \
- 	timeout ${timeout_test} \
--- 
-2.35.1
+Sorry for that I was too hasty.
+I will always send a new version patch after enough time for review.
 
+Thanks a lot,
+Taehee Yoo
