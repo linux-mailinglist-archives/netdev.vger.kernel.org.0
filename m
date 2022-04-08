@@ -2,224 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06B5D4F8E2B
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351214F8E99
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234282AbiDHEgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 00:36:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41062 "EHLO
+        id S234326AbiDHErb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 00:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiDHEf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 00:35:58 -0400
-Received: from mail-pl1-x664.google.com (mail-pl1-x664.google.com [IPv6:2607:f8b0:4864:20::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9591ED4CB8
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 21:33:54 -0700 (PDT)
-Received: by mail-pl1-x664.google.com with SMTP id s11so6874377pla.8
-        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 21:33:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:dkim-signature:from:to:cc:subject:date
-         :message-id:in-reply-to:references:content-transfer-encoding;
-        bh=9CYUHr8sc1keYeTHR45nH7V/JN2e+SSVKE6SwVUg4TY=;
-        b=k9st4l0wmlOdK5IcTdXsGmupZ9m2V73wG9jDgOJ3ZFB76rV5M1F85E3FG052KJWuSr
-         0jHMkXdYyUbn9DnTFhsJMatTXc3HimUIMJ9a1IJ/ENtoyjl1fWxxY1Wn/01u0CvL20qf
-         /zMVvq1hea5C43FEtNDnfret7Gvfaef/H3PYb1UyZJOdz2E/1xYGRpOaG0g7ZkFXSVIF
-         /lhr692Fi5D6T48YTc1WDvP/fbJmZrVsLPRnN/p1fisi1cFFQLLmm+WCqjdAhPRtkBhF
-         p0K9L5qKlrh6i3O8eOK6COoHUvHm5POgW/pAfI24DnonvuqrSABTdX6YHaywFVgfnzml
-         gtsg==
-X-Gm-Message-State: AOAM533YndhHu3Z4EOf/eMYk3Gn0v3e4t7bctIFXGXpzenEE6uos5l9P
-        2fYZPLl1cluffWk3BHCV+9RF3iRc81/3FHQD50/qVvtEtIEk
-X-Google-Smtp-Source: ABdhPJxmG0LfNAmoxbFQy9Z6AjwcMB6i3Af6j7erW3fLmvKaKYvxXQGL+HwaT2N9Y/AXRaOfGNpsnqM2uZ9A
-X-Received: by 2002:a17:90a:6389:b0:1c9:ee11:6c2c with SMTP id f9-20020a17090a638900b001c9ee116c2cmr19860434pjj.107.1649392434046;
-        Thu, 07 Apr 2022 21:33:54 -0700 (PDT)
-Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [54.193.82.35])
-        by smtp-relay.gmail.com with ESMTPS id f18-20020a170902ce9200b001566cf99a80sm721140plg.97.2022.04.07.21.33.53
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 07 Apr 2022 21:33:54 -0700 (PDT)
-X-Relaying-Domain: arista.com
-Received: from chmeee (unknown [10.95.70.41])
-        by smtp.aristanetworks.com (Postfix) with ESMTPS id 9BB58302BF87;
-        Thu,  7 Apr 2022 21:33:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1649392433;
-        bh=9CYUHr8sc1keYeTHR45nH7V/JN2e+SSVKE6SwVUg4TY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nWjhJsihO3WCswjLp2YmG/zMlEvF80hn/+Q6sZawOzo8iyX+XxFtvnJLoixZvCK2Z
-         AJ4/BCBQ6jU4e4LumrcmV7aeJjVaznVHrRcE78qws2YPyP6eYVAuE/ExJ8UUiuWGvm
-         MOl6TI4h9dplyHSWgPOOswDj5ZMAnOGrsPZmN099MEqnxbBuSZrA/JLOiUQLf998KO
-         50hs2fS/FW+Ojz3O9eN8mN27AOJcecYS/Mdw/5QFdDsHkFXd84Z5tkb+1v9B5BFcLJ
-         p8lfaSGo8NTZe8V2c1OtSUWdPidCrZZ7T6Jl9jkPaPFdED3Sa9ksSgjhX033UuWlD0
-         MtvQ9PXK5MqMA==
-Received: from kevmitch by chmeee with local (Exim 4.95)
-        (envelope-from <kevmitch@chmeee>)
-        id 1ncgJk-001kHs-5Q;
-        Thu, 07 Apr 2022 21:33:52 -0700
-From:   Kevin Mitchell <kevmitch@arista.com>
-Cc:     kevmitch@arista.com, gal@nvidia.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH nf-next v2 1/1] netfilter: conntrack: skip verification of zero UDP checksum
-Date:   Thu,  7 Apr 2022 21:33:40 -0700
-Message-Id: <20220408043341.416219-1-kevmitch@arista.com>
-In-Reply-To: <20220405234739.269371-2-kevmitch@arista.com>
-References: <20220405234739.269371-2-kevmitch@arista.com>
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229817AbiDHEr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 00:47:28 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C7128B12A;
+        Thu,  7 Apr 2022 21:45:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1649393124; x=1680929124;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0Um57j16VIm3UAAJbcdUmZW4zy0Fo9kHkNmKemxl03I=;
+  b=FwWREW62uFrMFB8Wvq4ACOWBhwK02weTVqFaRsBKIu9Xch3YDLnKdYld
+   s2/gALxBNsyGB7Ysb99qzYgwmzw+Nsqi4XPx/KUDttzIiHbX6QfzUddV3
+   RTMSymUY9N7BGU2O+y9Ol+T4krx5UaskuhA323KbJRrjUdxdxyJGRFGxO
+   MQlA6qJ7kZajUY5YDoJn1GsG7fXwB80bIUXB+ZmfEtAHy3IS5cunYD0Kx
+   eicXrDtYFDK0drn5ip9BqlTKU80t+y9kZdef6h2WgvMJ0HDV67520NEW7
+   orEIOXsivvqrc/eMX5a5+q+JsB7ctmIGbvS8FZ0sFXOrXK1Wl9cK16pzP
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261201295"
+X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
+   d="scan'208";a="261201295"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2022 21:45:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,244,1643702400"; 
+   d="scan'208";a="723248260"
+Received: from lkp-server02.sh.intel.com (HELO a44fdfb70b94) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 07 Apr 2022 21:45:20 -0700
+Received: from kbuild by a44fdfb70b94 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ncgUp-00062R-Ff;
+        Fri, 08 Apr 2022 04:45:19 +0000
+Date:   Fri, 8 Apr 2022 12:44:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Casey Schaufler <casey@schaufler-ca.com>,
+        casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, casey@schaufler-ca.com,
+        linux-audit@redhat.com, keescook@chromium.org,
+        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
+        paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v34 11/29] LSM: Use lsmblob in security_current_getsecid
+Message-ID: <202204081233.FUUgdt5c-lkp@intel.com>
+References: <20220407212230.12893-12-casey@schaufler-ca.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220407212230.12893-12-casey@schaufler-ca.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The checksum is optional for UDP packets in IPv4. However nf_reject
-would previously require a valid checksum to elicit a response such as
-ICMP_DEST_UNREACH.
+Hi Casey,
 
-Add some logic to nf_reject_verify_csum to determine if a UDP packet has
-a zero checksum and should therefore not be verified. Explicitly require
-a valid checksum for IPv6 consistent RFC 2460 and with the non-netfilter
-stack (see udp6_csum_zero_error).
+I love your patch! Perhaps something to improve:
 
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
----
- include/net/netfilter/nf_reject.h   | 27 +++++++++++++++++++++++----
- net/ipv4/netfilter/nf_reject_ipv4.c | 10 +++++++---
- net/ipv6/netfilter/nf_reject_ipv6.c |  4 ++--
- 3 files changed, 32 insertions(+), 9 deletions(-)
+[auto build test WARNING on pcmoore-selinux/next]
+[also build test WARNING on linus/master v5.18-rc1 next-20220407]
+[cannot apply to pcmoore-audit/next jmorris-security/next-testing]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-diff --git a/include/net/netfilter/nf_reject.h b/include/net/netfilter/nf_reject.h
-index 9051c3a0c8e7..f248c1ff8b22 100644
---- a/include/net/netfilter/nf_reject.h
-+++ b/include/net/netfilter/nf_reject.h
-@@ -5,12 +5,34 @@
- #include <linux/types.h>
- #include <uapi/linux/in.h>
- 
--static inline bool nf_reject_verify_csum(__u8 proto)
-+static inline bool nf_reject_verify_csum(struct sk_buff *skb, int dataoff,
-+					  __u8 proto)
- {
- 	/* Skip protocols that don't use 16-bit one's complement checksum
- 	 * of the entire payload.
- 	 */
- 	switch (proto) {
-+		/* Protocols with optional checksums. */
-+		case IPPROTO_UDP: {
-+			const struct udphdr *udp_hdr;
-+			struct udphdr _udp_hdr;
-+
-+			/* Checksum is required in IPv6
-+			 * see RFC 2460 section 8.1
-+			 */
-+			if (skb->protocol == htons(ETH_P_IPV6))
-+				return true;
-+
-+			udp_hdr = skb_header_pointer(skb, dataoff,
-+						     sizeof(_udp_hdr),
-+						     &_udp_hdr);
-+			if (!udp_hdr || udp_hdr->check)
-+				return true;
-+
-+			return false;
-+		}
-+		case IPPROTO_GRE:
-+
- 		/* Protocols with other integrity checks. */
- 		case IPPROTO_AH:
- 		case IPPROTO_ESP:
-@@ -19,9 +41,6 @@ static inline bool nf_reject_verify_csum(__u8 proto)
- 		/* Protocols with partial checksums. */
- 		case IPPROTO_UDPLITE:
- 		case IPPROTO_DCCP:
--
--		/* Protocols with optional checksums. */
--		case IPPROTO_GRE:
- 			return false;
- 	}
- 	return true;
-diff --git a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
-index 4eed5afca392..6c46d4e8ab84 100644
---- a/net/ipv4/netfilter/nf_reject_ipv4.c
-+++ b/net/ipv4/netfilter/nf_reject_ipv4.c
-@@ -82,6 +82,7 @@ struct sk_buff *nf_reject_skb_v4_unreach(struct net *net,
- 	unsigned int len;
- 	__wsum csum;
- 	u8 proto;
-+	int dataoff;
- 
- 	if (!nf_reject_iphdr_validate(oldskb))
- 		return NULL;
-@@ -99,10 +100,11 @@ struct sk_buff *nf_reject_skb_v4_unreach(struct net *net,
- 	if (pskb_trim_rcsum(oldskb, ntohs(ip_hdr(oldskb)->tot_len)))
- 		return NULL;
- 
-+	dataoff = ip_hdrlen(oldskb);
- 	proto = ip_hdr(oldskb)->protocol;
- 
- 	if (!skb_csum_unnecessary(oldskb) &&
--	    nf_reject_verify_csum(proto) &&
-+	    nf_reject_verify_csum(oldskb, dataoff, proto) &&
- 	    nf_ip_checksum(oldskb, hook, ip_hdrlen(oldskb), proto))
- 		return NULL;
- 
-@@ -312,6 +314,7 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- {
- 	struct iphdr *iph = ip_hdr(skb_in);
- 	u8 proto = iph->protocol;
-+	int dataoff = ip_hdrlen(skb_in);
- 
- 	if (iph->frag_off & htons(IP_OFFSET))
- 		return;
-@@ -320,12 +323,13 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- 	    nf_reject_fill_skb_dst(skb_in) < 0)
- 		return;
- 
--	if (skb_csum_unnecessary(skb_in) || !nf_reject_verify_csum(proto)) {
-+	if (skb_csum_unnecessary(skb_in) ||
-+	    !nf_reject_verify_csum(skb_in, dataoff, proto)) {
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- 		return;
- 	}
- 
--	if (nf_ip_checksum(skb_in, hook, ip_hdrlen(skb_in), proto) == 0)
-+	if (nf_ip_checksum(skb_in, hook, dataoff, proto) == 0)
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- }
- EXPORT_SYMBOL_GPL(nf_send_unreach);
-diff --git a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
-index dffeaaaadcde..f61d4f18e1cf 100644
---- a/net/ipv6/netfilter/nf_reject_ipv6.c
-+++ b/net/ipv6/netfilter/nf_reject_ipv6.c
-@@ -31,7 +31,7 @@ static bool nf_reject_v6_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
-@@ -388,7 +388,7 @@ static bool reject6_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
+url:    https://github.com/intel-lab-lkp/linux/commits/Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220408-062243
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git next
+config: mips-randconfig-r002-20220408 (https://download.01.org/0day-ci/archive/20220408/202204081233.FUUgdt5c-lkp@intel.com/config)
+compiler: mips64el-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/0d4df6ae86e123057cb18eeb5ba1b1eff2641fe4
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Casey-Schaufler/integrity-disassociate-ima_filter_rule-from-security_audit_rule/20220408-062243
+        git checkout 0d4df6ae86e123057cb18eeb5ba1b1eff2641fe4
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash security/integrity/ima/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   security/integrity/ima/ima_main.c: In function 'ima_file_check':
+>> security/integrity/ima/ima_main.c:521:16: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+     521 |         return process_measurement(file, current_cred(), blob.secid[0], NULL, 0,
+         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     522 |                                    mask & (MAY_READ | MAY_WRITE | MAY_EXEC |
+         |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     523 |                                            MAY_APPEND), FILE_CHECK);
+         |                                            ~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_main.c:26:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_main.c:517:24: note: defined here 'blob'
+     517 |         struct lsmblob blob;
+         |                        ^~~~
+   security/integrity/ima/ima_main.c: In function 'ima_file_mmap':
+   security/integrity/ima/ima_main.c:413:24: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+     413 |                 return process_measurement(file, current_cred(), blob.secid[0],
+         |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     414 |                                            NULL, 0, MAY_EXEC, MMAP_CHECK);
+         |                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_main.c:26:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_main.c:408:24: note: defined here 'blob'
+     408 |         struct lsmblob blob;
+         |                        ^~~~
+   security/integrity/ima/ima_main.c: In function 'ima_file_mprotect':
+   security/integrity/ima/ima_main.c:453:18: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+     453 |         action = ima_get_action(file_mnt_user_ns(vma->vm_file), inode,
+         |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     454 |                                 current_cred(), blob.secid[0], MAY_EXEC,
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     455 |                                 MMAP_CHECK, &pcr, &template, NULL, NULL);
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_main.c:26:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_main.c:441:24: note: defined here 'blob'
+     441 |         struct lsmblob blob;
+         |                        ^~~~
+   security/integrity/ima/ima_main.c: In function 'ima_bprm_check':
+   security/integrity/ima/ima_main.c:495:15: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+     495 |         ret = process_measurement(bprm->file, current_cred(), blob.secid[0],
+         |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     496 |                                   NULL, 0, MAY_EXEC, BPRM_CHECK);
+         |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_main.c:26:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_main.c:491:24: note: defined here 'blob'
+     491 |         struct lsmblob blob;
+         |                        ^~~~
+   security/integrity/ima/ima_main.c: In function 'ima_read_file':
+   security/integrity/ima/ima_main.c:739:16: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+     739 |         return process_measurement(file, current_cred(), blob.secid[0], NULL,
+         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     740 |                                    0, MAY_READ, func);
+         |                                    ~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_main.c:26:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_main.c:717:24: note: defined here 'blob'
+     717 |         struct lsmblob blob;
+         |                        ^~~~
+   security/integrity/ima/ima_main.c: In function 'ima_post_read_file':
+   security/integrity/ima/ima_main.c:783:16: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+     783 |         return process_measurement(file, current_cred(), blob.secid[0], buf,
+         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     784 |                                    size, MAY_READ, func);
+         |                                    ~~~~~~~~~~~~~~~~~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_main.c:26:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_main.c:768:24: note: defined here 'blob'
+     768 |         struct lsmblob blob;
+         |                        ^~~~
+   security/integrity/ima/ima_main.c: In function 'process_buffer_measurement':
+   security/integrity/ima/ima_main.c:934:26: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+     934 |                 action = ima_get_action(mnt_userns, inode, current_cred(),
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     935 |                                         blob.secid[0], 0, func, &pcr, &template,
+         |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     936 |                                         func_data, NULL);
+         |                                         ~~~~~~~~~~~~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_main.c:26:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_main.c:909:24: note: defined here 'blob'
+--
+   security/integrity/ima/ima_appraise.c: In function 'ima_must_appraise':
+>> security/integrity/ima/ima_appraise.c:81:16: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'unsigned int[]'} [-Warray-bounds]
+      81 |         return ima_match_policy(mnt_userns, inode, current_cred(),
+         |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      82 |                                 blob.secid[0], func, mask,
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      83 |                                 IMA_APPRAISE | IMA_HASH, NULL, NULL, NULL,
+         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      84 |                                 NULL);
+         |                                 ~~~~~
+   In file included from include/linux/ima.h:12,
+                    from security/integrity/ima/ima_appraise.c:14:
+   include/linux/security.h:150:17: note: while referencing 'secid'
+     150 |         u32     secid[LSMBLOB_ENTRIES];
+         |                 ^~~~~
+   security/integrity/ima/ima_appraise.c:74:24: note: defined here 'blob'
+      74 |         struct lsmblob blob;
+         |                        ^~~~
+
+
+vim +521 security/integrity/ima/ima_main.c
+
+   504	
+   505	/**
+   506	 * ima_file_check - based on policy, collect/store measurement.
+   507	 * @file: pointer to the file to be measured
+   508	 * @mask: contains MAY_READ, MAY_WRITE, MAY_EXEC or MAY_APPEND
+   509	 *
+   510	 * Measure files based on the ima_must_measure() policy decision.
+   511	 *
+   512	 * On success return 0.  On integrity appraisal error, assuming the file
+   513	 * is in policy and IMA-appraisal is in enforcing mode, return -EACCES.
+   514	 */
+   515	int ima_file_check(struct file *file, int mask)
+   516	{
+   517		struct lsmblob blob;
+   518	
+   519		security_current_getsecid_subj(&blob);
+   520		/* scaffolding until process_measurement changes */
+ > 521		return process_measurement(file, current_cred(), blob.secid[0], NULL, 0,
+   522					   mask & (MAY_READ | MAY_WRITE | MAY_EXEC |
+   523						   MAY_APPEND), FILE_CHECK);
+   524	}
+   525	EXPORT_SYMBOL_GPL(ima_file_check);
+   526	
+
 -- 
-2.35.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
