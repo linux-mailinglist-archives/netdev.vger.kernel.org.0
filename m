@@ -2,114 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 475E14F9AAB
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 18:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1E484F9ABF
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 18:35:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231819AbiDHQfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Apr 2022 12:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
+        id S232531AbiDHQhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Apr 2022 12:37:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231203AbiDHQfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 12:35:34 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAC2108186
-        for <netdev@vger.kernel.org>; Fri,  8 Apr 2022 09:33:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649435610; x=1680971610;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=C5YudwniUk0Ke+D/nOjhjUYoWNOsPnSOtJM/5fW3xVo=;
-  b=VlS3wYdRgqD2XWGXaxMselflQ1vIGUHuhUoIR0fxVdICSnoynGBfl3YA
-   mRB+uKlxT+FcmhG6a+qyEQ22k9+fSscW6EkyLoQwqLO2hj5liCeDKi6DV
-   8/q2bOJ9qQmb+k0lO8BOmh20Eh04l+qAynI3BZbVP7G+NybdAzCxSpevh
-   T2oYaxYIxUQamZBRCbGw5D9N7A3jDbKi/7YykhUMsve8uwOLijSaKRLGY
-   91BNtv+ud113+zxWmfQux5eIRbvMCl/I2fWifgfDOV15C1tODgJcvMeTI
-   g/PJmmdLrDBYHcQZhIzX8yW4gh+VDk9gYJMrtmAn82/wJ40JlUpImzffV
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10310"; a="261321989"
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="261321989"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2022 09:33:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,245,1643702400"; 
-   d="scan'208";a="642957828"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by FMSMGA003.fm.intel.com with ESMTP; 08 Apr 2022 09:33:29 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 2/2] Revert "iavf: Fix deadlock occurrence during resetting VF interface"
-Date:   Fri,  8 Apr 2022 09:34:11 -0700
-Message-Id: <20220408163411.2415552-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220408163411.2415552-1-anthony.l.nguyen@intel.com>
-References: <20220408163411.2415552-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S232479AbiDHQhp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Apr 2022 12:37:45 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F20B98F6A;
+        Fri,  8 Apr 2022 09:35:41 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id bq30so3241125lfb.3;
+        Fri, 08 Apr 2022 09:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=FFoYpbF863k/pBsPIF5QsC9t58VedUuM7a/RF6igal4=;
+        b=afkUqADE7Kkb8bW0nZw/GaT4xWYr1eKSw6jDRV+nkfdnDVLpid45/8ISvekE6oReop
+         DQSSBWmmk592uGL7Q1pFL8rBYYORE0q7n27a42F7YtjQ/DnwbHrAqFL9YLfGOXM+SPo6
+         LSNLcEqezquXx09qNbMlBMpQ0Nd4hXwaT6BMSskD/L23XgDBHjO90q3zb3F5ACqSyvqp
+         Foh+YyPEHJH7yc1sgByS7IvLspJHH/ngUGEz/Ifg/Pz8ZZaXwMzZEfTk16/CrXHC5STB
+         l/MdQoO8SkIAapZQIGFURyN0ddEg9OBWKOAoWWMbeoyz4Y2u3mqAeAUtdKmPWyf9Dhqg
+         r2KQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=FFoYpbF863k/pBsPIF5QsC9t58VedUuM7a/RF6igal4=;
+        b=24dn2dyfGGG2W+Wczp4MWvI7Eg1KDi2Q4qS4UZ+1kTeS2XaHRCMaHJB5w8uxyLzLsq
+         vXsv+D8k41H3gD9QmrcfPAMQhBvVTJTA+8awK3v6tkWyU1ATbm9yO7I6MCJ+ujC6cvxI
+         p7IIvBGfJ53IL9pv/czc5RJJMoPn+kGcGBmAzunytZcJ2u5vkvZ1fIER94CPKRXTrUpG
+         bG2aF1MnglTp10WFj0H1mCRTW1N2uxfwUfK8CBOlo0Ecr07m+WQ2yJP497csjI2MfO85
+         p6Q9U7XtZ7wDAvMIiOvOCdfJiZMZIwo2HiXNVHKfHUhBSiu7Q5GCISN4dZhjFJpR3c8C
+         lRug==
+X-Gm-Message-State: AOAM530f5psxBqjN8AFXJqL151ho8f2mbNi/cnbZ3/lJZqWtN2+sO0eL
+        oNTnVXbQHnqbH8xKYRJfaTSI4Qxhd64C4+R/IMU=
+X-Google-Smtp-Source: ABdhPJxFP/ouPbvMaJ5QMbtMWcOd1FddPolG7h+MMOx/15H8RobY8xBhjjZPrKUXtXyN769bc4d4N/LA78A8It6N6fg=
+X-Received: by 2002:a05:6512:b12:b0:44a:ba81:f874 with SMTP id
+ w18-20020a0565120b1200b0044aba81f874mr13517769lfu.449.1649435739232; Fri, 08
+ Apr 2022 09:35:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+From:   Paul Thomas <pthomas8589@gmail.com>
+Date:   Fri, 8 Apr 2022 12:35:27 -0400
+Message-ID: <CAD56B7dMg073f56vfaxp38=dZiAFU0iCn6kmDGiNcNtCijyFoA@mail.gmail.com>
+Subject: peak_usb: urb aborted
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        support@peak-system.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Folks,
 
-This change caused a regression with resetting while changing network
-namespaces. By clearing the IFF_UP flag, the kernel now thinks it has
-fully closed the device.
+I'm using a PCAN-USB adapter, and it seems to have a lot of trouble
+under medium load. I'm getting these urb aborted messages.
+[125054.082248] peak_usb 3-2.4.4:1.0 can0: Rx urb aborted (-71)
+[125077.886850] peak_usb 3-2.4.4:1.0 can0: Rx urb aborted (-32)
 
-This reverts commit 0cc318d2e8408bc0ffb4662a0c3e5e57005ac6ff.
+Is there anything that can be done about this? This is very
+frustrating because it makes the USB adapter very difficult to use as
+a reliable partner of an embedded CAN device.
 
-Fixes: 0cc318d2e840 ("iavf: Fix deadlock occurrence during resetting VF interface")
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf_main.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+I'm using Ubuntu with 5.4.0-107-generic. Any help would be appreciated.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 190590d32faf..7dfcf78b57fb 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2871,7 +2871,6 @@ static void iavf_reset_task(struct work_struct *work)
- 	running = adapter->state == __IAVF_RUNNING;
- 
- 	if (running) {
--		netdev->flags &= ~IFF_UP;
- 		netif_carrier_off(netdev);
- 		netif_tx_stop_all_queues(netdev);
- 		adapter->link_up = false;
-@@ -2988,7 +2987,7 @@ static void iavf_reset_task(struct work_struct *work)
- 		 * to __IAVF_RUNNING
- 		 */
- 		iavf_up_complete(adapter);
--		netdev->flags |= IFF_UP;
-+
- 		iavf_irq_enable(adapter, true);
- 	} else {
- 		iavf_change_state(adapter, __IAVF_DOWN);
-@@ -3004,10 +3003,8 @@ static void iavf_reset_task(struct work_struct *work)
- reset_err:
- 	mutex_unlock(&adapter->client_lock);
- 	mutex_unlock(&adapter->crit_lock);
--	if (running) {
-+	if (running)
- 		iavf_change_state(adapter, __IAVF_RUNNING);
--		netdev->flags |= IFF_UP;
--	}
- 	dev_err(&adapter->pdev->dev, "failed to allocate resources during reinit\n");
- 	iavf_close(netdev);
- }
--- 
-2.31.1
-
+-Paul
