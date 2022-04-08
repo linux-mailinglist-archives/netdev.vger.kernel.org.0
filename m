@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 503454F8EA4
-	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 385A34F8EB2
+	for <lists+netdev@lfdr.de>; Fri,  8 Apr 2022 08:27:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbiDHD62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Apr 2022 23:58:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60562 "EHLO
+        id S234053AbiDHD63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Apr 2022 23:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233984AbiDHD6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 23:58:24 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCAF1DD94B
-        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 20:56:22 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb58f605aeso66052987b3.0
-        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 20:56:22 -0700 (PDT)
+        with ESMTP id S234041AbiDHD62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Apr 2022 23:58:28 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F15AE0AFB
+        for <netdev@vger.kernel.org>; Thu,  7 Apr 2022 20:56:25 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id h16-20020a056902009000b00628a70584b2so5721236ybs.6
+        for <netdev@vger.kernel.org>; Thu, 07 Apr 2022 20:56:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=HxFczrqsspWyPdqTCif/D0IhzdUHRDLBzRRwTlKUif4=;
-        b=OpAiXGIhVTB/vTq+PHCL6R254gERCairQa9Ci41IeF1qLemf8XiEknJyK9Qj6Xs1GW
-         K7WpgXr2EA17KLl/s4ujXAp5fKXj6Xw078lOQwj1Q/BY5uq1kQT3b5ejYkJ5qqHiW0yK
-         aDjMN+hXma8v/A4lyggTad1UeC6FgVVVHzWbdfdzsvOb6vgvpXjsWygNGHBdBmop+AaA
-         o6CBjt20f1W7sJ77QjxsdVH8SloKdX922qn7sb64nBoukV1FFCcXuLm3tuKG+CljIAAM
-         mrt8cwt9D7X4gb1te5BnaS2qFjU3ZU6zqtUtJ3ij0eCLxZzpHO3OZoc+19JMxnnvTBOG
-         EHcA==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=+UkP3lUK7ObQkCyzmAzO/DKgbCUB8zFLRfkItQiish8=;
+        b=BNzAVEsk+y8i0hvgdOFQ3JjFIanV1LS9VEuAZRKQGCjO0pQxkFs7HPpPGinn10Etid
+         qbGu6TJpWjAY7tbIUlgPbg3YDegF4SulYZEbqhImfHCA0bSLbcxb9In1hHjf0qFjZCvP
+         SgeQSstMpFwmFmWUpRXp5btO080Ea/O/UWkoShdBq+D0DcObzMq3R3+XSJG9JI0mPSWi
+         QDz27KQ4K/OH+iABrm4y66+uPvJIn+c/q9mQiJUGWR3Zdmduu2Hac54igS6lH/ACe2+u
+         E/7s11R33gc1MsZazSS7nFG5nDxsYxZMR2FUCps5bhbd4R+En2NY/xireFZ9DN82KY0w
+         hPEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=HxFczrqsspWyPdqTCif/D0IhzdUHRDLBzRRwTlKUif4=;
-        b=1TM76JYecFMtNV0Qu2SVolq4sbTIO7nXRGm/cWgx0a7V6vTs4czVIbM1Jc70q4LV3b
-         O784T4zxL7uNQPc0apX+G1I/dDY1Hhp54U9w7TnfLZVepO2CVpI3jEh5yZvRn6FocMj6
-         DdugoBv7MyEDZf3E0N7uhEbpxm/u39IGWRg1zsobL04e15QiQYn/Eg3B3qO9ta6yTjcg
-         Ot95G/+iiXun/339CKLYtffejQF6poVCqeHxrb15cXYkDQXe2BElKu7nIBJ/BYrrXi9b
-         qVDd1jfvU9hHGmloVtFvsfz4i5KXU5VA03n+svChgj5Uhv/SFmZx56K2zVb/jGFJRmCH
-         u4QQ==
-X-Gm-Message-State: AOAM530o8fwK6wFk8bLrYQpr/tKTf0Fd3OzNPU0tj4+EaRR+g2SaBcwM
-        pcsOfSu8cnZmevf/LpL3uc4MhzNoQpdT
-X-Google-Smtp-Source: ABdhPJxGss2gEVXU1qEfZ8LDHdcCgN0sHB3FaIVikPe2VRhZW0mD6pgY0SGsZRVMI8prYHhp9fSSBvfka1ac
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=+UkP3lUK7ObQkCyzmAzO/DKgbCUB8zFLRfkItQiish8=;
+        b=IzA9rZlfKZW32cZKE9xnzRffQuTFjjs4YKOaSuIx33oecvDl7LKEhp2j0UWN/8lpPo
+         d6OS2KScO06CLYphQN2R/wZmfr+m5LUVTZtRE3ltfkyoGIeJDhbBhu4DEkUHDQrxyRba
+         A1y2LdvivwZDWzhO4pWovwOEnKdeJeAZeZfu8ghLExQt3wvDPL7qr8xVg6gwoMHPtmlH
+         XTUzPhNPFsBb3e0bXbH8JkOLf8U/8X8rFXHO0gziW74UsQWOOjkM6F8GOZuciaYiOacv
+         a3iMSZ/bXbZmHfO+pwnu5eZhThNUnXvlC+Gw6ddjodGTnsqU/+0ZPOXiAwz/suWISTRD
+         Fr/A==
+X-Gm-Message-State: AOAM530qOiqgsHQoc5tFd+GEHKDv3Y3Odozzmt17gkOGTXbQjarOKUWI
+        XgytMr99H95Jiz/agQu2/KCX1NH6rdgd
+X-Google-Smtp-Source: ABdhPJzAGn8IgbwUAH+00Y1LBeQMqrkd4DN8Kp/utfITpsnis/mZA85HK2v7x30g/16DPHKVX+kOi1HjQZn4
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:560:aa27:649e:a07d])
- (user=irogers job=sendgmr) by 2002:a25:dad1:0:b0:634:63aa:6ec2 with SMTP id
- n200-20020a25dad1000000b0063463aa6ec2mr12250168ybf.159.1649390181920; Thu, 07
- Apr 2022 20:56:21 -0700 (PDT)
-Date:   Thu,  7 Apr 2022 20:56:11 -0700
-Message-Id: <20220408035616.1356953-1-irogers@google.com>
+ (user=irogers job=sendgmr) by 2002:a25:af41:0:b0:633:905f:9e9b with SMTP id
+ c1-20020a25af41000000b00633905f9e9bmr12894988ybj.77.1649390184327; Thu, 07
+ Apr 2022 20:56:24 -0700 (PDT)
+Date:   Thu,  7 Apr 2022 20:56:12 -0700
+In-Reply-To: <20220408035616.1356953-1-irogers@google.com>
+Message-Id: <20220408035616.1356953-2-irogers@google.com>
 Mime-Version: 1.0
+References: <20220408035616.1356953-1-irogers@google.com>
 X-Mailer: git-send-email 2.35.1.1178.g4f1659d476-goog
-Subject: [PATCH v3 0/5] Make evlist CPUs more accurate
+Subject: [PATCH v3 1/5] perf cpumap: Don't decrement refcnt on args to merge
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -86,56 +90,95 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-evlist has all_cpus, computed to be the merge of all evsel CPU maps,
-and cpus. cpus may contain more CPUs than all_cpus, as by default cpus
-holds all online CPUs whilst all_cpus holds the merge/union from
-evsels. For an uncore event there may just be 1 CPU per socket, which
-will be a far smaller CPU map than all online CPUs.
+Having one argument to the cpumap merge decremented but not the other
+leads to an inconsistent API. Don't decrement either argument.
 
-The v1 patches changed cpus to be called user_requested_cpus, to
-reflect their potential user specified nature. The user_requested_cpus
-are set to be the current value intersected with all_cpus, so that
-user_requested_cpus is always a subset of all_cpus. This fixes
-printing code for metrics so that unnecessary blank lines aren't
-printed.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/lib/perf/cpumap.c   | 11 +++--------
+ tools/lib/perf/evlist.c   |  6 +++++-
+ tools/perf/tests/cpumap.c |  1 +
+ 3 files changed, 9 insertions(+), 9 deletions(-)
 
-To make the intersect function perform well, a perf_cpu_map__is_subset
-function is added. While adding this function, the v2 patches also
-used it in perf_cpu_map__merge to avoid creating a new CPU map for
-some currently missed patterns. The reference counts for these
-functions is simplified as discussed here:
-https://lore.kernel.org/lkml/YkdOpJDnknrOPq2t@kernel.org/ but this
-means users of perf_cpu_map__merge must now do a put on the 1st
-argument.
-
-v2. Reorders the "Avoid segv" patch and makes other adjustments
-    suggested by Arnaldo Carvalho de Melo <acme@kernel.org>.
-v3. Modify reference count behaviour for merge and intersect. Add
-    intersect tests and tidy thee cpu map tests suite.
-
-Ian Rogers (5):
-  perf cpumap: Don't decrement refcnt on args to merge
-  perf tests: Additional cpumap merge tests
-  perf cpumap: Add intersect function.
-  perf evlist: Respect all_cpus when setting user_requested_cpus
-  perf test: Combine cpu map tests into 1 suite
-
- tools/lib/perf/cpumap.c              | 46 ++++++++++++++---
- tools/lib/perf/evlist.c              |  6 ++-
- tools/lib/perf/include/perf/cpumap.h |  2 +
- tools/perf/tests/builtin-test.c      |  4 +-
- tools/perf/tests/cpumap.c            | 74 +++++++++++++++++++++++++---
- tools/perf/tests/tests.h             |  4 +-
- tools/perf/util/evlist.c             |  7 +++
- 7 files changed, 120 insertions(+), 23 deletions(-)
-
+diff --git a/tools/lib/perf/cpumap.c b/tools/lib/perf/cpumap.c
+index 384d5e076ee4..95c56e17241b 100644
+--- a/tools/lib/perf/cpumap.c
++++ b/tools/lib/perf/cpumap.c
+@@ -342,9 +342,7 @@ bool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu
+ /*
+  * Merge two cpumaps
+  *
+- * orig either gets freed and replaced with a new map, or reused
+- * with no reference count change (similar to "realloc")
+- * other has its reference count increased.
++ * May reuse either orig or other bumping reference count accordingly.
+  */
+ 
+ struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
+@@ -356,11 +354,9 @@ struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
+ 	struct perf_cpu_map *merged;
+ 
+ 	if (perf_cpu_map__is_subset(orig, other))
+-		return orig;
+-	if (perf_cpu_map__is_subset(other, orig)) {
+-		perf_cpu_map__put(orig);
++		return perf_cpu_map__get(orig);
++	if (perf_cpu_map__is_subset(other, orig))
+ 		return perf_cpu_map__get(other);
+-	}
+ 
+ 	tmp_len = orig->nr + other->nr;
+ 	tmp_cpus = malloc(tmp_len * sizeof(struct perf_cpu));
+@@ -387,6 +383,5 @@ struct perf_cpu_map *perf_cpu_map__merge(struct perf_cpu_map *orig,
+ 
+ 	merged = cpu_map__trim_new(k, tmp_cpus);
+ 	free(tmp_cpus);
+-	perf_cpu_map__put(orig);
+ 	return merged;
+ }
+diff --git a/tools/lib/perf/evlist.c b/tools/lib/perf/evlist.c
+index 1b15ba13c477..b783249a038b 100644
+--- a/tools/lib/perf/evlist.c
++++ b/tools/lib/perf/evlist.c
+@@ -35,6 +35,8 @@ void perf_evlist__init(struct perf_evlist *evlist)
+ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
+ 					  struct perf_evsel *evsel)
+ {
++	struct perf_cpu_map *tmp;
++
+ 	/*
+ 	 * We already have cpus for evsel (via PMU sysfs) so
+ 	 * keep it, if there's no target cpu list defined.
+@@ -52,7 +54,9 @@ static void __perf_evlist__propagate_maps(struct perf_evlist *evlist,
+ 
+ 	perf_thread_map__put(evsel->threads);
+ 	evsel->threads = perf_thread_map__get(evlist->threads);
+-	evlist->all_cpus = perf_cpu_map__merge(evlist->all_cpus, evsel->cpus);
++	tmp = perf_cpu_map__merge(evlist->all_cpus, evsel->cpus);
++	perf_cpu_map__put(evlist->all_cpus);
++	evlist->all_cpus = tmp;
+ }
+ 
+ static void perf_evlist__propagate_maps(struct perf_evlist *evlist)
+diff --git a/tools/perf/tests/cpumap.c b/tools/perf/tests/cpumap.c
+index f94929ebb54b..cf205ed6b158 100644
+--- a/tools/perf/tests/cpumap.c
++++ b/tools/perf/tests/cpumap.c
+@@ -133,6 +133,7 @@ static int test__cpu_map_merge(struct test_suite *test __maybe_unused, int subte
+ 	TEST_ASSERT_VAL("failed to merge map: bad nr", perf_cpu_map__nr(c) == 5);
+ 	cpu_map__snprint(c, buf, sizeof(buf));
+ 	TEST_ASSERT_VAL("failed to merge map: bad result", !strcmp(buf, "1-2,4-5,7"));
++	perf_cpu_map__put(a);
+ 	perf_cpu_map__put(b);
+ 	perf_cpu_map__put(c);
+ 	return 0;
 -- 
 2.35.1.1178.g4f1659d476-goog
 
